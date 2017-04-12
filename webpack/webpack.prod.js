@@ -27,14 +27,25 @@ base.output.filename = '[name].[chunkhash:8].js';
 // add webpack plugins
 base.plugins.push(
   new ProgressPlugin(),
-  new ExtractTextPlugin('[name].[chunkhash:8].css'),
+  new ExtractTextPlugin('[name].[contenthash:8].css'),
   new webpack.DefinePlugin({
     'process.env.NODE_ENV': JSON.stringify('production'),
+    __DEVELOPMENT__: false,
+    __DEVTOOLS__: false,
   }),
   new webpack.optimize.UglifyJsPlugin({
     sourceMap: true,
     compress: {
       warnings: false,
+      screw_ie8: true,
+      conditionals: true,
+      unused: true,
+      comparisons: true,
+      sequences: true,
+      dead_code: true,
+      evaluate: true,
+      if_return: true,
+      join_vars: true,
     },
     output: {
       comments: false,

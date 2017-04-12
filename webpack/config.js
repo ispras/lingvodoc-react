@@ -6,7 +6,15 @@ module.exports = {
   publicPath: '/',
   srcPath: path.join(__dirname, './../src'),
   vendor: [
-    'react', 'react-dom', 'react-router', 'redux', 'react-router-redux', 'semantic-ui-react', 'semantic-ui-css/semantic.css',
+    'react',
+    'react-dom',
+    'react-router-dom',
+    'react-router-redux',
+    'recompose',
+    'redux',
+    'redux-saga',
+    'semantic-ui-react',
+    'semantic-ui-css/semantic.css',
   ],
   babel: {
     babelrc: true,
