@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import Perf from 'react-addons-perf';
 import { AppContainer } from 'react-hot-loader';
 
 import injectTapEventPlugin from 'react-tap-event-plugin';
@@ -22,6 +23,9 @@ let composeEnhancers = compose;
 const devTools = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__;
 if (__DEVELOPMENT__ && __DEVTOOLS__ && devTools) {
   composeEnhancers = devTools;
+}
+if (__DEVELOPMENT__) {
+  window.Perf = Perf;
 }
 
 const store = createStore(

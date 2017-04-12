@@ -20,7 +20,15 @@
   },
   "extends": ["airbnb"],
   "settings": {
-    "import/resolver": "webpack"
+    "import/resolver": {
+      "webpack": {
+        "config": {
+          "resolve": {
+            "extensions": [".js"]
+          }
+        }
+      }
+    }
   },
   "rules": {
     "comma-dangle": ["warn", "always-multiline"],
