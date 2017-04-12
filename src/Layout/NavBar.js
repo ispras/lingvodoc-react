@@ -1,45 +1,58 @@
-import React, { PropTypes as T } from 'react';
+import React, { PropTypes } from 'react';
+import { Link, withRouter } from 'react-router-dom';
+import { Dropdown, Menu, Icon } from 'semantic-ui-react';
+import styled from 'styled-components';
 
-import AppBar from 'react-toolbox/lib/app_bar';
-import { Link } from 'react-router-dom';
+import User from './User';
+import Tasks from './Tasks';
+import Language from './Language';
 
-// import { Route, Link } from 'react-router-dom';
+const Logo = styled.span`
+  font-size: 1.2em;
+  font-weight: bold;
+`;
 
-// const MenuLink = ({ to, exact, children }) => (
-//   <Route path={to} exact={exact} >
-//     {
-//       ({ match }) =>
-//         <li className={match ? 'active' : ''}>
-//           <Link to={to}>{children}</Link>
-//         </li>
-//     }
-//   </Route>
-// );
+const NavBar = ({ location }) =>
+  <Menu fixed="top">
+    <Menu.Item as={Link} to="/">
+      <Logo>
+        Lingv<Icon name="talk outline" />doc
+      </Logo>
+    </Menu.Item>
 
-// MenuLink.propTypes = {
-//   to: T.string.isRequired,
-//   exact: T.bool.isRequired,
-//   children: T.string.isRequired,
-// };
+    <Dropdown item text="Dashboard">
+      <Dropdown.Menu>
+        <Dropdown.Item>English</Dropdown.Item>
+        <Dropdown.Item>Russian</Dropdown.Item>
+      </Dropdown.Menu>
+    </Dropdown>
 
-// MenuLink.defaultProps = {
-//   exact: false,
-// };
+    <Dropdown item text="Maps">
+      <Dropdown.Menu>
+        <Dropdown.Item as={Link} to="/map_search">Search</Dropdown.Item>
+        <Dropdown.Item as={Link} to="/sociolinguistics">Sociolinguistics</Dropdown.Item>
+      </Dropdown.Menu>
+    </Dropdown>
 
-function NavBar() {
-  return (
-    <AppBar flat fixed>
-      <Link to="/">
-        Lingvodoc
-      </Link>
-      <nav>
-        <ul>
-          <li><Link to="/maps">Maps</Link></li>
-          <li><Link to="/about">About</Link></li>
-        </ul>
-      </nav>
-    </AppBar>
-  );
-}
+    <Menu.Item as={Link} to="/desktop" active={location.pathname === '/desktop'} >
+      Desktop software
+    </Menu.Item>
 
-export default NavBar;
+    <Menu.Item as={Link} to="/info" active={location.pathname === '/info'} >
+      Info
+    </Menu.Item>
+
+    <Menu.Menu position="right">
+      <User />
+      <Tasks />
+      <Language />
+    </Menu.Menu>
+  </Menu>;
+
+NavBar.propTypes = {
+  location: PropTypes.shape({
+    pathname: PropTypes.string,
+  }).isRequired,
+};
+
+export default withRouter(NavBar);

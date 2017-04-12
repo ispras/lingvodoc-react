@@ -1,15 +1,7 @@
-const reactToolboxVariables = {
-};
-
 module.exports = {
-  plugins: [
-    require('postcss-cssnext')({
-      features: {
-        customProperties: {
-          variables: reactToolboxVariables,
-        },
-      },
-    }),
-    require('postcss-modules-values'),
-  ],
+  plugins: {
+    'postcss-cssnext': {
+      browsers: ['last 2 versions', '> 5%'],
+    },
+  },
 };

@@ -1,23 +1,31 @@
+import 'semantic-ui-css/semantic.css';
 import 'Styles/main.scss';
+
 import React from 'react';
-import { Layout, Panel, Sidebar } from 'react-toolbox';
+import { Switch, Route } from 'react-router-dom';
+import styled from 'styled-components';
+
 import NavBar from './NavBar';
 
-function App() {
-  return (
-    <Layout>
-      <Panel>
-        <NavBar />
-        <div style={{ flex: 1, overflowY: 'auto', padding: '1.8rem' }}>
-          <h1>Main Content</h1>
-          <p>Main content goes here.</p>
-        </div>
-      </Panel>
-      <Sidebar width={5}>
-        <p>Supplemental content goes here.</p>
-      </Sidebar>
-    </Layout>
-  );
-}
+import Home from 'Pages/Home';
+import Info from 'Pages/Info';
+import NotFound from 'Pages/NotFound';
+
+const Content = styled.div`
+  padding-top: 5em;
+`;
+
+const App = () => (
+  <div>
+    <NavBar />
+    <Content>
+      <Switch>
+        <Route exact path="/" component={Home} />
+        <Route path="/info" component={Info} />
+        <Route component={NotFound} />
+      </Switch>
+    </Content>
+  </div>
+);
 
 export default App;

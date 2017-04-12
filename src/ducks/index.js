@@ -1,5 +1,5 @@
-import widgets from './widgets';
+import language from './language';
 
 export default {
-  widgets,
+  language,
 };

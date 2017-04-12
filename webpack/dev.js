@@ -63,20 +63,12 @@ config.module.rules.push(
     test: /\.css$/,
     use: [
       'style-loader',
-      {
-        loader: 'css-loader',
-        options: {
-          modules: true,
-          sourceMap: true,
-          importLoaders: 1,
-          localIdentName: '[name]--[local]--[hash:base64:8]',
-        },
-      },
+      'css-loader',
       'postcss-loader',
     ],
   },
   {
-    test: /\.scss/,
+    test: /\.s(c|a)ss/,
     use: [
       'style-loader',
       'css-loader',
