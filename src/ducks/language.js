@@ -5,7 +5,7 @@ const SET = '@lang/SET';
 // Reducer
 const initial = {
   langs: [],
-  selected: 0,
+  selected: {},
 };
 
 export default function reducer(state = initial, action = {}) {

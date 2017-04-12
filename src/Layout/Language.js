@@ -7,9 +7,20 @@ import { Dropdown, Flag, Menu, Icon } from 'semantic-ui-react';
 
 import { selectLang } from 'ducks/language';
 
+const TITLE = 'Languages';
+
+function checkCountry(shortcut) {
+  return shortcut === 'en' ? 'gb' : shortcut;
+}
+
+function title({ intl_name: text }) {
+  const extra = text ? `(${text})` : '';
+  return TITLE + extra;
+}
+
 const WithSpinner = () =>
   <Menu.Item as="a">
-    Languages <Icon loading name="spinner" />
+    {TITLE} <Icon loading name="spinner" />
   </Menu.Item>;
 
 const enhance = branch(
@@ -18,12 +29,12 @@ const enhance = branch(
 );
 
 const Language = enhance(({ langs, selected, select }) =>
-  <Dropdown item text="Languages">
+  <Dropdown item text={title(selected)}>
     <Dropdown.Menu>
       {
-        langs.map(({ id, shortcut, intl_name: text }) =>
-          <Dropdown.Item key={id} active={id === selected} onClick={() => select(id)} >
-            <Flag name={shortcut === 'en' ? 'gb' : shortcut} />{text}
+        langs.map(lang =>
+          <Dropdown.Item key={lang.id} active={lang === selected} onClick={() => select(lang)} >
+            <Flag name={checkCountry(lang.shortcut)} />{lang.intl_name}
           </Dropdown.Item>
         )
       }
@@ -33,7 +44,7 @@ const Language = enhance(({ langs, selected, select }) =>
 
 Language.propTypes = {
   langs: PropTypes.array.isRequired,
-  selected: PropTypes.number.isRequired,
+  selected: PropTypes.object.isRequired,
   select: PropTypes.func.isRequired,
 };
 
