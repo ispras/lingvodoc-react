@@ -5,7 +5,7 @@ import { branch, renderComponent } from 'recompose';
 
 import { Dropdown, Flag, Menu, Icon } from 'semantic-ui-react';
 
-import { selectLang } from 'Ducks/language';
+import { selectLang } from 'ducks/language';
 
 const WithSpinner = () =>
   <Menu.Item as="a">

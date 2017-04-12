@@ -1,18 +1,15 @@
 import 'semantic-ui-css/semantic.css';
-import 'Styles/main.scss';
+import 'styles/main.scss';
 
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Switch, Route } from 'react-router-dom';
 import styled from 'styled-components';
 
-import mainSaga from './sagas';
+import Home from 'pages/Home';
+import Info from 'pages/Info';
+import NotFound from 'pages/NotFound';
 
 import NavBar from './NavBar';
-
-import Home from 'Pages/Home';
-import Info from 'Pages/Info';
-import NotFound from 'Pages/NotFound';
 
 const Content = styled.div`
   padding: 0 20px;
@@ -27,25 +24,12 @@ const Routes = () =>
     <Route component={NotFound} />
   </Switch>;
 
-class Layout extends React.Component {
-  static contextTypes = {
-    runSaga: PropTypes.func.isRequired,
-  };
-
-  componentDidMount() {
-    this.context.runSaga(mainSaga);
-  }
-
-  render() {
-    return (
-      <div>
-        <NavBar />
-        <Content>
-          <Routes />
-        </Content>
-      </div>
-    );
-  }
-}
+const Layout = () =>
+  <div>
+    <NavBar />
+    <Content>
+      <Routes />
+    </Content>
+  </div>;
 
 export default Layout;

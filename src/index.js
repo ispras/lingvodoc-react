@@ -7,14 +7,13 @@ import { AppContainer } from 'react-hot-loader';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 
 import { createStore, applyMiddleware, compose } from 'redux';
-import { withContext } from 'recompose';
 import { Provider } from 'react-redux';
 import createHistory from 'history/createBrowserHistory';
 import { ConnectedRouter, routerMiddleware } from 'react-router-redux';
 import createSagaMiddleware from 'redux-saga';
 
 import combinedReducer from './reducer';
-
+import mainFlow from './sagas';
 import Layout from './Layout';
 
 const sagaMiddleware = createSagaMiddleware();
@@ -41,19 +40,16 @@ const store = createStore(
   )
 );
 
+sagaMiddleware.run(mainFlow);
+
 const dest = document.getElementById('root');
 
 function render() {
-  const LayoutWithContext = withContext(
-    { runSaga: T.func },
-    () => ({ runSaga: sagaMiddleware.run })
-  )(Layout);
-
   ReactDOM.render(
     <AppContainer>
       <Provider store={store}>
         <ConnectedRouter history={history}>
-          <LayoutWithContext />
+          <Layout />
         </ConnectedRouter>
       </Provider>
     </AppContainer>,

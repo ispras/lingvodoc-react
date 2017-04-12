@@ -24,6 +24,9 @@ settings:
         resolve:
           extensions:
             - ".js"
+          modules:
+            - "src"
+            - "node_modules"
 rules:
   comma-dangle:
     - warn

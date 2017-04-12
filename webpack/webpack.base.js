@@ -22,14 +22,13 @@ module.exports = {
   resolve: {
     extensions: ['.js'],
     alias: {
-      Components: `${config.srcPath}/components/`,
-      Api: `${config.srcPath}/api/`,
-      Ducks: `${config.srcPath}/ducks/`,
-      Pages: `${config.srcPath}/pages/`,
-      Utils: `${config.srcPath}/utils/`,
-      Styles: `${config.srcPath}/styles/`,
-      Config: `${config.srcPath}/config/${process.env.REACT_WEBPACK_ENV}`,
+      config: `${config.srcPath}/config/${process.env.REACT_WEBPACK_ENV}`,
     },
+    modules: [
+      _.cwd('src'),
+      _.cwd('node_modules'),
+      _.cwd('./'),
+    ],
   },
   module: {
     loaders: [
