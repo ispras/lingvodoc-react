@@ -12,7 +12,7 @@ import NotFound from 'pages/NotFound';
 import NavBar from './NavBar';
 
 const Content = styled.div`
-  padding: 0 20px;
+  padding: 20px;
   padding-top: 5em;
   min-height: 100vh;
 `;
