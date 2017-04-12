@@ -30,3 +30,4 @@ rules:
     - always-multiline
 
   react/jsx-filename-extension: 'off'
+  react/forbid-prop-types: 'off'

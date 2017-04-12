@@ -1,5 +1,9 @@
-import React  from 'react';
+import React from 'react';
+import { Menu } from 'semantic-ui-react';
 
-const User = () => null;
+const Tasks = () =>
+  <Menu.Item as="a">
+    Tasks
+  </Menu.Item>;
 
-export default User;
+export default Tasks;

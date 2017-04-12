@@ -39,12 +39,13 @@ const devServerConf = {
 
 // Setup API proxy
 if (process.env.PROD) {
-  config.devServer.proxy = {
-    '/api': {
-      target: process.env.PROD,
-      secure: false,
-    },
-  };
+  const proxy = require('http-proxy-middleware');
+
+  app.use('/api', proxy({
+    target: process.env.PROD,
+    pathRewrite: { '^/api': '' },
+    changeOrigin: true,
+  }));
 }
 
 const devMiddleWare = require('webpack-dev-middleware')(compiler, devServerConf);

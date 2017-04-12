@@ -1,4 +1,5 @@
 import React from 'react';
+import T from 'prop-types';
 import ReactDOM from 'react-dom';
 import Perf from 'react-addons-perf';
 import { AppContainer } from 'react-hot-loader';
@@ -6,16 +7,21 @@ import { AppContainer } from 'react-hot-loader';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 
 import { createStore, applyMiddleware, compose } from 'redux';
+import { withContext } from 'recompose';
 import { Provider } from 'react-redux';
 import createHistory from 'history/createBrowserHistory';
 import { ConnectedRouter, routerMiddleware } from 'react-router-redux';
+import createSagaMiddleware from 'redux-saga';
+
 import combinedReducer from './reducer';
 
 import Layout from './Layout';
 
+const sagaMiddleware = createSagaMiddleware();
 const history = createHistory();
 const middlewares = [
   routerMiddleware(history),
+  sagaMiddleware,
 ];
 
 let composeEnhancers = compose;
@@ -38,11 +44,16 @@ const store = createStore(
 const dest = document.getElementById('root');
 
 function render() {
+  const LayoutWithContext = withContext(
+    { runSaga: T.func },
+    () => ({ runSaga: sagaMiddleware.run })
+  )(Layout);
+
   ReactDOM.render(
     <AppContainer>
       <Provider store={store}>
         <ConnectedRouter history={history}>
-          <Layout />
+          <LayoutWithContext />
         </ConnectedRouter>
       </Provider>
     </AppContainer>,

@@ -1,7 +1,7 @@
 import base from './base';
 
 const dev = {
-  env: 'dev',
+  apiUrl: '/api',
 };
 
 export default {

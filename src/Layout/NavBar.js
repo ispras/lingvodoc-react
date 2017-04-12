@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import { Link, withRouter } from 'react-router-dom';
 import { Dropdown, Menu, Icon } from 'semantic-ui-react';
 import styled from 'styled-components';

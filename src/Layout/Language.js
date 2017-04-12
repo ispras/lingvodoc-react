@@ -1,31 +1,43 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { map } from 'lodash';
+import { branch, renderComponent } from 'recompose';
 
-import { Dropdown, Flag } from 'semantic-ui-react';
+import { Dropdown, Flag, Menu, Icon } from 'semantic-ui-react';
 
 import { selectLang } from 'Ducks/language';
 
-const User = ({ langs, selected, selectLang }) =>
-  <Dropdown item text={`Languages(${langs[selected]})`}>
+const WithSpinner = () =>
+  <Menu.Item as="a">
+    Languages <Icon loading name="spinner" />
+  </Menu.Item>;
+
+const enhance = branch(
+  ({ langs }) => !(langs && langs.length > 0),
+  renderComponent(WithSpinner)
+);
+
+const Language = enhance(({ langs, selected, select }) =>
+  <Dropdown item text="Languages">
     <Dropdown.Menu>
       {
-        map(langs, (text, code) =>
-          <Dropdown.Item key={code} active={code === selected} onClick={() => selectLang(code)} >
-            <Flag name={code} />{text}
+        langs.map(({ id, shortcut, intl_name: text }) =>
+          <Dropdown.Item key={id} active={id === selected} onClick={() => select(id)} >
+            <Flag name={shortcut === 'en' ? 'gb' : shortcut} />{text}
           </Dropdown.Item>
         )
       }
     </Dropdown.Menu>
-  </Dropdown>;
+  </Dropdown>
+);
 
-User.propTypes = {
-  langs: PropTypes.shape().isRequired,
-  selected: PropTypes.string.isRequired,
-  selectLang: PropTypes.func.isRequired,
+Language.propTypes = {
+  langs: PropTypes.array.isRequired,
+  selected: PropTypes.number.isRequired,
+  select: PropTypes.func.isRequired,
 };
 
 export default connect(
   state => state.language,
-  { selectLang }
-)(User);
+  { select: selectLang }
+)(Language);

@@ -23,6 +23,7 @@ module.exports = {
     extensions: ['.js'],
     alias: {
       Components: `${config.srcPath}/components/`,
+      Api: `${config.srcPath}/api/`,
       Ducks: `${config.srcPath}/ducks/`,
       Pages: `${config.srcPath}/pages/`,
       Utils: `${config.srcPath}/utils/`,

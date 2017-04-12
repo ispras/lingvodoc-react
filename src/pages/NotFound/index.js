@@ -1,6 +1,9 @@
 import React from 'react';
+import { Container } from 'semantic-ui-react';
 
 const NotFound = () =>
-  <h1>Nothing here, sorry</h1>;
+  <Container>
+    <h1>Nothing here, sorry</h1>
+  </Container>;
 
 export default NotFound;
