@@ -1,6 +1,9 @@
 import { spawn } from 'redux-saga/effects';
-import languageInit from './language';
+
+import language from './language';
+import task from './task';
 
 export default function* mainFlow() {
-  yield spawn(languageInit);
+  yield spawn(language);
+  yield spawn(task);
 }

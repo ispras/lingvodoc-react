@@ -24,7 +24,7 @@ const WithSpinner = () =>
   </Menu.Item>;
 
 const enhance = branch(
-  ({ langs }) => !(langs && langs.length > 0),
+  ({ loading }) => loading,
   renderComponent(WithSpinner)
 );
 
@@ -45,6 +45,7 @@ const Language = enhance(({ langs, selected, select }) =>
 Language.propTypes = {
   langs: PropTypes.array.isRequired,
   selected: PropTypes.object.isRequired,
+  loading: PropTypes.bool.isRequired,
   select: PropTypes.func.isRequired,
 };
 

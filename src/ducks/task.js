@@ -1,11 +1,11 @@
 import { combineReducers } from 'redux';
 // Actions
-const REQUEST = '@lang/REQUEST';
-const SELECT = '@lang/SELECT';
-const SET = '@lang/SET';
+const REQUEST = '@task/REQUEST';
+const TOGGLE = '@task/TOGGLE';
+const SET = '@task/SET';
 
 // Reducers
-function langs(state = [], action = {}) {
+function tasks(state = [], action = {}) {
   switch (action.type) {
     case SET:
       return action.payload;
@@ -14,10 +14,10 @@ function langs(state = [], action = {}) {
   }
 }
 
-function selected(state = {}, action = {}) {
+function visible(state = false, action = {}) {
   switch (action.type) {
-    case SELECT:
-      return action.payload;
+    case TOGGLE:
+      return !state;
     default:
       return state;
   }
@@ -35,20 +35,20 @@ function loading(state = false, action = {}) {
 }
 
 export default combineReducers({
-  langs,
-  selected,
+  tasks,
+  visible,
   loading,
 });
 
 // Action Creators
-export function requestLangs() {
+export function requestTasks() {
   return { type: REQUEST };
 }
 
-export function selectLang(payload) {
-  return { type: SELECT, payload };
+export function toggleTasks() {
+  return { type: TOGGLE };
 }
 
-export function setLangs(payload) {
+export function setTasks(payload) {
   return { type: SET, payload };
 }

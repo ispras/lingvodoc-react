@@ -31,6 +31,9 @@ rules:
   comma-dangle:
     - warn
     - always-multiline
+  no-constant-condition:
+    - warn
+    - checkLoops: false
 
   react/jsx-filename-extension: 'off'
   react/forbid-prop-types: 'off'
