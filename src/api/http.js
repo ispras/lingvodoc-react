@@ -24,13 +24,13 @@ function wrapFetch(promise) {
 
 export function httpGet(url) {
   return wrapFetch(fetch(config.apiUrl + url, {
-    credentials: 'same-origin',
+    credentials: 'include',
   }));
 }
 
 export function httpPost(url, form) {
   return wrapFetch(fetch(config.apiUrl + url, {
-    credentials: 'same-origin',
+    credentials: 'include',
     method: 'post',
     body: JSON.stringify(form),
   }));

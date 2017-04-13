@@ -52,6 +52,7 @@
   "dependencies": {
     "babel-runtime": "^6.23.0",
     "history": "^4.6.1",
+    "js-cookie": "^2.1.4",
     "lodash": "^4.17.4",
     "postcss": "^5.2.16",
     "postcss-cssnext": "^2.10.0",
@@ -67,6 +68,7 @@
     "react-tap-event-plugin": "^2.0.1",
     "recompose": "^0.23.1",
     "redux": "^3.6.0",
+    "redux-form": "^6.6.3",
     "redux-saga": "^0.14.6",
     "semantic-ui-css": "^2.2.10",
     "semantic-ui-react": "^0.67.2",

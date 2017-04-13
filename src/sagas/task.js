@@ -1,5 +1,5 @@
 import { delay } from 'redux-saga';
-import { call, put, fork } from 'redux-saga/effects';
+import { call, put, spawn } from 'redux-saga/effects';
 import { getTasks } from 'api';
 import { setTasks, requestTasks } from 'ducks/task';
 import config from 'config';
@@ -22,5 +22,5 @@ export function* polling() {
 
 export default function* tasksInit() {
   yield put(requestTasks());
-  yield fork(polling);
+  yield spawn(polling);
 }

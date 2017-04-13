@@ -1,4 +1,6 @@
 import { combineReducers } from 'redux';
+import locale from 'api/locale';
+
 // Actions
 const REQUEST = '@lang/REQUEST';
 const SELECT = '@lang/SELECT';
@@ -14,10 +16,17 @@ function langs(state = [], action = {}) {
   }
 }
 
-function selected(state = {}, action = {}) {
+const selectedInitial = {
+  id: locale.get(),
+};
+
+function selected(state = selectedInitial, action = {}) {
   switch (action.type) {
     case SELECT:
+      locale.set(action.payload.id);
       return action.payload;
+    case SET:
+      return action.payload.find(l => l.id === state.id) || selectedInitial;
     default:
       return state;
   }
