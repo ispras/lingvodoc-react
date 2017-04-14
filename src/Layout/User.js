@@ -4,23 +4,36 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { isEmpty } from 'lodash';
 
-import { Dropdown, Header, Modal } from 'semantic-ui-react';
+import { Dropdown } from 'semantic-ui-react';
 
 import * as userActions from 'ducks/user';
-import * as modalActions from 'ducks/modal';
+
+import SignInModal from 'components/SignInModal';
+import SignUpModal from 'components/SignUpModal';
 
 const TITLE = 'User';
 
-const Anonymous = ({ signIn }) =>
+const Anonymous = ({ modal, launchSignInForm, launchSignUpForm, closeForm }) =>
   <Dropdown item text={TITLE}>
     <Dropdown.Menu>
-      <Dropdown.Item as="a">Sign Up</Dropdown.Item>
-      <Dropdown.Item as="a" onClick={signIn}>Sign In</Dropdown.Item>
+      <SignInModal
+        trigger={<Dropdown.Item as="a" onClick={launchSignInForm}>Sign In</Dropdown.Item>}
+        open={modal === 'signin'}
+        handleClose={closeForm}
+      />
+      <SignUpModal
+        trigger={<Dropdown.Item as="a" onClick={launchSignUpForm}>Sign Up</Dropdown.Item>}
+        open={modal === 'signup'}
+        handleClose={closeForm}
+      />
     </Dropdown.Menu>
   </Dropdown>;
 
 Anonymous.propTypes = {
-  signIn: PropTypes.func.isRequired,
+  modal: PropTypes.any.isRequired,
+  launchSignInForm: PropTypes.func.isRequired,
+  launchSignUpForm: PropTypes.func.isRequired,
+  closeForm: PropTypes.func.isRequired,
 };
 
 const Signed = ({ name, signOut }) =>
@@ -37,28 +50,23 @@ Signed.propTypes = {
   signOut: PropTypes.func.isRequired,
 };
 
-function UserDropdown({ user, signOut, signIn }) {
+function UserDropdown({ user, signOut, ...rest }) {
   return isEmpty(user)
-    ? <Anonymous signIn={signIn} />
+    ? <Anonymous {...rest} />
     : <Signed {...user} signOut={signOut} />;
 }
 
 UserDropdown.propTypes = {
   user: PropTypes.object.isRequired,
-  signIn: PropTypes.func.isRequired,
   signOut: PropTypes.func.isRequired,
 };
 
-function mapDispatchToProps(dispatch) {
-  return {
-    signIn: () => dispatch(modalActions.signInForm({
-      submit: () => dispatch(userActions.signIn()),
-    })),
-    signOut: () => dispatch(userActions.signOut()),
-  };
-}
-
 export default connect(
   state => state.user,
-  mapDispatchToProps,
+  {
+    launchSignInForm: userActions.launchSignInForm,
+    launchSignUpForm: userActions.launchSignUpForm,
+    closeForm: userActions.closeForm,
+    signOut: userActions.signOut,
+  },
 )(UserDropdown);

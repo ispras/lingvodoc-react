@@ -1,3 +1,4 @@
+import 'babel-polyfill';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { AppContainer } from 'react-hot-loader';
@@ -9,6 +10,7 @@ import { Provider } from 'react-redux';
 import createHistory from 'history/createBrowserHistory';
 import { ConnectedRouter, routerMiddleware } from 'react-router-redux';
 import createSagaMiddleware from 'redux-saga';
+import formActionSaga from 'redux-form-saga';
 
 import combinedReducer from './reducer';
 import mainFlow from './sagas';
@@ -36,6 +38,7 @@ const store = createStore(
 );
 
 sagaMiddleware.run(mainFlow);
+sagaMiddleware.run(formActionSaga);
 
 const dest = document.getElementById('root');
 

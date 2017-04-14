@@ -9,8 +9,8 @@ export function getUser() {
   return httpGet('/user');
 }
 
-export function signIn({ login, password }) {
-  return httpPost('/signin', { login, password });
+export function signIn(form) {
+  return httpPost('/signin', form);
 }
 
 export function signUp(form) {

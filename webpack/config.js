@@ -6,6 +6,7 @@ module.exports = {
   publicPath: '/',
   srcPath: path.join(__dirname, './../src'),
   vendor: [
+    'babel-polyfill',
     'react',
     'react-dom',
     'react-router-dom',

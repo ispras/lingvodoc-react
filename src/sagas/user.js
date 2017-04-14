@@ -1,7 +1,7 @@
-import { call, put, fork, take, select } from 'redux-saga/effects';
-import { getId, getUser, signIn, signOut } from 'api/user';
-import { setUser, requestUser, SIGN_OUT, SIGN_IN } from 'ducks/user';
-import { close } from 'ducks/modal';
+import { call, put, fork, take, race } from 'redux-saga/effects';
+import { getId, getUser, signIn, signUp, signOut } from 'api/user';
+import { setUser, requestUser, SIGN_OUT, signInForm, signUpForm } from 'ducks/user';
+import { SubmissionError } from 'redux-form';
 
 export function* requestFlow() {
   yield put(requestUser());
@@ -24,29 +24,45 @@ export function* logoutFlow() {
 }
 
 export function* loginFlow() {
-  yield take(SIGN_IN);
-  const form = yield select(state => state.form.signin);
-  const response = yield call(signIn, form && form.values);
+  const { payload } = yield take(signInForm.REQUEST);
+  const response = yield call(signIn, payload);
   if (response.data) {
-    yield put(close());
-    yield fork(requestFlow);
+    yield put(signInForm.success());
   } else {
-
+    yield put(signInForm.failure(
+      new SubmissionError({
+        _error: response.err.statusText,
+      })
+    ));
   }
 }
 
-export function* userFlow() {
-  while (true) {
-    const id = yield call(getId);
-    if (id) {
-      yield fork(requestFlow);
-      yield* logoutFlow();
-    } else {
-      yield* loginFlow();
-    }
+export function* signupFlow() {
+  const { payload } = yield take(signUpForm.REQUEST);
+  const response = yield call(signUp, payload);
+  if (response.data) {
+    yield put(signUpForm.success());
+  }
+  if (response.err) {
+    yield put(signUpForm.failure(
+      new SubmissionError({
+        _error: response.err.error,
+      })
+    ));
   }
 }
 
 export default function* main() {
-  yield fork(userFlow);
+  while (true) {
+    if (yield call(getId)) {
+      yield fork(requestFlow);
+      yield* logoutFlow();
+    } else {
+      const login = yield fork(loginFlow);
+      const signup = yield fork(signupFlow);
+      yield race([login.done, signup.done]);
+      login.cancel();
+      signup.cancel();
+    }
+  }
 }

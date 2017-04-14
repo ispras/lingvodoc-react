@@ -12,7 +12,6 @@ import NotFound from 'pages/NotFound';
 
 import NavBar from './NavBar';
 import TasksSidebar from './TasksSidebar';
-import Modal from './Modal';
 
 const Content = styled.div`
   padding: 20px;
@@ -36,7 +35,6 @@ const Layout = () =>
       </Sidebar.Pusher>
       <TasksSidebar />
     </Sidebar.Pushable>
-    <Modal />
   </div>;
 
 export default Layout;
