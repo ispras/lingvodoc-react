@@ -30,10 +30,13 @@ const SIGN_UP_FIELDS = [
   },
 ];
 
-function validate({ login, email }) {
+function validate({ login, name, email }) {
   const errors = {};
   if (!login) {
     errors.login = 'Login is required';
+  }
+  if (!name) {
+    errors.name = 'Name is required';
   }
   if (!email) {
     errors.email = 'Email is required';
@@ -46,6 +49,7 @@ function validate({ login, email }) {
 const SignUpModal = props =>
   <FormModal
     form="signup"
+    header="Sign Up"
     actions={signUpForm}
     fields={SIGN_UP_FIELDS}
     validate={validate}

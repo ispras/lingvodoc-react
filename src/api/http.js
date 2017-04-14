@@ -26,3 +26,11 @@ export function httpPost(url, form) {
     body: JSON.stringify(form),
   });
 }
+
+export function httpPut(url, form) {
+  return wrap(config.apiUrl + url, {
+    credentials: 'include',
+    method: 'put',
+    body: JSON.stringify(form),
+  });
+}

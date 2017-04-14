@@ -10,6 +10,9 @@ export const signInForm = createFormAction('@user/signin');
 export const LAUNCH_SIGN_UP_FORM = '@user/LAUNCH_SIGN_UP_FORM';
 export const signUpForm = createFormAction('@user/signup');
 
+export const LAUNCH_EDIT_FORM = '@user/LAUNCH_EDIT_FORM';
+export const editForm = createFormAction('@user/edit');
+
 export const SIGN_OUT = '@user/SIGN_OUT';
 export const CLOSE_FORM = '@user/CLOSE_FORM';
 
@@ -40,7 +43,11 @@ function modal(state = '', action = {}) {
       return 'signin';
     case LAUNCH_SIGN_UP_FORM:
       return 'signup';
+    case LAUNCH_EDIT_FORM:
+      return 'edit';
     case signInForm.SUCCESS:
+    case signUpForm.SUCCESS:
+    case editForm.SUCCESS:
     case CLOSE_FORM:
       return '';
     default:
@@ -65,6 +72,10 @@ export function launchSignInForm() {
 
 export function launchSignUpForm() {
   return { type: LAUNCH_SIGN_UP_FORM };
+}
+
+export function launchEditForm() {
+  return { type: LAUNCH_EDIT_FORM };
 }
 
 export function closeForm() {

@@ -18,6 +18,7 @@ const SIGN_IN_FIELDS = [
 const SignInModal = props =>
   <FormModal
     form="signin"
+    header="Please sign in"
     actions={signInForm}
     fields={SIGN_IN_FIELDS}
     {...props}

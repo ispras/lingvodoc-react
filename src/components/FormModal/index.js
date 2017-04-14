@@ -30,41 +30,62 @@ Rf.propTypes = {
   }).isRequired,
 };
 
-const FormModal = ({ open, actions, fields, handleClose, trigger, handleSubmit, submitting, error }) =>
-  <Modal
-    trigger={trigger}
-    open={open}
-    onClose={handleClose}
-    size="small"
-    dimmer="blurring"
-  >
-    <Modal.Header>Sign up</Modal.Header>
-    <Modal.Content>
-      <Form onSubmit={handleSubmit(actions)} onKeyDown={handleKeyDown(handleSubmit(actions))}>
-        {
-          fields.map(field =>
-            <Field key={field.name} component={Rf} {...field} />)
-        }
+function FormModal(props) {
+  const {
+    open,
+    header,
+    actions,
+    fields,
+    trigger,
+    handleSubmit,
+    submitting,
+    pristine,
+    error,
+    reset,
+    handleClose,
+  } = props;
 
-        <Message visible={!!error} error>
-          <Icon name="remove" /> {error}
-        </Message>
-        <Button basic color="red" onClick={handleClose}>
-          <Icon name="remove" /> Close
-        </Button>
-        <Button color="green" type="submit" disabled={submitting}>
-          <Icon name="checkmark" /> Submit
-        </Button>
-      </Form>
-    </Modal.Content>
-  </Modal>;
+  const close = () => reset() && handleClose();
+
+  return (
+    <Modal
+      trigger={trigger}
+      open={open}
+      onClose={close}
+      size="small"
+      dimmer="blurring"
+    >
+      <Modal.Header>{header} {submitting && <Icon loading name="spinner" />}</Modal.Header>
+      <Modal.Content>
+        <Form onSubmit={handleSubmit(actions)} onKeyDown={handleKeyDown(handleSubmit(actions))}>
+          {
+            fields.map(field =>
+              <Field key={field.name} component={field.component || Rf} {...field} />)
+          }
+          <Message visible={!!error} error>
+            <Icon name="remove" /> {error}
+          </Message>
+          <Button basic color="red" onClick={close}>
+            <Icon name="remove" /> Close
+          </Button>
+          <Button color="green" type="submit" disabled={pristine || submitting}>
+            <Icon name="checkmark" /> Submit
+          </Button>
+        </Form>
+      </Modal.Content>
+    </Modal>
+  );
+}
 
 FormModal.propTypes = {
+  header: PropTypes.node.isRequired,
   open: PropTypes.bool.isRequired,
   handleClose: PropTypes.func.isRequired,
   trigger: PropTypes.element.isRequired,
   handleSubmit: PropTypes.func.isRequired,
+  reset: PropTypes.func.isRequired,
   submitting: PropTypes.bool.isRequired,
+  pristine: PropTypes.bool.isRequired,
   error: PropTypes.any.isRequired,
   fields: PropTypes.any.isRequired,
   actions: PropTypes.any.isRequired,

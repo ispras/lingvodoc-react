@@ -10,6 +10,7 @@ import * as userActions from 'ducks/user';
 
 import SignInModal from 'components/SignInModal';
 import SignUpModal from 'components/SignUpModal';
+import EditUserModal from 'components/EditUserModal';
 
 const TITLE = 'User';
 
@@ -36,29 +37,36 @@ Anonymous.propTypes = {
   closeForm: PropTypes.func.isRequired,
 };
 
-const Signed = ({ name, signOut }) =>
-  <Dropdown item text={name}>
+const Signed = ({ user, modal, signOut, launchEditForm, closeForm }) =>
+  <Dropdown item text={user.name}>
     <Dropdown.Menu>
-      <Dropdown.Item as="a">Edit profile</Dropdown.Item>
+      <EditUserModal
+        trigger={<Dropdown.Item as="a" onClick={launchEditForm}>Edit Profile</Dropdown.Item>}
+        user={user}
+        open={modal === 'edit'}
+        handleClose={closeForm}
+      />
       <Dropdown.Item as={Link} to="/files">My files</Dropdown.Item>
       <Dropdown.Item as="a" onClick={signOut}>Sign out</Dropdown.Item>
     </Dropdown.Menu>
   </Dropdown>;
 
 Signed.propTypes = {
-  name: PropTypes.string.isRequired,
+  modal: PropTypes.any.isRequired,
+  user: PropTypes.object.isRequired,
   signOut: PropTypes.func.isRequired,
+  launchEditForm: PropTypes.func.isRequired,
+  closeForm: PropTypes.func.isRequired,
 };
 
-function UserDropdown({ user, signOut, ...rest }) {
+function UserDropdown({ user, ...rest }) {
   return isEmpty(user)
     ? <Anonymous {...rest} />
-    : <Signed {...user} signOut={signOut} />;
+    : <Signed user={user} {...rest} />;
 }
 
 UserDropdown.propTypes = {
   user: PropTypes.object.isRequired,
-  signOut: PropTypes.func.isRequired,
 };
 
 export default connect(
@@ -66,6 +74,7 @@ export default connect(
   {
     launchSignInForm: userActions.launchSignInForm,
     launchSignUpForm: userActions.launchSignUpForm,
+    launchEditForm: userActions.launchEditForm,
     closeForm: userActions.closeForm,
     signOut: userActions.signOut,
   },
