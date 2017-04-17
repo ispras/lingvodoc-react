@@ -12,6 +12,7 @@ import NotFound from 'pages/NotFound';
 
 import NavBar from './NavBar';
 import TasksSidebar from './TasksSidebar';
+import Snackbar from './Snackbar';
 
 const Content = styled.div`
   padding: 20px;
@@ -29,6 +30,7 @@ const Routes = () =>
 const Layout = () =>
   <div>
     <NavBar />
+    <Snackbar />
     <Sidebar.Pushable as="div">
       <Sidebar.Pusher as={Content}>
         <Routes />
