@@ -5,12 +5,11 @@ import { Link } from 'react-router-dom';
 import { Container, Dropdown } from 'semantic-ui-react';
 import styled from 'styled-components';
 
+const Wrapper = styled(Container)`
+`;
+
 const DictionaryContainer = styled.div`
   padding-left: 1em;
-
-  div > a {
-    padding-left: 1em;
-  }
 `;
 
 const LanguageContainer = styled.div`
@@ -54,12 +53,12 @@ const Section = ({ dicts = [], contains = [], translation, perspectives }) =>
 function Home({ dictionaries, perspectives }) {
   const processed = perspectives.valueSeq().toArray();
   return (
-    <Container>
+    <Wrapper>
       <h2>Опубликованные словари</h2>
       {
         dictionaries.map(dict => <Section perspectives={processed} {...dict} />)
       }
-    </Container>
+    </Wrapper>
   );
 }
 

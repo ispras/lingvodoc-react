@@ -1,4 +1,4 @@
-const SEPARATOR = '_';
+const SEPARATOR = '/';
 
 const handler = {
   get(t, name) {
