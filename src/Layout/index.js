@@ -15,9 +15,9 @@ import TasksSidebar from './TasksSidebar';
 import Snackbar from './Snackbar';
 
 const Content = styled.div`
-  padding: 20px;
-  padding-top: 5em;
-  min-height: 100vh !important;
+  padding: 5em 20px;
+  height: 100vh !important;
+  overflowY: auto !important;
 `;
 
 const Routes = () =>

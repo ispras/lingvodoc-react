@@ -20,10 +20,9 @@ const TasksSidebar = ({ visible, tasks }) =>
     direction="right"
     width="wide"
     visible={visible}
+    as={Wrapper}
   >
-    <Wrapper>
-      <TaskList tasks={tasks} />
-    </Wrapper>
+    <TaskList tasks={tasks} />
   </Sidebar>;
 
 TasksSidebar.propTypes = {
