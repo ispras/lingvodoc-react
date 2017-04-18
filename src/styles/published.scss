@@ -1,13 +1,25 @@
 .published {
-  .lang {
-    padding: 0em 1em;
+  .dict-list {
+    padding: 0.5em 0;
 
-    span.translation {
-      text-decoration: underline;
+    .translation {
+      span {
+        font-weight: bold;
+        font-size: 1.05em;
+      }
+
+      span+span:before {
+        content: ' > ';
+        color: gray;
+      }
     }
 
     .dict {
-      padding-left: 1em;
+      padding: 2px 1em;
+
+      .dict-name {
+        padding-right: 5px;
+      }
     }
   }
 }

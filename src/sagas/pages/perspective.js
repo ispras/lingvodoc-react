@@ -1,8 +1,8 @@
+import { LOCATION_CHANGE } from 'react-router-redux';
 import { call, take, put, fork } from 'redux-saga/effects';
-import { normalize } from 'normalizr-immutable';
 import { publishedDicts } from 'api';
-import { published, meta, perspectiveListSchema } from 'api/perspective';
-import { REQUEST_PUBLISHED_DICTS, setDictionaries, setPerspectives } from 'ducks/data';
+import { published, meta } from 'api/perspective';
+import { REQUEST_PERSPECTIVE, setDictionaries, setPerspectives } from 'ducks/data';
 
 export function* getDictionaries() {
   const { data } = yield call(publishedDicts);
@@ -17,10 +17,10 @@ export function* getPerspectives() {
     call(meta),
   ];
   if (part1.data) {
-    yield put(setPerspectives(normalize(part1.data, perspectiveListSchema).entities));
+    yield put(setPerspectives(part1.data));
   }
   if (part2.data) {
-    yield put(setPerspectives(normalize(part2.data, perspectiveListSchema).entities));
+    yield put(setPerspectives(part2.data));
   }
 }
 
@@ -29,8 +29,9 @@ export function* dataFlow() {
   yield fork(getPerspectives);
 }
 
-export default function* home() {
-  while (yield take(REQUEST_PUBLISHED_DICTS)) {
-    yield* dataFlow();
+export default function* perspective() {
+  while (true) {
+    const { payload } = yield take(REQUEST_PERSPECTIVE);
+    console.log(payload);
   }
 }

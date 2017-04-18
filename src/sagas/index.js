@@ -6,6 +6,7 @@ import user from './user';
 import snackbar from './snackbar';
 
 import home from './pages/home';
+import perspective from './pages/perspective';
 
 export default function* mainFlow() {
   yield spawn(language);
@@ -14,4 +15,5 @@ export default function* mainFlow() {
   yield spawn(snackbar);
 
   yield spawn(home);
+  yield spawn(perspective);
 }

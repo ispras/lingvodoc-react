@@ -39,6 +39,7 @@ const store = createStore(
 
 sagaMiddleware.run(mainFlow);
 sagaMiddleware.run(formActionSaga);
+store.runSaga = sagaMiddleware.run;
 
 const dest = document.getElementById('root');
 

@@ -56,6 +56,7 @@
     "immutable": "^3.8.1",
     "js-cookie": "^2.1.4",
     "lodash": "^4.17.4",
+    "normalizr-immutable": "^0.0.3",
     "postcss": "^5.2.17",
     "postcss-cssnext": "^2.10.0",
     "postcss-modules-values": "^1.2.2",
