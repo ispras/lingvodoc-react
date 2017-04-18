@@ -17,7 +17,6 @@ const Wrapper = styled(CSSTransitionGroup)`
   bottom: 0;
   left: 0;
   padding: 1em;
-  max-width: 30vw;
   z-index: 2000;
 
   display: flex;
@@ -28,6 +27,7 @@ const Wrapper = styled(CSSTransitionGroup)`
 const Message = styled(SUMessage)`
   padding: 0.5em 1em !important;
   margin: 0.5em 0 !important;
+  max-width: 30vw;
 
   & i {
     margin-left: 0.5em;
@@ -37,21 +37,22 @@ const Message = styled(SUMessage)`
   }
 
   &.${TRANSITION}-enter {
-    opacity: 0.01 !important;
+    left: -120% !important;
   }
 
   &.${TRANSITION}-enter.${TRANSITION}-enter-active {
-    opacity: 1 !important;
-    transition: opacity ${ENTER}ms ease-in !important;
+    left: 0 !important;
+    transition: left ${ENTER}ms cubic-bezier(0.89, 0.01, 0.5, 1.1) !important;
   }
 
   &.${TRANSITION}-leave {
-    opacity: 1 !important;
+    left: 0 !important;
+    transition: flex-grow ${LEAVE}ms linear;
   }
 
   &.${TRANSITION}-leave.${TRANSITION}-leave-active {
-    opacity: 0.01 !important;
-    transition: opacity ${LEAVE}ms ease-in !important;
+    left: -120% !important;
+    transition: left ${LEAVE}ms cubic-bezier(0.89, 0.01, 0.5, 1.1) !important;
   }
 `;
 
