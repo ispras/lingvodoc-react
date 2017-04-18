@@ -1,24 +1,10 @@
+import 'styles/published.scss';
+
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Container, Dropdown } from 'semantic-ui-react';
-import styled from 'styled-components';
-
-const Wrapper = styled(Container)`
-`;
-
-const DictionaryContainer = styled.div`
-  padding-left: 1em;
-`;
-
-const LanguageContainer = styled.div`
-  padding: 0em 1em;
-`;
-
-const Translation = styled.span`
-  text-decoration: underline;
-`;
 
 const Perspective = ({ client_id, object_id, parent_client_id, parent_object_id, authors = {}, translation = '' }) =>
   <Dropdown.Item as={Link} to={`dictionary/${parent_client_id}/${parent_object_id}/perspective/${client_id}/${object_id}`}>
@@ -26,39 +12,62 @@ const Perspective = ({ client_id, object_id, parent_client_id, parent_object_id,
   </Dropdown.Item>;
 
 const Dictionary = ({ client_id, object_id, translation, perspectives }) =>
-  <DictionaryContainer>
+  <div className="dict">
     <span>{translation} </span>
     <Dropdown inline text="View">
       <Dropdown.Menu>
         {
           perspectives.filter(
             v => v.parent_client_id === client_id && v.parent_object_id === object_id
-          ).map(pers => <Perspective {...pers} />)
+          ).map(pers =>
+            <Perspective
+              key={`${pers.client_id}/${pers.object_id}`}
+              {...pers}
+            />
+          )
         }
       </Dropdown.Menu>
     </Dropdown>
-  </DictionaryContainer>;
+  </div>;
 
 const Section = ({ dicts = [], contains = [], translation, perspectives }) =>
-  <LanguageContainer>
-    <Translation>{translation}</Translation>
+  <div className="lang">
+    <span className="translation">{translation}</span>
     {
-      contains.map(sub => <Section perspectives={perspectives} {...sub} />)
+      contains.map(sub =>
+        <Section
+          key={`${sub.client_id}/${sub.object_id}`}
+          perspectives={perspectives}
+          {...sub}
+        />
+      )
     }
     {
-      dicts.map(dict => <Dictionary perspectives={perspectives} {...dict} />)
+      dicts.map(dict =>
+        <Dictionary
+          key={`${dict.client_id}/${dict.object_id}`}
+          perspectives={perspectives}
+          {...dict}
+        />
+      )
     }
-  </LanguageContainer>;
+  </div>;
 
 function Home({ dictionaries, perspectives }) {
   const processed = perspectives.valueSeq().toArray();
   return (
-    <Wrapper>
+    <Container className="published">
       <h2>Опубликованные словари</h2>
       {
-        dictionaries.map(dict => <Section perspectives={processed} {...dict} />)
+        dictionaries.map(dict =>
+          <Section
+            key={`${dict.client_id}/${dict.object_id}`}
+            perspectives={processed}
+            {...dict}
+          />
+        )
       }
-    </Wrapper>
+    </Container>
   );
 }
 
