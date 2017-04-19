@@ -73,6 +73,7 @@
     "redux-form": "^6.6.3",
     "redux-form-saga": "^0.1.0",
     "redux-saga": "^0.14.6",
+    "reselect": "^3.0.0",
     "semantic-ui-css": "^2.2.10",
     "semantic-ui-react": "^0.68.0",
     "styled-components": "^1.4.5"

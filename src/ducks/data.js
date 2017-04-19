@@ -1,4 +1,9 @@
 import { combineReducers } from 'redux';
+import { is } from 'immutable';
+import { createSelectorCreator, createSelector, defaultMemoize } from 'reselect';
+
+import { Dictionary as DictionaryModel } from 'api/dictionary';
+import { Perspective as PerspectiveModel } from 'api/perspective';
 import Storage from 'api/storage';
 // Actions
 export const REQUEST_PUBLISHED_DICTS = '@data/REQUEST_PUBLISHED_DICTS';
@@ -42,6 +47,50 @@ export default combineReducers({
   dictionaries,
   storage,
 });
+
+// Selectors
+function preprocess(languages) {
+  const result = [];
+  function rc({ dicts = [], contains = [], translation, client_id, object_id }, history = []) {
+    const newHistory = [...history, translation];
+    result.push({
+      url: `${client_id}/${object_id}`,
+      history: newHistory,
+      dicts: dicts.map(x => new DictionaryModel(x)),
+    });
+    contains.forEach(sub => rc(sub, newHistory));
+  }
+
+  languages.forEach(rc);
+  return result;
+}
+
+const getData =
+  state => state.data;
+
+const getStorage =
+  createSelector(getData, state => state.storage);
+
+const getLoading =
+  createSelector(getData, state => state.loading);
+
+const getDictionaries =
+  createSelector(getData, state => preprocess(state.dictionaries));
+
+
+const createImmutableSelector =
+  createSelectorCreator(defaultMemoize, is);
+
+const getPerspectives =
+  createImmutableSelector(getStorage, s => s.all(PerspectiveModel).groupBy(x => x.parent));
+
+export const selectors = {
+  getData,
+  getStorage,
+  getLoading,
+  getDictionaries,
+  getPerspectives,
+};
 
 // Action Creators
 export function requestPublished() {

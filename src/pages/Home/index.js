@@ -1,12 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { is } from 'immutable';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Container, Dropdown, Icon } from 'semantic-ui-react';
 
 import { Perspective as PerspectiveModel } from 'api/perspective';
 import { Dictionary as DictionaryModel } from 'api/dictionary';
-import { requestPublished } from 'ducks/data';
+import { requestPublished, selectors } from 'ducks/data';
 
 import './published.scss';
 
@@ -108,6 +109,12 @@ class Home extends React.Component {
     this.props.dispatch(requestPublished());
   }
 
+  shouldComponentUpdate({ perspectives, loading }) {
+    const same = is(perspectives, this.props.perspectives) &&
+      loading === this.props.loading;
+    return !same;
+  }
+
   renderEntries() {
     const {
       languages,
@@ -141,27 +148,11 @@ class Home extends React.Component {
   }
 }
 
-function preprocess(languages) {
-  const result = [];
-  function rc({ dicts = [], contains = [], translation, client_id, object_id }, history = []) {
-    const newHistory = [...history, translation];
-    result.push({
-      url: `${client_id}/${object_id}`,
-      history: newHistory,
-      dicts: dicts.map(x => new DictionaryModel(x)),
-    });
-    contains.forEach(sub => rc(sub, newHistory));
-  }
-
-  languages.forEach(rc);
-  return result;
-}
-
-function mapStateToProps({ data }) {
+function mapStateToProps(state) {
   return {
-    languages: preprocess(data.dictionaries),
-    loading: data.loading,
-    perspectives: data.storage.all(PerspectiveModel).groupBy(p => p.parent),
+    languages: selectors.getDictionaries(state),
+    loading: selectors.getLoading(state),
+    perspectives: selectors.getPerspectives(state),
   };
 }
 
