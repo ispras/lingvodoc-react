@@ -1,10 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { pure } from 'recompose';
 import { connect } from 'react-redux';
 import CSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
 import styled from 'styled-components';
 
-import { Message as SUMessage, Icon, Container } from 'semantic-ui-react';
+import { Message as SUMessage, Icon } from 'semantic-ui-react';
 
 import { remove } from 'ducks/snackbar';
 
@@ -68,7 +69,7 @@ Snack.propTypes = {
   onDismiss: PropTypes.func.isRequired,
 };
 
-const Snackbar = ({ messages, dismiss }) =>
+const Snackbar = pure(({ messages, dismiss }) =>
   <Wrapper
     transitionName={TRANSITION}
     transitionEnterTimeout={ENTER}
@@ -78,7 +79,8 @@ const Snackbar = ({ messages, dismiss }) =>
       messages.map(message =>
         <Snack key={message.timestamp} {...message} onDismiss={() => dismiss(message)} />)
     }
-  </Wrapper>;
+  </Wrapper>
+);
 
 Snackbar.propTypes = {
   messages: PropTypes.array.isRequired,

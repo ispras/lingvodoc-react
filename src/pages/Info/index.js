@@ -1,4 +1,5 @@
 import React from 'react';
+import { pure } from 'recompose';
 import { Link } from 'react-router-dom';
 import { Container, Card } from 'semantic-ui-react';
 
@@ -40,7 +41,7 @@ const contributors = [
   },
 ];
 
-const Info = () =>
+const Info = pure(() =>
   <Container>
     <h3>Проект выполняется при финансовой поддержке грантов:</h3>
     <ul>
@@ -77,10 +78,11 @@ const Info = () =>
     </p>
 
     <h2>Участники проекта</h2>
-    <Card.Group items={contributors} itemsPerRow={4}/>
+    <Card.Group items={contributors} itemsPerRow={4} />
 
     <h2>Контакты</h2>
     <p>Вопросы по поводу работы программы LingvoDoc задавайте по адресу <a href="mailto:al@somestuff.ru">al@somestuff.ru</a></p>
-  </Container>;
+  </Container>
+);
 
 export default Info;

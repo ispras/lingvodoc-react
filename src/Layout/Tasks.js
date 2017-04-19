@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { pure } from 'recompose';
 import { connect } from 'react-redux';
 import { Menu, Label, Icon } from 'semantic-ui-react';
 
@@ -7,10 +8,11 @@ import { toggleTasks } from 'ducks/task';
 
 const TITLE = 'Tasks';
 
-const Tasks = ({ count, loading, toggle }) =>
+const Tasks = pure(({ count, loading, toggle }) =>
   <Menu.Item as="a" onClick={toggle}>
     {TITLE} { loading ? <Icon loading name="spinner" /> : <Label color="blue">{count}</Label> }
-  </Menu.Item>;
+  </Menu.Item>
+);
 
 Tasks.propTypes = {
   count: PropTypes.number.isRequired,

@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { pure } from 'recompose';
 import { Link, withRouter } from 'react-router-dom';
 import { Dropdown, Menu, Icon } from 'semantic-ui-react';
 import styled from 'styled-components';
@@ -13,7 +14,7 @@ const Logo = styled.span`
   font-weight: bold;
 `;
 
-const NavBar = ({ location }) =>
+const NavBar = pure(({ location }) =>
   <Menu fixed="top">
     <Menu.Item as={Link} to="/">
       <Logo>
@@ -48,7 +49,7 @@ const NavBar = ({ location }) =>
       <Tasks />
       <Locale />
     </Menu.Menu>
-  </Menu>;
+  </Menu>);
 
 NavBar.propTypes = {
   location: PropTypes.shape({

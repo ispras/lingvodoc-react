@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { branch, renderComponent } from 'recompose';
+import { pure, branch, renderComponent, compose } from 'recompose';
 
 import { Dropdown, Flag, Menu, Icon } from 'semantic-ui-react';
 
@@ -23,18 +23,21 @@ const WithSpinner = () =>
     {TITLE} <Icon loading name="spinner" />
   </Menu.Item>;
 
-const enhance = branch(
-  ({ loading }) => loading,
-  renderComponent(WithSpinner)
+const enhance = compose(
+  pure,
+  branch(
+    ({ loading }) => loading,
+    renderComponent(WithSpinner)
+  )
 );
 
 const Locale = enhance(({ locales, selected, select }) =>
   <Dropdown item text={title(selected)}>
     <Dropdown.Menu>
       {
-        locales.map(locale =>
-          <Dropdown.Item key={locale.id} active={locale === selected} onClick={() => select(locale)} >
-            <Flag name={checkCountry(locale.shortcut)} />{locale.intl_name}
+        locales.map(loc =>
+          <Dropdown.Item key={loc.id} active={loc === selected} onClick={() => select(loc)} >
+            <Flag name={checkCountry(loc.shortcut)} />{loc.intl_name}
           </Dropdown.Item>
         )
       }
