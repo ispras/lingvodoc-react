@@ -6,7 +6,7 @@ import styled from 'styled-components';
 
 import User from './User';
 import Tasks from './Tasks';
-import Language from './Language';
+import Locale from './Locale';
 
 const Logo = styled.span`
   font-size: 1.2em;
@@ -46,7 +46,7 @@ const NavBar = ({ location }) =>
     <Menu.Menu position="right">
       <User />
       <Tasks />
-      <Language />
+      <Locale />
     </Menu.Menu>
   </Menu>;
 

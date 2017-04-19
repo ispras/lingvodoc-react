@@ -1,7 +1,12 @@
 import Cookie from 'js-cookie';
+import { httpGet } from './http';
 
 const FIELD = 'locale_id';
 const DEFAULT = 2;
+
+export function getLocales() {
+  return httpGet('/all_locales');
+}
 
 export function setLocaleId(localeId = DEFAULT) {
   Cookie.set(FIELD, localeId);

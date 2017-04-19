@@ -5,7 +5,7 @@ import { branch, renderComponent } from 'recompose';
 
 import { Dropdown, Flag, Menu, Icon } from 'semantic-ui-react';
 
-import { selectLang } from 'ducks/language';
+import { selectLocale } from 'ducks/locale';
 
 const TITLE = 'Languages';
 
@@ -28,13 +28,13 @@ const enhance = branch(
   renderComponent(WithSpinner)
 );
 
-const Language = enhance(({ langs, selected, select }) =>
+const Locale = enhance(({ locales, selected, select }) =>
   <Dropdown item text={title(selected)}>
     <Dropdown.Menu>
       {
-        langs.map(lang =>
-          <Dropdown.Item key={lang.id} active={lang === selected} onClick={() => select(lang)} >
-            <Flag name={checkCountry(lang.shortcut)} />{lang.intl_name}
+        locales.map(locale =>
+          <Dropdown.Item key={locale.id} active={locale === selected} onClick={() => select(locale)} >
+            <Flag name={checkCountry(locale.shortcut)} />{locale.intl_name}
           </Dropdown.Item>
         )
       }
@@ -42,14 +42,14 @@ const Language = enhance(({ langs, selected, select }) =>
   </Dropdown>
 );
 
-Language.propTypes = {
-  langs: PropTypes.array.isRequired,
+Locale.propTypes = {
+  locales: PropTypes.array.isRequired,
   selected: PropTypes.object.isRequired,
   loading: PropTypes.bool.isRequired,
   select: PropTypes.func.isRequired,
 };
 
 export default connect(
-  state => state.language,
-  { select: selectLang }
-)(Language);
+  state => state.locale,
+  { select: selectLocale }
+)(Locale);

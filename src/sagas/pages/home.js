@@ -2,7 +2,7 @@ import { call, take, put, fork, select } from 'redux-saga/effects';
 import { publishedDicts } from 'api';
 import { published, meta, Perspective } from 'api/perspective';
 import { REQUEST_PUBLISHED_DICTS, requestPublished, setDictionaries, setPerspectives } from 'ducks/data';
-import { SELECT } from 'ducks/language';
+import { SELECT } from 'ducks/locale';
 
 export function* getDictionaries() {
   const { data } = yield call(publishedDicts);

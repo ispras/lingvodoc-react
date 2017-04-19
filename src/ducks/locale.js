@@ -2,12 +2,12 @@ import { combineReducers } from 'redux';
 import locale from 'api/locale';
 
 // Actions
-export const REQUEST = '@lang/REQUEST';
-export const SELECT = '@lang/SELECT';
-export const SET = '@lang/SET';
+export const REQUEST = '@locale/REQUEST';
+export const SELECT = '@locale/SELECT';
+export const SET = '@locale/SET';
 
 // Reducers
-function langs(state = [], action = {}) {
+function locales(state = [], action = {}) {
   switch (action.type) {
     case SET:
       return action.payload;
@@ -44,20 +44,20 @@ function loading(state = false, action = {}) {
 }
 
 export default combineReducers({
-  langs,
+  locales,
   selected,
   loading,
 });
 
 // Action Creators
-export function requestLangs() {
+export function requestLocales() {
   return { type: REQUEST };
 }
 
-export function selectLang(payload) {
+export function selectLocale(payload) {
   return { type: SELECT, payload };
 }
 
-export function setLangs(payload) {
+export function setLocales(payload) {
   return { type: SET, payload };
 }

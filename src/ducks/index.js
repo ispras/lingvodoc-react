@@ -1,11 +1,11 @@
-import language from './language';
+import locale from './locale';
 import task from './task';
 import user from './user';
 import snackbar from './snackbar';
 import data from './data';
 
 export default {
-  language,
+  locale,
   task,
   user,
   snackbar,
