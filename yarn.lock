@@ -2701,10 +2701,6 @@ har-validator@~4.2.1:
     ajv "^4.9.1"
     har-schema "^1.0.5"
 
-harmony-proxy@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/harmony-proxy/-/harmony-proxy-1.0.1.tgz#7bec8fb1981af32fbfc14233e080be43e5f7bcfa"
-
 has-ansi@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/has-ansi/-/has-ansi-2.0.0.tgz#34f5049ce1ecdf2b0649af3ef24e45ed35416d91"
@@ -2900,7 +2896,7 @@ ignore@^3.2.0:
   version "3.2.7"
   resolved "https://registry.yarnpkg.com/ignore/-/ignore-3.2.7.tgz#4810ca5f1d8eca5595213a34b94f2eb4ed926bbd"
 
-immutable@^3.7.6, immutable@^3.8.1:
+immutable@^3.8.1:
   version "3.8.1"
   resolved "https://registry.yarnpkg.com/immutable/-/immutable-3.8.1.tgz#200807f11ab0f72710ea485542de088075f68cd2"
 
@@ -3933,22 +3929,6 @@ normalize-url@^1.4.0:
     query-string "^4.1.0"
     sort-keys "^1.0.0"
 
-normalizr-immutable@^0.0.3:
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/normalizr-immutable/-/normalizr-immutable-0.0.3.tgz#c49114666bf04f8f2f4544e286e830ee403ca66e"
-  dependencies:
-    harmony-proxy "^1.0.1"
-    immutable "^3.7.6"
-    lodash "^4.2.1"
-    lodash-es "^4.2.1"
-    normalizr "^2.0.2"
-
-normalizr@^2.0.2:
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/normalizr/-/normalizr-2.3.1.tgz#ac12d771ce1fe6a43094c3d828caada4ed9a4540"
-  dependencies:
-    lodash "^4.17.2"
-
 "npmlog@0 || 1 || 2 || 3 || 4", npmlog@^4.0.0, npmlog@^4.0.2:
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/npmlog/-/npmlog-4.0.2.tgz#d03950e0e78ce1527ba26d2a7592e9348ac3e75f"
@@ -4913,13 +4893,6 @@ rc@^1.1.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
-react-addons-css-transition-group@^15.4.2:
-  version "15.5.2"
-  resolved "https://registry.yarnpkg.com/react-addons-css-transition-group/-/react-addons-css-transition-group-15.5.2.tgz#ea7e0a9f0e1c27ca426da4efd3559915bd42ead2"
-  dependencies:
-    fbjs "^0.8.4"
-    object-assign "^4.1.0"
-
 react-addons-perf@^15.4.2:
   version "15.4.2"
   resolved "https://registry.yarnpkg.com/react-addons-perf/-/react-addons-perf-15.4.2.tgz#110bdcf5c459c4f77cb85ed634bcd3397536383b"
@@ -5004,12 +4977,13 @@ react-tap-event-plugin@^2.0.1:
   dependencies:
     fbjs "^0.8.6"
 
-react-transition-group@^1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/react-transition-group/-/react-transition-group-1.1.1.tgz#f9d0f0dff82f52574fc5ab30684add24948d0f23"
+react-transition-group@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/react-transition-group/-/react-transition-group-1.1.2.tgz#374cd778070f74b0a658045fc532edfd471ad836"
   dependencies:
     chain-function "^1.0.0"
     dom-helpers "^3.2.0"
+    prop-types "^15.5.6"
     warning "^3.0.0"
 
 react@^15.4.2:

@@ -2,9 +2,9 @@ import { combineReducers } from 'redux';
 import locale from 'api/locale';
 
 // Actions
-const REQUEST = '@lang/REQUEST';
-const SELECT = '@lang/SELECT';
-const SET = '@lang/SET';
+export const REQUEST = '@lang/REQUEST';
+export const SELECT = '@lang/SELECT';
+export const SET = '@lang/SET';
 
 // Reducers
 function langs(state = [], action = {}) {

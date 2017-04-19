@@ -1,8 +1,5 @@
 import { httpGet, httpPost } from './http';
 
-import { get as getAllLangs } from './language';
-window.getAllLangs = getAllLangs;
-
 export function getLangs() {
   return httpGet('/all_locales');
 }

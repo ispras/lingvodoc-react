@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import { fromJS } from 'immutable';
+import Storage from 'api/storage';
 // Actions
 export const REQUEST_PUBLISHED_DICTS = '@data/REQUEST_PUBLISHED_DICTS';
 export const REQUEST_PERSPECTIVE = '@data/REQUEST_PERSPECTIVE';
@@ -16,11 +16,11 @@ function dictionaries(state = [], action = {}) {
   }
 }
 
-const perspectivesInit = fromJS({});
-function perspectives(state = perspectivesInit, action = {}) {
+const storageInit = new Storage();
+function storage(state = storageInit, action = {}) {
   switch (action.type) {
     case PERSPECT_SET:
-      return state.merge(action.payload.perspectives);
+      return state.updateAll(action.payload);
     default:
       return state;
   }
@@ -40,7 +40,7 @@ function loading(state = false, action = {}) {
 export default combineReducers({
   loading,
   dictionaries,
-  perspectives,
+  storage,
 });
 
 // Action Creators

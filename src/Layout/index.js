@@ -2,7 +2,7 @@ import 'semantic-ui-css/semantic.css';
 import 'styles/main.scss';
 
 import React from 'react';
-import { Switch, Route, Redirect } from 'react-router-dom';
+import { Switch, Route } from 'react-router-dom';
 import styled from 'styled-components';
 import { Sidebar } from 'semantic-ui-react';
 

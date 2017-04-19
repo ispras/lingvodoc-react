@@ -1,48 +1,35 @@
-import 'styles/published.scss';
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Container, Dropdown, Icon } from 'semantic-ui-react';
 
+import { Perspective as PerspectiveModel } from 'api/perspective';
+import { Dictionary as DictionaryModel } from 'api/dictionary';
 import { requestPublished } from 'ducks/data';
+
+import './published.scss';
 
 const Perspective =
 ({
-  client_id: cid,
-  object_id: oid,
-  parent_client_id: pcid,
-  parent_object_id: poid,
-  authors,
-  translation,
+  perspective: p,
 }) =>
-  <Dropdown.Item as={Link} to={`dictionary/${pcid}/${poid}/perspective/${cid}/${oid}`}>
-    {translation} {authors.content && ` (${authors.content})`}
+  <Dropdown.Item as={Link} to={`dictionary/${p.urlFor('parent_')}/perspective/${p.url}`}>
+    {p.translation} {p.authors && p.authors.content && ` (${p.authors.content})`}
   </Dropdown.Item>;
 
 Perspective.propTypes = {
-  client_id: PropTypes.number.isRequired,
-  object_id: PropTypes.number.isRequired,
-  parent_client_id: PropTypes.number.isRequired,
-  parent_object_id: PropTypes.number.isRequired,
-  authors: PropTypes.object,
-  translation: PropTypes.string,
-};
-
-Perspective.defaultProps = {
-  authors: {},
-  translation: '',
+  perspective: PropTypes.instanceOf(PerspectiveModel).isRequired,
 };
 
 const Dictionary =
 ({
-  translation,
+  dictionary,
   perspectives,
   history,
 }) =>
   <div className="dict">
-    <span title={history.join(' > ')} className="dict-name">{translation}</span>
+    <span title={history.join(' > ')} className="dict-name">{dictionary.translation}</span>
     {
       perspectives && perspectives.valueSeq &&
         <Dropdown inline text={`View (${perspectives.size})`}>
@@ -50,8 +37,8 @@ const Dictionary =
             {
               perspectives.valueSeq().map(pers =>
                 <Perspective
-                  key={`${pers.client_id}/${pers.object_id}`}
-                  {...pers.toJS()}
+                  key={pers.url}
+                  perspective={pers}
                 />
               )
             }
@@ -61,7 +48,7 @@ const Dictionary =
   </div>;
 
 Dictionary.propTypes = {
-  translation: PropTypes.string.isRequired,
+  dictionary: PropTypes.instanceOf(DictionaryModel).isRequired,
   perspectives: PropTypes.object,
   history: PropTypes.array.isRequired,
 };
@@ -81,18 +68,15 @@ const DictionaryList =
   return (
     <div className="dict-list">
       <span className="translation">
-        {
-          history.map(s =>
-            <span key={s}>{s}</span>)
-        }
+        { history.map(s => <span key={s}>{s}</span>) }
       </span>
       {
-        dicts.map(dict =>
+        dicts.map(dictionary =>
           <Dictionary
-            key={`${dict.client_id}/${dict.object_id}`}
-            perspectives={perspectives.get(`${dict.client_id}/${dict.object_id}`)}
+            key={dictionary.url}
+            perspectives={perspectives.get(dictionary.id)}
             history={history}
-            {...dict}
+            dictionary={dictionary}
           />
         )
       }
@@ -106,87 +90,81 @@ DictionaryList.propTypes = {
   history: PropTypes.array.isRequired,
 };
 
-const Section =
-({
-  dicts,
-  contains,
-  history,
-  translation,
-  perspectives,
-}) => {
-  const newHistory = [...history, translation];
-
-  return (
-    <div className="section">
-      {
-        contains.map(sub =>
-          <Section
-            key={`${sub.client_id}/${sub.object_id}`}
-            perspectives={perspectives}
-            history={newHistory}
-            {...sub}
-          />
-        )
-      }
-      <DictionaryList dicts={dicts} history={newHistory} perspectives={perspectives} />
-    </div>
-  );
-};
-
-Section.propTypes = {
-  dicts: PropTypes.array,
-  contains: PropTypes.array,
-  history: PropTypes.array,
-  translation: PropTypes.string.isRequired,
-  perspectives: PropTypes.object.isRequired,
-};
-
-Section.defaultProps = {
-  dicts: [],
-  contains: [],
-  history: [],
-};
-
 class Home extends React.Component {
   static propTypes = {
-    dictionaries: PropTypes.array.isRequired,
+    languages: PropTypes.array.isRequired,
     perspectives: PropTypes.object.isRequired,
     loading: PropTypes.bool.isRequired,
     dispatch: PropTypes.func.isRequired,
+  };
+
+  constructor(props) {
+    super(props);
+
+    this.renderEntries = this.renderEntries.bind(this);
   }
 
   componentDidMount() {
     this.props.dispatch(requestPublished());
   }
 
+  renderEntries() {
+    const {
+      languages,
+      perspectives,
+    } = this.props;
+
+    if (languages.length === 0) {
+      return null;
+    }
+
+    return languages.map(lang =>
+      <DictionaryList
+        key={lang.url}
+        perspectives={perspectives}
+        {...lang}
+      />
+    );
+  }
+
   render() {
     const {
-      dictionaries,
-      perspectives,
       loading,
     } = this.props;
 
-    const groupedByParent = perspectives.groupBy(v => `${v.parent_client_id}/${v.parent_object_id}`);
-
     return (
       <Container className="published">
-        <h2>Опубликованные словари</h2>
-        {
-          loading && dictionaries.length === 0
-            ? <Icon name="spinner" loading />
-            : dictionaries.map(dict =>
-              <Section
-                key={`${dict.client_id}/${dict.object_id}`}
-                perspectives={groupedByParent}
-                {...dict}
-              />
-            )
-        }
+        <h2>Опубликованные словари {loading && <Icon name="spinner" loading />}</h2>
+        { this.renderEntries() }
       </Container>
     );
   }
 }
 
+function preprocess(languages) {
+  const result = [];
+  function rc({ dicts = [], contains = [], translation, client_id, object_id }, history = []) {
+    const newHistory = [...history, translation];
+    result.push({
+      url: `${client_id}/${object_id}`,
+      history: newHistory,
+      dicts: dicts.map(x => new DictionaryModel(x)),
+    });
+    contains.forEach(sub => rc(sub, newHistory));
+  }
+
+  languages.forEach(rc);
+  return result;
+}
+
+function mapStateToProps({ data }) {
+  return {
+    languages: preprocess(data.dictionaries),
+    loading: data.loading,
+    perspectives: data.storage.all(PerspectiveModel).groupBy(p => p.parent),
+  };
+}
+
 export default connect(
-  state => state.data
+  mapStateToProps
 )(Home);

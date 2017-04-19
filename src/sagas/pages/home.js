@@ -1,8 +1,8 @@
-import { call, take, put, fork } from 'redux-saga/effects';
-import { normalize } from 'normalizr-immutable';
+import { call, take, put, fork, select } from 'redux-saga/effects';
 import { publishedDicts } from 'api';
-import { published, meta, perspectiveListSchema } from 'api/perspective';
-import { REQUEST_PUBLISHED_DICTS, setDictionaries, setPerspectives } from 'ducks/data';
+import { published, meta, Perspective } from 'api/perspective';
+import { REQUEST_PUBLISHED_DICTS, requestPublished, setDictionaries, setPerspectives } from 'ducks/data';
+import { SELECT } from 'ducks/language';
 
 export function* getDictionaries() {
   const { data } = yield call(publishedDicts);
@@ -11,17 +11,17 @@ export function* getDictionaries() {
   }
 }
 
+export function* getPerspective(apiCall) {
+  const { data } = yield call(apiCall);
+  if (data) {
+    const processed = data.map(p => new Perspective(p));
+    yield put(setPerspectives(processed));
+  }
+}
+
 export function* getPerspectives() {
-  const [part1, part2] = yield [
-    call(published),
-    call(meta),
-  ];
-  if (part1.data) {
-    yield put(setPerspectives(normalize(part1.data, perspectiveListSchema).entities));
-  }
-  if (part2.data) {
-    yield put(setPerspectives(normalize(part2.data, perspectiveListSchema).entities));
-  }
+  yield fork(getPerspective, published);
+  yield fork(getPerspective, meta);
 }
 
 export function* dataFlow() {
@@ -29,7 +29,17 @@ export function* dataFlow() {
   yield fork(getPerspectives);
 }
 
+export function* watchLang() {
+  while (yield take(SELECT)) {
+    const pathname = yield select(state => state.router.location.pathname);
+    if (pathname === '/') {
+      yield put(requestPublished());
+    }
+  }
+}
+
 export default function* home() {
+  yield fork(watchLang);
   while (yield take(REQUEST_PUBLISHED_DICTS)) {
     yield* dataFlow();
   }

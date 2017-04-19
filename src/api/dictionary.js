@@ -1,15 +1,15 @@
 import { httpGet, httpPost } from './http';
 import { LingvodocEntity } from './utils';
 
-export class Perspective extends LingvodocEntity {
-  static storageName = 'perspectives';
+export class Dictionary extends LingvodocEntity {
+  static storageName = 'dictionary';
 
   get storageName() { // eslint-disable-line class-methods-use-this
-    return Perspective.storageName;
+    return Dictionary.storageName;
   }
 
   update(props) {
-    return Object.assign(new Perspective(), this, props);
+    return Object.assign(new Dictionary(), this, props);
   }
 }
 
