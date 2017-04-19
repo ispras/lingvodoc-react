@@ -1,6 +1,8 @@
 import { call, put, fork, take } from 'redux-saga/effects';
 import { getId, getUser, signIn, signUp, signOut, editProfile } from 'api/user';
 import { setUser, requestUser, SIGN_OUT, signInForm, signUpForm, editForm } from 'ducks/user';
+import { err } from 'ducks/snackbar';
+
 import { SubmissionError } from 'redux-form';
 
 export function* requestRoutine() {
@@ -9,6 +11,8 @@ export function* requestRoutine() {
     const response = yield call(getUser);
     if (response.data) {
       yield put(setUser(response.data));
+    } else {
+      yield put(err('Could not get user info'));
     }
   }
 }
@@ -18,6 +22,8 @@ export function* signOutRoutine() {
   const response = yield call(signOut);
   if (response.data) {
     yield put(setUser({}));
+  } else {
+    yield put(err('Could not sign out'));
   }
 }
 

@@ -3,11 +3,14 @@ import { publishedDicts } from 'api';
 import { published, meta, Perspective } from 'api/perspective';
 import { REQUEST_PUBLISHED_DICTS, requestPublished, setDictionaries, setPerspectives } from 'ducks/data';
 import { SELECT } from 'ducks/locale';
+import { err } from 'ducks/snackbar';
 
 export function* getDictionaries() {
   const { data } = yield call(publishedDicts);
   if (data) {
     yield put(setDictionaries(data));
+  } else {
+    yield put(err('Could not get dictionaries'));
   }
 }
 
@@ -16,6 +19,8 @@ export function* getPerspective(apiCall) {
   if (data) {
     const processed = data.map(p => new Perspective(p));
     yield put(setPerspectives(processed));
+  } else {
+    yield put(err('Could not get perspectives'));
   }
 }
 

@@ -11,7 +11,7 @@ export function* requestFlow() {
   if (response.data) {
     yield put(setTasks(response.data));
   } else {
-    yield put(err('Could not get tasks!'));
+    yield put(err('Could not get tasks'));
   }
 }
 
