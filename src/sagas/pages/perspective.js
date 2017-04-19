@@ -1,37 +1,21 @@
-import { LOCATION_CHANGE } from 'react-router-redux';
-import { call, take, put, fork } from 'redux-saga/effects';
-import { publishedDicts } from 'api';
-import { published, meta } from 'api/perspective';
-import { REQUEST_PERSPECTIVE, setDictionaries, setPerspectives } from 'ducks/data';
+import { call, take, put, fork, select } from 'redux-saga/effects';
+import { perspective } from 'api/perspective';
+import { REQUEST_PERSPECTIVE } from 'ducks/data';
 
-export function* getDictionaries() {
-  const { data } = yield call(publishedDicts);
-  if (data) {
-    yield put(setDictionaries(data));
-  }
-}
-
-export function* getPerspectives() {
-  const [part1, part2] = yield [
-    call(published),
-    call(meta),
+export function* getPerspective({ oid, cid, pcid, poid }) {
+  const api = perspective(oid, cid, pcid, poid);
+  const [fields, total, published] = yield [
+    call(api.fields),
+    call(api.total),
+    call(api.published),
   ];
-  if (part1.data) {
-    yield put(setPerspectives(part1.data));
-  }
-  if (part2.data) {
-    yield put(setPerspectives(part2.data));
-  }
 }
 
-export function* dataFlow() {
-  yield fork(getDictionaries);
-  yield fork(getPerspectives);
-}
-
-export default function* perspective() {
+export default function* perspectiveFlow() {
   while (true) {
     const { payload } = yield take(REQUEST_PERSPECTIVE);
-    console.log(payload);
+    if (payload) {
+      yield* getPerspective(payload);
+    }
   }
 }
