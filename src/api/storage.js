@@ -34,7 +34,7 @@ export default class Storage extends Record({
 
   update(entity) {
     return this.updateIn([
-      PLURALS[entity.constructor.name],
+      entity.storageName,
       entity.id,
     ], updater(entity));
   }
@@ -43,7 +43,7 @@ export default class Storage extends Record({
     return this.withMutations((storage) => {
       entities.forEach(entity =>
         storage.updateIn([
-          PLURALS[entity.constructor.name],
+          entity.storageName,
           entity.id,
         ], updater(entity))
       );
