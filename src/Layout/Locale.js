@@ -36,7 +36,11 @@ const Locale = enhance(({ locales, selected, select }) =>
     <Dropdown.Menu>
       {
         locales.map(loc =>
-          <Dropdown.Item key={loc.id} active={loc === selected} onClick={() => select(loc)} >
+          <Dropdown.Item
+            key={loc.id}
+            active={loc === selected}
+            onClick={loc === selected ? null : () => select(loc)}
+          >
             <Flag name={checkCountry(loc.shortcut)} />{loc.intl_name}
           </Dropdown.Item>
         )
