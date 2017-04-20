@@ -1,4 +1,4 @@
-import { call, take, put, fork, select } from 'redux-saga/effects';
+import { call, takeLatest, put, fork, select } from 'redux-saga/effects';
 import { publishedDicts } from 'api';
 import { published, meta, Perspective } from 'api/perspective';
 import { REQUEST_PUBLISHED_DICTS, requestPublished, setDictionaries, setPerspectives } from 'ducks/data';
@@ -34,18 +34,14 @@ export function* dataFlow() {
   yield fork(getPerspectives);
 }
 
-export function* watchLang() {
-  while (yield take(SELECT)) {
-    const pathname = yield select(state => state.router.location.pathname);
-    if (pathname === '/') {
-      yield put(requestPublished());
-    }
+export function* localeChange() {
+  const pathname = yield select(state => state.router.location.pathname);
+  if (pathname === '/') {
+    yield put(requestPublished());
   }
 }
 
 export default function* home() {
-  yield fork(watchLang);
-  while (yield take(REQUEST_PUBLISHED_DICTS)) {
-    yield* dataFlow();
-  }
+  yield takeLatest(REQUEST_PUBLISHED_DICTS, dataFlow);
+  yield takeLatest(SELECT, localeChange);
 }

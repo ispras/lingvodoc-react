@@ -1,4 +1,4 @@
 export default {
   apiUrl: '',
-  pollingInterval: '2000',
+  pollingInterval: 2000,
 };

@@ -1,4 +1,4 @@
-import { call, put, fork, take } from 'redux-saga/effects';
+import { call, put, takeLatest } from 'redux-saga/effects';
 import { getId, getUser, signIn, signUp, signOut, editProfile } from 'api/user';
 import { setUser, requestUser, SIGN_OUT, signInForm, signUpForm, editForm } from 'ducks/user';
 import { err } from 'ducks/snackbar';
@@ -18,17 +18,16 @@ export function* requestRoutine() {
 }
 
 export function* signOutRoutine() {
-  yield take(SIGN_OUT);
   const response = yield call(signOut);
   if (response.data) {
     yield put(setUser({}));
   } else {
     yield put(err('Could not sign out'));
   }
+  yield* requestRoutine();
 }
 
-export function* signInRoutine() {
-  const { payload } = yield take(signInForm.REQUEST);
+export function* signInRoutine({ payload }) {
   const response = yield call(signIn, payload);
   if (response.data) {
     yield put(signInForm.success());
@@ -39,10 +38,10 @@ export function* signInRoutine() {
       })
     ));
   }
+  yield* requestRoutine();
 }
 
-export function* signUpRoutine() {
-  const { payload } = yield take(signUpForm.REQUEST);
+export function* signUpRoutine({ payload }) {
   const response = yield call(signUp, payload);
   if (response.data) {
     yield put(signUpForm.success());
@@ -55,10 +54,10 @@ export function* signUpRoutine() {
       })
     ));
   }
+  yield* requestRoutine();
 }
 
-export function* editRoutine() {
-  const { payload } = yield take(editForm.REQUEST);
+export function* editRoutine({ payload }) {
   const response = yield call(editProfile, payload);
   if (response.data) {
     yield put(editForm.success());
@@ -70,40 +69,14 @@ export function* editRoutine() {
       })
     ));
   }
-}
-
-function* signUpFlow() {
-  while (true) {
-    yield* signUpRoutine();
-    yield* requestRoutine();
-  }
-}
-
-function* signInFlow() {
-  while (true) {
-    yield* signInRoutine();
-    yield* requestRoutine();
-  }
-}
-
-function* signOutFlow() {
-  while (true) {
-    yield* signOutRoutine();
-    yield* requestRoutine();
-  }
-}
-
-function* editFlow() {
-  while (true) {
-    yield* editRoutine();
-    yield* requestRoutine();
-  }
+  yield* requestRoutine();
 }
 
 export default function* main() {
-  yield fork(signInFlow);
-  yield fork(signUpFlow);
-  yield fork(signOutFlow);
-  yield fork(editFlow);
+  yield takeLatest(signInForm.REQUEST, signInRoutine);
+  yield takeLatest(signUpForm.REQUEST, signUpRoutine);
+  yield takeLatest(editForm.REQUEST, editRoutine);
+  yield takeLatest(SIGN_OUT, signOutRoutine);
+
   yield* requestRoutine();
 }
