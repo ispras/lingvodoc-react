@@ -55,7 +55,7 @@ const Filter = () =>
   </div>;
 
 const ModeSelector = ({ mode, baseUrl }) =>
-  <Menu tabular className="perspective-menu">
+  <Menu tabular>
     {
       map(MODES, (info, stub) =>
         <Menu.Item key={stub} as={Link} to={`${baseUrl}/${stub}`} active={mode === stub}>
@@ -108,7 +108,7 @@ const Perspective = ({ match, perspective, storage }) => {
                 <info.component
                   {...perspective}
                   storage={storage}
-                  className="perspective-content"
+                  className="content"
                   mode={mode}
                 />
               }
