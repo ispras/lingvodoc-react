@@ -1,30 +1,23 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { Container } from 'semantic-ui-react';
+import { request, selectors } from 'ducks/perspective';
 
-import { requestPerspective } from 'ducks/data';
+import enhance from 'pages/utils';
 
-class Perspective extends React.Component {
-  static propTypes = {
-    match: PropTypes.shape({
-      params: PropTypes.object.isRequired,
-    }).isRequired,
-    dispatch: PropTypes.func.isRequired,
-  }
+import Component from './component';
+import saga from './saga';
 
-  componentDidMount() {
-    this.props.dispatch(requestPerspective(this.props.match.params));
-  }
-
-  render() {
-    return (
-      <Container fluid>
-      </Container>
-    );
-  }
+function init({ match }) {
+  return request(match.params);
 }
 
-export default connect(
-  state => state.data
-)(Perspective);
+export default enhance({
+  props(state, props) {
+    return {
+      perspective: selectors.getPerspective(state, props.match.params),
+    };
+  },
+  updateWhen() {
+    return true;
+  },
+  init,
+  saga,
+})(Component);

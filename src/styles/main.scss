@@ -1,0 +1,15 @@
+@font-face {
+  font-family: GentiumPlusW;
+  src: url("fonts/GentiumPlus-R.woff");
+}
+
+@font-face {
+  font-family: GentiumPlusW;
+  font-style: italic;
+  src: url("fonts/GentiumPlus-I.woff");
+}
+
+.gentium {
+  font-family: "GentiumPlusW", sans-serif !important;
+  font-size: 1.2em;
+}

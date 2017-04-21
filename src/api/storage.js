@@ -11,11 +11,13 @@ const updater = newValue => (oldValue) => {
 const PLURALS = {
   Perspective: 'perspectives',
   Dictionary: 'dictionaries',
+  DataType: 'dataTypes',
 };
 
 export default class Storage extends Record({
   perspectives: new Map(),
   dictionaries: new Map(),
+  dataTypes: new Map(),
 }) {
   all(name) {
     const lookup = name.storageName || PLURALS[name] || name;

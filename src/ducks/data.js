@@ -5,11 +5,14 @@ import { createSelectorCreator, createSelector, defaultMemoize } from 'reselect'
 import { Dictionary as DictionaryModel } from 'api/dictionary';
 import { Perspective as PerspectiveModel } from 'api/perspective';
 import Storage from 'api/storage';
+
+import perspective from './perspective';
+
 // Actions
 export const REQUEST_PUBLISHED_DICTS = '@data/REQUEST_PUBLISHED_DICTS';
-export const REQUEST_PERSPECTIVE = '@data/REQUEST_PERSPECTIVE';
 export const DICTS_SET = '@data/DICTS_SET';
-export const PERSPECT_SET = '@data/PERSPECT_SET';
+export const DATA_TYPES_SET = '@data/DATA_TYPES_SET';
+export const PUBLISHED_PERSPECTIVE_SET = '@data/PUBLISHED_PERSPECTIVE_SET';
 
 // Reducers
 function dictionaries(state = [], action = {}) {
@@ -24,7 +27,8 @@ function dictionaries(state = [], action = {}) {
 const storageInit = new Storage();
 function storage(state = storageInit, action = {}) {
   switch (action.type) {
-    case PERSPECT_SET:
+    case PUBLISHED_PERSPECTIVE_SET:
+    case DATA_TYPES_SET:
       return state.updateAll(action.payload);
     default:
       return state;
@@ -46,6 +50,8 @@ export default combineReducers({
   loading,
   dictionaries,
   storage,
+
+  perspective,
 });
 
 // Selectors
@@ -61,7 +67,7 @@ function preprocess(languages) {
     contains.forEach(sub => rc(sub, newHistory));
   }
 
-  languages.forEach(rc);
+  languages.forEach(lang => rc(lang, []));
   return result;
 }
 
@@ -69,14 +75,13 @@ const getData =
   state => state.data;
 
 const getStorage =
-  createSelector(getData, state => state.storage);
+  state => state.data.storage;
 
 const getLoading =
-  createSelector(getData, state => state.loading);
+  state => state.data.loading;
 
 const getDictionaries =
   createSelector(getData, state => preprocess(state.dictionaries));
-
 
 const createImmutableSelector =
   createSelectorCreator(defaultMemoize, is);
@@ -97,14 +102,14 @@ export function requestPublished() {
   return { type: REQUEST_PUBLISHED_DICTS };
 }
 
-export function requestPerspective(payload) {
-  return { type: REQUEST_PERSPECTIVE, payload };
-}
-
 export function setDictionaries(payload) {
   return { type: DICTS_SET, payload };
 }
 
 export function setPerspectives(payload) {
-  return { type: PERSPECT_SET, payload };
+  return { type: PUBLISHED_PERSPECTIVE_SET, payload };
+}
+
+export function setDataTypes(payload) {
+  return { type: DATA_TYPES_SET, payload };
 }

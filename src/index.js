@@ -12,6 +12,7 @@ import { ConnectedRouter, routerMiddleware } from 'react-router-redux';
 import createSagaMiddleware from 'redux-saga';
 import formActionSaga from 'redux-form-saga';
 
+import { setRunner } from 'ducks/saga';
 import combinedReducer from './reducer';
 import mainFlow from './sagas';
 import Layout from './Layout';
@@ -39,7 +40,7 @@ const store = createStore(
 
 sagaMiddleware.run(mainFlow);
 sagaMiddleware.run(formActionSaga);
-store.runSaga = sagaMiddleware.run;
+store.dispatch(setRunner(sagaMiddleware.run));
 
 const dest = document.getElementById('root');
 
