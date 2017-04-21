@@ -5,7 +5,7 @@ import { AppContainer } from 'react-hot-loader';
 
 import injectTapEventPlugin from 'react-tap-event-plugin';
 
-import { createStore, applyMiddleware, compose } from 'redux';
+import { createStore, applyMiddleware, compose, bindActionCreators } from 'redux';
 import { Provider } from 'react-redux';
 import createHistory from 'history/createBrowserHistory';
 import { ConnectedRouter, routerMiddleware } from 'react-router-redux';
@@ -13,6 +13,7 @@ import createSagaMiddleware from 'redux-saga';
 import formActionSaga from 'redux-form-saga';
 
 import { setRunner } from 'ducks/saga';
+import { log, suc, warn, err } from 'ducks/snackbar';
 import combinedReducer from './reducer';
 import mainFlow from './sagas';
 import Layout from './Layout';
@@ -41,6 +42,8 @@ const store = createStore(
 sagaMiddleware.run(mainFlow);
 sagaMiddleware.run(formActionSaga);
 store.dispatch(setRunner(sagaMiddleware.run));
+
+window.logger = bindActionCreators({ log, suc, warn, err }, store.dispatch);
 
 const dest = document.getElementById('root');
 
