@@ -3,7 +3,7 @@ import { map } from 'lodash';
 import PropTypes from 'prop-types';
 import { onlyUpdateForKeys } from 'recompose';
 import { Switch, Route, Redirect, Link } from 'react-router-dom';
-import { Container, Menu, Dropdown } from 'semantic-ui-react';
+import { Container, Menu, Dropdown, Icon } from 'semantic-ui-react';
 
 import PerspectiveView from 'components/PerspectiveView';
 import NotFound from 'pages/NotFound';
@@ -92,7 +92,7 @@ const Perspective = ({ match, perspective, storage }) => {
 
   return (
     <Container fluid className="perspective">
-      <h4>{baseUrl}</h4>
+      <h4>{baseUrl} {perspective.loading && <Icon loading name="spinner" />}</h4>
       <ModeSelector
         mode={mode}
         baseUrl={baseUrl}

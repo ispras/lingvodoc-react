@@ -1,6 +1,8 @@
-import { call, takeLatest, put, fork, select } from 'redux-saga/effects';
+import { call, takeLatest, put, select } from 'redux-saga/effects';
 import { perspective } from 'api/perspective';
-import { REQUEST, set } from 'ducks/perspective';
+import { REQUEST, request, set, selectors } from 'ducks/perspective';
+import { SELECT } from 'ducks/locale';
+import { err } from 'ducks/snackbar';
 
 export function* getPerspective({ payload }) {
   const { oid, cid, pcid, poid } = payload;
@@ -10,17 +12,19 @@ export function* getPerspective({ payload }) {
     call(api.total),
     call(api.published),
   ];
-  if (fields) {
-    yield put(set({ fields }));
+  if (fields && total && published) {
+    yield put(set({ total, fields, entries: published }));
+  } else {
+    yield put(err('Could not get perspective info'));
   }
-  if (total) {
-    yield put(set({ total }));
-  }
-  if (published) {
-    yield put(set({ entries: published }));
-  }
+}
+
+export function* updateCurrent() {
+  const { params } = yield select(selectors.getPerspective);
+  yield put(request(params));
 }
 
 export default function* perspectiveFlow() {
   yield takeLatest(REQUEST, getPerspective);
+  yield takeLatest(SELECT, updateCurrent);
 }
