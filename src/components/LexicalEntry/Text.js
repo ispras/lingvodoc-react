@@ -1,4 +1,5 @@
 import React from 'react';
+import { List } from 'semantic-ui-react';
 
 function single(mode) {
   switch (mode) {
@@ -12,7 +13,7 @@ function single(mode) {
 function all(mode) {
   switch (mode) {
     case 'edit':
-      return '+';
+      return <List.Item>+</List.Item>;
     default:
       return null;
   }
@@ -27,11 +28,13 @@ const Text = (props) => {
 
   return (
     <Component className="gentium">
-      {
-        entry.map(sub =>
-          <div key={`${sub.client_id}/${sub.object_id}`}>{sub.content} { single(mode) }</div>)
-      }
-      { all(mode) }
+      <List>
+        {
+          entry.map(sub =>
+            <List.Item key={`${sub.client_id}/${sub.object_id}`}>{sub.content} { single(mode) }</List.Item>)
+        }
+        { all(mode) }
+      </List>
     </Component>
   );
 };
