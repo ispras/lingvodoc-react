@@ -65,7 +65,7 @@ function FormModal(props) {
           <Message visible={!!error} error>
             <Icon name="remove" /> {error}
           </Message>
-          <Button basic color="red" onClick={close}>
+          <Button basic color="red" type="button" onClick={close}>
             <Icon name="remove" /> Close
           </Button>
           <Button color="green" type="submit" disabled={pristine || submitting}>
