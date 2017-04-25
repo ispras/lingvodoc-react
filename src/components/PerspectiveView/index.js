@@ -1,6 +1,6 @@
 import React from 'react';
 import { groupBy } from 'lodash';
-import { Table } from 'semantic-ui-react';
+import { Table, Dimmer, Header, Icon } from 'semantic-ui-react';
 
 import LexicalEntry from 'components/LexicalEntry';
 
@@ -53,7 +53,7 @@ const TableBody = ({ entries, columns, mode }) =>
     }
   </Table.Body>;
 
-const PerspectiveView = ({ className, mode, entriesTotal, fields, entries } ) => {
+const PerspectiveView = ({ className, mode, entriesTotal, fields, entries, loading }) => {
   const groupedEntries = entries.map(entry => ({
     ...entry,
     contains: groupBy(entry.contains, v => `${v.field_client_id}/${v.field_object_id}`),
@@ -65,11 +65,17 @@ const PerspectiveView = ({ className, mode, entriesTotal, fields, entries } ) =>
   }));
 
   return (
-    <Table celled padded className={className} >
-      <TableHeader fields={fields} />
+    <Dimmer.Dimmable dimmed={loading} style={{ minHeight: '600px' }}>
+      <Dimmer active={loading} inverted>
+        <Header as="h2" icon><Icon name="spinner" loading /></Header>
+      </Dimmer>
 
-      <TableBody entries={groupedEntries} columns={columns} mode={mode} />
-    </Table>
+      <Table celled padded className={className} >
+        <TableHeader fields={fields} />
+
+        <TableBody entries={groupedEntries} columns={columns} mode={mode} />
+      </Table>
+    </Dimmer.Dimmable>
   );
 };
 

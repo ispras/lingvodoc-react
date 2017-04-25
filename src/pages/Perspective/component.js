@@ -92,7 +92,7 @@ const Perspective = ({ match, perspective, storage }) => {
 
   return (
     <Container fluid className="perspective">
-      <h4>{baseUrl} {perspective.loading && <Icon loading name="spinner" />}</h4>
+      <h4>{baseUrl}</h4>
       <ModeSelector
         mode={mode}
         baseUrl={baseUrl}
