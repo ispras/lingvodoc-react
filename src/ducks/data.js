@@ -1,3 +1,4 @@
+import { flatMap } from 'lodash';
 import { combineReducers } from 'redux';
 import { is } from 'immutable';
 import { createSelectorCreator, createSelector, defaultMemoize } from 'reselect';
@@ -55,20 +56,21 @@ export default combineReducers({
 });
 
 // Selectors
-function preprocess(languages) {
-  const result = [];
-  function rc({ dicts = [], contains = [], translation, client_id, object_id }, history = []) {
-    const newHistory = [...history, translation];
-    result.push({
+function rc({ dicts = [], contains = [], translation, client_id, object_id }, history = []) {
+  const newHistory = [...history, translation];
+
+  return [
+    {
       url: `${client_id}/${object_id}`,
       history: newHistory,
       dicts: dicts.map(x => new DictionaryModel(x)),
-    });
-    contains.forEach(sub => rc(sub, newHistory));
-  }
+    },
+    ...flatMap(contains, sub => rc(sub, newHistory)),
+  ];
+}
 
-  languages.forEach(lang => rc(lang, []));
-  return result;
+function preprocess(languages) {
+  return flatMap(languages, lang => rc(lang, []));
 }
 
 const getData =
