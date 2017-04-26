@@ -3,7 +3,7 @@ import { map } from 'lodash';
 import PropTypes from 'prop-types';
 import { onlyUpdateForKeys } from 'recompose';
 import { Switch, Route, Redirect, Link } from 'react-router-dom';
-import { Container, Menu, Dropdown, Icon } from 'semantic-ui-react';
+import { Container, Menu, Dropdown } from 'semantic-ui-react';
 
 import PerspectiveView from 'components/PerspectiveView';
 import NotFound from 'pages/NotFound';
@@ -54,7 +54,7 @@ const Filter = () =>
     </div>
   </div>;
 
-const ModeSelector = ({ mode, baseUrl }) =>
+const ModeSelector = onlyUpdateForKeys(['mode', 'baseUrl'])(({ mode, baseUrl }) =>
   <Menu tabular>
     {
       map(MODES, (info, stub) =>
@@ -75,12 +75,12 @@ const ModeSelector = ({ mode, baseUrl }) =>
       </Dropdown.Menu>
     </Dropdown>
 
-    <Menu.Menu position='right'>
+    <Menu.Menu position="right">
       <Filter />
     </Menu.Menu>
-  </Menu>;
+  </Menu>);
 
-const Perspective = ({ match, perspective, storage }) => {
+const Perspective = onlyUpdateForKeys(['match', 'perspective'])(({ match, perspective }) => {
   const {
     cid,
     oid,
@@ -107,7 +107,6 @@ const Perspective = ({ match, perspective, storage }) => {
               render={() =>
                 <info.component
                   {...perspective}
-                  storage={storage}
                   className="content"
                   mode={mode}
                 />
@@ -119,6 +118,6 @@ const Perspective = ({ match, perspective, storage }) => {
       </Switch>
     </Container>
   );
-};
+});
 
-export default onlyUpdateForKeys(['match', 'perspective'])(Perspective);
+export default Perspective;
