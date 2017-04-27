@@ -1,12 +1,25 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Range } from 'immutable';
-import { onlyUpdateForPropTypes } from 'recompose';
+import { onlyUpdateForPropTypes, branch, renderNothing, compose } from 'recompose';
 import { Link } from 'react-router-dom';
 import { Menu } from 'semantic-ui-react';
+import styled from 'styled-components';
+
+const Pager = styled(Menu)`
+  position: fixed;
+  bottom: 10px;
+  opacity: 0.2;
+  transition: opacity 0.2s linear;
+
+  &:hover {
+    opacity: 1;
+  }
+`;
 
 const Pagination = ({ current, total, to }) =>
-  total > 1 && <Menu pagination>
+  <Pager pagination>
+    <Menu.Item name="Page" />
     {
       Range(1, total + 1).map(page =>
         <Menu.Item
@@ -21,7 +34,7 @@ const Pagination = ({ current, total, to }) =>
         />
       )
     }
-  </Menu>;
+  </Pager>;
 
 Pagination.propTypes = {
   current: PropTypes.number.isRequired,
@@ -29,4 +42,10 @@ Pagination.propTypes = {
   to: PropTypes.string.isRequired,
 };
 
-export default onlyUpdateForPropTypes(Pagination);
+export default compose(
+  branch(
+    ({ total }) => total < 2,
+    renderNothing
+  ),
+  onlyUpdateForPropTypes
+)(Pagination);

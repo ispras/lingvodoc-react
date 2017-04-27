@@ -10,6 +10,8 @@ import Pagination from './Pagination';
 
 const dimmerStyle = { minHeight: '600px' };
 
+const ROWS_PER_PAGE = 20;
+
 const PerspectiveView = ({ className, mode, fields, entries, entriesTotal, page, loading }) => {
   const groupedEntries = entries.map(entry => ({
     ...entry,
@@ -32,7 +34,7 @@ const PerspectiveView = ({ className, mode, fields, entries, entriesTotal, page,
 
         <TableBody entries={groupedEntries} columns={columns} mode={mode} />
       </Table>
-      <Pagination current={page} total={Math.floor(entriesTotal / 20) + 1} to={mode} />
+      <Pagination current={page} total={Math.floor(entriesTotal / ROWS_PER_PAGE) + 1} to={mode} />
     </Dimmer.Dimmable>
   );
 };

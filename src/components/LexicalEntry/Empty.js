@@ -1,6 +1,9 @@
 import React from 'react';
+import { shouldUpdate } from 'recompose';
+
+const emptyStyle = { background: '#eee' };
 
 const Empty = ({ as: Component }) =>
-  <Component style={{ background: '#eee' }} />;
+  <Component style={emptyStyle} />;
 
-export default Empty;
+export default shouldUpdate(() => false)(Empty);
