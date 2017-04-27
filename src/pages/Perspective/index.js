@@ -1,12 +1,16 @@
 import { request, selectors, setFilter } from 'ducks/perspective';
-
 import enhance from 'pages/utils';
+
+import { getPage } from 'utils/getParams';
 
 import Component from './component';
 import saga from './saga';
 
-function init({ match }) {
-  return request(match.params);
+function init({ match, location }) {
+  return request({
+    ...match.params,
+    page: getPage(location),
+  });
 }
 
 function submitFilter(value) {

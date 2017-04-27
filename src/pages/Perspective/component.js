@@ -8,6 +8,8 @@ import { Container, Menu, Dropdown } from 'semantic-ui-react';
 import PerspectiveView from 'components/PerspectiveView';
 import NotFound from 'pages/NotFound';
 
+import { getPage } from 'utils/getParams';
+
 import './style.scss';
 
 const MODES = {
@@ -94,11 +96,11 @@ const ModeSelector = onlyUpdateForKeys(['mode', 'baseUrl'])(({ mode, baseUrl, su
     </Dropdown>
 
     <Menu.Menu position="right">
-      <Filter submitFilter={submitFilter}/>
+      <Filter submitFilter={submitFilter} />
     </Menu.Menu>
   </Menu>);
 
-const Perspective = onlyUpdateForKeys(['match', 'perspective'])(({ match, perspective, submitFilter }) => {
+const Perspective = onlyUpdateForKeys(['match', 'location', 'perspective'])(({ match, location, perspective, submitFilter }) => {
   const {
     cid,
     oid,
@@ -106,6 +108,9 @@ const Perspective = onlyUpdateForKeys(['match', 'perspective'])(({ match, perspe
     poid,
     mode,
   } = match.params;
+
+  const page = getPage(location);
+
   const baseUrl = `/dictionary/${pcid}/${poid}/perspective/${cid}/${oid}`;
 
   return (
@@ -126,6 +131,7 @@ const Perspective = onlyUpdateForKeys(['match', 'perspective'])(({ match, perspe
               render={() =>
                 <info.component
                   {...perspective}
+                  page={page}
                   className="content"
                   mode={mode}
                 />
