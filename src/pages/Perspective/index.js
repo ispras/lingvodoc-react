@@ -1,4 +1,4 @@
-import { request, selectors } from 'ducks/perspective';
+import { request, selectors, setFilter } from 'ducks/perspective';
 
 import enhance from 'pages/utils';
 
@@ -9,12 +9,17 @@ function init({ match }) {
   return request(match.params);
 }
 
+function submitFilter(value) {
+  return setFilter(value);
+}
+
 export default enhance({
   props(state, props) {
     return {
       perspective: selectors.getPerspective(state, props.match.params),
     };
   },
+  actions: { submitFilter },
   updateWhen() {
     return true;
   },

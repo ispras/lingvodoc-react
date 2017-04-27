@@ -8,6 +8,7 @@ import { Perspective as PerspectiveModel } from 'api/perspective';
 // Actions
 export const REQUEST = '@data/perspective/REQUEST';
 export const SET = '@data/perspective/SET';
+export const SET_FILTER = '@data/perspective/SET_FILTER';
 
 // Reducers
 function entriesTotal(state = 0, action = {}) {
@@ -80,4 +81,8 @@ export function request(payload) {
 
 export function set(payload) {
   return { type: SET, payload };
+}
+
+export function setFilter(payload) {
+  return { type: SET_FILTER, payload };
 }

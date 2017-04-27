@@ -1,6 +1,6 @@
 import { call, takeLatest, put, select } from 'redux-saga/effects';
 import { perspective } from 'api/perspective';
-import { REQUEST, request, set, selectors } from 'ducks/perspective';
+import { REQUEST, SET_FILTER, request, set, selectors } from 'ducks/perspective';
 import { SELECT } from 'ducks/locale';
 import { err } from 'ducks/snackbar';
 
@@ -19,6 +19,11 @@ export function* getPerspective({ payload }) {
   }
 }
 
+export function* updateForFilter({ payload: filter }) {
+  const { params } = yield select(selectors.getPerspective);
+  yield put(request({ ...params, filter }));
+}
+
 export function* updateCurrent() {
   const { params } = yield select(selectors.getPerspective);
   yield put(request(params));
@@ -26,5 +31,6 @@ export function* updateCurrent() {
 
 export default function* perspectiveFlow() {
   yield takeLatest(REQUEST, getPerspective);
+  yield takeLatest(SET_FILTER, updateForFilter);
   yield takeLatest(SELECT, updateCurrent);
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { map } from 'lodash';
 import PropTypes from 'prop-types';
-import { onlyUpdateForKeys } from 'recompose';
+import { onlyUpdateForKeys, withHandlers, withState, compose } from 'recompose';
 import { Switch, Route, Redirect, Link } from 'react-router-dom';
 import { Container, Menu, Dropdown } from 'semantic-ui-react';
 
@@ -46,15 +46,33 @@ const TOOLS = {
   },
 };
 
-const Filter = () =>
-  <div className="ui right aligned category search item">
-    <div className="ui transparent icon input">
-      <input className="prompt" type="text" placeholder="Filter" />
-      <i className="search link icon" />
-    </div>
-  </div>;
+const handlers = compose(
+  withState('value', 'updateValue', ''),
+  withHandlers({
+    onChange(props) {
+      return event => props.updateValue(event.target.value);
+    },
+    onSubmit(props) {
+      return (event) => {
+        event.preventDefault();
+        props.submitFilter(props.value);
+      };
+    },
+  })
+);
 
-const ModeSelector = onlyUpdateForKeys(['mode', 'baseUrl'])(({ mode, baseUrl }) =>
+const Filter = handlers(({ value, onChange, onSubmit }) =>
+  <div className="ui right aligned category search item">
+    <form className="ui transparent icon input" onSubmit={onSubmit}>
+      <input type="text" placeholder="Filter" value={value} onChange={onChange} />
+      <button type="submit">
+        <i className="search link icon" />
+      </button>
+    </form>
+  </div>
+);
+
+const ModeSelector = onlyUpdateForKeys(['mode', 'baseUrl'])(({ mode, baseUrl, submitFilter }) =>
   <Menu tabular>
     {
       map(MODES, (info, stub) =>
@@ -76,11 +94,11 @@ const ModeSelector = onlyUpdateForKeys(['mode', 'baseUrl'])(({ mode, baseUrl }) 
     </Dropdown>
 
     <Menu.Menu position="right">
-      <Filter />
+      <Filter submitFilter={submitFilter}/>
     </Menu.Menu>
   </Menu>);
 
-const Perspective = onlyUpdateForKeys(['match', 'perspective'])(({ match, perspective }) => {
+const Perspective = onlyUpdateForKeys(['match', 'perspective'])(({ match, perspective, submitFilter }) => {
   const {
     cid,
     oid,
@@ -96,6 +114,7 @@ const Perspective = onlyUpdateForKeys(['match', 'perspective'])(({ match, perspe
       <ModeSelector
         mode={mode}
         baseUrl={baseUrl}
+        submitFilter={submitFilter}
       />
       <Switch>
         <Redirect exact from={baseUrl} to={`${baseUrl}/view`} />
