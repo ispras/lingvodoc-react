@@ -1,13 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { is } from 'immutable';
-import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Container, Dropdown, Icon } from 'semantic-ui-react';
 
 import { Perspective as PerspectiveModel } from 'api/perspective';
 import { Dictionary as DictionaryModel } from 'api/dictionary';
-import { requestPublished, selectors } from 'ducks/data';
 
 import './published.scss';
 

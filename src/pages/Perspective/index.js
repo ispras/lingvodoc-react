@@ -18,9 +18,9 @@ function submitFilter(value) {
 }
 
 export default enhance({
-  props(state, props) {
+  props(state) {
     return {
-      perspective: selectors.getPerspective(state, props.match.params),
+      perspective: selectors.getPerspective(state),
     };
   },
   actions: { submitFilter },
