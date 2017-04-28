@@ -8,8 +8,6 @@ import { Container, Menu, Dropdown } from 'semantic-ui-react';
 import PerspectiveView from 'components/PerspectiveView';
 import NotFound from 'pages/NotFound';
 
-import { getPage } from 'utils/getParams';
-
 import './style.scss';
 
 const MODES = {
@@ -49,7 +47,7 @@ const TOOLS = {
 };
 
 const handlers = compose(
-  withState('value', 'updateValue', ''),
+  withState('value', 'updateValue', props => props.filter),
   withHandlers({
     onChange(props) {
       return event => props.updateValue(event.target.value);
@@ -74,7 +72,7 @@ const Filter = handlers(({ value, onChange, onSubmit }) =>
   </div>
 );
 
-const ModeSelector = onlyUpdateForKeys(['mode', 'baseUrl'])(({ mode, baseUrl, submitFilter }) =>
+const ModeSelector = onlyUpdateForKeys(['mode', 'baseUrl', 'filter'])(({ mode, baseUrl, filter, submitFilter }) =>
   <Menu tabular>
     {
       map(MODES, (info, stub) =>
@@ -96,22 +94,19 @@ const ModeSelector = onlyUpdateForKeys(['mode', 'baseUrl'])(({ mode, baseUrl, su
     </Dropdown>
 
     <Menu.Menu position="right">
-      <Filter submitFilter={submitFilter} />
+      <Filter filter={filter} submitFilter={submitFilter} />
     </Menu.Menu>
   </Menu>);
 
-const Perspective = onlyUpdateForKeys(['match', 'location', 'perspective'])(({ match, location, perspective, submitFilter }) => {
+const Perspective = onlyUpdateForKeys(['perspective'])(({ perspective, submitFilter }) => {
   const {
-    cid,
-    oid,
-    pcid,
-    poid,
     mode,
-  } = match.params;
+    page,
+    filter,
+    baseUrl,
+  } = perspective.params;
 
-  const page = getPage(location);
-
-  const baseUrl = `/dictionary/${pcid}/${poid}/perspective/${cid}/${oid}`;
+  if (!baseUrl) return null;
 
   return (
     <Container fluid className="perspective">
@@ -119,6 +114,7 @@ const Perspective = onlyUpdateForKeys(['match', 'location', 'perspective'])(({ m
       <ModeSelector
         mode={mode}
         baseUrl={baseUrl}
+        filter={filter}
         submitFilter={submitFilter}
       />
       <Switch>

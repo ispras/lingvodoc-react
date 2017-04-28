@@ -1,16 +1,13 @@
 import { request, selectors, setFilter } from 'ducks/perspective';
 import enhance from 'pages/utils';
-
-import { getPage } from 'utils/getParams';
+import { shallowEqual } from 'recompose';
+import getParams from './utils';
 
 import Component from './component';
 import saga from './saga';
 
-function init({ match, location }) {
-  return request({
-    ...match.params,
-    page: getPage(location),
-  });
+function init({ location }) {
+  return request(getParams(location));
 }
 
 function submitFilter(value) {
@@ -24,8 +21,8 @@ export default enhance({
     };
   },
   actions: { submitFilter },
-  updateWhen() {
-    return true;
+  updateWhen({ perspective: np }, { perspective: op }) {
+    return !shallowEqual(np, op);
   },
   init,
   saga,

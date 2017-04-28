@@ -75,8 +75,8 @@ export const selectors = {
 };
 
 // Action Creators
-export function request(payload) {
-  return { type: REQUEST, payload };
+export function request(payload, lazy = true) {
+  return { type: REQUEST, meta: { lazy }, payload };
 }
 
 export function set(payload) {
