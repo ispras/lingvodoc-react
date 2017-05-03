@@ -1,4 +1,4 @@
-import { call, takeLatest, put, select } from 'redux-saga/effects';
+import { call, takeLatest, put, select, all } from 'redux-saga/effects';
 import { LOCATION_CHANGE } from 'react-router-redux';
 import { perspective } from 'api/perspective';
 import { REQUEST, SET_FILTER, request, set, selectors } from 'ducks/perspective';
@@ -25,10 +25,10 @@ export function* getPerspective({ payload, meta }) {
   const { oid, cid, pcid, poid, ...rest } = payload;
   const { lazy = true } = meta;
   const api = perspective(oid, cid, pcid, poid);
-  const [fields, values] = yield [
-    getFields(api, lazy),
-    getValues(api, rest, lazy),
-  ];
+  const { fields, values } = yield all({
+    fields: getFields(api, lazy),
+    values: getValues(api, rest, lazy),
+  });
   if (fields && values) {
     yield put(set({ fields, ...values }));
   } else {
