@@ -1,9 +1,9 @@
-const path = require('path');
 const express = require('express');
 const webpack = require('webpack');
 const webpackConfig = require('./webpack.dev');
 const config = require('./config');
 const LogPlugin = require('./log-plugin');
+const _ = require('./utils');
 
 const app = express();
 
@@ -12,7 +12,7 @@ webpackConfig.entry.client = [
   'react-hot-loader/patch',
   'webpack-hot-middleware/client?reload=true',
   'webpack/hot/only-dev-server',
-  webpackConfig.entry.client,
+  ...webpackConfig.entry.client,
 ];
 
 webpackConfig.plugins.push(new LogPlugin(port));
@@ -56,7 +56,7 @@ app.use(require('webpack-hot-middleware')(compiler, {
 }));
 
 const mfs = devMiddleWare.fileSystem;
-const file = path.join(webpackConfig.output.path, 'index.html');
+const file = _.outputIndexPath;
 
 devMiddleWare.waitUntilValid();
 

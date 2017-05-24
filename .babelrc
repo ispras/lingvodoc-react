@@ -8,6 +8,7 @@
         "moduleName": "babel-runtime"
       }
     ],
+    ["lodash", { "id": ["lodash", "recompose", "semantic-ui-react"] }],
     "react-hot-loader/babel"
   ],
   "presets": [
@@ -18,6 +19,9 @@
   "env": {
     "production": {
         "presets": ["react-optimize"]
+    },
+    "test": {
+      "plugins": ["transform-es2015-modules-commonjs"]
     }
   }
 }

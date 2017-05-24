@@ -14,19 +14,14 @@ env:
 globals:
   __DEVELOPMENT__: false
   __DEVTOOLS__: false
+  expect: false
 extends:
   - airbnb
 
 settings:
   import/resolver:
     webpack:
-      config:
-        resolve:
-          extensions:
-            - ".js"
-          modules:
-            - "src"
-            - "node_modules"
+      config: webpack/webpack.dev.js
 rules:
   comma-dangle:
     - warn
@@ -36,4 +31,5 @@ rules:
     - checkLoops: false
 
   react/jsx-filename-extension: 'off'
+  react/jsx-wrap-multilines: 'off'
   react/forbid-prop-types: 'off'

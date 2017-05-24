@@ -1,4 +1,3 @@
-
 const path = require('path');
 const config = require('./config');
 
@@ -6,7 +5,7 @@ module.exports = {
   cwd(file) {
     return path.join(process.cwd(), file || '');
   },
-  outputPath: path.join(__dirname, '../dist'),
+  outputPath: path.join(__dirname, '../dist', config.publicPath),
   outputIndexPath: path.join(__dirname, '../dist/index.html'),
   target: 'web',
   loadersOptions() {

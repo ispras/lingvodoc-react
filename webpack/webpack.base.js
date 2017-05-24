@@ -1,13 +1,12 @@
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
 const config = require('./config');
 const _ = require('./utils');
 
 module.exports = {
   entry: {
-    client: './src/index.js',
+    client: ['babel-polyfill', './src/index.js'],
   },
   output: {
     path: _.outputPath,
@@ -25,19 +24,12 @@ module.exports = {
       config: `${config.srcPath}/config/${process.env.REACT_WEBPACK_ENV}`,
     },
     modules: [
-      _.cwd('src'),
-      _.cwd('node_modules'),
-      _.cwd('./'),
+      'src',
+      'node_modules',
     ],
   },
   module: {
     loaders: [
-      // {
-      //   test: /\.jsx?$/,
-      //   enforce: 'pre',
-      //   loaders: ['eslint-loader'],
-      //   exclude: [/node_modules/],
-      // },
       {
         test: /\.jsx?$/,
         loaders: ['babel-loader'],
@@ -53,17 +45,11 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      title: config.title,
       template: path.resolve(__dirname, '../src/index.html'),
+      favicon: path.resolve(__dirname, '../src/favicon.ico'),
       filename: _.outputIndexPath,
     }),
     new webpack.LoaderOptionsPlugin(_.loadersOptions()),
-    new CopyWebpackPlugin([
-      {
-        from: _.cwd('./static'),
-        to: './',
-      },
-    ]),
   ],
   target: _.target,
 };

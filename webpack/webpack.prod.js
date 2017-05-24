@@ -1,18 +1,15 @@
-
 process.env.NODE_ENV = 'production';
 process.env.REACT_WEBPACK_ENV = 'dist';
 
-const exec = require('child_process').execSync;
 const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const ProgressPlugin = require('webpack/lib/ProgressPlugin');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
 // const OfflinePlugin = require('offline-plugin')
 const base = require('./webpack.base');
-const config = require('./config');
 
 
-exec('rm -rf dist/');
-base.devtool = 'cheap-source-map';
+base.devtool = 'cheap-module-source-map';
 base.module.loaders.push({
   test: /\.css$/,
   use: ExtractTextPlugin.extract({ fallback: 'style-loader', use: 'css-loader' }),
@@ -20,12 +17,11 @@ base.module.loaders.push({
   test: /\.scss$/,
   use: ExtractTextPlugin.extract({ fallback: 'style-loader', use: ['css-loader', 'sass-loader'] }),
 });
-// a white list to add dependencies to vendor chunk
-base.entry.vendor = config.vendor;
 // use hash filename to support long-term caching
 base.output.filename = '[name].[chunkhash:8].js';
 // add webpack plugins
 base.plugins.push(
+  new CleanWebpackPlugin(['dist']),
   new ProgressPlugin(),
   new ExtractTextPlugin('[name].[contenthash:8].css'),
   new webpack.DefinePlugin({
@@ -54,8 +50,11 @@ base.plugins.push(
   // extract vendor chunks
   new webpack.optimize.CommonsChunkPlugin({
     name: 'vendor',
-    filename: 'vendor.[chunkhash:8].js',
-  })
+    minChunks(module) {
+      return module.context && module.context.indexOf('node_modules') !== -1;
+    },
+  }),
+  new webpack.optimize.CommonsChunkPlugin({ name: 'manifest' })
   // For progressive web apps
   // new OfflinePlugin({
   //   relativePaths: false,
