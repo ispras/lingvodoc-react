@@ -10,8 +10,10 @@ export function intToRGB(i) {
   return '00000'.substring(0, 6 - c.length) + c;
 }
 
+export function colorFor(str) {
+  return `#${intToRGB(hashCode(str))}`;
+}
+
 export function styleFor(str) {
-  return {
-    color: `#${intToRGB(hashCode(str))}`,
-  };
+  return { color: colorFor(str) };
 }

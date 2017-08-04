@@ -42,7 +42,7 @@ const Dictionary =
             }
           </Dropdown.Menu>
         </Dropdown>
-      }
+    }
   </div>;
 
 Dictionary.propTypes = {
