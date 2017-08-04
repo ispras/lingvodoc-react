@@ -2,18 +2,21 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { pure } from 'recompose';
 import { connect } from 'react-redux';
-import CSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
+import TransitionGroup from 'react-transition-group/TransitionGroup';
+import CSSTransition from 'react-transition-group/CSSTransition';
 import styled from 'styled-components';
 
 import { Message as SUMessage, Icon } from 'semantic-ui-react';
 
 import { remove } from 'ducks/snackbar';
 
-const TRANSITION = 'snackbar';
-const ENTER = 500;
-const LEAVE = 1000;
+const TRANSITION = {
+  classNames: 'snackbar',
+  enter: 500,
+  exit: 1000,
+};
 
-const Wrapper = styled(CSSTransitionGroup)`
+const Wrapper = styled(TransitionGroup)`
   position: fixed;
   bottom: 0;
   left: 0;
@@ -37,23 +40,23 @@ const Message = styled(SUMessage)`
     cursor: pointer;
   }
 
-  &.${TRANSITION}-enter {
+  &.${TRANSITION.classNames}-enter {
     left: -120% !important;
   }
 
-  &.${TRANSITION}-enter.${TRANSITION}-enter-active {
+  &.${TRANSITION.classNames}-enter.${TRANSITION.classNames}-enter-active {
     left: 0 !important;
-    transition: left ${ENTER}ms cubic-bezier(0.89, 0.01, 0.5, 1.1) !important;
+    transition: left ${TRANSITION.enter}ms cubic-bezier(0.89, 0.01, 0.5, 1.1) !important;
   }
 
-  &.${TRANSITION}-leave {
+  &.${TRANSITION.classNames}-exit {
     left: 0 !important;
-    transition: flex-grow ${LEAVE}ms linear;
+    transition: flex-grow ${TRANSITION.exit}ms linear;
   }
 
-  &.${TRANSITION}-leave.${TRANSITION}-leave-active {
+  &.${TRANSITION.classNames}-exit.${TRANSITION.classNames}-exit-active {
     left: -120% !important;
-    transition: left ${LEAVE}ms cubic-bezier(0.89, 0.01, 0.5, 1.1) !important;
+    transition: left ${TRANSITION.exit}ms cubic-bezier(0.89, 0.01, 0.5, 1.1) !important;
   }
 `;
 
@@ -70,14 +73,16 @@ Snack.propTypes = {
 };
 
 const Snackbar = pure(({ messages, dismiss }) =>
-  <Wrapper
-    transitionName={TRANSITION}
-    transitionEnterTimeout={ENTER}
-    transitionLeaveTimeout={LEAVE}
-  >
+  <Wrapper>
     {
       messages.map(message =>
-        <Snack key={message.timestamp} {...message} onDismiss={() => dismiss(message)} />)
+        <CSSTransition
+          key={message.timestamp}
+          classNames={TRANSITION.classNames}
+          timeout={TRANSITION}
+        >
+          <Snack {...message} onDismiss={() => dismiss(message)} />
+        </CSSTransition>)
     }
   </Wrapper>
 );

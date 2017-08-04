@@ -13,7 +13,7 @@ import Routes from './Routes';
 const Content = styled.div`
   padding: 5em 20px;
   height: 100vh !important;
-  overflowY: auto !important;
+  overflow-y: auto !important;
 `;
 
 const Layout = () =>
