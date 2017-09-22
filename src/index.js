@@ -5,18 +5,20 @@ import { AppContainer } from 'react-hot-loader';
 
 import injectTapEventPlugin from 'react-tap-event-plugin';
 
-import { createStore, applyMiddleware, compose, bindActionCreators } from 'redux';
+import { createStore, applyMiddleware, compose, bindActionCreators, combineReducers} from 'redux';
 import { Provider } from 'react-redux';
 import createHistory from 'history/createBrowserHistory';
 import { ConnectedRouter, routerMiddleware } from 'react-router-redux';
 import createSagaMiddleware from 'redux-saga';
 import formActionSaga from 'redux-form-saga';
-
+import { ApolloProvider } from 'react-apollo';
 import { setRunner } from 'ducks/saga';
 import { log, suc, warn, err } from 'ducks/snackbar';
 import combinedReducer from './reducer';
 import mainFlow from './sagas';
 import Layout from './Layout';
+import apollo from './graphql';
+
 
 const sagaMiddleware = createSagaMiddleware();
 const history = createHistory();
@@ -31,6 +33,7 @@ const devTools = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__;
 if (__DEVELOPMENT__ && __DEVTOOLS__ && devTools) {
   composeEnhancers = devTools;
 }
+
 
 const store = createStore(
   combinedReducer,
@@ -47,14 +50,15 @@ window.logger = bindActionCreators({ log, suc, warn, err }, store.dispatch);
 
 const dest = document.getElementById('root');
 
+
 function render() {
   ReactDOM.render(
     <AppContainer>
-      <Provider store={store}>
+      <ApolloProvider store={store} client={apollo}>
         <ConnectedRouter history={history}>
           <Layout />
         </ConnectedRouter>
-      </Provider>
+      </ApolloProvider>
     </AppContainer>,
     dest
   );
