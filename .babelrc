@@ -9,7 +9,8 @@
       }
     ],
     ["lodash", { "id": ["lodash", "recompose", "semantic-ui-react"] }],
-    "react-hot-loader/babel"
+    "react-hot-loader/babel",
+    "transform-decorators-legacy"
   ],
   "presets": [
     ["es2015", {"modules": false}],
