@@ -2,44 +2,52 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { graphql, gql } from 'react-apollo';
 
-import { Container, Button, Input, Select } from 'semantic-ui-react';
+import { Container, Button } from 'semantic-ui-react';
 import TranslationAtom from '../TranslationAtom';
 import compositeIdToString from '../../utils/compositeId';
 
-
-@graphql(gql`
+export const translationGistQuery = gql`
   query ($id: [Int]) {
     translationgist(id: $id) {
       id, translationatoms {
-        id locale_id content
+        id parent_id locale_id content created_at
       }
     }
     all_locales
-  }`)
-@graphql(gql`
-  mutation ($parent_id: [Int], $locale_id: Int!, $content: String!) {
-    create_translationatom( parent_id: $parent_id, locale_id: $locale_id, content: $content) {
-            translationatom {
-                id content
-            }
-            triumph
-        }
-  }`, { name: 'createTranslationAtom' })
+  }`;
+
+@graphql(translationGistQuery)
 export default class TranslationGist extends React.Component {
   constructor(props) {
     super(props);
 
-    this.onChangeAtom = this.onChangeAtom.bind(this);
-    this.onCreateAtom = this.onCreateAtom.bind(this);
+    this.state = {
+      createdAtoms: [],
+    };
+
+    this.addAtom = this.addAtom.bind(this);
+    this.onAtomCreated = this.onAtomCreated.bind(this);
   }
 
-  onChangeAtom = atom => ({ atom });
-
-  onCreateAtom = () => {
-    this.props.createTranslationAtom({
-      variables: { repoFullName: 'apollographql/apollo-client' },
+  onAtomCreated(id) {
+    const { createdAtoms } = this.state;
+    this.setState({
+      createdAtoms: createdAtoms.filter(e => id !== e),
     });
-  };
+  }
+
+  addAtom = () => {
+    const { createdAtoms } = this.state;
+    const nextId = createdAtoms.length + 1;
+    this.setState(
+      {
+        createdAtoms: [
+          nextId,
+          ...createdAtoms,
+        ],
+      }
+    );
+  }
 
   render() {
     const { data, editable } = this.props;
@@ -48,7 +56,9 @@ export default class TranslationGist extends React.Component {
       return null;
     }
 
-    const atoms = data.translationgist.translationatoms || [];
+    const atoms = data.translationgist.translationatoms.slice().sort(
+      (a, b) => (a.created_at > b.created_at ? 1 : 0)
+    ) || [];
     const locales = data.all_locales || [];
 
     return (<Container>
@@ -56,28 +66,41 @@ export default class TranslationGist extends React.Component {
         {atoms.map(atom => (
           <li key={compositeIdToString(atom.id)}>
             <TranslationAtom
-              atom={atom}
+              id={atom.id}
+              parentId={atom.parent_id}
+              localeId={atom.locale_id}
+              content={atom.content}
               locales={locales}
               editable={editable}
               onSave={this.onChangeAtom}
             />
           </li>
         ))}
+        {this.state.createdAtoms.map(id => (
+          <li key={id}>
+            <TranslationAtom
+              parentId={data.translationgist.id}
+              locales={locales}
+              editable={editable}
+              onAtomCreated={() => this.onAtomCreated(id)}
+            />
+          </li>
+        ))}
+
       </ul>
-      <Button onClick={this.onCreateAtom} />
+      <Button onClick={this.addAtom}>Add</Button>
     </Container>);
   }
 }
 
 TranslationGist.propTypes = {
   // eslint-disable-next-line react/no-unused-prop-types
-  id: PropTypes.array.isRequired,
+  id: PropTypes.array,
   editable: PropTypes.bool.isRequired,
   data: PropTypes.object,
-  createTranslationAtom: PropTypes.func,
 };
 
 TranslationGist.defaultProps = {
+  id: [null, null],
   data: {},
-  createTranslationAtom: () => {},
 };

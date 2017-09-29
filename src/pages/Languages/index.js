@@ -2,82 +2,37 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { graphql, gql } from 'react-apollo';
+import { graphql } from 'react-apollo';
 
-import { Container, Button, Icon } from 'semantic-ui-react';
+import { Container } from 'semantic-ui-react';
 
-import CreateModal from '../../components/CreateLanguageModal';
+import Language from './language';
 import EditModal from '../../components/EditLanguageModal';
 
 import languageListToTree from './utils';
 import compositeIdToString from '../../utils/compositeId';
 
-
 import * as actions from '../../ducks/language';
 
-function Language({ language, create, edit }) {
-  return (<ul>
-    <li>{language.translation}
-
-      <Button.Group size="tiny" basic compact icon>
-        <Button onClick={() => create(language)}>
-          <Icon name="plus" />
-        </Button>
-        <Button onClick={() => edit(language)}>
-          <Icon name="setting" />
-        </Button>
-      </Button.Group>
-
-      <ul>
-        {language.languages.map(lang => (
-          <Language
-            key={compositeIdToString(lang.id)}
-            language={lang}
-            create={create}
-            edit={edit}
-          />
-        ))}
-      </ul>
-    </li>
-  </ul>);
-}
-
-Language.propTypes = {
-  language: PropTypes.object.isRequired,
-  create: PropTypes.func.isRequired,
-  edit: PropTypes.func.isRequired,
-};
+import { languagesQuery } from '../../graphql/language';
 
 
-@graphql(gql`
-  query Languages {
-    languages {
-      id
-      parent_id
-      translation
-      created_at
-      translation_gist_id
-    }
-  }
-`)
+/**
+ * The component represents the tree of languages
+ */
+@graphql(languagesQuery)
 class Languages extends React.Component {
   render() {
-    const { data } = this.props;
-    const { actions: { openModalCreate, openModalEdit, closeModal } } = this.props;
-    const { state } = this.props;
+    const { data, state } = this.props;
+    // Actions wired in by Redux
+    const { actions: { openModalEdit, closeModal } } = this.props;
 
     if (data.loading) {
       return null;
     }
 
+    // convert languages from flat list to tree
     const tree = languageListToTree(data.languages);
-
-    let modal;
-    if (state.language) {
-      modal = <EditModal language={state.language} close={closeModal} />;
-    } else if (state.parent) {
-      modal = <CreateModal parent={state.parent} close={closeModal} />;
-    }
 
     return (
       <Container>
@@ -87,19 +42,33 @@ class Languages extends React.Component {
               key={compositeIdToString(language.id)}
               language={language}
               edit={openModalEdit}
-              create={openModalCreate}
             />
           ))}
         </ul>
-        <span>{modal}</span>
+        <span>{state.language &&
+          // show edit modal is user clicked edit button
+          <EditModal language={state.language} close={closeModal} />
+        }
+        </span>
       </Container>
     );
   }
 }
 
 Languages.propTypes = {
+  /**
+   * Object is create by ApolloClient
+   */
   data: PropTypes.object,
+
+  /**
+   * Actions wired by Redux
+   */
   actions: PropTypes.object.isRequired,
+
+  /**
+   * Redux state
+   */
   state: PropTypes.object.isRequired,
 };
 

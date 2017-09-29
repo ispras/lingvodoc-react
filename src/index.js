@@ -5,11 +5,11 @@ import { AppContainer } from 'react-hot-loader';
 
 import injectTapEventPlugin from 'react-tap-event-plugin';
 
-import { createStore, applyMiddleware, compose, bindActionCreators, combineReducers} from 'redux';
-import { Provider } from 'react-redux';
+import { createStore, applyMiddleware, compose, bindActionCreators } from 'redux';
 import createHistory from 'history/createBrowserHistory';
 import { ConnectedRouter, routerMiddleware } from 'react-router-redux';
 import createSagaMiddleware from 'redux-saga';
+import thunk from 'redux-thunk';
 import formActionSaga from 'redux-form-saga';
 import { ApolloProvider } from 'react-apollo';
 import { setRunner } from 'ducks/saga';
@@ -25,6 +25,7 @@ const history = createHistory();
 const middlewares = [
   routerMiddleware(history),
   sagaMiddleware,
+  thunk,
 ];
 
 let composeEnhancers = compose;

@@ -4,25 +4,38 @@ import { graphql, gql } from 'react-apollo';
 
 import { Button, Input, Select } from 'semantic-ui-react';
 
+import { translationGistQuery } from '../TranslationGist';
+import { languagesQuery } from '../../graphql/language';
+
 @graphql(gql`
-  mutation updateAtom($id: [Int], $content: String!) {
+  mutation updateAtom($id: [Int]!, $content: String!) {
     update_translationatom(id: $id, content: $content) {
       triumph
     }
   }
-`)
+`, { name: 'updateAtomMutation' })
+@graphql(gql`
+  mutation ($parent_id: [Int], $locale_id: Int!, $content: String!) {
+    create_translationatom( parent_id: $parent_id, locale_id: $locale_id, content: $content) {
+      translationatom {
+        content
+      }
+      triumph
+    }
+  }`, { name: 'createAtomMutation' })
 export default class TranslationAtom extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      content: props.atom.content,
-      localeId: props.atom.locale_id,
+      localeId: props.localeId,
+      content: props.content,
     };
 
     this.onChangeContent = this.onChangeContent.bind(this);
     this.onChangeLocale = this.onChangeLocale.bind(this);
-    this.onSave = this.onSave.bind(this);
+    this.createAtom = this.createAtom.bind(this);
+    this.updateAtom = this.updateAtom.bind(this);
   }
 
   onChangeContent(event, data) {
@@ -36,14 +49,45 @@ export default class TranslationAtom extends React.Component {
     }
   }
 
-  onSave(atom) {
-    this.props.mutate({
-      variables: { id: atom.id, content: atom.content },
+  createAtom() {
+    const { parentId, createAtomMutation, onAtomCreated } = this.props;
+    const { localeId, content } = this.state;
+    createAtomMutation({
+      variables: { parent_id: parentId, locale_id: localeId, content },
+      refetchQueries: [{
+        query: translationGistQuery,
+        variables: {
+          id: parentId,
+        },
+      }, {
+        query: languagesQuery,
+      }],
+    });
+    onAtomCreated();
+  }
+
+  updateAtom() {
+    const { id, parentId, updateAtomMutation } = this.props;
+    const { content } = this.state;
+    updateAtomMutation({
+      variables: { id, content },
+      refetchQueries: [{
+        query: translationGistQuery,
+        variables: {
+          id: parentId,
+        },
+      },
+      {
+        query: languagesQuery,
+      }],
     });
   }
 
   render() {
-    const { atom, locales, editable } = this.props;
+    const { id, locales, editable } = this.props;
+
+    // true if atom is to be create
+    const isAtomNew = id.every(n => n == null);
 
     const options = locales.map(
       locale => (
@@ -52,12 +96,6 @@ export default class TranslationAtom extends React.Component {
     );
 
     const locale = locales.find(lc => lc.id === this.state.localeId);
-
-    const updatedAtom = {
-      ...atom,
-      content: this.state.content,
-      locale_id: this.state.localeId,
-    };
 
     return (
       <Input
@@ -71,11 +109,14 @@ export default class TranslationAtom extends React.Component {
         <Select
           defaultValue={locale.shortcut}
           options={options}
-          disabled={!editable}
+          disabled={!editable || !isAtomNew}
           onChange={this.onChangeLocale}
         />
-        {editable &&
-          <Button onClick={() => this.onSave(updatedAtom)}>Save</Button>
+        {editable && isAtomNew &&
+          <Button onClick={() => this.createAtom()}>Save</Button>
+        }
+        {editable && !isAtomNew &&
+          <Button onClick={() => this.updateAtom()}>Update</Button>
         }
       </Input>
     );
@@ -83,12 +124,23 @@ export default class TranslationAtom extends React.Component {
 }
 
 TranslationAtom.propTypes = {
-  atom: PropTypes.object.isRequired,
+  id: PropTypes.array,
+  parentId: PropTypes.array.isRequired,
+  localeId: PropTypes.number,
+  content: PropTypes.string,
   locales: PropTypes.array.isRequired,
-  editable: PropTypes.bool.isRequired,
-  mutate: PropTypes.func,
+  editable: PropTypes.bool,
+  createAtomMutation: PropTypes.func,
+  updateAtomMutation: PropTypes.func,
+  onAtomCreated: PropTypes.func,
 };
 
 TranslationAtom.defaultProps = {
-  mutate: () => {},
+  id: [null, null],
+  localeId: 1,
+  content: '',
+  editable: true,
+  createAtomMutation: () => {},
+  updateAtomMutation: () => {},
+  onAtomCreated: () => {},
 };

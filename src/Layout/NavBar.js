@@ -24,8 +24,8 @@ const NavBar = pure(({ location }) =>
 
     <Dropdown item text="Dashboard">
       <Dropdown.Menu>
-        <Dropdown.Item>English</Dropdown.Item>
-        <Dropdown.Item>Russian</Dropdown.Item>
+        <Dropdown.Item>Dashboard</Dropdown.Item>
+        <Dropdown.Item as={Link} to={'languages'}>Languages</Dropdown.Item>
       </Dropdown.Menu>
     </Dropdown>
 
