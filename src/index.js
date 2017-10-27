@@ -9,7 +9,6 @@ import { createStore, applyMiddleware, compose, bindActionCreators } from 'redux
 import createHistory from 'history/createBrowserHistory';
 import { ConnectedRouter, routerMiddleware } from 'react-router-redux';
 import createSagaMiddleware from 'redux-saga';
-import thunk from 'redux-thunk';
 import formActionSaga from 'redux-form-saga';
 import { ApolloProvider } from 'react-apollo';
 import { setRunner } from 'ducks/saga';
@@ -25,7 +24,6 @@ const history = createHistory();
 const middlewares = [
   routerMiddleware(history),
   sagaMiddleware,
-  thunk,
 ];
 
 let composeEnhancers = compose;
