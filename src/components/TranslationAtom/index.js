@@ -8,14 +8,14 @@ import { translationGistQuery } from '../TranslationGist';
 import { languagesQuery } from '../../graphql/language';
 
 @graphql(gql`
-  mutation updateAtom($id: [Int]!, $content: String!) {
+  mutation updateAtom($id: LingvodocID!, $content: String!) {
     update_translationatom(id: $id, content: $content) {
       triumph
     }
   }
 `, { name: 'updateAtomMutation' })
 @graphql(gql`
-  mutation ($parent_id: [Int], $locale_id: Int!, $content: String!) {
+  mutation ($parent_id: LingvodocID!, $locale_id: Int!, $content: String!) {
     create_translationatom( parent_id: $parent_id, locale_id: $locale_id, content: $content) {
       translationatom {
         content

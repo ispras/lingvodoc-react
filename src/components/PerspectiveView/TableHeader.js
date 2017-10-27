@@ -11,7 +11,7 @@ const TableHeader = ({ fields }) =>
       {
         fields.map(field =>
           <Column
-            key={`${field.client_id}/${field.object_id}`}
+            key={`${field.id[0]}/${field.id[1]}`}
             field={field}
           />
         )

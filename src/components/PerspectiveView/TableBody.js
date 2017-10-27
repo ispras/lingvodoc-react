@@ -10,7 +10,7 @@ const TableBody = ({ entries, columns, mode }) =>
     {
       entries.map(entry =>
         <Row
-          key={`${entry.client_id}/${entry.object_id}`}
+          key={entry.id}
           entry={entry}
           columns={columns}
           mode={mode}

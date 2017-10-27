@@ -7,7 +7,7 @@ import TranslationAtom from '../TranslationAtom';
 import compositeIdToString from '../../utils/compositeId';
 
 export const translationGistQuery = gql`
-  query ($id: [Int]) {
+  query ($id: LingvodocID!) {
     translationgist(id: $id) {
       id, translationatoms {
         id parent_id locale_id content created_at

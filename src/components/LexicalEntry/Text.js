@@ -31,7 +31,7 @@ const Text = (props) => {
       <List>
         {
           entry.map(sub =>
-            <List.Item key={`${sub.client_id}/${sub.object_id}`}>{sub.content} { single(mode) }</List.Item>)
+            <List.Item key={`${sub.id[0]}/${sub.id[1]}`}>{sub.content} { single(mode) }</List.Item>)
         }
         { all(mode) }
       </List>

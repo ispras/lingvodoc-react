@@ -1,5 +1,5 @@
 import React from 'react';
-import { List, Button, Dropdown, Icon } from 'semantic-ui-react';
+import { List, Button, Dropdown } from 'semantic-ui-react';
 
 import LexicalEntry from './index';
 
@@ -17,10 +17,9 @@ function all(mode) {
   }
 }
 
-const SingleSound = ({ content, contains, mode }) =>
+const Singlemarkup = ({ content, contains, mode }) =>
   <Button.Group basic icon size="mini">
     <Button as="a" href={content} content={content.substr(content.lastIndexOf('/') + 1)} icon="download" labelPosition="left" />
-    <Button icon="play" />
     {
       contains && contains.length > 0 &&
         <Dropdown button className="icon" >
@@ -40,7 +39,7 @@ const SingleSound = ({ content, contains, mode }) =>
     }
   </Button.Group>;
 
-const Sound = (props) => {
+const Markup = (props) => {
   const {
     entry,
     mode,
@@ -53,7 +52,7 @@ const Sound = (props) => {
         {
           entry.map(sub =>
             <List.Item key={`${sub.id[0]}/${sub.id[1]}`}>
-              <SingleSound {...sub} mode={mode} />
+              <Singlemarkup {...sub} mode={mode} />
               { single(mode) }
             </List.Item>)
         }
@@ -63,4 +62,4 @@ const Sound = (props) => {
   );
 };
 
-export default Sound;
+export default Markup;

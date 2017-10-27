@@ -13,7 +13,7 @@ export const languagesQuery = gql`
 `;
 
 export const createLanguageMutation = gql`
-  mutation ($parent_id: [Int]!, $translation_atoms: [ObjectVal]!) {
+  mutation ($parent_id: LingvodocID!, $translation_atoms: [ObjectVal]!) {
     create_language(parent_id: $parent_id, translation_atoms: $translation_atoms) {
       language {
         id

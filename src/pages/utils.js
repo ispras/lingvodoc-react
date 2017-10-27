@@ -21,7 +21,6 @@ const mountUnmountCycle = lifecycle({
 const mapActionsToProps = ({ actions = {}, init, teardown, saga }) =>
   (dispatch) => {
     const sagaId = generateId();
-
     return {
       ...bindActionCreators(actions, dispatch),
       onMount(props) {

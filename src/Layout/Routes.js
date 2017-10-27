@@ -11,7 +11,7 @@ const Routes = () =>
   <Switch>
     <Route exact path="/" component={Home} />
     <Route path="/info" component={Info} />
-    <Route path="/languages" component={Languages}/>
+    <Route path="/languages" component={Languages} />
     <Route path="/dictionary/:pcid/:poid/perspective/:cid/:oid/:mode" component={Perspective} />
     <Route path="/dictionary/:pcid/:poid/perspective/:cid/:oid" component={Perspective} />
     <Route component={NotFound} />

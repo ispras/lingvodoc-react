@@ -1,6 +1,6 @@
 import React from 'react';
-import { map } from 'lodash';
 import PropTypes from 'prop-types';
+import { map } from 'lodash';
 import { onlyUpdateForKeys, withHandlers, withState, compose } from 'recompose';
 import { Switch, Route, Redirect, Link } from 'react-router-dom';
 import { Container, Menu, Dropdown } from 'semantic-ui-react';
@@ -10,24 +10,27 @@ import NotFound from 'pages/NotFound';
 
 import './style.scss';
 
+
 const MODES = {
   edit: {
+    entitiesMode: 'all',
     text: 'Edit',
     component: PerspectiveView,
   },
   publish: {
+    entitiesMode: 'all',
     text: 'Publish',
     component: PerspectiveView,
   },
   view: {
+    entitiesMode: 'published',
     text: 'View published',
     component: PerspectiveView,
   },
   contributions: {
+    entitiesMode: 'not_accepted',
     text: 'View contributions',
-    component() {
-      return <h4>No contributions tab yet</h4>;
-    },
+    component: PerspectiveView,
   },
   merge: {
     text: 'Merge suggestions',
@@ -98,12 +101,14 @@ const ModeSelector = onlyUpdateForKeys(['mode', 'baseUrl', 'filter'])(({ mode, b
     </Menu.Menu>
   </Menu>);
 
-const Perspective = onlyUpdateForKeys(['perspective'])(({ perspective, submitFilter }) => {
+const Perspective = (({ perspective, submitFilter }) => {
   const {
     mode,
     page,
     filter,
     baseUrl,
+    cid,
+    oid,
   } = perspective.params;
 
   if (!baseUrl) return null;
@@ -126,10 +131,12 @@ const Perspective = onlyUpdateForKeys(['perspective'])(({ perspective, submitFil
               path={`${baseUrl}/${stub}`}
               render={() =>
                 <info.component
+                  id={[cid, oid]}
+                  mode={mode}
+                  entitiesMode={info.entitiesMode}
                   {...perspective}
                   page={page}
                   className="content"
-                  mode={mode}
                 />
               }
             />
@@ -140,5 +147,10 @@ const Perspective = onlyUpdateForKeys(['perspective'])(({ perspective, submitFil
     </Container>
   );
 });
+
+Perspective.propTypes = {
+  perspective: PropTypes.object.isRequired,
+  submitFilter: PropTypes.func.isRequired,
+};
 
 export default Perspective;

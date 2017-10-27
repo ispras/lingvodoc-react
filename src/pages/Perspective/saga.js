@@ -7,34 +7,35 @@ import { err } from 'ducks/snackbar';
 
 import getParams from './utils';
 
-function* getFields(pers, lazy) {
-  const { params, fields } = yield select(selectors.getPerspective);
-  if (lazy && fields.length > 0 && params.cid === pers.cid && params.oid === pers.oid) {
-    return fields;
-  }
 
-  const { data } = yield call(pers.fields);
-  return data;
-}
+// function* getFields(pers, lazy) {
+//   const { params, fields } = yield select(selectors.getPerspective);
+//   if (lazy && fields.length > 0 && params.cid === pers.cid && params.oid === pers.oid) {
+//     return fields;
+//   }
+//
+//   const { data } = yield call(pers.fields);
+//   return data;
+// }
+//
+// function* getValues(pers, opts) { // No lazy ATM
+//   return yield call(pers.get, opts);
+// }
 
-function* getValues(pers, opts) { // No lazy ATM
-  return yield call(pers.get, opts);
-}
-
-export function* getPerspective({ payload, meta }) {
-  const { oid, cid, pcid, poid, ...rest } = payload;
-  const { lazy = true } = meta;
-  const api = perspective(oid, cid, pcid, poid);
-  const { fields, values } = yield all({
-    fields: getFields(api, lazy),
-    values: getValues(api, rest, lazy),
-  });
-  if (fields && values) {
-    yield put(set({ fields, ...values }));
-  } else {
-    yield put(err('Could not get perspective info'));
-  }
-}
+// export function* getPerspective({ payload, meta }) {
+//   const { oid, cid, pcid, poid, ...rest } = payload;
+//   const { lazy = true } = meta;
+//   const api = perspective(oid, cid, pcid, poid);
+//   const { fields, values } = yield all({
+//     fields: getFields(api, lazy),
+//     values: getValues(api, rest, lazy),
+//   });
+//   if (fields && values) {
+//     yield put(set({ fields, ...values }));
+//   } else {
+//     yield put(err('Could not get perspective info'));
+//   }
+// }
 
 export function* updateForFilter({ payload: filter }) {
   const { params } = yield select(selectors.getPerspective);
@@ -54,7 +55,7 @@ function* locationChanged({ payload }) {
 }
 
 export default function* perspectiveFlow() {
-  yield takeLatest(REQUEST, getPerspective);
+  // yield takeLatest(REQUEST, getPerspective);
   yield takeLatest(SET_FILTER, updateForFilter);
   yield takeLatest(SELECT, updateCurrent);
   yield takeLatest(LOCATION_CHANGE, locationChanged);
