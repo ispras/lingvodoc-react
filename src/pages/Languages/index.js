@@ -10,7 +10,7 @@ import Language from './language';
 import EditModal from '../../components/EditLanguageModal';
 
 import languageListToTree from './utils';
-import compositeIdToString from '../../utils/compositeId';
+import { compositeIdToString } from '../../utils/compositeId';
 
 import * as actions from '../../ducks/language';
 

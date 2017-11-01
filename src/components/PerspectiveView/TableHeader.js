@@ -2,17 +2,21 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { onlyUpdateForPropTypes } from 'recompose';
 import { Table } from 'semantic-ui-react';
+import { sortBy } from 'lodash';
+import { compositeIdToString } from 'utils/compositeId';
+
 
 import Column from './Column';
 
-const TableHeader = ({ fields }) =>
+const TableHeader = ({ columns }) =>
   <Table.Header>
     <Table.Row>
       {
-        fields.map(field =>
+        sortBy(columns.filter(column => column.self_id == null), column => column.position).map(column =>
           <Column
-            key={`${field.id[0]}/${field.id[1]}`}
-            field={field}
+            key={compositeIdToString(column.column_id)}
+            field={column}
+            fields={columns}
           />
         )
       }
@@ -20,7 +24,7 @@ const TableHeader = ({ fields }) =>
   </Table.Header>;
 
 TableHeader.propTypes = {
-  fields: PropTypes.array.isRequired,
+  columns: PropTypes.array.isRequired,
 };
 
 export default onlyUpdateForPropTypes(TableHeader);

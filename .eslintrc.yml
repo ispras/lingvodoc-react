@@ -23,6 +23,9 @@ settings:
     webpack:
       config: webpack/webpack.dev.js
 rules:
+  max-len:
+    - warn
+    - 120
   comma-dangle:
     - warn
     - always-multiline
@@ -35,3 +38,10 @@ rules:
   react/forbid-prop-types: 'off'
 
   jsx-a11y/href-no-hash: 'off'
+
+  arrow-parens:
+    - warn
+    - as-needed
+    - requireForBlockBody: true
+  
+

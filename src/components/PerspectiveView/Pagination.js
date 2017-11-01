@@ -17,24 +17,44 @@ const Pager = styled(Menu)`
   }
 `;
 
-const Pagination = ({ current, total, to }) =>
-  <Pager pagination>
+const Pagination = ({ current, total, to }) => {
+  return <Pager size="tiny" pagination>
     <Menu.Item name="Page" />
-    {
-      Range(1, total + 1).map(page =>
-        <Menu.Item
-          key={page}
-          name={page.toString()}
-          active={page === current}
-          as={Link}
-          to={{
-            pathname: to,
-            search: `?page=${page}`,
-          }}
-        />
-      )
-    }
+
+    {current > 1 && (
+      <Menu.Item
+        as={Link}
+        to={{
+          pathname: to,
+          search: `?page=${current - 1}`,
+        }}
+        icon="chevron left"
+      />
+    )}
+    {Range(1, total + 1).map(page => (
+      <Menu.Item
+        key={page}
+        name={page.toString()}
+        active={page === current}
+        as={Link}
+        to={{
+          pathname: to,
+          search: `?page=${page}`,
+        }}
+      />
+    ))}
+    {current < (total) && (
+      <Menu.Item
+        as={Link}
+        to={{
+          pathname: to,
+          search: `?page=${current + 1}`,
+        }}
+        icon="chevron right"
+      />
+    )}
   </Pager>;
+};
 
 Pagination.propTypes = {
   current: PropTypes.number.isRequired,
@@ -42,10 +62,4 @@ Pagination.propTypes = {
   to: PropTypes.string.isRequired,
 };
 
-export default compose(
-  branch(
-    ({ total }) => total < 2,
-    renderNothing
-  ),
-  onlyUpdateForPropTypes
-)(Pagination);
+export default compose(branch(({ total }) => total < 2, renderNothing), onlyUpdateForPropTypes)(Pagination);

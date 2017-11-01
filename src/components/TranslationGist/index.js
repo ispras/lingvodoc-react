@@ -4,7 +4,7 @@ import { graphql, gql } from 'react-apollo';
 
 import { Container, Button } from 'semantic-ui-react';
 import TranslationAtom from '../TranslationAtom';
-import compositeIdToString from '../../utils/compositeId';
+import { compositeIdToString } from '../../utils/compositeId';
 
 export const translationGistQuery = gql`
   query ($id: LingvodocID!) {

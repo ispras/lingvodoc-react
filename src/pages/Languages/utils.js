@@ -1,4 +1,4 @@
-import compositeIdToString from '../../utils/compositeId';
+import { compositeIdToString } from 'utils/compositeId';
 
 export default function languageListToTree(languages) {
   const hashTable = Object.create(null);

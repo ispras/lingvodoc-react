@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { graphql, gql } from 'react-apollo';
 import { Button, Modal, Dropdown } from 'semantic-ui-react';
-import compositeIdToString from '../../utils/compositeId';
+import { compositeIdToString } from '../../utils/compositeId';
 
 import TranslationGist from '../TranslationGist';
 

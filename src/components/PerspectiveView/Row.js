@@ -2,23 +2,24 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { onlyUpdateForPropTypes } from 'recompose';
 import { Table } from 'semantic-ui-react';
+import { sortBy } from 'lodash';
+import { compositeIdToString } from 'utils/compositeId';
 
-import LexicalEntry from 'components/LexicalEntry';
+import Cell from './Cell';
 
-const Row = ({ entry, columns, mode }) =>
+const Row = ({ entry, columns, mode }) => (
   <Table.Row>
-    {
-      columns.map(({ key, dataType }) =>
-        <LexicalEntry
-          key={key}
-          as={Table.Cell}
-          mode={mode}
-          dataType={dataType}
-          entry={entry.contains[key]}
-        />
-      )
-    }
-  </Table.Row>;
+    {sortBy(columns.filter(column => column.self_id == null), column => column.position).map(column => (
+      <Cell
+        key={compositeIdToString(column.column_id)}
+        column={column}
+        columns={columns}
+        entities={entry.contains}
+        mode={mode}
+      />
+    ))}
+  </Table.Row>
+);
 
 Row.propTypes = {
   entry: PropTypes.object.isRequired,

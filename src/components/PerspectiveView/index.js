@@ -1,8 +1,16 @@
 import React from 'react';
 import { gql, graphql } from 'react-apollo';
 import PropTypes from 'prop-types';
-import { mapValues, groupBy, isEqual, find, take, drop, toPairs } from 'lodash';
+import {
+  map,
+  groupBy,
+  isEqual,
+  find,
+  take,
+  drop,
+} from 'lodash';
 import { Table, Dimmer, Header, Icon } from 'semantic-ui-react';
+import { compositeIdToString } from 'utils/compositeId';
 
 import TableHeader from './TableHeader';
 import TableBody from './TableBody';
@@ -10,7 +18,7 @@ import Pagination from './Pagination';
 
 const dimmerStyle = { minHeight: '600px' };
 
-const ROWS_PER_PAGE = 20;
+const ROWS_PER_PAGE = 50;
 
 const query = gql`
   query q($id: LingvodocID!, $entitiesMode: String!) {
@@ -67,34 +75,36 @@ const PerspectiveView = ({ className, mode, page, data }) => {
 
   const { all_fields, perspective: { entities, columns } } = data;
 
-  // group entities by entry id, then group entities by field
-  const entries = toPairs(
-    mapValues(groupBy(entities, e => `${e.parent_id[0]}/${e.parent_id[1]}`), v =>
-      groupBy(v, e => `${e.field_id[0]}/${e.field_id[1]}`)
-    )
-  ).map(e => ({
-    id: e[0],
-    contains: e[1],
-  }));
+  // group entities by entry id
+  const entries = map(
+    groupBy(entities, e => compositeIdToString(e.parent_id)),
+    (contains, id) => ({ id, contains }),
+  );
+
+  // get requested page
+  const pageEntries = take(
+    drop(entries, ROWS_PER_PAGE * (page - 1)),
+    ROWS_PER_PAGE,
+  );
 
   const entriesTotal = entries.length;
-  //
-  const pageEntries = take(drop(entries, ROWS_PER_PAGE * (page - 1)), ROWS_PER_PAGE);
 
-  const fields = columns.map(column => find(all_fields, f => isEqual(column.field_id, f.id)));
-
-  const fcolumns = fields.map(v => ({
-    key: `${v.id[0]}/${v.id[1]}`,
-    dataType: v.data_type,
-  }));
+  const fields = columns.map((column) => {
+    const field = find(all_fields, f => isEqual(column.field_id, f.id));
+    return { ...field, self_id: column.self_id, column_id: column.id, position: column.position };
+  });
 
   return (
     <div>
       <Table celled padded className={className}>
-        <TableHeader fields={fields} />
-        <TableBody entries={pageEntries} columns={fcolumns} mode={mode} />
+        <TableHeader columns={fields} />
+        <TableBody entries={pageEntries} columns={fields} mode={mode} />
       </Table>
-      <Pagination current={page} total={Math.floor(entriesTotal / ROWS_PER_PAGE) + 1} to={mode} />
+      <Pagination
+        current={page}
+        total={Math.floor(entriesTotal / ROWS_PER_PAGE) + 1}
+        to={mode}
+      />
     </div>
   );
 };
@@ -107,4 +117,6 @@ PerspectiveView.propTypes = {
   data: PropTypes.object.isRequired,
 };
 
-export default graphql(query)(PerspectiveView);
+export default graphql(query, {
+  options: { notifyOnNetworkStatusChange: true },
+})(PerspectiveView);

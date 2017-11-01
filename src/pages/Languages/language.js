@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { graphql, compose } from 'react-apollo';
 import { Dropdown } from 'semantic-ui-react';
-import compositeIdToString from '../../utils/compositeId';
+import { compositeIdToString } from '../../utils/compositeId';
 
 import { languagesQuery, createLanguageMutation } from '../../graphql/language';
 

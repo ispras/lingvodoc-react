@@ -13,3 +13,56 @@
   font-family: "GentiumPlusW", sans-serif !important;
   font-size: 1.2em;
 }
+
+
+.entity {
+  ul {
+      list-style-type: none;
+      background: url(../images/vline.png) repeat-y;
+      margin: 0;
+      padding: 0;
+      ul {
+          list-style-type: none;
+          background: url(../images/vline.png) repeat-y;
+          margin: 0;
+          padding: 0;
+          margin-left: 10px;
+      }
+      li {
+          margin: 0;
+          padding: 0 12px;
+          line-height: 20px;
+          background: url(../images/node.png) no-repeat;
+          color: #333;
+      }
+      li.last {
+          background: #ffffff url(../images/lastnode.png) no-repeat;
+      }
+  }
+}
+
+.entityHeader {
+  ul {
+      list-style-type: none;
+      background: url(../images/vline.png) repeat-y;
+      margin: 0;
+      padding: 0;
+      ul {
+          list-style-type: none;
+          background: url(../images/vline.png) repeat-y;
+          margin: 0;
+          padding: 0;
+          margin-left: 10px;
+      }
+      li {
+          margin: 0;
+          padding: 0 12px;
+          line-height: 20px;
+          background: url(../images/node.png) no-repeat;
+          color: #333;
+      }
+      li.last {
+          background: #F9FAFB url(../images/lastnode.png) no-repeat;
+      }
+  }
+}

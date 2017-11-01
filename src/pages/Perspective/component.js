@@ -4,12 +4,13 @@ import { map } from 'lodash';
 import { onlyUpdateForKeys, withHandlers, withState, compose } from 'recompose';
 import { Switch, Route, Redirect, Link } from 'react-router-dom';
 import { Container, Menu, Dropdown } from 'semantic-ui-react';
-
+import styled from 'styled-components';
 import PerspectiveView from 'components/PerspectiveView';
 import NotFound from 'pages/NotFound';
 
 import './style.scss';
 
+const TableContainer = styled(Container)`overflow-x: scroll;`;
 
 const MODES = {
   edit: {
@@ -61,10 +62,10 @@ const handlers = compose(
         props.submitFilter(props.value);
       };
     },
-  })
+  }),
 );
 
-const Filter = handlers(({ value, onChange, onSubmit }) =>
+const Filter = handlers(({ value, onChange, onSubmit }) => (
   <div className="ui right aligned category search item">
     <form className="ui transparent icon input" onSubmit={onSubmit}>
       <input type="text" placeholder="Filter" value={value} onChange={onChange} />
@@ -73,80 +74,57 @@ const Filter = handlers(({ value, onChange, onSubmit }) =>
       </button>
     </form>
   </div>
-);
+));
 
-const ModeSelector = onlyUpdateForKeys(['mode', 'baseUrl', 'filter'])(({ mode, baseUrl, filter, submitFilter }) =>
+const ModeSelector = onlyUpdateForKeys(['mode', 'baseUrl', 'filter'])(({ mode, baseUrl, filter, submitFilter }) => (
   <Menu tabular>
-    {
-      map(MODES, (info, stub) =>
-        <Menu.Item key={stub} as={Link} to={`${baseUrl}/${stub}`} active={mode === stub}>
-          {info.text}
-        </Menu.Item>
-      )
-    }
+    {map(MODES, (info, stub) => (
+      <Menu.Item key={stub} as={Link} to={`${baseUrl}/${stub}`} active={mode === stub}>
+        {info.text}
+      </Menu.Item>
+    ))}
     <Dropdown item text="Tools">
-      <Dropdown.Menu>
-        {
-          map(TOOLS, (info, stub) =>
-            <Dropdown.Item key={stub}>
-              {info.text}
-            </Dropdown.Item>
-          )
-        }
-      </Dropdown.Menu>
+      <Dropdown.Menu>{map(TOOLS, (info, stub) => <Dropdown.Item key={stub}>{info.text}</Dropdown.Item>)}</Dropdown.Menu>
     </Dropdown>
 
     <Menu.Menu position="right">
       <Filter filter={filter} submitFilter={submitFilter} />
     </Menu.Menu>
-  </Menu>);
+  </Menu>
+));
 
-const Perspective = (({ perspective, submitFilter }) => {
-  const {
-    mode,
-    page,
-    filter,
-    baseUrl,
-    cid,
-    oid,
-  } = perspective.params;
+const Perspective = ({ perspective, submitFilter }) => {
+  const { mode, page, filter, baseUrl, cid, oid } = perspective.params;
 
   if (!baseUrl) return null;
 
   return (
-    <Container fluid className="perspective">
+    <TableContainer fluid className="perspective">
       <h4>{baseUrl}</h4>
-      <ModeSelector
-        mode={mode}
-        baseUrl={baseUrl}
-        filter={filter}
-        submitFilter={submitFilter}
-      />
+      <ModeSelector mode={mode} baseUrl={baseUrl} filter={filter} submitFilter={submitFilter} />
       <Switch>
         <Redirect exact from={baseUrl} to={`${baseUrl}/view`} />
-        {
-          map(MODES, (info, stub) =>
-            <Route
-              key={stub}
-              path={`${baseUrl}/${stub}`}
-              render={() =>
-                <info.component
-                  id={[cid, oid]}
-                  mode={mode}
-                  entitiesMode={info.entitiesMode}
-                  {...perspective}
-                  page={page}
-                  className="content"
-                />
-              }
-            />
-          )
-        }
+        {map(MODES, (info, stub) => (
+          <Route
+            key={stub}
+            path={`${baseUrl}/${stub}`}
+            render={() => (
+              <info.component
+                id={[cid, oid]}
+                mode={mode}
+                entitiesMode={info.entitiesMode}
+                {...perspective}
+                page={page}
+                className="content"
+              />
+            )}
+          />
+        ))}
         <Route component={NotFound} />
       </Switch>
-    </Container>
+    </TableContainer>
   );
-});
+};
 
 Perspective.propTypes = {
   perspective: PropTypes.object.isRequired,
