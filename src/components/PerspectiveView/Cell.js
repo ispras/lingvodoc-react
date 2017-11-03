@@ -6,24 +6,28 @@ import Entities from 'components/LexicalEntry';
 import 'styles/main.scss';
 
 const Cell = (props) => {
-  const { entities, column, columns, mode } = props;
+  const { perspectiveId, entry, column, columns, mode, entitiesMode } = props;
   return (
     <Table.Cell className="entity gentium">
       <Entities
+        perspectiveId={perspectiveId}
         column={column}
         columns={columns}
-        entities={entities}
+        entry={entry}
         mode={mode}
+        entitiesMode={entitiesMode}
       />
     </Table.Cell>
   );
 };
 
 Cell.propTypes = {
-  entities: PropTypes.array.isRequired,
+  perspectiveId: PropTypes.array.isRequired,
+  entry: PropTypes.object.isRequired,
   column: PropTypes.object.isRequired,
   columns: PropTypes.array.isRequired,
   mode: PropTypes.string.isRequired,
+  entitiesMode: PropTypes.string.isRequired,
 };
 
 export default pure(Cell);

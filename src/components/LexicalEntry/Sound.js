@@ -28,7 +28,7 @@ function content1(c) {
 }
 
 const Sound = (props) => {
-  const { column, columns, entity, entities, mode, as: Component = 'li', className = '' } = props;
+  const { perspectiveId, column, columns, entity, entry, mode, entitiesMode, as: Component = 'li', className = '' } = props;
   const subColumn = find(columns, c => isEqual(c.self_id, column.column_id));
   const content = entity.content;
 
@@ -37,11 +37,19 @@ const Sound = (props) => {
       <Button.Group basic icon size="mini">
         <Button as="a" href={content} icon="download" />
         <Popup trigger={<Button content={content1(content)} />} content={content} />
-
         <Button icon="play" />
       </Button.Group>
 
-      {subColumn && <Entities column={subColumn} columns={columns} entities={entities} mode={mode} />}
+      {subColumn && (
+        <Entities
+          perspectiveId={perspectiveId}
+          column={subColumn}
+          columns={columns}
+          entry={entry}
+          mode={mode}
+          entitiesMode={entitiesMode}
+        />
+      )}
     </Component>
   );
 };
@@ -49,11 +57,24 @@ const Sound = (props) => {
 Sound.propTypes = {
   column: PropTypes.object.isRequired,
   columns: PropTypes.array.isRequired,
+  entry: PropTypes.object.isRequired,
   entity: PropTypes.object.isRequired,
-  entities: PropTypes.array.isRequired,
   mode: PropTypes.string.isRequired,
   as: PropTypes.string,
   className: PropTypes.string,
+};
+
+Sound.Edit = () => <input type="file" multiple="false" onChange={e => this.props.onSave(e.target.files[0])} />;
+
+
+Sound.Edit.propTypes = {
+  onSave: PropTypes.func,
+  onCancel: PropTypes.func,
+};
+
+Sound.Edit.defaultProps = {
+  onSave: () => {},
+  onCancel: () => {},
 };
 
 export default Sound;

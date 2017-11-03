@@ -36,6 +36,7 @@ rules:
   react/jsx-filename-extension: 'off'
   react/jsx-wrap-multilines: 'off'
   react/forbid-prop-types: 'off'
+  react/no-multi-comp: 'off'
 
   jsx-a11y/href-no-hash: 'off'
 

@@ -74,6 +74,7 @@
     "react-transition-group": "^2.2.0",
     "graphql": "^0.9.3",
     "apollo-client": "^1.9.3",
+    "apollo-upload-client": "^5.1.1",
     "react-apollo": "^1.4.16",
     "recompose": "^0.24.0",
     "redux": "^3.7.2",

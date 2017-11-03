@@ -1,16 +1,12 @@
 import React from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import { gql, graphql } from 'react-apollo';
 import PropTypes from 'prop-types';
-import {
-  map,
-  groupBy,
-  isEqual,
-  find,
-  take,
-  drop,
-} from 'lodash';
+import { isEqual, find, filter, take, drop } from 'lodash';
 import { Table, Dimmer, Header, Icon } from 'semantic-ui-react';
-import { compositeIdToString } from 'utils/compositeId';
+
+import { err } from 'ducks/snackbar';
 
 import TableHeader from './TableHeader';
 import TableBody from './TableBody';
@@ -20,7 +16,7 @@ const dimmerStyle = { minHeight: '600px' };
 
 const ROWS_PER_PAGE = 50;
 
-const query = gql`
+export const query = gql`
   query q($id: LingvodocID!, $entitiesMode: String!) {
     perspective(id: $id) {
       id
@@ -35,6 +31,10 @@ const query = gql`
         parent_id
         self_id
         position
+      }
+      lexical_entries {
+        id
+        created_at
       }
       entities(mode: $entitiesMode) {
         id
@@ -58,7 +58,7 @@ const query = gql`
   }
 `;
 
-const PerspectiveView = ({ className, mode, page, data }) => {
+const PerspectiveView = ({ id, className, mode, entitiesMode, page, data }) => {
   const { loading } = data;
 
   if (loading) {
@@ -73,22 +73,25 @@ const PerspectiveView = ({ className, mode, page, data }) => {
     );
   }
 
-  const { all_fields, perspective: { entities, columns } } = data;
+  const { all_fields, perspective: { lexical_entries, entities, columns } } = data;
 
-  // group entities by entry id
-  const entries = map(
-    groupBy(entities, e => compositeIdToString(e.parent_id)),
-    (contains, id) => ({ id, contains }),
-  );
+  const entries = lexical_entries.map(e => ({
+    ...e,
+    contains: filter(entities, entity => isEqual(entity.parent_id, e.id)),
+  }));
 
   // get requested page
-  const pageEntries = take(
-    drop(entries, ROWS_PER_PAGE * (page - 1)),
-    ROWS_PER_PAGE,
-  );
+  const pageEntries = take(drop(entries, ROWS_PER_PAGE * (page - 1)), ROWS_PER_PAGE);
 
   const entriesTotal = entries.length;
 
+  // join fields and columns
+  // {
+  //   column_id = column.id
+  //   position = column.position
+  //   self_id = column.self_id
+  //   ...field
+  // }
   const fields = columns.map((column) => {
     const field = find(all_fields, f => isEqual(column.field_id, f.id));
     return { ...field, self_id: column.self_id, column_id: column.id, position: column.position };
@@ -98,22 +101,19 @@ const PerspectiveView = ({ className, mode, page, data }) => {
     <div>
       <Table celled padded className={className}>
         <TableHeader columns={fields} />
-        <TableBody entries={pageEntries} columns={fields} mode={mode} />
+        <TableBody perspectiveId={id} entitiesMode={entitiesMode} entries={pageEntries} columns={fields} mode={mode} />
       </Table>
-      <Pagination
-        current={page}
-        total={Math.floor(entriesTotal / ROWS_PER_PAGE) + 1}
-        to={mode}
-      />
+      <Pagination current={page} total={Math.floor(entriesTotal / ROWS_PER_PAGE) + 1} to={mode} />
     </div>
   );
 };
 
 PerspectiveView.propTypes = {
+  id: PropTypes.array.isRequired,
   className: PropTypes.string.isRequired,
   page: PropTypes.number.isRequired,
   mode: PropTypes.string.isRequired,
-  entitiesMode: PropTypes.string.isRequired, // eslint-disable-line
+  entitiesMode: PropTypes.string.isRequired,
   data: PropTypes.object.isRequired,
 };
 
