@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { find, isEqual } from 'lodash';
-import { compositeIdToString } from 'utils/compositeId';
 import { Button, Input } from 'semantic-ui-react';
 
 import Entities from './index';
@@ -49,8 +48,8 @@ class Text extends React.Component {
       entry,
       mode,
       entitiesMode,
-      as: Component = 'li',
-      className = '',
+      as: Component,
+      className,
     } = this.props;
 
     const subColumn = find(columns, c => isEqual(c.self_id, column.column_id));
@@ -84,6 +83,12 @@ Text.propTypes = {
   as: PropTypes.string,
   className: PropTypes.string,
 };
+
+Text.defaultProps = {
+  as: 'li',
+  className: '',
+};
+
 
 Text.Edit = class Edit extends React.Component {
   constructor(props) {

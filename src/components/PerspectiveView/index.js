@@ -1,12 +1,8 @@
 import React from 'react';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
 import { gql, graphql } from 'react-apollo';
 import PropTypes from 'prop-types';
 import { isEqual, find, filter, take, drop } from 'lodash';
 import { Table, Dimmer, Header, Icon } from 'semantic-ui-react';
-
-import { err } from 'ducks/snackbar';
 
 import TableHeader from './TableHeader';
 import TableBody from './TableBody';

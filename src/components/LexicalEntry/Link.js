@@ -1,12 +1,8 @@
 import React from 'react';
 import { Button } from 'semantic-ui-react';
 
-
 const Link = (props) => {
-  const {
-    entry,
-    as: Component = 'div',
-  } = props;
+  const { entry, as: Component = 'div' } = props;
 
   return (
     <Component className="gentium">

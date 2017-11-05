@@ -1,23 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import { Button, Popup } from 'semantic-ui-react';
 import { find, isEqual } from 'lodash';
-
+import { playSound } from 'ducks/lexicalEntry';
 import Entities from './index';
 
-function single(mode) {
-  switch (mode) {
-    default:
-      return null;
-  }
-}
-
-function all(mode) {
-  switch (mode) {
-    default:
-      return null;
-  }
-}
 
 function content1(c) {
   const MAX_CONTENT_LENGTH = 12;
@@ -28,16 +17,26 @@ function content1(c) {
 }
 
 const Sound = (props) => {
-  const { perspectiveId, column, columns, entity, entry, mode, entitiesMode, as: Component = 'li', className = '' } = props;
+  const {
+    perspectiveId,
+    column,
+    columns,
+    entity: { content },
+    entry,
+    mode,
+    entitiesMode,
+    as: Component = 'li',
+    className = '',
+    actions,
+  } = props;
   const subColumn = find(columns, c => isEqual(c.self_id, column.column_id));
-  const content = entity.content;
 
   return (
     <Component className={className}>
       <Button.Group basic icon size="mini">
         <Button as="a" href={content} icon="download" />
         <Popup trigger={<Button content={content1(content)} />} content={content} />
-        <Button icon="play" />
+        <Button icon="play" onClick={() => actions.playSound(content)} />
       </Button.Group>
 
       {subColumn && (
@@ -55,17 +54,24 @@ const Sound = (props) => {
 };
 
 Sound.propTypes = {
+  perspectiveId: PropTypes.array.isRequired,
   column: PropTypes.object.isRequired,
   columns: PropTypes.array.isRequired,
   entry: PropTypes.object.isRequired,
   entity: PropTypes.object.isRequired,
   mode: PropTypes.string.isRequired,
+  entitiesMode: PropTypes.string.isRequired,
   as: PropTypes.string,
   className: PropTypes.string,
+  actions: PropTypes.object.isRequired,
+};
+
+Sound.defaultProps = {
+  as: 'li',
+  className: '',
 };
 
 Sound.Edit = () => <input type="file" multiple="false" onChange={e => this.props.onSave(e.target.files[0])} />;
-
 
 Sound.Edit.propTypes = {
   onSave: PropTypes.func,
@@ -77,4 +83,12 @@ Sound.Edit.defaultProps = {
   onCancel: () => {},
 };
 
-export default Sound;
+const mapStateToProps = state => ({
+  ...state,
+});
+
+const mapDispatchToProps = dispatch => ({
+  actions: bindActionCreators({ playSound }, dispatch),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Sound);

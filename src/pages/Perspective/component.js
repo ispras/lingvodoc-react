@@ -7,6 +7,7 @@ import { Container, Menu, Dropdown } from 'semantic-ui-react';
 import styled from 'styled-components';
 import PerspectiveView from 'components/PerspectiveView';
 import NotFound from 'pages/NotFound';
+import SimplePlayer from 'components/SimplePlayer';
 
 import './style.scss';
 
@@ -62,7 +63,7 @@ const handlers = compose(
         props.submitFilter(props.value);
       };
     },
-  }),
+  })
 );
 
 const Filter = handlers(({ value, onChange, onSubmit }) => (
@@ -76,7 +77,9 @@ const Filter = handlers(({ value, onChange, onSubmit }) => (
   </div>
 ));
 
-const ModeSelector = onlyUpdateForKeys(['mode', 'baseUrl', 'filter'])(({ mode, baseUrl, filter, submitFilter }) => (
+const ModeSelector = onlyUpdateForKeys(['mode', 'baseUrl', 'filter'])(({
+  mode, baseUrl, filter, submitFilter,
+}) => (
   <Menu tabular>
     {map(MODES, (info, stub) => (
       <Menu.Item key={stub} as={Link} to={`${baseUrl}/${stub}`} active={mode === stub}>
@@ -94,12 +97,15 @@ const ModeSelector = onlyUpdateForKeys(['mode', 'baseUrl', 'filter'])(({ mode, b
 ));
 
 const Perspective = ({ perspective, submitFilter }) => {
-  const { mode, page, filter, baseUrl, cid, oid } = perspective.params;
+  const {
+    mode, page, filter, baseUrl, cid, oid,
+  } = perspective.params;
 
   if (!baseUrl) return null;
 
   return (
     <TableContainer fluid className="perspective">
+      <SimplePlayer />
       <h4>{baseUrl}</h4>
       <ModeSelector mode={mode} baseUrl={baseUrl} filter={filter} submitFilter={submitFilter} />
       <Switch>
