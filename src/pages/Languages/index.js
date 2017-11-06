@@ -3,19 +3,14 @@ import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { graphql } from 'react-apollo';
-
 import { Container } from 'semantic-ui-react';
-
+import EditModal from 'components/EditLanguageModal';
+import { languagesQuery } from 'graphql/language';
+import { compositeIdToString } from 'utils/compositeId';
+import * as actions from 'ducks/language';
 import Language from './language';
-import EditModal from '../../components/EditLanguageModal';
 
 import languageListToTree from './utils';
-import { compositeIdToString } from '../../utils/compositeId';
-
-import * as actions from '../../ducks/language';
-
-import { languagesQuery } from '../../graphql/language';
-
 
 /**
  * The component represents the tree of languages
@@ -38,17 +33,14 @@ class Languages extends React.Component {
       <Container>
         <ul>
           {tree.map(language => (
-            <Language
-              key={compositeIdToString(language.id)}
-              language={language}
-              edit={openModalEdit}
-            />
+            <Language key={compositeIdToString(language.id)} language={language} edit={openModalEdit} />
           ))}
         </ul>
-        <span>{state.language &&
-          // show edit modal is user clicked edit button
-          <EditModal language={state.language} close={closeModal} />
-        }
+        <span>
+          {state.language && (
+            // show edit modal is user clicked edit button
+            <EditModal language={state.language} close={closeModal} />
+          )}
         </span>
       </Container>
     );

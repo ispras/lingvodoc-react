@@ -6,44 +6,6 @@ export const SET = '@data/perspective/SET';
 export const SET_FILTER = '@data/perspective/SET_FILTER';
 
 // Reducers
-// function entriesTotal(state = 0, action = {}) {
-//   switch (action.type) {
-//     case SET:
-//       return action.payload.total ? action.payload.total.count : state;
-//     default:
-//       return state;
-//   }
-// }
-
-// function fields(state = [], action = {}) {
-//   switch (action.type) {
-//     case SET:
-//       return action.payload.fields ? action.payload.fields : state;
-//     default:
-//       return state;
-//   }
-// }
-
-// function entries(state = [], action = {}) {
-//   switch (action.type) {
-//     case SET:
-//       return action.payload.entries ? action.payload.entries : state;
-//     default:
-//       return state;
-//   }
-// }
-
-// function loading(state = false, action = {}) {
-//   switch (action.type) {
-//     case REQUEST:
-//       return true;
-//     case SET:
-//       return false;
-//     default:
-//       return state;
-//   }
-// }
-
 function params(state = {}, action = {}) {
   switch (action.type) {
     case REQUEST:
@@ -54,10 +16,6 @@ function params(state = {}, action = {}) {
 }
 
 export default combineReducers({
-  // entriesTotal,
-  // fields,
-  // entries,
-  // loading,
   params,
 });
 

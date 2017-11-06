@@ -1,17 +1,44 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { gql, graphql } from 'react-apollo';
 import { map } from 'lodash';
 import { onlyUpdateForKeys, withHandlers, withState, compose } from 'recompose';
 import { Switch, Route, Redirect, Link } from 'react-router-dom';
-import { Container, Menu, Dropdown } from 'semantic-ui-react';
-import styled from 'styled-components';
+import { Container, Breadcrumb, Menu, Dropdown } from 'semantic-ui-react';
 import PerspectiveView from 'components/PerspectiveView';
+import PlayerModal from 'components/PlayerModal';
 import NotFound from 'pages/NotFound';
-import SimplePlayer from 'components/SimplePlayer';
 
 import './style.scss';
 
-const TableContainer = styled(Container)`overflow-x: scroll;`;
+const query = gql`
+  query q($id: LingvodocID!) {
+    perspective(id: $id) {
+      tree {
+        id
+        translation
+      }
+    }
+  }
+`;
+
+const PerspectivePath = graphql(query)(({ data }) => {
+  if (data.loading) {
+    return null;
+  }
+  const { perspective: { tree } } = data;
+  return (
+    <h3>
+      <Breadcrumb
+        icon="right angle"
+        sections={tree
+          .slice()
+          .reverse()
+          .map(e => ({ key: e.translation, content: e.translation, link: false }))}
+      />
+    </h3>
+  );
+});
 
 const MODES = {
   edit: {
@@ -98,15 +125,14 @@ const ModeSelector = onlyUpdateForKeys(['mode', 'baseUrl', 'filter'])(({
 
 const Perspective = ({ perspective, submitFilter }) => {
   const {
-    mode, page, filter, baseUrl, cid, oid,
+    id, mode, page, filter, baseUrl,
   } = perspective.params;
 
   if (!baseUrl) return null;
 
   return (
-    <TableContainer fluid className="perspective">
-      <SimplePlayer />
-      <h4>{baseUrl}</h4>
+    <Container fluid className="perspective">
+      <PerspectivePath id={id} />
       <ModeSelector mode={mode} baseUrl={baseUrl} filter={filter} submitFilter={submitFilter} />
       <Switch>
         <Redirect exact from={baseUrl} to={`${baseUrl}/view`} />
@@ -115,20 +141,14 @@ const Perspective = ({ perspective, submitFilter }) => {
             key={stub}
             path={`${baseUrl}/${stub}`}
             render={() => (
-              <info.component
-                id={[cid, oid]}
-                mode={mode}
-                entitiesMode={info.entitiesMode}
-                {...perspective}
-                page={page}
-                className="content"
-              />
+              <info.component id={id} mode={mode} entitiesMode={info.entitiesMode} page={page} className="content" />
             )}
           />
         ))}
         <Route component={NotFound} />
       </Switch>
-    </TableContainer>
+      <PlayerModal />
+    </Container>
   );
 };
 

@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Button, Popup } from 'semantic-ui-react';
 import { find, isEqual } from 'lodash';
-import { playSound } from 'ducks/lexicalEntry';
+import { openPlayer } from 'ducks/player';
 import Entities from './index';
 
 
@@ -36,7 +36,7 @@ const Sound = (props) => {
       <Button.Group basic icon size="mini">
         <Button as="a" href={content} icon="download" />
         <Popup trigger={<Button content={content1(content)} />} content={content} />
-        <Button icon="play" onClick={() => actions.playSound(content)} />
+        <Button icon="play" onClick={() => actions.openPlayer(content)} />
       </Button.Group>
 
       {subColumn && (
@@ -88,7 +88,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  actions: bindActionCreators({ playSound }, dispatch),
+  actions: bindActionCreators({ openPlayer }, dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Sound);

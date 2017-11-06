@@ -16,16 +16,17 @@ const Content = styled.div`
   overflow-y: auto !important;
 `;
 
-const Layout = () =>
+const Layout = () => (
   <div>
     <NavBar />
     <Snackbar />
     <Sidebar.Pushable as="div">
+      <TasksSidebar />
       <Sidebar.Pusher as={Content}>
         <Routes />
       </Sidebar.Pusher>
-      <TasksSidebar />
     </Sidebar.Pushable>
-  </div>;
+  </div>
+);
 
 export default Layout;

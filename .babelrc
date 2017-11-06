@@ -14,7 +14,10 @@
     "transform-decorators-legacy"
   ],
   "presets": [
-    ["env", { "targets": { "browsers": ["last 2 Chrome versions"] }, "modules": false }],
+    [
+      "env",
+      { "targets": { "browsers": ["last 2 major versions"] }, "modules": false, "loose": true }
+    ],
     "stage-0",
     "react"
   ],

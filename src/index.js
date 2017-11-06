@@ -18,13 +18,9 @@ import mainFlow from './sagas';
 import Layout from './Layout';
 import apollo from './graphql';
 
-
 const sagaMiddleware = createSagaMiddleware();
 const history = createHistory();
-const middlewares = [
-  routerMiddleware(history),
-  sagaMiddleware,
-];
+const middlewares = [routerMiddleware(history), sagaMiddleware];
 
 let composeEnhancers = compose;
 // eslint-disable-next-line no-underscore-dangle
@@ -33,22 +29,17 @@ if (__DEVELOPMENT__ && __DEVTOOLS__ && devTools) {
   composeEnhancers = devTools;
 }
 
-
-const store = createStore(
-  combinedReducer,
-  composeEnhancers(
-    applyMiddleware(...middlewares),
-  )
-);
+const store = createStore(combinedReducer, composeEnhancers(applyMiddleware(...middlewares)));
 
 sagaMiddleware.run(mainFlow);
 sagaMiddleware.run(formActionSaga);
 store.dispatch(setRunner(sagaMiddleware.run));
 
-window.logger = bindActionCreators({ log, suc, warn, err }, store.dispatch);
+window.logger = bindActionCreators({
+  log, suc, warn, err,
+}, store.dispatch);
 
 const dest = document.getElementById('root');
-
 
 function render() {
   ReactDOM.render(

@@ -5,7 +5,7 @@ import snackbar from './snackbar';
 import data from './data';
 import saga from './saga';
 import language from './language';
-import lexicalEntry from './lexicalEntry';
+import player from './player';
 
 export default {
   locale,
@@ -15,5 +15,5 @@ export default {
   data,
   saga,
   language,
-  lexicalEntry,
+  player,
 };

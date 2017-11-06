@@ -1,6 +1,6 @@
 import React from 'react';
-import { gql, graphql } from 'react-apollo';
 import PropTypes from 'prop-types';
+import { gql, graphql } from 'react-apollo';
 import { isEqual, find, filter, take, drop } from 'lodash';
 import { Table, Dimmer, Header, Icon } from 'semantic-ui-react';
 
@@ -17,10 +17,6 @@ export const query = gql`
     perspective(id: $id) {
       id
       translation
-      tree {
-        id
-        translation
-      }
       columns {
         id
         field_id
@@ -54,7 +50,9 @@ export const query = gql`
   }
 `;
 
-const PerspectiveView = ({ id, className, mode, entitiesMode, page, data }) => {
+const PerspectiveView = ({
+  id, className, mode, entitiesMode, page, data,
+}) => {
   const { loading } = data;
 
   if (loading) {
@@ -90,7 +88,9 @@ const PerspectiveView = ({ id, className, mode, entitiesMode, page, data }) => {
   // }
   const fields = columns.map((column) => {
     const field = find(all_fields, f => isEqual(column.field_id, f.id));
-    return { ...field, self_id: column.self_id, column_id: column.id, position: column.position };
+    return {
+      ...field, self_id: column.self_id, column_id: column.id, position: column.position,
+    };
   });
 
   return (
