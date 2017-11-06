@@ -5,72 +5,56 @@ import { Button, Input } from 'semantic-ui-react';
 
 import Entities from './index';
 
-class Text extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {};
-    this.getContent = this.getContent.bind(this);
-  }
-
-  getContent() {
-    const { entity, mode } = this.props;
-    let control = null;
-    switch (mode) {
-      case 'edit':
-        return (
-          <Button.Group basic icon size="mini">
-            <Button content={entity.content} />
-            <Button icon="remove" />
-          </Button.Group>
-        );
-      case 'publish':
-        control = entity.published ? <Button icon="remove" /> : <Button icon="checkmark" />;
-        return (
-          <Button.Group basic icon size="mini">
-            <Button content={entity.content} />
-            {control}
-          </Button.Group>
-        );
-      case 'view':
-        return entity.content;
-      case 'contributions':
-        return entity.content;
-      default:
-        return null;
-    }
-  }
-
-  render() {
-    const {
-      perspectiveId,
-      column,
-      columns,
-      entry,
-      mode,
-      entitiesMode,
-      as: Component,
-      className,
-    } = this.props;
-
-    const subColumn = find(columns, c => isEqual(c.self_id, column.column_id));
-
-    return (
-      <Component className={className}>
-        {this.getContent()}
-        {subColumn && (
-          <Entities
-            perspectiveId={perspectiveId}
-            column={subColumn}
-            columns={columns}
-            entry={entry}
-            mode={mode}
-            entitiesMode={entitiesMode}
-          />
-        )}
-      </Component>
-    );
+function getContent(entity, mode) {
+  let control = null;
+  switch (mode) {
+    case 'edit':
+      return (
+        <Button.Group basic icon size="mini">
+          <Button content={entity.content} />
+          <Button icon="remove" />
+        </Button.Group>
+      );
+    case 'publish':
+      control = entity.published ? <Button icon="remove" /> : <Button icon="checkmark" />;
+      return (
+        <Button.Group basic icon size="mini">
+          <Button content={entity.content} />
+          {control}
+        </Button.Group>
+      );
+    case 'view':
+      return entity.content;
+    case 'contributions':
+      return entity.content;
+    default:
+      return null;
   }
 }
+
+const Text = (props) => {
+  const {
+    perspectiveId, column, columns, entry, entity, mode, entitiesMode, as: Component, className,
+  } = props;
+
+  const subColumn = find(columns, c => isEqual(c.self_id, column.column_id));
+
+  return (
+    <Component className={className}>
+      {getContent(entity, mode)}
+      {subColumn && (
+        <Entities
+          perspectiveId={perspectiveId}
+          column={subColumn}
+          columns={columns}
+          entry={entry}
+          mode={mode}
+          entitiesMode={entitiesMode}
+        />
+      )}
+    </Component>
+  );
+};
 
 Text.propTypes = {
   perspectiveId: PropTypes.array.isRequired,
@@ -89,8 +73,7 @@ Text.defaultProps = {
   className: '',
 };
 
-
-Text.Edit = class Edit extends React.Component {
+class Edit extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -138,14 +121,16 @@ Text.Edit = class Edit extends React.Component {
   }
 };
 
-Text.Edit.propTypes = {
+Edit.propTypes = {
   onSave: PropTypes.func,
   onCancel: PropTypes.func,
 };
 
-Text.Edit.defaultProps = {
+Edit.defaultProps = {
   onSave: () => {},
   onCancel: () => {},
 };
+
+Text.Edit = Edit;
 
 export default Text;
