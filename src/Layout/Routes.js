@@ -5,6 +5,7 @@ import Home from 'pages/Home';
 import Info from 'pages/Info';
 import Perspective from 'pages/Perspective';
 import Languages from 'pages/Languages';
+import Dashboard from 'pages/Dashboard';
 import NotFound from 'pages/NotFound';
 
 const Routes = () =>
@@ -12,6 +13,7 @@ const Routes = () =>
     <Route exact path="/" component={Home} />
     <Route path="/info" component={Info} />
     <Route path="/languages" component={Languages} />
+    <Route path="/dashboard" component={Dashboard} />
     <Route path="/dictionary/:pcid/:poid/perspective/:cid/:oid/:mode" component={Perspective} />
     <Route path="/dictionary/:pcid/:poid/perspective/:cid/:oid" component={Perspective} />
     <Route component={NotFound} />
