@@ -35,7 +35,7 @@ const Sound = (props) => {
     <Component className={className}>
       <Button.Group basic icon size="mini">
         <Button as="a" href={content} icon="download" />
-        <Popup trigger={<Button content={content1(content)} />} content={content} />
+        <Popup trigger={<Button content={content1(content)} />} />
         <Button icon="play" onClick={() => actions.openPlayer(content)} />
       </Button.Group>
 
@@ -71,7 +71,7 @@ Sound.defaultProps = {
   className: '',
 };
 
-Sound.Edit = () => <input type="file" multiple="false" onChange={e => this.props.onSave(e.target.files[0])} />;
+Sound.Edit = ({ onSave }) => <input type="file" multiple="false" onChange={e => onSave(e.target.files[0])} />;
 
 Sound.Edit.propTypes = {
   onSave: PropTypes.func,

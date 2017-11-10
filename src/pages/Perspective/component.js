@@ -4,7 +4,7 @@ import { gql, graphql } from 'react-apollo';
 import { map } from 'lodash';
 import { onlyUpdateForKeys, withHandlers, withState, compose } from 'recompose';
 import { Switch, Route, Redirect, Link } from 'react-router-dom';
-import { Container, Breadcrumb, Menu, Dropdown } from 'semantic-ui-react';
+import { Container, Header, Breadcrumb, Menu, Dropdown } from 'semantic-ui-react';
 import PerspectiveView from 'components/PerspectiveView';
 import PlayerModal from 'components/PlayerModal';
 import NotFound from 'pages/NotFound';
@@ -28,7 +28,7 @@ const PerspectivePath = graphql(query)(({ data }) => {
   }
   const { perspective: { tree } } = data;
   return (
-    <h3>
+    <Header as="h2">
       <Breadcrumb
         icon="right angle"
         sections={tree
@@ -36,7 +36,7 @@ const PerspectivePath = graphql(query)(({ data }) => {
           .reverse()
           .map(e => ({ key: e.translation, content: e.translation, link: false }))}
       />
-    </h3>
+    </Header>
   );
 });
 

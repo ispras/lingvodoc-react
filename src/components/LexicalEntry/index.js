@@ -15,26 +15,43 @@ import Unknown from './Unknown';
 import Empty from './Empty';
 
 const createEntityMutation = gql`
-mutation createEntity($parent_id: LingvodocID!, $field_id: LingvodocID!, $content: String!) {
-  create_entity(parent_id: $parent_id, field_id: $field_id, content: $content) {
-    triumph
+  mutation createEntity($parent_id: LingvodocID!, $field_id: LingvodocID!, $content: String) {
+    create_entity(parent_id: $parent_id, field_id: $field_id, content: $content) {
+      triumph
+    }
   }
-}
 `;
 
-function getComponent(dataType) {
-  return (
-    {
-      Text,
-      Sound,
-      Markup,
-      Link,
-      'Grouping Tag': GroupingTag,
-    }[dataType] || Unknown
-  );
-}
+const publishEntityMutation = gql`
+  mutation createEntity($parent_id: LingvodocID!, $field_id: LingvodocID!, $content: String) {
+    create_entity(parent_id: $parent_id, field_id: $field_id, content: $content) {
+      triumph
+    }
+  }
+`;
+
+const acceptEntityMutation = gql`
+  mutation createEntity($parent_id: LingvodocID!, $field_id: LingvodocID!, $content: String) {
+    create_entity(parent_id: $parent_id, field_id: $field_id, content: $content) {
+      triumph
+    }
+  }
+`;
+
+const getComponent = dataType => (
+  {
+    Text,
+    Sound,
+    Markup,
+    Link,
+    'Grouping Tag': GroupingTag,
+  }[dataType] || Unknown
+);
 
 
+@graphql(createEntityMutation, { name: 'createEntity' })
+@graphql(publishEntityMutation, { name: 'publishEntity' })
+@graphql(acceptEntityMutation, { name: 'acceptEntity' })
 class Entities extends React.Component {
   constructor(props) {
     super(props);
@@ -45,7 +62,9 @@ class Entities extends React.Component {
   }
 
   onCreateEntity(content) {
-    const { perspectiveId, entry, column, entitiesMode, createEntity } = this.props;
+    const {
+      perspectiveId, entry, column, entitiesMode, createEntity,
+    } = this.props;
 
     createEntity({
       variables: { parent_id: entry.id, field_id: column.id, content },
@@ -64,7 +83,9 @@ class Entities extends React.Component {
   }
 
   render() {
-    const { perspectiveId, entry, column, columns, mode, entitiesMode } = this.props;
+    const {
+      perspectiveId, entry, column, columns, mode, entitiesMode,
+    } = this.props;
     const entities = entry.contains.filter(entity => isEqual(entity.field_id, column.id));
 
     if (column.data_type === 'Link' || column.data_type === 'Grouping Tag') {
@@ -76,31 +97,29 @@ class Entities extends React.Component {
 
     return (
       <ul>
-        {entities.map((entity) => {
-          return (
-            <Component
-              key={compositeIdToString(entity.id)}
-              perspectiveId={perspectiveId}
-              as={'li'}
-              column={column}
-              columns={columns}
-              entry={entry}
-              entity={entity}
-              mode={mode}
-              entitiesMode={entitiesMode}
-            />
-          );
-        })}
+        {entities.map(entity => (
+          <Component
+            key={compositeIdToString(entity.id)}
+            perspectiveId={perspectiveId}
+            as="li"
+            column={column}
+            columns={columns}
+            entry={entry}
+            entity={entity}
+            mode={mode}
+            entitiesMode={entitiesMode}
+          />
+          ))}
         <li className="last">
-          {!this.state.edit &&
-          <Button.Group basic size="mini">
-            <Button icon="plus" onClick={() => this.setState({ edit: true })} />
-          </Button.Group>
-          }
+          {!this.state.edit && (
+            <Button.Group basic size="mini">
+              <Button icon="plus" onClick={() => this.setState({ edit: true })} />
+            </Button.Group>
+          )}
 
-          {this.state.edit &&
-          <Component.Edit onSave={this.onCreateEntity} onCancel={() => this.setState({ edit: false })} />
-          }
+          {this.state.edit && (
+            <Component.Edit onSave={this.onCreateEntity} onCancel={() => this.setState({ edit: false })} />
+          )}
         </li>
       </ul>
     );
@@ -117,4 +136,4 @@ Entities.propTypes = {
   createEntity: PropTypes.func.isRequired,
 };
 
-export default graphql(createEntityMutation, { name: 'createEntity' })(Entities);
+export default Entities;

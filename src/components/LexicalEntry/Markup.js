@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Button } from 'semantic-ui-react';
+import { Button, Popup } from 'semantic-ui-react';
 import { find, isEqual } from 'lodash';
 
 import Entities from './index';
@@ -15,7 +15,8 @@ const Markup = (props) => {
     <Component className={className}>
       <Button.Group basic icon size="mini">
         <Button as="a" href={content} icon="download" />
-        <Button content={content.substr(content.lastIndexOf('/') + 1)} />
+        <Popup trigger={<Button content={content1(content)} />} />
+        <Button icon="play" onClick={() => actions.openPlayer(content)} />
       </Button.Group>
       {subColumn && <Entities column={subColumn} columns={columns} entry={entry} mode={mode} />}
     </Component>
@@ -37,7 +38,7 @@ Markup.defaultProps = {
   className: '',
 };
 
-Markup.Edit = () => <input type="file" multiple="false" onChange={e => this.props.onSave(e.target.files[0])} />;
+Markup.Edit = ({ onSave }) => <input type="file" multiple="false" onChange={e => onSave(e.target.files[0])} />;
 
 Markup.Edit.propTypes = {
   onSave: PropTypes.func,
