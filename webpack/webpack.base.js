@@ -21,6 +21,7 @@ module.exports = {
     alias: {
       config: `${config.srcPath}/config/${process.env.REACT_WEBPACK_ENV}`,
       wavesurfer: require.resolve('wavesurfer.js'),
+      chroma: require.resolve('chroma-js'),
     },
     modules: ['src', 'node_modules', 'vendor'],
   },
@@ -50,7 +51,7 @@ module.exports = {
     new webpack.LoaderOptionsPlugin(_.loadersOptions()),
     new webpack.ProvidePlugin({
       WaveSurfer: 'wavesurfer.js',
-      chroma: 'chroma-js',
+      chroma: 'chroma',
     }),
   ],
   target: _.target,

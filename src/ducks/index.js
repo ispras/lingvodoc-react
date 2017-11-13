@@ -6,6 +6,7 @@ import data from './data';
 import saga from './saga';
 import language from './language';
 import player from './player';
+import markup from './markup';
 
 export default {
   locale,
@@ -16,4 +17,5 @@ export default {
   saga,
   language,
   player,
+  markup,
 };

@@ -4,9 +4,7 @@ import Wavesurfer from 'react-wavesurfer';
 
 // FIXME:
 // Find a better way to import wavesurfer plugins and dependencies
-require('wavesurfer.js');
 require('wavesurfer.spectrogram.js');
-require('chroma.min.js');
 
 
 class Spectrogram extends React.Component {

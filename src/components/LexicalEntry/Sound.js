@@ -21,7 +21,7 @@ const Sound = (props) => {
     perspectiveId,
     column,
     columns,
-    entity: { content },
+    entity,
     entry,
     mode,
     entitiesMode,
@@ -30,13 +30,14 @@ const Sound = (props) => {
     actions,
   } = props;
   const subColumn = find(columns, c => isEqual(c.self_id, column.column_id));
+  const { content } = entity;
 
   return (
     <Component className={className}>
       <Button.Group basic icon size="mini">
         <Button as="a" href={content} icon="download" />
         <Popup trigger={<Button content={content1(content)} />} />
-        <Button icon="play" onClick={() => actions.openPlayer(content)} />
+        <Button icon="play" onClick={() => actions.openPlayer(entity)} />
       </Button.Group>
 
       {subColumn && (
@@ -47,6 +48,7 @@ const Sound = (props) => {
           entry={entry}
           mode={mode}
           entitiesMode={entitiesMode}
+          parentEntity={entity}
         />
       )}
     </Component>
