@@ -28,7 +28,7 @@ const Markup = (props) => {
       <Button.Group basic icon size="mini">
         <Button as="a" href={content} icon="download" />
         <Popup trigger={<Button content={content1(content)} />} />
-        <Button icon="play" onClick={() => actions.openViewer(parentEntity, entity)} />
+        <Button icon="table" onClick={() => actions.openViewer(parentEntity, entity)} />
       </Button.Group>
       {subColumn && <Entities column={subColumn} columns={columns} entry={entry} parentEntity={entity} mode={mode} />}
     </Component>

@@ -22,7 +22,7 @@ const visible = (state = false, action) => {
   }
 };
 
-const play = (state = '', action) => {
+const play = (state = { content: '' }, action) => {
   switch (action.type) {
     case OPEN_PLAYER:
       return action.payload;

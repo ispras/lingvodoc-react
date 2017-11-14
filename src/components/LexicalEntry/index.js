@@ -12,7 +12,6 @@ import Markup from './Markup';
 import Link from './Link';
 import GroupingTag from './GroupingTag';
 import Unknown from './Unknown';
-import Empty from './Empty';
 
 const createEntityMutation = gql`
   mutation createEntity($parent_id: LingvodocID!, $field_id: LingvodocID!, $content: String) {
@@ -23,16 +22,24 @@ const createEntityMutation = gql`
 `;
 
 const publishEntityMutation = gql`
-  mutation createEntity($parent_id: LingvodocID!, $field_id: LingvodocID!, $content: String) {
-    create_entity(parent_id: $parent_id, field_id: $field_id, content: $content) {
+  mutation publishEntity($id: LingvodocID!, $published: Boolean!) {
+    update_entity(id: $id, published: $published) {
       triumph
     }
   }
 `;
 
 const acceptEntityMutation = gql`
-  mutation createEntity($parent_id: LingvodocID!, $field_id: LingvodocID!, $content: String) {
-    create_entity(parent_id: $parent_id, field_id: $field_id, content: $content) {
+  mutation acceptEntity($id: LingvodocID!, $accepted: Boolean!) {
+    update_entity(id: $id, accepted: $accepted) {
+      triumph
+    }
+  }
+`;
+
+const removeEntityMutation = gql`
+  mutation acceptEntity($id: LingvodocID!, $accepted: Boolean!) {
+    update_entity(id: $id, accepted: $accepted) {
       triumph
     }
   }
@@ -54,6 +61,8 @@ class Entities extends React.Component {
       edit: false,
     };
     this.onCreateEntity = this.onCreateEntity.bind(this);
+    this.onPublishEntity = this.onPublishEntity.bind(this);
+    this.onAcceptEntity = this.onAcceptEntity.bind(this);
   }
 
   onCreateEntity(content) {
@@ -74,6 +83,40 @@ class Entities extends React.Component {
       ],
     }).then(() => {
       this.setState({ edit: false });
+    });
+  }
+
+  onPublishEntity(entity, published) {
+    const { perspectiveId, entitiesMode, publishEntity } = this.props;
+
+    publishEntity({
+      variables: { id: entity.id, published },
+      refetchQueries: [
+        {
+          query: queryPerspective,
+          variables: {
+            id: perspectiveId,
+            entitiesMode,
+          },
+        },
+      ],
+    });
+  }
+
+  onAcceptEntity(entity, accepted) {
+    const { perspectiveId, entitiesMode, acceptEntity } = this.props;
+
+    acceptEntity({
+      variables: { id: entity.id, accepted },
+      refetchQueries: [
+        {
+          query: queryPerspective,
+          variables: {
+            id: perspectiveId,
+            entitiesMode,
+          },
+        },
+      ],
     });
   }
 
@@ -104,12 +147,15 @@ class Entities extends React.Component {
             mode={mode}
             entitiesMode={entitiesMode}
             parentEntity={parentEntity}
+            publish={this.onPublishEntity}
+            remove={this.remove}
+            accept={this.onAcceptEntity}
           />
         ))}
         <li className="last">
           {!this.state.edit && (
             <Button.Group basic size="mini">
-              <Button icon="plus" onClick={() => this.setState({ edit: true })} />
+              <Button icon="plus" onClick={() => this.setState({ edit: true })} disabled={mode !== 'edit'} />
             </Button.Group>
           )}
 

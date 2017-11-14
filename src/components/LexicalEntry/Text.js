@@ -5,18 +5,24 @@ import { Button, Input } from 'semantic-ui-react';
 
 import Entities from './index';
 
-function getContent(entity, mode) {
+function getContent({
+  entity, mode, publish, accept, remove,
+}) {
   let control = null;
   switch (mode) {
     case 'edit':
       return (
         <Button.Group basic icon size="mini">
           <Button content={entity.content} />
-          <Button icon="remove" />
+          <Button icon="remove" onClick={() => remove(entity)} />
         </Button.Group>
       );
     case 'publish':
-      control = entity.published ? <Button icon="remove" /> : <Button icon="checkmark" />;
+      control = entity.published ? (
+        <Button icon="remove" onClick={() => publish(entity, false)} />
+      ) : (
+        <Button icon="checkmark" onClick={() => publish(entity, true)} />
+      );
       return (
         <Button.Group basic icon size="mini">
           <Button content={entity.content} />
@@ -26,7 +32,17 @@ function getContent(entity, mode) {
     case 'view':
       return entity.content;
     case 'contributions':
-      return entity.content;
+      control = entity.accepted ? (
+        <Button icon="remove" onClick={() => accept(entity, false)} />
+      ) : (
+        <Button icon="checkmark" onClick={() => accept(entity, true)} />
+      );
+      return (
+        <Button.Group basic icon size="mini">
+          <Button content={entity.content} />
+          {control}
+        </Button.Group>
+      );
     default:
       return null;
   }
@@ -34,14 +50,24 @@ function getContent(entity, mode) {
 
 const Text = (props) => {
   const {
-    perspectiveId, column, columns, entry, entity, mode, entitiesMode, as: Component, className,
+    perspectiveId,
+    column,
+    columns,
+    entry,
+    mode,
+    entitiesMode,
+    as: Component,
+    className,
+    publish,
+    accept,
+    remove,
   } = props;
 
   const subColumn = find(columns, c => isEqual(c.self_id, column.column_id));
 
   return (
     <Component className={className}>
-      {getContent(entity, mode)}
+      {getContent(props)}
       {subColumn && (
         <Entities
           perspectiveId={perspectiveId}
@@ -50,6 +76,9 @@ const Text = (props) => {
           entry={entry}
           mode={mode}
           entitiesMode={entitiesMode}
+          publish={publish}
+          remove={remove}
+          accept={accept}
         />
       )}
     </Component>
@@ -66,6 +95,9 @@ Text.propTypes = {
   entitiesMode: PropTypes.string.isRequired,
   as: PropTypes.string,
   className: PropTypes.string,
+  publish: PropTypes.func,
+  accept: PropTypes.func,
+  remove: PropTypes.func,
 };
 
 Text.defaultProps = {
@@ -119,7 +151,7 @@ class Edit extends React.Component {
       />
     );
   }
-};
+}
 
 Edit.propTypes = {
   onSave: PropTypes.func,

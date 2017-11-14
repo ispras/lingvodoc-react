@@ -19,7 +19,7 @@ const PlayerModal = ({ visible, actions, play: { content } }) => (
 
 PlayerModal.propTypes = {
   visible: PropTypes.bool.isRequired,
-  play: PropTypes.string.isRequired,
+  play: PropTypes.object.isRequired,
   actions: PropTypes.object.isRequired,
 };
 

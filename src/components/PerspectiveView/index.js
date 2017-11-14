@@ -72,7 +72,7 @@ const PerspectiveView = ({
   const entries = lexical_entries.map(e => ({
     ...e,
     contains: filter(entities, entity => isEqual(entity.parent_id, e.id)),
-  }));
+  })).filter(e => e.contains.length > 0);
 
   // get requested page
   const pageEntries = take(drop(entries, ROWS_PER_PAGE * (page - 1)), ROWS_PER_PAGE);

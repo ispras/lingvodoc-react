@@ -1,21 +1,35 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
+import { gql, graphql } from 'react-apollo';
 import { connect } from 'react-redux';
-import { Button, Modal, Header } from 'semantic-ui-react';
+import { Button, Modal } from 'semantic-ui-react';
 import { openViewer, closeViewer } from 'ducks/markup';
-import Player from 'components/Player';
+import MarkupViewer from 'components/MarkupViewer';
+
+
+const q = gql`
+  query convertMarkup($id: LingvodocID!) {
+    convert_markup(id: $id)
+  }
+`;
+
+const MarkupEntity = graphql(q)((props) => {
+  const { data, file } = props;
+  if (data.loading) {
+    return null;
+  }
+  return <MarkupViewer file={file} markup={data.convert_markup} />;
+});
 
 const MarkupModal = (props) => {
   const { visible, data, actions } = props;
-  const { audio: { content: audio }, markup: { content: markup } } = data;
+  const { audio: { content: audio }, markup: { id } } = data;
 
   return (
     <Modal open={visible} dimmer size="small">
       <Modal.Content>
-        <Player file={audio} />
-
-        <Header>{markup}</Header>
+        <MarkupEntity file={audio} id={id} />
       </Modal.Content>
       <Modal.Actions>
         <Button icon="minus" content="Close" onClick={actions.closeViewer} />
@@ -43,3 +57,6 @@ const mapDispatchToProps = dispatch => ({
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(MarkupModal);
+
+
+

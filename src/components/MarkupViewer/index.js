@@ -1,11 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Container, Button, Icon } from 'semantic-ui-react';
+import styled from 'styled-components';
 import Wavesurfer from 'react-wavesurfer';
 import Timeline from 'components/Wavesurfer/timeline';
 import Spectrogram from 'components/Wavesurfer/spectrogram';
+import ELAN from 'components/Wavesurfer/elan';
 
-class Player extends React.Component {
+const Wrapper = styled('div')`
+  padding-left: 80px;
+`;
+
+class MarkupViewer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -36,7 +42,7 @@ class Player extends React.Component {
   }
 
   render() {
-    const { file } = this.props;
+    const { file, markup } = this.props;
     const { playing, pos } = this.state;
     const options = {
       waveColor: '#999',
@@ -52,11 +58,12 @@ class Player extends React.Component {
     const spectrogramOptions = {
       fftSamples: 128,
     };
-    const timelineOptions = {
 
-    };
+    const elanOptions = {};
+    const timelineOptions = {};
+
     return (
-      <div>
+      <Wrapper>
         <Wavesurfer
           options={options}
           audioFile={file}
@@ -67,6 +74,8 @@ class Player extends React.Component {
         >
           <Timeline options={timelineOptions} />
           <Spectrogram options={spectrogramOptions} />
+          <ELAN markup={markup} options={elanOptions} />
+
         </Wavesurfer>
 
         <Container textAlign="center">
@@ -79,17 +88,19 @@ class Player extends React.Component {
             </Button>
           </Button.Group>
         </Container>
-      </div>
+      </Wrapper>
     );
   }
 }
 
-Player.propTypes = {
+MarkupViewer.propTypes = {
   file: PropTypes.string,
+  markup: PropTypes.string,
 };
 
-Player.defaultProps = {
+MarkupViewer.defaultProps = {
   file: '',
+  markup: '',
 };
 
-export default Player;
+export default MarkupViewer;

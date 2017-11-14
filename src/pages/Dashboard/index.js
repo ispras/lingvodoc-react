@@ -1,88 +1,51 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { pure, onlyUpdateForKeys } from 'recompose';
 import { Link } from 'react-router-dom';
 import { gql, graphql } from 'react-apollo';
 import { Container, Dimmer, Tab, Header, List, Dropdown, Icon, Menu } from 'semantic-ui-react';
+import { isEqual } from 'lodash';
 import { compositeIdToString } from 'utils/compositeId';
+
 const dimmerStyle = { minHeight: '600px' };
 
+const DICTIONARIES_TABS = [
+  {
+    menuItem: 'My dictionaries',
+    render: () => (
+      <Tab.Pane>
+        <Dictionaries category={1} my_dictionaries available={false} />
+      </Tab.Pane>
+    ),
+  },
+  {
+    menuItem: 'Available dictionaries',
+    render: () => (
+      <Tab.Pane>
+        <Dictionaries category={1} available my_dictionaries={false} />
+      </Tab.Pane>
+    ),
+  },
+];
 
-
-const TABS = [
-  { menuItem: 'My dictionaries', render: () => <Tab.Pane>
-    <Dictionaries my_dictionaries available={false} />
-    </Tab.Pane> },
-  { menuItem: 'Available dictionaries', render: () => <Tab.Pane>
-    <Dictionaries available my_dictionaries={false} />
-  </Tab.Pane> },
-]
-
-
-const Perspective = props => {
-  const { as: Component, id, parent_id, translation, status } = props;
-  return <Component>
-    <Menu>
-      <Dropdown text={translation} pointing className="link item">
-        <Dropdown.Menu>
-          <Dropdown.Item icon="users" text="Roles..."/>
-          <Dropdown.Item icon="setting" text="Properties..."/>
-          <Dropdown.Item icon="percent" text="Statistics..."/>
-          <Dropdown.Divider />
-          <Dropdown.Item icon="remove" text="Remove perspective"/>
-        </Dropdown.Menu>
-      </Dropdown>
-      
-      <Menu.Item as={Link} to={`dictionary/${parent_id[0]}/${parent_id[1]}/perspective/${id[0]}/${id[1]}/view`}>
-        View
-      </Menu.Item>
-
-      <Menu.Item as={Link} to={`dictionary/${parent_id[0]}/${parent_id[1]}/perspective/${id[0]}/${id[1]}/edit`}>
-        Edit
-      </Menu.Item>
-
-      <Menu.Item as={Link} to={`dictionary/${parent_id[0]}/${parent_id[1]}/perspective/${id[0]}/${id[1]}/publish`}>
-        Publish
-      </Menu.Item>
-
-      <Menu.Item as={Link} to={`dictionary/${parent_id[0]}/${parent_id[1]}/perspective/${id[0]}/${id[1]}/contributions`}>
-        Contributions
-      </Menu.Item>
-
-      <Menu.Item position="right">
-        {status}
-      </Menu.Item>
-
-    </Menu>
-  </Component>;
-};
-
-
-const Dictionary = props => {
-  const { as: Component, translation, status, perspectives } = props;
-  return <Component>
-    <Menu>
-      <Dropdown text={translation} pointing className="link item">
-        <Dropdown.Menu>
-          <Dropdown.Item icon="users" text="Roles..."/>
-          <Dropdown.Item icon="setting" text="Properties..."/>
-          <Dropdown.Item icon="percent" text="Statistics..."/>
-          <Dropdown.Item icon="circle" text="Create a new perspective..."/>
-          <Dropdown.Divider />
-          <Dropdown.Item icon="remove" text="Remove dictionary"/>
-        </Dropdown.Menu>
-      </Dropdown>
-
-      <Menu.Item position="right">
-        {status}
-      </Menu.Item>
-
-    </Menu>
-
-    <List relaxed>
-      {perspectives.map(perspective => <Perspective key={compositeIdToString(perspective.id)} {...perspective} as={List.Item} />)}
-    </List>
-  </Component>;
-};
+const CORPORA_TABS = [
+  {
+    menuItem: 'My corpora',
+    render: () => (
+      <Tab.Pane>
+        <Dictionaries category={2} my_dictionaries available={false} />
+      </Tab.Pane>
+    ),
+  },
+  {
+    menuItem: 'Available corpora',
+    render: () => (
+      <Tab.Pane>
+        <Dictionaries category={2} available my_dictionaries={false} />
+      </Tab.Pane>
+    ),
+  },
+];
 
 export const query = gql`
   query dashboardQuery($available: Boolean!, $my_dictionaries: Boolean!) {
@@ -102,11 +65,152 @@ export const query = gql`
     }
     all_statuses {
       id
+      created_at
+      marked_for_deletion
+      type
+      translation
     }
   }
 `;
-const Dashboard = ({ data }) => {
-  const { loading, dictionaries } = data;
+
+
+const updateDictionaryStatusMutation = gql`
+  mutation updateDictionaryStatus($id: LingvodocID!, $status_id: LingvodocID!) {
+    update_dictionary_status(id: $id, state_translation_gist_id: $status_id) {
+      triumph
+    }
+  }
+`;
+
+const updatePerspectiveStatusMutation = gql`
+  mutation updatePerspectiveStatus($id: LingvodocID!, $status_id: LingvodocID!) {
+    update_dictionary_status(id: $id, state_translation_gist_id: $status_id) {
+      triumph
+    }
+  }
+`;
+
+const Statuses = onlyUpdateForKeys(['translation'])(({
+  translation, statusId, parentId, statuses, updateStatus,
+}) => {
+  const updateHandler = (id, sid) => {
+    updateStatus({
+      variables: { id, status_id: sid },
+      refetchQueries: [
+        {
+          query,
+          variables: {
+            available: false,
+            my_dictionaries: true,
+          },
+        },
+      ],
+    });
+  };
+
+  return (
+    <Dropdown item text={translation}>
+      <Dropdown.Menu>
+        {statuses.map(status => (
+          <Dropdown.Item
+            key={compositeIdToString(status.id)}
+            icon="users"
+            text={status.translation}
+            active={isEqual(statusId, status.id)}
+            onClick={() => updateHandler(parentId, status.id)}
+          />
+          ))}
+      </Dropdown.Menu>
+    </Dropdown>
+  );
+});
+
+// Dictionary and Perspective share the set of statuses but use different mutations to change current status.
+const DicionaryStatuses = graphql(updateDictionaryStatusMutation, { name: 'updateStatus' })(Statuses);
+const PerspectiveStatuses = graphql(updatePerspectiveStatusMutation, { name: 'updateStatus' })(Statuses);
+
+const Perspective = onlyUpdateForKeys(['translation', 'status'])((props) => {
+  const {
+    id, parent_id, translation, status, state_translation_gist_id: statusId, statuses,
+  } = props;
+  return (
+    <List.Item>
+      <List.Icon verticalAlign="middle" name="book" />
+      <List.Content>
+        <Menu>
+          <Dropdown text={translation} pointing className="link item">
+            <Dropdown.Menu>
+              <Dropdown.Item icon="users" text="Roles..." />
+              <Dropdown.Item icon="setting" text="Properties..." />
+              <Dropdown.Item icon="percent" text="Statistics..." />
+              <Dropdown.Divider />
+              <Dropdown.Item icon="remove" text="Remove perspective" />
+            </Dropdown.Menu>
+          </Dropdown>
+
+          <Menu.Item as={Link} to={`dictionary/${parent_id[0]}/${parent_id[1]}/perspective/${id[0]}/${id[1]}/view`}>
+            View
+          </Menu.Item>
+
+          <Menu.Item as={Link} to={`dictionary/${parent_id[0]}/${parent_id[1]}/perspective/${id[0]}/${id[1]}/edit`}>
+            Edit
+          </Menu.Item>
+
+          <Menu.Item as={Link} to={`dictionary/${parent_id[0]}/${parent_id[1]}/perspective/${id[0]}/${id[1]}/publish`}>
+            Publish
+          </Menu.Item>
+
+          <Menu.Item
+            as={Link}
+            to={`dictionary/${parent_id[0]}/${parent_id[1]}/perspective/${id[0]}/${id[1]}/contributions`}
+          >
+            Contributions
+          </Menu.Item>
+
+          <Menu.Menu position="right">
+            <PerspectiveStatuses translation={status} statusId={statusId} parentId={id} statuses={statuses} />
+          </Menu.Menu>
+        </Menu>
+      </List.Content>
+    </List.Item>
+  );
+});
+
+const Dictionary = onlyUpdateForKeys(['translation', 'status', 'perspectives'])((props) => {
+  const {
+    id, translation, status, state_translation_gist_id: statusId, perspectives, statuses,
+  } = props;
+  return (
+    <List.Item>
+      <List.Content>
+        <Menu>
+          <Dropdown text={translation} pointing className="link item">
+            <Dropdown.Menu>
+              <Dropdown.Item icon="users" text="Roles..." />
+              <Dropdown.Item icon="setting" text="Properties..." />
+              <Dropdown.Item icon="percent" text="Statistics..." />
+              <Dropdown.Item icon="circle" text="Create a new perspective..." />
+              <Dropdown.Divider />
+              <Dropdown.Item icon="remove" text="Remove dictionary" />
+            </Dropdown.Menu>
+          </Dropdown>
+
+          <Menu.Menu position="right">
+            <DicionaryStatuses translation={status} statusId={statusId} parentId={id} statuses={statuses} />
+          </Menu.Menu>
+        </Menu>
+        <List relaxed>
+          {perspectives.map(perspective => (
+            <Perspective key={compositeIdToString(perspective.id)} {...perspective} as={List.Item} statuses={statuses} />
+          ))}
+        </List>
+      </List.Content>
+    </List.Item>
+  );
+});
+
+const Dashboard = pure(({ data }) => {
+  const { loading, dictionaries, all_statuses: statuses } = data;
   return (
     <Container>
       <Dimmer.Dimmable dimmed={loading} style={dimmerStyle}>
@@ -118,17 +222,20 @@ const Dashboard = ({ data }) => {
 
         <List>
           {!loading &&
-            dictionaries.map(dictionary => (
-              <Dictionary key={compositeIdToString(dictionary.id)} {...dictionary} as={List.Item} />
-            ))}
+            dictionaries.map(dictionary => <Dictionary key={compositeIdToString(dictionary.id)} statuses={statuses} {...dictionary} />)}
         </List>
       </Dimmer.Dimmable>
     </Container>
   );
+});
+
+Dashboard.propTypes = {
+  data: PropTypes.object.isRequired,
 };
 
- const Dictionaries = graphql(query)(Dashboard);
+const Dictionaries = graphql(query)(Dashboard);
 
-export default () => (
-  <Tab panes={TABS} renderActiveOnly={true} />
-)
+const DictionaryDashboard = () => <Tab panes={DICTIONARIES_TABS} renderActiveOnly />;
+const CorpusDashboard = () => <Tab panes={CORPORA_TABS} renderActiveOnly />;
+
+export { DictionaryDashboard, CorpusDashboard };
