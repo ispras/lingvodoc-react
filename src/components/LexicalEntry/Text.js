@@ -1,13 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { onlyUpdateForKeys } from 'recompose';
 import { find, isEqual } from 'lodash';
 import { Button, Input } from 'semantic-ui-react';
 
 import Entities from './index';
 
-function getContent({
+const TextEntityContent = onlyUpdateForKeys(['entity'])(({
   entity, mode, publish, accept, remove,
-}) {
+}) => {
   let control = null;
   switch (mode) {
     case 'edit':
@@ -46,14 +47,15 @@ function getContent({
     default:
       return null;
   }
-}
+});
 
-const Text = (props) => {
+const Text = onlyUpdateForKeys(['entry', 'entity'])((props) => {
   const {
     perspectiveId,
     column,
     columns,
     entry,
+    entity,
     mode,
     entitiesMode,
     as: Component,
@@ -67,7 +69,7 @@ const Text = (props) => {
 
   return (
     <Component className={className}>
-      {getContent(props)}
+      <TextEntityContent entity={entity} mode={mode} publish={publish} accept={accept} remove={remove} />
       {subColumn && (
         <Entities
           perspectiveId={perspectiveId}
@@ -83,7 +85,7 @@ const Text = (props) => {
       )}
     </Component>
   );
-};
+});
 
 Text.propTypes = {
   perspectiveId: PropTypes.array.isRequired,

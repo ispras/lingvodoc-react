@@ -1,12 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { gql, graphql } from 'react-apollo';
-import { isEqual, find, filter, take, drop } from 'lodash';
+import { isEqual, find, filter, take, drop, groupBy } from 'lodash';
 import { Table, Dimmer, Header, Icon } from 'semantic-ui-react';
 
 import TableHeader from './TableHeader';
 import TableBody from './TableBody';
 import Pagination from './Pagination';
+import { compositeIdToString } from '../../utils/compositeId';
 
 const dimmerStyle = { minHeight: '600px' };
 
@@ -69,9 +70,10 @@ const PerspectiveView = ({
 
   const { all_fields, perspective: { lexical_entries, entities, columns } } = data;
 
+  const groupedEntities = groupBy(entities, e => compositeIdToString(e.parent_id));
   const entries = lexical_entries.map(e => ({
     ...e,
-    contains: filter(entities, entity => isEqual(entity.parent_id, e.id)),
+    contains: groupedEntities[compositeIdToString(e.id)] || [],
   })).filter(e => e.contains.length > 0);
 
   // get requested page
