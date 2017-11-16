@@ -6,6 +6,8 @@ import Leaflet from 'components/Map';
 const Wrapper = styled.div`
   width: 100%;
   height: 600px;
+  border: 1px solid grey;
+  border-radius: 2px;
 
   .leaflet {
     width: 100%;
@@ -16,11 +18,15 @@ const Wrapper = styled.div`
       flex-direction: column;
       height: 2em !important;
       width: 2em !important;
-      border-radius: 0.2em;
+      border-radius: 2px;
       border: 1px solid black;
 
       span {
         flex: 1 1 auto;
+
+        &:not(:last-child) {
+          border-bottom: 1px solid black;
+        }
       }
     }
   }
@@ -55,7 +61,7 @@ class Map extends React.Component {
   componentDidMount() {
     this.leaflet = new Leaflet(this.map, {
       icon: pointIcon,
-      onPointClick: console.log.bind(console)
+      onPointClick: console.log.bind(console),
     });
     this.leaflet.load(extractPoints(this.props));
   }
@@ -72,7 +78,7 @@ class Map extends React.Component {
   render() {
     return (
       <Wrapper>
-        <div ref={ref => this.map = ref} className="leaflet" />
+        <div ref={(ref) => { this.map = ref; }} className="leaflet" />
       </Wrapper>
     );
   }

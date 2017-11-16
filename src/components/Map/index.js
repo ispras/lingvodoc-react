@@ -5,13 +5,17 @@ import L from 'leaflet';
 
 function initMap(mountPoint) {
   const map = L.map(mountPoint, {}).setView([61.32, 60.82], 4);
-  map.createPane('labels');
-  map.getPane('labels').style.zIndex = 650;
-  map.getPane('labels').style.pointerEvents = 'none';
 
   L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
   }).addTo(map);
+
+  // L.tileLayer('http://vec{s}.maps.yandex.net/tiles?l=map&z={z}&x={x}&y={y}&scale=1', {
+  //   subdomains: ['01', '02', '03', '04'],
+  //   attribution: '<a http="yandex.ru" target="_blank">Яндекс</a>',
+  //   reuseTiles: true,
+  //   updateWhenIdle: false,
+  // }).addTo(map);
 
   return map;
 }
