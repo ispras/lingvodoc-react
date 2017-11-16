@@ -1,7 +1,7 @@
 import React from 'react';
 import { List, fromJS } from 'immutable';
 import styled from 'styled-components';
-import { Segment, Button, Divider, Icon, Select, Input } from 'semantic-ui-react';
+import { Segment, Button, Divider, Select, Input } from 'semantic-ui-react';
 
 const Wrapper = styled.div`
   margin-bottom: 1em;
@@ -81,9 +81,7 @@ function Query({ data, onFieldChange, onDelete }) {
         value={type}
         onChange={onFieldChange('matching_type')}
       />
-      <Button compact basic color="red" onClick={onDelete}>
-        <Icon name="delete" />
-      </Button>
+      <Button compact basic color="red" icon="delete" onClick={onDelete} />
     </QueryInput>
   );
 }
@@ -102,17 +100,21 @@ function OrBlock({ data, onFieldChange, onAddBlock, onDeleteBlock, onDelete }) {
             />
           )
         }
-        <Button className="add-or" primary basic animated="vertical" onClick={onAddBlock}>
-          <Button.Content hidden>Add OR</Button.Content>
-          <Button.Content visible>
-            <Icon name="add" />
-          </Button.Content>
-        </Button>
+        <Button
+          primary
+          basic
+          icon="add"
+          onClick={onAddBlock}
+        />
       </OrBlocks>
 
-      <Button className="delete-and" compact basic animated="vertical" onClick={onDelete}>
-        <Icon name="delete" />
-      </Button>
+      <Button
+        className="delete-and"
+        compact
+        basic
+        icon="delete"
+        onClick={onDelete}
+      />
     </OrWrapper>
   );
 }
