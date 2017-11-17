@@ -1,0 +1,3088 @@
+{
+  "data": {
+    "advanced_search": {
+      "entities": [
+        {
+          "id": [
+            694,
+            39019
+          ],
+          "parent_id": [
+            694,
+            30392
+          ],
+          "content": "Бабушка"
+        },
+        {
+          "id": [
+            671,
+            15719
+          ],
+          "parent_id": [
+            671,
+            15172
+          ],
+          "content": "бабушка"
+        },
+        {
+          "id": [
+            726,
+            490
+          ],
+          "parent_id": [
+            694,
+            171
+          ],
+          "content": "бабушка"
+        },
+        {
+          "id": [
+            731,
+            1559
+          ],
+          "parent_id": [
+            731,
+            1557
+          ],
+          "content": "бабушка"
+        },
+        {
+          "id": [
+            704,
+            14567
+          ],
+          "parent_id": [
+            704,
+            12986
+          ],
+          "content": "бабушка"
+        },
+        {
+          "id": [
+            775,
+            16376
+          ],
+          "parent_id": [
+            775,
+            16374
+          ],
+          "content": "бабушка"
+        },
+        {
+          "id": [
+            840,
+            87
+          ],
+          "parent_id": [
+            840,
+            85
+          ],
+          "content": "Бабушка"
+        },
+        {
+          "id": [
+            889,
+            258
+          ],
+          "parent_id": [
+            889,
+            255
+          ],
+          "content": "Бабушка"
+        },
+        {
+          "id": [
+            958,
+            28
+          ],
+          "parent_id": [
+            958,
+            25
+          ],
+          "content": "Бабушка"
+        },
+        {
+          "id": [
+            965,
+            19297
+          ],
+          "parent_id": [
+            965,
+            19294
+          ],
+          "content": "Бабушка"
+        },
+        {
+          "id": [
+            70,
+            773
+          ],
+          "parent_id": [
+            70,
+            7
+          ],
+          "content": "бабушка"
+        },
+        {
+          "id": [
+            70,
+            1667
+          ],
+          "parent_id": [
+            70,
+            7
+          ],
+          "content": "бабушка"
+        },
+        {
+          "id": [
+            133,
+            2029
+          ],
+          "parent_id": [
+            133,
+            301
+          ],
+          "content": "бабушка"
+        },
+        {
+          "id": [
+            84,
+            1397
+          ],
+          "parent_id": [
+            84,
+            8
+          ],
+          "content": "бабушка"
+        },
+        {
+          "id": [
+            136,
+            2903
+          ],
+          "parent_id": [
+            136,
+            128
+          ],
+          "content": "бабушка"
+        },
+        {
+          "id": [
+            630,
+            1200
+          ],
+          "parent_id": [
+            630,
+            884
+          ],
+          "content": "бабушка"
+        },
+        {
+          "id": [
+            630,
+            1201
+          ],
+          "parent_id": [
+            630,
+            885
+          ],
+          "content": "бабушка"
+        },
+        {
+          "id": [
+            105,
+            773
+          ],
+          "parent_id": [
+            105,
+            22
+          ],
+          "content": "бабушка"
+        },
+        {
+          "id": [
+            107,
+            6603
+          ],
+          "parent_id": [
+            107,
+            12
+          ],
+          "content": "бабушка"
+        },
+        {
+          "id": [
+            150,
+            164
+          ],
+          "parent_id": [
+            150,
+            44
+          ],
+          "content": "бабушка"
+        },
+        {
+          "id": [
+            311,
+            6689
+          ],
+          "parent_id": [
+            311,
+            180
+          ],
+          "content": "бабушка"
+        },
+        {
+          "id": [
+            160,
+            1138
+          ],
+          "parent_id": [
+            160,
+            169
+          ],
+          "content": "бабушка"
+        },
+        {
+          "id": [
+            126,
+            3024
+          ],
+          "parent_id": [
+            126,
+            286
+          ],
+          "content": "бабушка"
+        },
+        {
+          "id": [
+            533,
+            1732
+          ],
+          "parent_id": [
+            533,
+            424
+          ],
+          "content": "бабушка"
+        },
+        {
+          "id": [
+            398,
+            4501
+          ],
+          "parent_id": [
+            398,
+            139
+          ],
+          "content": "бабушка"
+        },
+        {
+          "id": [
+            400,
+            4498
+          ],
+          "parent_id": [
+            400,
+            129
+          ],
+          "content": "бабушка"
+        },
+        {
+          "id": [
+            640,
+            2373
+          ],
+          "parent_id": [
+            640,
+            9
+          ],
+          "content": "Бабушка"
+        },
+        {
+          "id": [
+            480,
+            508
+          ],
+          "parent_id": [
+            480,
+            112
+          ],
+          "content": "бабушка"
+        },
+        {
+          "id": [
+            479,
+            5260
+          ],
+          "parent_id": [
+            479,
+            454
+          ],
+          "content": "Бабушка"
+        },
+        {
+          "id": [
+            498,
+            2422
+          ],
+          "parent_id": [
+            498,
+            10
+          ],
+          "content": "Бабушка"
+        },
+        {
+          "id": [
+            502,
+            796
+          ],
+          "parent_id": [
+            502,
+            22
+          ],
+          "content": "бабушка"
+        },
+        {
+          "id": [
+            504,
+            4583
+          ],
+          "parent_id": [
+            504,
+            14
+          ],
+          "content": "бабушка"
+        },
+        {
+          "id": [
+            527,
+            936
+          ],
+          "parent_id": [
+            527,
+            9
+          ],
+          "content": "бабушка"
+        },
+        {
+          "id": [
+            620,
+            3045
+          ],
+          "parent_id": [
+            620,
+            886
+          ],
+          "content": "бабушка"
+        },
+        {
+          "id": [
+            620,
+            3046
+          ],
+          "parent_id": [
+            620,
+            887
+          ],
+          "content": "бабушка"
+        },
+        {
+          "id": [
+            586,
+            6249
+          ],
+          "parent_id": [
+            586,
+            652
+          ],
+          "content": "бабушка"
+        },
+        {
+          "id": [
+            624,
+            1736
+          ],
+          "parent_id": [
+            624,
+            299
+          ],
+          "content": "бабушка"
+        },
+        {
+          "id": [
+            657,
+            1837
+          ],
+          "parent_id": [
+            657,
+            21
+          ],
+          "content": "бабушка"
+        },
+        {
+          "id": [
+            625,
+            2551
+          ],
+          "parent_id": [
+            625,
+            284
+          ],
+          "content": "бабушка"
+        },
+        {
+          "id": [
+            631,
+            2386
+          ],
+          "parent_id": [
+            631,
+            21
+          ],
+          "content": "Бабушка"
+        },
+        {
+          "id": [
+            638,
+            1921
+          ],
+          "parent_id": [
+            638,
+            10
+          ],
+          "content": "бабушка"
+        }
+      ],
+      "lexical_entries": [
+        {
+          "id": [
+            479,
+            454
+          ],
+          "parent_id": [
+            479,
+            5
+          ]
+        },
+        {
+          "id": [
+            150,
+            44
+          ],
+          "parent_id": [
+            150,
+            5
+          ]
+        },
+        {
+          "id": [
+            586,
+            652
+          ],
+          "parent_id": [
+            586,
+            3
+          ]
+        },
+        {
+          "id": [
+            671,
+            15172
+          ],
+          "parent_id": [
+            671,
+            15155
+          ]
+        },
+        {
+          "id": [
+            640,
+            9
+          ],
+          "parent_id": [
+            640,
+            3
+          ]
+        },
+        {
+          "id": [
+            631,
+            21
+          ],
+          "parent_id": [
+            631,
+            4
+          ]
+        },
+        {
+          "id": [
+            775,
+            16374
+          ],
+          "parent_id": [
+            775,
+            6
+          ]
+        },
+        {
+          "id": [
+            70,
+            7
+          ],
+          "parent_id": [
+            70,
+            5
+          ]
+        },
+        {
+          "id": [
+            502,
+            22
+          ],
+          "parent_id": [
+            502,
+            4
+          ]
+        },
+        {
+          "id": [
+            630,
+            884
+          ],
+          "parent_id": [
+            630,
+            3
+          ]
+        },
+        {
+          "id": [
+            136,
+            128
+          ],
+          "parent_id": [
+            136,
+            3
+          ]
+        },
+        {
+          "id": [
+            533,
+            424
+          ],
+          "parent_id": [
+            533,
+            4
+          ]
+        },
+        {
+          "id": [
+            965,
+            19294
+          ],
+          "parent_id": [
+            965,
+            19263
+          ]
+        },
+        {
+          "id": [
+            311,
+            180
+          ],
+          "parent_id": [
+            311,
+            3
+          ]
+        },
+        {
+          "id": [
+            498,
+            10
+          ],
+          "parent_id": [
+            498,
+            4
+          ]
+        },
+        {
+          "id": [
+            694,
+            171
+          ],
+          "parent_id": [
+            694,
+            5
+          ]
+        },
+        {
+          "id": [
+            527,
+            9
+          ],
+          "parent_id": [
+            527,
+            5
+          ]
+        },
+        {
+          "id": [
+            638,
+            10
+          ],
+          "parent_id": [
+            638,
+            5
+          ]
+        },
+        {
+          "id": [
+            840,
+            85
+          ],
+          "parent_id": [
+            840,
+            10
+          ]
+        },
+        {
+          "id": [
+            105,
+            22
+          ],
+          "parent_id": [
+            105,
+            4
+          ]
+        },
+        {
+          "id": [
+            398,
+            139
+          ],
+          "parent_id": [
+            398,
+            3
+          ]
+        },
+        {
+          "id": [
+            504,
+            14
+          ],
+          "parent_id": [
+            504,
+            5
+          ]
+        },
+        {
+          "id": [
+            84,
+            8
+          ],
+          "parent_id": [
+            84,
+            4
+          ]
+        },
+        {
+          "id": [
+            133,
+            301
+          ],
+          "parent_id": [
+            133,
+            5
+          ]
+        },
+        {
+          "id": [
+            160,
+            169
+          ],
+          "parent_id": [
+            160,
+            3
+          ]
+        },
+        {
+          "id": [
+            620,
+            887
+          ],
+          "parent_id": [
+            620,
+            3
+          ]
+        },
+        {
+          "id": [
+            731,
+            1557
+          ],
+          "parent_id": [
+            731,
+            12
+          ]
+        },
+        {
+          "id": [
+            958,
+            25
+          ],
+          "parent_id": [
+            958,
+            7
+          ]
+        },
+        {
+          "id": [
+            625,
+            284
+          ],
+          "parent_id": [
+            625,
+            3
+          ]
+        },
+        {
+          "id": [
+            889,
+            255
+          ],
+          "parent_id": [
+            889,
+            224
+          ]
+        },
+        {
+          "id": [
+            624,
+            299
+          ],
+          "parent_id": [
+            624,
+            3
+          ]
+        },
+        {
+          "id": [
+            620,
+            886
+          ],
+          "parent_id": [
+            620,
+            3
+          ]
+        },
+        {
+          "id": [
+            694,
+            30392
+          ],
+          "parent_id": [
+            694,
+            30034
+          ]
+        },
+        {
+          "id": [
+            400,
+            129
+          ],
+          "parent_id": [
+            400,
+            4
+          ]
+        },
+        {
+          "id": [
+            630,
+            885
+          ],
+          "parent_id": [
+            630,
+            3
+          ]
+        },
+        {
+          "id": [
+            126,
+            286
+          ],
+          "parent_id": [
+            126,
+            4
+          ]
+        },
+        {
+          "id": [
+            480,
+            112
+          ],
+          "parent_id": [
+            480,
+            5
+          ]
+        },
+        {
+          "id": [
+            704,
+            12986
+          ],
+          "parent_id": [
+            704,
+            12566
+          ]
+        },
+        {
+          "id": [
+            657,
+            21
+          ],
+          "parent_id": [
+            657,
+            4
+          ]
+        },
+        {
+          "id": [
+            107,
+            12
+          ],
+          "parent_id": [
+            107,
+            5
+          ]
+        }
+      ],
+      "perspectives": [
+        {
+          "id": [
+            657,
+            4
+          ],
+          "parent_id": [
+            657,
+            3
+          ],
+          "translation": "Lexical Entries",
+          "tree": [
+            {
+              "id": [
+                657,
+                4
+              ],
+              "translation": "Lexical Entries"
+            },
+            {
+              "id": [
+                657,
+                3
+              ],
+              "translation": "Dictionary of Konda dialect of Mansi"
+            },
+            {
+              "id": [
+                508,
+                45
+              ],
+              "translation": "Mansi"
+            },
+            {
+              "id": [
+                508,
+                36
+              ],
+              "translation": "Uralic"
+            }
+          ]
+        },
+        {
+          "id": [
+            480,
+            5
+          ],
+          "parent_id": [
+            480,
+            4
+          ],
+          "translation": "Lexical Entries",
+          "tree": [
+            {
+              "id": [
+                480,
+                5
+              ],
+              "translation": "Lexical Entries"
+            },
+            {
+              "id": [
+                480,
+                4
+              ],
+              "translation": "Dictionary of Middle Ob' dialect of Selkup language 1970s"
+            },
+            {
+              "id": [
+                508,
+                51
+              ],
+              "translation": "Selkup"
+            },
+            {
+              "id": [
+                508,
+                47
+              ],
+              "translation": "Samoyed"
+            },
+            {
+              "id": [
+                508,
+                36
+              ],
+              "translation": "Uralic"
+            }
+          ]
+        },
+        {
+          "id": [
+            126,
+            4
+          ],
+          "parent_id": [
+            126,
+            3
+          ],
+          "translation": "Lexical Entries",
+          "tree": [
+            {
+              "id": [
+                126,
+                4
+              ],
+              "translation": "Lexical Entries"
+            },
+            {
+              "id": [
+                126,
+                3
+              ],
+              "translation": "Evenki, Tutonchana 2008, (K.D. Hutokogir)"
+            },
+            {
+              "id": [
+                633,
+                23
+              ],
+              "translation": "Evenki"
+            },
+            {
+              "id": [
+                633,
+                16
+              ],
+              "translation": "Тунгусские"
+            }
+          ]
+        },
+        {
+          "id": [
+            105,
+            4
+          ],
+          "parent_id": [
+            105,
+            3
+          ],
+          "translation": "Lexical Entries",
+          "tree": [
+            {
+              "id": [
+                105,
+                4
+              ],
+              "translation": "Lexical Entries"
+            },
+            {
+              "id": [
+                105,
+                3
+              ],
+              "translation": "Kildin  Saami language (vi. Voronino)"
+            },
+            {
+              "id": [
+                508,
+                38
+              ],
+              "translation": "Saami"
+            },
+            {
+              "id": [
+                508,
+                36
+              ],
+              "translation": "Uralic"
+            }
+          ]
+        },
+        {
+          "id": [
+            731,
+            12
+          ],
+          "parent_id": [
+            731,
+            11
+          ],
+          "translation": "Lexical Entries",
+          "tree": [
+            {
+              "id": [
+                731,
+                12
+              ],
+              "translation": "Lexical Entries"
+            },
+            {
+              "id": [
+                731,
+                11
+              ],
+              "translation": "Dictionary for Kanin Tundra dialect"
+            },
+            {
+              "id": [
+                508,
+                48
+              ],
+              "translation": "Nenez"
+            },
+            {
+              "id": [
+                508,
+                47
+              ],
+              "translation": "Samoyed"
+            },
+            {
+              "id": [
+                508,
+                36
+              ],
+              "translation": "Uralic"
+            }
+          ]
+        },
+        {
+          "id": [
+            840,
+            10
+          ],
+          "parent_id": [
+            840,
+            9
+          ],
+          "translation": "Lexical Entries",
+          "tree": [
+            {
+              "id": [
+                840,
+                10
+              ],
+              "translation": "Lexical Entries"
+            },
+            {
+              "id": [
+                840,
+                9
+              ],
+              "translation": "Русско-сартовский словарь"
+            },
+            {
+              "id": [
+                840,
+                6
+              ],
+              "translation": "Uzbek"
+            },
+            {
+              "id": [
+                1068,
+                9
+              ],
+              "translation": "Turkic languages"
+            }
+          ]
+        },
+        {
+          "id": [
+            965,
+            19263
+          ],
+          "parent_id": [
+            965,
+            19262
+          ],
+          "translation": "Lexical Entries",
+          "tree": [
+            {
+              "id": [
+                965,
+                19263
+              ],
+              "translation": "Lexical Entries"
+            },
+            {
+              "id": [
+                965,
+                19262
+              ],
+              "translation": "Dictionary of Notozer Saami lamguage"
+            },
+            {
+              "id": [
+                508,
+                38
+              ],
+              "translation": "Saami"
+            },
+            {
+              "id": [
+                508,
+                36
+              ],
+              "translation": "Uralic"
+            }
+          ]
+        },
+        {
+          "id": [
+            479,
+            5
+          ],
+          "parent_id": [
+            479,
+            4
+          ],
+          "translation": "Lexical Entries",
+          "tree": [
+            {
+              "id": [
+                479,
+                5
+              ],
+              "translation": "Lexical Entries"
+            },
+            {
+              "id": [
+                479,
+                4
+              ],
+              "translation": "Dictionary of Ust-Avam dialect of Nganasan language (vil. Volochanka)"
+            },
+            {
+              "id": [
+                508,
+                50
+              ],
+              "translation": "Nganasan"
+            },
+            {
+              "id": [
+                508,
+                47
+              ],
+              "translation": "Samoyed"
+            },
+            {
+              "id": [
+                508,
+                36
+              ],
+              "translation": "Uralic"
+            }
+          ]
+        },
+        {
+          "id": [
+            625,
+            3
+          ],
+          "parent_id": [
+            625,
+            2
+          ],
+          "translation": "Lexical Entries",
+          "tree": [
+            {
+              "id": [
+                625,
+                3
+              ],
+              "translation": "Lexical Entries"
+            },
+            {
+              "id": [
+                625,
+                2
+              ],
+              "translation": "Evenki, Tutonchana 2008, (K.D. Hutokogir)"
+            },
+            {
+              "id": [
+                633,
+                23
+              ],
+              "translation": "Evenki"
+            },
+            {
+              "id": [
+                633,
+                16
+              ],
+              "translation": "Тунгусские"
+            }
+          ]
+        },
+        {
+          "id": [
+            533,
+            4
+          ],
+          "parent_id": [
+            533,
+            3
+          ],
+          "translation": "Lexical Entries",
+          "tree": [
+            {
+              "id": [
+                533,
+                4
+              ],
+              "translation": "Lexical Entries"
+            },
+            {
+              "id": [
+                533,
+                3
+              ],
+              "translation": "Dictionary of Bolshezemel dialect"
+            },
+            {
+              "id": [
+                508,
+                48
+              ],
+              "translation": "Nenez"
+            },
+            {
+              "id": [
+                508,
+                47
+              ],
+              "translation": "Samoyed"
+            },
+            {
+              "id": [
+                508,
+                36
+              ],
+              "translation": "Uralic"
+            }
+          ]
+        },
+        {
+          "id": [
+            631,
+            4
+          ],
+          "parent_id": [
+            631,
+            3
+          ],
+          "translation": "Lexical Entries",
+          "tree": [
+            {
+              "id": [
+                631,
+                4
+              ],
+              "translation": "Lexical Entries"
+            },
+            {
+              "id": [
+                631,
+                3
+              ],
+              "translation": "Dictionary of Notozero Saami language"
+            },
+            {
+              "id": [
+                508,
+                38
+              ],
+              "translation": "Saami"
+            },
+            {
+              "id": [
+                508,
+                36
+              ],
+              "translation": "Uralic"
+            }
+          ]
+        },
+        {
+          "id": [
+            498,
+            4
+          ],
+          "parent_id": [
+            498,
+            3
+          ],
+          "translation": "Lexical Entries",
+          "tree": [
+            {
+              "id": [
+                498,
+                4
+              ],
+              "translation": "Lexical Entries"
+            },
+            {
+              "id": [
+                498,
+                3
+              ],
+              "translation": "Dictionary of Notozero Saami language"
+            },
+            {
+              "id": [
+                508,
+                38
+              ],
+              "translation": "Saami"
+            },
+            {
+              "id": [
+                508,
+                36
+              ],
+              "translation": "Uralic"
+            }
+          ]
+        },
+        {
+          "id": [
+            107,
+            5
+          ],
+          "parent_id": [
+            107,
+            4
+          ],
+          "translation": "Lexical Entries",
+          "tree": [
+            {
+              "id": [
+                107,
+                5
+              ],
+              "translation": "Lexical Entries"
+            },
+            {
+              "id": [
+                107,
+                4
+              ],
+              "translation": "Besermyan dialect of Udmurt language"
+            },
+            {
+              "id": [
+                508,
+                43
+              ],
+              "translation": "Udmurt"
+            },
+            {
+              "id": [
+                508,
+                36
+              ],
+              "translation": "Uralic"
+            }
+          ]
+        },
+        {
+          "id": [
+            84,
+            4
+          ],
+          "parent_id": [
+            84,
+            3
+          ],
+          "translation": "Lexical Entries",
+          "tree": [
+            {
+              "id": [
+                84,
+                4
+              ],
+              "translation": "Lexical Entries"
+            },
+            {
+              "id": [
+                84,
+                3
+              ],
+              "translation": "Dictionary of Konda dialect of Mansi"
+            },
+            {
+              "id": [
+                508,
+                45
+              ],
+              "translation": "Mansi"
+            },
+            {
+              "id": [
+                508,
+                36
+              ],
+              "translation": "Uralic"
+            }
+          ]
+        },
+        {
+          "id": [
+            638,
+            5
+          ],
+          "parent_id": [
+            638,
+            4
+          ],
+          "translation": "Lexical Entries",
+          "tree": [
+            {
+              "id": [
+                638,
+                5
+              ],
+              "translation": "Lexical Entries"
+            },
+            {
+              "id": [
+                638,
+                4
+              ],
+              "translation": "словарь удыхейского диалекта села Гвасюги. носитель - О. А. Кялундзюга. запись 2016 года сделана А.Х.Гирфановой"
+            },
+            {
+              "id": [
+                643,
+                4
+              ],
+              "translation": "Удэгейский"
+            },
+            {
+              "id": [
+                633,
+                16
+              ],
+              "translation": "Тунгусские"
+            }
+          ]
+        },
+        {
+          "id": [
+            502,
+            4
+          ],
+          "parent_id": [
+            502,
+            3
+          ],
+          "translation": "Lexical Entries",
+          "tree": [
+            {
+              "id": [
+                502,
+                4
+              ],
+              "translation": "Lexical Entries"
+            },
+            {
+              "id": [
+                502,
+                3
+              ],
+              "translation": "Kildin  Saami language (vi. Voronino)"
+            },
+            {
+              "id": [
+                508,
+                38
+              ],
+              "translation": "Saami"
+            },
+            {
+              "id": [
+                508,
+                36
+              ],
+              "translation": "Uralic"
+            }
+          ]
+        },
+        {
+          "id": [
+            133,
+            5
+          ],
+          "parent_id": [
+            133,
+            4
+          ],
+          "translation": "Lexical Entries",
+          "tree": [
+            {
+              "id": [
+                133,
+                5
+              ],
+              "translation": "Lexical Entries"
+            },
+            {
+              "id": [
+                133,
+                4
+              ],
+              "translation": "Evenki, Chirinda 2007 HT Eldogir"
+            },
+            {
+              "id": [
+                633,
+                23
+              ],
+              "translation": "Evenki"
+            },
+            {
+              "id": [
+                633,
+                16
+              ],
+              "translation": "Тунгусские"
+            }
+          ]
+        },
+        {
+          "id": [
+            150,
+            5
+          ],
+          "parent_id": [
+            150,
+            4
+          ],
+          "translation": "Lexical Entries",
+          "tree": [
+            {
+              "id": [
+                150,
+                5
+              ],
+              "translation": "Lexical Entries"
+            },
+            {
+              "id": [
+                150,
+                4
+              ],
+              "translation": "Dictionary of Telengit dialect of the Altai language (Balykcha dialect, LV Silchakova)"
+            },
+            {
+              "id": [
+                145,
+                22
+              ],
+              "translation": "North Telengit (tёlёs) dialects"
+            },
+            {
+              "id": [
+                145,
+                21
+              ],
+              "translation": "Telengit dialect"
+            },
+            {
+              "id": [
+                145,
+                19
+              ],
+              "translation": "Southern dialect"
+            },
+            {
+              "id": [
+                1,
+                206
+              ],
+              "translation": "French language"
+            }
+          ]
+        },
+        {
+          "id": [
+            889,
+            224
+          ],
+          "parent_id": [
+            889,
+            223
+          ],
+          "translation": "Lexical Entries",
+          "tree": [
+            {
+              "id": [
+                889,
+                224
+              ],
+              "translation": "Lexical Entries"
+            },
+            {
+              "id": [
+                889,
+                223
+              ],
+              "translation": "Notozer dialect"
+            },
+            {
+              "id": [
+                508,
+                38
+              ],
+              "translation": "Saami"
+            },
+            {
+              "id": [
+                508,
+                36
+              ],
+              "translation": "Uralic"
+            }
+          ]
+        },
+        {
+          "id": [
+            694,
+            5
+          ],
+          "parent_id": [
+            694,
+            4
+          ],
+          "translation": "Lexical Entries",
+          "tree": [
+            {
+              "id": [
+                694,
+                5
+              ],
+              "translation": "Lexical Entries"
+            },
+            {
+              "id": [
+                694,
+                4
+              ],
+              "translation": "Dictionary of Forest dialect of Enets Language"
+            },
+            {
+              "id": [
+                508,
+                49
+              ],
+              "translation": "Enez"
+            },
+            {
+              "id": [
+                508,
+                47
+              ],
+              "translation": "Samoyed"
+            },
+            {
+              "id": [
+                508,
+                36
+              ],
+              "translation": "Uralic"
+            }
+          ]
+        },
+        {
+          "id": [
+            400,
+            4
+          ],
+          "parent_id": [
+            400,
+            3
+          ],
+          "translation": "Lexical Entries",
+          "tree": [
+            {
+              "id": [
+                400,
+                4
+              ],
+              "translation": "Lexical Entries"
+            },
+            {
+              "id": [
+                400,
+                3
+              ],
+              "translation": "Dictionary of Izhma dialect of Komi-Zyrian language (Beloyarsk Priuralsky district YaNAO)"
+            },
+            {
+              "id": [
+                508,
+                42
+              ],
+              "translation": "Komi"
+            },
+            {
+              "id": [
+                508,
+                36
+              ],
+              "translation": "Uralic"
+            }
+          ]
+        },
+        {
+          "id": [
+            504,
+            5
+          ],
+          "parent_id": [
+            504,
+            4
+          ],
+          "translation": "Lexical Entries",
+          "tree": [
+            {
+              "id": [
+                504,
+                5
+              ],
+              "translation": "Lexical Entries"
+            },
+            {
+              "id": [
+                504,
+                4
+              ],
+              "translation": "Russian-Karelian dictionary, 1908, compiled by teacher Svyatoozer school of M. D. Georgievskiy"
+            },
+            {
+              "id": [
+                508,
+                37
+              ],
+              "translation": "Karelian"
+            },
+            {
+              "id": [
+                1068,
+                5
+              ],
+              "translation": "Baltic-Finnish"
+            },
+            {
+              "id": [
+                508,
+                36
+              ],
+              "translation": "Uralic"
+            }
+          ]
+        },
+        {
+          "id": [
+            671,
+            15155
+          ],
+          "parent_id": [
+            671,
+            15154
+          ],
+          "translation": "Lexical Entries",
+          "tree": [
+            {
+              "id": [
+                671,
+                15155
+              ],
+              "translation": "Lexical Entries"
+            },
+            {
+              "id": [
+                671,
+                15154
+              ],
+              "translation": "Auri dialect, Ulcha language, recorded in 2016 – speaker: Iwan Rosugbu, né 1957"
+            },
+            {
+              "id": [
+                633,
+                22
+              ],
+              "translation": "Ulcha"
+            },
+            {
+              "id": [
+                633,
+                16
+              ],
+              "translation": "Тунгусские"
+            }
+          ]
+        },
+        {
+          "id": [
+            630,
+            3
+          ],
+          "parent_id": [
+            630,
+            2
+          ],
+          "translation": "Lexical Entries",
+          "tree": [
+            {
+              "id": [
+                630,
+                3
+              ],
+              "translation": "Lexical Entries"
+            },
+            {
+              "id": [
+                630,
+                2
+              ],
+              "translation": "Middle-Chulym language (Melet dialect, K.P. Sergeeva)"
+            },
+            {
+              "id": [
+                216,
+                8
+              ],
+              "translation": "Middle-Chulym language (Budeev, Budeeva, Tamycheva, Tatynkina)"
+            },
+            {
+              "id": [
+                1068,
+                9
+              ],
+              "translation": "Turkic languages"
+            }
+          ]
+        },
+        {
+          "id": [
+            70,
+            5
+          ],
+          "parent_id": [
+            70,
+            4
+          ],
+          "translation": "Lexical Entries",
+          "tree": [
+            {
+              "id": [
+                70,
+                5
+              ],
+              "translation": "Lexical Entries"
+            },
+            {
+              "id": [
+                70,
+                4
+              ],
+              "translation": "Dictionary of Tubalar (Troitsk)"
+            },
+            {
+              "id": [
+                252,
+                42
+              ],
+              "translation": "Tubalars dialect"
+            },
+            {
+              "id": [
+                145,
+                20
+              ],
+              "translation": "Northern dialect"
+            },
+            {
+              "id": [
+                33,
+                88
+              ],
+              "translation": "Altai language"
+            },
+            {
+              "id": [
+                1068,
+                9
+              ],
+              "translation": "Turkic languages"
+            }
+          ]
+        },
+        {
+          "id": [
+            136,
+            3
+          ],
+          "parent_id": [
+            136,
+            2
+          ],
+          "translation": "Lexical Entries",
+          "tree": [
+            {
+              "id": [
+                136,
+                3
+              ],
+              "translation": "Lexical Entries"
+            },
+            {
+              "id": [
+                136,
+                2
+              ],
+              "translation": "Dictionary of Izhma dialect of Komi-Zyrian language (Beloyarsk Priuralsky district YaNAO)"
+            },
+            {
+              "id": [
+                33,
+                65
+              ],
+              "translation": "Izhma dialect"
+            },
+            {
+              "id": [
+                508,
+                42
+              ],
+              "translation": "Komi"
+            },
+            {
+              "id": [
+                508,
+                36
+              ],
+              "translation": "Uralic"
+            }
+          ]
+        },
+        {
+          "id": [
+            527,
+            5
+          ],
+          "parent_id": [
+            527,
+            4
+          ],
+          "translation": "Lexical Entries",
+          "tree": [
+            {
+              "id": [
+                527,
+                5
+              ],
+              "translation": "Lexical Entries"
+            },
+            {
+              "id": [
+                527,
+                4
+              ],
+              "translation": "Dictionary of Salym dialect of Khanty language (vil. Lempino)"
+            },
+            {
+              "id": [
+                508,
+                44
+              ],
+              "translation": "Khanty"
+            },
+            {
+              "id": [
+                508,
+                36
+              ],
+              "translation": "Uralic"
+            }
+          ]
+        },
+        {
+          "id": [
+            311,
+            3
+          ],
+          "parent_id": [
+            311,
+            2
+          ],
+          "translation": "Lexical Entries",
+          "tree": [
+            {
+              "id": [
+                311,
+                3
+              ],
+              "translation": "Lexical Entries"
+            },
+            {
+              "id": [
+                311,
+                2
+              ],
+              "translation": "Dictionary of Forest dialect of Enents language"
+            },
+            {
+              "id": [
+                33,
+                85
+              ],
+              "translation": "Forest dialect"
+            },
+            {
+              "id": [
+                508,
+                49
+              ],
+              "translation": "Enez"
+            },
+            {
+              "id": [
+                508,
+                47
+              ],
+              "translation": "Samoyed"
+            },
+            {
+              "id": [
+                508,
+                36
+              ],
+              "translation": "Uralic"
+            }
+          ]
+        },
+        {
+          "id": [
+            958,
+            7
+          ],
+          "parent_id": [
+            958,
+            6
+          ],
+          "translation": "Lexical Entries",
+          "tree": [
+            {
+              "id": [
+                958,
+                7
+              ],
+              "translation": "Lexical Entries"
+            },
+            {
+              "id": [
+                958,
+                6
+              ],
+              "translation": "Dictionary of Ter Saami language"
+            },
+            {
+              "id": [
+                508,
+                38
+              ],
+              "translation": "Saami"
+            },
+            {
+              "id": [
+                508,
+                36
+              ],
+              "translation": "Uralic"
+            }
+          ]
+        },
+        {
+          "id": [
+            398,
+            3
+          ],
+          "parent_id": [
+            398,
+            2
+          ],
+          "translation": "Lexical Entries",
+          "tree": [
+            {
+              "id": [
+                398,
+                3
+              ],
+              "translation": "Lexical Entries"
+            },
+            {
+              "id": [
+                398,
+                2
+              ],
+              "translation": "Dictionary of Izhma dialect of Komi-Zyrian language (Beloyarsk Priuralsky district YaNAO)"
+            },
+            {
+              "id": [
+                33,
+                65
+              ],
+              "translation": "Izhma dialect"
+            },
+            {
+              "id": [
+                508,
+                42
+              ],
+              "translation": "Komi"
+            },
+            {
+              "id": [
+                508,
+                36
+              ],
+              "translation": "Uralic"
+            }
+          ]
+        },
+        {
+          "id": [
+            775,
+            6
+          ],
+          "parent_id": [
+            775,
+            5
+          ],
+          "translation": "Lexical Entries",
+          "tree": [
+            {
+              "id": [
+                775,
+                6
+              ],
+              "translation": "Lexical Entries"
+            },
+            {
+              "id": [
+                775,
+                5
+              ],
+              "translation": "Словарь казахского языка, 1897"
+            },
+            {
+              "id": [
+                500,
+                124
+              ],
+              "translation": "Kazakh"
+            },
+            {
+              "id": [
+                1068,
+                9
+              ],
+              "translation": "Turkic languages"
+            }
+          ]
+        },
+        {
+          "id": [
+            620,
+            3
+          ],
+          "parent_id": [
+            620,
+            2
+          ],
+          "translation": "Lexical Entries",
+          "tree": [
+            {
+              "id": [
+                620,
+                3
+              ],
+              "translation": "Lexical Entries"
+            },
+            {
+              "id": [
+                620,
+                2
+              ],
+              "translation": "Middle-Chulym language (Melet dialect, K.P. Sergeeva)"
+            },
+            {
+              "id": [
+                216,
+                8
+              ],
+              "translation": "Middle-Chulym language (Budeev, Budeeva, Tamycheva, Tatynkina)"
+            },
+            {
+              "id": [
+                1068,
+                9
+              ],
+              "translation": "Turkic languages"
+            }
+          ]
+        },
+        {
+          "id": [
+            640,
+            3
+          ],
+          "parent_id": [
+            640,
+            2
+          ],
+          "translation": "Lexical Entries",
+          "tree": [
+            {
+              "id": [
+                640,
+                3
+              ],
+              "translation": "Lexical Entries"
+            },
+            {
+              "id": [
+                640,
+                2
+              ],
+              "translation": "Dictionary of Notozero Saami language"
+            },
+            {
+              "id": [
+                508,
+                38
+              ],
+              "translation": "Saami"
+            },
+            {
+              "id": [
+                508,
+                36
+              ],
+              "translation": "Uralic"
+            }
+          ]
+        },
+        {
+          "id": [
+            694,
+            30034
+          ],
+          "parent_id": [
+            694,
+            30033
+          ],
+          "translation": "Lexical Entries",
+          "tree": [
+            {
+              "id": [
+                694,
+                30034
+              ],
+              "translation": "Lexical Entries"
+            },
+            {
+              "id": [
+                694,
+                30033
+              ],
+              "translation": "Dictionary of Ust-Avam dialect of Nganasan language (vil. Volochanka)"
+            },
+            {
+              "id": [
+                508,
+                50
+              ],
+              "translation": "Nganasan"
+            },
+            {
+              "id": [
+                508,
+                47
+              ],
+              "translation": "Samoyed"
+            },
+            {
+              "id": [
+                508,
+                36
+              ],
+              "translation": "Uralic"
+            }
+          ]
+        },
+        {
+          "id": [
+            586,
+            3
+          ],
+          "parent_id": [
+            586,
+            2
+          ],
+          "translation": "Lexical Entries",
+          "tree": [
+            {
+              "id": [
+                586,
+                3
+              ],
+              "translation": "Lexical Entries"
+            },
+            {
+              "id": [
+                586,
+                2
+              ],
+              "translation": "Словарь памятника сер. XIX в. \"Конъ святой борнызинъ\""
+            },
+            {
+              "id": [
+                578,
+                9
+              ],
+              "translation": "Верховой диалект"
+            },
+            {
+              "id": [
+                295,
+                8
+              ],
+              "translation": "Chuvash language"
+            },
+            {
+              "id": [
+                1068,
+                9
+              ],
+              "translation": "Turkic languages"
+            }
+          ]
+        },
+        {
+          "id": [
+            160,
+            3
+          ],
+          "parent_id": [
+            160,
+            2
+          ],
+          "translation": "Lexical Entries",
+          "tree": [
+            {
+              "id": [
+                160,
+                3
+              ],
+              "translation": "Lexical Entries"
+            },
+            {
+              "id": [
+                160,
+                2
+              ],
+              "translation": "Dictionary of Forest dialect of Enents language"
+            },
+            {
+              "id": [
+                33,
+                85
+              ],
+              "translation": "Forest dialect"
+            },
+            {
+              "id": [
+                508,
+                49
+              ],
+              "translation": "Enez"
+            },
+            {
+              "id": [
+                508,
+                47
+              ],
+              "translation": "Samoyed"
+            },
+            {
+              "id": [
+                508,
+                36
+              ],
+              "translation": "Uralic"
+            }
+          ]
+        },
+        {
+          "id": [
+            704,
+            12566
+          ],
+          "parent_id": [
+            704,
+            12565
+          ],
+          "translation": "Lexical Entries",
+          "tree": [
+            {
+              "id": [
+                704,
+                12566
+              ],
+              "translation": "Lexical Entries"
+            },
+            {
+              "id": [
+                704,
+                12565
+              ],
+              "translation": "Dictionary of the Bolshaya Zemlya dialect of Tundra Nenets"
+            },
+            {
+              "id": [
+                508,
+                48
+              ],
+              "translation": "Nenez"
+            },
+            {
+              "id": [
+                508,
+                47
+              ],
+              "translation": "Samoyed"
+            },
+            {
+              "id": [
+                508,
+                36
+              ],
+              "translation": "Uralic"
+            }
+          ]
+        },
+        {
+          "id": [
+            624,
+            3
+          ],
+          "parent_id": [
+            624,
+            2
+          ],
+          "translation": "Lexical Entries",
+          "tree": [
+            {
+              "id": [
+                624,
+                3
+              ],
+              "translation": "Lexical Entries"
+            },
+            {
+              "id": [
+                624,
+                2
+              ],
+              "translation": "Evenki, Chirinda 2007 HT Eldogir"
+            },
+            {
+              "id": [
+                633,
+                23
+              ],
+              "translation": "Evenki"
+            },
+            {
+              "id": [
+                633,
+                16
+              ],
+              "translation": "Тунгусские"
+            }
+          ]
+        }
+      ],
+      "dictionaries": [
+        {
+          "id": [
+            136,
+            2
+          ],
+          "translation": "Dictionary of Izhma dialect of Komi-Zyrian language (Beloyarsk Priuralsky district YaNAO)",
+          "parent_id": [
+            33,
+            65
+          ],
+          "additional_metadata": {
+            "location": "{'lat': 66.85460563477618, 'lng': 68.1646728515625}"
+          }
+        },
+        {
+          "id": [
+            704,
+            12565
+          ],
+          "translation": "Dictionary of the Bolshaya Zemlya dialect of Tundra Nenets",
+          "parent_id": [
+            508,
+            48
+          ],
+          "additional_metadata": {
+            "location": null
+          }
+        },
+        {
+          "id": [
+            479,
+            4
+          ],
+          "translation": "Dictionary of Ust-Avam dialect of Nganasan language (vil. Volochanka)",
+          "parent_id": [
+            508,
+            50
+          ],
+          "additional_metadata": {
+            "location": "{'lat': 70.94248580368708, 'lng': 94.5395515859127}"
+          }
+        },
+        {
+          "id": [
+            625,
+            2
+          ],
+          "translation": "Evenki, Tutonchana 2008, (K.D. Hutokogir)",
+          "parent_id": [
+            633,
+            23
+          ],
+          "additional_metadata": {
+            "location": "{'lat': 64.1053690415115, 'lng': 94.03298154473305}"
+          }
+        },
+        {
+          "id": [
+            498,
+            3
+          ],
+          "translation": "Dictionary of Notozero Saami language",
+          "parent_id": [
+            508,
+            38
+          ],
+          "additional_metadata": {
+            "location": "{'lat': 68.58205807143236, 'lng': 31.822998113930225}"
+          }
+        },
+        {
+          "id": [
+            630,
+            2
+          ],
+          "translation": "Middle-Chulym language (Melet dialect, K.P. Sergeeva)",
+          "parent_id": [
+            216,
+            8
+          ],
+          "additional_metadata": {
+            "location": null
+          }
+        },
+        {
+          "id": [
+            775,
+            5
+          ],
+          "translation": "Словарь казахского языка, 1897",
+          "parent_id": [
+            500,
+            124
+          ],
+          "additional_metadata": {
+            "location": null
+          }
+        },
+        {
+          "id": [
+            502,
+            3
+          ],
+          "translation": "Kildin  Saami language (vi. Voronino)",
+          "parent_id": [
+            508,
+            38
+          ],
+          "additional_metadata": {
+            "location": "{'lat': 66.77285271555562, 'lng': 38.348878026008606}"
+          }
+        },
+        {
+          "id": [
+            504,
+            4
+          ],
+          "translation": "Russian-Karelian dictionary, 1908, compiled by teacher Svyatoozer school of M. D. Georgievskiy",
+          "parent_id": [
+            508,
+            37
+          ],
+          "additional_metadata": {
+            "location": "{'lat': 61.54625873490123, 'lng': 33.632446490228176}"
+          }
+        },
+        {
+          "id": [
+            620,
+            2
+          ],
+          "translation": "Middle-Chulym language (Melet dialect, K.P. Sergeeva)",
+          "parent_id": [
+            216,
+            8
+          ],
+          "additional_metadata": {
+            "location": null
+          }
+        },
+        {
+          "id": [
+            105,
+            3
+          ],
+          "translation": "Kildin  Saami language (vi. Voronino)",
+          "parent_id": [
+            508,
+            38
+          ],
+          "additional_metadata": {
+            "location": "{'lat': 67.0314480172564, 'lng': 38.3928219974041}"
+          }
+        },
+        {
+          "id": [
+            840,
+            9
+          ],
+          "translation": "Русско-сартовский словарь",
+          "parent_id": [
+            840,
+            6
+          ],
+          "additional_metadata": {
+            "location": null
+          }
+        },
+        {
+          "id": [
+            527,
+            4
+          ],
+          "translation": "Dictionary of Salym dialect of Khanty language (vil. Lempino)",
+          "parent_id": [
+            508,
+            44
+          ],
+          "additional_metadata": {
+            "location": "{'lat': 60.997086599134704, 'lng': 71.20019517838955}"
+          }
+        },
+        {
+          "id": [
+            638,
+            4
+          ],
+          "translation": "словарь удыхейского диалекта села Гвасюги. носитель - О. А. Кялундзюга. запись 2016 года сделана А.Х.Гирфановой",
+          "parent_id": [
+            643,
+            4
+          ],
+          "additional_metadata": {
+            "location": "{'lat': 47.67816577719345, 'lng': 136.1895201355219}"
+          }
+        },
+        {
+          "id": [
+            107,
+            4
+          ],
+          "translation": "Besermyan dialect of Udmurt language",
+          "parent_id": [
+            508,
+            43
+          ],
+          "additional_metadata": {
+            "location": "{'lat': 58.01828230633404, 'lng': 52.149696350097656}"
+          }
+        },
+        {
+          "id": [
+            889,
+            223
+          ],
+          "translation": "Notozer dialect",
+          "parent_id": [
+            508,
+            38
+          ],
+          "additional_metadata": {
+            "location": null
+          }
+        },
+        {
+          "id": [
+            694,
+            4
+          ],
+          "translation": "Dictionary of Forest dialect of Enets Language",
+          "parent_id": [
+            508,
+            49
+          ],
+          "additional_metadata": {
+            "location": null
+          }
+        },
+        {
+          "id": [
+            731,
+            11
+          ],
+          "translation": "Dictionary for Kanin Tundra dialect",
+          "parent_id": [
+            508,
+            48
+          ],
+          "additional_metadata": {
+            "location": null
+          }
+        },
+        {
+          "id": [
+            958,
+            6
+          ],
+          "translation": "Dictionary of Ter Saami language",
+          "parent_id": [
+            508,
+            38
+          ],
+          "additional_metadata": {
+            "location": null
+          }
+        },
+        {
+          "id": [
+            624,
+            2
+          ],
+          "translation": "Evenki, Chirinda 2007 HT Eldogir",
+          "parent_id": [
+            633,
+            23
+          ],
+          "additional_metadata": {
+            "location": "{'lat': 67.53758827515938, 'lng': 100.40505185723305}"
+          }
+        },
+        {
+          "id": [
+            150,
+            4
+          ],
+          "translation": "Dictionary of Telengit dialect of the Altai language (Balykcha dialect, LV Silchakova)",
+          "parent_id": [
+            145,
+            22
+          ],
+          "additional_metadata": {
+            "location": "{'lat': 51.28425258391496, 'lng': 87.72445678710938}"
+          }
+        },
+        {
+          "id": [
+            586,
+            2
+          ],
+          "translation": "Словарь памятника сер. XIX в. \"Конъ святой борнызинъ\"",
+          "parent_id": [
+            578,
+            9
+          ],
+          "additional_metadata": {
+            "location": "{'lat': 55.962654000444125, 'lng': 46.877288818359375}"
+          }
+        },
+        {
+          "id": [
+            631,
+            3
+          ],
+          "translation": "Dictionary of Notozero Saami language",
+          "parent_id": [
+            508,
+            38
+          ],
+          "additional_metadata": {
+            "location": null
+          }
+        },
+        {
+          "id": [
+            311,
+            2
+          ],
+          "translation": "Dictionary of Forest dialect of Enents language",
+          "parent_id": [
+            33,
+            85
+          ],
+          "additional_metadata": {
+            "location": null
+          }
+        },
+        {
+          "id": [
+            965,
+            19262
+          ],
+          "translation": "Dictionary of Notozer Saami lamguage",
+          "parent_id": [
+            508,
+            38
+          ],
+          "additional_metadata": {
+            "location": "{'lat': 69.05460366782856, 'lng': 32.09960934240372}"
+          }
+        },
+        {
+          "id": [
+            671,
+            15154
+          ],
+          "translation": "Auri dialect, Ulcha language, recorded in 2016 – speaker: Iwan Rosugbu, né 1957",
+          "parent_id": [
+            633,
+            22
+          ],
+          "additional_metadata": {
+            "location": "{'lat': 52.36784357172409, 'lng': 140.43994903564456}"
+          }
+        },
+        {
+          "id": [
+            160,
+            2
+          ],
+          "translation": "Dictionary of Forest dialect of Enents language",
+          "parent_id": [
+            33,
+            85
+          ],
+          "additional_metadata": {
+            "location": "{'lat': 68.8605456268807, 'lng': 86.00166320800781}"
+          }
+        },
+        {
+          "id": [
+            694,
+            30033
+          ],
+          "translation": "Dictionary of Ust-Avam dialect of Nganasan language (vil. Volochanka)",
+          "parent_id": [
+            508,
+            50
+          ],
+          "additional_metadata": {
+            "location": null
+          }
+        },
+        {
+          "id": [
+            126,
+            3
+          ],
+          "translation": "Evenki, Tutonchana 2008, (K.D. Hutokogir)",
+          "parent_id": [
+            633,
+            23
+          ],
+          "additional_metadata": {
+            "location": "{'lat': 64.20398689468654, 'lng': 93.8397216796875}"
+          }
+        },
+        {
+          "id": [
+            70,
+            4
+          ],
+          "translation": "Dictionary of Tubalar (Troitsk)",
+          "parent_id": [
+            252,
+            42
+          ],
+          "additional_metadata": {
+            "location": "{'lat': 51.733226687439895, 'lng': 87.18411827139789}"
+          }
+        },
+        {
+          "id": [
+            657,
+            3
+          ],
+          "translation": "Dictionary of Konda dialect of Mansi",
+          "parent_id": [
+            508,
+            45
+          ],
+          "additional_metadata": {
+            "location": null
+          }
+        },
+        {
+          "id": [
+            533,
+            3
+          ],
+          "translation": "Dictionary of Bolshezemel dialect",
+          "parent_id": [
+            508,
+            48
+          ],
+          "additional_metadata": {
+            "location": "{'lat': 67.68505501493762, 'lng': 53.16174326464534}"
+          }
+        },
+        {
+          "id": [
+            398,
+            2
+          ],
+          "translation": "Dictionary of Izhma dialect of Komi-Zyrian language (Beloyarsk Priuralsky district YaNAO)",
+          "parent_id": [
+            33,
+            65
+          ],
+          "additional_metadata": {
+            "location": null
+          }
+        },
+        {
+          "id": [
+            133,
+            4
+          ],
+          "translation": "Evenki, Chirinda 2007 HT Eldogir",
+          "parent_id": [
+            633,
+            23
+          ],
+          "additional_metadata": {
+            "location": "{'lat': 67.55685098552249, 'lng': 100.39169311523438}"
+          }
+        },
+        {
+          "id": [
+            400,
+            3
+          ],
+          "translation": "Dictionary of Izhma dialect of Komi-Zyrian language (Beloyarsk Priuralsky district YaNAO)",
+          "parent_id": [
+            508,
+            42
+          ],
+          "additional_metadata": {
+            "location": "{'lat': 66.85905852766555, 'lng': 68.15909385681152}"
+          }
+        },
+        {
+          "id": [
+            640,
+            2
+          ],
+          "translation": "Dictionary of Notozero Saami language",
+          "parent_id": [
+            508,
+            38
+          ],
+          "additional_metadata": {
+            "location": "{'lat': 69.16255860200279, 'lng': 33.02689991891384}"
+          }
+        },
+        {
+          "id": [
+            84,
+            3
+          ],
+          "translation": "Dictionary of Konda dialect of Mansi",
+          "parent_id": [
+            508,
+            45
+          ],
+          "additional_metadata": {
+            "location": "{'lat': 60.20707506634915, 'lng': 66.5057373046875}"
+          }
+        },
+        {
+          "id": [
+            480,
+            4
+          ],
+          "translation": "Dictionary of Middle Ob' dialect of Selkup language 1970s",
+          "parent_id": [
+            508,
+            51
+          ],
+          "additional_metadata": {
+            "location": "{'lat': 58.35649493887599, 'lng': 82.84405519254506}"
+          }
+        }
+      ]
+    }
+  }
+}

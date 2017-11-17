@@ -1,0 +1,1035 @@
+{
+  "data": {
+    "language_tree": [
+      {
+        "id": [
+          1076,
+          4
+        ],
+        "parent_id": null,
+        "translation": "Altaic family",
+        "created_at": 1503899274
+      },
+      {
+        "id": [
+          1076,
+          7
+        ],
+        "parent_id": [
+          1076,
+          4
+        ],
+        "translation": "Mongolic languages",
+        "created_at": 1503899326
+      },
+      {
+        "id": [
+          1076,
+          22
+        ],
+        "parent_id": [
+          1076,
+          7
+        ],
+        "translation": "Buryat language",
+        "created_at": 1503899491
+      },
+      {
+        "id": [
+          1076,
+          10
+        ],
+        "parent_id": [
+          1076,
+          7
+        ],
+        "translation": "Kalmyk language",
+        "created_at": 1503899417
+      },
+      {
+        "id": [
+          1076,
+          119
+        ],
+        "parent_id": [
+          1076,
+          4
+        ],
+        "translation": "Koreanic languages",
+        "created_at": 1503903593
+      },
+      {
+        "id": [
+          1076,
+          122
+        ],
+        "parent_id": [
+          1076,
+          119
+        ],
+        "translation": "Hamgyŏng idioms",
+        "created_at": 1503903728
+      },
+      {
+        "id": [
+          891,
+          13
+        ],
+        "parent_id": [
+          1076,
+          119
+        ],
+        "translation": "Korean",
+        "created_at": 1503470830
+      },
+      {
+        "id": [
+          1076,
+          125
+        ],
+        "parent_id": [
+          1076,
+          119
+        ],
+        "translation": "Jŏlla idioms",
+        "created_at": 1503903746
+      },
+      {
+        "id": [
+          1068,
+          9
+        ],
+        "parent_id": null,
+        "translation": "Turkic languages",
+        "created_at": 1503831110
+      },
+      {
+        "id": [
+          840,
+          6
+        ],
+        "parent_id": [
+          1068,
+          9
+        ],
+        "translation": "Uzbek",
+        "created_at": 1492760588
+      },
+      {
+        "id": [
+          1088,
+          612
+        ],
+        "parent_id": [
+          1068,
+          9
+        ],
+        "translation": "Noghai",
+        "created_at": 1504086845
+      },
+      {
+        "id": [
+          1088,
+          615
+        ],
+        "parent_id": [
+          1068,
+          9
+        ],
+        "translation": "Urum",
+        "created_at": 1504086867
+      },
+      {
+        "id": [
+          500,
+          121
+        ],
+        "parent_id": [
+          1068,
+          9
+        ],
+        "translation": "Bashkir",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          1088,
+          609
+        ],
+        "parent_id": [
+          500,
+          121
+        ],
+        "translation": "North-Western dialectal group",
+        "created_at": 1504086808
+      },
+      {
+        "id": [
+          1088,
+          605
+        ],
+        "parent_id": [
+          500,
+          121
+        ],
+        "translation": "Southern dialectal group",
+        "created_at": 1504086771
+      },
+      {
+        "id": [
+          500,
+          122
+        ],
+        "parent_id": [
+          1068,
+          9
+        ],
+        "translation": "Tatar",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          500,
+          123
+        ],
+        "parent_id": [
+          1068,
+          9
+        ],
+        "translation": "Khakas",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          500,
+          124
+        ],
+        "parent_id": [
+          1068,
+          9
+        ],
+        "translation": "Kazakh",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          1100,
+          4
+        ],
+        "parent_id": [
+          1068,
+          9
+        ],
+        "translation": "Crimean Tatar",
+        "created_at": 1504126789
+      },
+      {
+        "id": [
+          998,
+          5
+        ],
+        "parent_id": [
+          1068,
+          9
+        ],
+        "translation": "Qumyq language",
+        "created_at": 1503065436
+      },
+      {
+        "id": [
+          1088,
+          601
+        ],
+        "parent_id": [
+          998,
+          5
+        ],
+        "translation": "Qaytaq dialectal group",
+        "created_at": 1504086723
+      },
+      {
+        "id": [
+          216,
+          8
+        ],
+        "parent_id": [
+          1068,
+          9
+        ],
+        "translation": "Middle-Chulym language (Budeev, Budeeva, Tamycheva, Tatynkina)",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          678,
+          9
+        ],
+        "parent_id": [
+          1068,
+          9
+        ],
+        "translation": "Yakut",
+        "created_at": 1482838979
+      },
+      {
+        "id": [
+          1088,
+          569
+        ],
+        "parent_id": [
+          678,
+          9
+        ],
+        "translation": "North-Western dialectal group",
+        "created_at": 1504084663
+      },
+      {
+        "id": [
+          1088,
+          577
+        ],
+        "parent_id": [
+          678,
+          9
+        ],
+        "translation": "Bülüü dialectal group",
+        "created_at": 1504084818
+      },
+      {
+        "id": [
+          1088,
+          573
+        ],
+        "parent_id": [
+          678,
+          9
+        ],
+        "translation": "North-Eastern dialectal group",
+        "created_at": 1504084696
+      },
+      {
+        "id": [
+          1105,
+          28
+        ],
+        "parent_id": [
+          678,
+          9
+        ],
+        "translation": "Dolgan language",
+        "created_at": 1504186631
+      },
+      {
+        "id": [
+          1088,
+          581
+        ],
+        "parent_id": [
+          678,
+          9
+        ],
+        "translation": "Central Yakut dialectal group",
+        "created_at": 1504084864
+      },
+      {
+        "id": [
+          33,
+          89
+        ],
+        "parent_id": [
+          1068,
+          9
+        ],
+        "translation": "Ujguri language",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          1068,
+          13
+        ],
+        "parent_id": [
+          1068,
+          9
+        ],
+        "translation": "Dictionary of Middle-Chulym language",
+        "created_at": 1503853568
+      },
+      {
+        "id": [
+          33,
+          88
+        ],
+        "parent_id": [
+          1068,
+          9
+        ],
+        "translation": "Altai language",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          65,
+          2
+        ],
+        "parent_id": [
+          33,
+          88
+        ],
+        "translation": "Telengit dialect",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          145,
+          20
+        ],
+        "parent_id": [
+          33,
+          88
+        ],
+        "translation": "Northern dialect",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          252,
+          42
+        ],
+        "parent_id": [
+          145,
+          20
+        ],
+        "translation": "Tubalars dialect",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          33,
+          90
+        ],
+        "parent_id": [
+          33,
+          88
+        ],
+        "translation": "Chalkan dialect",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          295,
+          8
+        ],
+        "parent_id": [
+          1068,
+          9
+        ],
+        "translation": "Chuvash language",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          578,
+          8
+        ],
+        "parent_id": [
+          295,
+          8
+        ],
+        "translation": "Малокарачинский диалект",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          578,
+          9
+        ],
+        "parent_id": [
+          295,
+          8
+        ],
+        "translation": "Верховой диалект",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          1,
+          204
+        ],
+        "parent_id": null,
+        "translation": "English language",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          633,
+          16
+        ],
+        "parent_id": null,
+        "translation": "Тунгусские",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          633,
+          23
+        ],
+        "parent_id": [
+          633,
+          16
+        ],
+        "translation": "Evenki",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          1088,
+          598
+        ],
+        "parent_id": [
+          633,
+          23
+        ],
+        "translation": "Barguzin Evenki",
+        "created_at": 1504086595
+      },
+      {
+        "id": [
+          1088,
+          595
+        ],
+        "parent_id": [
+          633,
+          23
+        ],
+        "translation": "Southern Evenki",
+        "created_at": 1504086578
+      },
+      {
+        "id": [
+          633,
+          22
+        ],
+        "parent_id": [
+          633,
+          16
+        ],
+        "translation": "Ulcha",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          1002,
+          12
+        ],
+        "parent_id": [
+          633,
+          16
+        ],
+        "translation": "Tungusic",
+        "created_at": 1503209383
+      },
+      {
+        "id": [
+          643,
+          4
+        ],
+        "parent_id": [
+          633,
+          16
+        ],
+        "translation": "Удэгейский",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          996,
+          1069
+        ],
+        "parent_id": [
+          633,
+          16
+        ],
+        "translation": "Orok",
+        "created_at": 1502952366
+      },
+      {
+        "id": [
+          633,
+          17
+        ],
+        "parent_id": [
+          633,
+          16
+        ],
+        "translation": "Nanai",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          1088,
+          592
+        ],
+        "parent_id": [
+          633,
+          17
+        ],
+        "translation": "Sungar",
+        "created_at": 1504086464
+      },
+      {
+        "id": [
+          1088,
+          585
+        ],
+        "parent_id": [
+          633,
+          17
+        ],
+        "translation": "Lower Amur Nanai",
+        "created_at": 1504086304
+      },
+      {
+        "id": [
+          1088,
+          589
+        ],
+        "parent_id": [
+          633,
+          17
+        ],
+        "translation": "Samagir Nanai",
+        "created_at": 1504086332
+      },
+      {
+        "id": [
+          1,
+          203
+        ],
+        "parent_id": null,
+        "translation": "Russian language",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          1,
+          205
+        ],
+        "parent_id": null,
+        "translation": "Finnish language",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          1,
+          207
+        ],
+        "parent_id": null,
+        "translation": "German language",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          1,
+          206
+        ],
+        "parent_id": null,
+        "translation": "French language",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          145,
+          19
+        ],
+        "parent_id": [
+          1,
+          206
+        ],
+        "translation": "Southern dialect",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          932,
+          4
+        ],
+        "parent_id": [
+          145,
+          19
+        ],
+        "translation": "Teleut dialect",
+        "created_at": 1499907550
+      },
+      {
+        "id": [
+          145,
+          21
+        ],
+        "parent_id": [
+          145,
+          19
+        ],
+        "translation": "Telengit dialect",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          145,
+          22
+        ],
+        "parent_id": [
+          145,
+          21
+        ],
+        "translation": "North Telengit (tёlёs) dialects",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          252,
+          39
+        ],
+        "parent_id": [
+          145,
+          21
+        ],
+        "translation": "South Telengit dialects",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          252,
+          40
+        ],
+        "parent_id": [
+          145,
+          19
+        ],
+        "translation": "Altai-Kizhi dialect",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          508,
+          36
+        ],
+        "parent_id": null,
+        "translation": "Uralic",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          508,
+          43
+        ],
+        "parent_id": [
+          508,
+          36
+        ],
+        "translation": "Udmurt",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          508,
+          44
+        ],
+        "parent_id": [
+          508,
+          36
+        ],
+        "translation": "Khanty",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          799,
+          796
+        ],
+        "parent_id": [
+          508,
+          44
+        ],
+        "translation": "Vasjugan",
+        "created_at": 1499837089
+      },
+      {
+        "id": [
+          799,
+          799
+        ],
+        "parent_id": [
+          508,
+          44
+        ],
+        "translation": "Vasjugan",
+        "created_at": 1499837137
+      },
+      {
+        "id": [
+          508,
+          45
+        ],
+        "parent_id": [
+          508,
+          36
+        ],
+        "translation": "Mansi",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          508,
+          46
+        ],
+        "parent_id": [
+          508,
+          36
+        ],
+        "translation": "Hungarian",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          508,
+          40
+        ],
+        "parent_id": [
+          508,
+          36
+        ],
+        "translation": "Moksha",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          508,
+          47
+        ],
+        "parent_id": [
+          508,
+          36
+        ],
+        "translation": "Samoyed",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          508,
+          49
+        ],
+        "parent_id": [
+          508,
+          47
+        ],
+        "translation": "Enez",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          33,
+          86
+        ],
+        "parent_id": [
+          508,
+          49
+        ],
+        "translation": "Tundra Enets",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          33,
+          85
+        ],
+        "parent_id": [
+          508,
+          49
+        ],
+        "translation": "Forest dialect",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          508,
+          51
+        ],
+        "parent_id": [
+          508,
+          47
+        ],
+        "translation": "Selkup",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          302,
+          4
+        ],
+        "parent_id": [
+          508,
+          51
+        ],
+        "translation": "Ket dialect",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          33,
+          87
+        ],
+        "parent_id": [
+          508,
+          51
+        ],
+        "translation": "Narym dialect",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          508,
+          50
+        ],
+        "parent_id": [
+          508,
+          47
+        ],
+        "translation": "Nganasan",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          508,
+          48
+        ],
+        "parent_id": [
+          508,
+          47
+        ],
+        "translation": "Nenez",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          33,
+          80
+        ],
+        "parent_id": [
+          508,
+          48
+        ],
+        "translation": "Tundra dialect",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          33,
+          81
+        ],
+        "parent_id": [
+          33,
+          80
+        ],
+        "translation": "Bolshezemel dialect",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          508,
+          42
+        ],
+        "parent_id": [
+          508,
+          36
+        ],
+        "translation": "Komi",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          33,
+          65
+        ],
+        "parent_id": [
+          508,
+          42
+        ],
+        "translation": "Izhma dialect",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          770,
+          27104
+        ],
+        "parent_id": [
+          508,
+          36
+        ],
+        "translation": "Votic",
+        "created_at": 1490964840
+      },
+      {
+        "id": [
+          508,
+          38
+        ],
+        "parent_id": [
+          508,
+          36
+        ],
+        "translation": "Saami",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          508,
+          39
+        ],
+        "parent_id": [
+          508,
+          36
+        ],
+        "translation": "Erzya",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          508,
+          41
+        ],
+        "parent_id": [
+          508,
+          36
+        ],
+        "translation": "Mari",
+        "created_at": 1482488658
+      },
+      {
+        "id": [
+          1068,
+          5
+        ],
+        "parent_id": [
+          508,
+          36
+        ],
+        "translation": "Baltic-Finnish",
+        "created_at": 1503830769
+      },
+      {
+        "id": [
+          508,
+          37
+        ],
+        "parent_id": [
+          1068,
+          5
+        ],
+        "translation": "Karelian",
+        "created_at": 1482488658
+      }
+    ]
+  }
+}

@@ -1,12 +1,13 @@
 import React from 'react';
 import Immutable from 'immutable';
-import { pure } from 'recompose';
 import { Container } from 'semantic-ui-react';
 
 import Labels from 'components/Search/Labels';
 import ResultsMap from 'components/Search/ResultsMap';
 import IntersectionControl from 'components/Search/IntersectionControl';
 import QueryBuilder from 'components/Search/QueryBuilder';
+import LanguageTree from 'components/Search/LanguageTree';
+import { buildLanguageTree, buildSearchResultsTree } from './treeBuilder';
 
 const adder = i => v => v.add(`search_${i}`);
 
@@ -18,6 +19,12 @@ const data = require('./results.json').reduce(
     ),
   new Immutable.Map()
 );
+
+const searchResults = Immutable.fromJS(require('./search_results.json').data.advanced_search);
+const languages = Immutable.fromJS(require('./languages.json').data.language_tree);
+
+const languagesTree = buildLanguageTree(languages);
+const searchResultsTree = buildSearchResultsTree(searchResults, languagesTree);
 
 const mdColors = new Immutable.List([
   '#E53935',
@@ -48,11 +55,7 @@ const COLORS = Immutable.fromJS({
 
 const searchStrings = [
   [
-    { search_string: 'баб', matching_type: 'substring' },
-    { search_string: 'о', matching_type: 'substring' },
-  ],
-  [
-    { search_string: 'сомне', matching_type: 'regexp' },
+    { search_string: 'бабушка', matching_type: 'full_string' },
   ],
 ];
 
@@ -83,7 +86,7 @@ class Info extends React.PureComponent {
 
   clickLabel(name) {
     this.setState({
-      actives: this.state.actives.update(name, v => !v)
+      actives: this.state.actives.update(name, v => !v),
     });
   }
 
@@ -92,6 +95,7 @@ class Info extends React.PureComponent {
       <Container>
         <h3>Поиск</h3>
         <QueryBuilder data={searchStrings} />
+        <LanguageTree data={searchResultsTree} />
         <Labels
           data={this.labels()}
           onClick={this.clickLabel}
