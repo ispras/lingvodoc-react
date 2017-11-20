@@ -3,7 +3,7 @@ import 'styles/main.scss';
 
 import React from 'react';
 import styled from 'styled-components';
-import { Sidebar } from 'semantic-ui-react';
+import { Sidebar, Menu, Icon } from 'semantic-ui-react';
 
 import NavBar from './NavBar';
 import TasksSidebar from './TasksSidebar';

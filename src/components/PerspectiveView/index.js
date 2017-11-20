@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { gql, graphql } from 'react-apollo';
-import { isEqual, find, filter, take, drop, groupBy } from 'lodash';
+import { isEqual, find, take, drop, groupBy } from 'lodash';
 import { Table, Dimmer, Header, Icon } from 'semantic-ui-react';
 
 import TableHeader from './TableHeader';

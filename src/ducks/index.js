@@ -7,6 +7,7 @@ import saga from './saga';
 import language from './language';
 import player from './player';
 import markup from './markup';
+import roles from './roles';
 
 export default {
   locale,
@@ -18,4 +19,5 @@ export default {
   language,
   player,
   markup,
+  roles,
 };

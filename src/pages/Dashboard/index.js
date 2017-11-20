@@ -1,11 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { pure, onlyUpdateForKeys } from 'recompose';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { compose, pure, onlyUpdateForKeys } from 'recompose';
 import { Link } from 'react-router-dom';
 import { gql, graphql } from 'react-apollo';
 import { Container, Dimmer, Tab, Header, List, Dropdown, Icon, Menu } from 'semantic-ui-react';
 import { isEqual } from 'lodash';
 import { compositeIdToString } from 'utils/compositeId';
+import { openDictionaryRoles } from 'ducks/roles';
+import DictionaryRolesModal from 'components/DictionaryRolesModal';
 
 const dimmerStyle = { minHeight: '600px' };
 
@@ -14,7 +18,7 @@ const DICTIONARIES_TABS = [
     menuItem: 'My dictionaries',
     render: () => (
       <Tab.Pane>
-        <Dictionaries category={1} my_dictionaries available={false} />
+        <Dictionaries category={0} mode={0} />
       </Tab.Pane>
     ),
   },
@@ -22,7 +26,7 @@ const DICTIONARIES_TABS = [
     menuItem: 'Available dictionaries',
     render: () => (
       <Tab.Pane>
-        <Dictionaries category={1} available my_dictionaries={false} />
+        <Dictionaries category={0} mode={1} />
       </Tab.Pane>
     ),
   },
@@ -33,7 +37,7 @@ const CORPORA_TABS = [
     menuItem: 'My corpora',
     render: () => (
       <Tab.Pane>
-        <Dictionaries category={2} my_dictionaries available={false} />
+        <Dictionaries category={1} mode={0} />
       </Tab.Pane>
     ),
   },
@@ -41,15 +45,15 @@ const CORPORA_TABS = [
     menuItem: 'Available corpora',
     render: () => (
       <Tab.Pane>
-        <Dictionaries category={2} available my_dictionaries={false} />
+        <Dictionaries category={1} mode={1} />
       </Tab.Pane>
     ),
   },
 ];
 
 export const query = gql`
-  query dashboardQuery($available: Boolean!, $my_dictionaries: Boolean!) {
-    dictionaries(available: $available, my_dictionaries: $my_dictionaries) {
+  query dashboardQuery($mode: Int!, $category: Int!) {
+    dictionaries(mode: $mode, category: $category) {
       id
       parent_id
       translation
@@ -72,7 +76,6 @@ export const query = gql`
     }
   }
 `;
-
 
 const updateDictionaryStatusMutation = gql`
   mutation updateDictionaryStatus($id: LingvodocID!, $status_id: LingvodocID!) {
@@ -100,8 +103,8 @@ const Statuses = onlyUpdateForKeys(['translation'])(({
         {
           query,
           variables: {
-            available: false,
-            my_dictionaries: true,
+            mode: 1,
+            category: 0,
           },
         },
       ],
@@ -119,7 +122,7 @@ const Statuses = onlyUpdateForKeys(['translation'])(({
             active={isEqual(statusId, status.id)}
             onClick={() => updateHandler(parentId, status.id)}
           />
-          ))}
+        ))}
       </Dropdown.Menu>
     </Dropdown>
   );
@@ -176,9 +179,9 @@ const Perspective = onlyUpdateForKeys(['translation', 'status'])((props) => {
   );
 });
 
-const Dictionary = onlyUpdateForKeys(['translation', 'status', 'perspectives'])((props) => {
+const D = (props) => {
   const {
-    id, translation, status, state_translation_gist_id: statusId, perspectives, statuses,
+    id, translation, status, state_translation_gist_id: statusId, perspectives, statuses, actions,
   } = props;
   return (
     <List.Item>
@@ -186,7 +189,7 @@ const Dictionary = onlyUpdateForKeys(['translation', 'status', 'perspectives'])(
         <Menu>
           <Dropdown text={translation} pointing className="link item">
             <Dropdown.Menu>
-              <Dropdown.Item icon="users" text="Roles..." />
+              <Dropdown.Item icon="users" text="Roles..." onClick={() => actions.openDictionaryRoles(id)} />
               <Dropdown.Item icon="setting" text="Properties..." />
               <Dropdown.Item icon="percent" text="Statistics..." />
               <Dropdown.Item icon="circle" text="Create a new perspective..." />
@@ -201,13 +204,28 @@ const Dictionary = onlyUpdateForKeys(['translation', 'status', 'perspectives'])(
         </Menu>
         <List relaxed>
           {perspectives.map(perspective => (
-            <Perspective key={compositeIdToString(perspective.id)} {...perspective} as={List.Item} statuses={statuses} />
+            <Perspective
+              key={compositeIdToString(perspective.id)}
+              {...perspective}
+              as={List.Item}
+              statuses={statuses}
+            />
           ))}
         </List>
       </List.Content>
     </List.Item>
   );
-});
+};
+
+const Dictionary = compose(
+  connect(
+    state => state.roles,
+    dispatch => ({
+      actions: bindActionCreators({ openDictionaryRoles }, dispatch),
+    })
+  ),
+  onlyUpdateForKeys(['translation', 'status', 'perspectives'])
+)(D);
 
 const Dashboard = pure(({ data }) => {
   const { loading, dictionaries, all_statuses: statuses } = data;
@@ -222,15 +240,20 @@ const Dashboard = pure(({ data }) => {
 
         <List>
           {!loading &&
-            dictionaries.map(dictionary => <Dictionary key={compositeIdToString(dictionary.id)} statuses={statuses} {...dictionary} />)}
+            dictionaries.map(dictionary => (
+              <Dictionary key={compositeIdToString(dictionary.id)} statuses={statuses} {...dictionary} />
+            ))}
         </List>
       </Dimmer.Dimmable>
+      <DictionaryRolesModal />
     </Container>
   );
 });
 
 Dashboard.propTypes = {
   data: PropTypes.object.isRequired,
+  mode: PropTypes.number.isRequired,
+  category: PropTypes.number.isRequired,
 };
 
 const Dictionaries = graphql(query)(Dashboard);
