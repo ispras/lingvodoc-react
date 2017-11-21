@@ -8,7 +8,7 @@ import { gql, graphql } from 'react-apollo';
 import { Container, Dimmer, Tab, Header, List, Dropdown, Icon, Menu } from 'semantic-ui-react';
 import { isEqual } from 'lodash';
 import { compositeIdToString } from 'utils/compositeId';
-import { openDictionaryRoles } from 'ducks/roles';
+import { openRoles } from 'ducks/roles';
 import DictionaryRolesModal from 'components/DictionaryRolesModal';
 
 const dimmerStyle = { minHeight: '600px' };
@@ -132,9 +132,9 @@ const Statuses = onlyUpdateForKeys(['translation'])(({
 const DicionaryStatuses = graphql(updateDictionaryStatusMutation, { name: 'updateStatus' })(Statuses);
 const PerspectiveStatuses = graphql(updatePerspectiveStatusMutation, { name: 'updateStatus' })(Statuses);
 
-const Perspective = onlyUpdateForKeys(['translation', 'status'])((props) => {
+const P = (props) => {
   const {
-    id, parent_id, translation, status, state_translation_gist_id: statusId, statuses,
+    id, parent_id, translation, status, state_translation_gist_id: statusId, statuses, actions,
   } = props;
   return (
     <List.Item>
@@ -143,7 +143,7 @@ const Perspective = onlyUpdateForKeys(['translation', 'status'])((props) => {
         <Menu>
           <Dropdown text={translation} pointing className="link item">
             <Dropdown.Menu>
-              <Dropdown.Item icon="users" text="Roles..." />
+              <Dropdown.Item icon="users" text="Roles..." onClick={() => actions.openRoles(id, 'perspective')} />
               <Dropdown.Item icon="setting" text="Properties..." />
               <Dropdown.Item icon="percent" text="Statistics..." />
               <Dropdown.Divider />
@@ -177,19 +177,30 @@ const Perspective = onlyUpdateForKeys(['translation', 'status'])((props) => {
       </List.Content>
     </List.Item>
   );
-});
+};
+
+const Perspective = compose(
+  connect(
+    null,
+    dispatch => ({
+      actions: bindActionCreators({ openRoles }, dispatch),
+    })
+  ),
+  onlyUpdateForKeys(['translation', 'status'])
+)(P);
 
 const D = (props) => {
   const {
     id, translation, status, state_translation_gist_id: statusId, perspectives, statuses, actions,
   } = props;
+
   return (
     <List.Item>
       <List.Content>
         <Menu>
           <Dropdown text={translation} pointing className="link item">
             <Dropdown.Menu>
-              <Dropdown.Item icon="users" text="Roles..." onClick={() => actions.openDictionaryRoles(id)} />
+              <Dropdown.Item icon="users" text="Roles..." onClick={() => actions.openRoles(id, 'dictionary')} />
               <Dropdown.Item icon="setting" text="Properties..." />
               <Dropdown.Item icon="percent" text="Statistics..." />
               <Dropdown.Item icon="circle" text="Create a new perspective..." />
@@ -219,9 +230,9 @@ const D = (props) => {
 
 const Dictionary = compose(
   connect(
-    state => state.roles,
+    null,
     dispatch => ({
-      actions: bindActionCreators({ openDictionaryRoles }, dispatch),
+      actions: bindActionCreators({ openRoles }, dispatch),
     })
   ),
   onlyUpdateForKeys(['translation', 'status', 'perspectives'])

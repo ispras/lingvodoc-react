@@ -6,76 +6,49 @@ import { compose, pure, onlyUpdateForKeys } from 'recompose';
 import { Link } from 'react-router-dom';
 import { gql, graphql } from 'react-apollo';
 import { Container, Dimmer, Tab, Header, List, Dropdown, Icon, Menu, Modal, Button } from 'semantic-ui-react';
-import { isEqual, find } from 'lodash';
+import { isEqual, find, filter, contains } from 'lodash';
 import { compositeIdToString } from 'utils/compositeId';
-import { closeDictionaryRoles as close } from 'ducks/roles';
+import { closeRoles as close } from 'ducks/roles';
+import { PerspectiveRoles, DictionaryRoles } from './component';
 
-const query = gql`
-  query DictionaryRoles($dictionaryId: LingvodocID!) {
-    dictionary(id: $dictionaryId) {
-      id
-      translation
-      roles {
-        roles_users
-        roles_organizations
-      }
-    }
-    all_basegroups {
-      id
-      created_at
-      action
-      name
-      subject
-      dictionary_default
-      perspective_default
-    }
-    users {
-      id
-      name
-      login
-      intl_name
-      email
-    }
+function getComponent(id, mode) {
+  switch (mode) {
+    case 'dictionary':
+      return DictionaryRoles;
+    case 'perspective':
+      return PerspectiveRoles;
+    default:
+      return () => <h4>Not supported</h4>;
   }
-`;
+}
 
-const RolesUsers = ({ roles }) => <List>{roles.map(role => <List.Item content={role} />)}</List>;
-
-const Roles = graphql(query)(({ data }) => {
-  if (data.loading) {
-    return null;
-  }
-
-  const { dictionary: { roles }, all_basegroups: baseGroups, users } = data;
-  const { roles_users: rolesUsers, roles_organizations: rolesOrganizations } = roles;
-
-  const permissions = rolesUsers.map(role => ({
-    roles: role.roles_ids.map(id => find(baseGroups, baseGroup => baseGroup.id === id)),
-    user: find(users, u => u.id === role.user_id),
-  }));
-
-  console.log(permissions);
-
-  return <h1>test</h1>;
-});
-
-const RolesModal = ({ visible, dictionaryId, actions }) => (
-  <Modal open={visible} dimmer="blurring" size="small">
-    <Modal.Content>
-      <Roles dictionaryId={dictionaryId} />
-    </Modal.Content>
-    <Modal.Actions>
-      <Button icon="minus" content="Close" onClick={actions.close} />
-    </Modal.Actions>
-  </Modal>
-);
+const RolesModal = ({
+  visible, id, mode, actions,
+}) => {
+  const Component = getComponent(id, mode);
+  return (
+    <Modal open={visible} dimmer="blurring" size="small">
+      <Modal.Content>
+        <Component id={id} mode={mode} />
+      </Modal.Content>
+      <Modal.Actions>
+        <Button icon="minus" content="Close" onClick={actions.close} />
+      </Modal.Actions>
+    </Modal>
+  );
+};
 
 RolesModal.propTypes = {
   visible: PropTypes.bool.isRequired,
-  dictionaryId: PropTypes.array.isRequired,
+  mode: PropTypes.oneOf(['dictionary', 'perspective']),
+  id: PropTypes.array.isRequired,
   actions: PropTypes.shape({
     close: PropTypes.func.isRequired,
   }).isRequired,
+};
+
+RolesModal.defaultProps = {
+  mode: 'dictionary',
 };
 
 const mapStateToProps = state => state.roles;
@@ -84,8 +57,4 @@ const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators({ close }, dispatch),
 });
 
-
-export default compose(
-  onlyUpdateForKeys(['visible']),
-  connect(mapStateToProps, mapDispatchToProps)
-)(RolesModal);
+export default compose(onlyUpdateForKeys(['visible', 'mode']), connect(mapStateToProps, mapDispatchToProps))(RolesModal);

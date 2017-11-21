@@ -1,37 +1,47 @@
 import { combineReducers } from 'redux';
 
 // Actions
-export const OPEN_DICTIONARY_ROLES = '@dictionary/roles/OPEN';
-export const CLOSE_DICTIONARY_ROLES = '@dictionary/roles/CLOSE';
+export const OPEN_ROLES = '@roles/OPEN';
+export const CLOSE_ROLES = '@roles/CLOSE';
 
-export const openDictionaryRoles = id => ({
-  type: OPEN_DICTIONARY_ROLES,
-  payload: id,
+export const openRoles = (id, mode) => ({
+  type: OPEN_ROLES,
+  payload: { id, mode },
 });
 
-export const closeDictionaryRoles = () => ({ type: CLOSE_DICTIONARY_ROLES });
+export const closeRoles = () => ({ type: CLOSE_ROLES });
 
 const visible = (state = false, action) => {
   switch (action.type) {
-    case OPEN_DICTIONARY_ROLES:
+    case OPEN_ROLES:
       return true;
-    case CLOSE_DICTIONARY_ROLES:
+    case CLOSE_ROLES:
       return false;
     default:
       return state;
   }
 };
 
-const dictionaryId = (state = [], action) => {
+const id = (state = [], action) => {
   switch (action.type) {
-    case OPEN_DICTIONARY_ROLES:
-      return action.payload;
+    case OPEN_ROLES:
+      return action.payload.id;
+    default:
+      return state;
+  }
+};
+
+const mode = (state = '', action) => {
+  switch (action.type) {
+    case OPEN_ROLES:
+      return action.payload.mode;
     default:
       return state;
   }
 };
 
 export default combineReducers({
-  dictionaryId,
   visible,
+  id,
+  mode,
 });
