@@ -9,7 +9,7 @@ import { Container, Dimmer, Tab, Header, List, Dropdown, Icon, Menu } from 'sema
 import { isEqual } from 'lodash';
 import { compositeIdToString } from 'utils/compositeId';
 import { openRoles } from 'ducks/roles';
-import DictionaryRolesModal from 'components/DictionaryRolesModal';
+import RolesModal from 'components/RolesModal';
 
 const dimmerStyle = { minHeight: '600px' };
 
@@ -256,7 +256,7 @@ const Dashboard = pure(({ data }) => {
             ))}
         </List>
       </Dimmer.Dimmable>
-      <DictionaryRolesModal />
+      <RolesModal />
     </Container>
   );
 });
