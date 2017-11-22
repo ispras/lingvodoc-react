@@ -6,6 +6,8 @@ import { Container, Dropdown, Icon } from 'semantic-ui-react';
 import { Perspective as PerspectiveModel } from 'api/perspective';
 import { Dictionary as DictionaryModel } from 'api/dictionary';
 
+import { styleFor } from 'utils/string';
+
 import './published.scss';
 
 const Perspective =
@@ -66,7 +68,7 @@ const DictionaryList =
   return (
     <div className="dict-list">
       <span className="translation">
-        { history.map(s => <span key={s}>{s}</span>) }
+        { history.map(s => <span key={s} style={styleFor(s)}>{s}</span>) }
       </span>
       {
         dicts.map(dictionary =>
