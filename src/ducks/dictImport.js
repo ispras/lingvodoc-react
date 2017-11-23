@@ -16,6 +16,9 @@ function replaceSelect(state, payload) {
 
 function addBlobSelect(state, payload) {
   const id = fromJS(payload);
+  if (state.getIn(['linking', id], false)) {
+    return state;
+  }
   const blob = state.get('blobs').find(x => is(x.get('id'), id));
   return state.setIn(['linking', id], blob);
 }
