@@ -1,4 +1,4 @@
-.linker {
+.linker, .column-mapper {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -17,6 +17,7 @@
     grid-template-areas: "name columns checkbox";
 
     border-bottom: 1px solid gray;
+    margin-bottom: 0.5em;
 
     .blob-name {
       width: 200px;
@@ -26,12 +27,29 @@
 
     .blob-columns {
       display: flex;
-      overflow: auto;
       grid-area: columns;
+      overflow: auto;
+
+      .column-field-type {
+        display: flex;
+        flex-direction: column;
+      }
     }
 
     .blob-checkbox {
       grid-area: checkbox;
     }
+  }
+}
+
+.popup-field-type {
+  display: flex;
+  flex-wrap: wrap;
+  min-width: 30vw;
+  max-height: 30vh;
+  overflow: auto;
+
+  & > button {
+    margin: 0.2em !important;
   }
 }

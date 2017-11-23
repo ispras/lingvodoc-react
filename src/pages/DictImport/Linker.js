@@ -2,8 +2,6 @@ import React from 'react';
 import { pure } from 'recompose';
 import { Dropdown, Button, Checkbox, Popup, Grid } from 'semantic-ui-react';
 
-import './linker.scss';
-
 function valueColor(value) {
   if (value === 'keep') {
     return 'green';
@@ -32,7 +30,7 @@ function Column({ spread, name, linkOptions, value, onChange }) {
   );
 
   if (spread) {
-    return React.cloneElement(trigger, { inverted: true, color: 'red' });
+    return React.cloneElement(trigger, { inverted: true, color: 'red', disabled: true });
   }
 
   const selectValue = value && value.includes('/') ? value : null;

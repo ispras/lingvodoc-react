@@ -8,8 +8,12 @@ import { Button, Step } from 'semantic-ui-react';
 import { setBlobs, nextStep, goToStep, linkingSelect, updateColumn, toggleAddColumn, selectors } from 'ducks/dictImport';
 
 import Linker from './Linker';
+import ColumnMapper from './ColumnMapper';
+
+import './styles.scss';
 
 const BLOBS = fromJS(require('./blobs.json')).map(v => v.set('values', new Map()));
+const FIELD_TYPES = fromJS(require('./field_types.json'));
 
 class Info extends React.Component {
   static propTypes = {
@@ -81,6 +85,14 @@ class Info extends React.Component {
             onSelect={this.onSelect}
             onUpdateColumn={this.onUpdateColumn}
             onToggleColumn={this.onToggleColumn}
+          />
+        );
+      case 'COLUMNS':
+        return (
+          <ColumnMapper
+            state={linking}
+            spreads={spreads}
+            types={FIELD_TYPES}
           />
         );
       default:
