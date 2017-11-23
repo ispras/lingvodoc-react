@@ -78,7 +78,7 @@ function Column({ spread, name, linkOptions, value, onChange }) {
   );
 }
 
-function Columns({ blob, spreads, linkOptions, onUpdateColumn }) {
+function Columns({ blob, spreads, linkOptions, onUpdateColumn, onToggleColumn }) {
   const columns = blob.getIn(['additional_metadata', 'starling_fields']);
   const values = blob.get('values');
 
@@ -107,12 +107,12 @@ function Columns({ blob, spreads, linkOptions, onUpdateColumn }) {
           )
         }
       </div>
-      <Checkbox className="blob-checkbox" />
+      <Checkbox className="blob-checkbox" onClick={onToggleColumn} checked={blob.get('add')} />
     </div>
   );
 }
 
-function Linker({ blobs, state, spreads, onSelect, onUpdateColumn }) {
+function Linker({ blobs, state, spreads, onSelect, onUpdateColumn, onToggleColumn }) {
   const stateOptions = blobs.reduce(
     (acc, blob) => [...acc, {
       key: blob.get('id').join('/'),
@@ -151,6 +151,7 @@ function Linker({ blobs, state, spreads, onSelect, onUpdateColumn }) {
             linkOptions={stateOptions}
             spreads={spreads.get(id, [])}
             onUpdateColumn={onUpdateColumn(id)}
+            onToggleColumn={onToggleColumn(id)}
           />
         ).toArray()
       }

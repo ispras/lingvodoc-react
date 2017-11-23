@@ -5,7 +5,7 @@ import { Map, fromJS } from 'immutable';
 
 import { Button, Step } from 'semantic-ui-react';
 
-import { setBlobs, nextStep, goToStep, linkingSelect, updateColumn, selectors } from 'ducks/dictImport';
+import { setBlobs, nextStep, goToStep, linkingSelect, updateColumn, toggleAddColumn, selectors } from 'ducks/dictImport';
 
 import Linker from './Linker';
 
@@ -23,6 +23,7 @@ class Info extends React.Component {
     goToStep: PropTypes.func.isRequired,
     linkingSelect: PropTypes.func.isRequired,
     updateColumn: PropTypes.func.isRequired,
+    toggleAddColumn: PropTypes.func.isRequired,
   }
 
   constructor(props) {
@@ -32,6 +33,7 @@ class Info extends React.Component {
     this.onNextClick = this.onNextClick.bind(this);
     this.onStepClick = this.onStepClick.bind(this);
     this.onUpdateColumn = this.onUpdateColumn.bind(this);
+    this.onToggleColumn = this.onToggleColumn.bind(this);
     this.renderStep = this.renderStep.bind(this);
   }
 
@@ -56,6 +58,11 @@ class Info extends React.Component {
       this.props.updateColumn(id, column, value, oldValue);
   }
 
+  onToggleColumn(id) {
+    return () =>
+      this.props.toggleAddColumn(id);
+  }
+
   renderStep() {
     const {
       step,
@@ -73,6 +80,7 @@ class Info extends React.Component {
             spreads={spreads}
             onSelect={this.onSelect}
             onUpdateColumn={this.onUpdateColumn}
+            onToggleColumn={this.onToggleColumn}
           />
         );
       default:
@@ -134,6 +142,7 @@ const mapDispatchToProps = {
   goToStep,
   linkingSelect,
   updateColumn,
+  toggleAddColumn,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Info);

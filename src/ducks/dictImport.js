@@ -6,6 +6,7 @@ const NEXT_STEP = '@import/NEXT_STEP';
 const GOTO_STEP = '@import/GOTO_STEP';
 const LINKING_SELECT = '@import/LINKING_SELECT';
 const LINKING_SET_COLUMN = '@import/LINKING_SET_COLUMN';
+const LINKING_TOGGLE_ADD_COLUMN = '@import/LINKING_TOGGLE_ADD_COLUMN';
 
 // Reducers
 function replaceSelect(state, payload) {
@@ -116,6 +117,9 @@ export default function (state = initial, { type, payload }) {
     case LINKING_SET_COLUMN:
       newState = setColumn(state, payload);
       break;
+    case LINKING_TOGGLE_ADD_COLUMN:
+      newState = state.updateIn(['linking', payload, 'add'], false, v => !v);
+      break;
     default:
       newState = state;
   }
@@ -173,4 +177,8 @@ export function updateColumn(id, column, value, oldValue) {
       id, column, value, oldValue,
     },
   };
+}
+
+export function toggleAddColumn(payload) {
+  return { type: LINKING_TOGGLE_ADD_COLUMN, payload };
 }
