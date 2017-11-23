@@ -4,6 +4,7 @@ import user from './user';
 import snackbar from './snackbar';
 import data from './data';
 import saga from './saga';
+import dictImport from './dictImport';
 
 export default {
   locale,
@@ -12,4 +13,5 @@ export default {
   snackbar,
   data,
   saga,
+  dictImport,
 };
