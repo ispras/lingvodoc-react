@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Map, fromJS } from 'immutable';
 
-import { Button, Step } from 'semantic-ui-react';
+import { Button, Step, Transition } from 'semantic-ui-react';
 
 import { setBlobs, nextStep, goToStep, linkingSelect, updateColumn, toggleAddColumn, selectors } from 'ducks/dictImport';
 
@@ -38,7 +38,6 @@ class Info extends React.Component {
     this.onStepClick = this.onStepClick.bind(this);
     this.onUpdateColumn = this.onUpdateColumn.bind(this);
     this.onToggleColumn = this.onToggleColumn.bind(this);
-    this.renderStep = this.renderStep.bind(this);
   }
 
   componentDidMount() {
@@ -67,41 +66,14 @@ class Info extends React.Component {
       this.props.toggleAddColumn(id);
   }
 
-  renderStep() {
+  render() {
     const {
       step,
+      isNextStep,
       blobs,
       linking,
       spreads,
     } = this.props;
-
-    switch (step) {
-      case 'LINKING':
-        return (
-          <Linker
-            blobs={blobs}
-            state={linking}
-            spreads={spreads}
-            onSelect={this.onSelect}
-            onUpdateColumn={this.onUpdateColumn}
-            onToggleColumn={this.onToggleColumn}
-          />
-        );
-      case 'COLUMNS':
-        return (
-          <ColumnMapper
-            state={linking}
-            spreads={spreads}
-            types={FIELD_TYPES}
-          />
-        );
-      default:
-        return null;
-    }
-  }
-
-  render() {
-    const { step, isNextStep } = this.props;
 
     return (
       <div>
@@ -129,7 +101,25 @@ class Info extends React.Component {
         </Step.Group>
 
         <div style={{ minHeight: '400px' }}>
-          {this.renderStep()}
+          {
+            step === 'LINKING' &&
+            <Linker
+              blobs={blobs}
+              state={linking}
+              spreads={spreads}
+              onSelect={this.onSelect}
+              onUpdateColumn={this.onUpdateColumn}
+              onToggleColumn={this.onToggleColumn}
+            />
+          }
+          {
+            step === 'COLUMNS' &&
+            <ColumnMapper
+              state={linking}
+              spreads={spreads}
+              types={FIELD_TYPES}
+            />
+          }
         </div>
 
         { isNextStep && <Button fluid inverted color="blue" onClick={this.onNextClick}>Next Step</Button> }
