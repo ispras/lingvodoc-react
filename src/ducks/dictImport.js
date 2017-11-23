@@ -105,6 +105,22 @@ export default function (state = initial, { type, payload }) {
   return updateSpread(newState);
 }
 
+// Selectors
+export const selectors = {
+  getStep(state) {
+    return state.dictImport.get('step');
+  },
+  getBlobs(state) {
+    return state.dictImport.get('blobs');
+  },
+  getLinking(state) {
+    return state.dictImport.get('linking');
+  },
+  getSpreads(state) {
+    return state.dictImport.get('spreads');
+  },
+};
+
 // Action Creators
 export function setBlobs(payload) {
   return { type: SET_BLOBS, payload };

@@ -1,17 +1,27 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { pure } from 'recompose';
 import { Map, fromJS } from 'immutable';
 
 import { Button, Step } from 'semantic-ui-react';
 
-import { setBlobs, linkingSelect, updateColumn } from 'ducks/dictImport';
+import { setBlobs, linkingSelect, updateColumn, selectors } from 'ducks/dictImport';
 
 import Linker from './Linker';
 
-const blobs = fromJS(require('./blobs.json')).map(v => v.set('values', new Map()));
+const BLOBS = fromJS(require('./blobs.json')).map(v => v.set('values', new Map()));
 
 class Info extends React.Component {
+  static propTypes = {
+    step: PropTypes.string.isRequired,
+    blobs: PropTypes.any.isRequired,
+    linking: PropTypes.any.isRequired,
+    spreads: PropTypes.any.isRequired,
+    setBlobs: PropTypes.func.isRequired,
+    linkingSelect: PropTypes.func.isRequired,
+    updateColumn: PropTypes.func.isRequired,
+  }
+
   constructor(props) {
     super(props);
 
@@ -21,7 +31,7 @@ class Info extends React.Component {
   }
 
   componentDidMount() {
-    this.props.setBlobs(blobs);
+    this.props.setBlobs(BLOBS);
   }
 
   onSelect(payload) {
@@ -34,16 +44,20 @@ class Info extends React.Component {
   }
 
   renderStep() {
-    const { state } = this.props;
-    const step = state.get('step');
+    const {
+      step,
+      blobs,
+      linking,
+      spreads,
+    } = this.props;
 
     switch (step) {
       case 'LINKING':
         return (
           <Linker
-            blobs={state.get('blobs')}
-            state={state.get('linking')}
-            spreads={state.get('spreads')}
+            blobs={blobs}
+            state={linking}
+            spreads={spreads}
             onSelect={this.onSelect}
             onUpdateColumn={this.onUpdateColumn}
           />
@@ -54,8 +68,7 @@ class Info extends React.Component {
   }
 
   render() {
-    const { state } = this.props;
-    const step = state.get('step');
+    const { step } = this.props;
 
     return (
       <div>
@@ -94,7 +107,10 @@ class Info extends React.Component {
 
 function mapStateToProps(state) {
   return {
-    state: state.dictImport,
+    step: selectors.getStep(state),
+    blobs: selectors.getBlobs(state),
+    linking: selectors.getLinking(state),
+    spreads: selectors.getSpreads(state),
   };
 }
 
