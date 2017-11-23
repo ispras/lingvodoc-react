@@ -2,6 +2,8 @@ import { OrderedMap, Map, Set, List, fromJS, is } from 'immutable';
 
 // Actions
 const SET_BLOBS = '@import/SET_BLOBS';
+const NEXT_STEP = '@import/NEXT_STEP';
+const GOTO_STEP = '@import/GOTO_STEP';
 const LINKING_SELECT = '@import/LINKING_SELECT';
 const LINKING_SET_COLUMN = '@import/LINKING_SET_COLUMN';
 
@@ -79,6 +81,13 @@ function updateSpread(state) {
   );
 }
 
+function updateNextStep(step) {
+  return ({
+    LINKING: 'COLUMNS',
+    COLUMNS: 'LANGUAGES',
+  })[step] || null;
+}
+
 const initial = new Map({
   step: 'LINKING',
   blobs: new List(),
@@ -91,6 +100,12 @@ export default function (state = initial, { type, payload }) {
   switch (type) {
     case SET_BLOBS:
       newState = initial.set('blobs', payload);
+      break;
+    case NEXT_STEP:
+      newState = state.update('step', updateNextStep);
+      break;
+    case GOTO_STEP:
+      newState = state.set('step', payload);
       break;
     case LINKING_SELECT:
       newState = replaceSelect(state, payload);
@@ -110,6 +125,16 @@ export const selectors = {
   getStep(state) {
     return state.dictImport.get('step');
   },
+  getNextStep(state) {
+    switch (state.dictImport.get('step')) {
+      case 'LINKING':
+        return state.dictImport.get('linking').size > 0;
+      case 'COLUMNS':
+        return true;
+      default:
+        return false;
+    }
+  },
   getBlobs(state) {
     return state.dictImport.get('blobs');
   },
@@ -124,6 +149,14 @@ export const selectors = {
 // Action Creators
 export function setBlobs(payload) {
   return { type: SET_BLOBS, payload };
+}
+
+export function nextStep() {
+  return { type: NEXT_STEP };
+}
+
+export function goToStep(payload) {
+  return { type: GOTO_STEP, payload };
 }
 
 export function linkingSelect(payload) {

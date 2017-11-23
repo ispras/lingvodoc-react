@@ -5,7 +5,7 @@ import { Map, fromJS } from 'immutable';
 
 import { Button, Step } from 'semantic-ui-react';
 
-import { setBlobs, linkingSelect, updateColumn, selectors } from 'ducks/dictImport';
+import { setBlobs, nextStep, goToStep, linkingSelect, updateColumn, selectors } from 'ducks/dictImport';
 
 import Linker from './Linker';
 
@@ -14,10 +14,13 @@ const BLOBS = fromJS(require('./blobs.json')).map(v => v.set('values', new Map()
 class Info extends React.Component {
   static propTypes = {
     step: PropTypes.string.isRequired,
+    isNextStep: PropTypes.bool.isRequired,
     blobs: PropTypes.any.isRequired,
     linking: PropTypes.any.isRequired,
     spreads: PropTypes.any.isRequired,
     setBlobs: PropTypes.func.isRequired,
+    nextStep: PropTypes.func.isRequired,
+    goToStep: PropTypes.func.isRequired,
     linkingSelect: PropTypes.func.isRequired,
     updateColumn: PropTypes.func.isRequired,
   }
@@ -26,6 +29,8 @@ class Info extends React.Component {
     super(props);
 
     this.onSelect = this.onSelect.bind(this);
+    this.onNextClick = this.onNextClick.bind(this);
+    this.onStepClick = this.onStepClick.bind(this);
     this.onUpdateColumn = this.onUpdateColumn.bind(this);
     this.renderStep = this.renderStep.bind(this);
   }
@@ -36,6 +41,14 @@ class Info extends React.Component {
 
   onSelect(payload) {
     this.props.linkingSelect(payload);
+  }
+
+  onNextClick() {
+    this.props.nextStep();
+  }
+
+  onStepClick(name) {
+    return () => this.props.goToStep(name);
   }
 
   onUpdateColumn(id) {
@@ -68,26 +81,26 @@ class Info extends React.Component {
   }
 
   render() {
-    const { step } = this.props;
+    const { step, isNextStep } = this.props;
 
     return (
       <div>
         <Step.Group widths={3}>
-          <Step active={step === 'LINKING'}>
+          <Step link active={step === 'LINKING'} onClick={this.onStepClick('LINKING')}>
             <Step.Content>
               <Step.Title>Linking</Step.Title>
               <Step.Description>Link columns from files with each other</Step.Description>
             </Step.Content>
           </Step>
 
-          <Step active={step === 'COLUMNS'}>
+          <Step link active={step === 'COLUMNS'} onClick={this.onStepClick('COLUMNS')}>
             <Step.Content>
               <Step.Title>Columns Mapping</Step.Title>
               <Step.Description>Map linked columns to LingvoDoc types</Step.Description>
             </Step.Content>
           </Step>
 
-          <Step active={step === 'LANGUAGES'}>
+          <Step link active={step === 'LANGUAGES'} onClick={this.onStepClick('LANGUAGES')}>
             <Step.Content>
               <Step.Title>Language Selection</Step.Title>
               <Step.Description>Map dictionaries to LingvoDoc languages</Step.Description>
@@ -99,7 +112,7 @@ class Info extends React.Component {
           {this.renderStep()}
         </div>
 
-        <Button fluid inverted color="blue">Next Step</Button>
+        { isNextStep && <Button fluid inverted color="blue" onClick={this.onNextClick}>Next Step</Button> }
       </div>
     );
   }
@@ -108,6 +121,7 @@ class Info extends React.Component {
 function mapStateToProps(state) {
   return {
     step: selectors.getStep(state),
+    isNextStep: selectors.getNextStep(state),
     blobs: selectors.getBlobs(state),
     linking: selectors.getLinking(state),
     spreads: selectors.getSpreads(state),
@@ -116,6 +130,8 @@ function mapStateToProps(state) {
 
 const mapDispatchToProps = {
   setBlobs,
+  nextStep,
+  goToStep,
   linkingSelect,
   updateColumn,
 };
