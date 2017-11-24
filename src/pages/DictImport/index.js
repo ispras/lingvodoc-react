@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Map, fromJS } from 'immutable';
 
 import { Button, Step } from 'semantic-ui-react';
 
@@ -14,6 +13,7 @@ import {
   toggleAddColumn,
   setColumnType,
   setLanguage,
+  setTranslation,
   selectors,
 } from 'ducks/dictImport';
 
@@ -23,8 +23,7 @@ import LanguageSelection from './LanguageSelection';
 
 import './styles.scss';
 
-const BLOBS = fromJS(require('./blobs.json')).map(v => v.set('values', new Map()));
-const FIELD_TYPES = fromJS(require('./field_types.json'));
+import { BLOBS, FIELD_TYPES } from './api';
 
 class Info extends React.Component {
   static propTypes = {
@@ -35,6 +34,7 @@ class Info extends React.Component {
     spreads: PropTypes.any.isRequired,
     columnTypes: PropTypes.any.isRequired,
     languages: PropTypes.any.isRequired,
+    locales: PropTypes.array.isRequired,
     setBlobs: PropTypes.func.isRequired,
     nextStep: PropTypes.func.isRequired,
     goToStep: PropTypes.func.isRequired,
@@ -43,6 +43,7 @@ class Info extends React.Component {
     toggleAddColumn: PropTypes.func.isRequired,
     setColumnType: PropTypes.func.isRequired,
     setLanguage: PropTypes.func.isRequired,
+    setTranslation: PropTypes.func.isRequired,
   }
 
   constructor(props) {
@@ -55,6 +56,7 @@ class Info extends React.Component {
     this.onToggleColumn = this.onToggleColumn.bind(this);
     this.onSetColumnType = this.onSetColumnType.bind(this);
     this.onSetLanguage = this.onSetLanguage.bind(this);
+    this.onSetTranslation = this.onSetTranslation.bind(this);
   }
 
   componentDidMount() {
@@ -91,6 +93,10 @@ class Info extends React.Component {
     return language => this.props.setLanguage(id, language);
   }
 
+  onSetTranslation(id) {
+    return (locale, value) => this.props.setTranslation(id, locale, value);
+  }
+
   render() {
     const {
       step,
@@ -100,6 +106,7 @@ class Info extends React.Component {
       spreads,
       columnTypes,
       languages,
+      locales,
     } = this.props;
 
     return (
@@ -154,7 +161,9 @@ class Info extends React.Component {
             <LanguageSelection
               state={linking}
               languages={languages}
+              locales={locales}
               onSetLanguage={this.onSetLanguage}
+              onSetTranslation={this.onSetTranslation}
             />
           }
         </div>
@@ -174,6 +183,7 @@ function mapStateToProps(state) {
     spreads: selectors.getSpreads(state),
     columnTypes: selectors.getColumnTypes(state),
     languages: selectors.getLanguages(state),
+    locales: state.locale.locales,
   };
 }
 
@@ -186,6 +196,7 @@ const mapDispatchToProps = {
   toggleAddColumn,
   setColumnType,
   setLanguage,
+  setTranslation,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Info);

@@ -10,10 +10,12 @@ const LINKING_SET_COLUMN = '@import/LINKING_SET_COLUMN';
 const LINKING_TOGGLE_ADD_COLUMN = '@import/LINKING_TOGGLE_ADD_COLUMN';
 const COLUMN_SET_TYPE = '@import/COLUMN_SET_TYPE';
 const LANGUAGE_SET = '@import/LANGUAGE_SET';
+const LOCALE_SET = '@import/LOCALE_SET';
 
 // Reducers
 function meta(blob) {
-  return blob;
+  return blob
+    .set('translation', new Map());
   // .set('spreads', new Set())
   // .set('columns', new OrderedMap())
   // .set('language', false);
@@ -169,6 +171,8 @@ export default function (state = initial, { type, payload }) {
     case LANGUAGE_SET:
       newState = state.setIn(['languages', payload.id], fromJS(payload.language));
       break;
+    case LOCALE_SET:
+      return state.setIn(['linking', payload.id, 'translation', payload.locale], payload.value);
     default:
       return state;
   }
@@ -252,5 +256,12 @@ export function setLanguage(id, language) {
   return {
     type: LANGUAGE_SET,
     payload: { id, language },
+  };
+}
+
+export function setTranslation(id, locale, value) {
+  return {
+    type: LOCALE_SET,
+    payload: { id, locale, value },
   };
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { pure } from 'recompose';
-import { Modal, Button } from 'semantic-ui-react';
+import { Form, Input, Modal, Button } from 'semantic-ui-react';
 
 import LanguageSelect from 'components/Tree/LanguageSelect';
 
@@ -17,7 +17,9 @@ class Dictionary extends React.Component {
     const {
       blob,
       language,
+      locales,
       onSetLanguage,
+      onSetTranslation,
     } = this.props;
 
     const triggerText = (language && language.get('translation', false)) || 'Select Language';
@@ -26,7 +28,7 @@ class Dictionary extends React.Component {
     return (
       <div className="blob">
         <b className="blob-name">{blob.get('name')}</b>
-        <div className="blob-columns">
+        <div className="blob-lang">
           <Modal
             dimmer="blurring"
             open={this.state.open}
@@ -43,13 +45,29 @@ class Dictionary extends React.Component {
               />
             </Modal.Content>
           </Modal>
+
+          <Form>
+            <Form.Group widths="equal">
+              {
+                locales.map(locale =>
+                  <Form.Field key={locale.id}>
+                    <label>Translation for {locale.intl_name}</label>
+                    <Input
+                      value={blob.getIn(['translation', locale.id], '')}
+                      onChange={(e, data) => onSetTranslation(locale.id, data.value)}
+                    />
+                  </Form.Field>
+                )
+              }
+            </Form.Group>
+          </Form>
         </div>
       </div>
     );
   }
 }
 
-function LanguageSelection({ state, languages, onSetLanguage }) {
+function LanguageSelection({ state, languages, locales, onSetLanguage, onSetTranslation }) {
 
   return (
     <div className="language-selection">
@@ -60,6 +78,8 @@ function LanguageSelection({ state, languages, onSetLanguage }) {
             blob={v}
             language={languages.get(id)}
             onSetLanguage={onSetLanguage(id)}
+            onSetTranslation={onSetTranslation(id)}
+            locales={locales}
           />).toArray()
       }
     </div>
