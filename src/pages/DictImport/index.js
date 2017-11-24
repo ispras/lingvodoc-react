@@ -141,7 +141,7 @@ class Info extends React.Component {
           }
           {
             step === 'LANGUAGES' &&
-            'TODO'
+            <Button fluid inverted color="blue">Submit</Button>
           }
         </div>
 

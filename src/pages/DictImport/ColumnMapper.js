@@ -34,9 +34,10 @@ function FieldButton({ text, onClick, value, isSelected }) {
 function Column({
   spread, name, value, fieldOptions, type, onSetColumnType,
 }) {
-  let button = (
+  const isLink = value && value.includes('/');
+
+  let columnButton = (
     <Button
-      size="tiny"
       className="column-button"
       color={valueColor(value)}
       content={name}
@@ -44,23 +45,42 @@ function Column({
   );
 
   if (spread) {
-    button = React.cloneElement(button, { inverted: true, color: 'red', disabled: true });
+    columnButton = React.cloneElement(columnButton, { inverted: true, color: 'red', disabled: true });
   }
 
   const selectedField = fieldOptions.find(x => is(x.value, type));
   const triggerColor = selectedField ? { color: 'blue' } : {};
 
-  const trigger = (
-    <Button
-      disabled={spread}
-      content={(selectedField && selectedField.text) || 'Field Type'}
-      {...triggerColor}
-    />
-  );
+  let inner;
 
-  return (
-    <div className="column-field-type">
-      {button}
+  if (spread) {
+    inner = (
+      <Button
+        disabled
+        content={(selectedField && selectedField.text) || 'Field Type'}
+        {...triggerColor}
+      />
+    );
+  }
+
+  if (isLink) {
+    inner = (
+      <Button
+        disabled
+        content="Link"
+      />
+    );
+  }
+
+  if (!spread && !isLink) {
+    const trigger = (
+      <Button
+        content={(selectedField && selectedField.text) || 'Field Type'}
+        {...triggerColor}
+      />
+    );
+
+    inner = (
       <Popup
         trigger={trigger}
         position="bottom center"
@@ -79,6 +99,15 @@ function Column({
           }
         </Popup.Content>
       </Popup>
+    );
+  }
+
+  return (
+    <div className="column-field-type">
+      <Button.Group vertical>
+        {columnButton}
+        {inner}
+      </Button.Group>
     </div>
   );
 }
@@ -94,15 +123,18 @@ function Columns({
       <b className="blob-name">{blob.get('name')}</b>
       <div className="blob-columns">
         {
-          values.map((value, column) =>
-            <Column
-              key={column}
-              name={column}
-              value={value}
-              type={columnTypes.getIn([blobId, column])}
-              onSetColumnType={onSetColumnType(column)}
-              fieldOptions={fieldOptions}
-            />).toArray()
+          values
+            .filter(value => value !== null)
+            .map((value, column) =>
+              <Column
+                key={column}
+                name={column}
+                value={value}
+                type={columnTypes.getIn([blobId, column])}
+                onSetColumnType={onSetColumnType(column)}
+                fieldOptions={fieldOptions}
+              />)
+            .toArray()
         }
         {
           spreads.map(spread =>

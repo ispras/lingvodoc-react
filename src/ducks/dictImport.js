@@ -109,6 +109,13 @@ function updateColumnTypes(state) {
       if (!columnTypes.get(id)) {
         map.setIn(['columnTypes', id], new OrderedMap());
       }
+
+      blob.get('values').forEach((value, column) => {
+        if (value !== null) {
+          const defaultField = value && value.includes('/') ? 'LINK' : null;
+          map.updateIn(['columnTypes', id, column], v => v || defaultField);
+        }
+      });
     });
   });
 }
@@ -167,7 +174,8 @@ export const selectors = {
       case 'LINKING':
         return state.dictImport.get('linking').size > 0;
       case 'COLUMNS':
-        return true;
+        return state.dictImport.get('columnTypes')
+          .every(values => values.every(field => field !== null));
       default:
         return false;
     }
