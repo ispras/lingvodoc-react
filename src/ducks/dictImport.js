@@ -9,12 +9,20 @@ const LINKING_SELECT = '@import/LINKING_SELECT';
 const LINKING_SET_COLUMN = '@import/LINKING_SET_COLUMN';
 const LINKING_TOGGLE_ADD_COLUMN = '@import/LINKING_TOGGLE_ADD_COLUMN';
 const COLUMN_SET_TYPE = '@import/COLUMN_SET_TYPE';
+const LANGUAGE_SET = '@import/LANGUAGE_SET';
 
 // Reducers
+function meta(blob) {
+  return blob;
+  // .set('spreads', new Set())
+  // .set('columns', new OrderedMap())
+  // .set('language', false);
+}
+
 function replaceSelect(state, payload) {
   const id = fromJS(payload);
   const blob = state.get('blobs').find(x => is(x.get('id'), id));
-  return state.set('linking', new OrderedMap([[id, blob]]));
+  return state.set('linking', new OrderedMap([[id, meta(blob)]]));
 }
 
 function addBlobSelect(state, payload) {
@@ -23,7 +31,7 @@ function addBlobSelect(state, payload) {
     return state;
   }
   const blob = state.get('blobs').find(x => is(x.get('id'), id));
-  return state.setIn(['linking', id], blob);
+  return state.setIn(['linking', id], meta(blob));
 }
 
 function setColumn(state, { id, column, value }) {
@@ -126,6 +134,7 @@ const initial = new Map({
   linking: new OrderedMap(),
   spreads: new Map(),
   columnTypes: new OrderedMap(),
+  languages: new Map(),
 });
 
 const computeStore = compose(
@@ -156,6 +165,9 @@ export default function (state = initial, { type, payload }) {
       break;
     case COLUMN_SET_TYPE:
       newState = state.setIn(['columnTypes', payload.id, payload.column], payload.field);
+      break;
+    case LANGUAGE_SET:
+      newState = state.setIn(['languages', payload.id], fromJS(payload.language));
       break;
     default:
       return state;
@@ -191,6 +203,9 @@ export const selectors = {
   },
   getColumnTypes(state) {
     return state.dictImport.get('columnTypes');
+  },
+  getLanguages(state) {
+    return state.dictImport.get('languages');
   },
 };
 
@@ -230,5 +245,12 @@ export function setColumnType(id, column, field) {
     payload: {
       id, column, field,
     },
+  };
+}
+
+export function setLanguage(id, language) {
+  return {
+    type: LANGUAGE_SET,
+    payload: { id, language },
   };
 }

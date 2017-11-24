@@ -13,11 +13,13 @@ import {
   updateColumn,
   toggleAddColumn,
   setColumnType,
+  setLanguage,
   selectors,
 } from 'ducks/dictImport';
 
 import Linker from './Linker';
 import ColumnMapper from './ColumnMapper';
+import LanguageSelection from './LanguageSelection';
 
 import './styles.scss';
 
@@ -32,6 +34,7 @@ class Info extends React.Component {
     linking: PropTypes.any.isRequired,
     spreads: PropTypes.any.isRequired,
     columnTypes: PropTypes.any.isRequired,
+    languages: PropTypes.any.isRequired,
     setBlobs: PropTypes.func.isRequired,
     nextStep: PropTypes.func.isRequired,
     goToStep: PropTypes.func.isRequired,
@@ -39,6 +42,7 @@ class Info extends React.Component {
     updateColumn: PropTypes.func.isRequired,
     toggleAddColumn: PropTypes.func.isRequired,
     setColumnType: PropTypes.func.isRequired,
+    setLanguage: PropTypes.func.isRequired,
   }
 
   constructor(props) {
@@ -50,6 +54,7 @@ class Info extends React.Component {
     this.onUpdateColumn = this.onUpdateColumn.bind(this);
     this.onToggleColumn = this.onToggleColumn.bind(this);
     this.onSetColumnType = this.onSetColumnType.bind(this);
+    this.onSetLanguage = this.onSetLanguage.bind(this);
   }
 
   componentDidMount() {
@@ -82,6 +87,10 @@ class Info extends React.Component {
     return column => field => this.props.setColumnType(id, column, field);
   }
 
+  onSetLanguage(id) {
+    return language => this.props.setLanguage(id, language);
+  }
+
   render() {
     const {
       step,
@@ -90,6 +99,7 @@ class Info extends React.Component {
       linking,
       spreads,
       columnTypes,
+      languages,
     } = this.props;
 
     return (
@@ -141,10 +151,14 @@ class Info extends React.Component {
           }
           {
             step === 'LANGUAGES' &&
-            <Button fluid inverted color="blue">Submit</Button>
+            <LanguageSelection
+              state={linking}
+              languages={languages}
+              onSetLanguage={this.onSetLanguage}
+            />
           }
         </div>
-
+        { step === 'LANGUAGES' && <Button fluid inverted color="blue">Submit</Button> }
         { isNextStep && <Button fluid inverted color="blue" onClick={this.onNextClick}>Next Step</Button> }
       </div>
     );
@@ -159,6 +173,7 @@ function mapStateToProps(state) {
     linking: selectors.getLinking(state),
     spreads: selectors.getSpreads(state),
     columnTypes: selectors.getColumnTypes(state),
+    languages: selectors.getLanguages(state),
   };
 }
 
@@ -170,6 +185,7 @@ const mapDispatchToProps = {
   updateColumn,
   toggleAddColumn,
   setColumnType,
+  setLanguage,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Info);

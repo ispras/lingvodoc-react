@@ -50,35 +50,20 @@ function Column({
 
   const selectedField = fieldOptions.find(x => is(x.value, type));
   const triggerColor = selectedField ? { color: 'blue' } : {};
+  const triggerText = (selectedField && selectedField.text) || 'Field Type';
 
   let inner;
 
   if (spread) {
-    inner = (
-      <Button
-        disabled
-        content={(selectedField && selectedField.text) || 'Field Type'}
-        {...triggerColor}
-      />
-    );
+    inner = <Button disabled content={triggerText} {...triggerColor} />;
   }
 
   if (isLink) {
-    inner = (
-      <Button
-        disabled
-        content="Link"
-      />
-    );
+    inner = <Button disabled content="Relation" />;
   }
 
   if (!spread && !isLink) {
-    const trigger = (
-      <Button
-        content={(selectedField && selectedField.text) || 'Field Type'}
-        {...triggerColor}
-      />
-    );
+    const trigger = <Button content={triggerText} {...triggerColor} />;
 
     inner = (
       <Popup

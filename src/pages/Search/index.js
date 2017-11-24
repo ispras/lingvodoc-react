@@ -23,7 +23,7 @@ const data = require('./results.json').reduce(
 const searchResults = Immutable.fromJS(require('./search_results.json').data.advanced_search);
 const languages = Immutable.fromJS(require('./languages.json').data.language_tree);
 
-const languagesTree = buildLanguageTree(languages);
+export const languagesTree = buildLanguageTree(languages);
 const searchResultsTree = buildSearchResultsTree(searchResults, languagesTree);
 
 const mdColors = new Immutable.List([
