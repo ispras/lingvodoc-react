@@ -3,9 +3,18 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Map, fromJS } from 'immutable';
 
-import { Button, Step, Transition } from 'semantic-ui-react';
+import { Button, Step } from 'semantic-ui-react';
 
-import { setBlobs, nextStep, goToStep, linkingSelect, updateColumn, toggleAddColumn, selectors } from 'ducks/dictImport';
+import {
+  setBlobs,
+  nextStep,
+  goToStep,
+  linkingSelect,
+  updateColumn,
+  toggleAddColumn,
+  setColumnType,
+  selectors,
+} from 'ducks/dictImport';
 
 import Linker from './Linker';
 import ColumnMapper from './ColumnMapper';
@@ -22,12 +31,14 @@ class Info extends React.Component {
     blobs: PropTypes.any.isRequired,
     linking: PropTypes.any.isRequired,
     spreads: PropTypes.any.isRequired,
+    columnTypes: PropTypes.any.isRequired,
     setBlobs: PropTypes.func.isRequired,
     nextStep: PropTypes.func.isRequired,
     goToStep: PropTypes.func.isRequired,
     linkingSelect: PropTypes.func.isRequired,
     updateColumn: PropTypes.func.isRequired,
     toggleAddColumn: PropTypes.func.isRequired,
+    setColumnType: PropTypes.func.isRequired,
   }
 
   constructor(props) {
@@ -38,6 +49,7 @@ class Info extends React.Component {
     this.onStepClick = this.onStepClick.bind(this);
     this.onUpdateColumn = this.onUpdateColumn.bind(this);
     this.onToggleColumn = this.onToggleColumn.bind(this);
+    this.onSetColumnType = this.onSetColumnType.bind(this);
   }
 
   componentDidMount() {
@@ -66,6 +78,10 @@ class Info extends React.Component {
       this.props.toggleAddColumn(id);
   }
 
+  onSetColumnType(id) {
+    return column => field => this.props.setColumnType(id, column, field);
+  }
+
   render() {
     const {
       step,
@@ -73,6 +89,7 @@ class Info extends React.Component {
       blobs,
       linking,
       spreads,
+      columnTypes,
     } = this.props;
 
     return (
@@ -117,8 +134,14 @@ class Info extends React.Component {
             <ColumnMapper
               state={linking}
               spreads={spreads}
+              columnTypes={columnTypes}
               types={FIELD_TYPES}
+              onSetColumnType={this.onSetColumnType}
             />
+          }
+          {
+            step === 'LANGUAGES' &&
+            'TODO'
           }
         </div>
 
@@ -135,6 +158,7 @@ function mapStateToProps(state) {
     blobs: selectors.getBlobs(state),
     linking: selectors.getLinking(state),
     spreads: selectors.getSpreads(state),
+    columnTypes: selectors.getColumnTypes(state),
   };
 }
 
@@ -145,6 +169,7 @@ const mapDispatchToProps = {
   linkingSelect,
   updateColumn,
   toggleAddColumn,
+  setColumnType,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Info);

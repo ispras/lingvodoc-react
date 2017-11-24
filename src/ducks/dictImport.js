@@ -1,3 +1,4 @@
+import { compose } from 'redux';
 import { OrderedMap, Map, Set, List, fromJS, is } from 'immutable';
 
 // Actions
@@ -7,6 +8,7 @@ const GOTO_STEP = '@import/GOTO_STEP';
 const LINKING_SELECT = '@import/LINKING_SELECT';
 const LINKING_SET_COLUMN = '@import/LINKING_SET_COLUMN';
 const LINKING_TOGGLE_ADD_COLUMN = '@import/LINKING_TOGGLE_ADD_COLUMN';
+const COLUMN_SET_TYPE = '@import/COLUMN_SET_TYPE';
 
 // Reducers
 function replaceSelect(state, payload) {
@@ -92,12 +94,37 @@ function updateNextStep(step) {
   })[step] || null;
 }
 
+function updateColumnTypes(state) {
+  const blobs = state.get('linking');
+  const columnTypes = state.get('columnTypes');
+
+  return state.withMutations((map) => {
+    columnTypes.forEach((blob, id) => {
+      if (!blobs.get(id)) {
+        map.deleteIn(['columnTypes', id]);
+      }
+    });
+
+    blobs.forEach((blob, id) => {
+      if (!columnTypes.get(id)) {
+        map.setIn(['columnTypes', id], new OrderedMap());
+      }
+    });
+  });
+}
+
 const initial = new Map({
   step: 'LINKING',
   blobs: new List(),
   linking: new OrderedMap(),
   spreads: new Map(),
+  columnTypes: new OrderedMap(),
 });
+
+const computeStore = compose(
+  updateColumnTypes,
+  updateSpread,
+);
 
 export default function (state = initial, { type, payload }) {
   let newState = state;
@@ -120,11 +147,14 @@ export default function (state = initial, { type, payload }) {
     case LINKING_TOGGLE_ADD_COLUMN:
       newState = state.updateIn(['linking', payload, 'add'], false, v => !v);
       break;
+    case COLUMN_SET_TYPE:
+      newState = state.setIn(['columnTypes', payload.id, payload.column], payload.field);
+      break;
     default:
-      newState = state;
+      return state;
   }
 
-  return updateSpread(newState);
+  return computeStore(newState);
 }
 
 // Selectors
@@ -150,6 +180,9 @@ export const selectors = {
   },
   getSpreads(state) {
     return state.dictImport.get('spreads');
+  },
+  getColumnTypes(state) {
+    return state.dictImport.get('columnTypes');
   },
 };
 
@@ -181,4 +214,13 @@ export function updateColumn(id, column, value, oldValue) {
 
 export function toggleAddColumn(payload) {
   return { type: LINKING_TOGGLE_ADD_COLUMN, payload };
+}
+
+export function setColumnType(id, column, field) {
+  return {
+    type: COLUMN_SET_TYPE,
+    payload: {
+      id, column, field,
+    },
+  };
 }

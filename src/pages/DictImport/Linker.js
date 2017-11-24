@@ -40,6 +40,7 @@ function Column({ spread, name, linkOptions, value, onChange }) {
       className="column-popup"
       trigger={trigger}
       position="bottom center"
+      on="click"
       style={{}}
       flowing
       hoverable
