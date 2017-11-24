@@ -1,11 +1,17 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { gql, graphql } from 'react-apollo';
+import { compose, pure, onlyUpdateForKeys } from 'recompose';
 import { List, fromJS } from 'immutable';
 import styled from 'styled-components';
 import { Segment, Button, Divider, Select, Input } from 'semantic-ui-react';
+import { setQuery } from 'ducks/search';
 
-const Wrapper = styled.div`
-  margin-bottom: 1em;
-`;
+import { compositeIdToString } from '../../utils/compositeId';
+
+const Wrapper = styled.div`margin-bottom: 1em;`;
 
 const OrWrapper = styled(Segment)`
   .delete-and {
@@ -25,8 +31,8 @@ const OrBlocks = styled.div`
 
   .ui.action.input {
     margin-right: 2em;
-    margin-bottom: .5em;
-    margin-top: .5em;
+    margin-bottom: 0.5em;
+    margin-top: 0.5em;
   }
 `;
 
@@ -43,36 +49,54 @@ const QueryInput = styled(Input)`
   }
 `;
 
-const fieldOptions = [
-  { key: 'name', text: 'name', value: 'name' },
-  { key: 'whatever', text: 'whatever', value: 'whatever' },
-];
-
 const matchingOptions = [
-  { key: 'substring', text: 'substring', value: 'substring' },
-  { key: 'regexp', text: 'regexp', value: 'regexp' },
+  { key: 'fullstring', text: 'Full string', value: 'full_string' },
+  { key: 'substring', text: 'Sub string', value: 'substring' },
+  { key: 'regexp', text: 'Regexp', value: 'regexp' },
 ];
 
-function Query({ data, onFieldChange, onDelete }) {
-  const field = data.get('field_name', '');
-  const str = data.get('search_string', '');
-  const type = data.get('matching_type', '');
+const newBlock = {
+  search_string: '',
+  matching_type: '',
+};
+
+const fieldsQuery = gql`
+  query searchBootstrapQuery {
+    all_fields {
+      id
+      translation
+    }
+  }
+`;
+
+function Query({
+  data, query, onFieldChange, onDelete,
+}) {
+  const fieldId = query.get('field_id', '');
+  const str = query.get('search_string', '');
+  const type = query.get('matching_type', '');
+
+  if (data.loading) {
+    return null;
+  }
+
+  const { all_fields: fields } = data;
+  const fieldOptions = fields.map(field => ({
+    key: compositeIdToString(field.id),
+    text: field.translation,
+    value: compositeIdToString(field.id),
+  }));
+
+  // wrapper functions to map str field ids to array ids.
+  const fieldById = compositeId => fields.find(f => compositeId === compositeIdToString(f.id));
+  const onChange = (event, { value }) => {
+    const field = fieldById(value);
+    onFieldChange('field_id')(event, { value: field.id });
+  };
 
   return (
-    <QueryInput
-      action
-      type="text"
-      placeholder="Search String"
-      value={str}
-      onChange={onFieldChange('search_string')}
-    >
-      <Select
-        compact
-        placeholder="Field"
-        options={fieldOptions}
-        value={field}
-        onChange={onFieldChange('field_name')}
-      />
+    <QueryInput action type="text" placeholder="Search String" value={str} onChange={onFieldChange('search_string')}>
+      <Select placeholder="Field" options={fieldOptions} value={compositeIdToString(fieldId)} onChange={onChange} />
       <input />
       <Select
         compact
@@ -86,39 +110,24 @@ function Query({ data, onFieldChange, onDelete }) {
   );
 }
 
-function OrBlock({ data, onFieldChange, onAddBlock, onDeleteBlock, onDelete }) {
+const QueryWithData = graphql(fieldsQuery)(Query);
+
+function OrBlock({
+  data, onFieldChange, onAddBlock, onDeleteBlock, onDelete,
+}) {
   return (
     <OrWrapper>
       <OrBlocks>
-        {
-          data.map((block, id) =>
-            <Query
-              key={id}
-              data={block}
-              onFieldChange={onFieldChange(id)}
-              onDelete={onDeleteBlock(id)}
-            />
-          )
-        }
-        <Button
-          primary
-          basic
-          icon="add"
-          onClick={onAddBlock}
-        />
+        {data.map((block, id) => (
+          <QueryWithData key={id} query={block} onFieldChange={onFieldChange(id)} onDelete={onDeleteBlock(id)} />
+        ))}
+        <Button primary basic icon="add" onClick={onAddBlock} />
       </OrBlocks>
 
-      <Button
-        className="delete-and"
-        compact
-        basic
-        icon="delete"
-        onClick={onDelete}
-      />
+      <Button className="delete-and" compact basic icon="delete" onClick={onDelete} />
     </OrWrapper>
   );
 }
-
 
 class QueryBuilder extends React.Component {
   constructor(props) {
@@ -130,11 +139,7 @@ class QueryBuilder extends React.Component {
     this.onDeleteOrBlock = this.onDeleteOrBlock.bind(this);
     this.onFieldChange = this.onFieldChange.bind(this);
 
-    this.newBlock = fromJS({
-      field_name: '',
-      search_string: '',
-      matching_type: '',
-    });
+    this.newBlock = fromJS(newBlock);
 
     this.state = {
       data: fromJS(props.data),
@@ -175,12 +180,12 @@ class QueryBuilder extends React.Component {
   }
 
   render() {
+    const { actions } = this.props;
     const blocks = this.state.data;
-
     return (
       <Wrapper>
-        {
-          blocks.flatMap((subblocks, id) => List.of(
+        {blocks.flatMap((subblocks, id) =>
+          List.of(
             <OrBlock
               key={`s_${id}`}
               data={subblocks}
@@ -189,13 +194,41 @@ class QueryBuilder extends React.Component {
               onDeleteBlock={this.onDeleteOrBlock(id)}
               onDelete={this.onDeleteAndBlock(id)}
             />,
-            <Divider key={`d_${id}`} horizontal>And</Divider>
-          ))
-        }
-        <Button primary basic fluid onClick={this.onAddAndBlock}>Add Another AND Block</Button>
+            <Divider key={`d_${id}`} horizontal>
+              And
+            </Divider>
+          ))}
+        <Button primary basic fluid onClick={this.onAddAndBlock}>
+          Add Another AND Block
+        </Button>
+
+        <Divider />
+
+        <Button primary basic onClick={() => actions.setQuery(this.state.data.toJS())}>
+          Search
+        </Button>
       </Wrapper>
     );
   }
 }
 
-export default QueryBuilder;
+QueryBuilder.propTypes = {
+  data: PropTypes.array,
+  actions: PropTypes.shape({
+    setQuery: PropTypes.func.isRequired,
+  }).isRequired,
+};
+
+QueryBuilder.defaultProps = {
+  data: [[newBlock]],
+};
+
+export default compose(
+  connect(
+    state => state.search,
+    dispatch => ({
+      actions: bindActionCreators({ setQuery }, dispatch),
+    })
+  ),
+  pure
+)(QueryBuilder);
