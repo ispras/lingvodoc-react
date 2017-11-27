@@ -22,7 +22,7 @@ class Dictionary extends React.Component {
       onSetTranslation,
     } = this.props;
 
-    const triggerText = (language && language.get('translation', false)) || 'Select Language';
+    const triggerText = (language && language.get('translation', false)) || 'Select Parent Language';
     const trigger = <Button onClick={this.toggle}>{triggerText}</Button>;
 
     return (

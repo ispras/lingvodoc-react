@@ -23,7 +23,7 @@ import LanguageSelection from './LanguageSelection';
 
 import './styles.scss';
 
-import { BLOBS, FIELD_TYPES } from './api';
+import { BLOBS, FIELD_TYPES, buildExport } from './api';
 
 class Info extends React.Component {
   static propTypes = {
@@ -57,6 +57,7 @@ class Info extends React.Component {
     this.onSetColumnType = this.onSetColumnType.bind(this);
     this.onSetLanguage = this.onSetLanguage.bind(this);
     this.onSetTranslation = this.onSetTranslation.bind(this);
+    this.onSubmit = this.onSubmit.bind(this);
   }
 
   componentDidMount() {
@@ -95,6 +96,10 @@ class Info extends React.Component {
 
   onSetTranslation(id) {
     return (locale, value) => this.props.setTranslation(id, locale, value);
+  }
+
+  onSubmit() {
+    console.log(buildExport(this.props));
   }
 
   render() {
@@ -167,8 +172,28 @@ class Info extends React.Component {
             />
           }
         </div>
-        { step === 'LANGUAGES' && <Button fluid inverted color="blue">Submit</Button> }
-        { isNextStep && <Button fluid inverted color="blue" onClick={this.onNextClick}>Next Step</Button> }
+        {
+          step === 'LANGUAGES' &&
+          <Button
+            fluid
+            inverted
+            color="blue"
+            onClick={this.onSubmit}
+          >
+            Submit
+          </Button>
+        }
+        {
+          isNextStep &&
+          <Button
+            fluid
+            inverted
+            color="blue"
+            onClick={this.onNextClick}
+          >
+            Next Step
+          </Button>
+        }
       </div>
     );
   }
