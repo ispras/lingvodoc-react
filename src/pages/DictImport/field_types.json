@@ -1,0 +1,247 @@
+[
+  {
+    "id": [
+      66,
+      6
+    ],
+    "translation": "Word"
+  },
+  {
+    "id": [
+      66,
+      8
+    ],
+    "translation": "Transcription"
+  },
+  {
+    "id": [
+      66,
+      10
+    ],
+    "translation": "Translation"
+  },
+  {
+    "id": [
+      66,
+      12
+    ],
+    "translation": "Sound"
+  },
+  {
+    "id": [
+      66,
+      14
+    ],
+    "translation": "Word of Paradigmatic forms"
+  },
+  {
+    "id": [
+      66,
+      17
+    ],
+    "translation": "Transcription of Paradigmatic forms"
+  },
+  {
+    "id": [
+      66,
+      19
+    ],
+    "translation": "Translation of Paradigmatic forms"
+  },
+  {
+    "id": [
+      66,
+      21
+    ],
+    "translation": "Sounds of Paradigmatic forms"
+  },
+  {
+    "id": [
+      66,
+      23
+    ],
+    "translation": "Markup"
+  },
+  {
+    "id": [
+      66,
+      25
+    ],
+    "translation": "Etymology"
+  },
+  {
+    "id": [
+      66,
+      27
+    ],
+    "translation": "Paradigm Markup"
+  },
+  {
+    "id": [
+      167,
+      33
+    ],
+    "translation": ""
+  },
+  {
+    "id": [
+      1,
+      212
+    ],
+    "translation": "Paradigmatic forms"
+  },
+  {
+    "id": [
+      1,
+      213
+    ],
+    "translation": "Backref"
+  },
+  {
+    "id": [
+      671,
+      14204
+    ],
+    "translation": "Phonological transcription"
+  },
+  {
+    "id": [
+      674,
+      5
+    ],
+    "translation": "Comment"
+  },
+  {
+    "id": [
+      671,
+      16067
+    ],
+    "translation": "Narrow transcription"
+  },
+  {
+    "id": [
+      671,
+      16073
+    ],
+    "translation": "Anomalies"
+  },
+  {
+    "id": [
+      748,
+      1392
+    ],
+    "translation": "Lexical Entries"
+  },
+  {
+    "id": [
+      748,
+      1397
+    ],
+    "translation": "Paradigmatic forms"
+  },
+  {
+    "id": [
+      742,
+      4309
+    ],
+    "translation": "Proto-form"
+  },
+  {
+    "id": [
+      742,
+      9070
+    ],
+    "translation": "Proto-form meaning"
+  },
+  {
+    "id": [
+      999,
+      6
+    ],
+    "translation": "Glossing"
+  },
+  {
+    "id": [
+      891,
+      19
+    ],
+    "translation": "Subphonological notes"
+  },
+  {
+    "id": [
+      1048,
+      145
+    ],
+    "translation": "Accentuation"
+  },
+  {
+    "id": [
+      1072,
+      21
+    ],
+    "translation": "Morphophonologiacal notes"
+  },
+  {
+    "id": [
+      1072,
+      190
+    ],
+    "translation": "Dictionary orthography"
+  },
+  {
+    "id": [
+      1072,
+      193
+    ],
+    "translation": "Author"
+  },
+  {
+    "id": [
+      1162,
+      68
+    ],
+    "translation": "English translation"
+  },
+  {
+    "id": [
+      1162,
+      71
+    ],
+    "translation": "Editorial remarks"
+  },
+  {
+    "id": [
+      1244,
+      119
+    ],
+    "translation": "Phonological notation"
+  },
+  {
+    "id": [
+      1207,
+      382
+    ],
+    "translation": "Parsed morphophonemics"
+  },
+  {
+    "id": [
+      1207,
+      385
+    ],
+    "translation": "Spelling"
+  },
+  {
+    "id": [
+      1271,
+      5
+    ],
+    "translation": "Transcription (Julia Normanskaja)"
+  },
+  {
+    "id": [
+      1,
+      293
+    ],
+    "translation": "Relation"
+  }
+]

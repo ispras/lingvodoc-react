@@ -9,6 +9,7 @@ import player from './player';
 import markup from './markup';
 import roles from './roles';
 import search from './search';
+import dictImport from './dictImport';
 
 export default {
   locale,
@@ -22,4 +23,5 @@ export default {
   markup,
   roles,
   search,
+  dictImport,
 };

@@ -1,0 +1,56 @@
+.linker, .column-mapper, .language-selection {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  .main-select {
+    width: 200px;
+  }
+
+  .blob {
+    display: grid;
+    padding: .5em 0;
+    width: 100%;
+    grid-template-columns: 200px 1fr 20px;
+    grid-template-rows: auto;
+
+    grid-template-areas: "name columns checkbox";
+
+    border-bottom: 1px solid gray;
+    margin-bottom: .5em;
+
+    .blob-name {
+      width: 200px;
+      text-align: center;
+      grid-area: name;
+    }
+
+    .blob-columns {
+      display: flex;
+      grid-area: columns;
+      overflow: auto;
+
+      .column-field-type {
+        display: flex;
+        flex-direction: column;
+        margin: 0 .2em;
+      }
+    }
+
+    .blob-checkbox {
+      grid-area: checkbox;
+    }
+  }
+}
+
+.popup-field-type {
+  display: flex;
+  flex-wrap: wrap;
+  min-width: 30vw;
+  max-height: 30vh;
+  overflow: auto;
+
+  & > button {
+    margin: .2em !important;
+  }
+}
