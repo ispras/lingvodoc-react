@@ -4,7 +4,7 @@ import { graphql, gql } from 'react-apollo';
 import { isEqual } from 'lodash';
 import { Button } from 'semantic-ui-react';
 import { compositeIdToString } from 'utils/compositeId';
-import { query as queryPerspective } from 'components/PerspectiveView';
+import { queryPerspective } from 'components/PerspectiveView';
 
 import Text from './Text';
 import Sound from './Sound';

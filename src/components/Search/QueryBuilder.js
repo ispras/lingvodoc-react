@@ -57,7 +57,7 @@ const matchingOptions = [
 
 const newBlock = {
   search_string: '',
-  matching_type: '',
+  matching_type: 'full_string',
 };
 
 const fieldsQuery = gql`

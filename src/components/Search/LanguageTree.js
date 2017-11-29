@@ -1,14 +1,14 @@
 import React from 'react';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { gql, withApollo } from 'react-apollo';
-import { compose, pure, onlyUpdateForKeys } from 'recompose';
+import { gql, graphql } from 'react-apollo';
+import { compose, pure } from 'recompose';
+import styled from 'styled-components';
 import Immutable from 'immutable';
+import { Dimmer, Loader, Popup, Button } from 'semantic-ui-react';
 import SortableTree, { map } from 'react-sortable-tree';
-import { Segment, Button, Divider, Select, Input } from 'semantic-ui-react';
 import { buildLanguageTree, buildSearchResultsTree } from 'pages/Search/treeBuilder';
+import { LexicalEntryView } from 'components/PerspectiveView/index';
 
-const advancedSearchQuery = gql`
+const query = gql`
   query Search($query: [[ObjectVal]]!) {
     advanced_search(search_strings: $query) {
       dictionaries {
@@ -23,6 +23,9 @@ const advancedSearchQuery = gql`
         id
         parent_id
         translation
+        additional_metadata {
+          location
+        }
         tree {
           id
           translation
@@ -31,11 +34,18 @@ const advancedSearchQuery = gql`
       lexical_entries {
         id
         parent_id
-      }
-      entities {
-        id
-        parent_id
-        content
+        entities {
+          id
+          parent_id
+          field_id
+          link_id
+          self_id
+          created_at
+          locale_id
+          content
+          published
+          accepted
+        }
       }
     }
     languages {
@@ -45,17 +55,26 @@ const advancedSearchQuery = gql`
       created_at
     }
   }
-  
 `;
 
+const Wrapper = styled('div')`height: 600;`;
+
 class LanguageTree extends React.Component {
-  
   static generateNodeProps({ node, path }) {
     switch (node.type) {
-      case 'entity':
+      case 'perspective':
         return {
-          subtitle: ' Entity',
-          title: <i>{node.content}</i>,
+          subtitle: (
+            <Popup trigger={<Button compact>{node.lexicalEntries.length}</Button>} hideOnScroll position="top center" on="click">
+              <LexicalEntryView
+                className="perspective"
+                perspectiveId={node.id}
+                entries={node.lexicalEntries}
+                mode="view"
+                entitiesMode="published"
+              />
+            </Popup>
+          ),
         };
       default:
         return {
@@ -63,35 +82,49 @@ class LanguageTree extends React.Component {
         };
     }
   }
-  
+
   constructor(props) {
     super(props);
-    this.state = {};
-    this.executeSearch = this.executeSearch.bind(this);
+
+    this.state = {
+      treeData: {},
+    };
   }
 
-  executeSearch = async () => {
-    const { query } = this.props;
-    const result = await this.props.client.query({
-      query: advancedSearchQuery,
-      variables: { query },
-    });
-  
-    const { data: { languages: allLanguages, advanced_search: searchResults } } = result;
-    const languages = Immutable.fromJS(allLanguages);
-    const languagesTree = buildLanguageTree(languages);
-    const searchResultsTree = buildSearchResultsTree(searchResults, languagesTree);
-    this.setState({
-      treeData: map({
-        treeData: searchResultsTree.toJS(),
-        callback: ({ node }) => ({ ...node, expanded: false }),
-        getNodeKey: ({ treeIndex }) => treeIndex,
-        ignoreCollapsed: false,
-      }),
-    });
+  componentWillReceiveProps(props) {
+    const { data } = props;
+    const { loading } = data;
+
+    if (!loading) {
+      const { languages: allLanguages, advanced_search } = data;
+
+      const searchResults = Immutable.fromJS(advanced_search);
+      const languages = Immutable.fromJS(allLanguages);
+      const languagesTree = buildLanguageTree(languages);
+      const searchResultsTree = buildSearchResultsTree(searchResults, languagesTree);
+      this.setState({
+        treeData: map({
+          treeData: searchResultsTree.toJS(),
+          callback: ({ node }) => ({ ...node, expanded: false }),
+          getNodeKey: ({ treeIndex }) => treeIndex,
+          ignoreCollapsed: false,
+        }),
+      });
+    }
   }
 
   render() {
+    const { data } = this.props;
+    const { loading } = data;
+
+    if (loading) {
+      return (
+        <Dimmer active={loading} inverted>
+          <Loader>Loading</Loader>
+        </Dimmer>
+      );
+    }
+
     return (
       <div style={{ height: 600 }}>
         <SortableTree
@@ -99,13 +132,12 @@ class LanguageTree extends React.Component {
           rowHeight={42}
           scaffoldBlockPxWidth={32}
           treeData={this.state.treeData}
-          onChange={treeData => this.setState({ treeData })}
           generateNodeProps={LanguageTree.generateNodeProps}
+          onChange={treeData => this.setState({ treeData })}
         />
-        <Button basic onClick={this.executeSearch}>Search!</Button>
       </div>
     );
   }
 }
 
-export default compose(pure, connect(state => state.search), withApollo)(LanguageTree);
+export default compose(graphql(query), pure)(LanguageTree);

@@ -17,20 +17,13 @@ export function buildLanguageTree(data) {
 
 export function buildDictTrees(data) {
   const byParentId = {
-    entities: data.get('entities').groupBy(parentGrouper),
     lexical_entries: data.get('lexical_entries').groupBy(parentGrouper),
     perspectives: data.get('perspectives').groupBy(parentGrouper),
   };
 
-  function buildEntity(e) {
-    return e.set('type', 'entity');
-  }
-
   function buildEntries(e) {
-    const eId = e.get('id');
     return e
-      .set('type', 'lexical_entries')
-      .set('children', byParentId.entities.get(eId).map(buildEntity));
+      .set('type', 'lexical_entries');
   }
 
   function buildPerpective(p) {
@@ -38,7 +31,7 @@ export function buildDictTrees(data) {
     return p
       .delete('tree')
       .set('type', 'perspective')
-      .set('children', byParentId.lexical_entries.get(pId).map(buildEntries));
+      .set('lexicalEntries', byParentId.lexical_entries.get(pId).map(buildEntries));
   }
 
   function buildDict(d) {
