@@ -9,14 +9,21 @@
         "moduleName": "babel-runtime"
       }
     ],
-    ["lodash", { "id": ["lodash", "recompose", "semantic-ui-react"] }],
+    [
+      "lodash",
+      {
+        "id": ["lodash", "recompose", "semantic-ui-react"]
+      }
+    ],
     "react-hot-loader/babel",
     "transform-decorators-legacy"
   ],
   "presets": [
     [
-      "env",
-      { "targets": { "browsers": ["last 2 major versions"] }, "modules": false, "loose": true }
+      "es2015",
+      {
+        "modules": false
+      }
     ],
     "stage-0",
     "react"
