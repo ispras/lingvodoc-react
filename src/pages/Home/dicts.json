@@ -1,0 +1,5516 @@
+[
+  {
+    "id": [
+      475,
+      2
+    ],
+    "parent_id": [
+      508,
+      50
+    ],
+    "translation": "Dictionary of Ust-Avam dialect of Nganasan language (vil. Ust-Avam)",
+    "additional_metadata": {
+      "authors": "Ю.В.Норманская, А.А.Добринина, Т.Р.Рыжикова"
+    },
+    "perspectives": [
+      {
+        "id": [
+          475,
+          4
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          475,
+          3
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      519,
+      2
+    ],
+    "parent_id": [
+      500,
+      123
+    ],
+    "translation": "Dictionary of Sagai dialect of Khakas language, village Kazanovka",
+    "additional_metadata": {
+      "authors": null
+    },
+    "perspectives": [
+      {
+        "id": [
+          519,
+          3
+        ],
+        "translation": "Lexical Entries"
+      },
+      {
+        "id": [
+          519,
+          4
+        ],
+        "translation": "Paradigms"
+      }
+    ]
+  },
+  {
+    "id": [
+      586,
+      2
+    ],
+    "parent_id": [
+      578,
+      9
+    ],
+    "translation": "Словарь памятника сер. XIX в. \"Конъ святой борнызинъ\"",
+    "additional_metadata": {
+      "authors": "А.В. Савельев"
+    },
+    "perspectives": [
+      {
+        "id": [
+          586,
+          4
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          586,
+          3
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      630,
+      2
+    ],
+    "parent_id": [
+      216,
+      8
+    ],
+    "translation": "Middle-Chulym language (Melet dialect, K.P. Sergeeva)",
+    "additional_metadata": {
+      "authors": null
+    },
+    "perspectives": [
+      {
+        "id": [
+          630,
+          3
+        ],
+        "translation": "Lexical Entries"
+      },
+      {
+        "id": [
+          630,
+          9
+        ],
+        "translation": "Paradigms"
+      }
+    ]
+  },
+  {
+    "id": [
+      652,
+      2
+    ],
+    "parent_id": [
+      508,
+      45
+    ],
+    "translation": "Upper Pelym Wogul Dictionary of 1905",
+    "additional_metadata": {
+      "authors": null
+    },
+    "perspectives": [
+      {
+        "id": [
+          652,
+          3
+        ],
+        "translation": "Lexical Entries"
+      },
+      {
+        "id": [
+          652,
+          9
+        ],
+        "translation": "Paradigms"
+      }
+    ]
+  },
+  {
+    "id": [
+      653,
+      2
+    ],
+    "parent_id": [
+      508,
+      44
+    ],
+    "translation": "Russian-Ostyak-Dictionary of Samoyed 1910.",
+    "additional_metadata": {
+      "authors": null
+    },
+    "perspectives": [
+      {
+        "id": [
+          653,
+          3
+        ],
+        "translation": "Lexical Entries"
+      },
+      {
+        "id": [
+          653,
+          4
+        ],
+        "translation": "Paradigms"
+      }
+    ]
+  },
+  {
+    "id": [
+      656,
+      2
+    ],
+    "parent_id": [
+      508,
+      45
+    ],
+    "translation": "Dictionary of Middle-Ob dialect Mansi",
+    "additional_metadata": {
+      "authors": null
+    },
+    "perspectives": [
+      {
+        "id": [
+          656,
+          3
+        ],
+        "translation": "Lexical Entries"
+      },
+      {
+        "id": [
+          656,
+          9
+        ],
+        "translation": "Paradigms"
+      }
+    ]
+  },
+  {
+    "id": [
+      75,
+      3
+    ],
+    "parent_id": [
+      252,
+      42
+    ],
+    "translation": "Dictionary of Tubalar (Yogach)",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          75,
+          5
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          75,
+          4
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      126,
+      3
+    ],
+    "parent_id": [
+      633,
+      23
+    ],
+    "translation": "Evenki, Tutonchana 2008, (K.D. Hutokogir)",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          126,
+          5
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          126,
+          4
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      139,
+      3
+    ],
+    "parent_id": [
+      508,
+      43
+    ],
+    "translation": "Ӟеч кылъёс. Святой Тихонлэн ӟечлы дышетэм кылъёсыз (1891)",
+    "additional_metadata": {
+      "authors": null
+    },
+    "perspectives": [
+      {
+        "id": [
+          139,
+          4
+        ],
+        "translation": "Lexical Entries"
+      },
+      {
+        "id": [
+          139,
+          10
+        ],
+        "translation": "Paradigms"
+      }
+    ]
+  },
+  {
+    "id": [
+      226,
+      3
+    ],
+    "parent_id": [
+      216,
+      8
+    ],
+    "translation": "Middle-Chulym language (Tutal dialect, B. Tamocheva)",
+    "additional_metadata": {
+      "authors": "А.В. Савельев"
+    },
+    "perspectives": [
+      {
+        "id": [
+          226,
+          5
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          226,
+          4
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      275,
+      3
+    ],
+    "parent_id": [
+      252,
+      39
+    ],
+    "translation": "Dictionary of Telengit dialect of the Altai language (Dzhazator dialect, AI Saduq)",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          275,
+          5
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          275,
+          4
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      326,
+      3
+    ],
+    "parent_id": [
+      508,
+      51
+    ],
+    "translation": "SouthSelkup, Stepanovka, Arbaldaev BB",
+    "additional_metadata": {
+      "authors": "Е.М.Будянская, О.А.Казакевич"
+    },
+    "perspectives": [
+      {
+        "id": [
+          326,
+          5
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          326,
+          4
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      330,
+      3
+    ],
+    "parent_id": [
+      508,
+      49
+    ],
+    "translation": "Dictionary of Tundra dialects of Enets language",
+    "additional_metadata": {
+      "authors": "О.В.Ханина"
+    },
+    "perspectives": [
+      {
+        "id": [
+          330,
+          5
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          330,
+          4
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      334,
+      3
+    ],
+    "parent_id": [
+      508,
+      51
+    ],
+    "translation": "Selkup",
+    "additional_metadata": {
+      "authors": "Н.Л.Федотова, Н.В.Дубровская, Ю.В.Норманская, Р.И.Идрисов"
+    },
+    "perspectives": [
+      {
+        "id": [
+          334,
+          4
+        ],
+        "translation": "Lexical Entries"
+      },
+      {
+        "id": [
+          334,
+          5
+        ],
+        "translation": "Paradigms"
+      }
+    ]
+  },
+  {
+    "id": [
+      400,
+      3
+    ],
+    "parent_id": [
+      508,
+      42
+    ],
+    "translation": "Dictionary of Izhma dialect of Komi-Zyrian language (Beloyarsk Priuralsky district YaNAO)",
+    "additional_metadata": {
+      "authors": "Е.А.Кашкин, Е. В. Кашкин"
+    },
+    "perspectives": [
+      {
+        "id": [
+          400,
+          5
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          400,
+          4
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      418,
+      3
+    ],
+    "parent_id": [
+      508,
+      41
+    ],
+    "translation": "Dictionary of \"Beginning of the Christian doctrine\", 1841",
+    "additional_metadata": {
+      "authors": "М.А.Ключева"
+    },
+    "perspectives": [
+      {
+        "id": [
+          418,
+          5
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          418,
+          4
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      425,
+      3
+    ],
+    "parent_id": [
+      508,
+      41
+    ],
+    "translation": "Dictionary of Volga dialect of Mari language",
+    "additional_metadata": {
+      "authors": "Ю.В.Норманская, М.А.Ключева"
+    },
+    "perspectives": [
+      {
+        "id": [
+          425,
+          5
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          425,
+          4
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      474,
+      3
+    ],
+    "parent_id": [
+      500,
+      122
+    ],
+    "translation": "Dictionary of Tatar language, 1880",
+    "additional_metadata": {
+      "authors": "Ю.В.Норманская"
+    },
+    "perspectives": [
+      {
+        "id": [
+          474,
+          5
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          474,
+          4
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      502,
+      3
+    ],
+    "parent_id": [
+      508,
+      38
+    ],
+    "translation": "Kildin  Saami language (vi. Voronino)",
+    "additional_metadata": {
+      "authors": "А.М.Эрштадт, Ю.В.Норманская"
+    },
+    "perspectives": [
+      {
+        "id": [
+          502,
+          5
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          502,
+          4
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      588,
+      3
+    ],
+    "parent_id": [
+      508,
+      46
+    ],
+    "translation": "Dictionary of the North-Eastern Hungarian dialect, village Kölcs",
+    "additional_metadata": {
+      "authors": null
+    },
+    "perspectives": [
+      {
+        "id": [
+          588,
+          4
+        ],
+        "translation": "Lexical Entries"
+      },
+      {
+        "id": [
+          588,
+          5
+        ],
+        "translation": "Paradigms"
+      }
+    ]
+  },
+  {
+    "id": [
+      654,
+      3
+    ],
+    "parent_id": [
+      508,
+      44
+    ],
+    "translation": "Dictionary of Nizyam dialect of the Khanty language",
+    "additional_metadata": {
+      "authors": null
+    },
+    "perspectives": [
+      {
+        "id": [
+          654,
+          4
+        ],
+        "translation": "Lexical Entries"
+      },
+      {
+        "id": [
+          654,
+          5
+        ],
+        "translation": "Paradigms"
+      }
+    ]
+  },
+  {
+    "id": [
+      657,
+      3
+    ],
+    "parent_id": [
+      508,
+      45
+    ],
+    "translation": "Dictionary of Konda dialect of Mansi",
+    "additional_metadata": {
+      "authors": null
+    },
+    "perspectives": [
+      {
+        "id": [
+          657,
+          4
+        ],
+        "translation": "Lexical Entries"
+      },
+      {
+        "id": [
+          657,
+          10
+        ],
+        "translation": "Paradigms"
+      }
+    ]
+  },
+  {
+    "id": [
+      69,
+      4
+    ],
+    "parent_id": [
+      252,
+      42
+    ],
+    "translation": "Dictionary of Tubalar (Pyzha)",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          69,
+          5
+        ],
+        "translation": "Lexical Entries"
+      },
+      {
+        "id": [
+          69,
+          6
+        ],
+        "translation": "Paradigms"
+      }
+    ]
+  },
+  {
+    "id": [
+      70,
+      4
+    ],
+    "parent_id": [
+      252,
+      42
+    ],
+    "translation": "Dictionary of Tubalar (Troitsk)",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          70,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          70,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      71,
+      4
+    ],
+    "parent_id": [
+      33,
+      90
+    ],
+    "translation": "Dictionary of Chalkan dialect of the Altai language",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          71,
+          5
+        ],
+        "translation": "Lexical Entries"
+      },
+      {
+        "id": [
+          71,
+          6
+        ],
+        "translation": "Paradigms"
+      }
+    ]
+  },
+  {
+    "id": [
+      79,
+      4
+    ],
+    "parent_id": [
+      33,
+      89
+    ],
+    "translation": "ujguri",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          79,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          79,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      83,
+      4
+    ],
+    "parent_id": [
+      33,
+      89
+    ],
+    "translation": "Dictionary of Ili dialect of Kazakh",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          83,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          83,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      92,
+      4
+    ],
+    "parent_id": [
+      508,
+      43
+    ],
+    "translation": "Dictionary of middle Chepets dialect of the northern dialect of the Udmurt language (village Kabakovo Glazov district)",
+    "additional_metadata": {
+      "authors": "М.П.Безенова"
+    },
+    "perspectives": [
+      {
+        "id": [
+          92,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          92,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      93,
+      4
+    ],
+    "parent_id": [
+      508,
+      43
+    ],
+    "translation": "Dictionary of middle dialect of the Udmurt language (village Vylyngurt Syumsinsky District)",
+    "additional_metadata": {
+      "authors": "М.П.Безенова"
+    },
+    "perspectives": [
+      {
+        "id": [
+          93,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          93,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      94,
+      4
+    ],
+    "parent_id": [
+      508,
+      43
+    ],
+    "translation": "Dictionary of Besermyan dialect of Udmurt language (village Vortsa Yar district)",
+    "additional_metadata": {
+      "authors": "М.П.Безенова"
+    },
+    "perspectives": [
+      {
+        "id": [
+          94,
+          5
+        ],
+        "translation": "Lexical Entries"
+      },
+      {
+        "id": [
+          94,
+          6
+        ],
+        "translation": "Paradigms"
+      }
+    ]
+  },
+  {
+    "id": [
+      96,
+      4
+    ],
+    "parent_id": [
+      508,
+      43
+    ],
+    "translation": "Dictionary of Bavly dialect of the southern dialect of the Udmurt language",
+    "additional_metadata": {
+      "authors": "М.П.Безенова"
+    },
+    "perspectives": [
+      {
+        "id": [
+          96,
+          5
+        ],
+        "translation": "Lexical Entries"
+      },
+      {
+        "id": [
+          96,
+          6
+        ],
+        "translation": "Paradigms"
+      }
+    ]
+  },
+  {
+    "id": [
+      100,
+      4
+    ],
+    "parent_id": [
+      33,
+      90
+    ],
+    "translation": "Dictionary of Chalkan dialect of the Altai language (Vibel Oksana M.)",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          100,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          100,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      101,
+      4
+    ],
+    "parent_id": [
+      33,
+      90
+    ],
+    "translation": "Dictionary of Chalkan language (village Suranash)",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          101,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          101,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      107,
+      4
+    ],
+    "parent_id": [
+      508,
+      43
+    ],
+    "translation": "Besermyan dialect of Udmurt language",
+    "additional_metadata": {
+      "authors": "Руслан Идрисов (при составлении словаря были использованы данные http://beserman.ru/)"
+    },
+    "perspectives": [
+      {
+        "id": [
+          107,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          107,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      108,
+      4
+    ],
+    "parent_id": [
+      508,
+      40
+    ],
+    "translation": "Moksha language, the central dialect (village Forest Tsibaevo)",
+    "additional_metadata": {
+      "authors": "Руслан Идрисов"
+    },
+    "perspectives": [
+      {
+        "id": [
+          108,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          108,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      133,
+      4
+    ],
+    "parent_id": [
+      633,
+      23
+    ],
+    "translation": "Evenki, Chirinda 2007 HT Eldogir",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          133,
+          5
+        ],
+        "translation": "Lexical Entries"
+      },
+      {
+        "id": [
+          133,
+          6
+        ],
+        "translation": "Paradigms"
+      }
+    ]
+  },
+  {
+    "id": [
+      146,
+      4
+    ],
+    "parent_id": [
+      145,
+      22
+    ],
+    "translation": "Dictionary of Telengit dialect of the Altai language (Balykcha dialect, Arjan)",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          146,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          146,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      147,
+      4
+    ],
+    "parent_id": [
+      145,
+      22
+    ],
+    "translation": "Dictionary of Telengit dialect of the Altai language (Balykcha dialect, GG Syrtakov)",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          147,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          147,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      150,
+      4
+    ],
+    "parent_id": [
+      145,
+      22
+    ],
+    "translation": "Dictionary of Telengit dialect of the Altai language (Balykcha dialect, LV Silchakova)",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          150,
+          5
+        ],
+        "translation": "Lexical Entries"
+      },
+      {
+        "id": [
+          150,
+          6
+        ],
+        "translation": "Paradigms"
+      }
+    ]
+  },
+  {
+    "id": [
+      155,
+      4
+    ],
+    "parent_id": [
+      145,
+      22
+    ],
+    "translation": "Dictionary of Telengit dialect of the Altai language (Balykcha dialect, Maria)",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          155,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          155,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      157,
+      4
+    ],
+    "parent_id": [
+      145,
+      22
+    ],
+    "translation": "Dictionary of Telengit dialect of the Altai language (Balykcha dialect, PP Andadikova)",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          157,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          157,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      218,
+      4
+    ],
+    "parent_id": [
+      216,
+      8
+    ],
+    "translation": "Middle-Chulym language (Melet dialect, A.F. Kondiyakov)",
+    "additional_metadata": {
+      "authors": "А.В. Савельев"
+    },
+    "perspectives": [
+      {
+        "id": [
+          218,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          218,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      220,
+      4
+    ],
+    "parent_id": [
+      216,
+      8
+    ],
+    "translation": "Middle-Chulym language (Tutal dialect, V.M. Gabov)",
+    "additional_metadata": {
+      "authors": "А.В. Савельев"
+    },
+    "perspectives": [
+      {
+        "id": [
+          220,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          220,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      242,
+      4
+    ],
+    "parent_id": [
+      145,
+      22
+    ],
+    "translation": "Dictionary of Telengit dialect of the Altai language (Balykcha dialect, SE Tereshkina)",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          242,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          242,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      243,
+      4
+    ],
+    "parent_id": [
+      145,
+      22
+    ],
+    "translation": "Dictionary of Telengit dialect of the Altai language (Balykcha dialect, ZI Toydonova)",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          243,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          243,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      245,
+      4
+    ],
+    "parent_id": [
+      145,
+      22
+    ],
+    "translation": "Dictionary of Telengit dialect of the Altai language (Balykcha dialect, list 1, Alain)",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          245,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          245,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      246,
+      4
+    ],
+    "parent_id": [
+      145,
+      22
+    ],
+    "translation": "Dictionary of Telengit dialect of the Altai language (Balykcha dialect, list 1, Marina)",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          246,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          246,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      248,
+      4
+    ],
+    "parent_id": [
+      145,
+      22
+    ],
+    "translation": "Dictionary of Telengit dialect of the Altai language (Balykcha dialect, list 1, Praskovya)",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          248,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          248,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      251,
+      4
+    ],
+    "parent_id": [
+      145,
+      22
+    ],
+    "translation": "Dictionary of Telengit dialect of the Altai language (Balykcha dialect, list 1, Zinaida)",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          251,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          251,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      254,
+      4
+    ],
+    "parent_id": [
+      145,
+      22
+    ],
+    "translation": "Dictionary of Telengit dialect of the Altai language (Balykcha dialect, list 2, Inga Syrbaganova)",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          254,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          254,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      255,
+      4
+    ],
+    "parent_id": [
+      145,
+      22
+    ],
+    "translation": "Dictionary of Telengit dialect of the Altai language (Balykcha dialect, list 2, Irina Tuzhalova)",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          255,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          255,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      257,
+      4
+    ],
+    "parent_id": [
+      145,
+      22
+    ],
+    "translation": "Dictionary of Telengit dialect of the Altai language (Balykcha dialect, list 2, Hope Bydysheva)",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          257,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          257,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      258,
+      4
+    ],
+    "parent_id": [
+      145,
+      22
+    ],
+    "translation": "Dictionary of Telengit dialect of the Altai language (Balykcha dialect, list 2, Sergey Bachimov)",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          258,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          258,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      259,
+      4
+    ],
+    "parent_id": [
+      145,
+      22
+    ],
+    "translation": "Dictionary of Telengit dialect of the Altai language (Balykcha dialect, list 2, Zinaida)",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          259,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          259,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      260,
+      4
+    ],
+    "parent_id": [
+      145,
+      22
+    ],
+    "translation": "Dictionary of Telengit dialect of the Altai language (Balykcha dialect, list 3, Irina Tuzhalova)",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          260,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          260,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      261,
+      4
+    ],
+    "parent_id": [
+      145,
+      22
+    ],
+    "translation": "Dictionary of Telengit dialect of the Altai language (Balykcha dialect, list 3, Suraya)",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          261,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          261,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      263,
+      4
+    ],
+    "parent_id": [
+      145,
+      22
+    ],
+    "translation": "Dictionary of Telengit dialect of the Altai language (Balykcha dialect, list 4, Chokurbashev)",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          263,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          263,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      264,
+      4
+    ],
+    "parent_id": [
+      145,
+      22
+    ],
+    "translation": "Dictionary of Telengit dialect of the Altai language (Balykcha dialect, list 4, GG Syrtakov)",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          264,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          264,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      265,
+      4
+    ],
+    "parent_id": [
+      145,
+      22
+    ],
+    "translation": "Dictionary of Telengit dialect of the Altai language (Balykcha dialect, list 4, Madysheva)",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          265,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          265,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      267,
+      4
+    ],
+    "parent_id": [
+      145,
+      22
+    ],
+    "translation": "Dictionary of Telengit dialect of the Altai language (Balykcha dialect, list 4, Raisa)",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          267,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          267,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      268,
+      4
+    ],
+    "parent_id": [
+      145,
+      22
+    ],
+    "translation": "Dictionary of Telengit dialect of the Altai language (Balykcha dialect, list 4, ZI Toydonova)",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          268,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          268,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      269,
+      4
+    ],
+    "parent_id": [
+      145,
+      22
+    ],
+    "translation": "Dictionary of Telengit dialect of the Altai language (Balykcha dialect, list 5, Catherine Tantyeva)",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          269,
+          5
+        ],
+        "translation": "Lexical Entries"
+      },
+      {
+        "id": [
+          269,
+          6
+        ],
+        "translation": "Paradigms"
+      }
+    ]
+  },
+  {
+    "id": [
+      270,
+      4
+    ],
+    "parent_id": [
+      145,
+      22
+    ],
+    "translation": "Dictionary of Telengit dialect of the Altai language (Balykcha dialect, list 6, Catherine Tantyeva)",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          270,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          270,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      271,
+      4
+    ],
+    "parent_id": [
+      252,
+      39
+    ],
+    "translation": "Dictionary of Telengit dialect of the Altai language (Argut, Jeanne)",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          271,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          271,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      272,
+      4
+    ],
+    "parent_id": [
+      252,
+      39
+    ],
+    "translation": "Dictionary of Telengit dialect of the Altai language (Argut dialect, Nicholas G.)",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          272,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          272,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      273,
+      4
+    ],
+    "parent_id": [
+      252,
+      39
+    ],
+    "translation": "Dictionary of Telengit dialect of the Altai language (Argut dialect, Radik)",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          273,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          273,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      274,
+      4
+    ],
+    "parent_id": [
+      508,
+      43
+    ],
+    "translation": "Dictionary of central-southern dialect of the Udmurt language (village Varklet-Bodya)",
+    "additional_metadata": {
+      "authors": "М.П.Безенова"
+    },
+    "perspectives": [
+      {
+        "id": [
+          274,
+          5
+        ],
+        "translation": "Lexical Entries"
+      },
+      {
+        "id": [
+          274,
+          6
+        ],
+        "translation": "Paradigms"
+      }
+    ]
+  },
+  {
+    "id": [
+      278,
+      4
+    ],
+    "parent_id": [
+      252,
+      39
+    ],
+    "translation": "Dictionary of Telengit dialect of the Altai language (Dzhazator dialect, AP Minchinova)",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          278,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          278,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      279,
+      4
+    ],
+    "parent_id": [
+      252,
+      39
+    ],
+    "translation": "Dictionary of Telengit dialect of the Altai language (Dzhazator dialect, BG Dadyyanova)",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          279,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          279,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      280,
+      4
+    ],
+    "parent_id": [
+      252,
+      39
+    ],
+    "translation": "Dictionary of Telengit dialect of the Altai language (Dzhazator dialect, Marina P.)",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          280,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          280,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      281,
+      4
+    ],
+    "parent_id": [
+      252,
+      39
+    ],
+    "translation": "Dictionary of Telengit dialect of the Altai language (Dzhazator dialect, NV pumps)",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          281,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          281,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      282,
+      4
+    ],
+    "parent_id": [
+      252,
+      39
+    ],
+    "translation": "Dictionary of Telengit dialect of the Altai language (Dzhazator dialect, TI Sadukova)",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          282,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          282,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      283,
+      4
+    ],
+    "parent_id": [
+      252,
+      39
+    ],
+    "translation": "Dictionary of Telengit dialect of the Altai language (Dzhazator dialect, Zinaida Keberekova)",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          283,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          283,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      284,
+      4
+    ],
+    "parent_id": [
+      252,
+      40
+    ],
+    "translation": "Dictionary of Altai Kizhi dialect of the Altai language (Gorno-Altaisk, Nagy)",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          284,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          284,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      285,
+      4
+    ],
+    "parent_id": [
+      216,
+      8
+    ],
+    "translation": "Middle-Chulym language (Budeev, Budeeva, Tamycheva, Tatynkina)",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          285,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          285,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      289,
+      4
+    ],
+    "parent_id": [
+      252,
+      42
+    ],
+    "translation": "Dictionary of Tubalar dialect of the Altai language (village Yogach)",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          289,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          289,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      296,
+      4
+    ],
+    "parent_id": [
+      578,
+      8
+    ],
+    "translation": "Dictionary of malokarach dialect of Chuvash",
+    "additional_metadata": {
+      "authors": "А.В. Савельев"
+    },
+    "perspectives": [
+      {
+        "id": [
+          296,
+          5
+        ],
+        "translation": "Lexical Entries"
+      },
+      {
+        "id": [
+          296,
+          6
+        ],
+        "translation": "Paradigms"
+      }
+    ]
+  },
+  {
+    "id": [
+      339,
+      4
+    ],
+    "parent_id": [
+      508,
+      48
+    ],
+    "translation": "Russian-Ostyak-Dictionary of Samoyed (Nenets part) 1910.",
+    "additional_metadata": {
+      "authors": "Ю.В.Норманская"
+    },
+    "perspectives": [
+      {
+        "id": [
+          339,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          339,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      376,
+      4
+    ],
+    "parent_id": [
+      500,
+      124
+    ],
+    "translation": "Dictionary of Semi dialect of Kazakh language",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          376,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          376,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      377,
+      4
+    ],
+    "parent_id": [
+      500,
+      124
+    ],
+    "translation": "Dictionary of Dzhambul dialect of Kazakh language",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          377,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          377,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      378,
+      4
+    ],
+    "parent_id": [
+      500,
+      124
+    ],
+    "translation": "Dictionary of Aksuk dialect of Kazakh language",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          378,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          378,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      379,
+      4
+    ],
+    "parent_id": [
+      500,
+      124
+    ],
+    "translation": "Dictionary of Semi dialect of Kyzyl-Orda language",
+    "additional_metadata": {
+      "authors": "Ю.В.Норманская"
+    },
+    "perspectives": [
+      {
+        "id": [
+          379,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          379,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      380,
+      4
+    ],
+    "parent_id": [
+      500,
+      124
+    ],
+    "translation": "Dictionary of Taldy-Korgan dialect of Kazakh language",
+    "additional_metadata": {
+      "authors": "Ю.В.Норманская"
+    },
+    "perspectives": [
+      {
+        "id": [
+          380,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          380,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      407,
+      4
+    ],
+    "parent_id": [
+      500,
+      123
+    ],
+    "translation": "Dictionary of Kachin dialect of Khakas kanguage (vil. Troshkino, Ju. I. Troshkin)",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          407,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          407,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      408,
+      4
+    ],
+    "parent_id": [
+      500,
+      123
+    ],
+    "translation": "Dictionary of Kyzyl dialect of Khakas language (vil. Charnoje Ozero, Maria Romanova)",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          408,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          408,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      477,
+      4
+    ],
+    "parent_id": [
+      508,
+      50
+    ],
+    "translation": "Dictionary of Ust-Avam dialect of Nganasan language 1970s (А.Ch.Momde)",
+    "additional_metadata": {
+      "authors": "Ю.В.Норманская, А.А.Добринина, Т.Р.Рыжикова"
+    },
+    "perspectives": [
+      {
+        "id": [
+          477,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          477,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      478,
+      4
+    ],
+    "parent_id": [
+      508,
+      50
+    ],
+    "translation": "Dictionary of Vadeevo dialect of Nganasan language 1970s (vil. Kresty)",
+    "additional_metadata": {
+      "authors": "Ю.В.Норманская, А.А.Добринина, Т.Р.Рыжикова"
+    },
+    "perspectives": [
+      {
+        "id": [
+          478,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          478,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      480,
+      4
+    ],
+    "parent_id": [
+      508,
+      51
+    ],
+    "translation": "Dictionary of Middle Ob' dialect of Selkup language 1970s",
+    "additional_metadata": {
+      "authors": "Ю.В.Норманская, А.А.Добринина, Т.Р.Рыжикова"
+    },
+    "perspectives": [
+      {
+        "id": [
+          480,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          480,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      481,
+      4
+    ],
+    "parent_id": [
+      508,
+      50
+    ],
+    "translation": "Dictionary of Ust-Avam dialect of Nganasan language of the 1970s (E. N. Sovalova)",
+    "additional_metadata": {
+      "authors": "Ю.В.Норманская, А.А.Добринина, Т.Р.Рыжикова"
+    },
+    "perspectives": [
+      {
+        "id": [
+          481,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          481,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      482,
+      4
+    ],
+    "parent_id": [
+      508,
+      49
+    ],
+    "translation": "Dictionary of Forest dialect of Enets language (1970)",
+    "additional_metadata": {
+      "authors": "О.В.Ханина"
+    },
+    "perspectives": [
+      {
+        "id": [
+          482,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          482,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      504,
+      4
+    ],
+    "parent_id": [
+      508,
+      37
+    ],
+    "translation": "Russian-Karelian dictionary, 1908, compiled by teacher Svyatoozer school of M. D. Georgievskiy",
+    "additional_metadata": {
+      "authors": "Родионова А.П."
+    },
+    "perspectives": [
+      {
+        "id": [
+          504,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          504,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      522,
+      4
+    ],
+    "parent_id": [
+      508,
+      42
+    ],
+    "translation": "Dictionary of South Kudymkar dialect of Komi-Permyak language (vil. Boljshaja i Malaja Serva)",
+    "additional_metadata": {
+      "authors": "Р.И.Идрисов"
+    },
+    "perspectives": [
+      {
+        "id": [
+          522,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          522,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      523,
+      4
+    ],
+    "parent_id": [
+      508,
+      42
+    ],
+    "translation": "Dictionary of North Mysov dialect of Komi-Permiak language (vil. Zhemchuzhnyj)",
+    "additional_metadata": {
+      "authors": "Р.И.Идрисов"
+    },
+    "perspectives": [
+      {
+        "id": [
+          523,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          523,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      524,
+      4
+    ],
+    "parent_id": [
+      508,
+      42
+    ],
+    "translation": "Dictionary of Komi-Yazva language",
+    "additional_metadata": {
+      "authors": "Р.И.Идрисов"
+    },
+    "perspectives": [
+      {
+        "id": [
+          524,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          524,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      528,
+      4
+    ],
+    "parent_id": [
+      508,
+      44
+    ],
+    "translation": "Dictionary of Shuryshkar dialect of Khanty language",
+    "additional_metadata": {
+      "authors": "Е.В.Кашкин, Ю.В.Норманская"
+    },
+    "perspectives": [
+      {
+        "id": [
+          528,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          528,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      589,
+      4
+    ],
+    "parent_id": [
+      508,
+      46
+    ],
+    "translation": "Dictionary of the Szeged dialect of Hungarian",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          589,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          589,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      596,
+      4
+    ],
+    "parent_id": [
+      508,
+      46
+    ],
+    "translation": "Dictionary of Pecs dialect of Hungarian",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          596,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          596,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      623,
+      4
+    ],
+    "parent_id": [
+      633,
+      23
+    ],
+    "translation": "Южный диалект эвенкийского языка, п. Стрелка-Чуня",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          623,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          623,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      637,
+      4
+    ],
+    "parent_id": [
+      1088,
+      592
+    ],
+    "translation": "словарь нанайского диалекта села Кондон, северо-западная диалектная группа  сунгарийского наречия. носитель - Л. Ф. Самар",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          637,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          637,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      638,
+      4
+    ],
+    "parent_id": [
+      643,
+      4
+    ],
+    "translation": "словарь удыхейского диалекта села Гвасюги. носитель - О. А. Кялундзюга. запись 2016 года сделана А.Х.Гирфановой",
+    "additional_metadata": {
+      "authors": ""
+    },
+    "perspectives": [
+      {
+        "id": [
+          638,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          638,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      694,
+      4
+    ],
+    "parent_id": [
+      508,
+      49
+    ],
+    "translation": "Dictionary of Forest dialect of Enets Language",
+    "additional_metadata": {
+      "authors": "А. Шлуинский, Ю. Норманская,С. Шешенин,О.Ханина,"
+    },
+    "perspectives": [
+      {
+        "id": [
+          694,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          694,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      817,
+      4
+    ],
+    "parent_id": [
+      508,
+      51
+    ],
+    "translation": "Selkup Bible",
+    "additional_metadata": {
+      "authors": null
+    },
+    "perspectives": [
+      {
+        "id": [
+          817,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          817,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      1088,
+      4
+    ],
+    "parent_id": [
+      1088,
+      577
+    ],
+    "translation": "диалект села Малжегар, вилюйская диалектная группа, якутский язык - носитель: Афанасьев Василий Валентинович, 1980 гр..",
+    "additional_metadata": {
+      "authors": null
+    },
+    "perspectives": [
+      {
+        "id": [
+          1088,
+          9
+        ],
+        "translation": "Lexical lentries"
+      },
+      {
+        "id": [
+          1088,
+          10
+        ],
+        "translation": "Paradigmatic forms"
+      }
+    ]
+  },
+  {
+    "id": [
+      1167,
+      4
+    ],
+    "parent_id": [
+      508,
+      44
+    ],
+    "translation": "Dictionary of Khanty Bible on  Obdorsk dialect (1868)",
+    "additional_metadata": {
+      "authors": null
+    },
+    "perspectives": [
+      {
+        "id": [
+          1167,
+          6
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          1167,
+          5
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      714,
+      5
+    ],
+    "parent_id": [
+      500,
+      121
+    ],
+    "translation": "Словарь башкирского языка",
+    "additional_metadata": {
+      "authors": "Катаринский В. В., Исупова Анна,"
+    },
+    "perspectives": [
+      {
+        "id": [
+          714,
+          7
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          714,
+          6
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      719,
+      5
+    ],
+    "parent_id": [
+      295,
+      8
+    ],
+    "translation": "Начертание правил чувашского языка и словарь",
+    "additional_metadata": {
+      "authors": "Евгения Чекменева, Евгения Чекменева,"
+    },
+    "perspectives": [
+      {
+        "id": [
+          719,
+          7
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          719,
+          6
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      775,
+      5
+    ],
+    "parent_id": [
+      500,
+      124
+    ],
+    "translation": "Словарь казахского языка, 1897",
+    "additional_metadata": {
+      "authors": "compiled by Zarema Kochakaeva"
+    },
+    "perspectives": [
+      {
+        "id": [
+          775,
+          6
+        ],
+        "translation": "Lexical Entries"
+      },
+      {
+        "id": [
+          775,
+          7
+        ],
+        "translation": "Paradigms"
+      }
+    ]
+  },
+  {
+    "id": [
+      435,
+      6
+    ],
+    "parent_id": [
+      643,
+      4
+    ],
+    "translation": "Dictionary of Udyhe, 1980s (archive of I.V.Kormushin)",
+    "additional_metadata": {
+      "authors": "И.В.Кормушин, М.П.Безенова"
+    },
+    "perspectives": [
+      {
+        "id": [
+          435,
+          83
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          435,
+          14
+        ],
+        "translation": "1 катушка (со звуком)"
+      },
+      {
+        "id": [
+          435,
+          7
+        ],
+        "translation": "1 катушка"
+      },
+      {
+        "id": [
+          435,
+          8
+        ],
+        "translation": "1 катушка"
+      },
+      {
+        "id": [
+          435,
+          9
+        ],
+        "translation": "1 катушка"
+      },
+      {
+        "id": [
+          435,
+          10
+        ],
+        "translation": "1 катушка"
+      },
+      {
+        "id": [
+          435,
+          11
+        ],
+        "translation": "1 катушка"
+      },
+      {
+        "id": [
+          435,
+          12
+        ],
+        "translation": "1 катушка"
+      },
+      {
+        "id": [
+          435,
+          13
+        ],
+        "translation": "1 катушка (со звуком)"
+      },
+      {
+        "id": [
+          435,
+          15
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          435,
+          17
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          435,
+          28
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          435,
+          43
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          435,
+          56
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          435,
+          63
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          435,
+          66
+        ],
+        "translation": "Paradigms"
+      }
+    ]
+  },
+  {
+    "id": [
+      906,
+      6
+    ],
+    "parent_id": [
+      508,
+      44
+    ],
+    "translation": "Vasjugan dialect of Khanty",
+    "additional_metadata": {
+      "authors": "Ковалева Е.В."
+    },
+    "perspectives": [
+      {
+        "id": [
+          906,
+          8
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          906,
+          7
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      958,
+      6
+    ],
+    "parent_id": [
+      508,
+      38
+    ],
+    "translation": "Dictionary of Ter Saami language",
+    "additional_metadata": {
+      "authors": "Ю.В.Норманская, А.Эрштадт"
+    },
+    "perspectives": [
+      {
+        "id": [
+          958,
+          8
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          958,
+          7
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      660,
+      7
+    ],
+    "parent_id": [
+      508,
+      45
+    ],
+    "translation": "Словарь сосьвинского диалекта мансийского языка",
+    "additional_metadata": {
+      "authors": null
+    },
+    "perspectives": [
+      {
+        "id": [
+          660,
+          8
+        ],
+        "translation": "Lexical Entries"
+      },
+      {
+        "id": [
+          660,
+          14
+        ],
+        "translation": "Paradigms"
+      }
+    ]
+  },
+  {
+    "id": [
+      1024,
+      7
+    ],
+    "parent_id": [
+      1088,
+      577
+    ],
+    "translation": "диалект села Нюрба вилюйской диалектной группы, якутский язык - носитель:  Семенова Светлана Владимировнаб 1969 г.р.",
+    "additional_metadata": {
+      "authors": "Ulyana Legusina, Zi Min Maak, Anna Dybo"
+    },
+    "perspectives": [
+      {
+        "id": [
+          1024,
+          12
+        ],
+        "translation": "Lexical entries"
+      },
+      {
+        "id": [
+          1024,
+          13
+        ],
+        "translation": "Paradigmatic forms"
+      }
+    ]
+  },
+  {
+    "id": [
+      998,
+      8
+    ],
+    "parent_id": [
+      998,
+      5
+    ],
+    "translation": "Yangikent dialect, Qaytaq dialect group, Qumyq language. speaker - Zazay Abdulžalilowa, née 1957. recorded in 2017",
+    "additional_metadata": {
+      "authors": "Zarema Kochakaeva, Zi Min Maak, Anna Dybo"
+    },
+    "perspectives": [
+      {
+        "id": [
+          998,
+          14
+        ],
+        "translation": "Paradigmatic forms"
+      },
+      {
+        "id": [
+          998,
+          13
+        ],
+        "translation": "Lexical entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      662,
+      9
+    ],
+    "parent_id": [
+      508,
+      44
+    ],
+    "translation": "Dictionary of Salym Khanty language dialect (vil. Salym)",
+    "additional_metadata": {
+      "authors": null
+    },
+    "perspectives": [
+      {
+        "id": [
+          662,
+          10
+        ],
+        "translation": "Lexical Entries"
+      },
+      {
+        "id": [
+          662,
+          11
+        ],
+        "translation": "Paradigms"
+      }
+    ]
+  },
+  {
+    "id": [
+      840,
+      9
+    ],
+    "parent_id": [
+      840,
+      6
+    ],
+    "translation": "Русско-сартовский словарь",
+    "additional_metadata": {
+      "authors": "В. Наливкинъ, Анна Исупова"
+    },
+    "perspectives": [
+      {
+        "id": [
+          840,
+          11
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          840,
+          10
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      867,
+      9
+    ],
+    "parent_id": [
+      508,
+      45
+    ],
+    "translation": "Dictionary of Mansi language, compiled by archpriest Simeon Cherkalov (Solikamsk sity, 1783)",
+    "additional_metadata": {
+      "authors": "Koshelyuk N.A."
+    },
+    "perspectives": [
+      {
+        "id": [
+          867,
+          11
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          867,
+          10
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      731,
+      11
+    ],
+    "parent_id": [
+      508,
+      48
+    ],
+    "translation": "Dictionary for Kanin Tundra dialect",
+    "additional_metadata": {
+      "authors": "Амелина Мария Константиновна"
+    },
+    "perspectives": [
+      {
+        "id": [
+          731,
+          13
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          731,
+          12
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      704,
+      16
+    ],
+    "parent_id": [
+      508,
+      48
+    ],
+    "translation": "Dictionary of the Gydan dialect of Tundra Nenets",
+    "additional_metadata": {
+      "authors": "Амелина Мария Константиновна, Амелина Мария Константиновна,"
+    },
+    "perspectives": [
+      {
+        "id": [
+          704,
+          18
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          704,
+          17
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      891,
+      16
+    ],
+    "parent_id": [
+      1076,
+      122
+    ],
+    "translation": "dictionary of Primorije Koryo-mar language, Škotowo dialect  - speaker: Witalij Lee, né 1947. recorded in 2017 by Paulina Lee",
+    "additional_metadata": {
+      "authors": "Paulina I. Lee, Zi Min Maak, Anna Dybo"
+    },
+    "perspectives": [
+      {
+        "id": [
+          891,
+          24
+        ],
+        "translation": "Lexical entries"
+      },
+      {
+        "id": [
+          891,
+          25
+        ],
+        "translation": "Paradigmatic forms"
+      }
+    ]
+  },
+  {
+    "id": [
+      1024,
+      16
+    ],
+    "parent_id": [
+      1088,
+      577
+    ],
+    "translation": "диалект села Нюрба вилюйской диалектной группы, якутский язык - носитель: Аргунова Алевтина Петровна",
+    "additional_metadata": {
+      "authors": "Ulyana Legusina, Zi Min Maak, Anna Dybo"
+    },
+    "perspectives": [
+      {
+        "id": [
+          1024,
+          21
+        ],
+        "translation": "Lexical entries"
+      },
+      {
+        "id": [
+          1024,
+          22
+        ],
+        "translation": "Paradigmatic forms"
+      }
+    ]
+  },
+  {
+    "id": [
+      965,
+      18
+    ],
+    "parent_id": [
+      508,
+      38
+    ],
+    "translation": "Dictionary of Evangelium of Matthew on Saami language, 1878",
+    "additional_metadata": {
+      "authors": null
+    },
+    "perspectives": [
+      {
+        "id": [
+          965,
+          20
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          965,
+          19
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      1024,
+      25
+    ],
+    "parent_id": [
+      1088,
+      577
+    ],
+    "translation": "диалект Вилюйска вилюйской диалектной группы, якутский язык - носитель: Гаврильева Валентина Николаевна,1956",
+    "additional_metadata": {
+      "authors": "Ulyana Legusina, Zi Min Maak, Anna Dybo"
+    },
+    "perspectives": [
+      {
+        "id": [
+          1024,
+          34
+        ],
+        "translation": "Lexical entries"
+      },
+      {
+        "id": [
+          1024,
+          36
+        ],
+        "translation": "Lexical entries"
+      },
+      {
+        "id": [
+          1024,
+          37
+        ],
+        "translation": "Paradigmatic forms"
+      },
+      {
+        "id": [
+          1024,
+          35
+        ],
+        "translation": "Paradigmatic forms"
+      }
+    ]
+  },
+  {
+    "id": [
+      902,
+      27
+    ],
+    "parent_id": [
+      508,
+      44
+    ],
+    "translation": "Saint History",
+    "additional_metadata": {
+      "authors": null
+    },
+    "perspectives": [
+      {
+        "id": [
+          902,
+          29
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          902,
+          28
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      1024,
+      40
+    ],
+    "parent_id": [
+      1105,
+      28
+    ],
+    "translation": "диалект села Саскылах северо-западной диалектной группы, якутский язык - носитель:  Туприна Аграфена Николаевна",
+    "additional_metadata": {
+      "authors": "Ulyana Legusina, Zi Min Maak, Anna Dybo"
+    },
+    "perspectives": [
+      {
+        "id": [
+          1024,
+          45
+        ],
+        "translation": "Lexical entries"
+      },
+      {
+        "id": [
+          1024,
+          46
+        ],
+        "translation": "Paradigmatic forms"
+      }
+    ]
+  },
+  {
+    "id": [
+      1088,
+      40
+    ],
+    "parent_id": [
+      1088,
+      577
+    ],
+    "translation": "диалект села Кудай, вилюйская диалектная группа, якутский язык - носитель: Горбунов Петр Васильевич, 1947",
+    "additional_metadata": {
+      "authors": null
+    },
+    "perspectives": [
+      {
+        "id": [
+          1088,
+          45
+        ],
+        "translation": "Lexical entries"
+      },
+      {
+        "id": [
+          1088,
+          46
+        ],
+        "translation": "Paradigmatic forms"
+      }
+    ]
+  },
+  {
+    "id": [
+      1024,
+      49
+    ],
+    "parent_id": [
+      1105,
+      28
+    ],
+    "translation": "диалект села Саскылах северо-западной диалектной группы, якутский язык - носитель:  Гуляева Анна Николаевна, 1955",
+    "additional_metadata": {
+      "authors": "Ulyana Legusina, Zi Min Maak, Anna Dybo"
+    },
+    "perspectives": [
+      {
+        "id": [
+          1024,
+          54
+        ],
+        "translation": "Lexical entries"
+      },
+      {
+        "id": [
+          1024,
+          55
+        ],
+        "translation": "Paradigmatic forms"
+      }
+    ]
+  },
+  {
+    "id": [
+      1024,
+      58
+    ],
+    "parent_id": [
+      1088,
+      573
+    ],
+    "translation": "диалект села Казачье северо-восточной диалектной группы, якутский язык - носитель:  Шахурдин Алексей Дмитриевич, 1963",
+    "additional_metadata": {
+      "authors": "Ulyana Legusina, Zi Min Maak, Anna Dybo"
+    },
+    "perspectives": [
+      {
+        "id": [
+          1024,
+          63
+        ],
+        "translation": "Lexical entries"
+      },
+      {
+        "id": [
+          1024,
+          64
+        ],
+        "translation": "Paradigmatic forms"
+      }
+    ]
+  },
+  {
+    "id": [
+      1024,
+      67
+    ],
+    "parent_id": [
+      1088,
+      573
+    ],
+    "translation": "диалект села Тумат северо-восточной диалектной группы, якутский язык - носитель:  Колесова Елизавета Сергеевна, 1969",
+    "additional_metadata": {
+      "authors": "Ulyana Legusina, Zi Min Maak, Anna Dybo"
+    },
+    "perspectives": [
+      {
+        "id": [
+          1024,
+          72
+        ],
+        "translation": "Lexical entries"
+      },
+      {
+        "id": [
+          1024,
+          73
+        ],
+        "translation": "Paradigmatic forms"
+      }
+    ]
+  },
+  {
+    "id": [
+      1024,
+      76
+    ],
+    "parent_id": [
+      1088,
+      569
+    ],
+    "translation": "диалект села Арылах (Верхоянский р.) северо-восточной диалектной группы, якутский язык - носитель: Чукров Андрей Петрович, 1953",
+    "additional_metadata": {
+      "authors": "Ulyana Legusina, Zi Min Maak, Anna Dybo"
+    },
+    "perspectives": [
+      {
+        "id": [
+          1024,
+          81
+        ],
+        "translation": "Lexical entries"
+      },
+      {
+        "id": [
+          1024,
+          82
+        ],
+        "translation": "Paradigmatic forms"
+      }
+    ]
+  },
+  {
+    "id": [
+      1088,
+      76
+    ],
+    "parent_id": [
+      1088,
+      577
+    ],
+    "translation": "диалект села Кюндяя, вилюйская группа, якутский язык - носитель: Иванова Людмила Михайловна, 1956 г.р.",
+    "additional_metadata": {
+      "authors": null
+    },
+    "perspectives": [
+      {
+        "id": [
+          1088,
+          82
+        ],
+        "translation": "Paradigmatic forms"
+      },
+      {
+        "id": [
+          1088,
+          81
+        ],
+        "translation": "Lexical entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      1024,
+      85
+    ],
+    "parent_id": [
+      1088,
+      581
+    ],
+    "translation": "диалект села Арылах (Усть-Алданский р.) центральной диалектной группы, якутский язык - носитель: Кириллова Марфа Ивановна, 1959",
+    "additional_metadata": {
+      "authors": "Ulyana Legusina, Zi Min Maak, Anna Dybo"
+    },
+    "perspectives": [
+      {
+        "id": [
+          1024,
+          90
+        ],
+        "translation": "Lexical entries"
+      },
+      {
+        "id": [
+          1024,
+          91
+        ],
+        "translation": "Paradigmatic forms"
+      }
+    ]
+  },
+  {
+    "id": [
+      1088,
+      111
+    ],
+    "parent_id": [
+      1088,
+      577
+    ],
+    "translation": "диалект села Тюбяй Жархан, вилюйская группа, якутский язык - носитель: Иванова Валентина Васильевна,  1948 г.р.",
+    "additional_metadata": {
+      "authors": null
+    },
+    "perspectives": [
+      {
+        "id": [
+          1088,
+          117
+        ],
+        "translation": "Paradigmatic forms"
+      },
+      {
+        "id": [
+          1088,
+          116
+        ],
+        "translation": "Lexical entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      1024,
+      119
+    ],
+    "parent_id": [
+      1088,
+      581
+    ],
+    "translation": "диалект села Черкёх центральной диалектной группы, якутский язык - носитель: Яковлева Татьяна Христофоровна, 1957",
+    "additional_metadata": {
+      "authors": "Ulyana Legusina, Zi Min Maak, Anna Dybo"
+    },
+    "perspectives": [
+      {
+        "id": [
+          1024,
+          152
+        ],
+        "translation": "Lexical entries"
+      },
+      {
+        "id": [
+          1024,
+          166
+        ],
+        "translation": ""
+      },
+      {
+        "id": [
+          1024,
+          164
+        ],
+        "translation": ""
+      },
+      {
+        "id": [
+          1024,
+          165
+        ],
+        "translation": ""
+      },
+      {
+        "id": [
+          1024,
+          167
+        ],
+        "translation": ""
+      },
+      {
+        "id": [
+          1024,
+          153
+        ],
+        "translation": "Paradigmatic forms"
+      },
+      {
+        "id": [
+          1024,
+          162
+        ],
+        "translation": ""
+      },
+      {
+        "id": [
+          1024,
+          163
+        ],
+        "translation": ""
+      },
+      {
+        "id": [
+          1024,
+          154
+        ],
+        "translation": ""
+      },
+      {
+        "id": [
+          1024,
+          156
+        ],
+        "translation": ""
+      },
+      {
+        "id": [
+          1024,
+          157
+        ],
+        "translation": ""
+      },
+      {
+        "id": [
+          1024,
+          158
+        ],
+        "translation": ""
+      },
+      {
+        "id": [
+          1024,
+          159
+        ],
+        "translation": ""
+      },
+      {
+        "id": [
+          1024,
+          160
+        ],
+        "translation": ""
+      },
+      {
+        "id": [
+          1024,
+          161
+        ],
+        "translation": ""
+      },
+      {
+        "id": [
+          1024,
+          155
+        ],
+        "translation": ""
+      }
+    ]
+  },
+  {
+    "id": [
+      1088,
+      147
+    ],
+    "parent_id": [
+      1088,
+      577
+    ],
+    "translation": "диалект села Кутана, вилюйская группа, якутский язык - носитель: Дьячковская Валентина Григорьевна, 1952 г.р.",
+    "additional_metadata": {
+      "authors": null
+    },
+    "perspectives": [
+      {
+        "id": [
+          1088,
+          153
+        ],
+        "translation": "Paradigmatic forms"
+      },
+      {
+        "id": [
+          1088,
+          152
+        ],
+        "translation": "Lexical entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      1026,
+      154
+    ],
+    "parent_id": [
+      33,
+      87
+    ],
+    "translation": "Dictionary of the Narym Dialect of the Selkup Language",
+    "additional_metadata": {
+      "authors": null
+    },
+    "perspectives": [
+      {
+        "id": [
+          1026,
+          220
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          1026,
+          219
+        ],
+        "translation": "Lexical Entries"
+      },
+      {
+        "id": [
+          1026,
+          157
+        ],
+        "translation": "Wrong perspective"
+      }
+    ]
+  },
+  {
+    "id": [
+      1088,
+      182
+    ],
+    "parent_id": [
+      1088,
+      577
+    ],
+    "translation": "диалект села Тюбяй Жархан, вилюйская диалектная группа, якутский язык - носитель: Токуева Мария Васильевна, 1955 г.р.",
+    "additional_metadata": {
+      "authors": null
+    },
+    "perspectives": [
+      {
+        "id": [
+          1088,
+          187
+        ],
+        "translation": "Lexical entries"
+      },
+      {
+        "id": [
+          1088,
+          188
+        ],
+        "translation": "Paradigmatic forms"
+      }
+    ]
+  },
+  {
+    "id": [
+      1024,
+      194
+    ],
+    "parent_id": [
+      1088,
+      581
+    ],
+    "translation": "диалект села Нам центральной диалектной группы, якутский язык - носитель: Пестряков Иван Петрович, 1937",
+    "additional_metadata": {
+      "authors": "Ulyana Legusina, Zi Min Maak, Anna Dybo"
+    },
+    "perspectives": [
+      {
+        "id": [
+          1024,
+          229
+        ],
+        "translation": "Lexical entries"
+      },
+      {
+        "id": [
+          1024,
+          204
+        ],
+        "translation": "Paradigmatic forms"
+      },
+      {
+        "id": [
+          1024,
+          230
+        ],
+        "translation": "Paradigmatic forms"
+      },
+      {
+        "id": [
+          1024,
+          203
+        ],
+        "translation": "Lexical entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      1088,
+      218
+    ],
+    "parent_id": [
+      1105,
+      28
+    ],
+    "translation": "диалект села Саскылах, севоро-западная диалектная группа, якутский язык - носитель: Петрова Антонина Николаевна, 1960 г.р.",
+    "additional_metadata": {
+      "authors": null
+    },
+    "perspectives": [
+      {
+        "id": [
+          1088,
+          224
+        ],
+        "translation": "Paradigmatic forms"
+      },
+      {
+        "id": [
+          1088,
+          223
+        ],
+        "translation": "Lexical entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      1083,
+      237
+    ],
+    "parent_id": [
+      1088,
+      577
+    ],
+    "translation": "диалект села Балагаччы, вилюйская диалектная группа, якутский язык - носитель: Майорова Мария Николаевнаю 1962 г.р",
+    "additional_metadata": {
+      "authors": null
+    },
+    "perspectives": [
+      {
+        "id": [
+          1083,
+          243
+        ],
+        "translation": "Paradigmatic forms"
+      },
+      {
+        "id": [
+          1083,
+          242
+        ],
+        "translation": "Lexical entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      1088,
+      254
+    ],
+    "parent_id": [
+      1088,
+      573
+    ],
+    "translation": "диалект села Уолбут, северо-восточная диалектная группа, якутский язык - носитель: Гермогенова Валентина Николаевна, 1959",
+    "additional_metadata": {
+      "authors": null
+    },
+    "perspectives": [
+      {
+        "id": [
+          1088,
+          260
+        ],
+        "translation": "Paradigmatic forms"
+      },
+      {
+        "id": [
+          1088,
+          259
+        ],
+        "translation": "Lexical entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      1083,
+      273
+    ],
+    "parent_id": [
+      1088,
+      577
+    ],
+    "translation": "диалект села Таас Юрях, вилюйская диалектная группа, якутский язык - носитель: Попов Максим Павлович, 1968 г.р.",
+    "additional_metadata": {
+      "authors": null
+    },
+    "perspectives": [
+      {
+        "id": [
+          1083,
+          279
+        ],
+        "translation": "Paradigmatic forms"
+      },
+      {
+        "id": [
+          1083,
+          278
+        ],
+        "translation": "Lexical entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      999,
+      303
+    ],
+    "parent_id": [
+      998,
+      5
+    ],
+    "translation": "Bashlykent dialect, Qaytaq dialect group, Qumyq language. speaker - Bagu Il'baewa, née 1958",
+    "additional_metadata": {
+      "authors": "Zarema Kochakaeva, Zi Min Maak, Anna Dybo"
+    },
+    "perspectives": [
+      {
+        "id": [
+          999,
+          310
+        ],
+        "translation": "Lexical entries"
+      },
+      {
+        "id": [
+          999,
+          311
+        ],
+        "translation": "Paradigmatic forms"
+      }
+    ]
+  },
+  {
+    "id": [
+      1088,
+      325
+    ],
+    "parent_id": [
+      1088,
+      573
+    ],
+    "translation": "диалект п. Чистый, северо-восточная диалектная группа, якутский язык - носитель: Тарабукина Анна Павловна, 1950",
+    "additional_metadata": {
+      "authors": null
+    },
+    "perspectives": [
+      {
+        "id": [
+          1088,
+          331
+        ],
+        "translation": "Paradigmatic forms"
+      },
+      {
+        "id": [
+          1088,
+          330
+        ],
+        "translation": "Lexical entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      678,
+      349
+    ],
+    "parent_id": [
+      252,
+      42
+    ],
+    "translation": "Словарь тубаларского идиома, говор нп Йогач",
+    "additional_metadata": {
+      "authors": null
+    },
+    "perspectives": [
+      {
+        "id": [
+          678,
+          351
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          678,
+          350
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      1088,
+      361
+    ],
+    "parent_id": [
+      1088,
+      573
+    ],
+    "translation": "диалект села Казачье, северо-восточной диалектной группы, якутский язык - носитель: Горохова Людмила Алексеевна, 1962",
+    "additional_metadata": {
+      "authors": null
+    },
+    "perspectives": [
+      {
+        "id": [
+          1088,
+          366
+        ],
+        "translation": "Lexical entries"
+      },
+      {
+        "id": [
+          1088,
+          367
+        ],
+        "translation": "Paradigmatic forms"
+      }
+    ]
+  },
+  {
+    "id": [
+      1088,
+      397
+    ],
+    "parent_id": [
+      1088,
+      573
+    ],
+    "translation": "диалект села Тумат, северо-восточной диалектной группы, якутский язык - носитель: Филиппов Ким Никитич, 1932 г.р.",
+    "additional_metadata": {
+      "authors": null
+    },
+    "perspectives": [
+      {
+        "id": [
+          1088,
+          402
+        ],
+        "translation": "Lexical entries"
+      },
+      {
+        "id": [
+          1088,
+          403
+        ],
+        "translation": "Paradigmatic forms"
+      }
+    ]
+  },
+  {
+    "id": [
+      1088,
+      433
+    ],
+    "parent_id": [
+      1088,
+      573
+    ],
+    "translation": "диалект села Казачье, северо-восточная диалектная группа, якутский язык - носитель: Тырылгина Наталья Константиновна, 1956 г.р.",
+    "additional_metadata": {
+      "authors": null
+    },
+    "perspectives": [
+      {
+        "id": [
+          1088,
+          439
+        ],
+        "translation": "Paradigmatic forms"
+      },
+      {
+        "id": [
+          1088,
+          438
+        ],
+        "translation": "Lexical entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      1088,
+      469
+    ],
+    "parent_id": [
+      1088,
+      581
+    ],
+    "translation": "диалект села Черкёх, центральная диалектная группа, якутский язык - носитель: Пестрякова Марина Васильевна, 1938 г.р.",
+    "additional_metadata": {
+      "authors": null
+    },
+    "perspectives": [
+      {
+        "id": [
+          1088,
+          475
+        ],
+        "translation": "Paradigmatic forms"
+      },
+      {
+        "id": [
+          1088,
+          474
+        ],
+        "translation": "Lexical entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      1088,
+      505
+    ],
+    "parent_id": [
+      1088,
+      581
+    ],
+    "translation": "диалект села Черкёх, центральная диалектная группа, якутский язык - носитель: Жегусов Дмитрий степанович, 1931 г.р.",
+    "additional_metadata": {
+      "authors": null
+    },
+    "perspectives": [
+      {
+        "id": [
+          1088,
+          511
+        ],
+        "translation": "Paradigmatic forms"
+      },
+      {
+        "id": [
+          1088,
+          510
+        ],
+        "translation": "Lexical entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      1088,
+      523
+    ],
+    "parent_id": [
+      1088,
+      581
+    ],
+    "translation": "диалкт села Тюнгюлю, центральная диалектная группа, якутский язык - носитель: Татаринова Нюргустана Петровна, 1971 г.р.",
+    "additional_metadata": {
+      "authors": null
+    },
+    "perspectives": [
+      {
+        "id": [
+          1088,
+          529
+        ],
+        "translation": "Paradigmatic forms"
+      },
+      {
+        "id": [
+          1088,
+          528
+        ],
+        "translation": "Lexica entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      1088,
+      532
+    ],
+    "parent_id": [
+      1088,
+      581
+    ],
+    "translation": "диалект села Чурапча, центральная диалектная группа, якутский язык - носитель: Макарова Мария Кузьминична, 1950 г.р.",
+    "additional_metadata": {
+      "authors": null
+    },
+    "perspectives": [
+      {
+        "id": [
+          1088,
+          538
+        ],
+        "translation": "Paradigmatic forms"
+      },
+      {
+        "id": [
+          1088,
+          537
+        ],
+        "translation": "Lexical entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      1108,
+      988
+    ],
+    "parent_id": [
+      508,
+      37
+    ],
+    "translation": "Dictionary of the Livvik dialect of Karelian language",
+    "additional_metadata": {
+      "authors": "Дьячков В. В., Норманская Ю. В."
+    },
+    "perspectives": [
+      {
+        "id": [
+          1108,
+          990
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          1108,
+          989
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      1146,
+      3311
+    ],
+    "parent_id": [
+      508,
+      45
+    ],
+    "translation": "Gospel of Matthew/Евангелие от Матфея",
+    "additional_metadata": {
+      "authors": null
+    },
+    "perspectives": [
+      {
+        "id": [
+          1146,
+          3313
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          1146,
+          3312
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      1040,
+      3852
+    ],
+    "parent_id": [
+      508,
+      38
+    ],
+    "translation": "Dictionary of th Evangel of Mathei (1878) on Saami language",
+    "additional_metadata": {
+      "authors": null
+    },
+    "perspectives": [
+      {
+        "id": [
+          1040,
+          3853
+        ],
+        "translation": "Lexical Entries"
+      },
+      {
+        "id": [
+          1040,
+          3854
+        ],
+        "translation": "Paradigms"
+      }
+    ]
+  },
+  {
+    "id": [
+      704,
+      3979
+    ],
+    "parent_id": [
+      508,
+      48
+    ],
+    "translation": "Dictionary of the Yamal dialect of Tundra Nenets",
+    "additional_metadata": {
+      "authors": "Амелина Мария Константиновна, Амелина Мария Константиновна,"
+    },
+    "perspectives": [
+      {
+        "id": [
+          704,
+          3981
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          704,
+          3980
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      1121,
+      4432
+    ],
+    "parent_id": [
+      508,
+      38
+    ],
+    "translation": "Dictionary of Evangelium (1878)",
+    "additional_metadata": {
+      "authors": null
+    },
+    "perspectives": [
+      {
+        "id": [
+          1121,
+          4434
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          1121,
+          4433
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      770,
+      5368
+    ],
+    "parent_id": [
+      508,
+      51
+    ],
+    "translation": "Dictionary of Selkup Bible 2",
+    "additional_metadata": {
+      "authors": null
+    },
+    "perspectives": [
+      {
+        "id": [
+          770,
+          5369
+        ],
+        "translation": "Lexical Entries"
+      },
+      {
+        "id": [
+          770,
+          5370
+        ],
+        "translation": "Paradigms"
+      }
+    ]
+  },
+  {
+    "id": [
+      1106,
+      7053
+    ],
+    "parent_id": [
+      508,
+      37
+    ],
+    "translation": "Dictionary of Livvik dialect in Finland",
+    "additional_metadata": {
+      "authors": "Ю.В.Норманская"
+    },
+    "perspectives": [
+      {
+        "id": [
+          1106,
+          7055
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          1106,
+          7054
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      770,
+      7892
+    ],
+    "parent_id": [
+      1068,
+      5
+    ],
+    "translation": "Словарь водского языка",
+    "additional_metadata": {
+      "authors": "Ю.В.Норманская, Ф.И.Рожанский"
+    },
+    "perspectives": [
+      {
+        "id": [
+          770,
+          7894
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          770,
+          7893
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      671,
+      10418
+    ],
+    "parent_id": [
+      633,
+      22
+    ],
+    "translation": "Oqto dialect, Ulcha language. recorded in 2016  – speaker: Natalija Xoǯær, née 1948",
+    "additional_metadata": {
+      "authors": "Zi Min Maak, after materials of A.H.Girfanowa"
+    },
+    "perspectives": [
+      {
+        "id": [
+          671,
+          10419
+        ],
+        "translation": "Lexical Entries"
+      },
+      {
+        "id": [
+          671,
+          10420
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          748,
+          1906
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          742,
+          3192
+        ],
+        "translation": "Paradigmatic forms"
+      },
+      {
+        "id": [
+          742,
+          3155
+        ],
+        "translation": "Paradigmatic forms"
+      },
+      {
+        "id": [
+          748,
+          1895
+        ],
+        "translation": "Paradigmatic forms"
+      }
+    ]
+  },
+  {
+    "id": [
+      704,
+      12565
+    ],
+    "parent_id": [
+      508,
+      48
+    ],
+    "translation": "Dictionary of the Bolshaya Zemlya dialect of Tundra Nenets",
+    "additional_metadata": {
+      "authors": "Амелина Мария Константиновна, Амелина Мария Константиновна,"
+    },
+    "perspectives": [
+      {
+        "id": [
+          704,
+          12567
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          704,
+          12566
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      719,
+      12652
+    ],
+    "parent_id": [
+      1100,
+      4
+    ],
+    "translation": "Крымскотатарско-русский словарь",
+    "additional_metadata": {
+      "authors": "Лемара Селендили, Лемара Селендили,"
+    },
+    "perspectives": [
+      {
+        "id": [
+          719,
+          12654
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          719,
+          12653
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      671,
+      12796
+    ],
+    "parent_id": [
+      633,
+      22
+    ],
+    "translation": "Bulawu dialect, Ulcha language. recorded in 2016  – speaker: Walentina Ǯečuli, née 1942",
+    "additional_metadata": {
+      "authors": "Zi Min Maak"
+    },
+    "perspectives": [
+      {
+        "id": [
+          748,
+          1802
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          671,
+          12797
+        ],
+        "translation": "Lexical Entries"
+      },
+      {
+        "id": [
+          671,
+          12798
+        ],
+        "translation": "Paradigms"
+      }
+    ]
+  },
+  {
+    "id": [
+      688,
+      14232
+    ],
+    "parent_id": [
+      508,
+      45
+    ],
+    "translation": "Сосьвинский диалект мансийского языка 1970-ые годы (с. Ломбовож)",
+    "additional_metadata": {
+      "authors": "Ковалева Е. В., Kovaleva E. V."
+    },
+    "perspectives": [
+      {
+        "id": [
+          688,
+          14234
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          688,
+          14233
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      671,
+      15154
+    ],
+    "parent_id": [
+      633,
+      22
+    ],
+    "translation": "Auri dialect, Ulcha language, recorded in 2016 – speaker: Iwan Rosugbu, né 1957",
+    "additional_metadata": {
+      "authors": "Zi Min Maak"
+    },
+    "perspectives": [
+      {
+        "id": [
+          748,
+          553
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          671,
+          15155
+        ],
+        "translation": "Lexical Entries"
+      },
+      {
+        "id": [
+          671,
+          15156
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          671,
+          16076
+        ],
+        "translation": ""
+      }
+    ]
+  },
+  {
+    "id": [
+      776,
+      16458
+    ],
+    "parent_id": [
+      508,
+      51
+    ],
+    "translation": "Selkup Bible Dictionary",
+    "additional_metadata": {
+      "authors": null
+    },
+    "perspectives": [
+      {
+        "id": [
+          776,
+          16460
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          776,
+          16459
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      719,
+      16771
+    ],
+    "parent_id": [
+      508,
+      42
+    ],
+    "translation": "Список русских слов с переводом на пермякский (Чердынский окр.) за подписью Никиты Овчинникова",
+    "additional_metadata": {
+      "authors": "Роман Гайдамашко, Роман Гайдамашко,"
+    },
+    "perspectives": [
+      {
+        "id": [
+          719,
+          16773
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          719,
+          16772
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      965,
+      19262
+    ],
+    "parent_id": [
+      508,
+      38
+    ],
+    "translation": "Dictionary of Notozer Saami lamguage",
+    "additional_metadata": {
+      "authors": "В.Б.Бакула, А. Исупова, Е.В. Кашкин, Ю.В.Норманская"
+    },
+    "perspectives": [
+      {
+        "id": [
+          965,
+          19264
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          965,
+          19263
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      776,
+      28368
+    ],
+    "parent_id": [
+      508,
+      51
+    ],
+    "translation": "Selkup Bible Aug 2017",
+    "additional_metadata": {
+      "authors": null
+    },
+    "perspectives": [
+      {
+        "id": [
+          776,
+          31097
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          776,
+          31096
+        ],
+        "translation": "Lexical Entries"
+      },
+      {
+        "id": [
+          776,
+          28370
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          776,
+          28369
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      694,
+      30033
+    ],
+    "parent_id": [
+      508,
+      50
+    ],
+    "translation": "Dictionary of Ust-Avam dialect of Nganasan language (vil. Volochanka)",
+    "additional_metadata": {
+      "authors": "Ю.В.Норманская, И.А.Стенин, А. Исупова"
+    },
+    "perspectives": [
+      {
+        "id": [
+          694,
+          30035
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          694,
+          30034
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      770,
+      32463
+    ],
+    "parent_id": [
+      508,
+      42
+    ],
+    "translation": "Словарь нижнеиньвенского диалекта коми-пермяцкого языка (с. Доёг)",
+    "additional_metadata": {
+      "authors": "Пономарева Лариса Геннадьевна"
+    },
+    "perspectives": [
+      {
+        "id": [
+          770,
+          32465
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          770,
+          32464
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      743,
+      127938
+    ],
+    "parent_id": [
+      508,
+      43
+    ],
+    "translation": "Словарь по памятнику письменности \"Закон божий: Книжка с картинками для маленьких детей. На вотском языке глазовского наречия. Часть I\", 1912",
+    "additional_metadata": {
+      "authors": null
+    },
+    "perspectives": [
+      {
+        "id": [
+          743,
+          127940
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          743,
+          127939
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  },
+  {
+    "id": [
+      798,
+      459106
+    ],
+    "parent_id": [
+      508,
+      51
+    ],
+    "translation": "Церковные праздники + Новый Завет",
+    "additional_metadata": {
+      "authors": null
+    },
+    "perspectives": [
+      {
+        "id": [
+          798,
+          459108
+        ],
+        "translation": "Paradigms"
+      },
+      {
+        "id": [
+          798,
+          459107
+        ],
+        "translation": "Lexical Entries"
+      }
+    ]
+  }
+]

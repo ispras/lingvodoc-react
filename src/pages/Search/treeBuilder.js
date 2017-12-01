@@ -52,11 +52,9 @@ export function buildDictTrees(data) {
   return data.get('dictionaries').map(buildDict);
 }
 
-export function buildSearchResultsTree(data, languageTree) {
-  const dictTrees = buildDictTrees(data);
-
+export function assignDictsToTree(data, languageTree) {
   function innerBuild(lang) {
-    const dicts = dictTrees.filter(d => is(d.get('parent_id'), lang.get('id')));
+    const dicts = data.filter(d => is(d.get('parent_id'), lang.get('id')));
     const newChildren = lang.get('children').map(innerBuild).concat(dicts);
 
     const hasDicts = !dicts.isEmpty() || newChildren.some(x => x.get('hasDicts'));
@@ -83,4 +81,8 @@ export function buildSearchResultsTree(data, languageTree) {
   const filteredTree = fullTree.flatMap(withDictOnly);
 
   return filteredTree;
+}
+
+export function buildSearchResultsTree(data, languageTree) {
+  return assignDictsToTree(buildDictTrees(data), languageTree);
 }

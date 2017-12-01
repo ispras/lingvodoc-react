@@ -1,0 +1,25 @@
+[
+  {
+    "id": 2,
+    "translation": "Новый грант для теста",
+    "additional_metadata": {
+      "participant": null
+    }
+  },
+  {
+    "id": 1,
+    "translation": "Создание сравнительно-исторического диалектного аудиословаря уральских языков",
+    "additional_metadata": {
+      "participant": [
+        [
+          475,
+          2
+        ],
+        [
+          519,
+          2
+        ]
+      ]
+    }
+  }
+]
