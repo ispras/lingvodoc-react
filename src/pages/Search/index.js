@@ -1,16 +1,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { compose, pure } from 'recompose';
 import { gql, graphql } from 'react-apollo';
-import Immutable from 'immutable';
-import { Container, Dimmer, Loader } from 'semantic-ui-react';
+import Immutable, { fromJS } from 'immutable';
+import { Container, Dimmer, Loader, Tab, Button, Divider } from 'semantic-ui-react';
+import { isEqual } from 'lodash';
 import Labels from 'components/Search/Labels';
 import ResultsMap from 'components/Search/ResultsMap';
 import IntersectionControl from 'components/Search/IntersectionControl';
 import QueryBuilder from 'components/Search/QueryBuilder';
 import LanguageTree from 'components/Search/LanguageTree';
 import { buildLanguageTree, buildSearchResultsTree } from 'pages/Search/treeBuilder';
+import { newSearch, storeSearchResult } from 'ducks/search';
 
 const adder = i => v => v.add(`search_${i}`);
 
@@ -93,6 +96,74 @@ const searchQuery = gql`
 class Wrapper extends React.Component {
   constructor(props) {
     super(props);
+  }
+
+  componentWillReceiveProps(props) {
+    // store search results aquired with graphql into Redux state
+    const { data, searchId, actions } = props;
+    if (!data.error && !data.loading) {
+      const oldSearchResult = this.props.searches.find(s => s.id === searchId);
+      // only update if results are different to avoid infinite loop
+      if (!isEqual(oldSearchResult.results, data.advanced_search)) {
+        actions.storeSearchResult(searchId, data.advanced_search);
+      }
+    }
+  }
+
+  render() {
+    const { data } = this.props;
+
+    if (data.error) {
+      return null;
+    }
+
+    if (data.loading) {
+      return (
+        <Dimmer active={data.loading} inverted>
+          <Loader>Loading</Loader>
+        </Dimmer>
+      );
+    }
+
+    const { languages: allLanguages, advanced_search } = data;
+
+    const searchResults = Immutable.fromJS(advanced_search);
+    const languages = Immutable.fromJS(allLanguages);
+    const languagesTree = buildLanguageTree(languages);
+    const searchResultsTree = buildSearchResultsTree(searchResults, languagesTree);
+
+    return <LanguageTree searchResultsTree={searchResultsTree} />;
+  }
+}
+
+const WrapperWithData = compose(
+  connect(
+    state => state.search,
+    dispatch => ({
+      actions: bindActionCreators({ storeSearchResult }, dispatch),
+    })
+  ),
+  graphql(searchQuery)
+)(Wrapper);
+
+const Info = ({ query, searchId }) => {
+  // remove empty strings
+  const cleanQuery = query
+    .map(q => q.filter(p => p.search_string.length > 0 && p.matching_type.length > 0))
+    .filter(q => q.length > 0);
+  if (cleanQuery.length > 0) {
+    return <WrapperWithData searchId={searchId} query={cleanQuery} />;
+  }
+  return null;
+};
+
+Info.propTypes = {
+  query: PropTypes.array.isRequired,
+};
+
+class SearchTabs extends React.Component {
+  constructor(props) {
+    super(props);
 
     this.labels = this.labels.bind(this);
     this.clickLabel = this.clickLabel.bind(this);
@@ -121,41 +192,47 @@ class Wrapper extends React.Component {
   }
 
   render() {
-    
-    const { data } = this.props;
-    
-    if (data.error) {
-      return null;
-    }
+    const { searches, actions } = this.props;
 
-    if (data.loading) {
-      return (
-        <Dimmer active={data.loading} inverted>
-          <Loader>Loading</Loader>
-        </Dimmer>
-      );
-    }
+    const searchPanes = searches.map(search => ({
+      menuItem: { key: `${search.id}`, content: `Search ${search.id}` },
+      render: () => (
+        <Tab.Pane key={search.id}>
+          <Container>
+            <h3>Поиск</h3>
+            <QueryBuilder searchId={search.id} data={fromJS(search.query)} />
+            <Info searchId={search.id} query={search.query} />
+          </Container>
+        </Tab.Pane>
+      ),
+    }));
 
+    // create tabs
+    const panes = [
+      ...searchPanes,
+      {
+        menuItem: <Button key="@search_tab_add_button" basic onClick={actions.newSearch} content="+" />,
+        render: () => null,
+      },
+    ];
 
-    const { languages: allLanguages, advanced_search } = data;
+    // extract locations from all found dictionaries
+    const locationResults = searches.map(result =>
+      (result.results.dictionaries
+        ? result.results.dictionaries
+          .filter(d => d.additional_metadata.location)
+          .map(d => d.additional_metadata.location)
+        : []));
 
-    const searchResults = Immutable.fromJS(advanced_search);
-    const languages = Immutable.fromJS(allLanguages);
-    const languagesTree = buildLanguageTree(languages);
-    const searchResultsTree = buildSearchResultsTree(searchResults, languagesTree);
-    
-    const locationResults = advanced_search.dictionaries
-      .filter(d => d.additional_metadata.location)
-      .map(d => d.additional_metadata.location);
-
-    const results = [locationResults].reduce(
+    const results = locationResults.reduce(
       (ac, vals, i) => vals.reduce((iac, val) => iac.update(Immutable.fromJS(val), new Immutable.Set(), adder(i)), ac),
       new Immutable.Map()
     );
 
     return (
       <Container>
-        <LanguageTree searchResultsTree={searchResultsTree} />
+        <Tab panes={panes} />
+        <Divider section />
         <Labels data={this.labels()} onClick={this.clickLabel} />
         <IntersectionControl
           max={this.state.actives.filter(f => f).size}
@@ -168,23 +245,10 @@ class Wrapper extends React.Component {
   }
 }
 
-const WrapperWithData = graphql(searchQuery)(Wrapper);
+export default connect(
+  state => state.search,
+  dispatch => ({
+    actions: bindActionCreators({ newSearch }, dispatch),
+  })
+)(SearchTabs);
 
-const Info = ({ query }) => {
-  // remove empty strings
-  const cleanQuery = query.map(q => q.filter(p => p.search_string.length > 0 && p.matching_type.length > 0));
-
-  return (
-    <Container>
-      <h3>Поиск</h3>
-      <QueryBuilder />
-      <WrapperWithData query={cleanQuery} />
-    </Container>
-  );
-};
-
-Info.propTypes = {
-  query: PropTypes.array.isRequired,
-};
-
-export default compose(connect(state => state.search), pure)(Info);

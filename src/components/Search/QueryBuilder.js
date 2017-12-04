@@ -72,7 +72,7 @@ const fieldsQuery = gql`
 function Query({
   data, query, onFieldChange, onDelete,
 }) {
-  const fieldId = query.get('field_id', '');
+  const fieldId = query.get('field_id', fromJS([]));
   const str = query.get('search_string', '');
   const type = query.get('matching_type', '');
 
@@ -91,12 +91,12 @@ function Query({
   const fieldById = compositeId => fields.find(f => compositeId === compositeIdToString(f.id));
   const onChange = (event, { value }) => {
     const field = fieldById(value);
-    onFieldChange('field_id')(event, { value: field.id });
+    onFieldChange('field_id')(event, { value: fromJS(field.id) });
   };
 
   return (
     <QueryInput action type="text" placeholder="Search String" value={str} onChange={onFieldChange('search_string')}>
-      <Select placeholder="Field" options={fieldOptions} value={compositeIdToString(fieldId)} onChange={onChange} />
+      <Select placeholder="Field" options={fieldOptions} value={compositeIdToString(fieldId.toJS())} onChange={onChange} />
       <input />
       <Select
         compact
@@ -180,7 +180,7 @@ class QueryBuilder extends React.Component {
   }
 
   render() {
-    const { actions } = this.props;
+    const { searchId, actions } = this.props;
     const blocks = this.state.data;
     return (
       <Wrapper>
@@ -204,7 +204,7 @@ class QueryBuilder extends React.Component {
 
         <Divider />
 
-        <Button primary basic onClick={() => actions.setQuery(this.state.data.toJS())}>
+        <Button primary basic onClick={() => actions.setQuery(searchId, this.state.data.toJS())}>
           Search
         </Button>
       </Wrapper>
@@ -213,7 +213,8 @@ class QueryBuilder extends React.Component {
 }
 
 QueryBuilder.propTypes = {
-  data: PropTypes.array,
+  data: PropTypes.object,
+  searchId: PropTypes.number.isRequired,
   actions: PropTypes.shape({
     setQuery: PropTypes.func.isRequired,
   }).isRequired,
