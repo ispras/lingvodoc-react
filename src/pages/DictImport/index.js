@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { gql, graphql } from 'react-apollo';
 import { Map, fromJS } from 'immutable';
 import { Button, Step } from 'semantic-ui-react';
+import { isEqual } from 'lodash';
 
 import {
   setBlobs,
@@ -24,13 +25,22 @@ import LanguageSelection from './LanguageSelection';
 
 import './styles.scss';
 
-import { BLOBS, buildExport } from './api';
+import { buildExport } from './api';
 
 const fieldsQuery = gql`
   query field {
     all_fields {
       id
       translation
+    }
+    user_blobs(is_global: true) {
+      id
+      data_type
+      name
+      created_at
+      additional_metadata {
+        starling_fields
+      }
     }
   }
 `;
@@ -71,8 +81,15 @@ class Info extends React.Component {
     this.onSubmit = this.onSubmit.bind(this);
   }
 
-  componentDidMount() {
-    this.props.setBlobs(BLOBS);
+  componentWillReceiveProps(props) {
+    const { data: { loading, error, user_blobs: blobs } } = props;
+    if (!loading && !error) {
+      const newBlobs = fromJS(blobs).map(v => v.set('values', new Map()));
+      // XXX: Ugly workaround
+      if (JSON.stringify(this.props.blobs) !== JSON.stringify(newBlobs)) {
+        this.props.setBlobs(newBlobs);
+      }
+    }
   }
 
   onSelect(payload) {

@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { compose, pure } from 'recompose';
+import { compose } from 'recompose';
 import { gql, graphql } from 'react-apollo';
 import Immutable, { fromJS } from 'immutable';
 import { Container, Dimmer, Loader, Tab, Button, Divider } from 'semantic-ui-react';
@@ -244,6 +244,13 @@ class SearchTabs extends React.Component {
     );
   }
 }
+
+SearchTabs.propTypes = {
+  searches: PropTypes.array.isRequired,
+  actions: PropTypes.shape({
+    newSearch: PropTypes.func.isRequired,
+  }).isRequired,
+};
 
 export default connect(
   state => state.search,
