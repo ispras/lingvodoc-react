@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-
+import { gql, graphql } from 'react-apollo';
+import { Map, fromJS } from 'immutable';
 import { Button, Step } from 'semantic-ui-react';
 
 import {
@@ -23,8 +24,18 @@ import LanguageSelection from './LanguageSelection';
 
 import './styles.scss';
 
-import { BLOBS, FIELD_TYPES, buildExport } from './api';
+import { BLOBS, buildExport } from './api';
 
+const fieldsQuery = gql`
+  query field {
+    all_fields {
+      id
+      translation
+    }
+  }
+`;
+
+@graphql(fieldsQuery)
 class Info extends React.Component {
   static propTypes = {
     step: PropTypes.string.isRequired,
@@ -44,7 +55,7 @@ class Info extends React.Component {
     setColumnType: PropTypes.func.isRequired,
     setLanguage: PropTypes.func.isRequired,
     setTranslation: PropTypes.func.isRequired,
-  }
+  };
 
   constructor(props) {
     super(props);
@@ -77,13 +88,11 @@ class Info extends React.Component {
   }
 
   onUpdateColumn(id) {
-    return (column, value, oldValue) =>
-      this.props.updateColumn(id, column, value, oldValue);
+    return (column, value, oldValue) => this.props.updateColumn(id, column, value, oldValue);
   }
 
   onToggleColumn(id) {
-    return () =>
-      this.props.toggleAddColumn(id);
+    return () => this.props.toggleAddColumn(id);
   }
 
   onSetColumnType(id) {
@@ -104,15 +113,15 @@ class Info extends React.Component {
 
   render() {
     const {
-      step,
-      isNextStep,
-      blobs,
-      linking,
-      spreads,
-      columnTypes,
-      languages,
-      locales,
+      step, isNextStep, blobs, linking, spreads, columnTypes, languages, locales, data,
     } = this.props;
+
+    if (data.loading || data.error) {
+      return null;
+    }
+
+    const { all_fields: fields } = data;
+    const fieldTypes = fromJS(fields);
 
     return (
       <div>
@@ -140,8 +149,7 @@ class Info extends React.Component {
         </Step.Group>
 
         <div style={{ minHeight: '400px' }}>
-          {
-            step === 'LINKING' &&
+          {step === 'LINKING' && (
             <Linker
               blobs={blobs}
               state={linking}
@@ -150,19 +158,17 @@ class Info extends React.Component {
               onUpdateColumn={this.onUpdateColumn}
               onToggleColumn={this.onToggleColumn}
             />
-          }
-          {
-            step === 'COLUMNS' &&
+          )}
+          {step === 'COLUMNS' && (
             <ColumnMapper
               state={linking}
               spreads={spreads}
               columnTypes={columnTypes}
-              types={FIELD_TYPES}
+              types={fieldTypes}
               onSetColumnType={this.onSetColumnType}
             />
-          }
-          {
-            step === 'LANGUAGES' &&
+          )}
+          {step === 'LANGUAGES' && (
             <LanguageSelection
               state={linking}
               languages={languages}
@@ -170,30 +176,18 @@ class Info extends React.Component {
               onSetLanguage={this.onSetLanguage}
               onSetTranslation={this.onSetTranslation}
             />
-          }
+          )}
         </div>
-        {
-          step === 'LANGUAGES' &&
-          <Button
-            fluid
-            inverted
-            color="blue"
-            onClick={this.onSubmit}
-          >
+        {step === 'LANGUAGES' && (
+          <Button fluid inverted color="blue" onClick={this.onSubmit}>
             Submit
           </Button>
-        }
-        {
-          isNextStep &&
-          <Button
-            fluid
-            inverted
-            color="blue"
-            onClick={this.onNextClick}
-          >
+        )}
+        {isNextStep && (
+          <Button fluid inverted color="blue" onClick={this.onNextClick}>
             Next Step
           </Button>
-        }
+        )}
       </div>
     );
   }

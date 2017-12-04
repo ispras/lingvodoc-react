@@ -2,20 +2,17 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { compose, pure } from 'recompose';
+import { gql, graphql } from 'react-apollo';
 import Immutable from 'immutable';
-import { Container } from 'semantic-ui-react';
+import { Container, Dimmer, Loader } from 'semantic-ui-react';
 import Labels from 'components/Search/Labels';
 import ResultsMap from 'components/Search/ResultsMap';
 import IntersectionControl from 'components/Search/IntersectionControl';
 import QueryBuilder from 'components/Search/QueryBuilder';
 import LanguageTree from 'components/Search/LanguageTree';
+import { buildLanguageTree, buildSearchResultsTree } from 'pages/Search/treeBuilder';
 
 const adder = i => v => v.add(`search_${i}`);
-
-const results = require('./results.json').reduce(
-  (ac, vals, i) => vals.reduce((iac, val) => iac.update(Immutable.fromJS(val), new Immutable.Set(), adder(i)), ac),
-  new Immutable.Map()
-);
 
 const mdColors = new Immutable.List([
   '#E53935',
@@ -44,7 +41,56 @@ const COLORS = Immutable.fromJS({
   search_3: mdColors.get(3),
 });
 
-class Info extends React.PureComponent {
+const searchQuery = gql`
+  query Search($query: [[ObjectVal]]!) {
+    advanced_search(search_strings: $query) {
+      dictionaries {
+        id
+        parent_id
+        translation
+        additional_metadata {
+          location
+        }
+      }
+      perspectives {
+        id
+        parent_id
+        translation
+        additional_metadata {
+          location
+        }
+        tree {
+          id
+          translation
+        }
+      }
+      lexical_entries {
+        id
+        parent_id
+        entities {
+          id
+          parent_id
+          field_id
+          link_id
+          self_id
+          created_at
+          locale_id
+          content
+          published
+          accepted
+        }
+      }
+    }
+    languages {
+      id
+      parent_id
+      translation
+      created_at
+    }
+  }
+`;
+
+class Wrapper extends React.Component {
   constructor(props) {
     super(props);
 
@@ -75,16 +121,41 @@ class Info extends React.PureComponent {
   }
 
   render() {
-    const { query } = this.props;
+    
+    const { data } = this.props;
+    
+    if (data.error) {
+      return null;
+    }
 
-    // remove empty strings
-    const cleanQuery = query.map(q => q.filter(p => p.search_string.length > 0 && p.matching_type.length > 0));
+    if (data.loading) {
+      return (
+        <Dimmer active={data.loading} inverted>
+          <Loader>Loading</Loader>
+        </Dimmer>
+      );
+    }
+
+
+    const { languages: allLanguages, advanced_search } = data;
+
+    const searchResults = Immutable.fromJS(advanced_search);
+    const languages = Immutable.fromJS(allLanguages);
+    const languagesTree = buildLanguageTree(languages);
+    const searchResultsTree = buildSearchResultsTree(searchResults, languagesTree);
+    
+    const locationResults = advanced_search.dictionaries
+      .filter(d => d.additional_metadata.location)
+      .map(d => d.additional_metadata.location);
+
+    const results = [locationResults].reduce(
+      (ac, vals, i) => vals.reduce((iac, val) => iac.update(Immutable.fromJS(val), new Immutable.Set(), adder(i)), ac),
+      new Immutable.Map()
+    );
 
     return (
       <Container>
-        <h3>Поиск</h3>
-        <QueryBuilder />
-        {cleanQuery.length > 0 && <LanguageTree query={cleanQuery} />}
+        <LanguageTree searchResultsTree={searchResultsTree} />
         <Labels data={this.labels()} onClick={this.clickLabel} />
         <IntersectionControl
           max={this.state.actives.filter(f => f).size}
@@ -97,11 +168,23 @@ class Info extends React.PureComponent {
   }
 }
 
+const WrapperWithData = graphql(searchQuery)(Wrapper);
+
+const Info = ({ query }) => {
+  // remove empty strings
+  const cleanQuery = query.map(q => q.filter(p => p.search_string.length > 0 && p.matching_type.length > 0));
+
+  return (
+    <Container>
+      <h3>Поиск</h3>
+      <QueryBuilder />
+      <WrapperWithData query={cleanQuery} />
+    </Container>
+  );
+};
+
 Info.propTypes = {
   query: PropTypes.array.isRequired,
 };
 
-export default compose(
-  connect(state => state.search),
-  pure,
-)(Info);
+export default compose(connect(state => state.search), pure)(Info);

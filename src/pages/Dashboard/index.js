@@ -65,6 +65,7 @@ export const query = gql`
         translation
         status
         state_translation_gist_id
+        
       }
     }
     all_statuses {

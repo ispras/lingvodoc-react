@@ -1,15 +1,21 @@
 import React from 'react';
+import { gql, graphql } from 'react-apollo';
 import styled from 'styled-components';
 import SortableTree, { map } from 'react-sortable-tree';
+import Immutable from 'immutable';
+import { buildLanguageTree } from 'pages/Search/treeBuilder';
 
-import { languagesTree } from 'pages/Search';
 
-const plainData = map({
-  treeData: languagesTree.toJS(),
-  callback: ({ node }) => ({ ...node, expanded: false }),
-  getNodeKey: ({ treeIndex }) => treeIndex,
-  ignoreCollapsed: false,
-});
+const languagesQuery = gql`
+query languagesQuery {
+  languages {
+    id
+    parent_id
+    translation
+    created_at
+  }
+}
+`;
 
 const Language = styled.div`
   cursor: pointer;
@@ -21,6 +27,13 @@ class LanguageSelect extends React.PureComponent {
     super(props);
 
     this.generateNodeProps = this.generateNodeProps.bind(this);
+    const { languagesTree } = props;
+    const plainData = map({
+      treeData: languagesTree.toJS(),
+      callback: ({ node }) => ({ ...node, expanded: false }),
+      getNodeKey: ({ treeIndex }) => treeIndex,
+      ignoreCollapsed: false,
+    });
 
     this.state = { tree: plainData };
   }
@@ -54,4 +67,16 @@ class LanguageSelect extends React.PureComponent {
   }
 }
 
-export default LanguageSelect;
+
+const Wrapper = ({ data, select, onSelect }) => {
+
+  if (data.loading || data.error) {
+    return null;
+  }
+
+  const { languages } = data;
+  const languagesTree = buildLanguageTree(Immutable.fromJS(languages));
+  return (<LanguageSelect languagesTree={languagesTree} select={select} onSelect={onSelect} />);
+};
+
+export default graphql(languagesQuery)(Wrapper);

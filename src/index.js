@@ -4,7 +4,6 @@ import ReactDOM from 'react-dom';
 import { AppContainer } from 'react-hot-loader';
 
 import injectTapEventPlugin from 'react-tap-event-plugin';
-
 import { createStore, applyMiddleware, compose, bindActionCreators } from 'redux';
 import createHistory from 'history/createBrowserHistory';
 import { ConnectedRouter, routerMiddleware } from 'react-router-redux';
@@ -35,9 +34,15 @@ sagaMiddleware.run(mainFlow);
 sagaMiddleware.run(formActionSaga);
 store.dispatch(setRunner(sagaMiddleware.run));
 
-window.logger = bindActionCreators({
-  log, suc, warn, err,
-}, store.dispatch);
+window.logger = bindActionCreators(
+  {
+    log,
+    suc,
+    warn,
+    err,
+  },
+  store.dispatch
+);
 
 const dest = document.getElementById('root');
 
