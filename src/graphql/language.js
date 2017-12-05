@@ -21,3 +21,11 @@ export const createLanguageMutation = gql`
       }
     }
 }`;
+
+export const moveLanguageMutation = gql`
+mutation MoveLanguage($id: LingvodocID!, $parent_id: LingvodocID, $previous_sibling_id: LingvodocID) {
+  move_language(id: $id, parent_id: $parent_id, previous_sibling: $previous_sibling_id) {
+    triumph
+  }
+}
+`;
