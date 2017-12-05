@@ -31,7 +31,7 @@ const id = (state = [], action) => {
   }
 };
 
-const mode = (state = '', action) => {
+const mode = (state = 'dictionary', action) => {
   switch (action.type) {
     case OPEN_ROLES:
       return action.payload.mode;
