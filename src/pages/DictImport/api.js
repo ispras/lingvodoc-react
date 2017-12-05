@@ -7,7 +7,7 @@ function singleColumn(name, value, columnTypes) {
 
   switch (value) {
     case 'keep':
-      result.starling_type = 2;
+      result.starling_type = 1;
       result.field_id = columnTypes.get(name, new Map()).toArray();
       break;
     case 'spread':

@@ -8,7 +8,7 @@ import { buildLanguageTree } from 'pages/Search/treeBuilder';
 
 const languagesQuery = gql`
 query languagesQuery {
-  languages {
+  language_tree {
     id
     parent_id
     translation
@@ -74,7 +74,8 @@ const Wrapper = ({ data, select, onSelect }) => {
     return null;
   }
 
-  const { languages } = data;
+  const { language_tree: languages } = data;
+  console.log(languages);
   const languagesTree = buildLanguageTree(Immutable.fromJS(languages));
   return (<LanguageSelect languagesTree={languagesTree} select={select} onSelect={onSelect} />);
 };

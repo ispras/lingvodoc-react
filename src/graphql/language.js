@@ -2,7 +2,7 @@ import { gql } from 'react-apollo';
 
 export const languagesQuery = gql`
   query Languages {
-    languages {
+    language_tree {
       id
       parent_id
       translation

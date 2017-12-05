@@ -3,77 +3,102 @@ import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { graphql } from 'react-apollo';
+import { pure, compose } from 'recompose';
 import { Container } from 'semantic-ui-react';
 import EditModal from 'components/EditLanguageModal';
 import { languagesQuery } from 'graphql/language';
 import { compositeIdToString } from 'utils/compositeId';
-import * as actions from 'ducks/language';
+import { openModalCreate, openModalEdit } from 'ducks/language';
 import Language from './language';
+import { buildLanguageTree } from 'pages/Search/treeBuilder';
+import SortableTree, { map } from 'react-sortable-tree';
+import Immutable from 'immutable';
+import { Button } from 'semantic-ui-react';
 
 import languageListToTree from './utils';
 
-/**
- * The component represents the tree of languages
- */
-@graphql(languagesQuery)
-class Languages extends React.Component {
+class LanguagesTree extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      treeData: map({
+        treeData: props.languagesTree.toJS(),
+        callback: ({ node }) => ({ ...node, expanded: false }),
+        getNodeKey: ({ treeIndex }) => treeIndex,
+        ignoreCollapsed: false,
+      }),
+    };
+
+    this.generateNodeProps = this.generateNodeProps.bind(this);
+  }
+
+  generateNodeProps({ node, path }) {
+    const { editLanguage, createLanguage } = this.props;
+    return {
+      title: node.translation,
+      buttons: [
+        <Button basic content="Edit" onClick={() => editLanguage(node)} />,
+        <Button basic content="Create" onClick={() => createLanguage(node)} />,
+      ],
+    };
+  }
+
   render() {
-    const { data, state } = this.props;
-    // Actions wired in by Redux
-    const { actions: { openModalEdit, closeModal } } = this.props;
-
-    if (data.loading) {
-      return null;
-    }
-
-    // convert languages from flat list to tree
-    const tree = languageListToTree(data.languages);
-
     return (
-      <Container>
-        <ul>
-          {tree.map(language => (
-            <Language key={compositeIdToString(language.id)} language={language} edit={openModalEdit} />
-          ))}
-        </ul>
-        <span>
-          {state.language && (
-            // show edit modal is user clicked edit button
-            <EditModal language={state.language} close={closeModal} />
-          )}
-        </span>
-      </Container>
+      <div style={{ height: '100%' }}>
+        <SortableTree
+          treeData={this.state.treeData}
+          onChange={treeData => this.setState({ treeData })}
+          generateNodeProps={this.generateNodeProps}
+        />
+        <EditModal />
+      </div>
     );
   }
 }
 
+const Languages = (props) => {
+  const { data, actions } = props;
+  const { error, loading } = data;
+  if (error) {
+    return null;
+  }
+
+  if (loading) {
+    return null;
+  }
+
+  const { language_tree: languages } = data;
+  const languagesTree = buildLanguageTree(Immutable.fromJS(languages));
+
+  return (
+    <LanguagesTree
+      languagesTree={languagesTree}
+      createLanguage={actions.openModalCreate}
+      editLanguage={actions.openModalEdit}
+    />
+  );
+};
+
 Languages.propTypes = {
-  /**
-   * Object is create by ApolloClient
-   */
-  data: PropTypes.object,
-
-  /**
-   * Actions wired by Redux
-   */
-  actions: PropTypes.object.isRequired,
-
-  /**
-   * Redux state
-   */
-  state: PropTypes.object.isRequired,
+  data: PropTypes.shape({
+    loading: PropTypes.bool.isRequired,
+    language_tree: PropTypes.array,
+  }).isRequired,
+  actions: PropTypes.shape({
+    openModalCreate: PropTypes.func,
+    openModalEdit: PropTypes.func,
+  }).isRequired,
 };
 
-Languages.defaultProps = {
-  data: {},
-};
-
-const mapStateToProps = state => ({
-  state: state.language,
-});
-
-const mapDispatchToProps = dispatch => ({
-  actions: bindActionCreators(actions, dispatch),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(Languages);
+export default compose(
+  graphql(languagesQuery),
+  connect(
+    state => state.language,
+    dispatch => ({
+      actions: bindActionCreators({ openModalCreate, openModalEdit }, dispatch),
+    })
+  ),
+  pure
+)(Languages);
