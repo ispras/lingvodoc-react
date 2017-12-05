@@ -3,8 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { gql, graphql } from 'react-apollo';
 import { Map, fromJS } from 'immutable';
-import { Button, Step } from 'semantic-ui-react';
-import { isEqual } from 'lodash';
+import { Message, Button, Step } from 'semantic-ui-react';
 
 import {
   setBlobs,
@@ -45,7 +44,16 @@ const fieldsQuery = gql`
   }
 `;
 
+const convertMutation = gql`
+  mutation convertMutation($starling_dictionaries: [StarlingDictionary]!) {
+    convert_starling(starling_dictionaries: $starling_dictionaries) {
+      triumph
+    }
+  }
+`;
+
 @graphql(fieldsQuery)
+@graphql(convertMutation, { name: 'convert' })
 class Info extends React.Component {
   static propTypes = {
     step: PropTypes.string.isRequired,
@@ -84,7 +92,7 @@ class Info extends React.Component {
   componentWillReceiveProps(props) {
     const { data: { loading, error, user_blobs: blobs } } = props;
     if (!loading && !error) {
-      const newBlobs = fromJS(blobs).map(v => v.set('values', new Map()));
+      const newBlobs = fromJS(blobs.filter(b => b.data_type === 'starling/csv')).map(v => v.set('values', new Map()));
       // XXX: Ugly workaround
       if (JSON.stringify(this.props.blobs) !== JSON.stringify(newBlobs)) {
         this.props.setBlobs(newBlobs);
@@ -125,7 +133,11 @@ class Info extends React.Component {
   }
 
   onSubmit() {
-    console.log(buildExport(this.props));
+    const { convert } = this.props;
+    const params = buildExport(this.props);
+    convert({
+      variables: { starling_dictionaries: params },
+    }).then(() => this.props.goToStep('FINISH'));
   }
 
   render() {
@@ -142,7 +154,7 @@ class Info extends React.Component {
 
     return (
       <div>
-        <Step.Group widths={3}>
+        <Step.Group widths={4}>
           <Step link active={step === 'LINKING'} onClick={this.onStepClick('LINKING')}>
             <Step.Content>
               <Step.Title>Linking</Step.Title>
@@ -161,6 +173,12 @@ class Info extends React.Component {
             <Step.Content>
               <Step.Title>Language Selection</Step.Title>
               <Step.Description>Map dictionaries to LingvoDoc languages</Step.Description>
+            </Step.Content>
+          </Step>
+
+          <Step link active={step === 'FINISH'}>
+            <Step.Content>
+              <Step.Title>Finish</Step.Title>
             </Step.Content>
           </Step>
         </Step.Group>
@@ -193,6 +211,14 @@ class Info extends React.Component {
               onSetLanguage={this.onSetLanguage}
               onSetTranslation={this.onSetTranslation}
             />
+          )}
+          {step === 'FINISH' && (
+            <Message>
+              <Message.Header>Conversion is in progress...</Message.Header>
+              <Message.Content>
+                Your dictionaries are scheduled for conversion. Please, check tasks tab for conversion status.
+              </Message.Content>
+            </Message>
           )}
         </div>
         {step === 'LANGUAGES' && (

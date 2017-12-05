@@ -7,6 +7,7 @@ import Search from 'pages/Search';
 import DictImport from 'pages/DictImport';
 import Perspective from 'pages/Perspective';
 import Languages from 'pages/Languages';
+import Files from 'pages/Files';
 import NotFound from 'pages/NotFound';
 import { DictionaryDashboard, CorpusDashboard } from 'pages/Dashboard';
 
@@ -21,6 +22,7 @@ const Routes = () =>
     <Route path="/import" component={DictImport} />
     <Route path="/dictionary/:pcid/:poid/perspective/:cid/:oid/:mode" component={Perspective} />
     <Route path="/dictionary/:pcid/:poid/perspective/:cid/:oid" component={Perspective} />
+    <Route path="/files" component={Files} />
     <Route component={NotFound} />
   </Switch>;
 

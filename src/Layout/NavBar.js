@@ -27,6 +27,7 @@ const NavBar = pure(({ location }) =>
         <Dropdown.Item as={Link} to="/dashboard/dictionaries">Dashboard</Dropdown.Item>
         <Dropdown.Item as={Link} to="/dashboard/corpora">Corpora</Dropdown.Item>
         <Dropdown.Item as={Link} to="/languages">Languages</Dropdown.Item>
+        <Dropdown.Item as={Link} to="/import">Import Starling dictionaries</Dropdown.Item>
       </Dropdown.Menu>
     </Dropdown>
 
