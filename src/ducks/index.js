@@ -9,6 +9,7 @@ import player from './player';
 import markup from './markup';
 import roles from './roles';
 import search from './search';
+import blobs from './blobs';
 import dictImport from './dictImport';
 
 export default {
@@ -23,5 +24,6 @@ export default {
   markup,
   roles,
   search,
+  blobs,
   dictImport,
 };

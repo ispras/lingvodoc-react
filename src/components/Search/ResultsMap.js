@@ -1,7 +1,11 @@
 import React from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { compose } from 'recompose';
 import styled from 'styled-components';
 
 import Leaflet from 'components/Map';
+import { openBlobsModal } from 'ducks/blobs';
 
 const Wrapper = styled.div`
   width: 100%;
@@ -40,7 +44,9 @@ function pointIcon({ colors }) {
   };
 }
 
-function extractPoints({ data, colors, actives, intersect }) {
+function extractPoints({
+  data, colors, actives, intersect,
+}) {
   const labelSet = actives
     .filter(isActive => isActive)
     .keySeq()
@@ -48,20 +54,33 @@ function extractPoints({ data, colors, actives, intersect }) {
   return data
     .map(values => values.intersect(labelSet))
     .filter(values => values.size > intersect)
-    .map((values, coords) => ({
-      coords: [coords.get('lat'), coords.get('lng')],
-      colors: values.map(v => colors.get(v)).sort().toJS(),
-      values: values.toJS(),
-    }))
+    .map((values, dictionary) => {
+      const location = dictionary.getIn(['additional_metadata', 'location']);
+
+      return {
+        coords: [location.get('lat'), location.get('lng')],
+        colors: values
+          .map(v => colors.get(v))
+          .sort()
+          .toJS(),
+        values: values.toJS(),
+        dictionary,
+      };
+    })
     .valueSeq()
     .toJS();
 }
 
 class Map extends React.Component {
+  constructor(props) {
+    super(props);
+    this.onPointClick = this.onPointClick.bind(this);
+  }
+
   componentDidMount() {
     this.leaflet = new Leaflet(this.map, {
       icon: pointIcon,
-      onPointClick: console.log.bind(console),
+      onPointClick: this.onPointClick,
     });
     this.leaflet.load(extractPoints(this.props));
   }
@@ -75,13 +94,29 @@ class Map extends React.Component {
     return true;
   }
 
+  onPointClick({ dictionary }) {
+    const { actions } = this.props;
+    const blobs = dictionary.getIn(['additional_metadata', 'blobs']);
+    // FIXME: backend returns empty list instead of null sometimes.
+    if (blobs && blobs.length > 0) {
+      actions.openBlobsModal(blobs.toJS());
+    }
+  }
+
   render() {
     return (
       <Wrapper>
-        <div ref={(ref) => { this.map = ref; }} className="leaflet" />
+        <div
+          ref={(ref) => {
+            this.map = ref;
+          }}
+          className="leaflet"
+        />
       </Wrapper>
     );
   }
 }
 
-export default Map;
+export default compose(connect(null, dispatch => ({
+  actions: bindActionCreators({ openBlobsModal }, dispatch),
+})))(Map);

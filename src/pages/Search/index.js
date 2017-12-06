@@ -12,7 +12,9 @@ import ResultsMap from 'components/Search/ResultsMap';
 import IntersectionControl from 'components/Search/IntersectionControl';
 import QueryBuilder from 'components/Search/QueryBuilder';
 import LanguageTree from 'components/Search/LanguageTree';
+import BlobsModal from 'components/Search/blobsModal';
 import { buildLanguageTree, buildSearchResultsTree } from 'pages/Search/treeBuilder';
+
 import { newSearch, storeSearchResult } from 'ducks/search';
 
 const adder = i => v => v.add(`search_${i}`);
@@ -52,7 +54,7 @@ const searchQuery = gql`
         parent_id
         translation
         additional_metadata {
-          location
+          location blobs
         }
       }
       perspectives {
@@ -94,10 +96,6 @@ const searchQuery = gql`
 `;
 
 class Wrapper extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
   componentWillReceiveProps(props) {
     // store search results aquired with graphql into Redux state
     const { data, searchId, actions } = props;
@@ -224,7 +222,15 @@ class SearchTabs extends React.Component {
           .map(d => d.additional_metadata.location)
         : []));
 
+    const dictionariesWithLocation = searches.map(result =>
+      (result.results.dictionaries ? result.results.dictionaries.filter(d => d.additional_metadata.location) : []));
+
     const results = locationResults.reduce(
+      (ac, vals, i) => vals.reduce((iac, val) => iac.update(Immutable.fromJS(val), new Immutable.Set(), adder(i)), ac),
+      new Immutable.Map()
+    );
+
+    const dictResults = dictionariesWithLocation.reduce(
       (ac, vals, i) => vals.reduce((iac, val) => iac.update(Immutable.fromJS(val), new Immutable.Set(), adder(i)), ac),
       new Immutable.Map()
     );
@@ -239,7 +245,8 @@ class SearchTabs extends React.Component {
           value={this.state.intersec}
           onChange={e => this.setState({ intersec: e.target.value })}
         />
-        <ResultsMap data={results} colors={COLORS} actives={this.state.actives} intersect={this.state.intersec} />
+        <ResultsMap data={dictResults} colors={COLORS} actives={this.state.actives} intersect={this.state.intersec} />
+        <BlobsModal />
       </Container>
     );
   }
@@ -258,4 +265,3 @@ export default connect(
     actions: bindActionCreators({ newSearch }, dispatch),
   })
 )(SearchTabs);
-
