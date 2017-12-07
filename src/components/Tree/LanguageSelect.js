@@ -75,7 +75,6 @@ const Wrapper = ({ data, select, onSelect }) => {
   }
 
   const { language_tree: languages } = data;
-  console.log(languages);
   const languagesTree = buildLanguageTree(Immutable.fromJS(languages));
   return (<LanguageSelect languagesTree={languagesTree} select={select} onSelect={onSelect} />);
 };

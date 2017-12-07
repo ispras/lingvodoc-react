@@ -19,10 +19,19 @@ export const closeModal = () => ({
   type: CLOSE_MODAL,
 });
 
-const visible = (state = false, action) => {
+const createVisible = (state = false, action) => {
   switch (action.type) {
     case OPEN_MODAL_CREATE:
       return true;
+    case CLOSE_MODAL:
+      return false;
+    default:
+      return state;
+  }
+};
+
+const editVisible = (state = false, action) => {
+  switch (action.type) {
     case OPEN_MODAL_EDIT:
       return true;
     case CLOSE_MODAL:
@@ -32,7 +41,7 @@ const visible = (state = false, action) => {
   }
 };
 
-const edit = (state = null, action) => {
+const language = (state = null, action) => {
   switch (action.type) {
     case OPEN_MODAL_EDIT:
       return action.payload;
@@ -41,7 +50,7 @@ const edit = (state = null, action) => {
   }
 };
 
-const create = (state = null, action) => {
+const parent = (state = null, action) => {
   switch (action.type) {
     case OPEN_MODAL_CREATE:
       return action.payload;
@@ -51,7 +60,8 @@ const create = (state = null, action) => {
 };
 
 export default combineReducers({
-  create,
-  edit,
-  visible,
+  createVisible,
+  editVisible,
+  language,
+  parent,
 });

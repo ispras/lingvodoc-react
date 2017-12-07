@@ -9,8 +9,9 @@ import Immutable from 'immutable';
 import { isEqual, findIndex } from 'lodash';
 import { Button } from 'semantic-ui-react';
 import EditModal from 'components/EditLanguageModal';
-import { openModalEdit } from 'ducks/language';
-import { languagesQuery, createLanguageMutation, moveLanguageMutation } from 'graphql/language';
+import CreateModal from 'components/CreateLanguageModal';
+import { openModalEdit, openModalCreate } from 'ducks/language';
+import { languagesQuery, moveLanguageMutation } from 'graphql/language';
 import { buildLanguageTree } from 'pages/Search/treeBuilder';
 
 class LanguagesTree extends React.Component {
@@ -27,7 +28,6 @@ class LanguagesTree extends React.Component {
     };
 
     this.generateNodeProps = this.generateNodeProps.bind(this);
-    this.createChildLanguage = this.createChildLanguage.bind(this);
     this.onMoveNode = this.onMoveNode.bind(this);
   }
 
@@ -61,22 +61,14 @@ class LanguagesTree extends React.Component {
   }
 
   generateNodeProps({ node, path }) {
-    const { editLanguage } = this.props;
+    const { editLanguage, createLanguage } = this.props;
     return {
       title: node.translation,
       buttons: [
         <Button basic content="Edit" onClick={() => editLanguage(node)} />,
-        <Button basic content="Create" onClick={() => this.createChildLanguage(node)} />,
+        <Button basic content="Create" onClick={() => createLanguage(node)} />,
       ],
     };
-  }
-
-  createChildLanguage(parent) {
-    const { createLanguage } = this.props;
-    createLanguage({
-      variables: { parent_id: parent.id, translation_atoms: [] },
-      refetchQueries: [{ query: languagesQuery }],
-    });
   }
 
   render() {
@@ -88,6 +80,7 @@ class LanguagesTree extends React.Component {
           generateNodeProps={this.generateNodeProps}
           onMoveNode={this.onMoveNode}
         />
+        <CreateModal />
         <EditModal />
       </div>
     );
@@ -96,7 +89,7 @@ class LanguagesTree extends React.Component {
 
 const Languages = (props) => {
   const {
-    data, createLanguage, moveLanguage, actions,
+    data, moveLanguage, actions,
   } = props;
   const { error, loading } = data;
   if (error) {
@@ -113,8 +106,8 @@ const Languages = (props) => {
   return (
     <LanguagesTree
       languagesTree={languagesTree}
-      createLanguage={createLanguage}
       editLanguage={actions.openModalEdit}
+      createLanguage={actions.openModalCreate}
       moveLanguage={moveLanguage}
     />
   );
@@ -127,19 +120,18 @@ Languages.propTypes = {
   }).isRequired,
   actions: PropTypes.shape({
     openModalEdit: PropTypes.func,
+    openModalCreate: PropTypes.func,
   }).isRequired,
-  createLanguage: PropTypes.func.isRequired,
   moveLanguage: PropTypes.func.isRequired,
 };
 
 export default compose(
   graphql(languagesQuery),
-  graphql(createLanguageMutation, { name: 'createLanguage' }),
   graphql(moveLanguageMutation, { name: 'moveLanguage' }),
   connect(
     state => state.language,
     dispatch => ({
-      actions: bindActionCreators({ openModalEdit }, dispatch),
+      actions: bindActionCreators({ openModalEdit, openModalCreate }, dispatch),
     })
   ),
   pure

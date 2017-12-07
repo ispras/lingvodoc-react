@@ -98,7 +98,7 @@ class Map extends React.Component {
     const { actions } = this.props;
     const blobs = dictionary.getIn(['additional_metadata', 'blobs']);
     // FIXME: backend returns empty list instead of null sometimes.
-    if (blobs && blobs.length > 0) {
+    if (blobs) {
       actions.openBlobsModal(blobs.toJS());
     }
   }

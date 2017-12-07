@@ -2,19 +2,25 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { graphql, gql } from 'react-apollo';
 
-import { Container, Button } from 'semantic-ui-react';
+import { Container, Button, List } from 'semantic-ui-react';
 import TranslationAtom from '../TranslationAtom';
 import { compositeIdToString } from '../../utils/compositeId';
 
 export const translationGistQuery = gql`
-  query ($id: LingvodocID!) {
+  query($id: LingvodocID!) {
     translationgist(id: $id) {
-      id, translationatoms {
-        id parent_id locale_id content created_at
+      id
+      translationatoms {
+        id
+        parent_id
+        locale_id
+        content
+        created_at
       }
     }
     all_locales
-  }`;
+  }
+`;
 
 @graphql(translationGistQuery)
 export default class TranslationGist extends React.Component {
@@ -39,15 +45,10 @@ export default class TranslationGist extends React.Component {
   addAtom = () => {
     const { createdAtoms } = this.state;
     const nextId = createdAtoms.length + 1;
-    this.setState(
-      {
-        createdAtoms: [
-          nextId,
-          ...createdAtoms,
-        ],
-      }
-    );
-  }
+    this.setState({
+      createdAtoms: [nextId, ...createdAtoms],
+    });
+  };
 
   render() {
     const { data, editable } = this.props;
@@ -56,40 +57,40 @@ export default class TranslationGist extends React.Component {
       return null;
     }
 
-    const atoms = data.translationgist.translationatoms.slice().sort(
-      (a, b) => (a.created_at > b.created_at ? 1 : 0)
-    ) || [];
+    const atoms =
+      data.translationgist.translationatoms.slice().sort((a, b) => (a.created_at > b.created_at ? 1 : 0)) || [];
     const locales = data.all_locales || [];
 
-    return (<Container>
-      <ul>
-        {atoms.map(atom => (
-          <li key={compositeIdToString(atom.id)}>
-            <TranslationAtom
-              id={atom.id}
-              parentId={atom.parent_id}
-              localeId={atom.locale_id}
-              content={atom.content}
-              locales={locales}
-              editable={editable}
-              onSave={this.onChangeAtom}
-            />
-          </li>
-        ))}
-        {this.state.createdAtoms.map(id => (
-          <li key={id}>
-            <TranslationAtom
-              parentId={data.translationgist.id}
-              locales={locales}
-              editable={editable}
-              onAtomCreated={() => this.onAtomCreated(id)}
-            />
-          </li>
-        ))}
-
-      </ul>
-      <Button onClick={this.addAtom}>Add</Button>
-    </Container>);
+    return (
+      <Container>
+        <List>
+          {atoms.map(atom => (
+            <List.Item key={compositeIdToString(atom.id)}>
+              <TranslationAtom
+                id={atom.id}
+                parentId={atom.parent_id}
+                localeId={atom.locale_id}
+                content={atom.content}
+                locales={locales}
+                editable={editable}
+                onSave={this.onChangeAtom}
+              />
+            </List.Item>
+          ))}
+          {this.state.createdAtoms.map(id => (
+            <List.Item key={id}>
+              <TranslationAtom
+                parentId={data.translationgist.id}
+                locales={locales}
+                editable={editable}
+                onAtomCreated={() => this.onAtomCreated(id)}
+              />
+            </List.Item>
+          ))}
+        </List>
+        <Button onClick={this.addAtom}>Add</Button>
+      </Container>
+    );
   }
 }
 
