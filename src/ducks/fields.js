@@ -11,7 +11,6 @@ export const openCreateFieldModal = () => ({
 export const closeCreateFieldModal = () => ({ type: CLOSE_CREATE_MODAL });
 
 const visible = (state = false, action) => {
-  console.log(action);
   switch (action.type) {
     case OPEN_CREATE_MODAL:
       return true;

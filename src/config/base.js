@@ -1,4 +1,4 @@
 export default {
-  apiUrl: 'http://lingvodoc.ispras.ru/',
+  apiUrl: '',
   pollingInterval: 2000,
 };
