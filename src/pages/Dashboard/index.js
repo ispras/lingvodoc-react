@@ -152,21 +152,21 @@ const P = (props) => {
             </Dropdown.Menu>
           </Dropdown>
 
-          <Menu.Item as={Link} to={`dictionary/${parent_id[0]}/${parent_id[1]}/perspective/${id[0]}/${id[1]}/view`}>
+          <Menu.Item as={Link} to={`/dictionary/${parent_id[0]}/${parent_id[1]}/perspective/${id[0]}/${id[1]}/view`}>
             View
           </Menu.Item>
 
-          <Menu.Item as={Link} to={`dictionary/${parent_id[0]}/${parent_id[1]}/perspective/${id[0]}/${id[1]}/edit`}>
+          <Menu.Item as={Link} to={`/dictionary/${parent_id[0]}/${parent_id[1]}/perspective/${id[0]}/${id[1]}/edit`}>
             Edit
           </Menu.Item>
 
-          <Menu.Item as={Link} to={`dictionary/${parent_id[0]}/${parent_id[1]}/perspective/${id[0]}/${id[1]}/publish`}>
+          <Menu.Item as={Link} to={`/dictionary/${parent_id[0]}/${parent_id[1]}/perspective/${id[0]}/${id[1]}/publish`}>
             Publish
           </Menu.Item>
 
           <Menu.Item
             as={Link}
-            to={`dictionary/${parent_id[0]}/${parent_id[1]}/perspective/${id[0]}/${id[1]}/contributions`}
+            to={`/dictionary/${parent_id[0]}/${parent_id[1]}/perspective/${id[0]}/${id[1]}/contributions`}
           >
             Contributions
           </Menu.Item>
