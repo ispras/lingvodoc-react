@@ -9,14 +9,13 @@ import { connect } from 'react-redux';
 import { head, nth, difference, isEmpty } from 'lodash';
 import { languagesQuery } from 'graphql/language';
 
-
 const localesQuery = gql`
   query Locales {
     all_locales
   }
 `;
 
-class Translation extends React.Component {
+export class Translation extends React.Component {
   constructor(props) {
     super(props);
     const { translation } = props;
@@ -83,9 +82,12 @@ class Translations extends React.Component {
       return t;
     });
 
-    this.setState({
-      translations: updateState,
-    }, () => this.props.onChange(this.state.translations));
+    this.setState(
+      {
+        translations: updateState,
+      },
+      () => this.props.onChange(this.state.translations)
+    );
   }
 
   addTranslation() {
@@ -97,9 +99,12 @@ class Translations extends React.Component {
       const usedIds = this.state.translations.map(t => t.localeId);
       const freeLocales = difference(ids, usedIds);
       if (!isEmpty(freeLocales)) {
-        this.setState({
-          translations: [...this.state.translations, { id: lastId, localeId: head(freeLocales), content: '' }],
-        }, () => this.props.onChange(this.state.translations));
+        this.setState(
+          {
+            translations: [...this.state.translations, { id: lastId, localeId: head(freeLocales), content: '' }],
+          },
+          () => this.props.onChange(this.state.translations)
+        );
       } else {
         window.logger.err('No more locales!');
       }
@@ -127,13 +132,13 @@ class Translations extends React.Component {
             </List.Item>
           ))}
         </List>
-        <Button basic onClick={this.addTranslation} content="add" />
+        <Button basic onClick={this.addTranslation} icon="plus" content="add" />
       </div>
     );
   }
 }
 
-const TranslationsWithData = compose(graphql(localesQuery))(Translations);
+export const TranslationsWithData = compose(graphql(localesQuery))(Translations);
 
 class CreateLanguageModal extends React.Component {
   constructor(props) {
@@ -148,10 +153,12 @@ class CreateLanguageModal extends React.Component {
     const { createLanguage, parent } = this.props;
     const translationAtoms = this.state.translations.map(t => ({ locale_id: t.localeId, content: t.content }));
     createLanguage({
-      variables: { parent_id: parent.id, translationAtoms: translationAtoms },
-      refetchQueries: [{
-        query: languagesQuery,
-      }],
+      variables: { parent_id: parent.id, translationAtoms },
+      refetchQueries: [
+        {
+          query: languagesQuery,
+        },
+      ],
     });
   }
 
@@ -167,7 +174,7 @@ class CreateLanguageModal extends React.Component {
         <Modal.Header>Create language</Modal.Header>
         <Modal.Content>
           <h4>Translations</h4>
-          <TranslationsWithData onChange={(translations) => this.setState({ translations })}/>
+          <TranslationsWithData onChange={translations => this.setState({ translations })} />
         </Modal.Content>
         <Modal.Actions>
           <Button icon="minus" content="Save" onClick={this.saveLanguage} />
@@ -205,3 +212,4 @@ export default compose(
     { name: 'createLanguage' }
   )
 )(CreateLanguageModal);
+

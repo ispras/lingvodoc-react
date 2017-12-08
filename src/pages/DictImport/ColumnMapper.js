@@ -1,7 +1,11 @@
 import React from 'react';
 import { is } from 'immutable';
-import { pure } from 'recompose';
-import { Popup, Button } from 'semantic-ui-react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { compose, pure } from 'recompose';
+import { Popup, Button, Divider } from 'semantic-ui-react';
+import { openCreateFieldModal } from 'ducks/fields';
+import CreateFieldModal from 'components/CreateFieldModal';
 
 function valueColor(value) {
   if (value === 'keep') {
@@ -19,30 +23,20 @@ function valueColor(value) {
   return null;
 }
 
-function FieldButton({ text, onClick, value, isSelected }) {
+function FieldButton({
+  text, onClick, value, isSelected,
+}) {
   const color = isSelected ? { color: 'blue' } : {};
 
-  return (
-    <Button
-      onClick={onClick}
-      content={text}
-      {...color}
-    />
-  );
+  return <Button onClick={onClick} content={text} {...color} />;
 }
 
 function Column({
-  spread, name, value, fieldOptions, type, onSetColumnType,
+  spread, name, value, fieldOptions, type, onSetColumnType, actions,
 }) {
   const isLink = value && value.includes('/');
 
-  let columnButton = (
-    <Button
-      className="column-button"
-      color={valueColor(value)}
-      content={name}
-    />
-  );
+  let columnButton = <Button className="column-button" color={valueColor(value)} content={name} />;
 
   if (spread) {
     columnButton = React.cloneElement(columnButton, { inverted: true, color: 'red', disabled: true });
@@ -66,22 +60,18 @@ function Column({
     const trigger = <Button content={triggerText} {...triggerColor} />;
 
     inner = (
-      <Popup
-        trigger={trigger}
-        position="bottom center"
-        on="click"
-      >
+      <Popup trigger={trigger} position="bottom center" on="click">
         <Popup.Content className="popup-field-type">
-          {
-            fieldOptions.map(f =>
-              <FieldButton
-                key={f.key}
-                onClick={() => onSetColumnType(f.value)}
-                text={f.text}
-                isSelected={is(type, f.value)}
-              />
-            )
-          }
+          {fieldOptions.map(f => (
+            <FieldButton
+              key={f.key}
+              onClick={() => onSetColumnType(f.value)}
+              text={f.text}
+              isSelected={is(type, f.value)}
+            />
+          ))}
+          <Divider fitted />
+          <Button basic content="Create a new field" onClick={actions.openCreateFieldModal} />
         </Popup.Content>
       </Popup>
     );
@@ -97,6 +87,10 @@ function Column({
   );
 }
 
+const ColumnWithData = compose(connect(null, dispatch => ({
+  actions: bindActionCreators({ openCreateFieldModal }, dispatch),
+})))(Column);
+
 function Columns({
   blob, spreads, fieldOptions, columnTypes, onSetColumnType,
 }) {
@@ -107,30 +101,28 @@ function Columns({
     <div className="blob">
       <b className="blob-name">{blob.get('name')}</b>
       <div className="blob-columns">
-        {
-          values
-            .filter(value => value !== null)
-            .map((value, column) =>
-              <Column
-                key={column}
-                name={column}
-                value={value}
-                type={columnTypes.getIn([blobId, column])}
-                onSetColumnType={onSetColumnType(column)}
-                fieldOptions={fieldOptions}
-              />)
-            .toArray()
-        }
-        {
-          spreads.map(spread =>
-            <Column
-              spread
-              key={spread.get('from').join(spread.get('column'))}
-              name={spread.get('column')}
-              type={columnTypes.getIn([spread.get('from'), spread.get('column')])}
+        {values
+          .filter(value => value !== null)
+          .map((value, column) => (
+            <ColumnWithData
+              key={column}
+              name={column}
+              value={value}
+              type={columnTypes.getIn([blobId, column])}
+              onSetColumnType={onSetColumnType(column)}
               fieldOptions={fieldOptions}
-            />)
-        }
+            />
+          ))
+          .toArray()}
+        {spreads.map(spread => (
+          <ColumnWithData
+            spread
+            key={spread.get('from').join(spread.get('column'))}
+            name={spread.get('column')}
+            type={columnTypes.getIn([spread.get('from'), spread.get('column')])}
+            fieldOptions={fieldOptions}
+          />
+        ))}
       </div>
     </div>
   );
@@ -139,21 +131,22 @@ function Columns({
 function ColumnMapper({
   state, spreads, types, columnTypes, onSetColumnType,
 }) {
-  const fieldOptions = types
-    .sortBy(type => type.get('translation'))
-    .reduce(
-      (acc, type) => [...acc, {
+  const fieldOptions = types.sortBy(type => type.get('translation')).reduce(
+    (acc, type) => [
+      ...acc,
+      {
         key: type.get('id').join('/'),
         value: type.get('id'),
         text: type.get('translation'),
-      }],
-      []
-    );
+      },
+    ],
+    []
+  );
 
   return (
     <div className="column-mapper">
-      {
-        state.map((v, id) =>
+      {state
+        .map((v, id) => (
           <Columns
             key={id.join('/')}
             blob={v}
@@ -161,10 +154,12 @@ function ColumnMapper({
             spreads={spreads.get(id, [])}
             columnTypes={columnTypes}
             onSetColumnType={onSetColumnType(id)}
-          />).toArray()
-      }
+          />
+        ))
+        .toArray()}
+      <CreateFieldModal />
     </div>
   );
 }
 
-export default pure(ColumnMapper);
+export default ColumnMapper;

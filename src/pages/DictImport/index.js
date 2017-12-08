@@ -26,7 +26,7 @@ import './styles.scss';
 
 import { buildExport } from './api';
 
-const fieldsQuery = gql`
+export const fieldsQuery = gql`
   query field {
     all_fields {
       id

@@ -11,6 +11,7 @@ import roles from './roles';
 import search from './search';
 import blobs from './blobs';
 import dictImport from './dictImport';
+import fields from './fields';
 
 export default {
   locale,
@@ -26,4 +27,5 @@ export default {
   search,
   blobs,
   dictImport,
+  fields,
 };
