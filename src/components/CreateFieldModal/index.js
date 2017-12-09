@@ -6,8 +6,9 @@ import { Button, Modal, Select, Grid, Header } from 'semantic-ui-react';
 import { closeCreateFieldModal } from 'ducks/fields';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { every } from 'lodash';
 import { compositeIdToString } from 'utils/compositeId';
-import { TranslationsWithData } from 'components/CreateLanguageModal';
+import Translations from 'components/Translation';
 import { fieldsQuery } from 'pages/DictImport';
 
 class CreateFieldModal extends React.Component {
@@ -20,12 +21,21 @@ class CreateFieldModal extends React.Component {
 
     this.saveField = this.saveField.bind(this);
     this.onChangeDataType = this.onChangeDataType.bind(this);
+    this.isSaveDisabled = this.isSaveDisabled.bind(this);
   }
 
   onChangeDataType(event, data) {
     this.setState({
       dataTypeId: data.value,
     });
+  }
+
+  isSaveDisabled() {
+    return (
+      this.state.translations.length === 0 ||
+      every(this.state.translations, translation => translation.content.length === 0) ||
+      this.state.dataTypeId === null
+    );
   }
 
   saveField() {
@@ -67,7 +77,7 @@ class CreateFieldModal extends React.Component {
           <Grid centered divided columns={2}>
             <Grid.Column>
               <Header>Translations</Header>
-              <TranslationsWithData onChange={translations => this.setState({ translations })} />
+              <Translations onChange={translations => this.setState({ translations })} />
             </Grid.Column>
             <Grid.Column>
               <Header>Type</Header>
@@ -76,7 +86,7 @@ class CreateFieldModal extends React.Component {
           </Grid>
         </Modal.Content>
         <Modal.Actions>
-          <Button icon="plus" content="Save" onClick={this.saveField} />
+          <Button icon="plus" content="Save" onClick={this.saveField} disabled={this.isSaveDisabled()} />
           <Button icon="minus" content="Cancel" onClick={actions.closeCreateFieldModal} />
         </Modal.Actions>
       </Modal>
@@ -88,7 +98,12 @@ CreateFieldModal.propTypes = {
   actions: PropTypes.shape({
     closeModal: PropTypes.func,
   }).isRequired,
+  data: PropTypes.shape({
+    loading: PropTypes.bool.isRequired,
+    all_data_types: PropTypes.array.isRequired,
+  }).isRequired,
   visible: PropTypes.bool.isRequired,
+  createField: PropTypes.func.isRequired,
 };
 
 const mapDispatchToProps = dispatch => ({

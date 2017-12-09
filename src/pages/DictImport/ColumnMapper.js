@@ -61,6 +61,9 @@ function Column({
 
     inner = (
       <Popup trigger={trigger} position="bottom center" on="click">
+        <Popup.Header>
+          <Button basic content="Create a new field" onClick={actions.openCreateFieldModal} />
+        </Popup.Header>
         <Popup.Content className="popup-field-type">
           {fieldOptions.map(f => (
             <FieldButton
@@ -70,8 +73,6 @@ function Column({
               isSelected={is(type, f.value)}
             />
           ))}
-          <Divider fitted />
-          <Button basic content="Create a new field" onClick={actions.openCreateFieldModal} />
         </Popup.Content>
       </Popup>
     );
