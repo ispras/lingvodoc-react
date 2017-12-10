@@ -9,6 +9,8 @@ import User from './User';
 import Tasks from './Tasks';
 import Locale from './Locale';
 
+import config from 'config';
+
 const Logo = styled.span`
   font-size: 1.2em;
   font-weight: bold;
@@ -16,7 +18,7 @@ const Logo = styled.span`
 
 const NavBar = pure(({ location }) =>
   <Menu fixed="top">
-    <Menu.Item as={Link} to="/">
+    <Menu.Item as={Link} to={config.homePath}>
       <Logo>
         Lingv<Icon name="talk outline" />doc
       </Logo>
