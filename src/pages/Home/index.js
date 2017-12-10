@@ -1,23 +1,47 @@
-import { is } from 'immutable';
+import React from 'react';
+import { fromJS, List, Map } from 'immutable';
+import { Container } from 'semantic-ui-react';
 
-import { requestPublished, selectors } from 'ducks/data';
+import LanguageTree from 'components/Tree';
 
-import enhance from 'pages/utils';
+import { languagesTree } from '../Search';
+import { assignDictsToTree } from '../Search/treeBuilder';
 
-import Component from './component';
-import saga from './saga';
+const DICTS = fromJS(require('./dicts.json')).reduce((acc, dict) => acc.set(dict.get('id'), dict), new Map());
+const GRANTS = fromJS(require('./grants.json'));
 
-export default enhance({
-  props(state) {
-    return {
-      languages: selectors.getDictionaries(state),
-      loading: selectors.getLoading(state),
-      perspectives: selectors.getPerspectives(state),
-    };
-  },
-  updateWhen({ perspectives: op, loading: ol }, { perspectives: np, loading: nl }) {
-    return !is(op, np) || ol !== nl;
-  },
-  init: requestPublished,
-  saga,
-})(Component);
+function generateNodeProps({ node, path }) {
+  switch (node.type) {
+    case 'language':
+      return {
+        title: node.translation,
+      };
+    default:
+      return {
+        title: 'TODO',
+      };
+  }
+}
+
+export default function () {
+  const trees = GRANTS
+    .map((grant) => {
+      const dictIds = grant.getIn(['additional_metadata', 'participant']) || new List();
+      const dicts = dictIds.map(id => DICTS.get(id));
+      return assignDictsToTree(dicts, languagesTree);
+    });
+
+  return (
+    <Container className="published">
+      {
+        trees.map(tree =>
+          <LanguageTree
+            expanded
+            data={tree}
+            generateNodeProps={generateNodeProps}
+          />
+        )
+      }
+    </Container>
+  );
+}

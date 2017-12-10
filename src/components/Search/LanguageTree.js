@@ -34,7 +34,7 @@ class LanguageTree extends React.Component {
     this.state = {
       treeData: map({
         treeData: props.searchResultsTree.toJS(),
-        callback: ({ node }) => ({ ...node, expanded: false }),
+        callback: ({ node }) => ({ ...node, expanded: !!props.expanded }),
         getNodeKey: ({ treeIndex }) => treeIndex,
         ignoreCollapsed: false,
       }),

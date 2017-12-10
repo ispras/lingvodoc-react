@@ -6,9 +6,9 @@ class LanguageTree extends React.Component {
     super(props);
 
     this.state = {
-      treeData: map({
+      tree: map({
         treeData: props.data.toJS(),
-        callback: ({ node }) => ({ ...node, expanded: false }),
+        callback: ({ node }) => ({ ...node, expanded: !!props.expanded }),
         getNodeKey: ({ treeIndex }) => treeIndex,
         ignoreCollapsed: false,
       }),
@@ -22,7 +22,8 @@ class LanguageTree extends React.Component {
           canDrag={false}
           rowHeight={42}
           scaffoldBlockPxWidth={32}
-          treeData={this.state.treeData}
+          treeData={this.state.tree}
+          onChange={tree => this.setState({ tree })}
           generateNodeProps={this.props.generateNodeProps}
         />
       </div>
