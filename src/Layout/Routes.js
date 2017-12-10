@@ -11,9 +11,11 @@ import Files from 'pages/Files';
 import NotFound from 'pages/NotFound';
 import { DictionaryDashboard, CorpusDashboard } from 'pages/Dashboard';
 
+import config from 'config';
+
 const Routes = () =>
   <Switch>
-    <Route exact path="/" component={Home} />
+    <Route exact path={config.homePath} component={Home} />
     <Route path="/info" component={Info} />
     <Route path="/languages" component={Languages} />
     <Route path="/dashboard/dictionaries" component={DictionaryDashboard} />
