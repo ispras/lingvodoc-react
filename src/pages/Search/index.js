@@ -86,7 +86,7 @@ const searchQuery = gql`
         }
       }
     }
-    languages {
+    language_tree {
       id
       parent_id
       translation
@@ -123,13 +123,13 @@ class Wrapper extends React.Component {
       );
     }
 
-    const { languages: allLanguages, advanced_search } = data;
+    const { language_tree: allLanguages, advanced_search } = data;
 
     const searchResults = Immutable.fromJS(advanced_search);
     const languages = Immutable.fromJS(allLanguages);
     const languagesTree = buildLanguageTree(languages);
     const searchResultsTree = buildSearchResultsTree(searchResults, languagesTree);
-
+    
     return <LanguageTree searchResultsTree={searchResultsTree} />;
   }
 }
@@ -157,6 +157,7 @@ const Info = ({ query, searchId }) => {
 
 Info.propTypes = {
   query: PropTypes.array.isRequired,
+  searchId: PropTypes.number.isRequired,
 };
 
 class SearchTabs extends React.Component {
@@ -214,21 +215,8 @@ class SearchTabs extends React.Component {
       },
     ];
 
-    // extract locations from all found dictionaries
-    const locationResults = searches.map(result =>
-      (result.results.dictionaries
-        ? result.results.dictionaries
-          .filter(d => d.additional_metadata.location)
-          .map(d => d.additional_metadata.location)
-        : []));
-
     const dictionariesWithLocation = searches.map(result =>
       (result.results.dictionaries ? result.results.dictionaries.filter(d => d.additional_metadata.location) : []));
-
-    const results = locationResults.reduce(
-      (ac, vals, i) => vals.reduce((iac, val) => iac.update(Immutable.fromJS(val), new Immutable.Set(), adder(i)), ac),
-      new Immutable.Map()
-    );
 
     const dictResults = dictionariesWithLocation.reduce(
       (ac, vals, i) => vals.reduce((iac, val) => iac.update(Immutable.fromJS(val), new Immutable.Set(), adder(i)), ac),

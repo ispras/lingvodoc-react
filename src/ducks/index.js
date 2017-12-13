@@ -12,6 +12,7 @@ import search from './search';
 import blobs from './blobs';
 import dictImport from './dictImport';
 import fields from './fields';
+import groupingTag from './groupingTag';
 
 export default {
   locale,
@@ -28,4 +29,5 @@ export default {
   blobs,
   dictImport,
   fields,
+  groupingTag,
 };

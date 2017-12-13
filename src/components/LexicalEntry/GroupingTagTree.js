@@ -28,19 +28,18 @@ export function buildDictTrees(data) {
 
   function buildPerpective(p) {
     const pId = p.get('id');
-    const lexicalEntries = byParentId.lexical_entries.get(pId) || [];
     return p
       .delete('tree')
       .set('type', 'perspective')
-      .set('lexicalEntries', lexicalEntries.map(buildEntries));
+      .set('lexicalEntries', byParentId.lexical_entries.get(pId).map(buildEntries));
   }
 
   function buildDict(d) {
     const dId = d.get('id');
-    const perspectives = byParentId.perspectives.get(dId) || [];
+
     return d
       .set('type', 'dictionary')
-      .set('children', perspectives.map(buildPerpective));
+      .set('children', byParentId.perspectives.get(dId).map(buildPerpective));
   }
 
   return data.get('dictionaries').map(buildDict);

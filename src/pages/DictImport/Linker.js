@@ -18,13 +18,11 @@ function valueColor(value) {
   return null;
 }
 
-function Column({ spread, name, linkOptions, value, onChange }) {
+function Column({
+  spread, name, linkOptions, value, onChange,
+}) {
   const trigger = (
-    <Button
-      size="tiny"
-      className="column-button"
-      color={valueColor(value)}
-    >
+    <Button size="tiny" className="column-button" color={valueColor(value)}>
       {name}
     </Button>
   );
@@ -36,15 +34,7 @@ function Column({ spread, name, linkOptions, value, onChange }) {
   const selectValue = value && value.includes('/') ? value : null;
 
   return (
-    <Popup
-      className="column-popup"
-      trigger={trigger}
-      position="bottom center"
-      on="click"
-      style={{}}
-      flowing
-      hoverable
-    >
+    <Popup className="column-popup" trigger={trigger} position="bottom center" on="click" style={{}} flowing hoverable>
       <Grid centered divided columns={3}>
         <Grid.Column textAlign="center">
           <Button
@@ -77,7 +67,9 @@ function Column({ spread, name, linkOptions, value, onChange }) {
   );
 }
 
-function Columns({ blob, spreads, linkOptions, onUpdateColumn, onToggleColumn }) {
+function Columns({
+  blob, spreads, linkOptions, onUpdateColumn, onToggleColumn,
+}) {
   const columns = blob.getIn(['additional_metadata', 'starling_fields']);
   const values = blob.get('values');
 
@@ -85,47 +77,42 @@ function Columns({ blob, spreads, linkOptions, onUpdateColumn, onToggleColumn })
     <div className="blob">
       <b className="blob-name">{blob.get('name')}</b>
       <div className="blob-columns">
-        {
-          columns.map(column =>
-            <Column
-              key={column}
-              name={column}
-              linkOptions={linkOptions.filter(x => x.key !== blob.get('id').join('/'))}
-              onChange={onUpdateColumn}
-              value={values.get(column)}
-            />
-          )
-        }
-        {
-          spreads.map(spread =>
-            <Column
-              spread
-              key={spread.get('from').join(spread.get('column'))}
-              name={spread.get('column')}
-            />
-          )
-        }
+        {columns.map(column => (
+          <Column
+            key={column}
+            name={column}
+            linkOptions={linkOptions.filter(x => x.key !== blob.get('id').join('/'))}
+            onChange={onUpdateColumn}
+            value={values.get(column)}
+          />
+        ))}
+        {spreads.map(spread => (
+          <Column spread key={spread.get('from').join(spread.get('column'))} name={spread.get('column')} />
+        ))}
       </div>
       <Checkbox className="blob-checkbox" onClick={onToggleColumn} checked={blob.get('add')} />
     </div>
   );
 }
 
-function Linker({ blobs, state, spreads, onSelect, onUpdateColumn, onToggleColumn }) {
+function Linker({
+  blobs, state, spreads, onSelect, onUpdateColumn, onToggleColumn,
+}) {
   const stateOptions = blobs.reduce(
-    (acc, blob) => [...acc, {
-      key: blob.get('id').join('/'),
-      value: blob.get('id').join('/'),
-      text: blob.get('name'),
-    }],
+    (acc, blob) => [
+      ...acc,
+      {
+        key: blob.get('id').join('/'),
+        value: blob.get('id').join('/'),
+        text: blob.get('name'),
+      },
+    ],
     []
   );
 
   const first = state.first();
 
-  const selected = first
-    ? first.get('id').join('/')
-    : null;
+  const selected = first ? first.get('id').join('/') : null;
 
   function onChange(event, data) {
     onSelect(data.value.split('/').map(x => parseInt(x, 10)));
@@ -142,8 +129,8 @@ function Linker({ blobs, state, spreads, onSelect, onUpdateColumn, onToggleColum
         value={selected}
         onChange={onChange}
       />
-      {
-        state.map((v, id) =>
+      {state
+        .map((v, id) => (
           <Columns
             key={id.join('/')}
             blob={v}
@@ -152,8 +139,8 @@ function Linker({ blobs, state, spreads, onSelect, onUpdateColumn, onToggleColum
             onUpdateColumn={onUpdateColumn(id)}
             onToggleColumn={onToggleColumn(id)}
           />
-        ).toArray()
-      }
+        ))
+        .toArray()}
     </div>
   );
 }
