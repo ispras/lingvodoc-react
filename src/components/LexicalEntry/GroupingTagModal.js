@@ -2,29 +2,25 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { compose } from 'recompose';
 import { graphql, gql } from 'react-apollo';
-import { Button, Modal, Popup } from 'semantic-ui-react';
-import Immutable, { fromJS } from 'immutable';
+import { Button, Modal, Header } from 'semantic-ui-react';
+import Immutable from 'immutable';
 import { closeModal } from 'ducks/groupingTag';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { uniq } from 'lodash';
-import SortableTree, { map } from 'react-sortable-tree';
+import SortableTree, { map, getVisibleNodeInfoAtIndex } from 'react-sortable-tree';
 import { compositeIdToString } from 'utils/compositeId';
 import { buildLanguageTree, buildSearchResultsTree } from 'pages/Search/treeBuilder';
 import { LexicalEntryView } from 'components/PerspectiveView';
 
 class Tree extends React.Component {
-  static generateNodeProps({ node, path }) {
+  static generateNodeProps({ node }) {
     switch (node.type) {
       case 'perspective':
         return {
           subtitle: (
-            <Popup
-              trigger={<Button compact>{node.lexicalEntries.length}</Button>}
-              hideOnScroll
-              position="top center"
-              on="click"
-            >
+            <div>
+              <Header size="large">{node.translation}</Header>
               <LexicalEntryView
                 className="perspective"
                 perspectiveId={node.id}
@@ -32,8 +28,11 @@ class Tree extends React.Component {
                 mode="view"
                 entitiesMode="published"
               />
-            </Popup>
+            </div>
           ),
+          // XXX: move style to CSS class
+          className: 'inlinePerspective',
+          style: { 'overflow-y': 'scroll' },
         };
       default:
         return {
@@ -56,16 +55,45 @@ class Tree extends React.Component {
   }
 
   render() {
+    const getHeight = ({ index }) => {
+      const { node } = getVisibleNodeInfoAtIndex({
+        treeData: this.state.treeData,
+        index,
+        getNodeKey: ({ treeIndex }) => treeIndex,
+      });
+      if (node.type === 'perspective') {
+        return 300;
+      }
+      return 64;
+    };
+
     return (
       <div style={{ height: 600 }}>
         <SortableTree
           canDrag={false}
           treeData={this.state.treeData}
+          rowHeight={getHeight}
           generateNodeProps={Tree.generateNodeProps}
           onChange={treeData => this.setState({ treeData })}
         />
       </div>
     );
+  }
+}
+
+Tree.propTypes = {
+  resultsTree: PropTypes.object.isRequired,
+}
+
+
+class GroupingTagEdit extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
+
+  render() {
+    return <div>edit</div>;
   }
 }
 
@@ -129,6 +157,10 @@ const ConnectedLexicalEntries = (props) => {
 
   const { lexical_entries } = connectedWords;
 
+  if (lexical_entries.length === 0) {
+    return null;
+  }
+
   const perspectiveCompositeIds = uniq(lexical_entries.map(entry => entry.parent_id)).map(compositeIdToString);
   const perspectives = allPerspectives.filter(p => perspectiveCompositeIds.indexOf(compositeIdToString(p.id)) >= 0);
   const perspectiveParentCompositeIds = perspectives.map(p => compositeIdToString(p.parent_id));
@@ -188,7 +220,7 @@ class GroupingTagModal extends React.Component {
     }
 
     return (
-      <Modal dimmer open fluid>
+      <Modal dimmer open size="fullscreen">
         <Modal.Header>Grouping tag</Modal.Header>
         <Modal.Content>
           <ConnectedLexicalEntriesWithData id={lexicalEntry.id} fieldId={fieldId} mode={mode} />

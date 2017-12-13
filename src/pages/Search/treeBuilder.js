@@ -4,7 +4,6 @@ const parentGrouper = x => x.get('parent_id');
 
 export function buildLanguageTree(data) {
   const byParentId = data.groupBy(parentGrouper);
-
   function innerBuild(lang) {
     const langId = lang.get('id');
     return lang
