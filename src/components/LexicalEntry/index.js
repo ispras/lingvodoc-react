@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { compose, pure } from 'recompose';
 import { graphql, gql } from 'react-apollo';
 import { isEqual } from 'lodash';
 import { Button } from 'semantic-ui-react';
@@ -11,6 +12,7 @@ import Sound from './Sound';
 import Markup from './Markup';
 import Link from './Link';
 import GroupingTag from './GroupingTag';
+import DirectedLink from './DirectedLink';
 import Unknown from './Unknown';
 
 const createEntityMutation = gql`
@@ -52,6 +54,7 @@ const getComponent = dataType =>
     Markup,
     Link,
     'Grouping Tag': GroupingTag,
+    'Directed Link': DirectedLink,
   }[dataType] || Unknown);
 
 class Entities extends React.Component {
@@ -126,7 +129,7 @@ class Entities extends React.Component {
     } = this.props;
     const entities = entry.contains.filter(entity => isEqual(entity.field_id, column.id));
 
-    if (column.data_type === 'Link' || column.data_type === 'Grouping Tag') {
+    if (column.data_type === 'Link' || column.data_type === 'Grouping Tag' || column.data_type === 'Directed Link') {
       const Component = getComponent(column.data_type);
       return <Component {...this.props} />;
     }
@@ -176,22 +179,21 @@ Entities.propTypes = {
   mode: PropTypes.string.isRequired,
   parentEntity: PropTypes.object,
   entitiesMode: PropTypes.string.isRequired,
-  createEntity: PropTypes.func,
-  publishEntity: PropTypes.func,
-  acceptEntity: PropTypes.func,
+  createEntity: PropTypes.func.isRequired,
+  publishEntity: PropTypes.func.isRequired,
+  acceptEntity: PropTypes.func.isRequired,
+  removeEntity: PropTypes.func.isRequired,
 };
 
 Entities.defaultProps = {
   parentEntity: null,
-  createEntity: () => {},
-  publishEntity: () => {},
-  acceptEntity: () => {},
 };
 
-// split graphql wrappers into 3 parts because React Hot Loader doesn't work so well
-// with nested calls like graphql(graphql(graphql(...)))
-const e1 = graphql(publishEntityMutation, { name: 'publishEntity' })(Entities);
-const e2 = graphql(acceptEntityMutation, { name: 'acceptEntity' })(e1);
-const e3 = graphql(createEntityMutation, { name: 'createEntity' })(e2);
+export default compose(
+  graphql(publishEntityMutation, { name: 'publishEntity' }),
+  graphql(acceptEntityMutation, { name: 'acceptEntity' }),
+  graphql(createEntityMutation, { name: 'createEntity' }),
+  graphql(removeEntityMutation, { name: 'removeEntity' }),
+  pure,
+)(Entities);
 
-export default e3;

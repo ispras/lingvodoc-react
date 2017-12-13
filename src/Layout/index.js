@@ -5,6 +5,8 @@ import React from 'react';
 import styled from 'styled-components';
 import { Sidebar, Menu, Icon } from 'semantic-ui-react';
 
+import GroupingTagModal from 'components/LexicalEntry/GroupingTagModal';
+
 import NavBar from './NavBar';
 import TasksSidebar from './TasksSidebar';
 import Snackbar from './Snackbar';
@@ -26,6 +28,7 @@ const Layout = () => (
         <Routes />
       </Sidebar.Pusher>
     </Sidebar.Pushable>
+    <GroupingTagModal />
   </div>
 );
 

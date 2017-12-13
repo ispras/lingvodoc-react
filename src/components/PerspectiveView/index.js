@@ -40,6 +40,9 @@ export const queryPerspective = gql`
         content
         published
         accepted
+        additional_metadata {
+          link_perspective_id
+        }
       }
     }
     all_fields {

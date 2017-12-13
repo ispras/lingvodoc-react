@@ -91,10 +91,12 @@ function updateSpread(state) {
     new Map()
   );
 
-  return cleanLinking(
-    state.set('spreads', extractedSpreads),
-    extractedSpreads.keySeq().toSet()
-  );
+  // return cleanLinking(
+  //   state.set('spreads', extractedSpreads),
+  //   extractedSpreads.keySeq().toSet()
+  // );
+  
+  return state.set('spreads', extractedSpreads);
 }
 
 function updateNextStep(step) {
