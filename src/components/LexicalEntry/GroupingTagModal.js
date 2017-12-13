@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { compose } from 'recompose';
-import { graphql, gql } from 'react-apollo';
-import { Button, Modal, Header } from 'semantic-ui-react';
+import { graphql, gql, withApollo } from 'react-apollo';
+import { Confirm, Button, Modal, Header, Input } from 'semantic-ui-react';
 import Immutable from 'immutable';
 import { closeModal } from 'ducks/groupingTag';
 import { bindActionCreators } from 'redux';
@@ -12,6 +12,37 @@ import SortableTree, { map, getVisibleNodeInfoAtIndex } from 'react-sortable-tre
 import { compositeIdToString } from 'utils/compositeId';
 import { buildLanguageTree, buildSearchResultsTree } from 'pages/Search/treeBuilder';
 import { LexicalEntryView } from 'components/PerspectiveView';
+
+function buildPartialLanguageTree({
+  lexicalEntries, allPerspectives, allDictionaries, allLanguages,
+}) {
+  const perspectiveCompositeIds = uniq(lexicalEntries.map(entry => entry.parent_id)).map(compositeIdToString);
+  const perspectives = allPerspectives.filter(p => perspectiveCompositeIds.indexOf(compositeIdToString(p.id)) >= 0);
+  const perspectiveParentCompositeIds = perspectives.map(p => compositeIdToString(p.parent_id));
+  const dictionaries = allDictionaries.filter(d => perspectiveParentCompositeIds.indexOf(compositeIdToString(d.id)) >= 0);
+  const dictionaryParentCompositeIds = dictionaries.map(d => compositeIdToString(d.parent_id));
+  const seedLanguages = allLanguages.filter(lang => dictionaryParentCompositeIds.indexOf(compositeIdToString(lang.id)) >= 0);
+
+  const reducer = (acc, lang) => {
+    const id = compositeIdToString(lang.id);
+    const parentIds = acc.filter(p => p.parent_id).map(p => compositeIdToString(p.parent_id));
+
+    if (parentIds.indexOf(id) >= 0 && acc.map(p => compositeIdToString(p.id)).indexOf(id) < 0) {
+      return [...acc, lang];
+    }
+    return acc;
+  };
+
+  let languages = seedLanguages;
+  let prevLanguages = [];
+  do {
+    prevLanguages = languages;
+    languages = allLanguages.reduce(reducer, prevLanguages);
+  } while (prevLanguages.length !== languages.length);
+  const treeData = Immutable.fromJS({ dictionaries, perspectives, lexical_entries: lexicalEntries });
+  const languagesTree = buildLanguageTree(Immutable.fromJS(languages));
+  return buildSearchResultsTree(treeData, languagesTree);
+}
 
 class Tree extends React.Component {
   static generateNodeProps({ node }) {
@@ -26,13 +57,13 @@ class Tree extends React.Component {
                 perspectiveId={node.id}
                 entries={node.lexicalEntries}
                 mode="view"
-                entitiesMode="published"
+                entitiesMode="all"
               />
             </div>
           ),
           // XXX: move style to CSS class
           className: 'inlinePerspective',
-          style: { 'overflow-y': 'scroll' },
+          style: { overflowY: 'scroll', height: '290px' },
         };
       default:
         return {
@@ -61,10 +92,7 @@ class Tree extends React.Component {
         index,
         getNodeKey: ({ treeIndex }) => treeIndex,
       });
-      if (node.type === 'perspective') {
-        return 300;
-      }
-      return 64;
+      return node.type === 'perspective' ? 300 : 64;
     };
 
     return (
@@ -83,8 +111,7 @@ class Tree extends React.Component {
 
 Tree.propTypes = {
   resultsTree: PropTypes.object.isRequired,
-}
-
+};
 
 class GroupingTagEdit extends React.Component {
   constructor(props) {
@@ -155,39 +182,18 @@ const ConnectedLexicalEntries = (props) => {
     return null;
   }
 
-  const { lexical_entries } = connectedWords;
+  const { lexical_entries: lexicalEntries } = connectedWords;
 
-  if (lexical_entries.length === 0) {
+  if (lexicalEntries.length === 0) {
     return null;
   }
 
-  const perspectiveCompositeIds = uniq(lexical_entries.map(entry => entry.parent_id)).map(compositeIdToString);
-  const perspectives = allPerspectives.filter(p => perspectiveCompositeIds.indexOf(compositeIdToString(p.id)) >= 0);
-  const perspectiveParentCompositeIds = perspectives.map(p => compositeIdToString(p.parent_id));
-  const dictionaries = allDictionaries.filter(d => perspectiveParentCompositeIds.indexOf(compositeIdToString(d.id)) >= 0);
-  const dictionaryParentCompositeIds = dictionaries.map(d => compositeIdToString(d.parent_id));
-  const seedLanguages = allLanguages.filter(lang => dictionaryParentCompositeIds.indexOf(compositeIdToString(lang.id)) >= 0);
-
-  const reducer = (acc, lang) => {
-    const id = compositeIdToString(lang.id);
-    const parentIds = acc.filter(p => p.parent_id).map(p => compositeIdToString(p.parent_id));
-
-    if (parentIds.indexOf(id) >= 0 && acc.map(p => compositeIdToString(p.id)).indexOf(id) < 0) {
-      return [...acc, lang];
-    }
-    return acc;
-  };
-
-  let languages = seedLanguages;
-  let prevLanguages = [];
-  do {
-    prevLanguages = languages;
-    languages = allLanguages.reduce(reducer, prevLanguages);
-  } while (prevLanguages.length !== languages.length);
-
-  const treeData = Immutable.fromJS({ dictionaries, perspectives, lexical_entries });
-  const languagesTree = buildLanguageTree(Immutable.fromJS(languages));
-  const resultsTree = buildSearchResultsTree(treeData, languagesTree);
+  const resultsTree = buildPartialLanguageTree({
+    lexicalEntries,
+    allLanguages,
+    allDictionaries,
+    allPerspectives,
+  });
 
   return <Tree resultsTree={resultsTree} />;
 };
@@ -204,15 +210,137 @@ ConnectedLexicalEntries.propTypes = {
 
 const ConnectedLexicalEntriesWithData = graphql(connectedQuery)(ConnectedLexicalEntries);
 
-class GroupingTagModal extends React.Component {
+// const disconnectMutation = gql`
+
+// `;
+
+const searchQuery = gql`
+  query EntriesList($searchString: String!, $fieldId: LingvodocID!) {
+    lexicalentries(searchstring: $searchString, search_in_published: true, field_id: $fieldId, can_add_tags: true) {
+      id
+      parent_id
+      entities {
+        id
+        parent_id
+        field_id
+        link_id
+        self_id
+        created_at
+        locale_id
+        content
+        published
+        accepted
+        additional_metadata {
+          link_perspective_id
+        }
+      }
+    }
+  }
+`;
+
+const languageTreeSourceQuery = gql`
+  query languageTreeSource {
+    language_tree {
+      id
+      parent_id
+      translation
+      created_at
+      translation_gist_id
+    }
+    dictionaries {
+      id
+      parent_id
+      translation
+    }
+    perspectives {
+      id
+      parent_id
+      translation
+    }
+  }
+`;
+
+@withApollo
+@graphql(languageTreeSourceQuery)
+class SearchLexicalEntries extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      searchString: '',
+    };
+
+    this.search = this.search.bind(this);
+  }
+
+  async search() {
+    const { searchString } = this.state;
+    const { data: { lexicalentries: lexicalEntries } } = await this.props.client.query({
+      query: searchQuery,
+      variables: { searchString, fieldId: [66, 25] },
+    });
+
+    const {
+      data: {
+        loading,
+        error,
+        language_tree: allLanguages,
+        dictionaries: allDictionaries,
+        perspectives: allPerspectives,
+      },
+    } = this.props;
+
+    const resultsTree = buildPartialLanguageTree({
+      lexicalEntries,
+      allLanguages,
+      allDictionaries,
+      allPerspectives,
+    });
+
+    console.log(resultsTree.toJS());
   }
 
   render() {
     const {
-      visible, lexicalEntry, fieldId, mode,
+      data: {
+        loading,
+        error,
+        language_tree: allLanguages,
+        dictionaries: allDictionaries,
+        perspectives: allPerspectives,
+      },
+    } = this.props;
+
+    if (loading || error) {
+      return null;
+    }
+
+    return (
+      <Input
+        action={{ icon: 'search', onClick: this.search }}
+        placeholder="Search..."
+        onChange={(e, data) => this.setState({ searchString: data.value })}
+      />
+    );
+  }
+}
+
+class GroupingTagModal extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      confirm: false,
+    };
+
+    this.handleConfirm = this.handleConfirm.bind(this);
+  }
+
+  handleConfirm() {
+    this.setState({ confirm: false });
+  }
+
+  render() {
+    const {
+      visible, lexicalEntry, fieldId, mode, controlsMode,
     } = this.props;
 
     if (!visible) {
@@ -220,15 +348,40 @@ class GroupingTagModal extends React.Component {
     }
 
     return (
-      <Modal dimmer open size="fullscreen">
-        <Modal.Header>Grouping tag</Modal.Header>
-        <Modal.Content>
-          <ConnectedLexicalEntriesWithData id={lexicalEntry.id} fieldId={fieldId} mode={mode} />
-        </Modal.Content>
-        <Modal.Actions>
-          <Button icon="minus" content="Cancel" onClick={this.props.actions.closeModal} />
-        </Modal.Actions>
-      </Modal>
+      <div>
+        <Modal dimmer open size="fullscreen">
+          <Modal.Header>Grouping tag</Modal.Header>
+          <Modal.Content>
+            <ConnectedLexicalEntriesWithData id={lexicalEntry.id} fieldId={fieldId} mode={mode} />
+
+            <SearchLexicalEntries />
+          </Modal.Content>
+          <Modal.Actions>
+            {controlsMode === 'edit' && (
+              <Button negative onClick={() => this.setState({ confirm: true })}>
+                Disconnect
+              </Button>
+            )}
+            {controlsMode === 'publish' && (
+              <Button positive onClick={() => this.setState({ confirm: true })}>
+                Publish
+              </Button>
+            )}
+            {controlsMode === 'contributions' && (
+              <Button negative onClick={() => this.setState({ confirm: true })}>
+                Accept
+              </Button>
+            )}
+            <Button icon="minus" content="Cancel" onClick={this.props.actions.closeModal} />
+          </Modal.Actions>
+        </Modal>
+
+        <Confirm
+          open={this.state.confirm}
+          onCancel={() => this.setState({ confirm: false })}
+          onConfirm={this.handleConfirm}
+        />
+      </div>
     );
   }
 }
@@ -241,6 +394,7 @@ GroupingTagModal.propTypes = {
   lexicalEntry: PropTypes.object,
   fieldId: PropTypes.array,
   mode: PropTypes.string.isRequired,
+  controlsMode: PropTypes.string.isRequired,
 };
 
 GroupingTagModal.defaultProps = {
