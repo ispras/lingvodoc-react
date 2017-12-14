@@ -8,8 +8,9 @@ import { openModal } from 'ducks/groupingTag';
 
 const GroupingTag = (props) => {
   const {
-    entry, column, entitiesMode, as: Component = 'div', actions,
+    entry, column, mode, entitiesMode, as: Component = 'div', actions,
   } = props;
+
   return (
     <Component className="gentium">
       <Button
@@ -18,7 +19,7 @@ const GroupingTag = (props) => {
         content="Grouping Tag"
         icon="code"
         labelPosition="left"
-        onClick={() => actions.openModal(entry, column.id, entitiesMode)}
+        onClick={() => actions.openModal(entry, column.id, entitiesMode, mode)}
       />
     </Component>
   );
@@ -27,6 +28,7 @@ const GroupingTag = (props) => {
 GroupingTag.propTypes = {
   entry: PropTypes.object.isRequired,
   column: PropTypes.object.isRequired,
+  mode: PropTypes.string.isRequired,
   entitiesMode: PropTypes.string.isRequired,
   as: PropTypes.string,
   actions: PropTypes.shape({
@@ -39,7 +41,7 @@ GroupingTag.defaultProps = {
 };
 
 export default compose(connect(
-  state => state.groupingTag,
+  null,
   dispatch => ({
     actions: bindActionCreators({ openModal }, dispatch),
   })

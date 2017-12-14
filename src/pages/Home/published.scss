@@ -1,31 +1,47 @@
+$selectColor: #1E88E5;
+
 .published {
-  .dict-list {
-    padding: 0.5em;
-    border-radius: 0.28571429rem;
-    margin: 0.5em 0;
+  .grant {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 2em;
 
-    &:nth-child(even) {
-      background-color: #eee;
+    .grant-title {
+      padding: .2em;
+      font-weight: bold;
+      font-size: 1.2em;
     }
 
-    .translation {
-      span {
-        font-weight: bold;
-        font-size: 1.05em;
-      }
+    .rst__tree {
+      flex: 1 1 400px;
+    }
+  }
 
-      span+span:before {
-        content: ' > ';
-        color: gray;
-      }
+  .dict {
+    .dict-name {
+      margin-right: 1em;
+      cursor: pointer;
     }
 
-    .dict {
-      padding: 2px 1em;
+    .dict-authors {
+      font-style: italic;
+      font-weight: 200;
+      margin-right: 1em;
+    }
 
+    .dict-perspectives {
+      color: #777;
+    }
+
+    &.selected {
       .dict-name {
-        padding-right: 5px;
       }
     }
+  }
+
+
+  .rst__row.selected > .rst__rowContents {
+    box-shadow: 0 5px 5px -3px $selectColor;
+    border-color: $selectColor;
   }
 }
