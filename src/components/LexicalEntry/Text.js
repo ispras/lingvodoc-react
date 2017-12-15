@@ -13,10 +13,13 @@ const TextEntityContent = onlyUpdateForKeys(['entity'])(({
   switch (mode) {
     case 'edit':
       return (
-        <Button.Group basic icon size="mini">
-          <Button content={entity.content} />
-          <Button icon="remove" onClick={() => remove(entity)} />
-        </Button.Group>
+        <div>
+          {entity.content}
+          <Button.Group basic icon size="mini">
+            <Button icon="edit" />
+            <Button icon="remove" onClick={() => remove(entity)} />
+          </Button.Group>
+        </div>
       );
     case 'publish':
       control = entity.published ? (
@@ -25,10 +28,12 @@ const TextEntityContent = onlyUpdateForKeys(['entity'])(({
         <Button icon="checkmark" onClick={() => publish(entity, true)} />
       );
       return (
-        <Button.Group basic icon size="mini">
-          <Button content={entity.content} />
-          {control}
-        </Button.Group>
+        <div>
+          {entity.content}
+          <Button.Group basic icon size="mini">
+            {control}
+          </Button.Group>
+        </div>
       );
     case 'view':
       return entity.content;
