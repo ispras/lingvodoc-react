@@ -1,20 +1,19 @@
 import React from 'react';
 import { pure } from 'recompose';
-import { Label, Icon } from 'semantic-ui-react';
+import { Label } from 'semantic-ui-react';
 
 const Labels = ({ data, onClick }) =>
-  data.map(({ text, color, isActive }) =>
+  data.map(label =>
     <Label
-      key={text}
+      key={label.text}
       as="a"
       style={{
-        backgroundColor: isActive ? color : 'grey',
+        backgroundColor: label.isActive ? label.color : 'grey',
         color: '#fff',
       }}
-      onClick={() => onClick(text)}
+      onClick={() => onClick(label.id)}
     >
-      {text}
-      <Icon name="delete" />
+      {label.text}
     </Label>
   );
 

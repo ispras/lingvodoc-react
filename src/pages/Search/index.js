@@ -40,13 +40,6 @@ const mdColors = new Immutable.List([
   '#6D4C41',
 ]).sortBy(Math.random);
 
-const COLORS = Immutable.fromJS({
-  search_0: mdColors.get(0),
-  search_1: mdColors.get(1),
-  search_2: mdColors.get(2),
-  search_3: mdColors.get(3),
-});
-
 const searchQuery = gql`
   query Search($query: [[ObjectVal]]!, $category: Int, $adopted: Boolean, $etymology: Boolean) {
     advanced_search(search_strings: $query, category: $category, adopted: $adopted, etymology: $etymology) {
@@ -188,6 +181,15 @@ Info.propTypes = {
   etymology: PropTypes.bool,
 };
 
+function searchesFromProps({ searches }) {
+  return searches.reduce((ac, s) => ac.set(s.id, Immutable.fromJS({
+    id: s.id,
+    text: `Search ${s.id}`,
+    color: mdColors.get(s.id - 1),
+    isActive: true,
+  })), new Immutable.Map());
+}
+
 class SearchTabs extends React.Component {
   constructor(props) {
     super(props);
@@ -197,25 +199,25 @@ class SearchTabs extends React.Component {
 
 
     this.state = {
-      actives: Immutable.fromJS({
-        search_0: true,
-        search_1: true,
-        search_2: true,
-        search_3: true,
-      }),
+      mapSearches: searchesFromProps(props),
       intersec: 0,
     };
   }
 
-  labels() {
-    return COLORS.map((color, text) => ({ text, color, isActive: this.state.actives.get(text) }))
-      .valueSeq()
-      .toJS();
+  componentWillReceiveProps(nextProps) {
+    this.setState({
+      mapSearches: searchesFromProps(nextProps),
+      intersec: 0,
+    });
   }
 
-  clickLabel(name) {
+  labels() {
+    return this.state.mapSearches.valueSeq().toJS();
+  }
+
+  clickLabel(id) {
     this.setState({
-      actives: this.state.actives.update(name, v => !v),
+      mapSearches: this.state.mapSearches.updateIn([id, 'isActive'], v => !v),
     });
   }
 
@@ -265,11 +267,16 @@ class SearchTabs extends React.Component {
         <Divider section />
         <Labels data={this.labels()} onClick={this.clickLabel} />
         <IntersectionControl
-          max={this.state.actives.filter(f => f).size}
+          max={this.state.mapSearches.filter(f => f.get('isActive')).size}
           value={this.state.intersec}
           onChange={e => this.setState({ intersec: e.target.value })}
         />
-        <ResultsMap data={dictResults} colors={COLORS} actives={this.state.actives} intersect={this.state.intersec} />
+        <ResultsMap
+          data={dictResults}
+          colors={this.state.mapSearches.map(v => v.get('color'))}
+          actives={this.state.mapSearches}
+          intersect={this.state.intersec}
+        />
         <BlobsModal />
       </Container>
     );
