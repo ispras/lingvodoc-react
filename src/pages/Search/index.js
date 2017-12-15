@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import { gql, graphql } from 'react-apollo';
 import Immutable, { fromJS } from 'immutable';
-import { Container, Dimmer, Loader, Tab, Button, Divider } from 'semantic-ui-react';
+import { Checkbox, Segment, Radio, Container, Grid, Dimmer, Loader, Tab, Button, Divider } from 'semantic-ui-react';
 import { isEqual } from 'lodash';
 import Labels from 'components/Search/Labels';
 import ResultsMap from 'components/Search/ResultsMap';
@@ -14,6 +14,7 @@ import QueryBuilder from 'components/Search/QueryBuilder';
 import LanguageTree from 'components/Search/LanguageTree';
 import BlobsModal from 'components/Search/blobsModal';
 import { buildLanguageTree, buildSearchResultsTree } from 'pages/Search/treeBuilder';
+import { compositeIdToString } from 'utils/compositeId';
 
 import { newSearch, storeSearchResult } from 'ducks/search';
 
@@ -47,14 +48,15 @@ const COLORS = Immutable.fromJS({
 });
 
 const searchQuery = gql`
-  query Search($query: [[ObjectVal]]!) {
-    advanced_search(search_strings: $query) {
+  query Search($query: [[ObjectVal]]!, $category: Int, $adopted: Boolean, $etymology: Boolean) {
+    advanced_search(search_strings: $query, category: $category, adopted: $adopted, etymology: $etymology) {
       dictionaries {
         id
         parent_id
         translation
         additional_metadata {
-          location blobs
+          location
+          blobs
         }
       }
       perspectives {
@@ -72,18 +74,18 @@ const searchQuery = gql`
       lexical_entries {
         id
         parent_id
-        entities {
-          id
-          parent_id
-          field_id
-          link_id
-          self_id
-          created_at
-          locale_id
-          content
-          published
-          accepted
-        }
+      }
+      entities {
+        id
+        parent_id
+        field_id
+        link_id
+        self_id
+        created_at
+        locale_id
+        content
+        published
+        accepted
       }
     }
     language_tree {
@@ -123,13 +125,26 @@ class Wrapper extends React.Component {
       );
     }
 
-    const { language_tree: allLanguages, advanced_search } = data;
+    const { language_tree: allLanguages, advanced_search: advancedSearch } = data;
 
-    const searchResults = Immutable.fromJS(advanced_search);
+    const lexicalEntriesWithEntities = advancedSearch.lexical_entries.map((entry) => {
+      const id = compositeIdToString(entry.id);
+      return {
+        ...entry,
+        entities: advancedSearch.entities.filter(entity => compositeIdToString(entity.parent_id) === id),
+      };
+    });
+
+    const r = {
+      ...advancedSearch,
+      lexical_entries: lexicalEntriesWithEntities,
+    };
+
+    const searchResults = Immutable.fromJS(r);
     const languages = Immutable.fromJS(allLanguages);
     const languagesTree = buildLanguageTree(languages);
     const searchResultsTree = buildSearchResultsTree(searchResults, languagesTree);
-    
+
     return <LanguageTree searchResultsTree={searchResultsTree} />;
   }
 }
@@ -144,13 +159,23 @@ const WrapperWithData = compose(
   graphql(searchQuery)
 )(Wrapper);
 
-const Info = ({ query, searchId }) => {
+const Info = ({
+  query, searchId, adopted, etymology, category,
+}) => {
   // remove empty strings
   const cleanQuery = query
     .map(q => q.filter(p => p.search_string.length > 0 && p.matching_type.length > 0))
     .filter(q => q.length > 0);
   if (cleanQuery.length > 0) {
-    return <WrapperWithData searchId={searchId} query={cleanQuery} />;
+    return (
+      <WrapperWithData
+        searchId={searchId}
+        query={cleanQuery}
+        category={category}
+        adopted={adopted}
+        etymology={etymology}
+      />
+    );
   }
   return null;
 };
@@ -158,6 +183,9 @@ const Info = ({ query, searchId }) => {
 Info.propTypes = {
   query: PropTypes.array.isRequired,
   searchId: PropTypes.number.isRequired,
+  category: PropTypes.number,
+  adopted: PropTypes.bool,
+  etymology: PropTypes.bool,
 };
 
 class SearchTabs extends React.Component {
@@ -166,6 +194,7 @@ class SearchTabs extends React.Component {
 
     this.labels = this.labels.bind(this);
     this.clickLabel = this.clickLabel.bind(this);
+
 
     this.state = {
       actives: Immutable.fromJS({
@@ -198,9 +227,16 @@ class SearchTabs extends React.Component {
       render: () => (
         <Tab.Pane key={search.id}>
           <Container>
-            <h3>Поиск</h3>
+            <h3>Search</h3>
+
             <QueryBuilder searchId={search.id} data={fromJS(search.query)} />
-            <Info searchId={search.id} query={search.query} />
+            <Info
+              searchId={search.id}
+              query={search.query}
+              category={search.category}
+              adopted={search.adopted}
+              etymology={search.etymology}
+            />
           </Container>
         </Tab.Pane>
       ),
