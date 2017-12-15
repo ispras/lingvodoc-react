@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import { gql, graphql } from 'react-apollo';
 import Immutable, { fromJS } from 'immutable';
-import { Checkbox, Segment, Radio, Container, Grid, Dimmer, Loader, Tab, Button, Divider } from 'semantic-ui-react';
+import { Container, Dimmer, Loader, Tab, Button, Divider, Menu } from 'semantic-ui-react';
 import { isEqual } from 'lodash';
 import Labels from 'components/Search/Labels';
 import ResultsMap from 'components/Search/ResultsMap';
@@ -16,9 +16,7 @@ import BlobsModal from 'components/Search/blobsModal';
 import { buildLanguageTree, buildSearchResultsTree } from 'pages/Search/treeBuilder';
 import { compositeIdToString } from 'utils/compositeId';
 
-import { newSearch, storeSearchResult } from 'ducks/search';
-
-const adder = i => v => v.add(`search_${i}`);
+import { newSearch, deleteSearch, storeSearchResult } from 'ducks/search';
 
 const mdColors = new Immutable.List([
   '#E53935',
@@ -196,6 +194,7 @@ class SearchTabs extends React.Component {
 
     this.labels = this.labels.bind(this);
     this.clickLabel = this.clickLabel.bind(this);
+    this.dictResults = this.dictResults.bind(this);
 
 
     this.state = {
@@ -221,11 +220,42 @@ class SearchTabs extends React.Component {
     });
   }
 
+  dictResults() {
+    return new Immutable.Map().withMutations((map) => {
+      this.props.searches.forEach((search) => {
+        if (search.results.dictionaries) {
+          const filteredDicts = search.results.dictionaries.filter(d => d.additional_metadata.location);
+
+          filteredDicts.forEach(dict =>
+            map.update(Immutable.fromJS(dict), new Immutable.Set(), v => v.add(search.id)));
+        }
+      });
+    });
+  }
+
   render() {
     const { searches, actions } = this.props;
 
+    function onSearchClose(id) {
+      return (event) => {
+        event.stopPropagation();
+        actions.deleteSearch(id);
+      };
+    }
+
     const searchPanes = searches.map(search => ({
-      menuItem: { key: `${search.id}`, content: `Search ${search.id}` },
+      menuItem: (
+        <Menu.Item key={search.id}>
+          Search {search.id}
+          <Button
+            compact
+            basic
+            icon="delete"
+            style={{ marginLeft: '1em' }}
+            onClick={onSearchClose(search.id)}
+          />
+        </Menu.Item>
+      ),
       render: () => (
         <Tab.Pane key={search.id}>
           <Container>
@@ -253,14 +283,6 @@ class SearchTabs extends React.Component {
       },
     ];
 
-    const dictionariesWithLocation = searches.map(result =>
-      (result.results.dictionaries ? result.results.dictionaries.filter(d => d.additional_metadata.location) : []));
-
-    const dictResults = dictionariesWithLocation.reduce(
-      (ac, vals, i) => vals.reduce((iac, val) => iac.update(Immutable.fromJS(val), new Immutable.Set(), adder(i)), ac),
-      new Immutable.Map()
-    );
-
     return (
       <Container>
         <Tab panes={panes} />
@@ -272,9 +294,8 @@ class SearchTabs extends React.Component {
           onChange={e => this.setState({ intersec: e.target.value })}
         />
         <ResultsMap
-          data={dictResults}
-          colors={this.state.mapSearches.map(v => v.get('color'))}
-          actives={this.state.mapSearches}
+          data={this.dictResults()}
+          meta={this.state.mapSearches}
           intersect={this.state.intersec}
         />
         <BlobsModal />
@@ -287,12 +308,13 @@ SearchTabs.propTypes = {
   searches: PropTypes.array.isRequired,
   actions: PropTypes.shape({
     newSearch: PropTypes.func.isRequired,
+    deleteSearch: PropTypes.func.isRequired,
   }).isRequired,
 };
 
 export default connect(
   state => state.search,
   dispatch => ({
-    actions: bindActionCreators({ newSearch }, dispatch),
+    actions: bindActionCreators({ newSearch, deleteSearch }, dispatch),
   })
 )(SearchTabs);

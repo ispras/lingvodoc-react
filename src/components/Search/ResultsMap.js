@@ -44,26 +44,25 @@ function pointIcon({ colors }) {
   };
 }
 
-function extractPoints({
-  data, colors, actives, intersect,
-}) {
-  const labelSet = actives
-    .filter(isActive => isActive)
+function extractPoints({ data, meta, intersect }) {
+  const labels = meta
+    .filter(v => v.get('isActive'))
     .keySeq()
     .toSet();
+
   return data
-    .map(values => values.intersect(labelSet))
-    .filter(values => values.size > intersect)
-    .map((values, dictionary) => {
+    .map(searches => searches.intersect(labels))
+    .filter(searches => searches.size > intersect)
+    .map((searches, dictionary) => {
       const location = dictionary.getIn(['additional_metadata', 'location']);
 
       return {
         coords: [location.get('lat'), location.get('lng')],
-        colors: values
-          .map(v => colors.get(v))
+        colors: searches
+          .map(id => meta.getIn([id, 'color']))
           .sort()
           .toJS(),
-        values: values.toJS(),
+        values: searches.toJS(),
         dictionary,
       };
     })
