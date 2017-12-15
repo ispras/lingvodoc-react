@@ -6,10 +6,37 @@ import { gql, graphql } from 'react-apollo';
 import { compose, pure, onlyUpdateForKeys } from 'recompose';
 import { List, fromJS } from 'immutable';
 import styled from 'styled-components';
-import { Segment, Button, Divider, Select, Input } from 'semantic-ui-react';
+import { Checkbox, Grid, Radio, Dropdown, Segment, Button, Divider, Select, Input } from 'semantic-ui-react';
 import { setQuery } from 'ducks/search';
 
 import { compositeIdToString } from '../../utils/compositeId';
+
+const mode2bool = (value) => {
+  switch (value) {
+    case 'ignore':
+      return null;
+    case 'include':
+      return true;
+    case 'exclude':
+      return false;
+    default:
+      return null;
+  }
+};
+
+const bool2category = (dicts, corpora) => {
+  if (dicts && corpora) {
+    return null;
+  }
+  if (dicts) {
+    return 0;
+  }
+  if (corpora) {
+    return 1;
+  }
+
+  return null;
+};
 
 const Wrapper = styled.div`margin-bottom: 1em;`;
 
@@ -96,7 +123,12 @@ function Query({
 
   return (
     <QueryInput action type="text" placeholder="Search String" value={str} onChange={onFieldChange('search_string')}>
-      <Select placeholder="Field" options={fieldOptions} value={compositeIdToString(fieldId.toJS())} onChange={onChange} />
+      <Select
+        placeholder="Field"
+        options={fieldOptions}
+        value={compositeIdToString(fieldId.toJS())}
+        onChange={onChange}
+      />
       <input />
       <Select
         compact
@@ -138,11 +170,21 @@ class QueryBuilder extends React.Component {
     this.onDeleteAndBlock = this.onDeleteAndBlock.bind(this);
     this.onDeleteOrBlock = this.onDeleteOrBlock.bind(this);
     this.onFieldChange = this.onFieldChange.bind(this);
+    this.changeSource = this.changeSource.bind(this);
+    this.changeMode = this.changeMode.bind(this);
 
     this.newBlock = fromJS(newBlock);
 
     this.state = {
       data: fromJS(props.data),
+      source: {
+        dictionaries: true,
+        corpora: true,
+      },
+      mode: {
+        adopted: 'ignore',
+        etymology: 'ignore',
+      },
     };
   }
 
@@ -179,35 +221,132 @@ class QueryBuilder extends React.Component {
     };
   }
 
+  changeSource(searchSourceType) {
+    const s = this.state.source;
+    s[searchSourceType] = !s[searchSourceType];
+    this.setState(s);
+  }
+
+  changeMode(modeType, value) {
+    const m = this.state.mode;
+    m[modeType] = value;
+    this.setState(m);
+  }
+
   render() {
     const { searchId, actions } = this.props;
     const blocks = this.state.data;
+
+    const adopted = mode2bool(this.state.mode.adopted);
+    const etymology = mode2bool(this.state.mode.etymology);
+    const category = bool2category(this.state.source.dictionaries, this.state.source.corpora);
+
     return (
-      <Wrapper>
-        {blocks.flatMap((subblocks, id) =>
-          List.of(
-            <OrBlock
-              key={`s_${id}`}
-              data={subblocks}
-              onFieldChange={this.onFieldChange(id)}
-              onAddBlock={this.onAddOrBlock(id)}
-              onDeleteBlock={this.onDeleteOrBlock(id)}
-              onDelete={this.onDeleteAndBlock(id)}
-            />,
-            <Divider key={`d_${id}`} horizontal>
-              And
-            </Divider>
-          ))}
-        <Button primary basic fluid onClick={this.onAddAndBlock}>
-          Add Another AND Block
-        </Button>
+      <div>
+        <Segment.Group>
+          <Segment>Search in</Segment>
+          <Segment.Group>
+            <Segment>
+              <Grid columns="equal">
+                <Grid.Column>
+                  <Checkbox
+                    label="Dictionaries"
+                    checked={this.state.source.dictionaries}
+                    onChange={() => this.changeSource('dictionaries')}
+                  />
+                </Grid.Column>
+                <Grid.Column>
+                  <Checkbox
+                    label="Corpora"
+                    checked={this.state.source.corpora}
+                    onChange={() => this.changeSource('corpora')}
+                  />
+                </Grid.Column>
+              </Grid>
+            </Segment>
+          </Segment.Group>
+        </Segment.Group>
 
-        <Divider />
+        <Segment.Group>
+          <Segment>Search options</Segment>
+          <Segment.Group>
+            <Segment>
+              <Grid columns="equal" divided>
+                <Grid.Column>
+                  <Radio
+                    label="Ignore adoptions"
+                    name="adoptedMode"
+                    value="ignore"
+                    checked={this.state.mode.adopted === 'ignore'}
+                    onChange={(e, { value }) => this.changeMode('adopted', value)}
+                  />
+                  <Radio
+                    label="Search for adoptions"
+                    name="adoptedMode"
+                    value="include"
+                    checked={this.state.mode.adopted === 'include'}
+                    onChange={(e, { value }) => this.changeMode('adopted', value)}
+                  />
+                  <Radio
+                    label="Exclude adoptions"
+                    name="adoptedMode"
+                    value="exclude"
+                    checked={this.state.mode.adopted === 'exclude'}
+                    onChange={(e, { value }) => this.changeMode('adopted', value)}
+                  />
+                </Grid.Column>
+                <Grid.Column>
+                  <Radio
+                    label="Ignore etymology"
+                    name="etymologyMode"
+                    value="ignore"
+                    checked={this.state.mode.etymology === 'ignore'}
+                    onChange={(e, { value }) => this.changeMode('etymology', value)}
+                  />
+                  <Radio
+                    label="Has etymology"
+                    name="etymologyMode"
+                    value="include"
+                    checked={this.state.mode.etymology === 'include'}
+                    onChange={(e, { value }) => this.changeMode('etymology', value)}
+                  />
+                  <Radio
+                    label="Doesn't have etymology"
+                    name="etymologyMode"
+                    value="exclude"
+                    checked={this.state.mode.etymology === 'exclude'}
+                    onChange={(e, { value }) => this.changeMode('etymology', value)}
+                  />
+                </Grid.Column>
+              </Grid>
+            </Segment>
+          </Segment.Group>
+        </Segment.Group>
+        <Wrapper>
+          {blocks.flatMap((subblocks, id) =>
+            List.of(
+              <OrBlock
+                key={`s_${id}`}
+                data={subblocks}
+                onFieldChange={this.onFieldChange(id)}
+                onAddBlock={this.onAddOrBlock(id)}
+                onDeleteBlock={this.onDeleteOrBlock(id)}
+                onDelete={this.onDeleteAndBlock(id)}
+              />,
+              <Divider key={`d_${id}`} horizontal>
+                And
+              </Divider>
+            ))}
+          <Button primary basic fluid onClick={this.onAddAndBlock}>
+            Add Another AND Block
+          </Button>
 
-        <Button primary basic onClick={() => actions.setQuery(searchId, this.state.data.toJS())}>
-          Search
-        </Button>
-      </Wrapper>
+          <Divider />
+          <Button primary basic onClick={() => actions.setQuery(searchId, this.state.data.toJS(), category, adopted, etymology)}>
+            Search
+          </Button>
+        </Wrapper>
+      </div>
     );
   }
 }
