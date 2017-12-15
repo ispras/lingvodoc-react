@@ -48,8 +48,8 @@ const COLORS = Immutable.fromJS({
 });
 
 const searchQuery = gql`
-  query Search($query: [[ObjectVal]]!, $category: Int, $adopted: Boolean, $etymology: Boolean) {
-    advanced_search(search_strings: $query, category: $category, adopted: $adopted, etymology: $etymology) {
+  query Search($query: [[ObjectVal]]!, $category: Int, $adopted: Boolean, $etymology: Boolean, $mode: String) {
+    advanced_search(search_strings: $query, category: $category, adopted: $adopted, etymology: $etymology, mode: $mode) {
       dictionaries {
         id
         parent_id
@@ -74,18 +74,21 @@ const searchQuery = gql`
       lexical_entries {
         id
         parent_id
+        entities(mode: $mode) {
+          id
+          parent_id
+          field_id
+          link_id
+          self_id
+          created_at
+          locale_id
+          content
+          published
+          accepted
+        }
       }
       entities {
         id
-        parent_id
-        field_id
-        link_id
-        self_id
-        created_at
-        locale_id
-        content
-        published
-        accepted
       }
     }
     language_tree {
@@ -127,20 +130,7 @@ class Wrapper extends React.Component {
 
     const { language_tree: allLanguages, advanced_search: advancedSearch } = data;
 
-    const lexicalEntriesWithEntities = advancedSearch.lexical_entries.map((entry) => {
-      const id = compositeIdToString(entry.id);
-      return {
-        ...entry,
-        entities: advancedSearch.entities.filter(entity => compositeIdToString(entity.parent_id) === id),
-      };
-    });
-
-    const r = {
-      ...advancedSearch,
-      lexical_entries: lexicalEntriesWithEntities,
-    };
-
-    const searchResults = Immutable.fromJS(r);
+    const searchResults = Immutable.fromJS(advancedSearch);
     const languages = Immutable.fromJS(allLanguages);
     const languagesTree = buildLanguageTree(languages);
     const searchResultsTree = buildSearchResultsTree(searchResults, languagesTree);
@@ -174,6 +164,7 @@ const Info = ({
         category={category}
         adopted={adopted}
         etymology={etymology}
+        mode="published"
       />
     );
   }
@@ -221,7 +212,6 @@ class SearchTabs extends React.Component {
 
   render() {
     const { searches, actions } = this.props;
-
     const searchPanes = searches.map(search => ({
       menuItem: { key: `${search.id}`, content: `Search ${search.id}` },
       render: () => (

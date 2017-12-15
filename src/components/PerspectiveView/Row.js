@@ -1,13 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { onlyUpdateForPropTypes } from 'recompose';
-import { Table } from 'semantic-ui-react';
+import { Table, Button } from 'semantic-ui-react';
 import { sortBy } from 'lodash';
 import { compositeIdToString } from 'utils/compositeId';
 
 import Cell from './Cell';
 
-const Row = ({ perspectiveId, entry, columns, mode, entitiesMode }) => (
+const Row = ({
+  perspectiveId, entry, columns, mode, entitiesMode, entryAction,
+}) => (
   <Table.Row>
     {sortBy(columns.filter(column => column.self_id == null), column => column.position).map(column => (
       <Cell
@@ -20,6 +22,11 @@ const Row = ({ perspectiveId, entry, columns, mode, entitiesMode }) => (
         entitiesMode={entitiesMode}
       />
     ))}
+    {entryAction && (
+      <Table.Cell>
+        <Button basic content={entryAction.title} onClick={() => entryAction.action(entry)} />
+      </Table.Cell>
+    )}
   </Table.Row>
 );
 
@@ -29,6 +36,11 @@ Row.propTypes = {
   columns: PropTypes.array.isRequired,
   mode: PropTypes.string.isRequired,
   entitiesMode: PropTypes.string.isRequired,
+  entryAction: PropTypes.object,
+};
+
+Row.defaultProps = {
+  entryAction: null,
 };
 
 export default onlyUpdateForPropTypes(Row);

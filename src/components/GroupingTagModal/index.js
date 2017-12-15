@@ -33,7 +33,7 @@ class Tree extends React.Component {
   }
 
   generateNodeProps({ node }) {
-    const { lexicalEntryControl } = this.props;
+    const { connect } = this.props;
     switch (node.type) {
       case 'perspective':
         return {
@@ -41,7 +41,6 @@ class Tree extends React.Component {
             <div>
               <Header size="large">
                 {node.translation}
-                {lexicalEntryControl && lexicalEntryControl}
               </Header>
 
               <LexicalEntryView
@@ -50,6 +49,7 @@ class Tree extends React.Component {
                 entries={node.lexicalEntries}
                 mode="view"
                 entitiesMode="all"
+                entryAction={{ title: 'Connect', action: (entry) => connect(entry) }}
               />
             </div>
           ),
@@ -149,7 +149,7 @@ class SearchLexicalEntries extends React.Component {
       fieldId, allLanguages, allDictionaries, allPerspectives,
     } = this.props;
 
-    const { data: { lexicalentries: { lexical_entries: lexicalEntries, entities } } } = await this.props.client.query({
+    const { data: { basic_search: { lexical_entries: lexicalEntries, entities } } } = await this.props.client.query({
       query: searchQuery,
       variables: { searchString, fieldId },
     });
@@ -172,6 +172,7 @@ class SearchLexicalEntries extends React.Component {
   }
 
   render() {
+    const { connect } = this.props;
     return (
       <div style={{ paddingTop: '20px' }}>
         <Input
@@ -180,7 +181,7 @@ class SearchLexicalEntries extends React.Component {
           onChange={(e, data) => this.setState({ searchString: data.value })}
         />
         {this.state.resultsTree && (
-          <Tree resultsTree={this.state.resultsTree} lexicalEntryControl={<Button basic content="connect" />} />
+          <Tree resultsTree={this.state.resultsTree} connect={connect} />
         )}
       </div>
     );
@@ -282,19 +283,22 @@ class GroupingTagModal extends React.Component {
           />
         ),
       },
-      {
+    ];
+
+    if (controlsMode === 'edit') {
+      panes.push({
         menuItem: 'Add connection',
         render: () => (
           <SearchLexicalEntriesW
             fieldId={fieldId}
-            connect={this.props.connect}
+            connect={this.joinGroup}
             allLanguages={allLanguages}
             allDictionaries={allDictionaries}
             allPerspectives={allPerspectives}
           />
         ),
-      },
-    ];
+      });
+    }
 
     return (
       <div>

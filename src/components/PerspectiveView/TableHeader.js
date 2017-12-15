@@ -5,26 +5,26 @@ import { Table } from 'semantic-ui-react';
 import { sortBy } from 'lodash';
 import { compositeIdToString } from 'utils/compositeId';
 
-
 import Column from './Column';
 
-const TableHeader = ({ columns }) =>
+const TableHeader = ({ columns, entryAction }) => (
   <Table.Header>
     <Table.Row>
-      {
-        sortBy(columns.filter(column => column.self_id == null), column => column.position).map(column =>
-          <Column
-            key={compositeIdToString(column.column_id)}
-            field={column}
-            fields={columns}
-          />
-        )
-      }
+      {sortBy(columns.filter(column => column.self_id == null), column => column.position).map(column => (
+        <Column key={compositeIdToString(column.column_id)} field={column} fields={columns} />
+      ))}
+      {entryAction && <Table.HeaderCell />}
     </Table.Row>
-  </Table.Header>;
+  </Table.Header>
+);
 
 TableHeader.propTypes = {
   columns: PropTypes.array.isRequired,
+  entryAction: PropTypes.object,
+};
+
+TableHeader.defaultTypes = {
+  entryAction: null,
 };
 
 export default onlyUpdateForPropTypes(TableHeader);
