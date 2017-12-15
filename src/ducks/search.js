@@ -39,7 +39,7 @@ const newBlock = {
 
 const emptyQuery = [[newBlock]];
 
-let counter = 0;
+let counter = 1;
 
 function buildNewQuery() {
   counter += 1;
@@ -53,7 +53,17 @@ function buildNewQuery() {
   };
 }
 
-const searches = (state = [buildNewQuery()], action) => {
+const initialState = {
+  id: 1,
+  query: emptyQuery,
+  categoty: null,
+  adopted: null,
+  etymology: null,
+  results: [],
+};
+
+
+const searches = (state = [initialState], action) => {
   switch (action.type) {
     case NEW_SEARCH:
       return [...state, buildNewQuery()];

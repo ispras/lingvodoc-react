@@ -248,7 +248,7 @@ class SearchTabs extends React.Component {
         </Menu.Item>
       ),
       render: () => (
-        <Tab.Pane key={search.id}>
+        <Tab.Pane attached={false} key={search.id}>
           <Container>
             <h3>Search</h3>
 
@@ -276,7 +276,7 @@ class SearchTabs extends React.Component {
 
     return (
       <Container>
-        <Tab panes={panes} />
+        <Tab menu={{ pointing: true }} panes={panes} />
         <Divider section />
         <Labels data={this.labels()} onClick={this.clickLabel} />
         <IntersectionControl
