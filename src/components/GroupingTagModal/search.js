@@ -53,7 +53,7 @@ class SearchLexicalEntries extends React.Component {
   }
 
   render() {
-    const { connect } = this.props;
+    const { joinGroup } = this.props;
     return (
       <div style={{ paddingTop: '20px' }}>
         <Input
@@ -62,7 +62,7 @@ class SearchLexicalEntries extends React.Component {
           value={this.state.searchString}
           onChange={(e, data) => this.setState({ searchString: data.value })}
         />
-        {this.state.resultsTree && <Tree resultsTree={this.state.resultsTree} connect={connect} />}
+        {this.state.resultsTree && <Tree resultsTree={this.state.resultsTree} connect={joinGroup} />}
       </div>
     );
   }

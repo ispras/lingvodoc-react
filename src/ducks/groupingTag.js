@@ -4,13 +4,13 @@ import { combineReducers } from 'redux';
 export const OPEN_MODAL = '@groupingTag/OPEN_MODAL';
 export const CLOSE_MODAL = '@groupingTag/CLOSE_MODAL';
 
-export const openModal = (lexicalEntry, fieldId, mode = 'all', controlsMode = 'view') => ({
+export const openModal = (lexicalEntry, fieldId, mode = 'view', entitiesMode = 'all') => ({
   type: OPEN_MODAL,
   payload: {
     lexicalEntry,
     fieldId,
     mode,
-    controlsMode,
+    entitiesMode,
   },
 });
 
@@ -49,10 +49,10 @@ const fieldId = (state = null, action) => {
   }
 };
 
-const mode = (state = 'all', action) => {
+const entitiesMode = (state = 'all', action) => {
   switch (action.type) {
     case OPEN_MODAL:
-      return action.payload.mode;
+      return action.payload.entitiesMode;
     case CLOSE_MODAL:
       return 'all';
     default:
@@ -60,10 +60,10 @@ const mode = (state = 'all', action) => {
   }
 };
 
-const controlsMode = (state = 'view', action) => {
+const mode = (state = 'view', action) => {
   switch (action.type) {
     case OPEN_MODAL:
-      return action.payload.controlsMode;
+      return action.payload.mode;
     case CLOSE_MODAL:
       return 'view';
     default:
@@ -76,5 +76,5 @@ export default combineReducers({
   lexicalEntry,
   fieldId,
   mode,
-  controlsMode,
+  entitiesMode,
 });

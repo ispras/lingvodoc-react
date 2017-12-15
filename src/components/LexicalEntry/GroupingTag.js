@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { compose, pure, onlyUpdateForKeys } from 'recompose';
+import { compose } from 'recompose';
 import { Button } from 'semantic-ui-react';
 import { openModal } from 'ducks/groupingTag';
 
@@ -19,7 +19,7 @@ const GroupingTag = (props) => {
         content="Grouping Tag"
         icon="code"
         labelPosition="left"
-        onClick={() => actions.openModal(entry, column.id, entitiesMode, mode)}
+        onClick={() => actions.openModal(entry, column.id, mode, entitiesMode)}
       />
     </Component>
   );
