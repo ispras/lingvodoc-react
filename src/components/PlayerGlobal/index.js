@@ -24,7 +24,7 @@ const Player = (props) => {
   </Container>;
 };
 
-Player.propTypes = {
+Player['propTypes'] = {
   visible: PropTypes.bool.isRequired,
 };
 

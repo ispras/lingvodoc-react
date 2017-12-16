@@ -31,7 +31,7 @@ const Column = ({ field, fields }) => {
   );
 };
 
-Column.propTypes = {
+Column['propTypes'] = {
   field: PropTypes.shape({
     translation: PropTypes.string.isRequired,
   }).isRequired,

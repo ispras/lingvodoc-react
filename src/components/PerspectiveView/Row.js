@@ -23,7 +23,7 @@ const Row = ({ perspectiveId, entry, columns, mode, entitiesMode }) => (
   </Table.Row>
 );
 
-Row.propTypes = {
+Row['propTypes'] = {
   perspectiveId: PropTypes.array.isRequired,
   entry: PropTypes.object.isRequired,
   columns: PropTypes.array.isRequired,
