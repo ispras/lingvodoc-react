@@ -21,7 +21,7 @@ const TableBody = ({ perspectiveId, entitiesMode, entries, columns, mode }) =>
     }
   </Table.Body>;
 
-TableBody.propTypes = {
+TableBody['propTypes'] = {
   perspectiveId: PropTypes.array.isRequired,
   entries: PropTypes.array.isRequired,
   columns: PropTypes.array.isRequired,

@@ -56,7 +56,7 @@ const Pagination = ({ current, total, to }) => {
   </Pager>;
 };
 
-Pagination.propTypes = {
+Pagination['propTypes'] = {
   current: PropTypes.number.isRequired,
   total: PropTypes.number.isRequired,
   to: PropTypes.string.isRequired,

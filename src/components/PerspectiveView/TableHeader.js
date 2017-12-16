@@ -23,7 +23,7 @@ const TableHeader = ({ columns }) =>
     </Table.Row>
   </Table.Header>;
 
-TableHeader.propTypes = {
+TableHeader['propTypes'] = {
   columns: PropTypes.array.isRequired,
 };
 
