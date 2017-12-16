@@ -23,8 +23,8 @@ export default function getParams(location) {
   if (!ids) return null;
 
   const result = {
-    id: [ids.cid, ids.oid],
-    parent_id: [ids.pcid, ids.poid],
+    id: [ids.cid, ids.oid].map(k => parseInt(k, 10)),
+    parent_id: [ids.pcid, ids.poid].map(k => parseInt(k, 10)),
     mode: getMode(location.pathname),
     page: getPage(location),
     filter: getFilter(location),
