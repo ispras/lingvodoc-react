@@ -54,6 +54,7 @@ class SearchLexicalEntries extends React.Component {
 
   render() {
     const { joinGroup } = this.props;
+    const actions = [{ title: 'Connect', action: entry => joinGroup(entry) }];
     return (
       <div style={{ paddingTop: '20px' }}>
         <Input
@@ -62,10 +63,16 @@ class SearchLexicalEntries extends React.Component {
           value={this.state.searchString}
           onChange={(e, data) => this.setState({ searchString: data.value })}
         />
-        {this.state.resultsTree && <Tree resultsTree={this.state.resultsTree} connect={joinGroup} />}
+        {this.state.resultsTree && <Tree resultsTree={this.state.resultsTree} actions={actions} />}
       </div>
     );
   }
 }
+
+SearchLexicalEntries.propTypes = {
+  lexicalEntry: PropTypes.object.isRequired,
+  joinGroup: PropTypes.func.isRequired,
+  client: PropTypes.object.isRequired,
+};
 
 export default compose(withApollo, pure)(SearchLexicalEntries);

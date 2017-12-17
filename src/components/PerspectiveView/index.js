@@ -27,6 +27,7 @@ export const queryPerspective = gql`
       }
       lexical_entries {
         id
+        parent_id
         created_at
       }
       entities(mode: $entitiesMode) {
@@ -146,7 +147,7 @@ export const queryLexicalEntry = gql`
 `;
 
 const LexicalEntryViewBase = ({
-  perspectiveId, entries, className, mode, entitiesMode, data, entryAction,
+  perspectiveId, entries, className, mode, entitiesMode, data, actions,
 }) => {
   const { loading } = data;
 
@@ -181,14 +182,14 @@ const LexicalEntryViewBase = ({
   return (
     <div>
       <Table celled padded className={className}>
-        <TableHeader columns={fields} entryAction={entryAction} />
+        <TableHeader columns={fields} actions={actions} />
         <TableBody
           perspectiveId={perspectiveId}
           entitiesMode={entitiesMode}
           entries={pagedEntries}
           columns={fields}
           mode={mode}
-          entryAction={entryAction}
+          actions={actions}
         />
       </Table>
     </div>
@@ -206,11 +207,11 @@ LexicalEntryViewBase.propTypes = {
     all_fields: PropTypes.array,
     perspective: PropTypes.object,
   }).isRequired,
-  entryAction: PropTypes.object,
+  actions: PropTypes.array,
 };
 
 LexicalEntryViewBase.defaultProps = {
-  entryAction: null,
+  actions: [],
 };
 
 export const LexicalEntryView = graphql(queryLexicalEntry, {

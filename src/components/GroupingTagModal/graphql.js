@@ -6,7 +6,7 @@ export const connectedQuery = gql`
       lexical_entries {
         id
         parent_id
-        entities {
+        entities(mode: $mode) {
           id
           parent_id
           field_id
@@ -17,9 +17,6 @@ export const connectedQuery = gql`
           content
           published
           accepted
-          additional_metadata {
-            link_perspective_id
-          }
         }
       }
     }
@@ -37,6 +34,22 @@ export const connectMutation = gql`
 export const disconnectMutation = gql`
   mutation disconnectMutation($lexicalEntryId: LingvodocID!, $fieldId: LingvodocID!) {
     leave_lexical_entry_group(id: $lexicalEntryId, field_id: $fieldId) {
+      triumph
+    }
+  }
+`;
+
+export const publishMutation = gql`
+  mutation publishEntity($id: LingvodocID!, $published: Boolean!) {
+    update_entity(id: $id, published: $published) {
+      triumph
+    }
+  }
+`;
+
+export const acceptMutation = gql`
+  mutation acceptEntity($id: LingvodocID!, $accepted: Boolean!) {
+    update_entity(id: $id, accepted: $accepted) {
       triumph
     }
   }

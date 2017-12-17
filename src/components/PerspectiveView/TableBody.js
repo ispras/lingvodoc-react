@@ -5,7 +5,7 @@ import { Table } from 'semantic-ui-react';
 
 import Row from './Row';
 
-const TableBody = ({ perspectiveId, entitiesMode, entries, columns, mode, entryAction }) =>
+const TableBody = ({ perspectiveId, entitiesMode, entries, columns, mode, actions }) =>
   <Table.Body>
     {
       entries.map(entry =>
@@ -16,7 +16,7 @@ const TableBody = ({ perspectiveId, entitiesMode, entries, columns, mode, entryA
           columns={columns}
           mode={mode}
           entitiesMode={entitiesMode}
-          entryAction={entryAction}
+          actions={actions}
         />
       )
     }
@@ -32,7 +32,7 @@ TableBody['propTypes'] = {
 };
 
 TableBody.defaultProps = {
-  entryAction: null,
-}
+  actions: [],
+};
 
 export default onlyUpdateForPropTypes(TableBody);

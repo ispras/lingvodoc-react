@@ -2,13 +2,14 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { compose, pure } from 'recompose';
 import { graphql } from 'react-apollo';
-import { Segment } from 'semantic-ui-react';
+import { Segment, Button } from 'semantic-ui-react';
 import { connectedQuery } from './graphql';
 import Tree from './Tree';
 import buildPartialLanguageTree from './partialTree';
 
 const ConnectedLexicalEntries = (props) => {
   const {
+    leaveGroup,
     data: { loading, error, connected_words: connectedWords },
     allLanguages,
     allDictionaries,
@@ -22,7 +23,7 @@ const ConnectedLexicalEntries = (props) => {
   const { lexical_entries: lexicalEntries } = connectedWords;
 
   if (lexicalEntries.length === 0) {
-    return <Segment padded="very" textAlign="center">No entries</Segment>;
+    return <span>No entries</span>;
   }
 
   const resultsTree = buildPartialLanguageTree({
@@ -43,6 +44,7 @@ ConnectedLexicalEntries.propTypes = {
   allLanguages: PropTypes.array.isRequired,
   allDictionaries: PropTypes.array.isRequired,
   allPerspectives: PropTypes.array.isRequired,
+  leaveGroup: PropTypes.func.isRequired,
 };
 
 export default compose(graphql(connectedQuery), pure)(ConnectedLexicalEntries);

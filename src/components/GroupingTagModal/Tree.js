@@ -21,7 +21,7 @@ class Tree extends React.Component {
   }
 
   generateNodeProps({ node }) {
-    const { connect } = this.props;
+    const { actions } = this.props;
     switch (node.type) {
       case 'perspective':
         return {
@@ -35,7 +35,7 @@ class Tree extends React.Component {
                 entries={node.lexicalEntries}
                 mode="view"
                 entitiesMode="all"
-                entryAction={{ title: 'Connect', action: entry => connect(entry) }}
+                actions={actions}
               />
             </div>
           ),
@@ -76,6 +76,11 @@ class Tree extends React.Component {
 
 Tree.propTypes = {
   resultsTree: PropTypes.object.isRequired,
+  actions: PropTypes.array,
+};
+
+Tree.defaultProps = {
+  actions: [],
 };
 
 export default Tree;
