@@ -18,7 +18,7 @@ const TableHeader = ({ columns, entryAction }) => (
   </Table.Header>
 );
 
-TableHeader.propTypes = {
+TableHeader['propTypes'] = {
   columns: PropTypes.array.isRequired,
   entryAction: PropTypes.object,
 };

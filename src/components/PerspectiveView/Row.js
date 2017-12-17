@@ -30,7 +30,7 @@ const Row = ({
   </Table.Row>
 );
 
-Row.propTypes = {
+Row['propTypes'] = {
   perspectiveId: PropTypes.array.isRequired,
   entry: PropTypes.object.isRequired,
   columns: PropTypes.array.isRequired,
