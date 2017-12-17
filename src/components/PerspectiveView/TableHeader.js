@@ -1,30 +1,30 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { onlyUpdateForPropTypes } from 'recompose';
+import { onlyUpdateForKeys } from 'recompose';
 import { Table } from 'semantic-ui-react';
-import { sortBy } from 'lodash';
+import { sortBy, isEmpty } from 'lodash';
 import { compositeIdToString } from 'utils/compositeId';
-
 
 import Column from './Column';
 
-const TableHeader = ({ columns }) =>
+const TableHeader = ({ columns, actions }) => (
   <Table.Header>
     <Table.Row>
-      {
-        sortBy(columns.filter(column => column.self_id == null), column => column.position).map(column =>
-          <Column
-            key={compositeIdToString(column.column_id)}
-            field={column}
-            fields={columns}
-          />
-        )
-      }
+      {sortBy(columns.filter(column => column.self_id == null), column => column.position).map(column => (
+        <Column key={compositeIdToString(column.column_id)} field={column} fields={columns} />
+      ))}
+      {!isEmpty(actions) && <Table.HeaderCell />}
     </Table.Row>
-  </Table.Header>;
+  </Table.Header>
+);
 
-TableHeader['propTypes'] = {
+TableHeader.propTypes = {
   columns: PropTypes.array.isRequired,
+  actions: PropTypes.array,
 };
 
-export default onlyUpdateForPropTypes(TableHeader);
+TableHeader.defaultProps = {
+  actions: [],
+};
+
+export default onlyUpdateForKeys(['columns'])(TableHeader);

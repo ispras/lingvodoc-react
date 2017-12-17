@@ -31,6 +31,7 @@ function buildPartialLanguageTree({
   } while (prevLanguages.length !== languages.length);
   const treeData = Immutable.fromJS({ dictionaries, perspectives, lexical_entries: lexicalEntries });
   const languagesTree = buildLanguageTree(Immutable.fromJS(languages));
+
   return buildSearchResultsTree(treeData, languagesTree);
 }
 

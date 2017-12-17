@@ -25,7 +25,7 @@ export default combineReducers({
 });
 
 // Action Creators
-export function add({ text, ttl = 2000, dismissable = false, color = 'blue' }) {
+export function add({ text, ttl = 8000, dismissable = false, color = 'blue' }) {
   return {
     type: ADD,
     payload: {

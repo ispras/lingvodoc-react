@@ -6,7 +6,7 @@ export const connectedQuery = gql`
       lexical_entries {
         id
         parent_id
-        entities {
+        entities(mode: $mode) {
           id
           parent_id
           field_id
@@ -17,9 +17,6 @@ export const connectedQuery = gql`
           content
           published
           accepted
-          additional_metadata {
-            link_perspective_id
-          }
         }
       }
     }
@@ -42,9 +39,25 @@ export const disconnectMutation = gql`
   }
 `;
 
+export const publishMutation = gql`
+  mutation publishEntity($id: LingvodocID!, $published: Boolean!) {
+    update_entity(id: $id, published: $published) {
+      triumph
+    }
+  }
+`;
+
+export const acceptMutation = gql`
+  mutation acceptEntity($id: LingvodocID!, $accepted: Boolean!) {
+    update_entity(id: $id, accepted: $accepted) {
+      triumph
+    }
+  }
+`;
+
 export const searchQuery = gql`
-  query EntriesList($searchString: String!, $fieldId: LingvodocID!) {
-    lexicalentries(searchstring: $searchString, search_in_published: true, field_id: $fieldId, can_add_tags: true) {
+  query SearchEtmologyCandidates($searchString: String!, $fieldId: LingvodocID!) {
+    basic_search(searchstring: $searchString, search_in_published: true, field_id: $fieldId, can_add_tags: true) {
       lexical_entries {
         id
         parent_id

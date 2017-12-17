@@ -1,210 +1,250 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { compose, pure } from 'recompose';
-import { graphql, withApollo } from 'react-apollo';
-import { Confirm, Button, Modal, Header, Input, Tab } from 'semantic-ui-react';
+import { graphql } from 'react-apollo';
+import { Segment, Checkbox, Button, Modal, Tab } from 'semantic-ui-react';
 import { closeModal } from 'ducks/groupingTag';
 import { bindActionCreators } from 'redux';
+import { isEqual } from 'lodash';
 import { connect } from 'react-redux';
-import SortableTree, { map, getVisibleNodeInfoAtIndex } from 'react-sortable-tree';
-import { compositeIdToString } from 'utils/compositeId';
-import { LexicalEntryView } from 'components/PerspectiveView';
 import styled from 'styled-components';
+import { queryPerspective } from 'components/PerspectiveView';
+import {
+  connectedQuery,
+  connectMutation,
+  disconnectMutation,
+  languageTreeSourceQuery,
+  publishMutation,
+  acceptMutation,
+} from './graphql';
+import ConnectedEntries from './ConnectedEntries';
+import Search from './search';
 
-import { connectedQuery, connectMutation, disconnectMutation, searchQuery, languageTreeSourceQuery } from './graphql';
-import buildPartialLanguageTree from './partialTree';
+const ModalContentWrapper = styled('div')`
+  min-height: 60vh;
+`;
 
-const ModalContentWrapper = styled('div')`min-height: 60vh;`;
-
-class Tree extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      treeData: map({
-        treeData: props.resultsTree.toJS(),
-        callback: ({ node }) => ({ ...node, expanded: !!props.expanded }),
-        getNodeKey: ({ treeIndex }) => treeIndex,
-        ignoreCollapsed: false,
-      }),
-    };
-
-    this.generateNodeProps = this.generateNodeProps.bind(this);
-  }
-
-  generateNodeProps({ node }) {
-    const { lexicalEntryControl } = this.props;
-    switch (node.type) {
-      case 'perspective':
-        return {
-          subtitle: (
-            <div>
-              <Header size="large">
-                {node.translation}
-                {lexicalEntryControl && lexicalEntryControl}
-              </Header>
-
-              <LexicalEntryView
-                className="perspective"
-                perspectiveId={node.id}
-                entries={node.lexicalEntries}
-                mode="view"
-                entitiesMode="all"
-              />
-            </div>
-          ),
-          // XXX: move style to CSS class
-          className: 'inlinePerspective',
-          style: { overflowY: 'scroll', height: '290px' },
-        };
-      default:
-        return {
-          title: node.translation || 'None',
-        };
-    }
-  }
-
-  render() {
-    const getHeight = ({ index }) => {
-      const { node } = getVisibleNodeInfoAtIndex({
-        treeData: this.state.treeData,
-        index,
-        getNodeKey: ({ treeIndex }) => treeIndex,
-      });
-      return node.type === 'perspective' ? 300 : 64;
-    };
-
-    return (
-      <div style={{ height: 600 }}>
-        <SortableTree
-          canDrag={false}
-          treeData={this.state.treeData}
-          rowHeight={getHeight}
-          generateNodeProps={this.generateNodeProps}
-          onChange={treeData => this.setState({ treeData })}
-        />
-      </div>
-    );
-  }
-}
-
-Tree.propTypes = {
-  resultsTree: PropTypes.object.isRequired,
-};
-
-const ConnectedLexicalEntries = (props) => {
+const EditGroupingTag = (props) => {
   const {
-    data: { loading, error, connected_words: connectedWords },
+    lexicalEntry,
+    fieldId,
+    entitiesMode,
     allLanguages,
     allDictionaries,
     allPerspectives,
+    joinGroup,
+    leaveGroup,
   } = props;
 
-  if (error || loading) {
-    return null;
-  }
-
-  const { lexical_entries: lexicalEntries } = connectedWords;
-
-  if (lexicalEntries.length === 0) {
-    return null;
-  }
-
-  const resultsTree = buildPartialLanguageTree({
-    lexicalEntries,
-    allLanguages,
-    allDictionaries,
-    allPerspectives,
-  });
-
-  return <Tree resultsTree={resultsTree} />;
+  const panes = [
+    {
+      menuItem: 'View',
+      render: () => (
+        <div>
+          <Segment textAlign="center">
+            <Button negative content="Disconnect" onClick={leaveGroup} />
+          </Segment>
+          <Segment padded="very" textAlign="center">
+            <ConnectedEntries
+              id={lexicalEntry.id}
+              fieldId={fieldId}
+              mode={entitiesMode}
+              allLanguages={allLanguages}
+              allDictionaries={allDictionaries}
+              allPerspectives={allPerspectives}
+            />
+          </Segment>
+        </div>
+      ),
+    },
+    {
+      menuItem: 'Add connection',
+      render: () => (
+        <Search
+          lexicalEntry={lexicalEntry}
+          fieldId={fieldId}
+          allLanguages={allLanguages}
+          allDictionaries={allDictionaries}
+          allPerspectives={allPerspectives}
+          joinGroup={joinGroup}
+        />
+      ),
+    },
+  ];
+  return <Tab panes={panes} />;
 };
 
-ConnectedLexicalEntries.propTypes = {
-  data: PropTypes.shape({
-    loading: PropTypes.bool.isRequired,
-    connected_words: PropTypes.object,
-  }).isRequired,
+EditGroupingTag.propTypes = {
+  lexicalEntry: PropTypes.object.isRequired,
+  fieldId: PropTypes.array.isRequired,
+  entitiesMode: PropTypes.string.isRequired,
+  allLanguages: PropTypes.array.isRequired,
+  allDictionaries: PropTypes.array.isRequired,
+  allPerspectives: PropTypes.array.isRequired,
+  joinGroup: PropTypes.func.isRequired,
+  leaveGroup: PropTypes.func.isRequired,
+};
+
+const ViewGroupingTag = (props) => {
+  const {
+    lexicalEntry, fieldId, entitiesMode, allLanguages, allDictionaries, allPerspectives,
+  } = props;
+
+  const panes = [
+    {
+      menuItem: 'View',
+      render: () => (
+        <div>
+          <Segment padded="very" textAlign="center">
+            <ConnectedEntries
+              id={lexicalEntry.id}
+              fieldId={fieldId}
+              mode={entitiesMode}
+              allLanguages={allLanguages}
+              allDictionaries={allDictionaries}
+              allPerspectives={allPerspectives}
+            />
+          </Segment>
+        </div>
+      ),
+    },
+  ];
+  return <Tab panes={panes} />;
+};
+
+ViewGroupingTag.propTypes = {
+  lexicalEntry: PropTypes.object.isRequired,
+  fieldId: PropTypes.array.isRequired,
+  entitiesMode: PropTypes.string.isRequired,
   allLanguages: PropTypes.array.isRequired,
   allDictionaries: PropTypes.array.isRequired,
   allPerspectives: PropTypes.array.isRequired,
 };
 
-const ConnectedLexicalEntriesWithData = graphql(connectedQuery)(ConnectedLexicalEntries);
+const PublishGroupingTag = (props) => {
+  const {
+    lexicalEntry, fieldId, entitiesMode, allLanguages, allDictionaries, allPerspectives, publish,
+  } = props;
 
-class SearchLexicalEntries extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      searchString: '',
-      resultsTree: null,
-    };
+  const entity = lexicalEntry.contains.find(e => isEqual(e.field_id, fieldId));
 
-    this.search = this.search.bind(this);
+  const panes = [
+    {
+      menuItem: 'Publish',
+      render: () => (
+        <div>
+          {entity && (
+            <Segment>
+              <Checkbox
+                toggle
+                defaultChecked={entity.published}
+                onChange={(e, { checked }) => publish(entity, checked)}
+              />
+              {entity.published && <span>The entity is currently published. Click to unpublish.</span>}
+              {!entity.published && <span>The entity is NOT currently published. Click to publish.</span>}
+            </Segment>
+          )}
+          <Segment padded="very" textAlign="center">
+            <ConnectedEntries
+              id={lexicalEntry.id}
+              fieldId={fieldId}
+              mode={entitiesMode}
+              allLanguages={allLanguages}
+              allDictionaries={allDictionaries}
+              allPerspectives={allPerspectives}
+            />
+          </Segment>
+        </div>
+      ),
+    },
+  ];
+  return <Tab panes={panes} />;
+};
+
+PublishGroupingTag.propTypes = {
+  lexicalEntry: PropTypes.object.isRequired,
+  fieldId: PropTypes.array.isRequired,
+  entitiesMode: PropTypes.string.isRequired,
+  allLanguages: PropTypes.array.isRequired,
+  allDictionaries: PropTypes.array.isRequired,
+  allPerspectives: PropTypes.array.isRequired,
+  publish: PropTypes.func.isRequired,
+};
+
+const ContributionsGroupingTag = (props) => {
+  const {
+    lexicalEntry, fieldId, entitiesMode, allLanguages, allDictionaries, allPerspectives, accept,
+  } = props;
+
+  const entity = lexicalEntry.contains.find(e => isEqual(e.field_id, fieldId));
+
+  const panes = [
+    {
+      menuItem: 'Contibutions',
+      render: () => (
+        <div>
+          {entity && (
+            <Segment>
+              <Button positive onClick={() => accept(entity, true)} content="Accept" />
+            </Segment>
+          )}
+          <Segment padded="very" textAlign="center">
+            <ConnectedEntries
+              id={lexicalEntry.id}
+              fieldId={fieldId}
+              mode={entitiesMode}
+              allLanguages={allLanguages}
+              allDictionaries={allDictionaries}
+              allPerspectives={allPerspectives}
+            />
+          </Segment>
+        </div>
+      ),
+    },
+  ];
+  return <Tab panes={panes} />;
+};
+
+ContributionsGroupingTag.propTypes = {
+  lexicalEntry: PropTypes.object.isRequired,
+  fieldId: PropTypes.array.isRequired,
+  entitiesMode: PropTypes.string.isRequired,
+  allLanguages: PropTypes.array.isRequired,
+  allDictionaries: PropTypes.array.isRequired,
+  allPerspectives: PropTypes.array.isRequired,
+  accept: PropTypes.func.isRequired,
+};
+
+const getComponent = (mode) => {
+  switch (mode) {
+    case 'edit':
+      return EditGroupingTag;
+    case 'view':
+      return ViewGroupingTag;
+    case 'publish':
+      return PublishGroupingTag;
+    case 'contributions':
+      return ContributionsGroupingTag;
+    default:
+      return <Segment negative>Mode {mode} not supported</Segment>;
   }
-
-  async search() {
-    const { searchString } = this.state;
-    const {
-      fieldId, allLanguages, allDictionaries, allPerspectives,
-    } = this.props;
-
-    const { data: { lexicalentries: { lexical_entries: lexicalEntries, entities } } } = await this.props.client.query({
-      query: searchQuery,
-      variables: { searchString, fieldId },
-    });
-
-    const lexicalEntriesWithEntities = lexicalEntries.map((entry) => {
-      const id = compositeIdToString(entry.id);
-      return {
-        ...entry,
-        entities: entities.filter(entity => compositeIdToString(entity.parent_id) === id),
-      };
-    });
-
-    const resultsTree = buildPartialLanguageTree({
-      lexicalEntries: lexicalEntriesWithEntities,
-      allLanguages,
-      allDictionaries,
-      allPerspectives,
-    });
-    this.setState({ resultsTree });
-  }
-
-  render() {
-    return (
-      <div style={{ paddingTop: '20px' }}>
-        <Input
-          action={{ icon: 'search', onClick: this.search }}
-          placeholder="Search..."
-          onChange={(e, data) => this.setState({ searchString: data.value })}
-        />
-        {this.state.resultsTree && (
-          <Tree resultsTree={this.state.resultsTree} lexicalEntryControl={<Button basic content="connect" />} />
-        )}
-      </div>
-    );
-  }
-}
-
-const SearchLexicalEntriesW = compose(withApollo, pure)(SearchLexicalEntries);
+};
 
 class GroupingTagModal extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      confirm: false,
-    };
+    this.state = {};
 
-    this.handleConfirm = this.handleConfirm.bind(this);
     this.joinGroup = this.joinGroup.bind(this);
     this.leaveGroup = this.leaveGroup.bind(this);
+    this.changePublished = this.changePublished.bind(this);
+    this.changeAccepted = this.changeAccepted.bind(this);
   }
 
   joinGroup(targetEntry) {
     // disconnect lexical entry from group
     const {
-      connect: mutate, lexicalEntry, fieldId, mode,
+      connect: mutate, lexicalEntry, fieldId, entitiesMode,
     } = this.props;
 
     mutate({
@@ -215,7 +255,7 @@ class GroupingTagModal extends React.Component {
           variables: {
             id: lexicalEntry.id,
             fieldId,
-            mode,
+            mode: entitiesMode,
           },
         },
       ],
@@ -242,14 +282,55 @@ class GroupingTagModal extends React.Component {
     });
   }
 
-  handleConfirm() {
-    this.setState({ confirm: false });
-    this.leaveGroup();
+  changePublished(entity, published) {
+    const { publish, lexicalEntry, entitiesMode } = this.props;
+
+    publish({
+      variables: { id: entity.id, published },
+      refetchQueries: [
+        {
+          // XXX: Expensive operation!
+          query: queryPerspective,
+          variables: {
+            id: lexicalEntry.parent_id,
+            entitiesMode,
+          },
+        },
+      ],
+    });
+  }
+
+  changeAccepted(entity, accepted) {
+    const {
+      accept, lexicalEntry, entitiesMode, fieldId, mode,
+    } = this.props;
+
+    accept({
+      variables: { id: entity.id, accepted },
+      refetchQueries: [
+        {
+          // XXX: Expensive operation!
+          query: queryPerspective,
+          variables: {
+            id: lexicalEntry.parent_id,
+            entitiesMode,
+          },
+        },
+        {
+          query: connectedQuery,
+          variables: {
+            id: lexicalEntry.id,
+            fieldId,
+            mode,
+          },
+        },
+      ],
+    });
   }
 
   render() {
     const {
-      data, visible, lexicalEntry, fieldId, mode, controlsMode,
+      data, visible, lexicalEntry, fieldId, entitiesMode, mode,
     } = this.props;
 
     if (!visible) {
@@ -268,33 +349,7 @@ class GroupingTagModal extends React.Component {
       return null;
     }
 
-    const panes = [
-      {
-        menuItem: 'View',
-        render: () => (
-          <ConnectedLexicalEntriesWithData
-            id={lexicalEntry.id}
-            fieldId={fieldId}
-            mode={mode}
-            allLanguages={allLanguages}
-            allDictionaries={allDictionaries}
-            allPerspectives={allPerspectives}
-          />
-        ),
-      },
-      {
-        menuItem: 'Add connection',
-        render: () => (
-          <SearchLexicalEntriesW
-            fieldId={fieldId}
-            connect={this.props.connect}
-            allLanguages={allLanguages}
-            allDictionaries={allDictionaries}
-            allPerspectives={allPerspectives}
-          />
-        ),
-      },
-    ];
+    const Component = getComponent(mode);
 
     return (
       <div>
@@ -302,34 +357,24 @@ class GroupingTagModal extends React.Component {
           <Modal.Header>Grouping tag</Modal.Header>
           <Modal.Content>
             <ModalContentWrapper>
-              <Tab panes={panes} />
+              <Component
+                lexicalEntry={lexicalEntry}
+                fieldId={fieldId}
+                entitiesMode={entitiesMode}
+                allLanguages={allLanguages}
+                allDictionaries={allDictionaries}
+                allPerspectives={allPerspectives}
+                joinGroup={this.joinGroup}
+                leaveGroup={this.leaveGroup}
+                publish={this.changePublished}
+                accept={this.changeAccepted}
+              />
             </ModalContentWrapper>
           </Modal.Content>
           <Modal.Actions>
-            {controlsMode === 'edit' && (
-              <Button negative onClick={() => this.setState({ confirm: true })}>
-                Disconnect
-              </Button>
-            )}
-            {controlsMode === 'publish' && (
-              <Button positive onClick={() => this.setState({ confirm: true })}>
-                Publish
-              </Button>
-            )}
-            {controlsMode === 'contributions' && (
-              <Button negative onClick={() => this.setState({ confirm: true })}>
-                Accept
-              </Button>
-            )}
             <Button icon="minus" content="Cancel" onClick={this.props.closeModal} />
           </Modal.Actions>
         </Modal>
-
-        <Confirm
-          open={this.state.confirm}
-          onCancel={() => this.setState({ confirm: false })}
-          onConfirm={this.handleConfirm}
-        />
       </div>
     );
   }
@@ -345,10 +390,12 @@ GroupingTagModal.propTypes = {
   lexicalEntry: PropTypes.object,
   fieldId: PropTypes.array,
   mode: PropTypes.string.isRequired,
-  controlsMode: PropTypes.string.isRequired,
+  entitiesMode: PropTypes.string.isRequired,
   closeModal: PropTypes.func.isRequired,
   connect: PropTypes.func.isRequired,
   disconnect: PropTypes.func.isRequired,
+  publish: PropTypes.func.isRequired,
+  accept: PropTypes.func.isRequired,
 };
 
 GroupingTagModal.defaultProps = {
@@ -356,11 +403,11 @@ GroupingTagModal.defaultProps = {
   fieldId: null,
 };
 
-const mapDispatchToProps = dispatch => bindActionCreators({ closeModal }, dispatch);
-
 export default compose(
-  connect(state => state.groupingTag, mapDispatchToProps),
+  connect(state => state.groupingTag, dispatch => bindActionCreators({ closeModal }, dispatch)),
   graphql(languageTreeSourceQuery),
   graphql(disconnectMutation, { name: 'disconnect' }),
-  graphql(connectMutation, { name: 'connect' })
+  graphql(connectMutation, { name: 'connect' }),
+  graphql(publishMutation, { name: 'publish' }),
+  graphql(acceptMutation, { name: 'accept' })
 )(GroupingTagModal);

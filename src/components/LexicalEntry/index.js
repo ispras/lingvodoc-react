@@ -63,12 +63,13 @@ class Entities extends React.Component {
     this.state = {
       edit: false,
     };
-    this.onCreateEntity = this.onCreateEntity.bind(this);
-    this.onPublishEntity = this.onPublishEntity.bind(this);
-    this.onAcceptEntity = this.onAcceptEntity.bind(this);
+    this.create = this.create.bind(this);
+    this.publish = this.publish.bind(this);
+    this.accept = this.accept.bind(this);
+    this.remove = this.remove.bind(this);
   }
 
-  onCreateEntity(content) {
+  create(content) {
     const {
       perspectiveId, entry, column, entitiesMode, createEntity,
     } = this.props;
@@ -89,7 +90,7 @@ class Entities extends React.Component {
     });
   }
 
-  onPublishEntity(entity, published) {
+  publish(entity, published) {
     const { perspectiveId, entitiesMode, publishEntity } = this.props;
 
     publishEntity({
@@ -106,7 +107,7 @@ class Entities extends React.Component {
     });
   }
 
-  onAcceptEntity(entity, accepted) {
+  accept(entity, accepted) {
     const { perspectiveId, entitiesMode, acceptEntity } = this.props;
 
     acceptEntity({
@@ -121,6 +122,10 @@ class Entities extends React.Component {
         },
       ],
     });
+  }
+
+  remove(entity) {
+
   }
 
   render() {
@@ -148,9 +153,9 @@ class Entities extends React.Component {
             mode={mode}
             entitiesMode={entitiesMode}
             parentEntity={parentEntity}
-            publish={this.onPublishEntity}
+            publish={this.publish}
             remove={this.remove}
-            accept={this.onAcceptEntity}
+            accept={this.accept}
           />
         ))}
         <li className="last">
@@ -161,7 +166,7 @@ class Entities extends React.Component {
           )}
 
           {this.state.edit && (
-            <Component.Edit onSave={this.onCreateEntity} onCancel={() => this.setState({ edit: false })} />
+            <Component.Edit onSave={this.create} onCancel={() => this.setState({ edit: false })} />
           )}
         </li>
       </ul>
