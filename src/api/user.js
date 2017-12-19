@@ -1,5 +1,6 @@
 import Cookie from 'js-cookie';
 import { httpGet, httpPost, httpPut } from './http';
+import config from 'config';
 
 const DEFAULT_BIRTH = {
   day: 1,
@@ -16,6 +17,9 @@ export function getUser() {
 }
 
 export function signIn({ login, password }) {
+  if (config.proxy) {
+    return httpPost('/signin/desktop', { login, password });
+  }
   return httpPost('/signin', { login, password });
 }
 
