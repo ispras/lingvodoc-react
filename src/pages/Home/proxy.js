@@ -24,28 +24,6 @@ const q = gql`
         translation
       }
     }
-    permission_lists(proxy: true) {
-      view {
-        id
-        parent_id
-        translation
-      }
-      edit {
-        id
-        parent_id
-        translation
-      }
-      publish {
-        id
-        parent_id
-        translation
-      }
-      limited {
-        id
-        parent_id
-        translation
-      }
-    }
     grants {
       id
       translation
@@ -73,6 +51,28 @@ const availableDictionaries = gql`
       }
       perspectives {
         id
+        translation
+      }
+    }
+    permission_lists(proxy: true) {
+      view {
+        id
+        parent_id
+        translation
+      }
+      edit {
+        id
+        parent_id
+        translation
+      }
+      publish {
+        id
+        parent_id
+        translation
+      }
+      limited {
+        id
+        parent_id
         translation
       }
     }
@@ -175,9 +175,10 @@ function modeReducer(state = false, { type, payload }) {
 function GrantedDicts(props) {
   const {
     data: {
-      loading, error, dictionaries, grants, language_tree: allLanguages, permission_lists,
+      loading, error, dictionaries, grants, language_tree: allLanguages,
     },
     availableDictionaries,
+    permissionLists,
     selected,
     grantsMode,
     dispatch,
@@ -190,12 +191,10 @@ function GrantedDicts(props) {
 
   const languages = fromJS(allLanguages);
   const languagesTree = buildLanguageTree(languages);
-  const permissions = fromJS(permission_lists);
+  const permissions = fromJS(permissionLists);
   const localDictionaries = fromJS(dictionaries);
 
-  const isDownloaded = (dict) => {
-    !!localDictionaries.find(d => d.get('id').equals(dict.get('id')));
-  };
+  const isDownloaded = dict => !!localDictionaries.find(d => d.get('id').equals(dict.get('id')));
 
   const dicts = fromJS(availableDictionaries)
     .reduce(
@@ -282,12 +281,16 @@ const GrantedDictsWithData = compose(
   graphql(downloadDictionariesMutation, { name: 'downloadDictionaries' })
 )(GrantedDicts);
 
-const WrappedGrantedDicts = ({ data: { loading, error, dictionaries } }) => {
+const WrappedGrantedDicts = ({
+  data: {
+    loading, error, dictionaries, permission_lists: permissionLists,
+  },
+}) => {
   if (loading || error) {
     return null;
   }
 
-  return <GrantedDictsWithData availableDictionaries={dictionaries} />;
+  return <GrantedDictsWithData availableDictionaries={dictionaries} permissionLists={permissionLists} />;
 };
 
 export default compose(graphql(availableDictionaries))(WrappedGrantedDicts);
