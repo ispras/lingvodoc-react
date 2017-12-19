@@ -1,5 +1,5 @@
-import Immutable from 'immutable';
-import { uniq } from 'lodash';
+import Immutable, { fromJS } from 'immutable';
+import { uniq, isEmpty } from 'lodash';
 import { compositeIdToString } from 'utils/compositeId';
 import { buildLanguageTree, buildSearchResultsTree } from 'pages/Search/treeBuilder';
 
@@ -29,6 +29,11 @@ function buildPartialLanguageTree({
     prevLanguages = languages;
     languages = allLanguages.reduce(reducer, prevLanguages);
   } while (prevLanguages.length !== languages.length);
+
+  if (isEmpty(languages)) {
+    return fromJS([]);
+  }
+
   const treeData = Immutable.fromJS({ dictionaries, perspectives, lexical_entries: lexicalEntries });
   const languagesTree = buildLanguageTree(Immutable.fromJS(languages));
 

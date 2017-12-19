@@ -13,6 +13,7 @@ import blobs from './blobs';
 import dictImport from './dictImport';
 import fields from './fields';
 import groupingTag from './groupingTag';
+import directedLink from './directedLink';
 
 export default {
   locale,
@@ -30,4 +31,5 @@ export default {
   dictImport,
   fields,
   groupingTag,
+  directedLink,
 };

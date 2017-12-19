@@ -20,8 +20,26 @@ class Tree extends React.Component {
     this.generateNodeProps = this.generateNodeProps.bind(this);
   }
 
+  componentWillReceiveProps(props) {
+    const { resultsTree: oldResultsTree } = this.props;
+    const { resultsTree: newResultsTree } = props;
+    if (!oldResultsTree.equals(newResultsTree)) {
+      console.log(props.resultsTree.toJS());
+      this.setState({
+        treeData: map({
+          treeData: props.resultsTree.toJS(),
+          callback: ({ node }) => ({ ...node, expanded: !!props.expanded }),
+          getNodeKey: ({ treeIndex }) => treeIndex,
+          ignoreCollapsed: false,
+        }),
+      });
+    } else {
+      console.log('old');
+    }
+  }
+
   generateNodeProps({ node }) {
-    const { actions } = this.props;
+    const { actions, TableComponent } = this.props;
     switch (node.type) {
       case 'perspective':
         return {
@@ -29,7 +47,7 @@ class Tree extends React.Component {
             <div>
               <Header size="large">{node.translation}</Header>
 
-              <LexicalEntryView
+              <TableComponent
                 className="perspective"
                 perspectiveId={node.id}
                 entries={node.lexicalEntries}
@@ -76,11 +94,13 @@ class Tree extends React.Component {
 
 Tree.propTypes = {
   resultsTree: PropTypes.object.isRequired,
+  TableComponent: PropTypes.func,
   actions: PropTypes.array,
 };
 
 Tree.defaultProps = {
   actions: [],
+  TableComponent: LexicalEntryView,
 };
 
 export default Tree;
