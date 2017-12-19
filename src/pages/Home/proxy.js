@@ -63,7 +63,7 @@ const q = gql`
 `;
 
 const availableDictionaries = gql`
-  query DictionaryWithPerspectives {
+  query AvailableDictionaryWithPerspectives {
     dictionaries(proxy: true) {
       id
       parent_id
@@ -221,8 +221,6 @@ function GrantedDicts(props) {
       new Map()
     )
     .map((d, id) => d.set('selected', selected.get(id)));
-
-  console.log(dicts.toJS());
 
   const trees = fromJS(grants).map((grant) => {
     const dictIds = grant.getIn(['additional_metadata', 'participant']) || new List();
