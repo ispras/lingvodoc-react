@@ -214,9 +214,125 @@ LexicalEntryViewBase.defaultProps = {
   actions: [],
 };
 
+export const queryLexicalEntriesByIds = gql`
+  query queryLexacalEntry($perspectiveId: LingvodocID!, $entitiesMode: String!) {
+    perspective(id: $perspectiveId) {
+      id
+      translation
+      columns {
+        id
+        field_id
+        parent_id
+        self_id
+        position
+      }
+      entities(mode: $entitiesMode) {
+        id
+        parent_id
+        field_id
+        link_id
+        self_id
+        created_at
+        locale_id
+        content
+        published
+        accepted
+        additional_metadata {
+          link_perspective_id
+        }
+      }
+    }
+    all_fields {
+      id
+      translation
+      data_type
+      data_type_translation_gist_id
+    }
+  }
+`;
+
+const LexicalEntryViewBaseByIds = ({
+  perspectiveId, entries, className, mode, entitiesMode, data, actions,
+}) => {
+  const { loading } = data;
+
+  if (loading) {
+    return (
+      <Header as="h2" icon>
+        <Icon name="spinner" loading />
+      </Header>
+    );
+  }
+
+  const { all_fields, perspective: { columns, entities } } = data;
+
+  const groupedEntities = groupBy(entities, e => compositeIdToString(e.parent_id));
+  const tableEntries = entries
+    .map(e => ({
+      ...e,
+      contains: groupedEntities[compositeIdToString(e.id)] || [],
+    }))
+    .filter(e => e.contains.length > 0);
+
+  // join fields and columns
+  // {
+  //   column_id = column.id
+  //   position = column.position
+  //   self_id = column.self_id
+  //   ...field
+  // }
+  const fields = columns.map((column) => {
+    const field = find(all_fields, f => isEqual(column.field_id, f.id));
+    return {
+      ...field,
+      self_id: column.self_id,
+      column_id: column.id,
+      position: column.position,
+    };
+  });
+
+  return (
+    <div>
+      <Table celled padded className={className}>
+        <TableHeader columns={fields} actions={actions} />
+        <TableBody
+          perspectiveId={perspectiveId}
+          entitiesMode={entitiesMode}
+          entries={tableEntries}
+          columns={fields}
+          mode={mode}
+          actions={actions}
+        />
+      </Table>
+    </div>
+  );
+};
+
+LexicalEntryViewBaseByIds.propTypes = {
+  perspectiveId: PropTypes.array.isRequired,
+  entries: PropTypes.array.isRequired,
+  className: PropTypes.string.isRequired,
+  mode: PropTypes.string.isRequired,
+  entitiesMode: PropTypes.string.isRequired,
+  data: PropTypes.shape({
+    loading: PropTypes.bool.isRequired,
+    all_fields: PropTypes.array,
+    perspective: PropTypes.object,
+  }).isRequired,
+  actions: PropTypes.array,
+};
+
+LexicalEntryViewBaseByIds.defaultProps = {
+  actions: [],
+};
+
 export const LexicalEntryView = graphql(queryLexicalEntry, {
   options: { notifyOnNetworkStatusChange: true },
 })(LexicalEntryViewBase);
+
+export const LexicalEntryViewByIds = graphql(queryLexicalEntriesByIds, {
+  options: { notifyOnNetworkStatusChange: true },
+})(LexicalEntryViewBaseByIds);
 
 export default graphql(queryPerspective, {
   options: { notifyOnNetworkStatusChange: true },

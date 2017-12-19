@@ -2,10 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { compose, withReducer } from 'recompose';
 import { graphql, gql } from 'react-apollo';
-import Immutable, { fromJS, List, Map, Set } from 'immutable';
+import { fromJS, List, Map, Set } from 'immutable';
 import { Link } from 'react-router-dom';
-import { Container, Dropdown, Button, Checkbox } from 'semantic-ui-react';
-
+import { Container, Dropdown, Button, Checkbox, Icon } from 'semantic-ui-react';
 import LanguageTree from 'components/Tree';
 import { buildLanguageTree, assignDictsToTree } from 'pages/Search/treeBuilder';
 
@@ -13,7 +12,7 @@ import './published.scss';
 
 const q = gql`
   query DictionaryWithPerspectives {
-    dictionaries {
+    dictionaries(proxy: false) {
       id
       parent_id
       translation
@@ -22,6 +21,28 @@ const q = gql`
       }
       perspectives {
         id
+        translation
+      }
+    }
+    permission_lists(proxy: true) {
+      view {
+        id
+        parent_id
+        translation
+      }
+      edit {
+        id
+        parent_id
+        translation
+      }
+      publish {
+        id
+        parent_id
+        translation
+      }
+      limited {
+        id
+        parent_id
         translation
       }
     }
@@ -41,6 +62,31 @@ const q = gql`
   }
 `;
 
+const availableDictionaries = gql`
+  query DictionaryWithPerspectives {
+    dictionaries(proxy: true) {
+      id
+      parent_id
+      translation
+      additional_metadata {
+        authors
+      }
+      perspectives {
+        id
+        translation
+      }
+    }
+  }
+`;
+
+const downloadDictionariesMutation = gql`
+  mutation DownloadDictionaries($ids: [LingvodocID]!) {
+    download_dictionaries(ids: $ids) {
+      triumph
+    }
+  }
+`;
+
 function toId(arr, prefix = null) {
   const joiner = prefix ? arr[prefix] : arr;
   return joiner.join('/');
@@ -48,14 +94,19 @@ function toId(arr, prefix = null) {
 
 const Perspective = ({ parent: pid, perspective: p }) => (
   <Dropdown.Item as={Link} to={`dictionary/${toId(pid)}/perspective/${toId(p.id)}`}>
+    {p.view && <Icon name="book" />}
+    {p.edit && <Icon name="edit" />}
+    {p.publish && <Icon name="external share" />}
+    {p.limited && <Icon name="privacy" />}
     {p.translation}
   </Dropdown.Item>
 );
 
 const Dictionary = ({
-  id, selected, translation, additional_metadata: meta, perspectives, onSelect,
+  id, selected, translation, additional_metadata: meta, perspectives, isDownloaded, onSelect,
 }) => (
   <div className={`dict ${selected ? 'selected' : ''}`}>
+    {!isDownloaded && <Icon name="download" />}
     <span className="dict-name" onClick={() => onSelect(id)}>
       {translation}
     </span>
@@ -124,8 +175,9 @@ function modeReducer(state = false, { type, payload }) {
 function GrantedDicts(props) {
   const {
     data: {
-      loading, error, dictionaries, grants, language_tree: allLanguages,
+      loading, error, dictionaries, grants, language_tree: allLanguages, permission_lists,
     },
+    availableDictionaries,
     selected,
     grantsMode,
     dispatch,
@@ -136,12 +188,41 @@ function GrantedDicts(props) {
     return null;
   }
 
-  const languages = Immutable.fromJS(allLanguages);
+  const languages = fromJS(allLanguages);
   const languagesTree = buildLanguageTree(languages);
+  const permissions = fromJS(permission_lists);
+  const localDictionaries = fromJS(dictionaries);
 
-  const dicts = fromJS(dictionaries)
-    .reduce((acc, dict) => acc.set(dict.get('id'), dict), new Map())
+  const isDownloaded = (dict) => {
+    !!localDictionaries.find(d => d.get('id').equals(dict.get('id')));
+  };
+
+  const dicts = fromJS(availableDictionaries)
+    .reduce(
+      (acc, dict) =>
+        acc.set(
+          dict.get('id'),
+          dict
+            .set(
+              'perspectives',
+              dict.get('perspectives').map(p =>
+                // for every perspective set 4 boolean property: edit, view, publish, limited
+                // according to permission_list result
+                ({
+                  ...p.toJS(),
+                  view: permissions.get('view').indexOf(p.id) === -1,
+                  edit: permissions.get('edit').indexOf(p.id) === -1,
+                  publish: permissions.get('publish').indexOf(p.id) === -1,
+                  limited: permissions.get('limited').indexOf(p.id) === -1,
+                }))
+            )
+            .set('isDownloaded', isDownloaded(dict))
+        ),
+      new Map()
+    )
     .map((d, id) => d.set('selected', selected.get(id)));
+
+  console.log(dicts.toJS());
 
   const trees = fromJS(grants).map((grant) => {
     const dictIds = grant.getIn(['additional_metadata', 'participant']) || new List();
@@ -155,7 +236,7 @@ function GrantedDicts(props) {
 
   const restTree = grantsMode
     ? assignDictsToTree(restDictionaries(dicts, fromJS(grants)), languagesTree)
-    : assignDictsToTree(fromJS(dictionaries), languagesTree);
+    : assignDictsToTree(dicts, languagesTree);
 
   function onSelect(payload) {
     dispatch({ type: 'TOGGLE_DICT', payload });
@@ -176,6 +257,10 @@ function GrantedDicts(props) {
 
   return (
     <Container className="published">
+      <Button positive content="Download" onClick={download} disabled={selected.size === 0}>
+        {selected.size > 0 && <p>Download ({selected.size})</p>}
+        {selected.size === 0 && <p>Download</p>}
+      </Button>
       <Checkbox toggle defaultChecked={grantsMode} onChange={(e, v) => changeMode(v.checked)} />
       {grantsMode &&
         trees.map(({ id, text, tree }) => (
@@ -192,8 +277,19 @@ function GrantedDicts(props) {
   );
 }
 
-export default compose(
+const GrantedDictsWithData = compose(
   withReducer('selected', 'dispatch', selectedReducer, new Set()),
   withReducer('grantsMode', 'dispatchMode', modeReducer, true),
   graphql(q),
+  graphql(downloadDictionariesMutation, { name: 'downloadDictionaries' })
 )(GrantedDicts);
+
+const WrappedGrantedDicts = ({ data: { loading, error, dictionaries } }) => {
+  if (loading || error) {
+    return null;
+  }
+
+  return <GrantedDictsWithData availableDictionaries={dictionaries} />;
+};
+
+export default compose(graphql(availableDictionaries))(WrappedGrantedDicts);

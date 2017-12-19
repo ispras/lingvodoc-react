@@ -6,8 +6,6 @@ import { onlyUpdateForKeys, withHandlers, withState, compose } from 'recompose';
 import { Switch, Route, Redirect, Link } from 'react-router-dom';
 import { Container, Header, Breadcrumb, Menu, Dropdown } from 'semantic-ui-react';
 import PerspectiveView from 'components/PerspectiveView';
-import PlayerModal from 'components/PlayerModal';
-import MarkupModal from 'components/MarkupModal';
 import NotFound from 'pages/NotFound';
 
 import './style.scss';
@@ -148,8 +146,6 @@ const Perspective = ({ perspective, submitFilter }) => {
         ))}
         <Route component={NotFound} />
       </Switch>
-      <PlayerModal />
-      <MarkupModal />
     </Container>
   );
 };
