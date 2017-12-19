@@ -9,6 +9,7 @@ import PlayerModal from 'components/PlayerModal';
 import MarkupModal from 'components/MarkupModal';
 import GroupingTagModal from 'components/GroupingTagModal';
 import DirectedLinkModal from 'components/DirectedLinkModal';
+import DictionaryProperties from 'components/DictionaryPropertiesModal';
 
 import NavBar from './NavBar';
 import TasksSidebar from './TasksSidebar';
@@ -35,6 +36,7 @@ const Layout = () => (
     <DirectedLinkModal />
     <PlayerModal />
     <MarkupModal />
+    <DictionaryProperties />
   </div>
 );
 

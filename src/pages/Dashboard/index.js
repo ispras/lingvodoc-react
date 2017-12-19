@@ -9,47 +9,10 @@ import { Container, Dimmer, Tab, Header, List, Dropdown, Icon, Menu } from 'sema
 import { isEqual } from 'lodash';
 import { compositeIdToString } from 'utils/compositeId';
 import { openRoles } from 'ducks/roles';
+import { openDictionaryPropertiesModal } from 'ducks/properties';
 import RolesModal from 'components/RolesModal';
 
 const dimmerStyle = { minHeight: '600px' };
-
-const DICTIONARIES_TABS = [
-  {
-    menuItem: 'My dictionaries',
-    render: () => (
-      <Tab.Pane>
-        <Dictionaries category={0} mode={0} />
-      </Tab.Pane>
-    ),
-  },
-  {
-    menuItem: 'Available dictionaries',
-    render: () => (
-      <Tab.Pane>
-        <Dictionaries category={0} mode={1} />
-      </Tab.Pane>
-    ),
-  },
-];
-
-const CORPORA_TABS = [
-  {
-    menuItem: 'My corpora',
-    render: () => (
-      <Tab.Pane>
-        <Dictionaries category={1} mode={0} />
-      </Tab.Pane>
-    ),
-  },
-  {
-    menuItem: 'Available corpora',
-    render: () => (
-      <Tab.Pane>
-        <Dictionaries category={1} mode={1} />
-      </Tab.Pane>
-    ),
-  },
-];
 
 export const query = gql`
   query dashboardQuery($mode: Int!, $category: Int!) {
@@ -202,7 +165,7 @@ const D = (props) => {
           <Dropdown text={translation} pointing className="link item">
             <Dropdown.Menu>
               <Dropdown.Item icon="users" text="Roles..." onClick={() => actions.openRoles(id, 'dictionary')} />
-              <Dropdown.Item icon="setting" text="Properties..." />
+              <Dropdown.Item icon="setting" text="Properties..." onClick={() => actions.openDictionaryPropertiesModal(id)} />
               <Dropdown.Item icon="percent" text="Statistics..." />
               <Dropdown.Item icon="circle" text="Create a new perspective..." />
               <Dropdown.Divider />
@@ -233,7 +196,7 @@ const Dictionary = compose(
   connect(
     null,
     dispatch => ({
-      actions: bindActionCreators({ openRoles }, dispatch),
+      actions: bindActionCreators({ openRoles, openDictionaryPropertiesModal }, dispatch),
     })
   ),
   onlyUpdateForKeys(['translation', 'status', 'perspectives'])
@@ -269,6 +232,44 @@ Dashboard.propTypes = {
 };
 
 const Dictionaries = graphql(query)(Dashboard);
+
+const DICTIONARIES_TABS = [
+  {
+    menuItem: 'My dictionaries',
+    render: () => (
+      <Tab.Pane>
+        <Dictionaries category={0} mode={0} />
+      </Tab.Pane>
+    ),
+  },
+  {
+    menuItem: 'Available dictionaries',
+    render: () => (
+      <Tab.Pane>
+        <Dictionaries category={0} mode={1} />
+      </Tab.Pane>
+    ),
+  },
+];
+
+const CORPORA_TABS = [
+  {
+    menuItem: 'My corpora',
+    render: () => (
+      <Tab.Pane>
+        <Dictionaries category={1} mode={0} />
+      </Tab.Pane>
+    ),
+  },
+  {
+    menuItem: 'Available corpora',
+    render: () => (
+      <Tab.Pane>
+        <Dictionaries category={1} mode={1} />
+      </Tab.Pane>
+    ),
+  },
+];
 
 const DictionaryDashboard = () => <Tab panes={DICTIONARIES_TABS} renderActiveOnly />;
 const CorpusDashboard = () => <Tab panes={CORPORA_TABS} renderActiveOnly />;

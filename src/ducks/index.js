@@ -14,6 +14,7 @@ import dictImport from './dictImport';
 import fields from './fields';
 import groupingTag from './groupingTag';
 import directedLink from './directedLink';
+import properties from './properties';
 
 export default {
   locale,
@@ -32,4 +33,5 @@ export default {
   fields,
   groupingTag,
   directedLink,
+  properties,
 };
