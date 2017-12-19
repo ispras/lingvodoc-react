@@ -96,10 +96,7 @@ class Map extends React.Component {
   onPointClick({ dictionary }) {
     const { actions } = this.props;
     const blobs = dictionary.getIn(['additional_metadata', 'blobs']);
-    // FIXME: backend returns empty list instead of null sometimes.
-    if (blobs) {
-      actions.openBlobsModal(blobs.toJS());
-    }
+    actions.openBlobsModal(dictionary.toJS(), blobs ? blobs.toJS() : []);
   }
 
   render() {

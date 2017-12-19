@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { compose, pure } from 'recompose';
 import { graphql, gql } from 'react-apollo';
-import { Modal, List, Button, Embed } from 'semantic-ui-react';
+import { Modal, List, Button, Embed, Message } from 'semantic-ui-react';
 import { closeBlobsModal } from 'ducks/blobs';
 import { compositeIdToString } from 'utils/compositeId';
 
@@ -41,23 +41,28 @@ Blob.propTypes = {
 
 const BlobWithData = compose(graphql(blobQuery), pure)(Blob);
 
-const BlobsModal = ({ visible, actions, blobs }) => (
-  <Modal open={visible} dimmer size="small">
-    <Modal.Content>
-      <List>
-        {blobs.map(blobId => (
-          <List.Item key={compositeIdToString(blobId)}>
-            {/* FIXME: Old ID format */}
-            <BlobWithData id={[blobId.client_id, blobId.object_id]} />
-          </List.Item>
-        ))}
-      </List>
-    </Modal.Content>
-    <Modal.Actions>
-      <Button icon="minus" content="Close" onClick={actions.closeBlobsModal} />
-    </Modal.Actions>
-  </Modal>
-);
+const BlobsModal = ({ visible, actions, blobs, dictionary }) => {
+  if (!visible) {
+    return null;
+  }
+  return (
+    <Modal open={visible} dimmer size="small">
+      <Modal.Header>{dictionary.translation}</Modal.Header>
+      <Modal.Content>
+        <List>
+          {blobs.length === 0 && <Message info>No files</Message>}
+          {blobs.map(blobId => (
+            <List.Item key={compositeIdToString(blobId)}>
+              <BlobWithData id={blobId} />
+            </List.Item>
+          ))}
+        </List>
+      </Modal.Content>
+      <Modal.Actions>
+        <Button icon="minus" content="Close" onClick={actions.closeBlobsModal} />
+      </Modal.Actions>
+    </Modal>);
+};
 
 export default compose(
   connect(

@@ -4,9 +4,12 @@ import { combineReducers } from 'redux';
 export const OPEN_BLOBS = '@blobs/OPEN_BLOBS';
 export const CLOSE_BLOBS = '@blobs/CLOSE_BLOBS';
 
-export const openBlobsModal = blobs => ({
+export const openBlobsModal = (dictionary, blobs) => ({
   type: OPEN_BLOBS,
-  payload: blobs,
+  payload: {
+    dictionary,
+    blobs,
+  }
 });
 
 export const closeBlobsModal = () => ({ type: CLOSE_BLOBS });
@@ -25,13 +28,23 @@ const visible = (state = false, action) => {
 const blobs = (state = [], action) => {
   switch (action.type) {
     case OPEN_BLOBS:
-      return action.payload;
+      return action.payload.blobs;
+    default:
+      return state;
+  }
+};
+
+const dictionary = (state = null, action) => {
+  switch (action.type) {
+    case OPEN_BLOBS:
+      return action.payload.dictionary;
     default:
       return state;
   }
 };
 
 export default combineReducers({
+  dictionary,
   blobs,
   visible,
 });
