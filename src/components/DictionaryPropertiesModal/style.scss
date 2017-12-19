@@ -1,0 +1,26 @@
+// Style with css
+.map-marker {
+  text-align: center;
+  position: absolute;
+  overflow: hidden;
+  background-repeat: no-repeat;
+  background-position: center;
+  color: #fff; // icon color
+  width: 28px;
+  height: 28px;
+  border-radius: 50%; // make a circle
+  line-height: 22pt;
+  font-size: 22px;
+  font-family: 'FontAwesome'; // anything goes
+  filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.5));
+}
+
+  // Style background
+  .marker-color-gray {
+    background: lightgray;
+  }
+
+  // If you want to change the icon
+  .another-class:before {
+    content: '\f1f8';
+  }

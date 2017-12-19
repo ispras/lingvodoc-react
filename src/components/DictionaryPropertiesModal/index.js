@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { compose, onlyUpdateForKeys } from 'recompose';
 import { gql, graphql } from 'react-apollo';
 import { connect } from 'react-redux';
-import { Button, Modal, Input, Container, Segment, Grid } from 'semantic-ui-react';
+import { Button, Modal, Input, Container, Segment, Grid, Header } from 'semantic-ui-react';
 import { closeDictionaryPropertiesModal } from 'ducks/properties';
 import Map from './Map';
 import styled from 'styled-components';
@@ -153,10 +153,13 @@ class Properties extends React.Component {
       return null;
     }
 
-    const { additional_metadata: { location, authors } } = dictionary;
+    const { translation, additional_metadata: { location, authors } } = dictionary;
 
     return (
       <Container>
+        <Segment>
+          <Header size="large">{translation}</Header>
+        </Segment>
         <Segment>
           <Grid>
             <Grid.Column width={12}>

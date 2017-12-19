@@ -7,6 +7,7 @@ import styled from 'styled-components';
 import L from 'leaflet';
 
 import 'leaflet/dist/leaflet.css';
+import './style.scss';
 
 const Wrapper = styled.div`
   width: 100%;
@@ -37,6 +38,12 @@ const Wrapper = styled.div`
   }
 `;
 
+const icon = L.divIcon({
+  className: 'map-marker marker-color-gray a-class',
+  iconSize: [28, 28],
+  html: '<i class="fa fa-fw fa-2x fa-question"></i>',
+});
+
 class Map extends React.Component {
   constructor(props) {
     super(props);
@@ -57,7 +64,7 @@ class Map extends React.Component {
   componentWillReceiveProps(props) {
     if (props.location) {
       const { lat, lng } = props.location;
-      this.markers.push(L.marker([lat, lng]).addTo(this.leaflet));
+      this.markers.push(L.marker([lat, lng], { icon }).addTo(this.leaflet));
     }
   }
 
@@ -70,7 +77,7 @@ class Map extends React.Component {
       this.leaflet.removeLayer(m);
     });
 
-    this.markers.push(L.marker([latlng.lat, latlng.lng]).addTo(this.leaflet));
+    this.markers.push(L.marker([latlng.lat, latlng.lng], { icon }).addTo(this.leaflet));
     this.props.onChange(latlng);
   }
 
