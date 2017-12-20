@@ -7,6 +7,12 @@ cache:
 script:
   npm run build
 
+before_deploy:
+  # Set up git user name and tag this commit
+  - git config --local user.name "st2135"
+  - git config --local user.email "loed@mail.ru"
+  - git tag "$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)"
+
 deploy:
   provider: releases
   api_key: "5082aa811a174af02058de15599ea3a78f84600f"
