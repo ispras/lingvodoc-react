@@ -15,7 +15,7 @@ before_deploy:
 
 deploy:
   provider: releases
-  api_key: "f613f5c2f9a58cba070c693e7c962e9c7e11344e"
+  api_key: "08b60d9cfc7a22b140adc2dd8668b7bfe0519b97"
   file_glob: true
   file: dist/*
   skip_cleanup: true
