@@ -6,3 +6,12 @@ cache:
     - "node_modules"
 script:
   npm run build
+
+deploy:
+  provider: releases
+  api_key: "5082aa811a174af02058de15599ea3a78f84600f"
+  file_glob: true
+  file: dist/*
+  skip_cleanup: true
+  on:
+    tags: true
