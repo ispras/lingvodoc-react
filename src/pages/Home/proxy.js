@@ -176,7 +176,7 @@ function modeReducer(state = false, { type, payload }) {
 function GrantedDicts(props) {
   const {
     data: {
-      loading, error, dictionaries, grants, language_tree: allLanguages,
+      loading, error, dictionaries, grants, language_tree: allLanguages, is_authenticated: isAuthenticated,
     },
     availableDictionaries,
     permissions,
@@ -197,7 +197,10 @@ function GrantedDicts(props) {
   const isDownloaded = dict => !!localDictionaries.find(d => d.get('id').equals(dict.get('id')));
   const hasPermission = (p, permission) => permissions.get(permission).has(p.get('id'));
 
-  const dicts = fromJS(availableDictionaries)
+  // if user is NOT authenticated show only local dictionaries
+  const dictsSource = isAuthenticated ? fromJS(availableDictionaries) : localDictionaries;
+
+  const dicts = dictsSource
     .reduce(
       (acc, dict) =>
         acc.set(
