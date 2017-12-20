@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { compose, withReducer } from 'recompose';
+import { compose, withReducer, onlyUpdateForKeys } from 'recompose';
 import { graphql, gql } from 'react-apollo';
 import { fromJS, List, Map, Set } from 'immutable';
 import { Link } from 'react-router-dom';
@@ -10,7 +10,7 @@ import { buildLanguageTree, assignDictsToTree } from 'pages/Search/treeBuilder';
 
 import './published.scss';
 
-const q = gql`
+const localDictionariesQuery = gql`
   query DictionaryWithPerspectives {
     dictionaries(proxy: false) {
       id
@@ -37,10 +37,11 @@ const q = gql`
       translation
       created_at
     }
+    is_authenticated
   }
 `;
 
-const availableDictionaries = gql`
+const availableDictionariesQuery = gql`
   query AvailableDictionaryWithPerspectives {
     dictionaries(proxy: true) {
       id
@@ -178,7 +179,7 @@ function GrantedDicts(props) {
       loading, error, dictionaries, grants, language_tree: allLanguages,
     },
     availableDictionaries,
-    permissionLists,
+    permissions,
     selected,
     grantsMode,
     dispatch,
@@ -191,10 +192,10 @@ function GrantedDicts(props) {
 
   const languages = fromJS(allLanguages);
   const languagesTree = buildLanguageTree(languages);
-  const permissions = fromJS(permissionLists);
   const localDictionaries = fromJS(dictionaries);
 
   const isDownloaded = dict => !!localDictionaries.find(d => d.get('id').equals(dict.get('id')));
+  const hasPermission = (p, permission) => permissions.get(permission).has(p.get('id'));
 
   const dicts = fromJS(availableDictionaries)
     .reduce(
@@ -204,15 +205,15 @@ function GrantedDicts(props) {
           dict
             .set(
               'perspectives',
-              dict.get('perspectives').map(p =>
+              dict.get('perspectives').map(perspective =>
                 // for every perspective set 4 boolean property: edit, view, publish, limited
                 // according to permission_list result
                 ({
-                  ...p.toJS(),
-                  view: permissions.get('view').indexOf(p.id) === -1,
-                  edit: permissions.get('edit').indexOf(p.id) === -1,
-                  publish: permissions.get('publish').indexOf(p.id) === -1,
-                  limited: permissions.get('limited').indexOf(p.id) === -1,
+                  ...perspective.toJS(),
+                  view: hasPermission(perspective, 'view'),
+                  edit: hasPermission(perspective, 'edit'),
+                  publish: hasPermission(perspective, 'publish'),
+                  limited: hasPermission(perspective, 'limited'),
                 }))
             )
             .set('isDownloaded', isDownloaded(dict))
@@ -236,7 +237,6 @@ function GrantedDicts(props) {
     : assignDictsToTree(dicts, languagesTree);
 
   const sortMode = grantsMode ? 'by grants' : 'by languages';
-    
 
   function onSelect(payload) {
     dispatch({ type: 'TOGGLE_DICT', payload });
@@ -257,7 +257,7 @@ function GrantedDicts(props) {
 
   return (
     <Container className="published">
-      <Button positive content="Download" onClick={download} disabled={selected.size === 0}>
+      <Button positive onClick={download} disabled={selected.size === 0}>
         {selected.size > 0 && <p>Download ({selected.size})</p>}
         {selected.size === 0 && <p>Download</p>}
       </Button>
@@ -277,10 +277,24 @@ function GrantedDicts(props) {
   );
 }
 
+GrantedDicts.propTypes = {
+  data: PropTypes.shape({
+    loading: PropTypes.bool.isRequired,
+  }).isRequired,
+  availableDictionaries: PropTypes.array.isRequired,
+  permissions: PropTypes.instanceOf(Map).isRequired,
+  selected: PropTypes.instanceOf(Set).isRequired,
+  grantsMode: PropTypes.bool.isRequired,
+  dispatch: PropTypes.func.isRequired,
+  dispatchMode: PropTypes.func.isRequired,
+  downloadDictionaries: PropTypes.func.isRequired,
+};
+
 const GrantedDictsWithData = compose(
+  onlyUpdateForKeys(['data', 'selected']),
   withReducer('selected', 'dispatch', selectedReducer, new Set()),
   withReducer('grantsMode', 'dispatchMode', modeReducer, true),
-  graphql(q),
+  graphql(localDictionariesQuery),
   graphql(downloadDictionariesMutation, { name: 'downloadDictionaries' })
 )(GrantedDicts);
 
@@ -293,7 +307,20 @@ const WrappedGrantedDicts = ({
     return null;
   }
 
-  return <GrantedDictsWithData availableDictionaries={dictionaries} permissionLists={permissionLists} />;
+  const permissions = fromJS({
+    view: permissionLists.view,
+    edit: permissionLists.edit,
+    publish: permissionLists.publish,
+    limited: permissionLists.limited,
+  }).map(perspectives => new Set(perspectives.map(p => p.get('id'))));
+
+  return <GrantedDictsWithData availableDictionaries={dictionaries} permissions={permissions} />;
 };
 
-export default compose(graphql(availableDictionaries))(WrappedGrantedDicts);
+WrappedGrantedDicts.propTypes = {
+  data: PropTypes.shape({
+    loading: PropTypes.bool.isRequired,
+  }).isRequired,
+};
+
+export default compose(graphql(availableDictionariesQuery), onlyUpdateForKeys(['data']))(WrappedGrantedDicts);
