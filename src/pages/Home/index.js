@@ -17,6 +17,7 @@ const q = gql`
       id
       parent_id
       translation
+      status
       additional_metadata {
         authors
       }
@@ -55,18 +56,18 @@ const Perspective = ({ parent: pid, perspective: p }) => (
 const Dictionary = ({
   id, selected, translation, additional_metadata: meta, perspectives, onSelect,
 }) => (
-  <div className={`dict ${selected ? 'selected' : ''}`}>
-    <span className="dict-name" onClick={() => onSelect(id)}>
-      {translation}
-    </span>
-    <span className="dict-authors">{(meta && meta.authors) || '.'}</span>
-    <Dropdown className="dict-perspectives" inline text={`View (${perspectives.length})`}>
-      <Dropdown.Menu>
-        {perspectives.map(pers => <Perspective key={toId(pers.id)} parent={id} perspective={pers} />)}
-      </Dropdown.Menu>
-    </Dropdown>
-  </div>
-);
+    <div className={`dict ${selected ? 'selected' : ''}`}>
+      <span className="dict-name" onClick={() => onSelect(id)}>
+        {translation}
+      </span>
+      <span className="dict-authors">{(meta && meta.authors) || '.'}</span>
+      <Dropdown className="dict-perspectives" inline text={`View (${perspectives.length})`}>
+        <Dropdown.Menu>
+          {perspectives.map(pers => <Perspective key={toId(pers.id)} parent={id} perspective={pers} />)}
+        </Dropdown.Menu>
+      </Dropdown>
+    </div>
+  );
 
 function generateNodeProps(onSelect) {
   return ({ node, path }) => {
@@ -130,7 +131,6 @@ function GrantedDicts(props) {
     grantsMode,
     dispatch,
     dispatchMode,
-    downloadDictionaries,
   } = props;
   if (loading || error) {
     return null;
@@ -138,6 +138,8 @@ function GrantedDicts(props) {
 
   const languages = Immutable.fromJS(allLanguages);
   const languagesTree = buildLanguageTree(languages);
+
+  const publishedDictionaries = fromJS(dictionaries.filter(d => d.status === 'Published'));
 
   const dicts = fromJS(dictionaries)
     .reduce((acc, dict) => acc.set(dict.get('id'), dict), new Map())
@@ -155,19 +157,12 @@ function GrantedDicts(props) {
 
   const restTree = grantsMode
     ? assignDictsToTree(restDictionaries(dicts, fromJS(grants)), languagesTree)
-    : assignDictsToTree(fromJS(dictionaries), languagesTree);
+    : assignDictsToTree(publishedDictionaries, languagesTree);
+
+  const sortMode = grantsMode ? 'by grants' : 'by languages';
 
   function onSelect(payload) {
     dispatch({ type: 'TOGGLE_DICT', payload });
-  }
-
-  function download() {
-    const ids = selected.toJS();
-    downloadDictionaries({
-      variables: { ids },
-    }).then(() => {
-      dispatch({ type: 'RESET_DICTS' });
-    });
   }
 
   function changeMode(m) {
@@ -176,7 +171,7 @@ function GrantedDicts(props) {
 
   return (
     <Container className="published">
-      <Checkbox toggle defaultChecked={grantsMode} onChange={(e, v) => changeMode(v.checked)} />
+      <Checkbox label={sortMode} toggle defaultChecked={grantsMode} onChange={(e, v) => changeMode(v.checked)} />
       {grantsMode &&
         trees.map(({ id, text, tree }) => (
           <div key={id} className="grant">
