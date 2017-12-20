@@ -31,6 +31,19 @@ class LanguagesTree extends React.Component {
     this.onMoveNode = this.onMoveNode.bind(this);
   }
 
+  componentWillReceiveProps({ languagesTree }) {
+    if (!Immutable.is(languagesTree, this.props.languagesTree)) {
+      this.setState({
+        treeData: map({
+          treeData: languagesTree.toJS(),
+          callback: ({ node }) => ({ ...node, expanded: false }),
+          getNodeKey: ({ treeIndex }) => treeIndex,
+          ignoreCollapsed: false,
+        }),
+      });
+    }
+  }
+
   onMoveNode({ treeData, node }) {
     const { moveLanguage } = this.props;
     // create flat representation of the language tree to make traversals easier
