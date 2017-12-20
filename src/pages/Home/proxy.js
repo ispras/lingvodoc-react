@@ -106,7 +106,7 @@ const Dictionary = ({
   id, selected, translation, additional_metadata: meta, perspectives, isDownloaded, onSelect,
 }) => (
   <div className={`dict ${selected ? 'selected' : ''}`}>
-    {!isDownloaded && <Icon name="download" />}
+    {isDownloaded && <Icon name="download" />}
     <span className="dict-name" onClick={() => onSelect(id)}>
       {translation}
     </span>
