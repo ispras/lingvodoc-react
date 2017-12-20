@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import { gql, graphql } from 'react-apollo';
 import Immutable, { fromJS } from 'immutable';
-import { Container, Dimmer, Loader, Tab, Button, Divider, Menu } from 'semantic-ui-react';
+import { Container, Dimmer, Loader, Tab, Button, Divider, Menu, Message } from 'semantic-ui-react';
 import { isEqual } from 'lodash';
 import Labels from 'components/Search/Labels';
 import ResultsMap from 'components/Search/ResultsMap';
@@ -125,8 +125,16 @@ class Wrapper extends React.Component {
     const languages = Immutable.fromJS(allLanguages);
     const languagesTree = buildLanguageTree(languages);
     const searchResultsTree = buildSearchResultsTree(searchResults, languagesTree);
-
-    return <LanguageTree searchResultsTree={searchResultsTree} />;
+    const resultsCount = searchResults.get('dictionaries').filter(d => (d.getIn(['additional_metadata', 'location']) !== null));
+    return <div>
+      <Message positive>
+        Found {resultsCount.size} resuls on <a href="" onClick={(e) => {
+          e.preventDefault();
+          document.getElementById('mapResults').scrollIntoView();
+        }}>map</a>
+      </Message>
+      <LanguageTree searchResultsTree={searchResultsTree} />
+    </div>;
   }
 }
 
@@ -277,7 +285,7 @@ class SearchTabs extends React.Component {
     return (
       <Container>
         <Tab menu={{ pointing: true }} panes={panes} />
-        <Divider section />
+        <Divider id="mapResults" section />
         <Labels data={this.labels()} onClick={this.clickLabel} />
         <IntersectionControl
           max={this.state.mapSearches.filter(f => f.get('isActive')).size}
