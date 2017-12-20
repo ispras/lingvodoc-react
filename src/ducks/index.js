@@ -15,6 +15,7 @@ import fields from './fields';
 import groupingTag from './groupingTag';
 import directedLink from './directedLink';
 import properties from './properties';
+import apolloClient from './apolloClient';
 
 export default {
   locale,
@@ -34,4 +35,5 @@ export default {
   groupingTag,
   directedLink,
   properties,
+  apolloClient,
 };

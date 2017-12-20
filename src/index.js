@@ -11,6 +11,7 @@ import createSagaMiddleware from 'redux-saga';
 import formActionSaga from 'redux-form-saga';
 import { ApolloProvider } from 'react-apollo';
 import { setRunner } from 'ducks/saga';
+import { setApolloClient } from 'ducks/apolloClient';
 import { log, suc, warn, err } from 'ducks/snackbar';
 import combinedReducer from './reducer';
 import mainFlow from './sagas';
@@ -33,6 +34,7 @@ const store = createStore(combinedReducer, composeEnhancers(applyMiddleware(...m
 sagaMiddleware.run(mainFlow);
 sagaMiddleware.run(formActionSaga);
 store.dispatch(setRunner(sagaMiddleware.run));
+store.dispatch(setApolloClient(apollo));
 
 window.logger = bindActionCreators(
   {
