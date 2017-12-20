@@ -106,7 +106,7 @@ const Dictionary = ({
   id, selected, translation, additional_metadata: meta, perspectives, isDownloaded, onSelect,
 }) => (
   <div className={`dict ${selected ? 'selected' : ''}`}>
-    {!isDownloaded && <Icon name="download" />}
+    {isDownloaded && <Icon name="download" />}
     <span className="dict-name" onClick={() => onSelect(id)}>
       {translation}
     </span>
@@ -235,6 +235,9 @@ function GrantedDicts(props) {
     ? assignDictsToTree(restDictionaries(dicts, fromJS(grants)), languagesTree)
     : assignDictsToTree(dicts, languagesTree);
 
+  const sortMode = grantsMode ? 'by grants' : 'by languages';
+    
+
   function onSelect(payload) {
     dispatch({ type: 'TOGGLE_DICT', payload });
   }
@@ -258,7 +261,7 @@ function GrantedDicts(props) {
         {selected.size > 0 && <p>Download ({selected.size})</p>}
         {selected.size === 0 && <p>Download</p>}
       </Button>
-      <Checkbox toggle defaultChecked={grantsMode} onChange={(e, v) => changeMode(v.checked)} />
+      <Checkbox label={sortMode} toggle defaultChecked={grantsMode} onChange={(e, v) => changeMode(v.checked)} />
       {grantsMode &&
         trees.map(({ id, text, tree }) => (
           <div key={id} className="grant">
