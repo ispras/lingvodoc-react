@@ -1,0 +1,22 @@
+language: node_js
+node_js:
+- '8'
+cache:
+  directories:
+  - node_modules
+script: npm run build
+
+before_deploy:
+  - tar -zcf ${TRAVIS_BUILD_DIR}${REPO}-build-${TRAVIS_BUILD_NUMBER}.tar.gz dist
+
+deploy:
+  provider: releases
+  api_key:
+    secure: vO255g54158v2dJqLeC9Huuv/+0o6RN1R5I5CATrSkAtfcAN2Pd8kSHB8WAWmXX9hMsTMzEODfO5Sg+LSL78ln4/CARRTrq/wOGm8w02iQtRdQzVNt2tXOIrmaYwKT6lRYBZ9t7gK6w4o66GkfFEDx/1BvxyB0SyKp/xSa8oCNYXwq+VQCL81qJsHNX0wAvPG413HdbWqwMCvIz+HrPUCJbYoOscxz5ak90r+x4C++8CfR3Yj3ChD3YRQThiV2C5QwoRCave1ljtbzuyZu5lxh9KX3uB1ggblU/iYhdneoUTRduAfW2jLrvmOHNdQieZXYfSikUwHkXPjB42/iKQUecVB+DxeImhDCLNT1Z7T64Cfv/OFR3Ty2L7KseM4z2hpCJDKMmS2Cy3XA8f5EYMXEFM5ShMkOilFfbglfYxClOta280rKDGDJt6yh52/+94+WYF0TnbEWCsSu1qi2Yz9PGjvMGtK3Oi5pUSjNnTAYOupphHQetAZsDfgFjtKnAA+c3TlimJ/sntU9J7Iehfvk/4G8bBRznKgev/+7ckz5B2IOKa431DqenXQEmOfmb1GZB4pkbTVrOe1EeDo+Ng5uYiVIu/Ol/dQuqwIug204oqTtIKb54GVIiSFQ45JQFU/DrM6ZgNmItCJIf42uStjAKNweRpZac1LYbDPjcvG0g=
+  file_glob: true
+  file: ${TRAVIS_BUILD_DIR}${REPO}-build-${TRAVIS_BUILD_NUMBER}.tar.gz
+  skip_cleanup: true
+  on:
+    repo: st2135/lingvodoc-react
+    branch: master
+

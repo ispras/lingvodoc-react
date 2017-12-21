@@ -5,36 +5,42 @@ import { compose, pure } from 'recompose';
 import { Link, withRouter } from 'react-router-dom';
 import { Dropdown, Menu, Icon, Button } from 'semantic-ui-react';
 import styled from 'styled-components';
+import config from 'config';
 
 import User from './User';
 import Tasks from './Tasks';
 import Locale from './Locale';
-
-import config from 'config';
 
 const Logo = styled.span`
   font-size: 1.2em;
   font-weight: bold;
 `;
 
-const SyncButton = ({synchronize}) => (
+const SyncButton = ({ synchronize }) => (
   <Menu.Item as={Button} negative onClick={synchronize}>
-      Sync
+    Sync
   </Menu.Item>
 );
 
+SyncButton.propTypes = {
+  synchronize: PropTypes.func.isRequired,
+};
+
 const Sync = compose(
-  graphql(gql`
-    mutation {
-      synchronize {
-        triumph
+  graphql(
+    gql`
+      mutation {
+        synchronize {
+          triumph
+        }
       }
-    }
-  `, { name: 'synchronize' }),
+    `,
+    { name: 'synchronize' }
+  ),
   pure
 )(SyncButton);
 
-const NavBar = pure(({ location, synchronize }) => (
+const NavBar = pure(({ location }) => (
   <Menu fixed="top">
     <Menu.Item as={Link} to={config.homePath}>
       <Logo>
@@ -79,9 +85,7 @@ const NavBar = pure(({ location, synchronize }) => (
     </Menu.Item>
 
     <Menu.Menu position="right">
-      {config.proxy && (
-        <Sync />
-      )}
+      {config.proxy && <Sync />}
       <User />
       <Tasks />
       <Locale />

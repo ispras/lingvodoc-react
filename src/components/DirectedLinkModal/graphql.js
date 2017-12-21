@@ -1,5 +1,23 @@
 import { gql } from 'react-apollo';
 
+export const createMutation = gql`
+  mutation createEntity(
+    $parent_id: LingvodocID!
+    $field_id: LingvodocID!
+    $linkId: LingvodocID!
+    $perspectiveLinkId: LingvodocID!
+  ) {
+    create_entity(
+      parent_id: $parent_id
+      field_id: $field_id
+      link_id: $linkId
+      perspective_link_id: $perspectiveLinkId
+    ) {
+      triumph
+    }
+  }
+`;
+
 export const publishMutation = gql`
   mutation publishEntity($id: LingvodocID!, $published: Boolean!) {
     update_entity(id: $id, published: $published) {
@@ -11,6 +29,14 @@ export const publishMutation = gql`
 export const acceptMutation = gql`
   mutation acceptEntity($id: LingvodocID!, $accepted: Boolean!) {
     update_entity(id: $id, accepted: $accepted) {
+      triumph
+    }
+  }
+`;
+
+export const removeMutation = gql`
+  mutation removeEntity($id: LingvodocID!) {
+    delete_entity(id: $id) {
       triumph
     }
   }

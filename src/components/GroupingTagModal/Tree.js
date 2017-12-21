@@ -11,7 +11,7 @@ class Tree extends React.Component {
     this.state = {
       treeData: map({
         treeData: props.resultsTree.toJS(),
-        callback: ({ node }) => ({ ...node, expanded: !!props.expanded }),
+        callback: ({ node }) => ({ ...node, expanded: false }),
         getNodeKey: ({ treeIndex }) => treeIndex,
         ignoreCollapsed: false,
       }),
@@ -24,17 +24,14 @@ class Tree extends React.Component {
     const { resultsTree: oldResultsTree } = this.props;
     const { resultsTree: newResultsTree } = props;
     if (!oldResultsTree.equals(newResultsTree)) {
-      console.log(props.resultsTree.toJS());
       this.setState({
         treeData: map({
           treeData: props.resultsTree.toJS(),
-          callback: ({ node }) => ({ ...node, expanded: !!props.expanded }),
+          callback: ({ node }) => ({ ...node, expanded: false }),
           getNodeKey: ({ treeIndex }) => treeIndex,
           ignoreCollapsed: false,
         }),
       });
-    } else {
-      console.log('old');
     }
   }
 
