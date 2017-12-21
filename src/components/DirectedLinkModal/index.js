@@ -65,7 +65,17 @@ const EditDirectedLink = (props) => {
 
   const tree = buildTree(lexicalEntry, fieldId, allLanguages, allDictionaries, allPerspectives);
 
-  const actions = [{ title: 'Remove', action: entry => remove(entry) }];
+  const actions = [
+    {
+      title: 'Remove',
+      action: (entry) => {
+        const entity = lexicalEntry.contains.find(e => isEqual(e.link_id, entry.id) && isEqual(e.field_id, fieldId));
+        if (entity) {
+          remove(entity);
+        }
+      },
+    },
+  ];
 
   const panes = [
     {
@@ -276,7 +286,6 @@ class DirectedLinkModal extends React.Component {
 
   removeEntity(entity) {
     const { remove, lexicalEntry, entitiesMode } = this.props;
-
     remove({
       variables: { id: entity.id },
       refetchQueries: [
