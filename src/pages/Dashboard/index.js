@@ -28,7 +28,6 @@ export const query = gql`
         translation
         status
         state_translation_gist_id
-        
       }
     }
     all_statuses {
@@ -143,13 +142,20 @@ const P = (props) => {
   );
 };
 
+P.propTypes = {
+  id: PropTypes.array.isRequired,
+  parent_id: PropTypes.array.isRequired,
+  translation: PropTypes.string.isRequired,
+  status: PropTypes.string.isRequired,
+  state_translation_gist_id: PropTypes.array.isRequired,
+  statuses: PropTypes.array.isRequired,
+  actions: PropTypes.object.isRequired,
+};
+
 const Perspective = compose(
-  connect(
-    null,
-    dispatch => ({
-      actions: bindActionCreators({ openRoles }, dispatch),
-    })
-  ),
+  connect(null, dispatch => ({
+    actions: bindActionCreators({ openRoles }, dispatch),
+  })),
   onlyUpdateForKeys(['translation', 'status'])
 )(P);
 
@@ -165,7 +171,11 @@ const D = (props) => {
           <Dropdown text={translation} pointing className="link item">
             <Dropdown.Menu>
               <Dropdown.Item icon="users" text="Roles..." onClick={() => actions.openRoles(id, 'dictionary')} />
-              <Dropdown.Item icon="setting" text="Properties..." onClick={() => actions.openDictionaryPropertiesModal(id)} />
+              <Dropdown.Item
+                icon="setting"
+                text="Properties..."
+                onClick={() => actions.openDictionaryPropertiesModal(id)}
+              />
               <Dropdown.Item icon="percent" text="Statistics..." />
               <Dropdown.Item icon="circle" text="Create a new perspective..." />
               <Dropdown.Divider />
@@ -192,13 +202,20 @@ const D = (props) => {
   );
 };
 
+D.propTypes = {
+  id: PropTypes.array.isRequired,
+  perspectives: PropTypes.array.isRequired,
+  translation: PropTypes.string.isRequired,
+  status: PropTypes.string.isRequired,
+  state_translation_gist_id: PropTypes.array.isRequired,
+  statuses: PropTypes.array.isRequired,
+  actions: PropTypes.object.isRequired,
+};
+
 const Dictionary = compose(
-  connect(
-    null,
-    dispatch => ({
-      actions: bindActionCreators({ openRoles, openDictionaryPropertiesModal }, dispatch),
-    })
-  ),
+  connect(null, dispatch => ({
+    actions: bindActionCreators({ openRoles, openDictionaryPropertiesModal }, dispatch),
+  })),
   onlyUpdateForKeys(['translation', 'status', 'perspectives'])
 )(D);
 

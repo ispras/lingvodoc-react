@@ -3,7 +3,7 @@ import 'styles/main.scss';
 
 import React from 'react';
 import styled from 'styled-components';
-import { Sidebar, Menu, Icon } from 'semantic-ui-react';
+import { Sidebar } from 'semantic-ui-react';
 
 import PlayerModal from 'components/PlayerModal';
 import MarkupModal from 'components/MarkupModal';

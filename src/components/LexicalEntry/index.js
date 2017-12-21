@@ -40,8 +40,8 @@ const acceptEntityMutation = gql`
 `;
 
 const removeEntityMutation = gql`
-  mutation acceptEntity($id: LingvodocID!, $accepted: Boolean!) {
-    update_entity(id: $id, accepted: $accepted) {
+  mutation removeEntity($id: LingvodocID!) {
+    delete_entity(id: $id) {
       triumph
     }
   }
@@ -125,7 +125,19 @@ class Entities extends React.Component {
   }
 
   remove(entity) {
-
+    const { perspectiveId, entitiesMode, removeEntity } = this.props;
+    removeEntity({
+      variables: { id: entity.id },
+      refetchQueries: [
+        {
+          query: queryPerspective,
+          variables: {
+            id: perspectiveId,
+            entitiesMode,
+          },
+        },
+      ],
+    });
   }
 
   render() {
@@ -165,9 +177,7 @@ class Entities extends React.Component {
             </Button.Group>
           )}
 
-          {this.state.edit && (
-            <Component.Edit onSave={this.create} onCancel={() => this.setState({ edit: false })} />
-          )}
+          {this.state.edit && <Component.Edit onSave={this.create} onCancel={() => this.setState({ edit: false })} />}
         </li>
       </ul>
     );
@@ -197,6 +207,5 @@ export default compose(
   graphql(acceptEntityMutation, { name: 'acceptEntity' }),
   graphql(createEntityMutation, { name: 'createEntity' }),
   graphql(removeEntityMutation, { name: 'removeEntity' }),
-  pure,
+  pure
 )(Entities);
-

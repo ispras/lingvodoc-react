@@ -1,6 +1,6 @@
 import Cookie from 'js-cookie';
-import { httpGet, httpPost, httpPut } from './http';
 import config from 'config';
+import { httpGet, httpPost, httpPut } from './http';
 
 const DEFAULT_BIRTH = {
   day: 1,
@@ -27,7 +27,9 @@ export function signUp(form) {
   return httpPost('/signup', Object.assign(form, DEFAULT_BIRTH));
 }
 
-export function editProfile({ id, name, email, new_password: np, old_password: op }) {
+export function editProfile({
+  id, name, email, new_password: np, old_password: op,
+}) {
   const newUser = { user_id: id, name, email };
   if (np) {
     newUser.new_password = np;
