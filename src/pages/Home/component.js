@@ -10,42 +10,31 @@ import { styleFor } from 'utils/string';
 
 import './published.scss';
 
-const Perspective =
-({
-  perspective: p,
-}) =>
+const Perspective = ({ perspective: p }) => (
   <Dropdown.Item as={Link} to={`dictionary/${p.urlFor('parent_')}/perspective/${p.url}`}>
     {p.translation} {p.authors && p.authors.content && ` (${p.authors.content})`}
-  </Dropdown.Item>;
+  </Dropdown.Item>
+);
 
 Perspective.propTypes = {
   perspective: PropTypes.instanceOf(PerspectiveModel).isRequired,
 };
 
-const Dictionary =
-({
-  dictionary,
-  perspectives,
-  history,
-}) =>
+const Dictionary = ({ dictionary, perspectives, history }) => (
   <div className="dict">
-    <span title={history.join(' > ')} className="dict-name">{dictionary.translation}</span>
-    {
-      perspectives && perspectives.valueSeq &&
+    <span title={history.join(' > ')} className="dict-name">
+      {dictionary.translation}
+    </span>
+    {perspectives &&
+      perspectives.valueSeq && (
         <Dropdown inline text={`View (${perspectives.size})`}>
           <Dropdown.Menu>
-            {
-              perspectives.valueSeq().map(pers =>
-                <Perspective
-                  key={pers.url}
-                  perspective={pers}
-                />
-              )
-            }
+            {perspectives.valueSeq().map(pers => <Perspective key={pers.url} perspective={pers} />)}
           </Dropdown.Menu>
         </Dropdown>
-    }
-  </div>;
+      )}
+  </div>
+);
 
 Dictionary.propTypes = {
   dictionary: PropTypes.instanceOf(DictionaryModel).isRequired,
@@ -57,29 +46,26 @@ Dictionary.defaultProps = {
   perspectives: {},
 };
 
-const DictionaryList =
-({
-  dicts,
-  history,
-  perspectives,
-}) => {
+const DictionaryList = ({ dicts, history, perspectives }) => {
   if (dicts.length === 0) return null;
 
   return (
     <div className="dict-list">
       <span className="translation">
-        { history.map(s => <span key={s} style={styleFor(s)}>{s}</span>) }
+        {history.map(s => (
+          <span key={s} style={styleFor(s)}>
+            {s}
+          </span>
+        ))}
       </span>
-      {
-        dicts.map(dictionary =>
-          <Dictionary
-            key={dictionary.url}
-            perspectives={perspectives.get(dictionary.id)}
-            history={history}
-            dictionary={dictionary}
-          />
-        )
-      }
+      {dicts.map(dictionary => (
+        <Dictionary
+          key={dictionary.url}
+          perspectives={perspectives.get(dictionary.id)}
+          history={history}
+          dictionary={dictionary}
+        />
+      ))}
     </div>
   );
 };
@@ -90,25 +76,14 @@ DictionaryList.propTypes = {
   history: PropTypes.array.isRequired,
 };
 
-const LanguagesList = ({
-  languages,
-  perspectives,
-}) => {
+const LanguagesList = ({ languages, perspectives }) => {
   if (languages.length === 0) {
     return null;
   }
 
   return (
     <div className="lang-list">
-      {
-        languages.map(lang =>
-          <DictionaryList
-            key={lang.url}
-            perspectives={perspectives}
-            {...lang}
-          />
-        )
-      }
+      {languages.map(lang => <DictionaryList key={lang.url} perspectives={perspectives} {...lang} />)}
     </div>
   );
 };
@@ -118,15 +93,12 @@ LanguagesList.propTypes = {
   perspectives: PropTypes.object.isRequired,
 };
 
-const Home = ({
-  languages,
-  perspectives,
-  loading,
-}) =>
+const Home = ({ languages, perspectives, loading }) => (
   <Container className="published">
     <h2>Опубликованные словари {loading && <Icon name="spinner" loading />}</h2>
     <LanguagesList languages={languages} perspectives={perspectives} />
-  </Container>;
+  </Container>
+);
 
 Home.propTypes = {
   languages: PropTypes.array.isRequired,

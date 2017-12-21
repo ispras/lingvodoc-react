@@ -7,36 +7,6 @@ import { connect } from 'react-redux';
 import { Button, Modal, Input, Container, Segment, Grid, Header } from 'semantic-ui-react';
 import { closeDictionaryPropertiesModal } from 'ducks/properties';
 import Map from './Map';
-import styled from 'styled-components';
-
-const Wrapper = styled.div`
-  width: 100%;
-  height: 600px;
-  border: 1px solid grey;
-  border-radius: 2px;
-
-  .leaflet {
-    width: 100%;
-    height: 100%;
-
-    .point {
-      display: flex;
-      flex-direction: column;
-      height: 2em !important;
-      width: 2em !important;
-      border-radius: 2px;
-      border: 1px solid black;
-
-      span {
-        flex: 1 1 auto;
-
-        &:not(:last-child) {
-          border-bottom: 1px solid black;
-        }
-      }
-    }
-  }
-`;
 
 const query = gql`
   query dictionaryProps($id: LingvodocID!) {
@@ -153,7 +123,7 @@ class Properties extends React.Component {
       return null;
     }
 
-    const { translation, additional_metadata: { location, authors } } = dictionary;
+    const { translation } = dictionary;
 
     return (
       <Container>
@@ -220,9 +190,14 @@ const DictionaryPropertiesModal = (props) => {
 
 DictionaryPropertiesModal.propTypes = {
   visible: PropTypes.bool.isRequired,
+  id: PropTypes.array,
   actions: PropTypes.shape({
     closeDictionaryPropertiesModal: PropTypes.func.isRequired,
   }).isRequired,
+};
+
+DictionaryPropertiesModal.defaultProps = {
+  id: null,
 };
 
 export default compose(connect(

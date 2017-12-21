@@ -2,5 +2,5 @@ export default {
   apiUrl: '',
   homePath: '/',
   pollingInterval: 2000,
-  proxy: false,
+  proxy: true,
 };
