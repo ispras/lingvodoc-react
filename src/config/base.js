@@ -2,5 +2,6 @@ export default {
   apiUrl: '',
   homePath: '/',
   pollingInterval: 2000,
-  proxy: true,
+  // buildType = server | desktop | proxy
+  buildType: 'server',
 };

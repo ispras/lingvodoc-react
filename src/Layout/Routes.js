@@ -2,7 +2,6 @@ import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 
 import Home from 'pages/Home';
-import ProxyHome from 'pages/Home/proxy';
 import Info from 'pages/Info';
 import Search from 'pages/Search';
 import DictImport from 'pages/DictImport';
@@ -14,11 +13,9 @@ import { DictionaryDashboard, CorpusDashboard } from 'pages/Dashboard';
 
 import config from 'config';
 
-const homeComponent = config.proxy ? ProxyHome : Home;
-
 const Routes = () =>
   <Switch>
-    <Route exact path={config.homePath} component={homeComponent} />
+    <Route exact path={config.homePath} component={Home} />
     <Route path="/info" component={Info} />
     <Route path="/languages" component={Languages} />
     <Route path="/dashboard/dictionaries" component={DictionaryDashboard} />

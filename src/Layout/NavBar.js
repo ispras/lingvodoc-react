@@ -85,7 +85,7 @@ const NavBar = pure(({ location }) => (
     </Menu.Item>
 
     <Menu.Menu position="right">
-      {config.proxy && <Sync />}
+      {(config.buildType === 'desktop' || config.buildType === 'proxy') && <Sync />}
       <User />
       <Tasks />
       <Locale />

@@ -1,23 +1,23 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { compose, withReducer } from 'recompose';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { compose } from 'recompose';
 import { graphql, gql } from 'react-apollo';
 import Immutable, { fromJS, Map } from 'immutable';
-import { Link } from 'react-router-dom';
-import { Container, Dropdown, Checkbox, List, Segment } from 'semantic-ui-react';
-import { buildLanguageTree, assignDictsToTree, buildDictTrees } from 'pages/Search/treeBuilder';
+import { Container, Checkbox, Segment, Button } from 'semantic-ui-react';
+import { buildLanguageTree } from 'pages/Search/treeBuilder';
+import { setGrantsMode } from 'ducks/home';
 
+import config from 'config';
+
+import GrantedDicts from './GrantedDicts';
+import AllDicts from './AllDicts';
 import './published.scss';
 
 const dictionaryWithPerspectivesQuery = gql`
   query DictionaryWithPerspectives {
-    language_tree {
-      id
-      parent_id
-      translation
-      created_at
-    }
-    dictionaries {
+    dictionaries(proxy: false) {
       id
       parent_id
       translation
@@ -25,11 +25,27 @@ const dictionaryWithPerspectivesQuery = gql`
       additional_metadata {
         authors
       }
+      perspectives {
+        id
+        translation
+      }
     }
     perspectives {
       id
       parent_id
       translation
+    }
+    remoteDictionaries: dictionaries(proxy: true) {
+      id
+      parent_id
+      translation
+      additional_metadata {
+        authors
+      }
+      perspectives {
+        id
+        translation
+      }
     }
     grants {
       id
@@ -38,223 +54,126 @@ const dictionaryWithPerspectivesQuery = gql`
         participant
       }
     }
+    language_tree {
+      id
+      parent_id
+      translation
+      created_at
+    }
+    permission_lists(proxy: true) {
+      view {
+        id
+        parent_id
+        translation
+      }
+      edit {
+        id
+        parent_id
+        translation
+      }
+      publish {
+        id
+        parent_id
+        translation
+      }
+      limited {
+        id
+        parent_id
+        translation
+      }
+    }
+    is_authenticated
   }
 `;
 
-const Perspective = ({ perspective: p }) => (
-  <Dropdown.Item as={Link} to="/persp">
-    {p.get('translation')}
-  </Dropdown.Item>
-);
-
-Perspective.propTypes = {
-  perspective: PropTypes.instanceOf(Immutable.Map).isRequired,
-};
-
-const Dictionary = ({ dictionary }) => {
-  const translation = dictionary.get('translation');
-  const perspectives = dictionary.get('children');
-  const authors = dictionary.getIn(['additional_metadata', 'authors']);
-  return (
-    <li className="dict">
-      <span className="dict-name">{translation}</span>
-      {authors && <span className="dict-authors">({authors})</span>}
-      {perspectives &&
-        perspectives.valueSeq && (
-          <Dropdown inline text={`View (${perspectives.size})`}>
-            <Dropdown.Menu>
-              {perspectives.valueSeq().map(pers => <Perspective key={pers.id} perspective={pers} />)}
-            </Dropdown.Menu>
-          </Dropdown>
-        )}
-    </li>
-  );
-};
-
-Dictionary.propTypes = {
-  dictionary: PropTypes.instanceOf(Immutable.Map).isRequired,
-};
-
-const Language = ({ language }) => {
-  const translation = language.get('translation');
-  const children = language.get('children');
-  return (
-    <li className="lang">
-      <span className="lang-name">{translation}</span>
-      <ul divided relaxed>
-        {children.map(n => <Node key={n.get('id')} node={n} />)}
-      </ul>
-    </li>
-  );
-};
-
-Language.propTypes = {
-  language: PropTypes.instanceOf(Immutable.Map).isRequired,
-};
-
-const Node = ({ node }) => {
-  switch (node.get('type')) {
-    case 'language':
-      return <Language language={node} />;
-    case 'dictionary':
-      return <Dictionary dictionary={node} />;
-    default:
-      return <div>Unknown type</div>;
+const downloadDictionariesMutation = gql`
+  mutation DownloadDictionaries($ids: [LingvodocID]!) {
+    download_dictionaries(ids: $ids) {
+      triumph
+    }
   }
-};
+`;
 
-Node.propTypes = {
-  node: PropTypes.instanceOf(Immutable.Map).isRequired,
-};
-
-const Tree = ({ tree }) => <ul className="tree">{tree.map(e => <Node key={e.get('id')} node={e} />)}</ul>;
-
-Tree.propTypes = {
-  tree: PropTypes.instanceOf(Map).isRequired,
-};
-
-function AllDicts(props) {
+const Home = (props) => {
   const {
+    grantsMode,
+    selected,
+    actions,
+    downloadDictionaries,
     data: {
-      loading, error, dictionaries, perspectives, language_tree: languages,
+      loading,
+      error,
+      dictionaries,
+      perspectives,
+      grants,
+      language_tree: languages,
+      remoteDictionaries,
+      is_authenticated: isAuthenticated,
+      permission_lists: permissionLists,
     },
   } = props;
 
-  if (loading || error) {
-    return null;
-  }
-
-  const languagesTree = buildLanguageTree(fromJS(languages));
-  const publishedDictionaries = fromJS(dictionaries.filter(d => d.status === 'Published'));
-
-  const tree = assignDictsToTree(
-    buildDictTrees(fromJS({
-      lexical_entries: [],
-      perspectives,
-      dictionaries: publishedDictionaries,
-    })),
-    languagesTree
-  );
-
-  return (
-    <div>
-      <Tree tree={tree} />
-    </div>
-  );
-}
-
-AllDicts.propTypes = {
-  data: PropTypes.shape({
-    loading: PropTypes.bool.isRequired,
-  }).isRequired,
-};
-
-const AllDictsWithData = compose(graphql(dictionaryWithPerspectivesQuery))(AllDicts);
-
-function restDictionaries(dicts, grants) {
-  const grantedDicts = grants
-    .flatMap(grant => grant.getIn(['additional_metadata', 'participant']) || new List())
-    .toSet();
-  return dicts.reduce((acc, dict, id) => (grantedDicts.has(id) ? acc : acc.push(dict)), new Immutable.List());
-}
-
-function GrantedDicts(props) {
-  const {
-    data: {
-      loading, error, dictionaries, perspectives, grants, language_tree: languages,
-    }, selected,
-  } = props;
-
-  if (loading || error) {
+  if (error || loading) {
     return null;
   }
 
   const grantsList = fromJS(grants);
   const languagesTree = buildLanguageTree(fromJS(languages));
-  // const publishedDictionaries = fromJS(dictionaries.filter(d => d.status === 'Published'));
 
-  const dicts = fromJS(dictionaries)
-    .reduce((acc, dict) => acc.set(dict.get('id'), dict), new Map())
-    .map((d, id) => d.set('selected', !!selected.get(id) || false));
+  // skip permissions if buildType == 'server'
+  const permissions =
+    config.buildType === 'server'
+      ? null
+      : fromJS({
+        view: permissionLists.view,
+        edit: permissionLists.edit,
+        publish: permissionLists.publish,
+        limited: permissionLists.limited,
+      }).map(ps => new Immutable.Set(ps.map(p => p.get('id'))));
 
-  // build grant trees
-  const trees = grantsList.map((grant) => {
-    // list of dictionary ids involved in this grant
-    const dictIds = grant.getIn(['additional_metadata', 'participant']) || new List();
-    const pickedDicts = dictIds.map(id => dicts.get(id));
-    return {
-      id: grant.get('id'),
-      text: grant.get('translation'),
-      tree: assignDictsToTree(
-        buildDictTrees(fromJS({
-          lexical_entries: [],
-          perspectives,
-          dictionaries: pickedDicts,
-        })),
-        languagesTree
-      ),
-    };
-  });
-
-  // build tree of dictionaries not included in grants
-  const restTree = assignDictsToTree(
-    buildDictTrees(fromJS({
-      lexical_entries: [],
-      perspectives,
-      dictionaries: restDictionaries(dicts, grantsList),
-    })),
-    languagesTree
-  );
-
-  return (
-    <div>
-      <div>
-        {trees.map(({ id, text, tree }) => (
-          <div key={id} className="grant">
-            <div className="grant-title">{text}</div>
-            <Tree tree={tree} />
-          </div>
-        ))}
-      </div>
-      <div className="grant">
-        <div className="grant-title">Индивидуальная работа</div>
-        <Tree tree={restTree} />
-      </div>
-    </div>
-  );
-}
-
-GrantedDicts.propTypes = {
-  data: PropTypes.shape({
-    loading: PropTypes.bool.isRequired,
-  }).isRequired,
-  selected: PropTypes.instanceOf(Immutable.Map).isRequired,
-};
-
-const GrantedDictsWithData = compose(graphql(dictionaryWithPerspectivesQuery))(GrantedDicts);
-
-// state: Map { grantMode: true, selected: Map { id: true } }
-function selectedReducer(state, { type, payload }) {
-  switch (type) {
-    case 'TOGGLE_DICT':
-      const id = fromJS(payload);
-      return state.hasIn(['selected', id]) ? state.deleteIn(['selected', id]) : state.setIn(['selected', id], true);
-    case 'RESET_DICTS':
-      return state.set('selected', new Map());
-    case 'TOGGLE_GRANTS_MODE':
-      return state.get('grantsMode') ? state.set('grantsMode', false) : state.set('grantsMode', true);
-    case 'SET_GRANTS_MODE':
-      return state.set('grantsMode', payload);
-    default:
-      return state;
+  // server version
+  let dictsSource;
+  // proxy/desktop version
+  if (config.buildType === 'desktop' || config.buildType === 'proxy') {
+    dictsSource = isAuthenticated ? fromJS(remoteDictionaries) : fromJS(dictionaries);
+  } else {
+    dictsSource = fromJS(dictionaries);
   }
-}
 
-const Home = (props) => {
-  const { state, dispatch } = props;
+  // pre-process dictionary list
+  const isDownloaded = dict => !!dictsSource.find(d => d.get('id').equals(dict.get('id')));
+  const hasPermission = (p, permission) =>
+    (config.buildType === 'server' ? false : permissions.get(permission).has(p.get('id')));
 
-  const grantsMode = state.get('grantsMode');
+  const dicts = dictsSource.reduce(
+    (acc, dict) =>
+      acc.set(
+        dict.get('id'),
+        dict.set('isDownloaded', isDownloaded(dict)).set('selected', selected.has(dict.get('id')))
+      ),
+    new Map()
+  );
+
+  const perspectivesList = fromJS(perspectives).map(perspective =>
+    // for every perspective set 4 boolean property: edit, view, publish, limited
+    // according to permission_list result
+    fromJS({
+      ...perspective.toJS(),
+      view: hasPermission(perspective, 'view'),
+      edit: hasPermission(perspective, 'edit'),
+      publish: hasPermission(perspective, 'publish'),
+      limited: hasPermission(perspective, 'limited'),
+    }));
+
   const sortMode = grantsMode ? 'by grants' : 'by languages';
+
+  function download() {
+    const ids = selected.toJS();
+    downloadDictionaries({
+      variables: { ids },
+    });
+  }
+
   return (
     <Container className="published">
       <Segment padded="very">
@@ -262,18 +181,44 @@ const Home = (props) => {
           toggle
           label={{ children: <div className="toggle-label">{sortMode}</div> }}
           defaultChecked={grantsMode}
-          onChange={(e, v) => dispatch({ type: 'SET_GRANTS_MODE', payload: v.checked })}
+          onChange={(e, v) => actions.setGrantsMode(v.checked)}
         />
+
+        {(config.buildType === 'desktop' || config.buildType === 'proxy') && (
+          <Button positive onClick={download} disabled={selected.size === 0}>
+            {selected.size > 0 && <p>Download ({selected.size})</p>}
+            {selected.size === 0 && <p>Download</p>}
+          </Button>
+        )}
       </Segment>
-      {grantsMode && <GrantedDictsWithData selected={state.get('selected')} />}
-      {!grantsMode && <AllDictsWithData />}
+      {grantsMode && (
+        <GrantedDicts
+          languagesTree={languagesTree}
+          dictionaries={dicts}
+          perspectives={perspectivesList}
+          grants={grantsList}
+          selected={selected}
+        />
+      )}
+      {!grantsMode && <AllDicts languagesTree={languagesTree} dictionaries={dicts} perspectives={perspectivesList} />}
     </Container>
   );
 };
 
 Home.propTypes = {
-  state: PropTypes.instanceOf(Immutable.Map).isRequired,
-  dispatch: PropTypes.func.isRequired,
+  data: PropTypes.shape({
+    loading: PropTypes.bool.isRequired,
+  }).isRequired,
+  grantsMode: PropTypes.bool.isRequired,
+  selected: PropTypes.instanceOf(Immutable.Set).isRequired,
+  actions: PropTypes.shape({
+    setGrantsMode: PropTypes.func.isRequired,
+  }).isRequired,
+  downloadDictionaries: PropTypes.func.isRequired,
 };
 
-export default compose(withReducer('state', 'dispatch', selectedReducer, fromJS({ grantsMode: true, selected: new Map() })))(Home);
+export default compose(
+  connect(state => state.home, dispatch => ({ actions: bindActionCreators({ setGrantsMode }, dispatch) })),
+  graphql(dictionaryWithPerspectivesQuery),
+  graphql(downloadDictionariesMutation, { name: 'downloadDictionaries' })
+)(Home);
