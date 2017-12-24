@@ -15,6 +15,7 @@ import fields from './fields';
 import groupingTag from './groupingTag';
 import directedLink from './directedLink';
 import properties from './properties';
+import home from './home';
 import apolloClient from './apolloClient';
 
 export default {
@@ -35,5 +36,6 @@ export default {
   groupingTag,
   directedLink,
   properties,
+  home,
   apolloClient,
 };

@@ -100,7 +100,7 @@ CreateFieldModal.propTypes = {
   }).isRequired,
   data: PropTypes.shape({
     loading: PropTypes.bool.isRequired,
-    all_data_types: PropTypes.array.isRequired,
+    all_data_types: PropTypes.array,
   }).isRequired,
   visible: PropTypes.bool.isRequired,
   createField: PropTypes.func.isRequired,

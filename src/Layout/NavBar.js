@@ -40,14 +40,12 @@ const Sync = compose(
   pure
 )(SyncButton);
 
-const NavBar = pure(({ location }) => (
-  <Menu fixed="top">
-    <Menu.Item as={Link} to={config.homePath}>
-      <Logo>
-        Lingv<Icon name="talk outline" />doc
-      </Logo>
-    </Menu.Item>
-
+const Dashboard = (props) => {
+  const { data: { loading, error, is_authenticated: isAuthenticated } } = props;
+  if (loading || error || !isAuthenticated) {
+    return null;
+  }
+  return (
     <Dropdown item text="Dashboard">
       <Dropdown.Menu>
         <Dropdown.Item as={Link} to="/dashboard/dictionaries">
@@ -64,9 +62,34 @@ const NavBar = pure(({ location }) => (
         </Dropdown.Item>
       </Dropdown.Menu>
     </Dropdown>
+  );
+};
+
+Dashboard.propTypes = {
+  data: PropTypes.shape({ loading: PropTypes.bool.isRequired }).isRequired,
+};
+
+const DashboardWithData = graphql(gql`
+  query isAuthenticated {
+    is_authenticated
+  }
+`)(Dashboard);
+
+const NavBar = pure(({ location }) => (
+  <Menu fixed="top">
+    <Menu.Item as={Link} to={config.homePath}>
+      <Logo>
+        Lingv<Icon name="talk outline" />doc
+      </Logo>
+    </Menu.Item>
+
+    <DashboardWithData />
 
     <Dropdown item text="Maps">
       <Dropdown.Menu>
+        <Dropdown.Item as={Link} to="/map">
+          Map
+        </Dropdown.Item>
         <Dropdown.Item as={Link} to="/map_search">
           Search
         </Dropdown.Item>
@@ -85,7 +108,7 @@ const NavBar = pure(({ location }) => (
     </Menu.Item>
 
     <Menu.Menu position="right">
-      {config.proxy && <Sync />}
+      {(config.buildType === 'desktop' || config.buildType === 'proxy') && <Sync />}
       <User />
       <Tasks />
       <Locale />

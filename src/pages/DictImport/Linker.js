@@ -1,6 +1,6 @@
 import React from 'react';
 import { pure } from 'recompose';
-import { Dropdown, Button, Checkbox, Popup, Grid } from 'semantic-ui-react';
+import { Dropdown, Button, Checkbox, Popup, Grid, Icon } from 'semantic-ui-react';
 
 function valueColor(value) {
   if (value === 'keep') {
@@ -68,13 +68,14 @@ function Column({
 }
 
 function Columns({
-  blob, spreads, linkOptions, onUpdateColumn, onToggleColumn,
+  blob, spreads, linkOptions, onUpdateColumn, onToggleColumn, onDelete,
 }) {
   const columns = blob.getIn(['additional_metadata', 'starling_fields']);
   const values = blob.get('values');
 
   return (
     <div className="blob">
+      <Button negative icon="trash" size="tiny" onClick={() => onDelete(blob.get('id'))} />
       <b className="blob-name">{blob.get('name')}</b>
       <div className="blob-columns">
         {columns.map(column => (
@@ -96,7 +97,7 @@ function Columns({
 }
 
 function Linker({
-  blobs, state, spreads, onSelect, onUpdateColumn, onToggleColumn,
+  blobs, state, spreads, onSelect, onDelete, onUpdateColumn, onToggleColumn,
 }) {
   const stateOptions = blobs.reduce(
     (acc, blob) => [
@@ -138,6 +139,7 @@ function Linker({
             spreads={spreads.get(id, [])}
             onUpdateColumn={onUpdateColumn(id)}
             onToggleColumn={onToggleColumn(id)}
+            onDelete={onDelete}
           />
         ))
         .toArray()}

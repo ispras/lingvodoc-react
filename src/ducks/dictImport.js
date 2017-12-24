@@ -6,6 +6,8 @@ const SET_BLOBS = '@import/SET_BLOBS';
 const NEXT_STEP = '@import/NEXT_STEP';
 const GOTO_STEP = '@import/GOTO_STEP';
 const LINKING_SELECT = '@import/LINKING_SELECT';
+const LINKING_ADD = '@import/LINKING_ADD';
+const LINKING_DELETE = '@import/LINKING_DELETE';
 const LINKING_SET_COLUMN = '@import/LINKING_SET_COLUMN';
 const LINKING_TOGGLE_ADD_COLUMN = '@import/LINKING_TOGGLE_ADD_COLUMN';
 const COLUMN_SET_TYPE = '@import/COLUMN_SET_TYPE';
@@ -34,6 +36,11 @@ function addBlobSelect(state, payload) {
   }
   const blob = state.get('blobs').find(x => is(x.get('id'), id));
   return state.setIn(['linking', id], meta(blob));
+}
+
+function deleteBlobSelect(state, payload) {
+  const id = fromJS(payload);
+  return state.deleteIn(['linking', id]);
 }
 
 function setColumn(state, { id, column, value }) {
@@ -161,6 +168,12 @@ export default function (state = initial, { type, payload }) {
     case LINKING_SELECT:
       newState = replaceSelect(state, payload);
       break;
+    case LINKING_ADD:
+      newState = addBlobSelect(state, payload);
+      break;
+    case LINKING_DELETE:
+      newState = deleteBlobSelect(state, payload);
+      break;
     case LINKING_SET_COLUMN:
       newState = setColumn(state, payload);
       break;
@@ -230,6 +243,14 @@ export function goToStep(payload) {
 
 export function linkingSelect(payload) {
   return { type: LINKING_SELECT, payload };
+}
+
+export function linkingAdd(payload) {
+  return { type: LINKING_ADD, payload };
+}
+
+export function linkingDelete(payload) {
+  return { type: LINKING_DELETE, payload };
 }
 
 export function updateColumn(id, column, value, oldValue) {

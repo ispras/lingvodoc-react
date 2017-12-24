@@ -19,7 +19,7 @@ class CreateLanguageModal extends React.Component {
   }
 
   saveLanguage() {
-    const { createLanguage, parent } = this.props;
+    const { createLanguage, parent, actions } = this.props;
     const translationAtoms = this.state.translations.map(t => ({ locale_id: t.localeId, content: t.content }));
     createLanguage({
       variables: { parent_id: parent.id, translationAtoms },
@@ -28,6 +28,8 @@ class CreateLanguageModal extends React.Component {
           query: languagesQuery,
         },
       ],
+    }).then(() => {
+      actions.closeModal();
     });
   }
 
