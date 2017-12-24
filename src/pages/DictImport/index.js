@@ -56,6 +56,7 @@ const convertMutation = gql`
 @graphql(convertMutation, { name: 'convert' })
 class Info extends React.Component {
   static propTypes = {
+    data: PropTypes.shape({ loading: PropTypes.bool.isRequired }).isRequired,
     step: PropTypes.string.isRequired,
     isNextStep: PropTypes.bool.isRequired,
     blobs: PropTypes.any.isRequired,

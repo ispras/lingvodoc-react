@@ -52,7 +52,7 @@ const Wrapper = styled.div`
 
 const dictionaryMapQuery = gql`
   query DictionaryMap {
-    dictionaries(category: 0) {
+    dictionaries(category: 0, published: true) {
       id
       parent_id
       translation
@@ -66,6 +66,7 @@ const dictionaryMapQuery = gql`
       data_type
       content
     }
+    is_authenticated
   }
 `;
 
@@ -89,11 +90,7 @@ class Map extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const {
-      actions, data: {
-        error, loading, dictionaries, blobs: allBlobs,
-      },
-    } = nextProps;
+    const { actions, data: { loading, dictionaries, blobs: allBlobs } } = nextProps;
 
     if (!loading) {
       this.markers = dictionaries.filter(dictionary => dictionary.additional_metadata.location).map((dictionary) => {

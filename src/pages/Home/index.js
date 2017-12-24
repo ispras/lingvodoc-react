@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
+import { Redirect, matchPath } from 'react-router-dom';
 import { graphql, gql } from 'react-apollo';
 import Immutable, { fromJS, Map } from 'immutable';
 import { Container, Checkbox, Segment, Button } from 'semantic-ui-react';
@@ -111,10 +112,26 @@ const Home = (props) => {
       is_authenticated: isAuthenticated,
       permission_lists: permissionLists,
     },
+    location: { hash },
   } = props;
 
   if (error || loading) {
     return null;
+  }
+
+  // handle legacy links from Lingvodoc 2.0
+  // if link has hash like #/dictionary/1/2/perspective/3/4/edit redirect to this version's
+  // PerspectiveView page
+  if (hash) {
+    const match = matchPath(hash, {
+      path: '#/dictionary/:pcid/:poid/perspective/:cid/:oid/:mode',
+    });
+    if (match) {
+      const {
+        pcid, poid, cid, oid, mode,
+      } = match.params;
+      return <Redirect to={`/dictionary/${pcid}/${poid}/perspective/${cid}/${oid}/${mode}`} />;
+    }
   }
 
   const grantsList = fromJS(grants);
@@ -214,11 +231,15 @@ Home.propTypes = {
   actions: PropTypes.shape({
     setGrantsMode: PropTypes.func.isRequired,
   }).isRequired,
+  location: PropTypes.object.isRequired,
   downloadDictionaries: PropTypes.func.isRequired,
 };
 
 export default compose(
-  connect(state => state.home, dispatch => ({ actions: bindActionCreators({ setGrantsMode }, dispatch) })),
+  connect(
+    state => ({ ...state.home, ...state.router }),
+    dispatch => ({ actions: bindActionCreators({ setGrantsMode }, dispatch) })
+  ),
   graphql(dictionaryWithPerspectivesQuery),
   graphql(downloadDictionariesMutation, { name: 'downloadDictionaries' })
 )(Home);

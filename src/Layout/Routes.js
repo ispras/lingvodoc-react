@@ -26,6 +26,7 @@ const Routes = () =>
     <Route path="/import" component={DictImport} />
     <Route path="/dictionary/:pcid/:poid/perspective/:cid/:oid/:mode" component={Perspective} />
     <Route path="/dictionary/:pcid/:poid/perspective/:cid/:oid" component={Perspective} />
+    <Route path="/#/dictionary/:pcid/:poid/perspective/:cid/:oid" component={Perspective} />
     <Route path="/files" component={Files} />
     <Route component={NotFound} />
   </Switch>;
