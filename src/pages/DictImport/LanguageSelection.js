@@ -27,30 +27,15 @@ class Dictionary extends React.Component {
         <b className="blob-name">{blob.get('name')}</b>
         <div className="blob-lang">
           <Modal dimmer="blurring" open={this.state.open} onClose={this.toggle} trigger={trigger}>
-            <Modal.Header>
-              Select Language for {blob.get('name')}
-              {/* Edit langauges modal */}
-              <Modal
-                dimmer="blurring"
-                trigger={
-                  <span style={{ cursor: 'pointer', textDecoration: 'underline' }}> (or edit languages...)</span>
-                }
-              >
-                <Modal.Content style={{ minHeight: '500px' }}>
-                  <div style={{ height: '500px' }}>
-                    <Languages />
-                  </div>
-                </Modal.Content>
-              </Modal>
-            </Modal.Header>
+            <Modal.Header>Select Language for {blob.get('name')}</Modal.Header>
             <Modal.Content style={{ minHeight: '500px' }}>
-            <div style={{ height: '500px' }}>
-              <Languages
-                onSelect={(params) => {
-                  onSetLanguage(params);
-                  this.toggle();
-                }}
-              />
+              <div style={{ height: '500px' }}>
+                <Languages
+                  onSelect={(params) => {
+                    onSetLanguage(params);
+                    this.toggle();
+                  }}
+                />
               </div>
             </Modal.Content>
           </Modal>

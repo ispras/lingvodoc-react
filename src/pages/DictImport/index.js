@@ -9,7 +9,8 @@ import {
   setBlobs,
   nextStep,
   goToStep,
-  linkingSelect,
+  linkingAdd,
+  linkingDelete,
   updateColumn,
   toggleAddColumn,
   setColumnType,
@@ -68,7 +69,8 @@ class Info extends React.Component {
     setBlobs: PropTypes.func.isRequired,
     nextStep: PropTypes.func.isRequired,
     goToStep: PropTypes.func.isRequired,
-    linkingSelect: PropTypes.func.isRequired,
+    linkingAdd: PropTypes.func.isRequired,
+    linkingDelete: PropTypes.func.isRequired,
     updateColumn: PropTypes.func.isRequired,
     toggleAddColumn: PropTypes.func.isRequired,
     setColumnType: PropTypes.func.isRequired,
@@ -80,6 +82,7 @@ class Info extends React.Component {
     super(props);
 
     this.onSelect = this.onSelect.bind(this);
+    this.onDelete = this.onDelete.bind(this);
     this.onNextClick = this.onNextClick.bind(this);
     this.onStepClick = this.onStepClick.bind(this);
     this.onUpdateColumn = this.onUpdateColumn.bind(this);
@@ -102,7 +105,11 @@ class Info extends React.Component {
   }
 
   onSelect(payload) {
-    this.props.linkingSelect(payload);
+    this.props.linkingAdd(payload);
+  }
+
+  onDelete(payload) {
+    this.props.linkingDelete(payload);
   }
 
   onNextClick() {
@@ -191,6 +198,7 @@ class Info extends React.Component {
               state={linking}
               spreads={spreads}
               onSelect={this.onSelect}
+              onDelete={this.onDelete}
               onUpdateColumn={this.onUpdateColumn}
               onToggleColumn={this.onToggleColumn}
             />
@@ -254,7 +262,8 @@ const mapDispatchToProps = {
   setBlobs,
   nextStep,
   goToStep,
-  linkingSelect,
+  linkingAdd,
+  linkingDelete,
   updateColumn,
   toggleAddColumn,
   setColumnType,
