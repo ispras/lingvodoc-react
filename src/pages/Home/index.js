@@ -51,6 +51,8 @@ const dictionaryWithPerspectivesQuery = gql`
     grants {
       id
       translation
+      issuer
+      grant_number
       additional_metadata {
         participant
       }

@@ -2,8 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Immutable, { fromJS, Map } from 'immutable';
 import { assignDictsToTree, buildDictTrees } from 'pages/Search/treeBuilder';
+import { Segment, Header, List } from 'semantic-ui-react';
 
 import Tree from './Tree';
+
+const grantId = id => `grant_entry_${id}`;
 
 function restDictionaries(dicts, grants) {
   const grantedDicts = grants
@@ -28,7 +31,9 @@ function GrantedDicts(props) {
     const pickedDicts = dictIds.map(id => dicts.get(id));
     return {
       id: grant.get('id'),
-      text: grant.get('translation'),
+      title: grant.get('translation'),
+      issuer: grant.get('issuer'),
+      number: grant.get('grant_number'),
       tree: assignDictsToTree(
         buildDictTrees(fromJS({
           lexical_entries: [],
@@ -50,20 +55,42 @@ function GrantedDicts(props) {
     languagesTree
   );
 
+  const navigateToGrant = (e, grant) => {
+    e.preventDefault();
+    document.getElementById(grantId(grant.id)).scrollIntoView();
+  };
+
   return (
     <div>
-      <div>
-        {trees.map(({ id, text, tree }) => (
-          <div key={id} className="grant">
-            <div className="grant-title">{text}</div>
-            <Tree tree={tree} />
-          </div>
+      <Segment>
+        <Header>Contents</Header>
+        <List ordered>
+          {trees.map(grant => (
+            <List.Item key={grant.id} as="a" onClick={e => navigateToGrant(e, grant)}>
+              {grant.title} ({grant.issuer} {grant.number})
+            </List.Item>
+          ))}
+        </List>
+      </Segment>
+
+      <Segment>
+        {trees.map(({
+ id, title, issuer, number, tree,
+}) => (
+  <div id={grantId(id)} key={id} className="grant">
+    <Header>
+      {title} ({issuer} {number})
+    </Header>
+    <Tree tree={tree} />
+  </div>
         ))}
-      </div>
-      <div className="grant">
-        <div className="grant-title">Индивидуальная работа</div>
-        <Tree tree={restTree} />
-      </div>
+      </Segment>
+      <Segment>
+        <div className="grant">
+          <div className="grant-title">Индивидуальная работа</div>
+          <Tree tree={restTree} />
+        </div>
+      </Segment>
     </div>
   );
 }
