@@ -6,6 +6,51 @@ import { Link } from 'react-router-dom';
 import { Menu } from 'semantic-ui-react';
 import styled from 'styled-components';
 
+const Item = ({
+  num,
+  disabled,
+  active,
+  text,
+  icon,
+  to,
+}) => {
+  const extraProps = {};
+  if (icon) {
+    extraProps.icon = icon;
+  } else {
+    extraProps.name = text || num.toString();
+  }
+
+  return (
+    <Menu.Item
+      as={Link}
+      active={active}
+      disabled={disabled}
+      to={{
+        pathname: to,
+        search: `?page=${num}`,
+      }}
+      {...extraProps}
+    />
+  );
+};
+
+Item.propTypes = {
+  num: PropTypes.number.isRequired,
+  disabled: PropTypes.bool,
+  active: PropTypes.bool,
+  text: PropTypes.string,
+  icon: PropTypes.string,
+  to: PropTypes.string.isRequired,
+};
+
+Item.defaultProps = {
+  disabled: false,
+  active: false,
+  text: null,
+  icon: null,
+};
+
 const Pager = styled(Menu)`
   position: fixed;
   bottom: 10px;
@@ -19,60 +64,21 @@ const Pager = styled(Menu)`
 
 const WINDOW = 5;
 
-const Pagination = ({ current, total, to }) => {
-  return (
-    <Pager size="tiny" pagination>
-      <Menu.Item
-        as={Link}
-        name="1↢"
-        active={current === 1}
-        to={{
-          pathname: to,
-          search: '?page=1',
-        }}
+const Pagination = ({ current, total, to }) =>
+  <Pager size="tiny" pagination>
+    <Item num={1} text="1↢" active={current === 1} to={to} />
+    <Item num={current - 1} icon="chevron left" disabled={current <= 1} to={to} />
+    {Range(Math.max(1, current - WINDOW), Math.min(current + WINDOW + 1, total)).map(page => (
+      <Item
+        key={page}
+        num={page}
+        active={page === current}
+        to={to}
       />
-      <Menu.Item
-        disabled={current <= 1}
-        as={Link}
-        to={{
-          pathname: to,
-          search: `?page=${current - 1}`,
-        }}
-        icon="chevron left"
-      />
-      {Range(Math.max(1, current - WINDOW), Math.min(current + WINDOW + 1, total)).map(page => (
-        <Menu.Item
-          key={page}
-          name={page.toString()}
-          active={page === current}
-          as={Link}
-          to={{
-            pathname: to,
-            search: `?page=${page}`,
-          }}
-        />
-      ))}
-      <Menu.Item
-        disabled={current >= total}
-        as={Link}
-        to={{
-          pathname: to,
-          search: `?page=${current + 1}`,
-        }}
-        icon="chevron right"
-      />
-      <Menu.Item
-        as={Link}
-        name={`↣${total}`}
-        active={current === total}
-        to={{
-          pathname: to,
-          search: `?page=${total}`,
-        }}
-      />
-    </Pager>
-  );
-};
+    ))}
+    <Item num={current + 1} icon="chevron right" disabled={current >= total} to={to} />
+    <Item num={total} text={`↣${total}`} active={current === total} to={to} />
+  </Pager>;
 
 Pagination.propTypes = {
   current: PropTypes.number.isRequired,
