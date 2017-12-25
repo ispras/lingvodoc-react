@@ -63,7 +63,7 @@ function GrantedDicts(props) {
   return (
     <div>
       <Segment>
-        <Header>Contents</Header>
+        <Header>The work is supported by the following grants:</Header>
         <List ordered>
           {trees.map(grant => (
             <List.Item key={grant.id} as="a" onClick={e => navigateToGrant(e, grant)}>
