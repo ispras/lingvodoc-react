@@ -18,6 +18,7 @@ const Routes = () =>
   <Switch>
     <Route exact path={config.homePath} component={Home} />
     <Route path="/info" component={Info} />
+    <Route path="/desktop" component={Info} />
     <Route path="/languages" component={Languages} />
     <Route path="/dashboard/dictionaries" component={DictionaryDashboard} />
     <Route path="/dashboard/corpora" component={CorpusDashboard} />

@@ -1,9 +1,14 @@
-import { call, put, takeLatest } from 'redux-saga/effects';
+import { call, put, select, takeLatest } from 'redux-saga/effects';
 import { getId, getUser, signIn, signUp, signOut, editProfile } from 'api/user';
 import { setUser, requestUser, SIGN_OUT, signInForm, signUpForm, editForm } from 'ducks/user';
 import { err } from 'ducks/snackbar';
 
 import { SubmissionError } from 'redux-form';
+
+export function* resetApollo() {
+  const client = yield select(state => state.apolloClient);
+  yield call(client.resetStore);
+}
 
 export function* requestRoutine() {
   if (yield call(getId)) {
@@ -21,6 +26,7 @@ export function* signOutRoutine() {
   const response = yield call(signOut);
   if (response.data) {
     yield put(setUser({}));
+    yield call(resetApollo);
   } else {
     yield put(err('Could not sign out'));
   }
@@ -31,12 +37,11 @@ export function* signInRoutine({ payload }) {
   const response = yield call(signIn, payload);
   if (response.data) {
     yield put(signInForm.success());
+    yield call(resetApollo);
   } else {
-    yield put(signInForm.failure(
-      new SubmissionError({
-        _error: response.err.statusText,
-      })
-    ));
+    yield put(signInForm.failure(new SubmissionError({
+      _error: response.err.statusText,
+    })));
   }
   yield* requestRoutine();
 }
@@ -48,11 +53,9 @@ export function* signUpRoutine({ payload }) {
     yield call(signIn, payload);
   }
   if (response.err) {
-    yield put(signUpForm.failure(
-      new SubmissionError({
-        _error: response.err.error,
-      })
-    ));
+    yield put(signUpForm.failure(new SubmissionError({
+      _error: response.err.error,
+    })));
   }
   yield* requestRoutine();
 }
@@ -63,11 +66,9 @@ export function* editRoutine({ payload }) {
     yield put(editForm.success());
   }
   if (response.err) {
-    yield put(editForm.failure(
-      new SubmissionError({
-        _error: response.err.error,
-      })
-    ));
+    yield put(editForm.failure(new SubmissionError({
+      _error: response.err.error,
+    })));
   }
   yield* requestRoutine();
 }
@@ -77,6 +78,5 @@ export default function* main() {
   yield takeLatest(signUpForm.REQUEST, signUpRoutine);
   yield takeLatest(editForm.REQUEST, editRoutine);
   yield takeLatest(SIGN_OUT, signOutRoutine);
-
   yield* requestRoutine();
 }

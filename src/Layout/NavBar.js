@@ -99,13 +99,17 @@ const NavBar = pure(({ location }) => (
       </Dropdown.Menu>
     </Dropdown>
 
-    <Menu.Item as={Link} to="/desktop" active={location.pathname === '/desktop'}>
-      Desktop software
-    </Menu.Item>
 
-    <Menu.Item as={Link} to="/info" active={location.pathname === '/info'}>
-      Info
-    </Menu.Item>
+    <Dropdown item text="Info">
+      <Dropdown.Menu>
+        <Dropdown.Item as={Link} to="/info">
+          Info
+        </Dropdown.Item>
+        <Dropdown.Item as={Link} to="/desktop">
+          Desktop
+        </Dropdown.Item>
+      </Dropdown.Menu>
+    </Dropdown>
 
     <Menu.Menu position="right">
       {(config.buildType === 'desktop' || config.buildType === 'proxy') && <Sync />}
