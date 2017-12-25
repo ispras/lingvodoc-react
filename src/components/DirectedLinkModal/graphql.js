@@ -42,34 +42,8 @@ export const removeMutation = gql`
   }
 `;
 
-export const searchQuery = gql`
-  query SearchEtmologyCandidates($searchString: String!, $fieldId: LingvodocID!) {
-    basic_search(searchstring: $searchString, search_in_published: true, field_id: $fieldId, can_add_tags: true) {
-      lexical_entries {
-        id
-        parent_id
-      }
-      entities {
-        id
-        parent_id
-        field_id
-        link_id
-        self_id
-        created_at
-        locale_id
-        content
-        published
-        accepted
-        additional_metadata {
-          link_perspective_id
-        }
-      }
-    }
-  }
-`;
-
 export const languageTreeSourceQuery = gql`
-  query languageTreeSource {
+  query linkInfo($perspectiveId: LingvodocID) {
     language_tree {
       id
       parent_id
@@ -86,6 +60,18 @@ export const languageTreeSourceQuery = gql`
       id
       parent_id
       translation
+    }
+    perspective(id: $perspectiveId) {
+      id
+      parent_id
+      translation
+      columns {
+        id
+        parent_id
+        self_id
+        field_id
+        link_id
+      }
     }
   }
 `;

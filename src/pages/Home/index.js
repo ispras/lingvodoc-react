@@ -6,7 +6,7 @@ import { compose } from 'recompose';
 import { Redirect, matchPath } from 'react-router-dom';
 import { graphql, gql } from 'react-apollo';
 import Immutable, { fromJS, Map } from 'immutable';
-import { Container, Checkbox, Segment, Button } from 'semantic-ui-react';
+import { Container, Checkbox, Segment, Button, Message } from 'semantic-ui-react';
 import { buildLanguageTree } from 'pages/Search/treeBuilder';
 import { setGrantsMode } from 'ducks/home';
 
@@ -18,7 +18,7 @@ import './published.scss';
 
 const dictionaryWithPerspectivesQuery = gql`
   query DictionaryWithPerspectives {
-    dictionaries(proxy: false) {
+    dictionaries(proxy: false, published: true) {
       id
       parent_id
       translation
@@ -195,7 +195,14 @@ const Home = (props) => {
 
   return (
     <Container className="published">
+      <Message padded="very" warning>
+        <b>
+          Редакторам рекомендуется использовать старую версию системы по адресу:{' '}
+          <a href="http://old.lingvodoc.at.ispras.ru">http://old.lingvodoc.at.ispras.ru</a>
+        </b>
+      </Message>
       <Segment padded="very">
+        <b style={{ fontSize: '1.2em' }}>Display mode </b>
         <Checkbox
           toggle
           label={{ children: <div className="toggle-label">{sortMode}</div> }}

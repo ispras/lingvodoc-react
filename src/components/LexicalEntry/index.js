@@ -12,7 +12,6 @@ import Sound from './Sound';
 import Markup from './Markup';
 import Link from './Link';
 import GroupingTag from './GroupingTag';
-import DirectedLink from './DirectedLink';
 import Unknown from './Unknown';
 
 const createEntityMutation = gql`
@@ -54,7 +53,7 @@ const getComponent = dataType =>
     Markup,
     Link,
     'Grouping Tag': GroupingTag,
-    'Directed Link': DirectedLink,
+    'Directed Link': Link,
   }[dataType] || Unknown);
 
 class Entities extends React.Component {

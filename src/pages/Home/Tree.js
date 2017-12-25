@@ -48,7 +48,7 @@ const Dict = ({ dictionary, actions, selected }) => {
       {(config.buildType === 'desktop' || config.buildType === 'proxy') && (
         <Checkbox defaultChecked={isChecked} onChange={() => actions.toggleDictionary(id.toJS())} />
       )}
-      {isDownloaded && <Icon name="download" />}
+      {(config.buildType === 'desktop' || config.buildType === 'proxy') && isDownloaded && <Icon name="download" />}
       <span className="dict-name">{translation}</span>
       {authors && <span className="dict-authors">({authors})</span>}
       {perspectives &&
