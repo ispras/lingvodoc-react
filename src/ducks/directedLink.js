@@ -4,9 +4,10 @@ import { combineReducers } from 'redux';
 export const OPEN_MODAL = '@directedLink/OPEN_MODAL';
 export const CLOSE_MODAL = '@irectedLink/CLOSE_MODAL';
 
-export const openModal = (lexicalEntry, fieldId, mode = 'view', entitiesMode = 'all') => ({
+export const openModal = (perspectiveId, lexicalEntry, fieldId, mode = 'view', entitiesMode = 'all') => ({
   type: OPEN_MODAL,
   payload: {
+    perspectiveId,
     lexicalEntry,
     fieldId,
     mode,
@@ -22,6 +23,17 @@ const visible = (state = false, action) => {
       return true;
     case CLOSE_MODAL:
       return false;
+    default:
+      return state;
+  }
+};
+
+const perspectiveId = (state = null, action) => {
+  switch (action.type) {
+    case OPEN_MODAL:
+      return action.payload.perspectiveId;
+    case CLOSE_MODAL:
+      return null;
     default:
       return state;
   }
@@ -73,6 +85,7 @@ const mode = (state = 'view', action) => {
 
 export default combineReducers({
   visible,
+  perspectiveId,
   lexicalEntry,
   fieldId,
   mode,

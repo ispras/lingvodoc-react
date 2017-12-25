@@ -14,7 +14,7 @@ const DirectedLink = (props) => {
   } = props;
 
   const count = entry.contains.filter(e => isEqual(e.field_id, column.id)).length;
-  const content = `Directed Link (${count})`;
+  const content = `${column.translation} (${count})`;
 
   return (
     <Component className="gentium">
@@ -24,7 +24,7 @@ const DirectedLink = (props) => {
         content={content}
         icon="code"
         labelPosition="left"
-        onClick={() => actions.openModal(entry, column.id, mode, entitiesMode)}
+        onClick={() => actions.openModal(entry.parent_id, entry, column.id, mode, entitiesMode)}
       />
     </Component>
   );

@@ -79,7 +79,7 @@ const NavBar = pure(({ location }) => (
   <Menu fixed="top">
     <Menu.Item as={Link} to={config.homePath}>
       <Logo>
-        Lingv<Icon name="talk outline" />doc
+        Lingvodoc 3.0
       </Logo>
     </Menu.Item>
 
