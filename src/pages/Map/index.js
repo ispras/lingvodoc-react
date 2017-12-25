@@ -4,18 +4,9 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import { gql, graphql } from 'react-apollo';
-import Immutable, { fromJS } from 'immutable';
-import { Container, Dimmer, Loader, Tab, Button, Divider, Menu, Message } from 'semantic-ui-react';
 import { isEqual } from 'lodash';
 import styled from 'styled-components';
-import Labels from 'components/Search/Labels';
-import ResultsMap from 'components/Search/ResultsMap';
-import IntersectionControl from 'components/Search/IntersectionControl';
-import QueryBuilder from 'components/Search/QueryBuilder';
-import LanguageTree from 'components/Search/LanguageTree';
 import BlobsModal from 'components/Search/blobsModal';
-import { buildLanguageTree, buildSearchResultsTree } from 'pages/Search/treeBuilder';
-import { compositeIdToString } from 'utils/compositeId';
 import L from 'leaflet';
 import { openBlobsModal } from 'ducks/blobs';
 
@@ -52,7 +43,7 @@ const Wrapper = styled.div`
 
 const dictionaryMapQuery = gql`
   query DictionaryMap {
-    dictionaries(category: 0, published: true) {
+    dictionaries(published: true) {
       id
       parent_id
       translation
@@ -97,7 +88,7 @@ class Map extends React.Component {
         const { additional_metadata: { location, blobs } } = dictionary;
         const { lat, lng } = location;
         const dictionaryBlobs = blobs
-          ? blobs.filter(b => !!b).map(blobId => allBlobs.find(b => isEqual(blobId, b.id)))
+          ? blobs.filter(b => !!b).map(blobId => allBlobs.find(b => isEqual(blobId, b.id))).filter(b => !!b)
           : [];
         return L.marker([lat, lng], { icon })
           .addTo(this.leaflet)
@@ -128,6 +119,9 @@ class Map extends React.Component {
 Map.propTypes = {
   data: PropTypes.shape({
     loading: PropTypes.bool.isRequired,
+  }).isRequired,
+  actions: PropTypes.shape({
+    openBlobsModal: PropTypes.func.isRequired,
   }).isRequired,
 };
 

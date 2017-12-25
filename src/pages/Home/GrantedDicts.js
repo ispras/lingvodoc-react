@@ -28,7 +28,7 @@ function GrantedDicts(props) {
   const trees = grants.map((grant) => {
     // list of dictionary ids involved in this grant
     const dictIds = grant.getIn(['additional_metadata', 'participant']) || new Immutable.List();
-    const pickedDicts = dictIds.map(id => dicts.get(id));
+    const pickedDicts = dictIds.map(id => dicts.get(id)).filter(d => !!d);
     return {
       id: grant.get('id'),
       title: grant.get('translation'),

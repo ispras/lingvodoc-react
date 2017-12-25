@@ -18,7 +18,7 @@ import './published.scss';
 
 const dictionaryWithPerspectivesQuery = gql`
   query DictionaryWithPerspectives {
-    dictionaries(proxy: false) {
+    dictionaries(proxy: false, published: true) {
       id
       parent_id
       translation
@@ -198,7 +198,7 @@ const Home = (props) => {
       <Message padded="very" warning>
         <b>
           Редакторам рекомендуется использовать старую версию системы по адресу:{' '}
-          <a href="http://old.lingvodoc.ispras.ru">http://old.lingvodoc.ispras.ru</a>
+          <a href="http://old.lingvodoc.at.ispras.ru">http://old.lingvodoc.at.ispras.ru</a>
         </b>
       </Message>
       <Segment padded="very">
