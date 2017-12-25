@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Range } from 'immutable';
-import { onlyUpdateForPropTypes, branch, renderNothing, compose } from 'recompose';
+import { pure, branch, renderNothing, compose } from 'recompose';
 import { Link } from 'react-router-dom';
 import { Menu } from 'semantic-ui-react';
 import styled from 'styled-components';
@@ -17,12 +17,22 @@ const Pager = styled(Menu)`
   }
 `;
 
-const Pagination = ({ current, total, to }) => {
-  return <Pager size="tiny" pagination>
-    <Menu.Item name="Page" />
+const WINDOW = 5;
 
-    {current > 1 && (
+const Pagination = ({ current, total, to }) => {
+  return (
+    <Pager size="tiny" pagination>
       <Menu.Item
+        as={Link}
+        name="1↢"
+        active={current === 1}
+        to={{
+          pathname: to,
+          search: '?page=1',
+        }}
+      />
+      <Menu.Item
+        disabled={current <= 1}
         as={Link}
         to={{
           pathname: to,
@@ -30,21 +40,20 @@ const Pagination = ({ current, total, to }) => {
         }}
         icon="chevron left"
       />
-    )}
-    {Range(1, total + 1).map(page => (
+      {Range(Math.max(1, current - WINDOW), Math.min(current + WINDOW + 1, total)).map(page => (
+        <Menu.Item
+          key={page}
+          name={page.toString()}
+          active={page === current}
+          as={Link}
+          to={{
+            pathname: to,
+            search: `?page=${page}`,
+          }}
+        />
+      ))}
       <Menu.Item
-        key={page}
-        name={page.toString()}
-        active={page === current}
-        as={Link}
-        to={{
-          pathname: to,
-          search: `?page=${page}`,
-        }}
-      />
-    ))}
-    {current < (total) && (
-      <Menu.Item
+        disabled={current >= total}
         as={Link}
         to={{
           pathname: to,
@@ -52,14 +61,26 @@ const Pagination = ({ current, total, to }) => {
         }}
         icon="chevron right"
       />
-    )}
-  </Pager>;
+      <Menu.Item
+        as={Link}
+        name={`↣${total}`}
+        active={current === total}
+        to={{
+          pathname: to,
+          search: `?page=${total}`,
+        }}
+      />
+    </Pager>
+  );
 };
 
-Pagination['propTypes'] = {
+Pagination.propTypes = {
   current: PropTypes.number.isRequired,
   total: PropTypes.number.isRequired,
   to: PropTypes.string.isRequired,
 };
 
-export default compose(branch(({ total }) => total < 2, renderNothing), onlyUpdateForPropTypes)(Pagination);
+export default compose(
+  branch(({ total }) => total < 2, renderNothing),
+  pure
+)(Pagination);
