@@ -105,7 +105,7 @@ const PerspectiveView = ({
   });
 
   return (
-    <div>
+    <div style={{ overflowY: 'auto' }}>
       <Table celled padded className={className}>
         <TableHeader columns={fields} />
         <TableBody perspectiveId={id} entitiesMode={entitiesMode} entries={pageEntries} columns={fields} mode={mode} />
@@ -180,7 +180,7 @@ const LexicalEntryViewBase = ({
   });
 
   return (
-    <div>
+    <div style={{ overflowY: 'auto' }}>
       <Table celled padded className={className}>
         <TableHeader columns={fields} actions={actions} />
         <TableBody
@@ -292,7 +292,7 @@ const LexicalEntryViewBaseByIds = ({
   });
 
   return (
-    <div>
+    <div style={{ overflowY: 'auto' }}>
       <Table celled padded className={className}>
         <TableHeader columns={fields} actions={actions} />
         <TableBody
