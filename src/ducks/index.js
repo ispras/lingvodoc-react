@@ -13,7 +13,7 @@ import blobs from './blobs';
 import dictImport from './dictImport';
 import fields from './fields';
 import groupingTag from './groupingTag';
-import directedLink from './directedLink';
+import link from './link';
 import properties from './properties';
 import home from './home';
 import apolloClient from './apolloClient';
@@ -34,7 +34,7 @@ export default {
   dictImport,
   fields,
   groupingTag,
-  directedLink,
+  link,
   properties,
   home,
   apolloClient,

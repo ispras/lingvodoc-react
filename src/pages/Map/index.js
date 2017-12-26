@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import { gql, graphql } from 'react-apollo';
-import { isEqual } from 'lodash';
+import { isEqual, isEmpty } from 'lodash';
 import styled from 'styled-components';
 import BlobsModal from 'components/Search/blobsModal';
 import L from 'leaflet';
@@ -61,11 +61,15 @@ const dictionaryMapQuery = gql`
   }
 `;
 
-const icon = L.divIcon({
-  className: 'map-marker marker-color-gray a-class',
-  iconSize: [28, 28],
-  html: '<i class="fa fa-fw fa-2x fa-question"></i>',
-});
+const icon = className =>
+  L.divIcon({
+    className: `map-marker ${className} a-class`,
+    iconSize: [28, 28],
+    html: '<i class="fa fa-fw fa-2x fa-question"></i>',
+  });
+
+const iconWithoutDictionaries = icon('marker-color-gray');
+const iconWithDictionaries = icon('marker-color-red');
 
 class Map extends React.Component {
   constructor(props) {
@@ -88,9 +92,12 @@ class Map extends React.Component {
         const { additional_metadata: { location, blobs } } = dictionary;
         const { lat, lng } = location;
         const dictionaryBlobs = blobs
-          ? blobs.filter(b => !!b).map(blobId => allBlobs.find(b => isEqual(blobId, b.id))).filter(b => !!b)
+          ? blobs
+            .filter(b => !!b)
+            .map(blobId => allBlobs.find(b => isEqual(blobId, b.id)))
+            .filter(b => !!b)
           : [];
-        return L.marker([lat, lng], { icon })
+        return L.marker([lat, lng], { icon: isEmpty(dictionaryBlobs) ? iconWithoutDictionaries : iconWithDictionaries })
           .addTo(this.leaflet)
           .on('click', () => actions.openBlobsModal(dictionary, dictionaryBlobs.map(b => b.id)));
       });

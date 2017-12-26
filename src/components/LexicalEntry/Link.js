@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import { isEqual } from 'lodash';
 import { Button } from 'semantic-ui-react';
-import { openModal } from 'ducks/directedLink';
+import { openModal } from 'ducks/link';
 
 
 const DirectedLink = (props) => {
