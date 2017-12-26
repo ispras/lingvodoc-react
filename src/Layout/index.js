@@ -8,7 +8,7 @@ import { Sidebar } from 'semantic-ui-react';
 import PlayerModal from 'components/PlayerModal';
 import MarkupModal from 'components/MarkupModal';
 import GroupingTagModal from 'components/GroupingTagModal';
-import DirectedLinkModal from 'components/DirectedLinkModal';
+import LinkModal from 'components/LinkModal';
 import DictionaryProperties from 'components/DictionaryPropertiesModal';
 
 import NavBar from './NavBar';
@@ -33,7 +33,7 @@ const Layout = () => (
       </Sidebar.Pusher>
     </Sidebar.Pushable>
     <GroupingTagModal />
-    <DirectedLinkModal />
+    <LinkModal />
     <PlayerModal />
     <MarkupModal />
     <DictionaryProperties />

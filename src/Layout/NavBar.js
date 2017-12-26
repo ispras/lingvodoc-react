@@ -93,9 +93,9 @@ const NavBar = pure(({ location }) => (
         <Dropdown.Item as={Link} to="/map_search">
           Search
         </Dropdown.Item>
-        <Dropdown.Item as={Link} to="/sociolinguistics">
+        {/* <Dropdown.Item as={Link} to="/sociolinguistics">
           Sociolinguistics
-        </Dropdown.Item>
+        </Dropdown.Item> */}
       </Dropdown.Menu>
     </Dropdown>
 
