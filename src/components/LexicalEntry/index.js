@@ -11,6 +11,7 @@ import Text from './Text';
 import Sound from './Sound';
 import Markup from './Markup';
 import Link from './Link';
+import Image from './Image';
 import GroupingTag from './GroupingTag';
 import Unknown from './Unknown';
 
@@ -52,6 +53,7 @@ const getComponent = dataType =>
     Sound,
     Markup,
     Link,
+    Image,
     'Grouping Tag': GroupingTag,
     'Directed Link': Link,
   }[dataType] || Unknown);
