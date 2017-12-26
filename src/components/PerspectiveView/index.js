@@ -55,6 +55,37 @@ export const queryPerspective = gql`
   }
 `;
 
+const TableComponent = ({
+  columns, perspectiveId, entitiesMode, entries, mode, actions,
+}) => (
+  <div style={{ overflowY: 'auto' }}>
+    <Table celled padded>
+      <TableHeader columns={columns} actions={actions} />
+      <TableBody
+        perspectiveId={perspectiveId}
+        entitiesMode={entitiesMode}
+        entries={entries}
+        columns={columns}
+        mode={mode}
+        actions={actions}
+      />
+    </Table>
+  </div>
+);
+
+TableComponent.propTypes = {
+  columns: PropTypes.array.isRequired,
+  perspectiveId: PropTypes.array.isRequired,
+  entitiesMode: PropTypes.string.isRequired,
+  entries: PropTypes.array.isRequired,
+  mode: PropTypes.string.isRequired,
+  actions: PropTypes.array,
+};
+
+TableComponent.defaultProps = {
+  actions: [],
+};
+
 const PerspectiveView = ({
   id, className, mode, entitiesMode, page, data,
 }) => {
@@ -147,7 +178,7 @@ export const queryLexicalEntry = gql`
 `;
 
 const LexicalEntryViewBase = ({
-  perspectiveId, entries, className, mode, entitiesMode, data, actions,
+  perspectiveId, entries, mode, entitiesMode, data, actions,
 }) => {
   const { loading } = data;
 
@@ -162,13 +193,6 @@ const LexicalEntryViewBase = ({
     contains: e.entities,
   }));
 
-  // join fields and columns
-  // {
-  //   column_id = column.id
-  //   position = column.position
-  //   self_id = column.self_id
-  //   ...field
-  // }
   const fields = columns.map((column) => {
     const field = find(all_fields, f => isEqual(column.field_id, f.id));
     return {
@@ -180,26 +204,20 @@ const LexicalEntryViewBase = ({
   });
 
   return (
-    <div style={{ overflowY: 'auto' }}>
-      <Table celled padded className={className}>
-        <TableHeader columns={fields} actions={actions} />
-        <TableBody
-          perspectiveId={perspectiveId}
-          entitiesMode={entitiesMode}
-          entries={pagedEntries}
-          columns={fields}
-          mode={mode}
-          actions={actions}
-        />
-      </Table>
-    </div>
+    <TableComponent
+      perspectiveId={perspectiveId}
+      entitiesMode={entitiesMode}
+      entries={pagedEntries}
+      columns={fields}
+      mode={mode}
+      actions={actions}
+    />
   );
 };
 
 LexicalEntryViewBase.propTypes = {
   perspectiveId: PropTypes.array.isRequired,
   entries: PropTypes.array.isRequired,
-  className: PropTypes.string.isRequired,
   mode: PropTypes.string.isRequired,
   entitiesMode: PropTypes.string.isRequired,
   data: PropTypes.shape({
@@ -252,7 +270,7 @@ export const queryLexicalEntriesByIds = gql`
 `;
 
 const LexicalEntryViewBaseByIds = ({
-  perspectiveId, entries, className, mode, entitiesMode, data, actions,
+  perspectiveId, entries, mode, entitiesMode, data, actions,
 }) => {
   const { loading } = data;
 
@@ -274,13 +292,6 @@ const LexicalEntryViewBaseByIds = ({
     }))
     .filter(e => e.contains.length > 0);
 
-  // join fields and columns
-  // {
-  //   column_id = column.id
-  //   position = column.position
-  //   self_id = column.self_id
-  //   ...field
-  // }
   const fields = columns.map((column) => {
     const field = find(all_fields, f => isEqual(column.field_id, f.id));
     return {
@@ -292,26 +303,20 @@ const LexicalEntryViewBaseByIds = ({
   });
 
   return (
-    <div style={{ overflowY: 'auto' }}>
-      <Table celled padded className={className}>
-        <TableHeader columns={fields} actions={actions} />
-        <TableBody
-          perspectiveId={perspectiveId}
-          entitiesMode={entitiesMode}
-          entries={tableEntries}
-          columns={fields}
-          mode={mode}
-          actions={actions}
-        />
-      </Table>
-    </div>
+    <TableComponent
+      perspectiveId={perspectiveId}
+      entitiesMode={entitiesMode}
+      entries={tableEntries}
+      columns={fields}
+      mode={mode}
+      actions={actions}
+    />
   );
 };
 
 LexicalEntryViewBaseByIds.propTypes = {
   perspectiveId: PropTypes.array.isRequired,
   entries: PropTypes.array.isRequired,
-  className: PropTypes.string.isRequired,
   mode: PropTypes.string.isRequired,
   entitiesMode: PropTypes.string.isRequired,
   data: PropTypes.shape({

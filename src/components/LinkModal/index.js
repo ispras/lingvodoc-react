@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { compose, pure } from 'recompose';
+import { compose } from 'recompose';
 import { graphql } from 'react-apollo';
 import { Segment, Checkbox, Button, Modal, Tab } from 'semantic-ui-react';
-import { closeModal } from 'ducks/directedLink';
+import { closeModal } from 'ducks/link';
 import { bindActionCreators } from 'redux';
 import { isEqual } from 'lodash';
 import { connect } from 'react-redux';
@@ -14,32 +14,28 @@ import Tree from 'components/GroupingTagModal/Tree';
 import SearchLexicalEntries from 'components/GroupingTagModal/search';
 import { languageTreeSourceQuery, createMutation, publishMutation, acceptMutation, removeMutation } from './graphql';
 
-const ModalContentWrapper = styled('div')`min-height: 60vh;`;
+const ModalContentWrapper = styled('div')`
+  min-height: 60vh;
+`;
 
 function buildTree(lexicalEntry, column, allLanguages, allDictionaries, allPerspectives) {
   const entities = lexicalEntry.contains.filter(e => isEqual(e.field_id, column.field_id));
 
-  console.log(entities);
-  // old-style links have perspective id in column
-  if (column.link_id) {
-    return buildPartialLanguageTree({
-      lexicalEntries: entities.map(e => ({ id: e.link_id, parent_id: column.link_id })),
-      allLanguages,
-      allDictionaries,
-      allPerspectives,
-    });
-  }
-  
-  // falback to directed link
+  // old-style links have perspective id stored in column while newer directed links
+  // store perspective id in the metadata of each entity
+  const lexicalEntries = column.link_id
+    ? entities.map(e => ({ id: e.link_id, parent_id: column.link_id }))
+    : entities.map(e => ({ id: e.link_id, parent_id: e.additional_metadata.link_perspective_id }));
+
   return buildPartialLanguageTree({
-    lexicalEntries: entities.map(e => ({ id: e.link_id, parent_id: e.additional_metadata.link_perspective_id })),
+    lexicalEntries,
     allLanguages,
     allDictionaries,
     allPerspectives,
   });
 }
 
-const ViewDirectedLink = (props) => {
+const ViewLink = (props) => {
   const {
     lexicalEntry, column, allLanguages, allDictionaries, allPerspectives,
   } = props;
@@ -61,7 +57,7 @@ const ViewDirectedLink = (props) => {
   return <Tab panes={panes} />;
 };
 
-ViewDirectedLink.propTypes = {
+ViewLink.propTypes = {
   lexicalEntry: PropTypes.object.isRequired,
   column: PropTypes.object.isRequired,
   allLanguages: PropTypes.array.isRequired,
@@ -69,7 +65,7 @@ ViewDirectedLink.propTypes = {
   allPerspectives: PropTypes.array.isRequired,
 };
 
-const EditDirectedLink = (props) => {
+const EditLink = (props) => {
   const {
     lexicalEntry, column, allLanguages, allDictionaries, allPerspectives, create, remove,
   } = props;
@@ -104,7 +100,7 @@ const EditDirectedLink = (props) => {
       render: () => (
         <SearchLexicalEntries
           lexicalEntry={lexicalEntry}
-          fieldId={fieldId}
+          fieldId={column.field_id}
           allLanguages={allLanguages}
           allDictionaries={allDictionaries}
           allPerspectives={allPerspectives}
@@ -116,7 +112,7 @@ const EditDirectedLink = (props) => {
   return <Tab panes={panes} />;
 };
 
-EditDirectedLink.propTypes = {
+EditLink.propTypes = {
   lexicalEntry: PropTypes.object.isRequired,
   column: PropTypes.object.isRequired,
   allLanguages: PropTypes.array.isRequired,
@@ -126,7 +122,7 @@ EditDirectedLink.propTypes = {
   remove: PropTypes.func.isRequired,
 };
 
-const PublishDirectedLink = (props) => {
+const PublishLink = (props) => {
   const {
     lexicalEntry, column, allLanguages, allDictionaries, allPerspectives, publish,
   } = props;
@@ -162,7 +158,7 @@ const PublishDirectedLink = (props) => {
   return <Tab panes={panes} />;
 };
 
-PublishDirectedLink.propTypes = {
+PublishLink.propTypes = {
   lexicalEntry: PropTypes.object.isRequired,
   column: PropTypes.object.isRequired,
   allLanguages: PropTypes.array.isRequired,
@@ -171,7 +167,7 @@ PublishDirectedLink.propTypes = {
   publish: PropTypes.func.isRequired,
 };
 
-const ContributionsDirectedLink = (props) => {
+const ContributionsLink = (props) => {
   const {
     lexicalEntry, column, allLanguages, allDictionaries, allPerspectives, accept,
   } = props;
@@ -199,7 +195,7 @@ const ContributionsDirectedLink = (props) => {
   return <Tab panes={panes} />;
 };
 
-ContributionsDirectedLink.propTypes = {
+ContributionsLink.propTypes = {
   lexicalEntry: PropTypes.object.isRequired,
   column: PropTypes.object.isRequired,
   allLanguages: PropTypes.array.isRequired,
@@ -211,22 +207,21 @@ ContributionsDirectedLink.propTypes = {
 const getComponent = (mode) => {
   switch (mode) {
     case 'edit':
-      return EditDirectedLink;
+      return EditLink;
     case 'view':
-      return ViewDirectedLink;
+      return ViewLink;
     case 'publish':
-      return PublishDirectedLink;
+      return PublishLink;
     case 'contributions':
-      return ContributionsDirectedLink;
+      return ContributionsLink;
     default:
       return <Segment negative>Mode {mode} not supported</Segment>;
   }
 };
 
-class DirectedLinkModalContent extends React.Component {
+class LinkModalContent extends React.PureComponent {
   constructor(props) {
     super(props);
-    this.state = {};
 
     this.createEntity = this.createEntity.bind(this);
     this.changePublished = this.changePublished.bind(this);
@@ -354,7 +349,7 @@ class DirectedLinkModalContent extends React.Component {
   }
 }
 
-DirectedLinkModalContent.propTypes = {
+LinkModalContent.propTypes = {
   data: PropTypes.shape({
     language_tree: PropTypes.array,
     dictionaries: PropTypes.array,
@@ -377,9 +372,9 @@ const Content = compose(
   graphql(publishMutation, { name: 'publish' }),
   graphql(acceptMutation, { name: 'accept' }),
   graphql(removeMutation, { name: 'remove' })
-)(DirectedLinkModalContent);
+)(LinkModalContent);
 
-const DirectedLinkModal = (props) => {
+const LinkModal = (props) => {
   const { visible } = props;
   if (!visible) {
     return null;
@@ -397,7 +392,7 @@ const DirectedLinkModal = (props) => {
   );
 };
 
-DirectedLinkModal.propTypes = {
+LinkModal.propTypes = {
   visible: PropTypes.bool.isRequired,
   perspectiveId: PropTypes.array,
   lexicalEntry: PropTypes.object,
@@ -407,13 +402,10 @@ DirectedLinkModal.propTypes = {
   closeModal: PropTypes.func.isRequired,
 };
 
-DirectedLinkModal.defaultProps = {
+LinkModal.defaultProps = {
   perspectiveId: null,
   lexicalEntry: null,
   fieldId: null,
 };
 
-export default compose(
-  connect(state => state.directedLink, dispatch => bindActionCreators({ closeModal }, dispatch)),
-  pure
-)(DirectedLinkModal);
+export default connect(state => state.link, dispatch => bindActionCreators({ closeModal }, dispatch))(LinkModal);

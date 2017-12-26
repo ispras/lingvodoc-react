@@ -9,6 +9,7 @@ import Perspective from 'pages/Perspective';
 import Languages from 'pages/Languages';
 import Files from 'pages/Files';
 import Map from 'pages/Map';
+import Desktop from 'pages/Desktop';
 import NotFound from 'pages/NotFound';
 import { DictionaryDashboard, CorpusDashboard } from 'pages/Dashboard';
 
@@ -18,7 +19,7 @@ const Routes = () =>
   <Switch>
     <Route exact path={config.homePath} component={Home} />
     <Route path="/info" component={Info} />
-    <Route path="/desktop" component={Info} />
+    <Route path="/desktop" component={Desktop} />
     <Route path="/languages" component={Languages} />
     <Route path="/dashboard/dictionaries" component={DictionaryDashboard} />
     <Route path="/dashboard/corpora" component={CorpusDashboard} />
