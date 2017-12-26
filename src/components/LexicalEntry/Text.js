@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { onlyUpdateForKeys } from 'recompose';
 import { find, isEqual } from 'lodash';
-import { Button, Input } from 'semantic-ui-react';
+import { Button, Input, Checkbox } from 'semantic-ui-react';
 
 import Entities from './index';
 
@@ -22,19 +22,30 @@ const TextEntityContent = onlyUpdateForKeys(['entity'])(({
         </div>
       );
     case 'publish':
-      control = entity.published ? (
-        <Button icon="remove" onClick={() => publish(entity, false)} />
-      ) : (
-        <Button icon="checkmark" onClick={() => publish(entity, true)} />
-      );
+      // control = entity.published ? (
+      //   <Button icon="remove" onClick={() => publish(entity, false)} />
+      // ) : (
+      //   <Button icon="checkmark" onClick={() => publish(entity, true)} />
+      // );
+      // return (
+      //   <div>
+      //     {entity.content}
+      //     <Button.Group basic icon size="mini">
+      //       {control}
+      //     </Button.Group>
+      //   </div>
+      // );
       return (
         <div>
           {entity.content}
-          <Button.Group basic icon size="mini">
-            {control}
-          </Button.Group>
+          <Checkbox
+            size="tiny"
+            defaultChecked={entity.published}
+            onChange={(e, { checked }) => publish(entity, checked)}
+          />
         </div>
       );
+
     case 'view':
       return entity.content;
     case 'contributions':

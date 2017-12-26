@@ -9,6 +9,7 @@ export const languagesQuery = gql`
       created_at
       translation_gist_id
     }
+    is_authenticated
   }
 `;
 

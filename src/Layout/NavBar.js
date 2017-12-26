@@ -49,13 +49,10 @@ const Dashboard = (props) => {
     <Dropdown item text="Dashboard">
       <Dropdown.Menu>
         <Dropdown.Item as={Link} to="/dashboard/dictionaries">
-          Dashboard
+          Dictionaries
         </Dropdown.Item>
         <Dropdown.Item as={Link} to="/dashboard/corpora">
           Corpora
-        </Dropdown.Item>
-        <Dropdown.Item as={Link} to="/languages">
-          Languages
         </Dropdown.Item>
         <Dropdown.Item as={Link} to="/import">
           Import Starling dictionaries
@@ -107,6 +104,9 @@ const NavBar = pure(({ location }) => (
         </Dropdown.Item>
         <Dropdown.Item as={Link} to="/desktop">
           Desktop
+        </Dropdown.Item>
+        <Dropdown.Item as={Link} to="/languages">
+          Languages
         </Dropdown.Item>
       </Dropdown.Menu>
     </Dropdown>

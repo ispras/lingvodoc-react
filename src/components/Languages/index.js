@@ -19,12 +19,13 @@ const Languages = (props) => {
     return null;
   }
 
-  const { language_tree: languages } = data;
+  const { language_tree: languages, is_authenticated: isAuthenticated } = data;
   const languagesTree = buildLanguageTree(Immutable.fromJS(languages));
   return (
     <div style={{ height: '100%' }}>
       <LanguagesTree
         languagesTree={languagesTree}
+        edit={isAuthenticated}
         editLanguage={actions.openModalEdit}
         createLanguage={actions.openModalCreate}
         moveLanguage={moveLanguage}

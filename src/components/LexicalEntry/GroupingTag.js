@@ -16,7 +16,7 @@ const GroupingTag = (props) => {
       <Button
         basic
         as="button"
-        content="Grouping Tag"
+        content={column.translation}
         icon="code"
         labelPosition="left"
         onClick={() => actions.openModal(entry, column.id, mode, entitiesMode)}
