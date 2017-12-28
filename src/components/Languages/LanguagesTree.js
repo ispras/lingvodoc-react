@@ -65,19 +65,28 @@ class LanguagesTree extends React.Component {
   }
 
   generateNodeProps({ node }) {
-    const { editLanguage, createLanguage, onSelect } = this.props;
+    const {
+      edit, editLanguage, createLanguage, onSelect,
+    } = this.props;
     const selectActions = onSelect ? [<Button basic content="Select" onClick={() => onSelect(node)} />] : [];
+    if (edit) {
+      return {
+        title: node.translation,
+        buttons: [
+          ...selectActions,
+          <Button basic content="Edit" onClick={() => editLanguage(node)} />,
+          <Button basic content="Create" onClick={() => createLanguage(node)} />,
+        ],
+      };
+    }
+
     return {
       title: node.translation,
-      buttons: [
-        ...selectActions,
-        <Button basic content="Edit" onClick={() => editLanguage(node)} />,
-        <Button basic content="Create" onClick={() => createLanguage(node)} />,
-      ],
     };
   }
 
   render() {
+    const { edit } = this.props;
     return (
       <div style={{ height: '100%' }}>
         <SortableTree
@@ -85,6 +94,7 @@ class LanguagesTree extends React.Component {
           onChange={treeData => this.setState({ treeData })}
           generateNodeProps={this.generateNodeProps}
           onMoveNode={this.onMoveNode}
+          canDrag={edit}
         />
       </div>
     );
@@ -93,10 +103,15 @@ class LanguagesTree extends React.Component {
 
 LanguagesTree.propTypes = {
   languagesTree: PropTypes.instanceOf(Immutable.List).isRequired,
+  edit: PropTypes.bool,
   editLanguage: PropTypes.func.isRequired,
   createLanguage: PropTypes.func.isRequired,
   moveLanguage: PropTypes.func.isRequired,
   onSelect: PropTypes.func,
+};
+
+LanguagesTree.defaultProps = {
+  edit: false,
 };
 
 export default LanguagesTree;

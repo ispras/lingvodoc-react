@@ -10,7 +10,7 @@ class LanguageTree extends React.Component {
       case 'perspective':
         return {
           subtitle: (
-            <Popup trigger={<Button compact>{node.lexicalEntries.length}</Button>} hideOnScroll position="top center" on="click">
+            <Popup trigger={<Button compact>{node.translation}:  {node.lexicalEntries.length} result(s)</Button>} hideOnScroll position="top center" on="click">
               <LexicalEntryView
                 className="perspective"
                 perspectiveId={node.id}

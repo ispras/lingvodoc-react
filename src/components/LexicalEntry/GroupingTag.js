@@ -2,7 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { compose } from 'recompose';
+import { compose, branch, renderNothing } from 'recompose';
+import { isEmpty, isEqual } from 'lodash';
 import { Button } from 'semantic-ui-react';
 import { openModal } from 'ducks/groupingTag';
 
@@ -16,7 +17,7 @@ const GroupingTag = (props) => {
       <Button
         basic
         as="button"
-        content="Grouping Tag"
+        content={column.translation}
         icon="code"
         labelPosition="left"
         onClick={() => actions.openModal(entry, column.id, mode, entitiesMode)}
@@ -40,7 +41,9 @@ GroupingTag.defaultProps = {
   as: 'div',
 };
 
-export default compose(connect(
+export default compose(
+  branch(({entry, column, mode}) => isEmpty(entry.contains.filter(entity => isEqual(entity.field_id, column.id))) && mode !== 'edit', renderNothing),
+  connect(
   null,
   dispatch => ({
     actions: bindActionCreators({ openModal }, dispatch),

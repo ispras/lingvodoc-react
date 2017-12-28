@@ -1,14 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { onlyUpdateForKeys } from 'recompose';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Button, Popup } from 'semantic-ui-react';
+import { Button, Checkbox, Popup } from 'semantic-ui-react';
 import { find, isEqual } from 'lodash';
 import { openViewer } from 'ducks/markup';
 
 import Entities from './index';
 
-function content1(c) {
+function content(c) {
   const MAX_CONTENT_LENGTH = 12;
   if (c.length <= MAX_CONTENT_LENGTH) {
     return c;
@@ -16,20 +17,80 @@ function content1(c) {
   return `${c.substr(c.lastIndexOf('/') + 1).substr(0, MAX_CONTENT_LENGTH)}...`;
 }
 
+const MarkupEntityContent = onlyUpdateForKeys([
+  'entity',
+])(({
+  entity, parentEntity, mode, publish, accept, remove, actions,
+}) => {
+  switch (mode) {
+    case 'edit':
+      return (
+        <Button.Group basic icon size="mini">
+          <Button as="a" href={entity.content} icon="download" />
+          <Popup trigger={<Button content={content(entity.content)} />} content={entity.content} />
+          <Button icon="table" onClick={() => actions.openViewer(parentEntity, entity)} />
+          <Button icon="remove" onClick={() => remove(entity)} />
+        </Button.Group>
+      );
+    case 'publish':
+      return (
+        <div>
+          <Button.Group basic icon size="mini">
+            <Button as="a" href={entity.content} icon="download" />
+            <Popup trigger={<Button content={content(entity.content)} />} content={entity.content} />
+            <Button icon="table" onClick={() => actions.openViewer(parentEntity, entity)} />
+          </Button.Group>
+          <Checkbox
+            size="tiny"
+            defaultChecked={entity.published}
+            onChange={(e, { checked }) => publish(entity, checked)}
+          />
+        </div>
+      );
+
+    case 'view':
+      return (
+        <Button.Group basic icon size="mini">
+          <Button as="a" href={entity.content} icon="download" />
+          <Popup trigger={<Button content={content(entity.content)} />} content={entity.content} />
+          <Button icon="table" onClick={() => actions.openViewer(parentEntity, entity)} />
+        </Button.Group>
+      );
+
+    case 'contributions':
+      return (
+        <Button.Group basic icon size="mini">
+          <Button as="a" href={entity.content} icon="download" />
+          <Popup trigger={<Button content={content(entity.content)} />} content={entity.content} />
+          <Button icon="table" onClick={() => actions.openViewer(parentEntity, entity)} />
+          <Button icon="remove" onClick={() => accept(entity, true)} />
+        </Button.Group>
+      );
+    default:
+      return null;
+  }
+});
+
 const Markup = (props) => {
   const {
-    column, columns, entity, parentEntity, entry, mode, as: Component = 'li', className = '', actions,
+    column,
+    columns,
+    entity,
+    parentEntity,
+    entry,
+    mode,
+    as: Component = 'li',
+    className = '',
+    publish,
+    accept,
+    remove,
+    actions,
   } = props;
   const subColumn = find(columns, c => isEqual(c.self_id, column.column_id));
-  const { content } = entity;
 
   return (
     <Component className={className}>
-      <Button.Group basic icon size="mini">
-        <Button as="a" href={content} icon="download" />
-        <Popup trigger={<Button content={content1(content)} />} />
-        <Button icon="table" onClick={() => actions.openViewer(parentEntity, entity)} />
-      </Button.Group>
+      <MarkupEntityContent entity={entity} parentEntity={parentEntity} mode={mode} publish={publish} accept={accept} remove={remove} actions={actions} />
       {subColumn && <Entities column={subColumn} columns={columns} entry={entry} parentEntity={entity} mode={mode} />}
     </Component>
   );
@@ -44,6 +105,9 @@ Markup.propTypes = {
   mode: PropTypes.string.isRequired,
   as: PropTypes.string,
   className: PropTypes.string,
+  publish: PropTypes.func,
+  accept: PropTypes.func,
+  remove: PropTypes.func,
   actions: PropTypes.object.isRequired,
 };
 
