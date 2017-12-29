@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { compose } from 'recompose';
 import { gql, graphql } from 'react-apollo';
 import { Map, fromJS } from 'immutable';
 import { Message, Button, Step } from 'semantic-ui-react';
@@ -32,6 +33,7 @@ export const fieldsQuery = gql`
     all_fields {
       id
       translation
+      data_type
     }
     user_blobs(data_type: "starling/csv") {
       id
@@ -53,8 +55,6 @@ const convertMutation = gql`
   }
 `;
 
-@graphql(fieldsQuery)
-@graphql(convertMutation, { name: 'convert' })
 class Info extends React.Component {
   static propTypes = {
     data: PropTypes.shape({ loading: PropTypes.bool.isRequired }).isRequired,
@@ -158,7 +158,7 @@ class Info extends React.Component {
     }
 
     const { all_fields: fields } = data;
-    const fieldTypes = fromJS(fields);
+    const fieldTypes = fromJS(fields).filter(field => field.get('data_type') === 'Text');
 
     return (
       <div>
@@ -271,4 +271,8 @@ const mapDispatchToProps = {
   setTranslation,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Info);
+export default compose(
+  connect(mapStateToProps, mapDispatchToProps),
+  graphql(fieldsQuery),
+  graphql(convertMutation, { name: 'convert' })
+)(Info);

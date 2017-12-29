@@ -16,6 +16,7 @@ import groupingTag from './groupingTag';
 import link from './link';
 import properties from './properties';
 import home from './home';
+import createDictionary from './createDictionary';
 import apolloClient from './apolloClient';
 
 export default {
@@ -37,5 +38,6 @@ export default {
   link,
   properties,
   home,
+  createDictionary,
   apolloClient,
 };

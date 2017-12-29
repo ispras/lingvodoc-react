@@ -1,8 +1,8 @@
 import { combineReducers } from 'redux';
 
 // Actions
-export const OPEN_MODAL = '@directedLink/OPEN_MODAL';
-export const CLOSE_MODAL = '@irectedLink/CLOSE_MODAL';
+export const OPEN_MODAL = '@link/OPEN_MODAL';
+export const CLOSE_MODAL = '@link/CLOSE_MODAL';
 
 export const openModal = (perspectiveId, lexicalEntry, fieldId, mode = 'view', entitiesMode = 'all') => ({
   type: OPEN_MODAL,

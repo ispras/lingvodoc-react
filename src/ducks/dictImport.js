@@ -83,26 +83,11 @@ function updateSingleSpread(result, blob) {
   });
 }
 
-function cleanLinking(state, linkedTo) {
-  const first = state.get('linking').first();
-
-  return state.update(
-    'linking',
-    v => v.filter((blob, id) => is(blob, first) || linkedTo.includes(id))
-  );
-}
-
 function updateSpread(state) {
   const extractedSpreads = state.get('linking').reduce(
     (acc, blob) => updateSingleSpread(acc, blob),
     new Map()
   );
-
-  // return cleanLinking(
-  //   state.set('spreads', extractedSpreads),
-  //   extractedSpreads.keySeq().toSet()
-  // );
-  
   return state.set('spreads', extractedSpreads);
 }
 
