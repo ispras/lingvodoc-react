@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { compose, onlyUpdateForKeys } from 'recompose';
 import { gql, graphql } from 'react-apollo';
 import { isEqual, find, take, drop, groupBy } from 'lodash';
 import { Table, Dimmer, Header, Icon } from 'semantic-ui-react';
@@ -8,6 +9,7 @@ import TableHeader from './TableHeader';
 import TableBody from './TableBody';
 import Pagination from './Pagination';
 import { compositeIdToString } from '../../utils/compositeId';
+
 
 const dimmerStyle = { minHeight: '600px' };
 
@@ -335,9 +337,11 @@ export const LexicalEntryView = graphql(queryLexicalEntry, {
   options: { notifyOnNetworkStatusChange: true },
 })(LexicalEntryViewBase);
 
-export const LexicalEntryViewByIds = graphql(queryLexicalEntriesByIds, {
+export const LexicalEntryViewByIds = compose(
+  onlyUpdateForKeys(['data']),
+  graphql(queryLexicalEntriesByIds, {
   options: { notifyOnNetworkStatusChange: true },
-})(LexicalEntryViewBaseByIds);
+}))(LexicalEntryViewBaseByIds);
 
 export default graphql(queryPerspective, {
   options: { notifyOnNetworkStatusChange: true },

@@ -17,7 +17,7 @@ export function getUser() {
 }
 
 export function signIn({ login, password }) {
-  if (config.proxy) {
+  if (config.buildType === 'proxy' || config.buildType === 'desktop') {
     return httpPost('/signin/desktop', { login, password });
   }
   return httpPost('/signin', { login, password });

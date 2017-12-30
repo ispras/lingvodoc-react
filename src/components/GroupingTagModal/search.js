@@ -35,16 +35,8 @@ class SearchLexicalEntries extends React.Component {
       variables: { searchString, fieldId },
     });
 
-    const lexicalEntriesWithEntities = lexicalEntries.map((entry) => {
-      const id = compositeIdToString(entry.id);
-      return {
-        ...entry,
-        entities: entities.filter(entity => compositeIdToString(entity.parent_id) === id),
-      };
-    });
-
     const resultsTree = buildPartialLanguageTree({
-      lexicalEntries: lexicalEntriesWithEntities,
+      lexicalEntries,
       allLanguages,
       allDictionaries,
       allPerspectives,

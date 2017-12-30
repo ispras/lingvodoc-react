@@ -1,7 +1,7 @@
 import React from 'react';
 import { Popup, Button } from 'semantic-ui-react';
 import SortableTree, { map } from 'react-sortable-tree';
-import { LexicalEntryView } from 'components/PerspectiveView/index';
+import { LexicalEntryViewByIds } from 'components/PerspectiveView/index';
 
 
 class LanguageTree extends React.Component {
@@ -11,7 +11,7 @@ class LanguageTree extends React.Component {
         return {
           subtitle: (
             <Popup trigger={<Button compact>{node.translation}:  {node.lexicalEntries.length} result(s)</Button>} hideOnScroll position="top center" on="click">
-              <LexicalEntryView
+              <LexicalEntryViewByIds
                 className="perspective"
                 perspectiveId={node.id}
                 entries={node.lexicalEntries}

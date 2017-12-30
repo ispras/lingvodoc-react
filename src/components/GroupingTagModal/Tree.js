@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import SortableTree, { map, getVisibleNodeInfoAtIndex } from 'react-sortable-tree';
 import { Header } from 'semantic-ui-react';
-import { LexicalEntryView } from 'components/PerspectiveView';
+import { LexicalEntryViewByIds } from 'components/PerspectiveView';
 
 class Tree extends React.Component {
   constructor(props) {
@@ -97,7 +97,7 @@ Tree.propTypes = {
 
 Tree.defaultProps = {
   actions: [],
-  TableComponent: LexicalEntryView,
+  TableComponent: LexicalEntryViewByIds,
 };
 
 export default Tree;
