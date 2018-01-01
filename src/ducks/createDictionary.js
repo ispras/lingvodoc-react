@@ -1,9 +1,12 @@
-import { Map, List } from 'immutable';
+import { Map, List, fromJS } from 'immutable';
 
 // Actions
 const NEXT_STEP = '@create/NEXT_STEP';
 const GOTO_STEP = '@create/GOTO_STEP';
 const PARENT_LANGUAGE_SET = '@create/PARENT_LANGUAGE_SET';
+const DICTIONARY_TRANSLATIONS_SET = '@create/DICTIONARY_TRANSLATIONS_SET';
+const DICTIONARY_PERSPECTIVES_SET = '@create/DICTIONARY_PERSPECTIVES_SET';
+const DICTIONARY_PERSPECTIVE_CREATE = '@create/DICTIONARY_PERSPECTIVES_CREATE';
 
 function updateNextStep(step) {
   return (
@@ -14,6 +17,15 @@ function updateNextStep(step) {
       FIELDS: 'FINISH',
     }[step] || null
   );
+}
+
+function addEmptyPerspective(perspectives) {
+  const perspective = fromJS({
+    index: perspectives.size,
+    translations: new List(),
+    fields: new List(),
+  });
+  return perspectives.push(perspective);
 }
 
 const initial = new Map({
@@ -35,6 +47,15 @@ export default function (state = initial, { type, payload }) {
     case PARENT_LANGUAGE_SET:
       newState = state.set('parentLanguage', payload);
       break;
+    case DICTIONARY_TRANSLATIONS_SET:
+      newState = state.set('translations', payload);
+      break;
+    case DICTIONARY_PERSPECTIVES_SET:
+      newState = state.set('perspectives', payload);
+      break;
+    case DICTIONARY_PERSPECTIVE_CREATE:
+      newState = state.update('perspectives', addEmptyPerspective);
+      break;
     default:
       return state;
   }
@@ -52,17 +73,23 @@ export const selectors = {
       case 'PARENT_LANGUAGE':
         return state.createDictionary.get('parentLanguage') !== null;
       case 'TRANSLATIONS':
-        return state.createDictionary.get('translations').every(translation => translation.content.size > 0);
+        return (
+          state.createDictionary.get('translations').size > 0 &&
+          state.createDictionary.get('translations').every(translation => translation.get('content').length > 0)
+        );
       case 'PERSPECTIVES':
-        return state.createDictionary.get('perpspectives').size > 0;
+        return state.createDictionary.get('perspectives').size > 0;
       case 'FIELDS':
-        return state.createDictionary.get('perpspectives').size > 0;
+        return state.createDictionary.get('perspectives').size > 0;
       default:
         return false;
     }
   },
   getParentLanguage(state) {
     return state.createDictionary.get('parentLanguage');
+  },
+  getPerspectives(state) {
+    return state.createDictionary.get('perspectives');
   },
 };
 
@@ -78,5 +105,25 @@ export function setParentLanguage(parentLanguage) {
   return {
     type: PARENT_LANGUAGE_SET,
     payload: parentLanguage,
+  };
+}
+
+export function setTranslations(translations) {
+  return {
+    type: DICTIONARY_TRANSLATIONS_SET,
+    payload: fromJS(translations),
+  };
+}
+
+export function setPerspectives(payload) {
+  return {
+    type: DICTIONARY_PERSPECTIVES_SET,
+    payload,
+  };
+}
+
+export function createPerspective() {
+  return {
+    type: DICTIONARY_PERSPECTIVE_CREATE,
   };
 }

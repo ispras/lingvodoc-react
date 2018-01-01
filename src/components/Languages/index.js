@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { graphql } from 'react-apollo';
-import { pure, compose, shouldUpdate } from 'recompose';
+import { compose, shouldUpdate } from 'recompose';
 import Immutable from 'immutable';
 import EditModal from 'components/EditLanguageModal';
 import CreateModal from 'components/CreateLanguageModal';

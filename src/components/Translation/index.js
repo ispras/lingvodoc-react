@@ -74,6 +74,14 @@ class Translations extends React.Component {
     this.onChange = this.onChange.bind(this);
   }
 
+  componentWillMount() {
+    if (this.props.translations.length > 0) {
+      this.setState({
+        translations: this.props.translations,
+      });
+    }
+  }
+  
   onChange(translation) {
     const updateState = this.state.translations.map((t) => {
       if (t.id === translation.id) {
@@ -126,7 +134,7 @@ class Translations extends React.Component {
       <div>
         <List>
           {translations.map(translation => (
-            <List.Item>
+            <List.Item key={translation.id}>
               <Translation
                 locales={locales}
                 translation={translation}
@@ -145,9 +153,14 @@ class Translations extends React.Component {
 Translations.propTypes = {
   data: PropTypes.shape({
     loading: PropTypes.bool.isRequired,
-    all_locales: PropTypes.array.isRequired,
+    all_locales: PropTypes.array,
   }).isRequired,
   onChange: PropTypes.func.isRequired,
-}
+  translations: PropTypes.array,
+};
+
+Translations.defaultProps = {
+  translations: [],
+};
 
 export default compose(graphql(localesQuery))(Translations);

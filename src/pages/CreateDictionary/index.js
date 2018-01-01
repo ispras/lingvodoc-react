@@ -2,10 +2,21 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
+import Immutable from 'immutable';
 import { gql, graphql } from 'react-apollo';
 import { Message, Button, Step, Header } from 'semantic-ui-react';
-import { nextStep, goToStep, setParentLanguage, selectors } from 'ducks/createDictionary';
+import {
+  nextStep,
+  goToStep,
+  setParentLanguage,
+  setTranslations,
+  createPerspective,
+  setPerspectives,
+  selectors,
+} from 'ducks/createDictionary';
 import Languages from 'components/Languages';
+import Translations from 'components/Translation';
+import Perspectives from './Perspectives';
 
 class CreateLanguageWizard extends React.Component {
   constructor(props) {
@@ -30,7 +41,9 @@ class CreateLanguageWizard extends React.Component {
   }
 
   render() {
-    const { step, isNextStep, parentLanguage } = this.props;
+    const {
+      step, isNextStep, parentLanguage, perspectives,
+    } = this.props;
     return (
       <div>
         <Step.Group widths={5}>
@@ -69,15 +82,33 @@ class CreateLanguageWizard extends React.Component {
           </Step>
         </Step.Group>
 
-        <div style={{ minHeight: '500px'}}>
+        <div style={{ minHeight: '500px' }}>
           {step === 'PARENT_LANGUAGE' && (
             <div style={{ height: '400px' }}>
               {!parentLanguage && <Header>Please, select the parent language</Header>}
-              {parentLanguage && <Header>You have selected: <b>{parentLanguage.translation}</b> </Header>}
+              {parentLanguage && (
+                <Header>
+                  You have selected: <b>{parentLanguage.translation}</b>
+                </Header>
+              )}
               <Languages onSelect={this.selectParent} />
             </div>
           )}
-          {step === 'TRANSLATIONS' && <div />}
+          {step === 'TRANSLATIONS' && (
+            <div>
+              <Header>Add one or more translations</Header>
+              <Translations onChange={translations => this.props.setTranslations(translations)} />
+            </div>
+          )}
+
+          {step === 'PERSPECTIVES' && (
+            <div>
+              <Header>Add one or perspectve</Header>
+              <Button basic icon="plus" onClick={this.props.createPerspective} />
+              <Perspectives perspectives={perspectives} onChange={p => this.props.setPerspectives(p)} />
+            </div>
+          )}
+
           {step === 'FIELDS' && <div />}
           {step === 'FINISH' && (
             <Message>
@@ -104,10 +135,14 @@ class CreateLanguageWizard extends React.Component {
 
 CreateLanguageWizard.propTypes = {
   step: PropTypes.string.isRequired,
+  perspectives: PropTypes.instanceOf(Immutable.List).isRequired,
   isNextStep: PropTypes.bool.isRequired,
   nextStep: PropTypes.func.isRequired,
   goToStep: PropTypes.func.isRequired,
   setParentLanguage: PropTypes.func.isRequired,
+  setTranslations: PropTypes.func.isRequired,
+  createPerspective: PropTypes.func.isRequired,
+  setPerspectives: PropTypes.func.isRequired,
 };
 
 function mapStateToProps(state) {
@@ -115,6 +150,7 @@ function mapStateToProps(state) {
     step: selectors.getStep(state),
     isNextStep: selectors.getNextStep(state),
     parentLanguage: selectors.getParentLanguage(state),
+    perspectives: selectors.getPerspectives(state),
   };
 }
 
@@ -122,6 +158,9 @@ const mapDispatchToProps = {
   nextStep,
   goToStep,
   setParentLanguage,
+  setTranslations,
+  createPerspective,
+  setPerspectives,
 };
 
 export default compose(connect(mapStateToProps, mapDispatchToProps))(CreateLanguageWizard);
