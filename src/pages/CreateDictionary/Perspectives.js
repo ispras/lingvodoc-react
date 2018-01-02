@@ -17,6 +17,10 @@ const Perspective = (props) => {
     props.onChange(perspective.set('translations', fromJS(updatedTranslations)));
   }
 
+  function updateFields(updatedFields) {
+    props.onChange(perspective.set('fields', fromJS(updatedFields)));
+  }
+
   return (
     <Segment>
       <Header>Perspective {perspective.get('index') + 1}</Header>
@@ -25,10 +29,10 @@ const Perspective = (props) => {
         <Translations translations={translations} onChange={u => updateTranslations(u)} />
       </Segment>
 
-      <Segment>
+      {/* <Segment>
         <Header>Fields</Header>
-        <Fields perspective={perspective} perspectives={perspectives} />
-      </Segment>
+        <Fields perspective={perspective} perspectives={perspectives} onChange={f => updateFields(f)} />
+      </Segment> */}
     </Segment>
   );
 };

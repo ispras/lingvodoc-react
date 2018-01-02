@@ -13,8 +13,8 @@ function updateNextStep(step) {
     {
       PARENT_LANGUAGE: 'TRANSLATIONS',
       TRANSLATIONS: 'PERSPECTIVES',
-      PERSPECTIVES: 'FIELDS',
-      FIELDS: 'FINISH',
+      PERSPECTIVES: 'FINISH',
+      // FIELDS: 'FINISH',
     }[step] || null
   );
 }
@@ -78,15 +78,25 @@ export const selectors = {
           state.createDictionary.get('translations').every(translation => translation.get('content').length > 0)
         );
       case 'PERSPECTIVES':
-        return state.createDictionary.get('perspectives').size > 0;
-      case 'FIELDS':
-        return state.createDictionary.get('perspectives').size > 0;
+        return (
+          state.createDictionary.get('perspectives').size > 0 &&
+          state.createDictionary
+            .get('perspectives')
+            .every(perspective =>
+              perspective.get('translations').size > 0 &&
+                perspective.get('translations').every(translation => translation.get('content').length > 0))
+        );
+      // case 'FIELDS':
+      //   return state.createDictionary.get('perspectives').size > 0;
       default:
         return false;
     }
   },
   getParentLanguage(state) {
     return state.createDictionary.get('parentLanguage');
+  },
+  getTranslations(state) {
+    return state.createDictionary.get('translations');
   },
   getPerspectives(state) {
     return state.createDictionary.get('perspectives');

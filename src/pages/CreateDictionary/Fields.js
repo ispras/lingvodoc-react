@@ -23,10 +23,15 @@ class Field extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      id: props.id,
       field: null,
       link: null,
+      hasLinkedField: false,
+      linkedField: null,
     };
     this.onFieldChange = this.onFieldChange.bind(this);
+    this.onLinkChange = this.onLinkChange.bind(this);
+    this.onHasLinkedFieldChange = this.onHasLinkedFieldChange.bind(this);
   }
 
   onFieldChange(value) {
@@ -37,17 +42,23 @@ class Field extends React.Component {
       const field = allFields.find(f => compositeIdToString(f.id) === value);
 
       if (field) {
-        this.setState({ field });
+        this.setState({ field }, () => this.props.onChange(fromJS(this.state)));
       }
     }
   }
 
   onLinkChange(value) {
-    this.setState({ link: value });
+    this.setState({ link: value }, () => this.props.onChange(fromJS(this.state)));
+  }
+
+  onHasLinkedFieldChange(hasLinkedField) {
+    this.setState({ hasLinkedField }, () => this.props.onChange(fromJS(this.state)));
   }
 
   render() {
-    const { data, perspective, perspectives } = this.props;
+    const {
+      data, fields, perspective, perspectives,
+    } = this.props;
     const { loading, error, all_fields: allFields } = data;
     const { field } = this.state;
 
@@ -56,22 +67,32 @@ class Field extends React.Component {
     }
 
     const options = allFields.map(f => ({ text: f.translation, value: compositeIdToString(f.id) }));
-    const availableOptions = perspectives
+    const availablePerspectives = perspectives
       .delete(perspectives.findIndex(p => p.equals(perspective)))
       .toJS()
       .map(p => ({ text: p.index + 1, value: p.index }));
+    // const availableLinkedFields = fields.filter();
 
     return (
       <span>
         <Dropdown selection options={options} onChange={(a, { value }) => this.onFieldChange(value)} />
         {field &&
           field.data_type === 'Link' && (
-            <Dropdown selection options={availableOptions} onChange={(a, { value }) => this.onLinkChange(value)} />
+            <Dropdown selection options={availablePerspectives} onChange={(a, { value }) => this.onLinkChange(value)} />
           )}
         {field &&
           field.data_type !== 'Link' &&
           field.data_type !== 'Directed Link' &&
-          field.data_type !== 'Grouping Tag' && <Checkbox label="has linked field" />}
+          field.data_type !== 'Grouping Tag' && (
+            <Checkbox
+              checked={this.state.hasLinkedField}
+              onChange={(e, { checked }) => this.onHasLinkedFieldChange(checked)}
+              label="has linked field"
+            />
+          )}
+        {this.state.hasLinkedField && (
+          <Dropdown selection options={options} onChange={(a, { value }) => this.onFieldChange(value)} />
+        )}
       </span>
     );
   }
@@ -83,6 +104,8 @@ Field.propTypes = {
   }).isRequired,
   perspective: PropTypes.instanceOf(Immutable.Map).isRequired,
   perspectives: PropTypes.instanceOf(Immutable.List).isRequired,
+  fields: PropTypes.instanceOf(Immutable.List).isRequired,
+  onChange: PropTypes.func.isRequired,
 };
 
 const FieldWithData = compose(graphql(fieldsQuery))(Field);
@@ -93,22 +116,30 @@ class Fields extends React.Component {
     this.state = {};
   }
 
+  componentWillReceiveProps(props) {
+    if (!props.fields.equals(this.props.fields)) {
+      this.props.onChange(props.fields);
+    }
+  }
+
   render() {
     const {
       fields, perspective, perspectives, dispatch,
     } = this.props;
+
     return (
       <div>
         <List divided relaxed>
           {fields.map(field => (
-            <List.Item>
+            <List.Item key={field.get('id')}>
               <Grid centered columns={2}>
                 <Grid.Column>
                   <FieldWithData
-                    key={field.get('pos')}
                     field={field}
+                    fields={fields}
                     perspective={perspective}
                     perspectives={perspectives}
+                    onChange={f => dispatch({ type: 'UPDATE_FIELD', payload: f })}
                   />
                 </Grid.Column>
                 <Grid.Column width={1}>
@@ -171,6 +202,8 @@ function reducer(state, { type, payload }) {
       return payload;
     case 'CREATE_FIELD':
       return createField(state);
+    case 'UPDATE_FIELD':
+      return state.set(state.findIndex(f => f.get('id') === payload.get('id')), payload);
     case 'REMOVE_FIELD':
       return state.delete(state.findIndex(f => f.get('id') === payload.get('id')));
     case 'MOVE_FIELD_UP':
@@ -182,7 +215,4 @@ function reducer(state, { type, payload }) {
   }
 }
 
-export default compose(withReducer('fields', 'dispatch', reducer, ({ perspective }) => {
-  console.log(perspective);
-  return perspective.get('fields');
-}))(Fields);
+export default compose(withReducer('fields', 'dispatch', reducer, ({ perspective }) => perspective.get('fields')))(Fields);
