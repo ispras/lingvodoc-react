@@ -10,6 +10,7 @@ import MarkupModal from 'components/MarkupModal';
 import GroupingTagModal from 'components/GroupingTagModal';
 import LinkModal from 'components/LinkModal';
 import DictionaryProperties from 'components/DictionaryPropertiesModal';
+import PerspectiveProperties from 'components/PerspectivePropertiesModal';
 
 import NavBar from './NavBar';
 import TasksSidebar from './TasksSidebar';
@@ -37,6 +38,7 @@ const Layout = () => (
     <PlayerModal />
     <MarkupModal />
     <DictionaryProperties />
+    <PerspectiveProperties />
   </div>
 );
 

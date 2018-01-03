@@ -14,7 +14,8 @@ import dictImport from './dictImport';
 import fields from './fields';
 import groupingTag from './groupingTag';
 import link from './link';
-import properties from './properties';
+import dictionaryProperties from './dictionaryProperties';
+import perspectiveProperties from './perspectiveProperties';
 import home from './home';
 import createDictionary from './createDictionary';
 import apolloClient from './apolloClient';
@@ -36,7 +37,8 @@ export default {
   fields,
   groupingTag,
   link,
-  properties,
+  dictionaryProperties,
+  perspectiveProperties,
   home,
   createDictionary,
   apolloClient,

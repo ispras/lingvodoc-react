@@ -1,25 +1,21 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { compose } from 'recompose';
 import Immutable, { fromJS } from 'immutable';
-import { gql, graphql } from 'react-apollo';
-import { Message, Button, Step, Header, Segment } from 'semantic-ui-react';
-import Languages from 'components/Languages';
+import { Header, Segment } from 'semantic-ui-react';
 import Translations from 'components/Translation';
-import Fields from './Fields';
+// import Fields from './Fields';
 
 const Perspective = (props) => {
-  const { perspective, perspectives } = props;
+  const { perspective } = props;
   const translations = perspective.get('translations').toJS();
 
   function updateTranslations(updatedTranslations) {
     props.onChange(perspective.set('translations', fromJS(updatedTranslations)));
   }
 
-  function updateFields(updatedFields) {
-    props.onChange(perspective.set('fields', fromJS(updatedFields)));
-  }
+  // function updateFields(updatedFields) {
+  //   props.onChange(perspective.set('fields', fromJS(updatedFields)));
+  // }
 
   return (
     <Segment>

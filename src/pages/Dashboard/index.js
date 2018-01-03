@@ -2,14 +2,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { compose, pure, onlyUpdateForKeys } from 'recompose';
+import { compose, pure, onlyUpdateForKeys, shouldUpdate } from 'recompose';
 import { Link } from 'react-router-dom';
 import { gql, graphql } from 'react-apollo';
 import { Container, Dimmer, Tab, Header, List, Dropdown, Icon, Menu } from 'semantic-ui-react';
 import { isEqual } from 'lodash';
 import { compositeIdToString } from 'utils/compositeId';
 import { openRoles } from 'ducks/roles';
-import { openDictionaryPropertiesModal } from 'ducks/properties';
+import { openDictionaryPropertiesModal } from 'ducks/dictionaryProperties';
+import { openPerspectivePropertiesModal } from 'ducks/perspectiveProperties';
 import RolesModal from 'components/RolesModal';
 
 const dimmerStyle = { minHeight: '600px' };
@@ -50,7 +51,7 @@ const updateDictionaryStatusMutation = gql`
 
 const updatePerspectiveStatusMutation = gql`
   mutation updatePerspectiveStatus($id: LingvodocID!, $status_id: LingvodocID!) {
-    update_dictionary_status(id: $id, state_translation_gist_id: $status_id) {
+    update_perspective_status(id: $id, state_translation_gist_id: $status_id) {
       triumph
     }
   }
@@ -107,7 +108,11 @@ const P = (props) => {
           <Dropdown text={translation} pointing className="link item">
             <Dropdown.Menu>
               <Dropdown.Item icon="users" text="Roles..." onClick={() => actions.openRoles(id, 'perspective')} />
-              <Dropdown.Item icon="setting" text="Properties..." />
+              <Dropdown.Item
+                icon="setting"
+                text="Properties..."
+                onClick={() => actions.openPerspectivePropertiesModal(id, parent_id)}
+              />
               <Dropdown.Item icon="percent" text="Statistics..." />
               <Dropdown.Divider />
               <Dropdown.Item icon="remove" text="Remove perspective" />
@@ -154,7 +159,7 @@ P.propTypes = {
 
 const Perspective = compose(
   connect(null, dispatch => ({
-    actions: bindActionCreators({ openRoles }, dispatch),
+    actions: bindActionCreators({ openRoles, openPerspectivePropertiesModal }, dispatch),
   })),
   onlyUpdateForKeys(['translation', 'status'])
 )(P);
@@ -219,7 +224,7 @@ const Dictionary = compose(
   onlyUpdateForKeys(['translation', 'status', 'perspectives'])
 )(D);
 
-const Dashboard = pure(({ data }) => {
+const Dashboard = ({ data }) => {
   const { loading, dictionaries, all_statuses: statuses } = data;
   return (
     <Container>
@@ -240,7 +245,7 @@ const Dashboard = pure(({ data }) => {
       <RolesModal />
     </Container>
   );
-});
+};
 
 Dashboard.propTypes = {
   data: PropTypes.object.isRequired,
@@ -248,7 +253,7 @@ Dashboard.propTypes = {
   category: PropTypes.number.isRequired,
 };
 
-const Dictionaries = graphql(query)(Dashboard);
+const Dictionaries = compose(graphql(query), onlyUpdateForKeys(['data']))(Dashboard);
 
 const DICTIONARIES_TABS = [
   {

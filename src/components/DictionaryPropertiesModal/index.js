@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
-import { compose, onlyUpdateForKeys } from 'recompose';
+import { branch, compose, onlyUpdateForKeys, renderNothing } from 'recompose';
 import { gql, graphql } from 'react-apollo';
 import { connect } from 'react-redux';
-import { Button, Modal, Input, Container, Segment, Grid, Header } from 'semantic-ui-react';
-import { closeDictionaryPropertiesModal } from 'ducks/properties';
+import { Button, Modal, Input, Segment, Grid, Header } from 'semantic-ui-react';
+import { closeDictionaryPropertiesModal } from 'ducks/dictionaryProperties';
 import Map from './Map';
 
 const query = gql`
@@ -117,7 +117,7 @@ class Properties extends React.Component {
   }
 
   render() {
-    const { data: { error, loading, dictionary } } = this.props;
+    const { data: { error, loading, dictionary }, actions } = this.props;
 
     if (loading || error) {
       return null;
@@ -126,35 +126,46 @@ class Properties extends React.Component {
     const { translation } = dictionary;
 
     return (
-      <Container>
-        <Segment>
-          <Header size="large">{translation}</Header>
-        </Segment>
-        <Segment>
-          <Grid>
-            <Grid.Column width={12}>
-              <Input fluid label="Authors" value={this.state.authors} onChange={this.onChangeAuthors} />
-            </Grid.Column>
-            <Grid.Column width={4}>
-              <Button positive content="Save" onClick={this.onSaveAuthors} />
-            </Grid.Column>
-          </Grid>
-        </Segment>
+      <Modal open dimmer size="fullscreen">
+        <Modal.Content>
+          <Segment>
+            <Header size="large">{translation}</Header>
+          </Segment>
+          <Segment>
+            <Grid>
+              <Grid.Column width={12}>
+                <Input fluid label="Authors" value={this.state.authors} onChange={this.onChangeAuthors} />
+              </Grid.Column>
+              <Grid.Column width={4}>
+                <Button positive content="Save" onClick={this.onSaveAuthors} />
+              </Grid.Column>
+            </Grid>
+          </Segment>
 
-        <Segment>
-          <Grid>
-            <Grid.Column width={12}>
-              <Input fluid label="Location" value={JSON.stringify(this.state.location)} disabled onChange={() => {}} />
-            </Grid.Column>
-            <Grid.Column width={4}>
-              <Button positive content="Save" onClick={this.onSaveLocation} />
-            </Grid.Column>
-          </Grid>
-        </Segment>
-        <Segment>
-          <Map location={this.state.location} authors={this.state.authors} onChange={this.onChangeLocation} />
-        </Segment>
-      </Container>
+          <Segment>
+            <Grid>
+              <Grid.Column width={12}>
+                <Input
+                  fluid
+                  label="Location"
+                  value={JSON.stringify(this.state.location)}
+                  disabled
+                  onChange={() => {}}
+                />
+              </Grid.Column>
+              <Grid.Column width={4}>
+                <Button positive content="Save" onClick={this.onSaveLocation} />
+              </Grid.Column>
+            </Grid>
+          </Segment>
+          <Segment>
+            <Map location={this.state.location} authors={this.state.authors} onChange={this.onChangeLocation} />
+          </Segment>
+        </Modal.Content>
+        <Modal.Actions>
+          <Button icon="minus" content="Close" onClick={actions.closeDictionaryPropertiesModal} />
+        </Modal.Actions>
+      </Modal>
     );
   }
 }
@@ -165,42 +176,18 @@ Properties.propTypes = {
     loading: PropTypes.bool.isRequired,
   }).isRequired,
   update: PropTypes.func.isRequired,
-};
-
-const DictionaryProperties = compose(
-  onlyUpdateForKeys(['id', 'data']),
-  graphql(query),
-  graphql(updateMetadataMutation, { name: 'update' })
-)(Properties);
-
-const DictionaryPropertiesModal = (props) => {
-  const { visible, actions, id } = props;
-
-  return (
-    <Modal open={visible} dimmer size="fullscreen">
-      <Modal.Content>
-        <DictionaryProperties id={id} />
-      </Modal.Content>
-      <Modal.Actions>
-        <Button icon="minus" content="Close" onClick={actions.closeDictionaryPropertiesModal} />
-      </Modal.Actions>
-    </Modal>
-  );
-};
-
-DictionaryPropertiesModal.propTypes = {
-  visible: PropTypes.bool.isRequired,
-  id: PropTypes.array,
   actions: PropTypes.shape({
     closeDictionaryPropertiesModal: PropTypes.func.isRequired,
   }).isRequired,
 };
 
-DictionaryPropertiesModal.defaultProps = {
-  id: null,
-};
-
-export default compose(connect(
-  state => state.properties,
-  dispatch => ({ actions: bindActionCreators({ closeDictionaryPropertiesModal }, dispatch) })
-))(DictionaryPropertiesModal);
+export default compose(
+  connect(
+    state => state.dictionaryProperties,
+    dispatch => ({ actions: bindActionCreators({ closeDictionaryPropertiesModal }, dispatch) })
+  ),
+  branch(({ id }) => !id, renderNothing),
+  graphql(query),
+  graphql(updateMetadataMutation, { name: 'update' }),
+  onlyUpdateForKeys(['id', 'data']),
+)(Properties);
