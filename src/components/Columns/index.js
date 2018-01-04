@@ -60,6 +60,20 @@ const removeColumnMutation = gql`
   }
 `;
 
+const updateColumnMutation = gql`
+  mutation UpdateColumnMutation(
+    $id: LingvodocID!
+    $parentId: LingvodocID!
+    $fieldId: LingvodocID!
+    $pos: Int!
+    $linkId: LingvodocID
+  ) {
+    update_column(id: $id, parent_id: $parentId, field_id: $fieldId, position: $pos, link_id: $linkId) {
+      triumph
+    }
+  }
+`;
+
 const NestedColumn = ({
   column, columns, fields, onChange,
 }) => {
@@ -126,9 +140,7 @@ class Column extends React.Component {
     this.setState({ hasNestedField });
   }
 
-  onChange(column) {
-    this.props.onChange(column);
-  }
+  onChange() {}
 
   render() {
     const {
@@ -188,10 +200,11 @@ class Columns extends React.Component {
     this.onChangePos = this.onChangePos.bind(this);
     this.onCreate = this.onCreate.bind(this);
     this.onRemove = this.onRemove.bind(this);
+    this.onUpdate = this.onUpdate.bind(this);
   }
 
   onChangePos(column, direction) {
-    // to
+    // XXX: ?
   }
 
   onCreate(column) {
@@ -232,6 +245,29 @@ class Columns extends React.Component {
           query: columnsQuery,
           variables: {
             perspectiveId,
+          },
+        },
+      ],
+    });
+  }
+
+  onUpdate(column) {
+    const { updateColumn, data } = this.props;
+    const { perspective } = data;
+    updateColumn({
+      variables: {
+        id: column.id,
+        // parentId: perspective.parent_id,
+        // fieldId: column.field_id,
+        // pos,
+        // linkId: 1,
+        // selfId: 1,
+      },
+      refetchQueries: [
+        {
+          query: columnsQuery,
+          variables: {
+            perspectiveId: perspective.id,
           },
         },
       ],
@@ -283,11 +319,13 @@ Columns.propTypes = {
   }).isRequired,
   createColumn: PropTypes.func.isRequired,
   removeColumn: PropTypes.func.isRequired,
+  updateColumn: PropTypes.func.isRequired,
 };
 
 export default compose(
   onlyUpdateForKeys(['data']),
   graphql(columnsQuery),
   graphql(createColumnMutation, { name: 'createColumn' }),
-  graphql(removeColumnMutation, { name: 'removeColumn' })
+  graphql(removeColumnMutation, { name: 'removeColumn' }),
+  graphql(updateColumnMutation, { name: 'updateColumn' }),
 )(Columns);
