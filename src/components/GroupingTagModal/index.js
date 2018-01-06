@@ -405,7 +405,7 @@ GroupingTagModal.defaultProps = {
 
 export default compose(
   connect(state => state.groupingTag, dispatch => bindActionCreators({ closeModal }, dispatch)),
-  //branch(({ visible }) => !visible, renderNothing),
+  branch(({ visible }) => !visible, renderNothing),
   graphql(languageTreeSourceQuery),
   graphql(disconnectMutation, { name: 'disconnect' }),
   graphql(connectMutation, { name: 'connect' }),

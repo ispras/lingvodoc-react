@@ -48,6 +48,9 @@ const Dashboard = (props) => {
   return (
     <Dropdown item text="Dashboard">
       <Dropdown.Menu>
+        <Dropdown.Item as={Link} to="/dashboard/create_dictionary">
+          Create dictionary
+        </Dropdown.Item>
         <Dropdown.Item as={Link} to="/dashboard/dictionaries">
           Dictionaries
         </Dropdown.Item>
@@ -75,9 +78,7 @@ const DashboardWithData = graphql(gql`
 const NavBar = pure(({ location }) => (
   <Menu fixed="top">
     <Menu.Item as={Link} to={config.homePath}>
-      <Logo>
-        Lingvodoc 3.0
-      </Logo>
+      <Logo>Lingvodoc 3.0</Logo>
     </Menu.Item>
 
     <DashboardWithData />
@@ -95,7 +96,6 @@ const NavBar = pure(({ location }) => (
         </Dropdown.Item> */}
       </Dropdown.Menu>
     </Dropdown>
-
 
     <Dropdown item text="Info">
       <Dropdown.Menu>
