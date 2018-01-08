@@ -48,7 +48,7 @@ class CreateLanguageWizard extends React.Component {
       .toJS();
     const perspectives = p
       .map(ps => ({
-        translations: ps.get('translations').map(t => ({ locale_id: t.get('localeId'), content: t.get('content') })),
+        translation_atoms: ps.get('translations').map(t => ({ locale_id: t.get('localeId'), content: t.get('content') })),
       }))
       .toJS();
 
