@@ -20,6 +20,7 @@ const columnsQuery = gql`
         self_id
         link_id
         marked_for_deletion
+        position
       }
     }
     all_fields {
@@ -72,6 +73,23 @@ const updateColumnMutation = gql`
       triumph
     }
   }
+`;
+
+const updatePositionMutation = gql`
+mutation UpdateColumnMutation(
+  $id1: LingvodocID!,
+  $id2: LingvodocID!,
+  $perspectiveId: LingvodocID,
+  $pos1: Int!,
+  $pos2: Int!
+) {
+  updatePos1: update_column(id: $id1, parent_id: $perspectiveId, position: $pos1) {
+    triumph
+  }
+  updatePos2: update_column(id: $id2, parent_id: $perspectiveId, position: $pos2) {
+    triumph
+  }
+}
 `;
 
 const NestedColumn = ({
@@ -203,8 +221,44 @@ class Columns extends React.Component {
     this.onUpdate = this.onUpdate.bind(this);
   }
 
-  onChangePos(column, direction) {
-    // XXX: ?
+  onChangePos(column, columns, direction) {
+    const { perspectiveId, updatePosition } = this.props;
+
+    const doUpdate = (id1, pos1, id2, pos2) => {
+      updatePosition({
+        variables: {
+          id1,
+          id2,
+          pos1,
+          pos2,
+          perspectiveId,
+        },
+        refetchQueries: [
+          {
+            query: columnsQuery,
+            variables: {
+              perspectiveId,
+            },
+          },
+        ],
+      });
+    };
+
+    if (direction === 'up' && column.position > 1) {
+      const newPos = column.position - 1;
+      const swapColumn = columns.find(c => c.position === newPos);
+      if (swapColumn) {
+        doUpdate(column.id, newPos, swapColumn.id, swapColumn.position + 1);
+      }
+    }
+
+    if (direction === 'down' && column.position < columns.length) {
+      const newPos = column.position + 1;
+      const swapColumn = columns.find(c => c.position === newPos);
+      if (swapColumn) {
+        doUpdate(column.id, newPos, swapColumn.id, swapColumn.position - 1);
+      }
+    }
   }
 
   onCreate(column) {
@@ -295,8 +349,8 @@ class Columns extends React.Component {
                 </Grid.Column>
                 <Grid.Column width={1}>
                   <Button.Group icon>
-                    <Button basic icon="caret up" onClick={() => this.changePos(column, 'up')} />
-                    <Button basic icon="caret down" onClick={() => this.changePos(column, 'down')} />
+                    <Button basic icon="caret up" onClick={() => this.onChangePos(column, columns, 'up')} />
+                    <Button basic icon="caret down" onClick={() => this.onChangePos(column, columns, 'down')} />
                     <Button negative icon="cancel" />
                   </Button.Group>
                 </Grid.Column>
@@ -320,6 +374,7 @@ Columns.propTypes = {
   createColumn: PropTypes.func.isRequired,
   removeColumn: PropTypes.func.isRequired,
   updateColumn: PropTypes.func.isRequired,
+  updatePosition: PropTypes.func.isRequired,
 };
 
 export default compose(
@@ -328,4 +383,5 @@ export default compose(
   graphql(createColumnMutation, { name: 'createColumn' }),
   graphql(removeColumnMutation, { name: 'removeColumn' }),
   graphql(updateColumnMutation, { name: 'updateColumn' }),
+  graphql(updatePositionMutation, { name: 'updatePosition' }),
 )(Columns);
