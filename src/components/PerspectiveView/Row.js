@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { onlyUpdateForPropTypes } from 'recompose';
+import { onlyUpdateForKeys } from 'recompose';
 import { Table, Button } from 'semantic-ui-react';
 import { sortBy, isEmpty } from 'lodash';
 import { compositeIdToString } from 'utils/compositeId';
@@ -43,4 +43,4 @@ Row.defaultProps = {
   actions: [],
 };
 
-export default onlyUpdateForPropTypes(Row);
+export default onlyUpdateForKeys(['perspectiveId', 'entry', 'mode'])(Row);

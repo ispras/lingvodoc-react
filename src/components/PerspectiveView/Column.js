@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { onlyUpdateForPropTypes } from 'recompose';
+import { onlyUpdateForKeys } from 'recompose';
 import { Table } from 'semantic-ui-react';
 import { isEqual } from 'lodash';
 import { compositeIdToString } from 'utils/compositeId';
@@ -31,11 +31,11 @@ const Column = ({ field, fields }) => {
   );
 };
 
-Column['propTypes'] = {
+Column.propTypes = {
   field: PropTypes.shape({
     translation: PropTypes.string.isRequired,
   }).isRequired,
   fields: PropTypes.array.isRequired,
 };
 
-export default onlyUpdateForPropTypes(Column);
+export default onlyUpdateForKeys(['field'])(Column);

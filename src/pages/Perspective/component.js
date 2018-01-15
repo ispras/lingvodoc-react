@@ -140,7 +140,7 @@ const Perspective = ({ perspective, submitFilter }) => {
             key={stub}
             path={`${baseUrl}/${stub}`}
             render={() => (
-              <info.component id={id} mode={mode} entitiesMode={info.entitiesMode} page={page} className="content" />
+              <info.component id={id} mode={mode} entitiesMode={info.entitiesMode} page={page} filter={filter} className="content" />
             )}
           />
         ))}

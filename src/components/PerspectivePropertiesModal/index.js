@@ -52,7 +52,7 @@ const Properties = (props) => {
     <Modal open dimmer size="fullscreen">
       <Modal.Content>
         <Header>Translations</Header>
-        <TranslationGist id={gistId} />
+        <TranslationGist id={gistId} editable />
         <Divider />
         <Header>Fields</Header>
         <Columns perspectiveId={perspective.id} perspectives={perspectives} />

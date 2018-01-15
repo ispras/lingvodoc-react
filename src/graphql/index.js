@@ -23,7 +23,7 @@ const handleErrors = ({ response }, next) => {
 
     if (json.errors && json.errors.length > 0) {
       each(json.errors, (error) => {
-        window.logger.err(`GraphQL error: ${error}`);
+        window.logger.err(`GraphQL error: ${error.message}`);
       });
     }
 

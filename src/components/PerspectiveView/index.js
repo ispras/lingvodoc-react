@@ -10,10 +10,9 @@ import TableBody from './TableBody';
 import Pagination from './Pagination';
 import { compositeIdToString } from '../../utils/compositeId';
 
-
 const dimmerStyle = { minHeight: '600px' };
 
-const ROWS_PER_PAGE = 50;
+const ROWS_PER_PAGE = 20;
 
 export const queryPerspective = gql`
   query queryPerspective($id: LingvodocID!, $entitiesMode: String!) {
@@ -89,7 +88,7 @@ TableComponent.defaultProps = {
 };
 
 const PerspectiveView = ({
-  id, className, mode, entitiesMode, page, data,
+  id, className, mode, entitiesMode, page, data, filter,
 }) => {
   const { loading } = data;
 
@@ -115,8 +114,13 @@ const PerspectiveView = ({
     }))
     .filter(e => e.contains.length > 0);
 
+  const filteredEntries = !filter
+    ? entries
+    : entries.filter(entry =>
+      !!entry.contains.find(entity => typeof entity.content === 'string' && entity.content.indexOf(filter) >= 0));
+
   // get requested page
-  const pageEntries = take(drop(entries, ROWS_PER_PAGE * (page - 1)), ROWS_PER_PAGE);
+  const pageEntries = take(drop(filteredEntries, ROWS_PER_PAGE * (page - 1)), ROWS_PER_PAGE);
 
   const entriesTotal = entries.length;
 
@@ -154,6 +158,7 @@ PerspectiveView.propTypes = {
   page: PropTypes.number.isRequired,
   mode: PropTypes.string.isRequired,
   entitiesMode: PropTypes.string.isRequired,
+  filter: PropTypes.string,
   data: PropTypes.object.isRequired,
 };
 
@@ -340,8 +345,9 @@ export const LexicalEntryView = graphql(queryLexicalEntry, {
 export const LexicalEntryViewByIds = compose(
   onlyUpdateForKeys(['data']),
   graphql(queryLexicalEntriesByIds, {
-  options: { notifyOnNetworkStatusChange: true },
-}))(LexicalEntryViewBaseByIds);
+    options: { notifyOnNetworkStatusChange: true },
+  })
+)(LexicalEntryViewBaseByIds);
 
 export default graphql(queryPerspective, {
   options: { notifyOnNetworkStatusChange: true },

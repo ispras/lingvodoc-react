@@ -111,7 +111,7 @@ const P = (props) => {
               <Dropdown.Item
                 icon="setting"
                 text="Properties..."
-                onClick={() => actions.openPerspectivePropertiesModal(id, parent_id)}
+                // onClick={() => actions.openPerspectivePropertiesModal(id, parent_id)}
               />
               <Dropdown.Item icon="percent" text="Statistics..." />
               <Dropdown.Divider />
