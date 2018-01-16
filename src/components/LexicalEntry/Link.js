@@ -7,13 +7,12 @@ import { isEqual, isEmpty } from 'lodash';
 import { Button } from 'semantic-ui-react';
 import { openModal } from 'ducks/link';
 
-
 const DirectedLink = (props) => {
   const {
     entry, column, mode, entitiesMode, as: Component = 'div', actions,
   } = props;
 
-  const count = entry.contains.filter(e => isEqual(e.field_id, column.id)).length;
+  const count = entry.entities.filter(e => isEqual(e.field_id, column.id)).length;
   const content = `${column.translation} (${count})`;
 
   return (
@@ -46,8 +45,10 @@ DirectedLink.defaultProps = {
 };
 
 export default compose(
-  branch(({entry, column, mode}) => isEmpty(entry.contains.filter(entity => isEqual(entity.field_id, column.id))) && mode !== 'edit', renderNothing),
-  connect(
-  null,
-  dispatch => ({ actions: bindActionCreators({ openModal }, dispatch) }),
-))(DirectedLink);
+  branch(
+    ({ entry, column, mode }) =>
+      isEmpty(entry.entities.filter(entity => isEqual(entity.field_id, column.id))) && mode !== 'edit',
+    renderNothing
+  ),
+  connect(null, dispatch => ({ actions: bindActionCreators({ openModal }, dispatch) }))
+)(DirectedLink);

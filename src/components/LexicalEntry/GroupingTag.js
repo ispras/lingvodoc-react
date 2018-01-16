@@ -42,10 +42,12 @@ GroupingTag.defaultProps = {
 };
 
 export default compose(
-  branch(({entry, column, mode}) => isEmpty(entry.contains.filter(entity => isEqual(entity.field_id, column.id))) && mode !== 'edit', renderNothing),
-  connect(
-  null,
-  dispatch => ({
+  branch(
+    ({ entry, column, mode }) =>
+      isEmpty(entry.entities.filter(entity => isEqual(entity.field_id, column.id))) && mode !== 'edit',
+    renderNothing
+  ),
+  connect(null, dispatch => ({
     actions: bindActionCreators({ openModal }, dispatch),
-  })
-))(GroupingTag);
+  }))
+)(GroupingTag);

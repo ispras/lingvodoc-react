@@ -124,7 +124,7 @@ const ModeSelector = onlyUpdateForKeys(['mode', 'baseUrl', 'filter'])(({
 
 const Perspective = ({ perspective, submitFilter }) => {
   const {
-    id, mode, page, filter, baseUrl,
+    id, mode, page, baseUrl,
   } = perspective.params;
 
   if (!baseUrl) return null;
@@ -132,7 +132,7 @@ const Perspective = ({ perspective, submitFilter }) => {
   return (
     <Container fluid className="perspective">
       <PerspectivePath id={id} />
-      <ModeSelector mode={mode} baseUrl={baseUrl} filter={filter} submitFilter={submitFilter} />
+      <ModeSelector mode={mode} baseUrl={baseUrl} filter={perspective.filter} submitFilter={submitFilter} />
       <Switch>
         <Redirect exact from={baseUrl} to={`${baseUrl}/view`} />
         {map(MODES, (info, stub) => (
@@ -140,7 +140,7 @@ const Perspective = ({ perspective, submitFilter }) => {
             key={stub}
             path={`${baseUrl}/${stub}`}
             render={() => (
-              <info.component id={id} mode={mode} entitiesMode={info.entitiesMode} page={page} filter={filter} className="content" />
+              <info.component id={id} mode={mode} entitiesMode={info.entitiesMode} page={page} filter={perspective.filter} className="content" />
             )}
           />
         ))}

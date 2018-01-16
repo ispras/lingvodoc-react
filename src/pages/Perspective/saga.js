@@ -1,4 +1,4 @@
-import { takeLatest, put, select } from 'redux-saga/effects';
+import { takeLatest, put, select, all } from 'redux-saga/effects';
 import { LOCATION_CHANGE } from 'react-router-redux';
 import { SET_FILTER, request, selectors } from 'ducks/perspective';
 import { SELECT } from 'ducks/locale';

@@ -7,11 +7,16 @@ import { compositeIdToString } from 'utils/compositeId';
 
 import Column from './Column';
 
-const TableHeader = ({ columns, actions }) => (
+const TableHeader = ({ columns, actions, onSortModeChange }) => (
   <Table.Header>
     <Table.Row>
       {sortBy(columns.filter(column => column.self_id == null), column => column.position).map(column => (
-        <Column key={compositeIdToString(column.column_id)} field={column} fields={columns} />
+        <Column
+          key={compositeIdToString(column.column_id)}
+          field={column}
+          fields={columns}
+          onSortModeChange={onSortModeChange}
+        />
       ))}
       {!isEmpty(actions) && <Table.HeaderCell />}
     </Table.Row>
@@ -21,10 +26,12 @@ const TableHeader = ({ columns, actions }) => (
 TableHeader.propTypes = {
   columns: PropTypes.array.isRequired,
   actions: PropTypes.array,
+  onSortModeChange: PropTypes.func,
 };
 
 TableHeader.defaultProps = {
   actions: [],
+  onSortModeChange: () => {},
 };
 
 export default onlyUpdateForKeys(['columns'])(TableHeader);

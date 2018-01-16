@@ -1,14 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { compose, onlyUpdateForKeys } from 'recompose';
+import { compose, onlyUpdateForKeys, withReducer } from 'recompose';
 import { gql, graphql } from 'react-apollo';
-import { isEqual, find, take, drop, groupBy } from 'lodash';
+import { isEqual, find, take, drop, flow, sortBy, reverse } from 'lodash';
 import { Table, Dimmer, Header, Icon } from 'semantic-ui-react';
 
 import TableHeader from './TableHeader';
 import TableBody from './TableBody';
 import Pagination from './Pagination';
-import { compositeIdToString } from '../../utils/compositeId';
 
 const dimmerStyle = { minHeight: '600px' };
 
@@ -30,20 +29,20 @@ export const queryPerspective = gql`
         id
         parent_id
         created_at
-      }
-      entities(mode: $entitiesMode) {
-        id
-        parent_id
-        field_id
-        link_id
-        self_id
-        created_at
-        locale_id
-        content
-        published
-        accepted
-        additional_metadata {
-          link_perspective_id
+        entities(mode: $entitiesMode) {
+          id
+          parent_id
+          field_id
+          link_id
+          self_id
+          created_at
+          locale_id
+          content
+          published
+          accepted
+          additional_metadata {
+            link_perspective_id
+          }
         }
       }
     }
@@ -88,7 +87,7 @@ TableComponent.defaultProps = {
 };
 
 const PerspectiveView = ({
-  id, className, mode, entitiesMode, page, data, filter,
+  id, className, mode, entitiesMode, page, data, filter, sortByField, dispatch,
 }) => {
   const { loading } = data;
 
@@ -104,25 +103,37 @@ const PerspectiveView = ({
     );
   }
 
-  const { all_fields, perspective: { lexical_entries, entities, columns } } = data;
+  const { all_fields, perspective: { lexical_entries, columns } } = data;
 
-  const groupedEntities = groupBy(entities, e => compositeIdToString(e.parent_id));
-  const entries = lexical_entries
-    .map(e => ({
-      ...e,
-      contains: groupedEntities[compositeIdToString(e.id)] || [],
-    }))
-    .filter(e => e.contains.length > 0);
+  const entries = flow([
+    // remove empty lexical entries, if not in edit mode
+    es => (mode !== 'edit' ? es.filter(e => e.entities.length > 0) : es),
+    // apply filtering
+    es =>
+      ((!!filter && filter.length > 0)
+        ? es.filter(entry =>
+          !!entry.entities.find(entity => typeof entity.content === 'string' && entity.content.indexOf(filter) >= 0))
+        : es),
+    // apply sorting
+    (es) => {
+      // no sorting required
+      if (!sortByField) {
+        return es;
+      }
+      const { fieldId, order } = sortByField;
+      // XXX: sort by first entity
+      const sortedEntries = sortBy(es, (e) => {
+        const entities = e.entities.filter(entity => isEqual(entity.field_id, fieldId));
+        if (entities.length > 0) {
+          return entities[0].content;
+        }
+        return '';
+      });
+      return order === 'a' ? sortedEntries : reverse(sortedEntries);
+    },
+  ])(lexical_entries);
 
-  const filteredEntries = !filter
-    ? entries
-    : entries.filter(entry =>
-      !!entry.contains.find(entity => typeof entity.content === 'string' && entity.content.indexOf(filter) >= 0));
-
-  // get requested page
-  const pageEntries = take(drop(filteredEntries, ROWS_PER_PAGE * (page - 1)), ROWS_PER_PAGE);
-
-  const entriesTotal = entries.length;
+  const pageEntries = (entries.length > ROWS_PER_PAGE ? take(drop(entries, ROWS_PER_PAGE * (page - 1)), ROWS_PER_PAGE) : entries);
 
   // join fields and columns
   // {
@@ -144,10 +155,13 @@ const PerspectiveView = ({
   return (
     <div style={{ overflowY: 'auto' }}>
       <Table celled padded className={className}>
-        <TableHeader columns={fields} />
+        <TableHeader
+          columns={fields}
+          onSortModeChange={(fieldId, order) => dispatch({ type: 'SET_SORT_MODE', payload: { fieldId, order } })}
+        />
         <TableBody perspectiveId={id} entitiesMode={entitiesMode} entries={pageEntries} columns={fields} mode={mode} />
       </Table>
-      <Pagination current={page} total={Math.floor(entriesTotal / ROWS_PER_PAGE) + 1} to={mode} />
+      <Pagination current={page} total={Math.floor(entries.length / ROWS_PER_PAGE) + 1} to={mode} />
     </div>
   );
 };
@@ -160,7 +174,32 @@ PerspectiveView.propTypes = {
   entitiesMode: PropTypes.string.isRequired,
   filter: PropTypes.string,
   data: PropTypes.object.isRequired,
+  sortByField: PropTypes.object,
+  dispatch: PropTypes.func.isRequired,
 };
+
+PerspectiveView.defaultProps = {
+  filter: '',
+  sortByField: null,
+};
+
+function sortByFieldReducer(state, { type, payload }) {
+  switch (type) {
+    case 'SET_SORT_MODE':
+      return payload;
+    case 'RESET_SORT_MODE':
+      return null;
+    default:
+      return state;
+  }
+}
+
+export default compose(
+  withReducer('sortByField', 'dispatch', sortByFieldReducer, null),
+  graphql(queryPerspective, {
+    options: { notifyOnNetworkStatusChange: true },
+  })
+)(PerspectiveView);
 
 export const queryLexicalEntry = gql`
   query queryLexacalEntry($perspectiveId: LingvodocID!) {
@@ -195,11 +234,6 @@ const LexicalEntryViewBase = ({
 
   const { all_fields, perspective: { columns } } = data;
 
-  const pagedEntries = entries.map(e => ({
-    ...e,
-    contains: e.entities,
-  }));
-
   const fields = columns.map((column) => {
     const field = find(all_fields, f => isEqual(column.field_id, f.id));
     return {
@@ -214,7 +248,7 @@ const LexicalEntryViewBase = ({
     <TableComponent
       perspectiveId={perspectiveId}
       entitiesMode={entitiesMode}
-      entries={pagedEntries}
+      entries={entries}
       columns={fields}
       mode={mode}
       actions={actions}
@@ -289,15 +323,7 @@ const LexicalEntryViewBaseByIds = ({
     );
   }
 
-  const { all_fields, perspective: { columns, entities } } = data;
-
-  const groupedEntities = groupBy(entities, e => compositeIdToString(e.parent_id));
-  const tableEntries = entries
-    .map(e => ({
-      ...e,
-      contains: groupedEntities[compositeIdToString(e.id)] || [],
-    }))
-    .filter(e => e.contains.length > 0);
+  const { all_fields, perspective: { columns } } = data;
 
   const fields = columns.map((column) => {
     const field = find(all_fields, f => isEqual(column.field_id, f.id));
@@ -313,7 +339,7 @@ const LexicalEntryViewBaseByIds = ({
     <TableComponent
       perspectiveId={perspectiveId}
       entitiesMode={entitiesMode}
-      entries={tableEntries}
+      entries={entries}
       columns={fields}
       mode={mode}
       actions={actions}
@@ -348,7 +374,3 @@ export const LexicalEntryViewByIds = compose(
     options: { notifyOnNetworkStatusChange: true },
   })
 )(LexicalEntryViewBaseByIds);
-
-export default graphql(queryPerspective, {
-  options: { notifyOnNetworkStatusChange: true },
-})(PerspectiveView);

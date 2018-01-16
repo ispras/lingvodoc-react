@@ -1,5 +1,5 @@
 import { matchPath } from 'react-router-dom';
-import { getPage, getFilter } from 'utils/getParams';
+import { getPage } from 'utils/getParams';
 
 function getIds(path) {
   const match = matchPath(path, {
@@ -27,7 +27,6 @@ export default function getParams(location) {
     parent_id: [ids.pcid, ids.poid].map(k => parseInt(k, 10)),
     mode: getMode(location.pathname),
     page: getPage(location),
-    filter: getFilter(location),
     baseUrl: `/dictionary/${ids.pcid}/${ids.poid}/perspective/${ids.cid}/${ids.oid}`,
   };
   return result;

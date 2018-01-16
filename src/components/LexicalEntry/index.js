@@ -145,7 +145,7 @@ class Entities extends React.Component {
     const {
       perspectiveId, entry, column, columns, mode, entitiesMode, parentEntity,
     } = this.props;
-    const entities = entry.contains.filter(entity => isEqual(entity.field_id, column.id));
+    const entities = entry.entities.filter(entity => isEqual(entity.field_id, column.id));
 
     const Component = getComponent(column.data_type);
     if (column.data_type === 'Link' || column.data_type === 'Grouping Tag' || column.data_type === 'Directed Link') {

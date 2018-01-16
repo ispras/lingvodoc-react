@@ -5,7 +5,9 @@ import { lifecycle, shouldUpdate, compose } from 'recompose';
 import { run, stop } from 'ducks/saga';
 
 function generateId() {
-  return Math.random().toString(36).substr(2, 12);
+  return Math.random()
+    .toString(36)
+    .substr(2, 12);
 }
 
 const mountUnmountCycle = lifecycle({
@@ -18,28 +20,30 @@ const mountUnmountCycle = lifecycle({
   },
 });
 
-const mapActionsToProps = ({ actions = {}, init, teardown, saga }) =>
-  (dispatch) => {
-    const sagaId = generateId();
-    return {
-      ...bindActionCreators(actions, dispatch),
-      onMount(props) {
-        dispatch(run({ saga, sagaId }));
-        if (init) dispatch(init(props));
-      },
-      onUnmount(props) {
-        if (teardown) dispatch(teardown(props));
-        dispatch(stop(sagaId));
-      },
-    };
+const mapActionsToProps = ({
+  actions = {}, init, teardown, saga,
+}) => (dispatch) => {
+  const sagaId = generateId();
+  return {
+    ...bindActionCreators(actions, dispatch),
+    onMount(props) {
+      dispatch(run({ saga, sagaId }));
+      if (init) dispatch(init(props));
+    },
+    onUnmount(props) {
+      if (teardown) dispatch(teardown(props));
+      dispatch(stop(sagaId));
+    },
   };
+};
 
-export default ({ props, actions, saga, updateWhen, init, teardown }) =>
+export default ({
+  props, actions, saga, updateWhen, init, teardown,
+}) =>
   compose(
-    connect(
-      props,
-      mapActionsToProps({ actions, init, teardown, saga })
-    ),
+    connect(props, mapActionsToProps({
+      actions, init, teardown, saga,
+    })),
     mountUnmountCycle,
     shouldUpdate(updateWhen)
   );
