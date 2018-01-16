@@ -126,7 +126,7 @@ const PublishGroupingTag = (props) => {
     lexicalEntry, fieldId, entitiesMode, allLanguages, allDictionaries, allPerspectives, publish,
   } = props;
 
-  const entity = lexicalEntry.contains.find(e => isEqual(e.field_id, fieldId));
+  const entity = lexicalEntry.entities.find(e => isEqual(e.field_id, fieldId));
 
   const panes = [
     {
@@ -176,7 +176,7 @@ const ContributionsGroupingTag = (props) => {
     lexicalEntry, fieldId, entitiesMode, allLanguages, allDictionaries, allPerspectives, accept,
   } = props;
 
-  const entity = lexicalEntry.contains.find(e => isEqual(e.field_id, fieldId));
+  const entity = lexicalEntry.entities.find(e => isEqual(e.field_id, fieldId));
 
   const panes = [
     {

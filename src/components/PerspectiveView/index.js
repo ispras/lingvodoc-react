@@ -2,8 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { compose, onlyUpdateForKeys, withReducer } from 'recompose';
 import { gql, graphql } from 'react-apollo';
-import { isEqual, find, take, drop, flow, sortBy, reverse } from 'lodash';
+import { isEqual, find, take, drop, flow, groupBy, sortBy, reverse } from 'lodash';
 import { Table, Dimmer, Header, Icon } from 'semantic-ui-react';
+import { compositeIdToString } from 'utils/compositeId';
 
 import TableHeader from './TableHeader';
 import TableBody from './TableBody';
@@ -110,7 +111,7 @@ const PerspectiveView = ({
     es => (mode !== 'edit' ? es.filter(e => e.entities.length > 0) : es),
     // apply filtering
     es =>
-      ((!!filter && filter.length > 0)
+      (!!filter && filter.length > 0
         ? es.filter(entry =>
           !!entry.entities.find(entity => typeof entity.content === 'string' && entity.content.indexOf(filter) >= 0))
         : es),
@@ -133,7 +134,8 @@ const PerspectiveView = ({
     },
   ])(lexical_entries);
 
-  const pageEntries = (entries.length > ROWS_PER_PAGE ? take(drop(entries, ROWS_PER_PAGE * (page - 1)), ROWS_PER_PAGE) : entries);
+  const pageEntries =
+    entries.length > ROWS_PER_PAGE ? take(drop(entries, ROWS_PER_PAGE * (page - 1)), ROWS_PER_PAGE) : entries;
 
   // join fields and columns
   // {
@@ -323,7 +325,15 @@ const LexicalEntryViewBaseByIds = ({
     );
   }
 
-  const { all_fields, perspective: { columns } } = data;
+  const { all_fields, perspective: { columns, entities } } = data;
+
+  const groupedEntities = groupBy(entities, e => compositeIdToString(e.parent_id));
+  const tableEntries = entries
+    .map(e => ({
+      ...e,
+      entities: groupedEntities[compositeIdToString(e.id)] || [],
+    }))
+    .filter(e => e.entities.length > 0);
 
   const fields = columns.map((column) => {
     const field = find(all_fields, f => isEqual(column.field_id, f.id));
@@ -339,7 +349,7 @@ const LexicalEntryViewBaseByIds = ({
     <TableComponent
       perspectiveId={perspectiveId}
       entitiesMode={entitiesMode}
-      entries={entries}
+      entries={tableEntries}
       columns={fields}
       mode={mode}
       actions={actions}

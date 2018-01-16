@@ -332,8 +332,6 @@ class Columns extends React.Component {
         .map(c => c.position)
         .reduce((x, y) => (x > y ? x : y)) + 1;
 
-    console.log(field);
-
     createColumn({
       variables: {
         //id: perspective.id,

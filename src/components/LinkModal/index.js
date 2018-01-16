@@ -19,7 +19,7 @@ const ModalContentWrapper = styled('div')`
 `;
 
 function buildTree(lexicalEntry, column, allLanguages, allDictionaries, allPerspectives) {
-  const entities = lexicalEntry.contains.filter(e => isEqual(e.field_id, column.field_id));
+  const entities = lexicalEntry.entities.filter(e => isEqual(e.field_id, column.field_id));
 
   // old-style links have perspective id stored in column while newer directed links
   // store perspective id in the metadata of each entity
@@ -76,7 +76,7 @@ const EditLink = (props) => {
     {
       title: 'Remove',
       action: (entry) => {
-        const entity = lexicalEntry.contains.find(e => isEqual(e.link_id, entry.id) && isEqual(e.field_id, column.field_id));
+        const entity = lexicalEntry.entities.find(e => isEqual(e.link_id, entry.id) && isEqual(e.field_id, column.field_id));
         if (entity) {
           remove(entity);
         }
@@ -128,7 +128,7 @@ const PublishLink = (props) => {
   } = props;
 
   const tree = buildTree(lexicalEntry, column, allLanguages, allDictionaries, allPerspectives);
-  const entity = lexicalEntry.contains.find(e => isEqual(e.field_id, column.field_id));
+  const entity = lexicalEntry.entities.find(e => isEqual(e.field_id, column.field_id));
   const label = entity.published
     ? 'The entity is currently published. Click to unpublish.'
     : 'The entity is NOT currently published. Click to publish.';
@@ -173,7 +173,7 @@ const ContributionsLink = (props) => {
   } = props;
 
   const tree = buildTree(lexicalEntry, column, allLanguages, allDictionaries, allPerspectives);
-  const entity = lexicalEntry.contains.find(e => isEqual(e.field_id, column.field_id));
+  const entity = lexicalEntry.entities.find(e => isEqual(e.field_id, column.field_id));
 
   const panes = [
     {
