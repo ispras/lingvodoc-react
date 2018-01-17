@@ -2,6 +2,7 @@ import { ApolloClient } from 'react-apollo';
 import { createNetworkInterface } from 'apollo-upload-client';
 import { each } from 'lodash';
 import config from 'config';
+import { compositeIdToString } from '../utils/compositeId';
 
 const handleErrors = ({ response }, next) => {
   // clone response so we can turn it into json independently
@@ -53,6 +54,12 @@ networkInterface.useAfter([
 
 const apolloClient = new ApolloClient({
   networkInterface,
+  // dataIdFromObject: (obj) => {
+  //   if (typeof obj.id === 'object') {
+  //     return compositeIdToString(obj.id);
+  //   }
+  //   return `${obj.id}`;
+  // },
 });
 
 export default apolloClient;

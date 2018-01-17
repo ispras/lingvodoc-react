@@ -5,7 +5,6 @@ import { graphql, gql } from 'react-apollo';
 import { isEqual } from 'lodash';
 import { Button } from 'semantic-ui-react';
 import { compositeIdToString } from 'utils/compositeId';
-import { queryPerspective } from 'components/PerspectiveView';
 
 import Text from './Text';
 import Sound from './Sound';
@@ -47,6 +46,31 @@ const removeEntityMutation = gql`
   }
 `;
 
+const lexicalEntryQuery = gql`
+  query LexicalEntryQuery($id: LingvodocID!, $entitiesMode: String!) {
+    lexicalentry(id: $id) {
+      id
+      parent_id
+      created_at
+      entities(mode: $entitiesMode) {
+        id
+        parent_id
+        field_id
+        link_id
+        self_id
+        created_at
+        locale_id
+        content
+        published
+        accepted
+        additional_metadata {
+          link_perspective_id
+        }
+      }
+    }
+  }
+`;
+
 const getComponent = dataType =>
   ({
     Text,
@@ -72,16 +96,16 @@ class Entities extends React.Component {
 
   create(content) {
     const {
-      perspectiveId, entry, column, entitiesMode, createEntity,
+      entry, column, entitiesMode, createEntity,
     } = this.props;
 
     createEntity({
       variables: { parent_id: entry.id, field_id: column.id, content },
       refetchQueries: [
         {
-          query: queryPerspective,
+          query: lexicalEntryQuery,
           variables: {
-            id: perspectiveId,
+            id: entry.id,
             entitiesMode,
           },
         },
@@ -92,15 +116,15 @@ class Entities extends React.Component {
   }
 
   publish(entity, published) {
-    const { perspectiveId, entitiesMode, publishEntity } = this.props;
+    const { entry, entitiesMode, publishEntity } = this.props;
 
     publishEntity({
       variables: { id: entity.id, published },
       refetchQueries: [
         {
-          query: queryPerspective,
+          query: lexicalEntryQuery,
           variables: {
-            id: perspectiveId,
+            id: entry.id,
             entitiesMode,
           },
         },
@@ -109,15 +133,15 @@ class Entities extends React.Component {
   }
 
   accept(entity, accepted) {
-    const { perspectiveId, entitiesMode, acceptEntity } = this.props;
+    const { entry, entitiesMode, acceptEntity } = this.props;
 
     acceptEntity({
       variables: { id: entity.id, accepted },
       refetchQueries: [
         {
-          query: queryPerspective,
+          query: lexicalEntryQuery,
           variables: {
-            id: perspectiveId,
+            id: entry.id,
             entitiesMode,
           },
         },
@@ -126,14 +150,14 @@ class Entities extends React.Component {
   }
 
   remove(entity) {
-    const { perspectiveId, entitiesMode, removeEntity } = this.props;
+    const { entry, entitiesMode, removeEntity } = this.props;
     removeEntity({
       variables: { id: entity.id },
       refetchQueries: [
         {
-          query: queryPerspective,
+          query: lexicalEntryQuery,
           variables: {
-            id: perspectiveId,
+            id: entry.id,
             entitiesMode,
           },
         },

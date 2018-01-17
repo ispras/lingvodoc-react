@@ -1,3 +1,7 @@
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const _ = require('./utils');
+
 process.env.NODE_ENV = 'production';
 process.env.REACT_WEBPACK_ENV = 'dist';
 
@@ -20,6 +24,15 @@ base.module.loaders.push({
 // use hash filename to support long-term caching
 base.output.filename = '[name].[chunkhash:8].js';
 // add webpack plugins
+
+base.plugins.push(
+  new HtmlWebpackPlugin({
+    template: path.resolve(__dirname, '../src/index.prod.html'),
+    favicon: path.resolve(__dirname, '../src/favicon.ico'),
+    filename: _.outputIndexPath,
+  }),
+);
+
 base.plugins.push(
   new CleanWebpackPlugin(['dist']),
   new ProgressPlugin(),

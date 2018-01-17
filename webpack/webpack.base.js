@@ -1,6 +1,5 @@
 const path = require('path');
 const webpack = require('webpack');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 const config = require('./config');
 const _ = require('./utils');
 
@@ -43,11 +42,6 @@ module.exports = {
     ],
   },
   plugins: [
-    new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, '../src/index.html'),
-      favicon: path.resolve(__dirname, '../src/favicon.ico'),
-      filename: _.outputIndexPath,
-    }),
     new webpack.LoaderOptionsPlugin(_.loadersOptions()),
     new webpack.ProvidePlugin({
       WaveSurfer: 'wavesurfer.js',

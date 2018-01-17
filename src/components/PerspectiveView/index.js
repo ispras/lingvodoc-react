@@ -26,7 +26,7 @@ export const queryPerspective = gql`
         self_id
         position
       }
-      lexical_entries {
+      lexical_entries(mode: $entitiesMode) {
         id
         parent_id
         created_at
