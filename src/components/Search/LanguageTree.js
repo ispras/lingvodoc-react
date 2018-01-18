@@ -5,7 +5,7 @@ import { LexicalEntryViewByIds } from 'components/PerspectiveView/index';
 
 
 class LanguageTree extends React.Component {
-  static generateNodeProps({ node, path }) {
+  static generateNodeProps({ node }) {
     switch (node.type) {
       case 'perspective':
         return {
@@ -14,7 +14,7 @@ class LanguageTree extends React.Component {
               <LexicalEntryViewByIds
                 className="perspective"
                 perspectiveId={node.id}
-                entries={node.lexicalEntries}
+                entriesIds={node.lexicalEntries.map(e => e.id)}
                 mode="view"
                 entitiesMode="published"
               />

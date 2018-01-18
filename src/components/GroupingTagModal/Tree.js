@@ -47,7 +47,7 @@ class Tree extends React.Component {
               <TableComponent
                 className="perspective"
                 perspectiveId={node.id}
-                entries={node.lexicalEntries}
+                entriesIds={node.lexicalEntries.map(e => e.id)}
                 mode="view"
                 entitiesMode="all"
                 actions={actions}

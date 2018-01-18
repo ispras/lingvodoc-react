@@ -204,7 +204,7 @@ export default compose(
 )(PerspectiveView);
 
 export const queryLexicalEntry = gql`
-  query queryLexacalEntry($perspectiveId: LingvodocID!) {
+  query queryLexicalEntry($perspectiveId: LingvodocID!) {
     perspective(id: $perspectiveId) {
       id
       translation
@@ -276,7 +276,7 @@ LexicalEntryViewBase.defaultProps = {
 };
 
 export const queryLexicalEntriesByIds = gql`
-  query queryLexacalEntry($perspectiveId: LingvodocID!, $entitiesMode: String!) {
+  query queryLexicalEntry($perspectiveId: LingvodocID!, $entriesIds: [LingvodocID]!, $entitiesMode: String!) {
     perspective(id: $perspectiveId) {
       id
       translation
@@ -287,19 +287,24 @@ export const queryLexicalEntriesByIds = gql`
         self_id
         position
       }
-      entities(mode: $entitiesMode) {
+      lexical_entries(mode: $entitiesMode, ids: $entriesIds) {
         id
         parent_id
-        field_id
-        link_id
-        self_id
         created_at
-        locale_id
-        content
-        published
-        accepted
-        additional_metadata {
-          link_perspective_id
+        entities(mode: $entitiesMode) {
+          id
+          parent_id
+          field_id
+          link_id
+          self_id
+          created_at
+          locale_id
+          content
+          published
+          accepted
+          additional_metadata {
+            link_perspective_id
+          }
         }
       }
     }
@@ -313,7 +318,7 @@ export const queryLexicalEntriesByIds = gql`
 `;
 
 const LexicalEntryViewBaseByIds = ({
-  perspectiveId, entries, mode, entitiesMode, data, actions,
+  perspectiveId, mode, entitiesMode, data, actions,
 }) => {
   const { loading } = data;
 
@@ -325,15 +330,7 @@ const LexicalEntryViewBaseByIds = ({
     );
   }
 
-  const { all_fields, perspective: { columns, entities } } = data;
-
-  const groupedEntities = groupBy(entities, e => compositeIdToString(e.parent_id));
-  const tableEntries = entries
-    .map(e => ({
-      ...e,
-      entities: groupedEntities[compositeIdToString(e.id)] || [],
-    }))
-    .filter(e => e.entities.length > 0);
+  const { all_fields, perspective: { columns, lexical_entries: entries } } = data;
 
   const fields = columns.map((column) => {
     const field = find(all_fields, f => isEqual(column.field_id, f.id));
@@ -349,7 +346,7 @@ const LexicalEntryViewBaseByIds = ({
     <TableComponent
       perspectiveId={perspectiveId}
       entitiesMode={entitiesMode}
-      entries={tableEntries}
+      entries={entries}
       columns={fields}
       mode={mode}
       actions={actions}
@@ -359,7 +356,7 @@ const LexicalEntryViewBaseByIds = ({
 
 LexicalEntryViewBaseByIds.propTypes = {
   perspectiveId: PropTypes.array.isRequired,
-  entries: PropTypes.array.isRequired,
+  entriesIds: PropTypes.array.isRequired,
   mode: PropTypes.string.isRequired,
   entitiesMode: PropTypes.string.isRequired,
   data: PropTypes.shape({
