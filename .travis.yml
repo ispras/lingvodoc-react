@@ -18,5 +18,4 @@ deploy:
   skip_cleanup: true
   on:
     repo: st2135/lingvodoc-react
-    branch: master
-
+    all_branches: true
