@@ -43,7 +43,8 @@ function GrantedDicts(props) {
         languagesTree
       ),
     };
-  });
+  }).filter(t => t.tree.size > 0);
+
 
   // build tree of dictionaries not included in grants
   const restTree = assignDictsToTree(

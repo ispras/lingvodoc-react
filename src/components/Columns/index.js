@@ -34,7 +34,6 @@ const columnsQuery = gql`
 
 const createColumnMutation = gql`
   mutation CreateColumnMutation(
-    $id: LingvodocID!
     $parentId: LingvodocID!
     $fieldId: LingvodocID!
     $pos: Int!
@@ -42,7 +41,6 @@ const createColumnMutation = gql`
     $selfId: LingvodocID
   ) {
     create_column(
-      id: $id
       parent_id: $parentId
       field_id: $fieldId
       position: $pos
