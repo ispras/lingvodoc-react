@@ -109,15 +109,13 @@ const Home = (props) => {
     selected,
     actions,
     downloadDictionaries,
+    dictionaries: localDictionaries,
     perspectives,
     grants,
     languages,
     isAuthenticated,
     data: {
-      loading,
-      error,
-      dictionaries,
-      permission_lists: permissionLists,
+      loading, error, dictionaries, permission_lists: permissionLists,
     },
     location: { hash },
   } = props;
@@ -158,16 +156,13 @@ const Home = (props) => {
   const dictsSource = fromJS(dictionaries);
 
   // pre-process dictionary list
-  const isDownloaded = dict => !!dictsSource.find(d => d.get('id').equals(dict.get('id')));
+  const localDicts = fromJS(localDictionaries);
+  const isDownloaded = dict => !!localDicts.find(d => d.get('id').equals(dict.get('id')));
   const hasPermission = (p, permission) =>
     (config.buildType === 'server' ? false : permissions.get(permission).has(p.get('id')));
 
   const dicts = dictsSource.reduce(
-    (acc, dict) =>
-      acc.set(
-        dict.get('id'),
-        dict.set('isDownloaded', isDownloaded(dict))
-      ),
+    (acc, dict) => acc.set(dict.get('id'), dict.set('isDownloaded', isDownloaded(dict))),
     new Map()
   );
 
@@ -243,6 +238,7 @@ Home.propTypes = {
   data: PropTypes.shape({
     loading: PropTypes.bool.isRequired,
   }).isRequired,
+  dictionaries: PropTypes.array,
   perspectives: PropTypes.array.isRequired,
   grants: PropTypes.array.isRequired,
   languages: PropTypes.array.isRequired,
@@ -255,6 +251,10 @@ Home.propTypes = {
   }).isRequired,
   location: PropTypes.object.isRequired,
   downloadDictionaries: PropTypes.func.isRequired,
+};
+
+Home.defaultProps = {
+  dictionaries: [],
 };
 
 const dictionaryWithPerspectivesQuery = gql`
@@ -283,12 +283,47 @@ const dictionaryWithPerspectivesQuery = gql`
   }
 `;
 
+const dictionaryWithPerspectivesProxyQuery = gql`
+  query DictionaryWithPerspectivesProxy {
+    dictionaries(proxy: false, published: true) {
+      id
+      parent_id
+      translation
+      additional_metadata {
+        authors
+      }
+      perspectives {
+        id
+        translation
+      }
+    }
+    perspectives {
+      id
+      parent_id
+      translation
+    }
+    grants {
+      id
+      translation
+      issuer
+      grant_number
+      additional_metadata {
+        participant
+      }
+    }
+    language_tree {
+      id
+      parent_id
+      translation
+      created_at
+    }
+    is_authenticated
+  }
+`;
+
 const AuthWrapper = ({
   data: {
-    perspectives,
-    grants,
-    language_tree: languages,
-    is_authenticated: isAuthenticated,
+    perspectives, grants, language_tree: languages, is_authenticated: isAuthenticated, dictionaries,
   },
 }) => {
   const Component = compose(
@@ -300,7 +335,21 @@ const AuthWrapper = ({
     graphql(downloadDictionariesMutation, { name: 'downloadDictionaries' })
   )(Home);
 
-  return <Component perspectives={perspectives} grants={grants} languages={languages} isAuthenticated={isAuthenticated}/>;
+  if (config.buildType === 'server') {
+    return (
+      <Component perspectives={perspectives} grants={grants} languages={languages} isAuthenticated={isAuthenticated} />
+    );
+  }
+  // proxy and desktop has additional parameter - local dictionaries
+  return (
+    <Component
+      dictionaries={dictionaries}
+      perspectives={perspectives}
+      grants={grants}
+      languages={languages}
+      isAuthenticated={isAuthenticated}
+    />
+  );
 };
 
 AuthWrapper.propTypes = {
@@ -314,6 +363,6 @@ AuthWrapper.propTypes = {
 };
 
 export default compose(
-  graphql(dictionaryWithPerspectivesQuery),
-  branch(({ data }) => data.loading || data.error, renderNothing),
+  graphql(config.buildType === 'server' ? dictionaryWithPerspectivesQuery : dictionaryWithPerspectivesProxyQuery),
+  branch(({ data }) => data.loading || data.error, renderNothing)
 )(AuthWrapper);

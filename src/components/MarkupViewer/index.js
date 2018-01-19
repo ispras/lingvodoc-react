@@ -64,30 +64,35 @@ class MarkupViewer extends React.Component {
 
     return (
       <Wrapper>
-        <Wavesurfer
-          options={options}
-          audioFile={file}
-          playing={playing}
-          pos={pos}
-          onPosChange={this.handlePosChange}
-          onReady={this.handleReady}
-        >
-          <Timeline options={timelineOptions} />
-          <Spectrogram options={spectrogramOptions} />
-          <ELAN markup={markup} options={elanOptions} />
+        {file && (
+          <Wavesurfer
+            options={options}
+            audioFile={file}
+            playing={playing}
+            pos={pos}
+            onPosChange={this.handlePosChange}
+            onReady={this.handleReady}
+          >
+            <Timeline options={timelineOptions} />
+            <Spectrogram options={spectrogramOptions} />
+            <ELAN markup={markup} options={elanOptions} />
+          </Wavesurfer>
+        )}
 
-        </Wavesurfer>
+        {!file && <ELAN markup={markup} options={elanOptions} />}
 
-        <Container textAlign="center">
-          <Button.Group icon>
-            <Button>
-              <Icon name="play" onClick={this.handlePlay} />
-            </Button>
-            <Button>
-              <Icon name="pause" onClick={this.handlePause} />
-            </Button>
-          </Button.Group>
-        </Container>
+        {file && (
+          <Container textAlign="center">
+            <Button.Group icon>
+              <Button>
+                <Icon name="play" onClick={this.handlePlay} />
+              </Button>
+              <Button>
+                <Icon name="pause" onClick={this.handlePause} />
+              </Button>
+            </Button.Group>
+          </Container>
+        )}
       </Wrapper>
     );
   }

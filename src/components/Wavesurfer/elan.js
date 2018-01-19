@@ -13,15 +13,24 @@ class ELAN extends React.Component {
 
   componentDidMount() {
     if (this.props.isReady) this.init();
-    this.props.wavesurfer.on('ready', () => {
-      this.elan = Object.create(WaveSurfer.ELAN);
+
+    this.elan = Object.create(WaveSurfer.ELAN);
+    if (this.props.wavesurfer) {
+      this.props.wavesurfer.on('ready', () => {
+        this.elan.init({
+          ...this.props.options,
+          container: this.elanElement,
+          wavesurfer: this.props.wavesurfer,
+          xml: this.props.markup,
+        });
+      });
+    } else {
       this.elan.init({
         ...this.props.options,
         container: this.elanElement,
-        wavesurfer: this.props.wavesurfer,
         xml: this.props.markup,
       });
-    });
+    }
   }
 
   render() {
