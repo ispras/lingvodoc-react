@@ -24,12 +24,13 @@ const MarkupEntity = graphql(q)((props) => {
 
 const MarkupModal = (props) => {
   const { visible, data, actions } = props;
-  const { audio: { content: audio }, markup: { id } } = data;
+  const { audio, markup: { id } } = data;
+  const audioUrl = audio ? audio.content : null;
 
   return (
     <Modal open={visible} dimmer size="small">
       <Modal.Content>
-        <MarkupEntity file={audio} id={id} />
+        <MarkupEntity file={audioUrl} id={id} />
       </Modal.Content>
       <Modal.Actions>
         <Button icon="minus" content="Close" onClick={actions.closeViewer} />

@@ -8,7 +8,7 @@ import { graphql, gql } from 'react-apollo';
 import Immutable, { fromJS, Map } from 'immutable';
 import { Container, Checkbox, Segment, Button, Message } from 'semantic-ui-react';
 import { buildLanguageTree } from 'pages/Search/treeBuilder';
-import { setGrantsMode } from 'ducks/home';
+import { setGrantsMode, resetDictionaries } from 'ducks/home';
 
 import config from 'config';
 
@@ -30,6 +30,28 @@ const authenticatedDictionariesQuery = gql`
         translation
       }
     }
+    permission_lists(proxy: true) {
+      view {
+        id
+        parent_id
+        translation
+      }
+      edit {
+        id
+        parent_id
+        translation
+      }
+      publish {
+        id
+        parent_id
+        translation
+      }
+      limited {
+        id
+        parent_id
+        translation
+      }
+    }
   }
 `;
 
@@ -45,6 +67,28 @@ const guestDictionariesQuery = gql`
       }
       perspectives {
         id
+        translation
+      }
+    }
+    permission_lists(proxy: false) {
+      view {
+        id
+        parent_id
+        translation
+      }
+      edit {
+        id
+        parent_id
+        translation
+      }
+      publish {
+        id
+        parent_id
+        translation
+      }
+      limited {
+        id
+        parent_id
         translation
       }
     }
@@ -68,12 +112,12 @@ const Home = (props) => {
     perspectives,
     grants,
     languages,
-    permissionLists,
     isAuthenticated,
     data: {
       loading,
       error,
       dictionaries,
+      permission_lists: permissionLists,
     },
     location: { hash },
   } = props;
@@ -144,6 +188,8 @@ const Home = (props) => {
     const ids = selected.toJS();
     downloadDictionaries({
       variables: { ids },
+    }).then(() => {
+      actions.resetDictionaries();
     });
   }
 
@@ -200,12 +246,12 @@ Home.propTypes = {
   perspectives: PropTypes.array.isRequired,
   grants: PropTypes.array.isRequired,
   languages: PropTypes.array.isRequired,
-  permissionLists: PropTypes.object.isRequired,
   isAuthenticated: PropTypes.bool.isRequired,
   grantsMode: PropTypes.bool.isRequired,
   selected: PropTypes.instanceOf(Immutable.Set).isRequired,
   actions: PropTypes.shape({
     setGrantsMode: PropTypes.func.isRequired,
+    resetDictionaries: PropTypes.func.isRequired,
   }).isRequired,
   location: PropTypes.object.isRequired,
   downloadDictionaries: PropTypes.func.isRequired,
@@ -233,28 +279,6 @@ const dictionaryWithPerspectivesQuery = gql`
       translation
       created_at
     }
-    permission_lists(proxy: true) {
-      view {
-        id
-        parent_id
-        translation
-      }
-      edit {
-        id
-        parent_id
-        translation
-      }
-      publish {
-        id
-        parent_id
-        translation
-      }
-      limited {
-        id
-        parent_id
-        translation
-      }
-    }
     is_authenticated
   }
 `;
@@ -264,20 +288,19 @@ const AuthWrapper = ({
     perspectives,
     grants,
     language_tree: languages,
-    permission_lists: permissionLists,
     is_authenticated: isAuthenticated,
   },
 }) => {
   const Component = compose(
     connect(
       state => ({ ...state.home, ...state.router }),
-      dispatch => ({ actions: bindActionCreators({ setGrantsMode }, dispatch) })
+      dispatch => ({ actions: bindActionCreators({ setGrantsMode, resetDictionaries }, dispatch) })
     ),
     graphql(isAuthenticated ? authenticatedDictionariesQuery : guestDictionariesQuery),
     graphql(downloadDictionariesMutation, { name: 'downloadDictionaries' })
   )(Home);
 
-  return <Component perspectives={perspectives} grants={grants} languages={languages} permissionLists={permissionLists} isAuthenticated={isAuthenticated}/>;
+  return <Component perspectives={perspectives} grants={grants} languages={languages} isAuthenticated={isAuthenticated}/>;
 };
 
 AuthWrapper.propTypes = {
@@ -286,7 +309,6 @@ AuthWrapper.propTypes = {
     perspectives: PropTypes.array,
     grants: PropTypes.array,
     language_tree: PropTypes.array,
-    permission_lists: PropTypes.object,
     is_authenticated: PropTypes.bool,
   }).isRequired,
 };
@@ -295,7 +317,3 @@ export default compose(
   graphql(dictionaryWithPerspectivesQuery),
   branch(({ data }) => data.loading || data.error, renderNothing),
 )(AuthWrapper);
-
-
-
-

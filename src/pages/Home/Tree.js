@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { compose, onlyUpdateForKeys, shouldUpdate } from 'recompose';
+import { compose, onlyUpdateForKeys } from 'recompose';
 import Immutable from 'immutable';
 import { Link } from 'react-router-dom';
 import { Dropdown, Checkbox, Icon } from 'semantic-ui-react';
