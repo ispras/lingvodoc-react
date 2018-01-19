@@ -17,12 +17,11 @@ function restDictionaries(dicts, grants) {
 
 function GrantedDicts(props) {
   const {
-    languagesTree, dictionaries, perspectives, grants, selected,
+    languagesTree, dictionaries, perspectives, grants, canSelectDictionaries,
   } = props;
 
   const dicts = fromJS(dictionaries)
-    .reduce((acc, dict) => acc.set(dict.get('id'), dict), new Map())
-    .map((d, id) => d.set('selected', !!selected.get(id) || false));
+    .reduce((acc, dict) => acc.set(dict.get('id'), dict), new Map());
 
   // build grant trees
   const trees = grants.map((grant) => {
@@ -81,14 +80,14 @@ function GrantedDicts(props) {
     <Header>
       {title} ({issuer} {number})
     </Header>
-    <Tree tree={tree} />
+    <Tree tree={tree} canSelectDictionaries={canSelectDictionaries} />
   </div>
         ))}
       </Segment>
       <Segment>
         <div className="grant">
           <div className="grant-title">Индивидуальная работа</div>
-          <Tree tree={restTree} />
+          <Tree tree={restTree} canSelectDictionaries={canSelectDictionaries} />
         </div>
       </Segment>
     </div>
@@ -100,7 +99,11 @@ GrantedDicts.propTypes = {
   dictionaries: PropTypes.instanceOf(Immutable.Map).isRequired,
   perspectives: PropTypes.instanceOf(Immutable.List).isRequired,
   grants: PropTypes.instanceOf(Immutable.List).isRequired,
-  selected: PropTypes.instanceOf(Immutable.Set).isRequired,
+  canSelectDictionaries: PropTypes.bool,
+};
+
+GrantedDicts.defaultProps = {
+  canSelectDictionaries: false,
 };
 
 export default GrantedDicts;

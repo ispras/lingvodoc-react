@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { compose, onlyUpdateForKeys } from 'recompose';
+import { compose, onlyUpdateForKeys, shouldUpdate } from 'recompose';
 import Immutable from 'immutable';
 import { Link } from 'react-router-dom';
 import { Dropdown, Checkbox, Icon } from 'semantic-ui-react';
@@ -36,7 +36,9 @@ Perspective.propTypes = {
   perspective: PropTypes.instanceOf(Immutable.Map).isRequired,
 };
 
-const Dict = ({ dictionary, actions, selected }) => {
+const Dict = ({
+  dictionary, actions, selected, canSelectDictionaries,
+}) => {
   const id = dictionary.get('id');
   const translation = dictionary.get('translation');
   const perspectives = dictionary.get('children');
@@ -45,10 +47,12 @@ const Dict = ({ dictionary, actions, selected }) => {
   const isChecked = selected.has(id);
   return (
     <li className="dict">
-      {(config.buildType === 'desktop' || config.buildType === 'proxy') && (
-        <Checkbox defaultChecked={isChecked} onChange={() => actions.toggleDictionary(id.toJS())} />
-      )}
+      {(config.buildType === 'desktop' || config.buildType === 'proxy') &&
+        canSelectDictionaries && (
+          <Checkbox defaultChecked={isChecked} onChange={() => actions.toggleDictionary(id.toJS())} />
+        )}
       {(config.buildType === 'desktop' || config.buildType === 'proxy') && isDownloaded && <Icon name="download" />}
+
       <span className="dict-name">{translation}</span>
       {authors && <span className="dict-authors">({authors})</span>}
       {perspectives &&
@@ -69,6 +73,7 @@ Dict.propTypes = {
     toggleDictionary: PropTypes.func.isRequired,
   }).isRequired,
   selected: PropTypes.instanceOf(Immutable.Set).isRequired,
+  canSelectDictionaries: PropTypes.bool.isRequired,
 };
 
 const Dictionary = compose(
@@ -76,27 +81,32 @@ const Dictionary = compose(
   onlyUpdateForKeys(['selected'])
 )(Dict);
 
-const Language = ({ language }) => {
+const Language = ({ language, canSelectDictionaries }) => {
   const translation = language.get('translation');
   const children = language.get('children');
   return (
     <li className="lang">
       <span className="lang-name">{translation}</span>
-      <ul>{children.map(n => <Node key={n.get('id')} node={n} />)}</ul>
+      <ul>{children.map(n => <Node key={n.get('id')} node={n} canSelectDictionaries={canSelectDictionaries} />)}</ul>
     </li>
   );
 };
 
 Language.propTypes = {
   language: PropTypes.instanceOf(Immutable.Map).isRequired,
+  canSelectDictionaries: PropTypes.bool,
 };
 
-const Node = ({ node }) => {
+Language.defaultProps = {
+  canSelectDictionaries: false,
+};
+
+const Node = ({ node, canSelectDictionaries }) => {
   switch (node.get('type')) {
     case 'language':
-      return <Language language={node} />;
+      return <Language language={node} canSelectDictionaries={canSelectDictionaries} />;
     case 'dictionary':
-      return <Dictionary dictionary={node} />;
+      return <Dictionary dictionary={node} canSelectDictionaries={canSelectDictionaries} />;
     default:
       return <div>Unknown type</div>;
   }
@@ -104,12 +114,22 @@ const Node = ({ node }) => {
 
 Node.propTypes = {
   node: PropTypes.instanceOf(Immutable.Map).isRequired,
+  canSelectDictionaries: PropTypes.bool.isRequired,
 };
 
-const Tree = ({ tree }) => <ul className="tree">{tree.map(e => <Node key={e.get('id')} node={e} />)}</ul>;
+const Tree = ({ tree, canSelectDictionaries }) => (
+  <ul className="tree">
+    {tree.map(e => <Node key={e.get('id')} node={e} canSelectDictionaries={canSelectDictionaries} />)}
+  </ul>
+);
 
 Tree.propTypes = {
   tree: PropTypes.instanceOf(Immutable.List).isRequired,
+  canSelectDictionaries: PropTypes.bool,
+};
+
+Tree.defaultProps = {
+  canSelectDictionaries: false,
 };
 
 export default Tree;
