@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { pure } from 'recompose';
 import Immutable, { fromJS, Map } from 'immutable';
 import { assignDictsToTree, buildDictTrees } from 'pages/Search/treeBuilder';
 import { Segment, Header, List } from 'semantic-ui-react';
@@ -106,4 +107,4 @@ GrantedDicts.defaultProps = {
   canSelectDictionaries: false,
 };
 
-export default GrantedDicts;
+export default pure(GrantedDicts);

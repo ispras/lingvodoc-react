@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { gql, graphql } from 'react-apollo';
-import { compose, pure } from 'recompose';
+import { compose, pure, branch, renderNothing } from 'recompose';
 import { Link, withRouter } from 'react-router-dom';
 import { Dropdown, Menu, Icon, Button } from 'semantic-ui-react';
 import styled from 'styled-components';
@@ -27,6 +27,11 @@ SyncButton.propTypes = {
 };
 
 const Sync = compose(
+  branch(() => config.buildType === 'server', renderNothing),
+  graphql(gql`
+  query isAuthenticatedProxy {
+    is_authenticated
+  }`),
   graphql(
     gql`
       mutation {
@@ -37,7 +42,7 @@ const Sync = compose(
     `,
     { name: 'synchronize' }
   ),
-  pure
+  branch(({ data }) => data.loading || !data.is_authenticated, renderNothing),
 )(SyncButton);
 
 const Dashboard = (props) => {
@@ -112,7 +117,7 @@ const NavBar = pure(({ location }) => (
     </Dropdown>
 
     <Menu.Menu position="right">
-      {(config.buildType === 'desktop' || config.buildType === 'proxy') && <Sync />}
+      <Sync />
       <User />
       <Tasks />
       <Locale />
