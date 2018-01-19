@@ -28,7 +28,7 @@ const MarkupEntityContent = onlyUpdateForKeys([
         <Button.Group basic icon size="mini">
           <Button as="a" href={entity.content} icon="download" />
           <Popup trigger={<Button content={content(entity.content)} />} content={entity.content} />
-          <Button icon="table" onClick={() => actions.openViewer(parentEntity, entity)} />
+          {parentEntity && <Button icon="table" onClick={() => actions.openViewer(parentEntity, entity)} />}
           <Button icon="remove" onClick={() => remove(entity)} />
         </Button.Group>
       );
@@ -38,7 +38,7 @@ const MarkupEntityContent = onlyUpdateForKeys([
           <Button.Group basic icon size="mini">
             <Button as="a" href={entity.content} icon="download" />
             <Popup trigger={<Button content={content(entity.content)} />} content={entity.content} />
-            <Button icon="table" onClick={() => actions.openViewer(parentEntity, entity)} />
+            {parentEntity && <Button icon="table" onClick={() => actions.openViewer(parentEntity, entity)} />}
           </Button.Group>
           <Checkbox
             size="tiny"
@@ -53,7 +53,7 @@ const MarkupEntityContent = onlyUpdateForKeys([
         <Button.Group basic icon size="mini">
           <Button as="a" href={entity.content} icon="download" />
           <Popup trigger={<Button content={content(entity.content)} />} content={entity.content} />
-          <Button icon="table" onClick={() => actions.openViewer(parentEntity, entity)} />
+          {parentEntity && <Button icon="table" onClick={() => actions.openViewer(parentEntity, entity)} />}
         </Button.Group>
       );
 
@@ -62,7 +62,7 @@ const MarkupEntityContent = onlyUpdateForKeys([
         <Button.Group basic icon size="mini">
           <Button as="a" href={entity.content} icon="download" />
           <Popup trigger={<Button content={content(entity.content)} />} content={entity.content} />
-          <Button icon="table" onClick={() => actions.openViewer(parentEntity, entity)} />
+          {parentEntity && <Button icon="table" onClick={() => actions.openViewer(parentEntity, entity)} />}
           <Button icon="remove" onClick={() => accept(entity, true)} />
         </Button.Group>
       );
