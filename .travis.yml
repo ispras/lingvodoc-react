@@ -6,6 +6,10 @@ cache:
   - node_modules
 script: npm run build
 
+branches:
+  except:
+    - /^v[0-9]/
+
 before_deploy:
   - tar -zcf ${TRAVIS_BUILD_DIR}${REPO}-build-${TRAVIS_BUILD_NUMBER}.tar.gz dist
 
