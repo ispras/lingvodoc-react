@@ -160,9 +160,10 @@ class Edit extends React.Component {
         onChange={this.onChange}
         onKeyPress={this.onKeyPress}
         onKeyDown={this.onKeyDown}
+        onBlur={() => onSave(this.state.content)}
         action={
           <Button.Group basic size="mini">
-            <Button icon="save" onClick={() => onSave(this.state.content)} />
+            <Button icon="save" />
             <Button icon="remove" onClick={onCancel} />
           </Button.Group>
         }
