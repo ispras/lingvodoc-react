@@ -56,6 +56,33 @@ export const queryPerspective = gql`
   }
 `;
 
+const createLexicalEntryMutation = gql`
+  mutation createLexicalEntry($id: LingvodocID!, $entitiesMode: String!) {
+    create_lexicalentry(perspective_id: $id) {
+      lexicalentry {
+        id
+        parent_id
+        created_at
+        entities(mode: $entitiesMode) {
+          id
+          parent_id
+          field_id
+          link_id
+          self_id
+          created_at
+          locale_id
+          content
+          published
+          accepted
+          additional_metadata {
+            link_perspective_id
+          }
+        }
+      }
+    }
+  }
+`;
+
 const TableComponent = ({
   columns, perspectiveId, entitiesMode, entries, mode, actions,
 }) => (
@@ -198,6 +225,7 @@ function sortByFieldReducer(state, { type, payload }) {
 
 export default compose(
   withReducer('sortByField', 'dispatch', sortByFieldReducer, null),
+  graphql(createLexicalEntryMutation, { name: 'createLexicalEntry' }),
   graphql(queryPerspective, {
     options: { notifyOnNetworkStatusChange: true },
   })

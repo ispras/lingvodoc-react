@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import SortableTree, { map } from 'react-sortable-tree';
 import { LexicalEntryViewByIds } from 'components/PerspectiveView/index';
 
-const LexicalEntryLink = styled.span`
+export const LexicalEntryLink = styled.span`
   cursor: pointer;
   color: #2185D0;
 
@@ -15,7 +15,7 @@ const LexicalEntryLink = styled.span`
   }
 `;
 
-function LexicalEntryModal({ node }) {
+export function LexicalEntryModal({ node, actions, entitiesMode }) {
   const { id, translation, lexicalEntries } = node;
   const trigger = <LexicalEntryLink>{translation}: {lexicalEntries.length} result(s)</LexicalEntryLink>;
 
@@ -34,7 +34,8 @@ function LexicalEntryModal({ node }) {
           perspectiveId={id}
           entriesIds={lexicalEntries.map(e => e.id)}
           mode="view"
-          entitiesMode="published"
+          entitiesMode={entitiesMode}
+          actions={actions}
         />
       </Modal.Content>
     </Modal>
@@ -47,6 +48,13 @@ LexicalEntryModal.propTypes = {
     translation: PropTypes.string.isRequired,
     lexicalEntries: PropTypes.array.isRequired,
   }).isRequired,
+  actions: PropTypes.array,
+  entitiesMode: PropTypes.string,
+};
+
+LexicalEntryModal.defaultProps = {
+  actions: [],
+  entitiesMode: 'published',
 };
 
 class LanguageTree extends React.Component {
