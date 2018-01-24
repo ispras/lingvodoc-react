@@ -85,4 +85,15 @@ class LanguageTree extends React.Component {
   }
 }
 
+LanguageTree.propTypes = {
+  searchResultsTree: PropTypes.shape({
+    toJS: PropTypes.func.isRequired,
+  }).isRequired,
+  expanded: PropTypes.bool,
+};
+
+LanguageTree.defaultProps = {
+  expanded: false,
+};
+
 export default LanguageTree;
