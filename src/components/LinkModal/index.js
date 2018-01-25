@@ -48,7 +48,7 @@ const ViewLink = (props) => {
       render: () => (
         <div>
           <Segment padded="very" textAlign="center">
-            <Tree resultsTree={tree} TableComponent={LexicalEntryViewByIds} />;
+            <Tree resultsTree={tree} />;
           </Segment>
         </div>
       ),

@@ -54,8 +54,6 @@ Item.defaultProps = {
 const Pager = styled(Menu)`
   position: fixed;
   bottom: 10px;
-  opacity: 0.2;
-  transition: opacity 0.2s linear;
 
   &:hover {
     opacity: 1;
