@@ -11,6 +11,7 @@ import GroupingTagModal from 'components/GroupingTagModal';
 import LinkModal from 'components/LinkModal';
 import DictionaryProperties from 'components/DictionaryPropertiesModal';
 import PerspectiveProperties from 'components/PerspectivePropertiesModal';
+import PhonologyModal from 'components/PhonologyModal';
 
 import NavBar from './NavBar';
 import TasksSidebar from './TasksSidebar';
@@ -39,6 +40,7 @@ const Layout = () => (
     <MarkupModal />
     <DictionaryProperties />
     <PerspectiveProperties />
+    <PhonologyModal />
   </div>
 );
 

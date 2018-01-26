@@ -4,7 +4,6 @@ import { compose, onlyUpdateForKeys, withReducer } from 'recompose';
 import { gql, graphql } from 'react-apollo';
 import { isEqual, find, take, drop, flow, groupBy, sortBy, reverse } from 'lodash';
 import { Table, Dimmer, Header, Icon } from 'semantic-ui-react';
-import { compositeIdToString } from 'utils/compositeId';
 
 import TableHeader from './TableHeader';
 import TableBody from './TableBody';

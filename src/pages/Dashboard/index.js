@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { compose, pure, onlyUpdateForKeys, shouldUpdate } from 'recompose';
+import { compose, onlyUpdateForKeys } from 'recompose';
 import { Link } from 'react-router-dom';
 import { gql, graphql } from 'react-apollo';
 import { Container, Dimmer, Tab, Header, List, Dropdown, Icon, Menu } from 'semantic-ui-react';

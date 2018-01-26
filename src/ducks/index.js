@@ -18,6 +18,7 @@ import dictionaryProperties from './dictionaryProperties';
 import perspectiveProperties from './perspectiveProperties';
 import home from './home';
 import createDictionary from './createDictionary';
+import phonology from './phonology';
 import apolloClient from './apolloClient';
 
 export default {
@@ -41,5 +42,6 @@ export default {
   perspectiveProperties,
   home,
   createDictionary,
+  phonology,
   apolloClient,
 };
