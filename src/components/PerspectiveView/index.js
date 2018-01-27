@@ -4,7 +4,6 @@ import { compose, onlyUpdateForKeys, withReducer } from 'recompose';
 import { gql, graphql } from 'react-apollo';
 import { isEqual, find, take, drop, flow, groupBy, sortBy, reverse } from 'lodash';
 import { Table, Dimmer, Header, Icon } from 'semantic-ui-react';
-import { compositeIdToString } from 'utils/compositeId';
 
 import TableHeader from './TableHeader';
 import TableBody from './TableBody';
@@ -52,6 +51,33 @@ export const queryPerspective = gql`
       translation
       data_type
       data_type_translation_gist_id
+    }
+  }
+`;
+
+const createLexicalEntryMutation = gql`
+  mutation createLexicalEntry($id: LingvodocID!, $entitiesMode: String!) {
+    create_lexicalentry(perspective_id: $id) {
+      lexicalentry {
+        id
+        parent_id
+        created_at
+        entities(mode: $entitiesMode) {
+          id
+          parent_id
+          field_id
+          link_id
+          self_id
+          created_at
+          locale_id
+          content
+          published
+          accepted
+          additional_metadata {
+            link_perspective_id
+          }
+        }
+      }
     }
   }
 `;
@@ -198,6 +224,7 @@ function sortByFieldReducer(state, { type, payload }) {
 
 export default compose(
   withReducer('sortByField', 'dispatch', sortByFieldReducer, null),
+  graphql(createLexicalEntryMutation, { name: 'createLexicalEntry' }),
   graphql(queryPerspective, {
     options: { notifyOnNetworkStatusChange: true },
   })

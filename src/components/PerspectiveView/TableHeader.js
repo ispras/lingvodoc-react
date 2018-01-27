@@ -31,7 +31,7 @@ TableHeader.propTypes = {
 
 TableHeader.defaultProps = {
   actions: [],
-  onSortModeChange: () => {},
+  onSortModeChange: null,
 };
 
 export default onlyUpdateForKeys(['columns'])(TableHeader);

@@ -1,8 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import SortableTree, { map, getVisibleNodeInfoAtIndex } from 'react-sortable-tree';
-import { Header } from 'semantic-ui-react';
-import { LexicalEntryViewByIds } from 'components/PerspectiveView';
+import SortableTree, { map } from 'react-sortable-tree';
+import { LexicalEntryModal } from 'components/Search/LanguageTree';
 
 class Tree extends React.Component {
   constructor(props) {
@@ -36,51 +35,19 @@ class Tree extends React.Component {
   }
 
   generateNodeProps({ node }) {
-    const { actions, TableComponent } = this.props;
-    switch (node.type) {
-      case 'perspective':
-        return {
-          subtitle: (
-            <div>
-              <Header size="large">{node.translation}</Header>
-
-              <TableComponent
-                className="perspective"
-                perspectiveId={node.id}
-                entriesIds={node.lexicalEntries.map(e => e.id)}
-                mode="view"
-                entitiesMode="all"
-                actions={actions}
-              />
-            </div>
-          ),
-          // XXX: move style to CSS class
-          className: 'inlinePerspective',
-          style: { overflowY: 'scroll', height: '290px' },
-        };
-      default:
-        return {
-          title: node.translation || 'None',
-        };
-    }
+    const { actions } = this.props;
+    const defaultTitle = node.translation || 'None';
+    const title = node.type === 'perspective' ? <LexicalEntryModal node={node} actions={actions} entitiesMode="all" /> : defaultTitle;
+    return { title };
   }
 
   render() {
-    const getHeight = ({ index }) => {
-      const { node } = getVisibleNodeInfoAtIndex({
-        treeData: this.state.treeData,
-        index,
-        getNodeKey: ({ treeIndex }) => treeIndex,
-      });
-      return node.type === 'perspective' ? 300 : 64;
-    };
-
     return (
       <div style={{ height: 600 }}>
         <SortableTree
           canDrag={false}
           treeData={this.state.treeData}
-          rowHeight={getHeight}
+          rowHeight={42}
           generateNodeProps={this.generateNodeProps}
           onChange={treeData => this.setState({ treeData })}
         />
@@ -91,13 +58,11 @@ class Tree extends React.Component {
 
 Tree.propTypes = {
   resultsTree: PropTypes.object.isRequired,
-  TableComponent: PropTypes.func,
   actions: PropTypes.array,
 };
 
 Tree.defaultProps = {
   actions: [],
-  TableComponent: LexicalEntryViewByIds,
 };
 
 export default Tree;

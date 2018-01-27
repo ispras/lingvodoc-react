@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { compose, pure } from 'recompose';
 import { withApollo } from 'react-apollo';
 import { Input } from 'semantic-ui-react';
-import { compositeIdToString } from 'utils/compositeId';
 
 import { searchQuery } from './graphql';
 import buildPartialLanguageTree from './partialTree';

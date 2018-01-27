@@ -40,13 +40,7 @@ const createColumnMutation = gql`
     $linkId: LingvodocID
     $selfId: LingvodocID
   ) {
-    create_column(
-      parent_id: $parentId
-      field_id: $fieldId
-      position: $pos
-      link_id: $linkId
-      self_id: $selfId
-    ) {
+    create_column(parent_id: $parentId, field_id: $fieldId, position: $pos, link_id: $linkId, self_id: $selfId) {
       triumph
     }
   }
@@ -149,7 +143,6 @@ NestedColumn.propTypes = {
   fields: PropTypes.array.isRequired,
   onChange: PropTypes.func.isRequired,
 };
-
 
 class C extends React.Component {
   constructor(props) {
@@ -332,8 +325,9 @@ class Columns extends React.Component {
 
     createColumn({
       variables: {
-        //id: perspective.id,
-        parentId: perspective.parent_id,
+        // id: perspective.id,
+        // parentId: perspective.parentId,
+        parentId: perspective.id,
         fieldId: field.id,
         pos,
         linkId: null,
@@ -384,12 +378,7 @@ class Columns extends React.Component {
             <List.Item key={column.id}>
               <Grid centered columns={2}>
                 <Grid.Column width={11}>
-                  <Column
-                    column={column}
-                    columns={columns}
-                    fields={allFields}
-                    perspectives={perspectives}
-                  />
+                  <Column column={column} columns={columns} fields={allFields} perspectives={perspectives} />
                 </Grid.Column>
                 <Grid.Column width={1}>
                   <Button.Group icon>
@@ -403,7 +392,11 @@ class Columns extends React.Component {
           ))}
         </List>
 
-        <Button basic content="Add new column" onClick={() => this.onCreate(allFields.find(f => f.data_type === 'Text'))} />
+        <Button
+          basic
+          content="Add new column"
+          onClick={() => this.onCreate(allFields.find(f => f.data_type === 'Text'))}
+        />
       </div>
     );
   }

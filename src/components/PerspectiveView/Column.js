@@ -12,8 +12,13 @@ const Column = ({ field, fields, onSortModeChange }) => {
     <Table.HeaderCell className="entityHeader">
       <ul>
         <li className="last">
-          {field.translation} <Icon fitted size="large" name="caret up" onClick={() => onSortModeChange(field.id, 'a')} />
-          <Icon fitted size="large" name="caret down" onClick={() => onSortModeChange(field.id, 'd')} />
+          {field.translation}{' '}
+          {onSortModeChange && (
+            <span>
+              <Icon fitted size="large" name="caret up" onClick={() => onSortModeChange(field.id, 'a')} />
+              <Icon fitted size="large" name="caret down" onClick={() => onSortModeChange(field.id, 'd')} />
+            </span>
+          )}
           <ul>
             {subFields.map((subField, index) => {
               const cls = index + 1 === subFields.length ? { className: 'last' } : {};
@@ -40,7 +45,7 @@ Column.propTypes = {
 };
 
 Column.defaultProps = {
-  onSortModeChange: () => {},
+  onSortModeChange: null,
 };
 
 export default onlyUpdateForKeys(['field'])(Column);
