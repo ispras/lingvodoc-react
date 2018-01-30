@@ -1,9 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { compose, onlyUpdateForKeys, withReducer } from 'recompose';
+import { compose, onlyUpdateForKeys } from 'recompose';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import { gql, graphql } from 'react-apollo';
 import { isEqual, find, take, drop, flow, groupBy, sortBy, reverse } from 'lodash';
-import { Table, Dimmer, Header, Icon } from 'semantic-ui-react';
+import { Table, Dimmer, Header, Icon, Button } from 'semantic-ui-react';
+import { setSortByField, addLexicalEntry } from 'ducks/perspective';
 
 import TableHeader from './TableHeader';
 import TableBody from './TableBody';
@@ -114,7 +117,18 @@ TableComponent.defaultProps = {
 };
 
 const PerspectiveView = ({
-  id, className, mode, entitiesMode, page, data, filter, sortByField, dispatch,
+  id,
+  className,
+  mode,
+  entitiesMode,
+  page,
+  data,
+  filter,
+  sortByField,
+  setSortByField: setSort,
+  createLexicalEntry,
+  addLexicalEntry: addCreatedEntry,
+  createdEntries,
 }) => {
   const { loading } = data;
 
@@ -132,7 +146,32 @@ const PerspectiveView = ({
 
   const { all_fields, perspective: { lexical_entries, columns } } = data;
 
-  const entries = flow([
+  const addEntry = () => {
+    createLexicalEntry({
+      variables: {
+        id,
+        entitiesMode,
+      },
+      refetchQueries: [
+        {
+          query: queryPerspective,
+          variables: {
+            id,
+            entitiesMode,
+          },
+        },
+      ],
+    })
+      .then(({ data: d }) => {
+        if (!d.loading || !d.error) {
+          const { create_lexicalentry: { lexicalentry } } = d;
+          addCreatedEntry(lexicalentry);
+        }
+      })
+      .then();
+  };
+
+  const processEntries = flow([
     // remove empty lexical entries, if not in edit mode
     es => (mode !== 'edit' ? es.filter(e => e.entities.length > 0) : es),
     // apply filtering
@@ -158,10 +197,15 @@ const PerspectiveView = ({
       });
       return order === 'a' ? sortedEntries : reverse(sortedEntries);
     },
-  ])(lexical_entries);
+  ]);
+
+  const newEntries = processEntries(lexical_entries.filter(e => !!createdEntries.find(c => isEqual(e.id, c.id))));
+  const entries = processEntries(lexical_entries);
 
   const pageEntries =
     entries.length > ROWS_PER_PAGE ? take(drop(entries, ROWS_PER_PAGE * (page - 1)), ROWS_PER_PAGE) : entries;
+
+  const e = [...newEntries, ...pageEntries];
 
   // join fields and columns
   // {
@@ -182,12 +226,10 @@ const PerspectiveView = ({
 
   return (
     <div style={{ overflowY: 'auto' }}>
+      <Button positive fluid content="+" onClick={addEntry} />
       <Table celled padded className={className}>
-        <TableHeader
-          columns={fields}
-          onSortModeChange={(fieldId, order) => dispatch({ type: 'SET_SORT_MODE', payload: { fieldId, order } })}
-        />
-        <TableBody perspectiveId={id} entitiesMode={entitiesMode} entries={pageEntries} columns={fields} mode={mode} />
+        <TableHeader columns={fields} onSortModeChange={(fieldId, order) => setSort(fieldId, order)} />
+        <TableBody perspectiveId={id} entitiesMode={entitiesMode} entries={e} columns={fields} mode={mode} />
       </Table>
       <Pagination current={page} total={Math.floor(entries.length / ROWS_PER_PAGE) + 1} to={mode} />
     </div>
@@ -203,7 +245,10 @@ PerspectiveView.propTypes = {
   filter: PropTypes.string,
   data: PropTypes.object.isRequired,
   sortByField: PropTypes.object,
-  dispatch: PropTypes.func.isRequired,
+  setSortByField: PropTypes.func.isRequired,
+  addLexicalEntry: PropTypes.func.isRequired,
+  createLexicalEntry: PropTypes.func.isRequired,
+  createdEntries: PropTypes.array.isRequired,
 };
 
 PerspectiveView.defaultProps = {
@@ -211,19 +256,11 @@ PerspectiveView.defaultProps = {
   sortByField: null,
 };
 
-function sortByFieldReducer(state, { type, payload }) {
-  switch (type) {
-    case 'SET_SORT_MODE':
-      return payload;
-    case 'RESET_SORT_MODE':
-      return null;
-    default:
-      return state;
-  }
-}
-
 export default compose(
-  withReducer('sortByField', 'dispatch', sortByFieldReducer, null),
+  connect(
+    ({ data: { perspective: { sortByField, createdEntries } } }) => ({ sortByField, createdEntries }),
+    dispatch => bindActionCreators({ addLexicalEntry, setSortByField }, dispatch)
+  ),
   graphql(createLexicalEntryMutation, { name: 'createLexicalEntry' }),
   graphql(queryPerspective, {
     options: { notifyOnNetworkStatusChange: true },
