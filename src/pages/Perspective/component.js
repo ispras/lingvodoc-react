@@ -6,6 +6,7 @@ import { onlyUpdateForKeys, withHandlers, withState, compose } from 'recompose';
 import { Switch, Route, Redirect, Link } from 'react-router-dom';
 import { Container, Header, Breadcrumb, Menu, Dropdown } from 'semantic-ui-react';
 import PerspectiveView from 'components/PerspectiveView';
+import { openModal } from 'ducks/phonology';
 import NotFound from 'pages/NotFound';
 
 import './style.scss';
@@ -68,15 +69,6 @@ const MODES = {
   },
 };
 
-const TOOLS = {
-  phonology: {
-    text: 'Phonology',
-  },
-  statistics: {
-    text: 'Statistics',
-  },
-};
-
 const handlers = compose(
   withState('value', 'updateValue', props => props.filter),
   withHandlers({
@@ -103,8 +95,12 @@ const Filter = handlers(({ value, onChange, onSubmit }) => (
   </div>
 ));
 
-const ModeSelector = onlyUpdateForKeys(['mode', 'baseUrl', 'filter'])(({
-  mode, baseUrl, filter, submitFilter,
+const ModeSelector = onlyUpdateForKeys([
+  'mode',
+  'baseUrl',
+  'filter',
+])(({
+  mode, baseUrl, filter, submitFilter, openPhonologyModal,
 }) => (
   <Menu tabular>
     {map(MODES, (info, stub) => (
@@ -113,7 +109,9 @@ const ModeSelector = onlyUpdateForKeys(['mode', 'baseUrl', 'filter'])(({
       </Menu.Item>
     ))}
     <Dropdown item text="Tools">
-      <Dropdown.Menu>{map(TOOLS, (info, stub) => <Dropdown.Item key={stub}>{info.text}</Dropdown.Item>)}</Dropdown.Menu>
+      <Dropdown.Menu>
+        <Dropdown.Item onClick={openPhonologyModal}>Phonology</Dropdown.Item>
+      </Dropdown.Menu>
     </Dropdown>
 
     <Menu.Menu position="right">
@@ -122,7 +120,7 @@ const ModeSelector = onlyUpdateForKeys(['mode', 'baseUrl', 'filter'])(({
   </Menu>
 ));
 
-const Perspective = ({ perspective, submitFilter }) => {
+const Perspective = ({ perspective, submitFilter, openPhonologyModal }) => {
   const {
     id, mode, page, baseUrl,
   } = perspective.params;
@@ -132,7 +130,13 @@ const Perspective = ({ perspective, submitFilter }) => {
   return (
     <Container fluid className="perspective">
       <PerspectivePath id={id} />
-      <ModeSelector mode={mode} baseUrl={baseUrl} filter={perspective.filter} submitFilter={submitFilter} />
+      <ModeSelector
+        mode={mode}
+        baseUrl={baseUrl}
+        filter={perspective.filter}
+        submitFilter={submitFilter}
+        openPhonologyModal={() => openPhonologyModal(id)}
+      />
       <Switch>
         <Redirect exact from={baseUrl} to={`${baseUrl}/view`} />
         {map(MODES, (info, stub) => (
@@ -140,7 +144,14 @@ const Perspective = ({ perspective, submitFilter }) => {
             key={stub}
             path={`${baseUrl}/${stub}`}
             render={() => (
-              <info.component id={id} mode={mode} entitiesMode={info.entitiesMode} page={page} filter={perspective.filter} className="content" />
+              <info.component
+                id={id}
+                mode={mode}
+                entitiesMode={info.entitiesMode}
+                page={page}
+                filter={perspective.filter}
+                className="content"
+              />
             )}
           />
         ))}
@@ -153,6 +164,7 @@ const Perspective = ({ perspective, submitFilter }) => {
 Perspective.propTypes = {
   perspective: PropTypes.object.isRequired,
   submitFilter: PropTypes.func.isRequired,
+  openPhonologyModal: PropTypes.func.isRequired,
 };
 
 export default Perspective;

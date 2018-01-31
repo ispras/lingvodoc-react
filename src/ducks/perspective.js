@@ -4,6 +4,9 @@ import { combineReducers } from 'redux';
 export const REQUEST = '@data/perspective/REQUEST';
 export const SET = '@data/perspective/SET';
 export const SET_FILTER = '@data/perspective/SET_FILTER';
+export const SET_SORT_MODE = '@data/perspective/SET_SORT_MODE';
+export const RESET_SORT_MODE = '@data/perspective/RESET_SORT_MODE';
+export const ADD_LEXICAL_ENTRY = '@data/perspective/ADD_LEXICAL_ENTRY';
 
 // Reducers
 function params(state = {}, action = {}) {
@@ -24,9 +27,31 @@ function filter(state = '', action = {}) {
   }
 }
 
+function sortByField(state = null, { type, payload }) {
+  switch (type) {
+    case SET_SORT_MODE:
+      return payload;
+    case RESET_SORT_MODE:
+      return null;
+    default:
+      return state;
+  }
+}
+
+function createdEntries(state = [], { type, payload }) {
+  switch (type) {
+    case ADD_LEXICAL_ENTRY:
+      return [payload, ...state];
+    default:
+      return state;
+  }
+}
+
 export default combineReducers({
   params,
   filter,
+  sortByField,
+  createdEntries,
 });
 
 // Selectors
@@ -48,4 +73,12 @@ export function set(payload) {
 
 export function setFilter(payload) {
   return { type: SET_FILTER, payload };
+}
+
+export function setSortByField(field, order) {
+  return { type: SET_SORT_MODE, payload: { field, order } };
+}
+
+export function addLexicalEntry(entry) {
+  return { type: ADD_LEXICAL_ENTRY, payload: entry };
 }
