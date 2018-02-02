@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { compose, withReducer, onlyUpdateForKeys } from 'recompose';
+import { compose, onlyUpdateForKeys } from 'recompose';
 import Immutable, { fromJS } from 'immutable';
 import { isEqual, findIndex } from 'lodash';
 import { gql, graphql } from 'react-apollo';

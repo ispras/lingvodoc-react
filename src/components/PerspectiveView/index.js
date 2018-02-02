@@ -226,7 +226,7 @@ const PerspectiveView = ({
 
   return (
     <div style={{ overflowY: 'auto' }}>
-      <Button positive fluid content="+" onClick={addEntry} />
+      <Button positive fluid icon="plus" content="Add lexical entry" onClick={addEntry} />
       <Table celled padded className={className}>
         <TableHeader columns={fields} onSortModeChange={(fieldId, order) => setSort(fieldId, order)} />
         <TableBody perspectiveId={id} entitiesMode={entitiesMode} entries={e} columns={fields} mode={mode} />
