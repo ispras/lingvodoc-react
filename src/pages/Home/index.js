@@ -22,6 +22,7 @@ const authenticatedDictionariesQuery = gql`
       id
       parent_id
       translation
+      status
       additional_metadata {
         authors
       }
@@ -219,7 +220,7 @@ const Home = (props) => {
           dictionaries={dicts}
           perspectives={perspectivesList}
           grants={grantsList}
-          canSelectDictionaries={isAuthenticated}
+          isAuthenticated={isAuthenticated}
         />
       )}
       {!grantsMode && (
@@ -227,7 +228,7 @@ const Home = (props) => {
           languagesTree={languagesTree}
           dictionaries={dicts}
           perspectives={perspectivesList}
-          canSelectDictionaries={isAuthenticated}
+          isAuthenticated={isAuthenticated}
         />
       )}
     </Container>
