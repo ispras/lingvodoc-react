@@ -18,7 +18,7 @@ function restDictionaries(dicts, grants) {
 
 function GrantedDicts(props) {
   const {
-    languagesTree, dictionaries, perspectives, grants, canSelectDictionaries,
+    languagesTree, dictionaries, perspectives, grants, isAuthenticated,
   } = props;
 
   const dicts = fromJS(dictionaries)
@@ -82,14 +82,14 @@ function GrantedDicts(props) {
     <Header>
       {title} ({issuer} {number})
     </Header>
-    <Tree tree={tree} canSelectDictionaries={canSelectDictionaries} />
+    <Tree tree={tree} canSelectDictionaries={isAuthenticated} />
   </div>
         ))}
       </Segment>
       <Segment>
         <div className="grant">
           <div className="grant-title">Индивидуальная работа</div>
-          <Tree tree={restTree} canSelectDictionaries={canSelectDictionaries} />
+          <Tree tree={restTree} canSelectDictionaries={isAuthenticated} />
         </div>
       </Segment>
     </div>
@@ -101,11 +101,11 @@ GrantedDicts.propTypes = {
   dictionaries: PropTypes.instanceOf(Immutable.Map).isRequired,
   perspectives: PropTypes.instanceOf(Immutable.List).isRequired,
   grants: PropTypes.instanceOf(Immutable.List).isRequired,
-  canSelectDictionaries: PropTypes.bool,
+  isAuthenticated: PropTypes.bool,
 };
 
 GrantedDicts.defaultProps = {
-  canSelectDictionaries: false,
+  isAuthenticated: false,
 };
 
 export default pure(GrantedDicts);

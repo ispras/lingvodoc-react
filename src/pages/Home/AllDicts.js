@@ -6,7 +6,7 @@ import Tree from './Tree';
 
 function AllDicts(props) {
   const {
-    languagesTree, dictionaries, perspectives, canSelectDictionaries,
+    languagesTree, dictionaries, perspectives, isAuthenticated,
   } = props;
   const tree = assignDictsToTree(
     buildDictTrees(fromJS({
@@ -19,7 +19,7 @@ function AllDicts(props) {
 
   return (
     <div>
-      <Tree tree={tree} canSelectDictionaries={canSelectDictionaries} />
+      <Tree tree={tree} canSelectDictionaries={isAuthenticated} />
     </div>
   );
 }
@@ -28,11 +28,11 @@ AllDicts.propTypes = {
   languagesTree: PropTypes.instanceOf(Immutable.List).isRequired,
   dictionaries: PropTypes.instanceOf(Immutable.Map).isRequired,
   perspectives: PropTypes.instanceOf(Immutable.List).isRequired,
-  canSelectDictionaries: PropTypes.bool,
+  isAuthenticated: PropTypes.bool,
 };
 
 AllDicts.defaultProps = {
-  canSelectDictionaries: false,
+  isAuthenticated: false,
 };
 
 export default AllDicts;

@@ -1,8 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { compose, pure } from 'recompose';
+import { compose, pure, withReducer } from 'recompose';
 import { gql, graphql } from 'react-apollo';
-import { Table, Button, Dropdown } from 'semantic-ui-react';
+import { sortBy, reverse } from 'lodash';
+import { Table, Button, Dropdown, Icon } from 'semantic-ui-react';
 import { compositeIdToString } from 'utils/compositeId';
 
 const userBlobsQuery = gql`
@@ -48,10 +49,11 @@ const Blob = ({ blob, deleteBlob }) => {
 
   return (
     <Table.Row>
-      <Table.Cell>{blob.name}</Table.Cell>
+      <Table.Cell>
+        <a href={blob.content}>{blob.name}</a>
+      </Table.Cell>
       <Table.Cell>{blob.data_type}</Table.Cell>
-      <Table.Cell>{blob.content}</Table.Cell>
-      <Table.Cell>{blob.created_at}</Table.Cell>
+      <Table.Cell>{new Date(blob.created_at * 1e3).toLocaleString()}</Table.Cell>
       <Table.Cell>
         <Button basic content="Remove" onClick={remove} />
       </Table.Cell>
@@ -63,6 +65,16 @@ Blob.propTypes = {
   blob: PropTypes.object.isRequired,
   deleteBlob: PropTypes.func.isRequired,
 };
+
+const SortableColumnHeader = ({ children, onSortModeChange }) => (
+  <Table.HeaderCell>
+    {children}
+    <span>
+      <Icon fitted size="large" name="caret up" onClick={() => onSortModeChange('a')} />
+      <Icon fitted size="large" name="caret down" onClick={() => onSortModeChange('d')} />
+    </span>
+  </Table.HeaderCell>
+);
 
 const BlobWithData = compose(graphql(deleteBlobMutation, { name: 'deleteBlob' }), pure)(Blob);
 
@@ -83,6 +95,12 @@ const fileTypes = [
     icon: 'conversation',
   },
 ];
+
+function sortFiles(files, sortByField) {
+  const { prop, order } = sortByField;
+  const sortedFiles = sortBy(files, file => file[prop]);
+  return order === 'a' ? sortedFiles : reverse(sortedFiles);
+}
 
 class Files extends React.Component {
   constructor(props) {
@@ -122,22 +140,34 @@ class Files extends React.Component {
   }
 
   render() {
-    const { data } = this.props;
+    const { data, sortByField, dispatch } = this.props;
     const { loading, error } = data;
     if (loading || error) {
       return null;
     }
 
-    const { user_blobs: blobs } = data;
+    const { user_blobs: userBlobs } = data;
+    const blobs = sortByField ? sortFiles(userBlobs, sortByField) : userBlobs;
 
     return (
       <Table celled compact definition>
         <Table.Header fullWidth>
           <Table.Row>
-            <Table.HeaderCell>Name</Table.HeaderCell>
-            <Table.HeaderCell>Type</Table.HeaderCell>
-            <Table.HeaderCell>Link</Table.HeaderCell>
-            <Table.HeaderCell>Created</Table.HeaderCell>
+            <SortableColumnHeader
+              onSortModeChange={order => dispatch({ type: 'SET_SORT_MODE', payload: { prop: 'name', order } })}
+            >
+              Name
+            </SortableColumnHeader>
+            <SortableColumnHeader
+              onSortModeChange={order => dispatch({ type: 'SET_SORT_MODE', payload: { prop: 'data_type', order } })}
+            >
+              Type
+            </SortableColumnHeader>
+            <SortableColumnHeader
+              onSortModeChange={order => dispatch({ type: 'SET_SORT_MODE', payload: { prop: 'created_at', order } })}
+            >
+              Created
+            </SortableColumnHeader>
             <Table.HeaderCell>Actions</Table.HeaderCell>
           </Table.Row>
         </Table.Header>
@@ -169,6 +199,27 @@ Files.propTypes = {
     user_blobs: PropTypes.array,
   }).isRequired,
   createBlob: PropTypes.func.isRequired,
+  sortByField: PropTypes.object,
+  dispatch: PropTypes.func.isRequired,
 };
 
-export default compose(graphql(userBlobsQuery), graphql(createBlobMutation, { name: 'createBlob' }))(Files);
+Files.defaultProps = {
+  sortByField: null,
+};
+
+function sortByFieldReducer(state, { type, payload }) {
+  switch (type) {
+    case 'SET_SORT_MODE':
+      return payload;
+    case 'RESET_SORT_MODE':
+      return null;
+    default:
+      return state;
+  }
+}
+
+export default compose(
+  graphql(userBlobsQuery),
+  graphql(createBlobMutation, { name: 'createBlob' }),
+  withReducer('sortByField', 'dispatch', sortByFieldReducer, null)
+)(Files);

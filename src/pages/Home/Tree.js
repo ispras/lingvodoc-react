@@ -41,10 +41,12 @@ const Dict = ({
 }) => {
   const id = dictionary.get('id');
   const translation = dictionary.get('translation');
+  const status = dictionary.get('status');
   const perspectives = dictionary.get('children');
   const authors = dictionary.getIn(['additional_metadata', 'authors']);
   const isDownloaded = dictionary.get('isDownloaded');
   const isChecked = selected.has(id);
+
   return (
     <li className="dict">
       {(config.buildType === 'desktop' || config.buildType === 'proxy') &&
@@ -53,7 +55,7 @@ const Dict = ({
         )}
       {(config.buildType === 'desktop' || config.buildType === 'proxy') && isDownloaded && <Icon name="download" />}
 
-      <span className="dict-name">{translation}</span>
+      <span className="dict-name">{translation} {config.buildType === 'server' && canSelectDictionaries && status === 'Published' && <Icon name="globe" />}</span>
       {authors && <span className="dict-authors">({authors})</span>}
       {perspectives &&
         perspectives.valueSeq && (
