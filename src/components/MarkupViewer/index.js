@@ -8,7 +8,7 @@ import Spectrogram from 'components/Wavesurfer/spectrogram';
 import ELAN from 'components/Wavesurfer/elan';
 
 const Wrapper = styled('div')`
-  padding-left: 80px;
+  padding-left: 120px;
 `;
 
 class MarkupViewer extends React.Component {

@@ -2,12 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { compose, pure, onlyUpdateForKeys } from 'recompose';
-import { Link } from 'react-router-dom';
-import { gql, graphql } from 'react-apollo';
-import { Container, Dimmer, Tab, Header, List, Dropdown, Icon, Menu, Modal, Button } from 'semantic-ui-react';
-import { isEqual, find, filter, contains } from 'lodash';
-import { compositeIdToString } from 'utils/compositeId';
+import { compose, onlyUpdateForKeys } from 'recompose';
+import { Modal, Button } from 'semantic-ui-react';
 import { closeRoles as close } from 'ducks/roles';
 import { PerspectiveRoles, DictionaryRoles } from './component';
 
@@ -57,4 +53,7 @@ const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators({ close }, dispatch),
 });
 
-export default compose(onlyUpdateForKeys(['visible', 'mode']), connect(mapStateToProps, mapDispatchToProps))(RolesModal);
+export default compose(
+  onlyUpdateForKeys(['visible', 'mode']),
+  connect(mapStateToProps, mapDispatchToProps)
+)(RolesModal);
