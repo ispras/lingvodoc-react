@@ -43,7 +43,7 @@ class ConverEafModal extends React.Component {
         variables: {
           markupId: markup.id,
           languageId: parentLanguage.id,
-          atoms: translations,
+          atoms: translations.map(a => ({ locale_id: a.localeId, content: a.content })),
         },
       }).then(() => {
         actions.closeConvert();

@@ -21,9 +21,9 @@ export const convertToNewDictionaryMutation = gql`
 `;
 
 export const convertToExistingDictionaryMutation = gql`
-mutation convertEaf2($markupId: LingvodocID!, $dictionaryId: LingvodocID!) {
-  convert_corpus(markup_id: $markupId, dictionary_id: $dictionaryId) {
-    triumph
+  mutation convertEaf2($markupId: LingvodocID!, $dictionaryId: LingvodocID!) {
+    convert_corpus(markup_id: $markupId, dictionary_id: $dictionaryId) {
+      triumph
+    }
   }
-}
 `;

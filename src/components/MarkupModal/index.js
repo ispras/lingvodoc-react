@@ -15,8 +15,8 @@ const q = gql`
 `;
 
 const validateQuery = gql`
-query validate($url: String!) {
-  convert_five_tiers_validate(eaf_url: $url)
+query validate($id: LingvodocID!) {
+  convert_five_tiers_validate(markup_id: $id)
 }
 `;
 
@@ -45,7 +45,7 @@ const MarkupModal = (props) => {
         <MarkupEntity file={audioUrl} id={id} />
       </Modal.Content>
       <Modal.Actions>
-        <ConvertButton positive content="Convert to dictionary..." onClick={() => actions.openConvert(audio, data.markup)} url={data.markup.content} />
+        <ConvertButton positive content="Convert to dictionary..." onClick={() => actions.openConvert(audio, data.markup)} id={data.markup.id} />
         <Button icon="minus" content="Close" onClick={actions.closeViewer} />
       </Modal.Actions>
     </Modal>
