@@ -9,7 +9,7 @@ import styled from 'styled-components';
 import { Checkbox, Grid, Radio, Dropdown, Segment, Button, Divider, Select, Input } from 'semantic-ui-react';
 import { setQuery } from 'ducks/search';
 
-import { compositeIdToString } from '../../utils/compositeId';
+import { compositeIdToString } from 'utils/compositeId';
 
 const mode2bool = (value) => {
   switch (value) {

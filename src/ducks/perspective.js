@@ -1,4 +1,5 @@
 import { combineReducers } from 'redux';
+import { isEqual } from 'lodash';
 
 // Actions
 export const REQUEST = '@data/perspective/REQUEST';
@@ -7,6 +8,7 @@ export const SET_FILTER = '@data/perspective/SET_FILTER';
 export const SET_SORT_MODE = '@data/perspective/SET_SORT_MODE';
 export const RESET_SORT_MODE = '@data/perspective/RESET_SORT_MODE';
 export const ADD_LEXICAL_ENTRY = '@data/perspective/ADD_LEXICAL_ENTRY';
+export const SELECT_LEXICAL_ENTRY = '@data/perspective/SELECT_LEXICAL_ENTRY';
 
 // Reducers
 function params(state = {}, action = {}) {
@@ -47,16 +49,25 @@ function createdEntries(state = [], { type, payload }) {
   }
 }
 
+function selectedEntries(state = [], { type, payload }) {
+  switch (type) {
+    case SELECT_LEXICAL_ENTRY:
+      return payload.checked ? [payload.id, ...state] : state.filter(id => !isEqual(payload.id, id));
+    default:
+      return state;
+  }
+}
+
 export default combineReducers({
   params,
   filter,
   sortByField,
   createdEntries,
+  selectedEntries,
 });
 
 // Selectors
-const getPerspective =
-  state => state.data.perspective;
+const getPerspective = state => state.data.perspective;
 
 export const selectors = {
   getPerspective,
@@ -81,4 +92,8 @@ export function setSortByField(field, order) {
 
 export function addLexicalEntry(entry) {
   return { type: ADD_LEXICAL_ENTRY, payload: entry };
+}
+
+export function selectLexicalEntry(id, checked) {
+  return { type: SELECT_LEXICAL_ENTRY, payload: { id, checked } };
 }

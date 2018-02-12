@@ -4,9 +4,9 @@ import { compose, onlyUpdateForKeys } from 'recompose';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { gql, graphql } from 'react-apollo';
-import { isEqual, find, take, drop, flow, groupBy, sortBy, reverse } from 'lodash';
+import { isEqual, find, take, drop, flow, sortBy, reverse } from 'lodash';
 import { Table, Dimmer, Header, Icon, Button } from 'semantic-ui-react';
-import { setSortByField, addLexicalEntry } from 'ducks/perspective';
+import { setSortByField, addLexicalEntry, selectLexicalEntry } from 'ducks/perspective';
 
 import TableHeader from './TableHeader';
 import TableBody from './TableBody';
@@ -128,7 +128,9 @@ const PerspectiveView = ({
   setSortByField: setSort,
   createLexicalEntry,
   addLexicalEntry: addCreatedEntry,
+  selectLexicalEntry: onEntrySelect,
   createdEntries,
+  selectedEntries,
 }) => {
   const { loading } = data;
 
@@ -226,10 +228,41 @@ const PerspectiveView = ({
 
   return (
     <div style={{ overflowY: 'auto' }}>
-      {mode === 'edit' && <Button positive fluid icon="plus" content="Add lexical entry" onClick={addEntry} />}
+      {mode === 'edit' && <Button positive icon="plus" content="Add lexical entry" onClick={addEntry} />}
+      {mode === 'edit' && (
+        <Button
+          negative
+          icon="minus"
+          content="Remove lexical entries"
+          onClick={addEntry}
+          disabled={selectedEntries.length < 1}
+        />
+      )}
+      {mode === 'edit' && (
+        <Button
+          positive
+          icon="plus"
+          content="Merge lexical entries"
+          onClick={addEntry}
+          disabled={selectedEntries.length < 2}
+        />
+      )}
       <Table celled padded className={className}>
-        <TableHeader columns={fields} onSortModeChange={(fieldId, order) => setSort(fieldId, order)} />
-        <TableBody perspectiveId={id} entitiesMode={entitiesMode} entries={e} columns={fields} mode={mode} />
+        <TableHeader
+          columns={fields}
+          onSortModeChange={(fieldId, order) => setSort(fieldId, order)}
+          selectEntries={mode === 'edit'}
+        />
+        <TableBody
+          perspectiveId={id}
+          entitiesMode={entitiesMode}
+          entries={e}
+          columns={fields}
+          mode={mode}
+          selectEntries={mode === 'edit'}
+          selectedEntries={selectedEntries}
+          onEntrySelect={onEntrySelect}
+        />
       </Table>
       <Pagination current={page} total={Math.floor(entries.length / ROWS_PER_PAGE) + 1} to={mode} />
     </div>
@@ -248,7 +281,9 @@ PerspectiveView.propTypes = {
   setSortByField: PropTypes.func.isRequired,
   addLexicalEntry: PropTypes.func.isRequired,
   createLexicalEntry: PropTypes.func.isRequired,
+  selectLexicalEntry: PropTypes.func.isRequired,
   createdEntries: PropTypes.array.isRequired,
+  selectedEntries: PropTypes.array.isRequired,
 };
 
 PerspectiveView.defaultProps = {
@@ -258,8 +293,12 @@ PerspectiveView.defaultProps = {
 
 export default compose(
   connect(
-    ({ data: { perspective: { sortByField, createdEntries } } }) => ({ sortByField, createdEntries }),
-    dispatch => bindActionCreators({ addLexicalEntry, setSortByField }, dispatch)
+    ({ data: { perspective: { sortByField, createdEntries, selectedEntries } } }) => ({
+      sortByField,
+      createdEntries,
+      selectedEntries,
+    }),
+    dispatch => bindActionCreators({ addLexicalEntry, setSortByField, selectLexicalEntry }, dispatch)
   ),
   graphql(createLexicalEntryMutation, { name: 'createLexicalEntry' }),
   graphql(queryPerspective, {

@@ -6,7 +6,7 @@ import { Table } from 'semantic-ui-react';
 import Row from './Row';
 
 const TableBody = ({
-  perspectiveId, entitiesMode, entries, columns, mode, actions,
+  perspectiveId, entitiesMode, entries, columns, mode, actions, selectEntries, selectedEntries, onEntrySelect,
 }) => (
   <Table.Body>
     {entries.map(entry => (
@@ -18,6 +18,9 @@ const TableBody = ({
         mode={mode}
         entitiesMode={entitiesMode}
         actions={actions}
+        selectEntries={selectEntries}
+        selectedEntries={selectedEntries}
+        onEntrySelect={onEntrySelect}
       />
     ))}
   </Table.Body>
@@ -30,10 +33,16 @@ TableBody.propTypes = {
   mode: PropTypes.string.isRequired,
   entitiesMode: PropTypes.string.isRequired,
   actions: PropTypes.array,
+  selectEntries: PropTypes.bool,
+  selectedEntries: PropTypes.array,
+  onEntrySelect: PropTypes.func,
 };
 
 TableBody.defaultProps = {
   actions: [],
+  selectEntries: false,
+  selectedEntries: [],
+  onEntrySelect: () => {},
 };
 
-export default onlyUpdateForKeys(['perspectiveId', 'entries', 'mode'])(TableBody);
+export default onlyUpdateForKeys(['perspectiveId', 'entries', 'mode', 'selectedEntries'])(TableBody);
