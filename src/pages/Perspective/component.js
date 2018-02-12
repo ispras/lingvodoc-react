@@ -6,7 +6,7 @@ import { onlyUpdateForKeys, withHandlers, withState, compose } from 'recompose';
 import { Switch, Route, Redirect, Link } from 'react-router-dom';
 import { Container, Header, Breadcrumb, Menu, Dropdown } from 'semantic-ui-react';
 import PerspectiveView from 'components/PerspectiveView';
-import { openModal } from 'ducks/phonology';
+import Merge from 'components/Merge';
 import NotFound from 'pages/NotFound';
 
 import './style.scss';
@@ -63,9 +63,7 @@ const MODES = {
   },
   merge: {
     text: 'Merge suggestions',
-    component() {
-      return <h4>No merge tab yet</h4>;
-    },
+    component: Merge,
   },
 };
 
