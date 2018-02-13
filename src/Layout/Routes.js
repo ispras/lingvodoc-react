@@ -16,7 +16,7 @@ import CreateDictionary from 'pages/CreateDictionary';
 
 import config from 'config';
 
-const Routes = () =>
+const Routes = () => (
   <Switch>
     <Route exact path={config.homePath} component={Home} />
     <Route path="/info" component={Info} />
@@ -25,7 +25,7 @@ const Routes = () =>
     <Route path="/dashboard/dictionaries" component={DictionaryDashboard} />
     <Route path="/dashboard/corpora" component={CorpusDashboard} />
     <Route path="/dashboard/create_dictionary" component={CreateDictionary} />
-    <Route path="/map" component={Map} /> 
+    <Route path="/map" component={Map} />
     <Route path="/map_search" component={Search} />
     <Route path="/import" component={DictImport} />
     <Route path="/dictionary/:pcid/:poid/perspective/:cid/:oid/:mode" component={Perspective} />
@@ -33,6 +33,7 @@ const Routes = () =>
     <Route path="/#/dictionary/:pcid/:poid/perspective/:cid/:oid" component={Perspective} />
     <Route path="/files" component={Files} />
     <Route component={NotFound} />
-  </Switch>;
+  </Switch>
+);
 
 export default Routes;
