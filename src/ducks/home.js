@@ -1,5 +1,7 @@
 import { combineReducers } from 'redux';
 import Immutable, { fromJS } from 'immutable';
+import { LOCATION_CHANGE } from 'react-router-redux';
+import config from 'config';
 
 // Actions
 export const TOGGLE_DICT = '@home/TOGGLE_DICT';
@@ -33,12 +35,18 @@ function selected(state = new Immutable.Set(), { type, payload }) {
 }
 
 function grantsMode(state = true, { type, payload }) {
-  
   switch (type) {
     case TOGGLE_GRANTS_MODE:
       return !state;
     case SET_GRANTS_MODE:
       return payload;
+    case LOCATION_CHANGE:
+      if (payload.pathname === config.homePath) {
+        const params = new URLSearchParams(payload.search);
+        const mode = params.get('mode');
+        return mode ? mode !== 'dicts' : state;
+      }
+      return state;
     default:
       return state;
   }

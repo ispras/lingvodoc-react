@@ -6,6 +6,8 @@ cache:
   - node_modules
 script: npm run build
 
+if: tag IS blank
+
 before_deploy:
   - tar -zcf ${TRAVIS_BUILD_DIR}${REPO}-build-${TRAVIS_BUILD_NUMBER}.tar.gz dist
 
@@ -18,4 +20,5 @@ deploy:
   skip_cleanup: true
   on:
     repo: st2135/lingvodoc-react
-    all_branches: true
+    branch: master
+
