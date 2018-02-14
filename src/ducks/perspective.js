@@ -9,6 +9,8 @@ export const SET_SORT_MODE = '@data/perspective/SET_SORT_MODE';
 export const RESET_SORT_MODE = '@data/perspective/RESET_SORT_MODE';
 export const ADD_LEXICAL_ENTRY = '@data/perspective/ADD_LEXICAL_ENTRY';
 export const SELECT_LEXICAL_ENTRY = '@data/perspective/SELECT_LEXICAL_ENTRY';
+export const RESET_ENTRIES_SELECTION = '@data/perspective/RESET_ENTRIES_SELECTION';
+
 
 // Reducers
 function params(state = {}, action = {}) {
@@ -53,6 +55,8 @@ function selectedEntries(state = [], { type, payload }) {
   switch (type) {
     case SELECT_LEXICAL_ENTRY:
       return payload.checked ? [payload.id, ...state] : state.filter(id => !isEqual(payload.id, id));
+    case RESET_ENTRIES_SELECTION:
+      return [];
     default:
       return state;
   }
@@ -96,4 +100,8 @@ export function addLexicalEntry(entry) {
 
 export function selectLexicalEntry(id, checked) {
   return { type: SELECT_LEXICAL_ENTRY, payload: { id, checked } };
+}
+
+export function resetEntriesSelection() {
+  return { type: RESET_ENTRIES_SELECTION };
 }

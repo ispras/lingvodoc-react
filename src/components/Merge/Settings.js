@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { compose, onlyUpdateForKeys, branch, renderNothing, pure, withReducer } from 'recompose';
+import { compose, onlyUpdateForKeys, branch, renderNothing, pure, withReducer, withProps } from 'recompose';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { gql, graphql } from 'react-apollo';
+import { gql, graphql, withApollo } from 'react-apollo';
 import Immutable, { fromJS } from 'immutable';
 import { isEqual, find, take, drop, flow, groupBy, sortBy, reverse } from 'lodash';
 import {
@@ -18,11 +18,12 @@ import {
   Checkbox,
   Container,
   Segment,
+  Divider,
 } from 'semantic-ui-react';
 import styled from 'styled-components';
 
-import { compositeIdToString } from '../../utils/compositeId';
-import { withApollo } from '../../../node_modules/react-apollo/withApollo';
+import { compositeIdToString } from 'utils/compositeId';
+import { queryPerspective, LexicalEntryView } from 'components/PerspectiveView';
 
 const FieldBlock = styled(Segment)`
   .delete-button {
@@ -32,27 +33,6 @@ const FieldBlock = styled(Segment)`
     margin: 0;
     right: 0;
     top: 0;
-  }
-`;
-
-const fieldsQuery = gql`
-  query fieldsQuery($id: LingvodocID!) {
-    perspective(id: $id) {
-      id
-      translation
-      columns {
-        id
-        field_id
-        parent_id
-        self_id
-        position
-      }
-    }
-    all_fields {
-      id
-      translation
-      data_type
-    }
   }
 `;
 
@@ -79,12 +59,16 @@ const mergeSuggestionsQuery = gql`
 class MergeSettings extends React.Component {
   constructor(props) {
     super(props);
-
     this.getSuggestions = this.getSuggestions.bind(this);
+    this.state = {
+      groups: [],
+    };
   }
 
   async getSuggestions() {
-    const { id, settings, client } = this.props;
+    const {
+      id, settings, client, data: { perspective: { lexical_entries: entries } },
+    } = this.props;
 
     const algorithm = settings.get('mode');
     const threshold = settings.get('threshold');
@@ -103,12 +87,20 @@ class MergeSettings extends React.Component {
 
     if (data) {
       const { merge_suggestions: { match_result } } = data;
-      console.log(match_result);
+      const groups = match_result.map(({ lexical_entries: ids, confidence }) => ({
+        lexical_entries: ids.map(eid => entries.find(e => isEqual(e.id, eid))),
+        confidence,
+      }));
+      this.setState({
+        groups,
+      });
     }
   }
 
   render() {
-    const { settings, dispatch, data } = this.props;
+    const {
+      id, entitiesMode, settings, dispatch, data,
+    } = this.props;
     const mode = settings.get('mode');
     const threshold = settings.get('threshold');
     const fields = settings.get('field_selection_list');
@@ -123,101 +115,127 @@ class MergeSettings extends React.Component {
     });
 
     return (
-      <Segment>
-        <Header>Entity matching algorithm</Header>
+      <div>
+        <Segment>
+          <Header>Entity matching algorithm</Header>
 
-        <List>
-          <List.Item>
-            <Checkbox
-              radio
-              name="mode"
-              value="simple"
-              label="Simple"
-              checked={mode === 'simple'}
-              onChange={(e, { value }) => dispatch({ type: 'SET_MODE', payload: value })}
-            />
-          </List.Item>
-          <List.Item>
-            <Checkbox
-              radio
-              name="mode"
-              value="fields"
-              label="With field selection"
-              checked={mode === 'fields'}
-              onChange={(e, { value }) => dispatch({ type: 'SET_MODE', payload: value })}
-            />
-          </List.Item>
-        </List>
+          <List>
+            <List.Item>
+              <Checkbox
+                radio
+                name="mode"
+                value="simple"
+                label="Simple"
+                checked={mode === 'simple'}
+                onChange={(e, { value }) => dispatch({ type: 'SET_MODE', payload: value })}
+              />
+            </List.Item>
+            <List.Item>
+              <Checkbox
+                radio
+                name="mode"
+                value="fields"
+                label="With field selection"
+                checked={mode === 'fields'}
+                onChange={(e, { value }) => dispatch({ type: 'SET_MODE', payload: value })}
+              />
+            </List.Item>
+          </List>
 
-        {mode === 'fields' && (
-          <Container>
-            {fields.map((e, i) => (
-              <FieldBlock>
-                <Button
-                  className="delete-button"
-                  compact
-                  basic
-                  icon="delete"
-                  onClick={() => dispatch({ type: 'REMOVE_FIELD', payload: i })}
-                />
-                <List>
-                  <List.Item>
-                    <Dropdown
-                      selection
-                      options={fieldOptions}
-                      defaultValue={JSON.stringify(e.field_id)}
-                      onChange={(_e, { value }) =>
-                        dispatch({ type: 'CHANGE_FIELD_ID', payload: { id: JSON.parse(value), index: i } })}
-                    />
-                  </List.Item>
-                  <List.Item>
-                    <Input
-                      label="Levenshtein distance limit for entity content matching"
-                      value={e.levenshtein}
-                      onChange={(ev, { value }) =>
-                        dispatch({ type: 'SET_LEVENSHTEIN', payload: { index: i, levenshtein: value } })}
-                    />
-                  </List.Item>
-                  <List.Item>
-                    <Checkbox
-                      label="Split contents of the field on whitespace before matching."
-                      checked={e.split_space}
-                      onChange={(_e, { checked }) =>
-                        dispatch({ type: 'SET_WHITESPACE_FLAG', payload: { index: i, checked } })}
-                    />
-                  </List.Item>
-                  <List.Item>
-                    <Checkbox
-                      label="Split contents of the field on punctuation before matching"
-                      checked={e.split_punctuation}
-                      onChange={(_e, { checked }) =>
-                        dispatch({ type: 'SET_PUNCTUATION_FLAG', payload: { index: i, checked } })}
-                    />
-                  </List.Item>
-                </List>
-              </FieldBlock>
-            ))}
+          {mode === 'fields' && (
+            <Container>
+              {fields.map((e, i) => (
+                <FieldBlock key={i}>
+                  <Button
+                    className="delete-button"
+                    compact
+                    basic
+                    icon="delete"
+                    onClick={() => dispatch({ type: 'REMOVE_FIELD', payload: i })}
+                  />
+                  <List>
+                    <List.Item>
+                      <Dropdown
+                        selection
+                        options={fieldOptions}
+                        defaultValue={JSON.stringify(e.field_id)}
+                        onChange={(_e, { value }) =>
+                          dispatch({ type: 'CHANGE_FIELD_ID', payload: { id: JSON.parse(value), index: i } })}
+                      />
+                    </List.Item>
+                    <List.Item>
+                      <Input
+                        label="Levenshtein distance limit for entity content matching"
+                        value={e.levenshtein}
+                        onChange={(ev, { value }) =>
+                          dispatch({ type: 'SET_LEVENSHTEIN', payload: { index: i, levenshtein: value } })}
+                      />
+                    </List.Item>
+                    <List.Item>
+                      <Checkbox
+                        label="Split contents of the field on whitespace before matching."
+                        checked={e.split_space}
+                        onChange={(_e, { checked }) =>
+                          dispatch({ type: 'SET_WHITESPACE_FLAG', payload: { index: i, checked } })}
+                      />
+                    </List.Item>
+                    <List.Item>
+                      <Checkbox
+                        label="Split contents of the field on punctuation before matching"
+                        checked={e.split_punctuation}
+                        onChange={(_e, { checked }) =>
+                          dispatch({ type: 'SET_PUNCTUATION_FLAG', payload: { index: i, checked } })}
+                      />
+                    </List.Item>
+                  </List>
+                </FieldBlock>
+              ))}
 
-            <Button basic content="Add field" onClick={() => dispatch({ type: 'ADD_FIELD' })} />
+              <Button basic content="Add field" onClick={() => dispatch({ type: 'ADD_FIELD' })} />
+            </Container>
+          )}
+
+          <Input
+            label="Entity matching threshold"
+            value={threshold}
+            onChange={(e, { value }) => dispatch({ type: 'SET_THRESHOLD', payload: value })}
+          />
+
+          <Container textAlign="center">
+            <Button positive content="View suggestions" onClick={this.getSuggestions} />
           </Container>
-        )}
-
-        <Input
-          label="Entity matching threshold"
-          value={threshold}
-          onChange={(e, { value }) => dispatch({ type: 'SET_THRESHOLD', payload: value })}
-        />
-
-        <Container textAlign="center">
-          <Button positive content="View suggestions" onClick={this.getSuggestions} />
-        </Container>
-      </Segment>
+        </Segment>
+        <Segment>
+          {this.state.groups.map((group, i) => (
+            <div>
+              <LexicalEntryView
+                key={i}
+                perspectiveId={id}
+                entries={group.lexical_entries}
+                mode="view"
+                entitiesMode={entitiesMode}
+                selectEntries={true}
+              />
+              <Container textAlign="center">
+                <Button positive content="Merge group" />
+              </Container>
+              <Divider />
+            </div>
+          ))}
+        </Segment>
+      </div>
     );
   }
 }
 
+// perspectiveId: PropTypes.array.isRequired,
+// entries: PropTypes.array.isRequired,
+// mode: PropTypes.string.isRequired,
+// entitiesMode: PropTypes.string.isRequired,
+
 MergeSettings.propTypes = {
   id: PropTypes.array.isRequired,
+  entitiesMode: PropTypes.string.isRequired,
   data: PropTypes.shape({
     loading: PropTypes.bool.isRequired,
   }).isRequired,
@@ -268,8 +286,9 @@ const initialState = {
 };
 
 export default compose(
+  withProps(p => ({ ...p, entitiesMode: 'all' })),
   withReducer('settings', 'dispatch', reducer, fromJS(initialState)),
-  graphql(fieldsQuery),
+  graphql(queryPerspective),
   branch(({ data }) => data.loading, renderNothing),
   withApollo,
   pure
