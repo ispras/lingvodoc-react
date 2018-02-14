@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import { gql, graphql } from 'react-apollo';
 import { isEqual, find, take, drop, flow, sortBy, reverse } from 'lodash';
 import { Table, Dimmer, Header, Icon, Button } from 'semantic-ui-react';
-import { setSortByField, addLexicalEntry, selectLexicalEntry } from 'ducks/perspective';
+import { setSortByField, addLexicalEntry, selectLexicalEntry, resetEntriesSelection } from 'ducks/perspective';
 
 import TableHeader from './TableHeader';
 import TableBody from './TableBody';
@@ -32,6 +32,7 @@ export const queryPerspective = gql`
         id
         parent_id
         created_at
+        marked_for_deletion
         entities(mode: $entitiesMode) {
           id
           parent_id
@@ -85,12 +86,28 @@ const createLexicalEntryMutation = gql`
   }
 `;
 
+const mergeLexicalEntriesMutation = gql`
+  mutation mergeEntries($groupList: [[LingvodocID]]!) {
+    merge_bulk(group_list: $groupList, publish_any: false, async: false) {
+      triumph
+    }
+  }
+`;
+
 const TableComponent = ({
-  columns, perspectiveId, entitiesMode, entries, mode, actions,
+  columns,
+  perspectiveId,
+  entitiesMode,
+  entries,
+  mode,
+  selectEntries,
+  selectedEntries,
+  onEntrySelect,
+  actions,
 }) => (
   <div style={{ overflowY: 'auto' }}>
     <Table celled padded>
-      <TableHeader columns={columns} actions={actions} />
+      <TableHeader columns={columns} selectEntries={selectEntries} actions={actions} />
       <TableBody
         perspectiveId={perspectiveId}
         entitiesMode={entitiesMode}
@@ -98,6 +115,9 @@ const TableComponent = ({
         columns={columns}
         mode={mode}
         actions={actions}
+        selectEntries={selectEntries}
+        selectedEntries={selectedEntries}
+        onEntrySelect={onEntrySelect}
       />
     </Table>
   </div>
@@ -109,11 +129,17 @@ TableComponent.propTypes = {
   entitiesMode: PropTypes.string.isRequired,
   entries: PropTypes.array.isRequired,
   mode: PropTypes.string.isRequired,
+  selectEntries: PropTypes.bool,
+  selectedEntries: PropTypes.array,
+  onEntrySelect: PropTypes.func,
   actions: PropTypes.array,
 };
 
 TableComponent.defaultProps = {
   actions: [],
+  selectEntries: false,
+  selectedEntries: [],
+  onEntrySelect: () => {},
 };
 
 const PerspectiveView = ({
@@ -127,8 +153,10 @@ const PerspectiveView = ({
   sortByField,
   setSortByField: setSort,
   createLexicalEntry,
+  mergeLexicalEntries,
   addLexicalEntry: addCreatedEntry,
   selectLexicalEntry: onEntrySelect,
+  resetEntriesSelection: resetSelection,
   createdEntries,
   selectedEntries,
 }) => {
@@ -163,14 +191,32 @@ const PerspectiveView = ({
           },
         },
       ],
-    })
-      .then(({ data: d }) => {
-        if (!d.loading || !d.error) {
-          const { create_lexicalentry: { lexicalentry } } = d;
-          addCreatedEntry(lexicalentry);
-        }
-      })
-      .then();
+    }).then(({ data: d }) => {
+      if (!d.loading || !d.error) {
+        const { create_lexicalentry: { lexicalentry } } = d;
+        addCreatedEntry(lexicalentry);
+      }
+    });
+  };
+
+  const mergeEntries = () => {
+    const groupList = [selectedEntries];
+    mergeLexicalEntries({
+      variables: {
+        groupList,
+      },
+      refetchQueries: [
+        {
+          query: queryPerspective,
+          variables: {
+            id,
+            entitiesMode,
+          },
+        },
+      ],
+    }).then(() => {
+      resetSelection();
+    });
   };
 
   const processEntries = flow([
@@ -243,7 +289,7 @@ const PerspectiveView = ({
           positive
           icon="plus"
           content="Merge lexical entries"
-          onClick={addEntry}
+          onClick={mergeEntries}
           disabled={selectedEntries.length < 2}
         />
       )}
@@ -281,7 +327,9 @@ PerspectiveView.propTypes = {
   setSortByField: PropTypes.func.isRequired,
   addLexicalEntry: PropTypes.func.isRequired,
   createLexicalEntry: PropTypes.func.isRequired,
+  mergeLexicalEntries: PropTypes.func.isRequired,
   selectLexicalEntry: PropTypes.func.isRequired,
+  resetEntriesSelection: PropTypes.func.isRequired,
   createdEntries: PropTypes.array.isRequired,
   selectedEntries: PropTypes.array.isRequired,
 };
@@ -298,9 +346,19 @@ export default compose(
       createdEntries,
       selectedEntries,
     }),
-    dispatch => bindActionCreators({ addLexicalEntry, setSortByField, selectLexicalEntry }, dispatch)
+    dispatch =>
+      bindActionCreators(
+        {
+          addLexicalEntry,
+          setSortByField,
+          selectLexicalEntry,
+          resetEntriesSelection,
+        },
+        dispatch
+      )
   ),
   graphql(createLexicalEntryMutation, { name: 'createLexicalEntry' }),
+  graphql(mergeLexicalEntriesMutation, { name: 'mergeLexicalEntries' }),
   graphql(queryPerspective, {
     options: { notifyOnNetworkStatusChange: true },
   })
@@ -329,7 +387,15 @@ export const queryLexicalEntry = gql`
 `;
 
 const LexicalEntryViewBase = ({
-  perspectiveId, entries, mode, entitiesMode, data, actions,
+  perspectiveId,
+  entries,
+  mode,
+  entitiesMode,
+  data,
+  selectEntries,
+  selectedEntries,
+  onEntrySelect,
+  actions,
 }) => {
   const { loading } = data;
 
@@ -357,6 +423,9 @@ const LexicalEntryViewBase = ({
       columns={fields}
       mode={mode}
       actions={actions}
+      selectEntries={selectEntries}
+      selectedEntries={selectedEntries}
+      onEntrySelect={onEntrySelect}
     />
   );
 };
@@ -371,11 +440,17 @@ LexicalEntryViewBase.propTypes = {
     all_fields: PropTypes.array,
     perspective: PropTypes.object,
   }).isRequired,
+  selectEntries: PropTypes.bool,
+  selectedEntries: PropTypes.array,
+  onEntrySelect: PropTypes.func,
   actions: PropTypes.array,
 };
 
 LexicalEntryViewBase.defaultProps = {
   actions: [],
+  selectEntries: false,
+  selectedEntries: [],
+  onEntrySelect: () => {},
 };
 
 export const queryLexicalEntriesByIds = gql`
