@@ -4,7 +4,7 @@ import { compose, onlyUpdateForKeys, branch, renderNothing, pure, withReducer, w
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { gql, graphql, withApollo } from 'react-apollo';
-import Immutable, { fromJS } from 'immutable';
+import Immutable, { fromJS, toJS } from 'immutable';
 import { isEqual, find, take, drop, flow, groupBy, sortBy, reverse } from 'lodash';
 import {
   Table,
@@ -56,10 +56,20 @@ const mergeSuggestionsQuery = gql`
   }
 `;
 
+const mergeLexicalEntriesMutation = gql`
+  mutation mergeEntries($groupList: [[LingvodocID]]!, $publish_any: Boolean!, $async: Boolean!) {
+    merge_bulk(group_list: $groupList, publish_any: $publish_any, async: $async) {
+      triumph
+    }
+  }
+`;
+
 class MergeSettings extends React.Component {
   constructor(props) {
     super(props);
     this.getSuggestions = this.getSuggestions.bind(this);
+    this.getSelected = this.getSelected.bind(this);
+    this.mergeGroup = this.mergeGroup.bind(this);
     this.state = {
       groups: [],
     };
@@ -97,6 +107,26 @@ class MergeSettings extends React.Component {
     }
   }
 
+  getSelected(group) {
+    const { settings } = this.props;
+    const groupIds = settings.getIn(['selected', group]);
+    return groupIds ? groupIds.toJS() : [];
+  }
+
+  mergeGroup(group) {
+    const { settings, mergeLexicalEntries } = this.props;
+    const groupIds = settings.getIn(['selected', group]);
+    mergeLexicalEntries({
+      variables: {
+        async: false,
+        publish_any: false,
+        groupList: [groupIds],
+      },
+    }).then(() => {
+      window.logger.suc('Merged successfully.');
+    });
+  }
+
   render() {
     const {
       id, entitiesMode, settings, dispatch, data,
@@ -104,6 +134,7 @@ class MergeSettings extends React.Component {
     const mode = settings.get('mode');
     const threshold = settings.get('threshold');
     const fields = settings.get('field_selection_list');
+
     const { all_fields: allFields, perspective: { columns } } = data;
 
     const fieldOptions = columns.map((c) => {
@@ -207,17 +238,27 @@ class MergeSettings extends React.Component {
         </Segment>
         <Segment>
           {this.state.groups.map((group, i) => (
-            <div>
+            <div key={i}>
+              <Header>
+                Group #{i}, confidence: {group.confidence}
+              </Header>
               <LexicalEntryView
-                key={i}
                 perspectiveId={id}
                 entries={group.lexical_entries}
                 mode="view"
                 entitiesMode={entitiesMode}
-                selectEntries={true}
+                selectEntries
+                selectedEntries={this.getSelected(i)}
+                onEntrySelect={(eid, checked) =>
+                  dispatch({ type: 'SET_ENTRY_SELECTION', payload: { group: i, id: eid, checked } })}
               />
               <Container textAlign="center">
-                <Button positive content="Merge group" />
+                <Button
+                  positive
+                  content="Merge group"
+                  onClick={() => this.mergeGroup(i)}
+                  disabled={this.getSelected(i).length < 2}
+                />
               </Container>
               <Divider />
             </div>
@@ -228,17 +269,13 @@ class MergeSettings extends React.Component {
   }
 }
 
-// perspectiveId: PropTypes.array.isRequired,
-// entries: PropTypes.array.isRequired,
-// mode: PropTypes.string.isRequired,
-// entitiesMode: PropTypes.string.isRequired,
-
 MergeSettings.propTypes = {
   id: PropTypes.array.isRequired,
   entitiesMode: PropTypes.string.isRequired,
   data: PropTypes.shape({
     loading: PropTypes.bool.isRequired,
   }).isRequired,
+  mergeLexicalEntries: PropTypes.func.isRequired,
   settings: PropTypes.instanceOf(Immutable.Map).isRequired,
   dispatch: PropTypes.func.isRequired,
   client: PropTypes.object.isRequired,
@@ -274,6 +311,14 @@ function reducer(state, { type, payload }) {
     case 'SET_LEVENSHTEIN':
       return state.update('field_selection_list', list =>
         list.update(payload.index, old => ({ ...old, levenshtein: parseFloat(payload.levenshtein) || 0.1 })));
+    case 'SET_ENTRY_SELECTION': {
+      const { group, id, checked } = payload;
+      const currentlySelected = state.getIn(['selected', group]) || new Immutable.List();
+      if (!checked) {
+        return state.setIn(['selected', group], currentlySelected.filter(eid => !isEqual(eid, id)));
+      }
+      return state.setIn(['selected', group], currentlySelected.push(id));
+    }
     default:
       return state;
   }
@@ -282,13 +327,15 @@ function reducer(state, { type, payload }) {
 const initialState = {
   mode: 'simple',
   threshold: 0.1,
-  field_selection_list: [],
+  field_selection_list: new Immutable.List(),
+  selected: new Immutable.Map(),
 };
 
 export default compose(
   withProps(p => ({ ...p, entitiesMode: 'all' })),
   withReducer('settings', 'dispatch', reducer, fromJS(initialState)),
   graphql(queryPerspective),
+  graphql(mergeLexicalEntriesMutation, { name: 'mergeLexicalEntries' }),
   branch(({ data }) => data.loading, renderNothing),
   withApollo,
   pure
