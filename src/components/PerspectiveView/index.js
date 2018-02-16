@@ -94,6 +94,14 @@ const mergeLexicalEntriesMutation = gql`
   }
 `;
 
+const removeLexicalEntriesMutation = gql`
+  mutation removeLexicalEntries($ids: [LingvodocID]!) {
+    bulk_delete_lexicalentry(ids: $ids) {
+      triumph
+    }
+  }
+`;
+
 const TableComponent = ({
   columns,
   perspectiveId,
@@ -154,6 +162,7 @@ const PerspectiveView = ({
   setSortByField: setSort,
   createLexicalEntry,
   mergeLexicalEntries,
+  removeLexicalEntries,
   addLexicalEntry: addCreatedEntry,
   selectLexicalEntry: onEntrySelect,
   resetEntriesSelection: resetSelection,
@@ -204,6 +213,25 @@ const PerspectiveView = ({
     mergeLexicalEntries({
       variables: {
         groupList,
+      },
+      refetchQueries: [
+        {
+          query: queryPerspective,
+          variables: {
+            id,
+            entitiesMode,
+          },
+        },
+      ],
+    }).then(() => {
+      resetSelection();
+    });
+  };
+
+  const removeEntries = () => {
+    removeLexicalEntries({
+      variables: {
+        ids: selectedEntries,
       },
       refetchQueries: [
         {
@@ -281,7 +309,7 @@ const PerspectiveView = ({
           negative
           icon="minus"
           content="Remove lexical entries"
-          onClick={addEntry}
+          onClick={removeEntries}
           disabled={selectedEntries.length < 1}
         />
       )}
@@ -329,6 +357,7 @@ PerspectiveView.propTypes = {
   addLexicalEntry: PropTypes.func.isRequired,
   createLexicalEntry: PropTypes.func.isRequired,
   mergeLexicalEntries: PropTypes.func.isRequired,
+  removeLexicalEntries: PropTypes.func.isRequired,
   selectLexicalEntry: PropTypes.func.isRequired,
   resetEntriesSelection: PropTypes.func.isRequired,
   createdEntries: PropTypes.array.isRequired,
@@ -360,6 +389,7 @@ export default compose(
   ),
   graphql(createLexicalEntryMutation, { name: 'createLexicalEntry' }),
   graphql(mergeLexicalEntriesMutation, { name: 'mergeLexicalEntries' }),
+  graphql(removeLexicalEntriesMutation, { name: 'removeLexicalEntries' }),
   graphql(queryPerspective, {
     options: { notifyOnNetworkStatusChange: true },
   })
