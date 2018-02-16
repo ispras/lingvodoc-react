@@ -175,6 +175,8 @@ class MergeSettings extends React.Component {
 
           {mode === 'fields' && (
             <Container>
+
+              {fields.size === 0 && <Segment textAlign="center">No fields, click button below to add a new one.</Segment>}
               {fields.map((e, i) => (
                 <FieldBlock key={i}>
                   <Button
@@ -191,7 +193,8 @@ class MergeSettings extends React.Component {
                         options={fieldOptions}
                         defaultValue={JSON.stringify(e.field_id)}
                         onChange={(_e, { value }) =>
-                          dispatch({ type: 'CHANGE_FIELD_ID', payload: { id: JSON.parse(value), index: i } })}
+                          dispatch({ type: 'CHANGE_FIELD_ID', payload: { id: JSON.parse(value), index: i } })
+                        }
                       />
                     </List.Item>
                     <List.Item>
@@ -199,7 +202,8 @@ class MergeSettings extends React.Component {
                         label="Levenshtein distance limit for entity content matching"
                         value={e.levenshtein}
                         onChange={(ev, { value }) =>
-                          dispatch({ type: 'SET_LEVENSHTEIN', payload: { index: i, levenshtein: value } })}
+                          dispatch({ type: 'SET_LEVENSHTEIN', payload: { index: i, levenshtein: value } })
+                        }
                       />
                     </List.Item>
                     <List.Item>
@@ -207,7 +211,8 @@ class MergeSettings extends React.Component {
                         label="Split contents of the field on whitespace before matching."
                         checked={e.split_space}
                         onChange={(_e, { checked }) =>
-                          dispatch({ type: 'SET_WHITESPACE_FLAG', payload: { index: i, checked } })}
+                          dispatch({ type: 'SET_WHITESPACE_FLAG', payload: { index: i, checked } })
+                        }
                       />
                     </List.Item>
                     <List.Item>
@@ -215,14 +220,16 @@ class MergeSettings extends React.Component {
                         label="Split contents of the field on punctuation before matching"
                         checked={e.split_punctuation}
                         onChange={(_e, { checked }) =>
-                          dispatch({ type: 'SET_PUNCTUATION_FLAG', payload: { index: i, checked } })}
+                          dispatch({ type: 'SET_PUNCTUATION_FLAG', payload: { index: i, checked } })
+                        }
                       />
                     </List.Item>
                   </List>
                 </FieldBlock>
               ))}
-
-              <Button basic content="Add field" onClick={() => dispatch({ type: 'ADD_FIELD' })} />
+              <Container textAlign="center">
+                <Button basic content="Add field" onClick={() => dispatch({ type: 'ADD_FIELD' })} />
+              </Container>
             </Container>
           )}
 
@@ -250,7 +257,8 @@ class MergeSettings extends React.Component {
                 selectEntries
                 selectedEntries={this.getSelected(i)}
                 onEntrySelect={(eid, checked) =>
-                  dispatch({ type: 'SET_ENTRY_SELECTION', payload: { group: i, id: eid, checked } })}
+                  dispatch({ type: 'SET_ENTRY_SELECTION', payload: { group: i, id: eid, checked } })
+                }
               />
               <Container textAlign="center">
                 <Button

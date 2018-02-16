@@ -1,9 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Range } from 'immutable';
 import { onlyUpdateForPropTypes, branch, renderNothing, compose } from 'recompose';
-import { Link } from 'react-router-dom';
-import { Menu } from 'semantic-ui-react';
 import styled from 'styled-components';
 
 const Container = styled('div')`
@@ -19,12 +16,10 @@ const Container = styled('div')`
 
 const Player = (props) => {
   const { text } = props;
-  return <Container>
-    {text}
-  </Container>;
+  return <Container>{text}</Container>;
 };
 
-Player['propTypes'] = {
+Player.propTypes = {
   visible: PropTypes.bool.isRequired,
 };
 

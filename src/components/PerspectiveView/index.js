@@ -234,10 +234,10 @@ const PerspectiveView = ({
       if (!sortByField) {
         return es;
       }
-      const { fieldId, order } = sortByField;
-      // XXX: sort by first entity
+      const { field, order } = sortByField;
+      // XXX: sorts by first entity only
       const sortedEntries = sortBy(es, (e) => {
-        const entities = e.entities.filter(entity => isEqual(entity.field_id, fieldId));
+        const entities = e.entities.filter(entity => isEqual(entity.field_id, field));
         if (entities.length > 0) {
           return entities[0].content;
         }
@@ -253,7 +253,8 @@ const PerspectiveView = ({
   const pageEntries =
     entries.length > ROWS_PER_PAGE ? take(drop(entries, ROWS_PER_PAGE * (page - 1)), ROWS_PER_PAGE) : entries;
 
-  const e = [...newEntries, ...pageEntries];
+  // Put newly created entries at the top of page.
+  const e = [...newEntries, ...pageEntries.filter(pageEntry => !createdEntries.find(c => isEqual(c.id, pageEntry.id)))];
 
   // join fields and columns
   // {
