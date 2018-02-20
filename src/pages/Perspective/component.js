@@ -34,7 +34,7 @@ const PerspectivePath = graphql(query)(({ data }) => {
         sections={tree
           .slice()
           .reverse()
-          .map(e => ({ key: e.translation, content: e.translation, link: false }))}
+          .map(e => ({ key: e.id, content: e.translation, link: false }))}
       />
     </Header>
   );
