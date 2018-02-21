@@ -12,26 +12,26 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 // const OfflinePlugin = require('offline-plugin')
 const base = require('./webpack.base');
 
-
-base.devtool = 'cheap-module-source-map';
-base.module.loaders.push({
-  test: /\.css$/,
-  use: ExtractTextPlugin.extract({ fallback: 'style-loader', use: 'css-loader' }),
-}, {
-  test: /\.scss$/,
-  use: ExtractTextPlugin.extract({ fallback: 'style-loader', use: ['css-loader', 'sass-loader'] }),
-});
+base.devtool = 'source-map';
+base.module.loaders.push(
+  {
+    test: /\.css$/,
+    use: ExtractTextPlugin.extract({ fallback: 'style-loader', use: 'css-loader' }),
+  },
+  {
+    test: /\.scss$/,
+    use: ExtractTextPlugin.extract({ fallback: 'style-loader', use: ['css-loader', 'sass-loader'] }),
+  }
+);
 // use hash filename to support long-term caching
 base.output.filename = '[name].[chunkhash:8].js';
 // add webpack plugins
 
-base.plugins.push(
-  new HtmlWebpackPlugin({
-    template: path.resolve(__dirname, '../src/index.prod.html'),
-    favicon: path.resolve(__dirname, '../src/favicon.ico'),
-    filename: _.outputIndexPath,
-  }),
-);
+base.plugins.push(new HtmlWebpackPlugin({
+  template: path.resolve(__dirname, '../src/index.prod.html'),
+  favicon: path.resolve(__dirname, '../src/favicon.ico'),
+  filename: _.outputIndexPath,
+}));
 
 base.plugins.push(
   new CleanWebpackPlugin(['dist']),

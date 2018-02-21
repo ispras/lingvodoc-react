@@ -321,7 +321,7 @@ class Columns extends React.Component {
       columns
         .filter(c => !c.self_id)
         .map(c => c.position)
-        .reduce((x, y) => (x > y ? x : y)) + 1;
+        .reduce((x, y) => (x > y ? x : y), 1) + 1;
 
     createColumn({
       variables: {
