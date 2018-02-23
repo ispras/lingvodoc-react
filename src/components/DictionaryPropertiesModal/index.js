@@ -36,18 +36,22 @@ class Properties extends React.Component {
     this.state = {
       authors: '',
       location: null,
+      tags: '',
     };
 
     this.onChangeAuthors = this.onChangeAuthors.bind(this);
     this.onSaveAuthors = this.onSaveAuthors.bind(this);
     this.onChangeLocation = this.onChangeLocation.bind(this);
     this.onSaveLocation = this.onSaveLocation.bind(this);
+    this.onChangeTags = this.onChangeTags.bind(this);
+    this.onSaveTags = this.onSaveTags.bind(this);
+    this.saveMeta = this.saveMeta.bind(this);
   }
 
   componentWillReceiveProps(props) {
     const { data: { error, loading, dictionary } } = props;
     if (!(loading && error)) {
-      const { additional_metadata: { authors, location } } = dictionary;
+      const { additional_metadata: { authors, location, tags } } = dictionary;
       if (authors !== this.state.authors && authors !== null) {
         this.setState({
           authors,
@@ -56,6 +60,12 @@ class Properties extends React.Component {
       if (location !== this.state.location) {
         this.setState({
           location,
+        });
+      }
+
+      if (tags !== this.state.tags) {
+        this.setState({
+          tags,
         });
       }
     }
@@ -68,22 +78,8 @@ class Properties extends React.Component {
   }
 
   onSaveAuthors() {
-    const { id, update } = this.props;
-    update({
-      variables: {
-        id,
-        meta: {
-          authors: this.state.authors,
-        },
-      },
-      refetchQueries: [
-        {
-          query,
-          variables: {
-            id,
-          },
-        },
-      ],
+    this.saveMeta({
+      authors: this.state.authors,
     });
   }
 
@@ -97,13 +93,29 @@ class Properties extends React.Component {
   }
 
   onSaveLocation() {
+    this.saveMeta({
+      location: this.state.location,
+    });
+  }
+
+  onChangeTags(e, { value }) {
+    this.setState({
+      authors: value,
+    });
+  }
+
+  onSaveTags() {
+    this.saveMeta({
+      tags: this.state.tags,
+    });
+  }
+
+  saveMeta(meta) {
     const { id, update } = this.props;
     update({
       variables: {
         id,
-        meta: {
-          location: this.state.location,
-        },
+        meta,
       },
       refetchQueries: [
         {
@@ -138,6 +150,17 @@ class Properties extends React.Component {
               </Grid.Column>
               <Grid.Column width={4}>
                 <Button positive content="Save" onClick={this.onSaveAuthors} />
+              </Grid.Column>
+            </Grid>
+          </Segment>
+
+          <Segment>
+            <Grid>
+              <Grid.Column width={12}>
+                <Input fluid label="Tags" value={this.state.tags} onChange={this.onChangeTags} />
+              </Grid.Column>
+              <Grid.Column width={4}>
+                <Button positive content="Save" onClick={this.onSaveTags} />
               </Grid.Column>
             </Grid>
           </Segment>
@@ -189,5 +212,5 @@ export default compose(
   branch(({ id }) => !id, renderNothing),
   graphql(query),
   graphql(updateMetadataMutation, { name: 'update' }),
-  onlyUpdateForKeys(['id', 'data']),
+  onlyUpdateForKeys(['id', 'data'])
 )(Properties);
