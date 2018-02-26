@@ -430,7 +430,7 @@ export default compose(
   withReducer('settings', 'dispatch', reducer, fromJS(initialState)),
   graphql(queryPerspective),
   graphql(mergeLexicalEntriesMutation, { name: 'mergeLexicalEntries' }),
-  branch(({ data }) => data.loading, renderNothing),
+  branch(({ data }) => data.loading || !!data.error, renderNothing),
   withApollo,
   pure
 )(MergeSettings);

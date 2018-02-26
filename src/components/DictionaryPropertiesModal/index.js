@@ -100,7 +100,7 @@ class Properties extends React.Component {
 
   onChangeTags(e, { value }) {
     this.setState({
-      authors: value,
+      tags: value,
     });
   }
 
