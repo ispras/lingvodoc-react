@@ -33,6 +33,20 @@ class ELAN extends React.Component {
     }
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (this.elan && nextProps.zoom !== this.props.zoom) {
+      const { zoom } = nextProps;
+      this.elan.setPxPerSec(zoom);
+      if (this.props.wavesurfer) {
+        this.props.wavesurfer.zoom(zoom);
+        this.elan.drawerSetup();
+        this.elan.render();
+      }
+    }
+  }
+
+  comp
+
   render() {
     return (
       <div
@@ -49,6 +63,7 @@ ELAN.propTypes = {
   options: PropTypes.object,
   wavesurfer: PropTypes.object,
   markup: PropTypes.string,
+  zoom: PropTypes.number,
 };
 
 ELAN.defaultProps = {};

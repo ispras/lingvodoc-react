@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { onlyUpdateForKeys } from 'recompose';
 import { Container, Button, Icon } from 'semantic-ui-react';
 import Wavesurfer from 'react-wavesurfer';
 import Timeline from 'components/Wavesurfer/timeline';
@@ -11,10 +12,12 @@ class Player extends React.Component {
     this.state = {
       playing: true,
       pos: 0,
+      zoom: 0,
     };
     this.handlePlay = this.handlePlay.bind(this);
     this.handlePause = this.handlePause.bind(this);
     this.handlePosChange = this.handlePosChange.bind(this);
+    this.handleZoom = this.handleZoom.bind(this);
   }
 
   handlePlay() {
@@ -35,6 +38,12 @@ class Player extends React.Component {
     });
   }
 
+  handleZoom(e) {
+    this.setState({
+      zoom: Number(e.target.value),
+    });
+  }
+
   render() {
     const { file } = this.props;
     const { playing, pos } = this.state;
@@ -52,11 +61,20 @@ class Player extends React.Component {
     const spectrogramOptions = {
       fftSamples: 128,
     };
-    const timelineOptions = {
+    const timelineOptions = {};
 
-    };
     return (
       <div>
+        <input
+          id="zoom-slider"
+          type="range"
+          min="0"
+          max="200"
+          value={this.state.zoom}
+          onChange={this.handleZoom}
+        />
+        <span>{this.state.zoom}%</span>
+
         <Wavesurfer
           options={options}
           audioFile={file}
@@ -64,6 +82,7 @@ class Player extends React.Component {
           pos={pos}
           onPosChange={this.handlePosChange}
           onReady={this.handleReady}
+          zoom={this.state.zoom}
         >
           <Timeline options={timelineOptions} />
           <Spectrogram options={spectrogramOptions} />
@@ -92,4 +111,4 @@ Player.defaultProps = {
   file: '',
 };
 
-export default Player;
+export default onlyUpdateForKeys(['file'])(Player);

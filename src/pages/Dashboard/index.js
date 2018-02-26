@@ -11,6 +11,7 @@ import { compositeIdToString } from 'utils/compositeId';
 import { openRoles } from 'ducks/roles';
 import { openDictionaryPropertiesModal } from 'ducks/dictionaryProperties';
 import { openPerspectivePropertiesModal } from 'ducks/perspectiveProperties';
+import { openStatistics } from 'ducks/statistics';
 import RolesModal from 'components/RolesModal';
 
 const dimmerStyle = { minHeight: '600px' };
@@ -113,7 +114,11 @@ const P = (props) => {
                 text="Properties..."
                 onClick={() => actions.openPerspectivePropertiesModal(id, parent_id)}
               />
-              <Dropdown.Item icon="percent" text="Statistics..." />
+              <Dropdown.Item
+                icon="percent"
+                text="Statistics..."
+                onClick={() => actions.openStatistics(id, 'perspective')}
+              />
               <Dropdown.Divider />
               <Dropdown.Item icon="remove" text="Remove perspective" />
             </Dropdown.Menu>
@@ -159,7 +164,7 @@ P.propTypes = {
 
 const Perspective = compose(
   connect(null, dispatch => ({
-    actions: bindActionCreators({ openRoles, openPerspectivePropertiesModal }, dispatch),
+    actions: bindActionCreators({ openRoles, openPerspectivePropertiesModal, openStatistics }, dispatch),
   })),
   onlyUpdateForKeys(['translation', 'status'])
 )(P);
@@ -181,7 +186,11 @@ const D = (props) => {
                 text="Properties..."
                 onClick={() => actions.openDictionaryPropertiesModal(id)}
               />
-              <Dropdown.Item icon="percent" text="Statistics..." />
+              <Dropdown.Item
+                icon="percent"
+                text="Statistics..."
+                onClick={() => actions.openStatistics(id, 'dictionary')}
+              />
               <Dropdown.Item icon="circle" text="Create a new perspective..." />
               <Dropdown.Divider />
               <Dropdown.Item icon="remove" text="Remove dictionary" />
@@ -219,7 +228,7 @@ D.propTypes = {
 
 const Dictionary = compose(
   connect(null, dispatch => ({
-    actions: bindActionCreators({ openRoles, openDictionaryPropertiesModal }, dispatch),
+    actions: bindActionCreators({ openRoles, openDictionaryPropertiesModal, openStatistics }, dispatch),
   })),
   onlyUpdateForKeys(['translation', 'status', 'perspectives'])
 )(D);

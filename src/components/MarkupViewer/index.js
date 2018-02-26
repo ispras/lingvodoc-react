@@ -17,10 +17,12 @@ class MarkupViewer extends React.Component {
     this.state = {
       playing: true,
       pos: 0,
+      zoom: 1,
     };
     this.handlePlay = this.handlePlay.bind(this);
     this.handlePause = this.handlePause.bind(this);
     this.handlePosChange = this.handlePosChange.bind(this);
+    this.handleZoom = this.handleZoom.bind(this);
   }
 
   handlePlay() {
@@ -38,6 +40,12 @@ class MarkupViewer extends React.Component {
   handlePosChange(e) {
     this.setState({
       pos: e.originalArgs[0],
+    });
+  }
+
+  handleZoom(e) {
+    this.setState({
+      zoom: Number(e.target.value),
     });
   }
 
@@ -63,7 +71,19 @@ class MarkupViewer extends React.Component {
     const timelineOptions = {};
 
     return (
+
       <Wrapper>
+
+        <input
+          id="zoom-slider"
+          type="range"
+          min="1"
+          max="200"
+          value={this.state.zoom}
+          onChange={this.handleZoom}
+        />
+        <span>{this.state.zoom}%</span>
+
         {file && (
           <Wavesurfer
             options={options}
@@ -72,14 +92,15 @@ class MarkupViewer extends React.Component {
             pos={pos}
             onPosChange={this.handlePosChange}
             onReady={this.handleReady}
+            zoom={this.state.zoom}
           >
             <Timeline options={timelineOptions} />
             <Spectrogram options={spectrogramOptions} />
-            <ELAN markup={markup} options={elanOptions} />
+            <ELAN markup={markup} options={elanOptions} zoom={this.state.zoom} />
           </Wavesurfer>
         )}
 
-        {!file && <ELAN markup={markup} options={elanOptions} />}
+        {!file && <ELAN markup={markup} options={elanOptions} zoom={this.state.zoom} />}
 
         {file && (
           <Container textAlign="center">
