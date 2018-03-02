@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { compose, onlyUpdateForKeys } from 'recompose';
+import { compose, onlyUpdateForKeys, branch, renderNothing } from 'recompose';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { gql, graphql } from 'react-apollo';
@@ -392,7 +392,8 @@ export default compose(
   graphql(removeLexicalEntriesMutation, { name: 'removeLexicalEntries' }),
   graphql(queryPerspective, {
     options: { notifyOnNetworkStatusChange: true },
-  })
+  }),
+  branch(({ data: { error } }) => !!error, renderNothing),
 )(PerspectiveView);
 
 export const queryLexicalEntry = gql`

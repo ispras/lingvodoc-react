@@ -13,6 +13,7 @@ import DictionaryProperties from 'components/DictionaryPropertiesModal';
 import PerspectiveProperties from 'components/PerspectivePropertiesModal';
 import PhonologyModal from 'components/PhonologyModal';
 import ConverEafModal from 'components/ConverEafModal';
+import StatisticsModal from 'components/StatisticsModal';
 
 import NavBar from './NavBar';
 import TasksSidebar from './TasksSidebar';
@@ -43,6 +44,7 @@ const Layout = () => (
     <PerspectiveProperties />
     <PhonologyModal />
     <ConverEafModal />
+    <StatisticsModal />
   </div>
 );
 
