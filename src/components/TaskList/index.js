@@ -30,7 +30,7 @@ function Task(props) {
     <List.Content>
       <List.Header>{task_family}</List.Header>
       <List.Description>
-        {task_details}
+        {task_details}, status: {status}
         <Progress value={current_stage} total={total_stages} autoSuccess progress="ratio" />
         {links}
       </List.Description>

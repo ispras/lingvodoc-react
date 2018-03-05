@@ -6,99 +6,6 @@ import { gql, graphql } from 'react-apollo';
 import { Button, List, Dropdown, Grid, Checkbox } from 'semantic-ui-react';
 import { compositeIdToString } from 'utils/compositeId';
 
-const columnsQuery = gql`
-  query ColumnsQuery($perspectiveId: LingvodocID!) {
-    perspective(id: $perspectiveId) {
-      id
-      parent_id
-      translation
-      columns {
-        id
-        parent_id
-        field_id
-        self_id
-        link_id
-        marked_for_deletion
-        position
-      }
-    }
-    all_fields {
-      id
-      translation
-      data_type
-    }
-  }
-`;
-
-const createColumnMutation = gql`
-  mutation CreateColumnMutation(
-    $parentId: LingvodocID!
-    $fieldId: LingvodocID!
-    $pos: Int!
-    $linkId: LingvodocID
-    $selfId: LingvodocID
-  ) {
-    create_column(parent_id: $parentId, field_id: $fieldId, position: $pos, link_id: $linkId, self_id: $selfId) {
-      triumph
-    }
-  }
-`;
-
-const removeColumnMutation = gql`
-  mutation RemoveColumnMutation($id: LingvodocID!) {
-    delete_column(id: $id) {
-      triumph
-    }
-  }
-`;
-
-const updateColumnMutation = gql`
-  mutation UpdateColumnMutation(
-    $id: LingvodocID!
-    $parentId: LingvodocID!
-    $fieldId: LingvodocID!
-    $pos: Int!
-    $linkId: LingvodocID
-  ) {
-    update_column(id: $id, parent_id: $parentId, field_id: $fieldId, position: $pos, link_id: $linkId) {
-      triumph
-    }
-  }
-`;
-
-const updatePositionMutation = gql`
-  mutation UpdateColumnMutation(
-    $id1: LingvodocID!
-    $id2: LingvodocID!
-    $perspectiveId: LingvodocID
-    $pos1: Int!
-    $pos2: Int!
-  ) {
-    updatePos1: update_column(id: $id1, parent_id: $perspectiveId, position: $pos1) {
-      triumph
-    }
-    updatePos2: update_column(id: $id2, parent_id: $perspectiveId, position: $pos2) {
-      triumph
-    }
-  }
-`;
-
-const updateNestedMutation = gql`
-  mutation UpdateColumnMutation(
-    $id1: LingvodocID!
-    $id2: LingvodocID!
-    $perspectiveId: LingvodocID
-    $selfId1: LingvodocID!
-    $selfId2: LingvodocID!
-  ) {
-    updatePos1: update_column(id: $id1, parent_id: $perspectiveId, self_id: $selfId1) {
-      triumph
-    }
-    updatePos2: update_column(id: $id2, parent_id: $perspectiveId, self_id: $selfId2) {
-      triumph
-    }
-  }
-`;
 
 const NestedColumn = ({
   column, columns, fields, onChange,
@@ -418,3 +325,8 @@ export default compose(
   graphql(removeColumnMutation, { name: 'removeColumn' }),
   graphql(updatePositionMutation, { name: 'updatePosition' })
 )(Columns);
+
+
+
+
+

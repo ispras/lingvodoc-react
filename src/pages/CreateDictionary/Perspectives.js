@@ -3,19 +3,19 @@ import PropTypes from 'prop-types';
 import Immutable, { fromJS } from 'immutable';
 import { Header, Segment } from 'semantic-ui-react';
 import Translations from 'components/Translation';
-// import Fields from './Fields';
+import Fields from './Fields';
 
 const Perspective = (props) => {
-  const { perspective } = props;
+  const { perspective, perspectives } = props;
   const translations = perspective.get('translations').toJS();
 
   function updateTranslations(updatedTranslations) {
     props.onChange(perspective.set('translations', fromJS(updatedTranslations)));
   }
 
-  // function updateFields(updatedFields) {
-  //   props.onChange(perspective.set('fields', fromJS(updatedFields)));
-  // }
+  function updateFields(updatedFields) {
+    props.onChange(perspective.set('fields', fromJS(updatedFields)));
+  }
 
   return (
     <Segment>
@@ -25,10 +25,10 @@ const Perspective = (props) => {
         <Translations translations={translations} onChange={u => updateTranslations(u)} />
       </Segment>
 
-      {/* <Segment>
+      <Segment>
         <Header>Fields</Header>
         <Fields perspective={perspective} perspectives={perspectives} onChange={f => updateFields(f)} />
-      </Segment> */}
+      </Segment>
     </Segment>
   );
 };
