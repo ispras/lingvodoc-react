@@ -1,11 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { compose, onlyUpdateForKeys } from 'recompose';
+import { compose, onlyUpdateForKeys, pure } from 'recompose';
 import { isEqual, findIndex } from 'lodash';
 import { gql, graphql } from 'react-apollo';
 import { Button, List, Dropdown, Grid, Checkbox } from 'semantic-ui-react';
 import { compositeIdToString } from 'utils/compositeId';
-
 
 const NestedColumn = ({
   column, columns, fields, onChange,
@@ -63,63 +62,16 @@ class C extends React.Component {
   }
 
   onFieldChange(value) {
-    const { column, fields } = this.props;
-    const field = fields.find(f => compositeIdToString(f.id) === value);
-    if (field) {
-      this.setState({ field_id: field.id }, () => {
-        this.update(column, field.id, column.link_id);
-      });
-    }
+
   }
 
   onLinkChange(value) {
-    const { column, perspectives } = this.props;
-    const perspective = perspectives.find(p => compositeIdToString(p.id) === value);
-    this.setState({ link_id: perspective.id }, () => {
-      this.update(column, column.field_id, perspective.id);
-    });
+
   }
 
   onNestedChange(nested) {
-    const { column, updateNested } = this.props;
-    updateNested({
-      variables: {
-        id1: nested[0].id,
-        id2: nested[1].id,
-        selfId1: nested[0].self_id,
-        selfId2: nested[1].self_id,
-        parentId: column.parent_id,
-      },
-      refetchQueries: [
-        {
-          query: columnsQuery,
-          variables: {
-            perspectiveId: column.parent_id,
-          },
-        },
-      ],
-    });
-  }
 
-  update = (column, fieldId, linkId) => {
-    this.props.updateColumn({
-      variables: {
-        id: column.id,
-        parentId: column.parent_id,
-        fieldId,
-        pos: column.position,
-        linkId,
-      },
-      refetchQueries: [
-        {
-          query: columnsQuery,
-          variables: {
-            perspectiveId: column.parent_id,
-          },
-        },
-      ],
-    });
-  };
+  }
 
   render() {
     const {
@@ -171,14 +123,9 @@ C.propTypes = {
   columns: PropTypes.array.isRequired,
   perspectives: PropTypes.array.isRequired,
   fields: PropTypes.array.isRequired,
-  updateColumn: PropTypes.func.isRequired,
-  updateNested: PropTypes.func.isRequired,
 };
 
-const Column = compose(
-  graphql(updateColumnMutation, { name: 'updateColumn' }),
-  graphql(updateNestedMutation, { name: 'updateNested' })
-)(C);
+const Column = compose(pure)(C);
 
 class Columns extends React.Component {
   constructor(props) {
@@ -188,94 +135,14 @@ class Columns extends React.Component {
     this.onRemove = this.onRemove.bind(this);
   }
 
-  onChangePos(column, columns, direction) {
-    const { perspectiveId, updatePosition } = this.props;
+  onChangePos(column, columns, direction) {}
 
-    const columnIndex = findIndex(columns, c => isEqual(c.id, column.id));
-    const swapColumnIndex = direction === 'up' ? columnIndex - 1 : columnIndex + 1;
+  onCreate() {}
 
-    if (swapColumnIndex >= 0 && swapColumnIndex < columns.length) {
-      const swapColumn = columns[swapColumnIndex];
-      updatePosition({
-        variables: {
-          id1: column.id,
-          id2: swapColumn.id,
-          pos1: swapColumn.position,
-          pos2: column.position,
-          perspectiveId,
-        },
-        refetchQueries: [
-          {
-            query: columnsQuery,
-            variables: {
-              perspectiveId,
-            },
-          },
-        ],
-      });
-    }
-  }
-
-  onCreate(field) {
-    const { createColumn, data } = this.props;
-    const { perspective } = data;
-    const { columns } = perspective;
-
-    // calculate next position
-    const pos =
-      columns
-        .filter(c => !c.self_id)
-        .map(c => c.position)
-        .reduce((x, y) => (x > y ? x : y), 1) + 1;
-
-    createColumn({
-      variables: {
-        // id: perspective.id,
-        // parentId: perspective.parentId,
-        parentId: perspective.id,
-        fieldId: field.id,
-        pos,
-        linkId: null,
-        selfId: null,
-      },
-      refetchQueries: [
-        {
-          query: columnsQuery,
-          variables: {
-            perspectiveId: perspective.id,
-          },
-        },
-      ],
-    });
-  }
-
-  onRemove(column) {
-    const { perspectiveId, removeColumn } = this.props;
-    removeColumn({
-      variables: {
-        id: column.id,
-      },
-      refetchQueries: [
-        {
-          query: columnsQuery,
-          variables: {
-            perspectiveId,
-          },
-        },
-      ],
-    });
-  }
+  onRemove(column) {}
 
   render() {
-    const { data, perspectives } = this.props;
-    const { loading, error } = data;
-
-    if (loading || error) {
-      return null;
-    }
-
-    const { perspective: { columns }, all_fields: allFields } = data;
-
+    const { columns } = this.props;
     return (
       <div>
         <List divided relaxed>
@@ -310,23 +177,6 @@ class Columns extends React.Component {
 Columns.propTypes = {
   perspectiveId: PropTypes.array.isRequired,
   perspectives: PropTypes.array.isRequired,
-  data: PropTypes.shape({
-    loading: PropTypes.bool.isRequired,
-  }).isRequired,
-  createColumn: PropTypes.func.isRequired,
-  removeColumn: PropTypes.func.isRequired,
-  updatePosition: PropTypes.func.isRequired,
 };
 
-export default compose(
-  onlyUpdateForKeys(['data']),
-  graphql(columnsQuery),
-  graphql(createColumnMutation, { name: 'createColumn' }),
-  graphql(removeColumnMutation, { name: 'removeColumn' }),
-  graphql(updatePositionMutation, { name: 'updatePosition' })
-)(Columns);
-
-
-
-
-
+export default compose(pure)(Columns);
