@@ -19,7 +19,7 @@ import Translations from 'components/Translation';
 import Perspectives from './Perspectives';
 import { createDictionaryMutation } from './graphql';
 
-class CreateLanguageWizard extends React.Component {
+class CreateDictionaryWizard extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
@@ -93,13 +93,6 @@ class CreateLanguageWizard extends React.Component {
             </Step.Content>
           </Step>
 
-          {/* <Step link active={step === 'FIELDS'} onClick={this.onStepClick('FIELDS')}>
-            <Step.Content>
-              <Step.Title>Language Selection</Step.Title>
-              <Step.Description>Map dictionaries to LingvoDoc languages</Step.Description>
-            </Step.Content>
-          </Step> */}
-
           <Step link active={step === 'FINISH'}>
             <Step.Content>
               <Step.Title>Finish</Step.Title>
@@ -134,7 +127,6 @@ class CreateLanguageWizard extends React.Component {
             </div>
           )}
 
-          {/* {step === 'FIELDS' && <div />} */}
           {step === 'FINISH' && (
             <Message>
               <Message.Header>Dictionary created</Message.Header>
@@ -159,7 +151,7 @@ class CreateLanguageWizard extends React.Component {
   }
 }
 
-CreateLanguageWizard.propTypes = {
+CreateDictionaryWizard.propTypes = {
   step: PropTypes.string.isRequired,
   perspectives: PropTypes.instanceOf(Immutable.List).isRequired,
   translations: PropTypes.instanceOf(Immutable.List).isRequired,
@@ -195,4 +187,4 @@ const mapDispatchToProps = {
 export default compose(
   connect(mapStateToProps, mapDispatchToProps),
   graphql(createDictionaryMutation, { name: 'createDictionary' })
-)(CreateLanguageWizard);
+)(CreateDictionaryWizard);

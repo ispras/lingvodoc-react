@@ -12,6 +12,7 @@ const ConnectedLexicalEntries = (props) => {
     allLanguages,
     allDictionaries,
     allPerspectives,
+    mode,
   } = props;
 
   if (error || loading) {
@@ -31,7 +32,7 @@ const ConnectedLexicalEntries = (props) => {
     allPerspectives,
   });
 
-  return <Tree resultsTree={resultsTree} />;
+  return <Tree resultsTree={resultsTree} mode={mode} />;
 };
 
 ConnectedLexicalEntries.propTypes = {

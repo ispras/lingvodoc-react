@@ -35,9 +35,9 @@ class Tree extends React.Component {
   }
 
   generateNodeProps({ node }) {
-    const { actions } = this.props;
+    const { actions, mode } = this.props;
     const defaultTitle = node.translation || 'None';
-    const title = node.type === 'perspective' ? <LexicalEntryModal node={node} actions={actions} entitiesMode="all" /> : defaultTitle;
+    const title = node.type === 'perspective' ? <LexicalEntryModal node={node} actions={actions} entitiesMode={mode} /> : defaultTitle;
     return { title };
   }
 
@@ -59,10 +59,12 @@ class Tree extends React.Component {
 Tree.propTypes = {
   resultsTree: PropTypes.object.isRequired,
   actions: PropTypes.array,
+  mode: PropTypes.string,
 };
 
 Tree.defaultProps = {
   actions: [],
+  mode: 'all',
 };
 
 export default Tree;

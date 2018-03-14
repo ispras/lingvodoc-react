@@ -1,12 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { compose, onlyUpdateForKeys } from 'recompose';
-import Immutable, { fromJS } from 'immutable';
 import { isEqual, findIndex } from 'lodash';
 import { gql, graphql } from 'react-apollo';
-import { Message, Button, Step, Header, Segment, List, Dropdown, Grid, Checkbox } from 'semantic-ui-react';
+import { Button, List, Dropdown, Grid, Checkbox } from 'semantic-ui-react';
 import { compositeIdToString } from 'utils/compositeId';
-import uuid from 'utils/uuid';
 
 const columnsQuery = gql`
   query ColumnsQuery($perspectiveId: LingvodocID!) {

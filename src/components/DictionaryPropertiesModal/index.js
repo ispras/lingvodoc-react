@@ -4,8 +4,9 @@ import { bindActionCreators } from 'redux';
 import { branch, compose, onlyUpdateForKeys, renderNothing } from 'recompose';
 import { gql, graphql } from 'react-apollo';
 import { connect } from 'react-redux';
-import { Button, Modal, Input, Segment, Grid, Header } from 'semantic-ui-react';
+import { Button, Dropdown, Modal, Input, Segment, Grid, Header } from 'semantic-ui-react';
 import { closeDictionaryPropertiesModal } from 'ducks/dictionaryProperties';
+import { isEqual } from 'lodash';
 import Map from './Map';
 
 const query = gql`
@@ -17,7 +18,17 @@ const query = gql`
       additional_metadata {
         authors
         location
+        blobs
+        tag_list
       }
+    }
+    user_blobs {
+      id
+      name
+      data_type
+      content
+      created_at
+      marked_for_deletion
     }
   }
 `;
@@ -37,6 +48,7 @@ class Properties extends React.Component {
       authors: '',
       location: null,
       tags: '',
+      files: [],
     };
 
     this.onChangeAuthors = this.onChangeAuthors.bind(this);
@@ -45,13 +57,23 @@ class Properties extends React.Component {
     this.onSaveLocation = this.onSaveLocation.bind(this);
     this.onChangeTags = this.onChangeTags.bind(this);
     this.onSaveTags = this.onSaveTags.bind(this);
+    this.onChangeFiles = this.onChangeFiles.bind(this);
+    this.onSaveFiles = this.onSaveFiles.bind(this);
     this.saveMeta = this.saveMeta.bind(this);
   }
 
   componentWillReceiveProps(props) {
-    const { data: { error, loading, dictionary } } = props;
+    const {
+      data: {
+        error, loading, dictionary, user_blobs: allFiles,
+      },
+    } = props;
     if (!(loading && error)) {
-      const { additional_metadata: { authors, location, tags } } = dictionary;
+      const {
+        additional_metadata: {
+          authors, location, tag_list, blobs,
+        },
+      } = dictionary;
       if (authors !== this.state.authors && authors !== null) {
         this.setState({
           authors,
@@ -63,9 +85,18 @@ class Properties extends React.Component {
         });
       }
 
+      const tags = tag_list.join(', ');
       if (tags !== this.state.tags) {
         this.setState({
           tags,
+        });
+      }
+
+      const files = blobs.map(id => allFiles.find(f => f.id === id));
+
+      if (!isEqual(this.state.files, files)) {
+        this.setState({
+          files,
         });
       }
     }
@@ -105,8 +136,21 @@ class Properties extends React.Component {
   }
 
   onSaveTags() {
+    const tagList = this.state.tags.split();
     this.saveMeta({
-      tags: this.state.tags,
+      tag_list: tagList,
+    });
+  }
+
+  onChangeFiles(e, { value }) {
+    this.setState({
+      files: value,
+    });
+  }
+
+  onSaveFiles() {
+    this.saveMeta({
+      blobs: this.state.files,
     });
   }
 
@@ -129,13 +173,11 @@ class Properties extends React.Component {
   }
 
   render() {
-    const { data: { error, loading, dictionary }, actions } = this.props;
-
-    if (loading || error) {
-      return null;
-    }
+    const { data: { dictionary, user_blobs: files }, actions } = this.props;
 
     const { translation } = dictionary;
+
+    const options = files.map(file => ({ key: file.id, text: file.name, value: file.id }));
 
     return (
       <Modal open dimmer size="fullscreen">
@@ -161,6 +203,28 @@ class Properties extends React.Component {
               </Grid.Column>
               <Grid.Column width={4}>
                 <Button positive content="Save" onClick={this.onSaveTags} />
+              </Grid.Column>
+            </Grid>
+          </Segment>
+
+          <Segment>
+            <Grid>
+              <Grid.Column width={12}>
+                <Dropdown
+                  labeled
+                  label="Files"
+                  placeholder="Files"
+                  fluid
+                  multiple
+                  selection
+                  search
+                  options={options}
+                  onChange={this.onChangeFiles}
+                  value={this.state.files}
+                />
+              </Grid.Column>
+              <Grid.Column width={4}>
+                <Button positive content="Save" onClick={this.onSaveFiles} />
               </Grid.Column>
             </Grid>
           </Segment>
@@ -212,5 +276,6 @@ export default compose(
   branch(({ id }) => !id, renderNothing),
   graphql(query),
   graphql(updateMetadataMutation, { name: 'update' }),
+  branch(({ data: { loading, error } }) => loading || !!error, renderNothing),
   onlyUpdateForKeys(['id', 'data'])
 )(Properties);

@@ -28,7 +28,7 @@ function selected(state = new Immutable.Set(), { type, payload }) {
     case TOGGLE_DICT:
       return state.has(id) ? state.delete(id) : state.add(id);
     case RESET_DICTS:
-      return state.deleteAll();
+      return new Immutable.Set();
     default:
       return state;
   }
