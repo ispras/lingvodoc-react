@@ -14,6 +14,7 @@ const Perspective = (props) => {
   }
 
   function updateFields(updatedFields) {
+    console.log(updatedFields);
     props.onChange(perspective.set('fields', fromJS(updatedFields)));
   }
 
@@ -27,7 +28,7 @@ const Perspective = (props) => {
 
       <Segment>
         <Header>Fields</Header>
-        <Fields perspective={perspective} perspectives={perspectives} onChange={f => updateFields(f)} />
+        <Fields perspective={perspective} perspectives={perspectives.toJS()} onChange={f => updateFields(f)} />
       </Segment>
     </Segment>
   );

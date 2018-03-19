@@ -48,7 +48,17 @@ class CreateDictionaryWizard extends React.Component {
       .toJS();
     const perspectives = p
       .map(ps => ({
-        translation_atoms: ps.get('translations').map(t => ({ locale_id: t.get('localeId'), content: t.get('content') })),
+        translation_atoms: ps
+          .get('translations')
+          .map(t => ({ locale_id: t.get('localeId'), content: t.get('content') })),
+        fields: ps
+          .get('fields')
+          .map(f => ({
+            fake_id: f.get('id'),
+            self_id: f.get('self_id'),
+            link_id: f.get('link_id'),
+            field_id: f.get('field_id'),
+          })),
       }))
       .toJS();
 
@@ -123,7 +133,9 @@ class CreateDictionaryWizard extends React.Component {
             <div>
               <Header>Add one or perspectve</Header>
               <Perspectives perspectives={perspectives} onChange={p => this.props.setPerspectives(p)} />
-              <Button fluid positive onClick={this.props.createPerspective}>Add perspective</Button>
+              <Button fluid positive onClick={this.props.createPerspective}>
+                Add perspective
+              </Button>
             </div>
           )}
 
@@ -135,11 +147,12 @@ class CreateDictionaryWizard extends React.Component {
           )}
         </div>
         <Divider />
-        {isNextStep && step === 'PERSPECTIVES' && (
-          <Button fluid inverted color="red" onClick={this.onCreateDictionary}>
-            Create dictionary
-          </Button>
-        )}
+        {isNextStep &&
+          step === 'PERSPECTIVES' && (
+            <Button fluid inverted color="red" onClick={this.onCreateDictionary}>
+              Create dictionary
+            </Button>
+          )}
         {isNextStep &&
           (step !== 'PERSPECTIVES' && step !== 'FINISH') && (
             <Button fluid inverted color="blue" onClick={this.onNextClick}>

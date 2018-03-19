@@ -11,3 +11,14 @@ export const createDictionaryMutation = gql`
     }
   }
 `;
+
+export const allFieldsQuery = gql`
+  query allFields {
+    all_fields {
+      id
+      translation
+      data_type
+      data_type_translation_gist_id
+    }
+  }
+`;
