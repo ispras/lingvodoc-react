@@ -180,13 +180,13 @@ class Columns extends React.Component {
     const { onChange } = this.props;
     this.setState({
       columns: [
+        ...this.state.columns,
         {
           id: uuid(),
           self_id: null,
           link_id: null,
           field_id: field.id,
         },
-        ...this.state.columns,
       ],
     }, () => onChange(this.state.columns));
   }

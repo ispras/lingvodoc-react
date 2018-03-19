@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { compose, pure } from 'recompose';
 import { graphql, gql } from 'react-apollo';
-import { isEqual } from 'lodash';
+import { isEqual, filter, flow } from 'lodash';
 import { Button } from 'semantic-ui-react';
 import { compositeIdToString } from 'utils/compositeId';
 
@@ -169,7 +169,13 @@ class Entities extends React.Component {
     const {
       perspectiveId, entry, column, columns, mode, entitiesMode, parentEntity,
     } = this.props;
-    const entities = entry.entities.filter(entity => isEqual(entity.field_id, column.id));
+
+    const filters = [
+      ens => ens.filter(entity => isEqual(entity.field_id, column.id)),
+      ens => (!parentEntity ? ens : ens.filter(e => isEqual(e.self_id, parentEntity.id))),
+    ];
+
+    const entities = flow(filters)(entry.entities);
 
     const Component = getComponent(column.data_type);
     if (column.data_type === 'Link' || column.data_type === 'Grouping Tag' || column.data_type === 'Directed Link') {

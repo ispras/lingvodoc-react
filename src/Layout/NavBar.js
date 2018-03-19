@@ -56,6 +56,9 @@ const Dashboard = (props) => {
         <Dropdown.Item as={Link} to="/dashboard/create_dictionary">
           Create dictionary
         </Dropdown.Item>
+        <Dropdown.Item as={Link} to="/dashboard/create_corpus">
+          Create corpus
+        </Dropdown.Item>
         <Dropdown.Item as={Link} to="/dashboard/dictionaries">
           Dictionaries
         </Dropdown.Item>

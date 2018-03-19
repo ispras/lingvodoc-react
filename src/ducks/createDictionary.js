@@ -14,7 +14,6 @@ function updateNextStep(step) {
       PARENT_LANGUAGE: 'TRANSLATIONS',
       TRANSLATIONS: 'PERSPECTIVES',
       PERSPECTIVES: 'FINISH',
-      // FIELDS: 'FINISH',
     }[step] || null
   );
 }
@@ -86,8 +85,6 @@ export const selectors = {
               perspective.get('translations').size > 0 &&
                 perspective.get('translations').every(translation => translation.get('content').length > 0))
         );
-      // case 'FIELDS':
-      //   return state.createDictionary.get('perspectives').size > 0;
       default:
         return false;
     }
