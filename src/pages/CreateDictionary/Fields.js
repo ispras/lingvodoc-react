@@ -1,42 +1,29 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { compose, onlyUpdateForKeys, pure } from 'recompose';
-import { isEqual, findIndex } from 'lodash';
-import { gql, graphql } from 'react-apollo';
+import { compose, branch, renderNothing } from 'recompose';
+import { isEqual } from 'lodash';
+import { graphql } from 'react-apollo';
 import { Button, List, Dropdown, Grid, Checkbox } from 'semantic-ui-react';
 import { compositeIdToString } from 'utils/compositeId';
+import { uuidv4 as uuid } from 'utils/uuid';
+
+import { allFieldsQuery } from './graphql';
 
 const NestedColumn = ({
   column, columns, fields, onChange,
 }) => {
-  const nested = columns.find(({ self_id: s }) => isEqual(column.id, s));
-  const selectedValue = nested ? compositeIdToString(nested.id) : '';
+  const nested = columns.find(({ self_id: s }) => column.id === s);
+
   const options = columns.filter(c => !isEqual(c.id, column.id)).map((c) => {
     const field = fields.find(f => isEqual(f.id, c.field_id));
-    return { text: field.translation, value: compositeIdToString(c.id) };
+    return { text: field.translation, value: c.id };
   });
-
-  // XXX: Temporary workaround
-  const getChangedField = (value) => {
-    const newColumn = columns.find(c => isEqual(compositeIdToString(c.id), value));
-    return [
-      {
-        ...newColumn,
-        self_id: column.id,
-      },
-      {
-        ...nested,
-        self_id: null,
-      },
-    ];
-  };
 
   return (
     <Dropdown
       selection
-      defaultValue={selectedValue}
       options={options}
-      onChange={(a, { value }) => onChange(getChangedField(value))}
+      onChange={(a, { value }) => onChange(value, nested ? nested.id : null)}
     />
   );
 };
@@ -48,7 +35,7 @@ NestedColumn.propTypes = {
   onChange: PropTypes.func.isRequired,
 };
 
-class C extends React.Component {
+class Column extends React.Component {
   constructor(props) {
     super(props);
     const { column, columns } = props;
@@ -62,15 +49,43 @@ class C extends React.Component {
   }
 
   onFieldChange(value) {
-
+    const { fields, onChange } = this.props;
+    const field = fields.find(f => compositeIdToString(f.id) === value);
+    if (field) {
+      this.setState(
+        {
+          field_id: field.id,
+        },
+        () => onChange(this.state)
+      );
+    }
   }
 
   onLinkChange(value) {
-
+    const { onChange } = this.props;
+    this.setState(
+      {
+        link_id: value,
+      },
+      () => onChange(this.state)
+    );
   }
 
-  onNestedChange(nested) {
+  onNestedChange(newNested, oldNested) {
 
+    const { onChange, column, columns } = this.props;
+    const nestedColumn = columns.find(c => c.id === newNested);
+    if (nestedColumn) {
+      nestedColumn.self_id = column.id;
+      onChange(nestedColumn);
+
+      // remove self_id from old column
+      if (oldNested) {
+        const oldColumn = columns.find(c => c.id === oldNested);
+        oldColumn.self_id = null;
+        onChange(oldColumn);
+      }
+    }
   }
 
   render() {
@@ -80,7 +95,7 @@ class C extends React.Component {
 
     const field = fields.find(f => isEqual(f.id, column.field_id));
     const options = fields.map(f => ({ text: f.translation, value: compositeIdToString(f.id) }));
-    const availablePerspectives = perspectives.map(p => ({ text: p.translation, value: compositeIdToString(p.id) }));
+    const availablePerspectives = perspectives.map(p => ({ text: p.index, value: p.index }));
     const currentField = compositeIdToString(field.id);
 
     return (
@@ -93,12 +108,7 @@ class C extends React.Component {
         />
         {field &&
           field.data_type === 'Link' && (
-            <Dropdown
-              selection
-              defaultValue={compositeIdToString(this.state.link_id)}
-              options={availablePerspectives}
-              onChange={(a, { value }) => this.onLinkChange(value)}
-            />
+            <Dropdown selection options={availablePerspectives} onChange={(a, { value }) => this.onLinkChange(value)} />
           )}
         {field &&
           field.data_type !== 'Link' &&
@@ -111,21 +121,20 @@ class C extends React.Component {
             />
           )}
         {this.state.hasNestedField && (
-          <NestedColumn column={column} columns={columns} fields={fields} onChange={d => this.onNestedChange(d)} />
+          <NestedColumn column={column} columns={columns} fields={fields} onChange={this.onNestedChange} />
         )}
       </span>
     );
   }
 }
 
-C.propTypes = {
+Column.propTypes = {
   column: PropTypes.object.isRequired,
   columns: PropTypes.array.isRequired,
   perspectives: PropTypes.array.isRequired,
   fields: PropTypes.array.isRequired,
+  onChange: PropTypes.func.isRequired,
 };
-
-const Column = compose(pure)(C);
 
 class Columns extends React.Component {
   constructor(props) {
@@ -133,16 +142,76 @@ class Columns extends React.Component {
     this.onChangePos = this.onChangePos.bind(this);
     this.onCreate = this.onCreate.bind(this);
     this.onRemove = this.onRemove.bind(this);
+    this.onChangeColumn = this.onChangeColumn.bind(this);
+
+    this.state = {
+      columns: [],
+    };
   }
 
-  onChangePos(column, columns, direction) {}
+  onChangePos(column, direction) {
+    const { columns } = this.state;
+    const { onChange } = this.props;
+    const index = columns.findIndex(c => c.id === column.id);
+    const swap = (i1, i2) => {
+      const c = columns.slice(0);
+      const v = c[i2];
+      c[i2] = c[i1];
+      c[i1] = v;
+      return c;
+    };
 
-  onCreate() {}
+    if (direction === 'up' && index > 0) {
+      const newIndex = index - 1;
+      this.setState({
+        columns: swap(index, newIndex),
+      }, onChange(this.state.columns));
+    }
 
-  onRemove(column) {}
+    if (direction === 'down' && index < columns.length - 1) {
+      const newIndex = index + 1;
+      this.setState({
+        columns: swap(index, newIndex),
+      }, onChange(this.state.columns));
+    }
+  }
+
+  onCreate(field) {
+    const { onChange } = this.props;
+    this.setState({
+      columns: [
+        ...this.state.columns,
+        {
+          id: uuid(),
+          self_id: null,
+          link_id: null,
+          field_id: field.id,
+        },
+      ],
+    }, () => onChange(this.state.columns));
+  }
+
+  onRemove(column) {
+    const { onChange } = this.props;
+    this.setState({
+      columns: this.state.columns.filter(c => c.id !== column.id),
+    }, () => onChange(this.state.columns));
+  }
+
+  onChangeColumn(column) {
+    const { onChange } = this.props;
+    const { columns } = this.state;
+    const index = columns.findIndex(c => c.id === column.id);
+    columns[index] = column;
+    this.setState({
+      columns,
+    }, () => onChange(this.state.columns));
+  }
 
   render() {
-    const { columns } = this.props;
+    const { perspectives, data: { all_fields: allFields } } = this.props;
+    const { columns } = this.state;
+ 
     return (
       <div>
         <List divided relaxed>
@@ -150,12 +219,18 @@ class Columns extends React.Component {
             <List.Item key={column.id}>
               <Grid centered columns={2}>
                 <Grid.Column width={11}>
-                  <Column column={column} columns={columns} fields={allFields} perspectives={perspectives} />
+                  <Column
+                    column={column}
+                    columns={columns}
+                    fields={allFields}
+                    perspectives={perspectives}
+                    onChange={this.onChangeColumn}
+                  />
                 </Grid.Column>
                 <Grid.Column width={1}>
                   <Button.Group icon>
-                    <Button basic icon="caret up" onClick={() => this.onChangePos(column, columns, 'up')} />
-                    <Button basic icon="caret down" onClick={() => this.onChangePos(column, columns, 'down')} />
+                    <Button basic icon="caret up" onClick={() => this.onChangePos(column, 'up')} />
+                    <Button basic icon="caret down" onClick={() => this.onChangePos(column, 'down')} />
                     <Button negative icon="cancel" onClick={() => this.onRemove(column)} />
                   </Button.Group>
                 </Grid.Column>
@@ -175,8 +250,11 @@ class Columns extends React.Component {
 }
 
 Columns.propTypes = {
-  perspectiveId: PropTypes.array.isRequired,
   perspectives: PropTypes.array.isRequired,
+  data: PropTypes.shape({
+    loading: PropTypes.bool.isRequired,
+  }).isRequired,
+  onChange: PropTypes.func.isRequired,
 };
 
-export default compose(pure)(Columns);
+export default compose(graphql(allFieldsQuery), branch(({ data }) => data.loading, renderNothing))(Columns);

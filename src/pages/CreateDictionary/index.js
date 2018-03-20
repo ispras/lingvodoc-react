@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { compose } from 'recompose';
+import { compose, withProps } from 'recompose';
 import { graphql } from 'react-apollo';
 import Immutable from 'immutable';
 import { Divider, Message, Button, Step, Header } from 'semantic-ui-react';
@@ -18,6 +18,7 @@ import Languages from 'components/Languages';
 import Translations from 'components/Translation';
 import Perspectives from './Perspectives';
 import { createDictionaryMutation } from './graphql';
+import { query as dashboardQuery } from 'pages/Dashboard';
 
 class CreateDictionaryWizard extends React.Component {
   constructor(props) {
@@ -48,7 +49,18 @@ class CreateDictionaryWizard extends React.Component {
       .toJS();
     const perspectives = p
       .map(ps => ({
-        translation_atoms: ps.get('translations').map(t => ({ locale_id: t.get('localeId'), content: t.get('content') })),
+        fake_id: ps.get('index'),
+        translation_atoms: ps
+          .get('translations')
+          .map(t => ({ locale_id: t.get('localeId'), content: t.get('content') })),
+        fields: ps
+          .get('fields')
+          .map(f => ({
+            fake_id: f.get('id'),
+            self_id: f.get('self_id'),
+            link_id: f.get('link_id'),
+            field_id: f.get('field_id'),
+          })),
       }))
       .toJS();
 
@@ -58,6 +70,15 @@ class CreateDictionaryWizard extends React.Component {
         dictionaryTranslations,
         perspectives,
       },
+      refetchQueries: [
+        {
+          query: dashboardQuery,
+          variables: {
+            mode: 0,
+            category: 0,
+          },
+        },
+      ],
     }).then(() => this.props.goToStep('FINISH'));
   }
 
@@ -67,7 +88,7 @@ class CreateDictionaryWizard extends React.Component {
 
   render() {
     const {
-      step, isNextStep, parentLanguage, translations, perspectives,
+      step, isNextStep, parentLanguage, translations, perspectives, mode,
     } = this.props;
     return (
       <div>
@@ -122,8 +143,10 @@ class CreateDictionaryWizard extends React.Component {
           {step === 'PERSPECTIVES' && (
             <div>
               <Header>Add one or perspectve</Header>
-              <Perspectives perspectives={perspectives} onChange={p => this.props.setPerspectives(p)} />
-              <Button fluid positive onClick={this.props.createPerspective}>Add perspective</Button>
+              <Perspectives perspectives={perspectives} onChange={p => this.props.setPerspectives(p)} mode={mode} />
+              <Button fluid positive onClick={this.props.createPerspective}>
+                Add perspective
+              </Button>
             </div>
           )}
 
@@ -135,11 +158,12 @@ class CreateDictionaryWizard extends React.Component {
           )}
         </div>
         <Divider />
-        {isNextStep && step === 'PERSPECTIVES' && (
-          <Button fluid inverted color="red" onClick={this.onCreateDictionary}>
-            Create dictionary
-          </Button>
-        )}
+        {isNextStep &&
+          step === 'PERSPECTIVES' && (
+            <Button fluid inverted color="red" onClick={this.onCreateDictionary}>
+              Create
+            </Button>
+          )}
         {isNextStep &&
           (step !== 'PERSPECTIVES' && step !== 'FINISH') && (
             <Button fluid inverted color="blue" onClick={this.onNextClick}>
@@ -163,6 +187,7 @@ CreateDictionaryWizard.propTypes = {
   createPerspective: PropTypes.func.isRequired,
   setPerspectives: PropTypes.func.isRequired,
   createDictionary: PropTypes.func.isRequired,
+  mode: PropTypes.string.isRequired,
 };
 
 function mapStateToProps(state) {
@@ -184,7 +209,15 @@ const mapDispatchToProps = {
   setPerspectives,
 };
 
-export default compose(
+export const CreateDictionary = compose(
   connect(mapStateToProps, mapDispatchToProps),
-  graphql(createDictionaryMutation, { name: 'createDictionary' })
+  graphql(createDictionaryMutation, { name: 'createDictionary' }),
+  withProps(() => ({ mode: 'dictionary' })),
+)(CreateDictionaryWizard);
+
+
+export const CreateCorpus = compose(
+  connect(mapStateToProps, mapDispatchToProps),
+  graphql(createDictionaryMutation, { name: 'createDictionary' }),
+  withProps(() => ({ mode: 'corpus' })),
 )(CreateDictionaryWizard);

@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import { Button, Dropdown, Modal, Input, Segment, Grid, Header } from 'semantic-ui-react';
 import { closeDictionaryPropertiesModal } from 'ducks/dictionaryProperties';
 import { isEqual } from 'lodash';
+import { compositeIdToString } from 'utils/compositeId';
 import Map from './Map';
 
 const query = gql`
@@ -63,15 +64,11 @@ class Properties extends React.Component {
   }
 
   componentWillReceiveProps(props) {
-    const {
-      data: {
-        error, loading, dictionary, user_blobs: allFiles,
-      },
-    } = props;
+    const { data: { error, loading, dictionary } } = props;
     if (!(loading && error)) {
       const {
         additional_metadata: {
-          authors, location, tag_list, blobs,
+          authors, location, tag_list: tagList, blobs,
         },
       } = dictionary;
       if (authors !== this.state.authors && authors !== null) {
@@ -85,18 +82,16 @@ class Properties extends React.Component {
         });
       }
 
-      const tags = tag_list.join(', ');
+      const tags = tagList.join(', ');
       if (tags !== this.state.tags) {
         this.setState({
           tags,
         });
       }
 
-      const files = blobs.map(id => allFiles.find(f => f.id === id));
-
-      if (!isEqual(this.state.files, files)) {
+      if (!isEqual(this.state.files, blobs)) {
         this.setState({
-          files,
+          files: blobs.map(compositeIdToString),
         });
       }
     }
@@ -149,8 +144,10 @@ class Properties extends React.Component {
   }
 
   onSaveFiles() {
+    const { data: { user_blobs: allFiles } } = this.props;
+    const ids = this.state.files.map(id => allFiles.find(f => id === compositeIdToString(f.id))).map(f => f.id);
     this.saveMeta({
-      blobs: this.state.files,
+      blobs: ids,
     });
   }
 
@@ -177,7 +174,7 @@ class Properties extends React.Component {
 
     const { translation } = dictionary;
 
-    const options = files.map(file => ({ key: file.id, text: file.name, value: file.id }));
+    const options = files.map(file => ({ key: file.id, text: file.name, value: compositeIdToString(file.id) }));
 
     return (
       <Modal open dimmer size="fullscreen">
