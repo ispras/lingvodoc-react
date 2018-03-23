@@ -48,22 +48,28 @@ class PhonologyModal extends React.Component {
   }
 
   handleCreate() {
-    const { perspectiveId, createPhonology } = this.props;
+    const { perspectiveId, createPhonology, data } = this.props;
+    const { all_fields: allFields } = data;
+    const field = allFields.find(f => compositeIdToString(f.id) === this.state.selectedFieldId);
+
     createPhonology({
       variables: {
         perspectiveId,
         groupByDescription: this.state.enabledGroup,
-        translationFieldId: this.state.selectedFieldId,
+        translationFieldId: field.id,
         firstTranslation: this.state.translationsMode === 'first',
         vowelSelection: this.state.vowelsMode === 'all',
         tiers: this.state.tiers,
       },
-    }).then(() => {
-      window.logger.suc('Phonology is being created. Check out tasks for details.');
-      this.props.closeModal();
-    }, () => {
-      window.logger.err('Failed to create phonology!');
-    });
+    }).then(
+      () => {
+        window.logger.suc('Phonology is being created. Check out tasks for details.');
+        this.props.closeModal();
+      },
+      () => {
+        window.logger.err('Failed to create phonology!');
+      }
+    );
   }
 
   render() {

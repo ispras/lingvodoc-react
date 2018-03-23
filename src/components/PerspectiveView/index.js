@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { compose, onlyUpdateForKeys, branch, renderNothing } from 'recompose';
+import { compose, onlyUpdateForKeys, branch, renderNothing, renderComponent } from 'recompose';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { gql, graphql } from 'react-apollo';
@@ -12,12 +12,14 @@ import TableHeader from './TableHeader';
 import TableBody from './TableBody';
 import Pagination from './Pagination';
 
+import Placeholder from './LoadingPlaceholder';
+
 const dimmerStyle = { minHeight: '600px' };
 
 const ROWS_PER_PAGE = 20;
 
 export const queryPerspective = gql`
-  query queryPerspective($id: LingvodocID!, $entitiesMode: String!) {
+  query queryPerspective1($id: LingvodocID!) {
     perspective(id: $id) {
       id
       translation
@@ -28,6 +30,21 @@ export const queryPerspective = gql`
         self_id
         position
       }
+    }
+    all_fields {
+      id
+      translation
+      data_type
+      data_type_translation_gist_id
+    }
+  }
+`;
+
+const queryLexicalEntries = gql`
+  query queryPerspective2($id: LingvodocID!, $entitiesMode: String!) {
+    perspective(id: $id) {
+      id
+      translation
       lexical_entries(mode: $entitiesMode) {
         id
         parent_id
@@ -49,12 +66,6 @@ export const queryPerspective = gql`
           }
         }
       }
-    }
-    all_fields {
-      id
-      translation
-      data_type
-      data_type_translation_gist_id
     }
   }
 `;
@@ -150,7 +161,7 @@ TableComponent.defaultProps = {
   onEntrySelect: () => {},
 };
 
-const PerspectiveView = ({
+const P = ({
   id,
   className,
   mode,
@@ -159,6 +170,8 @@ const PerspectiveView = ({
   data,
   filter,
   sortByField,
+  allFields,
+  columns,
   setSortByField: setSort,
   createLexicalEntry,
   mergeLexicalEntries,
@@ -169,7 +182,7 @@ const PerspectiveView = ({
   createdEntries,
   selectedEntries,
 }) => {
-  const { loading } = data;
+  const { loading, error } = data;
 
   if (loading) {
     return (
@@ -183,7 +196,7 @@ const PerspectiveView = ({
     );
   }
 
-  const { all_fields, perspective: { lexical_entries, columns } } = data;
+  const lexicalEntries = !error ? data.perspective.lexical_entries : []; 
 
   const addEntry = () => {
     createLexicalEntry({
@@ -275,8 +288,8 @@ const PerspectiveView = ({
     },
   ]);
 
-  const newEntries = processEntries(lexical_entries.filter(e => !!createdEntries.find(c => isEqual(e.id, c.id))));
-  const entries = processEntries(lexical_entries);
+  const newEntries = processEntries(lexicalEntries.filter(e => !!createdEntries.find(c => isEqual(e.id, c.id))));
+  const entries = processEntries(lexicalEntries);
 
   const pageEntries =
     entries.length > ROWS_PER_PAGE ? take(drop(entries, ROWS_PER_PAGE * (page - 1)), ROWS_PER_PAGE) : entries;
@@ -292,7 +305,7 @@ const PerspectiveView = ({
   //   ...field
   // }
   const fields = columns.map((column) => {
-    const field = find(all_fields, f => isEqual(column.field_id, f.id));
+    const field = find(allFields, f => isEqual(column.field_id, f.id));
     return {
       ...field,
       self_id: column.self_id,
@@ -344,7 +357,7 @@ const PerspectiveView = ({
   );
 };
 
-PerspectiveView.propTypes = {
+P.propTypes = {
   id: PropTypes.array.isRequired,
   className: PropTypes.string.isRequired,
   page: PropTypes.number.isRequired,
@@ -364,12 +377,12 @@ PerspectiveView.propTypes = {
   selectedEntries: PropTypes.array.isRequired,
 };
 
-PerspectiveView.defaultProps = {
+P.defaultProps = {
   filter: '',
   sortByField: null,
 };
 
-export default compose(
+const PerspectiveView = compose(
   connect(
     ({ data: { perspective: { sortByField, createdEntries, selectedEntries } } }) => ({
       sortByField,
@@ -390,11 +403,10 @@ export default compose(
   graphql(createLexicalEntryMutation, { name: 'createLexicalEntry' }),
   graphql(mergeLexicalEntriesMutation, { name: 'mergeLexicalEntries' }),
   graphql(removeLexicalEntriesMutation, { name: 'removeLexicalEntries' }),
-  graphql(queryPerspective, {
+  graphql(queryLexicalEntries, {
     options: { notifyOnNetworkStatusChange: true },
   }),
-  branch(({ data: { error } }) => !!error, renderNothing),
-)(PerspectiveView);
+)(P);
 
 export const queryLexicalEntry = gql`
   query queryLexicalEntry($perspectiveId: LingvodocID!) {
@@ -591,3 +603,47 @@ export const LexicalEntryViewByIds = compose(
     options: { notifyOnNetworkStatusChange: true },
   })
 )(LexicalEntryViewBaseByIds);
+
+const PerspectiveViewWrapper = ({
+  id, className, mode, entitiesMode, page, data, filter, sortByField,
+}) => {
+
+  const { all_fields: allFields, perspective: { columns } } = data;
+
+  return (
+    <PerspectiveView
+      id={id}
+      className={className}
+      mode={mode}
+      entitiesMode={entitiesMode}
+      page={page}
+      filter={filter}
+      sortByField={sortByField}
+      allFields={allFields}
+      columns={columns}
+    />
+  );
+};
+
+PerspectiveViewWrapper.propTypes = {
+  id: PropTypes.array.isRequired,
+  className: PropTypes.string.isRequired,
+  page: PropTypes.number.isRequired,
+  mode: PropTypes.string.isRequired,
+  entitiesMode: PropTypes.string.isRequired,
+  filter: PropTypes.string,
+  data: PropTypes.object.isRequired,
+  sortByField: PropTypes.object,
+};
+
+PerspectiveViewWrapper.defaultProps = {
+  filter: '',
+  sortByField: null,
+};
+
+export default compose(
+  graphql(queryPerspective, {
+    options: { notifyOnNetworkStatusChange: true },
+  }),
+  branch(({ data: { loading } }) => loading, renderComponent(Placeholder))
+)(PerspectiveViewWrapper);
