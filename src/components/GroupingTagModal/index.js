@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { compose, branch, renderNothing } from 'recompose';
+import { compose, branch, renderNothing, pure, shouldUpdate } from 'recompose';
 import { graphql } from 'react-apollo';
 import { Segment, Checkbox, Button, Modal, Tab } from 'semantic-ui-react';
 import { closeModal } from 'ducks/groupingTag';
@@ -404,6 +404,7 @@ GroupingTagModal.defaultProps = {
 };
 
 export default compose(
+  pure,
   connect(state => state.groupingTag, dispatch => bindActionCreators({ closeModal }, dispatch)),
   branch(({ visible }) => !visible, renderNothing),
   graphql(languageTreeSourceQuery),
