@@ -13,6 +13,7 @@ import Desktop from 'pages/Desktop';
 import NotFound from 'pages/NotFound';
 import { DictionaryDashboard, CorpusDashboard } from 'pages/Dashboard';
 import { CreateDictionary, CreateCorpus } from 'pages/CreateDictionary';
+import Grants from 'pages/Grants';
 
 import config from 'config';
 
@@ -26,6 +27,7 @@ const Routes = () => (
     <Route path="/dashboard/corpora" component={CorpusDashboard} />
     <Route path="/dashboard/create_dictionary" component={CreateDictionary} />
     <Route path="/dashboard/create_corpus" component={CreateCorpus} />
+    <Route path="/grants" component={Grants} />
     <Route path="/map" component={Map} />
     <Route path="/map_search" component={Search} />
     <Route path="/import" component={DictImport} />
