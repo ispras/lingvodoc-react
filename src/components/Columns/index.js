@@ -236,7 +236,7 @@ class C extends React.Component {
           field.data_type === 'Link' && (
             <Dropdown
               selection
-              defaultValue={compositeIdToString(this.state.link_id)}
+              defaultValue={this.state.link_id ? compositeIdToString(this.state.link_id) : null}
               options={availablePerspectives}
               onChange={(a, { value }) => this.onLinkChange(value)}
             />
