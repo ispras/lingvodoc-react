@@ -1,18 +1,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { compose, onlyUpdateForKeys, branch, renderNothing, renderComponent } from 'recompose';
+import { compose, onlyUpdateForKeys, branch, renderComponent } from 'recompose';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { gql, graphql } from 'react-apollo';
 import { isEqual, find, take, drop, flow, sortBy, reverse } from 'lodash';
 import { Table, Dimmer, Header, Icon, Button } from 'semantic-ui-react';
 import { setSortByField, addLexicalEntry, selectLexicalEntry, resetEntriesSelection } from 'ducks/perspective';
+import Placeholder from 'components/Placeholder';
 
 import TableHeader from './TableHeader';
 import TableBody from './TableBody';
 import Pagination from './Pagination';
 
-import Placeholder from './LoadingPlaceholder';
 
 const dimmerStyle = { minHeight: '600px' };
 
