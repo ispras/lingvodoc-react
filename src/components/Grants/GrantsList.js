@@ -25,7 +25,7 @@ class GrantsList extends React.Component {
   }
 
   isOwner(grant) {
-    const { user } = this.data;
+    const { data: { user } } = this.props;
     return !!grant.owners.find(u => user.id === u.id);
   }
 
@@ -65,8 +65,8 @@ class GrantsList extends React.Component {
                 <Table.Cell>e</Table.Cell>
                 <Table.Cell>{grant.owners.map(owner => <div key={owner.id}>{owner.name}</div>)}</Table.Cell>
                 <Table.Cell>
-                  {this.isOwner(grant) && (
-                    <Button basic onClick={() => this.joinGrant(grant)}>
+                  {!this.isOwner(grant) && (
+                    <Button positive onClick={() => this.joinGrant(grant)}>
                       Join
                     </Button>
                   )}
