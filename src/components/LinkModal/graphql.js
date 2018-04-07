@@ -5,13 +5,13 @@ export const createMutation = gql`
     $parent_id: LingvodocID!
     $field_id: LingvodocID!
     $linkId: LingvodocID!
-    $perspectiveLinkId: LingvodocID!
+    $linkPerspectiveId: LingvodocID!
   ) {
     create_entity(
       parent_id: $parent_id
       field_id: $field_id
       link_id: $linkId
-      perspective_link_id: $perspectiveLinkId
+      link_perspective_id: $linkPerspectiveId
     ) {
       triumph
     }
