@@ -55,7 +55,7 @@ class PhonologyModal extends React.Component {
         groupByDescription: this.state.enabledGroup,
         translationFieldId: this.state.selectedFieldId,
         firstTranslation: this.state.translationsMode === 'first',
-        vowelSelection: this.state.vowelsMode === 'all',
+        vowelSelection: this.state.vowelsMode === 'longest',
         tiers: this.state.tiers,
       },
     }).then(() => {
