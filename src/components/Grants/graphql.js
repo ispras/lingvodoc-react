@@ -31,3 +31,23 @@ export const createGrantPermissionMutation = gql`
     }
   }
 `;
+
+export const getUserRequestsQuery = gql`
+query userRequests {
+  userrequests {
+    id
+    created_at
+    type
+    sender_id
+    recipient_id
+    broadcast_uuid
+    message
+    subject {
+      grant_id
+      user_id
+      org_id
+      dictionary_id
+    }
+  }
+}
+`;

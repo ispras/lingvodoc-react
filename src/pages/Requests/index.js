@@ -6,14 +6,14 @@ import { graphql } from 'react-apollo';
 import Immutable, { fromJS } from 'immutable';
 import { Divider, Message, Button, Step, Header } from 'semantic-ui-react';
 
-import GrantsList from 'components/Grants/GrantsList';
+import Requests from 'components/Grants/Requests';
 
-class Grants extends React.Component {
+class UserRequests extends React.Component {
   render() {
-    return <GrantsList />;
+    return <Requests />;
   }
 }
 
-Grants.propTypes = {};
+UserRequests.propTypes = {};
 
-export default Grants;
+export default UserRequests;
