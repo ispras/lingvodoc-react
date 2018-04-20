@@ -1,14 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { compose, branch, renderNothing } from 'recompose';
-import { graphql, gql } from 'react-apollo';
-import { Checkbox, Button, Modal, Divider, List, Select } from 'semantic-ui-react';
+import { graphql, gql, withApollo } from 'react-apollo';
+import { Button, Checkbox, Divider, Input, List, Modal, Select } from 'semantic-ui-react';
 import { closeModal } from 'ducks/phonology';
 import { bindActionCreators } from 'redux';
 import { isEqual, map } from 'lodash';
 import { connect } from 'react-redux';
 import { compositeIdToString } from 'utils/compositeId';
-import { perspectiveColumnsQuery, createPhonologyMutation } from './graphql';
+import { perspectiveColumnsQuery, phonologyTierListQuery, phonologySkipListQuery, createPhonologyMutation } from './graphql';
+
+const DEFAULT_CHART_THRESHOLD = 8;
 
 class PhonologyModal extends React.Component {
   constructor(props) {
@@ -16,15 +18,30 @@ class PhonologyModal extends React.Component {
     this.state = {
       vowelsMode: 'all',
       translationsMode: 'all',
+      enabledGroup: false,
+      chartThreshold: DEFAULT_CHART_THRESHOLD,
+      tierList: [],
+      loadedTiers: false,
       enabledTiers: false,
       tiers: [],
-      enabledGroup: false,
+      loadedKeepJoin: false,
+      keepList: [],
+      enabledKeep: false,
+      selectedKeepList: [],
+      joinList: [],
+      enabledJoin: false,
+      selectedJoinList: [],
     };
 
     this.handleVowelsChange = this.handleVowelsChange.bind(this);
     this.handleTranslationsChange = this.handleTranslationsChange.bind(this);
     this.handleEnableTier = this.handleEnableTier.bind(this);
+    this.handleSelectKeep = this.handleSelectKeep.bind(this);
+    this.handleSelectJoin = this.handleSelectJoin.bind(this);
     this.handleCreate = this.handleCreate.bind(this);
+
+    this.getTierList = this.getTierList.bind(this);
+    this.getKeepJoinList = this.getKeepJoinList.bind(this);
   }
 
   handleVowelsChange(e, { value: vowelsMode }) {
@@ -33,6 +50,51 @@ class PhonologyModal extends React.Component {
 
   handleTranslationsChange(e, { value: translationsMode }) {
     this.setState({ translationsMode });
+  }
+
+  /* Loads list of perspective tiers, asynchronously. */
+  async getTierList()
+  {
+    const { perspectiveId, client } = this.props;
+
+    const { data } = await client.query({
+      query: phonologyTierListQuery,
+      variables: { perspectiveId },
+    });
+
+    if (data)
+    {
+      const { phonology_tier_list: { tier_count, total_count }} = data;
+
+      /* Getting markup tiers with their occurence counts, sorting them in alphabetical order. */
+
+      var tier_list = map(tier_count, (count, tier) => [tier, count]);
+
+      tier_list.sort((a, b) =>
+        {
+          if (a[0].toLowerCase() < b[0].toLowerCase())
+            return -1;
+          if (a[0].toLowerCase() > b[0].toLowerCase())
+            return 1;
+
+          if (a[0] < b[0])
+            return -1;
+          if (a[0] > b[0])
+            return 1;
+
+          return 0;
+        });
+
+      this.setState({ loadedTiers: true, tierList: tier_list });
+    }
+  }
+
+  handleTiersChange(enabled)
+  {
+    this.setState({ enabledTiers: enabled });
+
+    if (!this.state.loadedTiers)
+      this.getTierList();
   }
 
   handleEnableTier(tier, enable) {
@@ -47,6 +109,69 @@ class PhonologyModal extends React.Component {
     }
   }
 
+  /* Loads lists of skipped and adjacent markup characters, asynchronously. */
+  async getKeepJoinList()
+  {
+    const { perspectiveId, client } = this.props;
+
+    const { data } = await client.query({
+      query: phonologySkipListQuery,
+      variables: { perspectiveId },
+    });
+
+    if (data)
+    {
+      const { phonology_skip_list: { neighbour_list, skip_list }} = data;
+
+      this.setState({
+        loadedKeepJoin: true,
+        keepList: skip_list,
+        joinList: neighbour_list, });
+    }
+  }
+
+  handleKeepChange(enabled)
+  {
+    this.setState({ enabledKeep: enabled });
+
+    if (!this.state.loadedKeepJoin)
+      this.getKeepJoinList();
+  }
+
+  handleJoinChange(enabled)
+  {
+    this.setState({ enabledJoin: enabled });
+
+    if (!this.state.loadedKeepJoin)
+      this.getKeepJoinList();
+  }
+
+  handleSelectKeep(ord, enable)
+  {
+    if (!enable) {
+      this.setState({
+        selectedKeepList: this.state.selectedKeepList.filter(t => t !== ord),
+      });
+    } else {
+      this.setState({
+        selectedKeepList: [ord, ...this.state.selectedKeepList],
+      });
+    }
+  }
+
+  handleSelectJoin(ord, enable)
+  {
+    if (!enable) {
+      this.setState({
+        selectedJoinList: this.state.selectedJoinList.filter(t => t !== ord),
+      });
+    } else {
+      this.setState({
+        selectedJoinList: [ord, ...this.state.selectedJoinList],
+      });
+    }
+  }
+
   handleCreate() {
     const { perspectiveId, createPhonology } = this.props;
     createPhonology({
@@ -57,6 +182,9 @@ class PhonologyModal extends React.Component {
         firstTranslation: this.state.translationsMode === 'first',
         vowelSelection: this.state.vowelsMode === 'longest',
         tiers: this.state.tiers,
+        chartThreshold: this.state.chartThreshold,
+        keepList: this.state.selectedKeepList,
+        joinList: this.state.selectedJoinList,
       },
     }).then(() => {
       window.logger.suc('Phonology is being created. Check out tasks for details.');
@@ -68,11 +196,8 @@ class PhonologyModal extends React.Component {
 
   render() {
     const { data } = this.props;
-    const {
-      perspective: { columns },
-      all_fields: allFields,
-      phonology_tier_list: { tier_count: tiers, total_count: tiersCount },
-    } = data;
+    const { perspective: { columns }, all_fields: allFields, } = data;
+
     const textFields = allFields
       .filter(f => f.data_type === 'Text')
       .filter(f => !!columns.find(c => isEqual(f.id, c.field_id)));
@@ -112,32 +237,6 @@ class PhonologyModal extends React.Component {
               </List.Item>
             </List>
 
-            {tiersCount > 0 && (
-              <div>
-                <Checkbox
-                  label="Choose markup tiers"
-                  checked={this.state.enabledTiers}
-                  onChange={(e, { checked }) => this.setState({ enabledTiers: checked })}
-                />
-
-                {this.state.enabledTiers && (
-                  <List>
-                    {map(tiers, (count, tier) => (
-                      <List.Item key={tier}>
-                        <Checkbox
-                          label={`Tier ${tier} (present at ${parseFloat(count / tiersCount * 100).toFixed(2)}% of markup records)`}
-                          checked={this.state.tiers.indexOf(tier) >= 0}
-                          onChange={(e, { checked }) => this.handleEnableTier(tier, checked)}
-                        />
-                      </List.Item>
-                    ))}
-                  </List>
-                )}
-              </div>
-            )}
-
-            <Divider />
-
             <div>
               <Select
                 placeholder="Translation field"
@@ -170,11 +269,134 @@ class PhonologyModal extends React.Component {
               </List.Item>
             </List>
 
-            <Checkbox
-              label="Group phonology data by markup descriptions."
-              checked={this.state.enabledGroup}
-              onChange={(e, { checked }) => this.setState({ enabledGroup: checked })}
-            />
+            <List>
+              <List.Item>
+                <Checkbox
+                  label="Group phonology data by markup descriptions."
+                  checked={this.state.enabledGroup}
+                  onChange={(e, { checked }) => this.setState({ enabledGroup: checked })}
+                />
+              </List.Item>
+            </List>
+
+            <List>
+              <List.Item>
+                <Input
+                  label="Formant chart threshold"
+                  value={this.state.chartThreshold}
+                  onChange={(e, { value }) => this.setState({
+                    chartThreshold: parseInt(value) || DEFAULT_CHART_THRESHOLD })}
+                />
+              </List.Item>
+            </List>
+
+            <List>
+              <List.Item>
+                <Checkbox
+                  label="Choose markup tiers"
+                  checked={this.state.enabledTiers}
+                  onChange={(e, { checked }) => this.handleTiersChange(checked)}
+                />
+
+                {this.state.enabledTiers && !this.state.loadedTiers && (
+                  <div style={{marginLeft: '1.5em'}}>
+                    <List>
+                      <List.Item>
+                        Loading tier data...
+                      </List.Item>
+                    </List>
+                  </div>
+                )}
+
+                {this.state.enabledTiers && this.state.tierList.length > 0 && (
+                  <div style={{marginLeft: '1.5em'}}>
+                    <List>
+                      {map(this.state.tierList, ([tier, count]) => (
+                        <List.Item key={tier}>
+                          <Checkbox
+                            label={`Tier "${tier}" (present at ${parseFloat(count / this.state.tierList.length * 100).toFixed(2)}% of markup records)`}
+                            checked={this.state.tiers.indexOf(tier) >= 0}
+                            onChange={(e, { checked }) => this.handleEnableTier(tier, checked)}
+                          />
+                        </List.Item>
+                      ))}
+                    </List>
+                  </div>
+                )}
+              </List.Item>
+            </List>
+
+            <List>
+              <List.Item>
+                <Checkbox
+                  label="Keep skipped vowel interval characters"
+                  checked={this.state.enabledKeep}
+                  onChange={(e, { checked }) => this.handleKeepChange(checked)}
+                />
+
+                {this.state.enabledKeep && !this.state.loadedKeepJoin && (
+                  <div style={{marginLeft: '1.5em'}}>
+                    <List>
+                      <List.Item>
+                        Loading skipped character data...
+                      </List.Item>
+                    </List>
+                  </div>
+                )}
+
+                {this.state.enabledKeep && this.state.keepList.length > 0 && (
+                  <div style={{marginLeft: '1.5em'}}>
+                    <List>
+                      {map(this.state.keepList, ([ord, count, str, name]) => (
+                        <List.Item key={ord}>
+                          <Checkbox
+                            label={`"${str}" U+${ord.toString(16).padStart(4, '0')} ${name}`}
+                            checked={this.state.selectedKeepList.indexOf(ord) >= 0}
+                            onChange={(e, { checked }) => this.handleSelectKeep(ord, checked)}
+                          />
+                        </List.Item>
+                      ))}
+                    </List>
+                  </div>
+                )}
+              </List.Item>
+            </List>
+
+            <List>
+              <List.Item>
+                <Checkbox
+                  label="Combine with adjacent interval characters"
+                  checked={this.state.enabledJoin}
+                  onChange={(e, { checked }) => this.handleJoinChange(checked)}
+                />
+
+                {this.state.enabledJoin && !this.state.loadedKeepJoin && (
+                  <div style={{marginLeft: '1.5em'}}>
+                    <List>
+                      <List.Item>
+                        Loading adjacent character data...
+                      </List.Item>
+                    </List>
+                  </div>
+                )}
+
+                {this.state.enabledJoin && this.state.joinList.length > 0 && (
+                  <div style={{marginLeft: '1.5em'}}>
+                    <List>
+                      {map(this.state.joinList, ([ord, count, str, name]) => (
+                        <List.Item key={ord}>
+                          <Checkbox
+                            label={`"${str}" U+${ord.toString(16).padStart(4, '0')} ${name}`}
+                            checked={this.state.selectedJoinList.indexOf(ord) >= 0}
+                            onChange={(e, { checked }) => this.handleSelectJoin(ord, checked)}
+                          />
+                        </List.Item>
+                      ))}
+                    </List>
+                  </div>
+                )}
+              </List.Item>
+            </List>
           </Modal.Content>
 
           <Modal.Actions>
@@ -201,5 +423,6 @@ export default compose(
   branch(({ visible }) => !visible, renderNothing),
   graphql(perspectiveColumnsQuery),
   graphql(createPhonologyMutation, { name: 'createPhonology' }),
-  branch(({ data }) => data.loading, renderNothing)
+  branch(({ data }) => data.loading, renderNothing),
+  withApollo
 )(PhonologyModal);
