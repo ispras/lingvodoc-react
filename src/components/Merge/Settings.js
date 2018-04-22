@@ -267,11 +267,13 @@ class MergeSettings extends React.Component {
             </Container>
           )}
 
-          <Input
-            label="Entity matching threshold"
-            value={threshold}
-            onChange={(e, { value }) => dispatch({ type: 'SET_THRESHOLD', payload: value })}
-          />
+          {mode === 'simple' && (
+            <Input
+              label="Entity matching threshold"
+              value={threshold}
+              onChange={(e, { value }) => dispatch({ type: 'SET_THRESHOLD', payload: value })}
+            />
+          )}
 
           <Container textAlign="center">
             <Button positive content="View suggestions" onClick={this.getSuggestions} />
