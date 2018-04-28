@@ -46,6 +46,8 @@ window.logger = bindActionCreators(
   store.dispatch
 );
 
+window.dispatch = store.dispatch;
+
 const dest = document.getElementById('root');
 
 function render() {
