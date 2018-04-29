@@ -60,10 +60,25 @@ function modal(state = '', action = {}) {
   }
 }
 
+function signin_info(state = null, action = {})
+{
+  switch (action.type) {
+    case signInForm.REQUEST:
+      return null;
+    case signInForm.SUCCESS:
+      return null;
+    case signInForm.FAILURE:
+      return 'Signin failure. Either no such login/password combination exists, or this user account has been deactivated.';
+    default:
+      return state;
+  }
+};
+
 export default combineReducers({
   user,
   loading,
   modal,
+  signin_info,
 });
 
 // Action Creators
