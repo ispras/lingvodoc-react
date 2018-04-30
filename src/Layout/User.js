@@ -53,7 +53,7 @@ const Signed = ({ user, modal, signOut, launchEditForm, launchBanForm, closeForm
       <Dropdown.Item as="a" onClick={signOut}>Sign out</Dropdown.Item>
 
       {user.id == 1 && (
-        <Dropdown.Item onClick={openModal}>Deactivate user account</Dropdown.Item>
+        <Dropdown.Item onClick={openModal}>User account activation/deactivation</Dropdown.Item>
       )}
     </Dropdown.Menu>
   </Dropdown>;

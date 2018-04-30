@@ -7,6 +7,7 @@ import { bindActionCreators } from 'redux';
 import { reduxForm } from 'redux-form';
 import { Button, Dropdown, Form, Icon, List, Message, Modal } from 'semantic-ui-react';
 import { connect } from 'react-redux';
+import { sortBy } from 'lodash';
 
 const queryUsers = gql`
   query Users {
@@ -15,14 +16,15 @@ const queryUsers = gql`
       name
       login
       intl_name
+      email
       is_active
     }
   }
 `;
 
-const deactivateUserMutation = gql`
-  mutation deactivateUser($userId: Int!) {
-    deactivate_user(user_id: $userId) { triumph } }
+const activateDeactivateUserMutation = gql`
+  mutation activateDeactivateUser($userId: Int!, $isActive: Boolean!) {
+    activate_deactivate_user(user_id: $userId, is_active: $isActive) { triumph } }
 `;
 
 class BanModal extends React.Component
@@ -30,19 +32,24 @@ class BanModal extends React.Component
   constructor(props)
   {
     super(props);
-    this.state = { selected_id: null };
-    this.handleBan = this.handleBan.bind(this);
+    this.state = { selected_user: null };
+    this.handleActivateDeactivate = this.handleActivateDeactivate.bind(this);
   }
 
-  handleBan()
+  handleActivateDeactivate()
   {
-    if (this.state.selected_id === null)
+    if (this.state.selected_user === null)
       return;
 
-    this.props.deactivateUser({
-      variables: { userId: this.state.selected_id }
+    const { refetch } = this.props.data;
+
+    this.props.activateDeactivateUser({
+      variables: {
+        userId: this.state.selected_user.id,
+        isActive: !this.state.selected_user.is_active }
     }).then(() => {
       this.props.closeModal();
+      refetch();
     }, () => {
       window.logger.err('Failed to ban user!');
     });
@@ -50,45 +57,53 @@ class BanModal extends React.Component
 
   render()
   {
-    const { data } = this.props;
-        
-    if (data.loading)
-      return null;
+    const { users } = this.props.data;
 
-    const { users } = data;
+    const user_list = 
+      sortBy(users.filter(user => user.id != 1),
+        user => [user.login, user.name, user.intl_name, user.email]);
 
-    const user_selection = users
-      .filter(user => user.id != 1 && user.is_active)
-      .map(user => ({
+    const user_map = new Map(user_list.map(user => [user.id, user]))
+
+    const user_selection =
+      user_list.map(user => ({
         key: user.id,
         value: user.id,
-        text: user.login +
-          (user.intl_name !== user.login ? ' ' + user.intl_name : '') +
-          ` (${user.name})`,
-        icon: 'user'}))
+        text:
+          "'" + user.login + "'" +
+          ` (${user.name}${user.intl_name !== user.login ? ', ' + user.intl_name : ''})` +
+          ' ' + user.email +
+          ` [${user.is_active ? 'active' : 'inactive'}]`,
+        icon: 'user'}));
 
     return (
       <div>
         <Modal dimmer open size="small">
-          <Modal.Header>Deactivate user account</Modal.Header>
+          <Modal.Header>User account activation/deactivation</Modal.Header>
           <Modal.Content>
-            <Dropdown
-              placeholder="Select user"
-              search
-              selection
-              options={user_selection}
-              onChange={(event, data) => this.setState({ selected_id: data.value })}
-            />
+            <div style={{width: '80%'}}>
+              <Dropdown
+                fluid
+                placeholder="Select user"
+                search
+                selection
+                options={user_selection}
+                onChange={(event, data) =>
+                  this.setState({ selected_user: user_map.get(data.value) })}
+              />
+            </div>
           </Modal.Content>
 
           <Modal.Actions>
             <Button
               icon="checkmark"
               basic
-              disabled={this.state.selected_id === null}
+              disabled={this.state.selected_user === null}
               color="purple"
-              content="Deactivate"
-              onClick={this.handleBan} />
+              content={
+                this.state.selected_user === null ? "Activate / Deactivate" :
+                this.state.selected_user.is_active ? "Deactivate" : "Activate"}
+              onClick={this.handleActivateDeactivate} />
             <Button
               icon="remove"
               basic
@@ -107,13 +122,13 @@ BanModal.propTypes = {
     users: PropTypes.array,
   }).isRequired,
   closeModal: PropTypes.func.isRequired,
-  deactivateUser: PropTypes.func.isRequired,
+  activateDeactivateUser: PropTypes.func.isRequired,
 };
 
 export default compose(
   connect(state => state.ban, dispatch => bindActionCreators({ closeModal }, dispatch)),
   graphql(queryUsers),
-  graphql(deactivateUserMutation, { name: 'deactivateUser' }),
+  graphql(activateDeactivateUserMutation, { name: 'activateDeactivateUser' }),
   branch(({ visible }) => !visible, renderNothing),
   branch(({ data }) => data.loading, renderNothing),
 )(BanModal);
