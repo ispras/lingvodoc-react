@@ -53,7 +53,8 @@ export const createPhonologyMutation = gql`
     $tiers: [String]!,
     $chartThreshold: Int!,
     $keepList: [Int]!,
-    $joinList: [Int]!) {
+    $joinList: [Int]!,
+    $generateCsv: Boolean!) {
       phonology(perspective_id: $perspectiveId,
         vowel_selection: $vowelSelection,
         group_by_description: $groupByDescription,
@@ -62,7 +63,8 @@ export const createPhonologyMutation = gql`
         maybe_tier_list: $tiers,
         chart_threshold: $chartThreshold,
         keep_list: $keepList,
-        join_list: $joinList) {
+        join_list: $joinList,
+        generate_csv: $generateCsv) {
         triumph
       }
   }

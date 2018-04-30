@@ -20,6 +20,7 @@ class PhonologyModal extends React.Component {
       translationsMode: 'all',
       enabledGroup: false,
       chartThreshold: DEFAULT_CHART_THRESHOLD,
+      enabledCsv: false,
       tierList: [],
       loadedTiers: false,
       enabledTiers: false,
@@ -185,6 +186,7 @@ class PhonologyModal extends React.Component {
         chartThreshold: this.state.chartThreshold,
         keepList: this.state.selectedKeepList,
         joinList: this.state.selectedJoinList,
+        generateCsv: this.state.enabledCsv,
       },
     }).then(() => {
       window.logger.suc('Phonology is being created. Check out tasks for details.');
@@ -286,6 +288,16 @@ class PhonologyModal extends React.Component {
                   value={this.state.chartThreshold}
                   onChange={(e, { value }) => this.setState({
                     chartThreshold: parseInt(value) || DEFAULT_CHART_THRESHOLD })}
+                />
+              </List.Item>
+            </List>
+
+            <List>
+              <List.Item>
+                <Checkbox
+                  label="Export phonology data to a CSV file."
+                  checked={this.state.enabledCsv}
+                  onChange={(e, { checked }) => this.setState({ enabledCsv: checked })}
                 />
               </List.Item>
             </List>
