@@ -50,7 +50,10 @@ const Signed = ({ user, modal, signOut, launchEditForm, launchBanForm, closeForm
       />
 
       <Dropdown.Item as={Link} to="/files">My files</Dropdown.Item>
+      <Dropdown.Item as={Link} to="/grants">Grants</Dropdown.Item>
+      <Dropdown.Item as={Link} to="/requests">Requests</Dropdown.Item>
       <Dropdown.Item as="a" onClick={signOut}>Sign out</Dropdown.Item>
+
 
       {user.id == 1 && (
         <Dropdown.Item onClick={openModal}>User account activation/deactivation</Dropdown.Item>
