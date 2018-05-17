@@ -1,6 +1,7 @@
 import React from 'react';
 import { signInForm } from 'ducks/user';
 import FormModal from 'components/FormModal';
+import { connect } from 'react-redux';
 
 const SIGN_IN_FIELDS = [
   {
@@ -24,4 +25,4 @@ const SignInModal = props =>
     {...props}
   />;
 
-export default SignInModal;
+export default connect(state => ({ message: state.user.signin_info }))(SignInModal);

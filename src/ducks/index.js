@@ -21,6 +21,7 @@ import createDictionary from './createDictionary';
 import phonology from './phonology';
 import apolloClient from './apolloClient';
 import statistics from './statistics';
+import ban from './ban';
 
 export default {
   locale,
@@ -46,4 +47,5 @@ export default {
   phonology,
   apolloClient,
   statistics,
+  ban,
 };

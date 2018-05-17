@@ -43,6 +43,7 @@ function FormModal(props) {
     error,
     reset,
     handleClose,
+    message,
   } = props;
 
   const close = () => reset() && handleClose();
@@ -64,6 +65,9 @@ function FormModal(props) {
           }
           <Message visible={!!error} error>
             <Icon name="remove" /> {error}
+          </Message>
+          <Message visible={!!message} error>
+            {message}
           </Message>
           <Button basic color="red" type="button" onClick={close}>
             <Icon name="remove" /> Close

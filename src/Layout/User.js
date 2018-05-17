@@ -7,10 +7,12 @@ import { isEmpty } from 'lodash';
 import { Dropdown } from 'semantic-ui-react';
 
 import * as userActions from 'ducks/user';
+import { openModal } from 'ducks/ban';
 
 import SignInModal from 'components/SignInModal';
 import SignUpModal from 'components/SignUpModal';
 import EditUserModal from 'components/EditUserModal';
+import BanModal from 'components/BanModal';
 
 const TITLE = 'User';
 
@@ -37,17 +39,22 @@ Anonymous.propTypes = {
   closeForm: PropTypes.func.isRequired,
 };
 
-const Signed = ({ user, modal, signOut, launchEditForm, closeForm }) =>
+const Signed = ({ user, modal, signOut, launchEditForm, launchBanForm, closeForm, openModal }) =>
   <Dropdown item text={user.name}>
     <Dropdown.Menu>
       <EditUserModal
-        trigger={<Dropdown.Item as="a" onClick={launchEditForm}>Edit Profile</Dropdown.Item>}
+        trigger={<Dropdown.Item as="a" onClick={launchEditForm}>Edit profile</Dropdown.Item>}
         user={user}
         open={modal === 'edit'}
         handleClose={closeForm}
       />
+
       <Dropdown.Item as={Link} to="/files">My files</Dropdown.Item>
       <Dropdown.Item as="a" onClick={signOut}>Sign out</Dropdown.Item>
+
+      {user.id == 1 && (
+        <Dropdown.Item onClick={openModal}>User account activation/deactivation</Dropdown.Item>
+      )}
     </Dropdown.Menu>
   </Dropdown>;
 
@@ -77,5 +84,6 @@ export default connect(
     launchEditForm: userActions.launchEditForm,
     closeForm: userActions.closeForm,
     signOut: userActions.signOut,
+    openModal,
   },
 )(UserDropdown);

@@ -13,6 +13,9 @@ export const signUpForm = createFormAction('@user/signup');
 export const LAUNCH_EDIT_FORM = '@user/LAUNCH_EDIT_FORM';
 export const editForm = createFormAction('@user/edit');
 
+export const LAUNCH_BAN_FORM = '@user/LAUNCH_BAN_FORM';
+export const banForm = createFormAction('@user/ban');
+
 export const SIGN_OUT = '@user/SIGN_OUT';
 export const CLOSE_FORM = '@user/CLOSE_FORM';
 
@@ -45,6 +48,8 @@ function modal(state = '', action = {}) {
       return 'signup';
     case LAUNCH_EDIT_FORM:
       return 'edit';
+    case LAUNCH_BAN_FORM:
+      return 'ban';
     case signInForm.SUCCESS:
     case signUpForm.SUCCESS:
     case editForm.SUCCESS:
@@ -55,10 +60,25 @@ function modal(state = '', action = {}) {
   }
 }
 
+function signin_info(state = null, action = {})
+{
+  switch (action.type) {
+    case signInForm.REQUEST:
+      return null;
+    case signInForm.SUCCESS:
+      return null;
+    case signInForm.FAILURE:
+      return 'Signin failure. Either no such login/password combination exists, or this user account has been deactivated.';
+    default:
+      return state;
+  }
+};
+
 export default combineReducers({
   user,
   loading,
   modal,
+  signin_info,
 });
 
 // Action Creators
@@ -76,6 +96,10 @@ export function launchSignUpForm() {
 
 export function launchEditForm() {
   return { type: LAUNCH_EDIT_FORM };
+}
+
+export function launchBanForm() {
+  return { type: LAUNCH_BAN_FORM };
 }
 
 export function closeForm() {

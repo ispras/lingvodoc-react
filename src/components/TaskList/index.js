@@ -21,9 +21,9 @@ function Task(props) {
   } = props;
 
   const links = result_link_list.map(link => (
-    <a href={link} key={link}>
-      {link}
-    </a>
+    <div key={link}>
+      <a href={link} key={link}>{link}</a>
+    </div>
   ));
 
   return (
