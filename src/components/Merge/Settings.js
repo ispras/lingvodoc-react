@@ -7,7 +7,7 @@ import { isEqual, take, drop } from 'lodash';
 import { Header, Dropdown, List, Input, Button, Checkbox, Container, Segment, Divider } from 'semantic-ui-react';
 import styled from 'styled-components';
 
-import { queryPerspective, LexicalEntryView } from 'components/PerspectiveView';
+import { queryPerspective, queryLexicalEntries, LexicalEntryView } from 'components/PerspectiveView';
 import Pagination from './Pagination';
 
 const ROWS_PER_PAGE = 10;
@@ -66,8 +66,13 @@ class MergeSettings extends React.Component {
   }
 
   async getSuggestions() {
+
     const {
-      id, settings, client, data: { perspective: { lexical_entries: entries } }, dispatch,
+      id, settings, client, dispatch,
+    } = this.props;
+
+    const {
+      dataLexicalEntries: { perspective: { lexical_entries: entries } },
     } = this.props;
 
     const algorithm = settings.get('mode');
@@ -234,7 +239,7 @@ class MergeSettings extends React.Component {
                     <List.Item>
                       <Input
                         label="Levenshtein distance limit for entity content matching"
-                        value={e.levenshtein}
+                        value={Math.round(e.levenshtein) == e.levenshtein ? e.levenshtein.toString() + ".0" : e.levenshtein}
                         onChange={(ev, { value }) =>
                           dispatch({ type: 'SET_LEVENSHTEIN', payload: { index: i, levenshtein: value } })
                         }
@@ -270,13 +275,15 @@ class MergeSettings extends React.Component {
           {mode === 'simple' && (
             <Input
               label="Entity matching threshold"
-              value={threshold}
+              value={Math.round(threshold) == threshold ? threshold.toString() + ".0" : threshold}
               onChange={(e, { value }) => dispatch({ type: 'SET_THRESHOLD', payload: value })}
             />
           )}
 
           <Container textAlign="center">
-            <Button positive content="View suggestions" onClick={this.getSuggestions} />
+            <div style={{marginTop: '0.75em'}}>
+              <Button positive content="View suggestions" onClick={this.getSuggestions} />
+            </div>
           </Container>
         </Segment>
 
@@ -319,7 +326,9 @@ class MergeSettings extends React.Component {
           {groups.map((group, i) => (
             <div key={i}>
               <Header>
-                Group #{i}, confidence: {group.confidence}
+                Group #{i}, confidence: {
+                  group.confidence.toFixed(4).length < group.confidence.toString().length
+                    ? group.confidence.toFixed(4) : group.confidence.toString()}
               </Header>
               <LexicalEntryView
                 perspectiveId={id}
@@ -333,12 +342,14 @@ class MergeSettings extends React.Component {
                 }
               />
               <Container textAlign="center">
-                <Button
-                  positive
-                  content="Merge group"
-                  onClick={() => this.mergeGroup(i)}
-                  disabled={this.getSelected(i).length < 2}
-                />
+                <div style={{marginTop: '0.75em'}}>
+                  <Button
+                    positive
+                    content="Merge group"
+                    onClick={() => this.mergeGroup(i)}
+                    disabled={this.getSelected(i).length < 2}
+                  />
+                </div>
               </Container>
               <Divider />
             </div>
@@ -375,12 +386,18 @@ const fieldListEntry = {
   type: 'text',
 };
 
+function maybe_float(string, default_value)
+{
+  var maybe_value = parseFloat(string);
+  return maybe_value == 0.0 ? 0.0 : (maybe_value || defaul_value);
+}
+
 function reducer(state, { type, payload }) {
   switch (type) {
     case 'SET_MODE':
       return state.set('mode', payload);
     case 'SET_THRESHOLD':
-      return state.set('threshold', parseFloat(payload) || 0.1);
+      return state.set('threshold', maybe_float(payload, 0.1));
     case 'ADD_FIELD':
       return state.update('field_selection_list', list => list.push(fieldListEntry));
     case 'REMOVE_FIELD':
@@ -396,7 +413,7 @@ function reducer(state, { type, payload }) {
         list.update(payload.index, old => ({ ...old, split_punctuation: payload.checked })));
     case 'SET_LEVENSHTEIN':
       return state.update('field_selection_list', list =>
-        list.update(payload.index, old => ({ ...old, levenshtein: parseFloat(payload.levenshtein) || 0.1 })));
+        list.update(payload.index, old => ({ ...old, levenshtein: maybe_float(payload.levenshtein, 0.1) })));
     case 'SET_ENTRY_SELECTION': {
       const { group, id, checked } = payload;
       const currentlySelected = state.getIn(['selected', group]) || new Immutable.List();
@@ -431,6 +448,7 @@ export default compose(
   withProps(p => ({ ...p, entitiesMode: 'all' })),
   withReducer('settings', 'dispatch', reducer, fromJS(initialState)),
   graphql(queryPerspective),
+  graphql(queryLexicalEntries, { name: 'dataLexicalEntries' }),
   graphql(mergeLexicalEntriesMutation, { name: 'mergeLexicalEntries' }),
   branch(({ data }) => data.loading || !!data.error, renderNothing),
   withApollo,

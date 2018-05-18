@@ -40,7 +40,7 @@ export const queryPerspective = gql`
   }
 `;
 
-const queryLexicalEntries = gql`
+export const queryLexicalEntries = gql`
   query queryPerspective2($id: LingvodocID!, $entitiesMode: String!) {
     perspective(id: $id) {
       id
