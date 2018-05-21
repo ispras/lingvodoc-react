@@ -4,7 +4,7 @@ import { compose, branch, renderNothing, pure, withReducer, withProps } from 're
 import { gql, graphql, withApollo } from 'react-apollo';
 import Immutable, { fromJS } from 'immutable';
 import { isEqual, take, drop } from 'lodash';
-import { Header, Dropdown, List, Input, Button, Checkbox, Container, Segment, Divider } from 'semantic-ui-react';
+import { Header, Dropdown, List, Icon, Input, Button, Checkbox, Container, Segment, Divider } from 'semantic-ui-react';
 import styled from 'styled-components';
 
 import { queryPerspective, queryLexicalEntries, LexicalEntryView } from 'components/PerspectiveView';
@@ -62,6 +62,7 @@ class MergeSettings extends React.Component {
     this.mergeAll = this.mergeAll.bind(this);
     this.state = {
       groups: [],
+      loading: false,
     };
   }
 
@@ -78,6 +79,8 @@ class MergeSettings extends React.Component {
     const algorithm = settings.get('mode');
     const threshold = settings.get('threshold');
     const fields = settings.get('field_selection_list');
+
+    this.setState({ loading: true });
 
     const { data } = await client.query({
       query: mergeSuggestionsQuery,
@@ -98,6 +101,7 @@ class MergeSettings extends React.Component {
       }));
       this.setState(
         {
+          loading: false,
           groups,
         },
         () => {
@@ -282,79 +286,99 @@ class MergeSettings extends React.Component {
 
           <Container textAlign="center">
             <div style={{marginTop: '0.75em'}}>
-              <Button positive content="View suggestions" onClick={this.getSuggestions} />
+              <Button
+                positive
+                content="View suggestions"
+                onClick={this.getSuggestions}
+                disabled={this.state.loading}
+              />
             </div>
           </Container>
         </Segment>
 
-        {this.state.groups.length > 0 && (
+        {this.state.loading && (
           <Segment>
-            <List>
-              <List.Item>
-                <Checkbox
-                  label="Publish result of entity merge if any merged entity is published"
-                  checked={publishedAny}
-                  onChange={(e, { checked }) => dispatch({ type: 'SET_MERGE_PUBLISHED_MODE', payload: checked })}
-                />
-              </List.Item>
+            <Container textAlign="center">
+              Loading suggestions...
 
-              <List.Item>
-                <Button
-                  basic
-                  size="small"
-                  content="Select all on current page"
-                  onClick={() =>
-                    dispatch({
-                      type: 'SELECT_ALL_PAGE',
-                      payload: groups.map(g => g.lexical_entries.map(d => d.id)),
-                    })
-                  }
-                />
-                <Button basic size="small" content="Merge selected" onClick={this.mergeSelected} />
-              </List.Item>
-
-              <List.Item>
-                <Button positive size="small" content="Merge all" onClick={this.mergeAll} />
-              </List.Item>
-            </List>
+              <div style={{marginTop: '2em'}}>
+                <Header as="h4" icon>
+                  <Icon name="spinner" loading />
+                </Header>
+              </div>
+            </Container>
           </Segment>
         )}
 
-        <Segment>
-          {groups.length === 0 && <Container textAlign="center">No suggestions</Container>}
+        {!this.state.loading && (
 
-          {groups.map((group, i) => (
-            <div key={i}>
-              <Header>
-                Group #{i}, confidence: {
-                  group.confidence.toFixed(4).length < group.confidence.toString().length
-                    ? group.confidence.toFixed(4) : group.confidence.toString()}
-              </Header>
-              <LexicalEntryView
-                perspectiveId={id}
-                entries={group.lexical_entries}
-                mode="view"
-                entitiesMode={entitiesMode}
-                selectEntries
-                selectedEntries={this.getSelected(i)}
-                onEntrySelect={(eid, checked) =>
-                  dispatch({ type: 'SET_ENTRY_SELECTION', payload: { group: i, id: eid, checked } })
-                }
-              />
-              <Container textAlign="center">
-                <div style={{marginTop: '0.75em'}}>
-                  <Button
-                    positive
-                    content="Merge group"
-                    onClick={() => this.mergeGroup(i)}
-                    disabled={this.getSelected(i).length < 2}
+          <Segment>
+            {this.state.groups.length > 0 && (
+              <List>
+                <List.Item>
+                  <Checkbox
+                    label="Publish result of entity merge if any merged entity is published"
+                    checked={publishedAny}
+                    onChange={(e, { checked }) => dispatch({ type: 'SET_MERGE_PUBLISHED_MODE', payload: checked })}
                   />
-                </div>
-              </Container>
-              <Divider />
-            </div>
-          ))}
-        </Segment>
+                </List.Item>
+
+                <List.Item>
+                  <Button
+                    basic
+                    size="small"
+                    content="Select all on current page"
+                    onClick={() =>
+                      dispatch({
+                        type: 'SELECT_ALL_PAGE',
+                        payload: groups.map(g => g.lexical_entries.map(d => d.id)),
+                      })
+                    }
+                  />
+                  <Button basic size="small" content="Merge selected" onClick={this.mergeSelected} />
+                </List.Item>
+
+                <List.Item>
+                  <Button positive size="small" content="Merge all" onClick={this.mergeAll} />
+                </List.Item>
+              </List>
+            )}
+
+            {groups.length === 0 && <Container textAlign="center">No suggestions</Container>}
+
+            {groups.map((group, i) => (
+              <div key={i}>
+                <Header>
+                  Group #{i}, confidence: {
+                    group.confidence.toFixed(4).length < group.confidence.toString().length
+                      ? group.confidence.toFixed(4) : group.confidence.toString()}
+                </Header>
+                <LexicalEntryView
+                  perspectiveId={id}
+                  entries={group.lexical_entries}
+                  mode="view"
+                  entitiesMode={entitiesMode}
+                  selectEntries
+                  selectedEntries={this.getSelected(i)}
+                  onEntrySelect={(eid, checked) =>
+                    dispatch({ type: 'SET_ENTRY_SELECTION', payload: { group: i, id: eid, checked } })
+                  }
+                />
+                <Container textAlign="center">
+                  <div style={{marginTop: '0.75em'}}>
+                    <Button
+                      positive
+                      content="Merge group"
+                      onClick={() => this.mergeGroup(i)}
+                      disabled={this.getSelected(i).length < 2}
+                    />
+                  </div>
+                </Container>
+                <Divider />
+              </div>
+            ))}
+          </Segment>
+        )}
 
         <Pagination
           current={page}
