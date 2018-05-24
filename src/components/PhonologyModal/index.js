@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { compose, branch, renderNothing } from 'recompose';
 import { graphql, gql, withApollo } from 'react-apollo';
-import { Button, Checkbox, Divider, Input, List, Modal, Select } from 'semantic-ui-react';
+import { Button, Checkbox, Divider, Icon, Input, List, Modal, Select } from 'semantic-ui-react';
 import { closeModal } from 'ducks/phonology';
 import { bindActionCreators } from 'redux';
 import { isEqual, map } from 'lodash';
@@ -182,7 +182,7 @@ class PhonologyModal extends React.Component {
       variables: {
         perspectiveId,
         groupByDescription: this.state.enabledGroup,
-        translationFieldId: field.id,
+        translationFieldId: field !== undefined ? field.id : null,
         firstTranslation: this.state.translationsMode === 'first',
         vowelSelection: this.state.vowelsMode === 'longest',
         tiers: this.state.tiers,
@@ -320,7 +320,7 @@ class PhonologyModal extends React.Component {
                   <div style={{marginLeft: '1.5em'}}>
                     <List>
                       <List.Item>
-                        Loading tier data...
+                        Loading tier data... <Icon name="spinner" loading />
                       </List.Item>
                     </List>
                   </div>
@@ -356,7 +356,7 @@ class PhonologyModal extends React.Component {
                   <div style={{marginLeft: '1.5em'}}>
                     <List>
                       <List.Item>
-                        Loading skipped character data...
+                        Loading skipped character data... <Icon name="spinner" loading />
                       </List.Item>
                     </List>
                   </div>
@@ -392,7 +392,7 @@ class PhonologyModal extends React.Component {
                   <div style={{marginLeft: '1.5em'}}>
                     <List>
                       <List.Item>
-                        Loading adjacent character data...
+                        Loading adjacent character data... <Icon name="spinner" loading />
                       </List.Item>
                     </List>
                   </div>
