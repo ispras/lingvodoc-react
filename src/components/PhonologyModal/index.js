@@ -2,47 +2,100 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { compose, branch, renderNothing } from 'recompose';
 import { graphql, gql, withApollo } from 'react-apollo';
-import { Button, Checkbox, Divider, Icon, Input, List, Modal, Select } from 'semantic-ui-react';
+import { Breadcrumb, Button, Checkbox, Divider, Icon, Input, List, Modal, Select } from 'semantic-ui-react';
 import { closeModal } from 'ducks/phonology';
 import { bindActionCreators } from 'redux';
 import { isEqual, map } from 'lodash';
 import { connect } from 'react-redux';
 import { compositeIdToString } from 'utils/compositeId';
-import { perspectiveColumnsQuery, phonologyTierListQuery, phonologySkipListQuery, createPhonologyMutation } from './graphql';
+
+import {
+  createPhonologyMutation,
+  perspectiveColumnsFieldsQuery,
+  perspectiveColumnsQuery,
+  phonologySkipListQuery,
+  phonologyTierListQuery,
+  phonologyLinkPerspectiveQuery
+} from './graphql';
 
 const DEFAULT_CHART_THRESHOLD = 8;
 
-class PhonologyModal extends React.Component {
-  constructor(props) {
+class PhonologyModal extends React.Component
+{
+  constructor(props)
+  {
     super(props);
-    this.state = {
+
+    this.state =
+    {
       vowelsMode: 'all',
+      translationFieldIdStr: '',
       translationsMode: 'all',
       enabledGroup: false,
       chartThreshold: DEFAULT_CHART_THRESHOLD,
       enabledCsv: false,
-      tierList: [],
-      loadedTiers: false,
+
       enabledTiers: false,
-      tiers: [],
+      loadedTiers: false,
+      tierList: [],
+      tierSet: new Set(),
+
       loadedKeepJoin: false,
       keepList: [],
       enabledKeep: false,
-      selectedKeepList: [],
+      selectedKeepSet: new Set(),
       joinList: [],
       enabledJoin: false,
-      selectedJoinList: [],
+      selectedJoinSet: new Set(),
+
+      useLinkedData: false,
+      loadedLinkedData: false,
+      selectedLinkFieldSet: new Set(),
+
+      linkFieldDataDict: {},
+      linkPerspectiveDataList: [],
+      linkPerspectiveDataDict: {},
+      linkPerspectiveDict: {},
+      lpTranslationFieldDict: {},
     };
 
     this.handleVowelsChange = this.handleVowelsChange.bind(this);
     this.handleTranslationsChange = this.handleTranslationsChange.bind(this);
+
     this.handleEnableTier = this.handleEnableTier.bind(this);
     this.handleSelectKeep = this.handleSelectKeep.bind(this);
     this.handleSelectJoin = this.handleSelectJoin.bind(this);
+    this.handleSelectLink = this.handleSelectLink.bind(this);
+    this.handleSelectLinkTranslation = this.handleSelectLinkTranslation.bind(this);
+
     this.handleCreate = this.handleCreate.bind(this);
 
     this.getTierList = this.getTierList.bind(this);
     this.getKeepJoinList = this.getKeepJoinList.bind(this);
+    this.getLinkData = this.getLinkData.bind(this);
+
+    /* Compiling dictionary of perspective field info so that later we would be able to retrieve this info
+     * efficiently. */
+
+    const { data: {
+      all_fields: allFields,
+      perspective: { columns } }} = this.props;
+
+    this.fieldDict = {};
+    
+    for (const field of allFields)
+      this.fieldDict[compositeIdToString(field.id)] = field;;
+
+    /* Additional info of fields of our perspective. */
+
+    this.columnFields = columns
+      .map(column => this.fieldDict[compositeIdToString(column.field_id)]);
+
+    this.linkFields = this.columnFields
+      .filter(field => field.data_type === 'Link');
+
+    this.textFields = this.columnFields
+      .filter(field => field.data_type === 'Text');
   }
 
   handleVowelsChange(e, { value: vowelsMode }) {
@@ -69,9 +122,9 @@ class PhonologyModal extends React.Component {
 
       /* Getting markup tiers with their occurence counts, sorting them in alphabetical order. */
 
-      var tier_list = map(tier_count, (count, tier) => [tier, count]);
+      var tierList = map(tier_count, (count, tier) => [tier, count, count / total_count]);
 
-      tier_list.sort((a, b) =>
+      tierList.sort((a, b) =>
         {
           if (a[0].toLowerCase() < b[0].toLowerCase())
             return -1;
@@ -86,7 +139,8 @@ class PhonologyModal extends React.Component {
           return 0;
         });
 
-      this.setState({ loadedTiers: true, tierList: tier_list });
+      this.setState({
+        loadedTiers: true, tierList });
     }
   }
 
@@ -98,16 +152,17 @@ class PhonologyModal extends React.Component {
       this.getTierList();
   }
 
-  handleEnableTier(tier, enable) {
-    if (!enable) {
-      this.setState({
-        tiers: this.state.tiers.filter(t => t !== tier),
-      });
-    } else {
-      this.setState({
-        tiers: [tier, ...this.state.tiers],
-      });
-    }
+  handleEnableTier(tier, enable)
+  {
+    var tierSet = this.state.tierSet;
+
+    if (enable)
+      tierSet.add(tier);
+
+    else
+      tierSet.delete(tier);
+
+    this.setState({ tierSet });
   }
 
   /* Loads lists of skipped and adjacent markup characters, asynchronously. */
@@ -147,49 +202,203 @@ class PhonologyModal extends React.Component {
       this.getKeepJoinList();
   }
 
+  /* Processes selection/deselection of one of the skipped characters for keeping. */
   handleSelectKeep(ord, enable)
   {
-    if (!enable) {
-      this.setState({
-        selectedKeepList: this.state.selectedKeepList.filter(t => t !== ord),
-      });
-    } else {
-      this.setState({
-        selectedKeepList: [ord, ...this.state.selectedKeepList],
-      });
-    }
+    var selectedKeepSet = this.state.selectedKeepSet;
+
+    if (enable)
+      selectedKeepSet.add(ord);
+
+    else
+      selectedKeepSet.delete(ord);
+
+    this.setState({ selectedKeepSet });
   }
 
+  /* Processes selection/deselection of one of adjacent characters for combining. */
   handleSelectJoin(ord, enable)
   {
-    if (!enable) {
-      this.setState({
-        selectedJoinList: this.state.selectedJoinList.filter(t => t !== ord),
-      });
-    } else {
-      this.setState({
-        selectedJoinList: [ord, ...this.state.selectedJoinList],
-      });
-    }
+    var selectedJoinSet = this.state.selectedJoinSet;
+
+    if (enable)
+      selectedJoinSet.add(ord);
+
+    else
+      selectedJoinSet.delete(ord);
+
+    this.setState({ selectedJoinSet });
   }
 
-  handleCreate() {
+  handleLinkChange(enabled)
+  {
+    this.setState({ useLinkedData: enabled })
+
+    if (!this.state.loadedLinkData)
+      this.getLinkData();
+  }
+
+  /* Loads data of perspectives containing info linked from this perspective. */
+  async getLinkData()
+  {
+    const { client, data, perspectiveId } = this.props;
+    const { perspective: { columns }, all_fields: allFields } = data;
+
+    const linkFieldIdList =
+      this.linkFields.map(field => field.id);
+
+    const { data: link_data } = await client.query({
+      query: phonologyLinkPerspectiveQuery,
+      variables: {
+        perspectiveId,
+        fieldIdList: linkFieldIdList },
+    });
+
+    if (!link_data)
+      return;
+
+    /* Getting info of linked perspectives. */
+
+    var linkFieldDataDict = {};
+    var linkPerspectiveDataList = [];
+    var linkPerspectiveDataDict = {};
+    var linkPerspectiveDict = {};
+
+    const { phonology_link_perspective_data: {
+      field_data_list, perspective_id_list }} = link_data;
+
+    /* Preparing correspondence between link fields and sets of perspectives having data referenced by the
+     * link fields. */
+
+    for (const fieldData of field_data_list)
+    {
+      const [fieldId, perspectiveIdList] = fieldData;
+      linkFieldDataDict[compositeIdToString(fieldId)] = perspectiveIdList.map(compositeIdToString);
+    }
+
+    for (var i = 0; i < perspective_id_list.length; i++)
+    {
+      const { data: { perspective: perspective_data }} = await client.query({
+        query: perspectiveColumnsQuery,
+        variables: { perspectiveId: perspective_id_list[i] }});
+
+      if (!perspective_data)
+        continue;
+
+      var perspectiveData = {...perspective_data}
+
+      /* Preparing data of text fields of the perspective, i.e. fields selectable as a source fields for
+       * phonology results compilation. */
+
+      perspectiveData.columnFields = perspectiveData.columns
+        .map(column => this.fieldDict[compositeIdToString(column.field_id)]);
+
+      perspectiveData.textFields = perspectiveData.columnFields
+        .filter(field => field.data_type === 'Text');
+
+      perspectiveData.textFieldsOptions =
+        perspectiveData.textFields.map((field, index) => ({
+            key: index,
+            value: compositeIdToString(field.id),
+            text: field.translation,
+          }));
+
+      /* Saving perspective info. */
+
+      linkPerspectiveDataList.push(perspectiveData);
+
+      const key = compositeIdToString(perspectiveData.id);
+
+      linkPerspectiveDataDict[key] = perspectiveData;
+      linkPerspectiveDict[key] = 0;
+    }
+
+    this.setState({
+      loadedLinkData: true,
+      linkFieldDataDict,
+      linkPerspectiveDataList,
+      linkPerspectiveDataDict,
+      linkPerspectiveDict,
+    });
+  }
+
+  /* Processes selection/deselection of one of the fields linking to additional data. */
+  handleSelectLink(field, enable)
+  {
+    var selectedLinkFieldSet = this.state.selectedLinkFieldSet;
+    var linkPerspectiveDict = this.state.linkPerspectiveDict;
+
+    const key = compositeIdToString(field.id);
+
+    if (enable)
+    {
+      selectedLinkFieldSet.add(key);
+
+      for (const perspectiveIdKey of this.state.linkFieldDataDict[key])
+        linkPerspectiveDict[perspectiveIdKey] += 1
+    }
+
+    else
+    {
+      selectedLinkFieldSet.delete(key);
+
+      for (const perspectiveIdKey of this.state.linkFieldDataDict[key])
+        linkPerspectiveDict[perspectiveIdKey] -= 1;
+    }
+
+    this.setState({
+      selectedLinkFieldSet,
+      linkPerspectiveDict });
+  }
+
+  /* Selection of a source text field for one of the linked data perspectives. */
+  handleSelectLinkTranslation(perspectiveId, value)
+  {
+    var lpTranslationFieldDict = this.state.lpTranslationFieldDict;
+    lpTranslationFieldDict[compositeIdToString(perspectiveId)] = value;
+
+    this.setState({ lpTranslationFieldDict });
+  }
+
+  handleCreate()
+  {
     const { perspectiveId, createPhonology, data } = this.props;
     const { all_fields: allFields } = data;
-    const field = allFields.find(f => compositeIdToString(f.id) === this.state.selectedFieldId);
+
+    const translationField = this.fieldDict[this.state.translationFieldIdStr];
+
+    const linkFieldList =
+      Array.from(this.state.selectedLinkFieldSet.keys()).map(
+
+        fieldIdStr => [
+          this.fieldDict[fieldIdStr].id,
+          this.state.linkFieldDataDict[fieldIdStr].map(
+            perspectiveIdStr => this.state.linkPerspectiveDataDict[perspectiveIdStr].id)]);
+
+    const linkPerspectiveList =
+      Object.entries(this.state.linkPerspectiveDict)
+
+        .filter(([perspectiveIdStr, count]) =>
+          count > 0 && this.state.lpTranslationFieldDict.hasOwnProperty(perspectiveIdStr))
+
+        .map(([perspectiveIdStr, count]) => [
+          this.state.linkPerspectiveDataDict[perspectiveIdStr].id,
+          this.fieldDict[this.state.lpTranslationFieldDict[perspectiveIdStr]].id]);
 
     createPhonology({
       variables: {
         perspectiveId,
         groupByDescription: this.state.enabledGroup,
-        translationFieldId: field !== undefined ? field.id : null,
+        translationFieldId: translationField !== undefined ? translationField.id : null,
         firstTranslation: this.state.translationsMode === 'first',
         vowelSelection: this.state.vowelsMode === 'longest',
-        tiers: this.state.tiers,
+        tiers: this.state.enabledTiers ? Array.from(this.state.tierSet.keys()) : null,
         chartThreshold: this.state.chartThreshold,
-        keepList: this.state.selectedKeepList,
-        joinList: this.state.selectedJoinList,
+        keepList: this.state.enabledKeep ? Array.from(this.state.selectedKeepSet.keys()) : [],
+        joinList: this.state.enabledJoin ? Array.from(this.state.selectedJoinSet.keys()) : [],
         generateCsv: this.state.enabledCsv,
+        linkFieldList,
+        linkPerspectiveList,
       },
     }).then(
       () => {
@@ -202,19 +411,20 @@ class PhonologyModal extends React.Component {
     );
   }
 
-  render() {
+  render()
+  {
     const { data } = this.props;
-    const { perspective: { columns }, all_fields: allFields, } = data;
+    const { perspective: { columns }, all_fields: allFields } = data;
 
-    const textFields = allFields
-      .filter(f => f.data_type === 'Text')
-      .filter(f => !!columns.find(c => isEqual(f.id, c.field_id)));
-
-    const textFieldsOptions = textFields.map((f, k) => ({
+    const textFieldsOptions = this.textFields.map((f, k) => ({
       key: k,
       value: compositeIdToString(f.id),
       text: f.translation,
     }));
+
+    const linkPerspectiveDataList =
+      this.state.linkPerspectiveDataList.filter(perspectiveData =>
+        this.state.linkPerspectiveDict[compositeIdToString(perspectiveData.id)] > 0);
 
     return (
       <div>
@@ -249,7 +459,7 @@ class PhonologyModal extends React.Component {
               <Select
                 placeholder="Translation field"
                 options={textFieldsOptions}
-                onChange={(e, { value }) => this.setState({ selectedFieldId: value })}
+                onChange={(e, { value }) => this.setState({ translationFieldIdStr: value })}
               />
             </div>
 
@@ -274,6 +484,69 @@ class PhonologyModal extends React.Component {
                   checked={this.state.translationsMode === 'longest'}
                   onChange={this.handleTranslationsChange}
                 />
+              </List.Item>
+            </List>
+
+            <List>
+              <List.Item>
+                <Checkbox
+                  label="Use linked data"
+                  checked={this.state.useLinkedData}
+                  onChange={(e, { checked }) => this.handleLinkChange(checked)}
+                />
+
+                {this.state.useLinkedData && !this.state.loadedLinkData && (
+                  <div style={{marginLeft: '1.5em'}}>
+                    <List>
+                      <List.Item>
+                        Loading linked perspective data... <Icon name="spinner" loading />
+                      </List.Item>
+                    </List>
+                  </div>
+                )}
+
+                {this.state.useLinkedData && this.state.loadedLinkData && (
+                  <div style={{marginLeft: '1.5em'}}>
+                    <List>
+                      {map(this.linkFields, field => (
+                        <List.Item key={compositeIdToString(field.id)}>
+                          <Checkbox
+                            label={field.translation}
+                            checked={this.state.selectedLinkFieldSet[compositeIdToString(field.id)]}
+                            onChange={(e, { checked }) => this.handleSelectLink(field, checked)}
+                          />
+                        </List.Item>
+                      ))}
+                    </List>
+
+                    {linkPerspectiveDataList.length > 0 && (
+                      <List>
+                        {map(linkPerspectiveDataList, perspectiveData => (
+                          <List.Item key={compositeIdToString(perspectiveData.id)}>
+                            <Breadcrumb
+                              icon="right angle"
+                              sections={perspectiveData.tree.slice().reverse()
+                                .map(x => ({ key: x.id, content: x.translation, link: false }))}
+                            />
+                            <span style={{marginLeft: '1em'}}>
+                              <Select
+                                defaultValue={
+                                  this.state.lpTranslationFieldDict.hasOwnProperty(
+                                    compositeIdToString(perspectiveData.id)) ?
+                                  this.state.lpTranslationFieldDict[compositeIdToString(perspectiveData.id)] :
+                                  ''}
+                                placeholder="Translation field"
+                                options={perspectiveData.textFieldsOptions}
+                                onChange={(e, { value }) =>
+                                  this.handleSelectLinkTranslation(perspectiveData.id, value)}
+                              />
+                            </span>
+                          </List.Item>
+                        ))}
+                      </List>
+                    )}
+                  </div>
+                )}
               </List.Item>
             </List>
 
@@ -329,11 +602,11 @@ class PhonologyModal extends React.Component {
                 {this.state.enabledTiers && this.state.tierList.length > 0 && (
                   <div style={{marginLeft: '1.5em'}}>
                     <List>
-                      {map(this.state.tierList, ([tier, count]) => (
+                      {map(this.state.tierList, ([tier, count, fraction]) => (
                         <List.Item key={tier}>
                           <Checkbox
-                            label={`Tier "${tier}" (present at ${parseFloat(count / this.state.tierList.length * 100).toFixed(2)}% of markup records)`}
-                            checked={this.state.tiers.indexOf(tier) >= 0}
+                            label={`Tier "${tier}" (present at ${parseFloat(fraction * 100).toFixed(2)}% of markup records)`}
+                            checked={this.state.tierSet[tier]}
                             onChange={(e, { checked }) => this.handleEnableTier(tier, checked)}
                           />
                         </List.Item>
@@ -369,7 +642,7 @@ class PhonologyModal extends React.Component {
                         <List.Item key={ord}>
                           <Checkbox
                             label={`"${str}" U+${ord.toString(16).padStart(4, '0')} ${name}`}
-                            checked={this.state.selectedKeepList.indexOf(ord) >= 0}
+                            checked={this.state.selectedKeepSet.has(ord)}
                             onChange={(e, { checked }) => this.handleSelectKeep(ord, checked)}
                           />
                         </List.Item>
@@ -405,7 +678,7 @@ class PhonologyModal extends React.Component {
                         <List.Item key={ord}>
                           <Checkbox
                             label={`"${str}" U+${ord.toString(16).padStart(4, '0')} ${name}`}
-                            checked={this.state.selectedJoinList.indexOf(ord) >= 0}
+                            checked={this.state.selectedJoinSet.has(ord)}
                             onChange={(e, { checked }) => this.handleSelectJoin(ord, checked)}
                           />
                         </List.Item>
@@ -439,7 +712,7 @@ PhonologyModal.propTypes = {
 export default compose(
   connect(state => state.phonology, dispatch => bindActionCreators({ closeModal }, dispatch)),
   branch(({ visible }) => !visible, renderNothing),
-  graphql(perspectiveColumnsQuery),
+  graphql(perspectiveColumnsFieldsQuery),
   graphql(createPhonologyMutation, { name: 'createPhonology' }),
   branch(({ data }) => data.loading, renderNothing),
   withApollo
