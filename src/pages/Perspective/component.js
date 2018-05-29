@@ -11,6 +11,16 @@ import NotFound from 'pages/NotFound';
 
 import './style.scss';
 
+export const launchSoundAndMarkupMutation = gql`
+  mutation launchSoundAndMarkup(
+    $perspectiveId: LingvodocID!,
+    $publishedMode: String!) {
+      sound_and_markup(
+        perspective_id: $perspectiveId,
+        published_mode: $publishedMode)
+      { triumph } }
+`;
+
 const query = gql`
   query q($id: LingvodocID!) {
     perspective(id: $id) {
@@ -98,7 +108,7 @@ const ModeSelector = onlyUpdateForKeys([
   'baseUrl',
   'filter',
 ])(({
-  mode, baseUrl, filter, submitFilter, openPhonologyModal,
+  mode, baseUrl, filter, submitFilter, openPhonologyModal, soundAndMarkup
 }) => (
   <Menu tabular>
     {map(MODES, (info, stub) => (
@@ -109,6 +119,7 @@ const ModeSelector = onlyUpdateForKeys([
     <Dropdown item text="Tools">
       <Dropdown.Menu>
         <Dropdown.Item onClick={openPhonologyModal}>Phonology</Dropdown.Item>
+        <Dropdown.Item onClick={soundAndMarkup}>Sound and markup</Dropdown.Item>
       </Dropdown.Menu>
     </Dropdown>
 
@@ -118,7 +129,26 @@ const ModeSelector = onlyUpdateForKeys([
   </Menu>
 ));
 
-const Perspective = ({ perspective, submitFilter, openPhonologyModal }) => {
+const soundAndMarkup = (perspectiveId, mode, launchSoundAndMarkup) =>
+{
+  launchSoundAndMarkup({
+    variables: {
+      perspectiveId,
+      publishedMode: mode == 'edit' ? 'all' : 'published' }
+  }).then(
+    () => { window.logger.suc(
+      'Sound and markup compilation is being created. Check out tasks for details.'); },
+    () => { window.logger.err(
+      'Failed to launch sound and markup compilation!'); });
+}
+
+const Perspective = ({
+  perspective,
+  submitFilter,
+  openPhonologyModal,
+  launchSoundAndMarkup
+}) => {
+
   const {
     id, mode, page, baseUrl,
   } = perspective.params;
@@ -134,6 +164,7 @@ const Perspective = ({ perspective, submitFilter, openPhonologyModal }) => {
         filter={perspective.filter}
         submitFilter={submitFilter}
         openPhonologyModal={() => openPhonologyModal(id)}
+        soundAndMarkup={() => soundAndMarkup(id, mode, launchSoundAndMarkup)}
       />
       <Switch>
         <Redirect exact from={baseUrl} to={`${baseUrl}/view`} />
@@ -165,4 +196,6 @@ Perspective.propTypes = {
   openPhonologyModal: PropTypes.func.isRequired,
 };
 
-export default Perspective;
+export default
+  graphql(launchSoundAndMarkupMutation, { name: 'launchSoundAndMarkup' })(
+    Perspective);
