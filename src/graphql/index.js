@@ -3,6 +3,8 @@ import { createNetworkInterface } from 'apollo-upload-client';
 import { each } from 'lodash';
 import config from 'config';
 import { compositeIdToString } from '../utils/compositeId';
+import { signOut } from 'ducks/user';
+import { push } from 'react-router-redux';
 
 const handleErrors = ({ response }, next) => {
   // clone response so we can turn it into json independently
@@ -24,6 +26,12 @@ const handleErrors = ({ response }, next) => {
 
     if (json.errors && json.errors.length > 0) {
       each(json.errors, (error) => {
+        /* If we've caught a deactivated user, we sign them out and go to the starting page. */
+        if (error.message == 'this user account is deactivated')
+        {
+          window.dispatch(signOut());
+          window.dispatch(push('/'));
+        }
         window.logger.err(`GraphQL error: ${error.message}`);
       });
     }

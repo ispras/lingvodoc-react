@@ -46,12 +46,22 @@ export function* signInRoutine({ payload }) {
   yield* requestRoutine();
 }
 
-export function* signUpRoutine({ payload }) {
+export function* signUpRoutine({ payload })
+{
   const response = yield call(signUp, payload);
-  if (response.data) {
+
+  if (response.data)
+  {
     yield put(signUpForm.success());
-    yield call(signIn, payload);
+
+    if (response.data.result == 'Signup success.')
+      yield call(signIn, payload);
+    else if (response.data.result == 'Signup approval pending.')
+      window.logger.suc(response.data.result);
+    else
+      window.logger.log(response.data.result);
   }
+
   if (response.err) {
     yield put(signUpForm.failure(new SubmissionError({
       _error: response.err.error,
