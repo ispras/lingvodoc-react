@@ -1,9 +1,10 @@
 import { combineReducers } from 'redux';
 
 // Actions
-const REQUEST = '@task/REQUEST';
-const TOGGLE = '@task/TOGGLE';
-const SET = '@task/SET';
+export const REQUEST = '@task/REQUEST';
+export const TOGGLE = '@task/TOGGLE';
+export const SET = '@task/SET';
+export const REMOVE = '@task/REMOVE';
 
 // Reducers
 function tasks(state = [], action = {}) {
@@ -52,4 +53,11 @@ export function toggleTasks() {
 
 export function setTasks(payload) {
   return { type: SET, payload };
+}
+
+export function removeTask(payload) {
+  return {
+    type: REMOVE,
+    payload,
+  };
 }

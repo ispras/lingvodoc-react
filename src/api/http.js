@@ -34,3 +34,10 @@ export function httpPut(url, form) {
     body: JSON.stringify(form),
   });
 }
+
+export function httpDelete(url) {
+  return wrap(config.apiUrl + url, {
+    credentials: 'include',
+    method: 'delete',
+  });
+}
