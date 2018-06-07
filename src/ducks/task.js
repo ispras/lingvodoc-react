@@ -11,6 +11,8 @@ function tasks(state = [], action = {}) {
   switch (action.type) {
     case SET:
       return action.payload;
+    case REMOVE:
+      return state.filter(task => task.id !== action.payload);
     default:
       return state;
   }

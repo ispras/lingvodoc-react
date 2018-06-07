@@ -5,6 +5,6 @@ export function getTasks() {
 }
 
 export function removeTask(id) {
-  return httpDelete(`/tasks1/${encodeURIComponent(id)}`);
+  return httpDelete(`/tasks/${encodeURIComponent(id)}`);
 }
 
