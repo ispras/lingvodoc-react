@@ -10,6 +10,7 @@ import MarkupModal from 'components/MarkupModal';
 import GroupingTagModal from 'components/GroupingTagModal';
 import LinkModal from 'components/LinkModal';
 import DictionaryProperties from 'components/DictionaryPropertiesModal';
+import SaveDictionary from 'components/SaveDictionaryModal';
 import PerspectiveProperties from 'components/PerspectivePropertiesModal';
 import PhonologyModal from 'components/PhonologyModal';
 import ConverEafModal from 'components/ConverEafModal';
@@ -42,6 +43,7 @@ const Layout = () => (
     <PlayerModal />
     <MarkupModal />
     <DictionaryProperties />
+    <SaveDictionary />
     <PerspectiveProperties />
     <PhonologyModal />
     <ConverEafModal />

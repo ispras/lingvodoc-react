@@ -9,6 +9,7 @@ import { Container, Dimmer, Tab, Header, List, Dropdown, Icon, Menu } from 'sema
 import { isEqual } from 'lodash';
 import { compositeIdToString } from 'utils/compositeId';
 import { openRoles } from 'ducks/roles';
+import { openSaveDictionaryModal } from 'ducks/saveDictionary';
 import { openDictionaryPropertiesModal } from 'ducks/dictionaryProperties';
 import { openPerspectivePropertiesModal } from 'ducks/perspectiveProperties';
 import { openStatistics } from 'ducks/statistics';
@@ -192,6 +193,7 @@ const D = (props) => {
                 onClick={() => actions.openStatistics(id, 'dictionary')}
               />
               <Dropdown.Item icon="circle" text="Create a new perspective..." />
+              <Dropdown.Item icon="save" text="Save dictionary" onClick={() => actions.openSaveDictionaryModal(id)} />
               <Dropdown.Divider />
               <Dropdown.Item icon="remove" text="Remove dictionary" />
             </Dropdown.Menu>
@@ -228,7 +230,7 @@ D.propTypes = {
 
 const Dictionary = compose(
   connect(null, dispatch => ({
-    actions: bindActionCreators({ openRoles, openDictionaryPropertiesModal, openStatistics }, dispatch),
+    actions: bindActionCreators({ openRoles, openDictionaryPropertiesModal, openStatistics, openSaveDictionaryModal }, dispatch),
   })),
   onlyUpdateForKeys(['translation', 'status', 'perspectives'])
 )(D);

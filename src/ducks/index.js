@@ -15,6 +15,7 @@ import fields from './fields';
 import groupingTag from './groupingTag';
 import link from './link';
 import dictionaryProperties from './dictionaryProperties';
+import saveDictionary from './saveDictionary';
 import perspectiveProperties from './perspectiveProperties';
 import home from './home';
 import createDictionary from './createDictionary';
@@ -41,6 +42,7 @@ export default {
   groupingTag,
   link,
   dictionaryProperties,
+  saveDictionary,
   perspectiveProperties,
   home,
   createDictionary,
