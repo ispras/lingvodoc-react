@@ -1,14 +1,33 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { branch, renderComponent } from 'recompose';
-import { List, Progress } from 'semantic-ui-react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { branch, renderComponent, lifecycle, compose } from 'recompose';
+import { List, Progress, Button, Segment, Header } from 'semantic-ui-react';
 
+import styled from 'styled-components';
+
+import { removeTask } from 'ducks/task';
+import { run, stop } from 'ducks/saga';
+import saga from './saga';
+
+const OrWrapper = styled(Segment)`
+  .delete-task-button {
+    box-shadow: none !important;
+    position: absolute !important;
+    padding: 10px !important;
+    margin: 0;
+    right: 0;
+    top: 0;
+  }
+`;
 const Empty = () => <h3>No background tasks</h3>;
 
 const enhance = branch(({ tasks }) => tasks.length === 0, renderComponent(Empty));
 
 function Task(props) {
   const {
+    id,
     progress,
     result_link,
     status,
@@ -18,34 +37,43 @@ function Task(props) {
     total_stages,
     user_id,
     result_link_list,
+    removeTask: remove,
   } = props;
 
   const links = result_link_list.map(link => (
     <div key={link}>
-      <a href={link} key={link}>{link}</a>
+      <a href={link} key={link}>
+        {link}
+      </a>
     </div>
   ));
 
   return (
     <List.Content>
-      <List.Header>{task_family}</List.Header>
-      <List.Description>
+      <OrWrapper>
+        <Header size="small">{task_family}</Header>
+        {progress === 100 && (
+          <Button compact basic icon="delete" className="delete-task-button" onClick={() => remove(id)} />
+        )}
+
         {task_details}
-        <Progress
-          label={`(${current_stage}/${total_stages}) ${status}`}
-          percent={progress}
-          progress="percent" />
+        <Progress label={`(${current_stage}/${total_stages}) ${status}`} percent={progress} progress="percent" />
         {links}
-      </List.Description>
+      </OrWrapper>
+
+      <List.Description />
     </List.Content>
   );
 }
+
+const Task1 = connect(null, dispatch => bindActionCreators({ removeTask }, dispatch))(Task);
+
 
 const TaskList = enhance(({ tasks }) => (
   <List divided relaxed>
     {tasks.map(task => (
       <List.Item key={task.id}>
-        <Task {...task} />
+        <Task1 {...task} />
       </List.Item>
     ))}
   </List>
@@ -55,4 +83,33 @@ TaskList.propTypes = {
   tasks: PropTypes.array.isRequired,
 };
 
-export default TaskList;
+function generateId() {
+  return Math.random()
+    .toString(36)
+    .substr(2, 12);
+}
+
+const mapActionsToProps = () => (dispatch) => {
+  const sagaId = generateId();
+  return {
+    onMount() {
+      dispatch(run({ saga, sagaId }));
+    },
+    onUnmount() {
+      dispatch(stop(sagaId));
+    },
+  };
+};
+
+export default compose(
+  connect(null, mapActionsToProps),
+  lifecycle({
+    componentDidMount() {
+      this.props.onMount();
+    },
+
+    componentWillUnmount() {
+      this.props.onUnmount();
+    },
+  })
+)(TaskList);
