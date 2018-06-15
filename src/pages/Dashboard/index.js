@@ -59,6 +59,22 @@ const updatePerspectiveStatusMutation = gql`
   }
 `;
 
+const removePerspectiveMutation = gql`
+  mutation removePerspective($id: LingvodocID!) {
+    delete_perspective(id: $id) {
+      triumph
+    }
+  }
+`;
+
+const removeDictionaryMutation = gql`
+  mutation removeDictionary($id: LingvodocID!) {
+    delete_dictionary(id: $id) {
+      triumph
+    }
+  }
+`;
+
 const Statuses = onlyUpdateForKeys(['translation'])(({
   translation, statusId, parentId, statuses, updateStatus,
 }) => {
@@ -98,144 +114,233 @@ const Statuses = onlyUpdateForKeys(['translation'])(({
 const DicionaryStatuses = graphql(updateDictionaryStatusMutation, { name: 'updateStatus' })(Statuses);
 const PerspectiveStatuses = graphql(updatePerspectiveStatusMutation, { name: 'updateStatus' })(Statuses);
 
-const P = (props) => {
-  const {
-    id, parent_id, translation, status, state_translation_gist_id: statusId, statuses, actions,
-  } = props;
-  return (
-    <List.Item>
-      <List.Icon verticalAlign="middle" name="book" />
-      <List.Content>
-        <Menu>
-          <Dropdown text={translation} pointing className="link item">
-            <Dropdown.Menu>
-              <Dropdown.Item icon="users" text="Roles..." onClick={() => actions.openRoles(id, 'perspective')} />
-              <Dropdown.Item
-                icon="setting"
-                text="Properties..."
-                onClick={() => actions.openPerspectivePropertiesModal(id, parent_id)}
-              />
-              <Dropdown.Item
-                icon="percent"
-                text="Statistics..."
-                onClick={() => actions.openStatistics(id, 'perspective')}
-              />
-              <Dropdown.Divider />
-              <Dropdown.Item icon="remove" text="Remove perspective" />
-            </Dropdown.Menu>
-          </Dropdown>
+class P extends React.Component {
+  constructor(props) {
+    super(props);
+    this.onRemovePerspective = this.onRemovePerspective.bind(this);
+  }
 
-          <Menu.Item as={Link} to={`/dictionary/${parent_id[0]}/${parent_id[1]}/perspective/${id[0]}/${id[1]}/view`}>
-            View
-          </Menu.Item>
+  onRemovePerspective() {
+    const {
+      id, mode, category, removePerspective,
+    } = this.props;
+    removePerspective({
+      variables: {
+        id,
+      },
+      refetchQueries: [
+        {
+          query,
+          variables: {
+            mode,
+            category,
+          },
+        },
+      ],
+    });
+  }
 
-          <Menu.Item as={Link} to={`/dictionary/${parent_id[0]}/${parent_id[1]}/perspective/${id[0]}/${id[1]}/edit`}>
-            Edit
-          </Menu.Item>
+  render() {
+    const {
+      id, parent_id, translation, status, state_translation_gist_id: statusId, statuses, actions,
+    } = this.props;
+    return (
+      <List.Item>
+        <List.Icon verticalAlign="middle" name="book" />
+        <List.Content>
+          <Menu>
+            <Dropdown text={translation} pointing className="link item">
+              <Dropdown.Menu>
+                <Dropdown.Item icon="users" text="Roles..." onClick={() => actions.openRoles(id, 'perspective')} />
+                <Dropdown.Item
+                  icon="setting"
+                  text="Properties..."
+                  onClick={() => actions.openPerspectivePropertiesModal(id, parent_id)}
+                />
+                <Dropdown.Item
+                  icon="percent"
+                  text="Statistics..."
+                  onClick={() => actions.openStatistics(id, 'perspective')}
+                />
+                <Dropdown.Divider />
+                <Dropdown.Item icon="remove" text="Remove perspective" onClick={this.onRemovePerspective} />
+              </Dropdown.Menu>
+            </Dropdown>
 
-          <Menu.Item as={Link} to={`/dictionary/${parent_id[0]}/${parent_id[1]}/perspective/${id[0]}/${id[1]}/publish`}>
-            Publish
-          </Menu.Item>
+            <Menu.Item as={Link} to={`/dictionary/${parent_id[0]}/${parent_id[1]}/perspective/${id[0]}/${id[1]}/view`}>
+              View
+            </Menu.Item>
 
-          <Menu.Item
-            as={Link}
-            to={`/dictionary/${parent_id[0]}/${parent_id[1]}/perspective/${id[0]}/${id[1]}/contributions`}
-          >
-            Contributions
-          </Menu.Item>
+            <Menu.Item as={Link} to={`/dictionary/${parent_id[0]}/${parent_id[1]}/perspective/${id[0]}/${id[1]}/edit`}>
+              Edit
+            </Menu.Item>
 
-          <Menu.Menu position="right">
-            <PerspectiveStatuses translation={status} statusId={statusId} parentId={id} statuses={statuses} />
-          </Menu.Menu>
-        </Menu>
-      </List.Content>
-    </List.Item>
-  );
-};
+            <Menu.Item
+              as={Link}
+              to={`/dictionary/${parent_id[0]}/${parent_id[1]}/perspective/${id[0]}/${id[1]}/publish`}
+            >
+              Publish
+            </Menu.Item>
+
+            <Menu.Item
+              as={Link}
+              to={`/dictionary/${parent_id[0]}/${parent_id[1]}/perspective/${id[0]}/${id[1]}/contributions`}
+            >
+              Contributions
+            </Menu.Item>
+
+            <Menu.Menu position="right">
+              <PerspectiveStatuses translation={status} statusId={statusId} parentId={id} statuses={statuses} />
+            </Menu.Menu>
+          </Menu>
+        </List.Content>
+      </List.Item>
+    );
+  }
+}
 
 P.propTypes = {
   id: PropTypes.array.isRequired,
   parent_id: PropTypes.array.isRequired,
   translation: PropTypes.string.isRequired,
+  mode: PropTypes.number.isRequired,
+  category: PropTypes.number.isRequired,
   status: PropTypes.string.isRequired,
   state_translation_gist_id: PropTypes.array.isRequired,
   statuses: PropTypes.array.isRequired,
   actions: PropTypes.object.isRequired,
+  removePerspective: PropTypes.func.isRequired,
 };
 
 const Perspective = compose(
-  connect(null, dispatch => ({
-    actions: bindActionCreators({ openRoles, openPerspectivePropertiesModal, openStatistics }, dispatch),
-  })),
+  connect(
+    null,
+    dispatch => ({
+      actions: bindActionCreators({ openRoles, openPerspectivePropertiesModal, openStatistics }, dispatch),
+    })
+  ),
+  graphql(removePerspectiveMutation, { name: 'removePerspective' }),
   onlyUpdateForKeys(['translation', 'status'])
 )(P);
 
-const D = (props) => {
-  const {
-    id, translation, status, state_translation_gist_id: statusId, perspectives, statuses, actions,
-  } = props;
+class D extends React.Component {
+  constructor(props) {
+    super(props);
+    this.onRemoveDictionary = this.onRemoveDictionary.bind(this);
+  }
 
-  return (
-    <List.Item>
-      <List.Content>
-        <Menu>
-          <Dropdown text={translation} pointing className="link item">
-            <Dropdown.Menu>
-              <Dropdown.Item icon="users" text="Roles..." onClick={() => actions.openRoles(id, 'dictionary')} />
-              <Dropdown.Item
-                icon="setting"
-                text="Properties..."
-                onClick={() => actions.openDictionaryPropertiesModal(id)}
-              />
-              <Dropdown.Item
-                icon="percent"
-                text="Statistics..."
-                onClick={() => actions.openStatistics(id, 'dictionary')}
-              />
-              <Dropdown.Item icon="circle" text="Create a new perspective..." />
-              <Dropdown.Item icon="save" text="Save dictionary" onClick={() => actions.openSaveDictionaryModal(id)} />
-              <Dropdown.Divider />
-              <Dropdown.Item icon="remove" text="Remove dictionary" />
-            </Dropdown.Menu>
-          </Dropdown>
+  onRemoveDictionary() {
+    const {
+      id, mode, category, removeDictionary,
+    } = this.props;
+    removeDictionary({
+      variables: {
+        id,
+      },
+      refetchQueries: [
+        {
+          query,
+          variables: {
+            mode,
+            category,
+          },
+        },
+      ],
+    });
+  }
 
-          <Menu.Menu position="right">
-            <DicionaryStatuses translation={status} statusId={statusId} parentId={id} statuses={statuses} />
-          </Menu.Menu>
-        </Menu>
-        <List relaxed>
-          {perspectives.map(perspective => (
-            <Perspective
-              key={compositeIdToString(perspective.id)}
-              {...perspective}
-              as={List.Item}
-              statuses={statuses}
-            />
-          ))}
-        </List>
-      </List.Content>
-    </List.Item>
-  );
-};
+  render() {
+    const {
+      id,
+      translation,
+      status,
+      state_translation_gist_id: statusId,
+      perspectives,
+      statuses,
+      actions,
+      mode,
+      category,
+    } = this.props;
+
+    return (
+      <List.Item>
+        <List.Content>
+          <Menu>
+            <Dropdown text={translation} pointing className="link item">
+              <Dropdown.Menu>
+                <Dropdown.Item icon="users" text="Roles..." onClick={() => actions.openRoles(id, 'dictionary')} />
+                <Dropdown.Item
+                  icon="setting"
+                  text="Properties..."
+                  onClick={() => actions.openDictionaryPropertiesModal(id)}
+                />
+                <Dropdown.Item
+                  icon="percent"
+                  text="Statistics..."
+                  onClick={() => actions.openStatistics(id, 'dictionary')}
+                />
+                <Dropdown.Item icon="circle" text="Create a new perspective..." />
+                <Dropdown.Item icon="save" text="Save dictionary" onClick={() => actions.openSaveDictionaryModal(id)} />
+                <Dropdown.Divider />
+                <Dropdown.Item icon="remove" text="Remove dictionary" onClick={this.onRemoveDictionary} />
+              </Dropdown.Menu>
+            </Dropdown>
+
+            <Menu.Menu position="right">
+              <DicionaryStatuses translation={status} statusId={statusId} parentId={id} statuses={statuses} />
+            </Menu.Menu>
+          </Menu>
+          <List relaxed>
+            {perspectives.map(perspective => (
+              <Perspective
+                key={compositeIdToString(perspective.id)}
+                {...perspective}
+                category={category}
+                mode={mode}
+                as={List.Item}
+                statuses={statuses}
+              />
+            ))}
+          </List>
+        </List.Content>
+      </List.Item>
+    );
+  }
+}
 
 D.propTypes = {
   id: PropTypes.array.isRequired,
   perspectives: PropTypes.array.isRequired,
   translation: PropTypes.string.isRequired,
+  mode: PropTypes.number.isRequired,
+  category: PropTypes.number.isRequired,
   status: PropTypes.string.isRequired,
   state_translation_gist_id: PropTypes.array.isRequired,
   statuses: PropTypes.array.isRequired,
   actions: PropTypes.object.isRequired,
+  removeDictionary: PropTypes.func.isRequired,
 };
 
 const Dictionary = compose(
-  connect(null, dispatch => ({
-    actions: bindActionCreators({ openRoles, openDictionaryPropertiesModal, openStatistics, openSaveDictionaryModal }, dispatch),
-  })),
+  connect(
+    null,
+    dispatch => ({
+      actions: bindActionCreators(
+        {
+          openRoles,
+          openDictionaryPropertiesModal,
+          openStatistics,
+          openSaveDictionaryModal,
+        },
+        dispatch
+      ),
+    })
+  ),
+  graphql(removeDictionaryMutation, { name: 'removeDictionary' }),
   onlyUpdateForKeys(['translation', 'status', 'perspectives'])
 )(D);
 
-const Dashboard = ({ data }) => {
+const Dashboard = ({ data, mode, category }) => {
   const { loading, dictionaries, all_statuses: statuses } = data;
   return (
     <Container>
@@ -249,7 +354,13 @@ const Dashboard = ({ data }) => {
         <List>
           {!loading &&
             dictionaries.map(dictionary => (
-              <Dictionary key={compositeIdToString(dictionary.id)} statuses={statuses} {...dictionary} />
+              <Dictionary
+                key={compositeIdToString(dictionary.id)}
+                statuses={statuses}
+                category={category}
+                mode={mode}
+                {...dictionary}
+              />
             ))}
         </List>
       </Dimmer.Dimmable>
@@ -264,7 +375,10 @@ Dashboard.propTypes = {
   category: PropTypes.number.isRequired,
 };
 
-const Dictionaries = compose(graphql(query), onlyUpdateForKeys(['data']))(Dashboard);
+const Dictionaries = compose(
+  graphql(query),
+  onlyUpdateForKeys(['data'])
+)(Dashboard);
 
 const DICTIONARIES_TABS = [
   {
