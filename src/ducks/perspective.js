@@ -71,7 +71,7 @@ export default combineReducers({
 });
 
 // Selectors
-const getPerspective = state => state.data.perspective;
+const getPerspective = state => state.perspective;
 
 export const selectors = {
   getPerspective,

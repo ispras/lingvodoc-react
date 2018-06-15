@@ -18,9 +18,6 @@ const LOCALE_SET = '@import/LOCALE_SET';
 function meta(blob) {
   return blob
     .set('translation', new Map());
-  // .set('spreads', new Set())
-  // .set('columns', new OrderedMap())
-  // .set('language', false);
 }
 
 function replaceSelect(state, payload) {

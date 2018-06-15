@@ -13,7 +13,6 @@ import TableHeader from './TableHeader';
 import TableBody from './TableBody';
 import Pagination from './Pagination';
 
-
 const dimmerStyle = { minHeight: '600px' };
 
 const ROWS_PER_PAGE = 20;
@@ -196,7 +195,7 @@ const P = ({
     );
   }
 
-  const lexicalEntries = !error ? data.perspective.lexical_entries : []; 
+  const lexicalEntries = !error ? data.perspective.lexical_entries : [];
 
   const addEntry = () => {
     createLexicalEntry({
@@ -215,7 +214,9 @@ const P = ({
       ],
     }).then(({ data: d }) => {
       if (!d.loading || !d.error) {
-        const { create_lexicalentry: { lexicalentry } } = d;
+        const {
+          create_lexicalentry: { lexicalentry },
+        } = d;
         addCreatedEntry(lexicalentry);
       }
     });
@@ -384,7 +385,7 @@ P.defaultProps = {
 
 const PerspectiveView = compose(
   connect(
-    ({ data: { perspective: { sortByField, createdEntries, selectedEntries } } }) => ({
+    ({ perspective: { sortByField, createdEntries, selectedEntries } }) => ({
       sortByField,
       createdEntries,
       selectedEntries,
@@ -405,7 +406,7 @@ const PerspectiveView = compose(
   graphql(removeLexicalEntriesMutation, { name: 'removeLexicalEntries' }),
   graphql(queryLexicalEntries, {
     options: { notifyOnNetworkStatusChange: true },
-  }),
+  })
 )(P);
 
 export const queryLexicalEntry = gql`
@@ -447,7 +448,10 @@ const LexicalEntryViewBase = ({
     return null;
   }
 
-  const { all_fields, perspective: { columns } } = data;
+  const {
+    all_fields,
+    perspective: { columns },
+  } = data;
 
   const fields = columns.map((column) => {
     const field = find(all_fields, f => isEqual(column.field_id, f.id));
@@ -552,7 +556,10 @@ const LexicalEntryViewBaseByIds = ({
     );
   }
 
-  const { all_fields, perspective: { columns, lexical_entries: entries } } = data;
+  const {
+    all_fields,
+    perspective: { columns, lexical_entries: entries },
+  } = data;
 
   const fields = columns.map((column) => {
     const field = find(all_fields, f => isEqual(column.field_id, f.id));
@@ -607,8 +614,10 @@ export const LexicalEntryViewByIds = compose(
 const PerspectiveViewWrapper = ({
   id, className, mode, entitiesMode, page, data, filter, sortByField,
 }) => {
-
-  const { all_fields: allFields, perspective: { columns } } = data;
+  const {
+    all_fields: allFields,
+    perspective: { columns },
+  } = data;
 
   return (
     <PerspectiveView

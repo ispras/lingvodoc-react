@@ -2,7 +2,6 @@ import locale from './locale';
 import task from './task';
 import user from './user';
 import snackbar from './snackbar';
-import data from './data';
 import saga from './saga';
 import language from './language';
 import player from './player';
@@ -16,6 +15,7 @@ import groupingTag from './groupingTag';
 import link from './link';
 import dictionaryProperties from './dictionaryProperties';
 import saveDictionary from './saveDictionary';
+import perspective from './perspective';
 import perspectiveProperties from './perspectiveProperties';
 import home from './home';
 import createDictionary from './createDictionary';
@@ -29,7 +29,6 @@ export default {
   task,
   user,
   snackbar,
-  data,
   saga,
   language,
   player,
@@ -43,6 +42,7 @@ export default {
   link,
   dictionaryProperties,
   saveDictionary,
+  perspective,
   perspectiveProperties,
   home,
   createDictionary,
