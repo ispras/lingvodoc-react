@@ -12,9 +12,9 @@ script:
 if: tag IS blank
 
 before_deploy:
-  - tar -zcf ${TRAVIS_BUILD_DIR}${REPO}-server-build-${TRAVIS_BUILD_NUMBER}.tar.gz dist/server
-  - tar -zcf ${TRAVIS_BUILD_DIR}${REPO}-proxy-build-${TRAVIS_BUILD_NUMBER}.tar.gz dist/proxy
-  - tar -zcf ${TRAVIS_BUILD_DIR}${REPO}-desktop-build-${TRAVIS_BUILD_NUMBER}.tar.gz dist/desktop
+  - tar -zcf ${TRAVIS_BUILD_DIR}${REPO}-server-build-${TRAVIS_BUILD_NUMBER}.tar.gz -C dist/server .
+  - tar -zcf ${TRAVIS_BUILD_DIR}${REPO}-proxy-build-${TRAVIS_BUILD_NUMBER}.tar.gz -C dist/proxy .
+  - tar -zcf ${TRAVIS_BUILD_DIR}${REPO}-desktop-build-${TRAVIS_BUILD_NUMBER}.tar.gz -C dist/desktop .
 
 deploy:
   provider: releases
