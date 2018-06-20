@@ -1,6 +1,10 @@
 const webpack = require('webpack');
+const path = require('path');
 const config = require('./config');
 const _ = require('./utils');
+
+const buildType = process.env.LINGVODOC_BUILD_TYPE ? process.env.LINGVODOC_BUILD_TYPE : "server";
+const buildTypePath = `${path.join(__dirname, '.')}/buildType.${buildType}`;
 
 module.exports = {
   entry: {
@@ -18,8 +22,9 @@ module.exports = {
     extensions: ['.js'],
     alias: {
       config: `${config.srcPath}/config/${process.env.REACT_WEBPACK_ENV}`,
+      buildType: buildTypePath,
       wavesurfer: require.resolve('wavesurfer.js'),
-      chroma: require.resolve('chroma-js'),
+      chroma: require.resolve('chroma-js')
     },
     modules: ['src', 'node_modules', 'vendor'],
   },
