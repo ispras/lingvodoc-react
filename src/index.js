@@ -31,10 +31,12 @@ if (__DEVELOPMENT__ && __DEVTOOLS__ && devTools) {
 
 const store = createStore(combinedReducer, composeEnhancers(applyMiddleware(...middlewares)));
 
+store.dispatch(setApolloClient(apollo));
+
 sagaMiddleware.run(mainFlow);
 sagaMiddleware.run(formActionSaga);
 store.dispatch(setRunner(sagaMiddleware.run));
-store.dispatch(setApolloClient(apollo));
+
 
 window.logger = bindActionCreators(
   {

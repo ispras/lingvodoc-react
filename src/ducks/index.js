@@ -23,6 +23,7 @@ import phonology from './phonology';
 import apolloClient from './apolloClient';
 import statistics from './statistics';
 import ban from './ban';
+import translations from './translations';
 
 export default {
   locale,
@@ -50,4 +51,5 @@ export default {
   apolloClient,
   statistics,
   ban,
+  translations,
 };

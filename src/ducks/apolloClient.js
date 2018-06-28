@@ -15,3 +15,7 @@ export default function (state = null, action = {}) {
 export function setApolloClient(payload) {
   return { type: SET_CLIENT, payload };
 }
+
+export const selectors = {
+  client: state => state.apolloClient,
+};
