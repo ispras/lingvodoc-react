@@ -7,13 +7,16 @@ import { Redirect, matchPath } from 'react-router-dom';
 import { graphql, gql } from 'react-apollo';
 import Immutable, { fromJS, Map } from 'immutable';
 import { Container, Checkbox, Segment, Button, Message } from 'semantic-ui-react';
+
 import { buildLanguageTree } from 'pages/Search/treeBuilder';
 import { setGrantsMode, resetDictionaries } from 'ducks/home';
 
 import config from 'config';
 
-import GrantedDicts from './GrantedDicts';
-import AllDicts from './AllDicts';
+import BackTopButton from 'components/BackTopButton';
+import GrantedDicts from './components/GrantedDicts';
+import AllDicts from './components/AllDicts';
+import { getScrollContainer } from './common';
 import './published.scss';
 
 const authenticatedDictionariesQuery = gql`
@@ -23,6 +26,7 @@ const authenticatedDictionariesQuery = gql`
       parent_id
       translation
       status
+      category
       additional_metadata {
         authors
       }
@@ -63,6 +67,7 @@ const guestDictionariesQuery = gql`
       parent_id
       translation
       status
+      category
       additional_metadata {
         authors
       }
@@ -189,6 +194,8 @@ const Home = (props) => {
     });
   }
 
+  const scrollContainer = getScrollContainer();
+
   return (
     <Container className="published">
       <Message padded="very" warning>
@@ -231,6 +238,7 @@ const Home = (props) => {
           isAuthenticated={isAuthenticated}
         />
       )}
+      <BackTopButton scrollContainer={scrollContainer} />
     </Container>
   );
 };

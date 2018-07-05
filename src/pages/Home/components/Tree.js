@@ -10,7 +10,7 @@ import { toggleDictionary } from 'ducks/home';
 
 import config from 'config';
 
-import './published.scss';
+import '../published.scss';
 
 function toId(arr, prefix = null) {
   const joiner = prefix ? arr[prefix] : arr;
@@ -86,8 +86,9 @@ const Dictionary = compose(
 const Language = ({ language, canSelectDictionaries }) => {
   const translation = language.get('translation');
   const children = language.get('children');
+  const id = language.get('id').toJS().toString();
   return (
-    <li className="lang">
+    <li className="lang" id={`lang_${id}`}>
       <span className="lang-name">{translation}</span>
       <ul>{children.map(n => <Node key={n.get('id')} node={n} canSelectDictionaries={canSelectDictionaries} />)}</ul>
     </li>

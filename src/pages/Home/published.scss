@@ -49,11 +49,16 @@ ul.tree {
 
 .lang {
   padding: 4px 2em;
+  transition: background-color 0.25s ease-in;
 
   .lang-name {
     padding-right: 9px;
     font-size: 1.2em;
     font-weight: bolder;
+  }
+
+  &.highlighted {
+    background-color: rgba(23,167,219,0.3);
   }
 }
 

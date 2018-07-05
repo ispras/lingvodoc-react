@@ -1,0 +1,41 @@
+.langs-nav-list {
+  &__wrap.segment.ui {
+    margin-top: 14px;
+  }
+
+  &__item {
+    display: flex;
+    flex-wrap: nowrap;
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+
+  &__item-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__inner-item {
+    display: inline;
+  }
+
+  &__letter {
+    min-width: 20px;
+  }
+
+  &__button {
+    padding: 0;
+    margin: 0;
+    color: #4183C4;
+    text-decoration: none;
+    border: none;
+    outline: none;
+    background-color: transparent;
+  }
+
+  &__button:hover {
+    color: #1e70bf;
+    cursor: pointer;
+  }
+}
