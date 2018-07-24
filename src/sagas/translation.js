@@ -6,7 +6,7 @@ import { putTranslations } from 'ducks/translations';
 
 const translationsQuery = gql`
   query translations {
-    translationgists {
+    translationgists(gists_type: "Service") {
       id
       type
       translationatoms {
@@ -28,7 +28,7 @@ export function* requestFlow() {
         variables: {},
       });
       const { translationgists } = data;
-      return translationgists.filter(g => g.type === 'Service');
+      return translationgists;
     } catch (e) {
       // XXX: masking the exception is a bad idea
     }
