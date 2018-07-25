@@ -10,6 +10,7 @@ import Merge from 'components/Merge';
 import NotFound from 'pages/NotFound';
 
 import './style.scss';
+import { queryLexicalEntries } from '../../components/PerspectiveView';
 
 export const launchSoundAndMarkupMutation = gql`
   mutation launchSoundAndMarkup(
@@ -32,6 +33,14 @@ const query = gql`
   }
 `;
 
+const queryCounter = gql`
+  query qcounter($id: LingvodocID! $mode: String!) {
+    perspective(id: $id) {
+      counter(mode: $mode)
+    }
+  }
+`;
+
 const PerspectivePath = graphql(query)(({ data }) => {
   if (data.loading) {
     return null;
@@ -49,6 +58,16 @@ const PerspectivePath = graphql(query)(({ data }) => {
     </Header>
   );
 });
+
+const Counter = graphql(queryCounter)(({ data }) => {
+  if (data.loading) {
+    return null;
+  }
+  const { perspective: { counter } } = data;
+  return ` (${counter})`;
+});
+
+// const EditText = 'all';
 
 const MODES = {
   edit: {
@@ -72,6 +91,7 @@ const MODES = {
     component: PerspectiveView,
   },
   merge: {
+    entitiesMode: 'all',
     text: 'Merge suggestions',
     component: Merge,
   },
@@ -108,12 +128,16 @@ const ModeSelector = onlyUpdateForKeys([
   'baseUrl',
   'filter',
 ])(({
-  mode, baseUrl, filter, submitFilter, openPhonologyModal, soundAndMarkup
+  mode, baseUrl, filter, submitFilter, openPhonologyModal, soundAndMarkup, id,
 }) => (
   <Menu tabular>
     {map(MODES, (info, stub) => (
       <Menu.Item key={stub} as={Link} to={`${baseUrl}/${stub}`} active={mode === stub}>
         {info.text}
+        {info.component === PerspectiveView ? (<Counter
+          id={id}
+          mode={info.entitiesMode}
+        />) : null}
       </Menu.Item>
     ))}
     <Dropdown item text="Tools">
@@ -129,26 +153,28 @@ const ModeSelector = onlyUpdateForKeys([
   </Menu>
 ));
 
-const soundAndMarkup = (perspectiveId, mode, launchSoundAndMarkup) =>
-{
+const soundAndMarkup = (perspectiveId, mode, launchSoundAndMarkup) => {
   launchSoundAndMarkup({
     variables: {
       perspectiveId,
-      publishedMode: mode == 'edit' ? 'all' : 'published' }
+      publishedMode: mode == 'edit' ? 'all' : 'published',
+    },
   }).then(
-    () => { window.logger.suc(
-      'Sound and markup compilation is being created. Check out tasks for details.'); },
-    () => { window.logger.err(
-      'Failed to launch sound and markup compilation!'); });
-}
+    () => {
+      window.logger.suc('Sound and markup compilation is being created. Check out tasks for details.');
+    },
+    () => {
+      window.logger.err('Failed to launch sound and markup compilation!');
+    }
+  );
+};
 
 const Perspective = ({
   perspective,
   submitFilter,
   openPhonologyModal,
-  launchSoundAndMarkup
+  launchSoundAndMarkup,
 }) => {
-
   const {
     id, mode, page, baseUrl,
   } = perspective.params;
@@ -160,6 +186,7 @@ const Perspective = ({
       <PerspectivePath id={id} />
       <ModeSelector
         mode={mode}
+        id={id}
         baseUrl={baseUrl}
         filter={perspective.filter}
         submitFilter={submitFilter}
@@ -197,5 +224,4 @@ Perspective.propTypes = {
 };
 
 export default
-  graphql(launchSoundAndMarkupMutation, { name: 'launchSoundAndMarkup' })(
-    Perspective);
+graphql(launchSoundAndMarkupMutation, { name: 'launchSoundAndMarkup' })(Perspective);
