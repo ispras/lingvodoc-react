@@ -34,7 +34,7 @@ function selected(state = new Immutable.Set(), { type, payload }) {
   }
 }
 
-function grantsMode(state = true, { type, payload }) {
+function grantsMode(state = false, { type, payload }) {
   switch (type) {
     case TOGGLE_GRANTS_MODE:
       return !state;

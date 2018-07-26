@@ -133,9 +133,17 @@ WaveSurfer.ELAN = {
     `;
   },
 
+  extractAlignment(ann) {
+    let buf = ann;
+    while (buf.type === 'REF_ANNOTATION') {
+      buf = buf.reference;
+    }
+    return buf;
+  },
+
   annotation(ann) {
     const isRef = ann.type === 'REF_ANNOTATION';
-    const { start, end } = isRef ? ann.reference : ann;
+    const { start, end } = this.extractAlignment(ann);
     const node = document.createElement('div');
     node.textContent = ann.value;
     node.title = `[${start} - ${end}] ${ann.value}`;

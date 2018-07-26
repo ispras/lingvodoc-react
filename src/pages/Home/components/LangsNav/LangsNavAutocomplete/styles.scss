@@ -1,0 +1,104 @@
+.langs-nav-autocomplete {
+  position: relative;
+  display: block !important;
+
+  &__item {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  &__item:hover {
+    cursor: pointer;
+  }
+
+  &__item_highlighted {
+    background: lightgray;
+  }
+
+  &__input {
+    width: 100%;
+  }
+
+  &__input + div {
+    position: absolute;
+    max-height: 300px;
+    top: 100% !important;
+    left: 0 !important;
+    min-width: 100% !important;
+    width: 100%;
+    overflow: auto;
+    background: #FFFFFF;
+    -webkit-box-shadow: 0px 1px 2px 0 rgba(34,36,38,0.15);
+    box-shadow: 0px 1px 2px 0 rgba(34,36,38,0.15);
+    border-radius: 0.28571429rem;
+    border: 1px solid rgba(34,36,38,0.15);
+  }
+
+  &__wrap {
+    height: 68px;
+    z-index: 1000;
+  }
+
+  &__wrap_fixed.segment {
+    position: fixed;
+    top: 46px;
+    left: 50%;
+    width: 500px;
+    margin-left: -250px;
+  }
+
+  &__substrate {
+    height: 68px;
+    margin-bottom: 14px;
+    margin-top: 14px;
+  }
+
+  &__wrap_fixed {
+    height: 91px;
+  }
+
+  &__wrap_fixed .langs-nav-autocomplete__form {
+    padding-top: 20px;
+  }
+
+  &__disable-beside {
+    position: absolute;
+    font-size: 22px;
+    top: -10px;
+    right: 0;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    outline: none;
+    border: none;
+    transition: color 0.15s ease-in;
+  }
+
+  &__disable-beside:hover {
+    cursor: pointer;
+  }
+
+  &__disable-beside:hover,
+  &__disable-beside:active,
+  &__disable-beside:focus {
+    color: rgba(0,0,0,0.6);
+  }
+
+
+  &__disable-beside .icon {
+    display: inline-block;
+    margin: 0;
+  }
+}
+
+@media (max-width: 520px) {
+  .langs-nav-autocomplete {
+    &__wrap_fixed.segment {
+      width: 100%;
+      left: 0;
+      margin-left: 0;
+    }
+  }
+}

@@ -413,7 +413,7 @@ const fieldListEntry = {
 function maybe_float(string, default_value)
 {
   var maybe_value = parseFloat(string);
-  return maybe_value == 0.0 ? 0.0 : (maybe_value || defaul_value);
+  return maybe_value == 0.0 ? 0.0 : (maybe_value || default_value);
 }
 
 function reducer(state, { type, payload }) {

@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Immutable, { fromJS } from 'immutable';
 import { assignDictsToTree, buildDictTrees } from 'pages/Search/treeBuilder';
+import LangsNav from 'pages/Home/components/LangsNav';
 import Tree from './Tree';
 
 function AllDicts(props) {
@@ -19,6 +20,7 @@ function AllDicts(props) {
 
   return (
     <div>
+      <LangsNav data={tree} />
       <Tree tree={tree} canSelectDictionaries={isAuthenticated} />
     </div>
   );
