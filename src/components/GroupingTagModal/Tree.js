@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { pure } from 'recompose';
 import SortableTree, { map } from 'react-sortable-tree';
 import { LexicalEntryModal } from 'components/Search/LanguageTree';
 
@@ -19,25 +20,15 @@ class Tree extends React.Component {
     this.generateNodeProps = this.generateNodeProps.bind(this);
   }
 
-  componentWillReceiveProps(props) {
-    const { resultsTree: oldResultsTree } = this.props;
-    const { resultsTree: newResultsTree } = props;
-    if (!oldResultsTree.equals(newResultsTree)) {
-      this.setState({
-        treeData: map({
-          treeData: props.resultsTree.toJS(),
-          callback: ({ node }) => ({ ...node, expanded: false }),
-          getNodeKey: ({ treeIndex }) => treeIndex,
-          ignoreCollapsed: false,
-        }),
-      });
-    }
-  }
-
   generateNodeProps({ node }) {
     const { actions, mode } = this.props;
     const defaultTitle = node.translation || 'None';
-    const title = node.type === 'perspective' ? <LexicalEntryModal node={node} actions={actions} entitiesMode={mode} /> : defaultTitle;
+    const title =
+      node.type === 'perspective' ? (
+        <LexicalEntryModal node={node} actions={actions} entitiesMode={mode} />
+      ) : (
+        defaultTitle
+      );
     return { title };
   }
 
@@ -67,4 +58,4 @@ Tree.defaultProps = {
   mode: 'all',
 };
 
-export default Tree;
+export default pure(Tree);

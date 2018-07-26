@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { compose, onlyUpdateForKeys, branch, renderComponent } from 'recompose';
+import { compose, onlyUpdateForKeys, branch, renderComponent, renderNothing } from 'recompose';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { gql, graphql } from 'react-apollo';
@@ -546,15 +546,6 @@ export const queryLexicalEntriesByIds = gql`
 const LexicalEntryViewBaseByIds = ({
   perspectiveId, mode, entitiesMode, data, actions,
 }) => {
-  const { loading } = data;
-
-  if (loading) {
-    return (
-      <Header as="h2" icon>
-        <Icon name="spinner" loading />
-      </Header>
-    );
-  }
 
   const {
     all_fields,
@@ -605,10 +596,10 @@ export const LexicalEntryView = graphql(queryLexicalEntry, {
 })(LexicalEntryViewBase);
 
 export const LexicalEntryViewByIds = compose(
-  onlyUpdateForKeys(['data']),
   graphql(queryLexicalEntriesByIds, {
     options: { notifyOnNetworkStatusChange: true },
-  })
+  }),
+  branch(({ data }) => data.loading, renderComponent(Placeholder)),
 )(LexicalEntryViewBaseByIds);
 
 const PerspectiveViewWrapper = ({
