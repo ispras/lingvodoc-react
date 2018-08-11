@@ -2,7 +2,7 @@ import 'babel-polyfill';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { AppContainer } from 'react-hot-loader';
-
+import { Provider } from 'react-redux';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import { createStore, applyMiddleware, compose, bindActionCreators } from 'redux';
 import createHistory from 'history/createBrowserHistory';
@@ -37,7 +37,6 @@ sagaMiddleware.run(mainFlow);
 sagaMiddleware.run(formActionSaga);
 store.dispatch(setRunner(sagaMiddleware.run));
 
-
 window.logger = bindActionCreators(
   {
     log,
@@ -55,11 +54,13 @@ const dest = document.getElementById('root');
 function render() {
   ReactDOM.render(
     <AppContainer>
-      <ApolloProvider store={store} client={apollo}>
-        <ConnectedRouter history={history}>
-          <Layout />
-        </ConnectedRouter>
-      </ApolloProvider>
+      <Provider store={store}>
+        <ApolloProvider client={apollo}>
+          <ConnectedRouter history={history}>
+            <Layout />
+          </ConnectedRouter>
+        </ApolloProvider>
+      </Provider>
     </AppContainer>,
     dest
   );

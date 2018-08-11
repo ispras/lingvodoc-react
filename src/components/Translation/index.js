@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { compose } from 'recompose';
-import { graphql, gql } from 'react-apollo';
+import { graphql } from 'react-apollo';
+import gql from 'graphql-tag';
 import { Button, List, Input, Select } from 'semantic-ui-react';
 import { head, nth, difference, isEmpty } from 'lodash';
 

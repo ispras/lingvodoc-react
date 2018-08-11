@@ -4,7 +4,8 @@ import { compose, onlyUpdateForKeys, branch, renderNothing, pure } from 'recompo
 
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { gql, graphql } from 'react-apollo';
+import { graphql } from 'react-apollo';
+import gql from 'graphql-tag';
 import { isEqual, find, take, drop, flow, groupBy, sortBy, reverse } from 'lodash';
 import { Table, Dimmer, Header, Icon, Button } from 'semantic-ui-react';
 

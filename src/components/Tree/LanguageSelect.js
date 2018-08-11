@@ -1,5 +1,6 @@
 import React from 'react';
-import { gql, graphql } from 'react-apollo';
+import { graphql } from 'react-apollo';
+import gql from 'graphql-tag';
 import styled from 'styled-components';
 import SortableTree, { map } from 'react-sortable-tree';
 import Immutable from 'immutable';

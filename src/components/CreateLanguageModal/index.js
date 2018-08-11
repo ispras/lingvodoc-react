@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { compose } from 'recompose';
-import { graphql, gql } from 'react-apollo';
+import { graphql } from 'react-apollo';
+import gql from 'graphql-tag';
 import { Button, Modal } from 'semantic-ui-react';
 import { closeModal } from 'ducks/language';
 import { bindActionCreators } from 'redux';

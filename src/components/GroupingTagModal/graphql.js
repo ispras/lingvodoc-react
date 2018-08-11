@@ -1,4 +1,4 @@
-import { gql } from 'react-apollo';
+import gql from 'graphql-tag';
 
 export const connectedQuery = gql`
   query connectedWords($id: LingvodocID!, $fieldId: LingvodocID!, $mode: String!) {

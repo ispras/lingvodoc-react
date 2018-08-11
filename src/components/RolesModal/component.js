@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { compose, onlyUpdateForKeys } from 'recompose';
-import { gql, graphql } from 'react-apollo';
+import { graphql } from 'react-apollo';
+import gql from 'graphql-tag';
 import { Container, Dropdown, Table, Radio } from 'semantic-ui-react';
 import { some, find, filter, union, uniq, without } from 'lodash';
 

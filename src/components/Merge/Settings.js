@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { compose, branch, renderNothing, pure, withReducer, withProps } from 'recompose';
-import { gql, graphql, withApollo } from 'react-apollo';
+import { graphql, withApollo } from 'react-apollo';
+import gql from 'graphql-tag';
 import Immutable, { fromJS } from 'immutable';
 import { isEqual, take, drop } from 'lodash';
 import { Header, Dropdown, List, Icon, Input, Button, Checkbox, Container, Segment, Divider } from 'semantic-ui-react';

@@ -1,10 +1,11 @@
-import React from 'react';
+﻿import React from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { compose, branch, renderNothing } from 'recompose';
 import { Redirect, matchPath } from 'react-router-dom';
-import { graphql, gql } from 'react-apollo';
+import { graphql } from 'react-apollo';
+import gql from 'graphql-tag';
 import Immutable, { fromJS, Map } from 'immutable';
 import { Container, Checkbox, Segment, Button, Message } from 'semantic-ui-react';
 

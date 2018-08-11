@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { gql, graphql } from 'react-apollo';
+import { graphql } from 'react-apollo';
+import gql from 'graphql-tag';
 import { compose, pure, branch, renderNothing } from 'recompose';
 import { Link, withRouter } from 'react-router-dom';
 import { Dropdown, Menu, Icon, Button } from 'semantic-ui-react';

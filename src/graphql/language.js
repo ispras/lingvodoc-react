@@ -1,4 +1,4 @@
-import { gql } from 'react-apollo';
+import gql from 'graphql-tag';
 
 export const languagesQuery = gql`
   query Languages {
@@ -14,19 +14,20 @@ export const languagesQuery = gql`
 `;
 
 export const createLanguageMutation = gql`
-  mutation ($parent_id: LingvodocID!, $translation_atoms: [ObjectVal]!) {
+  mutation($parent_id: LingvodocID!, $translation_atoms: [ObjectVal]!) {
     create_language(parent_id: $parent_id, translation_atoms: $translation_atoms) {
       language {
         id
         translation_gist_id
       }
     }
-}`;
+  }
+`;
 
 export const moveLanguageMutation = gql`
-mutation MoveLanguage($id: LingvodocID!, $parent_id: LingvodocID, $previous_sibling_id: LingvodocID) {
-  move_language(id: $id, parent_id: $parent_id, previous_sibling: $previous_sibling_id) {
-    triumph
+  mutation MoveLanguage($id: LingvodocID!, $parent_id: LingvodocID, $previous_sibling_id: LingvodocID) {
+    move_language(id: $id, parent_id: $parent_id, previous_sibling: $previous_sibling_id) {
+      triumph
+    }
   }
-}
 `;

@@ -1,5 +1,5 @@
 import { call, put, spawn, select } from 'redux-saga/effects';
-import { gql } from 'react-apollo';
+import gql from 'graphql-tag';
 import { err } from 'ducks/snackbar';
 import { selectors } from 'ducks/apolloClient';
 import { putTranslations } from 'ducks/translations';

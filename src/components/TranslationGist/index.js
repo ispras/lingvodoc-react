@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { graphql, gql } from 'react-apollo';
+import { graphql } from 'react-apollo';
+import gql from 'graphql-tag';
 
 import { Container, Button, List } from 'semantic-ui-react';
 import TranslationAtom from '../TranslationAtom';

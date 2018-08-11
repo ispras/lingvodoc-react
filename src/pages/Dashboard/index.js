@@ -2,9 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { compose, onlyUpdateForKeys } from 'recompose';
+import { compose, onlyUpdateForKeys, branch, renderNothing } from 'recompose';
 import { Link } from 'react-router-dom';
-import { gql, graphql } from 'react-apollo';
+import { graphql } from 'react-apollo';
+import gql from 'graphql-tag';
 import { Container, Dimmer, Tab, Header, List, Dropdown, Icon, Menu } from 'semantic-ui-react';
 import { isEqual } from 'lodash';
 import { compositeIdToString } from 'utils/compositeId';
@@ -377,7 +378,8 @@ Dashboard.propTypes = {
 
 const Dictionaries = compose(
   graphql(query),
-  onlyUpdateForKeys(['data'])
+  onlyUpdateForKeys(['data']),
+  branch(({ data }) => !!data.error, renderNothing)
 )(Dashboard);
 
 const DICTIONARIES_TABS = [

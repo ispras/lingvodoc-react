@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { compose, branch, renderNothing } from 'recompose';
-import { graphql, gql, withApollo } from 'react-apollo';
+import { graphql, withApollo } from 'react-apollo';
+import gql from 'graphql-tag';
 import { Breadcrumb, Button, Checkbox, Divider, Icon, Input, List, Modal, Select } from 'semantic-ui-react';
 import { closeModal } from 'ducks/phonology';
 import { bindActionCreators } from 'redux';

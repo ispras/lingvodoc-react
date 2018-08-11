@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { compose, branch, renderNothing } from 'recompose';
-import { graphql, gql, withApollo } from 'react-apollo';
+import { graphql, withApollo } from 'react-apollo';
+import gql from 'graphql-tag';
 import { closeModal } from 'ducks/ban';
 import { bindActionCreators } from 'redux';
 import { reduxForm } from 'redux-form';

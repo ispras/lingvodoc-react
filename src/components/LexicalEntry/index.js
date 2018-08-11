@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { compose, pure } from 'recompose';
-import { graphql, gql } from 'react-apollo';
+import { graphql } from 'react-apollo';
+import gql from 'graphql-tag';
 import { isEqual, filter, flow } from 'lodash';
 import { Button } from 'semantic-ui-react';
 import { compositeIdToString } from 'utils/compositeId';

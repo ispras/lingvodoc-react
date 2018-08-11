@@ -2,7 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { compose, onlyUpdateForKeys } from 'recompose';
 import { isEqual, findIndex } from 'lodash';
-import { gql, graphql } from 'react-apollo';
+import { graphql } from 'react-apollo';
+import gql from 'graphql-tag';
 import { Button, List, Dropdown, Grid, Checkbox } from 'semantic-ui-react';
 import { compositeIdToString } from 'utils/compositeId';
 
