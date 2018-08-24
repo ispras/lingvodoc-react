@@ -6,64 +6,84 @@ import { Button, Input, Checkbox } from 'semantic-ui-react';
 
 import Entities from './index';
 
-const TextEntityContent = onlyUpdateForKeys(['entity'])(({
-  entity, mode, publish, accept, remove,
-}) => {
-  let control = null;
-  switch (mode) {
-    case 'edit':
-      return (
-        <div>
-          {entity.content}
-          <Button.Group basic icon size="mini">
-            <Button icon="edit" />
-            <Button icon="remove" onClick={() => remove(entity)} />
-          </Button.Group>
-        </div>
-      );
-    case 'publish':
-      // control = entity.published ? (
-      //   <Button icon="remove" onClick={() => publish(entity, false)} />
-      // ) : (
-      //   <Button icon="checkmark" onClick={() => publish(entity, true)} />
-      // );
-      // return (
-      //   <div>
-      //     {entity.content}
-      //     <Button.Group basic icon size="mini">
-      //       {control}
-      //     </Button.Group>
-      //   </div>
-      // );
-      return (
-        <div>
-          {entity.content}
-          <Checkbox
-            size="tiny"
-            defaultChecked={entity.published}
-            onChange={(e, { checked }) => publish(entity, checked)}
-          />
-        </div>
-      );
+class TextEntityContent extends React.Component {
+  constructor(props) {
+    super(props);
 
-    case 'view':
-      return entity.content;
-    case 'contributions':
-      control = entity.accepted ? (
-        <Button icon="remove" onClick={() => accept(entity, false)} />
-      ) : (
-        <Button icon="checkmark" onClick={() => accept(entity, true)} />
-      );
-      return (
-        <Button.Group basic icon size="mini">
-          <Button content={entity.content} />
-          {control}
-        </Button.Group>
-      );
-    default:
-      return null;
+    this.state = {
+      edit: false,
+      content: props.entity.content,
+    };
+
+    this.onEdit = this.onEdit.bind(this);
   }
-});
+
+  onEdit() {
+    const { entity, update } = this.props;
+    const { edit, content } = this.state;
+    if (!edit) {
+      this.setState({ edit: true });
+    } else {
+      update(entity, content);
+      this.setState({ edit: false });
+    }
+  }
+
+  render() {
+    const {
+      entity, mode, publish, accept, remove, update,
+    } = this.props;
+
+    let control = null;
+    switch (mode) {
+      case 'edit':
+        return (
+          <div>
+            {!this.state.edit && this.state.content}
+            {this.state.edit && (
+              <Input
+                size="mini"
+                onChange={(event, target) => this.setState({ content: target.value })}
+                value={this.state.content}
+              />
+            )}
+            <Button.Group basic icon size="mini">
+              <Button icon="edit" onClick={this.onEdit} />
+              <Button icon="remove" onClick={() => remove(entity)} />
+            </Button.Group>
+          </div>
+        );
+      case 'publish':
+        return (
+          <div>
+            {entity.content}
+            <Checkbox
+              size="tiny"
+              defaultChecked={entity.published}
+              onChange={(e, { checked }) => publish(entity, checked)}
+            />
+          </div>
+        );
+
+      case 'view':
+        return entity.content;
+      case 'contributions':
+        control = entity.accepted ? (
+          <Button icon="remove" onClick={() => accept(entity, false)} />
+        ) : (
+          <Button icon="checkmark" onClick={() => accept(entity, true)} />
+        );
+        return (
+          <Button.Group basic icon size="mini">
+            <Button content={entity.content} />
+            {control}
+          </Button.Group>
+        );
+      default:
+        return null;
+    }
+  }
+}
 
 const Text = onlyUpdateForKeys(['entry', 'entity'])((props) => {
   const {
@@ -79,13 +99,21 @@ const Text = onlyUpdateForKeys(['entry', 'entity'])((props) => {
     publish,
     accept,
     remove,
+    update,
   } = props;
 
   const subColumn = find(columns, c => isEqual(c.self_id, column.column_id));
 
   return (
     <Component className={className}>
-      <TextEntityContent entity={entity} mode={mode} publish={publish} accept={accept} remove={remove} />
+      <TextEntityContent
+        entity={entity}
+        mode={mode}
+        publish={publish}
+        accept={accept}
+        remove={remove}
+        update={update}
+      />
       {subColumn && (
         <Entities
           perspectiveId={perspectiveId}
@@ -97,6 +125,7 @@ const Text = onlyUpdateForKeys(['entry', 'entity'])((props) => {
           publish={publish}
           remove={remove}
           accept={accept}
+          update={update}
         />
       )}
     </Component>
@@ -116,6 +145,7 @@ Text.propTypes = {
   publish: PropTypes.func,
   accept: PropTypes.func,
   remove: PropTypes.func,
+  update: PropTypes.func,
 };
 
 Text.defaultProps = {

@@ -47,6 +47,15 @@ const removeEntityMutation = gql`
   }
 `;
 
+const updateEntityMutation = gql`
+  mutation updateEntity($id: LingvodocID!, $content: String!) {
+    update_entity_content(id: $id, content: $content) {
+      triumph
+    }
+  }
+`;
+
+
 const lexicalEntryQuery = gql`
   query LexicalEntryQuery($id: LingvodocID!, $entitiesMode: String!) {
     lexicalentry(id: $id) {
@@ -93,6 +102,7 @@ class Entities extends React.Component {
     this.publish = this.publish.bind(this);
     this.accept = this.accept.bind(this);
     this.remove = this.remove.bind(this);
+    this.update = this.update.bind(this);
   }
 
   create(content) {
@@ -166,6 +176,23 @@ class Entities extends React.Component {
     });
   }
 
+  update(entity, content) {
+    const { entry, entitiesMode, updateEntity } = this.props;
+    updateEntity({
+      variables: { id: entity.id, content },
+      refetchQueries: [
+        {
+          query: lexicalEntryQuery,
+          variables: {
+            id: entry.id,
+            entitiesMode,
+          },
+        },
+      ],
+    });
+  }
+
+
   render() {
     const {
       perspectiveId, entry, column, columns, mode, entitiesMode, parentEntity,
@@ -200,6 +227,7 @@ class Entities extends React.Component {
             publish={this.publish}
             remove={this.remove}
             accept={this.accept}
+            update={this.update}
           />
         ))}
         <li className="last">
@@ -228,6 +256,7 @@ Entities.propTypes = {
   publishEntity: PropTypes.func.isRequired,
   acceptEntity: PropTypes.func.isRequired,
   removeEntity: PropTypes.func.isRequired,
+  updateEntity: PropTypes.func.isRequired,
 };
 
 Entities.defaultProps = {
@@ -239,5 +268,6 @@ export default compose(
   graphql(acceptEntityMutation, { name: 'acceptEntity' }),
   graphql(createEntityMutation, { name: 'createEntity' }),
   graphql(removeEntityMutation, { name: 'removeEntity' }),
+  graphql(updateEntityMutation, { name: 'updateEntity' }),
   pure
 )(Entities);
