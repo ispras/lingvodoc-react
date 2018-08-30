@@ -16,8 +16,8 @@ import GroupingTag from './GroupingTag';
 import Unknown from './Unknown';
 
 const createEntityMutation = gql`
-  mutation createEntity($parent_id: LingvodocID!, $field_id: LingvodocID!, $content: String) {
-    create_entity(parent_id: $parent_id, field_id: $field_id, content: $content) {
+  mutation createEntity($parent_id: LingvodocID!, $field_id: LingvodocID!, $content: String, $file_content: Upload) {
+    create_entity(parent_id: $parent_id, field_id: $field_id, content: $content, file_content: $file_content) {
       triumph
     }
   }
@@ -110,8 +110,17 @@ class Entities extends React.Component {
       entry, column, entitiesMode, createEntity,
     } = this.props;
 
+    const variables = { parent_id: entry.id, field_id: column.id }
+    if (content instanceof File) {
+      variables.content = null;
+      variables.file_content = content;
+    } else {
+      variables.content = content;
+      variables.file_content = null;
+    }
+
     createEntity({
-      variables: { parent_id: entry.id, field_id: column.id, content },
+      variables,
       refetchQueries: [
         {
           query: lexicalEntryQuery,
