@@ -10,7 +10,7 @@ class LanguagesTree extends React.Component {
   static buildTree(languagesTree) {
     return map({
       treeData: languagesTree.toJS(),
-      callback: ({ node }) => ({ ...node, expanded: false }),
+      callback: ({ node }) => ({ ...node, expanded: true }),
       getNodeKey: ({ treeIndex }) => treeIndex,
       ignoreCollapsed: false,
     });
