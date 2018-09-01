@@ -8,10 +8,11 @@ class Tree extends React.Component {
   constructor(props) {
     super(props);
 
+
     this.state = {
       treeData: map({
         treeData: props.resultsTree.toJS(),
-        callback: ({ node }) => ({ ...node, expanded: false }),
+        callback: ({ node }) => ({ ...node, expanded: true }),
         getNodeKey: ({ treeIndex }) => treeIndex,
         ignoreCollapsed: false,
       }),

@@ -21,7 +21,7 @@ const userBlobsQuery = gql`
 `;
 
 const createBlobMutation = gql`
-  mutation createBlob($data_type: String!, $content: Upload!) {
+  mutation createBlob($data_type: String!, $content: Upload) {
     create_userblob(data_type: $data_type, file1: $content) {
       triumph
     }
