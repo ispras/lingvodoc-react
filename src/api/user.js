@@ -24,7 +24,9 @@ export function signIn({ login, password }) {
 }
 
 export function signUp(form) {
-  return httpPost('/signup', Object.assign(form, DEFAULT_BIRTH));
+  return httpPost('/signup',
+    Object.assign(form, DEFAULT_BIRTH, {
+      api_url: window.location.origin + config.apiUrl}));
 }
 
 export function editProfile({
