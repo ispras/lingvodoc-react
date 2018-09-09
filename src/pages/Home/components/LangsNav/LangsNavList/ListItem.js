@@ -20,7 +20,8 @@ const ListItem = ({ data, onLangSelect }) => {
   const list = data[1];
 
   const itemList = list.map((lang, index, arr) => {
-    const text = `${lang.translation} [${lang.dictsCount.dicts} | ${lang.dictsCount.corps}]`;
+    const thinSpace = '\u2009';
+    const text = `${lang.translation} [${lang.dictsCount.dicts}${thinSpace}|${thinSpace}${lang.dictsCount.corps}]`;
 
     return (
       <li key={lang.id} className={classNames.innerItem}>

@@ -287,6 +287,8 @@ const dictionaryWithPerspectivesQuery = gql`
       id
       parent_id
       translation
+      translation_gist {
+        translationatoms { locale_id content } }
       created_at
     }
     is_authenticated
@@ -325,6 +327,8 @@ const dictionaryWithPerspectivesProxyQuery = gql`
       id
       parent_id
       translation
+      translation_gist {
+        translationatoms { locale_id content } }
       created_at
     }
     is_authenticated
