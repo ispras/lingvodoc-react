@@ -12,6 +12,7 @@ import LinkModal from 'components/LinkModal';
 import DictionaryProperties from 'components/DictionaryPropertiesModal';
 import SaveDictionary from 'components/SaveDictionaryModal';
 import PerspectiveProperties from 'components/PerspectivePropertiesModal';
+import PhonemicAnalysisModal from 'components/PhonemicAnalysisModal';
 import PhonologyModal from 'components/PhonologyModal';
 import ConverEafModal from 'components/ConverEafModal';
 import StatisticsModal from 'components/StatisticsModal';
@@ -45,6 +46,7 @@ const Layout = () => (
     <DictionaryProperties />
     <SaveDictionary />
     <PerspectiveProperties />
+    <PhonemicAnalysisModal />
     <PhonologyModal />
     <ConverEafModal />
     <StatisticsModal />

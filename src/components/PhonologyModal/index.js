@@ -85,7 +85,7 @@ class PhonologyModal extends React.Component
     this.fieldDict = {};
     
     for (const field of allFields)
-      this.fieldDict[compositeIdToString(field.id)] = field;;
+      this.fieldDict[compositeIdToString(field.id)] = field;
 
     /* Additional info of fields of our perspective. */
 

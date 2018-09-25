@@ -19,6 +19,7 @@ import perspective from './perspective';
 import perspectiveProperties from './perspectiveProperties';
 import home from './home';
 import createDictionary from './createDictionary';
+import phonemicAnalysis from './phonemicAnalysis';
 import phonology from './phonology';
 import apolloClient from './apolloClient';
 import statistics from './statistics';
@@ -47,6 +48,7 @@ export default {
   perspectiveProperties,
   home,
   createDictionary,
+  phonemicAnalysis,
   phonology,
   apolloClient,
   statistics,
