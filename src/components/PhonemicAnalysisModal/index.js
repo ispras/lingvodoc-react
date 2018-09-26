@@ -130,9 +130,9 @@ class PhonemicAnalysisModal extends React.Component
             {this.textFields.length > 0 && (
               <Select
                 defaultValue={this.state.textFieldIdStr}
-                placeholder="Input text field"
+                placeholder="Source text field"
                 options={textFieldsOptions}
-                onChange={(e, { value }) => this.setState({ translationFieldIdStr: value })}
+                onChange={(e, { value }) => this.setState({ textFieldIdStr: value })}
               />
             )}
             {this.textFields.length <= 0 && (
