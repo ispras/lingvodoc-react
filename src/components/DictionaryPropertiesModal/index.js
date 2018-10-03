@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { branch, compose, onlyUpdateForKeys, renderNothing } from 'recompose';
 import { graphql } from 'react-apollo';
+import TranslationGist from 'components/TranslationGist';
 import gql from 'graphql-tag';
 import { connect } from 'react-redux';
 import { Button, Dropdown, Modal, Input, Segment, Grid, Header } from 'semantic-ui-react';
@@ -16,7 +17,7 @@ const query = gql`
     dictionary(id: $id) {
       id
       parent_id
-      translation
+      translation_gist_id
       additional_metadata {
         authors
         location
@@ -173,7 +174,7 @@ class Properties extends React.Component {
   render() {
     const { data: { dictionary, user_blobs: files }, actions } = this.props;
 
-    const { translation } = dictionary;
+    const { translation_gist_id: gistId } = dictionary;
 
     const options = files.map(file => ({ key: file.id, text: file.name, value: compositeIdToString(file.id) }));
 
@@ -181,7 +182,7 @@ class Properties extends React.Component {
       <Modal open dimmer size="fullscreen">
         <Modal.Content>
           <Segment>
-            <Header size="large">{translation}</Header>
+            <TranslationGist id={gistId} editable />
           </Segment>
           <Segment>
             <Grid>
