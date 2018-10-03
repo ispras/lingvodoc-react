@@ -1,9 +1,11 @@
 language: node_js
 node_js:
-- '8'
+  - '8'
+install:
+  - npm ci
 cache:
   directories:
-  - node_modules
+    - node_modules
 script:
   - LINGVODOC_BUILD_TYPE="server" npm run build
   - LINGVODOC_BUILD_TYPE="proxy" npm run build
@@ -28,5 +30,5 @@ deploy:
   skip_cleanup: true
   on:
     repo: ispras/lingvodoc-react
-    branch: master
+    branch: travis-ci-test
 
