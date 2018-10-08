@@ -15,6 +15,7 @@ import { DictionaryDashboard, CorpusDashboard } from 'pages/Dashboard';
 import { CreateDictionary, CreateCorpus } from 'pages/CreateDictionary';
 import Grants from 'pages/Grants';
 import Requests from 'pages/Requests';
+import EditTranslations from 'pages/EditTranslations';
 
 import config from 'config';
 
@@ -37,6 +38,7 @@ const Routes = () => (
     <Route path="/dictionary/:pcid/:poid/perspective/:cid/:oid" component={Perspective} />
     <Route path="/#/dictionary/:pcid/:poid/perspective/:cid/:oid" component={Perspective} />
     <Route path="/files" component={Files} />
+    <Route path="/edit_translations" component={EditTranslations} />
     <Route component={NotFound} />
   </Switch>
 );
