@@ -70,7 +70,7 @@ class EditTranslations extends React.Component {
     const { selectedCategory } = this.state;
     let translatedCategories = [];
     for (let i = 0; i < translated.length; i++) {
-      i18n[i] = translated[i].translation;
+      i18n[i] =  translated[i] ? translated[i].translation : null;
       if (i < 7)
         translatedCategories[i] = translated[i] ? translated[i].translation : categories[i];
     }
