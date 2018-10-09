@@ -240,8 +240,7 @@ const languageSet = {
   'Yugur': '',
 };
 
-const checkLanguage = (language) => {
-
+export const checkLanguage = (language) => {
   const atoms = language.translation_gist.translationatoms;
   var i = 0;
 

@@ -7,6 +7,7 @@ import Immutable from 'immutable';
 import { Link } from 'react-router-dom';
 import { Dropdown, Checkbox, Icon } from 'semantic-ui-react';
 import { toggleDictionary } from 'ducks/home';
+import { checkLanguage } from './LangsNav';
 
 import config from 'config';
 
@@ -87,9 +88,18 @@ const Language = ({ language, canSelectDictionaries }) => {
   const translation = language.get('translation');
   const children = language.get('children');
   const id = language.get('id').toJS().toString();
+  const parent_id = language.get('parent_id');
+  let langClass = "lang-name";
+  if (parent_id == null) {
+    langClass = "root-lang-name";
+  }
+  else if (checkLanguage({ translation_gist: language.get('translation_gist').toJS() })) {
+    langClass = "confirmed-lang-name";
+  }
+  
   return (
     <li className="lang" id={`lang_${id}`}>
-      <span className="lang-name">{translation}</span>
+      <span className={langClass}>{translation}</span>
       <ul>{children.map(n => <Node key={n.get('id')} node={n} canSelectDictionaries={canSelectDictionaries} />)}</ul>
     </li>
   );
