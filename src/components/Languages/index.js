@@ -13,7 +13,7 @@ import { buildLanguageTree } from 'pages/Search/treeBuilder';
 import LanguagesTree from './LanguagesTree';
 
 const Languages = (props) => {
-  const { data, moveLanguage, actions, onSelect } = props;
+  const { data, moveLanguage, actions, height, onSelect } = props;
   const { error, loading } = data;
   if (error || loading) {
     return null;
@@ -21,8 +21,9 @@ const Languages = (props) => {
 
   const { language_tree: languages, is_authenticated: isAuthenticated } = data;
   const languagesTree = buildLanguageTree(Immutable.fromJS(languages));
+  let heightStyle = height ? { height: height } : { height: '100%' };
   return (
-    <div style={{ height: '100%' }}>
+    <div style={heightStyle}>
       <LanguagesTree
         languagesTree={languagesTree}
         edit={isAuthenticated}

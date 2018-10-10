@@ -2,11 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { branch, compose, onlyUpdateForKeys, renderNothing } from 'recompose';
-import { graphql } from 'react-apollo';
+import { graphql, withApollo } from 'react-apollo';
 import TranslationGist from 'components/TranslationGist';
+import Languages from 'components/Languages';
 import gql from 'graphql-tag';
 import { connect } from 'react-redux';
-import { Button, Dropdown, Modal, Input, Segment, Grid, Header } from 'semantic-ui-react';
+import { Button, Dropdown, Modal, Input, Segment, Grid, Container, Label } from 'semantic-ui-react';
 import { closeDictionaryPropertiesModal } from 'ducks/dictionaryProperties';
 import { isEqual } from 'lodash';
 import { compositeIdToString } from 'utils/compositeId';
@@ -36,6 +37,23 @@ const query = gql`
   }
 `;
 
+const getParentLanguageQuery = gql`
+  query getParentLanguage($id: LingvodocID!) {
+    language(id: $id) {
+      id
+      translation
+    }
+  }
+`;
+
+const updateParentMutation = gql`
+  mutation updateParentLanguage($id: LingvodocID!, $parent_id: LingvodocID!) {
+    update_dictionary(id: $id, parent_id: $parent_id) {
+      triumph
+    }
+  }
+`;
+
 const updateMetadataMutation = gql`
   mutation UpdateMetadata($id: LingvodocID!, $meta: ObjectVal!) {
     update_dictionary(id: $id, additional_metadata: $meta) {
@@ -52,6 +70,8 @@ class Properties extends React.Component {
       location: null,
       tags: '',
       files: [],
+      parent: null,
+      selectedParent: null,
     };
 
     this.onChangeAuthors = this.onChangeAuthors.bind(this);
@@ -63,6 +83,8 @@ class Properties extends React.Component {
     this.onChangeFiles = this.onChangeFiles.bind(this);
     this.onSaveFiles = this.onSaveFiles.bind(this);
     this.saveMeta = this.saveMeta.bind(this);
+    this.onSelectParentLanguage = this.onSelectParentLanguage.bind(this);
+    this.onUpdateParentLanguage = this.onUpdateParentLanguage.bind(this);
   }
 
   componentWillReceiveProps(props) {
@@ -73,6 +95,7 @@ class Properties extends React.Component {
           authors, location, tag_list: tagList, blobs,
         },
       } = dictionary;
+
       if (authors !== this.state.authors && authors !== null) {
         this.setState({
           authors,
@@ -96,6 +119,26 @@ class Properties extends React.Component {
           files: blobs.map(compositeIdToString),
         });
       }
+    }
+  }
+
+  componentDidMount() {
+    const { data: { error, loading, dictionary }, client } = this.props;
+    if (loading || error) {
+      return;
+    }
+
+    const { parent_id } = dictionary;
+    if (this.state.parent == null || this.state.parent.id != parent_id) {
+      client.query({
+        query: getParentLanguageQuery,
+        variables: { id: parent_id }
+      }).then(result => {
+        this.setState({
+          parent: result.data.language,
+          selectedParent: result.data.language
+        });
+      });
     }
   }
 
@@ -171,12 +214,31 @@ class Properties extends React.Component {
     });
   }
 
+  onSelectParentLanguage(parent) {
+    this.setState({ selectedParent: parent });
+  }
+
+  onUpdateParentLanguage() {
+    const { data: { dictionary }, client } = this.props;
+    client.mutate({
+      mutation: updateParentMutation,
+      variables: {
+        id: dictionary.id,
+        parent_id: this.state.selectedParent.id
+      }
+    }).then(result => {
+      this.props.data.refetch().then(result => {
+        this.setState({ parent: this.state.selectedParent });
+      });
+    });
+  }
+
   render() {
     const { data: { dictionary, user_blobs: files }, actions } = this.props;
-
     const { translation_gist_id: gistId } = dictionary;
-
     const options = files.map(file => ({ key: file.id, text: file.name, value: compositeIdToString(file.id) }));
+    const parentName = this.state.parent == null ? null : this.state.parent.translation;
+    const selectedParentName = this.state.selectedParent == null ? null : this.state.selectedParent.translation;
 
     return (
       <Modal open dimmer size="fullscreen">
@@ -244,9 +306,20 @@ class Properties extends React.Component {
               </Grid.Column>
             </Grid>
           </Segment>
-          <Segment>
-            <Map location={this.state.location} authors={this.state.authors} onChange={this.onChangeLocation} />
-          </Segment>
+          <Grid>
+            <Grid.Column width={8}>
+              <div style={{ height: '400px' }}>
+                <Container>
+                  <Label size="large">Parent language: {selectedParentName || parentName}</Label>
+                  <Button size="medium" disabled={selectedParentName == parentName} onClick={this.onUpdateParentLanguage}>Update</Button>
+                </Container>
+                <Languages height='95%' onSelect={this.onSelectParentLanguage}/>
+              </div>
+            </Grid.Column>
+            <Grid.Column width={8}>
+              <Map location={this.state.location} authors={this.state.authors} onChange={this.onChangeLocation} />
+            </Grid.Column>
+          </Grid>
         </Modal.Content>
         <Modal.Actions>
           <Button icon="minus" content="Close" onClick={actions.closeDictionaryPropertiesModal} />
@@ -276,5 +349,6 @@ export default compose(
   graphql(query),
   graphql(updateMetadataMutation, { name: 'update' }),
   branch(({ data: { loading, error } }) => loading || !!error, renderNothing),
-  onlyUpdateForKeys(['id', 'data'])
+  onlyUpdateForKeys(['id', 'data']),
+  withApollo,
 )(Properties);
