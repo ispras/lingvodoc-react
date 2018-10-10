@@ -7,7 +7,7 @@ import { Redirect, matchPath } from 'react-router-dom';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import Immutable, { fromJS, Map } from 'immutable';
-import { Container, Checkbox, Segment, Button, Message } from 'semantic-ui-react';
+import { Container, Form, Radio, Segment, Button, Message } from 'semantic-ui-react';
 
 import { buildLanguageTree } from 'pages/Search/treeBuilder';
 import { setGrantsMode, resetDictionaries } from 'ducks/home';
@@ -184,8 +184,6 @@ const Home = (props) => {
       limited: hasPermission(perspective, 'limited'),
     }));
 
-  const sortMode = grantsMode ? 'by grants' : 'by languages';
-
   function download() {
     const ids = selected.toJS();
     downloadDictionaries({
@@ -205,14 +203,28 @@ const Home = (props) => {
           <a href="http://old.lingvodoc.at.ispras.ru">http://old.lingvodoc.at.ispras.ru</a>
         </b>
       </Message>
-      <Segment padded="very">
-        <b style={{ fontSize: '1.2em' }}>Display mode </b>
-        <Checkbox
-          toggle
-          label={{ children: <div className="toggle-label">{sortMode}</div> }}
-          defaultChecked={grantsMode}
-          onChange={(e, v) => actions.setGrantsMode(v.checked)}
-        />
+      <Segment>
+        <Form>
+          <Form.Group inline className="toggle-label">
+            <label>Display mode</label>
+            <Segment>
+              <Form.Field
+                control={Radio}
+                label={{ children: <div className="toggle-label">By Languages</div> }}
+                value='1'
+                checked={!grantsMode}
+                onChange={() => actions.setGrantsMode(false)}
+              />
+              <Form.Field
+                control={Radio}
+                label={{ children: <div className="toggle-label">By Grants</div> }}
+                value='2'
+                checked={grantsMode}
+                onChange={() => actions.setGrantsMode(true)}
+              />
+            </Segment>
+          </Form.Group>
+        </Form>
 
         {isAuthenticated &&
           (config.buildType === 'desktop' || config.buildType === 'proxy') && (
