@@ -149,6 +149,7 @@ const languageSet = [
   '500,121', // Bashkir
   '1076,22', // Buryat language
   '33,90', // Chalkan dialect
+  '216,8', // Chulym
   '1574,272286', // Chuvash
   '295,8', // Chuvash language
   '1100,4', // Crimean Tatar
