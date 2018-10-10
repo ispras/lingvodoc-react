@@ -4,7 +4,7 @@ import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import { compose, pure, branch, renderNothing } from 'recompose';
 import { Link, withRouter } from 'react-router-dom';
-import { Dropdown, Menu, Icon, Button } from 'semantic-ui-react';
+import { Dropdown, Menu, Button } from 'semantic-ui-react';
 import styled from 'styled-components';
 import config from 'config';
 
@@ -84,6 +84,10 @@ const DashboardWithData = graphql(gql`
   }
 `)(Dashboard);
 
+function openHelp() {
+  window.open('https://github.com/ispras/lingvodoc-react/wiki', '_blank');
+}
+
 const NavBar = pure(({ location }) => (
   <Menu fixed="top">
     <Menu.Item as={Link} to={config.homePath}>
@@ -125,6 +129,9 @@ const NavBar = pure(({ location }) => (
       <User />
       <Tasks />
       <Locale />
+      <Menu.Item>
+        <Button primary negative onClick={openHelp}>Help</Button>
+      </Menu.Item>
     </Menu.Menu>
   </Menu>
 ));
