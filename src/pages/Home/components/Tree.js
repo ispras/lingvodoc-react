@@ -93,7 +93,7 @@ const Language = ({ language, canSelectDictionaries }) => {
   if (parent_id == null) {
     langClass = "root-lang-name";
   }
-  else if (checkLanguage({ translation_gist: language.get('translation_gist').toJS() })) {
+  else if (checkLanguage({ id: id })) {
     langClass = "confirmed-lang-name";
   }
   
