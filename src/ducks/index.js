@@ -25,6 +25,7 @@ import apolloClient from './apolloClient';
 import statistics from './statistics';
 import ban from './ban';
 import translations from './translations';
+import lexicalEntry from './lexicalEntry';
 
 export default {
   locale,
@@ -54,4 +55,5 @@ export default {
   statistics,
   ban,
   translations,
+  lexicalEntry,
 };

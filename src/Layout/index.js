@@ -17,6 +17,7 @@ import PhonologyModal from 'components/PhonologyModal';
 import ConverEafModal from 'components/ConverEafModal';
 import StatisticsModal from 'components/StatisticsModal';
 import BanModal from 'components/BanModal';
+import LexicalEntryModal from 'components/LexicalEntryModal';
 
 import NavBar from './NavBar';
 import TasksSidebar from './TasksSidebar';
@@ -51,6 +52,7 @@ const Layout = () => (
     <ConverEafModal />
     <StatisticsModal />
     <BanModal />
+    <LexicalEntryModal />
   </div>
 );
 

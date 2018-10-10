@@ -242,7 +242,7 @@ class GroupingTagModal extends React.Component {
   }
 
   joinGroup(targetEntry) {
-    // disconnect lexical entry from group
+    // connect to lexical group
     const {
       connect: mutate, lexicalEntry, fieldId, entitiesMode,
     } = this.props;
@@ -250,15 +250,18 @@ class GroupingTagModal extends React.Component {
     mutate({
       variables: { fieldId, connections: [lexicalEntry.id, targetEntry.id] },
       refetchQueries: [
-        {
-          query: connectedQuery,
-          variables: {
-            id: lexicalEntry.id,
-            fieldId,
-            mode: entitiesMode,
-          },
-        },
+      // XXX: https://github.com/apollographql/react-apollo/issues/1314
+      //  {
+      //    query: connectedQuery,
+      //    variables: {
+      //      id: lexicalEntry.id,
+      //      fieldId,
+      //      mode: entitiesMode,
+      //    },
+      //  },
       ],
+    }).then(() => {
+      window.logger.suc('Connected.');
     });
   }
 
@@ -279,6 +282,8 @@ class GroupingTagModal extends React.Component {
           },
         },
       ],
+    }).then(() => {
+      window.logger.suc('Disconnected.');
     });
   }
 
@@ -405,7 +410,10 @@ GroupingTagModal.defaultProps = {
 
 export default compose(
   pure,
-  connect(state => state.groupingTag, dispatch => bindActionCreators({ closeModal }, dispatch)),
+  connect(
+    state => state.groupingTag,
+    dispatch => bindActionCreators({ closeModal }, dispatch)
+  ),
   branch(({ visible }) => !visible, renderNothing),
   graphql(languageTreeSourceQuery),
   graphql(disconnectMutation, { name: 'disconnect' }),

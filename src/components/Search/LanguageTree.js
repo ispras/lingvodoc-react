@@ -1,13 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Modal } from 'semantic-ui-react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import styled from 'styled-components';
 import SortableTree, { map } from 'react-sortable-tree';
-import { LexicalEntryViewByIds } from 'components/PerspectiveView/index';
+import { openLexicalEntry } from 'ducks/lexicalEntry';
 
-export const LexicalEntryLink = styled.span`
+const Link = styled.a`
   cursor: pointer;
-  color: #2185D0;
+  color: #2185d0;
 
   &:hover {
     color: #1678c2;
@@ -15,34 +16,18 @@ export const LexicalEntryLink = styled.span`
   }
 `;
 
-export function LexicalEntryModal({ node, actions, entitiesMode }) {
-  const { id, translation, lexicalEntries } = node;
-  const trigger = <LexicalEntryLink>{translation}: {lexicalEntries.length} result(s)</LexicalEntryLink>;
-
+const LexicalEntryLinkComponent = ({
+  node, actions, entitiesMode, openLexicalEntry: open,
+}) => {
+  const { translation, lexicalEntries } = node;
   return (
-    <Modal
-      closeIcon
-      size="fullscreen"
-      trigger={trigger}
-    >
-      <Modal.Header>
-        {translation}
-      </Modal.Header>
-      <Modal.Content scrolling>
-        <LexicalEntryViewByIds
-          className="perspective"
-          perspectiveId={id}
-          entriesIds={lexicalEntries.map(e => e.id)}
-          mode="view"
-          entitiesMode={entitiesMode}
-          actions={actions}
-        />
-      </Modal.Content>
-    </Modal>
+    <Link onClick={() => open(node, actions, entitiesMode)}>
+      {translation}: {lexicalEntries.length} result(s)
+    </Link>
   );
-}
+};
 
-LexicalEntryModal.propTypes = {
+LexicalEntryLinkComponent.propTypes = {
   node: PropTypes.shape({
     id: PropTypes.array.isRequired,
     translation: PropTypes.string.isRequired,
@@ -50,17 +35,27 @@ LexicalEntryModal.propTypes = {
   }).isRequired,
   actions: PropTypes.array,
   entitiesMode: PropTypes.string,
+  openLexicalEntry: PropTypes.func.isRequired,
 };
 
-LexicalEntryModal.defaultProps = {
+LexicalEntryLinkComponent.defaultProps = {
   actions: [],
   entitiesMode: 'published',
 };
 
+const mapDispatchToProps = dispatch => bindActionCreators({ openLexicalEntry }, dispatch);
+
+export const LexicalEntryLink = connect(
+  null,
+  mapDispatchToProps
+)(LexicalEntryLinkComponent);
+
 class LanguageTree extends React.Component {
   static generateNodeProps({ node }) {
-    const defaultTitle = node.translation || 'None';
-    const title = node.type === 'perspective' ? <LexicalEntryModal node={node} /> : defaultTitle;
+    const { translation } = node;
+    const defaultTitle = translation || 'None';
+
+    const title = node.type === 'perspective' ? <LexicalEntryLink node={node} /> : defaultTitle;
     return { title };
   }
 
