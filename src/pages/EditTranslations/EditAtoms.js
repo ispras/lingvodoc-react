@@ -25,6 +25,14 @@ const updateAtomMutation = gql`
   }
 `;
 
+const deleteAtomMutation = gql`
+  mutation deleteAtom($id: LingvodocID!) {
+    delete_translationatom(id: $id) {
+      triumph
+    }
+  }
+`;
+
 class EditAtoms extends React.Component {
 
   constructor(props) {
@@ -43,6 +51,7 @@ class EditAtoms extends React.Component {
 
     this.onContentChange = this.onContentChange.bind(this);
     this.onLanguageChange = this.onLanguageChange.bind(this);
+    this.onDeleteAtom = this.onDeleteAtom.bind(this);
     this.onAddTranslation = this.onAddTranslation.bind(this);
     this.onSave = this.onSave.bind(this);
   }
@@ -93,7 +102,7 @@ class EditAtoms extends React.Component {
 
     let newAtoms = JSON.parse(JSON.stringify(this.state.atoms));
     newAtoms.some(atom => {
-      if ('' + atom.id == '' + atomid) {
+      if (atom.id.toString() == atomid.toString()) {
         atom.content = value;
         return true;
       }
@@ -110,7 +119,7 @@ class EditAtoms extends React.Component {
 
     let newAtoms = JSON.parse(JSON.stringify(this.state.atoms));
     newAtoms.some(atom => {
-      if ('' + atom.id == '' + atomid) {
+      if (atom.id.toString() == atomid.toString()) {
         atom.locale_id = value;
         return true;
       }
@@ -120,17 +129,22 @@ class EditAtoms extends React.Component {
     this.setState( { atoms: newAtoms} );
   }
 
+  onDeleteAtom(event, { atomid }) {
+    let newAtoms = JSON.parse(JSON.stringify(this.state.atoms));
+    this.setState({ atoms: newAtoms.filter(atom => atom.id.toString() != atomid.toString()) });
+  }
+
   onAddTranslation() {
     let newAtoms = JSON.parse(JSON.stringify(this.state.atoms));
     newAtoms.push({ id: new Date().getUTCMilliseconds(), locale_id: this.getFreeLocale(), content: ''});
     this.setState( { atoms: newAtoms} );
   }
 
-  updateAtom(atom) {
+  updateAtom(id, atom) {
     return {
       mutation: updateAtomMutation,
       variables: {
-        id: atom.id,
+        id: id,
         locale_id: atom.locale_id,
         content: atom.content
       }
@@ -144,6 +158,15 @@ class EditAtoms extends React.Component {
         parent_id: this.props.gistId,
         locale_id: atom.locale_id,
         content: atom.content
+      }
+    };
+  }
+
+  deleteAtom(atom) {
+    return {
+      mutation: deleteAtomMutation,
+      variables: {
+        id: atom.id
       }
     };
   }
@@ -174,17 +197,22 @@ class EditAtoms extends React.Component {
   onSave() {
     const { atoms } = this.initialState;
     let { atoms: newAtoms } = this.state;
+    const total = Math.max(atoms.length, newAtoms.length);
     let mutations = [];
-    let lastIndex = 0;
-    for (let i = 0; i < atoms.length; i++, lastIndex++) {
-      let atom = atoms[i];
-      let newAtom = newAtoms[i];
-      if (atom.locale_id != newAtom.locale_id || atom.content != newAtom.content) {
-        mutations.push(this.updateAtom(newAtom));
+    for (let i = 0; i < total; i++) {
+      if (i >= atoms.length) {
+        mutations.push(this.createAtom(newAtoms[i]));
       }
-    }
-    for (let i = lastIndex; i < newAtoms.length; i++) {
-      mutations.push(this.createAtom(newAtoms[i]));
+      else if (i >= newAtoms.length) {
+        mutations.push(this.deleteAtom(atoms[i]));
+      }
+      else {
+        let atom = atoms[i];
+        let newAtom = newAtoms[i];
+        if (atom.locale_id != newAtom.locale_id || atom.content != newAtom.content) {
+          mutations.push(this.updateAtom(atom.id, newAtom));
+        }
+      }
     }
     if (mutations.length != 0) {
       this.executeSequence(mutations, JSON.parse(JSON.stringify(newAtoms)));
@@ -214,8 +242,11 @@ class EditAtoms extends React.Component {
                 <Grid.Column width={12}>
                   <Input value={atom.content} onChange={this.onContentChange} atomid={atom.id} fluid/>
                 </Grid.Column>
-                <Grid.Column width={4}>
+                <Grid.Column width={3}>
                   <Dropdown key={atom.locale_id} options={this.getAvailableLanguagesOptions(atom)} value={atom.locale_id} onChange={this.onLanguageChange} atomid={atom.id} selection/>
+                </Grid.Column>
+                <Grid.Column width={1}>
+                  <Button icon='delete' color='red' disabled={atoms.length == 1} onClick={this.onDeleteAtom} atomid={atom.id}/>
                 </Grid.Column>
               </Grid.Row>
             ))}
