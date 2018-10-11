@@ -87,45 +87,40 @@ class Properties extends React.Component {
     this.onUpdateParentLanguage = this.onUpdateParentLanguage.bind(this);
   }
 
-  componentWillReceiveProps(props) {
-    const { data: { error, loading, dictionary } } = props;
-    if (!(loading && error)) {
-      const {
-        additional_metadata: {
-          authors, location, tag_list: tagList, blobs,
-        },
-      } = dictionary;
-
-      if (authors !== this.state.authors && authors !== null) {
-        this.setState({
-          authors,
-        });
-      }
-      if (location !== this.state.location) {
-        this.setState({
-          location,
-        });
-      }
-
-      const tags = tagList.join(', ');
-      if (tags !== this.state.tags) {
-        this.setState({
-          tags,
-        });
-      }
-
-      if (!isEqual(this.state.files, blobs)) {
-        this.setState({
-          files: blobs.map(compositeIdToString),
-        });
-      }
-    }
-  }
-
   componentDidMount() {
     const { data: { error, loading, dictionary }, client } = this.props;
     if (loading || error) {
       return;
+    }
+
+    const {
+      additional_metadata: {
+        authors, location, tag_list: tagList, blobs,
+      },
+    } = dictionary;
+
+    if (authors !== this.state.authors && authors !== null) {
+      this.setState({
+        authors,
+      });
+    }
+    if (location !== this.state.location) {
+      this.setState({
+        location,
+      });
+    }
+
+    const tags = tagList.join(', ');
+    if (tags !== this.state.tags) {
+      this.setState({
+        tags,
+      });
+    }
+
+    if (!isEqual(this.state.files, blobs)) {
+      this.setState({
+        files: blobs.map(compositeIdToString),
+      });
     }
 
     const { parent_id } = dictionary;
@@ -296,7 +291,7 @@ class Properties extends React.Component {
                 <Input
                   fluid
                   label="Location"
-                  value={JSON.stringify(this.state.location)}
+                  value={this.state.location == null ? '' : JSON.stringify(this.state.location)}
                   disabled
                   onChange={() => {}}
                 />
