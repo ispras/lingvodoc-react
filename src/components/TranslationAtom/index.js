@@ -85,7 +85,7 @@ export default class TranslationAtom extends React.Component {
   }
 
   render() {
-    const { id, locales, editable } = this.props;
+    const { id, locales, editable, content } = this.props;
 
     // true if atom is to be create
     const isAtomNew = id.every(n => n == null);
@@ -100,7 +100,7 @@ export default class TranslationAtom extends React.Component {
 
     return (
       <Input
-        placeholder=""
+        fluid
         value={this.state.content}
         onChange={this.onChangeContent}
         disabled={!editable}
@@ -117,7 +117,7 @@ export default class TranslationAtom extends React.Component {
           <Button onClick={() => this.createAtom()}>Save</Button>
         }
         {editable && !isAtomNew &&
-          <Button onClick={() => this.updateAtom()}>Update</Button>
+          <Button disabled ={content == this.state.content} onClick={() => this.updateAtom()}>Update</Button>
         }
       </Input>
     );

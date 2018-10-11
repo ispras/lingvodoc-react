@@ -45,11 +45,26 @@ export default class TranslationGist extends React.Component {
 
   addAtom = () => {
     const { createdAtoms } = this.state;
-    const nextId = createdAtoms.length + 1;
+    const { all_locales, translationgist } = this.props.data;
+    const nextId = this.getAvailableLocales(all_locales, translationgist.translationatoms)[0].id;
     this.setState({
       createdAtoms: [nextId, ...createdAtoms],
     });
   };
+
+  getAvailableLocales(locales, atoms, currentAtomLocale) {
+    let result = [];
+    locales.forEach(locale => {
+      if (locale.id == currentAtomLocale) {
+        result.unshift(locale);
+      }
+      else if (atoms.every(atom => { return atom.locale_id != locale.id; }) && this.state.createdAtoms.every(id => { return id != locale.id; })) {
+        result.push(locale);
+      }
+    });
+
+    return result;
+  }
 
   render() {
     const { data, editable } = this.props;
@@ -72,7 +87,7 @@ export default class TranslationGist extends React.Component {
                 parentId={atom.parent_id}
                 localeId={atom.locale_id}
                 content={atom.content}
-                locales={locales}
+                locales={this.getAvailableLocales(locales, atoms, atom.locale_id)}
                 editable={editable}
                 onSave={this.onChangeAtom}
               />
@@ -82,14 +97,15 @@ export default class TranslationGist extends React.Component {
             <List.Item key={id}>
               <TranslationAtom
                 parentId={data.translationgist.id}
-                locales={locales}
+                localeId={id}
+                locales={this.getAvailableLocales(locales, atoms, id)}
                 editable={editable}
                 onAtomCreated={() => this.onAtomCreated(id)}
               />
             </List.Item>
           ))}
         </List>
-        <Button onClick={this.addAtom}>Add</Button>
+        <Button disabled={this.getAvailableLocales(locales, atoms).length == 0} onClick={this.addAtom}>Add</Button>
       </Container>
     );
   }
