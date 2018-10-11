@@ -21,10 +21,12 @@ class LanguagesTree extends React.Component {
 
     this.state = {
       treeData: LanguagesTree.buildTree(props.languagesTree),
+      selected: props.selected
     };
 
     this.generateNodeProps = this.generateNodeProps.bind(this);
     this.onMoveNode = this.onMoveNode.bind(this);
+    this.onLanguageSelected = this.onLanguageSelected.bind(this);
   }
 
   componentWillReceiveProps(props) {
@@ -68,9 +70,9 @@ class LanguagesTree extends React.Component {
     const {
       edit, editLanguage, createLanguage, onSelect,
     } = this.props;
-    const selectActions = onSelect ? [<Button basic content="Select" onClick={() => onSelect(node)} />] : [];
+    const selectActions = onSelect ? [<Button basic content="Select" onClick={() => this.onLanguageSelected(node)} />] : [];
     if (edit) {
-      return {
+      let nodeProps = {
         title: node.translation,
         buttons: [
           ...selectActions,
@@ -78,11 +80,27 @@ class LanguagesTree extends React.Component {
           <Button basic content="Create" onClick={() => createLanguage(node)} />,
         ],
       };
+      const { selected } = this.state;
+      if (selected && node.id.toString() == selected.id.toString()) {
+        nodeProps.style = {
+          boxShadow: `0 0 0 4px blue`
+        }
+      }
+      return nodeProps;
     }
 
     return {
       title: node.translation,
     };
+  }
+
+  onLanguageSelected(node) {
+    if (node == this.state.selected) {
+      return;
+    }
+    
+    this.setState({ selected: node });
+    this.props.onSelect(node);
   }
 
   render() {

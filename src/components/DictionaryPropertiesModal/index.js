@@ -229,6 +229,10 @@ class Properties extends React.Component {
   }
 
   render() {
+    if (this.state.parent == null) {
+      return null;
+    }
+    
     const { data: { dictionary, user_blobs: files }, actions } = this.props;
     const { translation_gist_id: gistId } = dictionary;
     const options = files.map(file => ({ key: file.id, text: file.name, value: compositeIdToString(file.id) }));
@@ -308,7 +312,7 @@ class Properties extends React.Component {
                   <Label size="large">Parent language: {selectedParentName || parentName}</Label>
                   <Button size="medium" disabled={selectedParentName == parentName} onClick={this.onUpdateParentLanguage}>Update</Button>
                 </Container>
-                <Languages height='95%' onSelect={this.onSelectParentLanguage}/>
+                <Languages height='95%' selected={this.state.parent} onSelect={this.onSelectParentLanguage}/>
               </div>
             </Grid.Column>
             <Grid.Column width={8}>

@@ -13,7 +13,7 @@ import { buildLanguageTree } from 'pages/Search/treeBuilder';
 import LanguagesTree from './LanguagesTree';
 
 const Languages = (props) => {
-  const { data, moveLanguage, actions, height, onSelect } = props;
+  const { data, moveLanguage, actions, height, selected, onSelect } = props;
   const { error, loading } = data;
   if (error || loading) {
     return null;
@@ -30,6 +30,7 @@ const Languages = (props) => {
         editLanguage={actions.openModalEdit}
         createLanguage={actions.openModalCreate}
         moveLanguage={moveLanguage}
+        selected={selected}
         onSelect={onSelect}
       />
       <CreateModal />
