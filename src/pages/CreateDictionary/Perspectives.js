@@ -25,12 +25,10 @@ const Perspective = (props) => {
         <Translations translations={translations} onChange={u => updateTranslations(u)} />
       </Segment>
 
-      {mode === 'dictionary' && (
-        <Segment>
-          <Header>Fields</Header>
-          <Fields perspective={perspective} perspectives={perspectives.toJS()} onChange={f => updateFields(f)} />
-        </Segment>
-      )}
+      <Segment>
+        <Header>Fields</Header>
+        <Fields mode={mode} perspective={perspective} perspectives={perspectives.toJS()} onChange={f => updateFields(f)} />
+      </Segment>
     </Segment>
   );
 };
