@@ -31,3 +31,11 @@ export const moveLanguageMutation = gql`
     }
   }
 `;
+
+export const deleteLanguageMutation = gql`
+  mutation DeleteLanguage($id: LingvodocID!) {
+    delete_language(id: $id) {
+      triumph
+    }
+  }
+`;

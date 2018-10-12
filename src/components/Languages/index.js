@@ -8,12 +8,12 @@ import Immutable from 'immutable';
 import EditModal from 'components/EditLanguageModal';
 import CreateModal from 'components/CreateLanguageModal';
 import { openModalEdit, openModalCreate } from 'ducks/language';
-import { languagesQuery, moveLanguageMutation } from 'graphql/language';
+import { languagesQuery, moveLanguageMutation, deleteLanguageMutation } from 'graphql/language';
 import { buildLanguageTree } from 'pages/Search/treeBuilder';
 import LanguagesTree from './LanguagesTree';
 
 const Languages = (props) => {
-  const { data, moveLanguage, actions, height, selected, onSelect } = props;
+  const { data, deleteLanguage, moveLanguage, actions, height, selected, onSelect } = props;
   const { error, loading } = data;
   if (error || loading) {
     return null;
@@ -30,6 +30,7 @@ const Languages = (props) => {
         editLanguage={actions.openModalEdit}
         createLanguage={actions.openModalCreate}
         moveLanguage={moveLanguage}
+        deleteLanguage={deleteLanguage}
         selected={selected}
         onSelect={onSelect}
       />
@@ -49,10 +50,12 @@ Languages.propTypes = {
     openModalCreate: PropTypes.func,
   }).isRequired,
   moveLanguage: PropTypes.func.isRequired,
+  deleteLanguage: PropTypes.func.isRequired,
 };
 
 export default compose(
   graphql(languagesQuery),
+  graphql(deleteLanguageMutation, { name: 'deleteLanguage' }),
   graphql(moveLanguageMutation, { name: 'moveLanguage' }),
   connect(
     state => state.language,

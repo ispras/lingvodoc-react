@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import SortableTree, { map, getFlatDataFromTree } from 'react-sortable-tree';
 import Immutable from 'immutable';
+import { connect } from 'react-redux';
 import { isEqual, findIndex } from 'lodash';
 import { Button } from 'semantic-ui-react';
 import { languagesQuery } from 'graphql/language';
@@ -27,6 +28,7 @@ class LanguagesTree extends React.Component {
     this.generateNodeProps = this.generateNodeProps.bind(this);
     this.onMoveNode = this.onMoveNode.bind(this);
     this.onLanguageSelected = this.onLanguageSelected.bind(this);
+    this.onDeleteLanguage = this.onDeleteLanguage.bind(this);
   }
 
   componentWillReceiveProps(props) {
@@ -68,7 +70,7 @@ class LanguagesTree extends React.Component {
 
   generateNodeProps({ node }) {
     const {
-      edit, editLanguage, createLanguage, onSelect,
+      user, edit, editLanguage, createLanguage, onSelect
     } = this.props;
     const selectActions = onSelect ? [<Button basic content="Select" onClick={() => this.onLanguageSelected(node)} />] : [];
     if (edit) {
@@ -81,6 +83,9 @@ class LanguagesTree extends React.Component {
         ],
       };
       const { selected } = this.state;
+      if (!onSelect && user.id == 1) {
+        nodeProps.buttons.push(<Button basic content="Delete" onClick={() => this.onDeleteLanguage(node)} />);
+      }
       if (selected && node.id.toString() == selected.id.toString()) {
         nodeProps.style = {
           boxShadow: `0 0 0 4px blue`
@@ -101,6 +106,13 @@ class LanguagesTree extends React.Component {
     
     this.setState({ selected: node });
     this.props.onSelect(node);
+  }
+
+  onDeleteLanguage(node) {
+    this.props.deleteLanguage({
+      variables: { id: node.id },
+      refetchQueries: [{ query: languagesQuery }]
+    });
   }
 
   render() {
@@ -125,6 +137,7 @@ LanguagesTree.propTypes = {
   editLanguage: PropTypes.func.isRequired,
   createLanguage: PropTypes.func.isRequired,
   moveLanguage: PropTypes.func.isRequired,
+  deleteLanguage: PropTypes.func,
   onSelect: PropTypes.func,
 };
 
@@ -132,4 +145,4 @@ LanguagesTree.defaultProps = {
   edit: false,
 };
 
-export default LanguagesTree;
+export default connect(state => state.user)(LanguagesTree);
