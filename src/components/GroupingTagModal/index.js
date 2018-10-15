@@ -360,7 +360,7 @@ class GroupingTagModal extends React.Component {
       <div>
         <Modal dimmer open size="fullscreen">
           <Modal.Header>Grouping tag</Modal.Header>
-          <Modal.Content>
+          <Modal.Content scrolling>
             <ModalContentWrapper>
               <Component
                 lexicalEntry={lexicalEntry}
