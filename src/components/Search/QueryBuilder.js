@@ -9,6 +9,7 @@ import { List, fromJS } from 'immutable';
 import styled from 'styled-components';
 import { Checkbox, Grid, Radio, Dropdown, Segment, Button, Divider, Select, Input } from 'semantic-ui-react';
 import { setQuery } from 'ducks/search';
+import SearchSelectLanguages from 'components/Search/SearchLanguageTree';
 
 import { compositeIdToString } from 'utils/compositeId';
 
@@ -267,6 +268,8 @@ class QueryBuilder extends React.Component {
             </Segment>
           </Segment.Group>
         </Segment.Group>
+
+        <SearchSelectLanguages />
 
         <Segment.Group>
           <Segment>Search options</Segment>
