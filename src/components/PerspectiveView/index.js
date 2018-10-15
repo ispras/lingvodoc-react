@@ -207,7 +207,7 @@ const P = ({
       },
       refetchQueries: [
         {
-          query: queryPerspective,
+          query: queryLexicalEntries,
           variables: {
             id,
             entitiesMode,
@@ -232,7 +232,7 @@ const P = ({
       },
       refetchQueries: [
         {
-          query: queryPerspective,
+          query: queryLexicalEntries,
           variables: {
             id,
             entitiesMode,
@@ -251,7 +251,7 @@ const P = ({
       },
       refetchQueries: [
         {
-          query: queryPerspective,
+          query: queryLexicalEntries,
           variables: {
             id,
             entitiesMode,
