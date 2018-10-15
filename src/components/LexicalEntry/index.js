@@ -237,17 +237,20 @@ class Entities extends React.Component {
             remove={this.remove}
             accept={this.accept}
             update={this.update}
+            className ={(mode != 'edit' && entities.indexOf(entity) == entities.length - 1) ? 'last' : ''}
           />
         ))}
-        <li className="last">
-          {!this.state.edit && (
-            <Button.Group basic size="mini">
-              <Button icon="plus" onClick={() => this.setState({ edit: true })} disabled={mode !== 'edit'} />
-            </Button.Group>
-          )}
+        {mode == 'edit' && (
+          <li className="last">
+            {!this.state.edit && (
+              <Button.Group basic size="mini">
+                <Button icon="plus" onClick={() => this.setState({ edit: true })} />
+              </Button.Group>
+            )}
 
-          {this.state.edit && <Component.Edit onSave={this.create} onCancel={() => this.setState({ edit: false })} />}
-        </li>
+            {this.state.edit && <Component.Edit onSave={this.create} onCancel={() => this.setState({ edit: false })} />}
+          </li>
+        )}
       </ul>
     );
   }
