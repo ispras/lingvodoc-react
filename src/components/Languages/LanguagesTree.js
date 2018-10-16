@@ -23,14 +23,14 @@ class LanguagesTree extends React.Component {
       const isDictionary = dictionary.category != 1;
       let content = this.langContent[key];
       if (!content) {
-        content = { dictionariesCount: 0, corpusesCount: 0 };
+        content = { dictionariesCount: 0, corporaCount: 0 };
         this.langContent[key] = content;
       }
       if (isDictionary) {
         content.dictionariesCount++;
       }
       else {
-        content.corpusesCount++;
+        content.corporaCount++;
       }
     });
 
@@ -105,7 +105,7 @@ class LanguagesTree extends React.Component {
       const { selected } = this.state;
       if (!onSelect && user.id == 1) {
         nodeProps.title = (
-          <div title={content ? ('Dictionaries: ' + content.dictionariesCount + ', Corpuses: ' + content.corpusesCount) : 'Dictionaries: 0, Corpuses: 0'}>
+          <div title={content ? ('Dictionaries: ' + content.dictionariesCount + ', Corpora: ' + content.corporaCount) : 'Dictionaries: 0, Corpora: 0'}>
             {node.translation}
           </div>
         );
