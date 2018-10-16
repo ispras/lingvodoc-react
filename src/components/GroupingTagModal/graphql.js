@@ -56,8 +56,8 @@ export const acceptMutation = gql`
 `;
 
 export const searchQuery = gql`
-  query SearchEtmologyCandidates($searchString: String!) {
-    basic_search(searchstring: $searchString, search_in_published: false, can_add_tags: true) {
+  query SearchEtmologyCandidates($searchString: String!, $perspectiveId: LingvodocID) {
+    basic_search(searchstring: $searchString, perspective_id: $perspectiveId, search_in_published: false, can_add_tags: true) {
       lexical_entries {
         id
         parent_id
