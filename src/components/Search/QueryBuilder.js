@@ -9,7 +9,9 @@ import { List, fromJS } from 'immutable';
 import styled from 'styled-components';
 import { Checkbox, Grid, Radio, Dropdown, Segment, Button, Divider, Select, Input } from 'semantic-ui-react';
 import { setQuery } from 'ducks/search';
-import SearchSelectLanguages from 'components/Search/SearchLanguageTree';
+import SearchSelectLanguages from 'components/Search/SearchSelectLanguages';
+import { languagesQuery } from 'graphql/language';
+import { buildLanguageTree } from 'pages/Search/treeBuilder';
 
 import { compositeIdToString } from 'utils/compositeId';
 
@@ -236,6 +238,15 @@ class QueryBuilder extends React.Component {
   }
 
   render() {
+    const { langsQueryRes } = this.props;
+    const { error, loading } = langsQueryRes;
+
+    if (error || loading) {
+      return null;
+    }
+
+    const { language_tree: langs } = langsQueryRes;
+    const languagesTree = buildLanguageTree(fromJS(langs)).toJS();
     const { searchId, actions } = this.props;
     const blocks = this.state.data;
 
@@ -269,7 +280,7 @@ class QueryBuilder extends React.Component {
           </Segment.Group>
         </Segment.Group>
 
-        <SearchSelectLanguages />
+        <SearchSelectLanguages data={languagesTree} />
 
         <Segment.Group>
           <Segment>Search options</Segment>
@@ -361,6 +372,7 @@ QueryBuilder.propTypes = {
   actions: PropTypes.shape({
     setQuery: PropTypes.func.isRequired,
   }).isRequired,
+  langsQueryRes: PropTypes.object.isRequired,
 };
 
 QueryBuilder.defaultProps = {
@@ -374,5 +386,8 @@ export default compose(
       actions: bindActionCreators({ setQuery }, dispatch),
     })
   ),
+  graphql(languagesQuery, {
+    name: 'langsQueryRes'
+  }),
   pure
 )(QueryBuilder);

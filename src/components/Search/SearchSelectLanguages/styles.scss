@@ -1,0 +1,45 @@
+.search-language-tree {
+  &__button {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    margin-top: -8px;
+    background-size: 24px;
+    width: 16px;
+    height: 16px;
+    padding: 0;
+    border-radius: 100%;
+    box-shadow: 0 0 0 1px #000;
+    border: none;
+    cursor: pointer;
+  }
+
+  &__item {
+    padding-left: 40px;
+  }
+
+  &__button_expand {
+    background: #fff url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxOCIgaGVpZ2h0PSIxOCI+PGNpcmNsZSBjeD0iOSIgY3k9IjkiIHI9IjgiIGZpbGw9IiNGRkYiLz48ZyBzdHJva2U9IiM5ODk4OTgiIHN0cm9rZS13aWR0aD0iMS45IiA+PHBhdGggZD0iTTQuNSA5aDkiLz48L2c+Cjwvc3ZnPg==) no-repeat center;
+  }
+
+  &__button_collapse {
+    background: #fff url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxOCIgaGVpZ2h0PSIxOCI+PGNpcmNsZSBjeD0iOSIgY3k9IjkiIHI9IjgiIGZpbGw9IiNGRkYiLz48ZyBzdHJva2U9IiM5ODk4OTgiIHN0cm9rZS13aWR0aD0iMS45IiA+PHBhdGggZD0iTTQuNSA5aDkiLz48cGF0aCBkPSJNOSA0LjV2OSIvPjwvZz4KPC9zdmc+) no-repeat center;
+  }
+
+  &__group {
+    padding-left: 20px;
+  }
+
+  &__group-items {
+    display: none;
+  }
+
+  &__group-items_show {
+    display: block;
+  }
+
+  &__group-title {
+    position: relative;
+    padding-left: 20px;
+  }
+}

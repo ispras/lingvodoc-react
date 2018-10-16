@@ -1,15 +1,7 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { Segment, Button } from 'semantic-ui-react';
-import { graphql } from 'react-apollo';
-import { compose } from 'recompose';
-import { languagesQuery } from 'graphql/language';
 import LanguageTree from './LanguageTree';
-
-/* ----------- PROPS ----------- */
-const classNames = {
-  container: 'search-language-tree',
-};
 
 /* ----------- COMPONENT ----------- */
 class SearchSelectLanguages extends PureComponent {
@@ -31,15 +23,7 @@ class SearchSelectLanguages extends PureComponent {
   }
 
   render() {
-    const { data } = this.props;
-    const { error, loading } = data;
-
-    if (error || loading) {
-      return null;
-    }
-
-    const { language_tree: langs } = data;
-
+    const { data: langsTree } = this.props;
     const { selectedLangs } = this.state;
     const selectedLangsCount = selectedLangs.length;
 
@@ -54,8 +38,8 @@ class SearchSelectLanguages extends PureComponent {
         {
           this.state.showLangs ?
             <Segment.Group>
-              <Segment className={classNames.container}>
-                <LanguageTree data={langs} />
+              <Segment>
+                <LanguageTree data={langsTree} />
               </Segment>
               <Segment>
                 <Button primary basic>
@@ -75,7 +59,7 @@ class SearchSelectLanguages extends PureComponent {
 
 /* ----------- PROPS VALIDATION ----------- */
 SearchSelectLanguages.propTypes = {
-  data: PropTypes.object.isRequired,
+  data: PropTypes.array.isRequired,
 };
 
-export default compose(graphql(languagesQuery))(SearchSelectLanguages);
+export default SearchSelectLanguages;

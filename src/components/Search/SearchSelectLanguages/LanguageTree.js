@@ -1,8 +1,13 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import Immutable from 'immutable';
-import { buildLanguageTree } from 'pages/Search/treeBuilder';
 import LanguageItem from './LanguageItem';
+
+import './styles.scss';
+
+/* ----------- PROPS ----------- */
+const classNames = {
+  container: 'search-language-tree',
+};
 
 /* ----------- COMPONENT ----------- */
 class SearchLanguageTree extends PureComponent {
@@ -11,12 +16,11 @@ class SearchLanguageTree extends PureComponent {
   }
 
   render() {
-    const { data } = this.props;
-    const langsTree = buildLanguageTree(Immutable.fromJS(data));
+    const { data: langsTree } = this.props;
 
     return (
-      <div>
-        {langsTree.toJS().map(item => <LanguageItem key={item.id} data={item} />)}
+      <div className={classNames.container}>
+        {langsTree.map(item => <LanguageItem key={item.id} data={item} />)}
       </div>
     );
   }
