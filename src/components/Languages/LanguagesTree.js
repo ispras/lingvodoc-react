@@ -17,6 +17,23 @@ class LanguagesTree extends React.Component {
       selected: props.selected
     };
 
+    this.langContent = new Map();
+    props.dictionaries.forEach( dictionary => {
+      const key = dictionary.parent_id.toString();
+      const isDictionary = dictionary.category != 1;
+      let content = this.langContent[key];
+      if (!content) {
+        content = { dictionariesCount: 0, corpusesCount: 0 };
+        this.langContent[key] = content;
+      }
+      if (isDictionary) {
+        content.dictionariesCount++;
+      }
+      else {
+        content.corpusesCount++;
+      }
+    });
+
     this.generateNodeProps = this.generateNodeProps.bind(this);
     this.onMoveNode = this.onMoveNode.bind(this);
     this.onLanguageSelected = this.onLanguageSelected.bind(this);
@@ -75,19 +92,29 @@ class LanguagesTree extends React.Component {
     const {
       user, edit, editLanguage, createLanguage, onSelect
     } = this.props;
-    const selectActions = onSelect ? [<Button basic content="Select" onClick={() => this.onLanguageSelected(node)} />] : [];
+    const selectActions = onSelect ? [<Button color="blue" content="Select" onClick={() => this.onLanguageSelected(node)} />] : [];
     if (edit) {
+      const content = this.langContent[node.id.toString()];
       let nodeProps = {
-        title: node.translation,
         buttons: [
           ...selectActions,
-          <Button basic content="Edit" onClick={() => editLanguage(node)} />,
-          <Button basic content="Create" onClick={() => createLanguage(node)} />,
+          <Button color="orange" content="Edit" onClick={() => editLanguage(node)} />,
+          <Button color="green" content="Create" onClick={() => createLanguage(node)} />,
         ],
       };
       const { selected } = this.state;
       if (!onSelect && user.id == 1) {
-        nodeProps.buttons.push(<Button basic content="Delete" onClick={() => this.onDeleteLanguage(node)} />);
+        nodeProps.title = (
+          <div title={content ? ('Dictionaries: ' + content.dictionariesCount + ', Corpuses: ' + content.corpusesCount) : 'Dictionaries: 0, Corpuses: 0'}>
+            {node.translation}
+          </div>
+        );
+        if (!content) {
+          nodeProps.buttons.push(<Button color="red" content="Delete" onClick={() => this.onDeleteLanguage(node)} />);
+        }
+      }
+      else {
+        nodeProps.title = node.translation;
       }
       if (selected && node.id.toString() == selected.id.toString()) {
         nodeProps.style = {
@@ -135,6 +162,7 @@ class LanguagesTree extends React.Component {
 }
 
 LanguagesTree.propTypes = {
+  dictionaries: PropTypes.array.isRequired,
   languagesTree: PropTypes.instanceOf(Immutable.List).isRequired,
   edit: PropTypes.bool,
   editLanguage: PropTypes.func.isRequired,
