@@ -8,20 +8,12 @@ import { Button } from 'semantic-ui-react';
 import { languagesQuery } from 'graphql/language';
 
 class LanguagesTree extends React.Component {
-  static buildTree(languagesTree) {
-    return map({
-      treeData: languagesTree.toJS(),
-      callback: ({ node }) => ({ ...node, expanded: true }),
-      getNodeKey: ({ treeIndex }) => treeIndex,
-      ignoreCollapsed: false,
-    });
-  }
 
   constructor(props) {
     super(props);
 
     this.state = {
-      treeData: LanguagesTree.buildTree(props.languagesTree),
+      treeData: this.buildTree(props.languagesTree),
       selected: props.selected
     };
 
@@ -31,11 +23,22 @@ class LanguagesTree extends React.Component {
     this.onDeleteLanguage = this.onDeleteLanguage.bind(this);
   }
 
+  buildTree(languagesTree) {
+    const { expanded } = this.props;
+
+    return map({
+      treeData: languagesTree.toJS(),
+      callback: ({ node }) => ({ ...node, expanded: expanded == undefined ? true : expanded }),
+      getNodeKey: ({ treeIndex }) => treeIndex,
+      ignoreCollapsed: false,
+    });
+  }
+
   componentWillReceiveProps(props) {
     const { languagesTree: newTree } = props;
     const { languagesTree: oldTree } = this.props;
     if (!oldTree.equals(newTree)) {
-      this.setState({ treeData: LanguagesTree.buildTree(newTree) });
+      this.setState({ treeData: this.buildTree(newTree) });
     }
   }
 
@@ -138,7 +141,9 @@ LanguagesTree.propTypes = {
   createLanguage: PropTypes.func.isRequired,
   moveLanguage: PropTypes.func.isRequired,
   deleteLanguage: PropTypes.func,
+  selected: PropTypes.object,
   onSelect: PropTypes.func,
+  expanded: PropTypes.bool
 };
 
 LanguagesTree.defaultProps = {

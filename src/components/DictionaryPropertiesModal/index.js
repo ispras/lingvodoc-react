@@ -312,7 +312,7 @@ class Properties extends React.Component {
                   <Label size="large">Parent language: {selectedParentName || parentName}</Label>
                   <Button size="medium" disabled={selectedParentName == parentName} onClick={this.onUpdateParentLanguage}>Update</Button>
                 </Container>
-                <Languages height='95%' selected={this.state.parent} onSelect={this.onSelectParentLanguage}/>
+                <Languages height='95%' expanded={false} selected={this.state.parent} onSelect={this.onSelectParentLanguage}/>
               </div>
             </Grid.Column>
             <Grid.Column width={8}>

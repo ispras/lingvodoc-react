@@ -131,7 +131,7 @@ class CreateDictionaryWizard extends React.Component {
                   You have selected: <b>{parentLanguage.translation}</b>
                 </Header>
               )}
-              <Languages selected={parentLanguage} onSelect={this.selectParent} />
+              <Languages expanded={false} selected={parentLanguage} onSelect={this.selectParent} />
             </div>
           )}
           {step === 'TRANSLATIONS' && (

@@ -13,7 +13,7 @@ import { buildLanguageTree } from 'pages/Search/treeBuilder';
 import LanguagesTree from './LanguagesTree';
 
 const Languages = (props) => {
-  const { data, deleteLanguage, moveLanguage, actions, height, selected, onSelect } = props;
+  const { data, deleteLanguage, moveLanguage, actions, height, selected, onSelect, expanded } = props;
   const { error, loading } = data;
   if (error || loading) {
     return null;
@@ -33,6 +33,7 @@ const Languages = (props) => {
         deleteLanguage={deleteLanguage}
         selected={selected}
         onSelect={onSelect}
+        expanded={expanded}
       />
       <CreateModal />
       <EditModal />
@@ -51,6 +52,9 @@ Languages.propTypes = {
   }).isRequired,
   moveLanguage: PropTypes.func.isRequired,
   deleteLanguage: PropTypes.func.isRequired,
+  selected: PropTypes.object,
+  onSelect: PropTypes.func,
+  expanded: PropTypes.bool
 };
 
 export default compose(
