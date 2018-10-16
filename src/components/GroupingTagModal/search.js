@@ -26,16 +26,16 @@ class SearchLexicalEntries extends React.Component {
   async search() {
     const { searchString } = this.state;
     const {
-      fieldId, allLanguages, allDictionaries, allPerspectives,
+      lexicalEntry, fieldId, allLanguages, allDictionaries, allPerspectives, perspectiveId
     } = this.props;
 
-    const { data: { basic_search: { lexical_entries: lexicalEntries, entities } } } = await this.props.client.query({
+    const { data: { basic_search: { lexical_entries: lexicalEntries } } } = await this.props.client.query({
       query: searchQuery,
-      variables: { searchString, fieldId },
+      variables: { searchString, field_id: fieldId, perspectiveId },
     });
 
     const resultsTree = buildPartialLanguageTree({
-      lexicalEntries,
+      lexicalEntries: lexicalEntries.filter(entry => entry.id.toString() != lexicalEntry.id.toString()),
       allLanguages,
       allDictionaries,
       allPerspectives,
@@ -62,6 +62,7 @@ class SearchLexicalEntries extends React.Component {
 
 SearchLexicalEntries.propTypes = {
   lexicalEntry: PropTypes.object.isRequired,
+  perspectiveId: PropTypes.array,
   joinGroup: PropTypes.func.isRequired,
   client: PropTypes.object.isRequired,
 };

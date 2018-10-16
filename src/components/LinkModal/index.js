@@ -100,6 +100,7 @@ const EditLink = (props) => {
       render: () => (
         <SearchLexicalEntries
           lexicalEntry={lexicalEntry}
+          perspectiveId={column.link_id}
           fieldId={column.field_id}
           allLanguages={allLanguages}
           allDictionaries={allDictionaries}
