@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { pure } from 'recompose';
 import SortableTree, { map } from 'react-sortable-tree';
-import { LexicalEntryModal } from 'components/Search/LanguageTree';
+import LexicalEntryModal from 'components/Search/LexicalEntryModal';
 
 class Tree extends React.Component {
   constructor(props) {

@@ -1,63 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Modal } from 'semantic-ui-react';
-import styled from 'styled-components';
 import SortableTree, { map } from 'react-sortable-tree';
-import { LexicalEntryViewByIds } from 'components/PerspectiveView/index';
-
-export const LexicalEntryLink = styled.span`
-  cursor: pointer;
-  color: #2185D0;
-
-  &:hover {
-    color: #1678c2;
-    text-decoration: underline;
-  }
-`;
-
-export function LexicalEntryModal({ node, actions, entitiesMode }) {
-  const { id, translation, lexicalEntries } = node;
-  const trigger = <LexicalEntryLink>{translation}: {lexicalEntries.length} result(s)</LexicalEntryLink>;
-
-  return (
-    <Modal
-      closeIcon
-      size="fullscreen"
-      trigger={trigger}
-    >
-      <Modal.Header>
-        {translation}
-      </Modal.Header>
-      <Modal.Content scrolling>
-        <LexicalEntryViewByIds
-          className="perspective"
-          perspectiveId={id}
-          entriesIds={lexicalEntries.map(e => e.id)}
-          mode="view"
-          entitiesMode={entitiesMode}
-          actions={actions}
-        />
-      </Modal.Content>
-    </Modal>
-  );
-}
-
-LexicalEntryModal.propTypes = {
-  node: PropTypes.shape({
-    id: PropTypes.array.isRequired,
-    translation: PropTypes.string.isRequired,
-    lexicalEntries: PropTypes.array.isRequired,
-  }).isRequired,
-  actions: PropTypes.array,
-  entitiesMode: PropTypes.string,
-};
-
-LexicalEntryModal.defaultProps = {
-  actions: [],
-  entitiesMode: 'published',
-};
+import LexicalEntryModal from './LexicalEntryModal';
 
 class LanguageTree extends React.Component {
+
   static generateNodeProps({ node }) {
     const defaultTitle = node.translation || 'None';
     const title = node.type === 'perspective' ? <LexicalEntryModal node={node} /> : defaultTitle;

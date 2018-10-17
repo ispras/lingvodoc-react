@@ -48,7 +48,7 @@ const ViewLink = (props) => {
       render: () => (
         <div>
           <Segment padded="very" textAlign="center">
-            <Tree resultsTree={tree} />;
+            <Tree resultsTree={tree} />
           </Segment>
         </div>
       ),
@@ -90,7 +90,7 @@ const EditLink = (props) => {
       render: () => (
         <div>
           <Segment padded="very" textAlign="center">
-            <Tree resultsTree={tree} TableComponent={LexicalEntryViewByIds} actions={actions} />;
+            <Tree resultsTree={tree} TableComponent={LexicalEntryViewByIds} actions={actions} />
           </Segment>
         </div>
       ),
@@ -150,7 +150,7 @@ const PublishLink = (props) => {
             </Segment>
           )}
           <Segment padded="very" textAlign="center">
-            <Tree resultsTree={tree} TableComponent={LexicalEntryViewByIds} />;
+            <Tree resultsTree={tree} TableComponent={LexicalEntryViewByIds} />
           </Segment>
         </div>
       ),
@@ -187,7 +187,7 @@ const ContributionsLink = (props) => {
             </Segment>
           )}
           <Segment padded="very" textAlign="center">
-            <Tree resultsTree={tree} TableComponent={LexicalEntryViewByIds} />;
+            <Tree resultsTree={tree} TableComponent={LexicalEntryViewByIds} />
           </Segment>
         </div>
       ),
