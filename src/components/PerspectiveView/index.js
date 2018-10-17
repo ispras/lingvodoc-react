@@ -184,10 +184,10 @@ const P = ({
 }) => {
   const { loading, error } = data;
 
-  if (loading) {
+  if (loading || (!loading && !error && !data.perspective)) {
     return (
-      <Dimmer.Dimmable dimmed={loading} style={dimmerStyle}>
-        <Dimmer active={loading} inverted>
+      <Dimmer.Dimmable dimmed style={dimmerStyle}>
+        <Dimmer active inverted>
           <Header as="h2" icon>
             <Icon name="spinner" loading />
           </Header>
@@ -195,6 +195,7 @@ const P = ({
       </Dimmer.Dimmable>
     );
   }
+
 
   const lexicalEntries = !error ? data.perspective.lexical_entries : [];
 
@@ -547,6 +548,18 @@ export const queryLexicalEntriesByIds = gql`
 const LexicalEntryViewBaseByIds = ({
   perspectiveId, mode, entitiesMode, data, actions,
 }) => {
+  const { loading, error } = data;
+  if (loading || (!loading && !error && !data.perspective)) {
+     return (
+      <Dimmer.Dimmable dimmed style={dimmerStyle}>
+        <Dimmer active inverted>
+          <Header as="h2" icon>
+            <Icon name="spinner" loading />
+          </Header>
+        </Dimmer>
+      </Dimmer.Dimmable>
+    ); 
+  }
 
   const {
     all_fields,

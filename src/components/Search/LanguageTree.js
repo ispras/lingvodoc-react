@@ -1,13 +1,62 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import styled from 'styled-components';
 import SortableTree, { map } from 'react-sortable-tree';
-import LexicalEntryModal from './LexicalEntryModal';
+import { openLexicalEntry } from 'ducks/lexicalEntry';
+
+const Link = styled.a`
+  cursor: pointer;
+  color: #2185d0;
+
+  &:hover {
+    color: #1678c2;
+    text-decoration: underline;
+  }
+`;
+
+const LexicalEntryLinkComponent = ({
+  node, actions, entitiesMode, openLexicalEntry: open,
+}) => {
+  const { translation, lexicalEntries } = node;
+  return (
+    <Link onClick={() => open(node, actions, entitiesMode)}>
+      {translation}: {lexicalEntries.length} result(s)
+    </Link>
+  );
+};
+
+LexicalEntryLinkComponent.propTypes = {
+  node: PropTypes.shape({
+    id: PropTypes.array.isRequired,
+    translation: PropTypes.string.isRequired,
+    lexicalEntries: PropTypes.array.isRequired,
+  }).isRequired,
+  actions: PropTypes.array,
+  entitiesMode: PropTypes.string,
+  openLexicalEntry: PropTypes.func.isRequired,
+};
+
+LexicalEntryLinkComponent.defaultProps = {
+  actions: [],
+  entitiesMode: 'published',
+};
+
+const mapDispatchToProps = dispatch => bindActionCreators({ openLexicalEntry }, dispatch);
+
+export const LexicalEntryLink = connect(
+  null,
+  mapDispatchToProps
+)(LexicalEntryLinkComponent);
 
 class LanguageTree extends React.Component {
 
   static generateNodeProps({ node }) {
-    const defaultTitle = node.translation || 'None';
-    const title = node.type === 'perspective' ? <LexicalEntryModal node={node} /> : defaultTitle;
+    const { translation } = node;
+    const defaultTitle = translation || 'None';
+
+    const title = node.type === 'perspective' ? <LexicalEntryLink node={node} /> : defaultTitle;
     return { title };
   }
 

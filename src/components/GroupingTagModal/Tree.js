@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { pure } from 'recompose';
 import SortableTree, { map } from 'react-sortable-tree';
-import LexicalEntryModal from 'components/Search/LexicalEntryModal';
+import { LexicalEntryLink } from 'components/Search/LanguageTree';
 
 class Tree extends React.Component {
   constructor(props) {
@@ -26,10 +26,11 @@ class Tree extends React.Component {
     const defaultTitle = node.translation || 'None';
     const title =
       node.type === 'perspective' ? (
-        <LexicalEntryModal node={node} actions={actions} entitiesMode={mode} />
+        <LexicalEntryLink node={node} actions={actions} entitiesMode={mode} />
       ) : (
         defaultTitle
       );
+
     return { title };
   }
 
