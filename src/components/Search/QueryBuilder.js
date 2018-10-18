@@ -10,8 +10,23 @@ import styled from 'styled-components';
 import { Checkbox, Grid, Radio, Dropdown, Segment, Button, Divider, Select, Input } from 'semantic-ui-react';
 import { setQuery } from 'ducks/search';
 import SearchSelectLanguages from 'components/Search/SearchSelectLanguages';
-import { languagesQuery } from 'graphql/language';
 import { buildLanguageTree } from 'pages/Search/treeBuilder';
+
+const LanguagesWithDictionariesQuery = gql`
+  query Languages {
+    language_tree {
+      id
+      parent_id
+      translation
+      dictionaries {
+        id
+        parent_id
+        translation
+        category
+      }
+    }
+  }
+`;
 
 import { compositeIdToString } from 'utils/compositeId';
 
@@ -245,8 +260,8 @@ class QueryBuilder extends React.Component {
       return null;
     }
 
-    const { language_tree: langs } = langsQueryRes;
-    const languagesTree = buildLanguageTree(fromJS(langs)).toJS();
+    const { language_tree: languages } = langsQueryRes;
+    const languagesTree = buildLanguageTree(fromJS(languages)).toJS();
     const { searchId, actions } = this.props;
     const blocks = this.state.data;
 
@@ -386,7 +401,7 @@ export default compose(
       actions: bindActionCreators({ setQuery }, dispatch),
     })
   ),
-  graphql(languagesQuery, {
+  graphql(LanguagesWithDictionariesQuery, {
     name: 'langsQueryRes'
   }),
   pure

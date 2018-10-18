@@ -6,6 +6,8 @@ import LanguageGroup from './LanguageGroup';
 /* ----------- PROPS ----------- */
 const classNames = {
   container: 'search-language-tree__item',
+  translationWrap: 'search-language-tree__translation-wrap',
+  translation: 'search-language-tree__translation',
 };
 
 /* ----------- COMPONENT ----------- */
@@ -18,7 +20,11 @@ const LanguageItem = ({ data }) => {
 
   return (
     <div className={classNames.container}>
-      {data.translation}
+      <div className={classNames.translationWrap}>
+        <div className={classNames.translation}>
+          {data.translation}
+        </div>
+      </div>
     </div>
   );
 };

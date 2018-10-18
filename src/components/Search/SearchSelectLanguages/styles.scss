@@ -18,6 +18,10 @@
     padding-left: 40px;
   }
 
+  &__group-items_no-groups .search-language-tree__item {
+    padding-left: 40px;
+  }
+
   &__button_expand {
     background: #fff url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxOCIgaGVpZ2h0PSIxOCI+PGNpcmNsZSBjeD0iOSIgY3k9IjkiIHI9IjgiIGZpbGw9IiNGRkYiLz48ZyBzdHJva2U9IiM5ODk4OTgiIHN0cm9rZS13aWR0aD0iMS45IiA+PHBhdGggZD0iTTQuNSA5aDkiLz48L2c+Cjwvc3ZnPg==) no-repeat center;
   }
@@ -41,5 +45,11 @@
   &__group-title {
     position: relative;
     padding-left: 20px;
+  }
+
+  &__translation-wrap {
+    display: inline-block;
+    vertical-align: top;
+    padding: 5px 5px 5px 0;
   }
 }
