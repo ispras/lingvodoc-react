@@ -191,6 +191,7 @@ class QueryBuilder extends React.Component {
     this.onFieldChange = this.onFieldChange.bind(this);
     this.changeSource = this.changeSource.bind(this);
     this.changeMode = this.changeMode.bind(this);
+    this.onFilterLangsChange = this.onFilterLangsChange.bind(this);
 
     this.newBlock = fromJS(newBlock);
 
@@ -252,6 +253,10 @@ class QueryBuilder extends React.Component {
     this.setState(m);
   }
 
+  onFilterLangsChange(id, type, checked) {
+    console.log(id, type, checked);
+  }
+
   render() {
     const { langsQueryRes } = this.props;
     const { error, loading } = langsQueryRes;
@@ -295,7 +300,7 @@ class QueryBuilder extends React.Component {
           </Segment.Group>
         </Segment.Group>
 
-        <SearchSelectLanguages data={languagesTree} />
+        <SearchSelectLanguages data={languagesTree} onChange={this.onFilterLangsChange} />
 
         <Segment.Group>
           <Segment>Search options</Segment>

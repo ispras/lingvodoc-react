@@ -2,7 +2,7 @@
   &__button {
     position: absolute;
     top: 50%;
-    left: 0;
+    left: 20px;
     margin-top: -8px;
     background-size: 24px;
     width: 16px;
@@ -14,12 +14,22 @@
     cursor: pointer;
   }
 
+  &__checkbox {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 16px;
+    height: 16px;
+    margin-top: -8px;
+    cursor: pointer;
+  }
+
   &__item {
-    padding-left: 40px;
+    padding-left: 20px;
   }
 
   &__group-items_no-groups .search-language-tree__item {
-    padding-left: 40px;
+    padding-left: 20px;
   }
 
   &__button_expand {
@@ -44,12 +54,17 @@
 
   &__group-title {
     position: relative;
-    padding-left: 20px;
+    padding-left: 40px;
   }
 
   &__translation-wrap {
     display: inline-block;
     vertical-align: top;
     padding: 5px 5px 5px 0;
+  }
+
+  &__item .search-language-tree__translation-wrap {
+    position: relative;
+    padding-left: 20px;
   }
 }

@@ -1,8 +1,6 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 
-import LanguageGroup from './LanguageGroup';
-
 /* ----------- PROPS ----------- */
 const classNames = {
   container: 'search-language-tree__item',
@@ -12,7 +10,7 @@ const classNames = {
 };
 
 /* ----------- COMPONENT ----------- */
-class LanguageItem extends PureComponent {
+class DictionaryItem extends PureComponent {
   constructor(props) {
     super();
 
@@ -32,7 +30,7 @@ class LanguageItem extends PureComponent {
   }
 
   onCheckboxChange(ev) {
-    this.props.onChange(this.props.data.id, 'language', ev.target.checked);
+    this.props.onChange(this.props.data.id, 'dictionary', ev.target.checked);
 
     this.setState({
       checked: ev.target.checked,
@@ -41,11 +39,6 @@ class LanguageItem extends PureComponent {
 
   render() {
     const { data } = this.props;
-    const isParent = data.children.length > 0 || data.dictionaries.length > 0;
-
-    if (isParent) {
-      return <LanguageGroup data={data} onChange={this.props.onChange} />;
-    }
 
     return (
       <div className={classNames.container}>
@@ -57,7 +50,7 @@ class LanguageItem extends PureComponent {
             onChange={this.onCheckboxChange}
           />
           <div className={classNames.translation}>
-            {data.translation}
+            <strong>{data.translation}</strong>
           </div>
         </div>
       </div>
@@ -66,9 +59,9 @@ class LanguageItem extends PureComponent {
 }
 
 /* ----------- PROPS VALIDATION ----------- */
-LanguageItem.propTypes = {
+DictionaryItem.propTypes = {
   data: PropTypes.object.isRequired,
   onChange: PropTypes.func.isRequired,
 };
 
-export default LanguageItem;
+export default DictionaryItem;

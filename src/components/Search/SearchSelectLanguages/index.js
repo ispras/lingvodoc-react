@@ -39,7 +39,7 @@ class SearchSelectLanguages extends PureComponent {
           this.state.showLangs ?
             <Segment.Group>
               <Segment>
-                <LanguageTree data={langsTree} />
+                <LanguageTree data={langsTree} onChange={this.props.onChange} />
               </Segment>
               <Segment>
                 <Button primary basic>
@@ -60,6 +60,7 @@ class SearchSelectLanguages extends PureComponent {
 /* ----------- PROPS VALIDATION ----------- */
 SearchSelectLanguages.propTypes = {
   data: PropTypes.array.isRequired,
+  onChange: PropTypes.func.isRequired,
 };
 
 export default SearchSelectLanguages;

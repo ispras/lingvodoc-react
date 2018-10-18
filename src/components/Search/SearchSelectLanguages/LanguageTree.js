@@ -20,7 +20,7 @@ class SearchLanguageTree extends PureComponent {
 
     return (
       <div className={classNames.container}>
-        {langsTree.map(item => <LanguageItem key={item.id} data={item} />)}
+        {langsTree.map(item => <LanguageItem key={item.id} data={item} onChange={this.props.onChange} />)}
       </div>
     );
   }
@@ -29,6 +29,7 @@ class SearchLanguageTree extends PureComponent {
 /* ----------- PROPS VALIDATION ----------- */
 SearchLanguageTree.propTypes = {
   data: PropTypes.array.isRequired,
+  onChange: PropTypes.func.isRequired,
 };
 
 export default SearchLanguageTree;

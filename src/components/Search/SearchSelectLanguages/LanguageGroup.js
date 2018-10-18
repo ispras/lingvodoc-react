@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 
 import LanguageItem from './LanguageItem';
+import DictionaryItem from './DictionaryItem';
 
 /* ----------- PROPS ----------- */
 const classNames = {
@@ -14,6 +15,7 @@ const classNames = {
   groupItemsShow: 'search-language-tree__group-items search-language-tree__group-items_show',
   noGroupsInGroup: 'search-language-tree__group-items_no-groups',
   groupTitle: 'search-language-tree__group-title',
+  checkbox: 'search-language-tree__checkbox',
 };
 
 const isGroupsInGroup = (group) => {
@@ -27,14 +29,25 @@ const isGroupsInGroup = (group) => {
 
 /* ----------- COMPONENT ----------- */
 class LanguageGroup extends PureComponent {
-  constructor() {
+  constructor(props) {
     super();
 
-    this.state = {
-      collapse: true,
-    };
+    const { data } = props;
+
+    if (data && (data.checked === undefined || data.checked)) {
+      this.state = {
+        checked: true,
+        collapse: true,
+      };
+    } else {
+      this.state = {
+        checked: false,
+        collapse: true,
+      };
+    }
 
     this.onButtonClick = this.onButtonClick.bind(this);
+    this.onCheckboxChange = this.onCheckboxChange.bind(this);
   }
 
   onButtonClick() {
@@ -43,9 +56,18 @@ class LanguageGroup extends PureComponent {
     });
   }
 
+  onCheckboxChange(ev) {
+    this.props.onChange(this.props.data.id, 'language', ev.target.checked);
+
+    this.setState({
+      checked: ev.target.checked,
+    });
+  }
+
   render() {
     const { data } = this.props;
     const { children } = data;
+    const { dictionaries } = data;
     const { collapse } = this.state;
     let childrenClassName = '';
 
@@ -62,6 +84,12 @@ class LanguageGroup extends PureComponent {
     return (
       <div className={classNames.container}>
         <div className={classNames.groupTitle}>
+          <input
+            className={classNames.checkbox}
+            type="checkbox"
+            checked={this.state.checked}
+            onChange={this.onCheckboxChange}
+          />
           <button
             className={collapse ? classNames.collapseButton : classNames.expandButton}
             onClick={this.onButtonClick}
@@ -73,7 +101,8 @@ class LanguageGroup extends PureComponent {
           </div>
         </div>
         <div className={childrenClassName}>
-          {children.map(item => <LanguageItem key={item.id} data={item} />)}
+          {children.map(item => <LanguageItem key={item.id} data={item} onChange={this.props.onChange} />)}
+          {dictionaries.map(item => <DictionaryItem key={item.id} data={item} onChange={this.props.onChange} />)}
         </div>
       </div>
     );
@@ -83,6 +112,7 @@ class LanguageGroup extends PureComponent {
 /* ----------- PROPS VALIDATION ----------- */
 LanguageGroup.propTypes = {
   data: PropTypes.object.isRequired,
+  onChange: PropTypes.func.isRequired,
 };
 
 export default LanguageGroup;
