@@ -382,7 +382,7 @@ const LinkModal = (props) => {
   }
 
   return (
-    <Modal dimmer open size="fullscreen">
+    <Modal dimmer open size="fullscreen" closeIcon onClose={props.closeModal}>
       <Modal.Content>
         <Content {...props} />
       </Modal.Content>
