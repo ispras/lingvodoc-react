@@ -4,9 +4,15 @@ import { compose, branch, renderNothing } from 'recompose';
 import { isEqual } from 'lodash';
 import { graphql, withApollo } from 'react-apollo';
 import { Button, List, Dropdown, Grid, Checkbox } from 'semantic-ui-react';
+import styled from 'styled-components';
 import { compositeIdToString } from 'utils/compositeId';
 import { uuidv4 as uuid } from 'utils/uuid';
 import { allFieldsQuery, corpusTemplateFieldsQuery } from './graphql';
+
+const CheckboxWithMargins = styled(Checkbox)`
+  margin-left: 1em;
+  margin-right: 1em;
+`;
 
 const NestedColumn = ({
   column, columns, fields, onChange,
@@ -95,7 +101,7 @@ class Column extends React.Component {
 
     const field = fields.find(f => isEqual(f.id, column.field_id));
     const options = fields.map(f => ({ text: f.translation, value: compositeIdToString(f.id) }));
-    const availablePerspectives = perspectives.map(p => ({ text: p.index, value: p.index }));
+    const availablePerspectives = perspectives.map(p => ({ text: 'Perspective ' + (p.index + 1), value: p.index }));
     const currentField = compositeIdToString(field.id);
 
     return (
@@ -114,7 +120,7 @@ class Column extends React.Component {
           field.data_type !== 'Link' &&
           field.data_type !== 'Directed Link' &&
           field.data_type !== 'Grouping Tag' && (
-            <Checkbox
+            <CheckboxWithMargins
               defaultChecked={this.state.hasNestedField}
               onChange={(e, { checked }) => this.setState({ hasNestedField: checked })}
               label="has linked field"
