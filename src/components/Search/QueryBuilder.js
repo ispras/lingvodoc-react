@@ -197,6 +197,7 @@ class QueryBuilder extends React.Component {
 
     this.state = {
       data: fromJS(props.data),
+      languagesTree: buildLanguageTree(fromJS(props.langsQueryRes.language_tree)).toJS(),
       source: {
         dictionaries: true,
         corpora: true,
@@ -258,15 +259,7 @@ class QueryBuilder extends React.Component {
   }
 
   render() {
-    const { langsQueryRes } = this.props;
-    const { error, loading } = langsQueryRes;
-
-    if (error || loading) {
-      return null;
-    }
-
-    const { language_tree: languages } = langsQueryRes;
-    const languagesTree = buildLanguageTree(fromJS(languages)).toJS();
+    const { languagesTree } = this.state;
     const { searchId, actions } = this.props;
     const blocks = this.state.data;
 
@@ -299,9 +292,11 @@ class QueryBuilder extends React.Component {
             </Segment>
           </Segment.Group>
         </Segment.Group>
-
-        <SearchSelectLanguages data={languagesTree} onChange={this.onFilterLangsChange} />
-
+        {
+          languagesTree ?
+          <SearchSelectLanguages data={languagesTree} onChange={this.onFilterLangsChange} /> :
+          null
+        }
         <Segment.Group>
           <Segment>Search options</Segment>
           <Segment.Group>
@@ -399,6 +394,21 @@ QueryBuilder.defaultProps = {
   data: [[newBlock]],
 };
 
+const QueryBuilderWrap = (props) => {
+  const { langsQueryRes } = props;
+  const { error, loading } = langsQueryRes;
+
+  if (error || loading) {
+    return null;
+  }
+
+  return <QueryBuilder {...props} />;
+};
+
+QueryBuilderWrap.propTypes = {
+  langsQueryRes: PropTypes.object.isRequired,
+};
+
 export default compose(
   connect(
     state => state.search,
@@ -410,4 +420,4 @@ export default compose(
     name: 'langsQueryRes'
   }),
   pure
-)(QueryBuilder);
+)(QueryBuilderWrap);
