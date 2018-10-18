@@ -11,34 +11,23 @@ const classNames = {
 
 /* ----------- COMPONENT ----------- */
 class DictionaryItem extends PureComponent {
-  constructor(props) {
+  constructor() {
     super();
-
-    const { data } = props;
-
-    if (data && (data.checked === undefined || data.checked)) {
-      this.state = {
-        checked: true,
-      };
-    } else {
-      this.state = {
-        checked: false,
-      };
-    }
 
     this.onCheckboxChange = this.onCheckboxChange.bind(this);
   }
 
   onCheckboxChange(ev) {
     this.props.onChange(this.props.data.id, 'dictionary', ev.target.checked);
-
-    this.setState({
-      checked: ev.target.checked,
-    });
   }
 
   render() {
     const { data } = this.props;
+    let checked = false;
+
+    if (data && (data.checked === undefined || data.checked)) {
+      checked = true;
+    }
 
     return (
       <div className={classNames.container}>
@@ -46,7 +35,7 @@ class DictionaryItem extends PureComponent {
           <input
             className={classNames.checkbox}
             type="checkbox"
-            checked={this.state.checked}
+            checked={checked}
             onChange={this.onCheckboxChange}
           />
           <div className={classNames.translation}>

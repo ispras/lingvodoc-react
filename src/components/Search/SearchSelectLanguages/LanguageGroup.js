@@ -32,19 +32,9 @@ class LanguageGroup extends PureComponent {
   constructor(props) {
     super();
 
-    const { data } = props;
-
-    if (data && (data.checked === undefined || data.checked)) {
-      this.state = {
-        checked: true,
-        collapse: true,
-      };
-    } else {
-      this.state = {
-        checked: false,
-        collapse: true,
-      };
-    }
+    this.state = {
+      collapse: true,
+    };
 
     this.onButtonClick = this.onButtonClick.bind(this);
     this.onCheckboxChange = this.onCheckboxChange.bind(this);
@@ -58,10 +48,6 @@ class LanguageGroup extends PureComponent {
 
   onCheckboxChange(ev) {
     this.props.onChange(this.props.data.id, 'language', ev.target.checked);
-
-    this.setState({
-      checked: ev.target.checked,
-    });
   }
 
   render() {
@@ -70,11 +56,16 @@ class LanguageGroup extends PureComponent {
     const { dictionaries } = data;
     const { collapse } = this.state;
     let childrenClassName = '';
+    let checked = false;
 
     if (collapse) {
       childrenClassName = classNames.groupItems;
     } else {
       childrenClassName = classNames.groupItemsShow;
+    }
+
+    if (data && (data.checked === undefined || data.checked)) {
+      checked = true;
     }
 
     if (!isGroupsInGroup(children)) {
@@ -87,7 +78,7 @@ class LanguageGroup extends PureComponent {
           <input
             className={classNames.checkbox}
             type="checkbox"
-            checked={this.state.checked}
+            checked={checked}
             onChange={this.onCheckboxChange}
           />
           <button

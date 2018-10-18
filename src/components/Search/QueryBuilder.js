@@ -255,7 +255,13 @@ class QueryBuilder extends React.Component {
   }
 
   onFilterLangsChange(id, type, checked) {
-    console.log(id, type, checked);
+    const newTree = [...this.state.languagesTree];
+
+    /* нужно вызвать обработку дерева на основе изменения */
+
+    this.setState({
+      languagesTree: newTree,
+    });
   }
 
   render() {
