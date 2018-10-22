@@ -26,6 +26,7 @@ import statistics from './statistics';
 import ban from './ban';
 import translations from './translations';
 import lexicalEntry from './lexicalEntry';
+import modals from './modals';
 
 export default {
   locale,
@@ -56,4 +57,5 @@ export default {
   ban,
   translations,
   lexicalEntry,
+  modals,
 };
