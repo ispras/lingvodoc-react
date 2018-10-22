@@ -5,6 +5,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { Sidebar } from 'semantic-ui-react';
 
+import Modals from 'components/Modals';
 import PlayerModal from 'components/PlayerModal';
 import MarkupModal from 'components/MarkupModal';
 import GroupingTagModal from 'components/GroupingTagModal';
@@ -40,6 +41,7 @@ const Layout = () => (
         <Routes />
       </Sidebar.Pusher>
     </Sidebar.Pushable>
+    <Modals />
     <GroupingTagModal />
     <LinkModal />
     <PlayerModal />
