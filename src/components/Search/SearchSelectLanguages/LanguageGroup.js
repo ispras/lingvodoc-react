@@ -29,7 +29,7 @@ const isGroupsInGroup = (group) => {
 
 /* ----------- COMPONENT ----------- */
 class LanguageGroup extends PureComponent {
-  constructor(props) {
+  constructor() {
     super();
 
     this.state = {

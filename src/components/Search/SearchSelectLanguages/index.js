@@ -5,8 +5,8 @@ import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import { compose } from 'recompose';
 import { fromJS } from 'immutable';
-import LanguageTree from './LanguageTree';
 import { buildLanguageTree } from 'pages/Search/treeBuilder';
+import LanguageTree from './LanguageTree';
 
 /* ----------- QUERIES ----------- */
 const LanguagesWithDictionariesQuery = gql`
@@ -27,15 +27,13 @@ const LanguagesWithDictionariesQuery = gql`
 
 /* ----------- COMPONENT ----------- */
 class SearchSelectLanguages extends PureComponent {
-  constructor(props) {
+  constructor() {
     super();
 
     this.state = {
       showLangs: false,
       selectedLangs: [],
     };
-
-    this.nodes = props.data;
 
     this.onShowLangsButtonClick = this.onShowLangsButtonClick.bind(this);
   }
@@ -51,7 +49,7 @@ class SearchSelectLanguages extends PureComponent {
   }
 
   render() {
-    const { nodes: langsTree } = this;
+    const { data } = this.props;
     const { selectedLangs } = this.state;
     const selectedLangsCount = selectedLangs.length;
 
@@ -67,7 +65,7 @@ class SearchSelectLanguages extends PureComponent {
           this.state.showLangs ?
             <Segment.Group>
               <Segment>
-                <LanguageTree data={langsTree} onChange={this.onFilterLangsChange} />
+                <LanguageTree nodes={data} onChange={this.onFilterLangsChange} />
               </Segment>
               <Segment>
                 <Button primary basic>
