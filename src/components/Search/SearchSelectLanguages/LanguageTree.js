@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import LanguageItem from './LanguageItem';
+import TreeNode from './TreeNode';
 
 import './styles.scss';
 
@@ -9,26 +10,41 @@ const classNames = {
   container: 'search-language-tree',
 };
 
+const propsNames = {
+  languages: 'children',
+  dictionaries: 'dictionaries',
+};
+
 /* ----------- COMPONENT ----------- */
 class SearchLanguageTree extends PureComponent {
-  static nodeHasChildren(node) {
-    return Array.isArray(node.children) && (node.children.length > 0 || node.dictionaries.length > 0);
+  static nodeHasLanguagesChildren(node) {
+    return Array.isArray(node[propsNames.languages]) && node[propsNames.languages].length > 0;
+  }
+
+  static nodeHasDictionariesChildren(node) {
+    return Array.isArray(node[propsNames.dictionaries]) && node[propsNames.dictionaries].length > 0;
   }
 
   static getNodeValue(node) {
     return `${node.id[0].toString()},${node.id[1].toString()}`;
   }
 
-  static isEveryChildChecked(node) {
-    return node.children.every(child => this.flatNodes[this.getNodeValue(child)].checkState === 1);
+  constructor(props) {
+    super(props);
+
+    this.flatNodes = {};
+    this.flattenNodes(props.nodes);
+    this.updateNodesWithChecked(props.checked);
+
+    this.onCheck = this.onCheck.bind(this);
   }
 
-  static isSomeChildChecked(node) {
-    return node.children.some(child => this.flatNodes[this.getNodeValue(child)].checkState > 0);
+  onCheck(nodeInfo) {
+    console.log(this, nodeInfo);
   }
 
-  static getShallowCheckState(node) {
-    const flatNode = this.flatNodes[node.value];
+  getShallowCheckState(node) {
+    const flatNode = this.flatNodes[this.constructor.getNodeValue(node)];
 
     if (flatNode.isLeaf) {
       return flatNode.checked ? 1 : 0;
@@ -45,17 +61,63 @@ class SearchLanguageTree extends PureComponent {
     return 0;
   }
 
-  constructor(props) {
-    super(props);
+  getCheckedList() {
+    const list = {
+      language: [],
+      dictionary: [],
+    };
 
-    this.flatNodes = {};
-    this.flattenNodes(props.nodes);
+    Object.keys(this.flatNodes).forEach((value) => {
+      const node = this.flatNodes[value];
+      if (node.checked) {
+        list[node.type].push(value);
+      }
+    });
 
-    this.onCheck = this.onCheck.bind(this);
+    return list;
   }
 
-  onCheck(nodeInfo) {
-    console.log(this, nodeInfo);
+  isEveryChildChecked(node) {
+    const everyLanguagesChecked = node[propsNames.languages]
+      .every(language => this.flatNodes[this.constructor.getNodeValue(language)].checkState === 1);
+
+    return !this.constructor.nodeHasDictionariesChildren(node) ? everyLanguagesChecked :
+      everyLanguagesChecked && node[propsNames.dictionaries]
+        .every(dictionary => this.flatNodes[this.constructor.getNodeValue(dictionary)].checkState === 1);
+  }
+
+  isSomeChildChecked(node) {
+    const someLanguagesChecked = node[propsNames.languages].some(language => this.flatNodes[this.constructor.getNodeValue(language)].checkState > 1);
+
+    return !this.constructor.nodeHasDictionariesChildren(node) ? someLanguagesChecked :
+      someLanguagesChecked || node[propsNames.dictionaries].some(dictionary => this.flatNodes[this.constructor.getNodeValue(dictionary)].checkState > 1);
+  }
+
+  updateNodesWithChecked(checkedLists) {
+    const isAllChecked = checkedLists[0] === 'all' && checkedLists.length === 1;
+
+    if (isAllChecked) {
+      // Set values to true
+      Object.keys(this.flatNodes).forEach((value) => {
+        this.flatNodes[value].checked = true;
+      });
+
+      return;
+    }
+
+    // Reset values to false
+    Object.keys(this.flatNodes).forEach((value) => {
+      this.flatNodes[value].checked = false;
+    });
+
+    checkedLists.forEach((item) => {
+      item.checked.forEach((value) => {
+        const node = this.flatNodes[value];
+        if (node !== undefined && node.type === item.type) {
+          this.flatNodes[value].checked = true;
+        }
+      });
+    });
   }
 
   flattenNodes(nodes, parent = {}, type = 'language') {
@@ -64,35 +126,71 @@ class SearchLanguageTree extends PureComponent {
     }
 
     nodes.forEach((node) => {
-      const isParent = this.constructor.nodeHasChildren(node);
+      const isParentWithLanguages = this.constructor.nodeHasLanguagesChildren(node);
+      const isParentWithDictionaries = this.constructor.nodeHasDictionariesChildren(node);
       const nodeValue = this.constructor.getNodeValue(node);
+
       this.flatNodes[nodeValue] = {
         value: nodeValue,
         self: node,
         parent,
-        isParent,
-        isLeaf: !isParent,
+        isParentWithLanguages,
+        isParentWithDictionaries,
+        isLeaf: !isParentWithLanguages && !isParentWithDictionaries,
         type,
-        showCheckbox: node.showCheckbox !== undefined ? node.showCheckbox : true,
+        expanded: false,
       };
       this.flattenNodes(node.children, node, 'language');
       this.flattenNodes(node.dictionaries, node, 'dictionary');
     });
   }
 
-  // renderTreeNodes(nodes, parent = {}) {
-  //   const treeNodes = nodes.map(node => {
-  //     const key = this.constructor.getNodeValue(node);
-  //     const flatNode = this.flatNodes[key];
+  renderTreeNodes(nodes, parent = {}) {
+    const treeNodes = nodes.map((node) => {
+      const key = this.constructor.getNodeValue(node);
+      const flatNode = this.flatNodes[key];
+      const childrenLanguages = flatNode.isParentWithLanguages ? this.renderTreeNodes(node[propsNames.languages], node) : null;
+      const childrenDictionaries = flatNode.isParentWithDictionaries ? this.renderTreeNodes(node[propsNames.dictionaries], node) : null;
 
-  //     flatNode.checkState = this.constructor.getShallowCheckState(node);
-  //   });
-  // }
+      // Get the check state after all children check states are determined
+      flatNode.checkState = this.getShallowCheckState(node);
+
+      const parentExpanded = parent.value ? this.flatNodes[this.constructor.getNodeValue(parent)].expanded : true;
+
+      if (!parentExpanded) {
+        return null;
+      }
+
+      return (
+        <TreeNode
+          key={key}
+          checked={flatNode.checked}
+          expanded={flatNode.expanded}
+          label={node.translation}
+          isLeaf={flatNode.isLeaf}
+          isParent={flatNode.isParent}
+          type={flatNode.type}
+          value={flatNode.value}
+          onCheck={this.onCheck}
+        >
+          {childrenLanguages}
+          {childrenDictionaries}
+        </TreeNode>
+      );
+    });
+
+    return (
+      <ol>
+        {treeNodes}
+      </ol>
+    );
+  }
 
   render() {
     const { nodes } = this.props;
+    const treeNodes = this.renderTreeNodes(nodes);
 
-    console.log(this.flatNodes);
+    console.log(treeNodes);
     return (
       <div className={classNames.container}>
         {nodes.map(item => <LanguageItem key={item.id} data={item} onChange={this.props.onChange} onCheck={this.onCheck} />)}
@@ -104,6 +202,7 @@ class SearchLanguageTree extends PureComponent {
 /* ----------- PROPS VALIDATION ----------- */
 SearchLanguageTree.propTypes = {
   nodes: PropTypes.array.isRequired,
+  checked: PropTypes.array.isRequired,
   onChange: PropTypes.func.isRequired,
 };
 

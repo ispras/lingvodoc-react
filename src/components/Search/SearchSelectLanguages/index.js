@@ -33,6 +33,20 @@ class SearchSelectLanguages extends PureComponent {
     this.state = {
       showLangs: false,
       selectedLangs: [],
+      checked: [
+        {
+          type: 'language',
+          checked: [
+            '1,203',
+          ]
+        },
+        {
+          type: 'dictionary',
+          checked: [
+            '269,4',
+          ],
+        },
+      ],
     };
 
     this.onShowLangsButtonClick = this.onShowLangsButtonClick.bind(this);
@@ -65,7 +79,7 @@ class SearchSelectLanguages extends PureComponent {
           this.state.showLangs ?
             <Segment.Group>
               <Segment>
-                <LanguageTree nodes={data} onChange={this.onFilterLangsChange} />
+                <LanguageTree checked={this.state.checked} nodes={data} onChange={this.onFilterLangsChange} />
               </Segment>
               <Segment>
                 <Button primary basic>
