@@ -4,29 +4,12 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
-import { compose, pure, onlyUpdateForKeys } from 'recompose';
+import { compose, pure } from 'recompose';
 import { List, fromJS } from 'immutable';
 import styled from 'styled-components';
-import { Checkbox, Grid, Radio, Dropdown, Segment, Button, Divider, Select, Input } from 'semantic-ui-react';
+import { Checkbox, Grid, Radio, Segment, Button, Divider, Select, Input } from 'semantic-ui-react';
 import { setQuery } from 'ducks/search';
 import SearchSelectLanguages from 'components/Search/SearchSelectLanguages';
-import { buildLanguageTree } from 'pages/Search/treeBuilder';
-
-const LanguagesWithDictionariesQuery = gql`
-  query Languages {
-    language_tree {
-      id
-      parent_id
-      translation
-      dictionaries {
-        id
-        parent_id
-        translation
-        category
-      }
-    }
-  }
-`;
 
 import { compositeIdToString } from 'utils/compositeId';
 
@@ -191,13 +174,11 @@ class QueryBuilder extends React.Component {
     this.onFieldChange = this.onFieldChange.bind(this);
     this.changeSource = this.changeSource.bind(this);
     this.changeMode = this.changeMode.bind(this);
-    this.onFilterLangsChange = this.onFilterLangsChange.bind(this);
 
     this.newBlock = fromJS(newBlock);
 
     this.state = {
       data: fromJS(props.data),
-      languagesTree: buildLanguageTree(fromJS(props.langsQueryRes.language_tree)).toJS(),
       source: {
         dictionaries: true,
         corpora: true,
@@ -254,18 +235,7 @@ class QueryBuilder extends React.Component {
     this.setState(m);
   }
 
-  onFilterLangsChange(id, type, checked) {
-    const newTree = [...this.state.languagesTree];
-
-    /* нужно вызвать обработку дерева на основе изменения */
-
-    this.setState({
-      languagesTree: newTree,
-    });
-  }
-
   render() {
-    const { languagesTree } = this.state;
     const { searchId, actions } = this.props;
     const blocks = this.state.data;
 
@@ -298,11 +268,9 @@ class QueryBuilder extends React.Component {
             </Segment>
           </Segment.Group>
         </Segment.Group>
-        {
-          languagesTree ?
-          <SearchSelectLanguages data={languagesTree} onChange={this.onFilterLangsChange} /> :
-          null
-        }
+
+        <SearchSelectLanguages />
+
         <Segment.Group>
           <Segment>Search options</Segment>
           <Segment.Group>
@@ -393,26 +361,11 @@ QueryBuilder.propTypes = {
   actions: PropTypes.shape({
     setQuery: PropTypes.func.isRequired,
   }).isRequired,
-  langsQueryRes: PropTypes.object.isRequired,
+  // langsQueryRes: PropTypes.object.isRequired,
 };
 
 QueryBuilder.defaultProps = {
   data: [[newBlock]],
-};
-
-const QueryBuilderWrap = (props) => {
-  const { langsQueryRes } = props;
-  const { error, loading } = langsQueryRes;
-
-  if (error || loading) {
-    return null;
-  }
-
-  return <QueryBuilder {...props} />;
-};
-
-QueryBuilderWrap.propTypes = {
-  langsQueryRes: PropTypes.object.isRequired,
 };
 
 export default compose(
@@ -422,8 +375,5 @@ export default compose(
       actions: bindActionCreators({ setQuery }, dispatch),
     })
   ),
-  graphql(LanguagesWithDictionariesQuery, {
-    name: 'langsQueryRes'
-  }),
   pure
-)(QueryBuilderWrap);
+)(QueryBuilder);
