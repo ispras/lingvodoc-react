@@ -184,6 +184,7 @@ const P = ({
   openModal: openNewModal,
   createdEntries,
   selectedEntries,
+  user
 }) => {
   const { loading, error } = data;
 
@@ -332,6 +333,8 @@ const P = ({
     });
   }
 
+  const isAdmin = user && user.user.id == 1;
+  
   return (
     <div style={{ overflowY: 'auto' }}>
       {mode === 'edit' && <Button positive icon="plus" content="Add lexical entry" onClick={addEntry} />}
@@ -353,8 +356,8 @@ const P = ({
           disabled={selectedEntries.length < 2}
         />
       )}
-      {mode === 'publish' && <Button positive content="Publish Entities" disabled={approveDisableCondition(entries)} onClick={onApprove} />}
-      {mode === 'contributions' && <Button positive content="Accept Contributions" disabled={approveDisableCondition(entries)} onClick={onApprove} />}
+      {mode === 'publish' && isAdmin && <Button positive content="Publish Entities" disabled={approveDisableCondition(entries)} onClick={onApprove} />}
+      {mode === 'contributions' && isAdmin && <Button positive content="Accept Contributions" disabled={approveDisableCondition(entries)} onClick={onApprove} />}
       <Table celled padded className={className}>
         <TableHeader
           columns={fields}
@@ -396,6 +399,7 @@ P.propTypes = {
   openModal: PropTypes.func.isRequired,
   createdEntries: PropTypes.array.isRequired,
   selectedEntries: PropTypes.array.isRequired,
+  user: PropTypes.object
 };
 
 P.defaultProps = {
@@ -405,7 +409,8 @@ P.defaultProps = {
 
 const PerspectiveView = compose(
   connect(
-    ({ perspective: { sortByField, createdEntries, selectedEntries } }) => ({
+    ({ user, perspective: { sortByField, createdEntries, selectedEntries } }) => ({
+      user,
       sortByField,
       createdEntries,
       selectedEntries,
