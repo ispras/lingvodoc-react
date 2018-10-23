@@ -1,8 +1,11 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
+import isEqual from 'lodash/isEqual';
+import { Segment, Button } from 'semantic-ui-react';
 import TreeNode from './TreeNode';
 
 import './styles.scss';
+import { check } from 'graphql-anywhere';
 
 /* ----------- PROPS ----------- */
 const classNames = {
@@ -16,15 +19,31 @@ const propsNames = {
 
 
 /* ----------- HELPERS ----------- */
-const isGroupsInGroup = (group) => {
-  if (!group) {
+// const isGroupsInGroup = (group) => {
+//   if (!group) {
+//     return false;
+//   }
+
+//   for (let i = 0; i < group.length; i++) {
+//     if (group[i].children.length > 0) {
+//       return true;
+//     }
+//   }
+
+//   return false;
+// };
+
+const isAllNodesChecked = (numOfNodes, checkedList) => {
+  if (!numOfNodes || !checkedList) {
     return false;
   }
 
-  for (let i = 0; i < group.length; i++) {
-    if (group[i].children.length > 0) {
-      return true;
-    }
+  if (Array.isArray(checkedList) && checkedList[0] === 'all') {
+    return true;
+  }
+
+  if (numOfNodes === checkedList[0].checked.length + checkedList[1].checked.length) {
+    return true;
   }
 
   return false;
@@ -65,10 +84,21 @@ class SearchLanguageTree extends PureComponent {
 
     this.onCheck = this.onCheck.bind(this);
     this.onExpand = this.onExpand.bind(this);
+    this.checkAll = this.checkAll.bind(this);
+    this.uncheckAll = this.uncheckAll.bind(this);
   }
 
-  onCheck() {
-    this.props.onChange(this.getCheckedList());
+  componentWillReceiveProps({ nodes, checked }) {
+    if (!isEqual(this.props.nodes, nodes)) {
+      this.flattenNodes(nodes);
+    }
+
+    this.updateNodesWithChecked(checked);
+  }
+
+  onCheck(nodeInfo) {
+    this.toggleChecked(nodeInfo.value, nodeInfo.checked);
+    this.sendCheckedListToTop();
   }
 
   onExpand(nodeInfo) {
@@ -109,7 +139,10 @@ class SearchLanguageTree extends PureComponent {
       }
     });
 
-    return list;
+    return Object.keys(list).map(item => ({
+      type: item,
+      checked: list[item],
+    }));
   }
 
   getExpandedList() {
@@ -123,6 +156,48 @@ class SearchLanguageTree extends PureComponent {
     });
 
     return list;
+  }
+
+  sendCheckedListToTop() {
+    const nextCheckedList = this.getCheckedList();
+    if (isAllNodesChecked(Object.keys(this.flatNodes).length, nextCheckedList)) {
+      return this.props.onChange(['all']);
+    }
+
+    return this.props.onChange(nextCheckedList);
+  }
+
+  toggleChecked(value, isChecked) {
+    const flatNode = this.flatNodes[value];
+
+    if (flatNode.isLeaf) {
+      if (flatNode.self.disabled) {
+        return;
+      }
+
+      this.toggleNode(value, 'checked', isChecked);
+    } else {
+      flatNode.self[propsNames.languages].forEach((language) => {
+        this.toggleChecked(this.constructor.getNodeValue(language), isChecked);
+      });
+
+      flatNode.self[propsNames.dictionaries].forEach((dictionary) => {
+        this.toggleChecked(this.constructor.getNodeValue(dictionary), isChecked);
+      });
+    }
+  }
+
+  toggleCheckedAll(isChecked) {
+    Object.keys(this.flatNodes).forEach(value => this.toggleNode(value, 'checked', isChecked));
+    this.sendCheckedListToTop();
+  }
+
+  checkAll() {
+    this.toggleCheckedAll(true);
+  }
+
+  uncheckAll() {
+    this.toggleCheckedAll(false);
   }
 
   toggleNode(nodeValue, key, toggleValue) {
@@ -139,10 +214,12 @@ class SearchLanguageTree extends PureComponent {
   }
 
   isSomeChildChecked(node) {
-    const someLanguagesChecked = node[propsNames.languages].some(language => this.flatNodes[this.constructor.getNodeValue(language)].checkState > 1);
+    const someLanguagesChecked = node[propsNames.languages]
+      .some(language => this.flatNodes[this.constructor.getNodeValue(language)].checkState > 0);
 
     return !this.constructor.nodeHasDictionariesChildren(node) ? someLanguagesChecked :
-      someLanguagesChecked || node[propsNames.dictionaries].some(dictionary => this.flatNodes[this.constructor.getNodeValue(dictionary)].checkState > 1);
+      someLanguagesChecked || node[propsNames.dictionaries]
+        .some(dictionary => this.flatNodes[this.constructor.getNodeValue(dictionary)].checkState > 0);
   }
 
   updateNodesWithChecked(checkedLists) {
@@ -217,7 +294,6 @@ class SearchLanguageTree extends PureComponent {
       const flatNode = this.flatNodes[key];
       const childrenLanguages = flatNode.isParentWithLanguages ? this.renderTreeNodes(node[propsNames.languages], node) : null;
       const childrenDictionaries = flatNode.isParentWithDictionaries ? this.renderTreeNodes(node[propsNames.dictionaries], node) : null;
-      const groupHasGroups = isGroupsInGroup(node[propsNames.languages]);
 
       // Get the check state after all children check states are determined
       flatNode.checkState = this.getShallowCheckState(node);
@@ -231,14 +307,13 @@ class SearchLanguageTree extends PureComponent {
       return (
         <TreeNode
           key={key}
-          checked={flatNode.checked}
+          checked={flatNode.checkState}
           expanded={flatNode.expanded}
           label={node.translation}
           isLeaf={flatNode.isLeaf}
           isParent={flatNode.isParent}
           type={flatNode.type}
           value={flatNode.value}
-          groupHasGroups={groupHasGroups}
           onCheck={this.onCheck}
           onExpand={this.onExpand}
         >
@@ -248,11 +323,7 @@ class SearchLanguageTree extends PureComponent {
       );
     });
 
-    return (
-      <div className="tree-nodes">
-        {treeNodes}
-      </div>
-    );
+    return treeNodes;
   }
 
   render() {
@@ -262,6 +333,14 @@ class SearchLanguageTree extends PureComponent {
     return (
       <div className={classNames.container}>
         {treeNodes}
+        <Segment>
+          <Button primary basic onClick={this.uncheckAll}>
+            Снять выделенное
+          </Button>
+          <Button primary basic onClick={this.checkAll}>
+            Выделить всё
+          </Button>
+        </Segment>
       </div>
     );
   }

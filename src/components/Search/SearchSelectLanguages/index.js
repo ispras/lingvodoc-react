@@ -57,6 +57,7 @@ class SearchSelectLanguages extends PureComponent {
     };
 
     this.onShowLangsButtonClick = this.onShowLangsButtonClick.bind(this);
+    this.onFilterLangsChange = this.onFilterLangsChange.bind(this);
   }
 
   onShowLangsButtonClick() {
@@ -66,7 +67,9 @@ class SearchSelectLanguages extends PureComponent {
   }
 
   onFilterLangsChange(checkedList) {
-    console.log(this, checkedList);
+    this.setState({
+      checked: checkedList,
+    });
   }
 
   render() {
@@ -87,14 +90,6 @@ class SearchSelectLanguages extends PureComponent {
             <Segment.Group>
               <Segment>
                 <LanguageTree checked={this.state.checked} nodes={data} onChange={this.onFilterLangsChange} />
-              </Segment>
-              <Segment>
-                <Button primary basic>
-                  Снять выделенное
-                </Button>
-                <Button primary basic>
-                  Выделить всё
-                </Button>
               </Segment>
             </Segment.Group> :
             null

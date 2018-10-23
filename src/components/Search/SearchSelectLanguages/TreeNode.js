@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
+import { Checkbox } from 'semantic-ui-react';
 
 /* ----------- PROPS ----------- */
 const classNames = {
@@ -12,27 +13,27 @@ const classNames = {
   collapseButton: 'search-language-tree__button search-language-tree__button_collapse',
   groupTitle: 'search-language-tree__group-title',
   groupItems: 'search-language-tree__group-items',
-  groupItemsShow: 'search-language-tree__group-items search-language-tree__group-items_show',
-  noGroupsInGroup: 'search-language-tree__group-items_no-groups',
 };
 
 class TreeNode extends PureComponent {
   static propTypes = {
-    checked: PropTypes.bool.isRequired,
+    checked: PropTypes.number.isRequired,
     expanded: PropTypes.bool.isRequired,
     isLeaf: PropTypes.bool.isRequired,
     isParent: PropTypes.bool.isRequired,
     label: PropTypes.string.isRequired,
     value: PropTypes.string.isRequired,
-    groupHasGroups: PropTypes.bool,
     onExpand: PropTypes.func,
+    onCheck: PropTypes.func,
     children: PropTypes.node,
+    optimisticToggle: PropTypes.bool,
   }
 
   static defaultProps = {
     onExpand: () => {},
+    onCheck: () => {},
     children: null,
-    groupHasGroups: false,
+    optimisticToggle: true,
   }
 
   constructor() {
@@ -43,7 +44,20 @@ class TreeNode extends PureComponent {
   }
 
   onCheck() {
-    console.log(this, 'checked');
+    let isChecked = false;
+
+    if (this.props.checked === 0) {
+      isChecked = true;
+    }
+
+    if (this.props.checked === 2) {
+      isChecked = this.props.optimisticToggle;
+    }
+
+    this.props.onCheck({
+      value: this.props.value,
+      checked: isChecked,
+    });
   }
 
   onExpand() {
@@ -56,13 +70,8 @@ class TreeNode extends PureComponent {
       return null;
     }
 
-    let childrenClassName = classNames.groupItems;
-
-    childrenClassName = !this.props.groupHasGroups ?
-      `${childrenClassName} ${classNames.noGroupsInGroup}` : childrenClassName;
-
     return (
-      <div className={childrenClassName}>
+      <div className={classNames.groupItems}>
         {this.props.children}
       </div>
     );
@@ -96,11 +105,20 @@ class TreeNode extends PureComponent {
   renderCheckbox() {
     const { checked } = this.props;
 
+    if (checked === 2) {
+      return (
+        <Checkbox
+          className={classNames.checkbox}
+          indeterminate
+          onChange={this.onCheck}
+        />
+      );
+    }
+
     return (
-      <input
+      <Checkbox
         className={classNames.checkbox}
-        type="checkbox"
-        checked={checked}
+        checked={checked === 1}
         onChange={this.onCheck}
       />
     );
