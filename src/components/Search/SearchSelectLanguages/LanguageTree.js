@@ -5,11 +5,11 @@ import { Segment, Button } from 'semantic-ui-react';
 import TreeNode from './TreeNode';
 
 import './styles.scss';
-import { check } from 'graphql-anywhere';
 
 /* ----------- PROPS ----------- */
 const classNames = {
   container: 'search-language-tree',
+  wrap: 'search-language-tree__wrap',
 };
 
 const propsNames = {
@@ -332,7 +332,9 @@ class SearchLanguageTree extends PureComponent {
 
     return (
       <div className={classNames.container}>
-        {treeNodes}
+        <div className={classNames.wrap}>
+          {treeNodes}
+        </div>
         <Segment>
           <Button primary basic onClick={this.uncheckAll}>
             Снять выделенное
