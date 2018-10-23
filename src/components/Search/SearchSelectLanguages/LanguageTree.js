@@ -1,6 +1,5 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import LanguageItem from './LanguageItem';
 import TreeNode from './TreeNode';
 
 import './styles.scss';
@@ -15,8 +14,30 @@ const propsNames = {
   dictionaries: 'dictionaries',
 };
 
+
+/* ----------- HELPERS ----------- */
+const isGroupsInGroup = (group) => {
+  if (!group) {
+    return false;
+  }
+
+  for (let i = 0; i < group.length; i++) {
+    if (group[i].children.length > 0) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
 /* ----------- COMPONENT ----------- */
 class SearchLanguageTree extends PureComponent {
+  static propTypes = {
+    nodes: PropTypes.array.isRequired,
+    checked: PropTypes.array.isRequired,
+    onChange: PropTypes.func.isRequired,
+  }
+
   static nodeHasLanguagesChildren(node) {
     return Array.isArray(node[propsNames.languages]) && node[propsNames.languages].length > 0;
   }
@@ -36,11 +57,25 @@ class SearchLanguageTree extends PureComponent {
     this.flattenNodes(props.nodes);
     this.updateNodesWithChecked(props.checked);
 
+    this.state = {
+      expanded: [],
+    };
+
+    this.updateNodesWithExpanded(this.state.expanded);
+
     this.onCheck = this.onCheck.bind(this);
+    this.onExpand = this.onExpand.bind(this);
   }
 
-  onCheck(nodeInfo) {
-    console.log(this, nodeInfo);
+  onCheck() {
+    this.props.onChange(this.getCheckedList());
+  }
+
+  onExpand(nodeInfo) {
+    this.toggleNode(nodeInfo.value, 'expanded', nodeInfo.expanded);
+    this.setState({
+      expanded: this.getExpandedList(),
+    });
   }
 
   getShallowCheckState(node) {
@@ -75,6 +110,23 @@ class SearchLanguageTree extends PureComponent {
     });
 
     return list;
+  }
+
+  getExpandedList() {
+    const list = [];
+
+    Object.keys(this.flatNodes).forEach((value) => {
+      const node = this.flatNodes[value];
+      if (node.expanded) {
+        list.push(value);
+      }
+    });
+
+    return list;
+  }
+
+  toggleNode(nodeValue, key, toggleValue) {
+    this.flatNodes[nodeValue][key] = toggleValue;
   }
 
   isEveryChildChecked(node) {
@@ -120,6 +172,19 @@ class SearchLanguageTree extends PureComponent {
     });
   }
 
+  updateNodesWithExpanded(expandedList) {
+    Object.keys(this.flatNodes).forEach((value) => {
+      this.flatNodes[value].expanded = false;
+    });
+
+    expandedList.forEach((value) => {
+      const node = this.flatNodes[value];
+      if (node !== undefined) {
+        this.flatNodes[value].expanded = true;
+      }
+    });
+  }
+
   flattenNodes(nodes, parent = {}, type = 'language') {
     if (!Array.isArray(nodes) || nodes.length === 0) {
       return;
@@ -136,6 +201,7 @@ class SearchLanguageTree extends PureComponent {
         parent,
         isParentWithLanguages,
         isParentWithDictionaries,
+        isParent: isParentWithDictionaries || isParentWithLanguages,
         isLeaf: !isParentWithLanguages && !isParentWithDictionaries,
         type,
         expanded: false,
@@ -151,6 +217,7 @@ class SearchLanguageTree extends PureComponent {
       const flatNode = this.flatNodes[key];
       const childrenLanguages = flatNode.isParentWithLanguages ? this.renderTreeNodes(node[propsNames.languages], node) : null;
       const childrenDictionaries = flatNode.isParentWithDictionaries ? this.renderTreeNodes(node[propsNames.dictionaries], node) : null;
+      const groupHasGroups = isGroupsInGroup(node[propsNames.languages]);
 
       // Get the check state after all children check states are determined
       flatNode.checkState = this.getShallowCheckState(node);
@@ -171,7 +238,9 @@ class SearchLanguageTree extends PureComponent {
           isParent={flatNode.isParent}
           type={flatNode.type}
           value={flatNode.value}
+          groupHasGroups={groupHasGroups}
           onCheck={this.onCheck}
+          onExpand={this.onExpand}
         >
           {childrenLanguages}
           {childrenDictionaries}
@@ -180,9 +249,9 @@ class SearchLanguageTree extends PureComponent {
     });
 
     return (
-      <ol>
+      <div className="tree-nodes">
         {treeNodes}
-      </ol>
+      </div>
     );
   }
 
@@ -190,20 +259,12 @@ class SearchLanguageTree extends PureComponent {
     const { nodes } = this.props;
     const treeNodes = this.renderTreeNodes(nodes);
 
-    console.log(treeNodes);
     return (
       <div className={classNames.container}>
-        {nodes.map(item => <LanguageItem key={item.id} data={item} onChange={this.props.onChange} onCheck={this.onCheck} />)}
+        {treeNodes}
       </div>
     );
   }
 }
-
-/* ----------- PROPS VALIDATION ----------- */
-SearchLanguageTree.propTypes = {
-  nodes: PropTypes.array.isRequired,
-  checked: PropTypes.array.isRequired,
-  onChange: PropTypes.func.isRequired,
-};
 
 export default SearchLanguageTree;

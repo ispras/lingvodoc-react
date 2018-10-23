@@ -27,25 +27,32 @@ const LanguagesWithDictionariesQuery = gql`
 
 /* ----------- COMPONENT ----------- */
 class SearchSelectLanguages extends PureComponent {
+  static propTypes = {
+    data: PropTypes.array.isRequired,
+  }
+
   constructor() {
     super();
 
     this.state = {
       showLangs: false,
       selectedLangs: [],
+      // checked: [
+      //   {
+      //     type: 'language',
+      //     checked: [
+      //       '1,203',
+      //     ]
+      //   },
+      //   {
+      //     type: 'dictionary',
+      //     checked: [
+      //       '269,4',
+      //     ],
+      //   },
+      // ],
       checked: [
-        {
-          type: 'language',
-          checked: [
-            '1,203',
-          ]
-        },
-        {
-          type: 'dictionary',
-          checked: [
-            '269,4',
-          ],
-        },
+        'all',
       ],
     };
 
@@ -58,8 +65,8 @@ class SearchSelectLanguages extends PureComponent {
     });
   }
 
-  onFilterLangsChange(id, type, checked) {
-    console.log(this, id, type, checked);
+  onFilterLangsChange(checkedList) {
+    console.log(this, checkedList);
   }
 
   render() {
@@ -96,11 +103,6 @@ class SearchSelectLanguages extends PureComponent {
     );
   }
 }
-
-/* ----------- PROPS VALIDATION ----------- */
-SearchSelectLanguages.propTypes = {
-  data: PropTypes.array.isRequired,
-};
 
 const SearchSelectLanguagesWrap = (props) => {
   const { data } = props;
