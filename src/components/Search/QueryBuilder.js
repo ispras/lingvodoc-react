@@ -172,10 +172,16 @@ class QueryBuilder extends React.Component {
     this.onDeleteAndBlock = this.onDeleteAndBlock.bind(this);
     this.onDeleteOrBlock = this.onDeleteOrBlock.bind(this);
     this.onFieldChange = this.onFieldChange.bind(this);
+    this.onLangsDictsToFilterChange = this.onLangsDictsToFilterChange.bind(this);
+    this.onSearchButtonClick = this.onSearchButtonClick.bind(this);
     this.changeSource = this.changeSource.bind(this);
     this.changeMode = this.changeMode.bind(this);
 
     this.newBlock = fromJS(newBlock);
+    this.langsDictsToFilter = {
+      languages: [],
+      dictionaries: [],
+    };
 
     this.state = {
       data: fromJS(props.data),
@@ -186,7 +192,7 @@ class QueryBuilder extends React.Component {
       mode: {
         adopted: 'ignore',
         etymology: 'ignore',
-      },
+      }
     };
   }
 
@@ -223,6 +229,20 @@ class QueryBuilder extends React.Component {
     };
   }
 
+  onLangsDictsToFilterChange(list) {
+    this.langsDictsToFilter = list;
+  }
+
+  onSearchButtonClick() {
+    const { searchId, actions } = this.props;
+    const { languages: langsToFilter, dictionaries: dictsToFilter } = this.langsDictsToFilter;
+    const adopted = mode2bool(this.state.mode.adopted);
+    const etymology = mode2bool(this.state.mode.etymology);
+    const category = bool2category(this.state.source.dictionaries, this.state.source.corpora);
+
+    actions.setQuery(searchId, this.state.data.toJS(), category, adopted, etymology, langsToFilter, dictsToFilter);
+  }
+
   changeSource(searchSourceType) {
     const s = this.state.source;
     s[searchSourceType] = !s[searchSourceType];
@@ -236,12 +256,7 @@ class QueryBuilder extends React.Component {
   }
 
   render() {
-    const { searchId, actions } = this.props;
     const blocks = this.state.data;
-
-    const adopted = mode2bool(this.state.mode.adopted);
-    const etymology = mode2bool(this.state.mode.etymology);
-    const category = bool2category(this.state.source.dictionaries, this.state.source.corpora);
 
     return (
       <div>
@@ -269,7 +284,7 @@ class QueryBuilder extends React.Component {
           </Segment.Group>
         </Segment.Group>
 
-        <SearchSelectLanguages />
+        <SearchSelectLanguages onChange={this.onLangsDictsToFilterChange} defaultData={this.langsDictsToFilter} />
 
         <Segment.Group>
           <Segment>Search options</Segment>
@@ -346,7 +361,7 @@ class QueryBuilder extends React.Component {
           </Button>
 
           <Divider />
-          <Button primary basic onClick={() => actions.setQuery(searchId, this.state.data.toJS(), category, adopted, etymology)}>
+          <Button primary basic onClick={this.onSearchButtonClick}>
             Search
           </Button>
         </Wrapper>

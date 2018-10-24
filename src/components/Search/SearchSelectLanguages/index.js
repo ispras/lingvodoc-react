@@ -11,33 +11,44 @@ import LanguageTree from './LanguageTree';
 /* ----------- COMPONENT ----------- */
 class SearchSelectLanguages extends PureComponent {
   static propTypes = {
+    defaultData: PropTypes.object.isRequired,
     data: PropTypes.array.isRequired,
     translations: PropTypes.array.isRequired,
+    onChange: PropTypes.func.isRequired,
   }
 
-  constructor() {
+  static getListInExternalFormat(list) {
+    return list
+      .map(item => item.split(','))
+      .map(item => item.map(idPart => parseInt(idPart, 10)));
+  }
+
+  static getListInInternalFormat(list) {
+    return list
+      .map(item => item.join(','));
+  }
+
+  constructor(props) {
     super();
+
+    const { defaultData } = props;
+    const { languages: languagesChecked, dictionaries: dictionariesChecked } = defaultData;
 
     this.state = {
       showLangs: false,
       selectedLangs: [],
-      // checked: [
-      //   {
-      //     type: 'language',
-      //     checked: [
-      //       '1,203',
-      //     ]
-      //   },
-      //   {
-      //     type: 'dictionary',
-      //     checked: [
-      //       '269,4',
-      //     ],
-      //   },
-      // ],
-      checked: [
-        'all',
-      ],
+      checked: languagesChecked.length > 0 && dictionariesChecked.length > 0 ?
+        [
+          {
+            type: 'language',
+            checked: this.constructor.getListInInternalFormat(languagesChecked),
+          },
+          {
+            type: 'dictionary',
+            checked: this.constructor.getListInInternalFormat(dictionariesChecked),
+          },
+        ] :
+        ['all'],
     };
 
     this.onShowLangsButtonClick = this.onShowLangsButtonClick.bind(this);
@@ -54,6 +65,22 @@ class SearchSelectLanguages extends PureComponent {
     this.setState({
       checked: checkedList,
     });
+
+    let checkedListToSend = null;
+
+    if (checkedList[0] === 'all') {
+      checkedListToSend = {
+        languages: [],
+        dictionaries: [],
+      };
+    } else {
+      checkedListToSend = {
+        languages: this.constructor.getListInExternalFormat(checkedList[0].checked),
+        dictionaries: this.constructor.getListInExternalFormat(checkedList[1].checked),
+      };
+    }
+
+    this.props.onChange(checkedListToSend);
   }
 
   render() {

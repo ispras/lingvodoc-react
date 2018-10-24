@@ -19,20 +19,6 @@ const propsNames = {
 
 
 /* ----------- HELPERS ----------- */
-// const isGroupsInGroup = (group) => {
-//   if (!group) {
-//     return false;
-//   }
-
-//   for (let i = 0; i < group.length; i++) {
-//     if (group[i].children.length > 0) {
-//       return true;
-//     }
-//   }
-
-//   return false;
-// };
-
 const isAllNodesChecked = (numOfNodes, checkedList) => {
   if (!numOfNodes || !checkedList) {
     return false;
@@ -184,6 +170,8 @@ class SearchLanguageTree extends PureComponent {
       flatNode.self[propsNames.dictionaries].forEach((dictionary) => {
         this.toggleChecked(this.constructor.getNodeValue(dictionary), isChecked);
       });
+
+      this.toggleNode(value, 'checked', isChecked);
     }
   }
 
@@ -226,7 +214,7 @@ class SearchLanguageTree extends PureComponent {
     const isAllChecked = checkedLists[0] === 'all' && checkedLists.length === 1;
 
     if (isAllChecked) {
-      // Set values to true
+      // Set all values to true
       Object.keys(this.flatNodes).forEach((value) => {
         this.flatNodes[value].checked = true;
       });

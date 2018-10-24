@@ -40,8 +40,8 @@ const mdColors = new Immutable.List([
 ]).sortBy(Math.random);
 
 const searchQuery = gql`
-  query Search($query: [[ObjectVal]]!, $category: Int, $adopted: Boolean, $etymology: Boolean, $mode: String) {
-    advanced_search(search_strings: $query, category: $category, adopted: $adopted, etymology: $etymology, mode: $mode) {
+  query Search($query: [[ObjectVal]]!, $category: Int, $adopted: Boolean, $etymology: Boolean, $mode: String, $langs: [LingvodocID]) {
+    advanced_search(search_strings: $query, category: $category, adopted: $adopted, etymology: $etymology, mode: $mode, languages: $langs) {
       dictionaries {
         id
         parent_id
@@ -150,7 +150,7 @@ const WrapperWithData = compose(
 )(Wrapper);
 
 const Info = ({
-  query, searchId, adopted, etymology, category,
+  query, searchId, adopted, etymology, category, langs,
 }) => {
   // remove empty strings
   const cleanQuery = query
@@ -164,6 +164,7 @@ const Info = ({
         category={category}
         adopted={adopted}
         etymology={etymology}
+        langs={langs}
         mode="published"
       />
     );
@@ -177,6 +178,7 @@ Info.propTypes = {
   category: PropTypes.number,
   adopted: PropTypes.bool,
   etymology: PropTypes.bool,
+  langs: PropTypes.array,
 };
 
 function searchesFromProps({ searches }) {
@@ -268,6 +270,7 @@ class SearchTabs extends React.Component {
               category={search.category}
               adopted={search.adopted}
               etymology={search.etymology}
+              langs={search.langs}
             />
           </Container>
         </Tab.Pane>
