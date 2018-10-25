@@ -84,6 +84,7 @@ class SearchLanguageTree extends PureComponent {
 
   onCheck(nodeInfo) {
     this.toggleChecked(nodeInfo.value, nodeInfo.checked);
+    this.recountParentsCheck(nodeInfo.value);
     this.sendCheckedListToTop();
   }
 
@@ -150,7 +151,61 @@ class SearchLanguageTree extends PureComponent {
       return this.props.onChange(['all']);
     }
 
+    // console.log({
+    //   languages: nextCheckedList[0].checked
+    //     .map(value => `${this.flatNodes[value].self.translation} - ${value}}`),
+    //   dictionaries: nextCheckedList[1].checked
+    //     .map(value => `${this.flatNodes[value].self.translation} - ${value}}`),
+    // });
+
     return this.props.onChange(nextCheckedList);
+  }
+
+  recountParentsCheck(flatNodeValue) {
+    const flatNode = this.flatNodes[flatNodeValue];
+    let everyChildChecked = null;
+    let someChildChecked = null;
+    let parentValue = null;
+    let parentFlatNode = null;
+    let parentNode = null;
+
+    if (flatNode.parent.id) {
+      parentNode = flatNode.parent;
+      everyChildChecked = this.isEveryChildChecked(parentNode);
+      parentValue = this.constructor.getNodeValue(parentNode);
+      parentFlatNode = this.flatNodes[parentValue];
+
+      if (everyChildChecked) {
+        parentFlatNode.checkState = 1;
+        parentFlatNode.checked = true;
+      } else {
+        // doubtful option in which you can remove all children without removing the parent
+        // someChildChecked = this.isSomeChildChecked(parentNode);
+
+        // if (someChildChecked) {
+        //   if (!parentFlatNode.checked) {
+        //     parentFlatNode.checkState = 2;
+        //     parentFlatNode.checked = false;
+        //   } else {
+        //     parentFlatNode.checkState = 1;
+        //   }
+        // } else if (parentFlatNode.checked) {
+        //   parentFlatNode.checkedState = 1;
+        // } else {
+        //   parentFlatNode.checked = false;
+        //   parentFlatNode.checkState = 0;
+        // }
+
+        parentFlatNode.checkState = someChildChecked ? 2 : 0;
+
+        someChildChecked = this.isSomeChildChecked(parentNode);
+        parentFlatNode.checked = false;
+
+        parentFlatNode.checkState = someChildChecked ? 2 : 0;
+      }
+
+      this.recountParentsCheck(parentValue);
+    }
   }
 
   toggleChecked(value, isChecked) {
@@ -162,6 +217,7 @@ class SearchLanguageTree extends PureComponent {
       }
 
       this.toggleNode(value, 'checked', isChecked);
+      flatNode.checkState = this.getShallowCheckState(flatNode.self);
     } else {
       flatNode.self[propsNames.languages].forEach((language) => {
         this.toggleChecked(this.constructor.getNodeValue(language), isChecked);
@@ -172,11 +228,15 @@ class SearchLanguageTree extends PureComponent {
       });
 
       this.toggleNode(value, 'checked', isChecked);
+      flatNode.checkState = this.getShallowCheckState(flatNode.self);
     }
   }
 
   toggleCheckedAll(isChecked) {
-    Object.keys(this.flatNodes).forEach(value => this.toggleNode(value, 'checked', isChecked));
+    Object.keys(this.flatNodes).forEach((value) => {
+      this.toggleNode(value, 'checked', isChecked);
+      this.flatNodes[value].checkState = isChecked ? 1 : 0;
+    });
     this.sendCheckedListToTop();
   }
 
@@ -280,11 +340,16 @@ class SearchLanguageTree extends PureComponent {
     const treeNodes = nodes.map((node) => {
       const key = this.constructor.getNodeValue(node);
       const flatNode = this.flatNodes[key];
-      const childrenLanguages = flatNode.isParentWithLanguages ? this.renderTreeNodes(node[propsNames.languages], node) : null;
-      const childrenDictionaries = flatNode.isParentWithDictionaries ? this.renderTreeNodes(node[propsNames.dictionaries], node) : null;
+      const childrenLanguages = flatNode.isParentWithLanguages ?
+        this.renderTreeNodes(node[propsNames.languages], node) :
+        null;
+      const childrenDictionaries = flatNode.isParentWithDictionaries ?
+        this.renderTreeNodes(node[propsNames.dictionaries], node) :
+        null;
 
       // Get the check state after all children check states are determined
-      flatNode.checkState = this.getShallowCheckState(node);
+      flatNode.checkState = flatNode.checkState === 0 || flatNode.checkState === 1 || flatNode.checkState === 2 ?
+        flatNode.checkState : 1;
 
       const parentExpanded = parent.value ? this.flatNodes[this.constructor.getNodeValue(parent)].expanded : true;
 
