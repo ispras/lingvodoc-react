@@ -87,7 +87,8 @@ class EditDictionaryMetadata extends React.Component {
   }
 
   onAddNewAlternative(event, data) {
-    data.options.push({ text: data.value, value: data.value });
+    if (data.options.every(option => option.value != data.value))
+      data.options.push({ text: data.value, value: data.value });
   }
 
   onChangeValue(kind, data) {
