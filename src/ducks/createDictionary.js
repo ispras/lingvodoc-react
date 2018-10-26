@@ -5,6 +5,7 @@ const NEXT_STEP = '@create/NEXT_STEP';
 const GOTO_STEP = '@create/GOTO_STEP';
 const PARENT_LANGUAGE_SET = '@create/PARENT_LANGUAGE_SET';
 const DICTIONARY_TRANSLATIONS_SET = '@create/DICTIONARY_TRANSLATIONS_SET';
+const DICTIONARY_METADATA_SET = '@create/DICTIONARY_METADATA_SET';
 const DICTIONARY_PERSPECTIVES_SET = '@create/DICTIONARY_PERSPECTIVES_SET';
 const DICTIONARY_PERSPECTIVE_CREATE = '@create/DICTIONARY_PERSPECTIVES_CREATE';
 
@@ -31,6 +32,7 @@ const initial = new Map({
   step: 'PARENT_LANGUAGE',
   parentLanguage: null,
   translations: new List(),
+  metadata: null,
   perspectives: new List(),
 });
 
@@ -48,6 +50,9 @@ export default function (state = initial, { type, payload }) {
       break;
     case DICTIONARY_TRANSLATIONS_SET:
       newState = state.set('translations', payload);
+      break;
+    case DICTIONARY_METADATA_SET:
+      newState = state.set('metadata', payload);
       break;
     case DICTIONARY_PERSPECTIVES_SET:
       newState = state.set('perspectives', payload);
@@ -95,6 +100,9 @@ export const selectors = {
   getTranslations(state) {
     return state.createDictionary.get('translations');
   },
+  getMetadata(state) {
+    return state.createDictionary.get('metadata');
+  },
   getPerspectives(state) {
     return state.createDictionary.get('perspectives');
   },
@@ -119,6 +127,13 @@ export function setTranslations(translations) {
   return {
     type: DICTIONARY_TRANSLATIONS_SET,
     payload: fromJS(translations),
+  };
+}
+
+export function setMetadata(metadata) {
+  return {
+    type: DICTIONARY_METADATA_SET,
+    payload: fromJS(metadata),
   };
 }
 
