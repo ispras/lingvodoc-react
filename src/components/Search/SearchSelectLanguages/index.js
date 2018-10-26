@@ -108,7 +108,18 @@ class SearchSelectLanguages extends PureComponent {
     const { data } = this.props;
     const { selectedLangs } = this.state;
     const selectedLangsCount = selectedLangs.length;
+    // TODO: translations
     const buttonTranslation = this.props.translations[0].translation;
+    let checkAllButtonText;
+    let uncheckAllButtonText;
+
+    if (this.props.translations[1]) {
+      checkAllButtonText = this.props.translations[1].translation;
+    }
+
+    if (this.props.translations[2]) {
+      uncheckAllButtonText = this.props.translations[2].translation;
+    }
 
     return (
       <Segment.Group>
@@ -125,7 +136,13 @@ class SearchSelectLanguages extends PureComponent {
           this.state.showLangs ?
             <Segment.Group>
               <Segment>
-                <LanguageTree checked={this.state.checked} nodes={data} onChange={this.onFilterLangsChange} />
+                <LanguageTree
+                  checked={this.state.checked}
+                  nodes={data}
+                  onChange={this.onFilterLangsChange}
+                  checkAllButtonText={checkAllButtonText}
+                  uncheckAllButtonText={uncheckAllButtonText}
+                />
               </Segment>
             </Segment.Group> :
             null
@@ -136,6 +153,7 @@ class SearchSelectLanguages extends PureComponent {
 }
 
 const SearchSelectLanguagesWrap = (props) => {
+  // TODO: translations
   const { languagesQuery, translationsQuery } = props;
   const { error: languagesQueryError, loading: languagesQueryLoading } = languagesQuery;
   const { error: translationsQueryError, loading: translationsQueryLoading } = translationsQuery;
@@ -189,7 +207,9 @@ const i18nQuery = gql`
   query {
     advanced_translation_search(
       searchstrings: [
-        "Select languages"
+        "Select languages",
+        "Check all",
+        "Uncheck all"
       ]
     ) {
       translation

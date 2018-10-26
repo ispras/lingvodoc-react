@@ -23,6 +23,13 @@ class SearchLanguageTree extends PureComponent {
     nodes: PropTypes.array.isRequired,
     checked: PropTypes.array.isRequired,
     onChange: PropTypes.func.isRequired,
+    checkAllButtonText: PropTypes.string,
+    uncheckAllButtonText: PropTypes.string,
+  }
+
+  static defaultProps = {
+    checkAllButtonText: 'Check all',
+    uncheckAllButtonText: 'Uncheck all',
   }
 
   static nodeHasLanguagesChildren(node) {
@@ -388,10 +395,10 @@ class SearchLanguageTree extends PureComponent {
         </div>
         <Segment>
           <Button primary basic onClick={this.uncheckAll}>
-            Снять выделенное
+            {this.props.uncheckAllButtonText}
           </Button>
           <Button primary basic onClick={this.checkAll}>
-            Выделить всё
+            {this.props.checkAllButtonText}
           </Button>
         </Segment>
       </div>
