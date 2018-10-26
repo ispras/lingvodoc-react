@@ -141,7 +141,6 @@ const SearchSelectLanguagesWrap = (props) => {
 SearchSelectLanguagesWrap.propTypes = {
   languagesQuery: PropTypes.object.isRequired,
   translationsQuery: PropTypes.object.isRequired,
-  // onChange: PropTypes.func.isRequired,
 };
 
 /* ----------- QUERIES ----------- */
@@ -161,6 +160,7 @@ const LanguagesWithDictionariesQuery = gql`
   }
 `;
 
+// TODO: translations
 const i18nQuery = gql`
   query {
     advanced_translation_search(
