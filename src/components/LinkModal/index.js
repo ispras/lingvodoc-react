@@ -3,10 +3,7 @@ import PropTypes from 'prop-types';
 import { compose } from 'recompose';
 import { graphql } from 'react-apollo';
 import { Segment, Checkbox, Button, Modal, Tab } from 'semantic-ui-react';
-import { closeModal } from 'ducks/link';
-import { bindActionCreators } from 'redux';
 import { isEqual } from 'lodash';
-import { connect } from 'react-redux';
 import styled from 'styled-components';
 import { queryPerspective, LexicalEntryViewByIds } from 'components/PerspectiveView';
 import buildPartialLanguageTree from 'components/GroupingTagModal/partialTree';
@@ -376,31 +373,25 @@ const Content = compose(
 )(LinkModalContent);
 
 const LinkModal = (props) => {
-  const { visible } = props;
-  if (!visible) {
-    return null;
-  }
-
   return (
-    <Modal dimmer open size="fullscreen" closeIcon onClose={props.closeModal}>
+    <Modal dimmer open size="fullscreen" closeOnDimmerClick={false} closeIcon onClose={props.onClose}>
       <Modal.Content>
         <Content {...props} />
       </Modal.Content>
       <Modal.Actions>
-        <Button icon="minus" content="Cancel" onClick={props.closeModal} />
+        <Button icon="minus" content="Cancel" onClick={props.onClose} />
       </Modal.Actions>
     </Modal>
   );
 };
 
 LinkModal.propTypes = {
-  visible: PropTypes.bool.isRequired,
   perspectiveId: PropTypes.array,
   lexicalEntry: PropTypes.object,
   fieldId: PropTypes.array,
   mode: PropTypes.string.isRequired,
   entitiesMode: PropTypes.string.isRequired,
-  closeModal: PropTypes.func.isRequired,
+  onClose: PropTypes.func.isRequired,
 };
 
 LinkModal.defaultProps = {
@@ -409,4 +400,4 @@ LinkModal.defaultProps = {
   fieldId: null,
 };
 
-export default connect(state => state.link, dispatch => bindActionCreators({ closeModal }, dispatch))(LinkModal);
+export default LinkModal;

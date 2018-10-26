@@ -5,11 +5,12 @@ import { connect } from 'react-redux';
 import { compose, branch, renderNothing } from 'recompose';
 import { isEqual, isEmpty } from 'lodash';
 import { Button } from 'semantic-ui-react';
-import { openModal } from 'ducks/link';
+import { openModal } from 'ducks/modals';
+import LinkModal from 'components/LinkModal';
 
 const DirectedLink = (props) => {
   const {
-    entry, column, mode, entitiesMode, as: Component = 'div', actions,
+    entry, column, mode, entitiesMode, as: Component = 'div', openModal,
   } = props;
 
   const count = entry.entities.filter(e => isEqual(e.field_id, column.id)).length;
@@ -23,7 +24,7 @@ const DirectedLink = (props) => {
         content={content}
         icon="code"
         labelPosition="left"
-        onClick={() => actions.openModal(entry.parent_id, entry, column.id, mode, entitiesMode)}
+        onClick={() => openModal(LinkModal, { perspectiveId: entry.parent_id, lexicalEntry: entry, fieldId: column.id, mode, entitiesMode })}
       />
     </Component>
   );
@@ -35,9 +36,7 @@ DirectedLink.propTypes = {
   mode: PropTypes.string.isRequired,
   entitiesMode: PropTypes.string.isRequired,
   as: PropTypes.string,
-  actions: PropTypes.shape({
-    openModal: PropTypes.func.isRequired,
-  }).isRequired,
+  openModal: PropTypes.func.isRequired
 };
 
 DirectedLink.defaultProps = {
@@ -50,5 +49,5 @@ export default compose(
       isEmpty(entry.entities.filter(entity => isEqual(entity.field_id, column.id))) && mode !== 'edit',
     renderNothing
   ),
-  connect(null, dispatch => ({ actions: bindActionCreators({ openModal }, dispatch) }))
+  connect(null, dispatch => bindActionCreators({ openModal }, dispatch))
 )(DirectedLink);

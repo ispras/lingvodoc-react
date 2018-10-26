@@ -11,8 +11,6 @@ import search from './search';
 import blobs from './blobs';
 import dictImport from './dictImport';
 import fields from './fields';
-import groupingTag from './groupingTag';
-import link from './link';
 import dictionaryProperties from './dictionaryProperties';
 import saveDictionary from './saveDictionary';
 import perspective from './perspective';
@@ -25,7 +23,6 @@ import apolloClient from './apolloClient';
 import statistics from './statistics';
 import ban from './ban';
 import translations from './translations';
-import lexicalEntry from './lexicalEntry';
 import modals from './modals';
 
 export default {
@@ -42,8 +39,6 @@ export default {
   blobs,
   dictImport,
   fields,
-  groupingTag,
-  link,
   dictionaryProperties,
   saveDictionary,
   perspective,
@@ -56,6 +51,5 @@ export default {
   statistics,
   ban,
   translations,
-  lexicalEntry,
   modals,
 };
