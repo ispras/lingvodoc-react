@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { compose, onlyUpdateForKeys, branch, renderComponent, renderNothing } from 'recompose';
+import { compose, branch, renderComponent } from 'recompose';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { graphql } from 'react-apollo';
@@ -8,7 +8,9 @@ import gql from 'graphql-tag';
 import { isEqual, find, take, drop, flow, sortBy, reverse } from 'lodash';
 import { Table, Dimmer, Header, Icon, Button } from 'semantic-ui-react';
 import { setSortByField, addLexicalEntry, selectLexicalEntry, resetEntriesSelection } from 'ducks/perspective';
+import { openModal } from 'ducks/modals';
 import Placeholder from 'components/Placeholder';
+import ApproveModal from 'components/ApproveModal';
 
 import TableHeader from './TableHeader';
 import TableBody from './TableBody';
@@ -179,8 +181,10 @@ const P = ({
   addLexicalEntry: addCreatedEntry,
   selectLexicalEntry: onEntrySelect,
   resetEntriesSelection: resetSelection,
+  openModal: openNewModal,
   createdEntries,
   selectedEntries,
+  user
 }) => {
   const { loading, error } = data;
 
@@ -207,7 +211,7 @@ const P = ({
       },
       refetchQueries: [
         {
-          query: queryPerspective,
+          query: queryLexicalEntries,
           variables: {
             id,
             entitiesMode,
@@ -232,7 +236,7 @@ const P = ({
       },
       refetchQueries: [
         {
-          query: queryPerspective,
+          query: queryLexicalEntries,
           variables: {
             id,
             entitiesMode,
@@ -251,7 +255,7 @@ const P = ({
       },
       refetchQueries: [
         {
-          query: queryPerspective,
+          query: queryLexicalEntries,
           variables: {
             id,
             entitiesMode,
@@ -262,6 +266,10 @@ const P = ({
       resetSelection();
     });
   };
+
+  const onApprove = () => {
+    openNewModal(ApproveModal, { perspectiveId: id, mode });
+  }
 
   const processEntries = flow([
     // remove empty lexical entries, if not in edit mode
@@ -317,6 +325,16 @@ const P = ({
     };
   });
 
+  function approveDisableCondition(entries) {
+    return entries.length == 0 || entries.every(entry => {
+      return entry.entities.every(entity => {
+        return mode == 'publish' ? entity.published == true : entity.accepted == true;
+      });
+    });
+  }
+
+  const isAdmin = user && user.user.id == 1;
+  
   return (
     <div style={{ overflowY: 'auto' }}>
       {mode === 'edit' && <Button positive icon="plus" content="Add lexical entry" onClick={addEntry} />}
@@ -338,6 +356,8 @@ const P = ({
           disabled={selectedEntries.length < 2}
         />
       )}
+      {mode === 'publish' && isAdmin && <Button positive content="Publish Entities" disabled={approveDisableCondition(entries)} onClick={onApprove} />}
+      {mode === 'contributions' && isAdmin && <Button positive content="Accept Contributions" disabled={approveDisableCondition(entries)} onClick={onApprove} />}
       <Table celled padded className={className}>
         <TableHeader
           columns={fields}
@@ -376,8 +396,10 @@ P.propTypes = {
   removeLexicalEntries: PropTypes.func.isRequired,
   selectLexicalEntry: PropTypes.func.isRequired,
   resetEntriesSelection: PropTypes.func.isRequired,
+  openModal: PropTypes.func.isRequired,
   createdEntries: PropTypes.array.isRequired,
   selectedEntries: PropTypes.array.isRequired,
+  user: PropTypes.object
 };
 
 P.defaultProps = {
@@ -387,7 +409,8 @@ P.defaultProps = {
 
 const PerspectiveView = compose(
   connect(
-    ({ perspective: { sortByField, createdEntries, selectedEntries } }) => ({
+    ({ user, perspective: { sortByField, createdEntries, selectedEntries } }) => ({
+      user,
       sortByField,
       createdEntries,
       selectedEntries,
@@ -399,6 +422,7 @@ const PerspectiveView = compose(
           setSortByField,
           selectLexicalEntry,
           resetEntriesSelection,
+          openModal,
         },
         dispatch
       )

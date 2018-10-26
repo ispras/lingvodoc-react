@@ -48,7 +48,7 @@ const ViewLink = (props) => {
       render: () => (
         <div>
           <Segment padded="very" textAlign="center">
-            <Tree resultsTree={tree} />;
+            <Tree resultsTree={tree} />
           </Segment>
         </div>
       ),
@@ -90,7 +90,7 @@ const EditLink = (props) => {
       render: () => (
         <div>
           <Segment padded="very" textAlign="center">
-            <Tree resultsTree={tree} TableComponent={LexicalEntryViewByIds} actions={actions} />;
+            <Tree resultsTree={tree} TableComponent={LexicalEntryViewByIds} actions={actions} />
           </Segment>
         </div>
       ),
@@ -100,6 +100,7 @@ const EditLink = (props) => {
       render: () => (
         <SearchLexicalEntries
           lexicalEntry={lexicalEntry}
+          perspectiveId={column.link_id}
           fieldId={column.field_id}
           allLanguages={allLanguages}
           allDictionaries={allDictionaries}
@@ -149,7 +150,7 @@ const PublishLink = (props) => {
             </Segment>
           )}
           <Segment padded="very" textAlign="center">
-            <Tree resultsTree={tree} TableComponent={LexicalEntryViewByIds} />;
+            <Tree resultsTree={tree} TableComponent={LexicalEntryViewByIds} />
           </Segment>
         </div>
       ),
@@ -186,7 +187,7 @@ const ContributionsLink = (props) => {
             </Segment>
           )}
           <Segment padded="very" textAlign="center">
-            <Tree resultsTree={tree} TableComponent={LexicalEntryViewByIds} />;
+            <Tree resultsTree={tree} TableComponent={LexicalEntryViewByIds} />
           </Segment>
         </div>
       ),
@@ -381,7 +382,7 @@ const LinkModal = (props) => {
   }
 
   return (
-    <Modal dimmer open size="fullscreen">
+    <Modal dimmer open size="fullscreen" closeIcon onClose={props.closeModal}>
       <Modal.Content>
         <Content {...props} />
       </Modal.Content>

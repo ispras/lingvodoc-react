@@ -16,8 +16,8 @@ import GroupingTag from './GroupingTag';
 import Unknown from './Unknown';
 
 const createEntityMutation = gql`
-  mutation createEntity($parent_id: LingvodocID!, $field_id: LingvodocID!, $content: String, $file_content: Upload) {
-    create_entity(parent_id: $parent_id, field_id: $field_id, content: $content, file_content: $file_content) {
+  mutation createEntity($parent_id: LingvodocID!, $field_id: LingvodocID!, $self_id : LingvodocID, $content: String, $file_content: Upload) {
+    create_entity(parent_id: $parent_id, field_id: $field_id, self_id: $self_id, content: $content, file_content: $file_content) {
       triumph
     }
   }
@@ -105,7 +105,7 @@ class Entities extends React.Component {
     this.update = this.update.bind(this);
   }
 
-  create(content) {
+  create(content, self_id) {
     const {
       entry, column, entitiesMode, createEntity,
     } = this.props;
@@ -117,6 +117,9 @@ class Entities extends React.Component {
     } else {
       variables.content = content;
       variables.file_content = null;
+    }
+    if (self_id) {
+      variables.self_id = self_id;
     }
 
     createEntity({
@@ -237,17 +240,20 @@ class Entities extends React.Component {
             remove={this.remove}
             accept={this.accept}
             update={this.update}
+            className ={(mode != 'edit' && entities.indexOf(entity) == entities.length - 1) ? 'last' : ''}
           />
         ))}
-        <li className="last">
-          {!this.state.edit && (
-            <Button.Group basic size="mini">
-              <Button icon="plus" onClick={() => this.setState({ edit: true })} disabled={mode !== 'edit'} />
-            </Button.Group>
-          )}
+        {mode == 'edit' && (
+          <li className="last">
+            {!this.state.edit && (
+              <Button.Group basic size="mini">
+                <Button icon="plus" onClick={() => this.setState({ edit: true })} />
+              </Button.Group>
+            )}
 
-          {this.state.edit && <Component.Edit onSave={this.create} onCancel={() => this.setState({ edit: false })} />}
-        </li>
+            {this.state.edit && <Component.Edit onSave={content => this.create(content, parentEntity == null ? null : parentEntity.id)} onCancel={() => this.setState({ edit: false })} />}
+          </li>
+        )}
       </ul>
     );
   }

@@ -24,7 +24,7 @@ function LexicalEntryModal({
   const { id, translation, lexicalEntries } = node;
 
   return (
-    <Modal closeIcon size="fullscreen" open>
+    <Modal closeIcon size="fullscreen" open onClose={close}>
       <Modal.Header>{translation}</Modal.Header>
       <Modal.Content scrolling>
         <LexicalEntryViewByIds

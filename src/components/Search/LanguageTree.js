@@ -51,6 +51,7 @@ export const LexicalEntryLink = connect(
 )(LexicalEntryLinkComponent);
 
 class LanguageTree extends React.Component {
+
   static generateNodeProps({ node }) {
     const { translation } = node;
     const defaultTitle = translation || 'None';

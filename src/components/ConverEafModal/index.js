@@ -117,7 +117,7 @@ class ConverEafModal extends React.Component {
                 </Header>
               )}
               <div style={{ height: '400px' }}>
-                <Languages onSelect={p => this.setState({ parentLanguage: p })} />
+                <Languages selected={parentLanguage} onSelect={p => this.setState({ parentLanguage: p })} />
               </div>
             </div>
           )}

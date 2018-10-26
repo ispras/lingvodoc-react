@@ -41,7 +41,7 @@ class CreateDictionaryWizard extends React.Component {
 
   onCreateDictionary() {
     const {
-      parentLanguage, translations, perspectives: p, createDictionary,
+      mode, parentLanguage, translations, perspectives: p, createDictionary,
     } = this.props;
     const parentId = parentLanguage.id;
     const dictionaryTranslations = translations
@@ -66,6 +66,7 @@ class CreateDictionaryWizard extends React.Component {
 
     createDictionary({
       variables: {
+        category: mode == 'dictionary' ? 0 : 1,
         parentId,
         dictionaryTranslations,
         perspectives,
@@ -74,7 +75,7 @@ class CreateDictionaryWizard extends React.Component {
         {
           query: dashboardQuery,
           variables: {
-            mode: 0,
+            mode: mode == 'dictionary' ? 0 : 1,
             category: 0,
           },
         },
@@ -102,8 +103,8 @@ class CreateDictionaryWizard extends React.Component {
 
           <Step link active={step === 'TRANSLATIONS'} onClick={this.onStepClick('TRANSLATIONS')}>
             <Step.Content>
-              <Step.Title>Dictionary names</Step.Title>
-              <Step.Description>Set dictionary name and its translations</Step.Description>
+              <Step.Title>{mode.replace(/^\w/, c => c.toUpperCase())} names</Step.Title>
+              <Step.Description>Set {mode} name and its translations</Step.Description>
             </Step.Content>
           </Step>
 
@@ -130,7 +131,7 @@ class CreateDictionaryWizard extends React.Component {
                   You have selected: <b>{parentLanguage.translation}</b>
                 </Header>
               )}
-              <Languages onSelect={this.selectParent} />
+              <Languages expanded={false} selected={parentLanguage} onSelect={this.selectParent} />
             </div>
           )}
           {step === 'TRANSLATIONS' && (
@@ -142,7 +143,7 @@ class CreateDictionaryWizard extends React.Component {
 
           {step === 'PERSPECTIVES' && (
             <div>
-              <Header>Add one or perspectve</Header>
+              <Header>Add one or more perspectives</Header>
               <Perspectives perspectives={perspectives} onChange={p => this.props.setPerspectives(p)} mode={mode} />
               <Button fluid positive onClick={this.props.createPerspective}>
                 Add perspective
@@ -152,8 +153,8 @@ class CreateDictionaryWizard extends React.Component {
 
           {step === 'FINISH' && (
             <Message>
-              <Message.Header>Dictionary created</Message.Header>
-              <Message.Content>Your dictionary is created, click here to view.</Message.Content>
+              <Message.Header>{mode.replace(/^\w/, c => c.toUpperCase())} created</Message.Header>
+              <Message.Content>Your {mode} is created, click here to view.</Message.Content>
             </Message>
           )}
         </div>

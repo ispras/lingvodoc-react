@@ -2,12 +2,17 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { compose, branch, renderNothing } from 'recompose';
 import { isEqual } from 'lodash';
-import { graphql } from 'react-apollo';
+import { graphql, withApollo } from 'react-apollo';
 import { Button, List, Dropdown, Grid, Checkbox } from 'semantic-ui-react';
+import styled from 'styled-components';
 import { compositeIdToString } from 'utils/compositeId';
 import { uuidv4 as uuid } from 'utils/uuid';
+import { allFieldsQuery, corpusTemplateFieldsQuery } from './graphql';
 
-import { allFieldsQuery } from './graphql';
+const CheckboxWithMargins = styled(Checkbox)`
+  margin-left: 1em;
+  margin-right: 1em;
+`;
 
 const NestedColumn = ({
   column, columns, fields, onChange,
@@ -23,6 +28,7 @@ const NestedColumn = ({
     <Dropdown
       selection
       options={options}
+      value={nested ? nested.id : null}
       onChange={(a, { value }) => onChange(value, nested ? nested.id : null)}
     />
   );
@@ -95,7 +101,7 @@ class Column extends React.Component {
 
     const field = fields.find(f => isEqual(f.id, column.field_id));
     const options = fields.map(f => ({ text: f.translation, value: compositeIdToString(f.id) }));
-    const availablePerspectives = perspectives.map(p => ({ text: p.index, value: p.index }));
+    const availablePerspectives = perspectives.map(p => ({ text: 'Perspective ' + (p.index + 1), value: p.index }));
     const currentField = compositeIdToString(field.id);
 
     return (
@@ -114,7 +120,7 @@ class Column extends React.Component {
           field.data_type !== 'Link' &&
           field.data_type !== 'Directed Link' &&
           field.data_type !== 'Grouping Tag' && (
-            <Checkbox
+            <CheckboxWithMargins
               defaultChecked={this.state.hasNestedField}
               onChange={(e, { checked }) => this.setState({ hasNestedField: checked })}
               label="has linked field"
@@ -147,6 +153,31 @@ class Columns extends React.Component {
     this.state = {
       columns: [],
     };
+
+    this.fetching = false;
+    if (props.mode == 'corpus') {
+      this.fetching = true;
+      props.client.query({
+        query: corpusTemplateFieldsQuery
+      }).then(result => {
+        const { template_fields } = result.data;
+        const columns = [];
+        for (let i = 0; i < template_fields.length; i++) {
+          const templateField = template_fields[i];
+          if (templateField.self_fake_id) {
+            columns.push( { id: uuid(), self_id: templateField.self_fake_id, link_id: null, field_id: templateField.id } );
+          }
+          columns.push( { id: templateField.fake_id || uuid(), self_id: null, link_id: null, field_id: templateField.id } );
+        }
+        this.fetching = false;
+        this.setState({
+          columns: columns
+        },
+        () => {
+          this.fetching = false;
+        });
+      });
+    }
   }
 
   onChangePos(column, direction) {
@@ -209,6 +240,10 @@ class Columns extends React.Component {
   }
 
   render() {
+    if (this.fetching) {
+      return null;
+    }
+
     const { perspectives, data: { all_fields: allFields } } = this.props;
     const { columns } = this.state;
  
@@ -257,4 +292,8 @@ Columns.propTypes = {
   onChange: PropTypes.func.isRequired,
 };
 
-export default compose(graphql(allFieldsQuery), branch(({ data }) => data.loading, renderNothing))(Columns);
+export default compose(
+  withApollo,
+  graphql(allFieldsQuery),
+  branch(({ data }) => data.loading, renderNothing)
+)(Columns);

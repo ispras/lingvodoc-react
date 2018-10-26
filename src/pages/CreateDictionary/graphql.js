@@ -2,11 +2,12 @@ import gql from 'graphql-tag';
 
 export const createDictionaryMutation = gql`
   mutation CreateDictionaryMutation(
+    $category: Int!
     $parentId: LingvodocID!
     $dictionaryTranslations: [ObjectVal]!
     $perspectives: [ObjectVal]!
   ) {
-    create_dictionary(parent_id: $parentId, translation_atoms: $dictionaryTranslations, perspectives: $perspectives) {
+    create_dictionary(category: $category, parent_id: $parentId, translation_atoms: $dictionaryTranslations, perspectives: $perspectives) {
       triumph
     }
   }
@@ -19,6 +20,17 @@ export const allFieldsQuery = gql`
       translation
       data_type
       data_type_translation_gist_id
+    }
+  }
+`;
+
+export const corpusTemplateFieldsQuery = gql`
+  query allFields {
+    template_fields(mode: "corpora") {
+      id
+      translation
+      fake_id
+      self_fake_id
     }
   }
 `;

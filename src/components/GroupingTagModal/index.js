@@ -358,9 +358,9 @@ class GroupingTagModal extends React.Component {
 
     return (
       <div>
-        <Modal dimmer open size="fullscreen">
+        <Modal dimmer open size="fullscreen" closeIcon onClose={this.props.closeModal}>
           <Modal.Header>Grouping tag</Modal.Header>
-          <Modal.Content>
+          <Modal.Content scrolling>
             <ModalContentWrapper>
               <Component
                 lexicalEntry={lexicalEntry}

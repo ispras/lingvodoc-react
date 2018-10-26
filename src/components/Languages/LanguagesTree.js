@@ -2,36 +2,60 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import SortableTree, { map, getFlatDataFromTree } from 'react-sortable-tree';
 import Immutable from 'immutable';
+import { connect } from 'react-redux';
 import { isEqual, findIndex } from 'lodash';
 import { Button } from 'semantic-ui-react';
 import { languagesQuery } from 'graphql/language';
 
 class LanguagesTree extends React.Component {
-  static buildTree(languagesTree) {
-    return map({
-      treeData: languagesTree.toJS(),
-      callback: ({ node }) => ({ ...node, expanded: true }),
-      getNodeKey: ({ treeIndex }) => treeIndex,
-      ignoreCollapsed: false,
-    });
-  }
 
   constructor(props) {
     super(props);
 
     this.state = {
-      treeData: LanguagesTree.buildTree(props.languagesTree),
+      treeData: this.buildTree(props.languagesTree),
+      selected: props.selected
     };
+
+    this.langContent = new Map();
+    props.dictionaries.forEach( dictionary => {
+      const key = dictionary.parent_id.toString();
+      const isDictionary = dictionary.category != 1;
+      let content = this.langContent[key];
+      if (!content) {
+        content = { dictionariesCount: 0, corporaCount: 0 };
+        this.langContent[key] = content;
+      }
+      if (isDictionary) {
+        content.dictionariesCount++;
+      }
+      else {
+        content.corporaCount++;
+      }
+    });
 
     this.generateNodeProps = this.generateNodeProps.bind(this);
     this.onMoveNode = this.onMoveNode.bind(this);
+    this.onLanguageSelected = this.onLanguageSelected.bind(this);
+    this.onDeleteLanguage = this.onDeleteLanguage.bind(this);
+  }
+
+  buildTree(languagesTree) {
+    const { expanded } = this.props;
+
+    return map({
+      treeData: languagesTree.toJS(),
+      callback: ({ node }) => ({ ...node, expanded: expanded == undefined ? true : expanded }),
+      getNodeKey: ({ treeIndex }) => treeIndex,
+      ignoreCollapsed: false,
+    });
   }
 
   componentWillReceiveProps(props) {
     const { languagesTree: newTree } = props;
     const { languagesTree: oldTree } = this.props;
     if (!oldTree.equals(newTree)) {
-      this.setState({ treeData: LanguagesTree.buildTree(newTree) });
+      this.setState({ treeData: this.buildTree(newTree) });
     }
   }
 
@@ -66,23 +90,59 @@ class LanguagesTree extends React.Component {
 
   generateNodeProps({ node }) {
     const {
-      edit, editLanguage, createLanguage, onSelect,
+      user, edit, editLanguage, createLanguage, onSelect
     } = this.props;
-    const selectActions = onSelect ? [<Button basic content="Select" onClick={() => onSelect(node)} />] : [];
+    const selectActions = onSelect ? [<Button color="blue" content="Select" onClick={() => this.onLanguageSelected(node)} />] : [];
     if (edit) {
-      return {
-        title: node.translation,
+      const content = this.langContent[node.id.toString()];
+      let nodeProps = {
         buttons: [
           ...selectActions,
-          <Button basic content="Edit" onClick={() => editLanguage(node)} />,
-          <Button basic content="Create" onClick={() => createLanguage(node)} />,
+          <Button color="orange" content="Edit" onClick={() => editLanguage(node)} />,
+          <Button color="green" content="Create" onClick={() => createLanguage(node)} />,
         ],
       };
+      const { selected } = this.state;
+      if (!onSelect && user.id == 1) {
+        nodeProps.title = (
+          <div title={content ? ('Dictionaries: ' + content.dictionariesCount + ', Corpora: ' + content.corporaCount) : 'Dictionaries: 0, Corpora: 0'}>
+            {node.translation}
+          </div>
+        );
+        if (!content) {
+          nodeProps.buttons.push(<Button color="red" content="Delete" onClick={() => this.onDeleteLanguage(node)} />);
+        }
+      }
+      else {
+        nodeProps.title = node.translation;
+      }
+      if (selected && node.id.toString() == selected.id.toString()) {
+        nodeProps.style = {
+          boxShadow: `0 0 0 4px blue`
+        }
+      }
+      return nodeProps;
     }
 
     return {
       title: node.translation,
     };
+  }
+
+  onLanguageSelected(node) {
+    if (node == this.state.selected) {
+      return;
+    }
+    
+    this.setState({ selected: node });
+    this.props.onSelect(node);
+  }
+
+  onDeleteLanguage(node) {
+    this.props.deleteLanguage({
+      variables: { id: node.id },
+      refetchQueries: [{ query: languagesQuery }]
+    });
   }
 
   render() {
@@ -102,16 +162,20 @@ class LanguagesTree extends React.Component {
 }
 
 LanguagesTree.propTypes = {
+  dictionaries: PropTypes.array.isRequired,
   languagesTree: PropTypes.instanceOf(Immutable.List).isRequired,
   edit: PropTypes.bool,
   editLanguage: PropTypes.func.isRequired,
   createLanguage: PropTypes.func.isRequired,
   moveLanguage: PropTypes.func.isRequired,
+  deleteLanguage: PropTypes.func,
+  selected: PropTypes.object,
   onSelect: PropTypes.func,
+  expanded: PropTypes.bool
 };
 
 LanguagesTree.defaultProps = {
   edit: false,
 };
 
-export default LanguagesTree;
+export default connect(state => state.user)(LanguagesTree);
