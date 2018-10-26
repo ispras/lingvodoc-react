@@ -17,24 +17,6 @@ const propsNames = {
   dictionaries: 'dictionaries',
 };
 
-
-/* ----------- HELPERS ----------- */
-const isAllNodesChecked = (numOfNodes, checkedList) => {
-  if (!numOfNodes || !checkedList) {
-    return false;
-  }
-
-  if (Array.isArray(checkedList) && checkedList[0] === 'all') {
-    return true;
-  }
-
-  if (numOfNodes === checkedList[0].checked.length + checkedList[1].checked.length) {
-    return true;
-  }
-
-  return false;
-};
-
 /* ----------- COMPONENT ----------- */
 class SearchLanguageTree extends PureComponent {
   static propTypes = {
@@ -53,6 +35,22 @@ class SearchLanguageTree extends PureComponent {
 
   static getNodeValue(node) {
     return `${node.id[0].toString()},${node.id[1].toString()}`;
+  }
+
+  static isAllNodesChecked(numOfNodes, checkedList) {
+    if (!numOfNodes || !checkedList) {
+      return false;
+    }
+
+    if (Array.isArray(checkedList) && checkedList[0] === 'all') {
+      return true;
+    }
+
+    if (numOfNodes === checkedList[0].checked.length + checkedList[1].checked.length) {
+      return true;
+    }
+
+    return false;
   }
 
   constructor(props) {
@@ -147,7 +145,7 @@ class SearchLanguageTree extends PureComponent {
 
   sendCheckedListToTop() {
     const nextCheckedList = this.getCheckedList();
-    if (isAllNodesChecked(Object.keys(this.flatNodes).length, nextCheckedList)) {
+    if (this.constructor.isAllNodesChecked(Object.keys(this.flatNodes).length, nextCheckedList)) {
       return this.props.onChange(['all']);
     }
 
