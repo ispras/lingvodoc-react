@@ -5,9 +5,10 @@ import { branch, compose, onlyUpdateForKeys, renderNothing } from 'recompose';
 import { graphql, withApollo } from 'react-apollo';
 import TranslationGist from 'components/TranslationGist';
 import Languages from 'components/Languages';
+import EditDictionaryMetadata from 'components/EditDictionaryMetadata';
 import gql from 'graphql-tag';
 import { connect } from 'react-redux';
-import { Button, Dropdown, Modal, Input, Segment, Grid, Container, Label } from 'semantic-ui-react';
+import { Button, Dropdown, Modal, Input, Segment, Grid, Label, Form } from 'semantic-ui-react';
 import { closeDictionaryPropertiesModal } from 'ducks/dictionaryProperties';
 import { isEqual } from 'lodash';
 import { compositeIdToString } from 'utils/compositeId';
@@ -20,6 +21,10 @@ const query = gql`
       parent_id
       translation_gist_id
       additional_metadata {
+        kind
+        humanSettlement
+        speakersAmount
+        years
         authors
         location
         blobs
@@ -74,8 +79,6 @@ class Properties extends React.Component {
       selectedParent: null,
     };
 
-    this.onChangeAuthors = this.onChangeAuthors.bind(this);
-    this.onSaveAuthors = this.onSaveAuthors.bind(this);
     this.onChangeLocation = this.onChangeLocation.bind(this);
     this.onSaveLocation = this.onSaveLocation.bind(this);
     this.onChangeTags = this.onChangeTags.bind(this);
@@ -135,18 +138,6 @@ class Properties extends React.Component {
         });
       });
     }
-  }
-
-  onChangeAuthors(e, { value }) {
-    this.setState({
-      authors: value,
-    });
-  }
-
-  onSaveAuthors() {
-    this.saveMeta({
-      authors: this.state.authors,
-    });
   }
 
   onChangeLocation({ lat, lng }) {
@@ -240,23 +231,14 @@ class Properties extends React.Component {
     const selectedParentName = this.state.selectedParent == null ? null : this.state.selectedParent.translation;
 
     return (
-      <Modal open dimmer size="fullscreen">
+      <Modal open dimmer size="fullscreen" closeOnDimmerClick={false} onClose={actions.closeDictionaryPropertiesModal}>
         <Modal.Content>
           <Segment>
             <TranslationGist id={gistId} editable />
           </Segment>
-          <Segment>
-            <Grid>
-              <Grid.Column width={12}>
-                <Input fluid label="Authors" value={this.state.authors} onChange={this.onChangeAuthors} />
-              </Grid.Column>
-              <Grid.Column width={4}>
-                <Button positive content="Save" onClick={this.onSaveAuthors} />
-              </Grid.Column>
-            </Grid>
-          </Segment>
+          <EditDictionaryMetadata mode='edit' metadata={dictionary.additional_metadata} onSave={this.saveMeta} />
 
-          <Segment>
+          {/*<Segment>
             <Grid>
               <Grid.Column width={12}>
                 <Input fluid label="Tags" value={this.state.tags} onChange={this.onChangeTags} />
@@ -265,7 +247,7 @@ class Properties extends React.Component {
                 <Button positive content="Save" onClick={this.onSaveTags} />
               </Grid.Column>
             </Grid>
-          </Segment>
+          </Segment>*/}
 
           <Segment>
             <Grid>
@@ -308,15 +290,17 @@ class Properties extends React.Component {
           <Grid>
             <Grid.Column width={8}>
               <div style={{ height: '400px' }}>
-                <Container>
-                  <Label size="large">Parent language: {selectedParentName || parentName}</Label>
-                  <Button size="medium" disabled={selectedParentName == parentName} onClick={this.onUpdateParentLanguage}>Update</Button>
-                </Container>
+                <Form>
+                  <Form.Group widths='equal'>
+                    <Label size="large">Parent language: {selectedParentName || parentName}</Label>
+                    <Button size="medium" positive disabled={selectedParentName == parentName} onClick={this.onUpdateParentLanguage}>Update</Button>
+                  </Form.Group>
+                </Form>
                 <Languages height='95%' expanded={false} selected={this.state.parent} onSelect={this.onSelectParentLanguage}/>
               </div>
             </Grid.Column>
             <Grid.Column width={8}>
-              <Map location={this.state.location} authors={this.state.authors} onChange={this.onChangeLocation} />
+              <Map location={this.state.location} onChange={this.onChangeLocation} />
             </Grid.Column>
           </Grid>
         </Modal.Content>

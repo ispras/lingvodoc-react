@@ -57,7 +57,7 @@ const Dict = ({
       {(config.buildType === 'desktop' || config.buildType === 'proxy') && isDownloaded && <Icon name="download" />}
 
       <span className="dict-name">{translation} {config.buildType === 'server' && canSelectDictionaries && status === 'Published' && <Icon name="globe" />}</span>
-      {authors && <span className="dict-authors">({authors})</span>}
+      {authors && authors.size != 0 && <span className="dict-authors">({authors.toArray().join(", ")})</span>}
       {perspectives &&
         perspectives.valueSeq && (
           <Dropdown inline text={`View (${perspectives.size})`}>

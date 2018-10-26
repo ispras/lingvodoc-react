@@ -6,8 +6,10 @@ export const createDictionaryMutation = gql`
     $parentId: LingvodocID!
     $dictionaryTranslations: [ObjectVal]!
     $perspectives: [ObjectVal]!
+    $metadata: ObjectVal
   ) {
-    create_dictionary(category: $category, parent_id: $parentId, translation_atoms: $dictionaryTranslations, perspectives: $perspectives) {
+    create_dictionary(category: $category, parent_id: $parentId, translation_atoms: $dictionaryTranslations,
+      perspectives: $perspectives, additional_metadata: $metadata) {
       triumph
     }
   }
