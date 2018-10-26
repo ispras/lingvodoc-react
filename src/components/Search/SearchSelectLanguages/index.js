@@ -83,6 +83,27 @@ class SearchSelectLanguages extends PureComponent {
     this.props.onChange(checkedListToSend);
   }
 
+  renderCount() {
+    const { checked } = this.state;
+    const isAll = checked[0] === 'all';
+    let countText = null;
+
+    if (isAll) {
+      countText = 'all';
+    } else {
+      // languages
+      countText = `${checked[0].checked.length} languages`;
+      // dictioanries
+      countText = `${countText}, ${checked[1].checked.length} dictionaries`;
+    }
+
+    return (
+      <div>
+        Selected: {countText}
+      </div>
+    );
+  }
+
   render() {
     const { data } = this.props;
     const { selectedLangs } = this.state;
@@ -91,6 +112,9 @@ class SearchSelectLanguages extends PureComponent {
 
     return (
       <Segment.Group>
+        <Segment>
+          {this.renderCount()}
+        </Segment>
         <Segment>
           <Button primary basic fluid onClick={this.onShowLangsButtonClick}>
             {buttonTranslation}
