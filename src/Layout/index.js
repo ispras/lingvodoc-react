@@ -8,8 +8,6 @@ import { Sidebar } from 'semantic-ui-react';
 import Modals from 'components/Modals';
 import PlayerModal from 'components/PlayerModal';
 import MarkupModal from 'components/MarkupModal';
-import GroupingTagModal from 'components/GroupingTagModal';
-import LinkModal from 'components/LinkModal';
 import DictionaryProperties from 'components/DictionaryPropertiesModal';
 import SaveDictionary from 'components/SaveDictionaryModal';
 import PerspectiveProperties from 'components/PerspectivePropertiesModal';
@@ -18,7 +16,6 @@ import PhonologyModal from 'components/PhonologyModal';
 import ConverEafModal from 'components/ConverEafModal';
 import StatisticsModal from 'components/StatisticsModal';
 import BanModal from 'components/BanModal';
-import LexicalEntryModal from 'components/LexicalEntryModal';
 
 import NavBar from './NavBar';
 import TasksSidebar from './TasksSidebar';
@@ -42,8 +39,6 @@ const Layout = () => (
       </Sidebar.Pusher>
     </Sidebar.Pushable>
     <Modals />
-    <GroupingTagModal />
-    <LinkModal />
     <PlayerModal />
     <MarkupModal />
     <DictionaryProperties />
@@ -54,7 +49,6 @@ const Layout = () => (
     <ConverEafModal />
     <StatisticsModal />
     <BanModal />
-    <LexicalEntryModal />
   </div>
 );
 
