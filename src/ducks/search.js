@@ -7,7 +7,7 @@ export const STORE_SEARCH_RESULT = '@search/STORE_SEARCH_RESULT';
 export const NEW_SEARCH = '@search/NEW_SEARCH';
 export const DELETE_SEARCH = '@search/DELETE_SEARCH';
 
-export const setQuery = (searchId, query, category, adopted, etymology, langs, dictsToFilter) => ({
+export const setQuery = (searchId, query, category, adopted, etymology, langs, dicts) => ({
   type: SET_QUERY,
   payload: {
     searchId,
@@ -16,7 +16,7 @@ export const setQuery = (searchId, query, category, adopted, etymology, langs, d
     adopted,
     etymology,
     langs,
-    dictsToFilter,
+    dicts,
   },
 });
 
@@ -82,6 +82,7 @@ const searches = (state = [initialState], action) => {
             adopted: action.payload.adopted,
             etymology: action.payload.etymology,
             langs: action.payload.langs,
+            dicts: action.payload.dicts,
           }
           : search));
     case STORE_SEARCH_RESULT:
