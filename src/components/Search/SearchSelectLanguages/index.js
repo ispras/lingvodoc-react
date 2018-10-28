@@ -176,7 +176,7 @@ class SearchSelectLanguages extends PureComponent {
 }
 
 /**
- * Component for receiving, transmitting and handling data from the API to the main component
+ * Component for receiving, transmitting and handling data from the API to the main component.
  * @param {Object} props - component properties
  * @returns {SearchSelectLanguages} - component with added properties (data from API)
  */
@@ -216,7 +216,8 @@ SearchSelectLanguagesWrap.propTypes = {
 };
 
 /* ----------- QUERIES ----------- */
-// TODO: move languages and dictionaries query to the QueryBuilder, the languages tree should be stored in the QueryBuilder
+// TODO: move languages and dictionaries query to the QueryBuilder,
+// the languages tree should be stored in the QueryBuilder
 const LanguagesWithDictionariesQuery = gql`
   query Languages {
     language_tree {

@@ -15,6 +15,9 @@ const classNames = {
   groupItems: 'search-language-tree__group-items',
 };
 
+/**
+ * Represents the tree node.
+ */
 class TreeNode extends PureComponent {
   static propTypes = {
     checked: PropTypes.number.isRequired,
@@ -43,6 +46,9 @@ class TreeNode extends PureComponent {
     this.onExpand = this.onExpand.bind(this);
   }
 
+  /**
+   * On checking tree node event handler.
+   */
   onCheck() {
     let isChecked = false;
 
@@ -60,11 +66,17 @@ class TreeNode extends PureComponent {
     });
   }
 
+  /**
+   * On expand tree node event handler.
+   */
   onExpand() {
     const { expanded, value, onExpand } = this.props;
     onExpand({ value, expanded: !expanded });
   }
 
+  /**
+   * Renders block with the children tree nodes.
+   */
   renderChildren() {
     if (!this.props.expanded) {
       return null;
@@ -77,6 +89,9 @@ class TreeNode extends PureComponent {
     );
   }
 
+  /**
+   * Renders button for expand/collapse children of the tree node.
+   */
   renderCollapseButton() {
     const { isLeaf, expanded } = this.props;
 
@@ -92,6 +107,9 @@ class TreeNode extends PureComponent {
     );
   }
 
+  /**
+   * Renders tree node label.
+   */
   renderLabel() {
     const { label } = this.props;
 
@@ -102,6 +120,9 @@ class TreeNode extends PureComponent {
     );
   }
 
+  /**
+   * Renders tree node checkbox.
+   */
   renderCheckbox() {
     const { checked } = this.props;
 
@@ -124,6 +145,9 @@ class TreeNode extends PureComponent {
     );
   }
 
+  /**
+   * Renders tree node title with checkbox, label and collapse/expand button.
+   */
   renderTitle() {
     return (
       <div className={classNames.translationWrap}>
@@ -134,10 +158,16 @@ class TreeNode extends PureComponent {
     );
   }
 
+  /**
+   * Renders title of the tree node that has no children.
+   */
   renderItemTitle() {
     return this.renderTitle();
   }
 
+  /**
+   * Renders title of the tree node that has children.
+   */
   renderGroupTitle() {
     return (
       <div className={classNames.groupTitle}>
