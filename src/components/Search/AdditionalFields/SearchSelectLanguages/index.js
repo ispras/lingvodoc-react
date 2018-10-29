@@ -15,9 +15,18 @@ class SearchSelectLanguages extends PureComponent {
     defaultLangsChecked: PropTypes.array.isRequired,
     defaultDictsChecked: PropTypes.array.isRequired,
     languagesTree: PropTypes.array.isRequired,
-    translations: PropTypes.array.isRequired,
     onChange: PropTypes.func.isRequired,
+    showButtonText: PropTypes.string,
+    checkAllButtonText: PropTypes.string,
+    uncheckAllButtonText: PropTypes.string,
   }
+
+  static defaultProps = {
+    showButtonText: 'Select languages',
+    checkAllButtonText: 'Check all',
+    uncheckAllButtonText: 'Uncheck all',
+  }
+
   /**
    * Creates a list of ids from the internal format to the external format.
    * @param {Array} list - input list in internal format ["1,2", "3,4" ...] (array of strings)
@@ -131,17 +140,7 @@ class SearchSelectLanguages extends PureComponent {
     const { selectedLangs } = this.state;
     const selectedLangsCount = selectedLangs.length;
     // TODO: translations
-    const buttonTranslation = this.props.translations[0].translation;
-    let checkAllButtonText;
-    let uncheckAllButtonText;
-
-    if (this.props.translations[1]) {
-      checkAllButtonText = this.props.translations[1].translation;
-    }
-
-    if (this.props.translations[2]) {
-      uncheckAllButtonText = this.props.translations[2].translation;
-    }
+    const { showButtonText, checkAllButtonText, uncheckAllButtonText } = this.props;
 
     return (
       <Segment.Group>
@@ -150,7 +149,7 @@ class SearchSelectLanguages extends PureComponent {
         </Segment>
         <Segment>
           <Button primary basic fluid onClick={this.onShowLangsButtonClick}>
-            {buttonTranslation}
+            {showButtonText}
             <strong> {selectedLangsCount > 0 ? `(selected ${selectedLangsCount} languages)` : null}</strong>
           </Button>
         </Segment>
@@ -183,21 +182,18 @@ const SearchSelectLanguagesWrap = (props) => {
   // TODO: translations
   const { translationsQuery } = props;
   const { error: translationsQueryError, loading: translationsQueryLoading } = translationsQuery;
-  let translations = null;
 
   if (translationsQueryError || translationsQueryLoading) {
-    // TODO: need to fix it, move the default values to the component itself
-    translations = [{
-      translation: 'Search languages',
-    }];
-  } else {
-    translations = translationsQuery.advanced_translation_search;
+    return <SearchSelectLanguages {...props} />;
   }
 
-  // TODO: need to fix it, too many extra calculates
+  const { advanced_translation_search: translations } = translationsQuery;
+  // TODO: translations
   const newProps = {
     ...props,
-    translations,
+    showButtonText: translations[0] ? translations[0].translation : undefined,
+    checkAllButtonText: translations[1] ? translations[1].translation : undefined,
+    uncheckAllButtonText: translations[2] ? translations[2].translation : undefined,
   };
 
   return <SearchSelectLanguages {...newProps} />;
