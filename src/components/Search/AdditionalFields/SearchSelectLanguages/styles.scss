@@ -37,7 +37,6 @@
 
   &__checkbox input[type="checkbox"]:focus + label:before {
     outline: rgb(77, 144, 254) auto 5px;
-    border: none;
   }
 
   &__leaf {
