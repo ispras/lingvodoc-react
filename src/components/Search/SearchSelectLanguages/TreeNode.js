@@ -150,7 +150,7 @@ class TreeNode extends PureComponent {
       <button
         className={expanded ? classNames.expandButton : classNames.collapseButton}
         onClick={this.onExpand}
-        ariaLabel={expanded ? 'Collapse' : 'Expand'}
+        aria-label={expanded ? 'Collapse' : 'Expand'}
       />
     );
   }
@@ -168,7 +168,7 @@ class TreeNode extends PureComponent {
         onKeyPress={this.onKeyPress}
         role="button"
         tabIndex="0"
-        ariaLabel={label}
+        aria-label={label}
       >
         {label}
       </div>
@@ -188,7 +188,7 @@ class TreeNode extends PureComponent {
           indeterminate
           onChange={this.onCheck}
           onKeyPress={this.onCheckboxKeyPress}
-          ariaLabel="Check"
+          aria-label="Check"
         />
       );
     }
@@ -199,7 +199,7 @@ class TreeNode extends PureComponent {
         checked={checked === 1}
         onChange={this.onCheck}
         onKeyPress={this.onCheckboxKeyPress}
-        ariaLabel={checked === 1 ? 'Uncheck' : 'Check'}
+        aria-label={checked === 1 ? 'Uncheck' : 'Check'}
       />
     );
   }
