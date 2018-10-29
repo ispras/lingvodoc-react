@@ -3,9 +3,7 @@ import { Segment, Button } from 'semantic-ui-react';
 import { graphql } from 'react-apollo';
 import { compose } from 'recompose';
 import PropTypes from 'prop-types';
-import { fromJS } from 'immutable';
 import gql from 'graphql-tag';
-import { buildLanguageTree } from 'pages/Search/treeBuilder';
 import LanguageTree from './LanguageTree';
 
 /* ----------- COMPONENT ----------- */
@@ -14,9 +12,9 @@ import LanguageTree from './LanguageTree';
  */
 class SearchSelectLanguages extends PureComponent {
   static propTypes = {
-    defaultLangs: PropTypes.array.isRequired,
-    defaultDicts: PropTypes.array.isRequired,
-    data: PropTypes.array.isRequired,
+    defaultLangsChecked: PropTypes.array.isRequired,
+    defaultDictsChecked: PropTypes.array.isRequired,
+    languagesTree: PropTypes.array.isRequired,
     translations: PropTypes.array.isRequired,
     onChange: PropTypes.func.isRequired,
   }
@@ -44,8 +42,8 @@ class SearchSelectLanguages extends PureComponent {
   constructor(props) {
     super();
 
-    const languagesChecked = props.defaultLangs;
-    const dictionariesChecked = props.defaultDicts;
+    const languagesChecked = props.defaultLangsChecked;
+    const dictionariesChecked = props.defaultDictsChecked;
 
     this.state = {
       showLangs: false,
@@ -129,7 +127,7 @@ class SearchSelectLanguages extends PureComponent {
   }
 
   render() {
-    const { data } = this.props;
+    const { languagesTree } = this.props;
     const { selectedLangs } = this.state;
     const selectedLangsCount = selectedLangs.length;
     // TODO: translations
@@ -162,7 +160,7 @@ class SearchSelectLanguages extends PureComponent {
               <Segment>
                 <LanguageTree
                   checked={this.state.checked}
-                  nodes={data}
+                  nodes={languagesTree}
                   onChange={this.onFilterLangsChange}
                   checkAllButtonText={checkAllButtonText}
                   uncheckAllButtonText={uncheckAllButtonText}
@@ -183,14 +181,9 @@ class SearchSelectLanguages extends PureComponent {
  */
 const SearchSelectLanguagesWrap = (props) => {
   // TODO: translations
-  const { languagesQuery, translationsQuery } = props;
-  const { error: languagesQueryError, loading: languagesQueryLoading } = languagesQuery;
+  const { translationsQuery } = props;
   const { error: translationsQueryError, loading: translationsQueryLoading } = translationsQuery;
   let translations = null;
-
-  if (languagesQueryError || languagesQueryLoading) {
-    return null;
-  }
 
   if (translationsQueryError || translationsQueryLoading) {
     // TODO: need to fix it, move the default values to the component itself
@@ -204,7 +197,6 @@ const SearchSelectLanguagesWrap = (props) => {
   // TODO: need to fix it, too many extra calculates
   const newProps = {
     ...props,
-    data: buildLanguageTree(fromJS(props.languagesQuery.language_tree)).toJS(),
     translations,
   };
 
@@ -212,29 +204,10 @@ const SearchSelectLanguagesWrap = (props) => {
 };
 
 SearchSelectLanguagesWrap.propTypes = {
-  languagesQuery: PropTypes.object.isRequired,
   translationsQuery: PropTypes.object.isRequired,
 };
 
 /* ----------- QUERIES ----------- */
-// TODO: move languages and dictionaries query to the QueryBuilder,
-// the languages tree should be stored in the QueryBuilder
-const LanguagesWithDictionariesQuery = gql`
-  query Languages {
-    language_tree {
-      id
-      parent_id
-      translation
-      dictionaries {
-        id
-        parent_id
-        translation
-        category
-      }
-    }
-  }
-`;
-
 // TODO: translations
 const i18nQuery = gql`
   query {
@@ -250,11 +223,6 @@ const i18nQuery = gql`
   }
 `;
 
-export default compose(
-  graphql(LanguagesWithDictionariesQuery, {
-    name: 'languagesQuery',
-  }),
-  graphql(i18nQuery, {
-    name: 'translationsQuery',
-  })
-)(SearchSelectLanguagesWrap);
+export default compose(graphql(i18nQuery, {
+  name: 'translationsQuery',
+}))(SearchSelectLanguagesWrap);
