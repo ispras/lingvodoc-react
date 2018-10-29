@@ -17,6 +17,7 @@ import combinedReducer from './reducer';
 import mainFlow from './sagas';
 import Layout from './Layout';
 import apollo from './graphql';
+import WebFont from 'webfontloader';
 
 const sagaMiddleware = createSagaMiddleware();
 const history = createHistory();
@@ -48,6 +49,12 @@ window.logger = bindActionCreators(
 );
 
 window.dispatch = store.dispatch;
+
+WebFont.load({
+  google: {
+    families: ['Noto Sans']
+  }
+});
 
 const dest = document.getElementById('root');
 

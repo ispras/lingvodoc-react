@@ -96,6 +96,7 @@
     "semantic-ui-css": "^2.2.12",
     "semantic-ui-react": "^0.77.1",
     "styled-components": "^2.4.0",
-    "wavesurfer.js": "^1.1.11"
+    "wavesurfer.js": "^1.1.11",
+    "webfontloader": "^1.6.28"
   }
 }
