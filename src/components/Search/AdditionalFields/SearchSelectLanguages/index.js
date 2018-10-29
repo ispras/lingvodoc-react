@@ -14,7 +14,8 @@ import LanguageTree from './LanguageTree';
  */
 class SearchSelectLanguages extends PureComponent {
   static propTypes = {
-    defaultData: PropTypes.object.isRequired,
+    defaultLangs: PropTypes.array.isRequired,
+    defaultDicts: PropTypes.array.isRequired,
     data: PropTypes.array.isRequired,
     translations: PropTypes.array.isRequired,
     onChange: PropTypes.func.isRequired,
@@ -43,8 +44,8 @@ class SearchSelectLanguages extends PureComponent {
   constructor(props) {
     super();
 
-    const { defaultData } = props;
-    const { languages: languagesChecked, dictionaries: dictionariesChecked } = defaultData;
+    const languagesChecked = props.defaultLangs;
+    const dictionariesChecked = props.defaultDicts;
 
     this.state = {
       showLangs: false,

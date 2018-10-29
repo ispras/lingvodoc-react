@@ -9,7 +9,7 @@ import { List, fromJS } from 'immutable';
 import styled from 'styled-components';
 import { Checkbox, Grid, Radio, Segment, Button, Divider, Select, Input } from 'semantic-ui-react';
 import { setQuery } from 'ducks/search';
-import SearchSelectLanguages from 'components/Search/SearchSelectLanguages';
+import AdditionalFields from 'components/Search/AdditionalFields';
 
 import { compositeIdToString } from 'utils/compositeId';
 
@@ -172,13 +172,13 @@ class QueryBuilder extends React.Component {
     this.onDeleteAndBlock = this.onDeleteAndBlock.bind(this);
     this.onDeleteOrBlock = this.onDeleteOrBlock.bind(this);
     this.onFieldChange = this.onFieldChange.bind(this);
-    this.onLangsDictsToFilterChange = this.onLangsDictsToFilterChange.bind(this);
+    this.onAdditionalFieldsChange = this.onAdditionalFieldsChange.bind(this);
     this.onSearchButtonClick = this.onSearchButtonClick.bind(this);
     this.changeSource = this.changeSource.bind(this);
     this.changeMode = this.changeMode.bind(this);
 
     this.newBlock = fromJS(newBlock);
-    this.langsDictsToFilter = {
+    this.additionalFields = {
       languages: [],
       dictionaries: [],
     };
@@ -229,13 +229,13 @@ class QueryBuilder extends React.Component {
     };
   }
 
-  onLangsDictsToFilterChange(list) {
-    this.langsDictsToFilter = list;
+  onAdditionalFieldsChange(list) {
+    this.additionalFields = list;
   }
 
   onSearchButtonClick() {
     const { searchId, actions } = this.props;
-    const { languages: langsToFilter, dictionaries: dictsToFilter } = this.langsDictsToFilter;
+    const { languages: langsToFilter, dictionaries: dictsToFilter } = this.additionalFields;
     const adopted = mode2bool(this.state.mode.adopted);
     const etymology = mode2bool(this.state.mode.etymology);
     const category = bool2category(this.state.source.dictionaries, this.state.source.corpora);
@@ -284,7 +284,7 @@ class QueryBuilder extends React.Component {
           </Segment.Group>
         </Segment.Group>
 
-        <SearchSelectLanguages onChange={this.onLangsDictsToFilterChange} defaultData={this.langsDictsToFilter} />
+        <AdditionalFields onChange={this.onAdditionalFieldsChange} defaultData={this.additionalFields} />
 
         <Segment.Group>
           <Segment>Search options</Segment>
