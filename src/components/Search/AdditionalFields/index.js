@@ -7,6 +7,7 @@ import gql from 'graphql-tag';
 import { buildLanguageTree } from 'pages/Search/treeBuilder';
 import SearchSelectLanguages from './SearchSelectLanguages';
 
+/* ----------- COMPONENT ----------- */
 /**
  * Additional fields for the search form.
  */
