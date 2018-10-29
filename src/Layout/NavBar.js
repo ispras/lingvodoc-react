@@ -113,7 +113,7 @@ const NavBar = pure(({ location }) => (
     <Dropdown item text="Info">
       <Dropdown.Menu>
         <Dropdown.Item as={Link} to="/info">
-          Info
+          Authors
         </Dropdown.Item>
         <Dropdown.Item as={Link} to="/desktop">
           Desktop
