@@ -1,44 +1,46 @@
 import React from 'react';
 import { pure } from 'recompose';
 import { Link } from 'react-router-dom';
-import { Container, Card } from 'semantic-ui-react';
+import { Container, Segment, Header, Card } from 'semantic-ui-react';
 
-const contributors = [
+const linguistsContributors = [
   {
-    header: 'Юлия Викторовна Норманская',
-    description: 'руководитель проекта',
-    href: 'http://iling-ran.ru/beta/scholars/normanskaya',
+    header: 'Норманская Юлия Викторовна',
+    description: 'главный редактор сайта, ответственный редактор Уральских словарей',
+    href: 'http://iling-ran.ru/main/scholars/normanskaya',
   },
   {
-    header: 'Анна Владимировна Дыбо',
-    description: 'научный консультант проекта',
-    href: 'http://iling-ran.ru/beta/scholars/dybo',
+    header: 'Дыбо Анна Владимировна',
+    description: 'ответственный редактор Алтайских словарей',
+    href: 'http://iling-ran.ru/main/scholars/dybo',
+  }
+];
+
+const developersContributors = [
+  {
+    header: 'Борисенко Олег Дмитриевич',
+    description: 'разработка архитектуры и ядра системы'
   },
   {
-    header: 'Олег Борисенко',
-    description: 'создатель программы LingvoDoc (API, backend)',
-    href: 'http://www.ispras.ru/ru/modis/staff.php',
+    header: 'Тапехин Андрей Николаевич',
+    description: 'разработка ядра системы'
   },
   {
-    header: 'Степан Ипатов',
-    description: 'руководитель проекта',
-    href: 'http://www.ispras.ru/ru/modis/staff.php',
+    header: 'Богомолов Игорь Владимирович',
+    description: 'разработка ядра системы'
   },
   {
-    header: 'Руслан Идрисов',
-    description: 'составитель корпуса бесермянского диалекта',
+    header: 'Белобородов Иван Борисович',
+    description: 'вычислительные модули системы'
   },
   {
-    header: 'Мария Константиновна Амелина',
-    href: 'http://iling-ran.ru/beta/scholars/amelina',
+    header: 'Ипатов Степан Анатольевич',
+    description: 'фронтенд'
   },
   {
-    header: 'Семен Евгеньевич Шешенин',
-    href: 'http://iling-ran.ru/beta/scholars/sheshenin',
-  },
-  {
-    header: 'Мария Петровна Кайсина',
-  },
+    header: 'Жаров Андрей Анатольевич',
+    description: 'фронтенд'
+  }
 ];
 
 const Info = pure(() =>
@@ -78,7 +80,14 @@ const Info = pure(() =>
     </p>
 
     <h2>Участники проекта</h2>
-    <Card.Group items={contributors} itemsPerRow={4} />
+    <Segment>
+      <Header color='blue'>Институт языкознания РАН, Томский государственный университет</Header>
+      <Card.Group items={linguistsContributors} itemsPerRow={2} />
+    </Segment>
+    <Segment>
+      <Header color='blue'>Институт системного программирования им. В. П. Иванникова РАН</Header>
+      <Card.Group items={developersContributors} itemsPerRow={3} />
+    </Segment>
 
     <h2>Контакты</h2>
     <p>Вопросы по поводу работы программы LingvoDoc задавайте по адресу <a href="mailto:al@somestuff.ru">al@somestuff.ru</a></p>
