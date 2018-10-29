@@ -45,6 +45,9 @@ class TreeNode extends PureComponent {
 
     this.onCheck = this.onCheck.bind(this);
     this.onExpand = this.onExpand.bind(this);
+    this.onKeyPress = this.onKeyPress.bind(this);
+    this.onLabelClick = this.onLabelClick.bind(this);
+    this.onCheckboxKeyPress = this.onCheckboxKeyPress.bind(this);
   }
 
   /**
@@ -71,8 +74,51 @@ class TreeNode extends PureComponent {
    * On expand tree node event handler.
    */
   onExpand() {
-    const { expanded, value, onExpand } = this.props;
+    const {
+      expanded, value, onExpand, isLeaf,
+    } = this.props;
+    if (isLeaf) {
+      return;
+    }
     onExpand({ value, expanded: !expanded });
+  }
+
+  /**
+   * Event handler for pressing a key.
+   * @param {Object} ev - keyboard event object
+   */
+  onKeyPress(ev) {
+    const { isLeaf } = this.props;
+    if (ev.key === 'Enter') {
+      if (isLeaf) {
+        this.onCheck();
+      } else {
+        this.onExpand();
+      }
+    }
+  }
+
+  /**
+   * Event handler for clicking on tree node label.
+   */
+  onLabelClick() {
+    const { isLeaf } = this.props;
+
+    if (isLeaf) {
+      this.onCheck();
+    } else {
+      this.onExpand();
+    }
+  }
+
+  /**
+   * Event handler for pressing key on checkbox.
+   * @param {Object} ev - keyboard event object
+   */
+  onCheckboxKeyPress(ev) {
+    if (ev.key === 'Enter') {
+      this.onCheck();
+    }
   }
 
   /**
@@ -104,6 +150,7 @@ class TreeNode extends PureComponent {
       <button
         className={expanded ? classNames.expandButton : classNames.collapseButton}
         onClick={this.onExpand}
+        ariaLabel={expanded ? 'Collapse' : 'Expand'}
       />
     );
   }
@@ -115,7 +162,14 @@ class TreeNode extends PureComponent {
     const { label } = this.props;
 
     return (
-      <div className={classNames.translation}>
+      <div
+        className={classNames.translation}
+        onClick={this.onLabelClick}
+        onKeyPress={this.onKeyPress}
+        role="button"
+        tabIndex="0"
+        ariaLabel={label}
+      >
         {label}
       </div>
     );
@@ -133,6 +187,8 @@ class TreeNode extends PureComponent {
           className={classNames.checkbox}
           indeterminate
           onChange={this.onCheck}
+          onKeyPress={this.onCheckboxKeyPress}
+          ariaLabel="Check"
         />
       );
     }
@@ -142,6 +198,8 @@ class TreeNode extends PureComponent {
         className={classNames.checkbox}
         checked={checked === 1}
         onChange={this.onCheck}
+        onKeyPress={this.onCheckboxKeyPress}
+        ariaLabel={checked === 1 ? 'Uncheck' : 'Check'}
       />
     );
   }

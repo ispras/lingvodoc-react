@@ -35,6 +35,11 @@
     cursor: pointer;
   }
 
+  &__checkbox input[type="checkbox"]:focus + label:before {
+    outline: rgb(77, 144, 254) auto 5px;
+    border: none;
+  }
+
   &__leaf {
     margin-left: 20px;
   }
@@ -90,6 +95,10 @@
 
   &__leaf .search-language-tree__title {
     padding-left: 0;
+  }
+
+  &__translation:hover {
+    cursor: pointer;
   }
 
   &__translation-wrap {
