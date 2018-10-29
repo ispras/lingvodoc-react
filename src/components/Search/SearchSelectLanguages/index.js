@@ -1,14 +1,17 @@
 import React, { PureComponent } from 'react';
-import PropTypes from 'prop-types';
 import { Segment, Button } from 'semantic-ui-react';
 import { graphql } from 'react-apollo';
-import gql from 'graphql-tag';
 import { compose } from 'recompose';
+import PropTypes from 'prop-types';
 import { fromJS } from 'immutable';
+import gql from 'graphql-tag';
 import { buildLanguageTree } from 'pages/Search/treeBuilder';
 import LanguageTree from './LanguageTree';
 
 /* ----------- COMPONENT ----------- */
+/**
+ * Component for selecting languages and dictionaries.
+ */
 class SearchSelectLanguages extends PureComponent {
   static propTypes = {
     defaultData: PropTypes.object.isRequired,
@@ -16,13 +19,22 @@ class SearchSelectLanguages extends PureComponent {
     translations: PropTypes.array.isRequired,
     onChange: PropTypes.func.isRequired,
   }
-
+  /**
+   * Creates a list of ids from the internal format to the external format.
+   * @param {Array} list - input list in internal format ["1,2", "3,4" ...] (array of strings)
+   * @returns {Array} - output list in external format "[[1,2], [3,4]]" (array of arrays of integers)
+   */
   static getListInExternalFormat(list) {
     return list
       .map(item => item.split(','))
       .map(item => item.map(idPart => parseInt(idPart, 10)));
   }
 
+  /**
+   * Creates a list of ids from the external format to the internal format.
+   * @param {Array} list - input list in external format "[[1,2], [3,4]]" (array of arrays of integers)
+   * @returns {Array} - output list in internal format ["1,2", "3,4" ...] (array of strings)
+   */
   static getListInInternalFormat(list) {
     return list
       .map(item => item.join(','));
@@ -54,13 +66,21 @@ class SearchSelectLanguages extends PureComponent {
     this.onShowLangsButtonClick = this.onShowLangsButtonClick.bind(this);
     this.onFilterLangsChange = this.onFilterLangsChange.bind(this);
   }
-
+  /**
+   * Event handler for clicking on the button to open or close
+   * component for languages and dictionaries selection.
+   */
   onShowLangsButtonClick() {
     this.setState({
       showLangs: !this.state.showLangs,
     });
   }
 
+  /**
+   * Event handler for changing selected languages or dictionaries.
+   * @param {Array} checkedList - ["all"] if all languages and dictionaries selected or list of ids
+   * in internal format ["1,2", "3,4" ...] (array of strings)
+   */
   onFilterLangsChange(checkedList) {
     this.setState({
       checked: checkedList,
@@ -83,6 +103,9 @@ class SearchSelectLanguages extends PureComponent {
     this.props.onChange(checkedListToSend);
   }
 
+  /**
+   * Сreates a block with the number of selected languages and dictionaries.
+   */
   renderCount() {
     const { checked } = this.state;
     const isAll = checked[0] === 'all';
@@ -152,6 +175,11 @@ class SearchSelectLanguages extends PureComponent {
   }
 }
 
+/**
+ * Component for receiving, transmitting and handling data from the API to the main component.
+ * @param {Object} props - component properties
+ * @returns {SearchSelectLanguages} - component with added properties (data from API)
+ */
 const SearchSelectLanguagesWrap = (props) => {
   // TODO: translations
   const { languagesQuery, translationsQuery } = props;
@@ -164,6 +192,7 @@ const SearchSelectLanguagesWrap = (props) => {
   }
 
   if (translationsQueryError || translationsQueryLoading) {
+    // TODO: need to fix it, move the default values to the component itself
     translations = [{
       translation: 'Search languages',
     }];
@@ -171,6 +200,7 @@ const SearchSelectLanguagesWrap = (props) => {
     translations = translationsQuery.advanced_translation_search;
   }
 
+  // TODO: need to fix it, too many extra calculates
   const newProps = {
     ...props,
     data: buildLanguageTree(fromJS(props.languagesQuery.language_tree)).toJS(),
@@ -186,6 +216,8 @@ SearchSelectLanguagesWrap.propTypes = {
 };
 
 /* ----------- QUERIES ----------- */
+// TODO: move languages and dictionaries query to the QueryBuilder,
+// the languages tree should be stored in the QueryBuilder
 const LanguagesWithDictionariesQuery = gql`
   query Languages {
     language_tree {

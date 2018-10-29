@@ -4,17 +4,21 @@ import { Checkbox } from 'semantic-ui-react';
 
 /* ----------- PROPS ----------- */
 const classNames = {
-  item: 'search-language-tree__item',
+  leaf: 'search-language-tree__leaf',
   group: 'search-language-tree__group',
+  node: 'search-language-tree__node',
   translationWrap: 'search-language-tree__translation-wrap',
   translation: 'search-language-tree__translation',
   checkbox: 'search-language-tree__checkbox',
   expandButton: 'search-language-tree__button search-language-tree__button_expand',
   collapseButton: 'search-language-tree__button search-language-tree__button_collapse',
-  groupTitle: 'search-language-tree__group-title',
-  groupItems: 'search-language-tree__group-items',
+  title: 'search-language-tree__title',
+  items: 'search-language-tree__items',
 };
 
+/**
+ * Represents the tree node.
+ */
 class TreeNode extends PureComponent {
   static propTypes = {
     checked: PropTypes.number.isRequired,
@@ -43,6 +47,9 @@ class TreeNode extends PureComponent {
     this.onExpand = this.onExpand.bind(this);
   }
 
+  /**
+   * On checking tree node event handler.
+   */
   onCheck() {
     let isChecked = false;
 
@@ -60,23 +67,32 @@ class TreeNode extends PureComponent {
     });
   }
 
+  /**
+   * On expand tree node event handler.
+   */
   onExpand() {
     const { expanded, value, onExpand } = this.props;
     onExpand({ value, expanded: !expanded });
   }
 
+  /**
+   * Renders block with the children tree nodes.
+   */
   renderChildren() {
     if (!this.props.expanded) {
       return null;
     }
 
     return (
-      <div className={classNames.groupItems}>
+      <div className={classNames.items}>
         {this.props.children}
       </div>
     );
   }
 
+  /**
+   * Renders button for expand/collapse children of the tree node.
+   */
   renderCollapseButton() {
     const { isLeaf, expanded } = this.props;
 
@@ -92,6 +108,9 @@ class TreeNode extends PureComponent {
     );
   }
 
+  /**
+   * Renders tree node label.
+   */
   renderLabel() {
     const { label } = this.props;
 
@@ -102,6 +121,9 @@ class TreeNode extends PureComponent {
     );
   }
 
+  /**
+   * Renders tree node checkbox.
+   */
   renderCheckbox() {
     const { checked } = this.props;
 
@@ -124,32 +146,27 @@ class TreeNode extends PureComponent {
     );
   }
 
+  /**
+   * Renders tree node title with checkbox, label and collapse/expand button.
+   */
   renderTitle() {
     return (
-      <div className={classNames.translationWrap}>
-        {this.renderCheckbox()}
-        {this.renderCollapseButton()}
-        {this.renderLabel()}
-      </div>
-    );
-  }
-
-  renderItemTitle() {
-    return this.renderTitle();
-  }
-
-  renderGroupTitle() {
-    return (
-      <div className={classNames.groupTitle}>
-        {this.renderTitle()}
+      <div className={classNames.title}>
+        <div className={classNames.translationWrap}>
+          {this.renderCheckbox()}
+          {this.renderCollapseButton()}
+          {this.renderLabel()}
+        </div>
       </div>
     );
   }
 
   render() {
     const { isLeaf, isParent } = this.props;
-    const containerClassName = isLeaf ? classNames.item : classNames.group;
-    const title = isLeaf ? this.renderItemTitle() : this.renderGroupTitle();
+    const containerClassName = isLeaf ?
+      `${classNames.node} ${classNames.leaf}` :
+      `${classNames.node} ${classNames.group}`;
+    const title = this.renderTitle();
     const children = isParent ? this.renderChildren() : null;
 
     return (
