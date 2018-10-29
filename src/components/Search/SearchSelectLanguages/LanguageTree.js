@@ -10,6 +10,7 @@ import './styles.scss';
 const classNames = {
   container: 'search-language-tree',
   wrap: 'search-language-tree__wrap',
+  items: 'search-language-tree__items',
 };
 
 const propsNames = {
@@ -495,7 +496,9 @@ class SearchLanguageTree extends PureComponent {
     return (
       <div className={classNames.container}>
         <div className={classNames.wrap}>
-          {treeNodes}
+          <div className={classNames.items}>
+            {treeNodes}
+          </div>
         </div>
         <Segment>
           <Button primary basic onClick={this.uncheckAll}>

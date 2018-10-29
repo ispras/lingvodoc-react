@@ -4,15 +4,16 @@ import { Checkbox } from 'semantic-ui-react';
 
 /* ----------- PROPS ----------- */
 const classNames = {
-  item: 'search-language-tree__item',
+  leaf: 'search-language-tree__leaf',
   group: 'search-language-tree__group',
+  node: 'search-language-tree__node',
   translationWrap: 'search-language-tree__translation-wrap',
   translation: 'search-language-tree__translation',
   checkbox: 'search-language-tree__checkbox',
   expandButton: 'search-language-tree__button search-language-tree__button_expand',
   collapseButton: 'search-language-tree__button search-language-tree__button_collapse',
-  groupTitle: 'search-language-tree__group-title',
-  groupItems: 'search-language-tree__group-items',
+  title: 'search-language-tree__title',
+  items: 'search-language-tree__items',
 };
 
 /**
@@ -83,7 +84,7 @@ class TreeNode extends PureComponent {
     }
 
     return (
-      <div className={classNames.groupItems}>
+      <div className={classNames.items}>
         {this.props.children}
       </div>
     );
@@ -150,36 +151,22 @@ class TreeNode extends PureComponent {
    */
   renderTitle() {
     return (
-      <div className={classNames.translationWrap}>
-        {this.renderCheckbox()}
-        {this.renderCollapseButton()}
-        {this.renderLabel()}
-      </div>
-    );
-  }
-
-  /**
-   * Renders title of the tree node that has no children.
-   */
-  renderItemTitle() {
-    return this.renderTitle();
-  }
-
-  /**
-   * Renders title of the tree node that has children.
-   */
-  renderGroupTitle() {
-    return (
-      <div className={classNames.groupTitle}>
-        {this.renderTitle()}
+      <div className={classNames.title}>
+        <div className={classNames.translationWrap}>
+          {this.renderCheckbox()}
+          {this.renderCollapseButton()}
+          {this.renderLabel()}
+        </div>
       </div>
     );
   }
 
   render() {
     const { isLeaf, isParent } = this.props;
-    const containerClassName = isLeaf ? classNames.item : classNames.group;
-    const title = isLeaf ? this.renderItemTitle() : this.renderGroupTitle();
+    const containerClassName = isLeaf ?
+      `${classNames.node} ${classNames.leaf}` :
+      `${classNames.node} ${classNames.group}`;
+    const title = this.renderTitle();
     const children = isParent ? this.renderChildren() : null;
 
     return (
