@@ -3,6 +3,10 @@ import PropTypes from 'prop-types';
 import isEqual from 'lodash/isEqual';
 import { Segment, Button } from 'semantic-ui-react';
 import TreeNode from './TreeNode';
+import {
+  propsNames, nodeHasDictionariesChildren,
+  getNodeValue, flattenNodes,
+} from '../helpers';
 
 import './styles.scss';
 
@@ -11,11 +15,6 @@ const classNames = {
   container: 'search-language-tree',
   wrap: 'search-language-tree__wrap',
   items: 'search-language-tree__items',
-};
-
-const propsNames = {
-  languages: 'children',
-  dictionaries: 'dictionaries',
 };
 
 /* ----------- COMPONENT ----------- */
@@ -34,33 +33,6 @@ class SearchLanguageTree extends PureComponent {
   static defaultProps = {
     checkAllButtonText: 'Check all',
     uncheckAllButtonText: 'Uncheck all',
-  }
-
-  /**
-   * Checks if a node has languages children.
-   * @param {Object} node - node of the tree
-   * @returns {boolean} - result of the checking
-   */
-  static nodeHasLanguagesChildren(node) {
-    return Array.isArray(node[propsNames.languages]) && node[propsNames.languages].length > 0;
-  }
-
-  /**
-   * Checks if a node has dictionaries children.
-   * @param {Object} node - tree node
-   * @returns {boolean} - result of checking
-   */
-  static nodeHasDictionariesChildren(node) {
-    return Array.isArray(node[propsNames.dictionaries]) && node[propsNames.dictionaries].length > 0;
-  }
-
-  /**
-   * Gets the value of a tree node as a string obtained from the node id.
-   * @param {Object} node - tree node
-   * @returns {string} - tree node value
-   */
-  static getNodeValue(node) {
-    return `${node.id[0].toString()},${node.id[1].toString()}`;
   }
 
   /**
@@ -88,7 +60,7 @@ class SearchLanguageTree extends PureComponent {
     super(props);
 
     this.flatNodes = {};
-    this.flattenNodes(props.nodes);
+    flattenNodes(props.nodes, this.flatNodes);
     this.updateNodesWithChecked(props.checked);
 
     this.state = {
@@ -109,7 +81,7 @@ class SearchLanguageTree extends PureComponent {
    */
   componentWillReceiveProps({ nodes, checked }) {
     if (!isEqual(this.props.nodes, nodes)) {
-      this.flattenNodes(nodes);
+      flattenNodes(nodes, this.flatNodes);
     }
 
     this.updateNodesWithChecked(checked);
@@ -143,7 +115,7 @@ class SearchLanguageTree extends PureComponent {
    * 0 - unchecked, 1 - checked, 2 - unchecked, but has at least one checked child.
    */
   getShallowCheckState(node) {
-    const flatNode = this.flatNodes[this.constructor.getNodeValue(node)];
+    const flatNode = this.flatNodes[getNodeValue(node)];
 
     if (flatNode.isLeaf) {
       return flatNode.checked ? 1 : 0;
@@ -213,11 +185,13 @@ class SearchLanguageTree extends PureComponent {
     //     .map(value => `${this.flatNodes[value].self.translation} - ${value}}`),
     // });
 
-    if (this.constructor.isAllNodesChecked(Object.keys(this.flatNodes).length, nextCheckedList)) {
-      this.props.onChange(['all']);
-    } else {
-      this.props.onChange(nextCheckedList);
-    }
+    // if (this.constructor.isAllNodesChecked(Object.keys(this.flatNodes).length, nextCheckedList)) {
+    //   this.props.onChange(['all']);
+    // } else {
+    //   this.props.onChange(nextCheckedList);
+    // }
+
+    this.props.onChange(nextCheckedList);
   }
   /**
    * Recounts the checked state of the parent of the tree node.
@@ -234,7 +208,7 @@ class SearchLanguageTree extends PureComponent {
     if (flatNode.parent.id) {
       parentNode = flatNode.parent;
       everyChildChecked = this.isEveryChildChecked(parentNode);
-      parentValue = this.constructor.getNodeValue(parentNode);
+      parentValue = getNodeValue(parentNode);
       parentFlatNode = this.flatNodes[parentValue];
 
       if (everyChildChecked) {
@@ -285,11 +259,11 @@ class SearchLanguageTree extends PureComponent {
       flatNode.checkState = this.getShallowCheckState(flatNode.self);
     } else {
       flatNode.self[propsNames.languages].forEach((language) => {
-        this.toggleChecked(this.constructor.getNodeValue(language), isChecked);
+        this.toggleChecked(getNodeValue(language), isChecked);
       });
 
       flatNode.self[propsNames.dictionaries].forEach((dictionary) => {
-        this.toggleChecked(this.constructor.getNodeValue(dictionary), isChecked);
+        this.toggleChecked(getNodeValue(dictionary), isChecked);
       });
 
       this.toggleNode(value, 'checked', isChecked);
@@ -340,11 +314,11 @@ class SearchLanguageTree extends PureComponent {
    */
   isEveryChildChecked(node) {
     const everyLanguagesChecked = node[propsNames.languages]
-      .every(language => this.flatNodes[this.constructor.getNodeValue(language)].checkState === 1);
+      .every(language => this.flatNodes[getNodeValue(language)].checkState === 1);
 
-    return !this.constructor.nodeHasDictionariesChildren(node) ? everyLanguagesChecked :
+    return !nodeHasDictionariesChildren(node) ? everyLanguagesChecked :
       everyLanguagesChecked && node[propsNames.dictionaries]
-        .every(dictionary => this.flatNodes[this.constructor.getNodeValue(dictionary)].checkState === 1);
+        .every(dictionary => this.flatNodes[getNodeValue(dictionary)].checkState === 1);
   }
 
   /**
@@ -354,11 +328,11 @@ class SearchLanguageTree extends PureComponent {
    */
   isSomeChildChecked(node) {
     const someLanguagesChecked = node[propsNames.languages]
-      .some(language => this.flatNodes[this.constructor.getNodeValue(language)].checkState > 0);
+      .some(language => this.flatNodes[getNodeValue(language)].checkState > 0);
 
-    return !this.constructor.nodeHasDictionariesChildren(node) ? someLanguagesChecked :
+    return !nodeHasDictionariesChildren(node) ? someLanguagesChecked :
       someLanguagesChecked || node[propsNames.dictionaries]
-        .some(dictionary => this.flatNodes[this.constructor.getNodeValue(dictionary)].checkState > 0);
+        .some(dictionary => this.flatNodes[getNodeValue(dictionary)].checkState > 0);
   }
 
   /**
@@ -408,39 +382,6 @@ class SearchLanguageTree extends PureComponent {
   }
 
   /**
-   * Creates a flat object from the nested node tree where key is a tree node value
-   * and value is a tree node object with the additional properties.
-   * @param {Array} nodes - list of the tree nodes
-   * @param {Object} parent - tree node-parent
-   * @param {string} type - type of the tree node: language or dictionary, language by default
-   */
-  flattenNodes(nodes, parent = {}, type = 'language') {
-    if (!Array.isArray(nodes) || nodes.length === 0) {
-      return;
-    }
-
-    nodes.forEach((node) => {
-      const isParentWithLanguages = this.constructor.nodeHasLanguagesChildren(node);
-      const isParentWithDictionaries = this.constructor.nodeHasDictionariesChildren(node);
-      const nodeValue = this.constructor.getNodeValue(node);
-
-      this.flatNodes[nodeValue] = {
-        value: nodeValue,
-        self: node,
-        parent,
-        isParentWithLanguages,
-        isParentWithDictionaries,
-        isParent: isParentWithDictionaries || isParentWithLanguages,
-        isLeaf: !isParentWithLanguages && !isParentWithDictionaries,
-        type,
-        expanded: false,
-      };
-      this.flattenNodes(node.children, node, 'language');
-      this.flattenNodes(node.dictionaries, node, 'dictionary');
-    });
-  }
-
-  /**
    * Renders tree nodes.
    * @param {Array} nodes - list of the tree nodes
    * @param {Object} parent - tree node-parent
@@ -448,7 +389,7 @@ class SearchLanguageTree extends PureComponent {
    */
   renderTreeNodes(nodes, parent = {}) {
     const treeNodes = nodes.map((node) => {
-      const key = this.constructor.getNodeValue(node);
+      const key = getNodeValue(node);
       const flatNode = this.flatNodes[key];
       const childrenLanguages = flatNode.isParentWithLanguages ?
         this.renderTreeNodes(node[propsNames.languages], node) :
@@ -459,9 +400,9 @@ class SearchLanguageTree extends PureComponent {
 
       // Get the checked state after all children checked states are determined
       flatNode.checkState = flatNode.checkState === 0 || flatNode.checkState === 1 || flatNode.checkState === 2 ?
-        flatNode.checkState : 1;
+        flatNode.checkState : 0;
 
-      const parentExpanded = parent.value ? this.flatNodes[this.constructor.getNodeValue(parent)].expanded : true;
+      const parentExpanded = parent.value ? this.flatNodes[getNodeValue(parent)].expanded : true;
 
       if (!parentExpanded) {
         return null;

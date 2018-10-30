@@ -12,8 +12,8 @@ import LanguageTree from './LanguageTree';
  */
 class SearchSelectLanguages extends PureComponent {
   static propTypes = {
-    defaultLangsChecked: PropTypes.array.isRequired,
-    defaultDictsChecked: PropTypes.array.isRequired,
+    langsChecked: PropTypes.array.isRequired,
+    dictsChecked: PropTypes.array.isRequired,
     languagesTree: PropTypes.array.isRequired,
     onChange: PropTypes.func.isRequired,
     showButtonText: PropTypes.string,
@@ -25,6 +25,29 @@ class SearchSelectLanguages extends PureComponent {
     showButtonText: 'Select languages',
     checkAllButtonText: 'Check all',
     uncheckAllButtonText: 'Uncheck all',
+  }
+
+  /**
+   * Сreates a block with the number of selected languages and dictionaries.
+   */
+  static renderCount(checked) {
+    const isAll = checked[0] === 'all';
+    let countText = null;
+
+    if (isAll) {
+      countText = 'all';
+    } else {
+      // languages
+      countText = `${checked[0].checked.length} languages`;
+      // dictioanries
+      countText = `${countText}, ${checked[1].checked.length} dictionaries`;
+    }
+
+    return (
+      <div>
+        Selected: {countText}
+      </div>
+    );
   }
 
   /**
@@ -48,27 +71,15 @@ class SearchSelectLanguages extends PureComponent {
       .map(item => item.join(','));
   }
 
-  constructor(props) {
+  constructor() {
     super();
 
-    const languagesChecked = props.defaultLangsChecked;
-    const dictionariesChecked = props.defaultDictsChecked;
+    // const languagesChecked = props.defaultLangsChecked;
+    // const dictionariesChecked = props.defaultDictsChecked;
 
     this.state = {
       showLangs: false,
-      selectedLangs: [],
-      checked: languagesChecked.length > 0 && dictionariesChecked.length > 0 ?
-        [
-          {
-            type: 'language',
-            checked: this.constructor.getListInInternalFormat(languagesChecked),
-          },
-          {
-            type: 'dictionary',
-            checked: this.constructor.getListInInternalFormat(dictionariesChecked),
-          },
-        ] :
-        ['all'],
+      // checked: this.getDataInInternalFormat(languagesChecked, dictionariesChecked),
     };
 
     this.onShowLangsButtonClick = this.onShowLangsButtonClick.bind(this);
@@ -90,67 +101,56 @@ class SearchSelectLanguages extends PureComponent {
    * in internal format ["1,2", "3,4" ...] (array of strings)
    */
   onFilterLangsChange(checkedList) {
-    this.setState({
-      checked: checkedList,
-    });
+    // this.setState({
+    //   checked: checkedList,
+    // });
 
-    let checkedListToSend = null;
+    this.props.onChange(this.getDataInExternalFormat(checkedList));
+  }
 
-    if (checkedList[0] === 'all') {
-      checkedListToSend = {
+  getDataInInternalFormat(languagesChecked, dictionariesChecked) {
+    return [
+      {
+        type: 'language',
+        checked: this.constructor.getListInInternalFormat(languagesChecked),
+      },
+      {
+        type: 'dictionary',
+        checked: this.constructor.getListInInternalFormat(dictionariesChecked),
+      },
+    ];
+  }
+
+  getDataInExternalFormat(data) {
+    let result = null;
+    if (data[0] === 'all') {
+      result = {
         languages: [],
         dictionaries: [],
       };
     } else {
-      checkedListToSend = {
-        languages: this.constructor.getListInExternalFormat(checkedList[0].checked),
-        dictionaries: this.constructor.getListInExternalFormat(checkedList[1].checked),
+      result = {
+        languages: this.constructor.getListInExternalFormat(data[0].checked),
+        dictionaries: this.constructor.getListInExternalFormat(data[1].checked),
       };
     }
 
-    this.props.onChange(checkedListToSend);
-  }
-
-  /**
-   * Сreates a block with the number of selected languages and dictionaries.
-   */
-  renderCount() {
-    const { checked } = this.state;
-    const isAll = checked[0] === 'all';
-    let countText = null;
-
-    if (isAll) {
-      countText = 'all';
-    } else {
-      // languages
-      countText = `${checked[0].checked.length} languages`;
-      // dictioanries
-      countText = `${countText}, ${checked[1].checked.length} dictionaries`;
-    }
-
-    return (
-      <div>
-        Selected: {countText}
-      </div>
-    );
+    return result;
   }
 
   render() {
-    const { languagesTree } = this.props;
-    const { selectedLangs } = this.state;
-    const selectedLangsCount = selectedLangs.length;
+    const { languagesTree, langsChecked, dictsChecked } = this.props;
     // TODO: translations
     const { showButtonText, checkAllButtonText, uncheckAllButtonText } = this.props;
-
+    const checkedData = this.getDataInInternalFormat(langsChecked, dictsChecked);
     return (
       <Segment.Group>
         <Segment>
-          {this.renderCount()}
+          {this.constructor.renderCount(checkedData)}
         </Segment>
         <Segment>
           <Button primary basic fluid onClick={this.onShowLangsButtonClick}>
             {showButtonText}
-            <strong> {selectedLangsCount > 0 ? `(selected ${selectedLangsCount} languages)` : null}</strong>
           </Button>
         </Segment>
         {
@@ -158,7 +158,7 @@ class SearchSelectLanguages extends PureComponent {
             <Segment.Group>
               <Segment>
                 <LanguageTree
-                  checked={this.state.checked}
+                  checked={checkedData}
                   nodes={languagesTree}
                   onChange={this.onFilterLangsChange}
                   checkAllButtonText={checkAllButtonText}

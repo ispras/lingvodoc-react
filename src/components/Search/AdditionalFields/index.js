@@ -14,14 +14,17 @@ import SearchSelectLanguages from './SearchSelectLanguages';
 class AdditionalFields extends PureComponent {
   static propTypes = {
     onChange: PropTypes.func.isRequired,
-    defaultDataChecked: PropTypes.object.isRequired,
-    languagesTree: PropTypes.array.isRequired,
+    data: PropTypes.object.isRequired,
+    languagesQuery: PropTypes.object.isRequired,
   }
 
   constructor(props) {
     super();
 
-    this.languagesTree = props.languagesTree;
+    this.state = {
+      checked: props.data,
+      languagesTree: buildLanguageTree(fromJS(props.languagesQuery.language_tree)).toJS(),
+    };
 
     this.onLangsDictsChange = this.onLangsDictsChange.bind(this);
   }
@@ -31,6 +34,10 @@ class AdditionalFields extends PureComponent {
    * @param {Object} list - checked languages and/or dictionaries
    */
   onLangsDictsChange(list) {
+    this.setState({
+      checked: list,
+    });
+
     const result = {
       ...list,
     };
@@ -39,14 +46,14 @@ class AdditionalFields extends PureComponent {
   }
 
   render() {
-    const { languages, dictionaries } = this.props.defaultDataChecked;
-    const { languagesTree } = this.props;
+    const { languages, dictionaries } = this.state.checked;
+    const { languagesTree } = this.state;
     return (
       <SearchSelectLanguages
         onChange={this.onLangsDictsChange}
         languagesTree={languagesTree}
-        defaultLangsChecked={languages}
-        defaultDictsChecked={dictionaries}
+        langsChecked={languages}
+        dictsChecked={dictionaries}
       />
     );
   }
@@ -65,13 +72,7 @@ const AdditionalFieldsWrap = (props) => {
     return null;
   }
 
-  // TODO: need to fix it, too many extra calculates
-  const newProps = {
-    ...props,
-    languagesTree: buildLanguageTree(fromJS(props.languagesQuery.language_tree)).toJS(),
-  };
-
-  return <AdditionalFields {...newProps} />;
+  return <AdditionalFields {...props} />;
 };
 
 AdditionalFieldsWrap.propTypes = {

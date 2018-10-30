@@ -286,7 +286,7 @@ class QueryBuilder extends React.Component {
 
         <AdditionalFields
           onChange={this.onAdditionalFieldsChange}
-          defaultDataChecked={this.additionalFields}
+          data={this.additionalFields}
         />
 
         <Segment.Group>
