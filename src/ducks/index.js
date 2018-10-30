@@ -22,7 +22,6 @@ import phonology from './phonology';
 import apolloClient from './apolloClient';
 import statistics from './statistics';
 import ban from './ban';
-import translations from './translations';
 import modals from './modals';
 
 export default {
@@ -50,6 +49,5 @@ export default {
   apolloClient,
   statistics,
   ban,
-  translations,
   modals,
 };

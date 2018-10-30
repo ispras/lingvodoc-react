@@ -1,33 +1,9 @@
 import React from 'react';
 import { Container, Menu } from 'semantic-ui-react';
-import { graphql, withApollo } from 'react-apollo';
 import { connect } from 'react-redux';
-import gql from 'graphql-tag';
-import { compose } from 'recompose';
 import styled from 'styled-components';
 import TranslationsBlock from './TranslationsBlock';
-
-const i18nQuery = gql`
-  query {
-    advanced_translation_search(
-      searchstrings: [
-        "Perspective",
-        "Dictionary",
-        "Service",
-        "Language",
-        "Field",
-        "Grant",
-        "All",
-        "Loading",
-        "This page is available for administrator only",
-        "Add Translation",
-        "Save"
-      ]
-    ) {
-      translation
-    }
-  }
-`;
+import { getTranslation } from 'api/i18n';
 
 const CategorySelector = styled(Menu)`
   position: fixed;
@@ -35,7 +11,7 @@ const CategorySelector = styled(Menu)`
   z-index: 100;
 `;
 
-export const categories = [
+const categories = [
   "Perspective",
   "Dictionary",
   "Service",
@@ -44,8 +20,6 @@ export const categories = [
   "Grant",
   "All"
 ];
-
-export const i18n = [];
 
 class EditTranslations extends React.Component {
 
@@ -62,29 +36,18 @@ class EditTranslations extends React.Component {
   };
 
   render() {
-    const { user, data: { error, loading, advanced_translation_search: translated } } = this.props;
-    if (loading || error) {
-      return null;
+    const { user } = this.props;
+    if (user.id === undefined || user.id != 1) {
+      return <h4>{getTranslation('This page is available for administrator only')}</h4>;
     }
 
     const { selectedCategory } = this.state;
-    let translatedCategories = [];
-    for (let i = 0; i < translated.length; i++) {
-      i18n[i] =  translated[i] ? translated[i].translation : null;
-      if (i < 7)
-        translatedCategories[i] = translated[i] ? translated[i].translation : categories[i];
-    }
-
-    if (user.id === undefined || user.id != 1) {
-      return <h4>{translated[8] ? translated[8].translation : 'This page is available for administrator only'}</h4>;
-    }
-
     return (
       <Container fluid>
         <CategorySelector size='massive' compact>
-          {translatedCategories.map((category, index) => (
+          {categories.map((category, index) => (
             <Menu.Item key={index}
-              name={category}
+              name={getTranslation(category)}
               index={index}
               active={selectedCategory == index}
               onClick={this.handleCategoryClick}
@@ -98,8 +61,4 @@ class EditTranslations extends React.Component {
 
 }
 
-export default compose(
-  connect(state => state.user),
-  graphql(i18nQuery),
-  withApollo
-)(EditTranslations);
+export default connect(state => state.user)(EditTranslations);
