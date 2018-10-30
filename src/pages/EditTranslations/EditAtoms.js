@@ -3,7 +3,7 @@ import { Segment, Header, Grid, Input, Button, Dropdown } from 'semantic-ui-reac
 import { withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
 import locale from 'api/locale';
-import { i18n } from '../EditTranslations';
+import { getTranslation } from 'api/i18n';
 
 const createAtomMutation = gql`
   mutation ($parent_id: LingvodocID!, $locale_id: Int!, $content: String!) {
@@ -253,8 +253,8 @@ class EditAtoms extends React.Component {
           </Grid>
           <Grid columns={1} centered>
             <Grid.Column textAlign='center'>
-              <Button disabled={this.getFreeLocale() == null} onClick={this.onAddTranslation}>{i18n[9] || 'Add Translation'}</Button>
-              <Button disabled={JSON.stringify(this.state) === JSON.stringify(this.initialState)} onClick={this.onSave}>{i18n[10] || 'Save'}</Button>
+              <Button disabled={this.getFreeLocale() == null} onClick={this.onAddTranslation}>{getTranslation('Add Translation')}</Button>
+              <Button disabled={JSON.stringify(this.state) === JSON.stringify(this.initialState)} onClick={this.onSave}>{getTranslation('Save')}</Button>
             </Grid.Column>
           </Grid>
       </Segment>
