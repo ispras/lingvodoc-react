@@ -45,10 +45,6 @@ class SearchLanguageTree extends PureComponent {
       return false;
     }
 
-    if (Array.isArray(checkedList) && checkedList[0] === 'all') {
-      return true;
-    }
-
     if (numOfNodes === checkedList[0].checked.length + checkedList[1].checked.length) {
       return true;
     }
@@ -177,20 +173,6 @@ class SearchLanguageTree extends PureComponent {
    */
   sendCheckedListToTop() {
     const nextCheckedList = this.getCheckedList();
-
-    // console.log({
-    //   languages: nextCheckedList[0].checked
-    //     .map(value => `${this.flatNodes[value].self.translation} - ${value}}`),
-    //   dictionaries: nextCheckedList[1].checked
-    //     .map(value => `${this.flatNodes[value].self.translation} - ${value}}`),
-    // });
-
-    // if (this.constructor.isAllNodesChecked(Object.keys(this.flatNodes).length, nextCheckedList)) {
-    //   this.props.onChange(['all']);
-    // } else {
-    //   this.props.onChange(nextCheckedList);
-    // }
-
     this.props.onChange(nextCheckedList);
   }
   /**
@@ -336,11 +318,37 @@ class SearchLanguageTree extends PureComponent {
   }
 
   /**
+   * Checks if node by id (nodeId) is checked.
+   * @param {Array} nodeId - node id
+   */
+  isNodeChecked(nodeId) {
+    const { checked: checkedList } = this.props;
+
+    const indexOfLanguage = checkedList[0].checked.find((value) => {
+      return `${nodeId[0]},${nodeId[1]}` === value;
+    });
+
+    if (indexOfLanguage !== undefined) {
+      return true;
+    }
+
+    const indexOfDictionary = checkedList[1].checked.find((value) => {
+      return value[0] === nodeId[0] && value[1] === nodeId[1];
+    });
+
+    if (indexOfDictionary !== undefined) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
    * Adds checked state to the tree nodes depending on list of checked tree nodes.
    * @param {Array} checkedLists - list of checked tree nodes
    */
   updateNodesWithChecked(checkedLists) {
-    const isAllChecked = checkedLists[0] === 'all' && checkedLists.length === 1;
+    const isAllChecked = this.constructor.isAllNodesChecked(Object.keys(this.flatNodes).length, checkedLists);
 
     if (isAllChecked) {
       // Set all values to true
@@ -389,8 +397,8 @@ class SearchLanguageTree extends PureComponent {
    */
   renderTreeNodes(nodes, parent = {}) {
     const treeNodes = nodes.map((node) => {
-      const key = getNodeValue(node);
-      const flatNode = this.flatNodes[key];
+      const nodeValue = getNodeValue(node);
+      const flatNode = this.flatNodes[nodeValue];
       const childrenLanguages = flatNode.isParentWithLanguages ?
         this.renderTreeNodes(node[propsNames.languages], node) :
         null;
@@ -400,7 +408,7 @@ class SearchLanguageTree extends PureComponent {
 
       // Get the checked state after all children checked states are determined
       flatNode.checkState = flatNode.checkState === 0 || flatNode.checkState === 1 || flatNode.checkState === 2 ?
-        flatNode.checkState : 0;
+        flatNode.checkState : this.isNodeChecked(node.id) ? 1 : 0;
 
       const parentExpanded = parent.value ? this.flatNodes[getNodeValue(parent)].expanded : true;
 
@@ -410,7 +418,7 @@ class SearchLanguageTree extends PureComponent {
 
       return (
         <TreeNode
-          key={key}
+          key={nodeValue}
           checked={flatNode.checkState}
           expanded={flatNode.expanded}
           label={node.translation}

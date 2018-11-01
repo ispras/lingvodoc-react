@@ -31,21 +31,9 @@ class SearchSelectLanguages extends PureComponent {
    * Сreates a block with the number of selected languages and dictionaries.
    */
   static renderCount(checked) {
-    const isAll = checked[0] === 'all';
-    let countText = null;
-
-    if (isAll) {
-      countText = 'all';
-    } else {
-      // languages
-      countText = `${checked[0].checked.length} languages`;
-      // dictioanries
-      countText = `${countText}, ${checked[1].checked.length} dictionaries`;
-    }
-
     return (
       <div>
-        Selected: {countText}
+        Selected: {checked[0].checked.length + ' languages, ' + checked[1].checked.length +  ' dictionaries'}
       </div>
     );
   }
@@ -74,12 +62,8 @@ class SearchSelectLanguages extends PureComponent {
   constructor() {
     super();
 
-    // const languagesChecked = props.defaultLangsChecked;
-    // const dictionariesChecked = props.defaultDictsChecked;
-
     this.state = {
       showLangs: false,
-      // checked: this.getDataInInternalFormat(languagesChecked, dictionariesChecked),
     };
 
     this.onShowLangsButtonClick = this.onShowLangsButtonClick.bind(this);
@@ -101,13 +85,14 @@ class SearchSelectLanguages extends PureComponent {
    * in internal format ["1,2", "3,4" ...] (array of strings)
    */
   onFilterLangsChange(checkedList) {
-    // this.setState({
-    //   checked: checkedList,
-    // });
-
     this.props.onChange(this.getDataInExternalFormat(checkedList));
   }
 
+  /**
+   * Get data in internal format from external format for next works.
+   * @param {Array} languagesChecked - checked languages ids
+   * @param {Array} dictionariesChecked - checked dictionaries ids
+   */
   getDataInInternalFormat(languagesChecked, dictionariesChecked) {
     return [
       {
@@ -121,6 +106,10 @@ class SearchSelectLanguages extends PureComponent {
     ];
   }
 
+  /**
+   * Get data in external format from internal format for export to top.
+   * @param {Array} data - data in internal format
+   */
   getDataInExternalFormat(data) {
     let result = null;
     if (data[0] === 'all') {

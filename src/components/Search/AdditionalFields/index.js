@@ -14,15 +14,48 @@ import SearchSelectLanguages from './SearchSelectLanguages';
 class AdditionalFields extends PureComponent {
   static propTypes = {
     onChange: PropTypes.func.isRequired,
-    data: PropTypes.object.isRequired,
+    data: PropTypes.object,
+    allChecked: PropTypes.bool,
     languagesQuery: PropTypes.object.isRequired,
+  }
+
+  static defaultProps = {
+    data: {
+      languages: [],
+      dictionaries: [],
+    },
+    allChecked: false,
+  }
+
+  /**
+   * Get all nodes values for allChecked option
+   * @param {Array} languagesTree - input array with languages
+   */
+  static getAllNodesValues(languagesTree) {
+    const result = {
+      languages: [],
+      dictionaries: [],
+    };
+
+    languagesTree.forEach((item) => {
+      const isLanguage = !!item.dictionaries;
+      const type = isLanguage ? 'languages' : 'dictionaries';
+
+      result[type].push([item.id[0], item.id[1]]);
+
+      if (isLanguage && item.dictionaries.length > 0) {
+        item.dictionaries.forEach(dictionary => result.dictionaries.push([dictionary.id[0], dictionary.id[1]]));
+      }
+    });
+
+    return result;
   }
 
   constructor(props) {
     super();
 
     this.state = {
-      checked: props.data,
+      checked: !props.allChecked ? props.data : this.constructor.getAllNodesValues(props.languagesQuery.language_tree),
       languagesTree: buildLanguageTree(fromJS(props.languagesQuery.language_tree)).toJS(),
     };
 
