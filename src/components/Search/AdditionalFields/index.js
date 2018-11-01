@@ -14,14 +14,138 @@ import SearchSelectLanguages from './SearchSelectLanguages';
 class AdditionalFields extends PureComponent {
   static propTypes = {
     onChange: PropTypes.func.isRequired,
-    defaultDataChecked: PropTypes.object.isRequired,
-    languagesTree: PropTypes.array.isRequired,
+    data: PropTypes.object,
+    allChecked: PropTypes.bool,
+    languagesQuery: PropTypes.object.isRequired,
+  }
+
+  static defaultProps = {
+    data: {
+      languages: [],
+      dictionaries: [],
+    },
+    allChecked: false,
+  }
+
+  /**
+   * Get all nodes values for allChecked option
+   * @param {Array} languagesTree - input array with languages
+   */
+  static getAllNodesValues(languagesTree, result) {
+    if (!result) {
+      result = {
+        languages: [],
+        dictionaries: [],
+      };
+    }
+    languagesTree.forEach((item) => {
+      const isLanguage = !!item.dictionaries;
+      const type = isLanguage ? 'languages' : 'dictionaries';
+
+      result[type].push([item.id[0], item.id[1]]);
+
+      if (isLanguage && item.dictionaries.length > 0) {
+        item.dictionaries.forEach(dictionary => result.dictionaries.push([dictionary.id[0], dictionary.id[1]]));
+      }
+
+      this.getAllNodesValues(item.children, result);
+    });
+
+    return result;
+  }
+
+  // static isLanguageWithDictsDeep(language) {
+  //   if (language.dictionaries.length > 0) {
+  //     return true;
+  //   }
+
+  //   if (language.children.some(child => this.isLanguageWithDictsDeep(child))) {
+  //     return true;
+  //   }
+
+  //   return false;
+  // }
+
+  // static updateLanguagesTreeItem(item) {
+  //   item.hasDictsDeep = this.isLanguageWithDictsDeep(item);
+
+  //   item.children.forEach(child => this.updateLanguagesTreeItem(child));
+  // }
+
+  // static getUpdatedLanguagesTree(rawLanguagesTree) {
+  //   rawLanguagesTree.forEach(language => this.updateLanguagesTreeItem(language));
+
+  //   return rawLanguagesTree;
+  // }
+
+  /**
+   * Checks if language has dictionaries on any level
+   * @param {Object} language - language tree node
+   * @returns {boolean} - result
+   */
+  static isLanguageWithDictsDeep(language) {
+    if (language.dictionaries.length > 0) {
+      return true;
+    }
+
+    if (language.children.some(child => this.isLanguageWithDictsDeep(child))) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * Adds item to the fillContainer if item has dictionaries on any level
+   * @param {Object} item - language tree node
+   * @param {Array} fillContainer - container for languages with dictionaries
+   */
+  static fillWithLangsWithDicts(item, fillContainer) {
+    if (!fillContainer) {
+      return;
+    }
+
+    const hasDictsDeep = this.isLanguageWithDictsDeep(item);
+
+    if (hasDictsDeep) {
+      const addingItem = {
+        ...item,
+      };
+      fillContainer.push(addingItem);
+
+      addingItem.children = [];
+
+      item.children.forEach(child => this.fillWithLangsWithDicts(child, addingItem.children));
+    }
+  }
+
+  /**
+   * Get language tree without languages that have no dictionaries on any level
+   * @param {Array} rawLanguagesTree - input languages tree
+   * @returns {Array} - new languages tree without languages that have no dictionaries on any level
+   */
+  static getUpdatedLanguagesTree(rawLanguagesTree) {
+    const newLanguagesTree = [];
+
+    rawLanguagesTree.forEach((language) => {
+      this.fillWithLangsWithDicts(language, newLanguagesTree);
+    });
+
+    return newLanguagesTree;
   }
 
   constructor(props) {
     super();
 
-    this.languagesTree = props.languagesTree;
+    const rawLanguagesTree = buildLanguageTree(fromJS(props.languagesQuery.language_tree)).toJS();
+
+    this.state = {
+      languagesTree: this.constructor.getUpdatedLanguagesTree(rawLanguagesTree),
+    };
+
+    this.state.checked = !props.allChecked ?
+      props.data :
+      this.constructor.getAllNodesValues(this.state.languagesTree);
 
     this.onLangsDictsChange = this.onLangsDictsChange.bind(this);
   }
@@ -31,6 +155,10 @@ class AdditionalFields extends PureComponent {
    * @param {Object} list - checked languages and/or dictionaries
    */
   onLangsDictsChange(list) {
+    this.setState({
+      checked: list,
+    });
+
     const result = {
       ...list,
     };
@@ -39,14 +167,14 @@ class AdditionalFields extends PureComponent {
   }
 
   render() {
-    const { languages, dictionaries } = this.props.defaultDataChecked;
-    const { languagesTree } = this.props;
+    const { languages, dictionaries } = this.state.checked;
+    const { languagesTree } = this.state;
     return (
       <SearchSelectLanguages
         onChange={this.onLangsDictsChange}
         languagesTree={languagesTree}
-        defaultLangsChecked={languages}
-        defaultDictsChecked={dictionaries}
+        langsChecked={languages}
+        dictsChecked={dictionaries}
       />
     );
   }
@@ -65,13 +193,7 @@ const AdditionalFieldsWrap = (props) => {
     return null;
   }
 
-  // TODO: need to fix it, too many extra calculates
-  const newProps = {
-    ...props,
-    languagesTree: buildLanguageTree(fromJS(props.languagesQuery.language_tree)).toJS(),
-  };
-
-  return <AdditionalFields {...newProps} />;
+  return <AdditionalFields {...props} />;
 };
 
 AdditionalFieldsWrap.propTypes = {
