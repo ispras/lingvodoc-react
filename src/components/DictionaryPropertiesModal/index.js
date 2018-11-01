@@ -11,7 +11,7 @@ import { connect } from 'react-redux';
 import { Button, Modal, Segment, Grid, Label, Form } from 'semantic-ui-react';
 import styled from 'styled-components';
 import { closeDictionaryPropertiesModal } from 'ducks/dictionaryProperties';
-import { isEqual } from 'lodash';
+import { isEqual, sortBy } from 'lodash';
 import { compositeIdToString } from 'utils/compositeId';
 import Map from './Map';
 
@@ -32,7 +32,7 @@ const query = gql`
         tag_list
       }
     }
-    user_blobs {
+    user_blobs(data_type: "pdf", is_global: true) {
       id
       name
       data_type
@@ -185,7 +185,7 @@ class Properties extends React.Component {
 
   onSaveFiles() {
     const { data: { user_blobs: allFiles } } = this.props;
-    const ids = this.state.files.map(id => allFiles.find(f => id === compositeIdToString(f.id))).map(f => f.id);
+    const ids = this.state.files.map(id => allFiles.find(f => id === compositeIdToString(f.id))).filter(f => f != undefined).map(f => f.id);
     this.initialState.files = this.state.files;
     this.saveMeta({
       blobs: ids,
@@ -236,7 +236,7 @@ class Properties extends React.Component {
     
     const { data: { dictionary, user_blobs: files }, actions } = this.props;
     const { translation_gist_id: gistId } = dictionary;
-    const options = files.map(file => ({ key: file.id, text: file.name, value: compositeIdToString(file.id) }));
+    const options = sortBy(files.map(file => ({ key: file.id, text: file.name, value: compositeIdToString(file.id) })), file => file.text);
     const parentName = this.state.parent == null ? null : this.state.parent.translation;
     const selectedParentName = this.state.selectedParent == null ? null : this.state.selectedParent.translation;
 
