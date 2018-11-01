@@ -8,7 +8,8 @@ import Languages from 'components/Languages';
 import EditDictionaryMetadata from 'components/EditDictionaryMetadata';
 import gql from 'graphql-tag';
 import { connect } from 'react-redux';
-import { Button, Dropdown, Modal, Input, Segment, Grid, Label, Form } from 'semantic-ui-react';
+import { Button, Modal, Segment, Grid, Label, Form } from 'semantic-ui-react';
+import styled from 'styled-components';
 import { closeDictionaryPropertiesModal } from 'ducks/dictionaryProperties';
 import { isEqual } from 'lodash';
 import { compositeIdToString } from 'utils/compositeId';
@@ -67,16 +68,26 @@ const updateMetadataMutation = gql`
   }
 `;
 
+const MarginForm = styled(Form)`
+  margin-top: 1em;
+  margin-bottom: 1em;
+`;
+
 class Properties extends React.Component {
+
   constructor(props) {
     super(props);
+
     this.state = {
-      authors: '',
       location: null,
       tags: '',
       files: [],
       parent: null,
       selectedParent: null,
+    };
+    this.initialState = {
+      location: null,
+      files: []
     };
 
     this.onChangeLocation = this.onChangeLocation.bind(this);
@@ -98,16 +109,12 @@ class Properties extends React.Component {
 
     const {
       additional_metadata: {
-        authors, location, tag_list: tagList, blobs,
+        location, tag_list: tagList, blobs,
       },
     } = dictionary;
 
-    if (authors !== this.state.authors && authors !== null) {
-      this.setState({
-        authors,
-      });
-    }
     if (location !== this.state.location) {
+      this.initialState.location = location;
       this.setState({
         location,
       });
@@ -121,8 +128,9 @@ class Properties extends React.Component {
     }
 
     if (!isEqual(this.state.files, blobs)) {
+      this.initialState.files = blobs.map(compositeIdToString);
       this.setState({
-        files: blobs.map(compositeIdToString),
+        files: this.initialState.files
       });
     }
 
@@ -150,6 +158,7 @@ class Properties extends React.Component {
   }
 
   onSaveLocation() {
+    this.initialState.location = this.state.location;
     this.saveMeta({
       location: this.state.location,
     });
@@ -177,6 +186,7 @@ class Properties extends React.Component {
   onSaveFiles() {
     const { data: { user_blobs: allFiles } } = this.props;
     const ids = this.state.files.map(id => allFiles.find(f => id === compositeIdToString(f.id))).map(f => f.id);
+    this.initialState.files = this.state.files;
     this.saveMeta({
       blobs: ids,
     });
@@ -212,8 +222,8 @@ class Properties extends React.Component {
         id: dictionary.id,
         parent_id: this.state.selectedParent.id
       }
-    }).then(result => {
-      this.props.data.refetch().then(result => {
+    }).then(() => {
+      this.props.data.refetch().then(() => {
         this.setState({ parent: this.state.selectedParent });
       });
     });
@@ -249,13 +259,12 @@ class Properties extends React.Component {
             </Grid>
           </Segment>*/}
 
-          <Segment>
-            <Grid>
-              <Grid.Column width={12}>
-                <Dropdown
+          <MarginForm>
+            <Segment>
+              <Form.Group widths='equal'>
+                <Label size='large'>Files</Label>
+                <Form.Dropdown
                   labeled
-                  label="Files"
-                  placeholder="Files"
                   fluid
                   multiple
                   selection
@@ -264,29 +273,22 @@ class Properties extends React.Component {
                   onChange={this.onChangeFiles}
                   value={this.state.files}
                 />
-              </Grid.Column>
-              <Grid.Column width={4}>
-                <Button positive content="Save" onClick={this.onSaveFiles} />
-              </Grid.Column>
-            </Grid>
-          </Segment>
-
-          <Segment>
-            <Grid>
-              <Grid.Column width={12}>
-                <Input
+                <Button positive content="Save" disabled={JSON.stringify(this.state.files) == JSON.stringify(this.initialState.files)} onClick={this.onSaveFiles} />
+              </Form.Group>
+            </Segment>
+            <Segment>
+              <Form.Group widths='equal'>
+                <Label size='large'>Location</Label>
+                <Form.Input
                   fluid
-                  label="Location"
                   value={this.state.location == null ? '' : JSON.stringify(this.state.location)}
                   disabled
                   onChange={() => {}}
                 />
-              </Grid.Column>
-              <Grid.Column width={4}>
-                <Button positive content="Save" onClick={this.onSaveLocation} />
-              </Grid.Column>
-            </Grid>
-          </Segment>
+                <Button positive content="Save" disabled={this.state.location == this.initialState.location} onClick={this.onSaveLocation} />
+                </Form.Group>
+            </Segment>
+          </MarginForm>
           <Grid>
             <Grid.Column width={8}>
               <div style={{ height: '400px' }}>
