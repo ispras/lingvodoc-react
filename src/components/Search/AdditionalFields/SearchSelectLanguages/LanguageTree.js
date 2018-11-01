@@ -333,7 +333,7 @@ class SearchLanguageTree extends PureComponent {
     }
 
     const indexOfDictionary = checkedList[1].checked.find((value) => {
-      return value[0] === nodeId[0] && value[1] === nodeId[1];
+      return `${nodeId[0]},${nodeId[1]}` === value;
     });
 
     if (indexOfDictionary !== undefined) {

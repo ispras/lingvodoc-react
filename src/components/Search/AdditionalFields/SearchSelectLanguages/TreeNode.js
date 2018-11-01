@@ -31,6 +31,7 @@ class TreeNode extends PureComponent {
     onCheck: PropTypes.func,
     children: PropTypes.node,
     optimisticToggle: PropTypes.bool,
+    type: PropTypes.string.isRequired,
   }
 
   static defaultProps = {
@@ -159,8 +160,7 @@ class TreeNode extends PureComponent {
    * Renders tree node label.
    */
   renderLabel() {
-    const { label } = this.props;
-
+    const { label, type } = this.props;
     return (
       <div
         className={classNames.translation}
@@ -170,7 +170,10 @@ class TreeNode extends PureComponent {
         tabIndex="0"
         aria-label={label}
       >
-        {label}
+        {type === 'dictionary' ?
+          <strong><em>{label}</em></strong> :
+          label
+        }
       </div>
     );
   }
