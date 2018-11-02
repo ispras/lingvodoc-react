@@ -18,11 +18,11 @@ const Link = styled.a`
 `;
 
 const LexicalEntryLinkComponent = ({
-  node, actions, entitiesMode, openModal,
+  node, actions, entitiesMode, mode, openModal,
 }) => {
   const { translation, lexicalEntries } = node;
   return (
-    <Link onClick={() => openModal(LexicalEntryModal, { node, actions, entitiesMode })}>
+    <Link onClick={() => openModal(LexicalEntryModal, { node, actions, entitiesMode, mode })}>
       {translation}: {lexicalEntries.length} result(s)
     </Link>
   );
@@ -36,6 +36,7 @@ LexicalEntryLinkComponent.propTypes = {
   }).isRequired,
   actions: PropTypes.array,
   entitiesMode: PropTypes.string,
+  mode: PropTypes.string,
   openModal: PropTypes.func.isRequired,
 };
 

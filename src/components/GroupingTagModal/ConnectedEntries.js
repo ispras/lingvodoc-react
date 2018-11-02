@@ -13,6 +13,7 @@ const ConnectedLexicalEntries = (props) => {
     allDictionaries,
     allPerspectives,
     mode,
+    entitiesMode
   } = props;
 
   if (error || loading) {
@@ -32,7 +33,7 @@ const ConnectedLexicalEntries = (props) => {
     allPerspectives,
   });
 
-  return <Tree resultsTree={resultsTree} mode={mode} />;
+  return <Tree resultsTree={resultsTree} entitiesMode={entitiesMode} mode={mode} />;
 };
 
 ConnectedLexicalEntries.propTypes = {
@@ -40,6 +41,8 @@ ConnectedLexicalEntries.propTypes = {
     loading: PropTypes.bool.isRequired,
     connected_words: PropTypes.object,
   }).isRequired,
+  entitiesMode: PropTypes.string,
+  mode: PropTypes.string,
   allLanguages: PropTypes.array.isRequired,
   allDictionaries: PropTypes.array.isRequired,
   allPerspectives: PropTypes.array.isRequired,

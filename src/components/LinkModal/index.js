@@ -45,7 +45,7 @@ const ViewLink = (props) => {
       render: () => (
         <div>
           <Segment padded="very" textAlign="center">
-            <Tree resultsTree={tree} />
+            <Tree resultsTree={tree} mode='view' />
           </Segment>
         </div>
       ),
@@ -87,7 +87,7 @@ const EditLink = (props) => {
       render: () => (
         <div>
           <Segment padded="very" textAlign="center">
-            <Tree resultsTree={tree} TableComponent={LexicalEntryViewByIds} actions={actions} />
+            <Tree resultsTree={tree} TableComponent={LexicalEntryViewByIds} actions={actions} mode='edit' />
           </Segment>
         </div>
       ),
@@ -141,13 +141,13 @@ const PublishLink = (props) => {
               <Checkbox
                 toggle
                 label={label}
-                defaultChecked={entity.published}
+                checked={entity.published}
                 onChange={(e, { checked }) => publish(entity, checked)}
               />
             </Segment>
           )}
           <Segment padded="very" textAlign="center">
-            <Tree resultsTree={tree} TableComponent={LexicalEntryViewByIds} />
+            <Tree resultsTree={tree} TableComponent={LexicalEntryViewByIds} mode='publish' />
           </Segment>
         </div>
       ),
@@ -184,7 +184,7 @@ const ContributionsLink = (props) => {
             </Segment>
           )}
           <Segment padded="very" textAlign="center">
-            <Tree resultsTree={tree} TableComponent={LexicalEntryViewByIds} />
+            <Tree resultsTree={tree} TableComponent={LexicalEntryViewByIds} mode='contributions' />
           </Segment>
         </div>
       ),

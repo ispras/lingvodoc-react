@@ -1,12 +1,12 @@
 import gql from 'graphql-tag';
 
 export const connectedQuery = gql`
-  query connectedWords($id: LingvodocID!, $fieldId: LingvodocID!, $mode: String!) {
-    connected_words(id: $id, field_id: $fieldId, mode: $mode) {
+  query connectedWords($id: LingvodocID!, $fieldId: LingvodocID!, $entitiesMode: String!) {
+    connected_words(id: $id, field_id: $fieldId, mode: $entitiesMode) {
       lexical_entries {
         id
         parent_id
-        entities(mode: $mode) {
+        entities(mode: $entitiesMode) {
           id
           parent_id
           field_id
