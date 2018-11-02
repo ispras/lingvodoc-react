@@ -14,7 +14,7 @@ export const LexicalEntryLink = styled.span`
   }
 `;
 
-function LexicalEntryModal({ node, actions, entitiesMode, onClose }) {
+function LexicalEntryModal({ node, actions, entitiesMode, mode, onClose }) {
   const { id, translation, lexicalEntries } = node;
 
   return (
@@ -25,7 +25,7 @@ function LexicalEntryModal({ node, actions, entitiesMode, onClose }) {
           className="perspective"
           perspectiveId={id}
           entriesIds={lexicalEntries.map(e => e.id)}
-          mode="view"
+          mode={mode}
           entitiesMode={entitiesMode}
           actions={actions}
         />
@@ -45,12 +45,14 @@ LexicalEntryModal.propTypes = {
   }).isRequired,
   actions: PropTypes.array,
   entitiesMode: PropTypes.string,
+  mode: PropTypes.string,
   onClose: PropTypes.func.isRequired,
 };
 
 LexicalEntryModal.defaultProps = {
   actions: [],
   entitiesMode: 'published',
+  mode: 'view',
 };
 
 

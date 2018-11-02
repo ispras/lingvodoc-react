@@ -39,7 +39,7 @@ const SoundEntityContent = onlyUpdateForKeys(['entity'])(({
           </Button.Group>
           <Checkbox
             size="tiny"
-            defaultChecked={entity.published}
+            checked={entity.published}
             onChange={(e, { checked }) => publish(entity, checked)}
           />
         </div>

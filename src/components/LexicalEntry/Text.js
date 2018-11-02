@@ -7,6 +7,7 @@ import { Button, Input, Checkbox } from 'semantic-ui-react';
 import Entities from './index';
 
 class TextEntityContent extends React.Component {
+  
   constructor(props) {
     super(props);
 
@@ -31,7 +32,7 @@ class TextEntityContent extends React.Component {
 
   render() {
     const {
-      entity, mode, publish, accept, remove, update,
+      entity, mode, publish, accept, remove,
     } = this.props;
 
     let control = null;
@@ -59,7 +60,7 @@ class TextEntityContent extends React.Component {
             {entity.content}
             <Checkbox
               size="tiny"
-              defaultChecked={entity.published}
+              checked={entity.published}
               onChange={(e, { checked }) => publish(entity, checked)}
             />
           </div>

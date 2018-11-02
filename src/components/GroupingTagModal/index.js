@@ -45,7 +45,8 @@ const EditGroupingTag = (props) => {
             <ConnectedEntries
               id={lexicalEntry.id}
               fieldId={fieldId}
-              mode={entitiesMode}
+              entitiesMode={entitiesMode}
+              mode='edit'
               allLanguages={allLanguages}
               allDictionaries={allDictionaries}
               allPerspectives={allPerspectives}
@@ -96,7 +97,8 @@ const ViewGroupingTag = (props) => {
             <ConnectedEntries
               id={lexicalEntry.id}
               fieldId={fieldId}
-              mode={entitiesMode}
+              entitiesMode={entitiesMode}
+              mode='view'
               allLanguages={allLanguages}
               allDictionaries={allDictionaries}
               allPerspectives={allPerspectives}
@@ -134,7 +136,7 @@ const PublishGroupingTag = (props) => {
             <Segment>
               <Checkbox
                 toggle
-                defaultChecked={entity.published}
+                checked={entity.published}
                 onChange={(e, { checked }) => publish(entity, checked)}
               />
               {entity.published && <span>The entity is currently published. Click to unpublish.</span>}
@@ -145,7 +147,8 @@ const PublishGroupingTag = (props) => {
             <ConnectedEntries
               id={lexicalEntry.id}
               fieldId={fieldId}
-              mode={entitiesMode}
+              entitiesMode={entitiesMode}
+              mode='publish'
               allLanguages={allLanguages}
               allDictionaries={allDictionaries}
               allPerspectives={allPerspectives}
@@ -189,7 +192,8 @@ const ContributionsGroupingTag = (props) => {
             <ConnectedEntries
               id={lexicalEntry.id}
               fieldId={fieldId}
-              mode={entitiesMode}
+              entitiesMode={entitiesMode}
+              mode='contributions'
               allLanguages={allLanguages}
               allDictionaries={allDictionaries}
               allPerspectives={allPerspectives}
@@ -265,7 +269,7 @@ class GroupingTagModal extends React.Component {
   leaveGroup() {
     // disconnect lexical entry from group
     const {
-      disconnect, lexicalEntry, fieldId, mode,
+      disconnect, lexicalEntry, fieldId, entitiesMode,
     } = this.props;
     disconnect({
       variables: { lexicalEntryId: lexicalEntry.id, fieldId },
@@ -275,7 +279,7 @@ class GroupingTagModal extends React.Component {
           variables: {
             id: lexicalEntry.id,
             fieldId,
-            mode,
+            entitiesMode,
           },
         },
       ],
@@ -304,7 +308,7 @@ class GroupingTagModal extends React.Component {
 
   changeAccepted(entity, accepted) {
     const {
-      accept, lexicalEntry, entitiesMode, fieldId, mode,
+      accept, lexicalEntry, entitiesMode, fieldId,
     } = this.props;
 
     accept({
@@ -323,7 +327,7 @@ class GroupingTagModal extends React.Component {
           variables: {
             id: lexicalEntry.id,
             fieldId,
-            mode,
+            entitiesMode,
           },
         },
       ],
