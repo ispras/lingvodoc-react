@@ -18,7 +18,7 @@ class AdditionalFields extends PureComponent {
     data: PropTypes.object,
     allChecked: PropTypes.bool,
     languagesQuery: PropTypes.object.isRequired,
-    showButtonText: PropTypes.string,
+    showLanguagesTreeText: PropTypes.string,
     checkAllButtonText: PropTypes.string,
     uncheckAllButtonText: PropTypes.string,
   }
@@ -29,7 +29,7 @@ class AdditionalFields extends PureComponent {
       dictionaries: [],
     },
     allChecked: false,
-    showButtonText: 'Select languages',
+    showLanguagesTreeText: 'Select languages',
     checkAllButtonText: 'Check all',
     uncheckAllButtonText: 'Uncheck all',
   }
@@ -164,12 +164,12 @@ class AdditionalFields extends PureComponent {
   render() {
     const { languages, dictionaries } = this.state.checked;
     const { languagesTree } = this.state;
-    const { checkAllButtonText, uncheckAllButtonText, showButtonText } = this.props;
+    const { checkAllButtonText, uncheckAllButtonText, showLanguagesTreeText } = this.props;
     return (
       <Segment.Group>
         <Segment>
           <Button primary basic fluid onClick={this.onShowLangsButtonClick}>
-            {showButtonText}
+            {showLanguagesTreeText}
           </Button>
         </Segment>
         <SearchSelectLanguages
@@ -210,7 +210,7 @@ const AdditionalFieldsWrap = (props) => {
   // TODO: translations
   const newProps = {
     ...props,
-    showButtonText: translations[0] ? translations[0].translation : undefined,
+    showLanguagesTreeText: translations[0] ? translations[0].translation : undefined,
     checkAllButtonText: translations[1] ? translations[1].translation : undefined,
     uncheckAllButtonText: translations[2] ? translations[2].translation : undefined,
   };
