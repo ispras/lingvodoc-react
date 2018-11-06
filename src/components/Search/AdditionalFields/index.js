@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import { Segment, Button } from 'semantic-ui-react';
 import { graphql } from 'react-apollo';
 import { compose } from 'recompose';
 import PropTypes from 'prop-types';
@@ -17,6 +18,9 @@ class AdditionalFields extends PureComponent {
     data: PropTypes.object,
     allChecked: PropTypes.bool,
     languagesQuery: PropTypes.object.isRequired,
+    showButtonText: PropTypes.string,
+    checkAllButtonText: PropTypes.string,
+    uncheckAllButtonText: PropTypes.string,
   }
 
   static defaultProps = {
@@ -25,6 +29,9 @@ class AdditionalFields extends PureComponent {
       dictionaries: [],
     },
     allChecked: false,
+    showButtonText: 'Select languages',
+    checkAllButtonText: 'Check all',
+    uncheckAllButtonText: 'Uncheck all',
   }
 
   /**
@@ -141,6 +148,7 @@ class AdditionalFields extends PureComponent {
 
     this.state = {
       languagesTree: this.constructor.getUpdatedLanguagesTree(rawLanguagesTree),
+      showSearchSelectLanguages: false,
     };
 
     this.state.checked = !props.allChecked ?
@@ -148,6 +156,17 @@ class AdditionalFields extends PureComponent {
       this.constructor.getAllNodesValues(this.state.languagesTree);
 
     this.onLangsDictsChange = this.onLangsDictsChange.bind(this);
+    this.onShowLangsButtonClick = this.onShowLangsButtonClick.bind(this);
+  }
+
+  /**
+   * Event handler for clicking on the button to open or close
+   * component for languages and dictionaries selection.
+   */
+  onShowLangsButtonClick() {
+    this.setState({
+      showSearchSelectLanguages: !this.state.showSearchSelectLanguages,
+    });
   }
 
   /**
@@ -169,13 +188,24 @@ class AdditionalFields extends PureComponent {
   render() {
     const { languages, dictionaries } = this.state.checked;
     const { languagesTree } = this.state;
+    const { checkAllButtonText, uncheckAllButtonText, showButtonText } = this.props;
     return (
-      <SearchSelectLanguages
-        onChange={this.onLangsDictsChange}
-        languagesTree={languagesTree}
-        langsChecked={languages}
-        dictsChecked={dictionaries}
-      />
+      <Segment.Group>
+        <Segment>
+          <Button primary basic fluid onClick={this.onShowLangsButtonClick}>
+            {showButtonText}
+          </Button>
+        </Segment>
+        <SearchSelectLanguages
+          onChange={this.onLangsDictsChange}
+          languagesTree={languagesTree}
+          langsChecked={languages}
+          dictsChecked={dictionaries}
+          showTree={this.state.showSearchSelectLanguages}
+          checkAllButtonText={checkAllButtonText}
+          uncheckAllButtonText={uncheckAllButtonText}
+        />
+      </Segment.Group>
     );
   }
 }
@@ -193,11 +223,28 @@ const AdditionalFieldsWrap = (props) => {
     return null;
   }
 
-  return <AdditionalFields {...props} />;
+  const { translationsQuery } = props;
+  const { error: translationsQueryError, loading: translationsQueryLoading } = translationsQuery;
+
+  if (translationsQueryError || translationsQueryLoading) {
+    return <AdditionalFields {...props} />;
+  }
+
+  const { advanced_translation_search: translations } = translationsQuery;
+  // TODO: translations
+  const newProps = {
+    ...props,
+    showButtonText: translations[0] ? translations[0].translation : undefined,
+    checkAllButtonText: translations[1] ? translations[1].translation : undefined,
+    uncheckAllButtonText: translations[2] ? translations[2].translation : undefined,
+  };
+
+  return <AdditionalFields {...newProps} />;
 };
 
 AdditionalFieldsWrap.propTypes = {
   languagesQuery: PropTypes.object.isRequired,
+  translationsQuery: PropTypes.object.isRequired,
 };
 
 /* ----------- QUERIES ----------- */
@@ -217,6 +264,25 @@ const languagesWithDictionariesQuery = gql`
   }
 `;
 
-export default compose(graphql(languagesWithDictionariesQuery, {
-  name: 'languagesQuery',
-}))(AdditionalFieldsWrap);
+const i18nQuery = gql`
+  query {
+    advanced_translation_search(
+      searchstrings: [
+        "Select languages",
+        "Check all",
+        "Uncheck all"
+      ]
+    ) {
+      translation
+    }
+  }
+`;
+
+export default compose(
+  graphql(languagesWithDictionariesQuery, {
+    name: 'languagesQuery',
+  }),
+  graphql(i18nQuery, {
+    name: 'translationsQuery',
+  })
+)(AdditionalFieldsWrap);

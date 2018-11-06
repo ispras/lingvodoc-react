@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import isEqual from 'lodash/isEqual';
-import { Segment, Button } from 'semantic-ui-react';
+import { Button } from 'semantic-ui-react';
 import TreeNode from './TreeNode';
 import {
   propsNames, nodeHasDictionariesChildren,
@@ -15,6 +15,7 @@ const classNames = {
   container: 'search-language-tree',
   wrap: 'search-language-tree__wrap',
   items: 'search-language-tree__items',
+  buttons: 'search-language-tree__buttons',
 };
 
 /* ----------- COMPONENT ----------- */
@@ -449,14 +450,14 @@ class SearchLanguageTree extends PureComponent {
             {treeNodes}
           </div>
         </div>
-        <Segment>
+        <div className={classNames.buttons}>
           <Button primary basic onClick={this.uncheckAll}>
             {this.props.uncheckAllButtonText}
           </Button>
           <Button primary basic onClick={this.checkAll}>
             {this.props.checkAllButtonText}
           </Button>
-        </Segment>
+        </div>
       </div>
     );
   }
