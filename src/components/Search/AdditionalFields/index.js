@@ -7,6 +7,7 @@ import { fromJS } from 'immutable';
 import gql from 'graphql-tag';
 import { buildLanguageTree } from 'pages/Search/treeBuilder';
 import SearchSelectLanguages from './SearchSelectLanguages';
+import SearchTagsFilter from './SearchTagsFilter';
 
 /* ----------- COMPONENT ----------- */
 /**
@@ -21,6 +22,7 @@ class AdditionalFields extends PureComponent {
     showLanguagesTreeText: PropTypes.string,
     checkAllButtonText: PropTypes.string,
     uncheckAllButtonText: PropTypes.string,
+    showTagsText: PropTypes.string,
   }
 
   static defaultProps = {
@@ -32,6 +34,7 @@ class AdditionalFields extends PureComponent {
     showLanguagesTreeText: 'Select languages',
     checkAllButtonText: 'Check all',
     uncheckAllButtonText: 'Uncheck all',
+    showTagsText: 'Select tags',
   }
 
   /**
@@ -125,6 +128,7 @@ class AdditionalFields extends PureComponent {
     this.state = {
       languagesTree: this.constructor.getUpdatedLanguagesTree(rawLanguagesTree),
       showSearchSelectLanguages: false,
+      showSearchTagsFilter: false,
     };
 
     this.state.checked = !props.allChecked ?
@@ -133,6 +137,7 @@ class AdditionalFields extends PureComponent {
 
     this.onLangsDictsChange = this.onLangsDictsChange.bind(this);
     this.onShowLangsButtonClick = this.onShowLangsButtonClick.bind(this);
+    this.onShowTagsButtonClick = this.onShowTagsButtonClick.bind(this);
   }
 
   /**
@@ -142,6 +147,18 @@ class AdditionalFields extends PureComponent {
   onShowLangsButtonClick() {
     this.setState({
       showSearchSelectLanguages: !this.state.showSearchSelectLanguages,
+      showSearchTagsFilter: !this.state.showSearchSelectLanguages ? false : this.state.showSearchTagsFilter,
+    });
+  }
+
+  /**
+   * Event handler for clicking on the button to open or close
+   * component for tags selection.
+   */
+  onShowTagsButtonClick() {
+    this.setState({
+      showSearchTagsFilter: !this.state.showSearchTagsFilter,
+      showSearchSelectLanguages: !this.state.showSearchTagsFilter ? false : this.state.showSearchSelectLanguages,
     });
   }
 
@@ -164,24 +181,34 @@ class AdditionalFields extends PureComponent {
   render() {
     const { languages, dictionaries } = this.state.checked;
     const { languagesTree } = this.state;
-    const { checkAllButtonText, uncheckAllButtonText, showLanguagesTreeText } = this.props;
+    const { checkAllButtonText, uncheckAllButtonText, showLanguagesTreeText, showTagsText } = this.props;
     return (
-      <Segment.Group>
-        <Segment>
-          <Button primary basic fluid onClick={this.onShowLangsButtonClick}>
-            {showLanguagesTreeText}
-          </Button>
-        </Segment>
-        <SearchSelectLanguages
-          onChange={this.onLangsDictsChange}
-          languagesTree={languagesTree}
-          langsChecked={languages}
-          dictsChecked={dictionaries}
-          showTree={this.state.showSearchSelectLanguages}
-          checkAllButtonText={checkAllButtonText}
-          uncheckAllButtonText={uncheckAllButtonText}
-        />
-      </Segment.Group>
+      <div>
+        <Segment.Group>
+          <Segment>
+            <Button primary basic fluid onClick={this.onShowLangsButtonClick}>
+              {showLanguagesTreeText}
+            </Button>
+          </Segment>
+          <SearchSelectLanguages
+            onChange={this.onLangsDictsChange}
+            languagesTree={languagesTree}
+            langsChecked={languages}
+            dictsChecked={dictionaries}
+            showTree={this.state.showSearchSelectLanguages}
+            checkAllButtonText={checkAllButtonText}
+            uncheckAllButtonText={uncheckAllButtonText}
+          />
+        </Segment.Group>
+        <Segment.Group>
+          <Segment>
+            <Button primary basic fluid onClick={this.onShowTagsButtonClick}>
+              {showTagsText}
+            </Button>
+          </Segment>
+          <SearchTagsFilter showTags={this.state.showSearchTagsFilter} />
+        </Segment.Group>
+      </div>
     );
   }
 }
@@ -213,6 +240,7 @@ const AdditionalFieldsWrap = (props) => {
     showLanguagesTreeText: translations[0] ? translations[0].translation : undefined,
     checkAllButtonText: translations[1] ? translations[1].translation : undefined,
     uncheckAllButtonText: translations[2] ? translations[2].translation : undefined,
+    showTagsText: translations[3] ? translations[3].translation : undefined,
   };
 
   return <AdditionalFields {...newProps} />;
@@ -247,7 +275,8 @@ const i18nQuery = gql`
       searchstrings: [
         "Select languages",
         "Check all",
-        "Uncheck all"
+        "Uncheck all",
+        "Select tags",
       ]
     ) {
       translation
