@@ -48,4 +48,7 @@ ConnectedLexicalEntries.propTypes = {
   allPerspectives: PropTypes.array.isRequired,
 };
 
-export default compose(graphql(connectedQuery), pure)(ConnectedLexicalEntries);
+export default compose(
+  graphql(connectedQuery, { options: { fetchPolicy: 'no-cache' } }),
+  pure
+)(ConnectedLexicalEntries);
