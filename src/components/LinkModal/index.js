@@ -180,7 +180,7 @@ const ContributionsLink = (props) => {
         <div>
           {entity && (
             <Segment>
-              <Button positive onClick={() => accept(entity, true)} content="Accept" />
+              <Button positive content="Accept" disabled={entity.accepted} onClick={() => accept(entity, true)} />
             </Segment>
           )}
           <Segment padded="very" textAlign="center">

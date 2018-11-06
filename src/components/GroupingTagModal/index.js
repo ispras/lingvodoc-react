@@ -5,7 +5,7 @@ import { graphql } from 'react-apollo';
 import { Segment, Checkbox, Button, Modal, Tab } from 'semantic-ui-react';
 import { isEqual } from 'lodash';
 import styled from 'styled-components';
-import { queryPerspective } from 'components/PerspectiveView';
+import { queryPerspective, queryLexicalEntries } from 'components/PerspectiveView';
 import {
   connectedQuery,
   connectMutation,
@@ -185,7 +185,7 @@ const ContributionsGroupingTag = (props) => {
         <div>
           {entity && (
             <Segment>
-              <Button positive onClick={() => accept(entity, true)} content="Accept" />
+              <Button positive content="Accept" disabled={entity.accepted} onClick={() => accept(entity, true)} />
             </Segment>
           )}
           <Segment padded="very" textAlign="center">
@@ -308,7 +308,7 @@ class GroupingTagModal extends React.Component {
 
   changeAccepted(entity, accepted) {
     const {
-      accept, lexicalEntry, entitiesMode, fieldId,
+      accept, lexicalEntry, entitiesMode,
     } = this.props;
 
     accept({
@@ -316,17 +316,9 @@ class GroupingTagModal extends React.Component {
       refetchQueries: [
         {
           // XXX: Expensive operation!
-          query: queryPerspective,
+          query: queryLexicalEntries,
           variables: {
             id: lexicalEntry.parent_id,
-            entitiesMode,
-          },
-        },
-        {
-          query: connectedQuery,
-          variables: {
-            id: lexicalEntry.id,
-            fieldId,
             entitiesMode,
           },
         },
