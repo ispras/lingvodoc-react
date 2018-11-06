@@ -3,10 +3,7 @@ import PropTypes from 'prop-types';
 import { compose } from 'recompose';
 import { graphql } from 'react-apollo';
 import { Segment, Checkbox, Button, Modal, Tab } from 'semantic-ui-react';
-import { closeModal } from 'ducks/link';
-import { bindActionCreators } from 'redux';
 import { isEqual } from 'lodash';
-import { connect } from 'react-redux';
 import styled from 'styled-components';
 import { queryPerspective, LexicalEntryViewByIds } from 'components/PerspectiveView';
 import buildPartialLanguageTree from 'components/GroupingTagModal/partialTree';
@@ -48,7 +45,7 @@ const ViewLink = (props) => {
       render: () => (
         <div>
           <Segment padded="very" textAlign="center">
-            <Tree resultsTree={tree} />
+            <Tree resultsTree={tree} mode='view' />
           </Segment>
         </div>
       ),
@@ -90,7 +87,7 @@ const EditLink = (props) => {
       render: () => (
         <div>
           <Segment padded="very" textAlign="center">
-            <Tree resultsTree={tree} TableComponent={LexicalEntryViewByIds} actions={actions} />
+            <Tree resultsTree={tree} TableComponent={LexicalEntryViewByIds} actions={actions} mode='edit' />
           </Segment>
         </div>
       ),
@@ -144,13 +141,13 @@ const PublishLink = (props) => {
               <Checkbox
                 toggle
                 label={label}
-                defaultChecked={entity.published}
+                checked={entity.published}
                 onChange={(e, { checked }) => publish(entity, checked)}
               />
             </Segment>
           )}
           <Segment padded="very" textAlign="center">
-            <Tree resultsTree={tree} TableComponent={LexicalEntryViewByIds} />
+            <Tree resultsTree={tree} TableComponent={LexicalEntryViewByIds} mode='publish' />
           </Segment>
         </div>
       ),
@@ -187,7 +184,7 @@ const ContributionsLink = (props) => {
             </Segment>
           )}
           <Segment padded="very" textAlign="center">
-            <Tree resultsTree={tree} TableComponent={LexicalEntryViewByIds} />
+            <Tree resultsTree={tree} TableComponent={LexicalEntryViewByIds} mode='contributions' />
           </Segment>
         </div>
       ),
@@ -376,31 +373,25 @@ const Content = compose(
 )(LinkModalContent);
 
 const LinkModal = (props) => {
-  const { visible } = props;
-  if (!visible) {
-    return null;
-  }
-
   return (
-    <Modal dimmer open size="fullscreen" closeIcon onClose={props.closeModal}>
+    <Modal dimmer open size="fullscreen" closeOnDimmerClick={false} closeIcon onClose={props.onClose}>
       <Modal.Content>
         <Content {...props} />
       </Modal.Content>
       <Modal.Actions>
-        <Button icon="minus" content="Cancel" onClick={props.closeModal} />
+        <Button icon="minus" content="Cancel" onClick={props.onClose} />
       </Modal.Actions>
     </Modal>
   );
 };
 
 LinkModal.propTypes = {
-  visible: PropTypes.bool.isRequired,
   perspectiveId: PropTypes.array,
   lexicalEntry: PropTypes.object,
   fieldId: PropTypes.array,
   mode: PropTypes.string.isRequired,
   entitiesMode: PropTypes.string.isRequired,
-  closeModal: PropTypes.func.isRequired,
+  onClose: PropTypes.func.isRequired,
 };
 
 LinkModal.defaultProps = {
@@ -409,4 +400,4 @@ LinkModal.defaultProps = {
   fieldId: null,
 };
 
-export default connect(state => state.link, dispatch => bindActionCreators({ closeModal }, dispatch))(LinkModal);
+export default LinkModal;

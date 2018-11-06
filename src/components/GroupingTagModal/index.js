@@ -1,12 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { compose, branch, renderNothing, pure, shouldUpdate } from 'recompose';
+import { compose, pure } from 'recompose';
 import { graphql } from 'react-apollo';
 import { Segment, Checkbox, Button, Modal, Tab } from 'semantic-ui-react';
-import { closeModal } from 'ducks/groupingTag';
-import { bindActionCreators } from 'redux';
 import { isEqual } from 'lodash';
-import { connect } from 'react-redux';
 import styled from 'styled-components';
 import { queryPerspective } from 'components/PerspectiveView';
 import {
@@ -48,7 +45,8 @@ const EditGroupingTag = (props) => {
             <ConnectedEntries
               id={lexicalEntry.id}
               fieldId={fieldId}
-              mode={entitiesMode}
+              entitiesMode={entitiesMode}
+              mode='edit'
               allLanguages={allLanguages}
               allDictionaries={allDictionaries}
               allPerspectives={allPerspectives}
@@ -99,7 +97,8 @@ const ViewGroupingTag = (props) => {
             <ConnectedEntries
               id={lexicalEntry.id}
               fieldId={fieldId}
-              mode={entitiesMode}
+              entitiesMode={entitiesMode}
+              mode='view'
               allLanguages={allLanguages}
               allDictionaries={allDictionaries}
               allPerspectives={allPerspectives}
@@ -137,7 +136,7 @@ const PublishGroupingTag = (props) => {
             <Segment>
               <Checkbox
                 toggle
-                defaultChecked={entity.published}
+                checked={entity.published}
                 onChange={(e, { checked }) => publish(entity, checked)}
               />
               {entity.published && <span>The entity is currently published. Click to unpublish.</span>}
@@ -148,7 +147,8 @@ const PublishGroupingTag = (props) => {
             <ConnectedEntries
               id={lexicalEntry.id}
               fieldId={fieldId}
-              mode={entitiesMode}
+              entitiesMode={entitiesMode}
+              mode='publish'
               allLanguages={allLanguages}
               allDictionaries={allDictionaries}
               allPerspectives={allPerspectives}
@@ -192,7 +192,8 @@ const ContributionsGroupingTag = (props) => {
             <ConnectedEntries
               id={lexicalEntry.id}
               fieldId={fieldId}
-              mode={entitiesMode}
+              entitiesMode={entitiesMode}
+              mode='contributions'
               allLanguages={allLanguages}
               allDictionaries={allDictionaries}
               allPerspectives={allPerspectives}
@@ -268,7 +269,7 @@ class GroupingTagModal extends React.Component {
   leaveGroup() {
     // disconnect lexical entry from group
     const {
-      disconnect, lexicalEntry, fieldId, mode,
+      disconnect, lexicalEntry, fieldId, entitiesMode,
     } = this.props;
     disconnect({
       variables: { lexicalEntryId: lexicalEntry.id, fieldId },
@@ -278,7 +279,7 @@ class GroupingTagModal extends React.Component {
           variables: {
             id: lexicalEntry.id,
             fieldId,
-            mode,
+            entitiesMode,
           },
         },
       ],
@@ -307,7 +308,7 @@ class GroupingTagModal extends React.Component {
 
   changeAccepted(entity, accepted) {
     const {
-      accept, lexicalEntry, entitiesMode, fieldId, mode,
+      accept, lexicalEntry, entitiesMode, fieldId,
     } = this.props;
 
     accept({
@@ -326,7 +327,7 @@ class GroupingTagModal extends React.Component {
           variables: {
             id: lexicalEntry.id,
             fieldId,
-            mode,
+            entitiesMode,
           },
         },
       ],
@@ -335,12 +336,8 @@ class GroupingTagModal extends React.Component {
 
   render() {
     const {
-      data, visible, lexicalEntry, fieldId, entitiesMode, mode,
+      data, lexicalEntry, fieldId, entitiesMode, mode, onClose
     } = this.props;
-
-    if (!visible) {
-      return null;
-    }
 
     const {
       loading,
@@ -358,7 +355,7 @@ class GroupingTagModal extends React.Component {
 
     return (
       <div>
-        <Modal dimmer open size="fullscreen" closeIcon onClose={this.props.closeModal}>
+        <Modal dimmer open size="fullscreen" closeOnDimmerClick={false} closeIcon onClose={onClose}>
           <Modal.Header>Grouping tag</Modal.Header>
           <Modal.Content scrolling>
             <ModalContentWrapper>
@@ -377,7 +374,7 @@ class GroupingTagModal extends React.Component {
             </ModalContentWrapper>
           </Modal.Content>
           <Modal.Actions>
-            <Button icon="minus" content="Cancel" onClick={this.props.closeModal} />
+            <Button icon="minus" content="Cancel" onClick={onClose} />
           </Modal.Actions>
         </Modal>
       </div>
@@ -391,12 +388,11 @@ GroupingTagModal.propTypes = {
     dictionaries: PropTypes.array,
     perspectives: PropTypes.array,
   }).isRequired,
-  visible: PropTypes.bool.isRequired,
   lexicalEntry: PropTypes.object,
   fieldId: PropTypes.array,
   mode: PropTypes.string.isRequired,
   entitiesMode: PropTypes.string.isRequired,
-  closeModal: PropTypes.func.isRequired,
+  onClose: PropTypes.func.isRequired,
   connect: PropTypes.func.isRequired,
   disconnect: PropTypes.func.isRequired,
   publish: PropTypes.func.isRequired,
@@ -410,11 +406,6 @@ GroupingTagModal.defaultProps = {
 
 export default compose(
   pure,
-  connect(
-    state => state.groupingTag,
-    dispatch => bindActionCreators({ closeModal }, dispatch)
-  ),
-  branch(({ visible }) => !visible, renderNothing),
   graphql(languageTreeSourceQuery),
   graphql(disconnectMutation, { name: 'disconnect' }),
   graphql(connectMutation, { name: 'connect' }),

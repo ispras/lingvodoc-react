@@ -2,8 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import L from 'leaflet';
+import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
 
 import 'leaflet/dist/leaflet.css';
+import 'leaflet-geosearch/assets/css/leaflet.css';
 import './style.scss';
 
 const Wrapper = styled.div`
@@ -42,26 +44,59 @@ const icon = L.divIcon({
 });
 
 class Map extends React.Component {
+
   constructor(props) {
     super(props);
+
+    this.marker = null;
     this.onChangeLocation = this.onChangeLocation.bind(this);
-    this.markers = [];
   }
 
   componentDidMount() {
-    this.leaflet = L.map(this.map, {}).setView([61.32, 60.82], 4);
+    let { location } = this.props;
+    if (location) {
+      location = [location.lat, location.lng];
+    }
+    else {
+      location = [61.32, 60.82];
+    }
+    this.leaflet = L.map(this.map, {}).setView(location, 4);
 
     L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
     }).addTo(this.leaflet);
 
-    this.leaflet.on('click', ({ latlng }) => this.onChangeLocation(latlng));
+    this.leaflet.on('click', (event) => {
+      let node = event.originalEvent.target.parentNode;
+      while (node) {
+        if (node.classList && node.classList.contains('leaflet-control-geosearch')) {
+          return;
+        }
+        node = node.parentNode;
+      }
+      this.onChangeLocation(event.latlng);
+    });
+
+    new GeoSearchControl({
+      provider: new OpenStreetMapProvider(),
+      style: 'bar',
+      searchLabel: 'Type to search',
+      autoClose: true,
+      marker: {
+        icon: icon,
+        draggable: false,
+      },
+    }).addTo(this.leaflet);
+    this.leaflet.on('geosearch/showlocation', ({ location }) => {
+      this.onChangeLocation({ lat: location.y, lng: location.x });
+    });
+    this.componentWillUpdate(this.props);
   }
 
-  componentWillReceiveProps(props) {
-    if (props.location) {
+  componentWillUpdate(props) {
+    if (props.location && this.marker == null) {
       const { lat, lng } = props.location;
-      this.markers.push(L.marker([lat, lng], { icon }).addTo(this.leaflet));
+      this.marker = L.marker([lat, lng], { icon }).addTo(this.leaflet);
     }
   }
 
@@ -70,11 +105,11 @@ class Map extends React.Component {
   }
 
   onChangeLocation(latlng) {
-    this.markers.forEach((m) => {
-      this.leaflet.removeLayer(m);
-    });
+    if (this.marker) {
+      this.leaflet.removeLayer(this.marker);
+    }
 
-    this.markers.push(L.marker([latlng.lat, latlng.lng], { icon }).addTo(this.leaflet));
+    this.marker = L.marker([latlng.lat, latlng.lng], { icon }).addTo(this.leaflet);
     this.props.onChange(latlng);
   }
 

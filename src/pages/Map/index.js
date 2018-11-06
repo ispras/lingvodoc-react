@@ -9,9 +9,12 @@ import { isEqual, isEmpty } from 'lodash';
 import styled from 'styled-components';
 import BlobsModal from 'components/Search/blobsModal';
 import L from 'leaflet';
+import 'leaflet.markercluster';
 import { openBlobsModal } from 'ducks/blobs';
+import { sortBy } from 'lodash';
 
 import 'components/DictionaryPropertiesModal/style.scss';
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 
 const Wrapper = styled.div`
   width: 100%;
@@ -72,10 +75,19 @@ const icon = className =>
 const iconWithoutDictionaries = icon('marker-color-gray');
 const iconWithDictionaries = icon('marker-color-red');
 
+function toggleHighlighting(marker) {
+  marker._icon.classList.toggle('marker-highlighted');
+  setTimeout(() => {
+    if (marker._icon) {
+      marker._icon.classList.toggle('marker-highlighted');
+    }
+  }, 3000);
+}
+
 class Map extends React.Component {
+
   constructor(props) {
     super(props);
-    this.markers = [];
   }
 
   componentDidMount() {
@@ -89,7 +101,38 @@ class Map extends React.Component {
     const { actions, data: { loading, dictionaries, blobs: allBlobs } } = nextProps;
 
     if (!loading) {
-      this.markers = dictionaries.filter(dictionary => dictionary.additional_metadata.location).map((dictionary) => {
+      const markersGroup = L.markerClusterGroup({ maxClusterRadius: 70, showCoverageOnHover: false });
+      const map = this.leaflet;
+      markersGroup.on('clustermouseover', event => {
+        map.closePopup();
+        const oldContent = document.getElementById("map-popup");
+        if (oldContent != null) {
+          oldContent.remove();
+        }
+        let popUpText = '<ul id="map-popup">';
+        let markers = [];
+        sortBy(event.layer.getAllChildMarkers(), marker => marker.options.title).forEach(marker => {
+          popUpText += '<li><u id=' + marker._leaflet_id + ' style="cursor: pointer">' + marker.options.title + '</u></li>';
+          markers.push(marker);
+        });
+        popUpText += '</ul>';
+        L.popup({ maxHeight: 300 }).setLatLng(event.layer.getLatLng()).setContent(popUpText).openOn(map);
+        markers.forEach(marker => {
+          document.getElementById(marker._leaflet_id).onclick = function() {
+            map.closePopup();
+            if (marker._icon) {
+              toggleHighlighting(marker);
+            }
+            else {
+              markersGroup.zoomToShowLayer(marker, () => {
+                toggleHighlighting(marker);
+              });
+            }
+          };
+        });
+      });
+      map.addLayer(markersGroup);
+      dictionaries.filter(dictionary => dictionary.additional_metadata.location).map((dictionary) => {
         const { additional_metadata: { location, blobs } } = dictionary;
         const { lat, lng } = location;
         const dictionaryBlobs = blobs
@@ -98,10 +141,11 @@ class Map extends React.Component {
             .map(blobId => allBlobs.find(b => isEqual(blobId, b.id)))
             .filter(b => !!b)
           : [];
-        return L.marker([lat, lng], { icon: isEmpty(dictionaryBlobs) ? iconWithoutDictionaries : iconWithDictionaries })
-          .addTo(this.leaflet)
+        return L.marker([lat, lng], { title: dictionary.translation, icon: isEmpty(dictionaryBlobs) ? iconWithoutDictionaries : iconWithDictionaries })
+          .addTo(markersGroup)
           .on('click', () => actions.openBlobsModal(dictionary, dictionaryBlobs.map(b => b.id)));
       });
+      map.on('zoomend', () => map.closePopup());
     }
   }
 

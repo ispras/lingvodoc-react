@@ -1,12 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { bindActionCreators } from 'redux';
-import { compose, branch, renderNothing } from 'recompose';
-import { connect } from 'react-redux';
 import { Modal, Button } from 'semantic-ui-react';
 import styled from 'styled-components';
 import { LexicalEntryViewByIds } from 'components/PerspectiveView/index';
-import { closeLexicalEntry } from 'ducks/lexicalEntry';
 
 export const LexicalEntryLink = styled.span`
   cursor: pointer;
@@ -18,33 +14,30 @@ export const LexicalEntryLink = styled.span`
   }
 `;
 
-function LexicalEntryModal({
-  node, actions, entitiesMode, closeLexicalEntry: close,
-}) {
+function LexicalEntryModal({ node, actions, entitiesMode, mode, onClose }) {
   const { id, translation, lexicalEntries } = node;
 
   return (
-    <Modal closeIcon size="fullscreen" open onClose={close}>
+    <Modal dimmer open size="fullscreen" closeOnDimmerClick={false} closeIcon onClose={onClose}>
       <Modal.Header>{translation}</Modal.Header>
       <Modal.Content scrolling>
         <LexicalEntryViewByIds
           className="perspective"
           perspectiveId={id}
           entriesIds={lexicalEntries.map(e => e.id)}
-          mode="view"
+          mode={mode}
           entitiesMode={entitiesMode}
           actions={actions}
         />
       </Modal.Content>
       <Modal.Actions>
-        <Button icon="minus" content="Cancel" onClick={close} />
+        <Button icon="minus" content="Cancel" onClick={onClose} />
       </Modal.Actions>
     </Modal>
   );
 }
 
 LexicalEntryModal.propTypes = {
-  visible: PropTypes.bool.isRequired,
   node: PropTypes.shape({
     id: PropTypes.array.isRequired,
     translation: PropTypes.string.isRequired,
@@ -52,22 +45,15 @@ LexicalEntryModal.propTypes = {
   }).isRequired,
   actions: PropTypes.array,
   entitiesMode: PropTypes.string,
-  closeLexicalEntry: PropTypes.func.isRequired,
+  mode: PropTypes.string,
+  onClose: PropTypes.func.isRequired,
 };
 
 LexicalEntryModal.defaultProps = {
   actions: [],
   entitiesMode: 'published',
+  mode: 'view',
 };
 
-const mapStateToProps = state => state.lexicalEntry;
 
-const mapDispatchToProps = dispatch => bindActionCreators({ closeLexicalEntry }, dispatch);
-
-export default compose(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  ),
-  branch(({ visible }) => !visible, renderNothing)
-)(LexicalEntryModal);
+export default LexicalEntryModal;

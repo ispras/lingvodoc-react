@@ -5,11 +5,12 @@ import React from 'react';
 import styled from 'styled-components';
 import { Sidebar } from 'semantic-ui-react';
 
+import { graphql } from 'react-apollo';
+import gql from 'graphql-tag';
+
 import Modals from 'components/Modals';
 import PlayerModal from 'components/PlayerModal';
 import MarkupModal from 'components/MarkupModal';
-import GroupingTagModal from 'components/GroupingTagModal';
-import LinkModal from 'components/LinkModal';
 import DictionaryProperties from 'components/DictionaryPropertiesModal';
 import SaveDictionary from 'components/SaveDictionaryModal';
 import PerspectiveProperties from 'components/PerspectivePropertiesModal';
@@ -18,12 +19,21 @@ import PhonologyModal from 'components/PhonologyModal';
 import ConverEafModal from 'components/ConverEafModal';
 import StatisticsModal from 'components/StatisticsModal';
 import BanModal from 'components/BanModal';
-import LexicalEntryModal from 'components/LexicalEntryModal';
 
 import NavBar from './NavBar';
 import TasksSidebar from './TasksSidebar';
 import Snackbar from './Snackbar';
 import Routes from './Routes';
+
+import { stringsToTranslate, setTranslation } from 'api/i18n';
+
+const getTranslationsQuery = gql`
+  query getTranslations($searchstrings: [String]!) {
+    advanced_translation_search(searchstrings: $searchstrings) {
+      translation
+    }
+  }
+`;
 
 const Content = styled.div`
   padding: 5em 20px;
@@ -31,31 +41,56 @@ const Content = styled.div`
   overflow-y: auto !important;
 `;
 
-const Layout = () => (
-  <div>
-    <NavBar />
-    <Snackbar />
-    <Sidebar.Pushable as="div">
-      <TasksSidebar />
-      <Sidebar.Pusher as={Content}>
-        <Routes />
-      </Sidebar.Pusher>
-    </Sidebar.Pushable>
-    <Modals />
-    <GroupingTagModal />
-    <LinkModal />
-    <PlayerModal />
-    <MarkupModal />
-    <DictionaryProperties />
-    <SaveDictionary />
-    <PerspectiveProperties />
-    <PhonemicAnalysisModal />
-    <PhonologyModal />
-    <ConverEafModal />
-    <StatisticsModal />
-    <BanModal />
-    <LexicalEntryModal />
-  </div>
-);
+class Layout extends React.Component {
 
-export default Layout;
+  constructor(props) {
+    super(props);
+  }
+
+  componentWillReceiveProps(props) {
+    const { data: { error, loading, advanced_translation_search: translated } } = props;
+    if (loading || error) {
+      return;
+    }
+  
+    for (let i = 0; i < stringsToTranslate.length; i++) {
+      setTranslation(stringsToTranslate[i], translated[i].translation);
+    }
+  }
+
+  render() {
+    if (this.props.data.loading) {
+      return null;
+    }
+
+    return (
+      <div>
+        <NavBar />
+        <Snackbar />
+        <Sidebar.Pushable as="div">
+          <TasksSidebar />
+          <Sidebar.Pusher as={Content}>
+            <Routes />
+          </Sidebar.Pusher>
+        </Sidebar.Pushable>
+        <Modals />
+        <PlayerModal />
+        <MarkupModal />
+        <DictionaryProperties />
+        <SaveDictionary />
+        <PerspectiveProperties />
+        <PhonemicAnalysisModal />
+        <PhonologyModal />
+        <ConverEafModal />
+        <StatisticsModal />
+        <BanModal />
+      </div>
+    );
+  }
+
+}
+
+export default graphql(
+  getTranslationsQuery,
+  { options: () => ({ variables: { searchstrings: stringsToTranslate } }) }
+)(Layout);

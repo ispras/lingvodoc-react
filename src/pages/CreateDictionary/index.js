@@ -10,12 +10,14 @@ import {
   goToStep,
   setParentLanguage,
   setTranslations,
+  setMetadata,
   createPerspective,
   setPerspectives,
   selectors,
 } from 'ducks/createDictionary';
 import Languages from 'components/Languages';
 import Translations from 'components/Translation';
+import EditDictionaryMetadata from 'components/EditDictionaryMetadata';
 import Perspectives from './Perspectives';
 import { createDictionaryMutation } from './graphql';
 import { query as dashboardQuery } from 'pages/Dashboard';
@@ -70,6 +72,7 @@ class CreateDictionaryWizard extends React.Component {
         parentId,
         dictionaryTranslations,
         perspectives,
+        metadata: this.props.metadata.toJS()
       },
       refetchQueries: [
         {
@@ -89,7 +92,7 @@ class CreateDictionaryWizard extends React.Component {
 
   render() {
     const {
-      step, isNextStep, parentLanguage, translations, perspectives, mode,
+      step, isNextStep, parentLanguage, translations, metadata, perspectives, mode,
     } = this.props;
     return (
       <div>
@@ -103,8 +106,8 @@ class CreateDictionaryWizard extends React.Component {
 
           <Step link active={step === 'TRANSLATIONS'} onClick={this.onStepClick('TRANSLATIONS')}>
             <Step.Content>
-              <Step.Title>{mode.replace(/^\w/, c => c.toUpperCase())} names</Step.Title>
-              <Step.Description>Set {mode} name and its translations</Step.Description>
+              <Step.Title>{mode.replace(/^\w/, c => c.toUpperCase())} names and metadata</Step.Title>
+              <Step.Description>Set {mode} name, translations and metadata</Step.Description>
             </Step.Content>
           </Step>
 
@@ -138,6 +141,9 @@ class CreateDictionaryWizard extends React.Component {
             <div>
               <Header>Add one or more translations</Header>
               <Translations translations={translations.toJS()} onChange={t => this.props.setTranslations(t)} />
+              <Divider/>
+              <Header>Fill metadata information</Header>
+              <EditDictionaryMetadata mode='create' metadata={metadata ? metadata.toJS() : metadata} onChange={metadata => this.props.setMetadata(metadata)} />
             </div>
           )}
 
@@ -185,6 +191,7 @@ CreateDictionaryWizard.propTypes = {
   goToStep: PropTypes.func.isRequired,
   setParentLanguage: PropTypes.func.isRequired,
   setTranslations: PropTypes.func.isRequired,
+  setMetadata: PropTypes.func.isRequired,
   createPerspective: PropTypes.func.isRequired,
   setPerspectives: PropTypes.func.isRequired,
   createDictionary: PropTypes.func.isRequired,
@@ -197,6 +204,7 @@ function mapStateToProps(state) {
     isNextStep: selectors.getNextStep(state),
     parentLanguage: selectors.getParentLanguage(state),
     translations: selectors.getTranslations(state),
+    metadata: selectors.getMetadata(state),
     perspectives: selectors.getPerspectives(state),
   };
 }
@@ -206,6 +214,7 @@ const mapDispatchToProps = {
   goToStep,
   setParentLanguage,
   setTranslations,
+  setMetadata,
   createPerspective,
   setPerspectives,
 };
