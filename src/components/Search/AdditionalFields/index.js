@@ -61,30 +61,6 @@ class AdditionalFields extends PureComponent {
     return result;
   }
 
-  // static isLanguageWithDictsDeep(language) {
-  //   if (language.dictionaries.length > 0) {
-  //     return true;
-  //   }
-
-  //   if (language.children.some(child => this.isLanguageWithDictsDeep(child))) {
-  //     return true;
-  //   }
-
-  //   return false;
-  // }
-
-  // static updateLanguagesTreeItem(item) {
-  //   item.hasDictsDeep = this.isLanguageWithDictsDeep(item);
-
-  //   item.children.forEach(child => this.updateLanguagesTreeItem(child));
-  // }
-
-  // static getUpdatedLanguagesTree(rawLanguagesTree) {
-  //   rawLanguagesTree.forEach(language => this.updateLanguagesTreeItem(language));
-
-  //   return rawLanguagesTree;
-  // }
-
   /**
    * Checks if language has dictionaries on any level
    * @param {Object} language - language tree node
@@ -264,6 +240,7 @@ const languagesWithDictionariesQuery = gql`
   }
 `;
 
+// TODO: translations
 const i18nQuery = gql`
   query {
     advanced_translation_search(
