@@ -1,9 +1,6 @@
 import React, { PureComponent } from 'react';
-import { Segment, Button } from 'semantic-ui-react';
-// import { graphql } from 'react-apollo';
-// import { compose } from 'recompose';
+import { Segment } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
-// import gql from 'graphql-tag';
 import LanguageTree from './LanguageTree';
 
 /* ----------- COMPONENT ----------- */
