@@ -43,7 +43,7 @@ const queryCounter = gql`
 `;
 
 const PerspectivePath = graphql(query)(({ data }) => {
-  if (data.loading) {
+  if (data.loading || data.error) {
     return null;
   }
   const { perspective: { tree } } = data;
@@ -61,7 +61,7 @@ const PerspectivePath = graphql(query)(({ data }) => {
 });
 
 const Counter = graphql(queryCounter)(({ data }) => {
-  if (data.loading) {
+  if (data.loading || data.error) {
     return null;
   }
   const { perspective: { counter } } = data;
