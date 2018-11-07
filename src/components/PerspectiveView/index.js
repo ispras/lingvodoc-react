@@ -643,6 +643,10 @@ export const LexicalEntryViewByIds = compose(
 const PerspectiveViewWrapper = ({
   id, className, mode, entitiesMode, page, data, filter, sortByField,
 }) => {
+  if (data.error) {
+    return null;
+  }
+
   const {
     all_fields: allFields,
     perspective: { columns },
