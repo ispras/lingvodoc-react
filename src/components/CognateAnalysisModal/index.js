@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { compose, branch, renderNothing } from 'recompose';
 import { graphql, withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
-import { Breadcrumb, Button, Checkbox, Divider, Header, Icon, Input, List, Modal, Select } from 'semantic-ui-react';
+import { Breadcrumb, Button, Checkbox, Dimmer, Divider, Header, Icon, Input, List, Loader, Modal, Select } from 'semantic-ui-react';
 import { closeModal } from 'ducks/cognateAnalysis';
 import { bindActionCreators } from 'redux';
 import { isEqual, map } from 'lodash';
@@ -82,6 +82,7 @@ class CognateAnalysisModal extends React.Component
 
     this.state =
     {
+      initialized: false,
       dictionary_count: 0,
       group_count: 0,
       text_count: 0,
@@ -95,8 +96,13 @@ class CognateAnalysisModal extends React.Component
     };
 
     this.handleCreate = this.handleCreate.bind(this);
+    this.initializeData = this.initializeData.bind(this);
     this.initializePerspectiveList = this.initializePerspectiveList.bind(this);
+  }
 
+  /* Initializes data of the cognate analysis dialog. */
+  initializeData()
+  {
     /* Compiling dictionary of perspective field info so that later we would be able to retrieve this info
      * efficiently. */
 
@@ -121,19 +127,21 @@ class CognateAnalysisModal extends React.Component
 
     /* Selecting default grouping field with 'cognate' in its name, or the first field. */
 
+    var groupFieldIdStr = '';
+
     for (const field of this.groupFields)
     {
       const check_str = field.translation.toLowerCase();
 
       if (check_str.includes('cognate') || check_str.includes('когнат'))
       {
-        this.state.groupFieldIdStr = compositeIdToString(field.id);
+        groupFieldIdStr = compositeIdToString(field.id);
         break;
       }
     }
 
-    if (!this.state.groupFieldIdStr && this.groupFields.length > 0)
-      this.state.groupFieldIdStr = compositeIdToString(this.groupFields[0].id);
+    if (!groupFieldIdStr && this.groupFields.length > 0)
+      groupFieldIdStr = compositeIdToString(this.groupFields[0].id);
 
     /* Finding dictionary of our perspective. */
 
@@ -149,13 +157,23 @@ class CognateAnalysisModal extends React.Component
     /* If we have selected a default cognate grouping field, we initialize perspectives available for
      * analysis. */
 
-    if (this.state.groupFieldIdStr)
-      this.initializePerspectiveList();
+    const set_state = { groupFieldIdStr, initialized: true };
+
+    if (groupFieldIdStr)
+    {
+      const {textFieldIdStrList, perspectiveSelectionList} =
+        this.initializePerspectiveList(groupFieldIdStr);
+
+      set_state.textFieldIdStrList = textFieldIdStrList;
+      set_state.perspectiveSelectionList = perspectiveSelectionList;
+    }
+
+    this.setState(set_state);
   }
 
   /* Initializes list of perspectives available for analysis depending on currently selected
    * grouping field. */
-  initializePerspectiveList()
+  initializePerspectiveList(groupFieldIdStr)
   {
     const { data: { dictionaries }} = this.props;
 
@@ -173,7 +191,7 @@ class CognateAnalysisModal extends React.Component
         for (var i = 0; i < dictionary.perspectives.length; i++)
 
           if (dictionary.perspectives[i].columns.findIndex(
-            column => compositeIdToString(column.field_id) == this.state.groupFieldIdStr) != -1)
+            column => compositeIdToString(column.field_id) == groupFieldIdStr) != -1)
           {
             const textFields =
 
@@ -282,9 +300,31 @@ class CognateAnalysisModal extends React.Component
     );
   }
 
+  componentDidMount()
+  {
+    if (!this.props.data.loading && !this.state.initialized)
+      this.initializeData();
+  }
+
+  componentDidUpdate()
+  {
+    if (!this.props.data.loading && !this.state.initialized)
+      this.initializeData();
+  }
+
   render()
   {
     const { data } = this.props;
+
+    if (data.loading || !this.state.initialized)
+    {
+      return (
+        <Dimmer active={data.loading} inverted>
+          <Loader>Loading</Loader>
+        </Dimmer>
+      );
+    }
+
     const { perspective: { columns, tree }, all_fields: allFields } = data;
 
     const groupFieldsOptions = this.groupFields.map((f, k) => ({
@@ -318,8 +358,9 @@ class CognateAnalysisModal extends React.Component
                     onChange={(e, { value }) => {
                       if (value != this.state.groupFieldIdStr)
                       {
-                        this.setState({ groupFieldIdStr: value });
-                        this.setState(this.initializePerspectiveList());
+                        this.setState({
+                          groupFieldIdStr: value,
+                          ...this.initializePerspectiveList(value) });
                       }
                     }}
                   />
@@ -331,7 +372,7 @@ class CognateAnalysisModal extends React.Component
                 phonemic analysis is impossible.</span>
             )}
             <div style={{marginTop: '1.5em'}}>
-            {map(this.perspective_list,
+            {this.perspective_list.length > 1 && map(this.perspective_list,
               ({dictionary, perspective, textFields, textFieldsOptions}, index) => (
                 <List>
                   <List.Item>
@@ -369,6 +410,10 @@ class CognateAnalysisModal extends React.Component
                   )}
                 </List>
             ))}
+            {this.perspective_list.length <= 1 && (
+              <span>Dictionary group doesn't have multiple dictionaries with selected
+                cognate grouping field present, cognate analysis is impossible.</span>
+            )}
             </div>
             {!this.state.library_present && (
               <List>
@@ -385,7 +430,10 @@ class CognateAnalysisModal extends React.Component
                 <span>Computing... <Icon name="spinner" loading /></span> :
                 "Compute"}
               onClick={this.handleCreate}
-              disabled={!this.state.perspectiveSelectionList.some(enabled => enabled) || this.state.computing}
+              disabled={
+                this.perspective_list.length <= 1 ||
+                !this.state.perspectiveSelectionList.some(enabled => enabled) ||
+                this.state.computing}
             />
             <Button negative content="Close" onClick={this.props.closeModal} />
           </Modal.Actions>
@@ -416,6 +464,5 @@ export default compose(
   branch(({ visible }) => !visible, renderNothing),
   graphql(cognateAnalysisDataQuery),
   graphql(computeCognateAnalysisMutation, { name: 'computeCognateAnalysis' }),
-  branch(({ data }) => data.loading, renderNothing),
   withApollo
 )(CognateAnalysisModal);
