@@ -6,6 +6,7 @@ import { Segment, Header } from 'semantic-ui-react';
 import LangsNavAutocomplete from 'pages/Home/components/LangsNav/LangsNavAutocomplete/index';
 import LangsNavList from 'pages/Home/components/LangsNav/LangsNavList/index';
 import { sortLangsAlphabetically } from '../../common';
+import { getTranslation } from 'api/i18n';
 
 /* 
  * Used for filtering languages based on a list provided by Julia Normanskaya.
@@ -293,7 +294,7 @@ const enhance = compose(propsHandler);
 /* ----------- COMPONENT ----------- */
 const LangsNav = ({ autocompleteData, listData }) => (
   <Segment>
-    <Header as="h3">Выбор языка</Header>
+    <Header as="h3">{getTranslation('Select language')}</Header>
     <LangsNavAutocomplete data={autocompleteData} />
     <LangsNavList data={listData} />
   </Segment>

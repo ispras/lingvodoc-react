@@ -11,6 +11,7 @@ import config from 'config';
 import User from './User';
 import Tasks from './Tasks';
 import Locale from './Locale';
+import { getTranslation } from 'api/i18n';
 
 const Logo = styled.span`
   font-size: 1.2em;
@@ -19,7 +20,7 @@ const Logo = styled.span`
 
 const SyncButton = ({ synchronize }) => (
   <Menu.Item as={Button} negative onClick={synchronize}>
-    Sync
+  {getTranslation("Sync")}
   </Menu.Item>
 );
 
@@ -52,22 +53,22 @@ const Dashboard = (props) => {
     return null;
   }
   return (
-    <Dropdown item text="Dashboard">
+    <Dropdown item text={getTranslation("Dashboard")}>
       <Dropdown.Menu>
         <Dropdown.Item as={Link} to="/dashboard/create_dictionary">
-          Create dictionary
+        {getTranslation("Create dictionary")}
         </Dropdown.Item>
         <Dropdown.Item as={Link} to="/dashboard/create_corpus">
-          Create corpus
+        {getTranslation("Create corpus")}
         </Dropdown.Item>
         <Dropdown.Item as={Link} to="/dashboard/dictionaries">
-          Dictionaries
+        {getTranslation("Dictionaries")}
         </Dropdown.Item>
         <Dropdown.Item as={Link} to="/dashboard/corpora">
-          Corpora
+        {getTranslation("Corpora")}
         </Dropdown.Item>
         <Dropdown.Item as={Link} to="/import">
-          Import Starling dictionaries
+        {getTranslation("Import Starling dictionaries")}
         </Dropdown.Item>
       </Dropdown.Menu>
     </Dropdown>
@@ -96,30 +97,27 @@ const NavBar = pure(({ location }) => (
 
     <DashboardWithData />
 
-    <Dropdown item text="Maps">
+    <Dropdown item text={getTranslation("Maps")}>
       <Dropdown.Menu>
         <Dropdown.Item as={Link} to="/map">
-          Map
+        {getTranslation("Map")}
         </Dropdown.Item>
         <Dropdown.Item as={Link} to="/map_search">
-          Search
+        {getTranslation("Search")}
         </Dropdown.Item>
-        {/* <Dropdown.Item as={Link} to="/sociolinguistics">
-          Sociolinguistics
-        </Dropdown.Item> */}
       </Dropdown.Menu>
     </Dropdown>
 
-    <Dropdown item text="Info">
+    <Dropdown item text={getTranslation("Info")}>
       <Dropdown.Menu>
         <Dropdown.Item as={Link} to="/info">
-          Authors
+        {getTranslation("Authors")}
         </Dropdown.Item>
         <Dropdown.Item as={Link} to="/desktop">
-          Desktop
+        {getTranslation("Desktop")}
         </Dropdown.Item>
         <Dropdown.Item as={Link} to="/languages">
-          Languages
+        {getTranslation("Languages")}
         </Dropdown.Item>
       </Dropdown.Menu>
     </Dropdown>
@@ -130,7 +128,7 @@ const NavBar = pure(({ location }) => (
       <Tasks />
       <Locale />
       <Menu.Item>
-        <Button primary negative onClick={openHelp}>Help</Button>
+        <Button primary negative onClick={openHelp}>{getTranslation("Help")}</Button>
       </Menu.Item>
     </Menu.Menu>
   </Menu>

@@ -55,7 +55,9 @@ class Layout extends React.Component {
     }
   
     for (let i = 0; i < stringsToTranslate.length; i++) {
-      setTranslation(stringsToTranslate[i], translated[i].translation);
+      const gist = translated[i];
+      if (gist != null)
+        setTranslation(stringsToTranslate[i], gist.translation);
     }
   }
 
