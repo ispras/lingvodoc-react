@@ -128,12 +128,19 @@ class PhonemicAnalysisModal extends React.Component
           <Modal.Header>Phonemic analysis</Modal.Header>
           <Modal.Content>
             {this.textFields.length > 0 && (
-              <Select
-                defaultValue={this.state.textFieldIdStr}
-                placeholder="Source text field"
-                options={textFieldsOptions}
-                onChange={(e, { value }) => this.setState({ textFieldIdStr: value })}
-              />
+              <List>
+                <List.Item>
+                  Source text field:
+                </List.Item>
+                <List.Item>
+                  <Select
+                    defaultValue={this.state.textFieldIdStr}
+                    placeholder="Source text field selection"
+                    options={textFieldsOptions}
+                    onChange={(e, { value }) => this.setState({ textFieldIdStr: value })}
+                  />
+                </List.Item>
+              </List>
             )}
             {this.textFields.length <= 0 && (
               <span>Perspective does not have any text fields,

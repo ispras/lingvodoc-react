@@ -129,8 +129,13 @@ const ModeSelector = onlyUpdateForKeys([
   'baseUrl',
   'filter',
 ])(({
-  mode, baseUrl, filter, submitFilter,
-  openPhonemicAnalysisModal, openPhonologyModal, soundAndMarkup, id,
+  mode, baseUrl, filter,
+  submitFilter,
+  openCognateAnalysisModal,
+  openPhonemicAnalysisModal,
+  openPhonologyModal,
+  soundAndMarkup,
+  id,
 }) => (
   <Menu tabular>
     {map(MODES, (info, stub) => (
@@ -144,6 +149,7 @@ const ModeSelector = onlyUpdateForKeys([
     ))}
     <Dropdown item text="Tools">
       <Dropdown.Menu>
+        <Dropdown.Item onClick={openCognateAnalysisModal}>Cognate analysis</Dropdown.Item>
         <Dropdown.Item onClick={openPhonemicAnalysisModal}>Phonemic analysis</Dropdown.Item>
         <Dropdown.Item onClick={openPhonologyModal}>Phonology</Dropdown.Item>
         <Dropdown.Item onClick={soundAndMarkup}>Sound and markup</Dropdown.Item>
@@ -175,6 +181,7 @@ const soundAndMarkup = (perspectiveId, mode, launchSoundAndMarkup) => {
 const Perspective = ({
   perspective,
   submitFilter,
+  openCognateAnalysisModal,
   openPhonemicAnalysisModal,
   openPhonologyModal,
   launchSoundAndMarkup,
@@ -194,6 +201,7 @@ const Perspective = ({
         baseUrl={baseUrl}
         filter={perspective.filter}
         submitFilter={submitFilter}
+        openCognateAnalysisModal={() => openCognateAnalysisModal(id)}
         openPhonemicAnalysisModal={() => openPhonemicAnalysisModal(id)}
         openPhonologyModal={() => openPhonologyModal(id)}
         soundAndMarkup={() => soundAndMarkup(id, mode, launchSoundAndMarkup)}
@@ -225,6 +233,7 @@ const Perspective = ({
 Perspective.propTypes = {
   perspective: PropTypes.object.isRequired,
   submitFilter: PropTypes.func.isRequired,
+  openCognateAnalysisModal: PropTypes.func.isRequired,
   openPhonemicAnalysisModal: PropTypes.func.isRequired,
   openPhonologyModal: PropTypes.func.isRequired,
 };

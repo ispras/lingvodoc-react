@@ -1,4 +1,5 @@
 import { request, selectors, setFilter } from 'ducks/perspective';
+import { openModal as cognateAnalysisOpenModal } from 'ducks/cognateAnalysis';
 import { openModal as phonemicAnalysisOpenModal } from 'ducks/phonemicAnalysis';
 import { openModal as phonologyOpenModal } from 'ducks/phonology';
 import enhance from 'pages/utils';
@@ -16,6 +17,10 @@ function submitFilter(value) {
   return setFilter(value);
 }
 
+function openCognateAnalysisModal(perspectiveId) {
+  return cognateAnalysisOpenModal(perspectiveId);
+}
+
 function openPhonemicAnalysisModal(perspectiveId) {
   return phonemicAnalysisOpenModal(perspectiveId);
 }
@@ -30,7 +35,11 @@ export default enhance({
       perspective: selectors.getPerspective(state),
     };
   },
-  actions: { submitFilter, openPhonemicAnalysisModal, openPhonologyModal },
+  actions: {
+    submitFilter,
+    openCognateAnalysisModal,
+    openPhonemicAnalysisModal,
+    openPhonologyModal },
   updateWhen({ perspective: np }, { perspective: op }) {
     return !shallowEqual(np, op);
   },
