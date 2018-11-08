@@ -5,13 +5,13 @@ import gql from 'graphql-tag';
 import { map } from 'lodash';
 import { onlyUpdateForKeys, withHandlers, withState, compose } from 'recompose';
 import { Switch, Route, Redirect, Link } from 'react-router-dom';
-import { Container, Header, Breadcrumb, Menu, Dropdown } from 'semantic-ui-react';
+import { Container, Menu, Dropdown } from 'semantic-ui-react';
 import PerspectiveView from 'components/PerspectiveView';
 import Merge from 'components/Merge';
 import NotFound from 'pages/NotFound';
+import PerspectivePath from './PerspectivePath';
 
 import './style.scss';
-import { queryLexicalEntries } from '../../components/PerspectiveView';
 
 export const launchSoundAndMarkupMutation = gql`
   mutation launchSoundAndMarkup(
@@ -23,17 +23,6 @@ export const launchSoundAndMarkupMutation = gql`
       { triumph } }
 `;
 
-const query = gql`
-  query q($id: LingvodocID!) {
-    perspective(id: $id) {
-      tree {
-        id
-        translation
-      }
-    }
-  }
-`;
-
 const queryCounter = gql`
   query qcounter($id: LingvodocID! $mode: String!) {
     perspective(id: $id) {
@@ -42,24 +31,6 @@ const queryCounter = gql`
   }
 `;
 
-const PerspectivePath = graphql(query)(({ data }) => {
-  if (data.loading || data.error) {
-    return null;
-  }
-  const { perspective: { tree } } = data;
-  return (
-    <Header as="h2">
-      <Breadcrumb
-        icon="right angle"
-        sections={tree
-          .slice()
-          .reverse()
-          .map(e => ({ key: e.id, content: e.translation, link: false }))}
-      />
-    </Header>
-  );
-});
-
 const Counter = graphql(queryCounter)(({ data }) => {
   if (data.loading || data.error) {
     return null;
@@ -67,8 +38,6 @@ const Counter = graphql(queryCounter)(({ data }) => {
   const { perspective: { counter } } = data;
   return ` (${counter})`;
 });
-
-// const EditText = 'all';
 
 const MODES = {
   edit: {
@@ -187,14 +156,14 @@ const Perspective = ({
   launchSoundAndMarkup,
 }) => {
   const {
-    id, mode, page, baseUrl,
+    id, parent_id, mode, page, baseUrl,
   } = perspective.params;
 
   if (!baseUrl) return null;
 
   return (
     <Container fluid className="perspective">
-      <PerspectivePath id={id} />
+      <PerspectivePath id={id} dictionary_id={parent_id} mode={mode} />
       <ModeSelector
         mode={mode}
         id={id}
