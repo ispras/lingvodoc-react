@@ -6,8 +6,9 @@ import { pure, branch, renderComponent, compose } from 'recompose';
 import { Dropdown, Flag, Menu, Icon } from 'semantic-ui-react';
 
 import { selectLocale } from 'ducks/locale';
+import { getTranslation } from 'api/i18n';
 
-const TITLE = 'Languages';
+const TITLE = getTranslation('Languages');
 
 function checkCountry(shortcut) {
   return shortcut === 'en' ? 'gb' : shortcut;
