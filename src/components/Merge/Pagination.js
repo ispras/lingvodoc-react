@@ -4,6 +4,7 @@ import { Range } from 'immutable';
 import { onlyUpdateForPropTypes, branch, renderNothing, compose } from 'recompose';
 import { Menu } from 'semantic-ui-react';
 import styled from 'styled-components';
+import { getTranslation } from 'api/i18n';
 
 const Pager = styled(Menu)`
   position: fixed;
@@ -17,7 +18,7 @@ const Pager = styled(Menu)`
 
 const Pagination = ({ current, total, changePage }) => (
   <Pager size="tiny" pagination>
-    <Menu.Item name="Page" />
+    <Menu.Item name={getTranslation("Page")} />
 
     {current > 1 && <Menu.Item onClick={() => changePage(current - 1)} icon="chevron left" />}
     {Range(1, total).map(page => (

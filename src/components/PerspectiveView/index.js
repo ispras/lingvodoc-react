@@ -15,6 +15,7 @@ import ApproveModal from 'components/ApproveModal';
 import TableHeader from './TableHeader';
 import TableBody from './TableBody';
 import Pagination from './Pagination';
+import { getTranslation } from 'api/i18n';
 
 const dimmerStyle = { minHeight: '600px' };
 
@@ -337,12 +338,12 @@ const P = ({
   
   return (
     <div style={{ overflowY: 'auto' }}>
-      {mode === 'edit' && <Button positive icon="plus" content="Add lexical entry" onClick={addEntry} />}
+      {mode === 'edit' && <Button positive icon="plus" content={getTranslation("Add lexical entry")} onClick={addEntry} />}
       {mode === 'edit' && (
         <Button
           negative
           icon="minus"
-          content="Remove lexical entries"
+          content={getTranslation("Remove lexical entries")}
           onClick={removeEntries}
           disabled={selectedEntries.length < 1}
         />
@@ -351,13 +352,17 @@ const P = ({
         <Button
           positive
           icon="plus"
-          content="Merge lexical entries"
+          content={getTranslation("Merge lexical entries")}
           onClick={mergeEntries}
           disabled={selectedEntries.length < 2}
         />
       )}
-      {mode === 'publish' && isAuthenticated && <Button positive content="Publish Entities" disabled={approveDisableCondition(entries)} onClick={onApprove} />}
-      {mode === 'contributions' && isAuthenticated && <Button positive content="Accept Contributions" disabled={approveDisableCondition(entries)} onClick={onApprove} />}
+      {mode === 'publish' && isAuthenticated &&
+        <Button positive content={getTranslation("Publish Entities")} disabled={approveDisableCondition(entries)} onClick={onApprove} />
+      }
+      {mode === 'contributions' && isAuthenticated &&
+        <Button positive content={getTranslation("Accept Contributions")} disabled={approveDisableCondition(entries)} onClick={onApprove} />
+      }
       <Table celled padded className={className}>
         <TableHeader
           columns={fields}

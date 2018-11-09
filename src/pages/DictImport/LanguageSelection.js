@@ -2,8 +2,8 @@ import React from 'react';
 import { pure } from 'recompose';
 import { Form, Input, Modal, Button } from 'semantic-ui-react';
 
-import LanguageSelect from 'components/Tree/LanguageSelect';
 import Languages from 'components/Languages';
+import { getTranslation } from 'api/i18n';
 
 class Dictionary extends React.Component {
   constructor(props) {
@@ -19,7 +19,7 @@ class Dictionary extends React.Component {
       blob, language, locales, onSetLanguage, onSetTranslation,
     } = this.props;
 
-    const triggerText = (language && language.get('translation', false)) || 'Select Parent Language';
+    const triggerText = (language && language.get('translation', false)) || getTranslation('Select Parent Language');
     const trigger = <Button onClick={this.toggle}>{triggerText}</Button>;
 
     return (
@@ -27,7 +27,7 @@ class Dictionary extends React.Component {
         <b className="blob-name">{blob.get('name')}</b>
         <div className="blob-lang">
           <Modal dimmer="blurring" open={this.state.open} onClose={this.toggle} trigger={trigger}>
-            <Modal.Header>Select Language for {blob.get('name')}</Modal.Header>
+            <Modal.Header>{getTranslation('Select Language for')} {blob.get('name')}</Modal.Header>
             <Modal.Content style={{ minHeight: '500px' }}>
               <div style={{ height: '500px' }}>
                 <Languages
@@ -44,7 +44,7 @@ class Dictionary extends React.Component {
             <Form.Group widths="equal">
               {locales.map(locale => (
                 <Form.Field key={locale.id}>
-                  <label>Translation for {locale.intl_name}</label>
+                  <label>{getTranslation('Translation for')} {locale.intl_name}</label>
                   <Input
                     value={blob.getIn(['translation', locale.id], '')}
                     onChange={(e, data) => onSetTranslation(locale.id, data.value)}

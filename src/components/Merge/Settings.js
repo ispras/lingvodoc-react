@@ -10,6 +10,7 @@ import styled from 'styled-components';
 
 import { queryPerspective, queryLexicalEntries, LexicalEntryView } from 'components/PerspectiveView';
 import Pagination from './Pagination';
+import { getTranslation } from 'api/i18n';
 
 const ROWS_PER_PAGE = 10;
 
@@ -128,7 +129,7 @@ class MergeSettings extends React.Component {
         groupList: [groupIds],
       },
     }).then(() => {
-      window.logger.suc('Merged successfully.');
+      window.logger.suc(getTranslation('Merged successfully'));
     });
   }
 
@@ -144,7 +145,7 @@ class MergeSettings extends React.Component {
         groupList: groups,
       },
     }).then(() => {
-      window.logger.suc('Merge task created successfully.');
+      window.logger.suc(getTranslation('Merge task created successfully'));
     });
   }
 
@@ -191,7 +192,7 @@ class MergeSettings extends React.Component {
     return (
       <div>
         <Segment>
-          <Header>Entity matching algorithm</Header>
+          <Header>{getTranslation('Entity matching algorithm')}</Header>
 
           <List>
             <List.Item>
@@ -219,7 +220,7 @@ class MergeSettings extends React.Component {
           {mode === 'fields' && (
             <Container>
               {fields.size === 0 && (
-                <Segment textAlign="center">No fields, click button below to add a new one.</Segment>
+                <Segment textAlign="center">{getTranslation('No fields, click button below to add a new one')}</Segment>
               )}
               {fields.map((e, i) => (
                 <FieldBlock key={i}>
@@ -243,7 +244,7 @@ class MergeSettings extends React.Component {
                     </List.Item>
                     <List.Item>
                       <Input
-                        label="Levenshtein distance limit for entity content matching"
+                        label={getTranslation("Levenshtein distance limit for entity content matching")}
                         value={Math.round(e.levenshtein) == e.levenshtein ? e.levenshtein.toString() + ".0" : e.levenshtein}
                         onChange={(ev, { value }) =>
                           dispatch({ type: 'SET_LEVENSHTEIN', payload: { index: i, levenshtein: value } })
@@ -252,7 +253,7 @@ class MergeSettings extends React.Component {
                     </List.Item>
                     <List.Item>
                       <Checkbox
-                        label="Split contents of the field on whitespace before matching."
+                        label={getTranslation("Split contents of the field on whitespace before matching")}
                         checked={e.split_space}
                         onChange={(_e, { checked }) =>
                           dispatch({ type: 'SET_WHITESPACE_FLAG', payload: { index: i, checked } })
@@ -261,7 +262,7 @@ class MergeSettings extends React.Component {
                     </List.Item>
                     <List.Item>
                       <Checkbox
-                        label="Split contents of the field on punctuation before matching"
+                        label={getTranslation("Split contents of the field on punctuation before matching")}
                         checked={e.split_punctuation}
                         onChange={(_e, { checked }) =>
                           dispatch({ type: 'SET_PUNCTUATION_FLAG', payload: { index: i, checked } })
@@ -272,14 +273,14 @@ class MergeSettings extends React.Component {
                 </FieldBlock>
               ))}
               <Container textAlign="center">
-                <Button basic content="Add field" onClick={() => dispatch({ type: 'ADD_FIELD' })} />
+                <Button basic content={getTranslation("Add field")} onClick={() => dispatch({ type: 'ADD_FIELD' })} />
               </Container>
             </Container>
           )}
 
           {mode === 'simple' && (
             <Input
-              label="Entity matching threshold"
+              label={getTranslation("Entity matching threshold")}
               value={Math.round(threshold) == threshold ? threshold.toString() + ".0" : threshold}
               onChange={(e, { value }) => dispatch({ type: 'SET_THRESHOLD', payload: value })}
             />
@@ -289,7 +290,7 @@ class MergeSettings extends React.Component {
             <div style={{marginTop: '0.75em'}}>
               <Button
                 positive
-                content="View suggestions"
+                content={getTranslation("View suggestions")}
                 onClick={this.getSuggestions}
                 disabled={this.state.loading}
               />
@@ -300,8 +301,7 @@ class MergeSettings extends React.Component {
         {this.state.loading && (
           <Segment>
             <Container textAlign="center">
-              Loading suggestions...
-
+              {getTranslation("Loading suggestions...")}
               <div style={{marginTop: '2em'}}>
                 <Header as="h4" icon>
                   <Icon name="spinner" loading />
@@ -312,13 +312,12 @@ class MergeSettings extends React.Component {
         )}
 
         {!this.state.loading && (
-
           <Segment>
             {this.state.groups.length > 0 && (
               <List>
                 <List.Item>
                   <Checkbox
-                    label="Publish result of entity merge if any merged entity is published"
+                    label={getTranslation("Publish result of entity merge if any merged entity is published")}
                     checked={publishedAny}
                     onChange={(e, { checked }) => dispatch({ type: 'SET_MERGE_PUBLISHED_MODE', payload: checked })}
                   />
@@ -328,7 +327,7 @@ class MergeSettings extends React.Component {
                   <Button
                     basic
                     size="small"
-                    content="Select all on current page"
+                    content={getTranslation("Select all on current page")}
                     onClick={() =>
                       dispatch({
                         type: 'SELECT_ALL_PAGE',
@@ -345,12 +344,12 @@ class MergeSettings extends React.Component {
               </List>
             )}
 
-            {groups.length === 0 && <Container textAlign="center">No suggestions</Container>}
+            {groups.length === 0 && <Container textAlign="center">{getTranslation("No suggestions")}</Container>}
 
             {groups.map((group, i) => (
               <div key={i}>
                 <Header>
-                  Group #{i}, confidence: {
+                {getTranslation("Group") + ' #' + i + ', ' + getTranslation("confidence")  + ':'} {
                     group.confidence.toFixed(4).length < group.confidence.toString().length
                       ? group.confidence.toFixed(4) : group.confidence.toString()}
                 </Header>
@@ -369,7 +368,7 @@ class MergeSettings extends React.Component {
                   <div style={{marginTop: '0.75em'}}>
                     <Button
                       positive
-                      content="Merge group"
+                      content={getTranslation("Merge group")}
                       onClick={() => this.mergeGroup(i)}
                       disabled={this.getSelected(i).length < 2}
                     />

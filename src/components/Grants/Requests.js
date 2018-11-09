@@ -1,12 +1,12 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { compose, branch, renderComponent, renderNothing, pure } from 'recompose';
+import { compose, branch, renderComponent, renderNothing } from 'recompose';
 import { graphql } from 'react-apollo';
 import { Table, Button, Tab, Card } from 'semantic-ui-react';
 import { groupBy, isEqual } from 'lodash';
 import moment from 'moment';
 
 import Placeholder from 'components/Placeholder';
+import { getTranslation } from 'api/i18n';
 
 import { getUserRequestsQuery, acceptMutation } from './graphql';
 
@@ -29,7 +29,7 @@ function acceptRequest(mutation, id, accept) {
 }
 
 const Subject = ({
-  request, grants, users, dictionaries, accept,
+  request, grants, dictionaries,
 }) => {
   switch (request.type) {
     case 'add_dict_to_grant':
@@ -41,7 +41,7 @@ const Subject = ({
     case 'participate_org':
     case 'administrate_org':
     default:
-      return <div>Unknow request type!</div>;
+      return <div>{getTranslation('Unknow request type!')}</div>;
   }
 };
 
@@ -52,18 +52,18 @@ const RequestsPane = ({
     <Table celled padded>
       <Table.Header>
         <Table.Row>
-          <Table.HeaderCell>User</Table.HeaderCell>
-          <Table.HeaderCell>Subject</Table.HeaderCell>
-          <Table.HeaderCell>Date</Table.HeaderCell>
-          <Table.HeaderCell>Message</Table.HeaderCell>
-          <Table.HeaderCell>Action</Table.HeaderCell>
+          <Table.HeaderCell>{getTranslation('User')}</Table.HeaderCell>
+          <Table.HeaderCell>{getTranslation('Subject')}</Table.HeaderCell>
+          <Table.HeaderCell>{getTranslation('Date')}</Table.HeaderCell>
+          <Table.HeaderCell>{getTranslation('Message')}</Table.HeaderCell>
+          <Table.HeaderCell>{getTranslation('Action')}</Table.HeaderCell>
         </Table.Row>
       </Table.Header>
 
       <Table.Body>
         {requests.length === 0 && (
           <Table.Row>
-            <Table.Cell>No entries</Table.Cell>
+            <Table.Cell>{getTranslation('No entries')}</Table.Cell>
           </Table.Row>
         )}
         {requests.map(r => (
@@ -77,10 +77,10 @@ const RequestsPane = ({
             <Table.Cell>{r.message}</Table.Cell>
             <Table.Cell>
               <Button positive size="mini" onClick={() => acceptRequest(accept, r.id, true)}>
-                Accept
+                {getTranslation('Accept')}
               </Button>
               <Button negative size="mini" onClick={() => acceptRequest(accept, r.id, false)}>
-                Reject
+                {getTranslation('Reject')}
               </Button>
             </Table.Cell>
           </Table.Row>
@@ -98,7 +98,7 @@ const Requests = ({ data, accept }) => {
 
   const panes = [
     {
-      menuItem: 'Dictionaries',
+      menuItem: getTranslation('Dictionaries'),
       render: () => (
         <RequestsPane
           requests={requestsByType.add_dict_to_grant || []}
@@ -110,7 +110,7 @@ const Requests = ({ data, accept }) => {
       ),
     },
     {
-      menuItem: 'Grants',
+      menuItem: getTranslation('Grants'),
       render: () => (
         <RequestsPane
           requests={requestsByType.grant_permission || []}
@@ -122,7 +122,7 @@ const Requests = ({ data, accept }) => {
       ),
     },
     {
-      menuItem: 'Organization users',
+      menuItem: getTranslation('Organization users'),
       render: () => (
         <RequestsPane
           requests={requestsByType.participate_org || []}
@@ -134,7 +134,7 @@ const Requests = ({ data, accept }) => {
       ),
     },
     {
-      menuItem: 'Organization admins',
+      menuItem: getTranslation('Organization admins'),
       render: () => (
         <RequestsPane
           requests={requestsByType.administrate_org || []}

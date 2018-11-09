@@ -7,6 +7,7 @@ import { Modal, Container, Button, Divider, Grid, Form, Table, Header } from 'se
 import DatePicker from 'react-datepicker';
 import moment from 'moment';
 import { clone } from 'lodash';
+import { getTranslation } from 'api/i18n';
 
 import 'react-datepicker/dist/react-datepicker.css';
 
@@ -100,7 +101,7 @@ class ApproveModal extends React.Component {
     const { mode, onClose } = this.props;
     const { startDate, endDate, user_id, approveMap } = this.state;
     const { statistic: statistics } = perspective;
-    const publishOrAccept = mode == 'publish' ? 'Publish' : 'Accept';
+    const publishOrAccept = mode == 'publish' ? getTranslation('Publish') : getTranslation('Accept');
 
     let toApprove = null;
     let keys = [];
@@ -118,10 +119,10 @@ class ApproveModal extends React.Component {
 
     return (
       <Modal open closeIcon closeOnDimmerClick={false} onClose={onClose}>
-        <Modal.Header>{mode == 'publish' ? 'Publish Entities' : 'Accept Contributions'}</Modal.Header>
+        <Modal.Header>{mode == 'publish' ? getTranslation('Publish Entities') : getTranslation('Accept Contributions')}</Modal.Header>
         <Modal.Content scrolling>
           <div>
-            From:
+            {getTranslation('From:')}
             <DatePicker
               selected={startDate}
               showTimeSelect
@@ -130,7 +131,7 @@ class ApproveModal extends React.Component {
               onChange={date => this.setState({ startDate: date})}
               dateFormat="DD.MM.YYYY HH:mm"
             />
-            To:
+            {getTranslation('To:')}
             <DatePicker
               selected={endDate}
               showTimeSelect
@@ -141,7 +142,7 @@ class ApproveModal extends React.Component {
             />
           </div>
           <Container textAlign="center">
-            <Button color='blue' content={'Refresh'} onClick={this.getStatistics} />
+            <Button color='blue' content={getTranslation('Refresh')} onClick={this.getStatistics} />
           </Container>
           <Divider/>
           <Grid columns={2} divided centered>
@@ -155,12 +156,12 @@ class ApproveModal extends React.Component {
             <Grid.Column>
               {user_id == null && (
                 <Container textAlign="center">
-                  <Header>Please select a user</Header>
+                  <Header>{getTranslation('Please select a user')}</Header>
                 </Container>
               )}
               {user_id != null && keys.length == 0 && (
                 <Container textAlign="center">
-                  <Header>{'Nothing to ' + publishOrAccept.toLowerCase()}</Header>
+                  <Header>{getTranslation('Nothing to') + ' ' + publishOrAccept.toLowerCase()}</Header>
                 </Container>
               )}
               {toApprove && keys.length != 0 && (
@@ -187,7 +188,7 @@ class ApproveModal extends React.Component {
                 <Container textAlign="center">
                   <Button
                     color='green'
-                    content={publishOrAccept + ' All'}
+                    content={publishOrAccept + ' ' + getTranslation('All')}
                     disabled={approveMap[user_id] && keys.every(key => approveMap[user_id].indexOf(key.name) != -1)}
                     onClick={() => this.onApprove(keys)} />
                 </Container>

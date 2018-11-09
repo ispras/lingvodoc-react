@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Button, Modal, Image as Img } from 'semantic-ui-react';
 import { find, isEqual } from 'lodash';
 import Entities from './index';
+import { getTranslation } from 'api/i18n';
 
 const Image = (props) => {
   const {
@@ -23,7 +24,7 @@ const Image = (props) => {
     <Component className={className}>
       <Button.Group basic icon size="mini">
         <Button as="a" href={content} icon="download" />
-        <Modal basic trigger={<Button>View</Button>}>
+        <Modal basic trigger={<Button>{getTranslation("View")}</Button>}>
           <Modal.Content>
             <Img src={content} />
           </Modal.Content>
