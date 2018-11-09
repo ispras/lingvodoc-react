@@ -333,7 +333,7 @@ const P = ({
     });
   }
 
-  const isAdmin = user && user.user.id == 1;
+  const isAuthenticated = user && user.user.id;
   
   return (
     <div style={{ overflowY: 'auto' }}>
@@ -356,8 +356,8 @@ const P = ({
           disabled={selectedEntries.length < 2}
         />
       )}
-      {mode === 'publish' && isAdmin && <Button positive content="Publish Entities" disabled={approveDisableCondition(entries)} onClick={onApprove} />}
-      {mode === 'contributions' && isAdmin && <Button positive content="Accept Contributions" disabled={approveDisableCondition(entries)} onClick={onApprove} />}
+      {mode === 'publish' && isAuthenticated && <Button positive content="Publish Entities" disabled={approveDisableCondition(entries)} onClick={onApprove} />}
+      {mode === 'contributions' && isAuthenticated && <Button positive content="Accept Contributions" disabled={approveDisableCondition(entries)} onClick={onApprove} />}
       <Table celled padded className={className}>
         <TableHeader
           columns={fields}
