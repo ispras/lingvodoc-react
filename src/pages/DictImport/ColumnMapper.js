@@ -2,10 +2,11 @@ import React from 'react';
 import { is } from 'immutable';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { compose, pure } from 'recompose';
-import { Popup, Button, Divider } from 'semantic-ui-react';
+import { compose } from 'recompose';
+import { Popup, Button } from 'semantic-ui-react';
 import { openCreateFieldModal } from 'ducks/fields';
 import CreateFieldModal from 'components/CreateFieldModal';
+import { getTranslation } from 'api/i18n';
 
 function valueColor(value) {
   if (value === 'keep') {
@@ -24,7 +25,7 @@ function valueColor(value) {
 }
 
 function FieldButton({
-  text, onClick, value, isSelected,
+  text, onClick, isSelected,
 }) {
   const color = isSelected ? { color: 'blue' } : {};
 
@@ -44,7 +45,7 @@ function Column({
 
   const selectedField = fieldOptions.find(x => is(x.value, type));
   const triggerColor = selectedField ? { color: 'blue' } : {};
-  const triggerText = (selectedField && selectedField.text) || 'Field Type';
+  const triggerText = (selectedField && selectedField.text) || getTranslation('Field Type');
 
   let inner;
 
@@ -53,7 +54,7 @@ function Column({
   }
 
   if (isLink) {
-    inner = <Button disabled content="Relation" />;
+    inner = <Button disabled content={getTranslation("Relation")} />;
   }
 
   if (!spread && !isLink) {
@@ -62,7 +63,7 @@ function Column({
     inner = (
       <Popup trigger={trigger} position="bottom center" on="click">
         <Popup.Header>
-          <Button basic content="Create a new field" onClick={actions.openCreateFieldModal} />
+          <Button basic content={getTranslation("Create a new field")} onClick={actions.openCreateFieldModal} />
         </Popup.Header>
         <Popup.Content className="popup-field-type">
           {fieldOptions.map(f => (

@@ -10,6 +10,7 @@ import { connect } from 'react-redux';
 import { languagesQuery } from 'graphql/language';
 import Translations from 'components/Translation';
 import EditLanguageMetadata from 'components/EditLanguageMetadata';
+import { getTranslation } from 'api/i18n';
 
 class CreateLanguageModal extends React.Component {
   constructor(props) {
@@ -48,16 +49,16 @@ class CreateLanguageModal extends React.Component {
 
     return (
       <Modal dimmer open size="small" closeIcon closeOnDimmerClick={false} onClose={actions.closeModal}>
-        <Modal.Header>Create language</Modal.Header>
+        <Modal.Header>{getTranslation('Create language')}</Modal.Header>
         <Modal.Content>
-          <h4>Translations</h4>
+          <h4>{getTranslation('Translations')}</h4>
           <Translations onChange={translations => this.setState({ translations })} />
           <Divider/>
           <EditLanguageMetadata mode='create' onChange={metadata => this.setState({ metadata })} />
         </Modal.Content>
         <Modal.Actions>
-          <Button icon="minus" content="Save" onClick={this.saveLanguage} />
-          <Button icon="minus" content="Cancel" onClick={actions.closeModal} />
+          <Button icon="minus" content={getTranslation("Save")} onClick={this.saveLanguage} />
+          <Button icon="minus" content={getTranslation("Cancel")} onClick={actions.closeModal} />
         </Modal.Actions>
       </Modal>
     );

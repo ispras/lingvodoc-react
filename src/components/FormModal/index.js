@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Form, Modal, Button, Icon, Message } from 'semantic-ui-react';
 import { Field, reduxForm } from 'redux-form';
+import { getTranslation } from 'api/i18n';
 
 function handleKeyDown(cb) {
   return (event) => {
@@ -70,10 +71,10 @@ function FormModal(props) {
             {message}
           </Message>
           <Button basic color="red" type="button" onClick={close}>
-            <Icon name="remove" /> Close
+            <Icon name="remove" /> {getTranslation("Close")}
           </Button>
           <Button color="green" type="submit" disabled={pristine || submitting}>
-            <Icon name="checkmark" /> Submit
+            <Icon name="checkmark" /> {getTranslation("Submit")}
           </Button>
         </Form>
       </Modal.Content>

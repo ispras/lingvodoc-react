@@ -5,25 +5,27 @@ import { graphql } from 'react-apollo';
 import { connectedQuery } from './graphql';
 import Tree from './Tree';
 import buildPartialLanguageTree from './partialTree';
+import { getTranslation } from 'api/i18n';
 
 const ConnectedLexicalEntries = (props) => {
+  const { data: { loading, error } } = props;
+
+  if (error || loading) {
+    return null;
+  }
+
   const {
-    data: { loading, error, connected_words: connectedWords },
+    data: { connected_words: connectedWords },
     allLanguages,
     allDictionaries,
     allPerspectives,
     mode,
     entitiesMode
   } = props;
-
-  if (error || loading) {
-    return null;
-  }
-
   const { lexical_entries: lexicalEntries } = connectedWords;
 
   if (lexicalEntries.length === 0) {
-    return <span>No entries</span>;
+    return <span>{getTranslation('No entries')}</span>;
   }
 
   const resultsTree = buildPartialLanguageTree({

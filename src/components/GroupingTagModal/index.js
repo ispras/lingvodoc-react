@@ -16,6 +16,7 @@ import {
 } from './graphql';
 import ConnectedEntries from './ConnectedEntries';
 import Search from './search';
+import { getTranslation } from 'api/i18n';
 
 const ModalContentWrapper = styled('div')`
   min-height: 60vh;
@@ -35,11 +36,11 @@ const EditGroupingTag = (props) => {
 
   const panes = [
     {
-      menuItem: 'View',
+      menuItem: getTranslation('View'),
       render: () => (
         <div>
           <Segment textAlign="center">
-            <Button negative content="Disconnect" onClick={leaveGroup} />
+            <Button negative content={getTranslation("Disconnect")} onClick={leaveGroup} />
           </Segment>
           <Segment padded="very" textAlign="center">
             <ConnectedEntries
@@ -56,7 +57,7 @@ const EditGroupingTag = (props) => {
       ),
     },
     {
-      menuItem: 'Add connection',
+      menuItem: getTranslation('Add connection'),
       render: () => (
         <Search
           lexicalEntry={lexicalEntry}
@@ -90,7 +91,7 @@ const ViewGroupingTag = (props) => {
 
   const panes = [
     {
-      menuItem: 'View',
+      menuItem: getTranslation('View'),
       render: () => (
         <div>
           <Segment padded="very" textAlign="center">
@@ -129,7 +130,7 @@ const PublishGroupingTag = (props) => {
 
   const panes = [
     {
-      menuItem: 'Publish',
+      menuItem: getTranslation('Publish'),
       render: () => (
         <div>
           {entity && (
@@ -139,8 +140,8 @@ const PublishGroupingTag = (props) => {
                 checked={entity.published}
                 onChange={(e, { checked }) => publish(entity, checked)}
               />
-              {entity.published && <span>The entity is currently published. Click to unpublish.</span>}
-              {!entity.published && <span>The entity is NOT currently published. Click to publish.</span>}
+              {entity.published && <span>{getTranslation('The entity is currently published. Click to unpublish.')}</span>}
+              {!entity.published && <span>{getTranslation('The entity is NOT currently published. Click to publish.')}</span>}
             </Segment>
           )}
           <Segment padded="very" textAlign="center">
@@ -180,12 +181,12 @@ const ContributionsGroupingTag = (props) => {
 
   const panes = [
     {
-      menuItem: 'Contibutions',
+      menuItem: getTranslation('Contibutions'),
       render: () => (
         <div>
           {entity && (
             <Segment>
-              <Button positive content="Accept" disabled={entity.accepted} onClick={() => accept(entity, true)} />
+              <Button positive content={getTranslation("Accept")} disabled={entity.accepted} onClick={() => accept(entity, true)} />
             </Segment>
           )}
           <Segment padded="very" textAlign="center">
@@ -245,7 +246,7 @@ class GroupingTagModal extends React.Component {
   joinGroup(targetEntry) {
     // connect to lexical group
     const {
-      connect: mutate, lexicalEntry, fieldId, entitiesMode,
+      connect: mutate, lexicalEntry, fieldId,
     } = this.props;
 
     mutate({
@@ -262,7 +263,7 @@ class GroupingTagModal extends React.Component {
       //  },
       ],
     }).then(() => {
-      window.logger.suc('Connected.');
+      window.logger.suc(getTranslation('Connected'));
     });
   }
 
@@ -284,7 +285,7 @@ class GroupingTagModal extends React.Component {
         },
       ],
     }).then(() => {
-      window.logger.suc('Disconnected.');
+      window.logger.suc(getTranslation('Disconnected'));
     });
   }
 
@@ -348,7 +349,7 @@ class GroupingTagModal extends React.Component {
     return (
       <div>
         <Modal dimmer open size="fullscreen" closeOnDimmerClick={false} closeIcon onClose={onClose}>
-          <Modal.Header>Grouping tag</Modal.Header>
+          <Modal.Header>{getTranslation('Grouping tag')}</Modal.Header>
           <Modal.Content scrolling>
             <ModalContentWrapper>
               <Component
@@ -366,7 +367,7 @@ class GroupingTagModal extends React.Component {
             </ModalContentWrapper>
           </Modal.Content>
           <Modal.Actions>
-            <Button icon="minus" content="Cancel" onClick={onClose} />
+            <Button icon="minus" content={getTranslation("Cancel")} onClick={onClose} />
           </Modal.Actions>
         </Modal>
       </div>

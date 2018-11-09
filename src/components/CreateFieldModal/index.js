@@ -11,6 +11,7 @@ import { every } from 'lodash';
 import { compositeIdToString } from 'utils/compositeId';
 import Translations from 'components/Translation';
 import { fieldsQuery } from 'pages/DictImport';
+import { getTranslation } from 'api/i18n';
 
 class CreateFieldModal extends React.Component {
   constructor(props) {
@@ -73,22 +74,22 @@ class CreateFieldModal extends React.Component {
 
     return (
       <Modal dimmer open size="small">
-        <Modal.Header>Create field</Modal.Header>
+        <Modal.Header>{getTranslation('Create field')}</Modal.Header>
         <Modal.Content>
           <Grid centered divided columns={2}>
             <Grid.Column>
-              <Header>Translations</Header>
+              <Header>{getTranslation('Translations')}</Header>
               <Translations onChange={translations => this.setState({ translations })} />
             </Grid.Column>
             <Grid.Column>
-              <Header>Type</Header>
+              <Header>{getTranslation('Type')}</Header>
               <Select value={this.state.dataTypeId} options={options} onChange={this.onChangeDataType} />
             </Grid.Column>
           </Grid>
         </Modal.Content>
         <Modal.Actions>
-          <Button icon="plus" content="Save" onClick={this.saveField} disabled={this.isSaveDisabled()} />
-          <Button icon="minus" content="Cancel" onClick={actions.closeCreateFieldModal} />
+          <Button icon="plus" content={getTranslation("Save")} onClick={this.saveField} disabled={this.isSaveDisabled()} />
+          <Button icon="minus" content={getTranslation("Cancel")} onClick={actions.closeCreateFieldModal} />
         </Modal.Actions>
       </Modal>
     );

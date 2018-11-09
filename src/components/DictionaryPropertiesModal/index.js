@@ -14,6 +14,7 @@ import { closeDictionaryPropertiesModal } from 'ducks/dictionaryProperties';
 import { isEqual, sortBy } from 'lodash';
 import { compositeIdToString } from 'utils/compositeId';
 import Map from './Map';
+import { getTranslation } from 'api/i18n';
 
 const query = gql`
   query dictionaryProps($id: LingvodocID!) {
@@ -262,7 +263,7 @@ class Properties extends React.Component {
           <MarginForm>
             <Segment>
               <Form.Group widths='equal'>
-                <Label size='large'>Files</Label>
+                <Label size='large'>{getTranslation('Files')}</Label>
                 <Form.Dropdown
                   labeled
                   fluid
@@ -273,19 +274,24 @@ class Properties extends React.Component {
                   onChange={this.onChangeFiles}
                   value={this.state.files}
                 />
-                <Button positive content="Save" disabled={JSON.stringify(this.state.files) == JSON.stringify(this.initialState.files)} onClick={this.onSaveFiles} />
+                <Button
+                  positive
+                  content={getTranslation("Save")}
+                  disabled={JSON.stringify(this.state.files) == JSON.stringify(this.initialState.files)}
+                  onClick={this.onSaveFiles}
+                />
               </Form.Group>
             </Segment>
             <Segment>
               <Form.Group widths='equal'>
-                <Label size='large'>Location</Label>
+                <Label size='large'>{getTranslation('Location')}</Label>
                 <Form.Input
                   fluid
                   value={this.state.location == null ? '' : JSON.stringify(this.state.location)}
                   disabled
                   onChange={() => {}}
                 />
-                <Button positive content="Save" disabled={this.state.location == this.initialState.location} onClick={this.onSaveLocation} />
+                <Button positive content={getTranslation("Save")} disabled={this.state.location == this.initialState.location} onClick={this.onSaveLocation} />
                 </Form.Group>
             </Segment>
           </MarginForm>
@@ -294,8 +300,14 @@ class Properties extends React.Component {
               <div style={{ height: '400px' }}>
                 <Form>
                   <Form.Group widths='equal'>
-                    <Label size="large">Parent language: {selectedParentName || parentName}</Label>
-                    <Button size="medium" positive disabled={selectedParentName == parentName} onClick={this.onUpdateParentLanguage}>Update</Button>
+                    <Label size="large">{getTranslation('Parent language')}: {selectedParentName || parentName}</Label>
+                    <Button
+                      size="medium"
+                      positive
+                      disabled={selectedParentName == parentName}
+                      onClick={this.onUpdateParentLanguage}>
+                      {getTranslation('Update')}
+                    </Button>
                   </Form.Group>
                 </Form>
                 <Languages height='95%' expanded={false} selected={this.state.parent} onSelect={this.onSelectParentLanguage}/>
@@ -307,7 +319,7 @@ class Properties extends React.Component {
           </Grid>
         </Modal.Content>
         <Modal.Actions>
-          <Button icon="minus" content="Close" onClick={actions.closeDictionaryPropertiesModal} />
+          <Button icon="minus" content={getTranslation("Close")} onClick={actions.closeDictionaryPropertiesModal} />
         </Modal.Actions>
       </Modal>
     );

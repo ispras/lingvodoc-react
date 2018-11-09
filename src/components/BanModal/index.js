@@ -1,14 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { compose, branch, renderNothing } from 'recompose';
-import { graphql, withApollo } from 'react-apollo';
+import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import { closeModal } from 'ducks/ban';
 import { bindActionCreators } from 'redux';
-import { reduxForm } from 'redux-form';
-import { Button, Dropdown, Form, Icon, List, Message, Modal } from 'semantic-ui-react';
+import { Button, Dropdown, Modal } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import { sortBy } from 'lodash';
+import { getTranslation } from 'api/i18n';
 
 const queryUsers = gql`
   query Users {
@@ -52,7 +52,7 @@ class BanModal extends React.Component
       this.props.closeModal();
       refetch();
     }, () => {
-      window.logger.err('Failed to ban user!');
+      window.logger.err(getTranslation('Failed to ban user!'));
     });
   }
 
@@ -80,12 +80,12 @@ class BanModal extends React.Component
     return (
       <div>
         <Modal dimmer open size="small">
-          <Modal.Header>User account activation/deactivation</Modal.Header>
+          <Modal.Header>{getTranslation('User account activation/deactivation')}</Modal.Header>
           <Modal.Content>
             <div style={{width: '80%'}}>
               <Dropdown
                 fluid
-                placeholder="Select user"
+                placeholder={getTranslation("Select user")}
                 search
                 selection
                 options={user_selection}
@@ -102,13 +102,13 @@ class BanModal extends React.Component
               disabled={this.state.selected_user === null}
               color="purple"
               content={
-                this.state.selected_user === null ? "Activate / Deactivate" :
-                this.state.selected_user.is_active ? "Deactivate" : "Activate"}
+                this.state.selected_user === null ? getTranslation("Activate / Deactivate") :
+                this.state.selected_user.is_active ? getTranslation("Deactivate") : getTranslation("Activate")}
               onClick={this.handleActivateDeactivate} />
             <Button
               icon="remove"
               basic
-              content="Cancel"
+              content={getTranslation("Cancel")}
               onClick={this.props.closeModal} />
           </Modal.Actions>
         </Modal>

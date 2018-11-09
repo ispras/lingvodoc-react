@@ -9,6 +9,7 @@ import gql from 'graphql-tag';
 import { graphql, withApollo } from 'react-apollo';
 import TranslationGist from '../TranslationGist';
 import EditLanguageMetadata from 'components/EditLanguageMetadata';
+import { getTranslation } from 'api/i18n';
 
 const getMetadataQuery = gql`
   query GetMetadata($id: LingvodocID!) {
@@ -83,15 +84,15 @@ class EditModal extends React.Component {
 
     return (
       <Modal dimmer open size="small" closeIcon closeOnDimmerClick={false} onClose={actions.closeModal}>
-        <Modal.Header>Language edit</Modal.Header>
+        <Modal.Header>{getTranslation('Language edit')}</Modal.Header>
         <Modal.Content>
-          <h4>Translations</h4>
+          <h4>{getTranslation('Translations')}</h4>
           <TranslationGist id={language.translation_gist_id} editable />
           <Divider/>
           <EditLanguageMetadata mode='edit' metadata={this.state.metadata} onSave={metadata => this.onUpdateMetadata(metadata)} />
         </Modal.Content>
         <Modal.Actions>
-          <Button icon="minus" content="Close" onClick={actions.closeModal} />
+          <Button icon="minus" content={getTranslation("Close")} onClick={actions.closeModal} />
         </Modal.Actions>
       </Modal>
     );

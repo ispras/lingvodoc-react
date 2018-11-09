@@ -2,39 +2,40 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { editForm } from 'ducks/user';
 import FormModal from 'components/FormModal';
+import { getTranslation } from 'api/i18n';
 
 const EDIT_FIELDS = [
   {
     name: 'email',
     type: 'email',
-    label: 'Email',
+    label: getTranslation('Email'),
   },
   {
     name: 'name',
     type: 'text',
-    label: 'Full name',
+    label: getTranslation('Full name'),
   },
   {
     name: 'old_password',
     type: 'password',
-    label: 'Old password',
+    label: getTranslation('Old password'),
   },
   {
     name: 'new_password',
     type: 'password',
-    label: 'New password',
+    label: getTranslation('New password')
   },
 ];
 
 function validate({ name, email }) {
   const errors = {};
   if (!name) {
-    errors.name = 'Login is required';
+    errors.name = getTranslation('Login is required');
   }
   if (!email) {
-    errors.email = 'Email is required';
+    errors.email = getTranslation('Email is required');
   } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(email)) {
-    errors.email = 'Invalid email address';
+    errors.email = getTranslation('Invalid email address');
   }
   return errors;
 }
@@ -42,7 +43,7 @@ function validate({ name, email }) {
 const EditUserModal = props =>
   <FormModal
     form="edit"
-    header="Edit profile"
+    header={getTranslation("Edit profile")}
     actions={editForm}
     fields={EDIT_FIELDS}
     initialValues={props.user}

@@ -10,6 +10,7 @@ import PerspectiveView from 'components/PerspectiveView';
 import Merge from 'components/Merge';
 import NotFound from 'pages/NotFound';
 import PerspectivePath from './PerspectivePath';
+import { getTranslation } from 'api/i18n';
 
 import './style.scss';
 
@@ -42,27 +43,27 @@ const Counter = graphql(queryCounter)(({ data }) => {
 const MODES = {
   edit: {
     entitiesMode: 'all',
-    text: 'Edit',
+    text: getTranslation('Edit'),
     component: PerspectiveView,
   },
   publish: {
     entitiesMode: 'all',
-    text: 'Publish',
+    text: getTranslation('Publish'),
     component: PerspectiveView,
   },
   view: {
     entitiesMode: 'published',
-    text: 'View published',
+    text: getTranslation('View published'),
     component: PerspectiveView,
   },
   contributions: {
     entitiesMode: 'not_accepted',
-    text: 'View contributions',
+    text: getTranslation('View contributions'),
     component: PerspectiveView,
   },
   merge: {
     entitiesMode: 'all',
-    text: 'Merge suggestions',
+    text: getTranslation('Merge suggestions'),
     component: Merge,
   },
 };
@@ -85,7 +86,7 @@ const handlers = compose(
 const Filter = handlers(({ value, onChange, onSubmit }) => (
   <div className="ui right aligned category search item">
     <form className="ui transparent icon input" onSubmit={onSubmit}>
-      <input type="text" placeholder="Filter" value={value} onChange={onChange} />
+      <input type="text" placeholder={getTranslation("Filter")} value={value} onChange={onChange} />
       <button type="submit">
         <i className="search link icon" />
       </button>
@@ -116,12 +117,12 @@ const ModeSelector = onlyUpdateForKeys([
         />) : null}
       </Menu.Item>
     ))}
-    <Dropdown item text="Tools">
+    <Dropdown item text={getTranslation("Tools")}>
       <Dropdown.Menu>
-        <Dropdown.Item onClick={openCognateAnalysisModal}>Cognate analysis</Dropdown.Item>
-        <Dropdown.Item onClick={openPhonemicAnalysisModal}>Phonemic analysis</Dropdown.Item>
-        <Dropdown.Item onClick={openPhonologyModal}>Phonology</Dropdown.Item>
-        <Dropdown.Item onClick={soundAndMarkup}>Sound and markup</Dropdown.Item>
+        <Dropdown.Item onClick={openCognateAnalysisModal}>{getTranslation("Cognate analysis")}</Dropdown.Item>
+        <Dropdown.Item onClick={openPhonemicAnalysisModal}>{getTranslation("Phonemic analysis")}</Dropdown.Item>
+        <Dropdown.Item onClick={openPhonologyModal}>{getTranslation("Phonology")}</Dropdown.Item>
+        <Dropdown.Item onClick={soundAndMarkup}>{getTranslation("Sound and markup")}</Dropdown.Item>
       </Dropdown.Menu>
     </Dropdown>
 
@@ -139,10 +140,10 @@ const soundAndMarkup = (perspectiveId, mode, launchSoundAndMarkup) => {
     },
   }).then(
     () => {
-      window.logger.suc('Sound and markup compilation is being created. Check out tasks for details.');
+      window.logger.suc(getTranslation('Sound and markup compilation is being created. Check out tasks for details.'));
     },
     () => {
-      window.logger.err('Failed to launch sound and markup compilation!');
+      window.logger.err(getTranslation('Failed to launch sound and markup compilation!'));
     }
   );
 };
