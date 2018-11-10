@@ -646,9 +646,24 @@ export const LexicalEntryViewByIds = compose(
 )(LexicalEntryViewBaseByIds);
 
 const PerspectiveViewWrapper = ({
-  id, className, mode, entitiesMode, page, data, filter, sortByField,
+  id, className, mode, entitiesMode, page, data, filter, sortByField
 }) => {
   if (data.error) {
+    return null;
+  }
+
+  if (data.perspective === undefined)
+  {
+    /* If we refetch data of this perspective with a different set of column fields during initialization
+     * of CognateAnalysisModal, data.perspective becomes undefined and errors and query refetching ensue.
+     *
+     * See additional info in comment on 'languageQuery' from CognateAnalysis modal.
+     *
+     * This shouldn't happen anymore, but just in case, if this happens, we refetch the data ourselves,
+     * which at least precludes the errors and corresponding waste of time on re-initialization of some
+     * components. */
+
+    data.refetch();
     return null;
   }
 

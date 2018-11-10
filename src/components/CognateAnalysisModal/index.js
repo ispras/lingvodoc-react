@@ -9,19 +9,17 @@ import { bindActionCreators } from 'redux';
 import { isEqual, map } from 'lodash';
 import { connect } from 'react-redux';
 import { compositeIdToString } from 'utils/compositeId';
+import { checkLanguageId } from 'pages/Home/components/LangsNav';
 
-export const cognateAnalysisDataQuery = gql`
+import { perspectiveColumnsFieldsQuery } from 'components/PhonologyModal/graphql';
+
+const cognateAnalysisDataQuery = gql`
   query cognateAnalysisData($perspectiveId: LingvodocID!) {
     perspective(id: $perspectiveId) {
       id
-      parent_id
       translation
       columns {
-        id
         field_id
-        parent_id
-        self_id
-        position
       }
       tree {
         id
@@ -32,24 +30,39 @@ export const cognateAnalysisDataQuery = gql`
       id
       translation
       data_type
-      data_type_translation_gist_id
     }
-    dictionaries(published: true) {
+  }
+`;
+
+/* 
+ * NOTE: We would be ok with only 'field_id' in 'columns', but changing it to fields which are not the
+ * same as fields in 'column' subquery in 'queryPerspective1' query from PerspectiveView causes that query
+ * to invalidate on fetching through this query data containing already loaded perspective data, and that
+ * either causes errors or requires unnecessary refetching.
+ */
+const languageQuery = gql`
+  query language($languageId: LingvodocID!) {
+    language(id: $languageId) {
       id
-      parent_id
-      perspectives {
-        id
-        parent_id
-        translation
-        columns {
+			dictionaries(deleted: false) {
+				id
+				translation
+        perspectives {
           id
-          field_id
-          parent_id
-          self_id
-          position
+          translation
+          columns {
+            id
+            field_id
+            parent_id
+            self_id
+            position
+          }
         }
+			}
+      languages(deleted: false) {
+        id
+        translation
       }
-      translation
     }
   }
 `;
@@ -95,32 +108,43 @@ class CognateAnalysisModal extends React.Component
       computing: false,
     };
 
+    this.initialize = this.initialize.bind(this);
+    this.initPerspectiveData = this.initPerspectiveData.bind(this);
+    this.initPerspectiveList = this.initPerspectiveList.bind(this);
+
     this.handleCreate = this.handleCreate.bind(this);
-    this.initializeData = this.initializeData.bind(this);
-    this.initializePerspectiveList = this.initializePerspectiveList.bind(this);
   }
 
-  /* Initializes data of the cognate analysis dialog. */
-  initializeData()
+  componentDidMount()
   {
-    /* Compiling dictionary of perspective field info so that later we would be able to retrieve this info
-     * efficiently. */
+    this.initialize();
+  }
+
+  async initialize()
+  {
+    const { client, perspectiveId } = this.props;
 
     const { data: {
       all_fields: allFields,
-      dictionaries,
-      perspective,
-      perspective: { columns } }} = this.props;
+      perspective: { columns, tree } }} =
+        
+      await client.query({
+        query: cognateAnalysisDataQuery,
+        variables: { perspectiveId },
+      });
+
+    /* Compiling dictionary of perspective field info so that later we would be able to retrieve this info
+     * efficiently. */
 
     this.fieldDict = {};
     
     for (const field of allFields)
-      this.fieldDict[compositeIdToString(field.id)] = field;
+      this.fieldDict['' + field.id] = field;
 
     /* Additional info of fields of our perspective. */
 
     this.columnFields = columns
-      .map(column => this.fieldDict[compositeIdToString(column.field_id)]);
+      .map(column => this.fieldDict['' + column.field_id]);
 
     this.groupFields = this.columnFields
       .filter(field => field.data_type === 'Grouping Tag');
@@ -135,24 +159,34 @@ class CognateAnalysisModal extends React.Component
 
       if (check_str.includes('cognate') || check_str.includes('когнат'))
       {
-        groupFieldIdStr = compositeIdToString(field.id);
+        groupFieldIdStr = '' + field.id;
         break;
       }
     }
 
     if (!groupFieldIdStr && this.groupFields.length > 0)
-      groupFieldIdStr = compositeIdToString(this.groupFields[0].id);
+      groupFieldIdStr = '' + this.groupFields[0].id;
 
-    /* Finding dictionary of our perspective. */
+    this.state.groupFieldIdStr = groupFieldIdStr;
 
-    this.dictionary = null;
+    /* Finding the root language of the language group we are to perform cognate analysis in. */
 
-    for (const dictionary of dictionaries)
-      if (equalIds(dictionary.id, perspective.parent_id))
+    var baseLanguageId;
+
+    for (var i = 0; i < tree.length; i++)
+    {
+      if (checkLanguageId(tree[i].id))
       {
-        this.dictionary = dictionary;
+        this.treePath = tree.slice(i, tree.length).reverse();
+        baseLanguageId = tree[i].id;
         break;
       }
+    }
+
+    /* Recursively getting data of perspectives available for analysis. */
+
+    this.available_list = [];
+    await this.initPerspectiveData(baseLanguageId, []);
 
     /* If we have selected a default cognate grouping field, we initialize perspectives available for
      * analysis. */
@@ -162,7 +196,7 @@ class CognateAnalysisModal extends React.Component
     if (groupFieldIdStr)
     {
       const {textFieldIdStrList, perspectiveSelectionList} =
-        this.initializePerspectiveList(groupFieldIdStr);
+        this.initPerspectiveList(groupFieldIdStr);
 
       set_state.textFieldIdStrList = textFieldIdStrList;
       set_state.perspectiveSelectionList = perspectiveSelectionList;
@@ -171,12 +205,57 @@ class CognateAnalysisModal extends React.Component
     this.setState(set_state);
   }
 
+  /* Recursively initializes data of perspectives available for the cognate analysis dialog. */
+  async initPerspectiveData(languageId, treePathList)
+  {
+    const { client } = this.props;
+
+    const { data: {
+      language: { dictionaries, languages } }} =
+
+      await client.query({
+        query: languageQuery,
+        variables: { languageId },
+      });
+
+    /* We need perspectives containing at least one grouping and one text field. */
+
+    for (const dictionary of dictionaries)
+      for (const perspective of dictionary.perspectives)
+      {
+        var group_flag = false;
+        var text_flag = false;
+
+        for (const column of perspective.columns)
+        {
+          const field = this.fieldDict['' + column.field_id];
+
+          if (field.data_type === 'Grouping Tag')
+            group_flag = true;
+
+          if (field.data_type === 'Text')
+            text_flag = true;
+        }
+
+        if (group_flag && text_flag)
+
+          this.available_list.push([
+            treePathList.concat([dictionary, perspective]),
+            perspective]);
+      }
+
+    /* Also looking through sublanguages. */
+
+    for (const language of languages)
+
+      await this.initPerspectiveData(
+        language.id, treePathList.concat([language]));
+  }
+
   /* Initializes list of perspectives available for analysis depending on currently selected
    * grouping field. */
-  initializePerspectiveList(groupFieldIdStr)
+  initPerspectiveList(groupFieldIdStr)
   {
-    const { data: { dictionaries }} = this.props;
-
     this.perspective_list = [];
 
     const textFieldIdStrList = [];
@@ -184,59 +263,45 @@ class CognateAnalysisModal extends React.Component
 
     /* Looking through all published dictionaries for siblings of the dictionary of our perspective. */
 
-    for (const dictionary of dictionaries)
+    for (const [treePathList, perspective] of this.available_list)
+    {
+      const textFields =
 
-      if (equalIds(dictionary.parent_id, this.dictionary.parent_id))
+        perspective.columns
+          .map(column => this.fieldDict['' + column.field_id])
+          .filter(field => field.data_type === 'Text');
 
-        for (var i = 0; i < dictionary.perspectives.length; i++)
+      const textFieldsOptions =
 
-          if (dictionary.perspectives[i].columns.findIndex(
-            column => compositeIdToString(column.field_id) == groupFieldIdStr) != -1)
-          {
-            const textFields =
+        textFields.map((f, k) => ({
+          key: k,
+          value: '' + f.id,
+          text: f.translation,
+        }));
 
-              dictionary.perspectives[i].columns
-                .map(column => this.fieldDict[compositeIdToString(column.field_id)])
-                .filter(field => field.data_type === 'Text');
+      this.perspective_list.push({
+        treePathList,
+        perspective,
+        textFieldsOptions})
 
-            /* Checking all sibling perspective with the chosen cognate field which have at least one text
-             * field. */
+      /* Selecting default text field with 'transcription' in its name, or the first field. */
 
-            if (textFields.length <= 0)
-              continue;
+      var textFieldIdStr = '';
 
-            const textFieldsOptions =
+      for (const field of textFields)
+      {
+        const check_str = field.translation.toLowerCase();
 
-              textFields.map((f, k) => ({
-                key: k,
-                value: compositeIdToString(f.id),
-                text: f.translation,
-              }));
+        if (check_str.includes('transcription') || check_str.includes('транскрипция'))
+        {
+          textFieldIdStr = '' + field.id;
+          break;
+        }
+      }
 
-            this.perspective_list.push({
-              dictionary,
-              perspective: dictionary.perspectives[i],
-              textFields,
-              textFieldsOptions})
-
-            /* Selecting default text field with 'transcription' in its name, or the first field. */
-
-            var textFieldIdStr = '';
-
-            for (const field of textFields)
-            {
-              const check_str = field.translation.toLowerCase();
-
-              if (check_str.includes('transcription') || check_str.includes('транскрипция'))
-              {
-                textFieldIdStr = compositeIdToString(field.id);
-                break;
-              }
-            }
-
-            textFieldIdStrList.push(textFieldIdStr);
-            perspectiveSelectionList.push(true);
-          }
+      textFieldIdStrList.push(textFieldIdStr);
+      perspectiveSelectionList.push(true);
+    }
 
     /* Initializing and then returning perspective selection state values. */
 
@@ -300,48 +365,32 @@ class CognateAnalysisModal extends React.Component
     );
   }
 
-  componentDidMount()
-  {
-    if (!this.props.data.loading && !this.state.initialized)
-      this.initializeData();
-  }
-
-  componentDidUpdate()
-  {
-    if (!this.props.data.loading && !this.state.initialized)
-      this.initializeData();
-  }
-
   render()
   {
-    const { data } = this.props;
-
-    if (data.loading || !this.state.initialized)
+    if (!this.state.initialized)
     {
       return (
-        <Dimmer active={data.loading} inverted>
+        <Dimmer active={true} inverted>
           <Loader>Loading</Loader>
         </Dimmer>
       );
     }
 
-    const { perspective: { columns, tree }, all_fields: allFields } = data;
-
     const groupFieldsOptions = this.groupFields.map((f, k) => ({
       key: k,
-      value: compositeIdToString(f.id),
+      value: '' + f.id,
       text: f.translation,
     }));
 
     return (
       <div>
-        <Modal dimmer open size="large">
+        <Modal dimmer open size="fullscreen">
           <Modal.Header>Cognate analysis</Modal.Header>
           <Modal.Content>
             <Header as="h2">
               <Breadcrumb
                 icon="right angle"
-                sections={tree.slice(2).reverse().map(e => ({
+                sections={this.treePath.map(e => ({
                   key: e.id, content: e.translation, link: false }))}
               />
             </Header>
@@ -360,7 +409,7 @@ class CognateAnalysisModal extends React.Component
                       {
                         this.setState({
                           groupFieldIdStr: value,
-                          ...this.initializePerspectiveList(value) });
+                          ...this.initPerspectiveList(value) });
                       }
                     }}
                   />
@@ -373,13 +422,13 @@ class CognateAnalysisModal extends React.Component
             )}
             <div style={{marginTop: '1.5em'}}>
             {this.perspective_list.length > 1 && map(this.perspective_list,
-              ({dictionary, perspective, textFields, textFieldsOptions}, index) => (
+              ({treePathList, perspective, textFieldsOptions}, index) => (
                 <List>
                   <List.Item>
                   <Breadcrumb
                     style={this.state.perspectiveSelectionList[index] ? {} : {opacity: 0.5}}
                     icon="right angle"
-                    sections={[dictionary, perspective].map(e => ({
+                    sections={treePathList.map(e => ({
                       key: e.id, content: e.translation, link: false }))}
                   />
                   <Checkbox
@@ -452,9 +501,6 @@ class CognateAnalysisModal extends React.Component
 
 CognateAnalysisModal.propTypes = {
   perspectiveId: PropTypes.array.isRequired,
-  data: PropTypes.shape({
-    loading: PropTypes.bool.isRequired,
-  }).isRequired,
   closeModal: PropTypes.func.isRequired,
   computeCognateAnalysis: PropTypes.func.isRequired,
 };
@@ -462,7 +508,6 @@ CognateAnalysisModal.propTypes = {
 export default compose(
   connect(state => state.cognateAnalysis, dispatch => bindActionCreators({ closeModal }, dispatch)),
   branch(({ visible }) => !visible, renderNothing),
-  graphql(cognateAnalysisDataQuery),
   graphql(computeCognateAnalysisMutation, { name: 'computeCognateAnalysis' }),
   withApollo
 )(CognateAnalysisModal);

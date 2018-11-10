@@ -7,7 +7,7 @@ import Immutable from 'immutable';
 import { Link } from 'react-router-dom';
 import { Dropdown, Checkbox, Icon } from 'semantic-ui-react';
 import { toggleDictionary } from 'ducks/home';
-import { checkLanguage } from './LangsNav';
+import { checkLanguageId } from './LangsNav';
 
 import config from 'config';
 
@@ -93,7 +93,7 @@ const Language = ({ language, canSelectDictionaries }) => {
   if (parent_id == null) {
     langClass = "root-lang-name";
   }
-  else if (checkLanguage({ id: id })) {
+  else if (checkLanguageId(id)) {
     langClass = "confirmed-lang-name";
   }
   
