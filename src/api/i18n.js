@@ -98,6 +98,7 @@ export const stringsToTranslate = [
   "Grouping tag",
   "has linked field",
   "Help",
+  "here",
   "Human settlement",
   "Import Starling dictionaries",
   "Info",
@@ -216,6 +217,7 @@ export const stringsToTranslate = [
   "To:",
   "Tools",
   "total",
+  "to view.",
   "Translation for",
   "Translations",
   "Type",
@@ -237,9 +239,9 @@ export const stringsToTranslate = [
   "web",
   "Years",
   "You have selected:",
-  "Your corpora is created, click here to view.",
+  "Your corpora is created, click",
   "Your dictionaries are scheduled for conversion. Please, check tasks tab for conversion status.",
-  "Your dictionary is created, click here to view."
+  "Your dictionary is created, click"
 ];
 
 export function getTranslation(string) {
