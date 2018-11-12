@@ -7,6 +7,7 @@ import { Button, Input, Select } from 'semantic-ui-react';
 
 import { translationGistQuery } from '../TranslationGist';
 import { languagesQuery } from '../../graphql/language';
+import { getTranslation } from 'api/i18n';
 
 @graphql(gql`
   mutation updateAtom($id: LingvodocID!, $content: String!) {
@@ -114,10 +115,10 @@ export default class TranslationAtom extends React.Component {
           onChange={this.onChangeLocale}
         />
         {editable && isAtomNew &&
-          <Button onClick={() => this.createAtom()}>Save</Button>
+          <Button onClick={() => this.createAtom()}>{getTranslation('Save')}</Button>
         }
         {editable && !isAtomNew &&
-          <Button disabled ={content == this.state.content} onClick={() => this.updateAtom()}>Update</Button>
+          <Button disabled ={content == this.state.content} onClick={() => this.updateAtom()}>{getTranslation('Update')}</Button>
         }
       </Input>
     );

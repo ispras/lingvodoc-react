@@ -5,13 +5,16 @@ import { branch, compose, onlyUpdateForKeys, renderNothing } from 'recompose';
 import { graphql, withApollo } from 'react-apollo';
 import TranslationGist from 'components/TranslationGist';
 import Languages from 'components/Languages';
+import EditDictionaryMetadata from 'components/EditDictionaryMetadata';
 import gql from 'graphql-tag';
 import { connect } from 'react-redux';
-import { Button, Dropdown, Modal, Input, Segment, Grid, Container, Label } from 'semantic-ui-react';
+import { Button, Modal, Segment, Grid, Label, Form } from 'semantic-ui-react';
+import styled from 'styled-components';
 import { closeDictionaryPropertiesModal } from 'ducks/dictionaryProperties';
-import { isEqual } from 'lodash';
+import { isEqual, sortBy } from 'lodash';
 import { compositeIdToString } from 'utils/compositeId';
 import Map from './Map';
+import { getTranslation } from 'api/i18n';
 
 const query = gql`
   query dictionaryProps($id: LingvodocID!) {
@@ -20,13 +23,17 @@ const query = gql`
       parent_id
       translation_gist_id
       additional_metadata {
+        kind
+        humanSettlement
+        speakersAmount
+        years
         authors
         location
         blobs
         tag_list
       }
     }
-    user_blobs {
+    user_blobs(data_type: "pdf", is_global: true) {
       id
       name
       data_type
@@ -62,20 +69,28 @@ const updateMetadataMutation = gql`
   }
 `;
 
+const MarginForm = styled(Form)`
+  margin-top: 1em;
+  margin-bottom: 1em;
+`;
+
 class Properties extends React.Component {
+
   constructor(props) {
     super(props);
+
     this.state = {
-      authors: '',
       location: null,
       tags: '',
       files: [],
       parent: null,
       selectedParent: null,
     };
+    this.initialState = {
+      location: null,
+      files: []
+    };
 
-    this.onChangeAuthors = this.onChangeAuthors.bind(this);
-    this.onSaveAuthors = this.onSaveAuthors.bind(this);
     this.onChangeLocation = this.onChangeLocation.bind(this);
     this.onSaveLocation = this.onSaveLocation.bind(this);
     this.onChangeTags = this.onChangeTags.bind(this);
@@ -95,16 +110,12 @@ class Properties extends React.Component {
 
     const {
       additional_metadata: {
-        authors, location, tag_list: tagList, blobs,
+        location, tag_list: tagList, blobs,
       },
     } = dictionary;
 
-    if (authors !== this.state.authors && authors !== null) {
-      this.setState({
-        authors,
-      });
-    }
     if (location !== this.state.location) {
+      this.initialState.location = location;
       this.setState({
         location,
       });
@@ -118,8 +129,9 @@ class Properties extends React.Component {
     }
 
     if (!isEqual(this.state.files, blobs)) {
+      this.initialState.files = blobs.map(compositeIdToString);
       this.setState({
-        files: blobs.map(compositeIdToString),
+        files: this.initialState.files
       });
     }
 
@@ -137,18 +149,6 @@ class Properties extends React.Component {
     }
   }
 
-  onChangeAuthors(e, { value }) {
-    this.setState({
-      authors: value,
-    });
-  }
-
-  onSaveAuthors() {
-    this.saveMeta({
-      authors: this.state.authors,
-    });
-  }
-
   onChangeLocation({ lat, lng }) {
     this.setState({
       location: {
@@ -159,6 +159,7 @@ class Properties extends React.Component {
   }
 
   onSaveLocation() {
+    this.initialState.location = this.state.location;
     this.saveMeta({
       location: this.state.location,
     });
@@ -185,7 +186,8 @@ class Properties extends React.Component {
 
   onSaveFiles() {
     const { data: { user_blobs: allFiles } } = this.props;
-    const ids = this.state.files.map(id => allFiles.find(f => id === compositeIdToString(f.id))).map(f => f.id);
+    const ids = this.state.files.map(id => allFiles.find(f => id === compositeIdToString(f.id))).filter(f => f != undefined).map(f => f.id);
+    this.initialState.files = this.state.files;
     this.saveMeta({
       blobs: ids,
     });
@@ -221,8 +223,8 @@ class Properties extends React.Component {
         id: dictionary.id,
         parent_id: this.state.selectedParent.id
       }
-    }).then(result => {
-      this.props.data.refetch().then(result => {
+    }).then(() => {
+      this.props.data.refetch().then(() => {
         this.setState({ parent: this.state.selectedParent });
       });
     });
@@ -235,28 +237,19 @@ class Properties extends React.Component {
     
     const { data: { dictionary, user_blobs: files }, actions } = this.props;
     const { translation_gist_id: gistId } = dictionary;
-    const options = files.map(file => ({ key: file.id, text: file.name, value: compositeIdToString(file.id) }));
+    const options = sortBy(files.map(file => ({ key: file.id, text: file.name, value: compositeIdToString(file.id) })), file => file.text);
     const parentName = this.state.parent == null ? null : this.state.parent.translation;
     const selectedParentName = this.state.selectedParent == null ? null : this.state.selectedParent.translation;
 
     return (
-      <Modal open dimmer size="fullscreen">
+      <Modal open dimmer size="fullscreen" closeOnDimmerClick={false} onClose={actions.closeDictionaryPropertiesModal}>
         <Modal.Content>
           <Segment>
             <TranslationGist id={gistId} editable />
           </Segment>
-          <Segment>
-            <Grid>
-              <Grid.Column width={12}>
-                <Input fluid label="Authors" value={this.state.authors} onChange={this.onChangeAuthors} />
-              </Grid.Column>
-              <Grid.Column width={4}>
-                <Button positive content="Save" onClick={this.onSaveAuthors} />
-              </Grid.Column>
-            </Grid>
-          </Segment>
+          <EditDictionaryMetadata mode='edit' metadata={dictionary.additional_metadata} onSave={this.saveMeta} />
 
-          <Segment>
+          {/*<Segment>
             <Grid>
               <Grid.Column width={12}>
                 <Input fluid label="Tags" value={this.state.tags} onChange={this.onChangeTags} />
@@ -265,15 +258,14 @@ class Properties extends React.Component {
                 <Button positive content="Save" onClick={this.onSaveTags} />
               </Grid.Column>
             </Grid>
-          </Segment>
+          </Segment>*/}
 
-          <Segment>
-            <Grid>
-              <Grid.Column width={12}>
-                <Dropdown
+          <MarginForm>
+            <Segment>
+              <Form.Group widths='equal'>
+                <Label size='large'>{getTranslation('Files')}</Label>
+                <Form.Dropdown
                   labeled
-                  label="Files"
-                  placeholder="Files"
                   fluid
                   multiple
                   selection
@@ -282,46 +274,52 @@ class Properties extends React.Component {
                   onChange={this.onChangeFiles}
                   value={this.state.files}
                 />
-              </Grid.Column>
-              <Grid.Column width={4}>
-                <Button positive content="Save" onClick={this.onSaveFiles} />
-              </Grid.Column>
-            </Grid>
-          </Segment>
-
-          <Segment>
-            <Grid>
-              <Grid.Column width={12}>
-                <Input
+                <Button
+                  positive
+                  content={getTranslation("Save")}
+                  disabled={JSON.stringify(this.state.files) == JSON.stringify(this.initialState.files)}
+                  onClick={this.onSaveFiles}
+                />
+              </Form.Group>
+            </Segment>
+            <Segment>
+              <Form.Group widths='equal'>
+                <Label size='large'>{getTranslation('Location')}</Label>
+                <Form.Input
                   fluid
-                  label="Location"
                   value={this.state.location == null ? '' : JSON.stringify(this.state.location)}
                   disabled
                   onChange={() => {}}
                 />
-              </Grid.Column>
-              <Grid.Column width={4}>
-                <Button positive content="Save" onClick={this.onSaveLocation} />
-              </Grid.Column>
-            </Grid>
-          </Segment>
+                <Button positive content={getTranslation("Save")} disabled={this.state.location == this.initialState.location} onClick={this.onSaveLocation} />
+                </Form.Group>
+            </Segment>
+          </MarginForm>
           <Grid>
             <Grid.Column width={8}>
               <div style={{ height: '400px' }}>
-                <Container>
-                  <Label size="large">Parent language: {selectedParentName || parentName}</Label>
-                  <Button size="medium" disabled={selectedParentName == parentName} onClick={this.onUpdateParentLanguage}>Update</Button>
-                </Container>
+                <Form>
+                  <Form.Group widths='equal'>
+                    <Label size="large">{getTranslation('Parent language')}: {selectedParentName || parentName}</Label>
+                    <Button
+                      size="medium"
+                      positive
+                      disabled={selectedParentName == parentName}
+                      onClick={this.onUpdateParentLanguage}>
+                      {getTranslation('Update')}
+                    </Button>
+                  </Form.Group>
+                </Form>
                 <Languages height='95%' expanded={false} selected={this.state.parent} onSelect={this.onSelectParentLanguage}/>
               </div>
             </Grid.Column>
             <Grid.Column width={8}>
-              <Map location={this.state.location} authors={this.state.authors} onChange={this.onChangeLocation} />
+              <Map location={this.state.location} onChange={this.onChangeLocation} />
             </Grid.Column>
           </Grid>
         </Modal.Content>
         <Modal.Actions>
-          <Button icon="minus" content="Close" onClick={actions.closeDictionaryPropertiesModal} />
+          <Button icon="minus" content={getTranslation("Close")} onClick={actions.closeDictionaryPropertiesModal} />
         </Modal.Actions>
       </Modal>
     );

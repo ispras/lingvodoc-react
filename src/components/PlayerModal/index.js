@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { Button, Modal } from 'semantic-ui-react';
 import { openPlayer, closePlayer } from 'ducks/player';
 import Player from 'components/Player';
+import { getTranslation } from 'api/i18n';
 
 const PlayerModal = ({ visible, actions, play: { content } }) => (
   <Modal open={visible} dimmer size="small">
@@ -12,7 +13,7 @@ const PlayerModal = ({ visible, actions, play: { content } }) => (
       <Player file={content} />
     </Modal.Content>
     <Modal.Actions>
-      <Button icon="minus" content="Close" onClick={actions.closePlayer} />
+      <Button icon="minus" content={getTranslation("Close")} onClick={actions.closePlayer} />
     </Modal.Actions>
   </Modal>
 );

@@ -18,6 +18,7 @@ import BackTopButton from 'components/BackTopButton';
 import GrantedDicts from './components/GrantedDicts';
 import AllDicts from './components/AllDicts';
 import { getScrollContainer } from './common';
+import { getTranslation } from 'api/i18n';
 import './published.scss';
 
 const authenticatedDictionariesQuery = gql`
@@ -206,18 +207,18 @@ const Home = (props) => {
       <Segment>
         <Form>
           <Form.Group inline className="toggle-label">
-            <label>Display mode</label>
+            <label>{getTranslation('Display mode')}</label>
             <Segment>
               <Form.Field
                 control={Radio}
-                label={{ children: <div className="toggle-label">By Languages</div> }}
+                label={{ children: <div className="toggle-label">{getTranslation('By Languages')}</div> }}
                 value='1'
                 checked={!grantsMode}
                 onChange={() => actions.setGrantsMode(false)}
               />
               <Form.Field
                 control={Radio}
-                label={{ children: <div className="toggle-label">By Grants</div> }}
+                label={{ children: <div className="toggle-label">{getTranslation('By Grants')}</div> }}
                 value='2'
                 checked={grantsMode}
                 onChange={() => actions.setGrantsMode(true)}

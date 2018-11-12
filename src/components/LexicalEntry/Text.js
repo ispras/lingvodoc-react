@@ -7,6 +7,7 @@ import { Button, Input, Checkbox } from 'semantic-ui-react';
 import Entities from './index';
 
 class TextEntityContent extends React.Component {
+  
   constructor(props) {
     super(props);
 
@@ -31,10 +32,9 @@ class TextEntityContent extends React.Component {
 
   render() {
     const {
-      entity, mode, publish, accept, remove, update,
+      entity, mode, publish, accept, remove,
     } = this.props;
 
-    let control = null;
     switch (mode) {
       case 'edit':
         return (
@@ -59,7 +59,7 @@ class TextEntityContent extends React.Component {
             {entity.content}
             <Checkbox
               size="tiny"
-              defaultChecked={entity.published}
+              checked={entity.published}
               onChange={(e, { checked }) => publish(entity, checked)}
             />
           </div>
@@ -68,15 +68,11 @@ class TextEntityContent extends React.Component {
       case 'view':
         return entity.content;
       case 'contributions':
-        control = entity.accepted ? (
-          <Button icon="remove" onClick={() => accept(entity, false)} />
-        ) : (
-          <Button icon="checkmark" onClick={() => accept(entity, true)} />
-        );
         return (
-          <Button.Group basic icon size="mini">
-            <Button content={entity.content} />
-            {control}
+          entity.accepted ? entity.content :
+          <Button.Group icon size="small">
+            <Button basic color='black' content={entity.content} />
+            <Button basic color='black' icon="check" onClick={() => accept(entity, true)} />
           </Button.Group>
         );
       default:

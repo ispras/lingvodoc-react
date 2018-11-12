@@ -42,7 +42,7 @@ const MarkupEntityContent = onlyUpdateForKeys([
           </Button.Group>
           <Checkbox
             size="tiny"
-            defaultChecked={entity.published}
+            checked={entity.published}
             onChange={(e, { checked }) => publish(entity, checked)}
           />
         </div>
@@ -59,11 +59,11 @@ const MarkupEntityContent = onlyUpdateForKeys([
 
     case 'contributions':
       return (
-        <Button.Group basic icon size="mini">
-          <Button as="a" href={entity.content} icon="download" />
-          <Popup trigger={<Button content={content(entity.content)} />} content={entity.content} />
-          <Button icon="table" onClick={() => actions.openViewer(parentEntity, entity)} />
-          <Button icon="remove" onClick={() => accept(entity, true)} />
+        <Button.Group icon size="mini">
+          <Button basic color='black' as="a" href={entity.content} icon="download" />
+          <Popup trigger={<Button basic color='black' content={content(entity.content)} />} content={entity.content} />
+          <Button basic color='black' icon="table" onClick={() => actions.openViewer(parentEntity, entity)} />
+          {!entity.accepted && <Button basic color='black' icon="check" onClick={() => accept(entity, true)} />}
         </Button.Group>
       );
     default:

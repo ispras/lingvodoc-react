@@ -3,8 +3,10 @@ import PropTypes from 'prop-types';
 import { pure } from 'recompose';
 import SortableTree, { map } from 'react-sortable-tree';
 import { LexicalEntryLink } from 'components/Search/LanguageTree';
+import { getTranslation } from 'api/i18n';
 
 class Tree extends React.Component {
+  
   constructor(props) {
     super(props);
 
@@ -22,11 +24,11 @@ class Tree extends React.Component {
   }
 
   generateNodeProps({ node }) {
-    const { actions, mode } = this.props;
-    const defaultTitle = node.translation || 'None';
+    const { actions, entitiesMode, mode } = this.props;
+    const defaultTitle = node.translation || getTranslation('None');
     const title =
       node.type === 'perspective' ? (
-        <LexicalEntryLink node={node} actions={actions} entitiesMode={mode} />
+        <LexicalEntryLink node={node} actions={actions} entitiesMode={entitiesMode} mode={mode}/>
       ) : (
         defaultTitle
       );
@@ -52,12 +54,14 @@ class Tree extends React.Component {
 Tree.propTypes = {
   resultsTree: PropTypes.object.isRequired,
   actions: PropTypes.array,
-  mode: PropTypes.string,
+  entitiesMode: PropTypes.string,
+  mode: PropTypes.string
 };
 
 Tree.defaultProps = {
   actions: [],
-  mode: 'all',
+  entitiesMode: 'all',
+  mode: 'view'
 };
 
 export default pure(Tree);

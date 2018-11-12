@@ -5,11 +5,9 @@ import { branch, compose, onlyUpdateForKeys, renderNothing } from 'recompose';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import { connect } from 'react-redux';
-import { Button, Dropdown, Modal, Input, Segment, Grid, Header } from 'semantic-ui-react';
+import { Button, Modal, Segment,  Header } from 'semantic-ui-react';
 import { closeSaveDictionaryModal } from 'ducks/saveDictionary';
-import { isEqual } from 'lodash';
-import { compositeIdToString } from 'utils/compositeId';
-
+import { getTranslation } from 'api/i18n';
 
 const query = gql`
 query Dictionary($id: LingvodocID!){
@@ -82,16 +80,16 @@ class Properties extends React.Component {
       <Modal open dimmer size="fullscreen">
         <Modal.Content>
           <Segment>
-            <Header size="large">Save {translation}?</Header>
+            <Header size="large">{getTranslation('Save')} {translation}?</Header>
           </Segment>
             <Segment>
-                <body >URL with results of saving data should appear soon after clicking save button in the tasks</body>
+                <body>{getTranslation('URL with results of saving data should appear soon after clicking save button in the tasks')}</body>
             </Segment>
         </Modal.Content>
         <Modal.Actions>
-            <Button icon="save" content="Save all" value="all" onClick={this.onSaveData} />
-            <Button icon="save" content="Save only published" value="published" onClick={this.onSaveData} />
-          <Button icon="minus" content="Close" onClick={actions.closeSaveDictionaryModal} />
+            <Button icon="save" content={getTranslation("Save all")} value="all" onClick={this.onSaveData} />
+            <Button icon="save" content={getTranslation("Save only published")} value="published" onClick={this.onSaveData} />
+          <Button icon="minus" content={getTranslation("Close")} onClick={actions.closeSaveDictionaryModal} />
         </Modal.Actions>
       </Modal>
     );

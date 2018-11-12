@@ -5,6 +5,7 @@ import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import { Button, List, Input, Select } from 'semantic-ui-react';
 import { head, nth, difference, isEmpty } from 'lodash';
+import { getTranslation } from 'api/i18n';
 
 const localesQuery = gql`
   query Locales {
@@ -119,7 +120,7 @@ class Translations extends React.Component {
           () => this.props.onChange(this.state.translations)
         );
       } else {
-        window.logger.err('No more locales!');
+        window.logger.err(getTranslation('No more locales!'));
       }
     }
   }
@@ -145,7 +146,7 @@ class Translations extends React.Component {
             </List.Item>
           ))}
         </List>
-        <Button basic onClick={this.addTranslation} icon="plus" content="add" />
+        <Button basic onClick={this.addTranslation} icon="plus" content={getTranslation("Add")} />
       </div>
     );
   }

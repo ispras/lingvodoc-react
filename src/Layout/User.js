@@ -12,20 +12,18 @@ import { openModal } from 'ducks/ban';
 import SignInModal from 'components/SignInModal';
 import SignUpModal from 'components/SignUpModal';
 import EditUserModal from 'components/EditUserModal';
-import BanModal from 'components/BanModal';
-
-const TITLE = 'User';
+import { getTranslation } from 'api/i18n';
 
 const Anonymous = ({ modal, launchSignInForm, launchSignUpForm, closeForm }) =>
-  <Dropdown item text={TITLE}>
+  <Dropdown item text={getTranslation('User')}>
     <Dropdown.Menu>
       <SignInModal
-        trigger={<Dropdown.Item as="a" onClick={launchSignInForm}>Sign In</Dropdown.Item>}
+        trigger={<Dropdown.Item as="a" onClick={launchSignInForm}>{getTranslation("Sign In")}</Dropdown.Item>}
         open={modal === 'signin'}
         handleClose={closeForm}
       />
       <SignUpModal
-        trigger={<Dropdown.Item as="a" onClick={launchSignUpForm}>Sign Up</Dropdown.Item>}
+        trigger={<Dropdown.Item as="a" onClick={launchSignUpForm}>{getTranslation("Sign Up")}</Dropdown.Item>}
         open={modal === 'signup'}
         handleClose={closeForm}
       />
@@ -39,24 +37,24 @@ Anonymous.propTypes = {
   closeForm: PropTypes.func.isRequired,
 };
 
-const Signed = ({ user, modal, signOut, launchEditForm, launchBanForm, closeForm, openModal }) =>
+const Signed = ({ user, modal, signOut, launchEditForm, closeForm, openModal }) =>
   <Dropdown item text={user.name}>
     <Dropdown.Menu>
       <EditUserModal
-        trigger={<Dropdown.Item as="a" onClick={launchEditForm}>Edit profile</Dropdown.Item>}
+        trigger={<Dropdown.Item as="a" onClick={launchEditForm}>{getTranslation("Edit profile")}</Dropdown.Item>}
         user={user}
         open={modal === 'edit'}
         handleClose={closeForm}
       />
 
-      <Dropdown.Item as={Link} to="/files">My files</Dropdown.Item>
-      <Dropdown.Item as={Link} to="/grants">Grants</Dropdown.Item>
-      <Dropdown.Item as={Link} to="/requests">Requests</Dropdown.Item>
-      <Dropdown.Item as="a" onClick={signOut}>Sign out</Dropdown.Item>
+      <Dropdown.Item as={Link} to="/files">{getTranslation("My files")}</Dropdown.Item>
+      <Dropdown.Item as={Link} to="/grants">{getTranslation("Grants")}</Dropdown.Item>
+      <Dropdown.Item as={Link} to="/requests">{getTranslation("Requests")}</Dropdown.Item>
+      <Dropdown.Item as="a" onClick={signOut}>{getTranslation("Sign out")}</Dropdown.Item>
 
 
       {user.id == 1 && (
-        <Dropdown.Item onClick={openModal}>User account activation/deactivation</Dropdown.Item>
+        <Dropdown.Item onClick={openModal}>{getTranslation("User account activation/deactivation")}</Dropdown.Item>
       )}
     </Dropdown.Menu>
   </Dropdown>;

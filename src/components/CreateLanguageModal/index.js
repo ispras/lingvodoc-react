@@ -3,27 +3,33 @@ import PropTypes from 'prop-types';
 import { compose } from 'recompose';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
-import { Button, Modal } from 'semantic-ui-react';
+import { Button, Modal, Divider } from 'semantic-ui-react';
 import { closeModal } from 'ducks/language';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { languagesQuery } from 'graphql/language';
 import Translations from 'components/Translation';
+import EditLanguageMetadata from 'components/EditLanguageMetadata';
+import { getTranslation } from 'api/i18n';
 
 class CreateLanguageModal extends React.Component {
   constructor(props) {
     super(props);
+
     this.state = {
       translations: [],
+      metadata: null
     };
+
     this.saveLanguage = this.saveLanguage.bind(this);
   }
 
   saveLanguage() {
     const { createLanguage, parent, actions } = this.props;
     const translationAtoms = this.state.translations.map(t => ({ locale_id: t.localeId, content: t.content }));
+
     createLanguage({
-      variables: { parent_id: parent.id, translationAtoms },
+      variables: { parent_id: parent.id, translationAtoms, metadata: this.state.metadata },
       refetchQueries: [
         {
           query: languagesQuery,
@@ -42,15 +48,17 @@ class CreateLanguageModal extends React.Component {
     }
 
     return (
-      <Modal dimmer open size="small">
-        <Modal.Header>Create language</Modal.Header>
+      <Modal dimmer open size="small" closeIcon closeOnDimmerClick={false} onClose={actions.closeModal}>
+        <Modal.Header>{getTranslation('Create language')}</Modal.Header>
         <Modal.Content>
-          <h4>Translations</h4>
+          <h4>{getTranslation('Translations')}</h4>
           <Translations onChange={translations => this.setState({ translations })} />
+          <Divider/>
+          <EditLanguageMetadata mode='create' onChange={metadata => this.setState({ metadata })} />
         </Modal.Content>
         <Modal.Actions>
-          <Button icon="minus" content="Save" onClick={this.saveLanguage} />
-          <Button icon="minus" content="Cancel" onClick={actions.closeModal} />
+          <Button icon="minus" content={getTranslation("Save")} onClick={this.saveLanguage} />
+          <Button icon="minus" content={getTranslation("Cancel")} onClick={actions.closeModal} />
         </Modal.Actions>
       </Modal>
     );
@@ -76,8 +84,8 @@ export default compose(
   connect(mapStateToProps, mapDispatchToProps),
   graphql(
     gql`
-      mutation createLanguage($parent_id: LingvodocID!, $translationAtoms: [ObjectVal]!) {
-        create_language(parent_id: $parent_id, translation_atoms: $translationAtoms) {
+      mutation createLanguage($parent_id: LingvodocID!, $translationAtoms: [ObjectVal]!, $metadata: ObjectVal) {
+        create_language(parent_id: $parent_id, translation_atoms: $translationAtoms, additional_metadata: $metadata) {
           triumph
         }
       }

@@ -10,15 +10,18 @@ import {
   goToStep,
   setParentLanguage,
   setTranslations,
+  setMetadata,
   createPerspective,
   setPerspectives,
   selectors,
 } from 'ducks/createDictionary';
 import Languages from 'components/Languages';
 import Translations from 'components/Translation';
+import EditDictionaryMetadata from 'components/EditDictionaryMetadata';
 import Perspectives from './Perspectives';
 import { createDictionaryMutation } from './graphql';
 import { query as dashboardQuery } from 'pages/Dashboard';
+import { getTranslation } from 'api/i18n';
 
 class CreateDictionaryWizard extends React.Component {
   constructor(props) {
@@ -70,6 +73,7 @@ class CreateDictionaryWizard extends React.Component {
         parentId,
         dictionaryTranslations,
         perspectives,
+        metadata: this.props.metadata.toJS()
       },
       refetchQueries: [
         {
@@ -89,35 +93,35 @@ class CreateDictionaryWizard extends React.Component {
 
   render() {
     const {
-      step, isNextStep, parentLanguage, translations, perspectives, mode,
+      step, isNextStep, parentLanguage, translations, metadata, perspectives, mode,
     } = this.props;
     return (
       <div>
         <Step.Group widths={4}>
           <Step link active={step === 'PARENT_LANGUAGE'} onClick={this.onStepClick('PARENT_LANGUAGE')}>
             <Step.Content>
-              <Step.Title>Parent language</Step.Title>
-              <Step.Description>Select language</Step.Description>
+              <Step.Title>{getTranslation('Parent language')}</Step.Title>
+              <Step.Description>{getTranslation('Select language')}</Step.Description>
             </Step.Content>
           </Step>
 
           <Step link active={step === 'TRANSLATIONS'} onClick={this.onStepClick('TRANSLATIONS')}>
             <Step.Content>
-              <Step.Title>{mode.replace(/^\w/, c => c.toUpperCase())} names</Step.Title>
-              <Step.Description>Set {mode} name and its translations</Step.Description>
+              <Step.Title>{getTranslation(mode.replace(/^\w/, c => c.toUpperCase()) + ' names and metadata')}</Step.Title>
+              <Step.Description>{getTranslation('Set ' + mode + ' name, translations and metadata')}</Step.Description>
             </Step.Content>
           </Step>
 
           <Step link active={step === 'PERSPECTIVES'} onClick={this.onStepClick('PERSPECTIVES')}>
             <Step.Content>
-              <Step.Title>Perspectives</Step.Title>
-              <Step.Description>Create one or more perspectives</Step.Description>
+              <Step.Title>{getTranslation('Perspectives')}</Step.Title>
+              <Step.Description>{getTranslation('Create one or more perspectives')}</Step.Description>
             </Step.Content>
           </Step>
 
           <Step link active={step === 'FINISH'}>
             <Step.Content>
-              <Step.Title>Finish</Step.Title>
+              <Step.Title>{getTranslation('Finish')}</Step.Title>
             </Step.Content>
           </Step>
         </Step.Group>
@@ -125,10 +129,10 @@ class CreateDictionaryWizard extends React.Component {
         <div style={{ minHeight: '500px' }}>
           {step === 'PARENT_LANGUAGE' && (
             <div style={{ height: '400px' }}>
-              {!parentLanguage && <Header>Please, select the parent language</Header>}
+              {!parentLanguage && <Header>{getTranslation('Please, select the parent language')}</Header>}
               {parentLanguage && (
                 <Header>
-                  You have selected: <b>{parentLanguage.translation}</b>
+                  {getTranslation('You have selected:')} <b>{parentLanguage.translation}</b>
                 </Header>
               )}
               <Languages expanded={false} selected={parentLanguage} onSelect={this.selectParent} />
@@ -136,25 +140,28 @@ class CreateDictionaryWizard extends React.Component {
           )}
           {step === 'TRANSLATIONS' && (
             <div>
-              <Header>Add one or more translations</Header>
+              <Header>{getTranslation('Add one or more translations')}</Header>
               <Translations translations={translations.toJS()} onChange={t => this.props.setTranslations(t)} />
+              <Divider/>
+              <Header>{getTranslation('Fill metadata information')}</Header>
+              <EditDictionaryMetadata mode='create' metadata={metadata ? metadata.toJS() : metadata} onChange={metadata => this.props.setMetadata(metadata)} />
             </div>
           )}
 
           {step === 'PERSPECTIVES' && (
             <div>
-              <Header>Add one or more perspectives</Header>
+              <Header>{getTranslation('Add one or more perspectives')}</Header>
               <Perspectives perspectives={perspectives} onChange={p => this.props.setPerspectives(p)} mode={mode} />
               <Button fluid positive onClick={this.props.createPerspective}>
-                Add perspective
+                {getTranslation('Add perspective')}
               </Button>
             </div>
           )}
 
           {step === 'FINISH' && (
             <Message>
-              <Message.Header>{mode.replace(/^\w/, c => c.toUpperCase())} created</Message.Header>
-              <Message.Content>Your {mode} is created, click here to view.</Message.Content>
+              <Message.Header>{getTranslation(mode.replace(/^\w/, c => c.toUpperCase()) + ' created')}</Message.Header>
+              <Message.Content>{getTranslation('Your ' + mode + ' is created, click here to view.')}</Message.Content>
             </Message>
           )}
         </div>
@@ -162,13 +169,13 @@ class CreateDictionaryWizard extends React.Component {
         {isNextStep &&
           step === 'PERSPECTIVES' && (
             <Button fluid inverted color="red" onClick={this.onCreateDictionary}>
-              Create
+              {getTranslation('Create')}
             </Button>
           )}
         {isNextStep &&
           (step !== 'PERSPECTIVES' && step !== 'FINISH') && (
             <Button fluid inverted color="blue" onClick={this.onNextClick}>
-              Next Step
+              {getTranslation('Next Step')}
             </Button>
           )}
       </div>
@@ -185,6 +192,7 @@ CreateDictionaryWizard.propTypes = {
   goToStep: PropTypes.func.isRequired,
   setParentLanguage: PropTypes.func.isRequired,
   setTranslations: PropTypes.func.isRequired,
+  setMetadata: PropTypes.func.isRequired,
   createPerspective: PropTypes.func.isRequired,
   setPerspectives: PropTypes.func.isRequired,
   createDictionary: PropTypes.func.isRequired,
@@ -197,6 +205,7 @@ function mapStateToProps(state) {
     isNextStep: selectors.getNextStep(state),
     parentLanguage: selectors.getParentLanguage(state),
     translations: selectors.getTranslations(state),
+    metadata: selectors.getMetadata(state),
     perspectives: selectors.getPerspectives(state),
   };
 }
@@ -206,6 +215,7 @@ const mapDispatchToProps = {
   goToStep,
   setParentLanguage,
   setTranslations,
+  setMetadata,
   createPerspective,
   setPerspectives,
 };

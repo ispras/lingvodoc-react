@@ -4,7 +4,8 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
 import SortableTree, { map } from 'react-sortable-tree';
-import { openLexicalEntry } from 'ducks/lexicalEntry';
+import { openModal } from 'ducks/modals';
+import LexicalEntryModal from 'components/LexicalEntryModal';
 
 const Link = styled.a`
   cursor: pointer;
@@ -17,11 +18,11 @@ const Link = styled.a`
 `;
 
 const LexicalEntryLinkComponent = ({
-  node, actions, entitiesMode, openLexicalEntry: open,
+  node, actions, entitiesMode, mode, openModal,
 }) => {
   const { translation, lexicalEntries } = node;
   return (
-    <Link onClick={() => open(node, actions, entitiesMode)}>
+    <Link onClick={() => openModal(LexicalEntryModal, { node, actions, entitiesMode, mode })}>
       {translation}: {lexicalEntries.length} result(s)
     </Link>
   );
@@ -35,7 +36,8 @@ LexicalEntryLinkComponent.propTypes = {
   }).isRequired,
   actions: PropTypes.array,
   entitiesMode: PropTypes.string,
-  openLexicalEntry: PropTypes.func.isRequired,
+  mode: PropTypes.string,
+  openModal: PropTypes.func.isRequired,
 };
 
 LexicalEntryLinkComponent.defaultProps = {
@@ -43,7 +45,7 @@ LexicalEntryLinkComponent.defaultProps = {
   entitiesMode: 'published',
 };
 
-const mapDispatchToProps = dispatch => bindActionCreators({ openLexicalEntry }, dispatch);
+const mapDispatchToProps = dispatch => bindActionCreators({ openModal }, dispatch);
 
 export const LexicalEntryLink = connect(
   null,

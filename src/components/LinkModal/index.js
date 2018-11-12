@@ -3,16 +3,14 @@ import PropTypes from 'prop-types';
 import { compose } from 'recompose';
 import { graphql } from 'react-apollo';
 import { Segment, Checkbox, Button, Modal, Tab } from 'semantic-ui-react';
-import { closeModal } from 'ducks/link';
-import { bindActionCreators } from 'redux';
 import { isEqual } from 'lodash';
-import { connect } from 'react-redux';
 import styled from 'styled-components';
 import { queryPerspective, LexicalEntryViewByIds } from 'components/PerspectiveView';
 import buildPartialLanguageTree from 'components/GroupingTagModal/partialTree';
 import Tree from 'components/GroupingTagModal/Tree';
 import SearchLexicalEntries from 'components/GroupingTagModal/search';
 import { languageTreeSourceQuery, createMutation, publishMutation, acceptMutation, removeMutation } from './graphql';
+import { getTranslation } from 'api/i18n';
 
 const ModalContentWrapper = styled('div')`
   min-height: 60vh;
@@ -44,11 +42,11 @@ const ViewLink = (props) => {
 
   const panes = [
     {
-      menuItem: 'View',
+      menuItem: getTranslation('View'),
       render: () => (
         <div>
           <Segment padded="very" textAlign="center">
-            <Tree resultsTree={tree} />
+            <Tree resultsTree={tree} mode='view' />
           </Segment>
         </div>
       ),
@@ -74,7 +72,7 @@ const EditLink = (props) => {
 
   const actions = [
     {
-      title: 'Remove',
+      title: getTranslation('Remove'),
       action: (entry) => {
         const entity = lexicalEntry.entities.find(e => isEqual(e.link_id, entry.id) && isEqual(e.field_id, column.field_id));
         if (entity) {
@@ -86,17 +84,17 @@ const EditLink = (props) => {
 
   const panes = [
     {
-      menuItem: 'View',
+      menuItem: getTranslation('View'),
       render: () => (
         <div>
           <Segment padded="very" textAlign="center">
-            <Tree resultsTree={tree} TableComponent={LexicalEntryViewByIds} actions={actions} />
+            <Tree resultsTree={tree} TableComponent={LexicalEntryViewByIds} actions={actions} mode='edit' />
           </Segment>
         </div>
       ),
     },
     {
-      menuItem: 'Add link',
+      menuItem: getTranslation('Add link'),
       render: () => (
         <SearchLexicalEntries
           lexicalEntry={lexicalEntry}
@@ -131,12 +129,12 @@ const PublishLink = (props) => {
   const tree = buildTree(lexicalEntry, column, allLanguages, allDictionaries, allPerspectives);
   const entity = lexicalEntry.entities.find(e => isEqual(e.field_id, column.field_id));
   const label = entity.published
-    ? 'The entity is currently published. Click to unpublish.'
-    : 'The entity is NOT currently published. Click to publish.';
+    ? getTranslation('The entity is currently published. Click to unpublish.')
+    : getTranslation('The entity is NOT currently published. Click to publish.');
 
   const panes = [
     {
-      menuItem: 'Publish',
+      menuItem: getTranslation('Publish'),
       render: () => (
         <div>
           {entity && (
@@ -144,13 +142,13 @@ const PublishLink = (props) => {
               <Checkbox
                 toggle
                 label={label}
-                defaultChecked={entity.published}
+                checked={entity.published}
                 onChange={(e, { checked }) => publish(entity, checked)}
               />
             </Segment>
           )}
           <Segment padded="very" textAlign="center">
-            <Tree resultsTree={tree} TableComponent={LexicalEntryViewByIds} />
+            <Tree resultsTree={tree} TableComponent={LexicalEntryViewByIds} mode='publish' />
           </Segment>
         </div>
       ),
@@ -178,16 +176,16 @@ const ContributionsLink = (props) => {
 
   const panes = [
     {
-      menuItem: 'Contributions',
+      menuItem: getTranslation('Contributions'),
       render: () => (
         <div>
           {entity && (
             <Segment>
-              <Button positive onClick={() => accept(entity, true)} content="Accept" />
+              <Button positive content={getTranslation("Accept")} disabled={entity.accepted} onClick={() => accept(entity, true)} />
             </Segment>
           )}
           <Segment padded="very" textAlign="center">
-            <Tree resultsTree={tree} TableComponent={LexicalEntryViewByIds} />
+            <Tree resultsTree={tree} TableComponent={LexicalEntryViewByIds} mode='contributions' />
           </Segment>
         </div>
       ),
@@ -376,31 +374,25 @@ const Content = compose(
 )(LinkModalContent);
 
 const LinkModal = (props) => {
-  const { visible } = props;
-  if (!visible) {
-    return null;
-  }
-
   return (
-    <Modal dimmer open size="fullscreen" closeIcon onClose={props.closeModal}>
+    <Modal dimmer open size="fullscreen" closeOnDimmerClick={false} closeIcon onClose={props.onClose}>
       <Modal.Content>
         <Content {...props} />
       </Modal.Content>
       <Modal.Actions>
-        <Button icon="minus" content="Cancel" onClick={props.closeModal} />
+        <Button icon="minus" content={getTranslation("Cancel")} onClick={props.onClose} />
       </Modal.Actions>
     </Modal>
   );
 };
 
 LinkModal.propTypes = {
-  visible: PropTypes.bool.isRequired,
   perspectiveId: PropTypes.array,
   lexicalEntry: PropTypes.object,
   fieldId: PropTypes.array,
   mode: PropTypes.string.isRequired,
   entitiesMode: PropTypes.string.isRequired,
-  closeModal: PropTypes.func.isRequired,
+  onClose: PropTypes.func.isRequired,
 };
 
 LinkModal.defaultProps = {
@@ -409,4 +401,4 @@ LinkModal.defaultProps = {
   fieldId: null,
 };
 
-export default connect(state => state.link, dispatch => bindActionCreators({ closeModal }, dispatch))(LinkModal);
+export default LinkModal;

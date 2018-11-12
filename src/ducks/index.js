@@ -11,21 +11,18 @@ import search from './search';
 import blobs from './blobs';
 import dictImport from './dictImport';
 import fields from './fields';
-import groupingTag from './groupingTag';
-import link from './link';
 import dictionaryProperties from './dictionaryProperties';
 import saveDictionary from './saveDictionary';
 import perspective from './perspective';
 import perspectiveProperties from './perspectiveProperties';
 import home from './home';
 import createDictionary from './createDictionary';
+import cognateAnalysis from './cognateAnalysis';
 import phonemicAnalysis from './phonemicAnalysis';
 import phonology from './phonology';
 import apolloClient from './apolloClient';
 import statistics from './statistics';
 import ban from './ban';
-import translations from './translations';
-import lexicalEntry from './lexicalEntry';
 import modals from './modals';
 
 export default {
@@ -42,20 +39,17 @@ export default {
   blobs,
   dictImport,
   fields,
-  groupingTag,
-  link,
   dictionaryProperties,
   saveDictionary,
   perspective,
   perspectiveProperties,
   home,
   createDictionary,
+  cognateAnalysis,
   phonemicAnalysis,
   phonology,
   apolloClient,
   statistics,
   ban,
-  translations,
-  lexicalEntry,
   modals,
 };

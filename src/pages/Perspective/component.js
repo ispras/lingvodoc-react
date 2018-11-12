@@ -5,13 +5,14 @@ import gql from 'graphql-tag';
 import { map } from 'lodash';
 import { onlyUpdateForKeys, withHandlers, withState, compose } from 'recompose';
 import { Switch, Route, Redirect, Link } from 'react-router-dom';
-import { Container, Header, Breadcrumb, Menu, Dropdown } from 'semantic-ui-react';
+import { Container, Menu, Dropdown } from 'semantic-ui-react';
 import PerspectiveView from 'components/PerspectiveView';
 import Merge from 'components/Merge';
 import NotFound from 'pages/NotFound';
+import PerspectivePath from './PerspectivePath';
+import { getTranslation } from 'api/i18n';
 
 import './style.scss';
-import { queryLexicalEntries } from '../../components/PerspectiveView';
 
 export const launchSoundAndMarkupMutation = gql`
   mutation launchSoundAndMarkup(
@@ -23,17 +24,6 @@ export const launchSoundAndMarkupMutation = gql`
       { triumph } }
 `;
 
-const query = gql`
-  query q($id: LingvodocID!) {
-    perspective(id: $id) {
-      tree {
-        id
-        translation
-      }
-    }
-  }
-`;
-
 const queryCounter = gql`
   query qcounter($id: LingvodocID! $mode: String!) {
     perspective(id: $id) {
@@ -42,58 +32,38 @@ const queryCounter = gql`
   }
 `;
 
-const PerspectivePath = graphql(query)(({ data }) => {
-  if (data.loading) {
-    return null;
-  }
-  const { perspective: { tree } } = data;
-  return (
-    <Header as="h2">
-      <Breadcrumb
-        icon="right angle"
-        sections={tree
-          .slice()
-          .reverse()
-          .map(e => ({ key: e.id, content: e.translation, link: false }))}
-      />
-    </Header>
-  );
-});
-
 const Counter = graphql(queryCounter)(({ data }) => {
-  if (data.loading) {
+  if (data.loading || data.error) {
     return null;
   }
   const { perspective: { counter } } = data;
   return ` (${counter})`;
 });
 
-// const EditText = 'all';
-
 const MODES = {
   edit: {
     entitiesMode: 'all',
-    text: 'Edit',
+    text: getTranslation('Edit'),
     component: PerspectiveView,
   },
   publish: {
     entitiesMode: 'all',
-    text: 'Publish',
+    text: getTranslation('Publish'),
     component: PerspectiveView,
   },
   view: {
     entitiesMode: 'published',
-    text: 'View published',
+    text: getTranslation('View published'),
     component: PerspectiveView,
   },
   contributions: {
     entitiesMode: 'not_accepted',
-    text: 'View contributions',
+    text: getTranslation('View contributions'),
     component: PerspectiveView,
   },
   merge: {
     entitiesMode: 'all',
-    text: 'Merge suggestions',
+    text: getTranslation('Merge suggestions'),
     component: Merge,
   },
 };
@@ -116,7 +86,7 @@ const handlers = compose(
 const Filter = handlers(({ value, onChange, onSubmit }) => (
   <div className="ui right aligned category search item">
     <form className="ui transparent icon input" onSubmit={onSubmit}>
-      <input type="text" placeholder="Filter" value={value} onChange={onChange} />
+      <input type="text" placeholder={getTranslation("Filter")} value={value} onChange={onChange} />
       <button type="submit">
         <i className="search link icon" />
       </button>
@@ -129,8 +99,13 @@ const ModeSelector = onlyUpdateForKeys([
   'baseUrl',
   'filter',
 ])(({
-  mode, baseUrl, filter, submitFilter,
-  openPhonemicAnalysisModal, openPhonologyModal, soundAndMarkup, id,
+  mode, baseUrl, filter,
+  submitFilter,
+  openCognateAnalysisModal,
+  openPhonemicAnalysisModal,
+  openPhonologyModal,
+  soundAndMarkup,
+  id,
 }) => (
   <Menu tabular>
     {map(MODES, (info, stub) => (
@@ -142,11 +117,12 @@ const ModeSelector = onlyUpdateForKeys([
         />) : null}
       </Menu.Item>
     ))}
-    <Dropdown item text="Tools">
+    <Dropdown item text={getTranslation("Tools")}>
       <Dropdown.Menu>
-        <Dropdown.Item onClick={openPhonemicAnalysisModal}>Phonemic analysis</Dropdown.Item>
-        <Dropdown.Item onClick={openPhonologyModal}>Phonology</Dropdown.Item>
-        <Dropdown.Item onClick={soundAndMarkup}>Sound and markup</Dropdown.Item>
+        <Dropdown.Item onClick={openCognateAnalysisModal}>{getTranslation("Cognate analysis")}</Dropdown.Item>
+        <Dropdown.Item onClick={openPhonemicAnalysisModal}>{getTranslation("Phonemic analysis")}</Dropdown.Item>
+        <Dropdown.Item onClick={openPhonologyModal}>{getTranslation("Phonology")}</Dropdown.Item>
+        <Dropdown.Item onClick={soundAndMarkup}>{getTranslation("Sound and markup")}</Dropdown.Item>
       </Dropdown.Menu>
     </Dropdown>
 
@@ -164,10 +140,10 @@ const soundAndMarkup = (perspectiveId, mode, launchSoundAndMarkup) => {
     },
   }).then(
     () => {
-      window.logger.suc('Sound and markup compilation is being created. Check out tasks for details.');
+      window.logger.suc(getTranslation('Sound and markup compilation is being created. Check out tasks for details.'));
     },
     () => {
-      window.logger.err('Failed to launch sound and markup compilation!');
+      window.logger.err(getTranslation('Failed to launch sound and markup compilation!'));
     }
   );
 };
@@ -175,25 +151,27 @@ const soundAndMarkup = (perspectiveId, mode, launchSoundAndMarkup) => {
 const Perspective = ({
   perspective,
   submitFilter,
+  openCognateAnalysisModal,
   openPhonemicAnalysisModal,
   openPhonologyModal,
   launchSoundAndMarkup,
 }) => {
   const {
-    id, mode, page, baseUrl,
+    id, parent_id, mode, page, baseUrl,
   } = perspective.params;
 
   if (!baseUrl) return null;
 
   return (
     <Container fluid className="perspective">
-      <PerspectivePath id={id} />
+      <PerspectivePath id={id} dictionary_id={parent_id} mode={mode} />
       <ModeSelector
         mode={mode}
         id={id}
         baseUrl={baseUrl}
         filter={perspective.filter}
         submitFilter={submitFilter}
+        openCognateAnalysisModal={() => openCognateAnalysisModal(id)}
         openPhonemicAnalysisModal={() => openPhonemicAnalysisModal(id)}
         openPhonologyModal={() => openPhonologyModal(id)}
         soundAndMarkup={() => soundAndMarkup(id, mode, launchSoundAndMarkup)}
@@ -225,6 +203,7 @@ const Perspective = ({
 Perspective.propTypes = {
   perspective: PropTypes.object.isRequired,
   submitFilter: PropTypes.func.isRequired,
+  openCognateAnalysisModal: PropTypes.func.isRequired,
   openPhonemicAnalysisModal: PropTypes.func.isRequired,
   openPhonologyModal: PropTypes.func.isRequired,
 };

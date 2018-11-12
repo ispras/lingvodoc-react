@@ -5,24 +5,27 @@ import { graphql } from 'react-apollo';
 import { connectedQuery } from './graphql';
 import Tree from './Tree';
 import buildPartialLanguageTree from './partialTree';
+import { getTranslation } from 'api/i18n';
 
 const ConnectedLexicalEntries = (props) => {
-  const {
-    data: { loading, error, connected_words: connectedWords },
-    allLanguages,
-    allDictionaries,
-    allPerspectives,
-    mode,
-  } = props;
+  const { data: { loading, error } } = props;
 
   if (error || loading) {
     return null;
   }
 
+  const {
+    data: { connected_words: connectedWords },
+    allLanguages,
+    allDictionaries,
+    allPerspectives,
+    mode,
+    entitiesMode
+  } = props;
   const { lexical_entries: lexicalEntries } = connectedWords;
 
   if (lexicalEntries.length === 0) {
-    return <span>No entries</span>;
+    return <span>{getTranslation('No entries')}</span>;
   }
 
   const resultsTree = buildPartialLanguageTree({
@@ -32,7 +35,7 @@ const ConnectedLexicalEntries = (props) => {
     allPerspectives,
   });
 
-  return <Tree resultsTree={resultsTree} mode={mode} />;
+  return <Tree resultsTree={resultsTree} entitiesMode={entitiesMode} mode={mode} />;
 };
 
 ConnectedLexicalEntries.propTypes = {
@@ -40,9 +43,14 @@ ConnectedLexicalEntries.propTypes = {
     loading: PropTypes.bool.isRequired,
     connected_words: PropTypes.object,
   }).isRequired,
+  entitiesMode: PropTypes.string,
+  mode: PropTypes.string,
   allLanguages: PropTypes.array.isRequired,
   allDictionaries: PropTypes.array.isRequired,
   allPerspectives: PropTypes.array.isRequired,
 };
 
-export default compose(graphql(connectedQuery), pure)(ConnectedLexicalEntries);
+export default compose(
+  graphql(connectedQuery, { options: { fetchPolicy: 'no-cache' } }),
+  pure
+)(ConnectedLexicalEntries);

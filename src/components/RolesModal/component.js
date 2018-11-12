@@ -5,6 +5,7 @@ import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import { Container, Dropdown, Table, Radio } from 'semantic-ui-react';
 import { some, find, filter, union, uniq, without } from 'lodash';
+import { getTranslation } from 'api/i18n';
 
 const queryDictionary = gql`
   query DictionaryRoles($id: LingvodocID!) {
@@ -171,7 +172,7 @@ class Roles extends React.Component {
         <Table celled>
           <Table.Header>
             <Table.Row>
-              <Table.HeaderCell>Role</Table.HeaderCell>
+              <Table.HeaderCell>{getTranslation('Role')}</Table.HeaderCell>
               {users.map(user => <Table.HeaderCell>{user.name}</Table.HeaderCell>)}
             </Table.Row>
           </Table.Header>
@@ -195,7 +196,7 @@ class Roles extends React.Component {
         </Table>
 
         <Dropdown
-          placeholder="Select user"
+          placeholder={getTranslation("Select user")}
           search
           selection
           options={userOptions}

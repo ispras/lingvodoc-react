@@ -4,6 +4,7 @@ import Immutable, { fromJS } from 'immutable';
 import { Header, Segment } from 'semantic-ui-react';
 import Translations from 'components/Translation';
 import Fields from './Fields';
+import { getTranslation } from 'api/i18n';
 
 const Perspective = (props) => {
   const { perspective, perspectives, mode } = props;
@@ -19,14 +20,14 @@ const Perspective = (props) => {
 
   return (
     <Segment>
-      <Header>Perspective {perspective.get('index') + 1}</Header>
+      <Header>{getTranslation('Perspective')} {perspective.get('index') + 1}</Header>
       <Segment>
-        <Header>Perspective names</Header>
+        <Header>{getTranslation('Perspective names')}</Header>
         <Translations translations={translations} onChange={u => updateTranslations(u)} />
       </Segment>
 
       <Segment>
-        <Header>Fields</Header>
+        <Header>{getTranslation('Fields')}</Header>
         <Fields mode={mode} perspective={perspective} perspectives={perspectives.toJS()} onChange={f => updateFields(f)} />
       </Segment>
     </Segment>

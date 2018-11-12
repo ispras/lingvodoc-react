@@ -8,6 +8,7 @@ import styled from 'styled-components';
 import { compositeIdToString } from 'utils/compositeId';
 import { uuidv4 as uuid } from 'utils/uuid';
 import { allFieldsQuery, corpusTemplateFieldsQuery } from './graphql';
+import { getTranslation } from 'api/i18n';
 
 const CheckboxWithMargins = styled(Checkbox)`
   margin-left: 1em;
@@ -101,7 +102,7 @@ class Column extends React.Component {
 
     const field = fields.find(f => isEqual(f.id, column.field_id));
     const options = fields.map(f => ({ text: f.translation, value: compositeIdToString(f.id) }));
-    const availablePerspectives = perspectives.map(p => ({ text: 'Perspective ' + (p.index + 1), value: p.index }));
+    const availablePerspectives = perspectives.map(p => ({ text: getTranslation('Perspective') + ' ' + (p.index + 1), value: p.index }));
     const currentField = compositeIdToString(field.id);
 
     return (
@@ -123,7 +124,7 @@ class Column extends React.Component {
             <CheckboxWithMargins
               defaultChecked={this.state.hasNestedField}
               onChange={(e, { checked }) => this.setState({ hasNestedField: checked })}
-              label="has linked field"
+              label={getTranslation("has linked field")}
             />
           )}
         {this.state.hasNestedField && (
@@ -276,7 +277,7 @@ class Columns extends React.Component {
 
         <Button
           basic
-          content="Add new column"
+          content={getTranslation("Add new column")}
           onClick={() => this.onCreate(allFields.find(f => f.data_type === 'Text'))}
         />
       </div>

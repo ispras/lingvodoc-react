@@ -5,6 +5,7 @@ import { graphql } from 'react-apollo';
 import { Table, Button } from 'semantic-ui-react';
 
 import Placeholder from 'components/Placeholder';
+import { getTranslation } from 'api/i18n';
 
 import { grantsQuery, createGrantPermissionMutation } from './graphql';
 
@@ -20,7 +21,7 @@ class GrantsList extends React.Component {
     createGrantPermission({
       variables: { grantId: grant.id },
     }).then(() => {
-      window.logger.suc('Request sent to grant owner.');
+      window.logger.suc(getTranslation("Request has been sent to the grant's owner."));
     });
   }
 
@@ -38,14 +39,14 @@ class GrantsList extends React.Component {
         <Table celled padded>
           <Table.Header>
             <Table.Row>
-              <Table.HeaderCell>Grant issuer</Table.HeaderCell>
-              <Table.HeaderCell>Grant</Table.HeaderCell>
-              <Table.HeaderCell>Issuer URL</Table.HeaderCell>
-              <Table.HeaderCell>Grant URL</Table.HeaderCell>
-              <Table.HeaderCell>Grant Number</Table.HeaderCell>
-              <Table.HeaderCell>Begin</Table.HeaderCell>
-              <Table.HeaderCell>End</Table.HeaderCell>
-              <Table.HeaderCell>Owners</Table.HeaderCell>
+              <Table.HeaderCell>{getTranslation('Grant Issuer')}</Table.HeaderCell>
+              <Table.HeaderCell>{getTranslation('Grant')}</Table.HeaderCell>
+              <Table.HeaderCell>{getTranslation('Issuer URL')}</Table.HeaderCell>
+              <Table.HeaderCell>{getTranslation('Grant URL')}</Table.HeaderCell>
+              <Table.HeaderCell>{getTranslation('Grant Number')}</Table.HeaderCell>
+              <Table.HeaderCell>{getTranslation('Begin')}</Table.HeaderCell>
+              <Table.HeaderCell>{getTranslation('End')}</Table.HeaderCell>
+              <Table.HeaderCell>{getTranslation('Owners')}</Table.HeaderCell>
               <Table.HeaderCell />
             </Table.Row>
           </Table.Header>
@@ -67,7 +68,7 @@ class GrantsList extends React.Component {
                 <Table.Cell>
                   {!this.isOwner(grant) && (
                     <Button positive onClick={() => this.joinGrant(grant)}>
-                      Join
+                      {getTranslation('Join')}
                     </Button>
                   )}
                 </Table.Cell>

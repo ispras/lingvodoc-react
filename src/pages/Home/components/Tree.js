@@ -7,7 +7,7 @@ import Immutable from 'immutable';
 import { Link } from 'react-router-dom';
 import { Dropdown, Checkbox, Icon } from 'semantic-ui-react';
 import { toggleDictionary } from 'ducks/home';
-import { checkLanguage } from './LangsNav';
+import { checkLanguageId } from './LangsNav';
 
 import config from 'config';
 
@@ -57,7 +57,7 @@ const Dict = ({
       {(config.buildType === 'desktop' || config.buildType === 'proxy') && isDownloaded && <Icon name="download" />}
 
       <span className="dict-name">{translation} {config.buildType === 'server' && canSelectDictionaries && status === 'Published' && <Icon name="globe" />}</span>
-      {authors && <span className="dict-authors">({authors})</span>}
+      {authors && authors.size != 0 && <span className="dict-authors">({authors.toArray().join(", ")})</span>}
       {perspectives &&
         perspectives.valueSeq && (
           <Dropdown inline text={`View (${perspectives.size})`}>
@@ -93,7 +93,7 @@ const Language = ({ language, canSelectDictionaries }) => {
   if (parent_id == null) {
     langClass = "root-lang-name";
   }
-  else if (checkLanguage({ id: id })) {
+  else if (checkLanguageId(id)) {
     langClass = "confirmed-lang-name";
   }
   

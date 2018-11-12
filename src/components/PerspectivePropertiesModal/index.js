@@ -6,10 +6,11 @@ import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import { isEqual } from 'lodash';
 import { connect } from 'react-redux';
-import { Button, Modal, Input, Container, Segment, Grid, Divider, Header } from 'semantic-ui-react';
+import { Button, Modal, Divider, Header } from 'semantic-ui-react';
 import TranslationGist from 'components/TranslationGist';
 import { closePerspectivePropertiesModal } from 'ducks/perspectiveProperties';
 import Columns from 'components/Columns';
+import { getTranslation } from 'api/i18n';
 
 const query = gql`
   query PerspectivePropsQuery($id: LingvodocID!, $parentId: LingvodocID!) {
@@ -52,14 +53,14 @@ const Properties = (props) => {
   return (
     <Modal open dimmer size="fullscreen">
       <Modal.Content>
-        <Header>Translations</Header>
+        <Header>{getTranslation("Translations")}</Header>
         <TranslationGist id={gistId} editable />
         <Divider />
-        <Header>Fields</Header>
+        <Header>{getTranslation("Fields")}</Header>
         <Columns perspectiveId={perspective.id} perspectives={perspectives} />
       </Modal.Content>
       <Modal.Actions>
-        <Button icon="minus" content="Close" onClick={actions.closePerspectivePropertiesModal} />
+        <Button icon="minus" content={getTranslation("Close")} onClick={actions.closePerspectivePropertiesModal} />
       </Modal.Actions>
     </Modal>
   );

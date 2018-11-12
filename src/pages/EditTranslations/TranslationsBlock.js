@@ -4,7 +4,7 @@ import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import styled from 'styled-components';
 import EditAtoms from './EditAtoms';
-import { categories, i18n } from '../EditTranslations';
+import { getTranslation } from 'api/i18n';
 
 const getTranslationsQuery = gql`
   query getTranslations($gists_type: String!) {
@@ -55,7 +55,7 @@ class TranslationsBlock extends React.Component {
     }
 
     if (loading || this.refetching) {
-      return <Loader active content={i18n[7] ? i18n[7] :'Loading'}></Loader>;
+      return <Loader active content={getTranslation('Loading')}></Loader>;
     }
 
     const typeGistsMap = new Map();
@@ -79,7 +79,7 @@ class TranslationsBlock extends React.Component {
       <TopContainer fluid>
         {types.map((type, index) => (
           <Container fluid key={index}>
-            <Header as='h1' textAlign='center' block>{i18n[categories.indexOf(type)] || type}</Header>
+            <Header as='h1' textAlign='center' block>{getTranslation(type)}</Header>
             <Segment>
               {typeGistsMap[type].map((gist, index) => (
                 <EditAtoms key={gist.id} gistId={gist.id} atoms={gist.translationatoms} locales={all_locales}></EditAtoms>

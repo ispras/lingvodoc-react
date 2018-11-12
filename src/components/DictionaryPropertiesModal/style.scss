@@ -25,6 +25,12 @@
     background: red;
   }
 
+  .marker-highlighted {
+    transition-property: background-color;
+    transition-duration: 3s;
+    background: blue;
+  }
+
   // If you want to change the icon
   .another-class:before {
     content: '\f1f8';

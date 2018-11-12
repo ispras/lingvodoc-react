@@ -1,4 +1,5 @@
 import React from 'react';
+import { getTranslation } from 'api/i18n';
 
 const Unknown = (props) => {
   const {
@@ -6,7 +7,7 @@ const Unknown = (props) => {
   } = props;
 
   return (
-    <Component>Unknown type</Component>
+    <Component>{getTranslation('Unknown type')}</Component>
   );
 };
 
