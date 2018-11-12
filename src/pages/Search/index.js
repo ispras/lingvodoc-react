@@ -150,7 +150,7 @@ const WrapperWithData = compose(
 )(Wrapper);
 
 const Info = ({
-  query, searchId, adopted, etymology, category, langs, dicts,
+  query, searchId, adopted, etymology, category, langs, dicts, searchMetadata,
 }) => {
   // remove empty strings
   const cleanQuery = query
@@ -166,6 +166,7 @@ const Info = ({
         etymology={etymology}
         langs={langs}
         dicts={dicts}
+        searchMetadata={searchMetadata}
         mode="published"
       />
     );
@@ -181,6 +182,7 @@ Info.propTypes = {
   etymology: PropTypes.bool,
   langs: PropTypes.array,
   dicts: PropTypes.array,
+  searchMetadata: PropTypes.object,
 };
 
 function searchesFromProps({ searches }) {
@@ -274,6 +276,7 @@ class SearchTabs extends React.Component {
               etymology={search.etymology}
               langs={search.langs}
               dicts={search.dicts}
+              searchMetadata={search.searchMetadata}
             />
           </Container>
         </Tab.Pane>

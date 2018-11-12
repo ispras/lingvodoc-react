@@ -7,7 +7,7 @@ export const STORE_SEARCH_RESULT = '@search/STORE_SEARCH_RESULT';
 export const NEW_SEARCH = '@search/NEW_SEARCH';
 export const DELETE_SEARCH = '@search/DELETE_SEARCH';
 
-export const setQuery = (searchId, query, category, adopted, etymology, langs, dicts) => ({
+export const setQuery = (searchId, query, category, adopted, etymology, langs, dicts, searchMetadata) => ({
   type: SET_QUERY,
   payload: {
     searchId,
@@ -17,6 +17,7 @@ export const setQuery = (searchId, query, category, adopted, etymology, langs, d
     etymology,
     langs,
     dicts,
+    searchMetadata,
   },
 });
 

@@ -181,6 +181,7 @@ class QueryBuilder extends React.Component {
     this.additionalFields = {
       languages: [],
       dictionaries: [],
+      hasAudio: null,
     };
 
     this.state = {
@@ -229,18 +230,21 @@ class QueryBuilder extends React.Component {
     };
   }
 
-  onAdditionalFieldsChange(list) {
-    this.additionalFields = list;
+  onAdditionalFieldsChange(data) {
+    this.additionalFields = data;
   }
 
   onSearchButtonClick() {
     const { searchId, actions } = this.props;
-    const { languages: langsToFilter, dictionaries: dictsToFilter } = this.additionalFields;
+    const { languages: langsToFilter, dictionaries: dictsToFilter, hasAudio } = this.additionalFields;
     const adopted = mode2bool(this.state.mode.adopted);
     const etymology = mode2bool(this.state.mode.etymology);
     const category = bool2category(this.state.source.dictionaries, this.state.source.corpora);
+    const searchMetadata = {
+      hasAudio,
+    };
 
-    actions.setQuery(searchId, this.state.data.toJS(), category, adopted, etymology, langsToFilter, dictsToFilter);
+    actions.setQuery(searchId, this.state.data.toJS(), category, adopted, etymology, langsToFilter, dictsToFilter, searchMetadata);
   }
 
   changeSource(searchSourceType) {
@@ -286,7 +290,8 @@ class QueryBuilder extends React.Component {
 
         <AdditionalFields
           onChange={this.onAdditionalFieldsChange}
-          allChecked
+          data={this.additionalFields}
+          allLangsDictsChecked
         />
 
         <Segment.Group>

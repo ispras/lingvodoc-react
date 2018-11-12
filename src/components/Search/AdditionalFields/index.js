@@ -7,7 +7,7 @@ import { fromJS } from 'immutable';
 import gql from 'graphql-tag';
 import { buildLanguageTree } from 'pages/Search/treeBuilder';
 import SearchSelectLanguages from './SearchSelectLanguages';
-import SearchTagsFilter from './SearchTagsFilter';
+import SearchAdvancedFilter from './SearchAdvancedFilter';
 
 /* ----------- COMPONENT ----------- */
 /**
@@ -16,29 +16,25 @@ import SearchTagsFilter from './SearchTagsFilter';
 class AdditionalFields extends PureComponent {
   static propTypes = {
     onChange: PropTypes.func.isRequired,
-    data: PropTypes.object,
-    allChecked: PropTypes.bool,
+    data: PropTypes.object.isRequired,
+    allLangsDictsChecked: PropTypes.bool,
     languagesQuery: PropTypes.object.isRequired,
     showLanguagesTreeText: PropTypes.string,
     checkAllButtonText: PropTypes.string,
     uncheckAllButtonText: PropTypes.string,
-    showTagsText: PropTypes.string,
+    showAdvancedFilterText: PropTypes.string,
   }
 
   static defaultProps = {
-    data: {
-      languages: [],
-      dictionaries: [],
-    },
-    allChecked: false,
+    allLangsDictsChecked: false,
     showLanguagesTreeText: 'Select languages',
     checkAllButtonText: 'Check all',
     uncheckAllButtonText: 'Uncheck all',
-    showTagsText: 'Select tags',
+    showAdvancedFilterText: 'Select tags',
   }
 
   /**
-   * Get all nodes values for allChecked option
+   * Get all nodes values for allLangsDictsChecked option
    * @param {Array} languagesTree - input array with languages
    */
   static getAllNodesValues(languagesTree, result) {
@@ -126,18 +122,33 @@ class AdditionalFields extends PureComponent {
     const rawLanguagesTree = buildLanguageTree(fromJS(props.languagesQuery.language_tree)).toJS();
 
     this.state = {
+      // calculating final lists of languages and dictionaries
       languagesTree: this.constructor.getUpdatedLanguagesTree(rawLanguagesTree),
       showSearchSelectLanguages: false,
-      showSearchTagsFilter: false,
+      showAdvancedFilter: false,
     };
 
-    this.state.checked = !props.allChecked ?
-      props.data :
+    // set checked list depends on "allLangsDictsChecked" prop
+    this.state.checked = !props.allLangsDictsChecked ?
+      {
+        languages: props.data.languages,
+        dictionaries: props.data.dictionaries,
+      } :
       this.constructor.getAllNodesValues(this.state.languagesTree);
 
+    // notify parent component with checked list if allLangsDictsChecked is true
+    // it's here because final lists with languages and dictionaries calculated in this component,
+    // not in the parent component
+    if (props.allLangsDictsChecked) {
+      props.onChange(this.state.checked);
+    }
+
+    this.state.hasAudio = props.data.hasAudio;
+
     this.onLangsDictsChange = this.onLangsDictsChange.bind(this);
+    this.onAdvancedFilterChange = this.onAdvancedFilterChange.bind(this);
     this.onShowLangsButtonClick = this.onShowLangsButtonClick.bind(this);
-    this.onShowTagsButtonClick = this.onShowTagsButtonClick.bind(this);
+    this.onShowAdvancedFilterButtonClick = this.onShowAdvancedFilterButtonClick.bind(this);
   }
 
   /**
@@ -147,18 +158,18 @@ class AdditionalFields extends PureComponent {
   onShowLangsButtonClick() {
     this.setState({
       showSearchSelectLanguages: !this.state.showSearchSelectLanguages,
-      showSearchTagsFilter: !this.state.showSearchSelectLanguages ? false : this.state.showSearchTagsFilter,
+      showAdvancedFilter: !this.state.showSearchSelectLanguages ? false : this.state.showAdvancedFilter,
     });
   }
 
   /**
    * Event handler for clicking on the button to open or close
-   * component for tags selection.
+   * component for advanced filter.
    */
-  onShowTagsButtonClick() {
+  onShowAdvancedFilterButtonClick() {
     this.setState({
-      showSearchTagsFilter: !this.state.showSearchTagsFilter,
-      showSearchSelectLanguages: !this.state.showSearchTagsFilter ? false : this.state.showSearchSelectLanguages,
+      showAdvancedFilter: !this.state.showAdvancedFilter,
+      showSearchSelectLanguages: !this.state.showAdvancedFilter ? false : this.state.showSearchSelectLanguages,
     });
   }
 
@@ -172,7 +183,26 @@ class AdditionalFields extends PureComponent {
     });
 
     const result = {
+      ...this.props.data,
       ...list,
+    };
+
+    this.props.onChange(result);
+  }
+
+  /**
+   * Event handler for advanced filter changes.
+   * @param {*} value - advanced filter field value
+   * @param {string} name - advanced filter field name
+   */
+  onAdvancedFilterChange(value, name) {
+    this.setState({
+      [name]: value,
+    });
+
+    const result = {
+      ...this.props.data,
+      [name]: value,
     };
 
     this.props.onChange(result);
@@ -181,7 +211,10 @@ class AdditionalFields extends PureComponent {
   render() {
     const { languages, dictionaries } = this.state.checked;
     const { languagesTree } = this.state;
-    const { checkAllButtonText, uncheckAllButtonText, showLanguagesTreeText, showTagsText } = this.props;
+    const {
+      checkAllButtonText, uncheckAllButtonText, showLanguagesTreeText, showAdvancedFilterText,
+    } = this.props;
+
     return (
       <div>
         <Segment.Group>
@@ -202,11 +235,15 @@ class AdditionalFields extends PureComponent {
         </Segment.Group>
         <Segment.Group>
           <Segment>
-            <Button primary basic fluid onClick={this.onShowTagsButtonClick}>
-              {showTagsText}
+            <Button primary basic fluid onClick={this.onShowAdvancedFilterButtonClick}>
+              {showAdvancedFilterText}
             </Button>
           </Segment>
-          <SearchTagsFilter showTags={this.state.showSearchTagsFilter} />
+          <SearchAdvancedFilter
+            show={this.state.showAdvancedFilter}
+            hasAudio={this.state.hasAudio}
+            onChange={this.onAdvancedFilterChange}
+          />
         </Segment.Group>
       </div>
     );
@@ -240,7 +277,7 @@ const AdditionalFieldsWrap = (props) => {
     showLanguagesTreeText: translations[0] ? translations[0].translation : undefined,
     checkAllButtonText: translations[1] ? translations[1].translation : undefined,
     uncheckAllButtonText: translations[2] ? translations[2].translation : undefined,
-    showTagsText: translations[3] ? translations[3].translation : undefined,
+    showAdvancedFilterText: translations[3] ? translations[3].translation : undefined,
   };
 
   return <AdditionalFields {...newProps} />;
