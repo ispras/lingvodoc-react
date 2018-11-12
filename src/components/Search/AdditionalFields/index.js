@@ -140,10 +140,15 @@ class AdditionalFields extends PureComponent {
     // it's here because final lists with languages and dictionaries calculated in this component,
     // not in the parent component
     if (props.allLangsDictsChecked) {
-      props.onChange(this.state.checked);
+      props.onChange({
+        ...props.data,
+        languages: this.state.checked.languages,
+        dictionaries: this.state.checked.dictionaries,
+      });
     }
 
     this.state.hasAudio = props.data.hasAudio;
+    this.state.kind = props.data.kind;
 
     this.onLangsDictsChange = this.onLangsDictsChange.bind(this);
     this.onAdvancedFilterChange = this.onAdvancedFilterChange.bind(this);
@@ -239,9 +244,11 @@ class AdditionalFields extends PureComponent {
               {showAdvancedFilterText}
             </Button>
           </Segment>
+          {/* aka "tags component" */}
           <SearchAdvancedFilter
             show={this.state.showAdvancedFilter}
             hasAudio={this.state.hasAudio}
+            kind={this.state.kind}
             onChange={this.onAdvancedFilterChange}
           />
         </Segment.Group>

@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react';
 import { Segment } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import SearchAudioField from '../SearchAudioField';
+import SearchKindField from '../SearchKindField';
 import './index.scss';
 
 /* ----------- PROPS ----------- */
@@ -21,6 +22,9 @@ class SearchAdvancedFilter extends PureComponent {
     hasAudio: PropTypes.oneOf([
       true, false, null,
     ]),
+    kind: PropTypes.oneOf([
+      'Expedition', 'Archive', null,
+    ]),
     onChange: PropTypes.func.isRequired,
   }
 
@@ -32,14 +36,23 @@ class SearchAdvancedFilter extends PureComponent {
     super();
 
     this.onHasAudioChange = this.onHasAudioChange.bind(this);
+    this.onKindChange = this.onKindChange.bind(this);
   }
 
   /**
-   * Event handler for hasAudio field selecting.
+   * Event handler for "hasAudio" field selecting.
    * @param {boolean|null} value - hasAudio field value
    */
   onHasAudioChange(value) {
     this.props.onChange(value, 'hasAudio');
+  }
+
+  /**
+   * Event handler for "kind" field selecting.
+   * @param {boolean|null} value - hasAudio field value
+   */
+  onKindChange(value) {
+    this.props.onChange(value, 'kind');
   }
 
   render() {
@@ -55,6 +68,13 @@ class SearchAdvancedFilter extends PureComponent {
                 classNames={classNames}
                 value={this.props.hasAudio}
                 onChange={this.onHasAudioChange}
+              />
+            </Segment>
+            <Segment>
+              <SearchKindField
+                classNames={classNames}
+                value={this.props.kind}
+                onChange={this.onKindChange}
               />
             </Segment>
           </Segment.Group> :
