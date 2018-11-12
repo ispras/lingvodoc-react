@@ -20,12 +20,17 @@ const dropdownOptions = [
   },
 ];
 
+/* ----------- COMPONENT ----------- */
+/**
+ * Audio field.
+ */
 class SearchAudioField extends PureComponent {
   static propTypes = {
     value: PropTypes.oneOf([
       true, false, null,
     ]),
     onChange: PropTypes.func.isRequired,
+    classNames: PropTypes.object.isRequired,
   }
 
   /**
@@ -73,15 +78,18 @@ class SearchAudioField extends PureComponent {
   }
 
   render() {
-    const { value } = this.props;
+    const { value, classNames } = this.props;
     const { getDropdownInnerValue } = this.constructor;
     return (
-      <Dropdown
-        selection
-        options={dropdownOptions}
-        value={getDropdownInnerValue(value)}
-        onChange={this.onDropdownValueChange}
-      />
+      <div className={classNames.field}>
+        <div className={classNames.header}>Аудио</div>
+        <Dropdown
+          selection
+          options={dropdownOptions}
+          value={getDropdownInnerValue(value)}
+          onChange={this.onDropdownValueChange}
+        />
+      </div>
     );
   }
 }
