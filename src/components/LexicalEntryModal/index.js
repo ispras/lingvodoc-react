@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Modal, Button } from 'semantic-ui-react';
 import styled from 'styled-components';
 import { LexicalEntryViewByIds } from 'components/PerspectiveView/index';
+import { getTranslation } from 'api/i18n';
 
 export const LexicalEntryLink = styled.span`
   cursor: pointer;
@@ -31,7 +32,7 @@ function LexicalEntryModal({ node, actions, entitiesMode, mode, onClose }) {
         />
       </Modal.Content>
       <Modal.Actions>
-        <Button icon="minus" content="Cancel" onClick={onClose} />
+        <Button icon="minus" content={getTranslation("Cancel")} onClick={onClose} />
       </Modal.Actions>
     </Modal>
   );

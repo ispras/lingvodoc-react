@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import { isEqual, findIndex } from 'lodash';
 import { Button } from 'semantic-ui-react';
 import { languagesQuery } from 'graphql/language';
+import { getTranslation } from 'api/i18n';
 
 class LanguagesTree extends React.Component {
 
@@ -92,25 +93,27 @@ class LanguagesTree extends React.Component {
     const {
       user, edit, editLanguage, createLanguage, onSelect
     } = this.props;
-    const selectActions = onSelect ? [<Button color="blue" content="Select" onClick={() => this.onLanguageSelected(node)} />] : [];
+    const selectActions = onSelect ? [<Button color="blue" content={getTranslation("Select")} onClick={() => this.onLanguageSelected(node)} />] : [];
     if (edit) {
       const content = this.langContent[node.id.toString()];
       let nodeProps = {
         buttons: [
           ...selectActions,
-          <Button color="orange" content="Edit" onClick={() => editLanguage(node)} />,
-          <Button color="green" content="Create" onClick={() => createLanguage(node)} />,
+          <Button color="orange" content={getTranslation("Edit")} onClick={() => editLanguage(node)} />,
+          <Button color="green" content={getTranslation("Create")} onClick={() => createLanguage(node)} />,
         ],
       };
       const { selected } = this.state;
       if (!onSelect && user.id == 1) {
+        const dictionariesCount = content ? content.dictionariesCount : 0;
+        const corporaCount = content ? content.corporaCount : 0;
         nodeProps.title = (
-          <div title={content ? ('Dictionaries: ' + content.dictionariesCount + ', Corpora: ' + content.corporaCount) : 'Dictionaries: 0, Corpora: 0'}>
+          <div title={getTranslation('Dictionaries') + ': ' + dictionariesCount + ', ' + getTranslation('Corpora') + ': ' + corporaCount}>
             {node.translation}
           </div>
         );
         if (!content) {
-          nodeProps.buttons.push(<Button color="red" content="Delete" onClick={() => this.onDeleteLanguage(node)} />);
+          nodeProps.buttons.push(<Button color="red" content={getTranslation("Delete")} onClick={() => this.onDeleteLanguage(node)} />);
         }
       }
       else {

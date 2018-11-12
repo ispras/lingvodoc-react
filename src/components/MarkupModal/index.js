@@ -8,6 +8,7 @@ import { connect } from 'react-redux';
 import { Button, Modal } from 'semantic-ui-react';
 import { openConvert, closeViewer } from 'ducks/markup';
 import MarkupViewer from 'components/MarkupViewer';
+import { getTranslation } from 'api/i18n';
 
 const q = gql`
   query convertMarkup($id: LingvodocID!) {
@@ -46,8 +47,8 @@ const MarkupModal = (props) => {
         <MarkupEntity file={audioUrl} id={id} />
       </Modal.Content>
       <Modal.Actions>
-        <ConvertButton positive content="Convert to dictionary..." onClick={() => actions.openConvert(audio, data.markup)} id={data.markup.id} />
-        <Button icon="minus" content="Close" onClick={actions.closeViewer} />
+        <ConvertButton positive content={getTranslation("Convert to dictionary...")} onClick={() => actions.openConvert(audio, data.markup)} id={data.markup.id} />
+        <Button icon="minus" content={getTranslation("Close")} onClick={actions.closeViewer} />
       </Modal.Actions>
     </Modal>
   );

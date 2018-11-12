@@ -6,6 +6,7 @@ import { Form, Segment, Icon } from 'semantic-ui-react';
 
 import debounce from 'utils/debounce';
 import { getScrollContainer, goToLanguage } from '../../../common/';
+import { getTranslation } from 'api/i18n';
 import './styles.scss';
 
 /* ----------- PROPS ----------- */
@@ -24,7 +25,7 @@ const classNames = {
 };
 
 const inputProps = {
-  placeholder: 'Начните вводить название языка',
+  placeholder: getTranslation('Start typing language name'),
   className: classNames.input,
 };
 

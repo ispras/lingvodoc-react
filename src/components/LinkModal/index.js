@@ -10,6 +10,7 @@ import buildPartialLanguageTree from 'components/GroupingTagModal/partialTree';
 import Tree from 'components/GroupingTagModal/Tree';
 import SearchLexicalEntries from 'components/GroupingTagModal/search';
 import { languageTreeSourceQuery, createMutation, publishMutation, acceptMutation, removeMutation } from './graphql';
+import { getTranslation } from 'api/i18n';
 
 const ModalContentWrapper = styled('div')`
   min-height: 60vh;
@@ -41,7 +42,7 @@ const ViewLink = (props) => {
 
   const panes = [
     {
-      menuItem: 'View',
+      menuItem: getTranslation('View'),
       render: () => (
         <div>
           <Segment padded="very" textAlign="center">
@@ -71,7 +72,7 @@ const EditLink = (props) => {
 
   const actions = [
     {
-      title: 'Remove',
+      title: getTranslation('Remove'),
       action: (entry) => {
         const entity = lexicalEntry.entities.find(e => isEqual(e.link_id, entry.id) && isEqual(e.field_id, column.field_id));
         if (entity) {
@@ -83,7 +84,7 @@ const EditLink = (props) => {
 
   const panes = [
     {
-      menuItem: 'View',
+      menuItem: getTranslation('View'),
       render: () => (
         <div>
           <Segment padded="very" textAlign="center">
@@ -93,7 +94,7 @@ const EditLink = (props) => {
       ),
     },
     {
-      menuItem: 'Add link',
+      menuItem: getTranslation('Add link'),
       render: () => (
         <SearchLexicalEntries
           lexicalEntry={lexicalEntry}
@@ -128,12 +129,12 @@ const PublishLink = (props) => {
   const tree = buildTree(lexicalEntry, column, allLanguages, allDictionaries, allPerspectives);
   const entity = lexicalEntry.entities.find(e => isEqual(e.field_id, column.field_id));
   const label = entity.published
-    ? 'The entity is currently published. Click to unpublish.'
-    : 'The entity is NOT currently published. Click to publish.';
+    ? getTranslation('The entity is currently published. Click to unpublish.')
+    : getTranslation('The entity is NOT currently published. Click to publish.');
 
   const panes = [
     {
-      menuItem: 'Publish',
+      menuItem: getTranslation('Publish'),
       render: () => (
         <div>
           {entity && (
@@ -175,12 +176,12 @@ const ContributionsLink = (props) => {
 
   const panes = [
     {
-      menuItem: 'Contributions',
+      menuItem: getTranslation('Contributions'),
       render: () => (
         <div>
           {entity && (
             <Segment>
-              <Button positive onClick={() => accept(entity, true)} content="Accept" />
+              <Button positive content={getTranslation("Accept")} disabled={entity.accepted} onClick={() => accept(entity, true)} />
             </Segment>
           )}
           <Segment padded="very" textAlign="center">
@@ -379,7 +380,7 @@ const LinkModal = (props) => {
         <Content {...props} />
       </Modal.Content>
       <Modal.Actions>
-        <Button icon="minus" content="Cancel" onClick={props.onClose} />
+        <Button icon="minus" content={getTranslation("Cancel")} onClick={props.onClose} />
       </Modal.Actions>
     </Modal>
   );

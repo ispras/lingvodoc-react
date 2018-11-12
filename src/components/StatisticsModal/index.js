@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { compose, branch, renderNothing, pure } from 'recompose';
+import { compose, branch, renderNothing } from 'recompose';
 import { withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
 import { Header, Container, Table, Button, Modal } from 'semantic-ui-react';
@@ -9,6 +9,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import DatePicker from 'react-datepicker';
 import moment from 'moment';
+import { getTranslation } from 'api/i18n';
 
 import 'react-datepicker/dist/react-datepicker.css';
 import './style.scss';
@@ -94,13 +95,13 @@ const LexicalEntries = ({ entries }) => {
     <Table celled structured textAlign="center">
       <Table.Header>
         <Table.Row>
-          <Table.HeaderCell rowSpan="2">Perspective state</Table.HeaderCell>
-          <Table.HeaderCell colSpan="3">Client type</Table.HeaderCell>
+          <Table.HeaderCell rowSpan="2">{getTranslation('Perspective state')}</Table.HeaderCell>
+          <Table.HeaderCell colSpan="3">{getTranslation('Client type')}</Table.HeaderCell>
         </Table.Row>
         <Table.Row>
-          <Table.HeaderCell>desktop</Table.HeaderCell>
-          <Table.HeaderCell>web</Table.HeaderCell>
-          <Table.HeaderCell>total</Table.HeaderCell>
+          <Table.HeaderCell>{getTranslation('desktop')}</Table.HeaderCell>
+          <Table.HeaderCell>{getTranslation('web')}</Table.HeaderCell>
+          <Table.HeaderCell>{getTranslation('total')}</Table.HeaderCell>
         </Table.Row>
       </Table.Header>
 
@@ -122,15 +123,15 @@ const DictionaryEntities = ({ entities }) => {
     <Table celled structured textAlign="center">
       <Table.Header>
         <Table.Row>
-          <Table.HeaderCell rowSpan="2">Perspective state</Table.HeaderCell>
-          <Table.HeaderCell rowSpan="2">Entity status</Table.HeaderCell>
-          <Table.HeaderCell rowSpan="2">Entity type</Table.HeaderCell>
-          <Table.HeaderCell colSpan="3">Client type</Table.HeaderCell>
+          <Table.HeaderCell rowSpan="2">{getTranslation('Perspective state')}</Table.HeaderCell>
+          <Table.HeaderCell rowSpan="2">{getTranslation('Entity status')}</Table.HeaderCell>
+          <Table.HeaderCell rowSpan="2">{getTranslation('Entity type')}</Table.HeaderCell>
+          <Table.HeaderCell colSpan="3">{getTranslation('Client type')}</Table.HeaderCell>
         </Table.Row>
         <Table.Row>
-          <Table.HeaderCell>desktop</Table.HeaderCell>
-          <Table.HeaderCell>web</Table.HeaderCell>
-          <Table.HeaderCell>total</Table.HeaderCell>
+          <Table.HeaderCell>{getTranslation('desktop')}</Table.HeaderCell>
+          <Table.HeaderCell>{getTranslation('web')}</Table.HeaderCell>
+          <Table.HeaderCell>{getTranslation('total')}</Table.HeaderCell>
         </Table.Row>
       </Table.Header>
 
@@ -152,14 +153,14 @@ const PerspectiveEntities = ({ entities }) => {
     <Table celled structured textAlign="center">
       <Table.Header>
         <Table.Row>
-          <Table.HeaderCell rowSpan="2">Entity status</Table.HeaderCell>
-          <Table.HeaderCell rowSpan="2">Entity type</Table.HeaderCell>
-          <Table.HeaderCell colSpan="3">Client type</Table.HeaderCell>
+          <Table.HeaderCell rowSpan="2">{getTranslation('Entity status')}</Table.HeaderCell>
+          <Table.HeaderCell rowSpan="2">{getTranslation('Entity type')}</Table.HeaderCell>
+          <Table.HeaderCell colSpan="3">{getTranslation('Client type')}</Table.HeaderCell>
         </Table.Row>
         <Table.Row>
-          <Table.HeaderCell>desktop</Table.HeaderCell>
-          <Table.HeaderCell>web</Table.HeaderCell>
-          <Table.HeaderCell>total</Table.HeaderCell>
+          <Table.HeaderCell>{getTranslation('desktop')}</Table.HeaderCell>
+          <Table.HeaderCell>{getTranslation('web')}</Table.HeaderCell>
+          <Table.HeaderCell>{getTranslation('total')}</Table.HeaderCell>
         </Table.Row>
       </Table.Header>
 
@@ -184,13 +185,13 @@ const Statistics = ({ statistics, mode }) => {
           <Header>{user.name}</Header>
           {user.lexical_entries && (
             <div>
-              <Header size="small" content="Lexical entries" />
+              <Header size="small" content={getTranslation("Lexical entries")} />
               <LexicalEntriesComponent entries={user.lexical_entries} />
             </div>
           )}
           {user.entities && (
             <div>
-              <Header size="small" content="Entities" />
+              <Header size="small" content={getTranslation("Entities")} />
               <EntitiesComponent entities={user.entities} />
             </div>
           )}
@@ -259,7 +260,7 @@ class StatisticsModal extends React.Component {
       <Modal dimmer open size="fullscreen">
         <Modal.Content>
           <div>
-            From:
+            {getTranslation('From:')}
             <DatePicker
               selected={startDate}
               showTimeSelect
@@ -268,7 +269,7 @@ class StatisticsModal extends React.Component {
               onChange={d => this.handleChange(d, 'startDate')}
               dateFormat="YYYY.MM.DD HH:mm"
             />
-            To:
+            {getTranslation('To:')}
             <DatePicker
               selected={endDate}
               showTimeSelect
@@ -279,7 +280,7 @@ class StatisticsModal extends React.Component {
             />
           </div>
           <Container textAlign="center">
-            <Button basic content="Show statistics" onClick={this.getStatistics} />
+            <Button basic content={getTranslation("Show statistics")} onClick={this.getStatistics} />
           </Container>
 
           <Container>
@@ -287,7 +288,7 @@ class StatisticsModal extends React.Component {
           </Container>
         </Modal.Content>
         <Modal.Actions>
-          <Button icon="minus" content="Cancel" onClick={this.props.closeStatistics} />
+          <Button icon="minus" content={getTranslation("Cancel")} onClick={this.props.closeStatistics} />
         </Modal.Actions>
       </Modal>
     );

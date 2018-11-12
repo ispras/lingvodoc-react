@@ -1,6 +1,7 @@
 import React from 'react';
 import { pure } from 'recompose';
 import { Dropdown, Button, Checkbox, Popup, Grid, Icon } from 'semantic-ui-react';
+import { getTranslation } from 'api/i18n';
 
 function valueColor(value) {
   if (value === 'keep') {
@@ -47,7 +48,7 @@ function Column({
         <Grid.Column textAlign="center">
           <Dropdown
             button
-            placeholder="Link"
+            placeholder={getTranslation("Link")}
             icon={false}
             options={linkOptions}
             value={selectValue}
@@ -59,7 +60,7 @@ function Column({
             color={value === 'spread' ? 'red' : null}
             onClick={() => onChange(name, value === 'spread' ? null : 'spread', value)}
           >
-            Spread
+            {getTranslation("Spread")}
           </Button>
         </Grid.Column>
       </Grid>
@@ -125,7 +126,7 @@ function Linker({
         className="main-select"
         search
         selection
-        placeholder="Base blob"
+        placeholder={getTranslation("Base blob")}
         options={stateOptions}
         value={selected}
         onChange={onChange}

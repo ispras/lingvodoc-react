@@ -5,12 +5,11 @@ import { connect } from 'react-redux';
 import { Menu, Label, Icon } from 'semantic-ui-react';
 
 import { toggleTasks } from 'ducks/task';
-
-const TITLE = 'Tasks';
+import { getTranslation } from 'api/i18n';
 
 const Tasks = pure(({ count, loading, toggle }) =>
   <Menu.Item as="a" onClick={toggle}>
-    {TITLE} { loading ? <Icon loading name="spinner" /> : <Label color="blue">{count}</Label> }
+    {getTranslation('Tasks')} { loading ? <Icon loading name="spinner" /> : <Label color="blue">{count}</Label> }
   </Menu.Item>
 );
 

@@ -35,7 +35,6 @@ class TextEntityContent extends React.Component {
       entity, mode, publish, accept, remove,
     } = this.props;
 
-    let control = null;
     switch (mode) {
       case 'edit':
         return (
@@ -69,15 +68,11 @@ class TextEntityContent extends React.Component {
       case 'view':
         return entity.content;
       case 'contributions':
-        control = entity.accepted ? (
-          <Button icon="remove" onClick={() => accept(entity, false)} />
-        ) : (
-          <Button icon="checkmark" onClick={() => accept(entity, true)} />
-        );
         return (
-          <Button.Group basic icon size="mini">
-            <Button content={entity.content} />
-            {control}
+          entity.accepted ? entity.content :
+          <Button.Group icon size="small">
+            <Button basic color='black' content={entity.content} />
+            <Button basic color='black' icon="check" onClick={() => accept(entity, true)} />
           </Button.Group>
         );
       default:

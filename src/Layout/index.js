@@ -15,6 +15,7 @@ import DictionaryProperties from 'components/DictionaryPropertiesModal';
 import SaveDictionary from 'components/SaveDictionaryModal';
 import PerspectiveProperties from 'components/PerspectivePropertiesModal';
 import PhonemicAnalysisModal from 'components/PhonemicAnalysisModal';
+import CognateAnalysisModal from 'components/CognateAnalysisModal';
 import PhonologyModal from 'components/PhonologyModal';
 import ConverEafModal from 'components/ConverEafModal';
 import StatisticsModal from 'components/StatisticsModal';
@@ -54,7 +55,9 @@ class Layout extends React.Component {
     }
   
     for (let i = 0; i < stringsToTranslate.length; i++) {
-      setTranslation(stringsToTranslate[i], translated[i].translation);
+      const gist = translated[i];
+      if (gist != null)
+        setTranslation(stringsToTranslate[i], gist.translation);
     }
   }
 
@@ -80,6 +83,7 @@ class Layout extends React.Component {
         <SaveDictionary />
         <PerspectiveProperties />
         <PhonemicAnalysisModal />
+        <CognateAnalysisModal />
         <PhonologyModal />
         <ConverEafModal />
         <StatisticsModal />

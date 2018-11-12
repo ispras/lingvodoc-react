@@ -10,6 +10,7 @@ import styled from 'styled-components';
 import { removeTask } from 'ducks/task';
 import { run, stop } from 'ducks/saga';
 import saga from './saga';
+import { getTranslation } from 'api/i18n';
 
 const OrWrapper = styled(Segment)`
   .delete-task-button {
@@ -21,7 +22,7 @@ const OrWrapper = styled(Segment)`
     top: 0;
   }
 `;
-const Empty = () => <h3>No background tasks</h3>;
+const Empty = () => <h3>{getTranslation('No background tasks')}</h3>;
 
 const enhance = branch(({ tasks }) => tasks.length === 0, renderComponent(Empty));
 
@@ -29,13 +30,11 @@ function Task(props) {
   const {
     id,
     progress,
-    result_link,
     status,
     task_details,
     task_family,
     current_stage,
     total_stages,
-    user_id,
     result_link_list,
     removeTask: remove,
   } = props;

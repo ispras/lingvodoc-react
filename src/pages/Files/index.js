@@ -6,6 +6,7 @@ import gql from 'graphql-tag';
 import { sortBy, reverse } from 'lodash';
 import { Table, Button, Dropdown, Icon } from 'semantic-ui-react';
 import { compositeIdToString } from 'utils/compositeId';
+import { getTranslation } from 'api/i18n';
 
 const userBlobsQuery = gql`
   query userBlobs {
@@ -56,7 +57,7 @@ const Blob = ({ blob, deleteBlob }) => {
       <Table.Cell>{blob.data_type}</Table.Cell>
       <Table.Cell>{new Date(blob.created_at * 1e3).toLocaleString()}</Table.Cell>
       <Table.Cell>
-        <Button basic content="Remove" onClick={remove} />
+        <Button basic content={getTranslation("Remove")} onClick={remove} />
       </Table.Cell>
     </Table.Row>
   );
@@ -81,12 +82,12 @@ const BlobWithData = compose(graphql(deleteBlobMutation, { name: 'deleteBlob' })
 
 const fileTypes = [
   {
-    text: 'PDF file',
+    text: getTranslation('PDF file'),
     value: 'pdf',
     icon: 'conversation',
   },
   {
-    text: 'Dialeqt file',
+    text: getTranslation('Dialeqt file'),
     value: 'dialeqt_dictionary',
     icon: 'conversation',
   },
@@ -157,19 +158,19 @@ class Files extends React.Component {
             <SortableColumnHeader
               onSortModeChange={order => dispatch({ type: 'SET_SORT_MODE', payload: { prop: 'name', order } })}
             >
-              Name
+              {getTranslation('Name')}
             </SortableColumnHeader>
             <SortableColumnHeader
               onSortModeChange={order => dispatch({ type: 'SET_SORT_MODE', payload: { prop: 'data_type', order } })}
             >
-              Type
+              {getTranslation('Type')}
             </SortableColumnHeader>
             <SortableColumnHeader
               onSortModeChange={order => dispatch({ type: 'SET_SORT_MODE', payload: { prop: 'created_at', order } })}
             >
-              Created
+              {getTranslation('Created')}
             </SortableColumnHeader>
-            <Table.HeaderCell>Actions</Table.HeaderCell>
+            <Table.HeaderCell>{getTranslation('Actions')}</Table.HeaderCell>
           </Table.Row>
         </Table.Header>
 
@@ -184,7 +185,7 @@ class Files extends React.Component {
             <Table.HeaderCell colSpan="5">
               <input type="file" multiple="false" onChange={this.onFileChange} />
               <Dropdown button basic options={fileTypes} value={this.state.fileType} onChange={this.onFileTypeChange} />
-              <Button basic content="Upload" onClick={this.uploadBlob} />
+              <Button basic content={getTranslation("Upload")} onClick={this.uploadBlob} />
             </Table.HeaderCell>
           </Table.Row>
         </Table.Footer>

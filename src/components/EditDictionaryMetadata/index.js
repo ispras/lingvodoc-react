@@ -3,6 +3,7 @@ import { Button, Form, Segment, Label } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
+import { getTranslation } from 'api/i18n';
 
 const getMetadataAlternativesQuery = gql`
   query getMetadataAlternatives {
@@ -154,7 +155,7 @@ class EditDictionaryMetadata extends React.Component {
   componentWillMount() {
     if (!this.props.loading) {
       this.refetching = true;
-      this.props.data.refetch().then((result) => {
+      this.props.data.refetch().then(() => {
         this.refetching = false;
         this.initDropdownOptions();
         this.forceUpdate();
@@ -180,17 +181,23 @@ class EditDictionaryMetadata extends React.Component {
         <Segment>
           <Form.Group widths='equal'>
             <Form.Group>
-              <Form.Radio label="Expedition" checked={kind == 'Expedition'} onClick={(event, data) => this.onChangeValue('kind', data)} />
-              <Form.Radio label="Archive" checked={kind == 'Archive'} onClick={(event, data) => this.onChangeValue('kind', data)} />
+              <Form.Radio label={getTranslation("Expedition")} checked={kind == 'Expedition'} onClick={(event, data) => this.onChangeValue('kind', data)} />
+              <Form.Radio label={getTranslation("Archive")} checked={kind == 'Archive'} onClick={(event, data) => this.onChangeValue('kind', data)} />
             </Form.Group>
             {mode != 'create' &&
-              <Form.Button floated='right' positive content="Save" disabled={kind == this.initialState.kind} onClick={() => this.onSaveValue('kind')} />
+              <Form.Button
+                floated='right'
+                positive
+                content={getTranslation("Save")}
+                disabled={kind == this.initialState.kind}
+                onClick={() => this.onSaveValue('kind')}
+              />
             }
           </Form.Group>
         </Segment>
         <Segment>
           <Form.Group widths='equal'>
-            <Label size='large'>Authors</Label>
+            <Label size='large'>{getTranslation("Authors")}</Label>
             <Form.Dropdown fluid multiple selection search allowAdditions
               options={this.authorsOptions}
               value={authors}
@@ -199,7 +206,7 @@ class EditDictionaryMetadata extends React.Component {
             />
             {mode != 'create' &&
               <Button positive
-                content="Save"
+                content={getTranslation("Save")}
                 disabled={JSON.stringify(authors) == JSON.stringify(this.initialState.authors)}
                 onClick={() => this.onSaveValue('authors')}
               />
@@ -208,7 +215,7 @@ class EditDictionaryMetadata extends React.Component {
         </Segment>
         <Segment>
           <Form.Group widths='equal'>
-            <Label size='large'>Human settlement</Label>
+            <Label size='large'>{getTranslation("Human settlement")}</Label>
             <Form.Dropdown fluid multiple selection search allowAdditions
               options={this.settlementsOptions}
               value={humanSettlement}
@@ -217,7 +224,7 @@ class EditDictionaryMetadata extends React.Component {
             />
             {mode != 'create' &&
               <Button positive
-                content="Save"
+                content={getTranslation("Save")}
                 disabled={JSON.stringify(humanSettlement) == JSON.stringify(this.initialState.humanSettlement)}
                 onClick={() => this.onSaveValue('settlements')}
               />
@@ -226,7 +233,7 @@ class EditDictionaryMetadata extends React.Component {
         </Segment>
         <Segment>
           <Form.Group widths='equal'>
-            <Label size='large'>Years</Label>
+            <Label size='large'>{getTranslation("Years")}</Label>
             <Form.Dropdown fluid multiple selection search allowAdditions
               options={this.yearsOptions}
               value={years}
@@ -235,7 +242,7 @@ class EditDictionaryMetadata extends React.Component {
             />
             {mode != 'create' &&
               <Button positive
-                content="Save"
+                content={getTranslation("Save")}
                 disabled={JSON.stringify(years) == JSON.stringify(this.initialState.years)}
                 onClick={() => this.onSaveValue('years')}
               />

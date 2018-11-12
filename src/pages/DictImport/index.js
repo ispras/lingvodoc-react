@@ -6,6 +6,7 @@ import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import { Map, fromJS } from 'immutable';
 import { Message, Button, Step } from 'semantic-ui-react';
+import { getTranslation } from 'api/i18n';
 
 import {
   setBlobs,
@@ -166,28 +167,28 @@ class Info extends React.Component {
         <Step.Group widths={4}>
           <Step link active={step === 'LINKING'} onClick={this.onStepClick('LINKING')}>
             <Step.Content>
-              <Step.Title>Linking</Step.Title>
-              <Step.Description>Link columns from files with each other</Step.Description>
+              <Step.Title>{getTranslation('Linking')}</Step.Title>
+              <Step.Description>{getTranslation('Link columns from files with each other')}</Step.Description>
             </Step.Content>
           </Step>
 
           <Step link active={step === 'COLUMNS'} onClick={this.onStepClick('COLUMNS')}>
             <Step.Content>
-              <Step.Title>Columns Mapping</Step.Title>
-              <Step.Description>Map linked columns to LingvoDoc types</Step.Description>
+              <Step.Title>{getTranslation('Columns Mapping')}</Step.Title>
+              <Step.Description>{getTranslation('Map linked columns to LingvoDoc types')}</Step.Description>
             </Step.Content>
           </Step>
 
           <Step link active={step === 'LANGUAGES'} onClick={this.onStepClick('LANGUAGES')}>
             <Step.Content>
-              <Step.Title>Language Selection</Step.Title>
-              <Step.Description>Map dictionaries to LingvoDoc languages</Step.Description>
+              <Step.Title>{getTranslation('Language Selection')}</Step.Title>
+              <Step.Description>{getTranslation('Map dictionaries to LingvoDoc languages')}</Step.Description>
             </Step.Content>
           </Step>
 
           <Step link active={step === 'FINISH'}>
             <Step.Content>
-              <Step.Title>Finish</Step.Title>
+              <Step.Title>{getTranslation('Finish')}</Step.Title>
             </Step.Content>
           </Step>
         </Step.Group>
@@ -224,21 +225,21 @@ class Info extends React.Component {
           )}
           {step === 'FINISH' && (
             <Message>
-              <Message.Header>Conversion is in progress...</Message.Header>
+              <Message.Header>{getTranslation('Conversion is in progress...')}</Message.Header>
               <Message.Content>
-                Your dictionaries are scheduled for conversion. Please, check tasks tab for conversion status.
+                {getTranslation('Your dictionaries are scheduled for conversion. Please, check tasks tab for conversion status.')}
               </Message.Content>
             </Message>
           )}
         </div>
         {step === 'LANGUAGES' && (
           <Button fluid inverted color="blue" onClick={this.onSubmit}>
-            Submit
+            {getTranslation('Submit')}
           </Button>
         )}
         {isNextStep && (
           <Button fluid inverted color="blue" onClick={this.onNextClick}>
-            Next Step
+            {getTranslation('Next Step')}
           </Button>
         )}
       </div>

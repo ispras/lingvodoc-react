@@ -6,6 +6,7 @@ import { compose, onlyUpdateForKeys } from 'recompose';
 import { Modal, Button } from 'semantic-ui-react';
 import { closeRoles as close } from 'ducks/roles';
 import { PerspectiveRoles, DictionaryRoles } from './component';
+import { getTranslation } from 'api/i18n';
 
 function getComponent(id, mode) {
   switch (mode) {
@@ -14,7 +15,7 @@ function getComponent(id, mode) {
     case 'perspective':
       return PerspectiveRoles;
     default:
-      return () => <h4>Not supported</h4>;
+      return () => <h4>{getTranslation('Not supported')}</h4>;
   }
 }
 
@@ -28,7 +29,7 @@ const RolesModal = ({
         <Component id={id} mode={mode} />
       </Modal.Content>
       <Modal.Actions>
-        <Button icon="minus" content="Close" onClick={actions.close} />
+        <Button icon="minus" content={getTranslation("Close")} onClick={actions.close} />
       </Modal.Actions>
     </Modal>
   );

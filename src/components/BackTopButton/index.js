@@ -5,6 +5,7 @@ import { Icon, Button } from 'semantic-ui-react';
 
 import debounce from 'utils/debounce';
 import smoothScroll from 'utils/smoothscroll';
+import { getTranslation } from 'api/i18n';
 import './styles.scss';
 
 /* ----------- PROPS ----------- */
@@ -61,7 +62,7 @@ const BackTopButton = ({ show, onClick }) => (
     aria-label="Вернуться наверх"
   >
     <Icon name="arrow up" />
-    Наверх
+    {getTranslation('Up')}
   </Button>
 );
 

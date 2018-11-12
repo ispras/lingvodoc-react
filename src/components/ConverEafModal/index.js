@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
-import { compose, onlyUpdateForKeys, withProps, branch, renderNothing } from 'recompose';
+import { compose, withProps, branch, renderNothing } from 'recompose';
 import { graphql } from 'react-apollo';
 import { connect } from 'react-redux';
 import { Button, Checkbox, Modal, Header, Dropdown } from 'semantic-ui-react';
@@ -11,6 +11,7 @@ import { closeConvert } from 'ducks/markup';
 
 import { compositeIdToString } from 'utils/compositeId';
 import { dictionariesQuery, convertToNewDictionaryMutation, convertToExistingDictionaryMutation } from './graphql';
+import { getTranslation } from 'api/i18n';
 
 class ConverEafModal extends React.Component {
   constructor(props) {
@@ -86,7 +87,7 @@ class ConverEafModal extends React.Component {
         <Modal.Header>
           <Checkbox
             radio
-            label="Create dictionary"
+            label={getTranslation("Create dictionary")}
             name="vowelsRadioGroup"
             value="new"
             checked={mode === 'new'}
@@ -94,7 +95,7 @@ class ConverEafModal extends React.Component {
           />
           <Checkbox
             radio
-            label="Update dictionary"
+            label={getTranslation("Update dictionary")}
             name="vowelsRadioGroup"
             value="update"
             checked={mode === 'update'}
@@ -106,14 +107,14 @@ class ConverEafModal extends React.Component {
           {mode === 'new' && (
             <div style={{ minHeight: '500px' }}>
               <div>
-                <Header>Add one or more translations</Header>
+                <Header>{getTranslation("Add one or more translations")}</Header>
                 <Translations translations={translations} onChange={t => this.setState({ translations: t })} />
               </div>
 
-              {!parentLanguage && <Header>Please, select the parent language</Header>}
+              {!parentLanguage && <Header>{getTranslation("Please, select the parent language")}</Header>}
               {parentLanguage && (
                 <Header>
-                  You have selected: <b>{parentLanguage.translation}</b>
+                  {getTranslation("You have selected:")} <b>{parentLanguage.translation}</b>
                 </Header>
               )}
               <div style={{ height: '400px' }}>
@@ -124,7 +125,7 @@ class ConverEafModal extends React.Component {
           {mode === 'update' && (
             <div>
               <Dropdown
-                placeholder="Select dictionary"
+                placeholder={getTranslation("Select dictionary")}
                 fluid
                 search
                 selection
@@ -135,8 +136,8 @@ class ConverEafModal extends React.Component {
           )}
         </Modal.Content>
         <Modal.Actions>
-          <Button positive icon="plus" content="Convert" onClick={this.convert} disabled={!this.conversionEnabled()} />
-          <Button negative icon="minus" content="Cancel" onClick={actions.closeConvert} />
+          <Button positive icon="plus" content={getTranslation("Convert")} onClick={this.convert} disabled={!this.conversionEnabled()} />
+          <Button negative icon="minus" content={getTranslation("Cancel")} onClick={actions.closeConvert} />
         </Modal.Actions>
       </Modal>
     );

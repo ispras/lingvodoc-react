@@ -15,6 +15,7 @@ import { openDictionaryPropertiesModal } from 'ducks/dictionaryProperties';
 import { openPerspectivePropertiesModal } from 'ducks/perspectiveProperties';
 import { openStatistics } from 'ducks/statistics';
 import RolesModal from 'components/RolesModal';
+import { getTranslation } from 'api/i18n';
 
 const dimmerStyle = { minHeight: '600px' };
 
@@ -152,42 +153,42 @@ class P extends React.Component {
           <Menu>
             <Dropdown text={translation} pointing className="link item">
               <Dropdown.Menu>
-                <Dropdown.Item icon="users" text="Roles..." onClick={() => actions.openRoles(id, 'perspective')} />
+                <Dropdown.Item icon="users" text={getTranslation("Roles...")} onClick={() => actions.openRoles(id, 'perspective')} />
                 <Dropdown.Item
                   icon="setting"
-                  text="Properties..."
+                  text={getTranslation("Properties...")}
                   onClick={() => actions.openPerspectivePropertiesModal(id, parent_id)}
                 />
                 <Dropdown.Item
                   icon="percent"
-                  text="Statistics..."
+                  text={getTranslation("Statistics...")}
                   onClick={() => actions.openStatistics(id, 'perspective')}
                 />
                 <Dropdown.Divider />
-                <Dropdown.Item icon="remove" text="Remove perspective" onClick={this.onRemovePerspective} />
+                <Dropdown.Item icon="remove" text={getTranslation("Remove perspective")} onClick={this.onRemovePerspective} />
               </Dropdown.Menu>
             </Dropdown>
 
             <Menu.Item as={Link} to={`/dictionary/${parent_id[0]}/${parent_id[1]}/perspective/${id[0]}/${id[1]}/view`}>
-              View
+              {getTranslation("View")}
             </Menu.Item>
 
             <Menu.Item as={Link} to={`/dictionary/${parent_id[0]}/${parent_id[1]}/perspective/${id[0]}/${id[1]}/edit`}>
-              Edit
+              {getTranslation("Edit")}
             </Menu.Item>
 
             <Menu.Item
               as={Link}
               to={`/dictionary/${parent_id[0]}/${parent_id[1]}/perspective/${id[0]}/${id[1]}/publish`}
             >
-              Publish
+              {getTranslation("Publish")}
             </Menu.Item>
 
             <Menu.Item
               as={Link}
               to={`/dictionary/${parent_id[0]}/${parent_id[1]}/perspective/${id[0]}/${id[1]}/contributions`}
             >
-              Contributions
+              {getTranslation("Contributions")}
             </Menu.Item>
 
             <Menu.Menu position="right">
@@ -269,21 +270,21 @@ class D extends React.Component {
           <Menu>
             <Dropdown text={translation} pointing className="link item">
               <Dropdown.Menu>
-                <Dropdown.Item icon="users" text="Roles..." onClick={() => actions.openRoles(id, 'dictionary')} />
+                <Dropdown.Item icon="users" text={getTranslation("Roles...")} onClick={() => actions.openRoles(id, 'dictionary')} />
                 <Dropdown.Item
                   icon="setting"
-                  text="Properties..."
+                  text={getTranslation("Properties...")}
                   onClick={() => actions.openDictionaryPropertiesModal(id)}
                 />
                 <Dropdown.Item
                   icon="percent"
-                  text="Statistics..."
+                  text={getTranslation("Statistics...")}
                   onClick={() => actions.openStatistics(id, 'dictionary')}
                 />
-                <Dropdown.Item icon="circle" text="Create a new perspective..." />
-                <Dropdown.Item icon="save" text="Save dictionary" onClick={() => actions.openSaveDictionaryModal(id)} />
+                <Dropdown.Item icon="circle" text={getTranslation("Create a new perspective...")} />
+                <Dropdown.Item icon="save" text={getTranslation("Save dictionary")} onClick={() => actions.openSaveDictionaryModal(id)} />
                 <Dropdown.Divider />
-                <Dropdown.Item icon="remove" text="Remove dictionary" onClick={this.onRemoveDictionary} />
+                <Dropdown.Item icon="remove" text={getTranslation("Remove dictionary")} onClick={this.onRemoveDictionary} />
               </Dropdown.Menu>
             </Dropdown>
 
@@ -384,7 +385,7 @@ const Dictionaries = compose(
 
 const DICTIONARIES_TABS = [
   {
-    menuItem: 'My dictionaries',
+    menuItem: getTranslation('My dictionaries'),
     render: () => (
       <Tab.Pane>
         <Dictionaries category={0} mode={0} />
@@ -392,7 +393,7 @@ const DICTIONARIES_TABS = [
     ),
   },
   {
-    menuItem: 'Available dictionaries',
+    menuItem: getTranslation('Available dictionaries'),
     render: () => (
       <Tab.Pane>
         <Dictionaries category={0} mode={1} />
@@ -403,7 +404,7 @@ const DICTIONARIES_TABS = [
 
 const CORPORA_TABS = [
   {
-    menuItem: 'My corpora',
+    menuItem: getTranslation('My corpora'),
     render: () => (
       <Tab.Pane>
         <Dictionaries category={1} mode={0} />
@@ -411,7 +412,7 @@ const CORPORA_TABS = [
     ),
   },
   {
-    menuItem: 'Available corpora',
+    menuItem: getTranslation('Available corpora'),
     render: () => (
       <Tab.Pane>
         <Dictionaries category={1} mode={1} />

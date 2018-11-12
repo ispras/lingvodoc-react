@@ -6,6 +6,7 @@ import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import { Button, List, Dropdown, Grid, Checkbox } from 'semantic-ui-react';
 import { compositeIdToString } from 'utils/compositeId';
+import { getTranslation } from 'api/i18n';
 
 const columnsQuery = gql`
   query ColumnsQuery($perspectiveId: LingvodocID!) {
@@ -249,7 +250,7 @@ class C extends React.Component {
             <Checkbox
               defaultChecked={this.state.hasNestedField}
               onChange={(e, { checked }) => this.setState({ hasNestedField: checked })}
-              label="has linked field"
+              label={getTranslation("has linked field")}
             />
           )}
         {this.state.hasNestedField && (
@@ -393,7 +394,7 @@ class Columns extends React.Component {
 
         <Button
           basic
-          content="Add new column"
+          content={getTranslation("Add new column")}
           onClick={() => this.onCreate(allFields.find(f => f.data_type === 'Text'))}
         />
       </div>

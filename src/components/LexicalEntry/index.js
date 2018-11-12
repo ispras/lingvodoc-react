@@ -156,7 +156,7 @@ class Entities extends React.Component {
   }
 
   accept(entity, accepted) {
-    const { entry, entitiesMode, acceptEntity } = this.props;
+    const { entry, acceptEntity } = this.props;
 
     acceptEntity({
       variables: { id: entity.id, accepted },
@@ -165,7 +165,7 @@ class Entities extends React.Component {
           query: lexicalEntryQuery,
           variables: {
             id: entry.id,
-            entitiesMode,
+            entitiesMode: 'all',
           },
         },
       ],
@@ -210,17 +210,16 @@ class Entities extends React.Component {
       perspectiveId, entry, column, columns, mode, entitiesMode, parentEntity,
     } = this.props;
 
-    const filters = [
-      ens => ens.filter(entity => isEqual(entity.field_id, column.id)),
-      ens => (!parentEntity ? ens : ens.filter(e => isEqual(e.self_id, parentEntity.id))),
-    ];
-
-    const entities = flow(filters)(entry.entities);
-
     const Component = getComponent(column.data_type);
     if (column.data_type === 'Link' || column.data_type === 'Grouping Tag' || column.data_type === 'Directed Link') {
       return <Component {...this.props} />;
     }
+
+    const filters = [
+      ens => ens.filter(entity => isEqual(entity.field_id, column.id)),
+      ens => (!parentEntity ? ens : ens.filter(e => isEqual(e.self_id, parentEntity.id))),
+    ];
+    const entities = flow(filters)(entry.entities);
 
     return (
       <ul>
