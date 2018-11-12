@@ -44,7 +44,7 @@ class CreateDictionaryWizard extends React.Component {
 
   onCreateDictionary() {
     const {
-      mode, parentLanguage, translations, perspectives: p, createDictionary,
+      mode, parentLanguage, translations, perspectives: p, createDictionary, metadata
     } = this.props;
     const parentId = parentLanguage.id;
     const dictionaryTranslations = translations
@@ -67,14 +67,16 @@ class CreateDictionaryWizard extends React.Component {
       }))
       .toJS();
 
+    const variables = {
+      category: mode == 'dictionary' ? 0 : 1,
+      parentId,
+      dictionaryTranslations,
+      perspectives
+    };
+    if (metadata)
+      variables.metadata = metadata.toJS();
     createDictionary({
-      variables: {
-        category: mode == 'dictionary' ? 0 : 1,
-        parentId,
-        dictionaryTranslations,
-        perspectives,
-        metadata: this.props.metadata.toJS()
-      },
+      variables,
       refetchQueries: [
         {
           query: dashboardQuery,
@@ -84,7 +86,11 @@ class CreateDictionaryWizard extends React.Component {
           },
         },
       ],
-    }).then(() => this.props.goToStep('FINISH'));
+    }).then((result) => {
+      const dictionary = result.data.create_dictionary.dictionary;
+      this.createdDictionary = { id: dictionary.id, perspective_id: dictionary.perspectives[0].id };
+      this.props.goToStep('FINISH');
+    });
   }
 
   selectParent(parent) {
@@ -161,7 +167,13 @@ class CreateDictionaryWizard extends React.Component {
           {step === 'FINISH' && (
             <Message>
               <Message.Header>{getTranslation(mode.replace(/^\w/, c => c.toUpperCase()) + ' created')}</Message.Header>
-              <Message.Content>{getTranslation('Your ' + mode + ' is created, click here to view.')}</Message.Content>
+              <Message.Content>
+                {getTranslation('Your ' + mode + ' is created, click') + ' '}
+                <a href={window.location.protocol + '//' + window.location.host + `/dictionary/${this.createdDictionary.id.join('/')}/perspective/${this.createdDictionary.perspective_id.join('/')}/edit`}>
+                  {getTranslation('here')}
+                </a>
+                {' ' + getTranslation('to view.')}
+              </Message.Content>
             </Message>
           )}
         </div>
