@@ -1,6 +1,9 @@
 import React, { PureComponent } from 'react';
 import { Segment } from 'semantic-ui-react';
+import { graphql } from 'react-apollo';
+import { compose } from 'recompose';
 import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
 import SearchAudioField from '../SearchAudioField';
 import SearchKindField from '../SearchKindField';
 import './index.scss';
@@ -85,4 +88,38 @@ class SearchAdvancedFilter extends PureComponent {
   }
 }
 
-export default SearchAdvancedFilter;
+/**
+ * Component for receiving, transmitting and handling data from the API to the main component.
+ * @param {Object} props - component properties
+ * @returns {AdditionalFields} - component with added properties (data from API)
+ */
+const SearchAdvancedFilterWrap = (props) => {
+  const { metadataQuery } = props;
+  const { error: metadataQueryError, loading: metadataQueryLoading } = metadataQuery;
+
+  if (metadataQueryError || metadataQueryLoading) {
+    return null;
+  }
+
+  const newProps = {
+    ...props,
+    metadata: metadataQuery.select_tags_metadata,
+  };
+
+  return <SearchAdvancedFilter {...newProps} />;
+};
+
+SearchAdvancedFilterWrap.propTypes = {
+  metadataQuery: PropTypes.object.isRequired,
+};
+
+/* ----------- QUERIES ----------- */
+const metadataQuery = gql`
+  query metadata {
+    select_tags_metadata
+  }
+`;
+
+export default compose(graphql(metadataQuery, {
+  name: 'metadataQuery',
+}))(SearchAdvancedFilterWrap);
