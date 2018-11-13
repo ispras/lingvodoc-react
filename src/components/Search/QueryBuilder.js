@@ -90,7 +90,7 @@ const newBlock = {
 
 const fieldsQuery = gql`
   query searchBootstrapQuery {
-    all_fields {
+    all_fields(common:true) {
       id
       translation
     }
