@@ -149,6 +149,7 @@ class AdditionalFields extends PureComponent {
 
     this.state.hasAudio = props.data.hasAudio;
     this.state.kind = props.data.kind;
+    this.state.years = props.data.years;
 
     this.onLangsDictsChange = this.onLangsDictsChange.bind(this);
     this.onAdvancedFilterChange = this.onAdvancedFilterChange.bind(this);
@@ -249,6 +250,7 @@ class AdditionalFields extends PureComponent {
             show={this.state.showAdvancedFilter}
             hasAudio={this.state.hasAudio}
             kind={this.state.kind}
+            years={this.state.years}
             onChange={this.onAdvancedFilterChange}
           />
         </Segment.Group>

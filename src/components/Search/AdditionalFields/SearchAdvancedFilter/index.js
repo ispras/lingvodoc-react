@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import SearchAudioField from '../SearchAudioField';
 import SearchKindField from '../SearchKindField';
+import SearchYearField from '../SearchYearField';
 import './index.scss';
 
 /* ----------- PROPS ----------- */
@@ -28,6 +29,7 @@ class SearchAdvancedFilter extends PureComponent {
     kind: PropTypes.oneOf([
       'Expedition', 'Archive', null,
     ]),
+    years: PropTypes.string,
     onChange: PropTypes.func.isRequired,
     metadata: PropTypes.object.isRequired,
   }
@@ -41,6 +43,7 @@ class SearchAdvancedFilter extends PureComponent {
 
     this.onHasAudioChange = this.onHasAudioChange.bind(this);
     this.onKindChange = this.onKindChange.bind(this);
+    this.onYearChange = this.onYearChange.bind(this);
   }
 
   /**
@@ -59,7 +62,16 @@ class SearchAdvancedFilter extends PureComponent {
     this.props.onChange(value, 'kind');
   }
 
+  /**
+   * Event handler for "year" field selecting.
+   * @param {string|null} value - year field value
+   */
+  onYearChange(value) {
+    this.props.onChange(value, 'years');
+  }
+
   render() {
+    const { years: yearOptions } = this.props.metadata;
     return (
       <Segment.Group className={classNames.container}>
         <Segment>
@@ -79,6 +91,14 @@ class SearchAdvancedFilter extends PureComponent {
                 classNames={classNames}
                 value={this.props.kind}
                 onChange={this.onKindChange}
+              />
+            </Segment>
+            <Segment>
+              <SearchYearField
+                classNames={classNames}
+                value={this.props.years}
+                options={yearOptions}
+                onChange={this.onYearChange}
               />
             </Segment>
           </Segment.Group> :
