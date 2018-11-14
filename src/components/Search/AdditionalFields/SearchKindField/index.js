@@ -5,7 +5,7 @@ import { Dropdown } from 'semantic-ui-react';
 const dropdownOptions = [
   {
     key: 0,
-    text: 'По всем',
+    text: 'All',
     value: 'all',
   },
   {
@@ -66,7 +66,7 @@ class SearchKindField extends PureComponent {
     const { getDropdownInnerValue } = this.constructor;
     return (
       <div className={classNames.field}>
-        <div className={classNames.header}>Источник данных</div>
+        <div className={classNames.header}>Data source</div>
         <Dropdown
           selection
           options={dropdownOptions}

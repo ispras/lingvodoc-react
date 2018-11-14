@@ -5,17 +5,17 @@ import { Dropdown } from 'semantic-ui-react';
 const dropdownOptions = [
   {
     key: 2,
-    text: 'По всем',
+    text: 'All',
     value: 2,
   },
   {
     key: 1,
-    text: 'Есть аудио',
+    text: 'Have audio',
     value: 1,
   },
   {
     key: 0,
-    text: 'Нет аудио',
+    text: 'No audio',
     value: 0,
   },
 ];
@@ -82,7 +82,7 @@ class SearchAudioField extends PureComponent {
     const { getDropdownInnerValue } = this.constructor;
     return (
       <div className={classNames.field}>
-        <div className={classNames.header}>Аудио</div>
+        <div className={classNames.header}>Audio</div>
         <Dropdown
           selection
           options={dropdownOptions}
