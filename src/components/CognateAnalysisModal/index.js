@@ -8,10 +8,8 @@ import { closeModal } from 'ducks/cognateAnalysis';
 import { bindActionCreators } from 'redux';
 import { isEqual, map } from 'lodash';
 import { connect } from 'react-redux';
-import { compositeIdToString } from 'utils/compositeId';
+import { compositeIdToString as id2str } from 'utils/compositeId';
 import { checkLanguageId } from 'pages/Home/components/LangsNav';
-
-import { perspectiveColumnsFieldsQuery } from 'components/PhonologyModal/graphql';
 
 const cognateAnalysisDataQuery = gql`
   query cognateAnalysisData($perspectiveId: LingvodocID!) {
@@ -29,6 +27,7 @@ const cognateAnalysisDataQuery = gql`
     all_fields {
       id
       translation
+      english_translation: translation(locale_id: 2)
       data_type
     }
   }
@@ -70,16 +69,21 @@ const languageQuery = gql`
 const computeCognateAnalysisMutation = gql`
   mutation computeCognateAnalysis(
     $groupFieldId: LingvodocID!,
+    $baseLanguageId: LingvodocID!,
     $perspectiveInfoList: [[LingvodocID]]!) {
       cognate_analysis(
+        base_language_id: $baseLanguageId,
         group_field_id: $groupFieldId,
         perspective_info_list: $perspectiveInfoList)
       {
         triumph
         dictionary_count
         group_count
-        text_count
+        not_enough_count
+        transcription_count
+        translation_count
         result
+        xlsx_url
       }
     }
 `;
@@ -98,11 +102,14 @@ class CognateAnalysisModal extends React.Component
       initialized: false,
       dictionary_count: 0,
       group_count: 0,
-      text_count: 0,
+      not_enough_count: 0,
+      transcription_count: 0,
+      translation_count: 0,
       library_present: true,
       result: '',
-      textFieldIdStr: '',
-      textFieldIdStrList: [],
+      xlsx_url: '',
+      transcriptionFieldIdStrList: [],
+      translationFieldIdStrList: [],
       perspectiveSelectionList: [],
       groupFieldIdStr: '',
       computing: false,
@@ -139,12 +146,12 @@ class CognateAnalysisModal extends React.Component
     this.fieldDict = {};
     
     for (const field of allFields)
-      this.fieldDict['' + field.id] = field;
+      this.fieldDict[id2str(field.id)] = field;
 
     /* Additional info of fields of our perspective. */
 
     this.columnFields = columns
-      .map(column => this.fieldDict['' + column.field_id]);
+      .map(column => this.fieldDict[id2str(column.field_id)]);
 
     this.groupFields = this.columnFields
       .filter(field => field.data_type === 'Grouping Tag');
@@ -155,30 +162,26 @@ class CognateAnalysisModal extends React.Component
 
     for (const field of this.groupFields)
     {
-      const check_str = field.translation.toLowerCase();
-
-      if (check_str.includes('cognate') || check_str.includes('когнат'))
+      if (field.english_translation.toLowerCase().includes('cognate'))
       {
-        groupFieldIdStr = '' + field.id;
+        groupFieldIdStr = id2str(field.id);
         break;
       }
     }
 
     if (!groupFieldIdStr && this.groupFields.length > 0)
-      groupFieldIdStr = '' + this.groupFields[0].id;
+      groupFieldIdStr = id2str(this.groupFields[0].id);
 
     this.state.groupFieldIdStr = groupFieldIdStr;
 
     /* Finding the root language of the language group we are to perform cognate analysis in. */
-
-    var baseLanguageId;
 
     for (var i = 0; i < tree.length; i++)
     {
       if (checkLanguageId(tree[i].id))
       {
         this.treePath = tree.slice(i, tree.length).reverse();
-        baseLanguageId = tree[i].id;
+        this.baseLanguageId = tree[i].id;
         break;
       }
     }
@@ -186,7 +189,7 @@ class CognateAnalysisModal extends React.Component
     /* Recursively getting data of perspectives available for analysis. */
 
     this.available_list = [];
-    await this.initPerspectiveData(baseLanguageId, []);
+    await this.initPerspectiveData(this.baseLanguageId, []);
 
     /* If we have selected a default cognate grouping field, we initialize perspectives available for
      * analysis. */
@@ -195,10 +198,15 @@ class CognateAnalysisModal extends React.Component
 
     if (groupFieldIdStr)
     {
-      const {textFieldIdStrList, perspectiveSelectionList} =
+      const {
+        transcriptionFieldIdStrList,
+        translationFieldIdStrList,
+        perspectiveSelectionList } =
+
         this.initPerspectiveList(groupFieldIdStr);
 
-      set_state.textFieldIdStrList = textFieldIdStrList;
+      set_state.transcriptionFieldIdStrList = transcriptionFieldIdStrList;
+      set_state.translationFieldIdStrList = translationFieldIdStrList;
       set_state.perspectiveSelectionList = perspectiveSelectionList;
     }
 
@@ -228,7 +236,7 @@ class CognateAnalysisModal extends React.Component
 
         for (const column of perspective.columns)
         {
-          const field = this.fieldDict['' + column.field_id];
+          const field = this.fieldDict[id2str(column.field_id)];
 
           if (field.data_type === 'Grouping Tag')
             group_flag = true;
@@ -258,7 +266,9 @@ class CognateAnalysisModal extends React.Component
   {
     this.perspective_list = [];
 
-    const textFieldIdStrList = [];
+    const transcriptionFieldIdStrList = [];
+    const translationFieldIdStrList = [];
+
     const perspectiveSelectionList = [];
 
     /* Looking through all published dictionaries for siblings of the dictionary of our perspective. */
@@ -268,14 +278,14 @@ class CognateAnalysisModal extends React.Component
       const textFields =
 
         perspective.columns
-          .map(column => this.fieldDict['' + column.field_id])
+          .map(column => this.fieldDict[id2str(column.field_id)])
           .filter(field => field.data_type === 'Text');
 
       const textFieldsOptions =
 
         textFields.map((f, k) => ({
           key: k,
-          value: '' + f.id,
+          value: id2str(f.id),
           text: f.translation,
         }));
 
@@ -284,45 +294,69 @@ class CognateAnalysisModal extends React.Component
         perspective,
         textFieldsOptions})
 
-      /* Selecting default text field with 'transcription' in its name, or the first field. */
+      /* Selecting text fields with 'transcription' and 'translation' in their names, if we have them. */
 
-      var textFieldIdStr = '';
+      var transcriptionFieldIdStr = '';
+      var translationFieldIdStr = '';
 
       for (const field of textFields)
       {
-        const check_str = field.translation.toLowerCase();
+        const check_str = field.english_translation.toLowerCase();
 
-        if (check_str.includes('transcription') || check_str.includes('транскрипция'))
-        {
-          textFieldIdStr = '' + field.id;
-          break;
-        }
+        if (!transcriptionFieldIdStr &&
+          check_str.includes('transcription'))
+
+          transcriptionFieldIdStr = id2str(field.id);
+
+        if (!translationFieldIdStr &&
+          (check_str.includes('translation') || check_str.includes('meaning')))
+
+          translationFieldIdStr = id2str(field.id);
       }
 
-      textFieldIdStrList.push(textFieldIdStr);
+      /* If we haven't found thus named fields, we try to select the first one. */
+
+      if (textFields.length > 0)
+      {
+        if (!transcriptionFieldIdStr)
+          transcriptionFieldIdStr = id2str(textFields[0].id);
+
+        if (!translationFieldIdStr)
+          translationFieldIdStr = id2str(textFields[0].id);
+      }
+
+      transcriptionFieldIdStrList.push(transcriptionFieldIdStr);
+      translationFieldIdStrList.push(translationFieldIdStr);
+
       perspectiveSelectionList.push(true);
     }
 
     /* Initializing and then returning perspective selection state values. */
 
-    this.state.textFieldIdStrList = textFieldIdStrList;
+    this.state.transcriptionFieldIdStrList = transcriptionFieldIdStrList;
+    this.state.translationFieldIdStrList = translationFieldIdStrList;
+
     this.state.perspectiveSelectionList = perspectiveSelectionList;
 
     return {
-      textFieldIdStrList,
+      transcriptionFieldIdStrList,
+      translationFieldIdStrList,
       perspectiveSelectionList };
   }
 
   handleCreate()
   {
-    const { perspectiveId, computeCognateAnalysis } = this.props;
+    const {
+      perspectiveId,
+      computeCognateAnalysis } = this.props;
 
     const groupField = this.fieldDict[this.state.groupFieldIdStr];
 
     const perspectiveInfoList = this.perspective_list
 
       .map(({perspective}, index) => [perspective.id,
-        this.fieldDict[this.state.textFieldIdStrList[index]].id])
+        this.fieldDict[this.state.transcriptionFieldIdStrList[index]].id,
+        this.fieldDict[this.state.translationFieldIdStrList[index]].id])
       
       .filter((perspective_info, index) =>
         (this.state.perspectiveSelectionList[index]));
@@ -332,20 +366,30 @@ class CognateAnalysisModal extends React.Component
 
     computeCognateAnalysis({
       variables: {
+        baseLanguageId: this.baseLanguageId,
         groupFieldId: groupField.id,
         perspectiveInfoList: perspectiveInfoList,
       },
     }).then(
 
       ({ data: { cognate_analysis: {
-        dictionary_count, group_count, text_count, result }}}) =>
+        dictionary_count,
+        group_count,
+        not_enough_count,
+        transcription_count,
+        translation_count,
+        result,
+        xlsx_url }}}) =>
       {
         this.setState({
           dictionary_count,
           group_count,
-          text_count,
+          not_enough_count,
+          transcription_count,
+          translation_count,
           library_present: true,
           result,
+          xlsx_url,
           computing: false });
       },
 
@@ -378,7 +422,7 @@ class CognateAnalysisModal extends React.Component
 
     const groupFieldsOptions = this.groupFields.map((f, k) => ({
       key: k,
-      value: '' + f.id,
+      value: id2str(f.id),
       text: f.translation,
     }));
 
@@ -397,9 +441,9 @@ class CognateAnalysisModal extends React.Component
             {this.groupFields.length > 0 && (
               <List>
                 <List.Item>
-                  Grouping field:
-                </List.Item>
-                <List.Item>
+                  <span style={{marginRight: '0.5em'}}>
+                    Grouping field:
+                  </span>
                   <Select
                     defaultValue={this.state.groupFieldIdStr}
                     placeholder="Grouping field selection"
@@ -423,7 +467,7 @@ class CognateAnalysisModal extends React.Component
             <div style={{marginTop: '1.5em'}}>
             {this.perspective_list.length > 1 && map(this.perspective_list,
               ({treePathList, perspective, textFieldsOptions}, index) => (
-                <List>
+                <List key={'perspective' + index}>
                   <List.Item>
                   <Breadcrumb
                     style={this.state.perspectiveSelectionList[index] ? {} : {opacity: 0.5}}
@@ -442,19 +486,38 @@ class CognateAnalysisModal extends React.Component
                   </List.Item>
                   {this.state.perspectiveSelectionList[index] && (
                     <List.Item>
-                    <span style={{marginLeft: '1em', marginRight: '0.5em'}}>
-                      Source text field:
-                    </span>
-                    <Select
-                      disabled={!this.state.perspectiveSelectionList[index]}
-                      defaultValue={this.state.textFieldIdStrList[index]}
-                      placeholder="Source text field selection"
-                      options={textFieldsOptions}
-                      onChange={(e, { value }) => {
-                        const textFieldIdStrList = this.state.textFieldIdStrList;
-                        textFieldIdStrList[index] = value;
-                        this.setState({ textFieldIdStrList });}}
-                    />
+                    <List>
+                    <List.Item>
+                      <span style={{marginLeft: '1em', marginRight: '0.5em'}}>
+                        Source transcription field:
+                      </span>
+                      <Select
+                        disabled={!this.state.perspectiveSelectionList[index]}
+                        defaultValue={this.state.transcriptionFieldIdStrList[index]}
+                        placeholder="Source transcription field selection"
+                        options={textFieldsOptions}
+                        onChange={(e, { value }) => {
+                          const transcriptionFieldIdStrList = this.state.transcriptionFieldIdStrList;
+                          transcriptionFieldIdStrList[index] = value;
+                          this.setState({ transcriptionFieldIdStrList });}}
+                      />
+                    </List.Item>
+                    <List.Item>
+                      <span style={{marginLeft: '1em', marginRight: '0.5em'}}>
+                        Source translation field:
+                      </span>
+                      <Select
+                        disabled={!this.state.perspectiveSelectionList[index]}
+                        defaultValue={this.state.translationFieldIdStrList[index]}
+                        placeholder="Source translation field selection"
+                        options={textFieldsOptions}
+                        onChange={(e, { value }) => {
+                          const translationFieldIdStrList = this.state.translationFieldIdStrList;
+                          translationFieldIdStrList[index] = value;
+                          this.setState({ translationFieldIdStrList });}}
+                      />
+                    </List.Item>
+                    </List>
                     </List.Item>
                   )}
                 </List>
@@ -489,7 +552,15 @@ class CognateAnalysisModal extends React.Component
           {this.state.library_present && this.state.result.length > 0 && (
             <Modal.Content>
               <h3>Analysis results
-                ({this.state.dictionary_count} dictionaries, {this.state.group_count} cognate groups and {this.state.text_count} transcriptions analysed):</h3>
+                ({this.state.dictionary_count} dictionaries, {this.state.group_count} cognate groups and {this.state.transcription_count} transcriptions analysed):</h3>
+              <List>
+                <List.Item>
+                  {this.state.not_enough_count} additional cognate groups were excluded from the analysis due to not having lexical entries in at least two dictionaries.
+                </List.Item>
+                <List.Item>
+                  <a href={this.state.xlsx_url}>XLSX-exported analysis results</a>
+                </List.Item>
+              </List>
               <div><pre>{this.state.result}</pre></div>
             </Modal.Content>
           )}
