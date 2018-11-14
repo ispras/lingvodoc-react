@@ -1,6 +1,24 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { Form, Radio } from 'semantic-ui-react';
+import { Dropdown } from 'semantic-ui-react';
+
+const dropdownOptions = [
+  {
+    key: 0,
+    text: 'По всем',
+    value: 'all',
+  },
+  {
+    key: 1,
+    text: 'Expedition',
+    value: 'Expedition',
+  },
+  {
+    key: 2,
+    text: 'Archive',
+    value: 'Archive',
+  },
+];
 
 /* ----------- COMPONENT ----------- */
 /**
@@ -15,6 +33,14 @@ class SearchKindField extends PureComponent {
     classNames: PropTypes.object.isRequired,
   }
 
+  static valueIsAll(value) {
+    return value === 'all';
+  }
+
+  static getDropdownInnerValue(value) {
+    return value === null ? 'all' : value;
+  }
+
   constructor() {
     super();
 
@@ -23,39 +49,30 @@ class SearchKindField extends PureComponent {
 
   /**
    * On value change event handler.
-   * @param {boolean|null} value - field value
+   * @param {string} value - field value
    */
   onChange(ev, { value }) {
     const { onChange } = this.props;
-    onChange(value);
+
+    if (this.constructor.valueIsAll(value)) {
+      onChange(null);
+    } else {
+      onChange(value);
+    }
   }
 
   render() {
     const { value, classNames } = this.props;
-
+    const { getDropdownInnerValue } = this.constructor;
     return (
       <div className={classNames.field}>
         <div className={classNames.header}>Источник данных</div>
-        <Form>
-          <Form.Field>
-            <Radio
-              label="Expedition"
-              name="kind"
-              value="Expedition"
-              checked={value === 'Expedition'}
-              onChange={this.onChange}
-            />
-          </Form.Field>
-          <Form.Field>
-            <Radio
-              label="Archive"
-              name="kind"
-              value="Archive"
-              checked={value === 'Archive'}
-              onChange={this.onChange}
-            />
-          </Form.Field>
-        </Form>
+        <Dropdown
+          selection
+          options={dropdownOptions}
+          value={getDropdownInnerValue(value)}
+          onChange={this.onChange}
+        />
       </div>
     );
   }
