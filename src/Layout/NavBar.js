@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
-import { compose, pure, branch, renderNothing } from 'recompose';
+import { compose, branch, renderNothing } from 'recompose';
 import { Link, withRouter } from 'react-router-dom';
 import { Dropdown, Menu, Button } from 'semantic-ui-react';
 import styled from 'styled-components';
@@ -89,7 +89,7 @@ function openHelp() {
   window.open('https://github.com/ispras/lingvodoc-react/wiki', '_blank');
 }
 
-const NavBar = pure(({ location }) => (
+const NavBar = () => (
   <Menu fixed="top">
     <Menu.Item as={Link} to={config.homePath}>
       <Logo>Lingvodoc 3.0</Logo>
@@ -132,12 +132,6 @@ const NavBar = pure(({ location }) => (
       </Menu.Item>
     </Menu.Menu>
   </Menu>
-));
-
-NavBar.propTypes = {
-  location: PropTypes.shape({
-    pathname: PropTypes.string,
-  }).isRequired,
-};
+);
 
 export default withRouter(NavBar);
