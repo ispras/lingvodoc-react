@@ -29,6 +29,7 @@ class SearchAdvancedFilter extends PureComponent {
       'Expedition', 'Archive', null,
     ]),
     onChange: PropTypes.func.isRequired,
+    metadata: PropTypes.object.isRequired,
   }
 
   static defaultProps = {
