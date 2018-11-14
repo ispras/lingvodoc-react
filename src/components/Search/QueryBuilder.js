@@ -250,8 +250,6 @@ class QueryBuilder extends React.Component {
       years,
     };
 
-    debugger;
-
     actions.setQuery(searchId, this.state.data.toJS(), category, adopted, etymology, langsToFilter, dictsToFilter, searchMetadata);
   }
 
