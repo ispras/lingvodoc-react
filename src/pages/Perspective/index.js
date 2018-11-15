@@ -17,8 +17,8 @@ function submitFilter(value) {
   return setFilter(value);
 }
 
-function openCognateAnalysisModal(perspectiveId) {
-  return cognateAnalysisOpenModal(perspectiveId);
+function openCognateAnalysisModal(perspectiveId, mode = '') {
+  return cognateAnalysisOpenModal(perspectiveId, mode);
 }
 
 function openPhonemicAnalysisModal(perspectiveId) {
