@@ -70,11 +70,13 @@ const computeCognateAnalysisMutation = gql`
   mutation computeCognateAnalysis(
     $groupFieldId: LingvodocID!,
     $baseLanguageId: LingvodocID!,
-    $perspectiveInfoList: [[LingvodocID]]!) {
+    $perspectiveInfoList: [[LingvodocID]]!,
+    $mode: String) {
       cognate_analysis(
         base_language_id: $baseLanguageId,
         group_field_id: $groupFieldId,
-        perspective_info_list: $perspectiveInfoList)
+        perspective_info_list: $perspectiveInfoList,
+        mode: $mode)
       {
         triumph
         dictionary_count
@@ -369,6 +371,7 @@ class CognateAnalysisModal extends React.Component
         baseLanguageId: this.baseLanguageId,
         groupFieldId: groupField.id,
         perspectiveInfoList: perspectiveInfoList,
+        mode: this.props.mode,
       },
     }).then(
 
@@ -429,7 +432,9 @@ class CognateAnalysisModal extends React.Component
     return (
       <div>
         <Modal dimmer open size="fullscreen">
-          <Modal.Header>Cognate analysis</Modal.Header>
+          <Modal.Header>{this.props.mode == 'acoustic' ?
+            'Cognate acoustic analysis' :
+            'Cognate analysis'}</Modal.Header>
           <Modal.Content>
             <Header as="h2">
               <Breadcrumb

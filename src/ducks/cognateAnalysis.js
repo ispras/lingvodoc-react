@@ -4,7 +4,7 @@ import { combineReducers } from 'redux';
 export const OPEN_MODAL = '@cognateAnalysis/OPEN_MODAL';
 export const CLOSE_MODAL = '@cognateAnalysis/CLOSE_MODAL';
 
-export const openModal = perspectiveId => ({ type: OPEN_MODAL, payload: perspectiveId });
+export const openModal = (perspectiveId, mode) => ({ type: OPEN_MODAL, payload: [perspectiveId, mode] });
 export const closeModal = () => ({ type: CLOSE_MODAL });
 
 const visible = (state = false, action) => {
@@ -21,7 +21,18 @@ const visible = (state = false, action) => {
 const perspectiveId = (state = null, { type, payload }) => {
   switch (type) {
     case OPEN_MODAL:
-      return payload;
+      return payload[0];
+    case CLOSE_MODAL:
+      return null;
+    default:
+      return state;
+  }
+};
+
+const mode = (state = null, { type, payload }) => {
+  switch (type) {
+    case OPEN_MODAL:
+      return payload[1];
     case CLOSE_MODAL:
       return null;
     default:
@@ -30,6 +41,7 @@ const perspectiveId = (state = null, { type, payload }) => {
 };
 
 export default combineReducers({
+  mode,
   perspectiveId,
   visible,
 });

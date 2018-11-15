@@ -102,6 +102,7 @@ const ModeSelector = onlyUpdateForKeys([
   mode, baseUrl, filter,
   submitFilter,
   openCognateAnalysisModal,
+  openCognateAcousticAnalysisModal,
   openPhonemicAnalysisModal,
   openPhonologyModal,
   soundAndMarkup,
@@ -120,6 +121,7 @@ const ModeSelector = onlyUpdateForKeys([
     <Dropdown item text={getTranslation("Tools")}>
       <Dropdown.Menu>
         <Dropdown.Item onClick={openCognateAnalysisModal}>{getTranslation("Cognate analysis")}</Dropdown.Item>
+        <Dropdown.Item onClick={openCognateAcousticAnalysisModal}>{getTranslation("Cognate acoustic analysis")}</Dropdown.Item>
         <Dropdown.Item onClick={openPhonemicAnalysisModal}>{getTranslation("Phonemic analysis")}</Dropdown.Item>
         <Dropdown.Item onClick={openPhonologyModal}>{getTranslation("Phonology")}</Dropdown.Item>
         <Dropdown.Item onClick={soundAndMarkup}>{getTranslation("Sound and markup")}</Dropdown.Item>
@@ -172,6 +174,7 @@ const Perspective = ({
         filter={perspective.filter}
         submitFilter={submitFilter}
         openCognateAnalysisModal={() => openCognateAnalysisModal(id)}
+        openCognateAcousticAnalysisModal={() => openCognateAnalysisModal(id, 'acoustic')}
         openPhonemicAnalysisModal={() => openPhonemicAnalysisModal(id)}
         openPhonologyModal={() => openPhonologyModal(id)}
         soundAndMarkup={() => soundAndMarkup(id, mode, launchSoundAndMarkup)}
