@@ -2,35 +2,20 @@ import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { Dropdown } from 'semantic-ui-react';
 
-const dropdownOptions = [
-  {
-    key: 2,
-    text: 'All',
-    value: 2,
-  },
-  {
-    key: 1,
-    text: 'Have audio',
-    value: 1,
-  },
-  {
-    key: 0,
-    text: 'No audio',
-    value: 0,
-  },
-];
-
 /* ----------- COMPONENT ----------- */
 /**
  * Audio field.
  */
 class SearchAudioField extends PureComponent {
   static propTypes = {
+    classNames: PropTypes.object.isRequired,
     value: PropTypes.oneOf([
       true, false, null,
     ]),
+    options: PropTypes.object.isRequired,
     onChange: PropTypes.func.isRequired,
-    classNames: PropTypes.object.isRequired,
+    label: PropTypes.string.isRequired,
+    allSelectedText: PropTypes.string.isRequired,
   }
 
   /**
@@ -77,15 +62,38 @@ class SearchAudioField extends PureComponent {
     onChange(getDropdownOuterValue(value));
   }
 
+  getDropdownOptions() {
+    const { allSelectedText } = this.props;
+    const { haveAudio, noAudio } = this.props.options;
+
+    return [
+      {
+        key: 2,
+        text: allSelectedText,
+        value: 2,
+      },
+      {
+        key: 1,
+        text: haveAudio,
+        value: 1,
+      },
+      {
+        key: 0,
+        text: noAudio,
+        value: 0,
+      },
+    ];
+  }
+
   render() {
-    const { value, classNames } = this.props;
+    const { value, classNames, label } = this.props;
     const { getDropdownInnerValue } = this.constructor;
     return (
       <div className={classNames.field}>
-        <div className={classNames.header}>Audio</div>
+        <div className={classNames.header}>{label}</div>
         <Dropdown
           selection
-          options={dropdownOptions}
+          options={this.getDropdownOptions()}
           value={getDropdownInnerValue(value)}
           onChange={this.onDropdownValueChange}
         />

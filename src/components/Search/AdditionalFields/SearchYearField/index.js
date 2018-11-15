@@ -8,13 +8,13 @@ import SearchFieldSelect from '../SearchFieldSelect';
  */
 class SearchYearField extends PureComponent {
   static propTypes = {
-    options: PropTypes.array.isRequired,
-    value: PropTypes.array.isRequired,
-    onChange: PropTypes.func.isRequired,
     classNames: PropTypes.object.isRequired,
+    value: PropTypes.array.isRequired,
+    options: PropTypes.array.isRequired,
+    onChange: PropTypes.func.isRequired,
+    label: PropTypes.string.isRequired,
     selectAllText: PropTypes.string.isRequired,
     clearAllText: PropTypes.string.isRequired,
-    label: PropTypes.string.isRequired,
     selectYearsText: PropTypes.string.isRequired,
     noYearsFoundText: PropTypes.string.isRequired,
   }
@@ -75,15 +75,15 @@ class SearchYearField extends PureComponent {
         <div className={classNames.header}>{label}</div>
         {/* TODO: need some styles with height limitation and button margins */}
         <SearchFieldSelect
-          options={getDropdownOptionsFromStrings(valueStrings)}
           value={value}
+          options={getDropdownOptionsFromStrings(valueStrings)}
           onChange={this.onValueChange}
           onSelectAllButtonClick={this.onSelectAllButtonClick}
           onClearAllButtonClick={this.onClearAllButtonClick}
           placeholder={selectYearsText}
-          noResultsMessage={noYearsFoundText}
           selectAllText={selectAllText}
           clearAllText={clearAllText}
+          noResultsMessage={noYearsFoundText}
         />
       </div>
     );

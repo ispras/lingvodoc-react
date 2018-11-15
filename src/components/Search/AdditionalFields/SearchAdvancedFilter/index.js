@@ -77,6 +77,19 @@ class SearchAdvancedFilter extends PureComponent {
     const allSelectedText = getTranslation('All');
     const selectAllText = getTranslation('Select all');
     const clearAllText = getTranslation('Clear all');
+    const selectedText = getTranslation('You have selected:');
+    // audio field text
+    const audioOptions = {
+      haveAudio: getTranslation('Have audio'),
+      noAudio: getTranslation('No audio'),
+    };
+    const audioLabel = getTranslation('Audio');
+    // kind field text
+    const kindOptions = {
+      expedition: getTranslation('Expedition'),
+      archive: getTranslation('Archive'),
+    };
+    const kindLabel = getTranslation('Data source');
     // years field text
     const selectYearsText = getTranslation('Select years');
     const noYearsFoundText = getTranslation('No years found.');
@@ -85,7 +98,7 @@ class SearchAdvancedFilter extends PureComponent {
     return (
       <Segment.Group className={classNames.container}>
         <Segment>
-          Selected:
+          {selectedText}
         </Segment>
         {this.props.show ?
           <Segment.Group>
@@ -93,16 +106,20 @@ class SearchAdvancedFilter extends PureComponent {
               <SearchAudioField
                 classNames={classNames}
                 value={this.props.hasAudio}
-                allSelectedText={allSelectedText}
+                options={audioOptions}
                 onChange={this.onHasAudioChange}
+                label={audioLabel}
+                allSelectedText={allSelectedText}
               />
             </Segment>
             <Segment>
               <SearchKindField
                 classNames={classNames}
                 value={this.props.kind}
-                allSelectedText={allSelectedText}
+                options={kindOptions}
                 onChange={this.onKindChange}
+                label={kindLabel}
+                allSelectedText={allSelectedText}
               />
             </Segment>
             <Segment>
@@ -111,11 +128,11 @@ class SearchAdvancedFilter extends PureComponent {
                 options={yearOptions}
                 value={this.props.years}
                 onChange={this.onYearChange}
+                label={yearsLabel}
                 selectAllText={selectAllText}
                 clearAllText={clearAllText}
                 selectYearsText={selectYearsText}
                 noYearsFoundText={noYearsFoundText}
-                label={yearsLabel}
               />
             </Segment>
           </Segment.Group> :

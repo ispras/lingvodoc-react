@@ -8,11 +8,11 @@ const SearchFieldSelect = props => (
       multiple
       search
       selection
+      value={props.value}
       options={props.options}
+      onChange={props.onChange}
       placeholder={props.placeholder}
       noResultsMessage={props.noResultsMessage}
-      value={props.value}
-      onChange={props.onChange}
     />
     <div>
       <Button primary basic onClick={props.onSelectAllButtonClick}>
@@ -26,15 +26,15 @@ const SearchFieldSelect = props => (
 );
 
 SearchFieldSelect.propTypes = {
-  options: PropTypes.array,
   value: PropTypes.array.isRequired,
+  options: PropTypes.array,
   onChange: PropTypes.func,
   onSelectAllButtonClick: PropTypes.func,
   onClearAllButtonClick: PropTypes.func,
   placeholder: PropTypes.string,
-  noResultsMessage: PropTypes.string,
   selectAllText: PropTypes.string.isRequired,
   clearAllText: PropTypes.string.isRequired,
+  noResultsMessage: PropTypes.string,
 };
 
 SearchFieldSelect.defaultProps = {
