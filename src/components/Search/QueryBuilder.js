@@ -183,7 +183,7 @@ class QueryBuilder extends React.Component {
       dictionaries: [],
       hasAudio: null,
       kind: null,
-      years: null,
+      years: [],
     };
 
     this.state = {

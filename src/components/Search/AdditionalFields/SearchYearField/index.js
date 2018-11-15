@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { Dropdown } from 'semantic-ui-react';
+import SearchFieldSelect from '../SearchFieldSelect';
 
 /* ----------- COMPONENT ----------- */
 /**
@@ -8,71 +8,82 @@ import { Dropdown } from 'semantic-ui-react';
  */
 class SearchYearField extends PureComponent {
   static propTypes = {
-    value: PropTypes.string,
+    options: PropTypes.array.isRequired,
+    value: PropTypes.array.isRequired,
     onChange: PropTypes.func.isRequired,
     classNames: PropTypes.object.isRequired,
-    options: PropTypes.array.isRequired,
+    selectAllText: PropTypes.string.isRequired,
+    clearAllText: PropTypes.string.isRequired,
+    label: PropTypes.string.isRequired,
+    selectYearsText: PropTypes.string.isRequired,
+    noYearsFoundText: PropTypes.string.isRequired,
   }
 
-  static valueIsAll(value) {
-    return value === 'all';
+  static getDropdownOptionsFromStrings(values) {
+    return values.map(value => ({
+      value,
+      key: value,
+      text: value,
+    }));
   }
 
-  static getDropdownInnerValue(value) {
-    return value === null ? 'all' : value;
-  }
-
-  static getDropdownOptions(values) {
-    const options = [
-      {
-        value: 'all',
-        key: 'all',
-        text: 'All',
-      },
-    ];
-
-    values.forEach((value) => {
-      options.push({
-        value,
-        key: value,
-        text: value,
-      });
-    });
-
-    return options;
+  /**
+   * Check if component value is empty.
+   * @param {string[]} value - array of options for selecting
+   */
+  static isValueEmpty(value) {
+    return (value.length === 0);
   }
 
   constructor() {
     super();
 
-    this.onChange = this.onChange.bind(this);
+    this.onValueChange = this.onValueChange.bind(this);
+    this.onSelectAllButtonClick = this.onSelectAllButtonClick.bind(this);
+    this.onClearAllButtonClick = this.onClearAllButtonClick.bind(this);
   }
 
-  /**
-   * On value change event handler.
-   * @param {string} value - field value
-   */
-  onChange(ev, { value }) {
+  onValueChange(ev, { value }) {
     const { onChange } = this.props;
+    onChange(value);
+  }
 
-    if (this.constructor.valueIsAll(value)) {
-      onChange(null);
-    } else {
-      onChange(value);
+  onSelectAllButtonClick() {
+    this.props.onChange(this.props.options);
+  }
+
+  onClearAllButtonClick() {
+    const { isValueEmpty } = this.constructor;
+    const { value } = this.props;
+
+    if (isValueEmpty(value)) {
+      return;
     }
+
+    this.props.onChange([]);
   }
 
   render() {
-    const { value, classNames, options: rawOptions } = this.props;
-    const { getDropdownInnerValue, getDropdownOptions } = this.constructor;
+    const {
+      value, classNames, options: valueStrings, selectAllText, clearAllText,
+      label, selectYearsText, noYearsFoundText,
+    } = this.props;
+    const { getDropdownOptionsFromStrings } = this.constructor;
+
     return (
       <div className={classNames.field}>
-        <div className={classNames.header}>Years</div>
-        <Dropdown
-          selection
-          options={getDropdownOptions(rawOptions)}
-          value={getDropdownInnerValue(value)}
-          onChange={this.onChange}
+        <div className={classNames.header}>{label}</div>
+        {/* TODO: need some styles with height limitation and button margins */}
+        <SearchFieldSelect
+          options={getDropdownOptionsFromStrings(valueStrings)}
+          value={value}
+          onChange={this.onValueChange}
+          onSelectAllButtonClick={this.onSelectAllButtonClick}
+          onClearAllButtonClick={this.onClearAllButtonClick}
+          placeholder={selectYearsText}
+          noResultsMessage={noYearsFoundText}
+          selectAllText={selectAllText}
+          clearAllText={clearAllText}
         />
       </div>
     );

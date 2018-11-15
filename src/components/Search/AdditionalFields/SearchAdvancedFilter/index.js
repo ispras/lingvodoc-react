@@ -4,6 +4,7 @@ import { graphql } from 'react-apollo';
 import { compose } from 'recompose';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
+import { getTranslation } from 'api/i18n';
 import SearchAudioField from '../SearchAudioField';
 import SearchKindField from '../SearchKindField';
 import SearchYearField from '../SearchYearField';
@@ -29,7 +30,7 @@ class SearchAdvancedFilter extends PureComponent {
     kind: PropTypes.oneOf([
       'Expedition', 'Archive', null,
     ]),
-    years: PropTypes.string,
+    years: PropTypes.array,
     onChange: PropTypes.func.isRequired,
     metadata: PropTypes.object.isRequired,
   }
@@ -64,7 +65,7 @@ class SearchAdvancedFilter extends PureComponent {
 
   /**
    * Event handler for "year" field selecting.
-   * @param {string|null} value - year field value
+   * @param {string[]} value - year field value
    */
   onYearChange(value) {
     this.props.onChange(value, 'years');
@@ -72,6 +73,15 @@ class SearchAdvancedFilter extends PureComponent {
 
   render() {
     const { years: yearOptions } = this.props.metadata;
+    // TODO: insert this phrases into stringsToTranslate object in 'api/i18n.js'
+    const allSelectedText = getTranslation('All');
+    const selectAllText = getTranslation('Select all');
+    const clearAllText = getTranslation('Clear all');
+    // years field text
+    const selectYearsText = getTranslation('Select years');
+    const noYearsFoundText = getTranslation('No years found.');
+    const yearsLabel = getTranslation('Years');
+
     return (
       <Segment.Group className={classNames.container}>
         <Segment>
@@ -83,6 +93,7 @@ class SearchAdvancedFilter extends PureComponent {
               <SearchAudioField
                 classNames={classNames}
                 value={this.props.hasAudio}
+                allSelectedText={allSelectedText}
                 onChange={this.onHasAudioChange}
               />
             </Segment>
@@ -90,15 +101,21 @@ class SearchAdvancedFilter extends PureComponent {
               <SearchKindField
                 classNames={classNames}
                 value={this.props.kind}
+                allSelectedText={allSelectedText}
                 onChange={this.onKindChange}
               />
             </Segment>
             <Segment>
               <SearchYearField
                 classNames={classNames}
-                value={this.props.years}
                 options={yearOptions}
+                value={this.props.years}
                 onChange={this.onYearChange}
+                selectAllText={selectAllText}
+                clearAllText={clearAllText}
+                selectYearsText={selectYearsText}
+                noYearsFoundText={noYearsFoundText}
+                label={yearsLabel}
               />
             </Segment>
           </Segment.Group> :

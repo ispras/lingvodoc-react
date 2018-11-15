@@ -84,6 +84,7 @@ const searches = (state = [initialState], action) => {
             etymology: action.payload.etymology,
             langs: action.payload.langs,
             dicts: action.payload.dicts,
+            searchMetadata: action.payload.searchMetadata,
           }
           : search));
     case STORE_SEARCH_RESULT:
