@@ -11,6 +11,12 @@ export const createDictionaryMutation = gql`
     create_dictionary(category: $category, parent_id: $parentId, translation_atoms: $dictionaryTranslations,
       perspectives: $perspectives, additional_metadata: $metadata) {
       triumph
+      dictionary {
+        id
+        perspectives {
+          id
+        }
+      }
     }
   }
 `;
