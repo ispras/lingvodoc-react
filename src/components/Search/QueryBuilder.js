@@ -242,7 +242,7 @@ class QueryBuilder extends React.Component {
     const { searchId, actions } = this.props;
     const {
       languages: langsToFilter, dictionaries: dictsToFilter,
-      hasAudio, kind, years, humanSettlement,
+      hasAudio, kind, years, humanSettlement, authors,
     } = this.additionalFields;
     const adopted = mode2bool(this.state.mode.adopted);
     const etymology = mode2bool(this.state.mode.etymology);
@@ -252,6 +252,7 @@ class QueryBuilder extends React.Component {
       kind,
       years,
       humanSettlement,
+      authors,
     };
 
     actions.setQuery(searchId, this.state.data.toJS(), category, adopted, etymology, langsToFilter, dictsToFilter, searchMetadata);

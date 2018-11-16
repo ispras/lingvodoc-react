@@ -7,7 +7,9 @@ import gql from 'graphql-tag';
 import { getTranslation } from 'api/i18n';
 import AudioField from './AudioField';
 import KindField from './KindField';
-import Field from './Field';
+import HumanSettlementField from './HumanSettlementField';
+import YearsField from './YearsField';
+import Authors from './AuthorsField';
 import './index.scss';
 
 /* ----------- PROPS ----------- */
@@ -75,11 +77,11 @@ class AdvancedFilter extends PureComponent {
   }
 
   render() {
-    const { years: yearOptions, humanSettlement: humanSettlementOptions } = this.props.metadata;
+    const {
+      years: yearOptions, humanSettlement: humanSettlementOptions, authors: authorsOptions,
+    } = this.props.metadata;
     // TODO: insert this phrases into stringsToTranslate object in 'api/i18n.js'
     const allSelectedText = getTranslation('All');
-    const selectAllText = getTranslation('Select all');
-    const clearAllText = getTranslation('Clear all');
     const selectedText = getTranslation('You have selected:');
     // audio field text
     const audioOptions = {
@@ -93,18 +95,6 @@ class AdvancedFilter extends PureComponent {
       archive: getTranslation('Archive'),
     };
     const kindLabel = getTranslation('Data source');
-    // years field text
-    const selectYearsText = getTranslation('Select years');
-    const noYearsFoundText = getTranslation('No years found.');
-    const yearsLabel = getTranslation('Years');
-    // humanSettlement field text
-    const selectHumanSettlementText = getTranslation('Select human settlement');
-    const noHumanSettlementFoundText = getTranslation('No human settlement found.');
-    const humanSettlementLabel = getTranslation('Human settlement');
-    // authors field text
-    const selectAuthorsText = getTranslation('Select authors');
-    const noAuthorsFoundText = getTranslation('No authors found.');
-    const authorsLabel = getTranslation('Authors');
 
     return (
       <Segment.Group className={classNames.container}>
@@ -134,31 +124,30 @@ class AdvancedFilter extends PureComponent {
               />
             </Segment>
             <Segment>
-              <Field
+              <YearsField
                 classNames={classNames}
                 options={yearOptions}
                 value={this.props.years}
-                name="years"
                 onChange={this.onFieldChange}
-                label={yearsLabel}
-                selectAllText={selectAllText}
-                clearAllText={clearAllText}
-                selectText={selectYearsText}
-                noFoundText={noYearsFoundText}
+                getTranslation={getTranslation}
               />
             </Segment>
             <Segment>
-              <Field
+              <HumanSettlementField
                 classNames={classNames}
                 options={humanSettlementOptions}
                 value={this.props.humanSettlement}
-                name="humanSettlement"
                 onChange={this.onFieldChange}
-                label={humanSettlementLabel}
-                selectAllText={selectAllText}
-                clearAllText={clearAllText}
-                selectText={selectHumanSettlementText}
-                noFoundText={noHumanSettlementFoundText}
+                getTranslation={getTranslation}
+              />
+            </Segment>
+            <Segment>
+              <Authors
+                classNames={classNames}
+                options={authorsOptions}
+                value={this.props.authors}
+                onChange={this.onFieldChange}
+                getTranslation={getTranslation}
               />
             </Segment>
           </Segment.Group> :
