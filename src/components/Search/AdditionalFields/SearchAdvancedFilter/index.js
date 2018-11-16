@@ -30,7 +30,9 @@ class SearchAdvancedFilter extends PureComponent {
     kind: PropTypes.oneOf([
       'Expedition', 'Archive', null,
     ]),
-    years: PropTypes.array,
+    years: PropTypes.array.isRequired,
+    humanSettlement: PropTypes.array.isRequired,
+    authors: PropTypes.array.isRequired,
     onChange: PropTypes.func.isRequired,
     metadata: PropTypes.object.isRequired,
   }
@@ -94,6 +96,14 @@ class SearchAdvancedFilter extends PureComponent {
     const selectYearsText = getTranslation('Select years');
     const noYearsFoundText = getTranslation('No years found.');
     const yearsLabel = getTranslation('Years');
+    // humanSettlement field text
+    const selectHumanSettlementText = getTranslation('Select human settlement');
+    const noHumanSettlementFoundText = getTranslation('No human settlement found.');
+    const humanSettlementLabel = getTranslation('Human settlement');
+    // authors field text
+    const selectAuthorsText = getTranslation('Select authors');
+    const noAuthorsFoundText = getTranslation('No authors found.');
+    const authorsLabel = getTranslation('Authors');
 
     return (
       <Segment.Group className={classNames.container}>

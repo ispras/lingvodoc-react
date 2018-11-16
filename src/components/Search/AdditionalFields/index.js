@@ -120,12 +120,20 @@ class AdditionalFields extends PureComponent {
     super();
 
     const rawLanguagesTree = buildLanguageTree(fromJS(props.languagesQuery.language_tree)).toJS();
+    const {
+      hasAudio, kind, years, humanSettlement, authors,
+    } = props.data;
 
     this.state = {
       // calculating final lists of languages and dictionaries
       languagesTree: this.constructor.getUpdatedLanguagesTree(rawLanguagesTree),
       showSearchSelectLanguages: false,
       showAdvancedFilter: false,
+      hasAudio,
+      kind,
+      years,
+      humanSettlement,
+      authors,
     };
 
     // set checked list depends on "allLangsDictsChecked" prop
@@ -146,10 +154,6 @@ class AdditionalFields extends PureComponent {
         dictionaries: this.state.checked.dictionaries,
       });
     }
-
-    this.state.hasAudio = props.data.hasAudio;
-    this.state.kind = props.data.kind;
-    this.state.years = props.data.years;
 
     this.onLangsDictsChange = this.onLangsDictsChange.bind(this);
     this.onAdvancedFilterChange = this.onAdvancedFilterChange.bind(this);
@@ -220,6 +224,9 @@ class AdditionalFields extends PureComponent {
     const {
       checkAllButtonText, uncheckAllButtonText, showLanguagesTreeText, showAdvancedFilterText,
     } = this.props;
+    const {
+      hasAudio, kind, years, humanSettlement, authors,
+    } = this.state;
 
     return (
       <div>
@@ -245,12 +252,14 @@ class AdditionalFields extends PureComponent {
               {showAdvancedFilterText}
             </Button>
           </Segment>
-          {/* aka "tags component" */}
+          {/* aka "tags" component */}
           <SearchAdvancedFilter
             show={this.state.showAdvancedFilter}
-            hasAudio={this.state.hasAudio}
-            kind={this.state.kind}
-            years={this.state.years}
+            hasAudio={hasAudio}
+            kind={kind}
+            years={years}
+            humanSettlement={humanSettlement}
+            authors={authors}
             onChange={this.onAdvancedFilterChange}
           />
         </Segment.Group>

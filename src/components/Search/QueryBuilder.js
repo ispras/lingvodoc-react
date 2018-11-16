@@ -184,6 +184,8 @@ class QueryBuilder extends React.Component {
       hasAudio: null,
       kind: null,
       years: [],
+      humanSettlement: [],
+      authors: [],
     };
 
     this.state = {
