@@ -10,6 +10,7 @@ import KindField from './KindField';
 import HumanSettlementField from './HumanSettlementField';
 import YearsField from './YearsField';
 import Authors from './AuthorsField';
+import LanguageVulnerabilityField from './LanguageVulnerabilityField';
 import './index.scss';
 
 /* ----------- PROPS ----------- */
@@ -35,6 +36,7 @@ class AdvancedFilter extends PureComponent {
     years: PropTypes.array.isRequired,
     humanSettlement: PropTypes.array.isRequired,
     authors: PropTypes.array.isRequired,
+    languageVulnerability: PropTypes.array.isRequired,
     onChange: PropTypes.func.isRequired,
     metadata: PropTypes.object.isRequired,
   }
@@ -78,7 +80,8 @@ class AdvancedFilter extends PureComponent {
 
   render() {
     const {
-      years: yearOptions, humanSettlement: humanSettlementOptions, authors: authorsOptions,
+      years: yearOptions, humanSettlement: humanSettlementOptions,
+      authors: authorsOptions, nativeSpeakersCount: languageVulnerabilityOptions,
     } = this.props.metadata;
     // TODO: insert this phrases into stringsToTranslate object in 'api/i18n.js'
     const allSelectedText = getTranslation('All');
@@ -146,6 +149,15 @@ class AdvancedFilter extends PureComponent {
                 classNames={classNames}
                 options={authorsOptions}
                 value={this.props.authors}
+                onChange={this.onFieldChange}
+                getTranslation={getTranslation}
+              />
+            </Segment>
+            <Segment>
+              <LanguageVulnerabilityField
+                classNames={classNames}
+                options={languageVulnerabilityOptions}
+                value={this.props.languageVulnerability}
                 onChange={this.onFieldChange}
                 getTranslation={getTranslation}
               />

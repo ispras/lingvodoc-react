@@ -121,7 +121,7 @@ class AdditionalFilter extends PureComponent {
 
     const rawLanguagesTree = buildLanguageTree(fromJS(props.languagesQuery.language_tree)).toJS();
     const {
-      hasAudio, kind, years, humanSettlement, authors,
+      hasAudio, kind, years, humanSettlement, authors, languageVulnerability,
     } = props.data;
 
     this.state = {
@@ -134,6 +134,7 @@ class AdditionalFilter extends PureComponent {
       years,
       humanSettlement,
       authors,
+      languageVulnerability,
     };
 
     // set checked list depends on "allLangsDictsChecked" prop
@@ -225,7 +226,7 @@ class AdditionalFilter extends PureComponent {
       checkAllButtonText, uncheckAllButtonText, showLanguagesTreeText, showAdvancedFilterText,
     } = this.props;
     const {
-      hasAudio, kind, years, humanSettlement, authors,
+      hasAudio, kind, years, humanSettlement, authors, languageVulnerability,
     } = this.state;
 
     return (
@@ -260,6 +261,7 @@ class AdditionalFilter extends PureComponent {
             years={years}
             humanSettlement={humanSettlement}
             authors={authors}
+            languageVulnerability={languageVulnerability}
             onChange={this.onAdvancedFilterChange}
           />
         </Segment.Group>
