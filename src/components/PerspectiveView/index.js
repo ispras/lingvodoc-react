@@ -37,6 +37,11 @@ export const queryPerspective = gql`
     all_fields {
       id
       translation
+      # NOTE: this field of this query is not used, but it needs to stay here because otherwise on showing
+      # of CognateAnalysisModal the query's data gets invalidated and we have to refetch it, see
+      # corresponding comments in PerspectiveViewWrapper and languageQuery of CognateAnalysisModal, and
+      # fetching another translation for fields doesn't slow down everything noticeably.
+      english_translation: translation(locale_id: 2)
       data_type
       data_type_translation_gist_id
     }
