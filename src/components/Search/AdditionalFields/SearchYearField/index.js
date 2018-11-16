@@ -15,8 +15,8 @@ class SearchYearField extends PureComponent {
     label: PropTypes.string.isRequired,
     selectAllText: PropTypes.string.isRequired,
     clearAllText: PropTypes.string.isRequired,
-    selectYearsText: PropTypes.string.isRequired,
-    noYearsFoundText: PropTypes.string.isRequired,
+    selectText: PropTypes.string.isRequired,
+    noFoundText: PropTypes.string.isRequired,
   }
 
   static getDropdownOptionsFromStrings(values) {
@@ -66,7 +66,7 @@ class SearchYearField extends PureComponent {
   render() {
     const {
       value, classNames, options: valueStrings, selectAllText, clearAllText,
-      label, selectYearsText, noYearsFoundText,
+      label, selectText, noFoundText,
     } = this.props;
     const { getDropdownOptionsFromStrings } = this.constructor;
 
@@ -80,10 +80,10 @@ class SearchYearField extends PureComponent {
           onChange={this.onValueChange}
           onSelectAllButtonClick={this.onSelectAllButtonClick}
           onClearAllButtonClick={this.onClearAllButtonClick}
-          placeholder={selectYearsText}
+          placeholder={selectText}
           selectAllText={selectAllText}
           clearAllText={clearAllText}
-          noResultsMessage={noYearsFoundText}
+          noResultsMessage={noFoundText}
         />
       </div>
     );

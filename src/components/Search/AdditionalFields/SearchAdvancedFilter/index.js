@@ -141,8 +141,8 @@ class SearchAdvancedFilter extends PureComponent {
                 label={yearsLabel}
                 selectAllText={selectAllText}
                 clearAllText={clearAllText}
-                selectYearsText={selectYearsText}
-                noYearsFoundText={noYearsFoundText}
+                selectText={selectYearsText}
+                noFoundText={noYearsFoundText}
               />
             </Segment>
           </Segment.Group> :
