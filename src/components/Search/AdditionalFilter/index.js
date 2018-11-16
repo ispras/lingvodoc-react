@@ -116,6 +116,10 @@ class AdditionalFilter extends PureComponent {
     return newLanguagesTree;
   }
 
+  static isFieldLanguageVulnerability(name) {
+    return name === 'languagesVulnerability';
+  }
+
   constructor(props) {
     super();
 
@@ -144,6 +148,7 @@ class AdditionalFilter extends PureComponent {
         dictionaries: props.data.dictionaries,
       } :
       this.constructor.getAllNodesValues(this.state.languagesTree);
+    this.saveChecked();
 
     // notify parent component with checked list if allLangsDictsChecked is true
     // it's here because final lists with languages and dictionaries calculated in this component,
@@ -216,7 +221,43 @@ class AdditionalFilter extends PureComponent {
       [name]: value,
     };
 
+    if (this.constructor.isFieldLanguageVulnerability) {
+      this.handleLanguageVulnerability(value);
+    }
+
     this.props.onChange(result);
+  }
+
+  /**
+   * Fake data. TODO: delete this
+   */
+  getFakeFilteredChecked() {
+    return {
+      languages: [this.state.checked.languages[0], this.state.checked.languages[1]],
+      dictionaries: [this.state.checked.dictionaries[0], this.state.checked.dictionaries[1]],
+    };
+  }
+
+  getCheckedByLanguageVulnerability(value) {
+    if (value.length === 0) {
+      return this.savedChecked;
+    }
+
+    this.saveChecked();
+
+    return this.getFakeFilteredChecked();
+  }
+
+  saveChecked() {
+    this.savedChecked = this.state.checked;
+  }
+
+  handleLanguageVulnerability(value) {
+    const filteredChecked = this.getCheckedByLanguageVulnerability(value);
+
+    this.setState({
+      checked: filteredChecked,
+    });
   }
 
   render() {
