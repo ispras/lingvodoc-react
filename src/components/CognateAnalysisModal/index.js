@@ -43,12 +43,14 @@ const languageQuery = gql`
   query language($languageId: LingvodocID!) {
     language(id: $languageId) {
       id
-			dictionaries(deleted: false) {
-				id
-				translation
+      dictionaries(deleted: false, published_and_limited_only: true) {
+        id
+        translation
+        status
         perspectives {
           id
           translation
+          status
           columns {
             id
             field_id
@@ -57,7 +59,7 @@ const languageQuery = gql`
             position
           }
         }
-			}
+      }
       languages(deleted: false) {
         id
         translation
@@ -478,7 +480,11 @@ class CognateAnalysisModal extends React.Component
                     style={this.state.perspectiveSelectionList[index] ? {} : {opacity: 0.5}}
                     icon="right angle"
                     sections={treePathList.map(e => ({
-                      key: e.id, content: e.translation, link: false }))}
+                      key: e.id,
+                      content: e.hasOwnProperty('status') ?
+                        e.translation + ' (' + e.status + ')' :
+                        e.translation,
+                      link: false }))}
                   />
                   <Checkbox
                     style={{marginLeft: '0.5em', verticalAlign: 'middle'}}
