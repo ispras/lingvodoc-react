@@ -321,6 +321,9 @@ const languagesWithDictionariesQuery = gql`
         translation
         category
       }
+      additional_metadata {
+        speakersAmount
+      }
     }
   }
 `;
