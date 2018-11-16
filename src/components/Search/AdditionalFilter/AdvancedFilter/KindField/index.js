@@ -6,7 +6,7 @@ import { Dropdown } from 'semantic-ui-react';
 /**
  * Kind field.
  */
-class SearchKindField extends PureComponent {
+class KindField extends PureComponent {
   static propTypes = {
     classNames: PropTypes.object.isRequired,
     value: PropTypes.oneOf([
@@ -86,4 +86,4 @@ class SearchKindField extends PureComponent {
   }
 }
 
-export default SearchKindField;
+export default KindField;

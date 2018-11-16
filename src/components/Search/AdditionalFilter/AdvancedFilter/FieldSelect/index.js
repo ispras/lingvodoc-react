@@ -2,7 +2,7 @@ import React from 'react';
 import { Dropdown, Button } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 
-const SearchFieldSelect = props => (
+const FieldSelect = props => (
   <div>
     <Dropdown
       multiple
@@ -25,7 +25,7 @@ const SearchFieldSelect = props => (
   </div>
 );
 
-SearchFieldSelect.propTypes = {
+FieldSelect.propTypes = {
   value: PropTypes.array.isRequired,
   options: PropTypes.array,
   onChange: PropTypes.func,
@@ -37,7 +37,7 @@ SearchFieldSelect.propTypes = {
   noResultsMessage: PropTypes.string,
 };
 
-SearchFieldSelect.defaultProps = {
+FieldSelect.defaultProps = {
   options: [],
   onChange: () => {},
   onSelectAllButtonClick: () => {},
@@ -46,4 +46,4 @@ SearchFieldSelect.defaultProps = {
   noResultsMessage: 'No results found.',
 };
 
-export default SearchFieldSelect;
+export default FieldSelect;

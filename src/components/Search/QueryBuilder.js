@@ -9,7 +9,7 @@ import { List, fromJS } from 'immutable';
 import styled from 'styled-components';
 import { Checkbox, Grid, Radio, Segment, Button, Divider, Select, Input } from 'semantic-ui-react';
 import { setQuery } from 'ducks/search';
-import AdditionalFields from 'components/Search/AdditionalFields';
+import AdditionalFilter from 'components/Search/AdditionalFilter';
 
 import { compositeIdToString } from 'utils/compositeId';
 
@@ -241,7 +241,8 @@ class QueryBuilder extends React.Component {
   onSearchButtonClick() {
     const { searchId, actions } = this.props;
     const {
-      languages: langsToFilter, dictionaries: dictsToFilter, hasAudio, kind, years
+      languages: langsToFilter, dictionaries: dictsToFilter,
+      hasAudio, kind, years, humanSettlement,
     } = this.additionalFields;
     const adopted = mode2bool(this.state.mode.adopted);
     const etymology = mode2bool(this.state.mode.etymology);
@@ -250,6 +251,7 @@ class QueryBuilder extends React.Component {
       hasAudio,
       kind,
       years,
+      humanSettlement,
     };
 
     actions.setQuery(searchId, this.state.data.toJS(), category, adopted, etymology, langsToFilter, dictsToFilter, searchMetadata);
@@ -296,7 +298,7 @@ class QueryBuilder extends React.Component {
           </Segment.Group>
         </Segment.Group>
 
-        <AdditionalFields
+        <AdditionalFilter
           onChange={this.onAdditionalFieldsChange}
           data={this.additionalFields}
           allLangsDictsChecked

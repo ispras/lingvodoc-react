@@ -1,15 +1,16 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import SearchFieldSelect from '../SearchFieldSelect';
+import FieldSelect from '../FieldSelect';
 
 /* ----------- COMPONENT ----------- */
 /**
- * Kind field.
+ * Advanced filter field.
  */
-class SearchYearField extends PureComponent {
+class Field extends PureComponent {
   static propTypes = {
     classNames: PropTypes.object.isRequired,
     value: PropTypes.array.isRequired,
+    name: PropTypes.string.isRequired,
     options: PropTypes.array.isRequired,
     onChange: PropTypes.func.isRequired,
     label: PropTypes.string.isRequired,
@@ -44,12 +45,12 @@ class SearchYearField extends PureComponent {
   }
 
   onValueChange(ev, { value }) {
-    const { onChange } = this.props;
-    onChange(value);
+    this.updateValue(value);
   }
 
   onSelectAllButtonClick() {
-    this.props.onChange(this.props.options);
+    const newValue = this.props.options;
+    this.updateValue(newValue);
   }
 
   onClearAllButtonClick() {
@@ -60,7 +61,12 @@ class SearchYearField extends PureComponent {
       return;
     }
 
-    this.props.onChange([]);
+    this.updateValue([]);
+  }
+
+  updateValue(value) {
+    const { onChange, name } = this.props;
+    onChange(value, name);
   }
 
   render() {
@@ -74,7 +80,7 @@ class SearchYearField extends PureComponent {
       <div className={classNames.field}>
         <div className={classNames.header}>{label}</div>
         {/* TODO: need some styles with height limitation and button margins */}
-        <SearchFieldSelect
+        <FieldSelect
           value={value}
           options={getDropdownOptionsFromStrings(valueStrings)}
           onChange={this.onValueChange}
@@ -90,4 +96,4 @@ class SearchYearField extends PureComponent {
   }
 }
 
-export default SearchYearField;
+export default Field;

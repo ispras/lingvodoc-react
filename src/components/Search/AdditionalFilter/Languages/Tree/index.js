@@ -2,13 +2,13 @@ import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import isEqual from 'lodash/isEqual';
 import { Button } from 'semantic-ui-react';
-import TreeNode from './TreeNode';
+import TreeNode from '../TreeNode';
 import {
   propsNames, nodeHasDictionariesChildren,
   getNodeValue, flattenNodes,
 } from '../helpers';
 
-import './styles.scss';
+import './index.scss';
 
 /* ----------- PROPS ----------- */
 const classNames = {
@@ -22,7 +22,7 @@ const classNames = {
 /**
  * Represents tree of languages and dictionaries with selecting functionality.
  */
-class SearchLanguageTree extends PureComponent {
+class Tree extends PureComponent {
   static propTypes = {
     nodes: PropTypes.array.isRequired,
     checked: PropTypes.array.isRequired,
@@ -463,4 +463,4 @@ class SearchLanguageTree extends PureComponent {
   }
 }
 
-export default SearchLanguageTree;
+export default Tree;

@@ -6,14 +6,14 @@ import PropTypes from 'prop-types';
 import { fromJS } from 'immutable';
 import gql from 'graphql-tag';
 import { buildLanguageTree } from 'pages/Search/treeBuilder';
-import SearchSelectLanguages from './SearchSelectLanguages';
-import SearchAdvancedFilter from './SearchAdvancedFilter';
+import Languages from './Languages';
+import AdvancedFilter from './AdvancedFilter';
 
 /* ----------- COMPONENT ----------- */
 /**
  * Additional fields for the search form.
  */
-class AdditionalFields extends PureComponent {
+class AdditionalFilter extends PureComponent {
   static propTypes = {
     onChange: PropTypes.func.isRequired,
     data: PropTypes.object.isRequired,
@@ -236,7 +236,7 @@ class AdditionalFields extends PureComponent {
               {showLanguagesTreeText}
             </Button>
           </Segment>
-          <SearchSelectLanguages
+          <Languages
             onChange={this.onLangsDictsChange}
             languagesTree={languagesTree}
             langsChecked={languages}
@@ -253,7 +253,7 @@ class AdditionalFields extends PureComponent {
             </Button>
           </Segment>
           {/* aka "tags" component */}
-          <SearchAdvancedFilter
+          <AdvancedFilter
             show={this.state.showAdvancedFilter}
             hasAudio={hasAudio}
             kind={kind}
@@ -273,7 +273,7 @@ class AdditionalFields extends PureComponent {
  * @param {Object} props - component properties
  * @returns {AdditionalFields} - component with added properties (data from API)
  */
-const AdditionalFieldsWrap = (props) => {
+const AdditionalFilterWrap = (props) => {
   const { languagesQuery } = props;
   const { error: languagesQueryError, loading: languagesQueryLoading } = languagesQuery;
 
@@ -285,7 +285,7 @@ const AdditionalFieldsWrap = (props) => {
   const { error: translationsQueryError, loading: translationsQueryLoading } = translationsQuery;
 
   if (translationsQueryError || translationsQueryLoading) {
-    return <AdditionalFields {...props} />;
+    return <AdditionalFilter {...props} />;
   }
 
   const { advanced_translation_search: translations } = translationsQuery;
@@ -298,10 +298,10 @@ const AdditionalFieldsWrap = (props) => {
     showAdvancedFilterText: translations[3] ? translations[3].translation : undefined,
   };
 
-  return <AdditionalFields {...newProps} />;
+  return <AdditionalFilter {...newProps} />;
 };
 
-AdditionalFieldsWrap.propTypes = {
+AdditionalFilterWrap.propTypes = {
   languagesQuery: PropTypes.object.isRequired,
   translationsQuery: PropTypes.object.isRequired,
 };
@@ -346,4 +346,4 @@ export default compose(
   graphql(i18nQuery, {
     name: 'translationsQuery',
   })
-)(AdditionalFieldsWrap);
+)(AdditionalFilterWrap);

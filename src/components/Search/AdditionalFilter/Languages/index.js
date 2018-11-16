@@ -1,13 +1,13 @@
 import React, { PureComponent } from 'react';
 import { Segment } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
-import LanguageTree from './LanguageTree';
+import Tree from './Tree';
 
 /* ----------- COMPONENT ----------- */
 /**
  * Component for selecting languages and dictionaries.
  */
-class SearchSelectLanguages extends PureComponent {
+class Languages extends PureComponent {
   static propTypes = {
     langsChecked: PropTypes.array.isRequired,
     dictsChecked: PropTypes.array.isRequired,
@@ -122,7 +122,7 @@ class SearchSelectLanguages extends PureComponent {
           this.props.showTree ?
             <Segment.Group>
               <Segment>
-                <LanguageTree
+                <Tree
                   checked={checkedData}
                   nodes={languagesTree}
                   onChange={this.onFilterLangsChange}
@@ -138,4 +138,4 @@ class SearchSelectLanguages extends PureComponent {
   }
 }
 
-export default SearchSelectLanguages;
+export default Languages;

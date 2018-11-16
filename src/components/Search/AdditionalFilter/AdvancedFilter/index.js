@@ -5,9 +5,9 @@ import { compose } from 'recompose';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { getTranslation } from 'api/i18n';
-import SearchAudioField from '../SearchAudioField';
-import SearchKindField from '../SearchKindField';
-import SearchYearField from '../SearchYearField';
+import AudioField from './AudioField';
+import KindField from './KindField';
+import Field from './Field';
 import './index.scss';
 
 /* ----------- PROPS ----------- */
@@ -21,7 +21,7 @@ const classNames = {
 /**
  * Advanced filter.
  */
-class SearchAdvancedFilter extends PureComponent {
+class AdvancedFilter extends PureComponent {
   static propTypes = {
     show: PropTypes.bool,
     hasAudio: PropTypes.oneOf([
@@ -46,7 +46,7 @@ class SearchAdvancedFilter extends PureComponent {
 
     this.onHasAudioChange = this.onHasAudioChange.bind(this);
     this.onKindChange = this.onKindChange.bind(this);
-    this.onYearChange = this.onYearChange.bind(this);
+    this.onFieldChange = this.onFieldChange.bind(this);
   }
 
   /**
@@ -66,15 +66,16 @@ class SearchAdvancedFilter extends PureComponent {
   }
 
   /**
-   * Event handler for "year" field selecting.
-   * @param {string[]} value - year field value
+   * Event handler for field value changing.
+   * @param {string[]} value - field value
+   * @param {string} name - field name
    */
-  onYearChange(value) {
-    this.props.onChange(value, 'years');
+  onFieldChange(value, name) {
+    this.props.onChange(value, name);
   }
 
   render() {
-    const { years: yearOptions } = this.props.metadata;
+    const { years: yearOptions, humanSettlement: humanSettlementOptions } = this.props.metadata;
     // TODO: insert this phrases into stringsToTranslate object in 'api/i18n.js'
     const allSelectedText = getTranslation('All');
     const selectAllText = getTranslation('Select all');
@@ -113,7 +114,7 @@ class SearchAdvancedFilter extends PureComponent {
         {this.props.show ?
           <Segment.Group>
             <Segment>
-              <SearchAudioField
+              <AudioField
                 classNames={classNames}
                 value={this.props.hasAudio}
                 options={audioOptions}
@@ -123,7 +124,7 @@ class SearchAdvancedFilter extends PureComponent {
               />
             </Segment>
             <Segment>
-              <SearchKindField
+              <KindField
                 classNames={classNames}
                 value={this.props.kind}
                 options={kindOptions}
@@ -133,16 +134,31 @@ class SearchAdvancedFilter extends PureComponent {
               />
             </Segment>
             <Segment>
-              <SearchYearField
+              <Field
                 classNames={classNames}
                 options={yearOptions}
                 value={this.props.years}
-                onChange={this.onYearChange}
+                name="years"
+                onChange={this.onFieldChange}
                 label={yearsLabel}
                 selectAllText={selectAllText}
                 clearAllText={clearAllText}
                 selectText={selectYearsText}
                 noFoundText={noYearsFoundText}
+              />
+            </Segment>
+            <Segment>
+              <Field
+                classNames={classNames}
+                options={humanSettlementOptions}
+                value={this.props.humanSettlement}
+                name="humanSettlement"
+                onChange={this.onFieldChange}
+                label={humanSettlementLabel}
+                selectAllText={selectAllText}
+                clearAllText={clearAllText}
+                selectText={selectHumanSettlementText}
+                noFoundText={noHumanSettlementFoundText}
               />
             </Segment>
           </Segment.Group> :
@@ -158,7 +174,7 @@ class SearchAdvancedFilter extends PureComponent {
  * @param {Object} props - component properties
  * @returns {AdditionalFields} - component with added properties (data from API)
  */
-const SearchAdvancedFilterWrap = (props) => {
+const AdvancedFilterWrap = (props) => {
   const { metadataQuery } = props;
   const { error: metadataQueryError, loading: metadataQueryLoading } = metadataQuery;
 
@@ -171,10 +187,10 @@ const SearchAdvancedFilterWrap = (props) => {
     metadata: metadataQuery.select_tags_metadata,
   };
 
-  return <SearchAdvancedFilter {...newProps} />;
+  return <AdvancedFilter {...newProps} />;
 };
 
-SearchAdvancedFilterWrap.propTypes = {
+AdvancedFilterWrap.propTypes = {
   metadataQuery: PropTypes.object.isRequired,
 };
 
@@ -187,4 +203,4 @@ const metadataQuery = gql`
 
 export default compose(graphql(metadataQuery, {
   name: 'metadataQuery',
-}))(SearchAdvancedFilterWrap);
+}))(AdvancedFilterWrap);

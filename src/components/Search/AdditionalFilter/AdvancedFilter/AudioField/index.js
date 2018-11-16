@@ -6,7 +6,7 @@ import { Dropdown } from 'semantic-ui-react';
 /**
  * Audio field.
  */
-class SearchAudioField extends PureComponent {
+class AudioField extends PureComponent {
   static propTypes = {
     classNames: PropTypes.object.isRequired,
     value: PropTypes.oneOf([
@@ -102,4 +102,4 @@ class SearchAudioField extends PureComponent {
   }
 }
 
-export default SearchAudioField;
+export default AudioField;
