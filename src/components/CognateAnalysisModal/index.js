@@ -365,53 +365,79 @@ class CognateAnalysisModal extends React.Component
       .filter((perspective_info, index) =>
         (this.state.perspectiveSelectionList[index]));
 
-    this.setState({
-      computing: true });
+    /* If we are to perform acoustic analysis, we will try to launch it in the background. */
 
-    computeCognateAnalysis({
-      variables: {
-        baseLanguageId: this.baseLanguageId,
-        groupFieldId: groupField.id,
-        perspectiveInfoList: perspectiveInfoList,
-        mode: this.props.mode,
-      },
-    }).then(
+    if (this.props.mode == 'acoustic')
 
-      ({ data: { cognate_analysis: {
-        dictionary_count,
-        group_count,
-        not_enough_count,
-        transcription_count,
-        translation_count,
-        result,
-        xlsx_url }}}) =>
-      {
-        this.setState({
+      computeCognateAnalysis({
+        variables: {
+          baseLanguageId: this.baseLanguageId,
+          groupFieldId: groupField.id,
+          perspectiveInfoList: perspectiveInfoList,
+          mode: this.props.mode,
+        },
+      }).then(
+        () => {
+          window.logger.suc('Cognate acoustic analysis is launched. Please check out tasks for details.');
+          this.props.closeModal();
+        },
+        () => {
+          window.logger.err('Failed launch cognate acoustic analysis!');
+        }
+      );
+
+    /* Otherwise we will launch it as usual and then will wait for results to display them. */
+
+    else
+    {
+      this.setState({
+        computing: true });
+
+      computeCognateAnalysis({
+        variables: {
+          baseLanguageId: this.baseLanguageId,
+          groupFieldId: groupField.id,
+          perspectiveInfoList: perspectiveInfoList,
+          mode: this.props.mode,
+        },
+      }).then(
+
+        ({ data: { cognate_analysis: {
           dictionary_count,
           group_count,
           not_enough_count,
           transcription_count,
           translation_count,
-          library_present: true,
           result,
-          xlsx_url,
-          computing: false });
-      },
+          xlsx_url }}}) =>
+        {
+          this.setState({
+            dictionary_count,
+            group_count,
+            not_enough_count,
+            transcription_count,
+            translation_count,
+            library_present: true,
+            result,
+            xlsx_url,
+            computing: false });
+        },
 
-      (error_data) =>
-      {
-        window.logger.err('Failed to compute cognate analysis!');
+        (error_data) =>
+        {
+          window.logger.err('Failed to compute cognate analysis!');
 
-        if (error_data.message ===
-          'GraphQL error: Analysis library is absent, please contact system administrator.')
+          if (error_data.message ===
+            'GraphQL error: Analysis library is absent, please contact system administrator.')
+
+            this.setState({
+              library_present: false });
 
           this.setState({
-            library_present: false });
-
-        this.setState({
-          computing: false });
-      }
-    );
+            computing: false });
+        }
+      );
+    }
   }
 
   render()
