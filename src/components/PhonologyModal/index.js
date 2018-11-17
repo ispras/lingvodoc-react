@@ -403,11 +403,11 @@ class PhonologyModal extends React.Component
       },
     }).then(
       () => {
-        window.logger.suc('Phonology is being created. Check out tasks for details.');
+        window.logger.suc('Phonology is being compiled. Please check out tasks for details.');
         this.props.closeModal();
       },
       () => {
-        window.logger.err('Failed to create phonology!');
+        window.logger.err('Failed to launch phonology compilation!');
       }
     );
   }
