@@ -8,6 +8,7 @@ import gql from 'graphql-tag';
 import { buildLanguageTree } from 'pages/Search/treeBuilder';
 import Languages from './Languages';
 import AdvancedFilter from './AdvancedFilter';
+import { getNodeValue } from './Languages/helpers';
 
 /* ----------- COMPONENT ----------- */
 /**
@@ -141,6 +142,9 @@ class AdditionalFilter extends PureComponent {
       languageVulnerability,
     };
 
+    this.flatLanguages = {};
+    this.flattenLanguages(this.state.languagesTree, this.flatLanguages);
+
     // set checked list depends on "allLangsDictsChecked" prop
     this.state.checked = !props.allLangsDictsChecked ?
       {
@@ -228,25 +232,73 @@ class AdditionalFilter extends PureComponent {
     this.props.onChange(result);
   }
 
-  /**
-   * Fake data. TODO: delete this
-   */
-  getFakeFilteredChecked() {
+  getCheckedByLanguageVulnerability(vulnerabilityValue) {
+    if (vulnerabilityValue.length === 0) {
+      return this.savedChecked;
+    }
+
+    this.saveChecked();
+
+    const formattedVulnerabilityValue = vulnerabilityValue.map(item => item.toLowerCase());
+
+    const { checked } = this.state;
+    const { languages } = checked;
+    const removedLanguages = [];
+    const filteredChecked = [];
+
+    languages.forEach((item) => {
+      const language = this.flatLanguages[
+        getNodeValue({
+          id: item,
+        })
+      ];
+
+      if (language.vulnerability === null) {
+        removedLanguages.push(item);
+        return;
+      }
+
+      if (formattedVulnerabilityValue.indexOf(language.vulnerability.toLowerCase() !== -1)) {
+        filteredChecked.push(item);
+        return;
+      }
+
+      removedLanguages.push(item);
+    });
+
+    // removedLanguages.forEach((item) => {
+    //   const allChildren = this.getAllChildrenId(this.flatLanguages[getNodeValue({
+    //     id: item,
+    //   })]);
+    // });
+
     return {
       languages: [this.state.checked.languages[0], this.state.checked.languages[1]],
       dictionaries: [this.state.checked.dictionaries[0], this.state.checked.dictionaries[1]],
     };
   }
 
-  getCheckedByLanguageVulnerability(value) {
-    if (value.length === 0) {
-      return this.savedChecked;
-    }
+  getAllChildrenId(language, container = []) {
+    language.children.forEach((item) => {
+      container.push(item.id);
+      this.getAllChildrenId(item, container);
+    });
 
-    this.saveChecked();
-
-    return this.getFakeFilteredChecked();
+    return container;
   }
+
+  flattenLanguages = (languages, flatLanguages) => {
+    if (!Array.isArray(languages) || languages.length === 0) {
+      return;
+    }
+    languages.forEach((languageItem) => {
+      flatLanguages[getNodeValue(languageItem)] = {
+        vulnerability: languageItem.additional_metadata.speakersAmount,
+        children: languageItem.children,
+      };
+      this.flattenLanguages(languageItem.children, flatLanguages);
+    });
+  };
 
   saveChecked() {
     this.savedChecked = this.state.checked;
