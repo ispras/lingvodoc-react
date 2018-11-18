@@ -117,7 +117,7 @@ class AdditionalFilter extends PureComponent {
   }
 
   static isFieldLanguageVulnerability(name) {
-    return name === 'languagesVulnerability';
+    return name === 'languageVulnerability';
   }
 
   constructor(props) {
@@ -221,7 +221,7 @@ class AdditionalFilter extends PureComponent {
       [name]: value,
     };
 
-    if (this.constructor.isFieldLanguageVulnerability) {
+    if (this.constructor.isFieldLanguageVulnerability(name)) {
       this.handleLanguageVulnerability(value);
     }
 
