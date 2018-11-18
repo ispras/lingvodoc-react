@@ -139,4 +139,8 @@
   &__node:last-child.search-language-tree__leaf:before {
     height: 15px;
   }
+
+  &__group_hidden {
+    display: none;
+  }
 }

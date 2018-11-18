@@ -118,21 +118,14 @@ class Languages extends PureComponent {
         <Segment>
           {this.constructor.renderCount(checkedData)}
         </Segment>
-        {
-          this.props.showTree ?
-            <Segment.Group>
-              <Segment>
-                <Tree
-                  checked={checkedData}
-                  nodes={languagesTree}
-                  onChange={this.onFilterLangsChange}
-                  checkAllButtonText={checkAllButtonText}
-                  uncheckAllButtonText={uncheckAllButtonText}
-                />
-              </Segment>
-            </Segment.Group> :
-            null
-        }
+        <Tree
+          checked={checkedData}
+          nodes={languagesTree}
+          onChange={this.onFilterLangsChange}
+          checkAllButtonText={checkAllButtonText}
+          uncheckAllButtonText={uncheckAllButtonText}
+          showTree={this.props.showTree}
+        />
       </Segment.Group>
     );
   }

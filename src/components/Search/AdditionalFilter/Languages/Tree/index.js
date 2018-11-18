@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import isEqual from 'lodash/isEqual';
-import { Button } from 'semantic-ui-react';
+import { Button, Segment } from 'semantic-ui-react';
 import TreeNode from '../TreeNode';
 import {
   propsNames, nodeHasDictionariesChildren,
@@ -16,6 +16,8 @@ const classNames = {
   wrap: 'search-language-tree__wrap',
   items: 'search-language-tree__items',
   buttons: 'search-language-tree__buttons',
+  group: 'search-language-tree__group',
+  groupHidden: 'search-language-tree__group_hidden',
 };
 
 /* ----------- COMPONENT ----------- */
@@ -29,6 +31,7 @@ class Tree extends PureComponent {
     onChange: PropTypes.func.isRequired,
     checkAllButtonText: PropTypes.string,
     uncheckAllButtonText: PropTypes.string,
+    showTree: PropTypes.bool.isRequired,
   }
 
   static defaultProps = {
@@ -214,9 +217,8 @@ class Tree extends PureComponent {
         //   parentFlatNode.checkState = 0;
         // }
 
-        parentFlatNode.checkState = someChildChecked ? 2 : 0;
-
         someChildChecked = this.isSomeChildChecked(parentNode);
+        parentFlatNode.checkState = someChildChecked ? 2 : 0;
         parentFlatNode.checked = false;
 
         parentFlatNode.checkState = someChildChecked ? 2 : 0;
@@ -325,19 +327,19 @@ class Tree extends PureComponent {
   isNodeChecked(nodeId) {
     const { checked: checkedList } = this.props;
 
-    const indexOfLanguage = checkedList[0].checked.find((value) => {
+    const languageInChecked = checkedList[0].checked.find((value) => {
       return `${nodeId[0]},${nodeId[1]}` === value;
     });
 
-    if (indexOfLanguage !== undefined) {
+    if (languageInChecked !== undefined) {
       return true;
     }
 
-    const indexOfDictionary = checkedList[1].checked.find((value) => {
+    const dictionaryInChecked = checkedList[1].checked.find((value) => {
       return `${nodeId[0]},${nodeId[1]}` === value;
     });
 
-    if (indexOfDictionary !== undefined) {
+    if (dictionaryInChecked !== undefined) {
       return true;
     }
 
@@ -440,25 +442,32 @@ class Tree extends PureComponent {
   }
 
   render() {
-    const { nodes } = this.props;
-    const treeNodes = this.renderTreeNodes(nodes);
+    const { nodes, showTree } = this.props;
+    const groupClassName = showTree ? `${classNames.group}` : `${classNames.group} ${classNames.groupHidden}`;
 
     return (
-      <div className={classNames.container}>
-        <div className={classNames.wrap}>
-          <div className={classNames.items}>
-            {treeNodes}
-          </div>
-        </div>
-        <div className={classNames.buttons}>
-          <Button primary basic onClick={this.uncheckAll}>
-            {this.props.uncheckAllButtonText}
-          </Button>
-          <Button primary basic onClick={this.checkAll}>
-            {this.props.checkAllButtonText}
-          </Button>
-        </div>
-      </div>
+      <Segment.Group className={groupClassName}>
+        {showTree ?
+          <Segment>
+            <div className={classNames.container}>
+              <div className={classNames.wrap}>
+                <div className={classNames.items}>
+                  {this.renderTreeNodes(nodes)}
+                </div>
+              </div>
+              <div className={classNames.buttons}>
+                <Button primary basic onClick={this.uncheckAll}>
+                  {this.props.uncheckAllButtonText}
+                </Button>
+                <Button primary basic onClick={this.checkAll}>
+                  {this.props.checkAllButtonText}
+                </Button>
+              </div>
+            </div>
+          </Segment> :
+        null
+        }
+      </Segment.Group>
     );
   }
 }
