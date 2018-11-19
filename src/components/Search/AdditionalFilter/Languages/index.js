@@ -16,10 +16,12 @@ class Languages extends PureComponent {
     checkAllButtonText: PropTypes.string.isRequired,
     uncheckAllButtonText: PropTypes.string.isRequired,
     showTree: PropTypes.bool,
+    filterMode: PropTypes.bool,
   }
 
   static defaultProps = {
     showTree: false,
+    filterMode: false,
   }
 
   /**
@@ -125,6 +127,7 @@ class Languages extends PureComponent {
           checkAllButtonText={checkAllButtonText}
           uncheckAllButtonText={uncheckAllButtonText}
           showTree={this.props.showTree}
+          filterMode={this.props.filterMode}
         />
       </Segment.Group>
     );

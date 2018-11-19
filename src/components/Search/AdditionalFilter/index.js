@@ -132,6 +132,7 @@ class AdditionalFilter extends PureComponent {
     this.state = {
       // calculating final lists of languages and dictionaries
       languagesTree: this.constructor.getUpdatedLanguagesTree(rawLanguagesTree),
+      filterMode: false,
       showSearchSelectLanguages: false,
       showAdvancedFilter: false,
       hasAudio,
@@ -198,8 +199,11 @@ class AdditionalFilter extends PureComponent {
    * @param {Object} list - checked languages and/or dictionaries
    */
   onLangsDictsChange(list) {
+    const { languageVulnerability } = this.state;
     this.setState({
       checked: list,
+      filterMode: false,
+      languageVulnerability: languageVulnerability.length !== 0 ? [] : languageVulnerability,
     });
 
     const result = {
@@ -216,18 +220,26 @@ class AdditionalFilter extends PureComponent {
    * @param {string} name - advanced filter field name
    */
   onAdvancedFilterChange(value, name) {
-    this.setState({
+    const state = {
       [name]: value,
-    });
+      filterMode: false,
+    };
+
+    if (this.constructor.isFieldLanguageVulnerability(name)) {
+      const handlingResult = this.handleLanguageVulnerability(value);
+
+      this.setState({
+        ...state,
+        ...handlingResult,
+      });
+    } else {
+      this.setState(state);
+    }
 
     const result = {
       ...this.props.data,
       [name]: value,
     };
-
-    if (this.constructor.isFieldLanguageVulnerability(name)) {
-      this.handleLanguageVulnerability(value);
-    }
 
     this.props.onChange(result);
   }
@@ -237,51 +249,86 @@ class AdditionalFilter extends PureComponent {
       return this.savedChecked;
     }
 
-    this.saveChecked();
-
-    const formattedVulnerabilityValue = vulnerabilityValue.map(item => item.toLowerCase());
-
-    const { checked } = this.state;
+    const { savedChecked: checked } = this;
     const { languages } = checked;
     const removedLanguages = [];
-    const filteredChecked = [];
+    const filteredLanguages = [];
 
     languages.forEach((item) => {
-      const language = this.flatLanguages[
-        getNodeValue({
-          id: item,
-        })
-      ];
+      const value = getNodeValue({
+        id: item,
+        allChildren: null,
+      });
+      const language = this.flatLanguages[value];
 
-      if (language.vulnerability === null) {
-        removedLanguages.push(item);
+      const languageVulnerability = language.vulnerability === null ?
+        language.vulnerability :
+        language.vulnerability.toLowerCase();
+
+      if (vulnerabilityValue.indexOf(languageVulnerability) !== -1) {
+        filteredLanguages.push(item);
         return;
       }
 
-      if (formattedVulnerabilityValue.indexOf(language.vulnerability.toLowerCase() !== -1)) {
-        filteredChecked.push(item);
-        return;
-      }
-
-      removedLanguages.push(item);
+      removedLanguages.push({
+        value,
+        allChildren: this.getAllChildrenId(this.flatLanguages[value]),
+      });
     });
 
-    // removedLanguages.forEach((item) => {
-    //   const allChildren = this.getAllChildrenId(this.flatLanguages[getNodeValue({
+    const nextRemovedLanguages = [];
+    // const resultLanguages = filteredLanguages.filter((item) => {
+    //   const value = getNodeValue({
     //     id: item,
-    //   })]);
+    //   });
+    //   let result = true;
+
+    //   for (let i = 0; i < removedLanguages.length; i++) {
+    //     // removedLanguages[i].allChildren = this.getAllChildrenId(this.flatLanguages[removedLanguages[i].value]);
+    //     if (removedLanguages[i].allChildren.indexOf(value) !== -1) {
+    //       nextRemovedLanguages.push({
+    //         value,
+    //         allChildren: this.getAllChildrenId(this.flatLanguages[value]),
+    //       });
+
+    //       result = false;
+    //       break;
+    //     }
+    //   }
+
+    //   return result;
     // });
 
+    const resultRemovedLanguages = removedLanguages.concat(nextRemovedLanguages);
+
+    const filteredDicts = checked.dictionaries.filter((dictionary) => {
+      for (let i = 0; i < resultRemovedLanguages.length; i++) {
+        if (resultRemovedLanguages[i].allChildren.indexOf(dictionary) !== 0) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+
     return {
-      languages: [this.state.checked.languages[0], this.state.checked.languages[1]],
-      dictionaries: [this.state.checked.dictionaries[0], this.state.checked.dictionaries[1]],
+      languages: filteredLanguages,
+      dictionaries: filteredDicts,
     };
   }
 
   getAllChildrenId(language, container = []) {
     language.children.forEach((item) => {
-      container.push(item.id);
+      container.push(getNodeValue({
+        id: item.id,
+      }));
       this.getAllChildrenId(item, container);
+    });
+
+    language.dictionaries.forEach((item) => {
+      container.push(getNodeValue({
+        id: item.id,
+      }));
     });
 
     return container;
@@ -295,21 +342,36 @@ class AdditionalFilter extends PureComponent {
       flatLanguages[getNodeValue(languageItem)] = {
         vulnerability: languageItem.additional_metadata.speakersAmount,
         children: languageItem.children,
+        dictionaries: languageItem.dictionaries,
       };
       this.flattenLanguages(languageItem.children, flatLanguages);
     });
-  };
+  }
 
   saveChecked() {
     this.savedChecked = this.state.checked;
   }
 
   handleLanguageVulnerability(value) {
+    const { languageVulnerability: currentLanguageVulnerability } = this.state;
+
+    if (currentLanguageVulnerability.length === 0 && value.length > 0) {
+      this.saveChecked();
+    }
+
     const filteredChecked = this.getCheckedByLanguageVulnerability(value);
 
-    this.setState({
+    if (filteredChecked === this.savedChecked) {
+      return {
+        checked: filteredChecked,
+        filterMode: false,
+      };
+    }
+
+    return {
       checked: filteredChecked,
-    });
+      filterMode: true,
+    };
   }
 
   render() {
@@ -336,6 +398,7 @@ class AdditionalFilter extends PureComponent {
             langsChecked={languages}
             dictsChecked={dictionaries}
             showTree={this.state.showSearchSelectLanguages}
+            filterMode={this.state.filterMode}
             checkAllButtonText={checkAllButtonText}
             uncheckAllButtonText={uncheckAllButtonText}
           />

@@ -32,6 +32,7 @@ class Tree extends PureComponent {
     checkAllButtonText: PropTypes.string,
     uncheckAllButtonText: PropTypes.string,
     showTree: PropTypes.bool.isRequired,
+    filterMode: PropTypes.bool.isRequired,
   }
 
   static defaultProps = {
@@ -79,12 +80,58 @@ class Tree extends PureComponent {
    * Updates the tree data if the props were changed.
    * @param {Object} - next component properties
    */
-  componentWillReceiveProps({ nodes, checked }) {
-    if (!isEqual(this.props.nodes, nodes)) {
-      flattenNodes(nodes, this.flatNodes);
+  componentWillReceiveProps({ nodes: netxtNodes, checked: nextChecked, filterMode: nextFilterMode }) {
+    const { nodes: currentNodes, checked: currentChecked, filterMode: currentFilterMode } = this.props;
+    if (!isEqual(currentNodes, netxtNodes)) {
+      flattenNodes(netxtNodes, this.flatNodes);
     }
 
-    this.updateNodesWithChecked(checked);
+    const needToRecount = (nextFilterMode && !currentFilterMode) || (currentFilterMode && !nextFilterMode);
+
+    if (!isEqual(currentChecked, nextChecked)) {
+      this.updateNodesWithChecked(nextChecked, needToRecount);
+      if (needToRecount) {
+        this.onRecountTree();
+      }
+    }
+  }
+
+  onRecountTree() {
+    const rootNodeValues = Object.keys(this.flatNodes).filter((value) => {
+      return !this.flatNodes[value].parent.id;
+    });
+
+    rootNodeValues.forEach((value) => {
+      const deepestNodeValue = this.onGetDeepestNodeValue(value);
+      this.recountParentsCheck(deepestNodeValue);
+    });
+  }
+
+  onGetDeepestNodeValue(nodeValue) {
+    const node = this.flatNodes[nodeValue].self;
+    let result = {
+      node: null,
+    };
+    const counters = {
+      maxLevel: -1,
+    };
+
+    return getNodeValue(this.onFindDeepestNode(node, 0, counters, result));
+  }
+
+  onFindDeepestNode(node, level, counters, result) {
+    if (node.children.length === 0) {
+      if (level > counters.maxLevel) {
+        result.node = node;
+        counters.maxLevel = level;
+      }
+    } else {
+      node.children.forEach((child) => {
+        this.onFindDeepestNode(child, level + 1, counters, result);
+      });
+    }
+
+    return result.node;
   }
 
   /**
@@ -201,27 +248,9 @@ class Tree extends PureComponent {
         parentFlatNode.checkState = 1;
         parentFlatNode.checked = true;
       } else {
-        // doubtful option in which you can remove all children without removing the parent
-        // someChildChecked = this.isSomeChildChecked(parentNode);
-        // if (someChildChecked) {
-        //   if (!parentFlatNode.checked) {
-        //     parentFlatNode.checkState = 2;
-        //     parentFlatNode.checked = false;
-        //   } else {
-        //     parentFlatNode.checkState = 1;
-        //   }
-        // } else if (parentFlatNode.checked) {
-        //   parentFlatNode.checkedState = 1;
-        // } else {
-        //   parentFlatNode.checked = false;
-        //   parentFlatNode.checkState = 0;
-        // }
-
         someChildChecked = this.isSomeChildChecked(parentNode);
         parentFlatNode.checkState = someChildChecked ? 2 : 0;
         parentFlatNode.checked = false;
-
-        parentFlatNode.checkState = someChildChecked ? 2 : 0;
       }
 
       this.recountParentsCheck(parentValue);
@@ -350,18 +379,24 @@ class Tree extends PureComponent {
    * Adds checked state to the tree nodes depending on list of checked tree nodes.
    * @param {Array} checkedLists - list of checked tree nodes
    */
-  updateNodesWithChecked(checkedLists) {
+  updateNodesWithChecked(checkedLists, filterMode) {
     const isAllChecked = this.constructor.isAllNodesChecked(Object.keys(this.flatNodes).length, checkedLists);
 
     if (isAllChecked) {
       // Set all values to true
       Object.keys(this.flatNodes).forEach((value) => {
         this.flatNodes[value].checked = true;
+        if (filterMode) {
+          this.flatNodes[value].checkState = 1;
+        }
       });
     } else {
       // Reset values to false
       Object.keys(this.flatNodes).forEach((value) => {
         this.flatNodes[value].checked = false;
+        if (filterMode) {
+          this.flatNodes[value].checkState = 0;
+        }
       });
 
       checkedLists.forEach((item) => {
@@ -369,6 +404,9 @@ class Tree extends PureComponent {
           const node = this.flatNodes[value];
           if (node !== undefined && node.type === item.type) {
             this.flatNodes[value].checked = true;
+            if (filterMode) {
+              this.flatNodes[value].checkState = 1;
+            }
           }
         });
       });
