@@ -9,7 +9,7 @@ import { List, fromJS } from 'immutable';
 import styled from 'styled-components';
 import { Checkbox, Grid, Radio, Segment, Button, Divider, Select, Input } from 'semantic-ui-react';
 import { setQuery } from 'ducks/search';
-import AdditionalFields from 'components/Search/AdditionalFields';
+import AdditionalFilter from 'components/Search/AdditionalFilter';
 
 import { compositeIdToString } from 'utils/compositeId';
 
@@ -181,6 +181,12 @@ class QueryBuilder extends React.Component {
     this.additionalFields = {
       languages: [],
       dictionaries: [],
+      hasAudio: null,
+      kind: null,
+      years: [],
+      humanSettlement: [],
+      authors: [],
+      languageVulnerability: [],
     };
 
     this.state = {
@@ -229,18 +235,28 @@ class QueryBuilder extends React.Component {
     };
   }
 
-  onAdditionalFieldsChange(list) {
-    this.additionalFields = list;
+  onAdditionalFieldsChange(data) {
+    this.additionalFields = data;
   }
 
   onSearchButtonClick() {
     const { searchId, actions } = this.props;
-    const { languages: langsToFilter, dictionaries: dictsToFilter } = this.additionalFields;
+    const {
+      languages: langsToFilter, dictionaries: dictsToFilter,
+      hasAudio, kind, years, humanSettlement, authors,
+    } = this.additionalFields;
     const adopted = mode2bool(this.state.mode.adopted);
     const etymology = mode2bool(this.state.mode.etymology);
     const category = bool2category(this.state.source.dictionaries, this.state.source.corpora);
+    const searchMetadata = {
+      hasAudio,
+      kind,
+      years,
+      humanSettlement,
+      authors,
+    };
 
-    actions.setQuery(searchId, this.state.data.toJS(), category, adopted, etymology, langsToFilter, dictsToFilter);
+    actions.setQuery(searchId, this.state.data.toJS(), category, adopted, etymology, langsToFilter, dictsToFilter, searchMetadata);
   }
 
   changeSource(searchSourceType) {
@@ -284,9 +300,10 @@ class QueryBuilder extends React.Component {
           </Segment.Group>
         </Segment.Group>
 
-        <AdditionalFields
+        <AdditionalFilter
           onChange={this.onAdditionalFieldsChange}
-          allChecked
+          data={this.additionalFields}
+          allLangsDictsChecked
         />
 
         <Segment.Group>

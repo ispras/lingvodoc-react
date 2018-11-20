@@ -25,6 +25,10 @@
     margin-left: 0;
   }
 
+  &__buttons {
+    margin-top: 20px;
+  }
+
   &__checkbox {
     position: absolute !important;
     top: 50%;
@@ -134,5 +138,9 @@
 
   &__node:last-child.search-language-tree__leaf:before {
     height: 15px;
+  }
+
+  &__group_hidden {
+    display: none;
   }
 }

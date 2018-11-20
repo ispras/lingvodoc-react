@@ -1,33 +1,38 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import isEqual from 'lodash/isEqual';
-import { Segment, Button } from 'semantic-ui-react';
-import TreeNode from './TreeNode';
+import { Button, Segment } from 'semantic-ui-react';
+import TreeNode from '../TreeNode';
 import {
   propsNames, nodeHasDictionariesChildren,
   getNodeValue, flattenNodes,
 } from '../helpers';
 
-import './styles.scss';
+import './index.scss';
 
 /* ----------- PROPS ----------- */
 const classNames = {
   container: 'search-language-tree',
   wrap: 'search-language-tree__wrap',
   items: 'search-language-tree__items',
+  buttons: 'search-language-tree__buttons',
+  group: 'search-language-tree__group',
+  groupHidden: 'search-language-tree__group_hidden',
 };
 
 /* ----------- COMPONENT ----------- */
 /**
  * Represents tree of languages and dictionaries with selecting functionality.
  */
-class SearchLanguageTree extends PureComponent {
+class Tree extends PureComponent {
   static propTypes = {
     nodes: PropTypes.array.isRequired,
     checked: PropTypes.array.isRequired,
     onChange: PropTypes.func.isRequired,
     checkAllButtonText: PropTypes.string,
     uncheckAllButtonText: PropTypes.string,
+    showTree: PropTypes.bool.isRequired,
+    filterMode: PropTypes.bool.isRequired,
   }
 
   static defaultProps = {
@@ -75,12 +80,68 @@ class SearchLanguageTree extends PureComponent {
    * Updates the tree data if the props were changed.
    * @param {Object} - next component properties
    */
-  componentWillReceiveProps({ nodes, checked }) {
-    if (!isEqual(this.props.nodes, nodes)) {
-      flattenNodes(nodes, this.flatNodes);
+  componentWillReceiveProps({ nodes: netxtNodes, checked: nextChecked, filterMode: nextFilterMode }) {
+    const { nodes: currentNodes, checked: currentChecked, filterMode: currentFilterMode } = this.props;
+    if (!isEqual(currentNodes, netxtNodes)) {
+      flattenNodes(netxtNodes, this.flatNodes);
     }
 
-    this.updateNodesWithChecked(checked);
+    const needToRecount = (nextFilterMode && !currentFilterMode) ||
+      (currentFilterMode && !nextFilterMode) ||
+      (currentFilterMode && nextFilterMode);
+
+    if (!isEqual(currentChecked, nextChecked)) {
+      this.updateNodesWithChecked(nextChecked, needToRecount);
+      if (needToRecount) {
+        this.onRecountTree();
+      }
+    }
+  }
+
+  onRecountTree() {
+    const rootNodeValues = Object.keys(this.flatNodes).filter((value) => {
+      return !this.flatNodes[value].parent.id;
+    });
+
+    rootNodeValues.forEach((value) => {
+      this.onGetDeepestNodeValue(value);
+    });
+  }
+
+  onGetDeepestNodeValue(nodeValue) {
+    const node = this.flatNodes[nodeValue].self;
+    let result = {
+      node: null,
+    };
+    const counters = {
+      maxLevel: -1,
+    };
+
+    this.onFindDeepestNode(node, 0, counters, result);
+  }
+
+  onFindDeepestNode(node, level, counters, result) {
+    if (node.children.length === 0) {
+      let midNode = node;
+      let midLevel = level;
+      if (node.dictionaries.length > 0) {
+        midNode = node.dictionaries[0];
+        midLevel = level + 1;
+      }
+
+      if (level > counters.maxLevel) {
+        result.node = midNode;
+        counters.maxLevel = midLevel;
+      }
+
+      console.log(midNode);
+
+      this.recountParentsCheck(getNodeValue(midNode));
+    } else {
+      node.children.forEach((child) => {
+        this.onFindDeepestNode(child, level + 1, counters, result);
+      });
+    }
   }
 
   /**
@@ -197,28 +258,9 @@ class SearchLanguageTree extends PureComponent {
         parentFlatNode.checkState = 1;
         parentFlatNode.checked = true;
       } else {
-        // doubtful option in which you can remove all children without removing the parent
-        // someChildChecked = this.isSomeChildChecked(parentNode);
-        // if (someChildChecked) {
-        //   if (!parentFlatNode.checked) {
-        //     parentFlatNode.checkState = 2;
-        //     parentFlatNode.checked = false;
-        //   } else {
-        //     parentFlatNode.checkState = 1;
-        //   }
-        // } else if (parentFlatNode.checked) {
-        //   parentFlatNode.checkedState = 1;
-        // } else {
-        //   parentFlatNode.checked = false;
-        //   parentFlatNode.checkState = 0;
-        // }
-
-        parentFlatNode.checkState = someChildChecked ? 2 : 0;
-
         someChildChecked = this.isSomeChildChecked(parentNode);
-        parentFlatNode.checked = false;
-
         parentFlatNode.checkState = someChildChecked ? 2 : 0;
+        parentFlatNode.checked = false;
       }
 
       this.recountParentsCheck(parentValue);
@@ -324,19 +366,19 @@ class SearchLanguageTree extends PureComponent {
   isNodeChecked(nodeId) {
     const { checked: checkedList } = this.props;
 
-    const indexOfLanguage = checkedList[0].checked.find((value) => {
+    const languageInChecked = checkedList[0].checked.find((value) => {
       return `${nodeId[0]},${nodeId[1]}` === value;
     });
 
-    if (indexOfLanguage !== undefined) {
+    if (languageInChecked !== undefined) {
       return true;
     }
 
-    const indexOfDictionary = checkedList[1].checked.find((value) => {
+    const dictionaryInChecked = checkedList[1].checked.find((value) => {
       return `${nodeId[0]},${nodeId[1]}` === value;
     });
 
-    if (indexOfDictionary !== undefined) {
+    if (dictionaryInChecked !== undefined) {
       return true;
     }
 
@@ -347,18 +389,24 @@ class SearchLanguageTree extends PureComponent {
    * Adds checked state to the tree nodes depending on list of checked tree nodes.
    * @param {Array} checkedLists - list of checked tree nodes
    */
-  updateNodesWithChecked(checkedLists) {
+  updateNodesWithChecked(checkedLists, filterMode) {
     const isAllChecked = this.constructor.isAllNodesChecked(Object.keys(this.flatNodes).length, checkedLists);
 
     if (isAllChecked) {
       // Set all values to true
       Object.keys(this.flatNodes).forEach((value) => {
         this.flatNodes[value].checked = true;
+        if (filterMode) {
+          this.flatNodes[value].checkState = 1;
+        }
       });
     } else {
       // Reset values to false
       Object.keys(this.flatNodes).forEach((value) => {
         this.flatNodes[value].checked = false;
+        if (filterMode) {
+          this.flatNodes[value].checkState = 0;
+        }
       });
 
       checkedLists.forEach((item) => {
@@ -366,6 +414,9 @@ class SearchLanguageTree extends PureComponent {
           const node = this.flatNodes[value];
           if (node !== undefined && node.type === item.type) {
             this.flatNodes[value].checked = true;
+            if (filterMode) {
+              this.flatNodes[value].checkState = 1;
+            }
           }
         });
       });
@@ -439,27 +490,34 @@ class SearchLanguageTree extends PureComponent {
   }
 
   render() {
-    const { nodes } = this.props;
-    const treeNodes = this.renderTreeNodes(nodes);
+    const { nodes, showTree } = this.props;
+    const groupClassName = showTree ? `${classNames.group}` : `${classNames.group} ${classNames.groupHidden}`;
 
     return (
-      <div className={classNames.container}>
-        <div className={classNames.wrap}>
-          <div className={classNames.items}>
-            {treeNodes}
-          </div>
-        </div>
-        <Segment>
-          <Button primary basic onClick={this.uncheckAll}>
-            {this.props.uncheckAllButtonText}
-          </Button>
-          <Button primary basic onClick={this.checkAll}>
-            {this.props.checkAllButtonText}
-          </Button>
-        </Segment>
-      </div>
+      <Segment.Group className={groupClassName}>
+        {showTree ?
+          <Segment>
+            <div className={classNames.container}>
+              <div className={classNames.wrap}>
+                <div className={classNames.items}>
+                  {this.renderTreeNodes(nodes)}
+                </div>
+              </div>
+              <div className={classNames.buttons}>
+                <Button primary basic onClick={this.uncheckAll}>
+                  {this.props.uncheckAllButtonText}
+                </Button>
+                <Button primary basic onClick={this.checkAll}>
+                  {this.props.checkAllButtonText}
+                </Button>
+              </div>
+            </div>
+          </Segment> :
+        null
+        }
+      </Segment.Group>
     );
   }
 }
 
-export default SearchLanguageTree;
+export default Tree;

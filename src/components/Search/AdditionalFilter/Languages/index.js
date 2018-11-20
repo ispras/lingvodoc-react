@@ -1,30 +1,27 @@
 import React, { PureComponent } from 'react';
-import { Segment, Button } from 'semantic-ui-react';
-import { graphql } from 'react-apollo';
-import { compose } from 'recompose';
+import { Segment } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
-import LanguageTree from './LanguageTree';
+import Tree from './Tree';
 
 /* ----------- COMPONENT ----------- */
 /**
  * Component for selecting languages and dictionaries.
  */
-class SearchSelectLanguages extends PureComponent {
+class Languages extends PureComponent {
   static propTypes = {
     langsChecked: PropTypes.array.isRequired,
     dictsChecked: PropTypes.array.isRequired,
     languagesTree: PropTypes.array.isRequired,
     onChange: PropTypes.func.isRequired,
-    showButtonText: PropTypes.string,
-    checkAllButtonText: PropTypes.string,
-    uncheckAllButtonText: PropTypes.string,
+    checkAllButtonText: PropTypes.string.isRequired,
+    uncheckAllButtonText: PropTypes.string.isRequired,
+    showTree: PropTypes.bool,
+    filterMode: PropTypes.bool,
   }
 
   static defaultProps = {
-    showButtonText: 'Select languages',
-    checkAllButtonText: 'Check all',
-    uncheckAllButtonText: 'Uncheck all',
+    showTree: false,
+    filterMode: false,
   }
 
   /**
@@ -62,21 +59,7 @@ class SearchSelectLanguages extends PureComponent {
   constructor() {
     super();
 
-    this.state = {
-      showLangs: false,
-    };
-
-    this.onShowLangsButtonClick = this.onShowLangsButtonClick.bind(this);
     this.onFilterLangsChange = this.onFilterLangsChange.bind(this);
-  }
-  /**
-   * Event handler for clicking on the button to open or close
-   * component for languages and dictionaries selection.
-   */
-  onShowLangsButtonClick() {
-    this.setState({
-      showLangs: !this.state.showLangs,
-    });
   }
 
   /**
@@ -130,84 +113,25 @@ class SearchSelectLanguages extends PureComponent {
   render() {
     const { languagesTree, langsChecked, dictsChecked } = this.props;
     // TODO: translations
-    const { showButtonText, checkAllButtonText, uncheckAllButtonText } = this.props;
+    const { checkAllButtonText, uncheckAllButtonText } = this.props;
     const checkedData = this.getDataInInternalFormat(langsChecked, dictsChecked);
     return (
       <Segment.Group>
         <Segment>
           {this.constructor.renderCount(checkedData)}
         </Segment>
-        <Segment>
-          <Button primary basic fluid onClick={this.onShowLangsButtonClick}>
-            {showButtonText}
-          </Button>
-        </Segment>
-        {
-          this.state.showLangs ?
-            <Segment.Group>
-              <Segment>
-                <LanguageTree
-                  checked={checkedData}
-                  nodes={languagesTree}
-                  onChange={this.onFilterLangsChange}
-                  checkAllButtonText={checkAllButtonText}
-                  uncheckAllButtonText={uncheckAllButtonText}
-                />
-              </Segment>
-            </Segment.Group> :
-            null
-        }
+        <Tree
+          checked={checkedData}
+          nodes={languagesTree}
+          onChange={this.onFilterLangsChange}
+          checkAllButtonText={checkAllButtonText}
+          uncheckAllButtonText={uncheckAllButtonText}
+          showTree={this.props.showTree}
+          filterMode={this.props.filterMode}
+        />
       </Segment.Group>
     );
   }
 }
 
-/**
- * Component for receiving, transmitting and handling data from the API to the main component.
- * @param {Object} props - component properties
- * @returns {SearchSelectLanguages} - component with added properties (data from API)
- */
-const SearchSelectLanguagesWrap = (props) => {
-  // TODO: translations
-  const { translationsQuery } = props;
-  const { error: translationsQueryError, loading: translationsQueryLoading } = translationsQuery;
-
-  if (translationsQueryError || translationsQueryLoading) {
-    return <SearchSelectLanguages {...props} />;
-  }
-
-  const { advanced_translation_search: translations } = translationsQuery;
-  // TODO: translations
-  const newProps = {
-    ...props,
-    showButtonText: translations[0] ? translations[0].translation : undefined,
-    checkAllButtonText: translations[1] ? translations[1].translation : undefined,
-    uncheckAllButtonText: translations[2] ? translations[2].translation : undefined,
-  };
-
-  return <SearchSelectLanguages {...newProps} />;
-};
-
-SearchSelectLanguagesWrap.propTypes = {
-  translationsQuery: PropTypes.object.isRequired,
-};
-
-/* ----------- QUERIES ----------- */
-// TODO: translations
-const i18nQuery = gql`
-  query {
-    advanced_translation_search(
-      searchstrings: [
-        "Select languages",
-        "Check all",
-        "Uncheck all"
-      ]
-    ) {
-      translation
-    }
-  }
-`;
-
-export default compose(graphql(i18nQuery, {
-  name: 'translationsQuery',
-}))(SearchSelectLanguagesWrap);
+export default Languages;
