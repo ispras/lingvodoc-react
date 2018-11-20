@@ -249,66 +249,41 @@ class AdditionalFilter extends PureComponent {
       return this.savedChecked;
     }
 
+    const formattedLanguageVulnerability = vulnerabilityValue.map(item => item.toLowerCase());
+
     const { savedChecked: checked } = this;
     const { languages } = checked;
-    const removedLanguages = [];
-    const filteredLanguages = [];
+    let filtered = [];
 
     languages.forEach((item) => {
       const value = getNodeValue({
         id: item,
-        allChildren: null,
       });
       const language = this.flatLanguages[value];
-
       const languageVulnerability = language.vulnerability === null ?
         language.vulnerability :
         language.vulnerability.toLowerCase();
 
-      if (vulnerabilityValue.indexOf(languageVulnerability) !== -1) {
-        filteredLanguages.push(item);
-        return;
-      }
+      if (formattedLanguageVulnerability.indexOf(languageVulnerability) !== -1 && filtered.indexOf(item) < 0) {
+        filtered.push(item);
 
-      removedLanguages.push({
-        value,
-        allChildren: this.getAllChildrenId(this.flatLanguages[value]),
-      });
+        filtered = [...filtered, ...this.getAllChildrenId(language)];
+      }
     });
 
-    const nextRemovedLanguages = [];
-    // const resultLanguages = filteredLanguages.filter((item) => {
-    //   const value = getNodeValue({
-    //     id: item,
-    //   });
-    //   let result = true;
+    const filteredLanguages = [];
+    const filteredDicts = [];
 
-    //   for (let i = 0; i < removedLanguages.length; i++) {
-    //     // removedLanguages[i].allChildren = this.getAllChildrenId(this.flatLanguages[removedLanguages[i].value]);
-    //     if (removedLanguages[i].allChildren.indexOf(value) !== -1) {
-    //       nextRemovedLanguages.push({
-    //         value,
-    //         allChildren: this.getAllChildrenId(this.flatLanguages[value]),
-    //       });
+    filtered.forEach((item) => {
+      const node = this.flatLanguages[getNodeValue({
+        id: item,
+      })];
 
-    //       result = false;
-    //       break;
-    //     }
-    //   }
-
-    //   return result;
-    // });
-
-    const resultRemovedLanguages = removedLanguages.concat(nextRemovedLanguages);
-
-    const filteredDicts = checked.dictionaries.filter((dictionary) => {
-      for (let i = 0; i < resultRemovedLanguages.length; i++) {
-        if (resultRemovedLanguages[i].allChildren.indexOf(dictionary) !== 0) {
-          return false;
-        }
+      if (!node) {
+        filteredDicts.push(item);
+      } else {
+        filteredLanguages.push(item);
       }
-
-      return true;
     });
 
     return {
@@ -319,16 +294,12 @@ class AdditionalFilter extends PureComponent {
 
   getAllChildrenId(language, container = []) {
     language.children.forEach((item) => {
-      container.push(getNodeValue({
-        id: item.id,
-      }));
+      container.push(item.id);
       this.getAllChildrenId(item, container);
     });
 
     language.dictionaries.forEach((item) => {
-      container.push(getNodeValue({
-        id: item.id,
-      }));
+      container.push(item.id);
     });
 
     return container;

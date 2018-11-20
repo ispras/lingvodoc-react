@@ -86,7 +86,9 @@ class Tree extends PureComponent {
       flattenNodes(netxtNodes, this.flatNodes);
     }
 
-    const needToRecount = (nextFilterMode && !currentFilterMode) || (currentFilterMode && !nextFilterMode);
+    const needToRecount = (nextFilterMode && !currentFilterMode) ||
+      (currentFilterMode && !nextFilterMode) ||
+      (currentFilterMode && nextFilterMode);
 
     if (!isEqual(currentChecked, nextChecked)) {
       this.updateNodesWithChecked(nextChecked, needToRecount);
@@ -102,8 +104,7 @@ class Tree extends PureComponent {
     });
 
     rootNodeValues.forEach((value) => {
-      const deepestNodeValue = this.onGetDeepestNodeValue(value);
-      this.recountParentsCheck(deepestNodeValue);
+      this.onGetDeepestNodeValue(value);
     });
   }
 
@@ -116,22 +117,31 @@ class Tree extends PureComponent {
       maxLevel: -1,
     };
 
-    return getNodeValue(this.onFindDeepestNode(node, 0, counters, result));
+    this.onFindDeepestNode(node, 0, counters, result);
   }
 
   onFindDeepestNode(node, level, counters, result) {
     if (node.children.length === 0) {
-      if (level > counters.maxLevel) {
-        result.node = node;
-        counters.maxLevel = level;
+      let midNode = node;
+      let midLevel = level;
+      if (node.dictionaries.length > 0) {
+        midNode = node.dictionaries[0];
+        midLevel = level + 1;
       }
+
+      if (level > counters.maxLevel) {
+        result.node = midNode;
+        counters.maxLevel = midLevel;
+      }
+
+      console.log(midNode);
+
+      this.recountParentsCheck(getNodeValue(midNode));
     } else {
       node.children.forEach((child) => {
         this.onFindDeepestNode(child, level + 1, counters, result);
       });
     }
-
-    return result.node;
   }
 
   /**
