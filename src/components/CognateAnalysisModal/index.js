@@ -43,12 +43,14 @@ const languageQuery = gql`
   query language($languageId: LingvodocID!) {
     language(id: $languageId) {
       id
-			dictionaries(deleted: false) {
-				id
-				translation
+      dictionaries(deleted: false, published_and_limited_only: true) {
+        id
+        translation
+        status
         perspectives {
           id
           translation
+          status
           columns {
             id
             field_id
@@ -57,7 +59,7 @@ const languageQuery = gql`
             position
           }
         }
-			}
+      }
       languages(deleted: false) {
         id
         translation
@@ -70,11 +72,13 @@ const computeCognateAnalysisMutation = gql`
   mutation computeCognateAnalysis(
     $groupFieldId: LingvodocID!,
     $baseLanguageId: LingvodocID!,
-    $perspectiveInfoList: [[LingvodocID]]!) {
+    $perspectiveInfoList: [[LingvodocID]]!,
+    $mode: String) {
       cognate_analysis(
         base_language_id: $baseLanguageId,
         group_field_id: $groupFieldId,
-        perspective_info_list: $perspectiveInfoList)
+        perspective_info_list: $perspectiveInfoList,
+        mode: $mode)
       {
         triumph
         dictionary_count
@@ -361,52 +365,79 @@ class CognateAnalysisModal extends React.Component
       .filter((perspective_info, index) =>
         (this.state.perspectiveSelectionList[index]));
 
-    this.setState({
-      computing: true });
+    /* If we are to perform acoustic analysis, we will try to launch it in the background. */
 
-    computeCognateAnalysis({
-      variables: {
-        baseLanguageId: this.baseLanguageId,
-        groupFieldId: groupField.id,
-        perspectiveInfoList: perspectiveInfoList,
-      },
-    }).then(
+    if (this.props.mode == 'acoustic')
 
-      ({ data: { cognate_analysis: {
-        dictionary_count,
-        group_count,
-        not_enough_count,
-        transcription_count,
-        translation_count,
-        result,
-        xlsx_url }}}) =>
-      {
-        this.setState({
+      computeCognateAnalysis({
+        variables: {
+          baseLanguageId: this.baseLanguageId,
+          groupFieldId: groupField.id,
+          perspectiveInfoList: perspectiveInfoList,
+          mode: this.props.mode,
+        },
+      }).then(
+        () => {
+          window.logger.suc('Cognate acoustic analysis is launched. Please check out tasks for details.');
+          this.props.closeModal();
+        },
+        () => {
+          window.logger.err('Failed launch cognate acoustic analysis!');
+        }
+      );
+
+    /* Otherwise we will launch it as usual and then will wait for results to display them. */
+
+    else
+    {
+      this.setState({
+        computing: true });
+
+      computeCognateAnalysis({
+        variables: {
+          baseLanguageId: this.baseLanguageId,
+          groupFieldId: groupField.id,
+          perspectiveInfoList: perspectiveInfoList,
+          mode: this.props.mode,
+        },
+      }).then(
+
+        ({ data: { cognate_analysis: {
           dictionary_count,
           group_count,
           not_enough_count,
           transcription_count,
           translation_count,
-          library_present: true,
           result,
-          xlsx_url,
-          computing: false });
-      },
+          xlsx_url }}}) =>
+        {
+          this.setState({
+            dictionary_count,
+            group_count,
+            not_enough_count,
+            transcription_count,
+            translation_count,
+            library_present: true,
+            result,
+            xlsx_url,
+            computing: false });
+        },
 
-      (error_data) =>
-      {
-        window.logger.err('Failed to compute cognate analysis!');
+        (error_data) =>
+        {
+          window.logger.err('Failed to compute cognate analysis!');
 
-        if (error_data.message ===
-          'GraphQL error: Analysis library is absent, please contact system administrator.')
+          if (error_data.message ===
+            'GraphQL error: Analysis library is absent, please contact system administrator.')
+
+            this.setState({
+              library_present: false });
 
           this.setState({
-            library_present: false });
-
-        this.setState({
-          computing: false });
-      }
-    );
+            computing: false });
+        }
+      );
+    }
   }
 
   render()
@@ -429,7 +460,9 @@ class CognateAnalysisModal extends React.Component
     return (
       <div>
         <Modal dimmer open size="fullscreen">
-          <Modal.Header>Cognate analysis</Modal.Header>
+          <Modal.Header>{this.props.mode == 'acoustic' ?
+            'Cognate acoustic analysis' :
+            'Cognate analysis'}</Modal.Header>
           <Modal.Content>
             <Header as="h2">
               <Breadcrumb
@@ -473,7 +506,11 @@ class CognateAnalysisModal extends React.Component
                     style={this.state.perspectiveSelectionList[index] ? {} : {opacity: 0.5}}
                     icon="right angle"
                     sections={treePathList.map(e => ({
-                      key: e.id, content: e.translation, link: false }))}
+                      key: e.id,
+                      content: e.hasOwnProperty('status') ?
+                        e.translation + ' (' + e.status + ')' :
+                        e.translation,
+                      link: false }))}
                   />
                   <Checkbox
                     style={{marginLeft: '0.5em', verticalAlign: 'middle'}}
