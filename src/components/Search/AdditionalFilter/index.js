@@ -8,7 +8,7 @@ import gql from 'graphql-tag';
 import { buildLanguageTree } from 'pages/Search/treeBuilder';
 import Languages from './Languages';
 import AdvancedFilter from './AdvancedFilter';
-import { getNodeValue } from './Languages/helpers';
+import { getNodeValue, getNodeValueById } from './Languages/helpers';
 
 /* ----------- COMPONENT ----------- */
 /**
@@ -121,6 +121,10 @@ class AdditionalFilter extends PureComponent {
     return name === 'languageVulnerability';
   }
 
+  static isLanguageVulnerabilitySet(language) {
+    return language.vulnerability !== null;
+  }
+
   constructor(props) {
     super();
 
@@ -228,13 +232,20 @@ class AdditionalFilter extends PureComponent {
     if (this.constructor.isFieldLanguageVulnerability(name)) {
       const handlingResult = this.handleLanguageVulnerability(value);
 
+      this.props.onChange({
+        ...this.props.data,
+        ...handlingResult.checked,
+      });
+
       this.setState({
         ...state,
         ...handlingResult,
       });
-    } else {
-      this.setState(state);
+
+      return;
     }
+
+    this.setState(state);
 
     const result = {
       ...this.props.data,
@@ -244,6 +255,10 @@ class AdditionalFilter extends PureComponent {
     this.props.onChange(result);
   }
 
+  /**
+   * Filtering of current checked state based on languageVulnerability value
+   * @param {Array} vulnerabilityValue - languageVulnerability field value
+   */
   getCheckedByLanguageVulnerability(vulnerabilityValue) {
     if (vulnerabilityValue.length === 0) {
       return this.savedChecked;
@@ -251,38 +266,34 @@ class AdditionalFilter extends PureComponent {
 
     const formattedLanguageVulnerability = vulnerabilityValue.map(item => item.toLowerCase());
 
-    const { savedChecked: checked } = this;
-    const { languages } = checked;
+    const { languages } = this.savedChecked;
     let filtered = [];
 
-    languages.forEach((item) => {
-      const value = getNodeValue({
-        id: item,
-      });
-      const language = this.flatLanguages[value];
-      const languageVulnerability = language.vulnerability === null ?
+    languages.forEach((languageId) => {
+      const language = this.getFlatLanguagesById(languageId);
+      const languageVulnerability = !this.constructor.isLanguageVulnerabilitySet(language) ?
         language.vulnerability :
         language.vulnerability.toLowerCase();
 
-      if (formattedLanguageVulnerability.indexOf(languageVulnerability) !== -1 && filtered.indexOf(item) < 0) {
-        filtered.push(item);
-
-        filtered = [...filtered, ...this.getAllChildrenId(language)];
+      if (formattedLanguageVulnerability.indexOf(languageVulnerability) !== -1 && filtered.indexOf(languageId) < 0) {
+        filtered.push(languageId);
+        filtered = [
+          ...filtered,
+          ...this.getAllChildrenId(language)
+        ];
       }
     });
 
     const filteredLanguages = [];
     const filteredDicts = [];
 
-    filtered.forEach((item) => {
-      const node = this.flatLanguages[getNodeValue({
-        id: item,
-      })];
+    filtered.forEach((itemId) => {
+      const item = this.getFlatLanguagesById(itemId);
 
-      if (!node) {
-        filteredDicts.push(item);
+      if (!item) {
+        filteredDicts.push(itemId);
       } else {
-        filteredLanguages.push(item);
+        filteredLanguages.push(itemId);
       }
     });
 
@@ -292,6 +303,11 @@ class AdditionalFilter extends PureComponent {
     };
   }
 
+  /**
+   * Gets all children (languages and dictionaries) ids of the language node on any depth
+   * @param {Object} language - language node
+   * @param {Array} container - array of ids
+   */
   getAllChildrenId(language, container = []) {
     language.children.forEach((item) => {
       container.push(item.id);
@@ -305,10 +321,36 @@ class AdditionalFilter extends PureComponent {
     return container;
   }
 
+  getFlatLanguages() {
+    return this.flatLanguages;
+  }
+
+  getFlatLanguagesByValue(value) {
+    const flatLanguages = this.getFlatLanguages();
+
+    return flatLanguages[value];
+  }
+
+  getFlatLanguagesByLanguage(language) {
+    const value = getNodeValue(language);
+
+    return this.getFlatLanguagesByValue(value);
+  }
+
+  getFlatLanguagesById(id) {
+    const value = getNodeValueById(id);
+
+    return this.getFlatLanguagesByValue(value);
+  }
+
+  /**
+   * Creates flat object of languages from the tree structure
+   */
   flattenLanguages = (languages, flatLanguages) => {
     if (!Array.isArray(languages) || languages.length === 0) {
       return;
     }
+
     languages.forEach((languageItem) => {
       flatLanguages[getNodeValue(languageItem)] = {
         vulnerability: languageItem.additional_metadata.speakersAmount,
@@ -319,10 +361,17 @@ class AdditionalFilter extends PureComponent {
     });
   }
 
+  /**
+   * Saves checked state for reconstruction after exit from filterMode (with languageVulnerability filter)
+   */
   saveChecked() {
     this.savedChecked = this.state.checked;
   }
 
+  /**
+   * Handles languageVulnerability field changes.
+   * @param {Array} value - languageVulnerability value
+   */
   handleLanguageVulnerability(value) {
     const { languageVulnerability: currentLanguageVulnerability } = this.state;
 

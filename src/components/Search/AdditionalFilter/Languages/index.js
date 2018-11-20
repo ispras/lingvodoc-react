@@ -28,9 +28,12 @@ class Languages extends PureComponent {
    * Сreates a block with the number of selected languages and dictionaries.
    */
   static renderCount(checked) {
+    const languagesCount = checked[0].checked.length;
+    const dictionariesCount = checked[1].checked.length;
+
     return (
       <div>
-        Selected: {checked[0].checked.length + ' languages, ' + checked[1].checked.length +  ' dictionaries'}
+        Selected: {`${languagesCount} languages, ${dictionariesCount} dictionaries`}
       </div>
     );
   }
