@@ -21,12 +21,14 @@ const nodeHasDictionariesChildren = (node) => {
   return Array.isArray(node[propsNames.dictionaries]) && node[propsNames.dictionaries].length > 0;
 };
 
+const getNodeValueById = id => `${id[0].toString()},${id[1].toString()}`;
+
 /**
  * Gets the value of a tree node as a string obtained from the node id.
  * @param {Object} node - tree node
  * @returns {string} - tree node value
  */
-const getNodeValue = node => `${node.id[0].toString()},${node.id[1].toString()}`;
+const getNodeValue = node => getNodeValueById(node.id);
 
 /**
  * Creates a flat object from the nested node tree where key is a tree node value
@@ -66,6 +68,7 @@ export {
   nodeHasLanguagesChildren,
   nodeHasDictionariesChildren,
   getNodeValue,
+  getNodeValueById,
   flattenNodes,
   propsNames,
 };

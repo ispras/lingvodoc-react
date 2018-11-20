@@ -57,6 +57,19 @@ class Tree extends PureComponent {
     return false;
   }
 
+  /**
+   * Checks if flat node has defined checkState
+   * @param {Object} flatNode - flat node
+   */
+  static isCheckStateSet(flatNode) {
+    const { checkState } = flatNode;
+    if (checkState === null || checkState === undefined) {
+      return false;
+    }
+
+    return (checkState === 0 || checkState === 1 || checkState === 2);
+  }
+
   constructor(props) {
     super(props);
 
@@ -83,7 +96,7 @@ class Tree extends PureComponent {
   componentWillReceiveProps({ nodes: netxtNodes, checked: nextChecked, filterMode: nextFilterMode }) {
     const { nodes: currentNodes, checked: currentChecked, filterMode: currentFilterMode } = this.props;
     if (!isEqual(currentNodes, netxtNodes)) {
-      flattenNodes(netxtNodes, this.flatNodes);
+      flattenNodes(netxtNodes, this.getFlatNodes());
     }
 
     const needToRecount = (nextFilterMode && !currentFilterMode) ||
@@ -93,54 +106,8 @@ class Tree extends PureComponent {
     if (!isEqual(currentChecked, nextChecked)) {
       this.updateNodesWithChecked(nextChecked, needToRecount);
       if (needToRecount) {
-        this.onRecountTree();
+        this.recountTree();
       }
-    }
-  }
-
-  onRecountTree() {
-    const rootNodeValues = Object.keys(this.flatNodes).filter((value) => {
-      return !this.flatNodes[value].parent.id;
-    });
-
-    rootNodeValues.forEach((value) => {
-      this.onGetDeepestNodeValue(value);
-    });
-  }
-
-  onGetDeepestNodeValue(nodeValue) {
-    const node = this.flatNodes[nodeValue].self;
-    let result = {
-      node: null,
-    };
-    const counters = {
-      maxLevel: -1,
-    };
-
-    this.onFindDeepestNode(node, 0, counters, result);
-  }
-
-  onFindDeepestNode(node, level, counters, result) {
-    if (node.children.length === 0) {
-      let midNode = node;
-      let midLevel = level;
-      if (node.dictionaries.length > 0) {
-        midNode = node.dictionaries[0];
-        midLevel = level + 1;
-      }
-
-      if (level > counters.maxLevel) {
-        result.node = midNode;
-        counters.maxLevel = midLevel;
-      }
-
-      console.log(midNode);
-
-      this.recountParentsCheck(getNodeValue(midNode));
-    } else {
-      node.children.forEach((child) => {
-        this.onFindDeepestNode(child, level + 1, counters, result);
-      });
     }
   }
 
@@ -166,13 +133,33 @@ class Tree extends PureComponent {
   }
 
   /**
+   * Gets all nodes from wich recounting will go to the top
+   * @param {Object} node - root node
+   * @param {Array} container - array with all nodes from which recounting will go to the top
+   */
+  getAllNodesToRecount(node, container = []) {
+    if (node.children.length === 0) {
+      if (node.dictionaries.length > 0) {
+        container.push(node.dictionaries[0]);
+      } else {
+        container.push(node);
+      }
+    } else {
+      node.children.forEach((child) => {
+        this.getAllNodesToRecount(child, container);
+      });
+    }
+    return container;
+  }
+
+  /**
    * Gets state of the tree node for its visual presentation.
    * @param {Object} node - tree node
    * @returns {number} - state of the tree node.
    * 0 - unchecked, 1 - checked, 2 - unchecked, but has at least one checked child.
    */
   getShallowCheckState(node) {
-    const flatNode = this.flatNodes[getNodeValue(node)];
+    const flatNode = this.getFlatNodeByNode(node);
 
     if (flatNode.isLeaf) {
       return flatNode.checked ? 1 : 0;
@@ -198,11 +185,12 @@ class Tree extends PureComponent {
       language: [],
       dictionary: [],
     };
+    const flatNodes = this.getFlatNodes();
 
-    Object.keys(this.flatNodes).forEach((value) => {
-      const node = this.flatNodes[value];
-      if (node.checked) {
-        list[node.type].push(value);
+    Object.keys(flatNodes).forEach((value) => {
+      const flatNode = this.getFlatNodeByValue(value);
+      if (flatNode.checked) {
+        list[flatNode.type].push(value);
       }
     });
 
@@ -218,15 +206,48 @@ class Tree extends PureComponent {
    */
   getExpandedList() {
     const list = [];
+    const flatNodes = this.getFlatNodes();
 
-    Object.keys(this.flatNodes).forEach((value) => {
-      const node = this.flatNodes[value];
-      if (node.expanded) {
+    Object.keys(flatNodes).forEach((value) => {
+      const flatNode = this.getFlatNodeByValue(value);
+      if (flatNode.expanded) {
         list.push(value);
       }
     });
 
     return list;
+  }
+
+  getFlatNodes() {
+    return this.flatNodes;
+  }
+
+  getFlatNodeByValue(value) {
+    const flatNodes = this.getFlatNodes();
+    return flatNodes[value];
+  }
+
+  getFlatNodeByNode(node) {
+    const value = getNodeValue(node);
+
+    return this.getFlatNodeByValue(value);
+  }
+
+  /**
+   * Full recounting of the tree
+   */
+  recountTree() {
+    const flatNodes = this.getFlatNodes();
+    const rootNodeValues = Object.keys(flatNodes).filter((value) => {
+      return !this.getFlatNodeByValue(value).parent.id;
+    });
+
+    rootNodeValues.forEach((value) => {
+      const flatNode = this.getFlatNodeByValue(value).self;
+      const allNodesToRecount = this.getAllNodesToRecount(flatNode);
+
+      allNodesToRecount.forEach(item => this.recountParentsCheck(getNodeValue(item)));
+    });
   }
 
   /**
@@ -236,12 +257,13 @@ class Tree extends PureComponent {
     const nextCheckedList = this.getCheckedList();
     this.props.onChange(nextCheckedList);
   }
+
   /**
    * Recounts the checked state of the parent of the tree node.
    * @param  {string} flatNodeValue - tree node value
    */
   recountParentsCheck(flatNodeValue) {
-    const flatNode = this.flatNodes[flatNodeValue];
+    const flatNode = this.getFlatNodeByValue(flatNodeValue);
     let everyChildChecked = null;
     let someChildChecked = null;
     let parentValue = null;
@@ -252,7 +274,7 @@ class Tree extends PureComponent {
       parentNode = flatNode.parent;
       everyChildChecked = this.isEveryChildChecked(parentNode);
       parentValue = getNodeValue(parentNode);
-      parentFlatNode = this.flatNodes[parentValue];
+      parentFlatNode = this.getFlatNodeByValue(parentValue);
 
       if (everyChildChecked) {
         parentFlatNode.checkState = 1;
@@ -272,7 +294,7 @@ class Tree extends PureComponent {
    * @param  {boolean} isChecked - is tree node checked
    */
   toggleChecked(value, isChecked) {
-    const flatNode = this.flatNodes[value];
+    const flatNode = this.getFlatNodeByValue(value);
 
     if (flatNode.isLeaf) {
       if (flatNode.self.disabled) {
@@ -300,9 +322,12 @@ class Tree extends PureComponent {
    * @param {boolean} isChecked - needed checked state
    */
   toggleCheckedAll(isChecked) {
-    Object.keys(this.flatNodes).forEach((value) => {
+    const flatNodes = this.getFlatNodes();
+
+    Object.keys(flatNodes).forEach((value) => {
+      const flatNode = this.getFlatNodeByValue(value);
       this.toggleNode(value, 'checked', isChecked);
-      this.flatNodes[value].checkState = isChecked ? 1 : 0;
+      flatNode.checkState = isChecked ? 1 : 0;
     });
     this.sendCheckedListToTop();
   }
@@ -328,7 +353,8 @@ class Tree extends PureComponent {
    * @param {boolean} toggleValue
    */
   toggleNode(nodeValue, key, toggleValue) {
-    this.flatNodes[nodeValue][key] = toggleValue;
+    const flatNode = this.getFlatNodeByValue(nodeValue);
+    flatNode[key] = toggleValue;
   }
 
   /**
@@ -338,11 +364,11 @@ class Tree extends PureComponent {
    */
   isEveryChildChecked(node) {
     const everyLanguagesChecked = node[propsNames.languages]
-      .every(language => this.flatNodes[getNodeValue(language)].checkState === 1);
+      .every(language => this.getFlatNodeByNode(language).checkState === 1);
 
     return !nodeHasDictionariesChildren(node) ? everyLanguagesChecked :
       everyLanguagesChecked && node[propsNames.dictionaries]
-        .every(dictionary => this.flatNodes[getNodeValue(dictionary)].checkState === 1);
+        .every(dictionary => this.getFlatNodeByNode(dictionary).checkState === 1);
   }
 
   /**
@@ -352,22 +378,22 @@ class Tree extends PureComponent {
    */
   isSomeChildChecked(node) {
     const someLanguagesChecked = node[propsNames.languages]
-      .some(language => this.flatNodes[getNodeValue(language)].checkState > 0);
+      .some(language => this.getFlatNodeByNode(language).checkState > 0);
 
     return !nodeHasDictionariesChildren(node) ? someLanguagesChecked :
       someLanguagesChecked || node[propsNames.dictionaries]
-        .some(dictionary => this.flatNodes[getNodeValue(dictionary)].checkState > 0);
+        .some(dictionary => this.getFlatNodeByNode(dictionary).checkState > 0);
   }
 
   /**
-   * Checks if node by id (nodeId) is checked.
-   * @param {Array} nodeId - node id
+   * Checks if node is checked.
+   * @param {object} node - node
    */
-  isNodeChecked(nodeId) {
+  isNodeChecked(node) {
     const { checked: checkedList } = this.props;
 
     const languageInChecked = checkedList[0].checked.find((value) => {
-      return `${nodeId[0]},${nodeId[1]}` === value;
+      return getNodeValue(node) === value;
     });
 
     if (languageInChecked !== undefined) {
@@ -375,7 +401,7 @@ class Tree extends PureComponent {
     }
 
     const dictionaryInChecked = checkedList[1].checked.find((value) => {
-      return `${nodeId[0]},${nodeId[1]}` === value;
+      return getNodeValue(node) === value;
     });
 
     if (dictionaryInChecked !== undefined) {
@@ -390,32 +416,35 @@ class Tree extends PureComponent {
    * @param {Array} checkedLists - list of checked tree nodes
    */
   updateNodesWithChecked(checkedLists, filterMode) {
-    const isAllChecked = this.constructor.isAllNodesChecked(Object.keys(this.flatNodes).length, checkedLists);
+    const flatNodes = this.getFlatNodes();
+    const isAllChecked = this.constructor.isAllNodesChecked(Object.keys(flatNodes).length, checkedLists);
 
     if (isAllChecked) {
       // Set all values to true
-      Object.keys(this.flatNodes).forEach((value) => {
-        this.flatNodes[value].checked = true;
+      Object.keys(flatNodes).forEach((value) => {
+        const flatNode = this.getFlatNodeByValue(value);
+        flatNode.checked = true;
         if (filterMode) {
-          this.flatNodes[value].checkState = 1;
+          flatNode.checkState = 1;
         }
       });
     } else {
       // Reset values to false
-      Object.keys(this.flatNodes).forEach((value) => {
-        this.flatNodes[value].checked = false;
+      Object.keys(flatNodes).forEach((value) => {
+        const flatNode = this.getFlatNodeByValue(value);
+        flatNode.checked = false;
         if (filterMode) {
-          this.flatNodes[value].checkState = 0;
+          flatNode.checkState = 0;
         }
       });
 
       checkedLists.forEach((item) => {
         item.checked.forEach((value) => {
-          const node = this.flatNodes[value];
-          if (node !== undefined && node.type === item.type) {
-            this.flatNodes[value].checked = true;
+          const flatNode = this.getFlatNodeByValue(value);
+          if (flatNode !== undefined && flatNode.type === item.type) {
+            flatNode.checked = true;
             if (filterMode) {
-              this.flatNodes[value].checkState = 1;
+              flatNode.checkState = 1;
             }
           }
         });
@@ -428,14 +457,17 @@ class Tree extends PureComponent {
    * @param {Array} checkedLists - list of expanded tree nodes
    */
   updateNodesWithExpanded(expandedList) {
-    Object.keys(this.flatNodes).forEach((value) => {
-      this.flatNodes[value].expanded = false;
+    const flatNodes = this.getFlatNodes();
+
+    Object.keys(flatNodes).forEach((value) => {
+      const flatNode = this.getFlatNodeByValue(value);
+      flatNode.expanded = false;
     });
 
     expandedList.forEach((value) => {
-      const node = this.flatNodes[value];
-      if (node !== undefined) {
-        this.flatNodes[value].expanded = true;
+      const flatNode = this.getFlatNodeByValue(value);
+      if (flatNode !== undefined) {
+        flatNode.expanded = true;
       }
     });
   }
@@ -449,7 +481,7 @@ class Tree extends PureComponent {
   renderTreeNodes(nodes, parent = {}) {
     const treeNodes = nodes.map((node) => {
       const nodeValue = getNodeValue(node);
-      const flatNode = this.flatNodes[nodeValue];
+      const flatNode = this.getFlatNodeByValue(nodeValue);
       const childrenLanguages = flatNode.isParentWithLanguages ?
         this.renderTreeNodes(node[propsNames.languages], node) :
         null;
@@ -458,10 +490,16 @@ class Tree extends PureComponent {
         null;
 
       // Get the checked state after all children checked states are determined
-      flatNode.checkState = flatNode.checkState === 0 || flatNode.checkState === 1 || flatNode.checkState === 2 ?
-        flatNode.checkState : this.isNodeChecked(node.id) ? 1 : 0;
+      if (!this.constructor.isCheckStateSet(flatNode)) {
+        flatNode.checkState = this.isNodeChecked(node) ? 1 : 0;
+      }
 
-      const parentExpanded = parent.value ? this.flatNodes[getNodeValue(parent)].expanded : true;
+      let parentExpanded = true;
+
+      if (parent.value) {
+        const parentFlatNode = this.getFlatNodeByNode(parent);
+        parentExpanded = parentFlatNode.expanded;
+      }
 
       if (!parentExpanded) {
         return null;
