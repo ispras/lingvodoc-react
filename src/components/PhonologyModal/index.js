@@ -97,6 +97,19 @@ class PhonologyModal extends React.Component
 
     this.textFields = this.columnFields
       .filter(field => field.data_type === 'Text');
+
+    /* Trying to find a default translation field choice. */
+
+    for (const field of this.textFields)
+    {
+      const check_str = field.english_translation.toLowerCase();
+
+      if (check_str.includes('translation') || check_str.includes('meaning'))
+      {
+        this.state.translationFieldIdStr = compositeIdToString(field.id);
+        break;
+      }
+    }
   }
 
   handleVowelsChange(e, { value: vowelsMode }) {
@@ -458,6 +471,7 @@ class PhonologyModal extends React.Component
 
             <div>
               <Select
+                defaultValue={this.state.translationFieldIdStr}
                 placeholder="Translation field"
                 options={textFieldsOptions}
                 onChange={(e, { value }) => this.setState({ translationFieldIdStr: value })}
