@@ -10,6 +10,15 @@ import Languages from './Languages';
 import AdvancedFilter from './AdvancedFilter';
 import { getNodeValue, getNodeValueById } from './Languages/helpers';
 
+import './index.scss';
+
+/* ----------- PROPS ----------- */
+
+const classNames = {
+  container: 'additional-filter',
+  buttonGroup: 'additional-filter__button-group',
+};
+
 /* ----------- COMPONENT ----------- */
 /**
  * Additional fields for the search form.
@@ -405,11 +414,14 @@ class AdditionalFilter extends PureComponent {
     } = this.state;
 
     return (
-      <div>
+      <div className={classNames.container}>
         <Segment.Group>
-          <Segment>
+          <Segment className={classNames.buttonGroup}>
             <Button primary basic fluid onClick={this.onShowLangsButtonClick}>
               {showLanguagesTreeText}
+            </Button>
+            <Button primary basic fluid onClick={this.onShowAdvancedFilterButtonClick}>
+              {showAdvancedFilterText}
             </Button>
           </Segment>
           <Languages
@@ -422,13 +434,7 @@ class AdditionalFilter extends PureComponent {
             checkAllButtonText={checkAllButtonText}
             uncheckAllButtonText={uncheckAllButtonText}
           />
-        </Segment.Group>
-        <Segment.Group>
-          <Segment>
-            <Button primary basic fluid onClick={this.onShowAdvancedFilterButtonClick}>
-              {showAdvancedFilterText}
-            </Button>
-          </Segment>
+
           {/* aka "tags" component */}
           <AdvancedFilter
             show={this.state.showAdvancedFilter}

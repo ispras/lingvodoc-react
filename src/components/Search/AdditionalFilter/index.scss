@@ -1,0 +1,31 @@
+.additional-filter {
+  &__button-group {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  &__button-group .button {
+    margin-right: 10px;
+  }
+
+  &__button-group .button:last-child {
+    margin-right: 0;
+  }
+
+  @media screen and (max-width: 991px) {
+    &__button-group {
+      flex-wrap: wrap;
+    }
+
+    &__button-group .button {
+      width: 100%;
+      margin-bottom: 15px;
+      margin-right: 0;
+    }
+
+    &__button-group .button:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
