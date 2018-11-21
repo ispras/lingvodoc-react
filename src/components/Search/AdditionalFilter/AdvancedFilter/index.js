@@ -18,6 +18,7 @@ const classNames = {
   container: 'search-advanced-filter',
   field: 'search-advanced-filter__field',
   header: 'search-advanced-filter__header',
+  hide: 'hide',
 };
 
 /* ----------- COMPONENT ----------- */
@@ -79,19 +80,15 @@ class AdvancedFilter extends PureComponent {
   }
 
   render() {
+    const { show } = this.props;
     const {
       years: yearOptions, humanSettlement: humanSettlementOptions,
       authors: authorsOptions, nativeSpeakersCount: languageVulnerabilityOptions,
     } = this.props.metadata;
 
-    const selectedText = getTranslation('You have selected:');
-
     return (
-      <Segment.Group className={classNames.container}>
-        <Segment>
-          {selectedText}
-        </Segment>
-        {this.props.show ?
+      <Segment.Group className={`${classNames.container} ${!show ? classNames.hide : ''}`}>
+        {show ?
           <Segment.Group>
             <Segment>
               <AudioField

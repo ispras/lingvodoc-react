@@ -6,11 +6,26 @@
   }
 
   &__button-group .button {
-    margin-right: 10px;
+    margin-right: 15px;
   }
 
   &__button-group .button:last-child {
     margin-right: 0;
+  }
+
+  &__info-field {
+    margin-bottom: 5px;
+    padding: 5px;
+    border-radius: 0.28571429rem;
+    border: 1px solid rgba(34, 36, 38, 0.15);
+  }
+
+  &__info-field:last-child {
+    margin-bottom: 0;
+  }
+
+  &__info-header {
+    margin-bottom: 10px;
   }
 
   @media screen and (max-width: 991px) {
@@ -28,4 +43,8 @@
       margin-bottom: 0;
     }
   }
+}
+
+.hide {
+  display: none;
 }

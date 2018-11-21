@@ -3,6 +3,12 @@ import { Segment } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import Tree from './Tree';
 
+/* ----------- PROPS ----------- */
+
+const classNames = {
+  hide: 'hide',
+}
+
 /* ----------- COMPONENT ----------- */
 /**
  * Component for selecting languages and dictionaries.
@@ -22,20 +28,6 @@ class Languages extends PureComponent {
   static defaultProps = {
     showTree: false,
     filterMode: false,
-  }
-
-  /**
-   * Сreates a block with the number of selected languages and dictionaries.
-   */
-  static renderCount(checked) {
-    const languagesCount = checked[0].checked.length;
-    const dictionariesCount = checked[1].checked.length;
-
-    return (
-      <div>
-        Selected: {`${languagesCount} languages, ${dictionariesCount} dictionaries`}
-      </div>
-    );
   }
 
   /**
@@ -114,22 +106,19 @@ class Languages extends PureComponent {
   }
 
   render() {
-    const { languagesTree, langsChecked, dictsChecked } = this.props;
+    const { languagesTree, langsChecked, dictsChecked, showTree } = this.props;
     // TODO: translations
     const { checkAllButtonText, uncheckAllButtonText } = this.props;
     const checkedData = this.getDataInInternalFormat(langsChecked, dictsChecked);
     return (
-      <Segment.Group>
-        <Segment>
-          {this.constructor.renderCount(checkedData)}
-        </Segment>
+      <Segment.Group className={!showTree ? classNames.hide : ''}>
         <Tree
           checked={checkedData}
           nodes={languagesTree}
           onChange={this.onFilterLangsChange}
           checkAllButtonText={checkAllButtonText}
           uncheckAllButtonText={uncheckAllButtonText}
-          showTree={this.props.showTree}
+          showTree={showTree}
           filterMode={this.props.filterMode}
         />
       </Segment.Group>

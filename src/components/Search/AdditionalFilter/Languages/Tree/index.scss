@@ -29,6 +29,14 @@
     margin-top: 20px;
   }
 
+  &__buttons .button {
+    margin-right: 15px;
+  }
+
+  &__button .button:last-child {
+    margin-right: 0;
+  }
+
   &__checkbox {
     position: absolute !important;
     top: 50%;
