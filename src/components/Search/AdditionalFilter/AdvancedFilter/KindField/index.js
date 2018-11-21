@@ -16,14 +16,6 @@ class KindField extends PureComponent {
     getTranslation: PropTypes.func.isRequired,
   }
 
-  // static valueIsAll(value) {
-  //   return value === 'All';
-  // }
-
-  // static getDropdownInnerValue(value) {
-  //   return value === null ? null : value;
-  // }
-
   constructor() {
     super();
 
@@ -42,12 +34,6 @@ class KindField extends PureComponent {
    */
   onChange(ev, { value }) {
     const { onChange } = this.props;
-
-    // if (this.constructor.valueIsAll(value)) {
-    //   onChange(null);
-    // } else {
-    //   onChange(value);
-    // }
 
     onChange(value);
   }
@@ -79,7 +65,6 @@ class KindField extends PureComponent {
 
   render() {
     const { value, classNames, getTranslation } = this.props;
-    // const { getDropdownInnerValue } = this.constructor;
 
     const label = getTranslation('Data source');
     const clearText = getTranslation('Clear');
