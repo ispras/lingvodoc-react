@@ -12,22 +12,26 @@ class KindField extends PureComponent {
     value: PropTypes.oneOf([
       'Expedition', 'Archive', null,
     ]),
-    options: PropTypes.object.isRequired,
     onChange: PropTypes.func.isRequired,
-    label: PropTypes.string.isRequired,
-    allSelectedText: PropTypes.string.isRequired,
+    getTranslation: PropTypes.func.isRequired,
   }
 
   static valueIsAll(value) {
-    return value === 'all';
+    return value === 'All';
   }
 
   static getDropdownInnerValue(value) {
-    return value === null ? 'all' : value;
+    return value === null ? 'All' : value;
   }
 
   constructor() {
     super();
+
+    this.options = {
+      archive: 'Archive',
+      expedition: 'Expedition',
+      all: 'All',
+    };
 
     this.onChange = this.onChange.bind(this);
   }
@@ -47,31 +51,32 @@ class KindField extends PureComponent {
   }
 
   getDropdownOptions() {
-    const { allSelectedText } = this.props;
-    const { expedition, archive } = this.props.options;
+    const { expedition, archive, all } = this.options;
 
     return [
       {
         key: 0,
-        text: allSelectedText,
-        value: 'all',
+        text: all,
+        value: all,
       },
       {
         key: 1,
         text: expedition,
-        value: 'Expedition',
+        value: expedition,
       },
       {
         key: 2,
         text: archive,
-        value: 'Archive',
+        value: archive,
       },
     ];
   }
 
   render() {
-    const { value, classNames, label } = this.props;
+    const { value, classNames, getTranslation } = this.props;
     const { getDropdownInnerValue } = this.constructor;
+
+    const label = getTranslation('Data source');
     return (
       <div className={classNames.field}>
         <div className={classNames.header}>{label}</div>
