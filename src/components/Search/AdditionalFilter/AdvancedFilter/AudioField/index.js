@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { Dropdown } from 'semantic-ui-react';
+import { Dropdown, Button } from 'semantic-ui-react';
 
 /* ----------- COMPONENT ----------- */
 /**
@@ -22,7 +22,7 @@ class AudioField extends PureComponent {
    */
   static getDropdownInnerValue(value) {
     if (value === null) {
-      return 2;
+      return null;
     }
 
     return value ? 1 : 0;
@@ -50,12 +50,12 @@ class AudioField extends PureComponent {
     const { getTranslation } = props;
 
     this.optionsText = {
-      haveAudio: getTranslation('Have audio'),
+      haveAudio: getTranslation('Has audio'),
       noAudio: getTranslation('No audio'),
-      all: getTranslation('All'),
     };
 
     this.onDropdownValueChange = this.onDropdownValueChange.bind(this);
+    this.onClearAllButtonClick = this.onClearAllButtonClick.bind(this);
   }
 
   /**
@@ -68,17 +68,20 @@ class AudioField extends PureComponent {
     onChange(getDropdownOuterValue(value));
   }
 
+  onClearAllButtonClick() {
+    if (this.props.value === null) {
+      return;
+    }
+
+    this.props.onChange(null);
+  }
+
   getDropdownOptions() {
     const {
-      haveAudio: haveAudioText, noAudio: noAudioText, all: allText,
+      haveAudio: haveAudioText, noAudio: noAudioText,
     } = this.optionsText;
 
     return [
-      {
-        key: 2,
-        text: allText,
-        value: 2,
-      },
       {
         key: 1,
         text: haveAudioText,
@@ -97,6 +100,8 @@ class AudioField extends PureComponent {
     const { getDropdownInnerValue } = this.constructor;
 
     const label = getTranslation('Audio');
+    const clearText = getTranslation('Clear');
+    const placeholder = getTranslation('Select audio');
 
     return (
       <div className={classNames.field}>
@@ -106,7 +111,13 @@ class AudioField extends PureComponent {
           options={this.getDropdownOptions()}
           value={getDropdownInnerValue(value)}
           onChange={this.onDropdownValueChange}
+          placeholder={placeholder}
         />
+        <div>
+          <Button primary basic onClick={this.onClearAllButtonClick}>
+            {clearText}
+          </Button>
+        </div>
       </div>
     );
   }

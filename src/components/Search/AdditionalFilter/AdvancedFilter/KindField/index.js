@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { Dropdown } from 'semantic-ui-react';
+import { Dropdown, Button } from 'semantic-ui-react';
 
 /* ----------- COMPONENT ----------- */
 /**
@@ -16,13 +16,13 @@ class KindField extends PureComponent {
     getTranslation: PropTypes.func.isRequired,
   }
 
-  static valueIsAll(value) {
-    return value === 'All';
-  }
+  // static valueIsAll(value) {
+  //   return value === 'All';
+  // }
 
-  static getDropdownInnerValue(value) {
-    return value === null ? 'All' : value;
-  }
+  // static getDropdownInnerValue(value) {
+  //   return value === null ? null : value;
+  // }
 
   constructor() {
     super();
@@ -30,10 +30,10 @@ class KindField extends PureComponent {
     this.options = {
       archive: 'Archive',
       expedition: 'Expedition',
-      all: 'All',
     };
 
     this.onChange = this.onChange.bind(this);
+    this.onClearAllButtonClick = this.onClearAllButtonClick.bind(this);
   }
 
   /**
@@ -43,22 +43,27 @@ class KindField extends PureComponent {
   onChange(ev, { value }) {
     const { onChange } = this.props;
 
-    if (this.constructor.valueIsAll(value)) {
-      onChange(null);
-    } else {
-      onChange(value);
+    // if (this.constructor.valueIsAll(value)) {
+    //   onChange(null);
+    // } else {
+    //   onChange(value);
+    // }
+
+    onChange(value);
+  }
+
+  onClearAllButtonClick() {
+    if (this.props.value === null) {
+      return;
     }
+
+    this.props.onChange(null);
   }
 
   getDropdownOptions() {
-    const { expedition, archive, all } = this.options;
+    const { expedition, archive } = this.options;
 
     return [
-      {
-        key: 0,
-        text: all,
-        value: all,
-      },
       {
         key: 1,
         text: expedition,
@@ -74,18 +79,27 @@ class KindField extends PureComponent {
 
   render() {
     const { value, classNames, getTranslation } = this.props;
-    const { getDropdownInnerValue } = this.constructor;
+    // const { getDropdownInnerValue } = this.constructor;
 
     const label = getTranslation('Data source');
+    const clearText = getTranslation('Clear');
+    const placeholder = getTranslation('Select data source');
+
     return (
       <div className={classNames.field}>
         <div className={classNames.header}>{label}</div>
         <Dropdown
           selection
           options={this.getDropdownOptions()}
-          value={getDropdownInnerValue(value)}
+          value={value}
           onChange={this.onChange}
+          placeholder={placeholder}
         />
+        <div>
+          <Button primary basic onClick={this.onClearAllButtonClick}>
+            {clearText}
+          </Button>
+        </div>
       </div>
     );
   }
