@@ -6,9 +6,12 @@ import PropTypes from 'prop-types';
 import { fromJS } from 'immutable';
 import gql from 'graphql-tag';
 import { buildLanguageTree } from 'pages/Search/treeBuilder';
+import { getTranslation } from 'api/i18n';
 import Languages from './Languages';
 import AdvancedFilter from './AdvancedFilter';
 import { getNodeValue, getNodeValueById } from './Languages/helpers';
+
+import AdditionalFilterInfo from './AdditionalFilterInfo';
 
 import './index.scss';
 
@@ -424,6 +427,21 @@ class AdditionalFilter extends PureComponent {
               {showAdvancedFilterText}
             </Button>
           </Segment>
+          <Segment.Group>
+            <Segment>
+              <AdditionalFilterInfo
+                languages={languages}
+                dictionaries={dictionaries}
+                hasAudio={hasAudio}
+                kind={kind}
+                years={years}
+                humanSettlement={humanSettlement}
+                authors={authors}
+                languageVulnerability={languageVulnerability}
+                getTranslation={getTranslation}
+              />
+            </Segment>
+          </Segment.Group>
           <Languages
             onChange={this.onLangsDictsChange}
             languagesTree={languagesTree}
