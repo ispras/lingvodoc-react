@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { Dropdown } from 'semantic-ui-react';
+import { Dropdown, Button } from 'semantic-ui-react';
 
 /* ----------- COMPONENT ----------- */
 /**
@@ -12,10 +12,8 @@ class AudioField extends PureComponent {
     value: PropTypes.oneOf([
       true, false, null,
     ]),
-    options: PropTypes.object.isRequired,
     onChange: PropTypes.func.isRequired,
-    label: PropTypes.string.isRequired,
-    allSelectedText: PropTypes.string.isRequired,
+    getTranslation: PropTypes.func.isRequired,
   }
 
   /**
@@ -24,7 +22,7 @@ class AudioField extends PureComponent {
    */
   static getDropdownInnerValue(value) {
     if (value === null) {
-      return 2;
+      return null;
     }
 
     return value ? 1 : 0;
@@ -46,10 +44,18 @@ class AudioField extends PureComponent {
     return false;
   }
 
-  constructor() {
+  constructor(props) {
     super();
 
+    const { getTranslation } = props;
+
+    this.optionsText = {
+      haveAudio: getTranslation('Has audio'),
+      noAudio: getTranslation('No audio'),
+    };
+
     this.onDropdownValueChange = this.onDropdownValueChange.bind(this);
+    this.onClearAllButtonClick = this.onClearAllButtonClick.bind(this);
   }
 
   /**
@@ -62,32 +68,41 @@ class AudioField extends PureComponent {
     onChange(getDropdownOuterValue(value));
   }
 
+  onClearAllButtonClick() {
+    if (this.props.value === null) {
+      return;
+    }
+
+    this.props.onChange(null);
+  }
+
   getDropdownOptions() {
-    const { allSelectedText } = this.props;
-    const { haveAudio, noAudio } = this.props.options;
+    const {
+      haveAudio: haveAudioText, noAudio: noAudioText,
+    } = this.optionsText;
 
     return [
       {
-        key: 2,
-        text: allSelectedText,
-        value: 2,
-      },
-      {
         key: 1,
-        text: haveAudio,
+        text: haveAudioText,
         value: 1,
       },
       {
         key: 0,
-        text: noAudio,
+        text: noAudioText,
         value: 0,
       },
     ];
   }
 
   render() {
-    const { value, classNames, label } = this.props;
+    const { value, classNames, getTranslation } = this.props;
     const { getDropdownInnerValue } = this.constructor;
+
+    const label = getTranslation('Audio');
+    const clearText = getTranslation('Clear');
+    const placeholder = getTranslation('Select audio');
+
     return (
       <div className={classNames.field}>
         <div className={classNames.header}>{label}</div>
@@ -96,7 +111,13 @@ class AudioField extends PureComponent {
           options={this.getDropdownOptions()}
           value={getDropdownInnerValue(value)}
           onChange={this.onDropdownValueChange}
+          placeholder={placeholder}
         />
+        <div>
+          <Button primary basic onClick={this.onClearAllButtonClick}>
+            {clearText}
+          </Button>
+        </div>
       </div>
     );
   }

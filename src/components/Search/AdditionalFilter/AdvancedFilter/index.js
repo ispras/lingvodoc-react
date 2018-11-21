@@ -83,21 +83,8 @@ class AdvancedFilter extends PureComponent {
       years: yearOptions, humanSettlement: humanSettlementOptions,
       authors: authorsOptions, nativeSpeakersCount: languageVulnerabilityOptions,
     } = this.props.metadata;
-    // TODO: insert this phrases into stringsToTranslate object in 'api/i18n.js'
-    const allSelectedText = getTranslation('All');
+
     const selectedText = getTranslation('You have selected:');
-    // audio field text
-    const audioOptions = {
-      haveAudio: getTranslation('Have audio'),
-      noAudio: getTranslation('No audio'),
-    };
-    const audioLabel = getTranslation('Audio');
-    // kind field text
-    const kindOptions = {
-      expedition: getTranslation('Expedition'),
-      archive: getTranslation('Archive'),
-    };
-    const kindLabel = getTranslation('Data source');
 
     return (
       <Segment.Group className={classNames.container}>
@@ -110,20 +97,16 @@ class AdvancedFilter extends PureComponent {
               <AudioField
                 classNames={classNames}
                 value={this.props.hasAudio}
-                options={audioOptions}
                 onChange={this.onHasAudioChange}
-                label={audioLabel}
-                allSelectedText={allSelectedText}
+                getTranslation={getTranslation}
               />
             </Segment>
             <Segment>
               <KindField
                 classNames={classNames}
                 value={this.props.kind}
-                options={kindOptions}
                 onChange={this.onKindChange}
-                label={kindLabel}
-                allSelectedText={allSelectedText}
+                getTranslation={getTranslation}
               />
             </Segment>
             <Segment>
