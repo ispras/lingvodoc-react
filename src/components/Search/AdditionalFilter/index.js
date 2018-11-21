@@ -355,6 +355,11 @@ class AdditionalFilter extends PureComponent {
     return this.getFlatLanguagesByValue(value);
   }
 
+  isNeedToShowVulnerabilityWarning() {
+    const { checked, languageVulnerability } = this.state;
+    return checked.languages.length === 0 && checked.dictionaries.length === 0 && languageVulnerability.length !== 0;
+  }
+
   /**
    * Creates flat object of languages from the tree structure
    */
@@ -407,7 +412,8 @@ class AdditionalFilter extends PureComponent {
   }
 
   render() {
-    const { languages, dictionaries } = this.state.checked;
+    const { checked } = this.state;
+    const { languages, dictionaries } = checked;
     const { languagesTree } = this.state;
     const {
       checkAllButtonText, uncheckAllButtonText, showLanguagesTreeText, showAdvancedFilterText,
@@ -462,6 +468,7 @@ class AdditionalFilter extends PureComponent {
             humanSettlement={humanSettlement}
             authors={authors}
             languageVulnerability={languageVulnerability}
+            showVulnerabilityWarning={this.isNeedToShowVulnerabilityWarning()}
             onChange={this.onAdvancedFilterChange}
           />
         </Segment.Group>

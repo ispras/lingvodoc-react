@@ -18,6 +18,7 @@ const classNames = {
   container: 'search-advanced-filter',
   field: 'search-advanced-filter__field',
   header: 'search-advanced-filter__header',
+  warning: 'search-advanced-filter__warning',
   hide: 'hide',
 };
 
@@ -38,6 +39,7 @@ class AdvancedFilter extends PureComponent {
     humanSettlement: PropTypes.array.isRequired,
     authors: PropTypes.array.isRequired,
     languageVulnerability: PropTypes.array.isRequired,
+    showVulnerabilityWarning: PropTypes.bool.isRequired,
     onChange: PropTypes.func.isRequired,
     metadata: PropTypes.object.isRequired,
   }
@@ -138,6 +140,7 @@ class AdvancedFilter extends PureComponent {
                 classNames={classNames}
                 options={languageVulnerabilityOptions}
                 value={this.props.languageVulnerability}
+                showVulnerabilityWarning={this.props.showVulnerabilityWarning}
                 onChange={this.onFieldChange}
                 getTranslation={getTranslation}
               />
