@@ -4,7 +4,7 @@ import { compose, pure } from 'recompose';
 import { withApollo } from 'react-apollo';
 import { Input } from 'semantic-ui-react';
 
-import { searchQuery } from './graphql';
+import { searchQuery, connectedQuery } from './graphql';
 import buildPartialLanguageTree from './partialTree';
 import Tree from './Tree';
 import { getTranslation } from 'api/i18n';
@@ -27,7 +27,7 @@ class SearchLexicalEntries extends React.Component {
   async search() {
     const { searchString } = this.state;
     const {
-      lexicalEntry, fieldId, allLanguages, allDictionaries, allPerspectives, perspectiveId
+      lexicalEntry, fieldId, allLanguages, allDictionaries, allPerspectives, perspectiveId, entitiesMode, filterConnected
     } = this.props;
 
     const { data: { basic_search: { lexical_entries: lexicalEntries } } } = await this.props.client.query({
@@ -35,8 +35,24 @@ class SearchLexicalEntries extends React.Component {
       variables: { searchString, field_id: fieldId, perspectiveId },
     });
 
+    let idsToFilter = [];
+    if (filterConnected) {
+      const result = await this.props.client.query({
+        query: connectedQuery,
+        variables: { id: lexicalEntry.id, fieldId, entitiesMode },
+      });
+      idsToFilter = result.data.connected_words.lexical_entries.map(entry => entry.id);
+    }
+
     const resultsTree = buildPartialLanguageTree({
-      lexicalEntries: lexicalEntries.filter(entry => entry.id.toString() != lexicalEntry.id.toString()),
+      lexicalEntries: lexicalEntries.filter(entry => {
+        const entryId = entry.id.toString();
+        if (entryId == lexicalEntry.id.toString()) {
+          return false;
+        }
+
+        return idsToFilter.every(id => id.toString() != entryId)
+      }),
       allLanguages,
       allDictionaries,
       allPerspectives,
@@ -66,6 +82,8 @@ SearchLexicalEntries.propTypes = {
   perspectiveId: PropTypes.array,
   joinGroup: PropTypes.func.isRequired,
   client: PropTypes.object.isRequired,
+  entitiesMode: PropTypes.string,
+  filterConnected: PropTypes.bool
 };
 
 export default compose(withApollo, pure)(SearchLexicalEntries);
