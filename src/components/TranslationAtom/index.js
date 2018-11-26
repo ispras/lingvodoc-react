@@ -10,13 +10,6 @@ import { languagesQuery } from '../../graphql/language';
 import { getTranslation } from 'api/i18n';
 
 @graphql(gql`
-  mutation updateAtom($id: LingvodocID!, $content: String!) {
-    update_translationatom(id: $id, content: $content) {
-      triumph
-    }
-  }
-`, { name: 'updateAtomMutation' })
-@graphql(gql`
   mutation ($parent_id: LingvodocID!, $locale_id: Int!, $content: String!) {
     create_translationatom( parent_id: $parent_id, locale_id: $locale_id, content: $content) {
       translationatom {
@@ -64,23 +57,28 @@ export default class TranslationAtom extends React.Component {
       }, {
         query: languagesQuery,
       }],
+    }).then(() => {
+      onAtomCreated();
     });
-    onAtomCreated();
   }
 
-  updateAtom() {
-    const { id, parentId, updateAtomMutation } = this.props;
-    const { content } = this.state;
+  updateAtom(locale_id) {
+    const { updateAtomMutation, objectId, id, parentId } = this.props;
     updateAtomMutation({
-      variables: { id, content },
+      variables: {
+        id: objectId,
+        atom_id: id,
+        locale_id,
+        content: this.state.content
+      },
       refetchQueries: [{
         query: translationGistQuery,
         variables: {
           id: parentId,
-        },
+        }
       },
       {
-        query: languagesQuery,
+        query: languagesQuery
       }],
     });
   }
@@ -88,7 +86,7 @@ export default class TranslationAtom extends React.Component {
   render() {
     const { id, locales, editable, content } = this.props;
 
-    // true if atom is to be create
+    // true if atom is to be created
     const isAtomNew = id.every(n => n == null);
 
     const options = locales.map(
@@ -118,7 +116,7 @@ export default class TranslationAtom extends React.Component {
           <Button onClick={() => this.createAtom()}>{getTranslation('Save')}</Button>
         }
         {editable && !isAtomNew &&
-          <Button disabled ={content == this.state.content} onClick={() => this.updateAtom()}>{getTranslation('Update')}</Button>
+          <Button disabled ={content == this.state.content} onClick={() => this.updateAtom(locale.id)}>{getTranslation('Update')}</Button>
         }
       </Input>
     );
@@ -126,6 +124,7 @@ export default class TranslationAtom extends React.Component {
 }
 
 TranslationAtom.propTypes = {
+  objectId: PropTypes.array.isRequired,
   id: PropTypes.array,
   parentId: PropTypes.array.isRequired,
   localeId: PropTypes.number,
@@ -143,6 +142,5 @@ TranslationAtom.defaultProps = {
   content: '',
   editable: true,
   createAtomMutation: () => {},
-  updateAtomMutation: () => {},
   onAtomCreated: () => {},
 };

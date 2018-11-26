@@ -29,6 +29,14 @@ const query = gql`
   }
 `;
 
+const updateAtomMutation = gql`
+  mutation updateAtom($id: LingvodocID!, $atom_id: LingvodocID!, $locale_id: Int!, $content: String!) {
+    update_perspective_atom(id: $id, atom_id: $atom_id, locale_id: $locale_id, content: $content) {
+      triumph
+    }
+  }
+`;
+
 // const updateMetadataMutation = gql`
 //   mutation UpdateMetadata($id: LingvodocID!, $meta: ObjectVal!) {
 //     update_dictionary(id: $id, additional_metadata: $meta) {
@@ -38,7 +46,7 @@ const query = gql`
 // `;
 
 const Properties = (props) => {
-  const { id, data, actions } = props;
+  const { id, data, actions, updateAtomMutation } = props;
   const {
     loading, error, dictionary, perspective,
   } = data;
@@ -54,7 +62,7 @@ const Properties = (props) => {
     <Modal open dimmer size="fullscreen">
       <Modal.Content>
         <Header>{getTranslation("Translations")}</Header>
-        <TranslationGist id={gistId} editable />
+        <TranslationGist objectId={perspective.id} id={gistId} editable updateAtomMutation={updateAtomMutation} />
         <Divider />
         <Header>{getTranslation("Fields")}</Header>
         <Columns perspectiveId={perspective.id} perspectives={perspectives} />
@@ -84,6 +92,7 @@ export default compose(
   ),
   branch(({ perspective }) => !perspective, renderNothing),
   withProps(({ perspective: { id, parentId } }) => ({ id, parentId })),
+  graphql(updateAtomMutation, { name: 'updateAtomMutation' }),
   graphql(query),
   // graphql(updateMetadataMutation, { name: 'update' }),
   onlyUpdateForKeys(['perspective', 'data'])

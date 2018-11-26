@@ -69,6 +69,14 @@ const updateMetadataMutation = gql`
   }
 `;
 
+const updateAtomMutation = gql`
+  mutation updateAtom($id: LingvodocID!, $atom_id: LingvodocID!, $locale_id: Int!, $content: String!) {
+    update_dictionary_atom(id: $id, atom_id: $atom_id, locale_id: $locale_id, content: $content) {
+      triumph
+    }
+  }
+`;
+
 const MarginForm = styled(Form)`
   margin-top: 1em;
   margin-bottom: 1em;
@@ -235,7 +243,7 @@ class Properties extends React.Component {
       return null;
     }
     
-    const { data: { dictionary, user_blobs: files }, actions } = this.props;
+    const { data: { dictionary, user_blobs: files }, actions, updateAtomMutation } = this.props;
     const { translation_gist_id: gistId } = dictionary;
     const options = sortBy(files.map(file => ({ key: file.id, text: file.name, value: compositeIdToString(file.id) })), file => file.text);
     const parentName = this.state.parent == null ? null : this.state.parent.translation;
@@ -245,7 +253,7 @@ class Properties extends React.Component {
       <Modal open dimmer size="fullscreen" closeOnDimmerClick={false} onClose={actions.closeDictionaryPropertiesModal}>
         <Modal.Content>
           <Segment>
-            <TranslationGist id={gistId} editable />
+            <TranslationGist id={gistId} objectId={dictionary.id} editable updateAtomMutation={updateAtomMutation}/>
           </Segment>
           <EditDictionaryMetadata mode='edit' metadata={dictionary.additional_metadata} onSave={this.saveMeta} />
 
@@ -345,6 +353,7 @@ export default compose(
   branch(({ id }) => !id, renderNothing),
   graphql(query),
   graphql(updateMetadataMutation, { name: 'update' }),
+  graphql(updateAtomMutation, { name: 'updateAtomMutation' }),
   branch(({ data: { loading, error } }) => loading || !!error, renderNothing),
   onlyUpdateForKeys(['id', 'data']),
   withApollo,
