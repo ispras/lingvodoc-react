@@ -67,8 +67,7 @@ export default class TranslationGist extends React.Component {
   }
 
   render() {
-    const { data, editable } = this.props;
-
+    const { data, editable, objectId, updateAtomMutation } = this.props;
     if (data.loading) {
       return null;
     }
@@ -83,24 +82,27 @@ export default class TranslationGist extends React.Component {
           {atoms.map(atom => (
             <List.Item key={compositeIdToString(atom.id)}>
               <TranslationAtom
+                objectId={objectId}
                 id={atom.id}
                 parentId={atom.parent_id}
                 localeId={atom.locale_id}
                 content={atom.content}
                 locales={this.getAvailableLocales(locales, atoms, atom.locale_id)}
                 editable={editable}
-                onSave={this.onChangeAtom}
+                updateAtomMutation={updateAtomMutation}
               />
             </List.Item>
           ))}
           {this.state.createdAtoms.map(id => (
             <List.Item key={id}>
               <TranslationAtom
+                objectId={objectId}
                 parentId={data.translationgist.id}
                 localeId={id}
                 locales={this.getAvailableLocales(locales, atoms, id)}
                 editable={editable}
                 onAtomCreated={() => this.onAtomCreated(id)}
+                updateAtomMutation={updateAtomMutation}
               />
             </List.Item>
           ))}
@@ -112,10 +114,11 @@ export default class TranslationGist extends React.Component {
 }
 
 TranslationGist.propTypes = {
-  // eslint-disable-next-line react/no-unused-prop-types
-  id: PropTypes.array,
+  objectId: PropTypes.array.isRequired,
+  id: PropTypes.array.isRequired,
   editable: PropTypes.bool.isRequired,
   data: PropTypes.object,
+  updateAtomMutation: PropTypes.func
 };
 
 TranslationGist.defaultProps = {
