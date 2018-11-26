@@ -30,7 +30,7 @@ const updateMetadataMutation = gql`
 `;
 
 const updateAtomMutation = gql`
-  mutation updateAtom($id: LingvodocID!, $atom_id: LingvodocID!, $locale_id: Int!, $content: String!) {
+  mutation updateAtom($id: LingvodocID!, $atom_id: LingvodocID, $locale_id: Int!, $content: String!) {
     update_language_atom(id: $id, atom_id: $atom_id, locale_id: $locale_id, content: $content) {
       triumph
     }

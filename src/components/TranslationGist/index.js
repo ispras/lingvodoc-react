@@ -96,11 +96,13 @@ export default class TranslationGist extends React.Component {
           {this.state.createdAtoms.map(id => (
             <List.Item key={id}>
               <TranslationAtom
+                objectId={objectId}
                 parentId={data.translationgist.id}
                 localeId={id}
                 locales={this.getAvailableLocales(locales, atoms, id)}
                 editable={editable}
                 onAtomCreated={() => this.onAtomCreated(id)}
+                updateAtomMutation={updateAtomMutation}
               />
             </List.Item>
           ))}
