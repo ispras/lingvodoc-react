@@ -239,36 +239,42 @@ class AdditionalFilter extends PureComponent {
    * @param {string} name - advanced filter field name
    */
   onAdvancedFilterChange(value, name) {
-    const state = {
+    let state = {
       [name]: value,
       filterMode: false,
       isDataDefault: false,
     };
 
-    if (this.constructor.isFieldLanguageVulnerability(name)) {
-      const handlingResult = this.handleLanguageVulnerability(value);
+    const currentState = {
+      hasAudio: this.state.hasAudio,
+      kind: this.state.kind,
+      years: this.state.years,
+      humanSettlement: this.state.humanSettlement,
+      authors: this.state.authors,
+      languageVulnerability: this.state.languageVulnerability,
+    };
 
-      this.props.onChange({
-        ...this.props.data,
-        ...handlingResult.checked,
-      });
-
-      this.setState({
-        ...state,
-        ...handlingResult,
-      });
-
-      return;
-    }
-
-    this.setState(state);
-
-    const result = {
-      ...this.props.data,
+    let dataToSendToTop = {
+      ...currentState,
       [name]: value,
     };
 
-    this.props.onChange(result);
+    if (this.constructor.isFieldLanguageVulnerability(name)) {
+      const handlingResult = this.handleLanguageVulnerability(value);
+
+      state = {
+        ...state,
+        ...handlingResult,
+      };
+
+      dataToSendToTop = {
+        ...dataToSendToTop,
+        ...handlingResult.checked,
+      };
+    }
+
+    this.setState(state);
+    this.props.onChange(dataToSendToTop);
   }
 
   /**
