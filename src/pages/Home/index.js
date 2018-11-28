@@ -7,7 +7,7 @@ import { Redirect, matchPath } from 'react-router-dom';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import Immutable, { fromJS, Map } from 'immutable';
-import { Container, Form, Radio, Segment, Button, Message } from 'semantic-ui-react';
+import { Container, Form, Radio, Segment, Button, Message, Dimmer, Header, Icon } from 'semantic-ui-react';
 
 import { buildLanguageTree } from 'pages/Search/treeBuilder';
 import { setGrantsMode, resetDictionaries } from 'ducks/home';
@@ -128,8 +128,20 @@ const Home = (props) => {
     location: { hash },
   } = props;
 
-  if (error || loading) {
+  if (error) {
     return null;
+  }
+
+  if (loading) {
+    return (
+      <Dimmer.Dimmable dimmed style={{ minHeight: '600px' }}>
+        <Dimmer active inverted>
+          <Header as="h2" icon>
+            <Icon name="spinner" loading />
+          </Header>
+        </Dimmer>
+      </Dimmer.Dimmable>
+    ); 
   }
 
   // handle legacy links from Lingvodoc 2.0
@@ -354,7 +366,11 @@ const AuthWrapper = ({
       state => ({ ...state.home, ...state.router }),
       dispatch => ({ actions: bindActionCreators({ setGrantsMode, resetDictionaries }, dispatch) })
     ),
-    graphql(isAuthenticated ? authenticatedDictionariesQuery : guestDictionariesQuery),
+    graphql(isAuthenticated ? authenticatedDictionariesQuery : guestDictionariesQuery, {
+      options: {
+        fetchPolicy: 'network-only'
+      }
+    }),
     graphql(downloadDictionariesMutation, { name: 'downloadDictionaries' })
   )(Home);
 

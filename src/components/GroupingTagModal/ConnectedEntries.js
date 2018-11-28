@@ -22,14 +22,13 @@ const ConnectedLexicalEntries = (props) => {
     mode,
     entitiesMode
   } = props;
-  const { lexical_entries: lexicalEntries } = connectedWords;
 
-  if (lexicalEntries.length === 0) {
+  if (!connectedWords || connectedWords.lexical_entries.length === 0) {
     return <span>{getTranslation('No entries')}</span>;
   }
 
   const resultsTree = buildPartialLanguageTree({
-    lexicalEntries,
+    lexicalEntries: connectedWords.lexical_entries,
     allLanguages,
     allDictionaries,
     allPerspectives,

@@ -66,6 +66,8 @@ const EditGroupingTag = (props) => {
           allDictionaries={allDictionaries}
           allPerspectives={allPerspectives}
           joinGroup={joinGroup}
+          entitiesMode={entitiesMode}
+          filterConnected={true}
         />
       ),
     },
