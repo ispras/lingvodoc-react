@@ -141,7 +141,7 @@ const Home = (props) => {
           </Header>
         </Dimmer>
       </Dimmer.Dimmable>
-    ); 
+    );
   }
 
   // handle legacy links from Lingvodoc 2.0
@@ -212,8 +212,8 @@ const Home = (props) => {
     <Container className="published">
       <Message padded="very" warning>
         <b>
-          Редакторам рекомендуется использовать старую версию системы по адресу:
-          <a href="http://old.lingvodoc.at.ispras.ru">http://old.lingvodoc.at.ispras.ru</a>
+          Старая версия системы доступна по адресу:
+          <a href="http://old.lingvodoc.at.ispras.ru"> http://old.lingvodoc.at.ispras.ru</a>
         </b>
       </Message>
       <Segment>
@@ -248,21 +248,25 @@ const Home = (props) => {
           )}
       </Segment>
       {grantsMode && (
-        <GrantedDicts
-          languagesTree={languagesTree}
-          dictionaries={dicts}
-          perspectives={perspectivesList}
-          grants={grantsList}
-          isAuthenticated={isAuthenticated}
-        />
+        <Segment>
+          <GrantedDicts
+            languagesTree={languagesTree}
+            dictionaries={dicts}
+            perspectives={perspectivesList}
+            grants={grantsList}
+            isAuthenticated={isAuthenticated}
+          />
+        </Segment>
       )}
       {!grantsMode && (
-        <AllDicts
-          languagesTree={languagesTree}
-          dictionaries={dicts}
-          perspectives={perspectivesList}
-          isAuthenticated={isAuthenticated}
-        />
+        <Segment>
+          <AllDicts
+            languagesTree={languagesTree}
+            dictionaries={dicts}
+            perspectives={perspectivesList}
+            isAuthenticated={isAuthenticated}
+          />
+        </Segment>
       )}
       <BackTopButton scrollContainer={scrollContainer} />
     </Container>

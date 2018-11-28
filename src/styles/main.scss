@@ -10,8 +10,12 @@
 }
 
 body {
+  background-image: url(../images/background.png);
+
+  background-size: cover;
   font-family: 'Noto Sans', 'Helvetica Neue', Arial, Helvetica, sans-serif;
 }
+
 
 .gentium {
   font-family: "GentiumPlusW", sans-serif !important;
