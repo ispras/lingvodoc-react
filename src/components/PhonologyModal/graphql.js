@@ -16,6 +16,7 @@ export const perspectiveColumnsFieldsQuery = gql`
     all_fields {
       id
       translation
+      english_translation: translation(locale_id: 2)
       data_type
       data_type_translation_gist_id
     }

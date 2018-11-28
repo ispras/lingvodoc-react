@@ -29,6 +29,14 @@ const updateMetadataMutation = gql`
   }
 `;
 
+const updateAtomMutation = gql`
+  mutation updateAtom($id: LingvodocID!, $atom_id: LingvodocID, $locale_id: Int!, $content: String!) {
+    update_language_atom(id: $id, atom_id: $atom_id, locale_id: $locale_id, content: $content) {
+      triumph
+    }
+  }
+`;
+
 class EditModal extends React.Component {
 
   constructor(props) {
@@ -76,8 +84,7 @@ class EditModal extends React.Component {
       return null;
     }
 
-    const { visible, actions, language } = this.props;
-
+    const { visible, actions, language, updateAtomMutation } = this.props;
     if (!visible) {
       return null;
     }
@@ -87,7 +94,7 @@ class EditModal extends React.Component {
         <Modal.Header>{getTranslation('Language edit')}</Modal.Header>
         <Modal.Content>
           <h4>{getTranslation('Translations')}</h4>
-          <TranslationGist id={language.translation_gist_id} editable />
+          <TranslationGist objectId={language.id} id={language.translation_gist_id} editable updateAtomMutation={updateAtomMutation} />
           <Divider/>
           <EditLanguageMetadata mode='edit' metadata={this.state.metadata} onSave={metadata => this.onUpdateMetadata(metadata)} />
         </Modal.Content>
@@ -116,5 +123,6 @@ const mapDispatchToProps = dispatch => ({
 export default compose(
   withApollo,
   graphql(updateMetadataMutation, { name: 'updateMetadata' } ),
+  graphql(updateAtomMutation, { name: 'updateAtomMutation' }),
   connect(mapStateToProps, mapDispatchToProps),
 )(EditModal);
