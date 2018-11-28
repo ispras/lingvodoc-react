@@ -236,7 +236,10 @@ class QueryBuilder extends React.Component {
   }
 
   onAdditionalFieldsChange(data) {
-    this.additionalFields = data;
+    this.additionalFields = {
+      ...this.additionalFields,
+      ...data,
+    };
   }
 
   onSearchButtonClick() {
