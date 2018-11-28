@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Segment, Button } from 'semantic-ui-react';
+import { Segment, Button, Modal } from 'semantic-ui-react';
 import { graphql } from 'react-apollo';
 import { compose } from 'recompose';
 import PropTypes from 'prop-types';
@@ -20,6 +20,7 @@ import './index.scss';
 const classNames = {
   container: 'additional-filter',
   buttonGroup: 'additional-filter__button-group',
+  modal: 'additional-filter__modal',
 };
 
 /* ----------- COMPONENT ----------- */
@@ -157,6 +158,7 @@ class AdditionalFilter extends PureComponent {
       humanSettlement,
       authors,
       languageVulnerability,
+      isDataDefault: true,
     };
 
     this.flatLanguages = {};
@@ -220,6 +222,7 @@ class AdditionalFilter extends PureComponent {
       checked: list,
       filterMode: false,
       languageVulnerability: languageVulnerability.length !== 0 ? [] : languageVulnerability,
+      isDataDefault: false,
     });
 
     const result = {
@@ -239,6 +242,7 @@ class AdditionalFilter extends PureComponent {
     const state = {
       [name]: value,
       filterMode: false,
+      isDataDefault: false,
     };
 
     if (this.constructor.isFieldLanguageVulnerability(name)) {
@@ -419,8 +423,9 @@ class AdditionalFilter extends PureComponent {
       checkAllButtonText, uncheckAllButtonText, showLanguagesTreeText, showAdvancedFilterText,
     } = this.props;
     const {
-      hasAudio, kind, years, humanSettlement, authors, languageVulnerability,
+      hasAudio, kind, years, humanSettlement, authors, languageVulnerability, isDataDefault,
     } = this.state;
+    const closeText = getTranslation('Close');
 
     return (
       <div className={classNames.container}>
@@ -444,33 +449,61 @@ class AdditionalFilter extends PureComponent {
                 humanSettlement={humanSettlement}
                 authors={authors}
                 languageVulnerability={languageVulnerability}
+                isDataDefault={isDataDefault}
                 getTranslation={getTranslation}
               />
             </Segment>
           </Segment.Group>
-          <Languages
-            onChange={this.onLangsDictsChange}
-            languagesTree={languagesTree}
-            langsChecked={languages}
-            dictsChecked={dictionaries}
-            showTree={this.state.showSearchSelectLanguages}
-            filterMode={this.state.filterMode}
-            checkAllButtonText={checkAllButtonText}
-            uncheckAllButtonText={uncheckAllButtonText}
-          />
-
-          {/* aka "tags" component */}
-          <AdvancedFilter
-            show={this.state.showAdvancedFilter}
-            hasAudio={hasAudio}
-            kind={kind}
-            years={years}
-            humanSettlement={humanSettlement}
-            authors={authors}
-            languageVulnerability={languageVulnerability}
-            showVulnerabilityWarning={this.isNeedToShowVulnerabilityWarning()}
-            onChange={this.onAdvancedFilterChange}
-          />
+          <Modal
+            className={classNames.modal}
+            open={this.state.showSearchSelectLanguages}
+            onClose={this.onShowLangsButtonClick}
+          >
+            <Modal.Header>{showLanguagesTreeText}</Modal.Header>
+            <Modal.Content scrolling>
+              <Languages
+                onChange={this.onLangsDictsChange}
+                languagesTree={languagesTree}
+                langsChecked={languages}
+                dictsChecked={dictionaries}
+                showTree={this.state.showSearchSelectLanguages}
+                filterMode
+                checkAllButtonText={checkAllButtonText}
+                uncheckAllButtonText={uncheckAllButtonText}
+              />
+            </Modal.Content>
+            <Modal.Actions>
+              <Button primary basic onClick={this.onShowLangsButtonClick}>
+                {closeText}
+              </Button>
+            </Modal.Actions>
+          </Modal>
+          <Modal
+            className={classNames.modal}
+            open={this.state.showAdvancedFilter}
+            onClose={this.onShowAdvancedFilterButtonClick}
+          >
+            <Modal.Header>{showAdvancedFilterText}</Modal.Header>
+            <Modal.Content scrolling>
+              {/* aka "tags" component */}
+              <AdvancedFilter
+                show={this.state.showAdvancedFilter}
+                hasAudio={hasAudio}
+                kind={kind}
+                years={years}
+                humanSettlement={humanSettlement}
+                authors={authors}
+                languageVulnerability={languageVulnerability}
+                showVulnerabilityWarning={this.isNeedToShowVulnerabilityWarning()}
+                onChange={this.onAdvancedFilterChange}
+              />
+            </Modal.Content>
+            <Modal.Actions>
+              <Button primary basic onClick={this.onShowAdvancedFilterButtonClick}>
+                {closeText}
+              </Button>
+            </Modal.Actions>
+          </Modal>
         </Segment.Group>
       </div>
     );
