@@ -75,13 +75,17 @@ class Tree extends PureComponent {
 
     this.flatNodes = {};
     flattenNodes(props.nodes, this.flatNodes);
-    this.updateNodesWithChecked(props.checked);
+    this.updateNodesWithChecked(props.checked, props.filterMode);
 
     this.state = {
       expanded: [],
     };
 
     this.updateNodesWithExpanded(this.state.expanded);
+
+    if (props.filterMode) {
+      this.recountTree();
+    }
 
     this.onCheck = this.onCheck.bind(this);
     this.onExpand = this.onExpand.bind(this);

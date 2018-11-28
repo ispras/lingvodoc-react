@@ -33,15 +33,15 @@ class AudioField extends PureComponent {
    * @param {number} value - hasAudio value with dropdown format
    */
   static getDropdownOuterValue(value) {
-    if (value === 2) {
-      return null;
+    if (value === 0) {
+      return false;
     }
 
     if (value === 1) {
       return true;
     }
 
-    return false;
+    return null;
   }
 
   constructor(props) {
