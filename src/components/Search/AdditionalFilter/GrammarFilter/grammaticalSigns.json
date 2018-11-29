@@ -91,5 +91,365 @@
         "value": "FOC"
       }
     ]
+  },
+  {
+    "name": "Case",
+    "children": [
+      {
+        "name": "ablative",
+        "value": "ABL"
+      },
+      {
+        "name": "absolutive",
+        "value": "ABS"
+      },
+      {
+        "name": "accusative",
+        "value": "ACC"
+      },
+      {
+        "name": "adessiv",
+        "value": "AD"
+      },
+      {
+        "name": "allative",
+        "value": "ALL"
+      },
+      {
+        "name": "comitative",
+        "value": "COM"
+      },
+      {
+        "name": "comparativ",
+        "value": "COMP"
+      },
+      {
+        "name": "dative",
+        "value": "DAT"
+      },
+      {
+        "name": "deliberativ",
+        "value": "DELIB"
+      },
+      {
+        "name": "demonstrative",
+        "value": "DEM"
+      },
+      {
+        "name": "distributive",
+        "value": "DISTR"
+      },
+      {
+        "name": "durative",
+        "value": "DUR"
+      },
+      {
+        "name": "essiv",
+        "value": "ESS"
+      },
+      {
+        "name": "ergative",
+        "value": "ERG"
+      },
+      {
+        "name": "exclusive",
+        "value": "EXCL"
+      },
+      {
+        "name": "genitive",
+        "value": "GEN"
+      },
+      {
+        "name": "elatv",
+        "value": "EL"
+      },
+      {
+        "name": "illative",
+        "value": "ILL"
+      },
+      {
+        "name": "inessiv",
+        "value": "IN"
+      },
+      {
+        "name": "instrumental",
+        "value": "INS"
+      },
+      {
+        "name": "locative",
+        "value": "LOC"
+      },
+      {
+        "name": "nominative",
+        "value": "NOM"
+      },
+      {
+        "name": "prolative",
+        "value": "PROL"
+      },
+      {
+        "name": "transitive",
+        "value": "TR"
+      },
+      {
+        "name": "vocative",
+        "value": "VOC"
+      }
+    ]
+  },
+  {
+    "name": "Number",
+    "children": [
+      {
+        "name": "singular",
+        "value": "SG"
+      },
+      {
+        "name": "dual",
+        "value": "DU"
+      },
+      {
+        "name": "plural",
+        "value": "PL"
+      }
+    ]
+  },
+  {
+    "name": "Possesiv",
+    "children": [
+      {
+        "name": "posssesiv",
+        "value": "POSS"
+      }
+    ]
+  },
+  {
+    "name": "Person",
+    "children": [
+      {
+        "name": "first person",
+        "value": "1"
+      },
+      {
+        "name": "second person",
+        "value": "2"
+      },
+      {
+        "name": "third person",
+        "value": "3"
+      }
+    ]
+  },
+  {
+    "name": "Genus",
+    "children": [
+      {
+        "name": "feminine",
+        "value": "F"
+      },
+      {
+        "name": "masculine",
+        "value": "M"
+      },
+      {
+        "name": "neuter",
+        "value": "N"
+      }
+    ]
+  },
+  {
+    "name": "Tense-Aspect",
+    "children": [
+      {
+        "name": "continius",
+        "value": "CONT"
+      },
+      {
+        "name": "future",
+        "value": "FUT"
+      },
+      {
+        "name": "imperfective",
+        "value": "IPFV"
+      },
+      {
+        "name": "perfective",
+        "value": "PFV"
+      },
+      {
+        "name": "perfect",
+        "value": "PRF"
+      },
+      {
+        "name": "present",
+        "value": "PRS"
+      },
+      {
+        "name": "past",
+        "value": "PST"
+      },
+      {
+        "name": "кункатив",
+        "value": "CUNC"
+      },
+      {
+        "name": "дистрибутив",
+        "value": "DISTR"
+      },
+      {
+        "name": "durative",
+        "value": "DUR"
+      },
+      {
+        "name": "habitualis",
+        "value": "HAB"
+      },
+      {
+        "name": "iterative",
+        "value": "ITER"
+      },
+      {
+        "name": "prospektiv",
+        "value": "PROSP"
+      },
+      {
+        "name": "limitative",
+        "value": "LIM"
+      },
+      {
+        "name": "past recent",
+        "value": "RPAST"
+      }
+    ]
+  },
+  {
+    "name": "Наклонение / Форма",
+    "children": [
+      {
+        "name": "affirmative",
+        "value": "AFFIRM"
+      },
+      {
+        "name": "assumptive",
+        "value": "ASSUM"
+      },
+      {
+        "name": "benefactive",
+        "value": "BEN"
+      },
+      {
+        "name": "conditional",
+        "value": "COND"
+      },
+      {
+        "name": "declarative",
+        "value": "DECL"
+      },
+      {
+        "name": "definite",
+        "value": "DEF"
+      },
+      {
+        "name": "imperative",
+        "value": "IMP"
+      },
+      {
+        "name": "inclusive",
+        "value": "INCL"
+      },
+      {
+        "name": "indicative",
+        "value": "IND"
+      },
+      {
+        "name": "indefinite",
+        "value": "INDF"
+      },
+      {
+        "name": "indirective",
+        "value": "INDIR"
+      },
+      {
+        "name": "infinitive",
+        "value": "INF"
+      },
+      {
+        "name": "irrealis",
+        "value": "IRR"
+      },
+      {
+        "name": "converb",
+        "value": "CVB"
+      },
+      {
+        "name": "optative",
+        "value": "OPT"
+      },
+      {
+        "name": "predicative",
+        "value": "PRED"
+      },
+      {
+        "name": "progressive",
+        "value": "PROG"
+      },
+      {
+        "name": "prohibitive",
+        "value": "PROH"
+      },
+      {
+        "name": "proximal/proximate",
+        "value": "PROX"
+      },
+      {
+        "name": "participle",
+        "value": "PTCP"
+      },
+      {
+        "name": "reciprocal",
+        "value": "RECP"
+      },
+      {
+        "name": "relative",
+        "value": "REL"
+      },
+      {
+        "name": "resultative",
+        "value": "RES"
+      },
+      {
+        "name": "subjunctive",
+        "value": "SBJV"
+      }
+    ]
+  },
+  {
+    "name": "Voice",
+    "children": [
+      {
+        "name": "antipassive",
+        "value": "ANTIP"
+      },
+      {
+        "name": "causative",
+        "value": "CAUS"
+      },
+      {
+        "name": "intransitive",
+        "value": "INTR"
+      },
+      {
+        "name": "passive",
+        "value": "PASS"
+      },
+      {
+        "name": "reciproc",
+        "value": "REC"
+      },
+      {
+        "name": "reflexive",
+        "value": "REFL"
+      }
+    ]
   }
 ]

@@ -1,0 +1,14 @@
+.grammar-filter {
+  &__group-wrap:not(:first-child) {
+    margin-top: 15px;
+  }
+
+  &__item {
+    margin-bottom: 8px;
+  }
+
+  &__group-header {
+    margin-bottom: 8px;
+    font-weight: bold;
+  }
+}

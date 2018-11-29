@@ -2,6 +2,10 @@ import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { Checkbox } from 'semantic-ui-react';
 
+const classNames = {
+  container: 'grammar-filter__item',
+};
+
 class GrammarItem extends PureComponent {
   static propTypes = {
     data: PropTypes.shape({
@@ -32,7 +36,7 @@ class GrammarItem extends PureComponent {
   render() {
     const { name, isChecked } = this.props.data;
     return (
-      <div>
+      <div className={classNames.container}>
         <Checkbox
           label={name}
           checked={isChecked}

@@ -2,6 +2,12 @@ import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import GrammarItem from '../Item';
 
+const classNames = {
+  container: 'grammar-filter__group-wrap',
+  group: 'grammar-filter__group',
+  header: 'grammar-filter__group-header',
+};
+
 class GrammarGroup extends PureComponent {
   static propTypes = {
     data: PropTypes.shape({
@@ -41,9 +47,9 @@ class GrammarGroup extends PureComponent {
     const { name, children: items } = this.props.data;
     const group = this.getRenderItems(items);
     return (
-      <div>
-        <div>{name}</div>
-        <div>{group}</div>
+      <div className={classNames.container}>
+        <div className={classNames.header}>{name}</div>
+        <div className={classNames.group}>{group}</div>
       </div>
     );
   }
