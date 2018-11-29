@@ -186,6 +186,7 @@ class AdditionalFilter extends PureComponent {
 
     this.onLangsDictsChange = this.onLangsDictsChange.bind(this);
     this.onAdvancedFilterChange = this.onAdvancedFilterChange.bind(this);
+    this.onGrammarFilterChange = this.onGrammarFilterChange.bind(this);
     this.onShowLangsButtonClick = this.onShowLangsButtonClick.bind(this);
     this.onShowAdvancedFilterButtonClick = this.onShowAdvancedFilterButtonClick.bind(this);
     this.onShowGrammarFilterButtonClick = this.onShowGrammarFilterButtonClick.bind(this);
@@ -284,6 +285,19 @@ class AdditionalFilter extends PureComponent {
 
     this.setState(state);
     this.props.onChange(dataToSendToTop);
+  }
+
+  /**
+   * Event handler for grammar filter changes.
+   * @param {*} data - grammar filter value
+   */
+  onGrammarFilterChange(data) {
+    const state = {
+      grammaticalSigns: data,
+    };
+
+    this.setState(state);
+    this.props.onChange(state);
   }
 
   /**
@@ -505,7 +519,10 @@ class AdditionalFilter extends PureComponent {
           >
             <Modal.Header>{showGrammarFilterText}</Modal.Header>
             <Modal.Content scrolling>
-              <GrammarFilter checked={grammaticalSigns} />
+              <GrammarFilter
+                checked={grammaticalSigns}
+                onChange={this.onGrammarFilterChange}
+              />
             </Modal.Content>
             <Modal.Actions>
               <Button primary basic onClick={this.onShowGrammarFilterButtonClick}>

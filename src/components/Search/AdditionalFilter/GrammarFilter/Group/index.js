@@ -8,21 +8,38 @@ class GrammarGroup extends PureComponent {
       name: PropTypes.string.isRequired,
       children: PropTypes.array.isRequired,
     }).isRequired,
-  }
-
-  static getRenderItems(items) {
-    return items.map(item => <GrammarItem key={item.value} data={item} />);
+    onChange: PropTypes.func.isRequired,
   }
 
   constructor() {
     super();
 
-    this.state = {};
+    this.onItemChange = this.onItemChange.bind(this);
+  }
+
+  onItemChange(item) {
+    const { name: groupName } = this.props.data;
+    this.sendDataToTop({
+      ...item,
+      groupName,
+    });
+  }
+
+  getRenderItems(items) {
+    return items.map(item => <GrammarItem
+      key={item.value}
+      data={item}
+      onChange={this.onItemChange}
+    />);
+  }
+
+  sendDataToTop(data) {
+    this.props.onChange(data);
   }
 
   render() {
     const { name, children: items } = this.props.data;
-    const group = this.constructor.getRenderItems(items);
+    const group = this.getRenderItems(items);
     return (
       <div>
         <div>{name}</div>
