@@ -297,7 +297,7 @@ const enhance = compose(propsHandler);
 
 /* ----------- COMPONENT ----------- */
 const LangsNav = ({ autocompleteData, listData }) => (
-  <Segment>
+  <Segment className="rose_background">
     <Header as="h3">{getTranslation('Select language')}</Header>
     <LangsNavAutocomplete data={autocompleteData} />
     <LangsNavList data={listData} />
