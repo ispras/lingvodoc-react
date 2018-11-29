@@ -187,6 +187,7 @@ class QueryBuilder extends React.Component {
       humanSettlement: [],
       authors: [],
       languageVulnerability: [],
+      grammaticalSigns: {},
     };
 
     this.state = {

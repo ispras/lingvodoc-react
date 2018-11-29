@@ -141,7 +141,7 @@ class AdditionalFilter extends PureComponent {
 
     const rawLanguagesTree = buildLanguageTree(fromJS(props.languagesQuery.language_tree)).toJS();
     const {
-      hasAudio, kind, years, humanSettlement, authors, languageVulnerability,
+      hasAudio, kind, years, humanSettlement, authors, languageVulnerability, grammaticalSigns,
     } = props.data;
 
     this.state = {
@@ -157,6 +157,7 @@ class AdditionalFilter extends PureComponent {
       humanSettlement,
       authors,
       languageVulnerability,
+      grammaticalSigns,
       isDataDefault: true,
     };
 
@@ -438,7 +439,8 @@ class AdditionalFilter extends PureComponent {
       showAdvancedFilterText, showGrammarFilterText,
     } = this.props;
     const {
-      hasAudio, kind, years, humanSettlement, authors, languageVulnerability, isDataDefault,
+      hasAudio, kind, years, humanSettlement, authors,
+      languageVulnerability, isDataDefault, grammaticalSigns,
     } = this.state;
     const closeText = getTranslation('Close');
 
@@ -503,7 +505,7 @@ class AdditionalFilter extends PureComponent {
           >
             <Modal.Header>{showGrammarFilterText}</Modal.Header>
             <Modal.Content scrolling>
-              <GrammarFilter />
+              <GrammarFilter checked={grammaticalSigns} />
             </Modal.Content>
             <Modal.Actions>
               <Button primary basic onClick={this.onShowGrammarFilterButtonClick}>

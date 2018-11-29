@@ -1,0 +1,95 @@
+[
+  {
+    "name": "Role in the sentence",
+    "children": [
+      {
+        "name": "agent-like argument of canonical transitive verb",
+        "value": "A"
+      },
+      {
+        "name": "adjective",
+        "value": "ADJ"
+      },
+      {
+        "name": "adverb(ial)",
+        "value": "ADV"
+      },
+      {
+        "name": "article",
+        "value": "ART"
+      },
+      {
+        "name": "attributive",
+        "value": "ATTR"
+      },
+      {
+        "name": "auxiliary",
+        "value": "AUX"
+      },
+      {
+        "name": "classifier",
+        "value": "CLF"
+      },
+      {
+        "name": "determiner",
+        "value": "DET"
+      },
+      {
+        "name": "negation, negative",
+        "value": "NEG"
+      },
+      {
+        "name": "object",
+        "value": "OBJ"
+      },
+      {
+        "name": "patient-like argument of canonical transitive verb",
+        "value": "P"
+      },
+      {
+        "name": "question particle/marker",
+        "value": "Q"
+      },
+      {
+        "name": "single argument of canonical intransitive verb",
+        "value": "S"
+      },
+      {
+        "name": "subject",
+        "value": "SBJ"
+      },
+      {
+        "name": "subjunctive",
+        "value": "SBJV"
+      },
+      {
+        "name": "transpnition marker",
+        "value": "TRANSP"
+      },
+      {
+        "name": "particle",
+        "value": "PTCL"
+      },
+      {
+        "name": "additive",
+        "value": "ADD"
+      },
+      {
+        "name": "continuative",
+        "value": "CONT"
+      },
+      {
+        "name": "assertive",
+        "value": "ASS"
+      },
+      {
+        "name": "precative",
+        "value": "PREC"
+      },
+      {
+        "name": "Focus",
+        "value": "FOC"
+      }
+    ]
+  }
+]
