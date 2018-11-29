@@ -3,55 +3,13 @@ import PropTypes from 'prop-types';
 import { Grid } from 'semantic-ui-react';
 import grammaticalSigns from './grammaticalSigns.json';
 import GrammarGroup from './Group';
+import GridGenerator from './GridGenerator';
+import signGroupDivision from './signGroupDivision';
 import './index.scss';
 
 const classNames = {
   container: 'grammar-filter',
-  row: 'grammar-filter__row',
 };
-
-// division of groups by index in array into rows and columns
-const rowsDescription = [
-  {
-    id: '1',
-    columns: [
-      {
-        id: '1',
-        indexesOfSignGroup: [7],
-      },
-      {
-        id: '2',
-        indexesOfSignGroup: [1],
-      },
-    ],
-  },
-  {
-    id: '4',
-    columns: [
-      {
-        id: '5',
-        indexesOfSignGroup: [0]
-      },
-      {
-        id: '4',
-        indexesOfSignGroup: [6, 8],
-      },
-    ],
-  },
-  {
-    id: '2',
-    columns: [
-      {
-        id: '3',
-        indexesOfSignGroup: [2, 3],
-      },
-      {
-        id: '6',
-        indexesOfSignGroup: [4, 5],
-      },
-    ],
-  },
-];
 
 class GrammarFilter extends PureComponent {
   static propTypes = {
@@ -121,71 +79,58 @@ class GrammarFilter extends PureComponent {
     this.sendDataToTop(newChecked);
   }
 
+  getGridData(rowsData) {
+    const { checked } = this.props;
+    const grammaticalSignsData = this.constructor.updateSignsWithChecked(grammaticalSigns, checked);
+
+    return rowsData.map((row) => {
+      const resultRow = {};
+
+      resultRow.id = row.id;
+      resultRow.columns = row.columns.map((column) => {
+        const resultColumn = {};
+
+        resultColumn.id = column.id;
+        resultColumn.blocksToRender = column.indexesOfSignGroup.map((index) => {
+          const grammaticalSignsGroup = grammaticalSignsData[index];
+
+          if (!grammaticalSignsGroup) {
+            return null;
+          }
+
+          return <GrammarGroup
+            key={grammaticalSignsGroup.name}
+            data={grammaticalSignsGroup}
+            onChange={this.onCheckedChange}
+          />;
+        });
+
+        return resultColumn;
+      });
+
+      return resultRow;
+    });
+  }
+
   sendDataToTop(data) {
     this.props.onChange(data);
   }
 
-  renderRowGroup(signGroups) {
-    return rowsDescription.map(rowDescription => this.renderRow(rowDescription, signGroups));
-  }
-
-  renderColumnGroup(columns, signGroups) {
-    return columns.map(columnItem => this.renderColumn(columnItem, signGroups));
-  }
-
-  renderColumn(column, signGroups) {
-    const renderSignGroups = column.indexesOfSignGroup.map((index) => {
-      const group = signGroups[index];
-      if (!group) {
-        return null;
-      }
-
-      return <GrammarGroup
-        key={group.name}
-        data={group}
-        onChange={this.onCheckedChange}
-      />;
-    });
-
-    if (renderSignGroups.length === 0) {
-      return null;
-    }
+  renderSigns() {
+    const gridData = this.getGridData(signGroupDivision);
 
     return (
-      <Grid.Column key={column.id}>
-        {renderSignGroups}
-      </Grid.Column>
-    );
-  }
-
-  renderRow(rowDescription, signGroups) {
-    const columnGroup = this.renderColumnGroup(rowDescription.columns, signGroups);
-
-    if (columnGroup.length === 0) {
-      return null;
-    }
-
-    return (
-      <Grid.Row key={rowDescription.id} className={classNames.row} stretched>
-        {columnGroup}
-      </Grid.Row>
-    );
-  }
-
-  renderSigns(signGroups) {
-    const rowsGroup = this.renderRowGroup(signGroups);
-
-    return (
-      <Grid columns={2}>
-        {rowsGroup}
-      </Grid>
+      <GridGenerator
+        data={gridData}
+        GridComponent={Grid}
+        RowComponent={Grid.Row}
+        ColumnComponent={Grid.Column}
+      />
     );
   }
 
   render() {
-    const { checked } = this.props;
-    const data = this.constructor.updateSignsWithChecked(grammaticalSigns, checked);
-    const grammarBlock = this.renderSigns(data);
+    const grammarBlock = this.renderSigns();
 
     return (
       <div className={classNames.container}>
