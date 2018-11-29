@@ -38,7 +38,7 @@ Anonymous.propTypes = {
 };
 
 const Signed = ({ user, modal, signOut, launchEditForm, closeForm, openModal }) =>
-  <Dropdown item text={user.name}>
+  <Dropdown item text={user.name} className="top_menu">
     <Dropdown.Menu>
       <EditUserModal
         trigger={<Dropdown.Item as="a" onClick={launchEditForm}>{getTranslation("Edit profile")}</Dropdown.Item>}

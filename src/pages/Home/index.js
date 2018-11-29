@@ -134,13 +134,11 @@ const Home = (props) => {
 
   if (loading) {
     return (
-      <Dimmer.Dimmable dimmed style={{ minHeight: '600px' }}>
-        <Dimmer active inverted>
-          <Header as="h2" icon>
-            <Icon name="spinner" loading />
-          </Header>
-        </Dimmer>
-      </Dimmer.Dimmable>
+      <Dimmer active style={{ minHeight: '600px', background: 'none' }}>
+        <Header as="h2" icon>
+          <Icon name="spinner" loading />
+        </Header>
+      </Dimmer>
     );
   }
 
@@ -216,7 +214,7 @@ const Home = (props) => {
           <a href="http://old.lingvodoc.at.ispras.ru"> http://old.lingvodoc.at.ispras.ru</a>
         </b>
       </Message>
-      <Segment>
+      <Segment className="rose_background">
         <Form>
           <Form.Group inline className="toggle-label">
             <label>{getTranslation('Display mode')}</label>
@@ -247,8 +245,8 @@ const Home = (props) => {
             </Button>
           )}
       </Segment>
-      {grantsMode && (
-        <Segment>
+      <Segment>
+        {grantsMode && (
           <GrantedDicts
             languagesTree={languagesTree}
             dictionaries={dicts}
@@ -256,18 +254,16 @@ const Home = (props) => {
             grants={grantsList}
             isAuthenticated={isAuthenticated}
           />
-        </Segment>
-      )}
-      {!grantsMode && (
-        <Segment>
+        )}
+        {!grantsMode && (
           <AllDicts
             languagesTree={languagesTree}
             dictionaries={dicts}
             perspectives={perspectivesList}
             isAuthenticated={isAuthenticated}
           />
-        </Segment>
-      )}
+        )}
+      </Segment>
       <BackTopButton scrollContainer={scrollContainer} />
     </Container>
   );
