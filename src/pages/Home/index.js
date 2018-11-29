@@ -136,7 +136,7 @@ const Home = (props) => {
     return (
       <Dimmer active style={{ minHeight: '600px', background: 'none' }}>
         <Header as="h2" icon>
-          <Icon name="spinner" loading />
+          <Icon name="spinner" color="yellow" loading />
         </Header>
       </Dimmer>
     );

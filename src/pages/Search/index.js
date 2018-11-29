@@ -6,7 +6,7 @@ import { compose } from 'recompose';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import Immutable, { fromJS } from 'immutable';
-import { Container, Dimmer, Loader, Tab, Button, Divider, Menu, Message } from 'semantic-ui-react';
+import { Container, Dimmer, Loader, Tab, Button, Divider, Menu, Message, Segment } from 'semantic-ui-react';
 import { isEqual } from 'lodash';
 import Labels from 'components/Search/Labels';
 import ResultsMap from 'components/Search/ResultsMap';
@@ -288,11 +288,13 @@ class SearchTabs extends React.Component {
         <Tab menu={{ pointing: true }} panes={panes} />
         <Divider id="mapResults" section />
         <Labels data={this.labels()} onClick={this.clickLabel} />
-        <IntersectionControl
-          max={this.state.mapSearches.filter(f => f.get('isActive')).size}
-          value={this.state.intersec}
-          onChange={e => this.setState({ intersec: e.target.value })}
-        />
+        <Segment>
+          <IntersectionControl
+            max={this.state.mapSearches.filter(f => f.get('isActive')).size}
+            value={this.state.intersec}
+            onChange={e => this.setState({ intersec: e.target.value })}
+          />
+        </Segment>
         <ResultsMap
           data={this.dictResults()}
           meta={this.state.mapSearches}
