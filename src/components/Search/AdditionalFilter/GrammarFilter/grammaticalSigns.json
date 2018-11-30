@@ -289,11 +289,11 @@
         "value": "PST"
       },
       {
-        "name": "кункатив",
+        "name": "cuncative",
         "value": "CUNC"
       },
       {
-        "name": "дистрибутив",
+        "name": "distributive",
         "value": "DISTR"
       },
       {
@@ -323,7 +323,7 @@
     ]
   },
   {
-    "name": "Наклонение / Форма",
+    "name": "Mood / Form",
     "children": [
       {
         "name": "affirmative",

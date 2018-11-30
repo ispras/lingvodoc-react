@@ -12,7 +12,7 @@ import AdvancedFilter from './AdvancedFilter';
 import GrammarFilter from './GrammarFilter';
 import { getNodeValue, getNodeValueById } from './Languages/helpers';
 
-import AdditionalFilterInfo from './AdditionalFilterInfo';
+import AdditionalFilterInfo from './Info';
 
 import './index.scss';
 
@@ -190,6 +190,10 @@ class AdditionalFilter extends PureComponent {
     this.onShowLangsButtonClick = this.onShowLangsButtonClick.bind(this);
     this.onShowAdvancedFilterButtonClick = this.onShowAdvancedFilterButtonClick.bind(this);
     this.onShowGrammarFilterButtonClick = this.onShowGrammarFilterButtonClick.bind(this);
+
+    this.infoOnClickCallbacks = {
+      grammar: this.onShowGrammarFilterButtonClick,
+    };
   }
 
   /**
@@ -294,6 +298,7 @@ class AdditionalFilter extends PureComponent {
   onGrammarFilterChange(data) {
     const state = {
       grammaticalSigns: data,
+      isDataDefault: false,
     };
 
     this.setState(state);
@@ -483,8 +488,9 @@ class AdditionalFilter extends PureComponent {
                 humanSettlement={humanSettlement}
                 authors={authors}
                 languageVulnerability={languageVulnerability}
+                grammaticalSigns={grammaticalSigns}
                 isDataDefault={isDataDefault}
-                getTranslation={getTranslation}
+                onClickCallbacks={this.infoOnClickCallbacks}
               />
             </Segment>
           </Segment.Group>

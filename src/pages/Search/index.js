@@ -148,28 +148,33 @@ const WrapperWithData = compose(
   graphql(searchQuery)
 )(Wrapper);
 
-const isAdditionalParamsSet = (langs, dicts, searchMetadata) => {
-  if ((langs && langs.length) > 0 || (dicts && dicts.length > 0)) {
-    return true;
-  }
+// const isAdditionalParamsSet = (langs, dicts, searchMetadata) => {
+//   if ((langs && langs.length) > 0 || (dicts && dicts.length > 0)) {
+//     return true;
+//   }
 
-  if (searchMetadata &&
-      searchMetadata.hasAudio !== null &&
-      searchMetadata.kind !== null &&
-      searchMetadata.years.length > 0 &&
-      searchMetadata.humanSettlement.length > 0 &&
-      searchMetadata.authors.length > 0) {
-    return true;
-  }
+//   if (searchMetadata &&
+//       searchMetadata.hasAudio !== null &&
+//       searchMetadata.kind !== null &&
+//       searchMetadata.years.length > 0 &&
+//       searchMetadata.humanSettlement.length > 0 &&
+//       searchMetadata.authors.length > 0) {
+//     return true;
+//   }
+// };
+
+const allQueriesOnlyWithRegexp = (queryGroup) => {
+  return queryGroup.every(query => query.matching_type === 'regexp');
 };
 
-const isQueryClean = (query) => {
+const isQueryWithoutEmptyString = (query) => {
   return query.search_string.length > 0 && query.matching_type.length > 0;
 };
 
 const getCleanQueries = (query) => {
   return query
-    .map(q => q.filter(p => isQueryClean(p)))
+    .map(q => q.filter(p => isQueryWithoutEmptyString(p)))
+    .filter(q => !allQueriesOnlyWithRegexp(q))
     .filter(q => q.length > 0);
 };
 
@@ -178,7 +183,6 @@ const Info = ({
 }) => {
   // remove empty strings
   const cleanQuery = getCleanQueries(query);
-
   if (cleanQuery.length > 0) {
     return (
       <WrapperWithData

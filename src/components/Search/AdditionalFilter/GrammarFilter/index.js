@@ -19,6 +19,20 @@ class GrammarFilter extends PureComponent {
     onChange: PropTypes.func.isRequired,
   }
 
+  static isGroupEmpty(group) {
+    if (group === null) return true;
+
+    if (group.length > 0) {
+      return false;
+    }
+
+    if (group.length === 0) {
+      return true;
+    }
+
+    return Object.keys(group).length === 0;
+  }
+
   static isItemInChecked(item, checked, groupName) {
     if (!checked || !checked[groupName]) {
       return false;
@@ -91,6 +105,10 @@ class GrammarFilter extends PureComponent {
     if (!isChecked) {
       if (newChecked[groupName] && newChecked[groupName][name]) {
         delete newChecked[groupName][name];
+      }
+
+      if (this.constructor.isGroupEmpty(newChecked[groupName])) {
+        delete newChecked[groupName];
       }
     } else {
       newChecked[groupName] = newChecked[groupName] || {};
