@@ -15,7 +15,7 @@ import EditUserModal from 'components/EditUserModal';
 import { getTranslation } from 'api/i18n';
 
 const Anonymous = ({ modal, launchSignInForm, launchSignUpForm, closeForm }) =>
-  <Dropdown item text={getTranslation('User')}>
+  <Dropdown item text={getTranslation('User')} className="top_menu">
     <Dropdown.Menu>
       <SignInModal
         trigger={<Dropdown.Item as="a" onClick={launchSignInForm}>{getTranslation("Sign In")}</Dropdown.Item>}

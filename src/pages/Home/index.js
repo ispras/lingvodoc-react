@@ -7,7 +7,7 @@ import { Redirect, matchPath } from 'react-router-dom';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import Immutable, { fromJS, Map } from 'immutable';
-import { Container, Form, Radio, Segment, Button, Message, Dimmer, Header, Icon } from 'semantic-ui-react';
+import { Container, Form, Radio, Segment, Button, Message } from 'semantic-ui-react';
 
 import { buildLanguageTree } from 'pages/Search/treeBuilder';
 import { setGrantsMode, resetDictionaries } from 'ducks/home';
@@ -17,6 +17,7 @@ import config from 'config';
 import BackTopButton from 'components/BackTopButton';
 import GrantedDicts from './components/GrantedDicts';
 import AllDicts from './components/AllDicts';
+import Placeholder from 'components/Placeholder';
 import { getScrollContainer } from './common';
 import { getTranslation } from 'api/i18n';
 import './published.scss';
@@ -134,11 +135,7 @@ const Home = (props) => {
 
   if (loading) {
     return (
-      <Dimmer active style={{ minHeight: '600px', background: 'none' }}>
-        <Header as="h2" icon>
-          <Icon name="spinner" loading />
-        </Header>
-      </Dimmer>
+      <Placeholder/>
     );
   }
 
