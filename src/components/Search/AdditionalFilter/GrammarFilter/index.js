@@ -1,14 +1,16 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { Grid } from 'semantic-ui-react';
-import grammaticalSigns from './grammaticalSigns.json';
+import { Grid, Button } from 'semantic-ui-react';
+import grammaticalSignsRaw from './grammaticalSigns.json';
 import GrammarGroup from './Group';
 import GridGenerator from './GridGenerator';
 import signGroupDivision from './signGroupDivision';
+import { getTranslation } from 'api/i18n';
 import './index.scss';
 
 const classNames = {
   container: 'grammar-filter',
+  buttons: 'grammar-filter__buttons',
 };
 
 class GrammarFilter extends PureComponent {
@@ -48,10 +50,29 @@ class GrammarFilter extends PureComponent {
     return data;
   }
 
+  static getGrammaticalSigns() {
+    const grammaticalSigns = grammaticalSignsRaw.map((grammaticalGroup) => {
+      return {
+        name: getTranslation(grammaticalGroup.name),
+        children: grammaticalGroup.children.map((grammaticalSign) => {
+          return {
+            name: getTranslation(grammaticalSign.name),
+            value: grammaticalSign.value,
+          };
+        }),
+      };
+    });
+
+    return grammaticalSigns;
+  }
+
   constructor() {
     super();
 
+    this.grammaticalSigns = this.constructor.getGrammaticalSigns();
     this.onCheckedChange = this.onCheckedChange.bind(this);
+    this.checkAll = this.checkAll.bind(this);
+    this.uncheckAll = this.uncheckAll.bind(this);
   }
 
   /**
@@ -81,6 +102,7 @@ class GrammarFilter extends PureComponent {
 
   getGridData(rowsData) {
     const { checked } = this.props;
+    const { grammaticalSigns } = this;
     const grammaticalSignsData = this.constructor.updateSignsWithChecked(grammaticalSigns, checked);
 
     return rowsData.map((row) => {
@@ -112,6 +134,28 @@ class GrammarFilter extends PureComponent {
     });
   }
 
+  checkAll() {
+    const newChecked = {};
+
+    grammaticalSignsRaw.forEach((grammaticalGroup) => {
+      const groupName = grammaticalGroup.name;
+      newChecked[groupName] = newChecked[groupName] || {};
+
+      grammaticalGroup.children.forEach((grammaticalSign) => {
+        const { name, value } = grammaticalSign;
+        newChecked[groupName][name] = value;
+      });
+    });
+
+    this.sendDataToTop(newChecked);
+  }
+
+  uncheckAll() {
+    const newChecked = {};
+
+    this.sendDataToTop(newChecked);
+  }
+
   sendDataToTop(data) {
     this.props.onChange(data);
   }
@@ -131,9 +175,19 @@ class GrammarFilter extends PureComponent {
 
   render() {
     const grammarBlock = this.renderSigns();
+    const uncheckAllButtonText = getTranslation('Uncheck all');
+    const checkAllButtonText = getTranslation('Check all');
 
     return (
       <div className={classNames.container}>
+        <div className={classNames.buttons}>
+          <Button primary basic onClick={this.uncheckAll}>
+            {uncheckAllButtonText}
+          </Button>
+          <Button primary basic onClick={this.checkAll}>
+            {checkAllButtonText}
+          </Button>
+        </div>
         {grammarBlock}
       </div>
     );
