@@ -17,7 +17,7 @@ const signGroupDivision = [
     columns: [
       {
         id: '5',
-        indexesOfSignGroup: [0]
+        indexesOfSignGroup: [0],
       },
       {
         id: '4',
