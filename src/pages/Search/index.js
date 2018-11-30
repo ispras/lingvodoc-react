@@ -15,7 +15,6 @@ import QueryBuilder from 'components/Search/QueryBuilder';
 import LanguageTree from 'components/Search/LanguageTree';
 import BlobsModal from 'components/Search/blobsModal';
 import { buildLanguageTree, buildSearchResultsTree } from 'pages/Search/treeBuilder';
-import { compositeIdToString } from 'utils/compositeId';
 
 import { newSearch, deleteSearch, storeSearchResult } from 'ducks/search';
 
@@ -149,13 +148,41 @@ const WrapperWithData = compose(
   graphql(searchQuery)
 )(Wrapper);
 
+// const isAdditionalParamsSet = (langs, dicts, searchMetadata) => {
+//   if ((langs && langs.length) > 0 || (dicts && dicts.length > 0)) {
+//     return true;
+//   }
+
+//   if (searchMetadata &&
+//       searchMetadata.hasAudio !== null &&
+//       searchMetadata.kind !== null &&
+//       searchMetadata.years.length > 0 &&
+//       searchMetadata.humanSettlement.length > 0 &&
+//       searchMetadata.authors.length > 0) {
+//     return true;
+//   }
+// };
+
+const allQueriesOnlyWithRegexp = (queryGroup) => {
+  return queryGroup.every(query => query.matching_type === 'regexp');
+};
+
+const isQueryWithoutEmptyString = (query) => {
+  return query.search_string.length > 0 && query.matching_type.length > 0;
+};
+
+const getCleanQueries = (query) => {
+  return query
+    .map(q => q.filter(p => isQueryWithoutEmptyString(p)))
+    .filter(q => !allQueriesOnlyWithRegexp(q))
+    .filter(q => q.length > 0);
+};
+
 const Info = ({
   query, searchId, adopted, etymology, category, langs, dicts, searchMetadata,
 }) => {
   // remove empty strings
-  const cleanQuery = query
-    .map(q => q.filter(p => p.search_string.length > 0 && p.matching_type.length > 0))
-    .filter(q => q.length > 0);
+  const cleanQuery = getCleanQueries(query);
   if (cleanQuery.length > 0) {
     return (
       <WrapperWithData
@@ -171,6 +198,7 @@ const Info = ({
       />
     );
   }
+
   return null;
 };
 

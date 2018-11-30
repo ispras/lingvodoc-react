@@ -187,6 +187,7 @@ class QueryBuilder extends React.Component {
       humanSettlement: [],
       authors: [],
       languageVulnerability: [],
+      grammaticalSigns: {},
     };
 
     this.state = {
@@ -258,8 +259,41 @@ class QueryBuilder extends React.Component {
       humanSettlement,
       authors,
     };
+    const query = this.addGrammaticalSigns(this.state.data.toJS());
 
-    actions.setQuery(searchId, this.state.data.toJS(), category, adopted, etymology, langsToFilter, dictsToFilter, searchMetadata);
+    actions.setQuery(searchId, query, category, adopted, etymology, langsToFilter, dictsToFilter, searchMetadata);
+  }
+
+  addGrammaticalSigns(query) {
+    const { grammaticalSigns } = this.additionalFields;
+    const grammaticalGroupNames = Object.keys(grammaticalSigns);
+
+    if (grammaticalGroupNames.length === 0) {
+      return query;
+    }
+
+    const addGrammaticalSigns = [];
+
+    grammaticalGroupNames.forEach((name) => {
+      const values = Object.values(grammaticalSigns[name]);
+
+      values.forEach((value) => {
+        addGrammaticalSigns.push({
+          search_string: `.*[.-]${value}`,
+          matching_type: 'regexp',
+        });
+      });
+    });
+
+    if (addGrammaticalSigns.length === 0) {
+      return query;
+    }
+
+    query.forEach((q) => {
+      addGrammaticalSigns.forEach(sign => q.push(sign));
+    });
+
+    return query;
   }
 
   changeSource(searchSourceType) {

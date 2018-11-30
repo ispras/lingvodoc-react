@@ -9,9 +9,10 @@ import { buildLanguageTree } from 'pages/Search/treeBuilder';
 import { getTranslation } from 'api/i18n';
 import Languages from './Languages';
 import AdvancedFilter from './AdvancedFilter';
+import GrammarFilter from './GrammarFilter';
 import { getNodeValue, getNodeValueById } from './Languages/helpers';
 
-import AdditionalFilterInfo from './AdditionalFilterInfo';
+import AdditionalFilterInfo from './Info';
 
 import './index.scss';
 
@@ -33,18 +34,15 @@ class AdditionalFilter extends PureComponent {
     data: PropTypes.object.isRequired,
     allLangsDictsChecked: PropTypes.bool,
     languagesQuery: PropTypes.object.isRequired,
-    showLanguagesTreeText: PropTypes.string,
-    checkAllButtonText: PropTypes.string,
-    uncheckAllButtonText: PropTypes.string,
-    showAdvancedFilterText: PropTypes.string,
+    showLanguagesTreeText: PropTypes.string.isRequired,
+    checkAllButtonText: PropTypes.string.isRequired,
+    uncheckAllButtonText: PropTypes.string.isRequired,
+    showAdvancedFilterText: PropTypes.string.isRequired,
+    showGrammarFilterText: PropTypes.string.isRequired,
   }
 
   static defaultProps = {
     allLangsDictsChecked: false,
-    showLanguagesTreeText: 'Select languages',
-    checkAllButtonText: 'Check all',
-    uncheckAllButtonText: 'Uncheck all',
-    showAdvancedFilterText: 'Select tags',
   }
 
   /**
@@ -143,7 +141,7 @@ class AdditionalFilter extends PureComponent {
 
     const rawLanguagesTree = buildLanguageTree(fromJS(props.languagesQuery.language_tree)).toJS();
     const {
-      hasAudio, kind, years, humanSettlement, authors, languageVulnerability,
+      hasAudio, kind, years, humanSettlement, authors, languageVulnerability, grammaticalSigns,
     } = props.data;
 
     this.state = {
@@ -152,12 +150,14 @@ class AdditionalFilter extends PureComponent {
       filterMode: false,
       showSearchSelectLanguages: false,
       showAdvancedFilter: false,
+      showGrammarFilter: false,
       hasAudio,
       kind,
       years,
       humanSettlement,
       authors,
       languageVulnerability,
+      grammaticalSigns,
       isDataDefault: true,
     };
 
@@ -186,8 +186,14 @@ class AdditionalFilter extends PureComponent {
 
     this.onLangsDictsChange = this.onLangsDictsChange.bind(this);
     this.onAdvancedFilterChange = this.onAdvancedFilterChange.bind(this);
+    this.onGrammarFilterChange = this.onGrammarFilterChange.bind(this);
     this.onShowLangsButtonClick = this.onShowLangsButtonClick.bind(this);
     this.onShowAdvancedFilterButtonClick = this.onShowAdvancedFilterButtonClick.bind(this);
+    this.onShowGrammarFilterButtonClick = this.onShowGrammarFilterButtonClick.bind(this);
+
+    this.infoOnClickCallbacks = {
+      grammar: this.onShowGrammarFilterButtonClick,
+    };
   }
 
   /**
@@ -197,7 +203,6 @@ class AdditionalFilter extends PureComponent {
   onShowLangsButtonClick() {
     this.setState({
       showSearchSelectLanguages: !this.state.showSearchSelectLanguages,
-      showAdvancedFilter: !this.state.showSearchSelectLanguages ? false : this.state.showAdvancedFilter,
     });
   }
 
@@ -208,7 +213,16 @@ class AdditionalFilter extends PureComponent {
   onShowAdvancedFilterButtonClick() {
     this.setState({
       showAdvancedFilter: !this.state.showAdvancedFilter,
-      showSearchSelectLanguages: !this.state.showAdvancedFilter ? false : this.state.showSearchSelectLanguages,
+    });
+  }
+
+  /**
+   * Event handler for clicking on the button to open or close
+   * component for grammar filter.
+   */
+  onShowGrammarFilterButtonClick() {
+    this.setState({
+      showGrammarFilter: !this.state.showGrammarFilter,
     });
   }
 
@@ -275,6 +289,20 @@ class AdditionalFilter extends PureComponent {
 
     this.setState(state);
     this.props.onChange(dataToSendToTop);
+  }
+
+  /**
+   * Event handler for grammar filter changes.
+   * @param {*} data - grammar filter value
+   */
+  onGrammarFilterChange(data) {
+    const state = {
+      grammaticalSigns: data,
+      isDataDefault: false,
+    };
+
+    this.setState(state);
+    this.props.onChange(state);
   }
 
   /**
@@ -426,10 +454,12 @@ class AdditionalFilter extends PureComponent {
     const { languages, dictionaries } = checked;
     const { languagesTree } = this.state;
     const {
-      checkAllButtonText, uncheckAllButtonText, showLanguagesTreeText, showAdvancedFilterText,
+      checkAllButtonText, uncheckAllButtonText, showLanguagesTreeText,
+      showAdvancedFilterText, showGrammarFilterText,
     } = this.props;
     const {
-      hasAudio, kind, years, humanSettlement, authors, languageVulnerability, isDataDefault,
+      hasAudio, kind, years, humanSettlement, authors,
+      languageVulnerability, isDataDefault, grammaticalSigns,
     } = this.state;
     const closeText = getTranslation('Close');
 
@@ -439,6 +469,9 @@ class AdditionalFilter extends PureComponent {
           <Segment className={classNames.buttonGroup}>
             <Button primary basic fluid onClick={this.onShowLangsButtonClick}>
               {showLanguagesTreeText}
+            </Button>
+            <Button primary basic fluid onClick={this.onShowGrammarFilterButtonClick}>
+              {showGrammarFilterText}
             </Button>
             <Button primary basic fluid onClick={this.onShowAdvancedFilterButtonClick}>
               {showAdvancedFilterText}
@@ -455,8 +488,9 @@ class AdditionalFilter extends PureComponent {
                 humanSettlement={humanSettlement}
                 authors={authors}
                 languageVulnerability={languageVulnerability}
+                grammaticalSigns={grammaticalSigns}
                 isDataDefault={isDataDefault}
-                getTranslation={getTranslation}
+                onClickCallbacks={this.infoOnClickCallbacks}
               />
             </Segment>
           </Segment.Group>
@@ -480,6 +514,24 @@ class AdditionalFilter extends PureComponent {
             </Modal.Content>
             <Modal.Actions>
               <Button primary basic onClick={this.onShowLangsButtonClick}>
+                {closeText}
+              </Button>
+            </Modal.Actions>
+          </Modal>
+          <Modal
+            className={classNames.modal}
+            open={this.state.showGrammarFilter}
+            onClose={this.onShowGrammarFilterButtonClick}
+          >
+            <Modal.Header>{showGrammarFilterText}</Modal.Header>
+            <Modal.Content scrolling>
+              <GrammarFilter
+                checked={grammaticalSigns}
+                onChange={this.onGrammarFilterChange}
+              />
+            </Modal.Content>
+            <Modal.Actions>
+              <Button primary basic onClick={this.onShowGrammarFilterButtonClick}>
                 {closeText}
               </Button>
             </Modal.Actions>
@@ -529,21 +581,13 @@ const AdditionalFilterWrap = (props) => {
     return null;
   }
 
-  const { translationsQuery } = props;
-  const { error: translationsQueryError, loading: translationsQueryLoading } = translationsQuery;
-
-  if (translationsQueryError || translationsQueryLoading) {
-    return <AdditionalFilter {...props} />;
-  }
-
-  const { advanced_translation_search: translations } = translationsQuery;
-  // TODO: translations
   const newProps = {
     ...props,
-    showLanguagesTreeText: translations[0] ? translations[0].translation : undefined,
-    checkAllButtonText: translations[1] ? translations[1].translation : undefined,
-    uncheckAllButtonText: translations[2] ? translations[2].translation : undefined,
-    showAdvancedFilterText: translations[3] ? translations[3].translation : undefined,
+    showLanguagesTreeText: getTranslation('Select languages'),
+    checkAllButtonText: getTranslation('Check all'),
+    uncheckAllButtonText: getTranslation('Uncheck all'),
+    showAdvancedFilterText: getTranslation('Select tags'),
+    showGrammarFilterText: getTranslation('Grammar'),
   };
 
   return <AdditionalFilter {...newProps} />;
@@ -551,7 +595,6 @@ const AdditionalFilterWrap = (props) => {
 
 AdditionalFilterWrap.propTypes = {
   languagesQuery: PropTypes.object.isRequired,
-  translationsQuery: PropTypes.object.isRequired,
 };
 
 /* ----------- QUERIES ----------- */
@@ -574,27 +617,6 @@ const languagesWithDictionariesQuery = gql`
   }
 `;
 
-// TODO: translations
-const i18nQuery = gql`
-  query {
-    advanced_translation_search(
-      searchstrings: [
-        "Select languages",
-        "Check all",
-        "Uncheck all",
-        "Select tags",
-      ]
-    ) {
-      translation
-    }
-  }
-`;
-
-export default compose(
-  graphql(languagesWithDictionariesQuery, {
-    name: 'languagesQuery',
-  }),
-  graphql(i18nQuery, {
-    name: 'translationsQuery',
-  })
-)(AdditionalFilterWrap);
+export default compose(graphql(languagesWithDictionariesQuery, {
+  name: 'languagesQuery',
+}))(AdditionalFilterWrap);

@@ -1,0 +1,26 @@
+.grammar-filter {
+  &__group-wrap:not(:first-child) {
+    margin-top: 15px;
+  }
+
+  &__item {
+    margin-bottom: 8px;
+  }
+
+  &__group-header {
+    margin-bottom: 8px;
+    font-weight: bold;
+  }
+
+  &__buttons {
+    margin-bottom: 15px;
+  }
+
+  &__buttons .button {
+    margin-right: 15px;
+  }
+
+  &__buttons .button:last-child {
+    margin-right: 0;
+  }
+}

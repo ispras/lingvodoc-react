@@ -1,6 +1,16 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { Button } from 'semantic-ui-react';
+import languagesInfo from './languages';
+import dictionariesInfo from './dictionaries';
+import hasAudioInfo from './hasAudio';
+import kindInfo from './kind';
+import yearsInfo from './years';
+import humanSettlementInfo from './humanSettlement';
+import authorsInfo from './authors';
+import languageVulnerabilityInfo from './languageVulnerability';
+import grammarInfo from './grammar';
+import { getTranslation } from 'api/i18n';
 
 const classNames = {
   container: 'additional-filter__info',
@@ -10,134 +20,6 @@ const classNames = {
   toggleButton: 'additional-filter__info-button',
   toggleButtonShow: 'additional-filter__info-button_show',
   toggleButtonClose: 'additional-filter__info-button_close',
-};
-
-const isValueString = (value) => {
-  return Object.prototype.toString.call(value) === '[object String]';
-};
-
-const isValueArray = (value) => {
-  return Object.prototype.toString.call(value) === '[object Array]';
-};
-
-const isValueBoolean = (value) => {
-  return Object.prototype.toString.call(value) === '[object Boolean]';
-};
-
-const info = (value) => {
-  let result = '';
-
-  if (isValueString(value)) {
-    result = value;
-  }
-
-  if (isValueArray(value)) {
-    if (value.length > 5) {
-      result = `${value.length} items`;
-    } else {
-      result = value.reduce((accumulator, currentValue, currentIndex, array) => {
-        if (accumulator === '' && currentIndex + 1 !== array.length) {
-          return `${currentValue}, `;
-        }
-
-        if (currentIndex + 1 === array.length) {
-          return `${accumulator}${currentValue}`;
-        }
-
-        return `${accumulator}${currentValue}, `;
-      }, '');
-    }
-  }
-
-  if (isValueBoolean(value)) {
-    result = value ? 'yes' : 'no';
-  }
-
-  return result;
-};
-
-const kindInfo = (kind) => {
-  let result = '';
-
-  if (kind === null) {
-    result = info('Not chosen');
-  } else {
-    result = info(kind);
-  }
-
-  return `Data source: ${result}`;
-};
-
-const hasAudioInfo = (hasAudio) => {
-  let result = '';
-
-  if (hasAudio === null) {
-    result = info('Not chosen');
-  } else {
-    result = info(hasAudio);
-  }
-
-  return `Audio: ${result}`;
-};
-
-const yearsInfo = (years) => {
-  let result = '';
-
-  if (years.length === 0) {
-    result = info('Not chosen');
-  } else {
-    result = info(years);
-  }
-
-  return `Years: ${result}`;
-};
-
-const humanSettlementInfo = (humanSettlement) => {
-  let result = '';
-
-  if (humanSettlement.length === 0) {
-    result = info('Not chosen');
-  } else {
-    result = info(humanSettlement);
-  }
-
-  return `Human settlement: ${result}`;
-};
-
-const authorsInfo = (authors) => {
-  let result = '';
-
-  if (authors.length === 0) {
-    result = info('Not chosen');
-  } else {
-    result = info(authors);
-  }
-
-  return `Authors: ${result}`;
-};
-
-const languageVulnerabilityInfo = (languageVulnerability) => {
-  let result = '';
-
-  if (languageVulnerability.length === 0) {
-    result = info('Not chosen');
-  } else {
-    result = info(languageVulnerability);
-  }
-
-  return `Language vulnerability: ${result}`;
-};
-
-const languagesInfo = (languages) => {
-  const result = `${languages.length} items`;
-
-  return `Languages: ${result}`;
-};
-
-const dictionariesInfo = (dictionaries) => {
-  const result = `${dictionaries.length} items`;
-
-  return `Dictionaries: ${result}`;
 };
 
 class AdditionalFilterInfo extends PureComponent {
@@ -161,7 +43,7 @@ class AdditionalFilterInfo extends PureComponent {
     const {
       languages, dictionaries, hasAudio, kind, years,
       humanSettlement, authors, languageVulnerability,
-      isDataDefault, getTranslation,
+      grammaticalSigns, onClickCallbacks, isDataDefault,
     } = this.props;
     const { showInfo } = this.state;
 
@@ -172,6 +54,8 @@ class AdditionalFilterInfo extends PureComponent {
     const buttonText = showInfo ? closeText : showText;
     const buttonClassName = showInfo ? `${classNames.toggleButton} ${classNames.toggleButtonClose}` :
       `${classNames.toggleButton} ${classNames.toggleButtonShow}`;
+    
+    const grammarClickCallback = onClickCallbacks.grammar || null;
 
     return (
       <div className={classNames.container}>
@@ -189,6 +73,7 @@ class AdditionalFilterInfo extends PureComponent {
             <div className={classNames.field}>{humanSettlementInfo(humanSettlement)}</div>
             <div className={classNames.field}>{authorsInfo(authors)}</div>
             <div className={classNames.field}>{languageVulnerabilityInfo(languageVulnerability)}</div>
+            <div className={classNames.field}>{grammarInfo(grammaticalSigns, grammarClickCallback)}</div>
           </div> :
           null
         }
@@ -206,8 +91,9 @@ AdditionalFilterInfo.propTypes = {
   humanSettlement: PropTypes.array.isRequired,
   authors: PropTypes.array.isRequired,
   languageVulnerability: PropTypes.array.isRequired,
+  grammaticalSigns: PropTypes.object.isRequired,
   isDataDefault: PropTypes.bool.isRequired,
-  getTranslation: PropTypes.func.isRequired,
+  onClickCallbacks: PropTypes.object.isRequired,
 };
 
 export default AdditionalFilterInfo;

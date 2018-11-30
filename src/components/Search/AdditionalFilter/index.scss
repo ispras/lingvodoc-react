@@ -24,6 +24,10 @@
     margin-bottom: 0;
   }
 
+  &__info-field a:hover {
+    cursor: pointer;
+  }
+
   &__info-data {
     margin-top: 10px;
     margin-bottom: 10px;
