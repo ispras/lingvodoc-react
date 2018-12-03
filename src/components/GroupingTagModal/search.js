@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { compose, pure } from 'recompose';
 import { withApollo } from 'react-apollo';
-import { Input } from 'semantic-ui-react';
+import { Input, Dimmer, Header, Icon } from 'semantic-ui-react';
 
 import { searchQuery } from './graphql';
 import buildPartialLanguageTree from './partialTree';
@@ -19,37 +19,44 @@ class SearchLexicalEntries extends React.Component {
     this.state = {
       searchString: entity ? entity.content : '',
       resultsTree: null,
+      searchInProgress: false
     };
 
     this.search = this.search.bind(this);
   }
 
-  async search() {
+  search() {
     const { searchString } = this.state;
     const {
-      lexicalEntry, fieldId, allLanguages, allDictionaries, allPerspectives, perspectiveId, entitiesMode, connectedWords
+      lexicalEntry, fieldId, allLanguages, allDictionaries, allPerspectives, perspectiveId, connectedWords
     } = this.props;
 
-    const { data: { basic_search: { lexical_entries: lexicalEntries } } } = await this.props.client.query({
+    this.setState({ resultsTree: null, searchInProgress: true });
+    this.props.client.query({
       query: searchQuery,
       variables: { searchString, field_id: fieldId, perspectiveId },
-    });
+    }).then(result => {
+      const { data: { basic_search: { lexical_entries: lexicalEntries } } } = result;
 
-    const idsToFilter = connectedWords ? connectedWords.lexical_entries.map(entry => entry.id) : [];
-    const resultsTree = buildPartialLanguageTree({
-      lexicalEntries: lexicalEntries.filter(entry => {
-        const entryId = entry.id.toString();
-        if (entryId == lexicalEntry.id.toString()) {
-          return false;
-        }
+      const idsToFilter = connectedWords ? connectedWords.lexical_entries.map(entry => entry.id) : [];
+      const resultsTree = buildPartialLanguageTree({
+        lexicalEntries: lexicalEntries.filter(entry => {
+          const entryId = entry.id.toString();
+          if (entryId == lexicalEntry.id.toString()) {
+            return false;
+          }
 
-        return idsToFilter.every(id => id.toString() != entryId)
-      }),
-      allLanguages,
-      allDictionaries,
-      allPerspectives,
+          return idsToFilter.every(id => id.toString() != entryId)
+        }),
+        allLanguages,
+        allDictionaries,
+        allPerspectives,
+      });
+      this.setState({ resultsTree, searchInProgress: false });
+    },
+    () => {
+      this.setState({ searchInProgress: false });
     });
-    this.setState({ resultsTree });
   }
 
   render() {
@@ -63,6 +70,13 @@ class SearchLexicalEntries extends React.Component {
           value={this.state.searchString}
           onChange={(e, data) => this.setState({ searchString: data.value })}
         />
+        {this.state.searchInProgress &&
+          <Dimmer active inverted style={{ minHeight: '600px', background: 'none' }}>
+            <Header as="h2" icon>
+              <Icon name="spinner" loading />
+            </Header>
+          </Dimmer>
+        }
         {this.state.resultsTree && <Tree resultsTree={this.state.resultsTree} actions={actions} />}
       </div>
     );
