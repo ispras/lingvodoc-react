@@ -84,7 +84,7 @@ EditGroupingTag.propTypes = {
   allLanguages: PropTypes.array.isRequired,
   allDictionaries: PropTypes.array.isRequired,
   allPerspectives: PropTypes.array.isRequired,
-  connectedWords: PropTypes.object.isRequired,
+  connectedWords: PropTypes.object,
   joinGroup: PropTypes.func.isRequired,
   leaveGroup: PropTypes.func.isRequired,
 };
@@ -125,7 +125,7 @@ ViewGroupingTag.propTypes = {
   allLanguages: PropTypes.array.isRequired,
   allDictionaries: PropTypes.array.isRequired,
   allPerspectives: PropTypes.array.isRequired,
-  connectedWords: PropTypes.object.isRequired
+  connectedWords: PropTypes.object
 };
 
 const PublishGroupingTag = (props) => {
@@ -177,7 +177,7 @@ PublishGroupingTag.propTypes = {
   allLanguages: PropTypes.array.isRequired,
   allDictionaries: PropTypes.array.isRequired,
   allPerspectives: PropTypes.array.isRequired,
-  connectedWords: PropTypes.object.isRequired,
+  connectedWords: PropTypes.object,
   publish: PropTypes.func.isRequired,
 };
 
@@ -224,7 +224,7 @@ ContributionsGroupingTag.propTypes = {
   allLanguages: PropTypes.array.isRequired,
   allDictionaries: PropTypes.array.isRequired,
   allPerspectives: PropTypes.array.isRequired,
-  connectedWords: PropTypes.object.isRequired,
+  connectedWords: PropTypes.object,
   accept: PropTypes.func.isRequired,
 };
 
@@ -380,7 +380,7 @@ class GroupingTagModal extends React.Component {
                 allLanguages={allLanguages}
                 allDictionaries={allDictionaries}
                 allPerspectives={allPerspectives}
-                connectedWords = {connectedQueryData.connected_words}
+                connectedWords={connectedQueryData.connected_words}
                 joinGroup={this.joinGroup}
                 leaveGroup={this.leaveGroup}
                 publish={this.changePublished}
