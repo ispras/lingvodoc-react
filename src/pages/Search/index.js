@@ -91,6 +91,48 @@ const searchQuery = gql`
   }
 `;
 
+const isAdditionalParamsSet = (langs, dicts, searchMetadata) => {
+  if ((langs && langs.length) > 0 || (dicts && dicts.length > 0)) {
+    return true;
+  }
+
+  if (searchMetadata &&
+      searchMetadata.hasAudio !== null &&
+      searchMetadata.kind !== null &&
+      searchMetadata.years.length > 0 &&
+      searchMetadata.humanSettlement.length > 0 &&
+      searchMetadata.authors.length > 0) {
+    return true;
+  }
+
+  return false;
+};
+
+const allQueriesOnlyWithRegexp = (queryGroup) => {
+  return queryGroup.every(query => query.matching_type === 'regexp');
+};
+
+const isQueryWithoutEmptyString = (query) => {
+  return query.search_string.length > 0 && query.matching_type.length > 0;
+};
+
+const getCleanQueries = (query) => {
+  return query
+    .map(q => q.filter(p => isQueryWithoutEmptyString(p)))
+    .filter(q => q.length > 0);
+};
+
+const isQueriesClean = (query) => {
+  return getCleanQueries(query).length > 0;
+};
+
+const isNeedToRenderLanguageTree = (query) => {
+  return getCleanQueries(query)
+    .filter(q => !allQueriesOnlyWithRegexp(q))
+    .filter(q => q.length > 0)
+    .length > 0;
+};
+
 class Wrapper extends React.Component {
   componentWillReceiveProps(props) {
     // store search results aquired with graphql into Redux state
@@ -119,13 +161,18 @@ class Wrapper extends React.Component {
       );
     }
 
-    const { language_tree: allLanguages, advanced_search: advancedSearch } = data;
-
+    const { language_tree: allLanguages, advanced_search: advancedSearch, variables } = data;
+    const { query } = variables;
+    const needToRenderLanguageTree = isNeedToRenderLanguageTree(query);
     const searchResults = Immutable.fromJS(advancedSearch);
-    const languages = Immutable.fromJS(allLanguages);
-    const languagesTree = buildLanguageTree(languages);
-    const searchResultsTree = buildSearchResultsTree(searchResults, languagesTree);
     const resultsCount = searchResults.get('dictionaries').filter(d => (d.getIn(['additional_metadata', 'location']) !== null));
+    let searchResultsTree = null;
+    if (needToRenderLanguageTree) {
+      const languages = Immutable.fromJS(allLanguages);
+      const languagesTree = buildLanguageTree(languages);
+      searchResultsTree = buildSearchResultsTree(searchResults, languagesTree);
+    }
+
     return <div>
       <Message positive>
         Found {resultsCount.size} resuls on <a href="" onClick={(e) => {
@@ -133,7 +180,10 @@ class Wrapper extends React.Component {
           document.getElementById('mapResults').scrollIntoView();
         }}>map</a>
       </Message>
-      <LanguageTree searchResultsTree={searchResultsTree} />
+      {needToRenderLanguageTree ?
+        <LanguageTree searchResultsTree={searchResultsTree} /> :
+        null
+      }
     </div>;
   }
 }
@@ -148,46 +198,17 @@ const WrapperWithData = compose(
   graphql(searchQuery)
 )(Wrapper);
 
-// const isAdditionalParamsSet = (langs, dicts, searchMetadata) => {
-//   if ((langs && langs.length) > 0 || (dicts && dicts.length > 0)) {
-//     return true;
-//   }
-
-//   if (searchMetadata &&
-//       searchMetadata.hasAudio !== null &&
-//       searchMetadata.kind !== null &&
-//       searchMetadata.years.length > 0 &&
-//       searchMetadata.humanSettlement.length > 0 &&
-//       searchMetadata.authors.length > 0) {
-//     return true;
-//   }
-// };
-
-const allQueriesOnlyWithRegexp = (queryGroup) => {
-  return queryGroup.every(query => query.matching_type === 'regexp');
-};
-
-const isQueryWithoutEmptyString = (query) => {
-  return query.search_string.length > 0 && query.matching_type.length > 0;
-};
-
-const getCleanQueries = (query) => {
-  return query
-    .map(q => q.filter(p => isQueryWithoutEmptyString(p)))
-    .filter(q => !allQueriesOnlyWithRegexp(q))
-    .filter(q => q.length > 0);
-};
-
 const Info = ({
   query, searchId, adopted, etymology, category, langs, dicts, searchMetadata,
 }) => {
   // remove empty strings
-  const cleanQuery = getCleanQueries(query);
-  if (cleanQuery.length > 0) {
+  const isQueryClean = isQueriesClean(query);
+  const additionalParamsSet = isAdditionalParamsSet(langs, dicts, searchMetadata);
+  if (isQueryClean > 0 || additionalParamsSet) {
     return (
       <WrapperWithData
         searchId={searchId}
-        query={cleanQuery}
+        query={query}
         category={category}
         adopted={adopted}
         etymology={etymology}
