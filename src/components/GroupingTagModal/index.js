@@ -70,7 +70,6 @@ const EditGroupingTag = (props) => {
           connectedWords={connectedWords}
           joinGroup={joinGroup}
           entitiesMode={entitiesMode}
-          filterConnected={true}
         />
       ),
     },

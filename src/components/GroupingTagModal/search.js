@@ -4,7 +4,7 @@ import { compose, pure } from 'recompose';
 import { withApollo } from 'react-apollo';
 import { Input } from 'semantic-ui-react';
 
-import { searchQuery, connectedQuery } from './graphql';
+import { searchQuery } from './graphql';
 import buildPartialLanguageTree from './partialTree';
 import Tree from './Tree';
 import { getTranslation } from 'api/i18n';
@@ -27,7 +27,7 @@ class SearchLexicalEntries extends React.Component {
   async search() {
     const { searchString } = this.state;
     const {
-      lexicalEntry, fieldId, allLanguages, allDictionaries, allPerspectives, perspectiveId, entitiesMode, filterConnected
+      lexicalEntry, fieldId, allLanguages, allDictionaries, allPerspectives, perspectiveId, entitiesMode, connectedWords
     } = this.props;
 
     const { data: { basic_search: { lexical_entries: lexicalEntries } } } = await this.props.client.query({
@@ -35,15 +35,7 @@ class SearchLexicalEntries extends React.Component {
       variables: { searchString, field_id: fieldId, perspectiveId },
     });
 
-    let idsToFilter = [];
-    if (filterConnected) {
-      const result = await this.props.client.query({
-        query: connectedQuery,
-        variables: { id: lexicalEntry.id, fieldId, entitiesMode },
-      });
-      idsToFilter = result.data.connected_words.lexical_entries.map(entry => entry.id);
-    }
-
+    const idsToFilter = connectedWords ? connectedWords.lexical_entries.map(entry => entry.id) : [];
     const resultsTree = buildPartialLanguageTree({
       lexicalEntries: lexicalEntries.filter(entry => {
         const entryId = entry.id.toString();
@@ -83,7 +75,7 @@ SearchLexicalEntries.propTypes = {
   joinGroup: PropTypes.func.isRequired,
   client: PropTypes.object.isRequired,
   entitiesMode: PropTypes.string,
-  filterConnected: PropTypes.bool
+  connectedWords: PropTypes.object
 };
 
 export default compose(withApollo, pure)(SearchLexicalEntries);

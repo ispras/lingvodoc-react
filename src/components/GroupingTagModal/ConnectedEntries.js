@@ -35,7 +35,7 @@ ConnectedLexicalEntries.propTypes = {
   allLanguages: PropTypes.array.isRequired,
   allDictionaries: PropTypes.array.isRequired,
   allPerspectives: PropTypes.array.isRequired,
-  connectedWords: PropTypes.array.isRequired
+  connectedWords: PropTypes.object.isRequired
 };
 
 export default pure(ConnectedLexicalEntries);
