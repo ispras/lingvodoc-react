@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { compose, pure } from 'recompose';
 import { graphql } from 'react-apollo';
-import { Segment, Checkbox, Button, Modal, Tab } from 'semantic-ui-react';
+import { Segment, Checkbox, Button, Modal, Tab, Dimmer, Header, Icon } from 'semantic-ui-react';
 import { isEqual } from 'lodash';
 import styled from 'styled-components';
 import { queryPerspective, queryLexicalEntries } from 'components/PerspectiveView';
@@ -30,6 +30,7 @@ const EditGroupingTag = (props) => {
     allLanguages,
     allDictionaries,
     allPerspectives,
+    connectedWords,
     joinGroup,
     leaveGroup,
   } = props;
@@ -51,6 +52,7 @@ const EditGroupingTag = (props) => {
               allLanguages={allLanguages}
               allDictionaries={allDictionaries}
               allPerspectives={allPerspectives}
+              connectedWords={connectedWords}
             />
           </Segment>
         </div>
@@ -65,9 +67,9 @@ const EditGroupingTag = (props) => {
           allLanguages={allLanguages}
           allDictionaries={allDictionaries}
           allPerspectives={allPerspectives}
+          connectedWords={connectedWords}
           joinGroup={joinGroup}
           entitiesMode={entitiesMode}
-          filterConnected={true}
         />
       ),
     },
@@ -82,13 +84,14 @@ EditGroupingTag.propTypes = {
   allLanguages: PropTypes.array.isRequired,
   allDictionaries: PropTypes.array.isRequired,
   allPerspectives: PropTypes.array.isRequired,
+  connectedWords: PropTypes.object.isRequired,
   joinGroup: PropTypes.func.isRequired,
   leaveGroup: PropTypes.func.isRequired,
 };
 
 const ViewGroupingTag = (props) => {
   const {
-    lexicalEntry, fieldId, entitiesMode, allLanguages, allDictionaries, allPerspectives,
+    lexicalEntry, fieldId, entitiesMode, allLanguages, allDictionaries, allPerspectives, connectedWords
   } = props;
 
   const panes = [
@@ -105,6 +108,7 @@ const ViewGroupingTag = (props) => {
               allLanguages={allLanguages}
               allDictionaries={allDictionaries}
               allPerspectives={allPerspectives}
+              connectedWords={connectedWords}
             />
           </Segment>
         </div>
@@ -121,11 +125,12 @@ ViewGroupingTag.propTypes = {
   allLanguages: PropTypes.array.isRequired,
   allDictionaries: PropTypes.array.isRequired,
   allPerspectives: PropTypes.array.isRequired,
+  connectedWords: PropTypes.object.isRequired
 };
 
 const PublishGroupingTag = (props) => {
   const {
-    lexicalEntry, fieldId, entitiesMode, allLanguages, allDictionaries, allPerspectives, publish,
+    lexicalEntry, fieldId, entitiesMode, allLanguages, allDictionaries, allPerspectives, connectedWords, publish
   } = props;
 
   const entity = lexicalEntry.entities.find(e => isEqual(e.field_id, fieldId));
@@ -155,6 +160,7 @@ const PublishGroupingTag = (props) => {
               allLanguages={allLanguages}
               allDictionaries={allDictionaries}
               allPerspectives={allPerspectives}
+              connectedWords={connectedWords}
             />
           </Segment>
         </div>
@@ -171,12 +177,13 @@ PublishGroupingTag.propTypes = {
   allLanguages: PropTypes.array.isRequired,
   allDictionaries: PropTypes.array.isRequired,
   allPerspectives: PropTypes.array.isRequired,
+  connectedWords: PropTypes.object.isRequired,
   publish: PropTypes.func.isRequired,
 };
 
 const ContributionsGroupingTag = (props) => {
   const {
-    lexicalEntry, fieldId, entitiesMode, allLanguages, allDictionaries, allPerspectives, accept,
+    lexicalEntry, fieldId, entitiesMode, allLanguages, allDictionaries, allPerspectives, connectedWords, accept,
   } = props;
 
   const entity = lexicalEntry.entities.find(e => isEqual(e.field_id, fieldId));
@@ -200,6 +207,7 @@ const ContributionsGroupingTag = (props) => {
               allLanguages={allLanguages}
               allDictionaries={allDictionaries}
               allPerspectives={allPerspectives}
+              connectedWords={connectedWords}
             />
           </Segment>
         </div>
@@ -216,6 +224,7 @@ ContributionsGroupingTag.propTypes = {
   allLanguages: PropTypes.array.isRequired,
   allDictionaries: PropTypes.array.isRequired,
   allPerspectives: PropTypes.array.isRequired,
+  connectedWords: PropTypes.object.isRequired,
   accept: PropTypes.func.isRequired,
 };
 
@@ -331,7 +340,7 @@ class GroupingTagModal extends React.Component {
 
   render() {
     const {
-      data, lexicalEntry, fieldId, entitiesMode, mode, onClose
+      data, connectedQueryData, lexicalEntry, fieldId, entitiesMode, mode, onClose
     } = this.props;
 
     const {
@@ -342,8 +351,18 @@ class GroupingTagModal extends React.Component {
       perspectives: allPerspectives,
     } = data;
 
-    if (loading || error) {
+    if (error || connectedQueryData.error) {
       return null;
+    }
+
+    if (loading || connectedQueryData.loading) {
+      return (
+        <Dimmer active inverted style={{ minHeight: '600px', background: 'none' }}>
+          <Header as="h2" icon>
+            <Icon name="spinner" loading />
+          </Header>
+        </Dimmer>
+      ); 
     }
 
     const Component = getComponent(mode);
@@ -361,6 +380,7 @@ class GroupingTagModal extends React.Component {
                 allLanguages={allLanguages}
                 allDictionaries={allDictionaries}
                 allPerspectives={allPerspectives}
+                connectedWords = {connectedQueryData.connected_words}
                 joinGroup={this.joinGroup}
                 leaveGroup={this.leaveGroup}
                 publish={this.changePublished}
@@ -402,6 +422,17 @@ GroupingTagModal.defaultProps = {
 export default compose(
   pure,
   graphql(languageTreeSourceQuery),
+  graphql(connectedQuery, {
+    name: 'connectedQueryData',
+    options: (props) => ({
+      variables: {
+        id: props.lexicalEntry.id,
+        fieldId: props.fieldId,
+        entitiesMode: props.entitiesMode
+      },
+      fetchPolicy: 'no-cache'
+    })
+  }),
   graphql(disconnectMutation, { name: 'disconnect' }),
   graphql(connectMutation, { name: 'connect' }),
   graphql(publishMutation, { name: 'publish' }),
