@@ -14,7 +14,7 @@ import Locale from './Locale';
 import { getTranslation } from 'api/i18n';
 
 const Logo = styled.span`
-  font-size: 1.2em;
+  font-size: 1.4em;
   font-weight: bold;
 `;
 
@@ -53,7 +53,7 @@ const Dashboard = (props) => {
     return null;
   }
   return (
-    <Dropdown item text={getTranslation("Dashboard")}>
+    <Dropdown item text={getTranslation("Dashboard")} className="top_menu">
       <Dropdown.Menu>
         <Dropdown.Item as={Link} to="/dashboard/create_dictionary">
         {getTranslation("Create dictionary")}
@@ -90,14 +90,14 @@ function openHelp() {
 }
 
 const NavBar = () => (
-  <Menu fixed="top">
-    <Menu.Item as={Link} to={config.homePath}>
+  <Menu fixed="top" className="top_menu">
+    <Menu.Item as={Link} to={config.homePath} className="top_menu">
       <Logo>Lingvodoc 3.0</Logo>
     </Menu.Item>
 
     <DashboardWithData />
 
-    <Dropdown item text={getTranslation("Maps")}>
+    <Dropdown item text={getTranslation("Maps")} className="top_menu">
       <Dropdown.Menu>
         <Dropdown.Item as={Link} to="/map">
         {getTranslation("Map")}
@@ -108,7 +108,7 @@ const NavBar = () => (
       </Dropdown.Menu>
     </Dropdown>
 
-    <Dropdown item text={getTranslation("Info")}>
+    <Dropdown item text={getTranslation("Info")} className="top_menu">
       <Dropdown.Menu>
         <Dropdown.Item as={Link} to="/info">
         {getTranslation("Authors")}

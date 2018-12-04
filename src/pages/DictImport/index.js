@@ -233,12 +233,12 @@ class Info extends React.Component {
           )}
         </div>
         {step === 'LANGUAGES' && (
-          <Button fluid inverted color="blue" onClick={this.onSubmit}>
+          <Button fluid color="blue" onClick={this.onSubmit}>
             {getTranslation('Submit')}
           </Button>
         )}
         {isNextStep && (
-          <Button fluid inverted color="blue" onClick={this.onNextClick}>
+          <Button fluid color="blue" onClick={this.onNextClick}>
             {getTranslation('Next Step')}
           </Button>
         )}

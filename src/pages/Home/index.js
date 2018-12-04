@@ -7,7 +7,7 @@ import { Redirect, matchPath } from 'react-router-dom';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import Immutable, { fromJS, Map } from 'immutable';
-import { Container, Form, Radio, Segment, Button, Message, Dimmer, Header, Icon } from 'semantic-ui-react';
+import { Container, Form, Radio, Segment, Button, Message } from 'semantic-ui-react';
 
 import { buildLanguageTree } from 'pages/Search/treeBuilder';
 import { setGrantsMode, resetDictionaries } from 'ducks/home';
@@ -17,6 +17,7 @@ import config from 'config';
 import BackTopButton from 'components/BackTopButton';
 import GrantedDicts from './components/GrantedDicts';
 import AllDicts from './components/AllDicts';
+import Placeholder from 'components/Placeholder';
 import { getScrollContainer } from './common';
 import { getTranslation } from 'api/i18n';
 import './published.scss';
@@ -134,14 +135,8 @@ const Home = (props) => {
 
   if (loading) {
     return (
-      <Dimmer.Dimmable dimmed style={{ minHeight: '600px' }}>
-        <Dimmer active inverted>
-          <Header as="h2" icon>
-            <Icon name="spinner" loading />
-          </Header>
-        </Dimmer>
-      </Dimmer.Dimmable>
-    ); 
+      <Placeholder/>
+    );
   }
 
   // handle legacy links from Lingvodoc 2.0
@@ -212,11 +207,11 @@ const Home = (props) => {
     <Container className="published">
       <Message padded="very" warning>
         <b>
-          Редакторам рекомендуется использовать старую версию системы по адресу:
-          <a href="http://old.lingvodoc.at.ispras.ru">http://old.lingvodoc.at.ispras.ru</a>
+          Старая версия системы доступна по адресу:
+          <a href="http://old.lingvodoc.at.ispras.ru"> http://old.lingvodoc.at.ispras.ru</a>
         </b>
       </Message>
-      <Segment>
+      <Segment className="rose_background">
         <Form>
           <Form.Group inline className="toggle-label">
             <label>{getTranslation('Display mode')}</label>
@@ -247,23 +242,25 @@ const Home = (props) => {
             </Button>
           )}
       </Segment>
-      {grantsMode && (
-        <GrantedDicts
-          languagesTree={languagesTree}
-          dictionaries={dicts}
-          perspectives={perspectivesList}
-          grants={grantsList}
-          isAuthenticated={isAuthenticated}
-        />
-      )}
-      {!grantsMode && (
-        <AllDicts
-          languagesTree={languagesTree}
-          dictionaries={dicts}
-          perspectives={perspectivesList}
-          isAuthenticated={isAuthenticated}
-        />
-      )}
+      <Segment>
+        {grantsMode && (
+          <GrantedDicts
+            languagesTree={languagesTree}
+            dictionaries={dicts}
+            perspectives={perspectivesList}
+            grants={grantsList}
+            isAuthenticated={isAuthenticated}
+          />
+        )}
+        {!grantsMode && (
+          <AllDicts
+            languagesTree={languagesTree}
+            dictionaries={dicts}
+            perspectives={perspectivesList}
+            isAuthenticated={isAuthenticated}
+          />
+        )}
+      </Segment>
       <BackTopButton scrollContainer={scrollContainer} />
     </Container>
   );

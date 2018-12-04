@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { compose, withProps } from 'recompose';
 import { graphql } from 'react-apollo';
 import Immutable from 'immutable';
-import { Divider, Message, Button, Step, Header } from 'semantic-ui-react';
+import { Divider, Message, Button, Step, Header, Segment } from 'semantic-ui-react';
 import {
   nextStep,
   goToStep,
@@ -134,7 +134,7 @@ class CreateDictionaryWizard extends React.Component {
 
         <div style={{ minHeight: '500px' }}>
           {step === 'PARENT_LANGUAGE' && (
-            <div style={{ height: '400px' }}>
+            <div className="inverted" style={{ height: '400px' }}>
               {!parentLanguage && <Header>{getTranslation('Please, select the parent language')}</Header>}
               {parentLanguage && (
                 <Header>
@@ -146,10 +146,12 @@ class CreateDictionaryWizard extends React.Component {
           )}
           {step === 'TRANSLATIONS' && (
             <div>
-              <Header>{getTranslation('Add one or more translations')}</Header>
-              <Translations translations={translations.toJS()} onChange={t => this.props.setTranslations(t)} />
+              <Header inverted>{getTranslation('Add one or more translations')}</Header>
+              <Segment>
+                <Translations translations={translations.toJS()} onChange={t => this.props.setTranslations(t)} />
+              </Segment>
               <Divider/>
-              <Header>{getTranslation('Fill metadata information')}</Header>
+              <Header inverted>{getTranslation('Fill metadata information')}</Header>
               <EditDictionaryMetadata mode='create' metadata={metadata ? metadata.toJS() : metadata} onChange={metadata => this.props.setMetadata(metadata)} />
             </div>
           )}
@@ -180,13 +182,13 @@ class CreateDictionaryWizard extends React.Component {
         <Divider />
         {isNextStep &&
           step === 'PERSPECTIVES' && (
-            <Button fluid inverted color="red" onClick={this.onCreateDictionary}>
+            <Button fluid color="blue" onClick={this.onCreateDictionary}>
               {getTranslation('Create')}
             </Button>
           )}
         {isNextStep &&
           (step !== 'PERSPECTIVES' && step !== 'FINISH') && (
-            <Button fluid inverted color="blue" onClick={this.onNextClick}>
+            <Button fluid color="blue" onClick={this.onNextClick}>
               {getTranslation('Next Step')}
             </Button>
           )}
