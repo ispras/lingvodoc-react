@@ -108,9 +108,9 @@ const isAdditionalParamsSet = (langs, dicts, searchMetadata) => {
   return false;
 };
 
-const allQueriesOnlyWithRegexp = (queryGroup) => {
-  return queryGroup.every(query => query.matching_type === 'regexp');
-};
+// const allQueriesOnlyWithRegexp = (queryGroup) => {
+//   return queryGroup.every(query => query.matching_type === 'regexp');
+// };
 
 const isQueryWithoutEmptyString = (query) => {
   return query.search_string.length > 0 && query.matching_type.length > 0;
@@ -127,10 +127,7 @@ const isQueriesClean = (query) => {
 };
 
 const isNeedToRenderLanguageTree = (query) => {
-  return getCleanQueries(query)
-    .filter(q => !allQueriesOnlyWithRegexp(q))
-    .filter(q => q.length > 0)
-    .length > 0;
+  return isQueriesClean(query);
 };
 
 class Wrapper extends React.Component {
@@ -201,14 +198,19 @@ const WrapperWithData = compose(
 const Info = ({
   query, searchId, adopted, etymology, category, langs, dicts, searchMetadata,
 }) => {
-  // remove empty strings
-  const isQueryClean = isQueriesClean(query);
+  const queryClean = isQueriesClean(query);
   const additionalParamsSet = isAdditionalParamsSet(langs, dicts, searchMetadata);
-  if (isQueryClean > 0 || additionalParamsSet) {
+  let resultQuery = query;
+
+  if (!queryClean) {
+    resultQuery = [];
+  }
+
+  if (queryClean > 0 || additionalParamsSet) {
     return (
       <WrapperWithData
         searchId={searchId}
-        query={query}
+        query={resultQuery}
         category={category}
         adopted={adopted}
         etymology={etymology}
