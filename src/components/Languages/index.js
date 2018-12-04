@@ -23,16 +23,17 @@ const dictionariesQuery = gql`
 `;
 
 const Languages = (props) => {
-  const { dictionariesData, languagesData, deleteLanguage, moveLanguage, actions, height, selected, onSelect, expanded } = props;
+  const { dictionariesData, languagesData, deleteLanguage, moveLanguage, actions, height, selected, onSelect, expanded, inverted } = props;
   if (dictionariesData.error || dictionariesData.loading || languagesData.error || languagesData.loading) {
     return null;
   }
 
   const { language_tree: languages, is_authenticated: isAuthenticated } = languagesData;
   const languagesTree = buildLanguageTree(Immutable.fromJS(languages));
-  let heightStyle = height ? { height: height } : { height: '100%' };
+  const heightStyle = height ? { height: height } : { height: '100%' };
+  const shouldInvert = inverted === undefined ? true : inverted;
   return (
-    <div style={heightStyle}>
+    <div className={shouldInvert ? 'inverted' : ''} style={heightStyle}>
       <LanguagesTree
         dictionaries={dictionariesData.dictionaries}
         languagesTree={languagesTree}
@@ -69,7 +70,8 @@ Languages.propTypes = {
   height: PropTypes.string,
   selected: PropTypes.object,
   onSelect: PropTypes.func,
-  expanded: PropTypes.bool
+  expanded: PropTypes.bool,
+  inverted: PropTypes.bool
 };
 
 export default compose(
