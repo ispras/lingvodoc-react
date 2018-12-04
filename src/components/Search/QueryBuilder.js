@@ -289,11 +289,19 @@ class QueryBuilder extends React.Component {
       return query;
     }
 
+    const resultQuery = [];
+
     query.forEach((q) => {
-      addGrammaticalSigns.forEach(sign => q.push(sign));
+      const innerQuery = [...q];
+      if (innerQuery[0].search_string === '') {
+        innerQuery.shift();
+      }
+
+      addGrammaticalSigns.forEach(sign => innerQuery.push(sign));
+      resultQuery.push(innerQuery);
     });
 
-    return query;
+    return resultQuery;
   }
 
   changeSource(searchSourceType) {
