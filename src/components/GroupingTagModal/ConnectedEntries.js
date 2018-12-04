@@ -1,24 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { compose, pure } from 'recompose';
-import { graphql } from 'react-apollo';
-import { connectedQuery } from './graphql';
+import { pure } from 'recompose';
 import Tree from './Tree';
 import buildPartialLanguageTree from './partialTree';
 import { getTranslation } from 'api/i18n';
 
 const ConnectedLexicalEntries = (props) => {
-  const { data: { loading, error } } = props;
-
-  if (error || loading) {
-    return null;
-  }
-
   const {
-    data: { connected_words: connectedWords },
     allLanguages,
     allDictionaries,
     allPerspectives,
+    connectedWords,
     mode,
     entitiesMode
   } = props;
@@ -38,18 +30,12 @@ const ConnectedLexicalEntries = (props) => {
 };
 
 ConnectedLexicalEntries.propTypes = {
-  data: PropTypes.shape({
-    loading: PropTypes.bool.isRequired,
-    connected_words: PropTypes.object,
-  }).isRequired,
   entitiesMode: PropTypes.string,
   mode: PropTypes.string,
   allLanguages: PropTypes.array.isRequired,
   allDictionaries: PropTypes.array.isRequired,
   allPerspectives: PropTypes.array.isRequired,
+  connectedWords: PropTypes.object
 };
 
-export default compose(
-  graphql(connectedQuery, { options: { fetchPolicy: 'no-cache' } }),
-  pure
-)(ConnectedLexicalEntries);
+export default pure(ConnectedLexicalEntries);

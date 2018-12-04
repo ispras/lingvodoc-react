@@ -318,7 +318,7 @@ class Properties extends React.Component {
                     </Button>
                   </Form.Group>
                 </Form>
-                <Languages height='95%' expanded={false} selected={this.state.parent} onSelect={this.onSelectParentLanguage}/>
+                <Languages height='95%' expanded={false} inverted={false} selected={this.state.parent} onSelect={this.onSelectParentLanguage}/>
               </div>
             </Grid.Column>
             <Grid.Column width={8}>

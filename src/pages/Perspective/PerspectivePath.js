@@ -47,7 +47,7 @@ class PerspectivePath extends React.Component {
     const { perspectives } = queryAvailablePerspectives.dictionary;
  
     return (
-      <Header as="h2">
+      <Header as="h2" className="white">
         <Breadcrumb
           icon="right angle"
           sections={tree.slice().reverse().map((e, index) => {

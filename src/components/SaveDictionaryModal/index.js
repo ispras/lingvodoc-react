@@ -83,7 +83,7 @@ class Properties extends React.Component {
             <Header size="large">{getTranslation('Save')} {translation}?</Header>
           </Segment>
             <Segment>
-                <body>{getTranslation('URL with results of saving data should appear soon after clicking save button in the tasks')}</body>
+              {getTranslation('URL with results of saving data should appear soon after clicking save button in the tasks')}
             </Segment>
         </Modal.Content>
         <Modal.Actions>
