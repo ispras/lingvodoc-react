@@ -8,7 +8,7 @@ import { toggleTasks } from 'ducks/task';
 import { getTranslation } from 'api/i18n';
 
 const Tasks = pure(({ count, loading, toggle }) =>
-  <Menu.Item as="a" onClick={toggle}>
+  <Menu.Item as="a" onClick={toggle} className="top_menu">
     {getTranslation('Tasks')} { loading ? <Icon loading name="spinner" /> : <Label color="blue">{count}</Label> }
   </Menu.Item>
 );

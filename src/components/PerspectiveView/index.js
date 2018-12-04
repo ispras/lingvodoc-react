@@ -17,8 +17,6 @@ import TableBody from './TableBody';
 import Pagination from './Pagination';
 import { getTranslation } from 'api/i18n';
 
-const dimmerStyle = { minHeight: '600px' };
-
 const ROWS_PER_PAGE = 20;
 
 export const queryPerspective = gql`
@@ -196,13 +194,11 @@ const P = ({
 
   if (loading || (!loading && !error && !data.perspective)) {
     return (
-      <Dimmer.Dimmable dimmed style={dimmerStyle}>
-        <Dimmer active inverted>
-          <Header as="h2" icon>
-            <Icon name="spinner" loading />
-          </Header>
-        </Dimmer>
-      </Dimmer.Dimmable>
+      <Dimmer active style={{ minHeight: '600px', background: 'none' }}>
+        <Header as="h2" icon>
+          <Icon name="spinner" color="yellow" loading />
+        </Header>
+      </Dimmer>
     );
   }
 
@@ -585,7 +581,7 @@ const LexicalEntryViewBaseByIds = ({
   const { loading, error } = data;
   if (loading || (!loading && !error && !data.perspective)) {
      return (
-      <Dimmer.Dimmable dimmed style={dimmerStyle}>
+      <Dimmer.Dimmable dimmed style={{ minHeight: '600px' }}>
         <Dimmer active inverted>
           <Header as="h2" icon>
             <Icon name="spinner" loading />

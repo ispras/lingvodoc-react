@@ -20,7 +20,7 @@ function title({ intl_name: text }) {
 }
 
 const WithSpinner = () =>
-  <Menu.Item as="a">
+  <Menu.Item as="a" className="top_menu">
     {TITLE} <Icon loading name="spinner" />
   </Menu.Item>;
 
@@ -33,7 +33,7 @@ const enhance = compose(
 );
 
 const Locale = enhance(({ locales, selected, select }) =>
-  <Dropdown item text={title(selected)}>
+  <Dropdown item text={title(selected)} className="top_menu">
     <Dropdown.Menu>
       {
         locales.map(loc =>

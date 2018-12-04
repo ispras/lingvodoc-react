@@ -147,7 +147,7 @@ const Requests = ({ data, accept }) => {
     },
   ];
 
-  return <Tab menu={{ fluid: true, vertical: true, tabular: 'right' }} panes={panes} />;
+  return <Tab className="inverted" menu={{ fluid: true, vertical: true, tabular: 'right' }} panes={panes} />;
 };
 
 export default compose(

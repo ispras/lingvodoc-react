@@ -10,8 +10,12 @@
 }
 
 body {
+  background-image: url(../images/background.jpg);
+
+  background-size: cover;
   font-family: 'Noto Sans', 'Helvetica Neue', Arial, Helvetica, sans-serif;
 }
+
 
 .gentium {
   font-family: "GentiumPlusW", sans-serif !important;
@@ -69,4 +73,40 @@ body {
           background: #F9FAFB url(../images/lastnode.png) no-repeat;
       }
   }
+}
+
+.rose_background {
+  background: url(../images/display_mode_background.png) !important;
+}
+
+.top_menu {
+  font-size: 1.2em !important;
+  background-color: black !important;
+  color: white !important;
+}
+
+/** Inverted colors support */
+
+.inverted {
+  .rst__lineHalfHorizontalRight::before, 
+  .rst__lineFullVertical::after,
+  .rst__lineHalfVerticalTop::after,
+  .rst__lineHalfVerticalBottom::after,
+  .rst__lineChildren::after {
+    background: white;
+  }
+
+  .tabular {
+    .item:not(.active) {
+      color: white !important;
+    }
+  }
+
+  .right.angle.icon {
+    color: white !important;
+  }
+}
+
+.white {
+  color: white !important;
 }
