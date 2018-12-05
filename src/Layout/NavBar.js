@@ -19,8 +19,8 @@ const Logo = styled.span`
 `;
 
 const SyncButton = ({ synchronize }) => (
-  <Menu.Item as={Button} negative onClick={synchronize}>
-  {getTranslation("Sync")}
+  <Menu.Item>
+    <Button color="purple" onClick={synchronize}>{getTranslation("Sync")}</Button>
   </Menu.Item>
 );
 
