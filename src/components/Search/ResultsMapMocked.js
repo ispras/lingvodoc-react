@@ -135,6 +135,11 @@ class Map extends React.Component {
     this.onPointClick = this.onPointClick.bind(this);
     this.showAreas = this.showAreas.bind(this);
     this.hideAreas = this.hideAreas.bind(this);
+    this.toggleAreas = this.toggleAreas.bind(this);
+
+    this.state = {
+      areasMode: false,
+    };
   }
 
   componentDidMount() {
@@ -161,6 +166,20 @@ class Map extends React.Component {
     actions.openBlobsModal(dictionary.toJS(), blobs ? blobs.toJS() : []);
   }
 
+  toggleAreas() {
+    const { areasMode } = this.state;
+
+    if (areasMode) {
+      this.hideAreas();
+    } else {
+      this.showAreas();
+    }
+
+    this.setState({
+      areasMode: !areasMode,
+    });
+  }
+
   showAreas() {
     this.leaflet.showAreas();
   }
@@ -170,11 +189,11 @@ class Map extends React.Component {
   }
 
   render() {
+    const { areasMode } = this.state;
     return (
       <Segment>
         <div style={{ marginBottom: 15 }}>
-          <Button primary basic onClick={this.showAreas}>Построить ареалы</Button>
-          <Button primary basic onClick={this.hideAreas}>Скрыть ареалы</Button>
+          <Button primary basic onClick={this.toggleAreas}>{areasMode ? 'Выключить ареалы' : 'Включить ареалы'}</Button>
         </div>
         <Wrapper>
           <div
