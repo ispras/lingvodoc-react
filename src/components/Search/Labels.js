@@ -1,20 +1,36 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { pure } from 'recompose';
 import { Label } from 'semantic-ui-react';
 
-const Labels = ({ data, onClick }) =>
-  data.map(label =>
-    <Label
-      key={label.text}
-      as="a"
-      style={{
-        backgroundColor: label.isActive ? label.color : 'grey',
-        color: '#fff',
-      }}
-      onClick={() => onClick(label.id)}
-    >
-      {label.text}
-    </Label>
+const Labels = ({ data, onClick, isActive }) =>
+  (
+    <div className={isActive ? 'searches-lables active' : 'searches-labels'}>
+      {
+        data.map(label =>
+          <Label
+            key={label.text}
+            as="a"
+            style={{
+              backgroundColor: label.isActive ? label.color : 'grey',
+              color: '#fff',
+            }}
+            onClick={() => {
+              if (isActive) {
+                onClick(label.id);
+              }
+            }}
+          >
+            {label.text}
+          </Label>)
+      }
+    </div>
   );
+
+Labels.propTypes = {
+  data: PropTypes.array.isRequired,
+  onClick: PropTypes.func.isRequired,
+  isActive: PropTypes.bool.isRequired,
+};
 
 export default pure(Labels);

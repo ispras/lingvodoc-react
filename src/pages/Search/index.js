@@ -7,14 +7,17 @@ import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import Immutable, { fromJS } from 'immutable';
 import { Container, Dimmer, Loader, Tab, Button, Divider, Menu, Message, Segment } from 'semantic-ui-react';
-import { isEqual } from 'lodash';
+import { isEqual, memoize } from 'lodash';
 import Labels from 'components/Search/Labels';
 import ResultsMap from 'components/Search/ResultsMapMocked';
 import IntersectionControl from 'components/Search/IntersectionControl';
+import AreasMode from 'components/Search/AreasMode';
 import QueryBuilder from 'components/Search/QueryBuilder';
 import LanguageTree from 'components/Search/LanguageTree';
 import BlobsModal from 'components/Search/blobsModal';
 import { buildLanguageTree, buildSearchResultsTree } from 'pages/Search/treeBuilder';
+
+import './style.scss';
 
 import { newSearch, deleteSearch, storeSearchResult } from 'ducks/search';
 
@@ -247,15 +250,18 @@ class SearchTabs extends React.Component {
   constructor(props) {
     super(props);
 
-    this.labels = this.labels.bind(this);
-    this.clickLabel = this.clickLabel.bind(this);
-    this.dictResults = this.dictResults.bind(this);
-
-
     this.state = {
       mapSearches: searchesFromProps(props),
       intersec: 0,
+      areasMode: false,
+      selectedAreaGroups: [],
     };
+
+    this.labels = this.labels.bind(this);
+    this.clickLabel = this.clickLabel.bind(this);
+    this.dictResults = this.dictResults.bind(this);
+    this.onAreasModeChange = this.onAreasModeChange.bind(this);
+    this.onSelectedAreaGroupsChange = this.onSelectedAreaGroupsChange.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -265,13 +271,15 @@ class SearchTabs extends React.Component {
     });
   }
 
-  labels() {
-    return this.state.mapSearches.valueSeq().toJS();
+  onAreasModeChange(ev, { checked }) {
+    this.setState({
+      areasMode: checked,
+    });
   }
 
-  clickLabel(id) {
+  onSelectedAreaGroupsChange(data) {
     this.setState({
-      mapSearches: this.state.mapSearches.updateIn([id, 'isActive'], v => !v),
+      selectedAreaGroups: data,
     });
   }
 
@@ -287,6 +295,20 @@ class SearchTabs extends React.Component {
       });
     });
   }
+
+  clickLabel(id) {
+    this.setState({
+      mapSearches: this.state.mapSearches.updateIn([id, 'isActive'], v => !v),
+    });
+  }
+
+  labels() {
+    return this.state.mapSearches.valueSeq().toJS();
+  }
+
+  getFilteredMapSearches = memoize(
+    (mapSearches) => mapSearches.filter(f => f.get('isActive'))
+  );
 
   render() {
     const { searches, actions } = this.props;
@@ -341,22 +363,42 @@ class SearchTabs extends React.Component {
       },
     ];
 
+    const {
+      areasMode, mapSearches, intersec, selectedAreaGroups,
+    } = this.state;
+    const filteredMapSearches = this.getFilteredMapSearches(mapSearches);
+
     return (
       <Container>
         <Tab menu={{ pointing: true }} panes={panes} />
         <Divider id="mapResults" section />
-        <Labels data={this.labels()} onClick={this.clickLabel} />
+        <Labels
+          data={this.labels()}
+          isActive={!areasMode}
+          onClick={this.clickLabel}
+        />
+        <Segment>
+          <AreasMode
+            isAreasModeOn={areasMode}
+            areasGroups={filteredMapSearches}
+            onAreasModeChange={this.onAreasModeChange}
+            onSelectedAreaGroupsChange={this.onSelectedAreaGroupsChange}
+          />
+        </Segment>
         <Segment>
           <IntersectionControl
-            max={this.state.mapSearches.filter(f => f.get('isActive')).size}
-            value={this.state.intersec}
-            onChange={e => this.setState({ intersec: e.target.value })}
+            max={filteredMapSearches.size}
+            value={intersec}
+            isActive={!areasMode}
+            onChange={e => this.setState({ intersec: parseInt(e.target.value, 10) })}
           />
         </Segment>
         <ResultsMap
           data={this.dictResults()}
-          meta={this.state.mapSearches}
-          intersect={this.state.intersec}
+          meta={mapSearches}
+          intersect={intersec}
+          areasMode={areasMode}
+          areaGroups={selectedAreaGroups}
         />
         <BlobsModal />
       </Container>
