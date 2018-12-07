@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Checkbox } from 'semantic-ui-react';
 import { memoize } from 'lodash';
 
+import { getTranslation } from 'api/i18n';
 import AreaGroupsSelect from './AreaGroupsSelect';
 
 class AreasMode extends PureComponent {
@@ -29,7 +30,7 @@ class AreasMode extends PureComponent {
         <div className="areas-mode__toggle-mode">
           <Checkbox
             toggle
-            label="Режим построения ареалов"
+            label={getTranslation('Areas mode')}
             checked={isAreasModeOn}
             onChange={onAreasModeChange}
           />

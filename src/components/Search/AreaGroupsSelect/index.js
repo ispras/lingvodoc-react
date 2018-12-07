@@ -3,6 +3,7 @@ import { memoize } from 'lodash';
 import PropTypes from 'prop-types';
 import { Accordion, Icon, Checkbox } from 'semantic-ui-react';
 import AreaGroup from './Group';
+import { getTranslation } from 'api/i18n';
 
 class AreaGroupsSelect extends PureComponent {
   constructor() {
@@ -176,7 +177,7 @@ class AreaGroupsSelect extends PureComponent {
       <Accordion className={isActive ? 'area-groups-select active' : 'area-groups-select'}>
         <Accordion.Title active={activeIndex === 0} index={0} onClick={this.handleClick}>
           <Icon name="dropdown" />
-          Выбор пунктов для построения ареалов
+          {getTranslation('Choose groups for areas')}
         </Accordion.Title>
         <Accordion.Content active={activeIndex === 0}>
           {
@@ -184,21 +185,25 @@ class AreaGroupsSelect extends PureComponent {
               <AreaGroup
                 key={group.id}
                 text={group.text}
-                id={group.id}
                 selected={this.isGroupSelected(group)}
+                color={group.color}
                 isActive={isActive}
                 onChange={this.onSelectedChange}
               />)
           }
-          <div className="area-groups-select__group area-groups-select__group_all">
-            <Checkbox
-              toggle
-              checked={selectedAll}
-              label="Select all"
-              onChange={this.onSelectAllChange}
-              disabled={!isActive}
-            />
-          </div>
+          {
+            data.length === 0 ?
+              <strong>{getTranslation('No groups to select')}</strong> :
+              <div className="area-groups-select__group area-groups-select__group_all">
+                <Checkbox
+                  toggle
+                  checked={selectedAll}
+                  label={getTranslation('Select all')}
+                  onChange={this.onSelectAllChange}
+                  disabled={!isActive}
+                />
+              </div>
+          }
         </Accordion.Content>
       </Accordion>
     );

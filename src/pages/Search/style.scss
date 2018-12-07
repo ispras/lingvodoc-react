@@ -24,20 +24,14 @@
   }
 }
 
-.area-groups-select {
-  opacity: 0.6;
-  cursor: default;
-  
-  &.active {
-    opacity: 1;
-    cursor: auto;
-  }
-
+.area-groups-select {  
   &.ui.accordion .title {
+    opacity: 0.6;
     cursor: default;
   }
 
   &.active.ui.accordion .title {
+    opacity: 1;
     cursor: pointer;
   }
 
@@ -51,6 +45,14 @@
 
   &__group_all label {
     font-weight: bold;
+  }
+
+  &__color {
+    display: inline-block;
+    vertical-align: bottom;
+    margin-left: 10px;
+    width: 40px;
+    height: 20px;
   }
 }
 

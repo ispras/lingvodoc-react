@@ -237,21 +237,22 @@ Info.propTypes = {
   searchMetadata: PropTypes.object,
 };
 
-function searchesFromProps({ searches }) {
-  return searches.reduce((ac, s) => ac.set(s.id, Immutable.fromJS({
-    id: s.id,
-    text: `Search ${s.id}`,
-    color: mdColors.get(s.id - 1),
-    isActive: true,
-  })), new Immutable.Map());
-}
+const searchesFromProps = memoize(
+  (searches) => {
+    return searches.reduce((ac, s) => ac.set(s.id, Immutable.fromJS({
+      id: s.id,
+      text: `Search ${s.id}`,
+      color: mdColors.get(s.id - 1),
+      isActive: true,
+    })), new Immutable.Map());
+  });
 
 class SearchTabs extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      mapSearches: searchesFromProps(props),
+      mapSearches: searchesFromProps(props.searches),
       intersec: 0,
       areasMode: false,
       selectedAreaGroups: [],
@@ -259,14 +260,13 @@ class SearchTabs extends React.Component {
 
     this.labels = this.labels.bind(this);
     this.clickLabel = this.clickLabel.bind(this);
-    this.dictResults = this.dictResults.bind(this);
     this.onAreasModeChange = this.onAreasModeChange.bind(this);
     this.onSelectedAreaGroupsChange = this.onSelectedAreaGroupsChange.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
     this.setState({
-      mapSearches: searchesFromProps(nextProps),
+      mapSearches: searchesFromProps(nextProps.searches),
       intersec: 0,
     });
   }
@@ -283,9 +283,11 @@ class SearchTabs extends React.Component {
     });
   }
 
-  dictResults() {
+  getFilteredMapSearches = memoize(mapSearches => mapSearches.filter(f => f.get('isActive')));
+
+  getDictResults = memoize((searches) => {
     return new Immutable.Map().withMutations((map) => {
-      this.props.searches.forEach((search) => {
+      searches.forEach((search) => {
         if (search.results.dictionaries) {
           const filteredDicts = search.results.dictionaries.filter(d => d.additional_metadata.location);
 
@@ -294,6 +296,10 @@ class SearchTabs extends React.Component {
         }
       });
     });
+  });
+
+  labels() {
+    return this.state.mapSearches.valueSeq().toJS();
   }
 
   clickLabel(id) {
@@ -302,13 +308,18 @@ class SearchTabs extends React.Component {
     });
   }
 
-  labels() {
-    return this.state.mapSearches.valueSeq().toJS();
-  }
+  // dictResults() {
+  //   return new Immutable.Map().withMutations((map) => {
+  //     this.props.searches.forEach((search) => {
+  //       if (search.results.dictionaries) {
+  //         const filteredDicts = search.results.dictionaries.filter(d => d.additional_metadata.location);
 
-  getFilteredMapSearches = memoize(
-    (mapSearches) => mapSearches.filter(f => f.get('isActive'))
-  );
+  //         filteredDicts.forEach(dict =>
+  //           map.update(Immutable.fromJS(dict), new Immutable.Set(), v => v.add(search.id)));
+  //       }
+  //     });
+  //   });
+  // }
 
   render() {
     const { searches, actions } = this.props;
@@ -394,8 +405,8 @@ class SearchTabs extends React.Component {
           />
         </Segment>
         <ResultsMap
-          data={this.dictResults()}
-          meta={mapSearches}
+          data={this.getDictResults(this.props.searches)}
+          meta={filteredMapSearches}
           intersect={intersec}
           areasMode={areasMode}
           areaGroups={selectedAreaGroups}
