@@ -16,12 +16,12 @@ function wrapDivIcon(func) {
   return options => L.divIcon(func(options));
 }
 
-function getRectangles(width, height, markerX, markerY) {
+function getRectangles(width, height, pointX, pointY) {
   return {
     width,
     height,
-    x: markerX,
-    y: markerY,
+    x: pointX,
+    y: pointY,
   };
 }
 
@@ -42,14 +42,17 @@ function getAreaOutline(rectangles) {
   return outline;
 }
 
-class Map {
+class MapAreas {
   constructor(mountPoint, options) {
     this.options = options;
     this.map = initMap(mountPoint);
-    this.markersLeafletElements = {};
+    this.markersLeafletElements = new Map();
     this.iconFunc = wrapDivIcon(options.icon);
-    this.markerGroups = [];
+
+    this.points = [];
     this.areas = [];
+    this.areasMode = false;
+
     this.areasLayer = null;
     this.areasPathsLeafletElements = {};
 
@@ -57,15 +60,32 @@ class Map {
     this.onZoomEndEventHandler = this.onZoomEndEventHandler.bind(this);
   }
 
-  load(markerGroups, areas) {
+  load(points, areas, areasMode) {
     if (!this.areasLayer && areas) {
       this.createAreasLayer();
     }
 
-    // data.forEach(point => this.addPoint(point));
-    this.updateMarkers(markerGroups);
-    this.renderMarkers();
-    this.updateAreas(areas);
+    if (!this.areasMode && areasMode) {
+      this.removeMarkersEventHandlers();
+    }
+
+    this.areasMode = areasMode;
+
+    if (points !== this.points) {
+      this.resetMarkers();
+      this.resetAreas();
+
+      this.updatePoints(points);
+      this.updateAreas(areas);
+
+      this.renderMarkers();
+      this.showAreas();
+    } else if (areas !== this.areas) {
+      this.resetAreas();
+
+      this.updateAreas(areas);
+      this.showAreas();
+    }
   }
 
   createAreasLayer() {
@@ -79,24 +99,36 @@ class Map {
     this.map.on('zoomend', this.onZoomEndEventHandler);
   }
 
-  updateMarkers(markerGroups) {
-    if (!markerGroups) {
+  setMarkerEventHandlers(markerData) {
+    const marker = this.markersLeafletElements.get(markerData);
+
+    if (marker) {
+      marker
+        // .on('contextmenu', (ev) => {
+        //   L
+        //     .popup()
+        //     .setLatLng(ev.latlng)
+        //     .setContent('<pre>Hello</pre>')
+        //     .addTo(this.map)
+        //     .openOn(this.map);
+        // })
+        .on('contextmenu', () => this.options.onPointClick(markerData))
+        .on('click', () => this.options.onPointClick(markerData));
+    }
+  }
+
+  updatePoints(points) {
+    if (!points) {
       return;
     }
 
-    this.markerGroups = markerGroups;
+    this.points = points;
   }
 
   renderMarkers() {
-    this.markerGroups.forEach((group) => {
-      group.markers.forEach((marker) => {
-        this.addMarkerToMap({
-          ...marker,
-          colors: group.colors,
-          groupName: group.name,
-        });
-      });
-    });
+    const { points } = this;
+
+    points.forEach(point => this.addMarkerToMap(point));
   }
 
   updateAreas(areas) {
@@ -109,62 +141,35 @@ class Map {
 
   renderAreas() {
     this.areas.forEach((areaItem) => {
-      const markerGroup = this.getMarkerGroup(areaItem);
-      if (!markerGroup) {
-        return;
+      const areaPoints = this.getAreaPoints(areaItem);
+      const { id: areaId, color } = areaItem;
+
+      if (!this.isAreaSet(areaId)) {
+        this.createAreaPath(areaId);
       }
 
-      const { name: markerGroupName } = markerGroup;
-
-      if (!this.isAreaSet(markerGroupName)) {
-        this.createAreaPath(markerGroupName);
-      }
-
-      this.updateArea(markerGroup);
+      this.updateArea(areaPoints, areaId, color);
     });
   }
 
   addMarkerToMap(markerData) {
-    const { coords, groupName } = markerData;
+    const { coords } = markerData;
     const markerLeafletElement = L.marker(coords, { icon: this.iconFunc(markerData) })
-      .addTo(this.map)
-      .on('contextmenu', (ev) => {
-        L
-          .popup()
-          .setLatLng(ev.latlng)
-          .setContent('<pre>Hello</pre>')
-          .addTo(this.map)
-          .openOn(this.map);
-      })
-      // .on('contextmenu', () => this.options.onPointClick(markerData))
-      .on('click', () => this.options.onPointClick(markerData));
+      .addTo(this.map);
 
-    this.addMarkerLeafletElement(markerLeafletElement, groupName);
+    this.addMarkerLeafletElement(markerData, markerLeafletElement);
+
+    if (!this.areasMode) {
+      this.setMarkerEventHandlers(markerData);
+    }
   }
 
-  addMarkerLeafletElement(markerLeafletElement, groupName) {
-    if (!this.markersLeafletElements[groupName]) {
-      this.markersLeafletElements[groupName] = [];
-    }
-
-    this.markersLeafletElements[groupName].push(markerLeafletElement);
+  addMarkerLeafletElement(markerData, markerLeafletElement) {
+    this.markersLeafletElements.set(markerData, markerLeafletElement);
   }
 
-  getMarkerGroup(markerGroupName) {
-    const { markerGroups } = this;
-    let result = null;
-
-    if (!markerGroups) {
-      return result;
-    }
-
-    markerGroups.forEach((group) => {
-      if (group.name === markerGroupName) {
-        result = group;
-      }
-    });
-
-    return result;
+  getAreaPoints({ color }) {
+    return this.points.filter(point => point.colors.indexOf(color) !== -1);
   }
 
   isAreaSet(areaName) {
@@ -173,73 +178,77 @@ class Map {
     return !!areaPath;
   }
 
-  getAreaPath(markerGroupName) {
-    return this.areasPathsLeafletElements[markerGroupName];
+  getAreaPath(areaId) {
+    return this.areasPathsLeafletElements[areaId];
   }
 
-  createAreaPath(markerGroupName) {
+  createAreaPath(areaId) {
     const areaPath = L.SVG.create('path');
-    this.areasPathsLeafletElements[markerGroupName] = areaPath;
+    this.areasPathsLeafletElements[areaId] = areaPath;
 
     this.areasLayer._container.appendChild(areaPath);
 
     return areaPath;
   }
 
-  updateArea(markerGroup) {
-    const { markers, colors, name } = markerGroup;
-    const color = colors[colors.length - 1];
+  updateArea(areaPoints, areaId, color) {
     const markerWidth = 24;
     const markerHeight = 24;
-    const markersRectangles = [];
+    const pointsRectangles = [];
 
-    markers.forEach((markerItem) => {
-      const { coords } = markerItem;
+    areaPoints.forEach((point) => {
+      const { coords } = point;
       if (!coords) {
         return;
       }
 
-      const markerInPixel = this.latLngToLayerPoint(coords);
-      markersRectangles.push(getRectangles(markerWidth, markerHeight, markerInPixel.x, markerInPixel.y));
+      const pointInPixel = this.latLngToLayerPoint(coords);
+      pointsRectangles.push(getRectangles(markerWidth, markerHeight, pointInPixel.x, pointInPixel.y));
     });
 
-    const outline = getAreaOutline(markersRectangles);
-    this.updateAreaPath(name, outline, color);
+    const outline = getAreaOutline(pointsRectangles);
+    this.updateAreaPath(areaId, outline, color);
   }
 
   latLngToLayerPoint(coords) {
     return this.map.latLngToLayerPoint(coords);
   }
 
-  updateAreaPath(markerGroupName, outline, color) {
-    const path = this.getAreaPath(markerGroupName);
+  updateAreaPath(areaId, outline, color) {
+    const path = this.getAreaPath(areaId);
 
-    path.setAttribute('d', outline);
     path.setAttribute('fill', color);
     path.setAttribute('opacity', 0.5);
     path.setAttribute('stroke', 'black');
+    path.setAttribute('d', outline);
 
-    console.log('--- areas ---', this.areas);
-    console.log('--- areasLayer ---', this.areasLayer);
-    console.log('--- areasPaths ---', this.areasPathsLeafletElements);
-    console.log('--- markersLeafletElements ---', this.markersLeafletElements);
+    // console.log('--- areas ---', this.areas);
+    // console.log('--- areasLayer ---', this.areasLayer);
+    // console.log('--- areasPaths ---', this.areasPathsLeafletElements);
+    // console.log('--- markersLeafletElements ---', this.markersLeafletElements);
   }
 
   reset() {
-    // this.points.forEach(point => this.map.removeLayer(point));
-    // this.points = [];
+    this.resetMarkers();
+    this.resetAreas();
+  }
+
+  resetMarkers() {
+    this.removeMarkersEventHandlers();
+
+    for (let marker of this.markersLeafletElements.values()) {
+      this.map.removeLayer(marker);
+    }
+
+    this.markersLeafletElements.clear();
+
+    this.points = [];
+  }
+
+  resetAreas() {
     this.areas = [];
-
-    Object.values(this.markersLeafletElements)
-      .forEach((markersLeafletElements) => {
-        markersLeafletElements.forEach(marker => this.map.removeLayer(marker));
-      });
-    this.markersLeafletElements = {};
-
-    this.map.removeLayer(this.areasLayer);
     this.removeAreasFromMap();
-    this.areasLayer = null;
-    this.markerGroups = null;
+
     this.removeAreasEventHandlers();
   }
 
@@ -257,6 +266,13 @@ class Map {
     this.map.on('zoomend', () => {});
   }
 
+  removeMarkersEventHandlers() {
+    for (let marker of this.markersLeafletElements.values()) {
+      marker.on('click', () => {});
+      marker.on('contextmenu', () => {});
+    }
+  }
+
   onZoomStartEventHandler() {
     this.hideAreas();
   }
@@ -271,14 +287,16 @@ class Map {
   }
 
   showAreas() {
-    this.renderAreas();
-    this.setAreasEventHandlers();
+    if (this.areas && this.areas.length > 0) {
+      this.renderAreas();
+      this.setAreasEventHandlers();
+    }
   }
 
-  // destroy() {
-  //   this.reset();
-  //   this.map.remove();
-  // }
+  destroy() {
+    this.reset();
+    this.map.remove();
+  }
 }
 
-export default Map;
+export default MapAreas;

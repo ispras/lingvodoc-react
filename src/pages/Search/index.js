@@ -7,14 +7,17 @@ import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import Immutable, { fromJS } from 'immutable';
 import { Container, Dimmer, Loader, Tab, Button, Divider, Menu, Message, Segment } from 'semantic-ui-react';
-import { isEqual } from 'lodash';
+import { isEqual, memoize } from 'lodash';
 import Labels from 'components/Search/Labels';
 import ResultsMap from 'components/Search/ResultsMapMocked';
 import IntersectionControl from 'components/Search/IntersectionControl';
+import AreasMode from 'components/Search/AreasMode';
 import QueryBuilder from 'components/Search/QueryBuilder';
 import LanguageTree from 'components/Search/LanguageTree';
 import BlobsModal from 'components/Search/blobsModal';
 import { buildLanguageTree, buildSearchResultsTree } from 'pages/Search/treeBuilder';
+
+import './style.scss';
 
 import { newSearch, deleteSearch, storeSearchResult } from 'ducks/search';
 
@@ -236,36 +239,66 @@ Info.propTypes = {
   searchMetadata: PropTypes.object,
 };
 
-function searchesFromProps({ searches }) {
-  return searches.reduce((ac, s) => ac.set(s.id, Immutable.fromJS({
-    id: s.id,
-    text: `Search ${s.id}`,
-    color: mdColors.get(s.id - 1),
-    isActive: true,
-  })), new Immutable.Map());
-}
+const searchesFromProps = memoize(
+  (searches) => {
+    return searches.reduce((ac, s) => ac.set(s.id, Immutable.fromJS({
+      id: s.id,
+      text: `Search ${s.id}`,
+      color: mdColors.get(s.id - 1),
+      isActive: true,
+    })), new Immutable.Map());
+  });
 
 class SearchTabs extends React.Component {
   constructor(props) {
     super(props);
 
+    this.state = {
+      mapSearches: searchesFromProps(props.searches),
+      intersec: 0,
+      areasMode: false,
+      selectedAreaGroups: [],
+    };
+
     this.labels = this.labels.bind(this);
     this.clickLabel = this.clickLabel.bind(this);
-    this.dictResults = this.dictResults.bind(this);
-
-
-    this.state = {
-      mapSearches: searchesFromProps(props),
-      intersec: 0,
-    };
+    this.onAreasModeChange = this.onAreasModeChange.bind(this);
+    this.onSelectedAreaGroupsChange = this.onSelectedAreaGroupsChange.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
     this.setState({
-      mapSearches: searchesFromProps(nextProps),
+      mapSearches: searchesFromProps(nextProps.searches),
       intersec: 0,
     });
   }
+
+  onAreasModeChange(ev, { checked }) {
+    this.setState({
+      areasMode: checked,
+    });
+  }
+
+  onSelectedAreaGroupsChange(data) {
+    this.setState({
+      selectedAreaGroups: data,
+    });
+  }
+
+  getFilteredMapSearches = memoize(mapSearches => mapSearches.filter(f => f.get('isActive')));
+
+  getDictResults = memoize((searches) => {
+    return new Immutable.Map().withMutations((map) => {
+      searches.forEach((search) => {
+        if (search.results.dictionaries) {
+          const filteredDicts = search.results.dictionaries.filter(d => d.additional_metadata.location);
+
+          filteredDicts.forEach(dict =>
+            map.update(Immutable.fromJS(dict), new Immutable.Set(), v => v.add(search.id)));
+        }
+      });
+    });
+  });
 
   labels() {
     return this.state.mapSearches.valueSeq().toJS();
@@ -277,18 +310,18 @@ class SearchTabs extends React.Component {
     });
   }
 
-  dictResults() {
-    return new Immutable.Map().withMutations((map) => {
-      this.props.searches.forEach((search) => {
-        if (search.results.dictionaries) {
-          const filteredDicts = search.results.dictionaries.filter(d => d.additional_metadata.location);
+  // dictResults() {
+  //   return new Immutable.Map().withMutations((map) => {
+  //     this.props.searches.forEach((search) => {
+  //       if (search.results.dictionaries) {
+  //         const filteredDicts = search.results.dictionaries.filter(d => d.additional_metadata.location);
 
-          filteredDicts.forEach(dict =>
-            map.update(Immutable.fromJS(dict), new Immutable.Set(), v => v.add(search.id)));
-        }
-      });
-    });
-  }
+  //         filteredDicts.forEach(dict =>
+  //           map.update(Immutable.fromJS(dict), new Immutable.Set(), v => v.add(search.id)));
+  //       }
+  //     });
+  //   });
+  // }
 
   render() {
     const { searches, actions } = this.props;
@@ -343,22 +376,42 @@ class SearchTabs extends React.Component {
       },
     ];
 
+    const {
+      areasMode, mapSearches, intersec, selectedAreaGroups,
+    } = this.state;
+    const filteredMapSearches = this.getFilteredMapSearches(mapSearches);
+
     return (
       <Container>
         <Tab menu={{ pointing: true }} panes={panes} />
         <Divider id="mapResults" section />
-        <Labels data={this.labels()} onClick={this.clickLabel} />
+        <Labels
+          data={this.labels()}
+          isActive={!areasMode}
+          onClick={this.clickLabel}
+        />
+        <Segment>
+          <AreasMode
+            isAreasModeOn={areasMode}
+            areasGroups={filteredMapSearches}
+            onAreasModeChange={this.onAreasModeChange}
+            onSelectedAreaGroupsChange={this.onSelectedAreaGroupsChange}
+          />
+        </Segment>
         <Segment>
           <IntersectionControl
-            max={this.state.mapSearches.filter(f => f.get('isActive')).size}
-            value={this.state.intersec}
-            onChange={e => this.setState({ intersec: e.target.value })}
+            max={filteredMapSearches.size}
+            value={intersec}
+            isActive={!areasMode}
+            onChange={e => this.setState({ intersec: parseInt(e.target.value, 10) })}
           />
         </Segment>
         <ResultsMap
-          data={this.dictResults()}
-          meta={this.state.mapSearches}
-          intersect={this.state.intersec}
+          data={this.getDictResults(this.props.searches)}
+          meta={filteredMapSearches}
+          intersect={intersec}
+          areasMode={areasMode}
+          areaGroups={selectedAreaGroups}
         />
         <BlobsModal />
       </Container>

@@ -1,9 +1,10 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import styled from 'styled-components';
-import { Button, Segment } from 'semantic-ui-react';
+import { Segment } from 'semantic-ui-react';
 
 import Leaflet from 'components/Map/MapAreas';
 import { openBlobsModal } from 'ducks/blobs';
@@ -45,101 +46,10 @@ function pointIcon({ colors }) {
   };
 }
 
-// function extractPoints({ data, meta, intersect }) {
-//   const labels = meta
-//     .filter(v => v.get('isActive'))
-//     .keySeq()
-//     .toSet();
-
-//   return data
-//     .map(searches => searches.intersect(labels))
-//     .filter(searches => searches.size > intersect)
-//     .map((searches, dictionary) => {
-//       const location = dictionary.getIn(['additional_metadata', 'location']);
-//       debugger;
-//       return {
-//         coords: [location.get('lat'), location.get('lng')],
-//         colors: searches
-//           .map(id => meta.getIn([id, 'color']))
-//           .sort()
-//           .toJS(),
-//         values: searches.toJS(),
-//         dictionary,
-//       };
-//     })
-//     .valueSeq()
-//     .toJS();
-// }
-
-const data = [
-  {
-    name: 'Search 1',
-    colors: ['#5E35B1'],
-    markers: [
-      {
-        coords: [51.34605424944661, 93.7847900390625],
-      },
-      {
-        coords: [70.7403390289637, 136.2054491043091],
-      },
-      {
-        coords: [62.8818649, 117.4730521],
-      },
-    ],
-  },
-  {
-    name: 'Search 2',
-    colors: ['#C0CA33'],
-    markers: [
-      {
-        coords: [62.18657453545535, 133.22828292846683],
-      },
-      {
-        coords: [62.18585366149508, 133.2262229919434],
-      },
-      {
-        coords: [63.740255621885964, 121.61834716389423],
-      },
-    ],
-  },
-];
-
-const areas = ['Search 1', 'Search 2'];
-
-// const data2 = [
-//   {
-//     name: 'Search 2',
-//     colors: ['#C0CA33'],
-//     markers: [
-//       {
-//         coords: [51.34605424944661, 93.7847900390625],
-//       },
-//       {
-//         coords: [70.7403390289637, 136.2054491043091],
-//       },
-//       {
-//         coords: [62.8818649, 117.4730521],
-//       },
-//       {
-//         coords: [63.740255621885964, 121.61834716389423],
-//       },
-//     ],
-//   },
-// ];
-
-// const areas2 = ['Search 2'];
-
-class Map extends React.Component {
+class Map extends React.PureComponent {
   constructor(props) {
     super(props);
     this.onPointClick = this.onPointClick.bind(this);
-    this.showAreas = this.showAreas.bind(this);
-    this.hideAreas = this.hideAreas.bind(this);
-    this.toggleAreas = this.toggleAreas.bind(this);
-
-    this.state = {
-      areasMode: false,
-    };
   }
 
   componentDidMount() {
@@ -147,17 +57,33 @@ class Map extends React.Component {
       icon: pointIcon,
       onPointClick: this.onPointClick,
     });
-    // this.leaflet.load(extractPoints(this.props));
-    this.leaflet.load(data, areas);
+
+    const {
+      data, meta, intersect, areaGroups, areasMode,
+    } = this.props;
+
+    const points = this.getExtractedPoints(data, meta, intersect);
+    let resultAreaGroups = areaGroups;
+
+    if (!areasMode) {
+      resultAreaGroups = [];
+    }
+
+    this.leaflet.load(points, resultAreaGroups, areasMode);
   }
 
-  // componentWillReceiveProps(nextProps) {
-  //   this.leaflet.reset();
-  //   this.leaflet.load(extractPoints(nextProps));
-  // }
+  componentWillReceiveProps(nextProps) {
+    const {
+      data, meta, intersect, areaGroups, areasMode,
+    } = nextProps;
+    const points = this.getExtractedPoints(data, meta, intersect);
+    let resultAreaGroups = areaGroups;
 
-  shouldComponentUpdate() {
-    return true;
+    if (!areasMode) {
+      resultAreaGroups = [];
+    }
+
+    this.leaflet.load(points, resultAreaGroups, areasMode);
   }
 
   onPointClick({ dictionary }) {
@@ -166,35 +92,34 @@ class Map extends React.Component {
     actions.openBlobsModal(dictionary.toJS(), blobs ? blobs.toJS() : []);
   }
 
-  toggleAreas() {
-    const { areasMode } = this.state;
+  getExtractedPoints = (data, meta, intersect) => {
+    const labels = meta
+      .filter(v => v.get('isActive'))
+      .keySeq()
+      .toSet();
 
-    if (areasMode) {
-      this.hideAreas();
-    } else {
-      this.showAreas();
-    }
-
-    this.setState({
-      areasMode: !areasMode,
-    });
-  }
-
-  showAreas() {
-    this.leaflet.showAreas();
-  }
-
-  hideAreas() {
-    this.leaflet.hideAreas();
-  }
+    return data
+      .map(searches => searches.intersect(labels))
+      .filter(searches => searches.size > intersect)
+      .map((searches, dictionary) => {
+        const location = dictionary.getIn(['additional_metadata', 'location']);
+        return {
+          coords: [parseFloat(location.get('lat')), parseFloat(location.get('lng'))],
+          colors: searches
+            .map(id => meta.getIn([id, 'color']))
+            .sort()
+            .toJS(),
+          values: searches.toJS(),
+          dictionary,
+        };
+      })
+      .valueSeq()
+      .toJS();
+  };
 
   render() {
-    const { areasMode } = this.state;
     return (
       <Segment>
-        <div style={{ marginBottom: 15 }}>
-          <Button primary basic onClick={this.toggleAreas}>{areasMode ? 'Выключить ареалы' : 'Включить ареалы'}</Button>
-        </div>
         <Wrapper>
           <div
             ref={(ref) => {
@@ -207,6 +132,15 @@ class Map extends React.Component {
     );
   }
 }
+
+Map.propTypes = {
+  data: PropTypes.object.isRequired,
+  meta: PropTypes.object.isRequired,
+  intersect: PropTypes.number.isRequired,
+  areasMode: PropTypes.bool.isRequired,
+  areaGroups: PropTypes.array.isRequired,
+  actions: PropTypes.object.isRequired,
+};
 
 export default compose(connect(null, dispatch => ({
   actions: bindActionCreators({ openBlobsModal }, dispatch),
