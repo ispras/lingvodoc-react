@@ -161,47 +161,54 @@ class MapAreas {
 
   addMarkerToMap(markerData) {
     const { coords } = markerData;
-    const markerLeafletElement = L.marker(coords, { 
-      icon: this.iconFunc(markerData),
-      contextmenu: true,
-      contextmenuItems: [{
-        text: 'Отключить маркер',
-        callback: () => { console.log('Отключение маркера!'); },
-      }, {
-        text: 'Отключить все маркеры данной группы',
-        callback: () => { console.log('Отключение всех маркеров данной группы!'); },
-      }, {
-        separator: true,
-      }, {
-        text: 'Добавить маркер в группу',
+    let markerLeafletElement = null;
+
+    if (this.areasMode) {
+      markerLeafletElement = L.marker(coords, { icon: this.iconFunc(markerData) })
+        .addTo(this.map);
+    } else {
+      markerLeafletElement = L.marker(coords, { 
+        icon: this.iconFunc(markerData),
+        contextmenu: true,
         contextmenuItems: [{
-          text: 'Search 1',
-          callback: () => { console.log('Add marker to the Search 1'); },
+          text: 'Отключить маркер',
+          callback: () => { console.log('Отключение маркера!'); },
         }, {
-          text: 'Search 2',
-          callback: () => { console.log('Add marker to the Search 2'); },
-        }],
-      }, {
-        text: 'Добавить все маркеры данной группы в группу',
-        contextmenuItems: [{
-          text: 'Search 1',
-          callback: () => { console.log('Add markers to the Search 1'); },
+          text: 'Отключить все маркеры данной группы',
+          callback: () => { console.log('Отключение всех маркеров данной группы!'); },
         }, {
-          text: 'Search 2',
-          callback: () => { console.log('Add markers to the Search 2'); },
-        }],
-      }, {
-        text: 'Добавить все маркеры, не вошедшие в результат поиска на карту в группу',
-        contextmenuItems: [{
-          text: 'Search 1',
-          callback: () => { console.log('Add markers to the Search 1'); },
+          separator: true,
         }, {
-          text: 'Search 2',
-          callback: () => { console.log('Add markers to the Search 2'); },
+          text: 'Добавить маркер в группу',
+          contextmenuItems: [{
+            text: 'Search 1',
+            callback: () => { console.log('Add marker to the Search 1'); },
+          }, {
+            text: 'Search 2',
+            callback: () => { console.log('Add marker to the Search 2'); },
+          }],
+        }, {
+          text: 'Добавить все маркеры данной группы в группу',
+          contextmenuItems: [{
+            text: 'Search 1',
+            callback: () => { console.log('Add markers to the Search 1'); },
+          }, {
+            text: 'Search 2',
+            callback: () => { console.log('Add markers to the Search 2'); },
+          }],
+        }, {
+          text: 'Добавить все маркеры, не вошедшие в результат поиска на карту в группу',
+          contextmenuItems: [{
+            text: 'Search 1',
+            callback: () => { console.log('Add markers to the Search 1'); },
+          }, {
+            text: 'Search 2',
+            callback: () => { console.log('Add markers to the Search 2'); },
+          }],
         }],
-      }],
-    })
-      .addTo(this.map);
+      })
+        .addTo(this.map);
+    }
 
     this.addMarkerLeafletElement(markerData, markerLeafletElement);
 
@@ -315,7 +322,6 @@ class MapAreas {
   removeMarkersEventHandlers() {
     for (let marker of this.markersLeafletElements.values()) {
       marker.on('click', () => {});
-      // marker.on('contextmenu', () => {});
     }
   }
 
