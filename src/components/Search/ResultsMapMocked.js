@@ -63,27 +63,30 @@ class Map extends React.PureComponent {
     }, markersHandlers);
 
     const points = this.getExtractedPoints(data, meta, intersect);
+    const markersGroups = meta;
     let resultAreaGroups = areaGroups;
 
     if (!areasMode) {
       resultAreaGroups = [];
     }
 
-    this.leaflet.load(points, resultAreaGroups, areasMode);
+    this.leaflet.load(points, resultAreaGroups, areasMode, markersGroups);
   }
 
   componentWillReceiveProps(nextProps) {
     const {
       data, meta, intersect, areaGroups, areasMode,
     } = nextProps;
+
     const points = this.getExtractedPoints(data, meta, intersect);
+    const markersGroups = meta;
     let resultAreaGroups = areaGroups;
 
     if (!areasMode) {
       resultAreaGroups = [];
     }
 
-    this.leaflet.load(points, resultAreaGroups, areasMode);
+    this.leaflet.load(points, resultAreaGroups, areasMode, markersGroups);
   }
 
   onPointClick({ dictionary }) {

@@ -271,6 +271,8 @@ class SearchTabs extends React.Component {
     this.dictsHandlers = {
       deleteDictFromSearches: this.deleteDictFromSearches.bind(this),
       deleteAllDictsOfGroups: this.deleteAllDictsOfGroups.bind(this),
+      addMarkerToGroup: this.addMarkerToGroup.bind(this),
+      addAllMarkersToGroup: this.addAllMarkersToGroup.bind(this),
     };
 
     this.labels = this.labels.bind(this);
@@ -299,12 +301,14 @@ class SearchTabs extends React.Component {
     });
   }
 
-  getFilteredMapSearches = memoize((mapSearches, dictsResults) => {
+  getFilteredMapSearchesFromCache = memoize(this.getFilteredMapSearches);
+
+  getFilteredMapSearches(mapSearches, dictsResults) {
     return mapSearches
       .filter((f) => {
         return f.get('isActive') && this.constructor.groupHasDicts(f.get('id'), dictsResults);
       });
-  });
+  }
 
   getDictResults = memoize((searches) => {
     return new Immutable.Map().withMutations((map) => {
@@ -349,6 +353,29 @@ class SearchTabs extends React.Component {
         groupsIds.forEach((id) => {
           newGroups = newGroups.delete(id);
         });
+
+        return newGroups;
+      });
+
+    this.setState({
+      dictsResults: newDictsResults,
+    });
+  }
+
+  addMarkerToGroup(mapMarkerData, group) {
+    this.setState({
+      dictsResults: this.state.dictsResults.update(mapMarkerData.dictionary, groups => groups.add(group.id)),
+    });
+  }
+
+  addAllMarkersToGroup(mapMarkerData, group) {
+    const currentGroups = mapMarkerData.values;
+    const newDictsResults = this.state.dictsResults
+      .map((groups) => {
+        let newGroups = groups;
+        if (groups.intersect(currentGroups).size > 0) {
+          newGroups = newGroups.add(group.id);
+        }
 
         return newGroups;
       });
@@ -414,8 +441,8 @@ class SearchTabs extends React.Component {
     const {
       areasMode, mapSearches, intersec, selectedAreaGroups, dictsResults,
     } = this.state;
-    const filteredMapSearches = this.getFilteredMapSearches(mapSearches, dictsResults);
-
+    const filteredMapSearchesFromCache = this.getFilteredMapSearchesFromCache(mapSearches, dictsResults);
+    const searchGroups = this.getFilteredMapSearches(mapSearches, dictsResults);
     return (
       <Container>
         <Tab menu={{ pointing: true }} panes={panes} />
@@ -428,14 +455,14 @@ class SearchTabs extends React.Component {
         <Segment>
           <AreasMode
             isAreasModeOn={areasMode}
-            areasGroups={filteredMapSearches}
+            areasGroups={filteredMapSearchesFromCache}
             onAreasModeChange={this.onAreasModeChange}
             onSelectedAreaGroupsChange={this.onSelectedAreaGroupsChange}
           />
         </Segment>
         <Segment>
           <IntersectionControl
-            max={filteredMapSearches.size}
+            max={filteredMapSearchesFromCache.size}
             value={intersec}
             isActive={!areasMode}
             onChange={e => this.setState({ intersec: parseInt(e.target.value, 10) })}
@@ -443,7 +470,7 @@ class SearchTabs extends React.Component {
         </Segment>
         <ResultsMap
           data={dictsResults}
-          meta={filteredMapSearches}
+          meta={searchGroups}
           intersect={intersec}
           areasMode={areasMode}
           areaGroups={selectedAreaGroups}

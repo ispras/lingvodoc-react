@@ -69,7 +69,7 @@ class MapAreas {
     this.onZoomEndEventHandler = this.onZoomEndEventHandler.bind(this);
   }
 
-  load(points, areas, areasMode) {
+  load(points, areas, areasMode, markersGroups) {
     if (!this.areasLayer && areas) {
       this.createAreasLayer();
     }
@@ -79,6 +79,7 @@ class MapAreas {
     }
 
     this.areasMode = areasMode;
+    this.markersGroups = markersGroups.toJS();
 
     if (points !== this.points) {
       this.resetMarkers();
@@ -161,6 +162,31 @@ class MapAreas {
     });
   }
 
+  getGroupItemsAddMarkerToGroup(markerData) {
+    const groups = Object.values(this.markersGroups)
+      .filter(group => markerData.values.indexOf(group.id) === -1);
+
+    return groups.map((group) => {
+      return {
+        text: group.text,
+        callback: () => { this.markersHandlers.addMarkerToGroup(markerData, group); },
+      };
+    });
+  }
+
+  getGroupItemsAddAllMarkersToGroup(markerData) {
+    // const groups = Object.values(this.markersGroups)
+    //   .filter(group => markerData.values.indexOf(group.id) === -1);
+    const groups = Object.values(this.markersGroups);
+
+    return groups.map((group) => {
+      return {
+        text: group.text,
+        callback: () => { this.markersHandlers.addAllMarkersToGroup(markerData, group); },
+      };
+    });
+  }
+
   addMarkerToMap(markerData) {
     const { coords } = markerData;
     let markerLeafletElement = null;
@@ -177,30 +203,19 @@ class MapAreas {
           callback: () => { this.markersHandlers.deleteDictFromSearches(markerData); },
         },
         {
-          text: 'Отключить все маркеры данной группы',
+          text: 'Отключить все маркеры групп, к которым относится данный маркер',
           callback: () => { this.markersHandlers.deleteAllDictsOfGroups(markerData.values); },
-        }
+        }, {
+          separator: true,
+        }, {
+          text: 'Добавить маркер в группу',
+          contextmenuItems: this.getGroupItemsAddMarkerToGroup(markerData),
+        },
+        {
+          text: 'Добавить все маркеры групп, к которым относится данный маркер, в группу',
+          contextmenuItems: this.getGroupItemsAddAllMarkersToGroup(markerData),
+        },
         // {
-        //   separator: true,
-        // }, {
-        //   text: 'Добавить маркер в группу',
-        //   contextmenuItems: [{
-        //     text: 'Search 1',
-        //     callback: () => { console.log('Add marker to the Search 1'); },
-        //   }, {
-        //     text: 'Search 2',
-        //     callback: () => { console.log('Add marker to the Search 2'); },
-        //   }],
-        // }, {
-        //   text: 'Добавить все маркеры данной группы в группу',
-        //   contextmenuItems: [{
-        //     text: 'Search 1',
-        //     callback: () => { console.log('Add markers to the Search 1'); },
-        //   }, {
-        //     text: 'Search 2',
-        //     callback: () => { console.log('Add markers to the Search 2'); },
-        //   }],
-        // }, {
         //   text: 'Добавить все маркеры, не вошедшие в результат поиска на карту в группу',
         //   contextmenuItems: [{
         //     text: 'Search 1',
