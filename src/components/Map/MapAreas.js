@@ -48,11 +48,13 @@ function getAreaOutline(rectangles) {
 }
 
 class MapAreas {
-  constructor(mountPoint, options) {
+  constructor(mountPoint, options, markersHandlers) {
     initializeContextMenu(L);
 
     this.options = options;
     this.map = initMap(mountPoint);
+    this.markersHandlers = markersHandlers;
+
     this.markersLeafletElements = new Map();
     this.iconFunc = wrapDivIcon(options.icon);
 
@@ -172,40 +174,43 @@ class MapAreas {
         contextmenu: true,
         contextmenuItems: [{
           text: 'Отключить маркер',
-          callback: () => { console.log('Отключение маркера!'); },
-        }, {
+          callback: () => { this.markersHandlers.deleteDictFromSearches(markerData); },
+        },
+        {
           text: 'Отключить все маркеры данной группы',
-          callback: () => { console.log('Отключение всех маркеров данной группы!'); },
-        }, {
-          separator: true,
-        }, {
-          text: 'Добавить маркер в группу',
-          contextmenuItems: [{
-            text: 'Search 1',
-            callback: () => { console.log('Add marker to the Search 1'); },
-          }, {
-            text: 'Search 2',
-            callback: () => { console.log('Add marker to the Search 2'); },
-          }],
-        }, {
-          text: 'Добавить все маркеры данной группы в группу',
-          contextmenuItems: [{
-            text: 'Search 1',
-            callback: () => { console.log('Add markers to the Search 1'); },
-          }, {
-            text: 'Search 2',
-            callback: () => { console.log('Add markers to the Search 2'); },
-          }],
-        }, {
-          text: 'Добавить все маркеры, не вошедшие в результат поиска на карту в группу',
-          contextmenuItems: [{
-            text: 'Search 1',
-            callback: () => { console.log('Add markers to the Search 1'); },
-          }, {
-            text: 'Search 2',
-            callback: () => { console.log('Add markers to the Search 2'); },
-          }],
-        }],
+          callback: () => { this.markersHandlers.deleteAllDictsOfGroups(markerData.values); },
+        }
+        // {
+        //   separator: true,
+        // }, {
+        //   text: 'Добавить маркер в группу',
+        //   contextmenuItems: [{
+        //     text: 'Search 1',
+        //     callback: () => { console.log('Add marker to the Search 1'); },
+        //   }, {
+        //     text: 'Search 2',
+        //     callback: () => { console.log('Add marker to the Search 2'); },
+        //   }],
+        // }, {
+        //   text: 'Добавить все маркеры данной группы в группу',
+        //   contextmenuItems: [{
+        //     text: 'Search 1',
+        //     callback: () => { console.log('Add markers to the Search 1'); },
+        //   }, {
+        //     text: 'Search 2',
+        //     callback: () => { console.log('Add markers to the Search 2'); },
+        //   }],
+        // }, {
+        //   text: 'Добавить все маркеры, не вошедшие в результат поиска на карту в группу',
+        //   contextmenuItems: [{
+        //     text: 'Search 1',
+        //     callback: () => { console.log('Add markers to the Search 1'); },
+        //   }, {
+        //     text: 'Search 2',
+        //     callback: () => { console.log('Add markers to the Search 2'); },
+        //   }],
+        // }
+        ],
       })
         .addTo(this.map);
     }

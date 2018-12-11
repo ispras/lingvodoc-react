@@ -53,14 +53,14 @@ class Map extends React.PureComponent {
   }
 
   componentDidMount() {
+    const {
+      data, meta, intersect, areaGroups, areasMode, markersHandlers,
+    } = this.props;
+
     this.leaflet = new Leaflet(this.map, {
       icon: pointIcon,
       onPointClick: this.onPointClick,
-    });
-
-    const {
-      data, meta, intersect, areaGroups, areasMode,
-    } = this.props;
+    }, markersHandlers);
 
     const points = this.getExtractedPoints(data, meta, intersect);
     let resultAreaGroups = areaGroups;
@@ -139,6 +139,7 @@ Map.propTypes = {
   intersect: PropTypes.number.isRequired,
   areasMode: PropTypes.bool.isRequired,
   areaGroups: PropTypes.array.isRequired,
+  markersHandlers: PropTypes.object.isRequired,
   actions: PropTypes.object.isRequired,
 };
 
