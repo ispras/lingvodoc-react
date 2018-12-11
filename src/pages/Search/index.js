@@ -308,19 +308,6 @@ class SearchTabs extends React.Component {
     });
   }
 
-  // dictResults() {
-  //   return new Immutable.Map().withMutations((map) => {
-  //     this.props.searches.forEach((search) => {
-  //       if (search.results.dictionaries) {
-  //         const filteredDicts = search.results.dictionaries.filter(d => d.additional_metadata.location);
-
-  //         filteredDicts.forEach(dict =>
-  //           map.update(Immutable.fromJS(dict), new Immutable.Set(), v => v.add(search.id)));
-  //       }
-  //     });
-  //   });
-  // }
-
   render() {
     const { searches, actions } = this.props;
 

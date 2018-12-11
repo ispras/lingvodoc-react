@@ -1,9 +1,14 @@
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { BubbleSet, ShapeSimplifier, BSplineShapeGenerator, PointPath } from 'bubblesets-js';
+import initializeContextMenu from './leaflet.contextmenu';
+import './leaflet.contextmenu.scss';
 
 function initMap(mountPoint) {
-  const map = L.map(mountPoint, {}).setView([62.8818649, 117.4730521], 4);
+  const map = L.map(mountPoint, {
+    contextmenu: true,
+    contextmenuWidth: 270,
+  }).setView([62.8818649, 117.4730521], 4);
 
   L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
@@ -44,6 +49,8 @@ function getAreaOutline(rectangles) {
 
 class MapAreas {
   constructor(mountPoint, options) {
+    initializeContextMenu(L);
+
     this.options = options;
     this.map = initMap(mountPoint);
     this.markersLeafletElements = new Map();
@@ -112,7 +119,7 @@ class MapAreas {
         //     .addTo(this.map)
         //     .openOn(this.map);
         // })
-        .on('contextmenu', () => this.options.onPointClick(markerData))
+        // .on('contextmenu', () => this.options.onPointClick(markerData))
         .on('click', () => this.options.onPointClick(markerData));
     }
   }
@@ -154,7 +161,46 @@ class MapAreas {
 
   addMarkerToMap(markerData) {
     const { coords } = markerData;
-    const markerLeafletElement = L.marker(coords, { icon: this.iconFunc(markerData) })
+    const markerLeafletElement = L.marker(coords, { 
+      icon: this.iconFunc(markerData),
+      contextmenu: true,
+      contextmenuItems: [{
+        text: 'Отключить маркер',
+        callback: () => { console.log('Отключение маркера!'); },
+      }, {
+        text: 'Отключить все маркеры данной группы',
+        callback: () => { console.log('Отключение всех маркеров данной группы!'); },
+      }, {
+        separator: true,
+      }, {
+        text: 'Добавить маркер в группу',
+        contextmenuItems: [{
+          text: 'Search 1',
+          callback: () => { console.log('Add marker to the Search 1'); },
+        }, {
+          text: 'Search 2',
+          callback: () => { console.log('Add marker to the Search 2'); },
+        }],
+      }, {
+        text: 'Добавить все маркеры данной группы в группу',
+        contextmenuItems: [{
+          text: 'Search 1',
+          callback: () => { console.log('Add markers to the Search 1'); },
+        }, {
+          text: 'Search 2',
+          callback: () => { console.log('Add markers to the Search 2'); },
+        }],
+      }, {
+        text: 'Добавить все маркеры, не вошедшие в результат поиска на карту в группу',
+        contextmenuItems: [{
+          text: 'Search 1',
+          callback: () => { console.log('Add markers to the Search 1'); },
+        }, {
+          text: 'Search 2',
+          callback: () => { console.log('Add markers to the Search 2'); },
+        }],
+      }],
+    })
       .addTo(this.map);
 
     this.addMarkerLeafletElement(markerData, markerLeafletElement);
@@ -269,7 +315,7 @@ class MapAreas {
   removeMarkersEventHandlers() {
     for (let marker of this.markersLeafletElements.values()) {
       marker.on('click', () => {});
-      marker.on('contextmenu', () => {});
+      // marker.on('contextmenu', () => {});
     }
   }
 

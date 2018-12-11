@@ -1,0 +1,128 @@
+ .leaflet-contextmenu {
+  display: none;
+  box-shadow: 0 1px 7px rgba(0,0,0,0.4);
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+  padding: 4px 0;
+  background-color: #fff;
+  cursor: default;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+
+  a.leaflet-contextmenu-item {
+    display: block;
+    color: #222;
+    font-size: 12px;
+    line-height: 20px;
+    text-decoration: none;
+    padding: 0 12px;
+    border-top: 1px solid transparent;
+    border-bottom: 1px solid transparent;
+    cursor: default;
+    outline: none;
+  }
+
+  a.leaflet-contextmenu-item-disabled {
+    opacity: 0.5;
+  }
+
+  a.leaflet-contextmenu-item.over {
+    background-color: #f4f4f4;
+    border-top: 1px solid #f0f0f0;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+  }
+
+  a.leaflet-contextmenu-item-disabled.over {
+    background-color: inherit;
+    border-top: 1px solid transparent;
+    border-bottom: 1px solid transparent;
+  }
+
+  &-icon {
+    margin: 2px 8px 0 0;
+    width: 16px;
+    height: 16px;
+    float: left;
+    border: 0;
+  }
+  
+  &-separator {
+    border-bottom: 1px solid #ccc;
+    margin: 5px 0;
+  }
+
+  &-item_parent {
+    position: relative;
+  }
+
+  a.leaflet-contextmenu-item.leaflet-contextmenu-item_parent.over {
+    cursor: inherit;
+  }
+
+  &_to-left .leaflet-contextmenu__nested-menu {
+    right: 100%;
+    left: auto;
+  }
+
+  &_to-right .leaflet-contextmenu__nested-menu {
+    left: 100%;
+    right: auto;
+  }
+
+  &__nested-menu {
+    width: 120px;
+    position: absolute;
+    top: 0;
+    display: none;
+    box-shadow: 0 1px 7px rgba(0,0,0,0.4);
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+    padding: 4px 0;
+    background-color: #fff;
+    cursor: default;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+  }
+
+  &-item_parent:hover > .leaflet-contextmenu__nested-menu {
+    display: block;
+  }
+
+  &-item_parent:after {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 0;
+    background: transparent;
+  }
+
+  &_to-right &-item_parent:after {
+    top: 6px;
+    right: 5px;
+    border-top: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-left: 4px solid #000;
+    border-bottom: 4px solid transparent;
+  }
+
+  &_to-left &-item_parent:after {
+    top: 6px;
+    left: 5px;
+    border-top: 4px solid transparent;
+    border-right: 4px solid #000;
+    border-left: 4px solid transparent;
+    border-bottom: 4px solid transparent;
+  }
+
+  &_to-left &-item_parent.leaflet-contextmenu-item {
+    padding-left: 20px;
+  }
+
+  &_to-right &-item_parent.leaflet-contextmenu-item {
+    padding-right: 20px;
+  }
+}
+
