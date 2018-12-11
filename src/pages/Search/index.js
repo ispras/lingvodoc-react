@@ -250,14 +250,27 @@ const searchesFromProps = memoize(
   });
 
 class SearchTabs extends React.Component {
+  static groupHasDicts(groupId, dictsResults) {
+    return dictsResults
+      .valueSeq()
+      .toJS()
+      .some(groupsIds => groupsIds.indexOf(groupId) !== -1);
+  }
+
   constructor(props) {
     super(props);
 
     this.state = {
       mapSearches: searchesFromProps(props.searches),
+      dictsResults: this.getDictResults(props.searches),
       intersec: 0,
       areasMode: false,
       selectedAreaGroups: [],
+    };
+
+    this.dictsHandlers = {
+      deleteDictFromSearches: this.deleteDictFromSearches.bind(this),
+      deleteAllDictsOfGroups: this.deleteAllDictsOfGroups.bind(this),
     };
 
     this.labels = this.labels.bind(this);
@@ -269,6 +282,7 @@ class SearchTabs extends React.Component {
   componentWillReceiveProps(nextProps) {
     this.setState({
       mapSearches: searchesFromProps(nextProps.searches),
+      dictsResults: this.getDictResults(nextProps.searches),
       intersec: 0,
     });
   }
@@ -285,7 +299,12 @@ class SearchTabs extends React.Component {
     });
   }
 
-  getFilteredMapSearches = memoize(mapSearches => mapSearches.filter(f => f.get('isActive')));
+  getFilteredMapSearches = memoize((mapSearches, dictsResults) => {
+    return mapSearches
+      .filter((f) => {
+        return f.get('isActive') && this.constructor.groupHasDicts(f.get('id'), dictsResults);
+      });
+  });
 
   getDictResults = memoize((searches) => {
     return new Immutable.Map().withMutations((map) => {
@@ -304,9 +323,38 @@ class SearchTabs extends React.Component {
     return this.state.mapSearches.valueSeq().toJS();
   }
 
-  clickLabel(id) {
+  toggleSearchGroup(id) {
     this.setState({
       mapSearches: this.state.mapSearches.updateIn([id, 'isActive'], v => !v),
+    });
+  }
+
+  clickLabel(id) {
+    this.toggleSearchGroup(id);
+  }
+
+  deleteDictFromSearches(mapMarkerData) {
+    this.setState({
+      dictsResults: this.state.dictsResults.delete(mapMarkerData.dictionary),
+    });
+  }
+
+  deleteAllDictsOfGroups(groupsIds) {
+    const newDictsResults = this.state.dictsResults
+      .filter((groups) => {
+        return groups.filter(id => groupsIds.indexOf(id) === -1).size > 0;
+      })
+      .map((groups) => {
+        let newGroups = groups;
+        groupsIds.forEach((id) => {
+          newGroups = newGroups.delete(id);
+        });
+
+        return newGroups;
+      });
+
+    this.setState({
+      dictsResults: newDictsResults,
     });
   }
 
@@ -364,9 +412,9 @@ class SearchTabs extends React.Component {
     ];
 
     const {
-      areasMode, mapSearches, intersec, selectedAreaGroups,
+      areasMode, mapSearches, intersec, selectedAreaGroups, dictsResults,
     } = this.state;
-    const filteredMapSearches = this.getFilteredMapSearches(mapSearches);
+    const filteredMapSearches = this.getFilteredMapSearches(mapSearches, dictsResults);
 
     return (
       <Container>
@@ -394,11 +442,12 @@ class SearchTabs extends React.Component {
           />
         </Segment>
         <ResultsMap
-          data={this.getDictResults(this.props.searches)}
+          data={dictsResults}
           meta={filteredMapSearches}
           intersect={intersec}
           areasMode={areasMode}
           areaGroups={selectedAreaGroups}
+          markersHandlers={this.dictsHandlers}
         />
         <BlobsModal />
       </Container>
