@@ -98,7 +98,7 @@ function initializeContextMenu(L) {
       return this.insertItem(options);
     },
 
-    insertItem: function (options, index, parentEl) {
+    insertItem: function (options, index, parentEl, isItemEmptyParent) {
       index = index !== undefined ? index : this._items.length;
       const nestedMenuClassName = L.Map.ContextMenu.BASE_CLS + '__nested-menu';
 
@@ -114,7 +114,7 @@ function initializeContextMenu(L) {
         parent = this._container;
       }
 
-      var item = this._createItem(parent, options, index);
+      var item = this._createItem(parent, options, index, isItemEmptyParent);
 
       this._items.push(item);
 
@@ -219,14 +219,21 @@ function initializeContextMenu(L) {
       })
     },
 
-    _createItem: function (container, options, index) {
+    _createItem: function (container, options, index, isItemEmptyParent) {
       if (options.separator || options === '-') {
         return this._createSeparator(container, index);
       }
 
       var
         isParent = !!options.contextmenuItems,
-        parentClassName = isParent ? L.Map.ContextMenu.BASE_CLS + '-item' + '_parent' : '',
+        parentClassName = isParent ? L.Map.ContextMenu.BASE_CLS + '-item_parent' : '';
+      
+      if (isItemEmptyParent) {
+        parentClassName = parentClassName + ' ' + L.Map.ContextMenu.BASE_CLS + '-item_parent-empty ' + 
+        L.Map.ContextMenu.BASE_CLS + '-item-disabled';
+      }
+
+      var
         itemCls = L.Map.ContextMenu.BASE_CLS + '-item ' + parentClassName,
         cls = options.disabled ? (itemCls + ' ' + itemCls + '-disabled') : itemCls,
         el = this._insertElementAt('a', cls, container, index),
@@ -546,7 +553,8 @@ function initializeContextMenu(L) {
       }
 
       optionItems.forEach(item => {
-        const createdItem = this._map.contextmenu.insertItem(item, item.index, parentItem);
+        const isEmptyParent = !!item.contextmenuItems && item.contextmenuItems.length === 0;
+        const createdItem = this._map.contextmenu.insertItem(item, item.index, parentItem, isEmptyParent);
         this._items.push(createdItem);
 
         if (item.contextmenuItems) {
