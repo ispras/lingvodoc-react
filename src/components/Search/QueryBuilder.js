@@ -410,11 +410,11 @@ class QueryBuilder extends React.Component {
                 onDelete={this.onDeleteAndBlock(id)}
               />,
               <Divider key={`d_${id}`} horizontal>
-                And
+                Or
               </Divider>
             ))}
           <Button primary basic fluid onClick={this.onAddAndBlock}>
-            Add Another AND Block
+            Add Another OR Block
           </Button>
 
           <Divider />
