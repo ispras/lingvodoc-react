@@ -187,6 +187,24 @@ class MapAreas {
     });
   }
 
+  getGroupItemsMoveMarkerToGroup(markerData) {
+    let groups = [];
+
+    if (markerData.values.length === 1) {
+      groups = Object.values(this.markersGroups)
+        .filter(group => markerData.values.indexOf(group.id) === -1);
+    } else {
+      groups = Object.values(this.markersGroups);
+    }
+
+    return groups.map((group) => {
+      return {
+        text: group.text,
+        callback: () => { this.markersHandlers.moveMarkerToGroup(markerData, group); },
+      };
+    });
+  }
+
   addMarkerToMap(markerData) {
     const { coords } = markerData;
     let markerLeafletElement = null;
@@ -214,6 +232,9 @@ class MapAreas {
         {
           text: 'Добавить все маркеры групп, к которым относится данный маркер, в группу',
           contextmenuItems: this.getGroupItemsAddAllMarkersToGroup(markerData),
+        }, {
+          text: 'Перенести маркер в группу',
+          contextmenuItems: this.getGroupItemsMoveMarkerToGroup(markerData),
         },
         // {
         //   text: 'Добавить все маркеры, не вошедшие в результат поиска на карту в группу',

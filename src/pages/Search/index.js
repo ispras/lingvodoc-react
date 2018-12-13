@@ -273,6 +273,7 @@ class SearchTabs extends React.Component {
       deleteAllDictsOfGroups: this.deleteAllDictsOfGroups.bind(this),
       addMarkerToGroup: this.addMarkerToGroup.bind(this),
       addAllMarkersToGroup: this.addAllMarkersToGroup.bind(this),
+      moveMarkerToGroup: this.moveMarkerToGroup.bind(this),
     };
 
     this.labels = this.labels.bind(this);
@@ -365,6 +366,12 @@ class SearchTabs extends React.Component {
   addMarkerToGroup(mapMarkerData, group) {
     this.setState({
       dictsResults: this.state.dictsResults.update(mapMarkerData.dictionary, groups => groups.add(group.id)),
+    });
+  }
+
+  moveMarkerToGroup(mapMarkerData, group) {
+    this.setState({
+      dictsResults: this.state.dictsResults.update(mapMarkerData.dictionary, () => new Immutable.Set([group.id])),
     });
   }
 
