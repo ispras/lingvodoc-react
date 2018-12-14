@@ -1,8 +1,8 @@
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import { BubbleSet, ShapeSimplifier, BSplineShapeGenerator, PointPath } from 'bubblesets-js';
 import initializeContextMenu from './leaflet.contextmenu';
 import './leaflet.contextmenu.scss';
+import getAreaOutline from './areas';
 
 function initMap(mountPoint) {
   const map = L.map(mountPoint, {
@@ -19,32 +19,6 @@ function initMap(mountPoint) {
 
 function wrapDivIcon(func) {
   return options => L.divIcon(func(options));
-}
-
-function getRectangles(width, height, pointX, pointY) {
-  return {
-    width,
-    height,
-    x: pointX,
-    y: pointY,
-  };
-}
-
-function getAreaOutline(rectangles) {
-  const pad = 5;
-  const bubbles = new BubbleSet();
-  const list = bubbles.createOutline(
-    BubbleSet.addPadding(rectangles, pad),
-    []
-  );
-
-  const outline = new PointPath(list).transform([
-    new ShapeSimplifier(0.0),
-    new BSplineShapeGenerator(),
-    new ShapeSimplifier(0.0),
-  ]);
-
-  return outline;
 }
 
 class MapAreas {
@@ -64,6 +38,9 @@ class MapAreas {
 
     this.areasLayer = null;
     this.areasPathsLeafletElements = {};
+
+    this.markerWidth = 24;
+    this.markerHeight = 24;
 
     this.onZoomStartEventHandler = this.onZoomStartEventHandler.bind(this);
     this.onZoomEndEventHandler = this.onZoomEndEventHandler.bind(this);
@@ -259,21 +236,10 @@ class MapAreas {
   }
 
   updateArea(areaPoints, areaId, color) {
-    const markerWidth = 24;
-    const markerHeight = 24;
-    const pointsRectangles = [];
+    const { markerWidth, markerHeight } = this;
+    const pointsInPixel = areaPoints.map(point => this.latLngToLayerPoint(point.coords));
+    const outline = getAreaOutline(pointsInPixel, markerWidth, markerHeight);
 
-    areaPoints.forEach((point) => {
-      const { coords } = point;
-      if (!coords) {
-        return;
-      }
-
-      const pointInPixel = this.latLngToLayerPoint(coords);
-      pointsRectangles.push(getRectangles(markerWidth, markerHeight, pointInPixel.x, pointInPixel.y));
-    });
-
-    const outline = getAreaOutline(pointsRectangles);
     this.updateAreaPath(areaId, outline, color);
   }
 
