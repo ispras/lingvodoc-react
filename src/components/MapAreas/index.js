@@ -113,17 +113,7 @@ class MapAreas {
     const marker = this.markersLeafletElements.get(markerData);
 
     if (marker) {
-      marker
-        // .on('contextmenu', (ev) => {
-        //   L
-        //     .popup()
-        //     .setLatLng(ev.latlng)
-        //     .setContent('<pre>Hello</pre>')
-        //     .addTo(this.map)
-        //     .openOn(this.map);
-        // })
-        // .on('contextmenu', () => this.options.onPointClick(markerData))
-        .on('click', () => this.options.onPointClick(markerData));
+      marker.on('click', () => this.options.onPointClick(markerData));
     }
   }
 
@@ -175,8 +165,6 @@ class MapAreas {
   }
 
   getGroupItemsAddAllMarkersToGroup(markerData) {
-    // const groups = Object.values(this.markersGroups)
-    //   .filter(group => markerData.values.indexOf(group.id) === -1);
     const groups = Object.values(this.markersGroups);
 
     return groups.map((group) => {
@@ -235,18 +223,7 @@ class MapAreas {
         }, {
           text: 'Перенести маркер в группу',
           contextmenuItems: this.getGroupItemsMoveMarkerToGroup(markerData),
-        },
-        // {
-        //   text: 'Добавить все маркеры, не вошедшие в результат поиска на карту в группу',
-        //   contextmenuItems: [{
-        //     text: 'Search 1',
-        //     callback: () => { console.log('Add markers to the Search 1'); },
-        //   }, {
-        //     text: 'Search 2',
-        //     callback: () => { console.log('Add markers to the Search 2'); },
-        //   }],
-        // }
-        ],
+        }],
       })
         .addTo(this.map);
     }
@@ -315,11 +292,6 @@ class MapAreas {
     path.setAttribute('opacity', 0.5);
     path.setAttribute('stroke', 'black');
     path.setAttribute('d', outline);
-
-    // console.log('--- areas ---', this.areas);
-    // console.log('--- areasLayer ---', this.areasLayer);
-    // console.log('--- areasPaths ---', this.areasPathsLeafletElements);
-    // console.log('--- markersLeafletElements ---', this.markersLeafletElements);
   }
 
   reset() {

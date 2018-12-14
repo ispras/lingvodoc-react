@@ -1,10 +1,12 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import styled from 'styled-components';
+import { Segment } from 'semantic-ui-react';
 
-import Leaflet from 'components/Map';
+import Leaflet from 'components/MapAreas';
 import { openBlobsModal } from 'ducks/blobs';
 
 const Wrapper = styled.div`
@@ -44,53 +46,47 @@ function pointIcon({ colors }) {
   };
 }
 
-function extractPoints({ data, meta, intersect }) {
-  const labels = meta
-    .filter(v => v.get('isActive'))
-    .keySeq()
-    .toSet();
-
-  return data
-    .map(searches => searches.intersect(labels))
-    .filter(searches => searches.size > intersect)
-    .map((searches, dictionary) => {
-      const location = dictionary.getIn(['additional_metadata', 'location']);
-
-      return {
-        coords: [location.get('lat'), location.get('lng')],
-        colors: searches
-          .map(id => meta.getIn([id, 'color']))
-          .sort()
-          .toJS(),
-        values: searches.toJS(),
-        dictionary,
-      };
-    })
-    .valueSeq()
-    .toJS();
-}
-
-class Map extends React.Component {
+class Map extends React.PureComponent {
   constructor(props) {
     super(props);
     this.onPointClick = this.onPointClick.bind(this);
   }
 
   componentDidMount() {
+    const {
+      data, meta, intersect, areaGroups, areasMode, markersHandlers,
+    } = this.props;
+
     this.leaflet = new Leaflet(this.map, {
       icon: pointIcon,
       onPointClick: this.onPointClick,
-    });
-    this.leaflet.load(extractPoints(this.props));
+    }, markersHandlers);
+
+    const points = this.getExtractedPoints(data, meta, intersect);
+    const markersGroups = meta;
+    let resultAreaGroups = areaGroups;
+
+    if (!areasMode) {
+      resultAreaGroups = [];
+    }
+
+    this.leaflet.load(points, resultAreaGroups, areasMode, markersGroups);
   }
 
   componentWillReceiveProps(nextProps) {
-    this.leaflet.reset();
-    this.leaflet.load(extractPoints(nextProps));
-  }
+    const {
+      data, meta, intersect, areaGroups, areasMode,
+    } = nextProps;
 
-  shouldComponentUpdate() {
-    return true;
+    const points = this.getExtractedPoints(data, meta, intersect);
+    const markersGroups = meta;
+    let resultAreaGroups = areaGroups;
+
+    if (!areasMode) {
+      resultAreaGroups = [];
+    }
+
+    this.leaflet.load(points, resultAreaGroups, areasMode, markersGroups);
   }
 
   onPointClick({ dictionary }) {
@@ -99,19 +95,56 @@ class Map extends React.Component {
     actions.openBlobsModal(dictionary.toJS(), blobs ? blobs.toJS() : []);
   }
 
+  getExtractedPoints = (data, meta, intersect) => {
+    const labels = meta
+      .filter(v => v.get('isActive'))
+      .keySeq()
+      .toSet();
+
+    return data
+      .map(searches => searches.intersect(labels))
+      .filter(searches => searches.size > intersect)
+      .map((searches, dictionary) => {
+        const location = dictionary.getIn(['additional_metadata', 'location']);
+        return {
+          coords: [parseFloat(location.get('lat')), parseFloat(location.get('lng'))],
+          colors: searches
+            .map(id => meta.getIn([id, 'color']))
+            .sort()
+            .toJS(),
+          values: searches.toJS(),
+          dictionary,
+        };
+      })
+      .valueSeq()
+      .toJS();
+  };
+
   render() {
     return (
-      <Wrapper>
-        <div
-          ref={(ref) => {
-            this.map = ref;
-          }}
-          className="leaflet"
-        />
-      </Wrapper>
+      <Segment>
+        <Wrapper>
+          <div
+            ref={(ref) => {
+              this.map = ref;
+            }}
+            className="leaflet"
+          />
+        </Wrapper>
+      </Segment>
     );
   }
 }
+
+Map.propTypes = {
+  data: PropTypes.object.isRequired,
+  meta: PropTypes.object.isRequired,
+  intersect: PropTypes.number.isRequired,
+  areasMode: PropTypes.bool.isRequired,
+  areaGroups: PropTypes.array.isRequired,
+  markersHandlers: PropTypes.object.isRequired,
+  actions: PropTypes.object.isRequired,
+};
 
 export default compose(connect(null, dispatch => ({
   actions: bindActionCreators({ openBlobsModal }, dispatch),

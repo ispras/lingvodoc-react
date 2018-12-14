@@ -9,7 +9,7 @@ import Immutable, { fromJS } from 'immutable';
 import { Container, Dimmer, Loader, Tab, Button, Divider, Menu, Message, Segment } from 'semantic-ui-react';
 import { isEqual, memoize } from 'lodash';
 import Labels from 'components/Search/Labels';
-import ResultsMap from 'components/Search/ResultsMapMocked';
+import ResultsMap from 'components/Search/ResultsMap';
 import IntersectionControl from 'components/Search/IntersectionControl';
 import AreasMode from 'components/Search/AreasMode';
 import QueryBuilder from 'components/Search/QueryBuilder';
