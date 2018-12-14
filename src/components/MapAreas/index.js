@@ -152,77 +152,73 @@ class MapAreas {
     });
   }
 
-  getGroupItemsAddMarkerToGroup(markerData) {
+  getGroupItemsAddMarkerToGroup(markerGroups, dictionary) {
     const groups = Object.values(this.markersGroups)
-      .filter(group => markerData.values.indexOf(group.id) === -1);
+      .filter(group => markerGroups.indexOf(group.id) === -1);
 
-    return groups.map((group) => {
-      return {
-        text: group.text,
-        callback: () => { this.markersHandlers.addMarkerToGroup(markerData, group); },
-      };
-    });
+    return groups.map(group => ({
+      text: group.text,
+      callback: () => { this.markersHandlers.addDictToGroup(dictionary, group.id); },
+    }));
   }
 
-  getGroupItemsAddAllMarkersToGroup(markerData) {
+  getGroupItemsAddAllMarkersToGroup(markerGroups) {
     const groups = Object.values(this.markersGroups);
 
-    return groups.map((group) => {
-      return {
-        text: group.text,
-        callback: () => { this.markersHandlers.addAllMarkersToGroup(markerData, group); },
-      };
-    });
+    return groups.map(group => ({
+      text: group.text,
+      callback: () => { this.markersHandlers.addAllDictsToGroup(markerGroups, group.id); },
+    }));
   }
 
-  getGroupItemsMoveMarkerToGroup(markerData) {
+  getGroupItemsMoveMarkerToGroup(markerGroups, dictionary) {
     let groups = [];
 
-    if (markerData.values.length === 1) {
+    if (markerGroups.length === 1) {
       groups = Object.values(this.markersGroups)
-        .filter(group => markerData.values.indexOf(group.id) === -1);
+        .filter(group => markerGroups.indexOf(group.id) === -1);
     } else {
       groups = Object.values(this.markersGroups);
     }
 
-    return groups.map((group) => {
-      return {
-        text: group.text,
-        callback: () => { this.markersHandlers.moveMarkerToGroup(markerData, group); },
-      };
-    });
+    return groups.map(group => ({
+      text: group.text,
+      callback: () => { this.markersHandlers.moveDictToGroup(dictionary, group.id); },
+    }));
   }
 
   addMarkerToMap(markerData) {
-    const { coords } = markerData;
+    const { coords, values: markerGroups, dictionary } = markerData;
     let markerLeafletElement = null;
 
     if (this.areasMode) {
       markerLeafletElement = L.marker(coords, { icon: this.iconFunc(markerData) })
         .addTo(this.map);
     } else {
-      markerLeafletElement = L.marker(coords, { 
+      markerLeafletElement = L.marker(coords, {
         icon: this.iconFunc(markerData),
         contextmenu: true,
         contextmenuItems: [{
           text: 'Отключить маркер',
-          callback: () => { this.markersHandlers.deleteDictFromSearches(markerData); },
+          callback: () => { this.markersHandlers.deleteDictFromSearches(dictionary); },
         },
         {
           text: 'Отключить все маркеры групп, к которым относится данный маркер',
-          callback: () => { this.markersHandlers.deleteAllDictsOfGroups(markerData.values); },
+          callback: () => { this.markersHandlers.deleteAllDictsOfGroups(markerGroups); },
         }, {
           separator: true,
         }, {
           text: 'Добавить маркер в группу',
-          contextmenuItems: this.getGroupItemsAddMarkerToGroup(markerData),
+          contextmenuItems: this.getGroupItemsAddMarkerToGroup(markerGroups, dictionary),
         },
         {
           text: 'Добавить все маркеры групп, к которым относится данный маркер, в группу',
-          contextmenuItems: this.getGroupItemsAddAllMarkersToGroup(markerData),
+          contextmenuItems: this.getGroupItemsAddAllMarkersToGroup(markerGroups),
+        }, {
+          separator: true,
         }, {
           text: 'Перенести маркер в группу',
-          contextmenuItems: this.getGroupItemsMoveMarkerToGroup(markerData),
+          contextmenuItems: this.getGroupItemsMoveMarkerToGroup(markerGroups, dictionary),
         }],
       })
         .addTo(this.map);

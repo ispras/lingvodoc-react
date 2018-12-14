@@ -271,9 +271,9 @@ class SearchTabs extends React.Component {
     this.dictsHandlers = {
       deleteDictFromSearches: this.deleteDictFromSearches.bind(this),
       deleteAllDictsOfGroups: this.deleteAllDictsOfGroups.bind(this),
-      addMarkerToGroup: this.addMarkerToGroup.bind(this),
-      addAllMarkersToGroup: this.addAllMarkersToGroup.bind(this),
-      moveMarkerToGroup: this.moveMarkerToGroup.bind(this),
+      addDictToGroup: this.addDictToGroup.bind(this),
+      addAllDictsToGroup: this.addAllDictsToGroup.bind(this),
+      moveDictToGroup: this.moveDictToGroup.bind(this),
     };
 
     this.labels = this.labels.bind(this);
@@ -338,17 +338,15 @@ class SearchTabs extends React.Component {
     this.toggleSearchGroup(id);
   }
 
-  deleteDictFromSearches(mapMarkerData) {
+  deleteDictFromSearches(dictionary) {
     this.setState({
-      dictsResults: this.state.dictsResults.delete(mapMarkerData.dictionary),
+      dictsResults: this.state.dictsResults.delete(dictionary),
     });
   }
 
   deleteAllDictsOfGroups(groupsIds) {
     const newDictsResults = this.state.dictsResults
-      .filter((groups) => {
-        return groups.filter(id => groupsIds.indexOf(id) === -1).size > 0;
-      })
+      .filter(groups => groups.filter(id => groupsIds.indexOf(id) === -1).size > 0)
       .map((groups) => {
         let newGroups = groups;
         groupsIds.forEach((id) => {
@@ -363,25 +361,24 @@ class SearchTabs extends React.Component {
     });
   }
 
-  addMarkerToGroup(mapMarkerData, group) {
+  addDictToGroup(dictionary, groupId) {
     this.setState({
-      dictsResults: this.state.dictsResults.update(mapMarkerData.dictionary, groups => groups.add(group.id)),
+      dictsResults: this.state.dictsResults.update(dictionary, groups => groups.add(groupId)),
     });
   }
 
-  moveMarkerToGroup(mapMarkerData, group) {
+  moveDictToGroup(dictionary, groupId) {
     this.setState({
-      dictsResults: this.state.dictsResults.update(mapMarkerData.dictionary, () => new Immutable.Set([group.id])),
+      dictsResults: this.state.dictsResults.update(dictionary, () => new Immutable.Set([groupId])),
     });
   }
 
-  addAllMarkersToGroup(mapMarkerData, group) {
-    const currentGroups = mapMarkerData.values;
+  addAllDictsToGroup(currentGroupsIds, destinationGroupId) {
     const newDictsResults = this.state.dictsResults
       .map((groups) => {
         let newGroups = groups;
-        if (groups.intersect(currentGroups).size > 0) {
-          newGroups = newGroups.add(group.id);
+        if (groups.intersect(currentGroupsIds).size > 0) {
+          newGroups = newGroups.add(destinationGroupId);
         }
 
         return newGroups;
