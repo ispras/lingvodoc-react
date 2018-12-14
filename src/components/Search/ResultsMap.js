@@ -15,7 +15,7 @@ function pointIcon({ colors }) {
   };
 }
 
-class Map extends React.PureComponent {
+class ResultsMap extends React.PureComponent {
   constructor(props) {
     super(props);
     this.onPointClick = this.onPointClick.bind(this);
@@ -79,7 +79,7 @@ class Map extends React.PureComponent {
   }
 }
 
-Map.propTypes = {
+ResultsMap.propTypes = {
   data: PropTypes.object.isRequired,
   meta: PropTypes.object.isRequired,
   intersect: PropTypes.number.isRequired,
@@ -91,4 +91,4 @@ Map.propTypes = {
 
 export default compose(connect(null, dispatch => ({
   actions: bindActionCreators({ openBlobsModal }, dispatch),
-})))(Map);
+})))(ResultsMap);

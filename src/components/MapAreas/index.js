@@ -134,7 +134,8 @@ class MapAreas extends PureComponent {
     }));
   }
 
-  getAreaPoints({ color }) {
+  getAreaPoints(area) {
+    const { color } = area;
     return this.points.filter(point => point.colors.indexOf(color) !== -1);
   }
 
