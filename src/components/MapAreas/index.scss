@@ -1,0 +1,28 @@
+.leaflet {
+  width: 100%;
+  height: 600px;
+  border: 1px solid grey;
+  border-radius: 2px;
+
+  &__map {
+    width: 100%;
+    height: 100%;
+
+    .point {
+      display: flex;
+      flex-direction: column;
+      height: 2em !important;
+      width: 2em !important;
+      border-radius: 2px;
+      border: 1px solid black;
+
+      span {
+        flex: 1 1 auto;
+
+        &:not(:last-child) {
+          border-bottom: 1px solid black;
+        }
+      }
+    }
+  }
+}
