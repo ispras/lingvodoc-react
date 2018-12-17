@@ -178,16 +178,38 @@ class QueryBuilder extends React.Component {
     this.changeMode = this.changeMode.bind(this);
 
     this.newBlock = fromJS(newBlock);
+    debugger;
+    const { langs, dicts, searchMetadata } = this.props;
+    const languages = langs || [];
+    const dictionaries = dicts || [];
+    let hasAudio = null;
+    let kind = null;
+    let years = [];
+    let humanSettlement = [];
+    let authors = [];
+    let languageVulnerability = [];
+    let grammaticalSigns = {};
+
+    if (searchMetadata) {
+      hasAudio = searchMetadata.hasAudio || hasAudio;
+      kind = searchMetadata.hasAudio || kind;
+      years = searchMetadata.years || years;
+      humanSettlement = searchMetadata.humanSettlement || humanSettlement;
+      authors = searchMetadata.authors || authors;
+      languageVulnerability = searchMetadata.languageVulnerability || languageVulnerability;
+      grammaticalSigns = searchMetadata.grammaticalSigns || grammaticalSigns;
+    }
+
     this.additionalFields = {
-      languages: [],
-      dictionaries: [],
-      hasAudio: null,
-      kind: null,
-      years: [],
-      humanSettlement: [],
-      authors: [],
-      languageVulnerability: [],
-      grammaticalSigns: {},
+      languages,
+      dictionaries,
+      hasAudio,
+      kind,
+      years,
+      humanSettlement,
+      authors,
+      languageVulnerability,
+      grammaticalSigns,
     };
 
     this.state = {
@@ -438,6 +460,9 @@ class QueryBuilder extends React.Component {
 QueryBuilder.propTypes = {
   data: PropTypes.object,
   searchId: PropTypes.number.isRequired,
+  langs: PropTypes.array,
+  dicts: PropTypes.array,
+  searchMetadata: PropTypes.object,
   actions: PropTypes.shape({
     setQuery: PropTypes.func.isRequired,
   }).isRequired,

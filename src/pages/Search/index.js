@@ -531,7 +531,13 @@ class SearchTabs extends React.Component {
           <Container>
             <h3>Search</h3>
 
-            <QueryBuilder searchId={search.id} data={fromJS(search.query)} />
+            <QueryBuilder
+              searchId={search.id}
+              data={fromJS(search.query)}
+              langs={search.langs}
+              dicts={search.dicts}
+              searchMetadata={search.searchMetadata}
+            />
             <Info
               searchId={search.id}
               query={search.query}
