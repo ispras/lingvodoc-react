@@ -130,7 +130,7 @@ class MapAreas extends PureComponent {
 
     return groups.map(group => ({
       text: group.text,
-      callback: () => { this.props.markersHandlers.moveDictToGroup(dictionary, group.id); },
+      callback: () => { this.props.markersHandlers.moveDictToGroup(dictionary, markerGroups, group.id); },
     }));
   }
 
@@ -166,7 +166,7 @@ class MapAreas extends PureComponent {
         contextmenu: true,
         contextmenuItems: [{
           text: 'Отключить маркер',
-          callback: () => { this.props.markersHandlers.deleteDictFromSearches(dictionary); },
+          callback: () => { this.props.markersHandlers.deleteDictFromSearches(dictionary, markerGroups); },
         },
         {
           text: 'Отключить все маркеры групп, к которым относится данный маркер',
