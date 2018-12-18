@@ -178,26 +178,28 @@ class QueryBuilder extends React.Component {
     this.changeMode = this.changeMode.bind(this);
 
     this.newBlock = fromJS(newBlock);
-    debugger;
-    const { langs, dicts, searchMetadata } = this.props;
+    const {
+      langs, dicts, searchMetadata, grammaticalSigns: gramSigns, languageVulnerability: langVulnerability,
+    } = this.props;
     const languages = langs || [];
     const dictionaries = dicts || [];
+    const grammaticalSigns = gramSigns || {};
+    const languageVulnerability = langVulnerability || [];
     let hasAudio = null;
     let kind = null;
     let years = [];
     let humanSettlement = [];
     let authors = [];
-    let languageVulnerability = [];
-    let grammaticalSigns = {};
 
     if (searchMetadata) {
-      hasAudio = searchMetadata.hasAudio || hasAudio;
-      kind = searchMetadata.hasAudio || kind;
+      if (typeof searchMetadata.hasAudio === 'boolean') {
+        hasAudio = searchMetadata.hasAudio;
+      }
+
+      kind = searchMetadata.kind || kind;
       years = searchMetadata.years || years;
       humanSettlement = searchMetadata.humanSettlement || humanSettlement;
       authors = searchMetadata.authors || authors;
-      languageVulnerability = searchMetadata.languageVulnerability || languageVulnerability;
-      grammaticalSigns = searchMetadata.grammaticalSigns || grammaticalSigns;
     }
 
     this.additionalFields = {
@@ -221,7 +223,8 @@ class QueryBuilder extends React.Component {
       mode: {
         adopted: 'ignore',
         etymology: 'ignore',
-      }
+      },
+      allLangsDictsChecked: !this.props.langs && !this.props.dicts,
     };
   }
 
@@ -270,7 +273,9 @@ class QueryBuilder extends React.Component {
     const {
       languages: langsToFilter, dictionaries: dictsToFilter,
       hasAudio, kind, years, humanSettlement, authors,
+      grammaticalSigns, languageVulnerability,
     } = this.additionalFields;
+
     const adopted = mode2bool(this.state.mode.adopted);
     const etymology = mode2bool(this.state.mode.etymology);
     const category = bool2category(this.state.source.dictionaries, this.state.source.corpora);
@@ -283,7 +288,7 @@ class QueryBuilder extends React.Component {
     };
     const query = this.addGrammaticalSigns(this.state.data.toJS());
 
-    actions.setQuery(searchId, query, category, adopted, etymology, langsToFilter, dictsToFilter, searchMetadata);
+    actions.setQuery(searchId, query, category, adopted, etymology, langsToFilter, dictsToFilter, searchMetadata, grammaticalSigns, languageVulnerability);
   }
 
   addGrammaticalSigns(query) {
@@ -340,6 +345,8 @@ class QueryBuilder extends React.Component {
 
   render() {
     const blocks = this.state.data;
+    const { showCreateSearchButton } = this.props;
+    const { allLangsDictsChecked } = this.state;
 
     return (
       <div>
@@ -362,6 +369,14 @@ class QueryBuilder extends React.Component {
                     onChange={() => this.changeSource('corpora')}
                   />
                 </Grid.Column>
+                {showCreateSearchButton ?
+                  <Grid.Column>
+                    <Button primary basic onClick={this.props.createSearchWithAdditionalFields}>
+                      Поиск в найденном
+                    </Button>
+                  </Grid.Column> :
+                  null
+                }
               </Grid>
             </Segment>
           </Segment.Group>
@@ -370,7 +385,7 @@ class QueryBuilder extends React.Component {
         <AdditionalFilter
           onChange={this.onAdditionalFieldsChange}
           data={this.additionalFields}
-          allLangsDictsChecked
+          allLangsDictsChecked={allLangsDictsChecked}
         />
 
         <Segment.Group>
@@ -463,6 +478,10 @@ QueryBuilder.propTypes = {
   langs: PropTypes.array,
   dicts: PropTypes.array,
   searchMetadata: PropTypes.object,
+  grammaticalSigns: PropTypes.object,
+  languageVulnerability: PropTypes.array,
+  showCreateSearchButton: PropTypes.bool,
+  createSearchWithAdditionalFields: PropTypes.func.isRequired,
   actions: PropTypes.shape({
     setQuery: PropTypes.func.isRequired,
   }).isRequired,
@@ -471,6 +490,7 @@ QueryBuilder.propTypes = {
 
 QueryBuilder.defaultProps = {
   data: [[newBlock]],
+  showCreateSearchButton: false,
 };
 
 export default compose(

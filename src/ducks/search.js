@@ -7,7 +7,7 @@ export const NEW_SEARCH = '@search/NEW_SEARCH';
 export const NEW_SEARCH_WITH_ADDITIONAL_FIELDS = '@search/NEW_SEARCH_WITH_ADDITIONAL_FIELDS';
 export const DELETE_SEARCH = '@search/DELETE_SEARCH';
 
-export const setQuery = (searchId, query, category, adopted, etymology, langs, dicts, searchMetadata) => ({
+export const setQuery = (searchId, query, category, adopted, etymology, langs, dicts, searchMetadata, grammaticalSigns, languageVulnerability) => ({
   type: SET_QUERY,
   payload: {
     searchId,
@@ -18,6 +18,8 @@ export const setQuery = (searchId, query, category, adopted, etymology, langs, d
     langs,
     dicts,
     searchMetadata,
+    grammaticalSigns,
+    languageVulnerability,
   },
 });
 
@@ -59,7 +61,13 @@ function buildNewQuery() {
     categoty: null,
     adopted: null,
     etymology: null,
+    langs: null,
+    dicts: null,
+    searchMetadata: null,
+    grammaticalSigns: null,
+    languageVulnerability: null,
     results: [],
+    subQuery: false,
   };
 }
 
@@ -70,7 +78,12 @@ const initialState = {
   adopted: null,
   etymology: null,
   langs: null,
+  dicts: null,
+  searchMetadata: null,
+  grammaticalSigns: null,
+  languageVulnerability: null,
   results: [],
+  subQuery: false,
 };
 
 
@@ -84,6 +97,7 @@ const searches = (state = [initialState], action) => {
         {
           ...buildNewQuery(),
           ...action.payload,
+          subQuery: true,
         },
       ];
     case DELETE_SEARCH:
@@ -100,6 +114,9 @@ const searches = (state = [initialState], action) => {
             langs: action.payload.langs,
             dicts: action.payload.dicts,
             searchMetadata: action.payload.searchMetadata,
+            grammaticalSigns: action.payload.grammaticalSigns,
+            languageVulnerability: action.payload.languageVulnerability,
+            subQuery: false,
           }
           : search));
     case STORE_SEARCH_RESULT:

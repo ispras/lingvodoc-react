@@ -19,7 +19,7 @@ import { buildLanguageTree, buildSearchResultsTree } from 'pages/Search/treeBuil
 
 import './style.scss';
 
-import { newSearch, deleteSearch, storeSearchResult } from 'ducks/search';
+import { newSearch, deleteSearch, storeSearchResult, newSearchWithAdditionalFields } from 'ducks/search';
 
 const mdColors = new Immutable.List([
   '#E53935',
@@ -199,8 +199,13 @@ const WrapperWithData = compose(
 )(Wrapper);
 
 const Info = ({
-  query, searchId, adopted, etymology, category, langs, dicts, searchMetadata,
+  query, searchId, adopted, etymology, category,
+  langs, dicts, searchMetadata, subQuery,
 }) => {
+  if (subQuery) {
+    return null;
+  }
+
   const queryClean = isQueriesClean(query);
   const additionalParamsSet = isAdditionalParamsSet(langs, dicts, searchMetadata);
   let resultQuery = query;
@@ -237,6 +242,7 @@ Info.propTypes = {
   langs: PropTypes.array,
   dicts: PropTypes.array,
   searchMetadata: PropTypes.object,
+  subQuery: PropTypes.bool.isRequired,
 };
 
 const searchesFromProps = memoize(searches => Immutable.fromJS(searches)
@@ -268,6 +274,8 @@ class SearchTabs extends React.Component {
       moveDictToGroup: this.moveDictToGroup.bind(this),
     };
 
+    this.tabsRef = null;
+
     this.labels = this.labels.bind(this);
     this.clickLabel = this.clickLabel.bind(this);
     this.onAreasModeChange = this.onAreasModeChange.bind(this);
@@ -279,6 +287,20 @@ class SearchTabs extends React.Component {
       mapSearches: this.updateMapSearchesActiveState(searchesFromProps(nextProps.searches)),
       intersec: 0,
     });
+  }
+
+  componentDidUpdate(prevProps) {
+    const currentSearchesCount = this.props.searches.length;
+    const lastSearch = this.props.searches[currentSearchesCount - 1];
+
+    if (this.props.searches.length > prevProps.searches.length && lastSearch.subQuery) {
+      const tabsItems = this.tabsRef.querySelectorAll('.ui.menu .item');
+      const newSearchItem = tabsItems[currentSearchesCount - 1];
+
+      if (newSearchItem) {
+        newSearchItem.click();
+      }
+    }
   }
 
   onAreasModeChange(ev, { checked }) {
@@ -503,6 +525,55 @@ class SearchTabs extends React.Component {
     });
   }
 
+  isNeedToShowCreateSearchButton(search) {
+    if (!search || !search.query) {
+      return false;
+    }
+
+    if (!search.results || !search.results.dictionaries || search.results.dictionaries.length === 0) {
+      return false;
+    }
+
+    const dictionariesCount = search.results.dictionaries
+      .filter(dict => dict.additional_metadata && dict.additional_metadata.location)
+      .map(dict => dict.id)
+      .length;
+    
+    if (dictionariesCount === 0) {
+      return false;
+    }
+
+    return isNeedToRenderLanguageTree(search.query);
+  }
+
+  createSearchWithAdditionalFields = search => () => {
+    const { results } = search;
+    const showCreateSearchButton = this.isNeedToShowCreateSearchButton(search);
+
+    if (!showCreateSearchButton || !results || !results.dictionaries) {
+      return;
+    }
+
+    const dicts = results.dictionaries
+      .filter(dict => dict.additional_metadata && dict.additional_metadata.location)
+      .map(dict => dict.id);
+
+    if (!dicts || dicts.length === 0) {
+      return;
+    }
+
+    const additionalFields = {
+      dicts,
+      searchMetadata: {
+        ...search.searchMetadata,
+      },
+      grammaticalSigns: search.grammaticalSigns,
+      languageVulnerability: search.languageVulnerability,
+    };
+
+    this.props.actions.newSearchWithAdditionalFields(additionalFields);
+  }
+
   render() {
     const { searches, actions } = this.props;
 
@@ -526,31 +597,38 @@ class SearchTabs extends React.Component {
           />
         </Menu.Item>
       ),
-      render: () => (
-        <Tab.Pane attached={false} key={search.id}>
-          <Container>
-            <h3>Search</h3>
-
-            <QueryBuilder
-              searchId={search.id}
-              data={fromJS(search.query)}
-              langs={search.langs}
-              dicts={search.dicts}
-              searchMetadata={search.searchMetadata}
-            />
-            <Info
-              searchId={search.id}
-              query={search.query}
-              category={search.category}
-              adopted={search.adopted}
-              etymology={search.etymology}
-              langs={search.langs}
-              dicts={search.dicts}
-              searchMetadata={search.searchMetadata}
-            />
-          </Container>
-        </Tab.Pane>
-      ),
+      render: () => {
+        const showCreateSearchButton = this.isNeedToShowCreateSearchButton(search);
+        return (
+          <Tab.Pane attached={false} key={search.id}>
+            <Container>
+              <h3>Search</h3>
+              <QueryBuilder
+                searchId={search.id}
+                data={fromJS(search.query)}
+                langs={search.langs}
+                dicts={search.dicts}
+                searchMetadata={search.searchMetadata}
+                grammaticalSigns={search.grammaticalSigns}
+                languageVulnerability={search.languageVulnerability}
+                showCreateSearchButton={showCreateSearchButton}
+                createSearchWithAdditionalFields={this.createSearchWithAdditionalFields(search)}
+              />
+              <Info
+                searchId={search.id}
+                query={search.query}
+                category={search.category}
+                adopted={search.adopted}
+                etymology={search.etymology}
+                langs={search.langs}
+                dicts={search.dicts}
+                searchMetadata={search.searchMetadata}
+                subQuery={search.subQuery}
+              />
+            </Container>
+          </Tab.Pane>
+        );
+      },
     }));
 
     // create tabs
@@ -573,7 +651,16 @@ class SearchTabs extends React.Component {
 
     return (
       <Container>
-        <Tab menu={{ pointing: true }} panes={panes} />
+        <div
+          ref={(ref) => {
+            this.tabsRef = ref;
+          }}
+        >
+          <Tab
+            menu={{ pointing: true }}
+            panes={panes}
+          />
+        </div>
         <Divider id="mapResults" section />
         <Labels
           data={labels}
@@ -615,12 +702,13 @@ SearchTabs.propTypes = {
   actions: PropTypes.shape({
     newSearch: PropTypes.func.isRequired,
     deleteSearch: PropTypes.func.isRequired,
+    newSearchWithAdditionalFields: PropTypes.func.isRequired,
   }).isRequired,
 };
 
 export default connect(
   state => state.search,
   dispatch => ({
-    actions: bindActionCreators({ newSearch, deleteSearch }, dispatch),
+    actions: bindActionCreators({ newSearch, deleteSearch, newSearchWithAdditionalFields }, dispatch),
   })
 )(SearchTabs);
