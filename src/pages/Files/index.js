@@ -84,7 +84,7 @@ const fileTypes = [
   {
     text: getTranslation('PDF file'),
     value: 'pdf',
-    icon: 'conversation',
+    icon: 'file pdf outline',
   },
   {
     text: getTranslation('Dialeqt file'),
@@ -96,6 +96,11 @@ const fileTypes = [
     value: 'starling/csv',
     icon: 'conversation',
   },
+  {
+    text: getTranslation('Image'),
+    value: 'image',
+    icon: 'file outline',
+  }
 ];
 
 function sortFiles(files, sortByField) {
