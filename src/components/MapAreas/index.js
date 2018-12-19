@@ -6,6 +6,7 @@ import L from 'leaflet';
 import initializeContextMenu from './leaflet.contextmenu';
 import './leaflet.contextmenu.scss';
 import getAreaOutline from './areas';
+import { getTranslation } from 'api/i18n';
 import './index.scss';
 
 function initMap(mountPoint) {
@@ -165,25 +166,25 @@ class MapAreas extends PureComponent {
         icon: this.iconFunc(markerData),
         contextmenu: true,
         contextmenuItems: [{
-          text: 'Отключить маркер',
+          text: getTranslation('Отключить маркер'),
           callback: () => { this.props.markersHandlers.deleteDictFromSearches(dictionary, markerGroups); },
         },
         {
-          text: 'Отключить все маркеры групп, к которым относится данный маркер',
+          text: getTranslation('Отключить все маркеры групп, к которым относится данный маркер'),
           callback: () => { this.props.markersHandlers.deleteAllDictsOfGroups(markerGroups); },
         }, {
           separator: true,
         }, {
-          text: 'Добавить маркер в группу',
+          text: getTranslation('Добавить маркер в группу'),
           contextmenuItems: this.getGroupItemsAddMarkerToGroup(markerGroups, dictionary),
         },
         {
-          text: 'Добавить все маркеры групп, к которым относится данный маркер, в группу',
+          text: getTranslation('Добавить все маркеры групп, к которым относится данный маркер, в группу'),
           contextmenuItems: this.getGroupItemsAddAllMarkersToGroup(markerGroups),
         }, {
           separator: true,
         }, {
-          text: 'Перенести маркер в группу',
+          text: getTranslation('Перенести маркер в группу'),
           contextmenuItems: this.getGroupItemsMoveMarkerToGroup(markerGroups, dictionary),
         }],
       })

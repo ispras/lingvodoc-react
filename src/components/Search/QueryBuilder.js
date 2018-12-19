@@ -10,6 +10,7 @@ import styled from 'styled-components';
 import { Checkbox, Grid, Radio, Segment, Button, Divider, Select, Input } from 'semantic-ui-react';
 import { setQuery } from 'ducks/search';
 import AdditionalFilter from 'components/Search/AdditionalFilter';
+import { getTranslation } from 'api/i18n';
 
 import { compositeIdToString } from 'utils/compositeId';
 
@@ -372,7 +373,7 @@ class QueryBuilder extends React.Component {
                 {showCreateSearchButton ?
                   <Grid.Column>
                     <Button primary basic onClick={this.props.createSearchWithAdditionalFields}>
-                      Поиск в найденном
+                      {getTranslation('Поиск в найденном')}
                     </Button>
                   </Grid.Column> :
                   null
