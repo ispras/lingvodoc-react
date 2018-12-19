@@ -9,19 +9,18 @@ import { Dropdown, Button } from 'semantic-ui-react';
 class KindField extends PureComponent {
   static propTypes = {
     classNames: PropTypes.object.isRequired,
-    value: PropTypes.oneOf([
-      'Expedition', 'Archive', null,
-    ]),
     onChange: PropTypes.func.isRequired,
     getTranslation: PropTypes.func.isRequired,
   }
 
-  constructor() {
+  constructor(props) {
     super();
 
+    const { getTranslation } = props;
+
     this.options = {
-      archive: 'Archive',
-      expedition: 'Expedition',
+      archive: getTranslation('Archive'),
+      expedition: getTranslation('Expedition'),
     };
 
     this.onChange = this.onChange.bind(this);
