@@ -32,9 +32,7 @@ class AdvancedFilter extends PureComponent {
     hasAudio: PropTypes.oneOf([
       true, false, null,
     ]),
-    kind: PropTypes.oneOf([
-      'Expedition', 'Archive', null,
-    ]),
+    kind: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]).isRequired,
     years: PropTypes.array.isRequired,
     humanSettlement: PropTypes.array.isRequired,
     authors: PropTypes.array.isRequired,

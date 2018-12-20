@@ -44,4 +44,6 @@ const info = (value) => {
   return result;
 };
 
+export { isValueArray, isValueBoolean, isValueString };
+
 export default info;

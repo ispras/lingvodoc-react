@@ -1,11 +1,13 @@
 import { getTranslation } from 'api/i18n';
-import info from './info';
+import info, { isValueBoolean } from './info';
 
 const kindInfo = (kind) => {
   let result = '';
 
-  if (kind === null) {
-    result = info(getTranslation('Not chosen'));
+  if (isValueBoolean(kind)) {
+    if (kind === false) {
+      result = info(getTranslation('Not chosen'));
+    }
   } else {
     result = info(kind);
   }

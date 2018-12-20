@@ -187,7 +187,7 @@ class QueryBuilder extends React.Component {
     const grammaticalSigns = gramSigns || {};
     const languageVulnerability = langVulnerability || [];
     let hasAudio = null;
-    let kind = null;
+    let kind = false;
     let years = [];
     let humanSettlement = [];
     let authors = [];
@@ -197,7 +197,12 @@ class QueryBuilder extends React.Component {
         hasAudio = searchMetadata.hasAudio;
       }
 
-      kind = searchMetadata.kind || kind;
+      if (typeof searchMetadata.kind === 'boolean') {
+        kind = searchMetadata.kind;
+      } else {
+        kind = searchMetadata.kind || kind;
+      }
+
       years = searchMetadata.years || years;
       humanSettlement = searchMetadata.humanSettlement || humanSettlement;
       authors = searchMetadata.authors || authors;
@@ -282,7 +287,7 @@ class QueryBuilder extends React.Component {
     const category = bool2category(this.state.source.dictionaries, this.state.source.corpora);
     const searchMetadata = {
       hasAudio,
-      kind,
+      kind: kind || null,
       years,
       humanSettlement,
       authors,
