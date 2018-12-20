@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { PureComponent } from 'react';
 import { Segment, Button, Modal } from 'semantic-ui-react';
 import { graphql } from 'react-apollo';
@@ -136,6 +137,10 @@ class AdditionalFilter extends PureComponent {
     return language.vulnerability !== null;
   }
 
+  static needToUpdateCheckedLanguages(allLangsDictsChecked, checkedLanguages, checkedDictionaries) {
+    return !allLangsDictsChecked && checkedLanguages.length === 0 && checkedDictionaries.length > 0;
+  }
+
   constructor(props) {
     super();
 
@@ -164,8 +169,10 @@ class AdditionalFilter extends PureComponent {
     this.flatLanguages = {};
     this.flattenLanguages(this.state.languagesTree, this.flatLanguages);
 
+    const { allLangsDictsChecked } = props;
+
     // set checked list depends on "allLangsDictsChecked" prop
-    this.state.checked = !props.allLangsDictsChecked ?
+    this.state.checked = !allLangsDictsChecked ?
       {
         languages: props.data.languages,
         dictionaries: props.data.dictionaries,
@@ -173,10 +180,18 @@ class AdditionalFilter extends PureComponent {
       this.constructor.getAllNodesValues(this.state.languagesTree);
     this.saveChecked();
 
+    const { languages: checkedLanguages, dictionaries: checkedDictionaries } = this.state.checked;
+    const isNeedToUpdateCheckedLanguages = this.constructor.needToUpdateCheckedLanguages(allLangsDictsChecked, checkedLanguages, checkedDictionaries);
+
+    if (isNeedToUpdateCheckedLanguages) {
+      this.state.checked.languages = this.getCheckedLanguagesByDictionaries(this.state.languagesTree, checkedDictionaries)
+        .map(language => language.id);
+    }
+
     // notify parent component with checked list if allLangsDictsChecked is true
     // it's here because final lists with languages and dictionaries calculated in this component,
     // not in the parent component
-    if (props.allLangsDictsChecked) {
+    if (allLangsDictsChecked || isNeedToUpdateCheckedLanguages) {
       props.onChange({
         ...props.data,
         languages: this.state.checked.languages,
@@ -194,6 +209,52 @@ class AdditionalFilter extends PureComponent {
     this.infoOnClickCallbacks = {
       grammar: this.onShowGrammarFilterButtonClick,
     };
+  }
+
+  getCheckedLanguagesByDictionaries(languages, checkedDictionaries) {
+    const checkedLanguages = [];
+
+    languages.forEach(lang => this.addLangCheckedLangsToContainer(lang, checkedLanguages, checkedDictionaries));
+
+    return checkedLanguages;
+  }
+
+  addLangCheckedLangsToContainer(language, container, checkedDictionaries) {
+    if (this.languageIsChecked(language, checkedDictionaries)) {
+      container.push(language);
+    }
+
+    language.children.forEach(child => this.addLangCheckedLangsToContainer(child, container, checkedDictionaries));
+  }
+
+  languageIsChecked(language, checkedDictionaries) {
+    const nodeHasDicts = language.dictionaries && language.dictionaries.length > 0;
+
+    if (nodeHasDicts) {
+      const allDictsChecked = language.dictionaries.every(dictionary => this.isDictionaryInChecked(dictionary, checkedDictionaries));
+
+      if (!allDictsChecked) {
+        return false;
+      }
+
+      if (language.children.length === 0) {
+        return true;
+      }
+    }
+
+    return language.children.every(child => this.languageIsChecked(child, checkedDictionaries));
+  }
+
+  isDictionaryInChecked(dictionary, checked) {
+    let result = false;
+
+    checked.forEach((checkedDictionaryId) => {
+      if (checkedDictionaryId[0] === dictionary.id[0] && checkedDictionaryId[1] === dictionary.id[1]) {
+        result = true;
+      }
+    });
+
+    return result;
   }
 
   /**
