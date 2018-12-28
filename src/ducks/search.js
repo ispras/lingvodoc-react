@@ -1,13 +1,13 @@
 import { combineReducers } from 'redux';
-import { fromJS } from 'immutable';
 
 // Actions
 export const SET_QUERY = '@search/SET_QUERY';
 export const STORE_SEARCH_RESULT = '@search/STORE_SEARCH_RESULT';
 export const NEW_SEARCH = '@search/NEW_SEARCH';
+export const NEW_SEARCH_WITH_ADDITIONAL_FIELDS = '@search/NEW_SEARCH_WITH_ADDITIONAL_FIELDS';
 export const DELETE_SEARCH = '@search/DELETE_SEARCH';
 
-export const setQuery = (searchId, query, category, adopted, etymology) => ({
+export const setQuery = (searchId, query, category, adopted, etymology, langs, dicts, searchMetadata, grammaticalSigns, languageVulnerability) => ({
   type: SET_QUERY,
   payload: {
     searchId,
@@ -15,6 +15,11 @@ export const setQuery = (searchId, query, category, adopted, etymology) => ({
     category,
     adopted,
     etymology,
+    langs,
+    dicts,
+    searchMetadata,
+    grammaticalSigns,
+    languageVulnerability,
   },
 });
 
@@ -25,6 +30,13 @@ export const storeSearchResult = (searchId, results) => ({
 
 export const newSearch = () => ({
   type: NEW_SEARCH,
+});
+
+export const newSearchWithAdditionalFields = additionalFields => ({
+  type: NEW_SEARCH_WITH_ADDITIONAL_FIELDS,
+  payload: {
+    ...additionalFields,
+  }
 });
 
 export const deleteSearch = searchId => ({
@@ -49,7 +61,13 @@ function buildNewQuery() {
     categoty: null,
     adopted: null,
     etymology: null,
+    langs: null,
+    dicts: null,
+    searchMetadata: null,
+    grammaticalSigns: null,
+    languageVulnerability: null,
     results: [],
+    subQuery: false,
   };
 }
 
@@ -59,7 +77,13 @@ const initialState = {
   categoty: null,
   adopted: null,
   etymology: null,
+  langs: null,
+  dicts: null,
+  searchMetadata: null,
+  grammaticalSigns: null,
+  languageVulnerability: null,
   results: [],
+  subQuery: false,
 };
 
 
@@ -67,6 +91,15 @@ const searches = (state = [initialState], action) => {
   switch (action.type) {
     case NEW_SEARCH:
       return [...state, buildNewQuery()];
+    case NEW_SEARCH_WITH_ADDITIONAL_FIELDS:
+      return [
+        ...state,
+        {
+          ...buildNewQuery(),
+          ...action.payload,
+          subQuery: true,
+        },
+      ];
     case DELETE_SEARCH:
       return state.length > 1 ? state.filter(search => search.id !== action.payload) : state;
     case SET_QUERY:
@@ -78,6 +111,12 @@ const searches = (state = [initialState], action) => {
             category: action.payload.category,
             adopted: action.payload.adopted,
             etymology: action.payload.etymology,
+            langs: action.payload.langs,
+            dicts: action.payload.dicts,
+            searchMetadata: action.payload.searchMetadata,
+            grammaticalSigns: action.payload.grammaticalSigns,
+            languageVulnerability: action.payload.languageVulnerability,
+            subQuery: false,
           }
           : search));
     case STORE_SEARCH_RESULT:
