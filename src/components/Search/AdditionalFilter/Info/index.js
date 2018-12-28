@@ -86,7 +86,7 @@ AdditionalFilterInfo.propTypes = {
   languages: PropTypes.array.isRequired,
   dictionaries: PropTypes.array.isRequired,
   hasAudio: PropTypes.bool,
-  kind: PropTypes.string,
+  kind: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]).isRequired,
   years: PropTypes.array.isRequired,
   humanSettlement: PropTypes.array.isRequired,
   authors: PropTypes.array.isRequired,

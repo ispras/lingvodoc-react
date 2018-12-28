@@ -10,7 +10,7 @@ const hasAudioInfo = (hasAudio) => {
     result = info(hasAudio);
   }
 
-  return `Audio: ${result}`;
+  return `${getTranslation('Audio')}: ${result}`;
 };
 
 export default hasAudioInfo;

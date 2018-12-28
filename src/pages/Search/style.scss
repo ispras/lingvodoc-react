@@ -1,0 +1,74 @@
+.searches-labels {
+  opacity: 0.7;
+
+  &.active {
+    opacity: 1;
+  }
+
+  & a.label.ui {
+    cursor: default;
+  }
+
+  &.active a.label.ui {
+    cursor: pointer;
+  }
+}
+
+.intersection-control {
+  opacity: 0.7;
+  cursor: default;
+
+  &.active {
+    opacity: 1;
+    cursor: auto;
+  }
+}
+
+.area-groups-select {  
+  &.ui.accordion .title {
+    opacity: 0.6;
+    cursor: default;
+  }
+
+  &.active.ui.accordion .title {
+    opacity: 1;
+    cursor: pointer;
+  }
+
+  &__group {
+    margin-bottom: 10px;
+  }
+
+  &__group:last-child {
+    margin-bottom: 0;
+  }
+
+  &__group_all label {
+    font-weight: bold;
+  }
+
+  &__color {
+    display: inline-block;
+    vertical-align: bottom;
+    margin-left: 10px;
+    width: 40px;
+    height: 20px;
+  }
+}
+
+.areas-mode {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-direction: row;
+  flex-wrap: wrap;
+
+  &__toggle-mode {
+    padding: 0.5em 0em;
+  }
+  
+  & .ui.toggle.checkbox .box:after,
+  & .ui.toggle.checkbox label:after {
+    z-index: 5;
+  }
+}

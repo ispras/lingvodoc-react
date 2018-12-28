@@ -10,6 +10,7 @@ import styled from 'styled-components';
 import { Checkbox, Grid, Radio, Segment, Button, Divider, Select, Input } from 'semantic-ui-react';
 import { setQuery } from 'ducks/search';
 import AdditionalFilter from 'components/Search/AdditionalFilter';
+import { getTranslation } from 'api/i18n';
 
 import { compositeIdToString } from 'utils/compositeId';
 
@@ -178,16 +179,45 @@ class QueryBuilder extends React.Component {
     this.changeMode = this.changeMode.bind(this);
 
     this.newBlock = fromJS(newBlock);
+    const {
+      langs, dicts, searchMetadata, grammaticalSigns: gramSigns, languageVulnerability: langVulnerability,
+    } = this.props;
+    const languages = langs || [];
+    const dictionaries = dicts || [];
+    const grammaticalSigns = gramSigns || {};
+    const languageVulnerability = langVulnerability || [];
+    let hasAudio = null;
+    let kind = false;
+    let years = [];
+    let humanSettlement = [];
+    let authors = [];
+
+    if (searchMetadata) {
+      if (typeof searchMetadata.hasAudio === 'boolean') {
+        hasAudio = searchMetadata.hasAudio;
+      }
+
+      if (typeof searchMetadata.kind === 'boolean') {
+        kind = searchMetadata.kind;
+      } else {
+        kind = searchMetadata.kind || kind;
+      }
+
+      years = searchMetadata.years || years;
+      humanSettlement = searchMetadata.humanSettlement || humanSettlement;
+      authors = searchMetadata.authors || authors;
+    }
+
     this.additionalFields = {
-      languages: [],
-      dictionaries: [],
-      hasAudio: null,
-      kind: null,
-      years: [],
-      humanSettlement: [],
-      authors: [],
-      languageVulnerability: [],
-      grammaticalSigns: {},
+      languages,
+      dictionaries,
+      hasAudio,
+      kind,
+      years,
+      humanSettlement,
+      authors,
+      languageVulnerability,
+      grammaticalSigns,
     };
 
     this.state = {
@@ -199,7 +229,8 @@ class QueryBuilder extends React.Component {
       mode: {
         adopted: 'ignore',
         etymology: 'ignore',
-      }
+      },
+      allLangsDictsChecked: !this.props.langs && !this.props.dicts,
     };
   }
 
@@ -248,20 +279,22 @@ class QueryBuilder extends React.Component {
     const {
       languages: langsToFilter, dictionaries: dictsToFilter,
       hasAudio, kind, years, humanSettlement, authors,
+      grammaticalSigns, languageVulnerability,
     } = this.additionalFields;
+
     const adopted = mode2bool(this.state.mode.adopted);
     const etymology = mode2bool(this.state.mode.etymology);
     const category = bool2category(this.state.source.dictionaries, this.state.source.corpora);
     const searchMetadata = {
       hasAudio,
-      kind,
+      kind: kind || null,
       years,
       humanSettlement,
       authors,
     };
     const query = this.addGrammaticalSigns(this.state.data.toJS());
 
-    actions.setQuery(searchId, query, category, adopted, etymology, langsToFilter, dictsToFilter, searchMetadata);
+    actions.setQuery(searchId, query, category, adopted, etymology, langsToFilter, dictsToFilter, searchMetadata, grammaticalSigns, languageVulnerability);
   }
 
   addGrammaticalSigns(query) {
@@ -318,6 +351,8 @@ class QueryBuilder extends React.Component {
 
   render() {
     const blocks = this.state.data;
+    const { showCreateSearchButton } = this.props;
+    const { allLangsDictsChecked } = this.state;
 
     return (
       <div>
@@ -340,6 +375,14 @@ class QueryBuilder extends React.Component {
                     onChange={() => this.changeSource('corpora')}
                   />
                 </Grid.Column>
+                {showCreateSearchButton ?
+                  <Grid.Column>
+                    <Button primary basic onClick={this.props.createSearchWithAdditionalFields}>
+                      {getTranslation('Поиск в найденном')}
+                    </Button>
+                  </Grid.Column> :
+                  null
+                }
               </Grid>
             </Segment>
           </Segment.Group>
@@ -348,7 +391,7 @@ class QueryBuilder extends React.Component {
         <AdditionalFilter
           onChange={this.onAdditionalFieldsChange}
           data={this.additionalFields}
-          allLangsDictsChecked
+          allLangsDictsChecked={allLangsDictsChecked}
         />
 
         <Segment.Group>
@@ -418,11 +461,11 @@ class QueryBuilder extends React.Component {
                 onDelete={this.onDeleteAndBlock(id)}
               />,
               <Divider key={`d_${id}`} horizontal>
-                And
+                Or
               </Divider>
             ))}
           <Button primary basic fluid onClick={this.onAddAndBlock}>
-            Add Another AND Block
+            Add Another OR Block
           </Button>
 
           <Divider />
@@ -438,6 +481,13 @@ class QueryBuilder extends React.Component {
 QueryBuilder.propTypes = {
   data: PropTypes.object,
   searchId: PropTypes.number.isRequired,
+  langs: PropTypes.array,
+  dicts: PropTypes.array,
+  searchMetadata: PropTypes.object,
+  grammaticalSigns: PropTypes.object,
+  languageVulnerability: PropTypes.array,
+  showCreateSearchButton: PropTypes.bool,
+  createSearchWithAdditionalFields: PropTypes.func.isRequired,
   actions: PropTypes.shape({
     setQuery: PropTypes.func.isRequired,
   }).isRequired,
@@ -446,6 +496,7 @@ QueryBuilder.propTypes = {
 
 QueryBuilder.defaultProps = {
   data: [[newBlock]],
+  showCreateSearchButton: false,
 };
 
 export default compose(

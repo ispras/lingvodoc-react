@@ -9,19 +9,35 @@ import { Dropdown, Button } from 'semantic-ui-react';
 class KindField extends PureComponent {
   static propTypes = {
     classNames: PropTypes.object.isRequired,
-    value: PropTypes.oneOf([
-      'Expedition', 'Archive', null,
-    ]),
+    value: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]).isRequired,
     onChange: PropTypes.func.isRequired,
     getTranslation: PropTypes.func.isRequired,
   }
 
-  constructor() {
+  static getDropdownInnerValue(value) {
+    if (value === false) {
+      return null;
+    }
+
+    return value;
+  }
+
+  static getDropdownOuterValue(value) {
+    if (value === null) {
+      return false;
+    }
+
+    return value;
+  }
+
+  constructor(props) {
     super();
 
+    const { getTranslation } = props;
+
     this.options = {
-      archive: 'Archive',
-      expedition: 'Expedition',
+      archive: getTranslation('Archive'),
+      expedition: getTranslation('Expedition'),
     };
 
     this.onChange = this.onChange.bind(this);
@@ -34,8 +50,9 @@ class KindField extends PureComponent {
    */
   onChange(ev, { value }) {
     const { onChange } = this.props;
+    const { getDropdownOuterValue } = this.constructor;
 
-    onChange(value);
+    onChange(getDropdownOuterValue(value));
   }
 
   onClearAllButtonClick() {
@@ -43,7 +60,7 @@ class KindField extends PureComponent {
       return;
     }
 
-    this.props.onChange(null);
+    this.props.onChange(false);
   }
 
   getDropdownOptions() {
@@ -65,6 +82,7 @@ class KindField extends PureComponent {
 
   render() {
     const { value, classNames, getTranslation } = this.props;
+    const { getDropdownInnerValue } = this.constructor;
 
     const label = getTranslation('Data source');
     const clearText = getTranslation('Clear');
@@ -76,7 +94,7 @@ class KindField extends PureComponent {
         <Dropdown
           selection
           options={this.getDropdownOptions()}
-          value={value}
+          value={getDropdownInnerValue(value)}
           onChange={this.onChange}
           placeholder={placeholder}
         />
