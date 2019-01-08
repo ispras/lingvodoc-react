@@ -13,6 +13,7 @@ import AdditionalFilter from 'components/Search/AdditionalFilter';
 import { getTranslation } from 'api/i18n';
 
 import { compositeIdToString } from 'utils/compositeId';
+import './index.scss';
 
 const mode2bool = (value) => {
   switch (value) {
@@ -24,6 +25,17 @@ const mode2bool = (value) => {
       return false;
     default:
       return null;
+  }
+};
+
+const modeBlocksBool = (value) => {
+  switch (value) {
+    case 'and':
+      return true;
+    case 'or':
+      return false;
+    default:
+      return false;
   }
 };
 
@@ -286,7 +298,7 @@ class QueryBuilder extends React.Component {
     const adopted = mode2bool(this.state.mode.adopted);
     const etymology = mode2bool(this.state.mode.etymology);
     const category = bool2category(this.state.source.dictionaries, this.state.source.corpora);
-    const { blocks } = this.state.mode;
+    const blocks = modeBlocksBool(this.state.mode.blocks);
     const searchMetadata = {
       hasAudio,
       kind: kind || null,
@@ -384,7 +396,7 @@ class QueryBuilder extends React.Component {
 
     return (
       <div>
-        <Segment.Group>
+        <Segment.Group className="search-group">
           <Segment>Search in</Segment>
           <Segment.Group>
             <Segment>
@@ -422,7 +434,7 @@ class QueryBuilder extends React.Component {
           allLangsDictsChecked={allLangsDictsChecked}
         />
 
-        <Segment.Group>
+        <Segment.Group className="search-group">
           <Segment>Search options</Segment>
           <Segment.Group>
             <Segment>
@@ -477,7 +489,7 @@ class QueryBuilder extends React.Component {
             </Segment>
           </Segment.Group>
         </Segment.Group>
-        <Segment.Group>
+        <Segment.Group className="search-group">
           <Segment>
             <div>Blocks mode</div>
             <Segment.Group>
