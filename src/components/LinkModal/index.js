@@ -5,7 +5,7 @@ import { graphql } from 'react-apollo';
 import { Segment, Checkbox, Button, Modal, Tab } from 'semantic-ui-react';
 import { isEqual } from 'lodash';
 import styled from 'styled-components';
-import { queryPerspective, LexicalEntryViewByIds } from 'components/PerspectiveView';
+import { queryPerspective, LexicalEntryByIds } from 'components/PerspectiveView';
 import buildPartialLanguageTree from 'components/GroupingTagModal/partialTree';
 import Tree from 'components/GroupingTagModal/Tree';
 import SearchLexicalEntries from 'components/GroupingTagModal/search';
@@ -88,7 +88,7 @@ const EditLink = (props) => {
       render: () => (
         <div>
           <Segment padded="very" textAlign="center">
-            <Tree resultsTree={tree} TableComponent={LexicalEntryViewByIds} actions={actions} mode='edit' />
+            <Tree resultsTree={tree} TableComponent={LexicalEntryByIds} actions={actions} mode='edit' />
           </Segment>
         </div>
       ),
@@ -148,7 +148,7 @@ const PublishLink = (props) => {
             </Segment>
           )}
           <Segment padded="very" textAlign="center">
-            <Tree resultsTree={tree} TableComponent={LexicalEntryViewByIds} mode='publish' />
+            <Tree resultsTree={tree} TableComponent={LexicalEntryByIds} mode='publish' />
           </Segment>
         </div>
       ),
@@ -185,7 +185,7 @@ const ContributionsLink = (props) => {
             </Segment>
           )}
           <Segment padded="very" textAlign="center">
-            <Tree resultsTree={tree} TableComponent={LexicalEntryViewByIds} mode='contributions' />
+            <Tree resultsTree={tree} TableComponent={LexicalEntryByIds} mode='contributions' />
           </Segment>
         </div>
       ),

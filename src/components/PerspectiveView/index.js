@@ -639,7 +639,7 @@ export const LexicalEntryView = graphql(queryLexicalEntry, {
   options: { notifyOnNetworkStatusChange: true },
 })(LexicalEntryViewBase);
 
-export const LexicalEntryViewByIds = compose(
+export const LexicalEntryByIds = compose(
   graphql(queryLexicalEntriesByIds, {
     options: { notifyOnNetworkStatusChange: true },
   }),
