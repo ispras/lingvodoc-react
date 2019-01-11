@@ -81,7 +81,7 @@ class TextEntityContent extends React.Component {
   }
 }
 
-const Text = onlyUpdateForKeys(['entry', 'entity'])((props) => {
+const Text = onlyUpdateForKeys(['entry', 'entity', 'mode'])((props) => {
   const {
     perspectiveId,
     column,

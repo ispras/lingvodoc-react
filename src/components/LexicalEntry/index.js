@@ -129,7 +129,14 @@ class Entities extends React.Component {
           query: lexicalEntryQuery,
           variables: {
             id: entry.id,
-            entitiesMode,
+            entitiesMode: 'all',
+          },
+        },
+        {
+          query: lexicalEntryQuery,
+          variables: {
+            id: entry.id,
+            entitiesMode: 'published',
           },
         },
       ],
@@ -148,7 +155,14 @@ class Entities extends React.Component {
           query: lexicalEntryQuery,
           variables: {
             id: entry.id,
-            entitiesMode,
+            entitiesMode: 'all',
+          },
+        },
+        {
+          query: lexicalEntryQuery,
+          variables: {
+            id: entry.id,
+            entitiesMode: 'published',
           },
         },
       ],
@@ -168,6 +182,13 @@ class Entities extends React.Component {
             entitiesMode: 'all',
           },
         },
+        {
+          query: lexicalEntryQuery,
+          variables: {
+            id: entry.id,
+            entitiesMode: 'published',
+          },
+        },
       ],
     });
   }
@@ -181,7 +202,14 @@ class Entities extends React.Component {
           query: lexicalEntryQuery,
           variables: {
             id: entry.id,
-            entitiesMode,
+            entitiesMode: 'all',
+          },
+        },
+        {
+          query: lexicalEntryQuery,
+          variables: {
+            id: entry.id,
+            entitiesMode: 'published',
           },
         },
       ],
@@ -197,7 +225,14 @@ class Entities extends React.Component {
           query: lexicalEntryQuery,
           variables: {
             id: entry.id,
-            entitiesMode,
+            entitiesMode: 'all',
+          },
+        },
+        {
+          query: lexicalEntryQuery,
+          variables: {
+            id: entry.id,
+            entitiesMode: 'published',
           },
         },
       ],

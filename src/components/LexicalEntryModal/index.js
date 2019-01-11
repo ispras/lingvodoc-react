@@ -17,9 +17,11 @@ export const LexicalEntryLink = styled.span`
 `;
 
 function LexicalEntryModal({
-  node, actions, entitiesMode, defaultMode, onClose,
+  node, actions, entitiesMode, defaultMode, onClose, onlyViewMode,
 }) {
-  const { id, translation, lexicalEntries } = node;
+  const {
+    id, translation, lexicalEntries, parent_id: perspectiveParentId,
+  } = node;
 
   return (
     <Modal dimmer open size="fullscreen" closeOnDimmerClick={false} closeIcon onClose={onClose}>
@@ -28,9 +30,11 @@ function LexicalEntryModal({
         <LexicalEntryByIds
           className="perspective"
           perspectiveId={id}
+          perspectiveParentId={perspectiveParentId}
           entriesIds={lexicalEntries.map(e => e.id)}
           defaultMode={defaultMode}
           entitiesMode={entitiesMode}
+          onlyViewMode={onlyViewMode}
           actions={actions}
         />
       </Modal.Content>
@@ -50,6 +54,7 @@ LexicalEntryModal.propTypes = {
   actions: PropTypes.array,
   entitiesMode: PropTypes.string,
   defaultMode: PropTypes.string.isRequired,
+  onlyViewMode: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
 };
 

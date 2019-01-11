@@ -1,0 +1,14 @@
+.search-perspective-view {
+  .tabular .item:not(.active) {
+    color: rgba(0, 0, 0, 0.95) !important;
+  }
+
+  .ui.tabular.menu {
+    margin-bottom: -1px;
+  }
+
+  .lexical-entries-actions {
+    margin-top: 5px;
+    margin-bottom: 5px;
+  }
+}

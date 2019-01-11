@@ -26,9 +26,16 @@ class Tree extends React.Component {
   generateNodeProps({ node }) {
     const { actions, entitiesMode, mode } = this.props;
     const defaultTitle = node.translation || getTranslation('None');
+    const onlyViewMode = true;
     const title =
       node.type === 'perspective' ? (
-        <LexicalEntryLink node={node} actions={actions} entitiesMode={entitiesMode} mode={mode}/>
+        <LexicalEntryLink
+          node={node}
+          actions={actions}
+          entitiesMode={entitiesMode}
+          mode={mode}
+          onlyViewMode={onlyViewMode}
+        />
       ) : (
         defaultTitle
       );

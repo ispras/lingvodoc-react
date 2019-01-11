@@ -1,5 +1,6 @@
 import React from 'react';
 import gql from 'graphql-tag';
+import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
 import { compose } from 'recompose';
 import { Header, Breadcrumb, Dropdown } from 'semantic-ui-react';
@@ -37,7 +38,7 @@ class PerspectivePath extends React.Component {
   }
 
   render() {
-    const { queryPerspectivePath, queryAvailablePerspectives, mode} = this.props;
+    const { queryPerspectivePath, queryAvailablePerspectives, mode, className } = this.props;
 
     if (queryPerspectivePath.loading || queryPerspectivePath.error || queryAvailablePerspectives.loading || queryAvailablePerspectives.error) {
       return null;
@@ -47,7 +48,7 @@ class PerspectivePath extends React.Component {
     const { perspectives } = queryAvailablePerspectives.dictionary;
  
     return (
-      <Header as="h2" className="white">
+      <Header as="h2" className={className}>
         <Breadcrumb
           icon="right angle"
           sections={tree.slice().reverse().map((e, index) => {
@@ -75,8 +76,15 @@ class PerspectivePath extends React.Component {
       </Header>
     );
   }
-
 }
+
+PerspectivePath.propTypes = {
+  className: PropTypes.string,
+};
+
+PerspectivePath.defaultProps = {
+  className: 'white',
+};
 
 export default compose(
   graphql(queryPerspectivePath, {

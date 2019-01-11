@@ -1,31 +1,14 @@
-import React, { PureComponent } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
-import { compose, branch, renderComponent } from 'recompose';
+import { compose, branch, renderComponent, pure } from 'recompose';
 import Placeholder from 'components/Placeholder';
 import { LexicalEntryByIds as LexicalEntryByIdsViewMode } from 'components/PerspectiveView/index';
+import LexicalEntryByIdsAdvanced from './LexicalEntryByIdsAdvanced';
 import { isOnlyViewModeAllowed } from './helpers';
 
-// const PerspectiveRoles = graphql(
-//   gql`
-//     query PerspectiveRoles($id: LingvodocID!) {
-//       perspective(id: $id) {
-//         id
-//         roles {
-//           roles_users
-//         }
-//       }
-//     }
-//   `,
-//   {
-//     options: props => ({
-//       variables: {
-//         id: props.perspectiveId,
-//       },
-//     }),
-//   }
-// );
+import './style.scss';
 
 const PermissionLists = graphql(
   gql`
@@ -37,52 +20,24 @@ const PermissionLists = graphql(
         }
       }
     }
-  `
-);
-
-class LexicalEntryByIds extends PureComponent {
-  constructor() {
-    super();
-
-    // const { perspectiveId, entriesIds } = props;
-
-    this.state = {
-      entriesIds: [],
-    };
-  }
-
-  render() {
-    // const {
-    //   className, perspectiveId, entriesIds, defaultMode, entitiesMode, actions,
-    // } = this.props;
-    return (
-      <div>
-        Продвинутый компонент
-      </div>
-    );
-  }
-}
-
-LexicalEntryByIds.propTypes = {
-  className: PropTypes.string.isRequired,
-  perspectiveId: PropTypes.array.isRequired,
-  entriesIds: PropTypes.array.isRequired,
-  defaultMode: PropTypes.string.isRequired,
-  entitiesMode: PropTypes.string.isRequired,
-  actions: PropTypes.array.isRequired,
-  data: PropTypes.object.isRequired,
-};
+  `);
 
 const LexicalEntryByIdsWrapper = ({ data, ...restProps }) => {
   const { permission_lists: permissionLists } = data;
-  const { perspectiveId } = restProps;
+  const { perspectiveId, onlyViewMode } = restProps;
   const onlyViewModeAllowed = isOnlyViewModeAllowed(permissionLists, perspectiveId);
+
+  if (onlyViewMode) {
+    return (
+      <LexicalEntryByIdsViewMode {...restProps} mode={restProps.defaultMode} />
+    );
+  }
 
   return (
     <div>
       {onlyViewModeAllowed ?
         <LexicalEntryByIdsViewMode {...restProps} mode={restProps.defaultMode} /> :
-        <LexicalEntryByIds {...restProps} data={data} />
+        <LexicalEntryByIdsAdvanced {...restProps} data={data} />
       }
     </div>
   );
@@ -94,5 +49,6 @@ LexicalEntryByIdsWrapper.propTypes = {
 
 export default compose(
   PermissionLists,
-  branch(({ data }) => data.loading, renderComponent(Placeholder))
+  branch(({ data }) => data.loading, renderComponent(Placeholder)),
+  pure
 )(LexicalEntryByIdsWrapper);

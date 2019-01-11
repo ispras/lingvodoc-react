@@ -18,7 +18,7 @@ function content(c) {
 }
 
 const MarkupEntityContent = onlyUpdateForKeys([
-  'entity',
+  'entity', 'mode',
 ])(({
   entity, parentEntity, mode, publish, accept, remove, actions,
 }) => {
