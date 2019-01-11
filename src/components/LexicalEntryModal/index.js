@@ -4,7 +4,6 @@ import { Modal, Button } from 'semantic-ui-react';
 import styled from 'styled-components';
 import { getTranslation } from 'api/i18n';
 import LexicalEntryByIds from 'components/LexicalEntryByIds';
-// import { LexicalEntryByIds } from 'components/PerspectiveView/index';
 
 export const LexicalEntryLink = styled.span`
   cursor: pointer;

@@ -187,7 +187,7 @@ const P = ({
   changePage,
   entriesIds,
   createLexicalEntry,
-  mergeLexicalEntries,
+  // mergeLexicalEntries,
   removeLexicalEntries,
   addLexicalEntry: addCreatedEntry,
   selectLexicalEntry: onEntrySelect,
@@ -208,7 +208,6 @@ const P = ({
       </Dimmer>
     );
   }
-
 
   const lexicalEntries = !error ? data.perspective.lexical_entries : [];
 
@@ -322,15 +321,8 @@ const P = ({
     },
   ]);
 
-  // const newEntries = processEntries(lexicalEntries.filter(e => !!createdEntries.find(c => isEqual(e.id, c.id))));
-  // const entriesToShow = lexicalEntries
-  //   .filter(e => !!createdEntries.find(c => isEqual(e.id, c.id)))
-  //   .filter(e => !!entriesIds.find(entryId => isEqual(e.id, entryId)));
-
   const newEntries = processEntries(lexicalEntries.filter(e => !!createdEntries.find(c => isEqual(e.id, c.id))));
   const entries = processEntries(lexicalEntries.filter(e => !!entriesIds.find(entryId => isEqual(e.id, entryId))));
-  // const newEntries = processEntries(createdEntries);
-  // const entries = processEntries(lexicalEntries);
 
   const pageEntries =
     entries.length > ROWS_PER_PAGE ? take(drop(entries, ROWS_PER_PAGE * (page - 1)), ROWS_PER_PAGE) : entries;
@@ -507,122 +499,6 @@ export const queryLexicalEntry = gql`
     }
   }
 `;
-
-// const LexicalEntryViewBase = ({
-//   perspectiveId,
-//   entries,
-//   mode,
-//   entitiesMode,
-//   data,
-//   selectEntries,
-//   selectedEntries,
-//   onEntrySelect,
-//   actions,
-// }) => {
-//   const { loading } = data;
-
-//   if (loading) {
-//     return null;
-//   }
-
-//   const {
-//     all_fields,
-//     perspective: { columns },
-//   } = data;
-
-//   const fields = columns.map((column) => {
-//     const field = find(all_fields, f => isEqual(column.field_id, f.id));
-//     return {
-//       ...field,
-//       self_id: column.self_id,
-//       column_id: column.id,
-//       position: column.position,
-//     };
-//   });
-
-//   return (
-//     <TableComponent
-//       perspectiveId={perspectiveId}
-//       entitiesMode={entitiesMode}
-//       entries={entries}
-//       columns={fields}
-//       mode={mode}
-//       actions={actions}
-//       selectEntries={selectEntries}
-//       selectedEntries={selectedEntries}
-//       onEntrySelect={onEntrySelect}
-//     />
-//   );
-// };
-
-// LexicalEntryViewBase.propTypes = {
-//   perspectiveId: PropTypes.array.isRequired,
-//   entries: PropTypes.array.isRequired,
-//   mode: PropTypes.string.isRequired,
-//   entitiesMode: PropTypes.string.isRequired,
-//   data: PropTypes.shape({
-//     loading: PropTypes.bool.isRequired,
-//     all_fields: PropTypes.array,
-//     perspective: PropTypes.object,
-//   }).isRequired,
-//   selectEntries: PropTypes.bool,
-//   selectedEntries: PropTypes.array,
-//   onEntrySelect: PropTypes.func,
-//   actions: PropTypes.array,
-// };
-
-// LexicalEntryViewBase.defaultProps = {
-//   actions: [],
-//   selectEntries: false,
-//   selectedEntries: [],
-//   onEntrySelect: () => {},
-// };
-
-// export const queryLexicalEntriesByIds = gql`
-//   query queryLexicalEntry($perspectiveId: LingvodocID!, $entriesIds: [LingvodocID]!, $entitiesMode: String!) {
-//     perspective(id: $perspectiveId) {
-//       id
-//       translation
-//       columns {
-//         id
-//         field_id
-//         parent_id
-//         self_id
-//         position
-//       }
-//       lexical_entries(mode: $entitiesMode, ids: $entriesIds) {
-//         id
-//         parent_id
-//         created_at
-//         entities(mode: $entitiesMode) {
-//           id
-//           parent_id
-//           field_id
-//           link_id
-//           self_id
-//           created_at
-//           locale_id
-//           content
-//           published
-//           accepted
-//           additional_metadata {
-//             link_perspective_id
-//           }
-//         }
-//       }
-//     }
-//     all_fields {
-//       id
-//       translation
-//       data_type
-//       data_type_translation_gist_id
-//     }
-//   }
-// `;
-
-// export const LexicalEntryView = graphql(queryLexicalEntry, {
-//   options: { notifyOnNetworkStatusChange: true },
-// })(LexicalEntryViewBase);
 
 const PerspectiveViewWrapper = ({
   id, className, mode, entitiesMode, page, data, filter, sortByField, changePage, entriesIds,

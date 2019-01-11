@@ -1,14 +1,10 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
-// import { map } from 'lodash';
 import { onlyUpdateForKeys, withHandlers, withState, compose } from 'recompose';
-// import { Switch, Route, Redirect, Link } from 'react-router-dom';
-import { Container, Menu, Dropdown } from 'semantic-ui-react';
-import PerspectiveView from './PerspectiveView';
-// import NotFound from 'pages/NotFound';
+import { Container, Menu } from 'semantic-ui-react';
 import { getTranslation } from 'api/i18n';
+import PerspectiveView from './PerspectiveView';
 import PerspectivePath from '../../pages/Perspective/PerspectivePath';
 
 import '../../pages/Perspective/style.scss';
@@ -23,14 +19,7 @@ export const launchSoundAndMarkupMutation = gql`
       { triumph } }
 `;
 
-// const queryCounter = gql`
-//   query qcounter($id: LingvodocID! $mode: String!) {
-//     perspective(id: $id) {
-//       counter(mode: $mode)
-//     }
-//   }
-// `;
-
+/* Old Counter */
 // const queryCounter = gql`
 //   query qcounter($id: LingvodocID!, $entriesIds: [LingvodocID]!, $mode: String!) {
 //     perspective(id: $id) {
@@ -64,7 +53,7 @@ const MODES = {
   publish: {
     entitiesMode: 'all',
     text: getTranslation('Publish'),
-  }
+  },
 };
 
 const handlers = compose(
@@ -99,11 +88,6 @@ const ModeSelector = onlyUpdateForKeys([
 ])(({
   mode, filter,
   submitFilter,
-  openCognateAnalysisModal,
-  openCognateAcousticAnalysisModal,
-  openPhonemicAnalysisModal,
-  openPhonologyModal,
-  soundAndMarkup,
   toggleMode,
   id,
   entriesIds,
@@ -133,39 +117,11 @@ const ModeSelector = onlyUpdateForKeys([
         entriesIds={entriesIds}
       />
     </Menu.Item>
-    {/* <Dropdown item text={getTranslation('Tools')}>
-      <Dropdown.Menu>
-        <Dropdown.Item onClick={openCognateAnalysisModal}>{getTranslation('Cognate analysis')}</Dropdown.Item>
-        <Dropdown.Item onClick={openCognateAcousticAnalysisModal}>
-          {getTranslation('Cognate acoustic analysis')}
-        </Dropdown.Item>
-        <Dropdown.Item onClick={openPhonemicAnalysisModal}>{getTranslation('Phonemic analysis')}</Dropdown.Item>
-        <Dropdown.Item onClick={openPhonologyModal}>{getTranslation('Phonology')}</Dropdown.Item>
-        <Dropdown.Item onClick={soundAndMarkup}>{getTranslation('Sound and markup')}</Dropdown.Item>
-      </Dropdown.Menu>
-    </Dropdown> */}
-
     <Menu.Menu position="right">
       <Filter filter={filter} submitFilter={submitFilter} />
     </Menu.Menu>
   </Menu>
 ));
-
-const soundAndMarkup = (perspectiveId, mode, launchSoundAndMarkup) => {
-  launchSoundAndMarkup({
-    variables: {
-      perspectiveId,
-      publishedMode: mode === 'edit' ? 'all' : 'published',
-    },
-  }).then(
-    () => {
-      window.logger.suc(getTranslation('Sound and markup compilation is being created. Check out tasks for details.'));
-    },
-    () => {
-      window.logger.err(getTranslation('Failed to launch sound and markup compilation!'));
-    }
-  );
-};
 
 class Perspective extends PureComponent {
   constructor(props) {
@@ -203,10 +159,6 @@ class Perspective extends PureComponent {
       perspective,
       entriesIds,
       submitFilter,
-      openCognateAnalysisModal,
-      openPhonemicAnalysisModal,
-      openPhonologyModal,
-      launchSoundAndMarkup,
     } = this.props;
     const {
       id, parent_id: parentId,
@@ -225,11 +177,6 @@ class Perspective extends PureComponent {
           entriesIds={entriesIds}
           filter={perspective.filter}
           submitFilter={submitFilter}
-          openCognateAnalysisModal={() => openCognateAnalysisModal(id)}
-          openCognateAcousticAnalysisModal={() => openCognateAnalysisModal(id, 'acoustic')}
-          openPhonemicAnalysisModal={() => openPhonemicAnalysisModal(id)}
-          openPhonologyModal={() => openPhonologyModal(id)}
-          soundAndMarkup={() => soundAndMarkup(id, mode, launchSoundAndMarkup)}
           toggleMode={this.toggleMode}
         />
         <PerspectiveView
@@ -247,80 +194,11 @@ class Perspective extends PureComponent {
   }
 }
 
-// const Perspective = ({
-//   perspective,
-//   submitFilter,
-//   openCognateAnalysisModal,
-//   openPhonemicAnalysisModal,
-//   openPhonologyModal,
-//   launchSoundAndMarkup,
-// }) => {
-//   const {
-//     id, parent_id: parentId,
-//   } = perspective.params;
-
-//   if (!id || !parentId) return null;
-
-//   const mode = 'edit';
-//   const page = 1;
-
-//   return (
-//     <Container fluid className="perspective inverted">
-//       <PerspectivePath id={id} dictionary_id={parentId} mode={mode} />
-//       <ModeSelector
-//         mode={mode}
-//         id={id}
-//         filter={perspective.filter}
-//         submitFilter={submitFilter}
-//         openCognateAnalysisModal={() => openCognateAnalysisModal(id)}
-//         openCognateAcousticAnalysisModal={() => openCognateAnalysisModal(id, 'acoustic')}
-//         openPhonemicAnalysisModal={() => openPhonemicAnalysisModal(id)}
-//         openPhonologyModal={() => openPhonologyModal(id)}
-//         soundAndMarkup={() => soundAndMarkup(id, mode, launchSoundAndMarkup)}
-//       />
-//       <Switch>
-//         <Redirect exact from={baseUrl} to={`${baseUrl}/view`} />
-//         {map(MODES, (info, stub) => (
-//           <Route
-//             key={stub}
-//             path={`${baseUrl}/${stub}`}
-//             render={() => (
-//               <info.component
-//                 id={id}
-//                 mode={mode}
-//                 entitiesMode={info.entitiesMode}
-//                 page={page}
-//                 filter={perspective.filter}
-//                 className="content"
-//               />
-//             )}
-//           />
-//         ))}
-//         <Route component={NotFound} />
-//       </Switch>
-
-//       <PerspectiveView
-//         id={id}
-//         mode={mode}
-//         entitiesMode="all"
-//         page={page}
-//         filter={perspective.filter}
-//         className="content"
-//       />
-//     </Container>
-//   );
-// };
-
 Perspective.propTypes = {
   perspective: PropTypes.object.isRequired,
   defaultMode: PropTypes.string.isRequired,
   entriesIds: PropTypes.array.isRequired,
   submitFilter: PropTypes.func.isRequired,
-  openCognateAnalysisModal: PropTypes.func.isRequired,
-  openPhonemicAnalysisModal: PropTypes.func.isRequired,
-  openPhonologyModal: PropTypes.func.isRequired,
-  launchSoundAndMarkup: PropTypes.func.isRequired,
 };
 
-export default
-graphql(launchSoundAndMarkupMutation, { name: 'launchSoundAndMarkup' })(Perspective);
+export default Perspective;

@@ -107,7 +107,7 @@ class Entities extends React.Component {
 
   create(content, self_id) {
     const {
-      entry, column, entitiesMode, createEntity,
+      entry, column, createEntity,
     } = this.props;
 
     const variables = { parent_id: entry.id, field_id: column.id }
@@ -146,7 +146,7 @@ class Entities extends React.Component {
   }
 
   publish(entity, published) {
-    const { entry, entitiesMode, publishEntity } = this.props;
+    const { entry, publishEntity } = this.props;
 
     publishEntity({
       variables: { id: entity.id, published },
@@ -194,7 +194,7 @@ class Entities extends React.Component {
   }
 
   remove(entity) {
-    const { entry, entitiesMode, removeEntity } = this.props;
+    const { entry, removeEntity } = this.props;
     removeEntity({
       variables: { id: entity.id },
       refetchQueries: [
@@ -217,7 +217,7 @@ class Entities extends React.Component {
   }
 
   update(entity, content) {
-    const { entry, entitiesMode, updateEntity } = this.props;
+    const { entry, updateEntity } = this.props;
     updateEntity({
       variables: { id: entity.id, content },
       refetchQueries: [
@@ -274,7 +274,7 @@ class Entities extends React.Component {
             remove={this.remove}
             accept={this.accept}
             update={this.update}
-            className ={(mode != 'edit' && entities.indexOf(entity) == entities.length - 1) ? 'last' : ''}
+            className={(mode != 'edit' && entities.indexOf(entity) == entities.length - 1) ? 'last' : ''}
           />
         ))}
         {mode == 'edit' && (

@@ -6,21 +6,20 @@ import { compose, branch, renderComponent, pure } from 'recompose';
 import Placeholder from 'components/Placeholder';
 import { LexicalEntryByIds as LexicalEntryByIdsViewMode } from 'components/PerspectiveView/index';
 import LexicalEntryByIdsAdvanced from './LexicalEntryByIdsAdvanced';
-import { isOnlyViewModeAllowed } from './helpers';
+import { isOnlyViewModeAllowed } from './utils';
 
 import './style.scss';
 
-const PermissionLists = graphql(
-  gql`
-    query PermissionLists {
-      permission_lists(proxy: false) {
-        edit {
-          id
-          translation
-        }
+const PermissionLists = graphql(gql`
+  query PermissionLists {
+    permission_lists(proxy: false) {
+      edit {
+        id
+        translation
       }
     }
-  `);
+  }
+`);
 
 const LexicalEntryByIdsWrapper = ({ data, ...restProps }) => {
   const { permission_lists: permissionLists } = data;
