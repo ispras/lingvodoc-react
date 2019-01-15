@@ -10,7 +10,7 @@ const humanSettlementInfo = (humanSettlement) => {
     result = info(humanSettlement);
   }
 
-  return `${getTranslation('Human settlement')}: ${result}`;
+  return `${getTranslation('Settlement')}: ${result}`;
 };
 
 export default humanSettlementInfo;

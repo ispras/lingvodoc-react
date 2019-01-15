@@ -418,7 +418,7 @@ class QueryBuilder extends React.Component {
                 {showCreateSearchButton ?
                   <Grid.Column>
                     <Button primary basic onClick={this.props.createSearchWithAdditionalFields}>
-                      {getTranslation('Поиск в найденном')}
+                      {getTranslation('Search in found')}
                     </Button>
                   </Grid.Column> :
                   null

@@ -22,6 +22,8 @@ const classNames = {
   toggleButtonClose: 'additional-filter__info-button_close',
 };
 
+const capitalizeFirstLetter = string => string.charAt(0).toUpperCase() + string.slice(1);
+
 class AdditionalFilterInfo extends PureComponent {
   constructor() {
     super();
@@ -47,8 +49,8 @@ class AdditionalFilterInfo extends PureComponent {
     } = this.props;
     const { showInfo } = this.state;
 
-    const selectedText = getTranslation('You have selected:');
-    const defaultSelectedText = getTranslation('You have selected by default:');
+    const selectedText = `${capitalizeFirstLetter(getTranslation('selected'))}:`;
+    const defaultSelectedText = `${capitalizeFirstLetter(getTranslation('selected by default'))}:`;
     const showText = getTranslation('Show');
     const closeText = getTranslation('Close');
     const buttonText = showInfo ? closeText : showText;

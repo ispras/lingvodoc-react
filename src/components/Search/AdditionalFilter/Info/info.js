@@ -21,7 +21,7 @@ const info = (value) => {
 
   if (isValueArray(value)) {
     if (value.length > 5) {
-      result = `${value.length} ${getTranslation('items')}`;
+      result = `${value.length} ${getTranslation('selected')}`;
     } else {
       result = value.reduce((accumulator, currentValue, currentIndex, array) => {
         if (accumulator === '' && currentIndex + 1 !== array.length) {
