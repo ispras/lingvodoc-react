@@ -78,7 +78,8 @@ const computeCognateAnalysisMutation = gql`
         base_language_id: $baseLanguageId,
         group_field_id: $groupFieldId,
         perspective_info_list: $perspectiveInfoList,
-        mode: $mode)
+        mode: $mode,
+        figure_flag: true)
       {
         triumph
         dictionary_count
@@ -88,6 +89,7 @@ const computeCognateAnalysisMutation = gql`
         translation_count
         result
         xlsx_url
+        figure_url
       }
     }
 `;
@@ -112,6 +114,7 @@ class CognateAnalysisModal extends React.Component
       library_present: true,
       result: '',
       xlsx_url: '',
+      figure_url: '',
       transcriptionFieldIdStrList: [],
       translationFieldIdStrList: [],
       perspectiveSelectionList: [],
@@ -409,7 +412,8 @@ class CognateAnalysisModal extends React.Component
           transcription_count,
           translation_count,
           result,
-          xlsx_url }}}) =>
+          xlsx_url,
+          figure_url }}}) =>
         {
           this.setState({
             dictionary_count,
@@ -420,6 +424,7 @@ class CognateAnalysisModal extends React.Component
             library_present: true,
             result,
             xlsx_url,
+            figure_url,
             computing: false });
         },
 
@@ -596,6 +601,14 @@ class CognateAnalysisModal extends React.Component
                 </List.Item>
                 <List.Item>
                   <a href={this.state.xlsx_url}>XLSX-exported analysis results</a>
+                </List.Item>
+              </List>
+              <List>
+                <List.Item>
+                  Etymological distance tree:
+                </List.Item>
+                <List.Item>
+                  <img src={this.state.figure_url}/>
                 </List.Item>
               </List>
               <div><pre>{this.state.result}</pre></div>
