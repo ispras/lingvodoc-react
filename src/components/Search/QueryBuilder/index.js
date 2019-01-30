@@ -510,7 +510,7 @@ class QueryBuilder extends React.Component {
         </Segment.Group>
         <Segment.Group className="search-group">
           <Segment>
-            <div>Blocks mode</div>
+            <div>{getTranslation('OR/AND mode')}</div>
             <Segment.Group>
               <Segment>
                 <Radio
