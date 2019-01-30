@@ -150,6 +150,7 @@ export const stringsToTranslate = [
   "Nothing to",
   "Number of native speakers",
   "Old password",
+  "OR/AND mode",
   "Organization admins",
   "Organization users",
   "Owners",
