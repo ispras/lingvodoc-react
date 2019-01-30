@@ -160,15 +160,21 @@ function Query({
 const QueryWithData = graphql(fieldsQuery)(Query);
 
 function SearchBlock({
-  data, onFieldChange, onAddInnerSearchBlock, onDeleteInnerSearchBlock, onDeleteSearchBlock,
+  data, subBlocksMode, onFieldChange, onAddInnerSearchBlock, onDeleteInnerSearchBlock, onDeleteSearchBlock,
 }) {
+  const subBlocksModeText = subBlocksMode.toUpperCase();
   return (
     <OrWrapper>
+      <div>{subBlocksModeText} block</div>
       <InnerSearchBlocks>
         {data.map((block, id) => (
           <QueryWithData key={id} query={block} onFieldChange={onFieldChange(id)} onDelete={onDeleteInnerSearchBlock(id)} />
         ))}
-        <Button primary basic icon="add" onClick={onAddInnerSearchBlock} />
+        <div>
+          <Button primary basic onClick={onAddInnerSearchBlock}>
+            Add {subBlocksModeText} condition
+          </Button>
+        </div>
       </InnerSearchBlocks>
 
       <Button className="delete-and" compact basic icon="delete" onClick={onDeleteSearchBlock} />
@@ -317,6 +323,18 @@ class QueryBuilder extends React.Component {
     return blocks.toUpperCase();
   }
 
+  getSubBlocksMode() {
+    const { blocks } = this.state.mode;
+
+    if (blocks === 'or') {
+      return 'and';
+    } else if (blocks === 'and') {
+      return 'or';
+    }
+
+    return '';
+  }
+
   addGrammaticalSigns(query) {
     const { grammaticalSigns } = this.additionalFields;
     const grammaticalGroupNames = Object.keys(grammaticalSigns);
@@ -393,6 +411,7 @@ class QueryBuilder extends React.Component {
     const { showCreateSearchButton } = this.props;
     const { allLangsDictsChecked } = this.state;
     const blocksText = this.getBlocksText();
+    const subBlocksMode = this.getSubBlocksMode();
 
     return (
       <div>
@@ -513,11 +532,12 @@ class QueryBuilder extends React.Component {
           </Segment>
         </Segment.Group>
         <Wrapper>
-          {blocks.flatMap((subblocks, id) =>
+          {blocks.flatMap((subBlocks, id) =>
           List.of(
             <SearchBlock
               key={`s_${id}`}
-              data={subblocks}
+              data={subBlocks}
+              subBlocksMode={subBlocksMode}
               onFieldChange={this.onFieldChange(id)}
               onAddInnerSearchBlock={this.onAddInnerSearchBlock(id)}
               onDeleteInnerSearchBlock={this.onDeleteInnerSearchBlock(id)}
@@ -528,7 +548,7 @@ class QueryBuilder extends React.Component {
             </Divider>
           ))}
           <Button primary basic fluid onClick={this.onAddSearchBlock}>
-            Add Another { blocksText } Block
+            Add { blocksText } block
           </Button>
 
           <Divider />
