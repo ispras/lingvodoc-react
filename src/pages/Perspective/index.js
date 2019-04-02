@@ -25,8 +25,8 @@ function openPhonemicAnalysisModal(perspectiveId) {
   return phonemicAnalysisOpenModal(perspectiveId);
 }
 
-function openPhonologyModal(perspectiveId) {
-  return phonologyOpenModal(perspectiveId);
+function openPhonologyModal(perspectiveId, mode = '') {
+  return phonologyOpenModal(perspectiveId, mode);
 }
 
 export default enhance({

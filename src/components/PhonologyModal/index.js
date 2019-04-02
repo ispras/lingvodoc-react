@@ -3,23 +3,28 @@ import PropTypes from 'prop-types';
 import { compose, branch, renderNothing } from 'recompose';
 import { graphql, withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
-import { Breadcrumb, Button, Checkbox, Divider, Icon, Input, List, Modal, Select } from 'semantic-ui-react';
+import { Breadcrumb, Button, Checkbox, Divider, Dropdown, Icon, Input, List, Modal, Select } from 'semantic-ui-react';
 import { closeModal } from 'ducks/phonology';
 import { bindActionCreators } from 'redux';
 import { isEqual, map } from 'lodash';
 import { connect } from 'react-redux';
-import { compositeIdToString } from 'utils/compositeId';
+import { compositeIdToString as id2str } from 'utils/compositeId';
+import { buildLanguageTree, assignDictsToTree, buildDictTrees } from 'pages/Search/treeBuilder';
+import { fromJS } from 'immutable';
 
 import {
+  computePSDMutation,
   createPhonologyMutation,
   perspectiveColumnsFieldsQuery,
   perspectiveColumnsQuery,
   phonologySkipListQuery,
   phonologyTierListQuery,
-  phonologyLinkPerspectiveQuery
+  phonologyLinkPerspectiveQuery,
+  phonologyPerspectiveInfoQuery,
 } from './graphql';
 
 const DEFAULT_CHART_THRESHOLD = 8;
+const DEFAULT_STAT_THRESHOLD = 1;
 
 class PhonologyModal extends React.Component
 {
@@ -33,7 +38,12 @@ class PhonologyModal extends React.Component
       translationFieldIdStr: '',
       translationsMode: 'all',
       enabledGroup: false,
-      chartThreshold: DEFAULT_CHART_THRESHOLD,
+
+      chartThreshold:
+        this.props.mode == 'statistical_distance' ?
+          DEFAULT_STAT_THRESHOLD :
+          DEFAULT_CHART_THRESHOLD,
+
       enabledCsv: false,
 
       enabledTiers: false,
@@ -58,6 +68,12 @@ class PhonologyModal extends React.Component
       linkPerspectiveDataDict: {},
       linkPerspectiveDict: {},
       lpTranslationFieldDict: {},
+
+      perspective_selection: [],
+      perspective_selection_loading: true,
+
+      perspective_list: [],
+      perspective_id_set: new Set(),
     };
 
     this.handleVowelsChange = this.handleVowelsChange.bind(this);
@@ -78,19 +94,22 @@ class PhonologyModal extends React.Component
     /* Compiling dictionary of perspective field info so that later we would be able to retrieve this info
      * efficiently. */
 
-    const { data: {
-      all_fields: allFields,
-      perspective: { columns } }} = this.props;
+    const {
+      data: {
+        all_fields: allFields,
+        perspective,
+        perspective: { columns, tree } },
+      perspectiveId } = this.props;
 
     this.fieldDict = {};
     
     for (const field of allFields)
-      this.fieldDict[compositeIdToString(field.id)] = field;
+      this.fieldDict[id2str(field.id)] = field;
 
     /* Additional info of fields of our perspective. */
 
     this.columnFields = columns
-      .map(column => this.fieldDict[compositeIdToString(column.field_id)]);
+      .map(column => this.fieldDict[id2str(column.field_id)]);
 
     this.linkFields = this.columnFields
       .filter(field => field.data_type === 'Link');
@@ -106,10 +125,106 @@ class PhonologyModal extends React.Component
 
       if (check_str.includes('translation') || check_str.includes('meaning'))
       {
-        this.state.translationFieldIdStr = compositeIdToString(field.id);
+        this.state.translationFieldIdStr = id2str(field.id);
         break;
       }
     }
+
+    /* Initializing list of perspectives selected for statistical distance analysis, if required. */
+
+    if (this.props.mode == 'statistical_distance')
+    {
+      this.state.perspective_list.push([
+        perspective,
+        tree
+          .map(value =>
+            value.hasOwnProperty('status') ?
+            value.translation + ' (' + value.status + ')' :
+            value.translation)
+          .reverse()
+          .join(' \u203a ')]);
+
+      this.state.perspective_id_set.add(id2str(perspectiveId));
+
+      this.initialize_perspective_data();
+    }
+  }
+
+  async initialize_perspective_data()
+  {
+    const { client } = this.props;
+
+    /* Getting data of existing perspectives. */
+
+    const { data: {
+      perspectives, dictionaries, language_tree } } =
+      
+      await client.query({
+        query: phonologyPerspectiveInfoQuery,
+        variables: {},
+      });
+
+    const tree =
+      
+      assignDictsToTree(
+        buildDictTrees(fromJS({
+          lexical_entries: [],
+          perspectives,
+          dictionaries})),
+        buildLanguageTree(fromJS(language_tree))).toJS();
+
+    /* Collecting perspectives by languages and dictionaries. */
+
+    const perspective_info_list = [];
+    const perspective_info_dict = {};
+
+    var tree_path = [];
+
+    function f(object)
+    {
+      const object_str = 
+        object.hasOwnProperty('status') ?
+        object.translation + ' (' + object.status + ')' :
+        object.translation;
+
+      tree_path.push(object_str);
+
+      if (object.type == 'perspective')
+      {
+        const perspective_info = [object, tree_path.join(' \u203a ')];
+
+        perspective_info_list.push(perspective_info);
+        perspective_info_dict[id2str(object.id)] = perspective_info;
+
+        tree_path.pop();
+        return;
+      }
+
+      for (const child of object.children)
+        f(child);
+
+      tree_path.pop();
+    }
+
+    for (const value of tree)
+      f(value);
+
+    this.perspective_info_list = perspective_info_list;
+    this.perspective_info_dict = perspective_info_dict;
+
+    /* Compiling perspective selection data. */
+
+    const perspective_selection =
+
+      this.perspective_info_list.map(
+        ([perspective, perspective_str]) => ({
+          key: perspective.id,
+          value: id2str(perspective.id),
+          text: perspective_str}));
+
+    this.setState({
+      perspective_selection,
+      perspective_selection_loading: false });
   }
 
   handleVowelsChange(e, { value: vowelsMode }) {
@@ -287,7 +402,7 @@ class PhonologyModal extends React.Component
     for (const fieldData of field_data_list)
     {
       const [fieldId, perspectiveIdList] = fieldData;
-      linkFieldDataDict[compositeIdToString(fieldId)] = perspectiveIdList.map(compositeIdToString);
+      linkFieldDataDict[id2str(fieldId)] = perspectiveIdList.map(id2str);
     }
 
     for (var i = 0; i < perspective_id_list.length; i++)
@@ -305,7 +420,7 @@ class PhonologyModal extends React.Component
        * phonology results compilation. */
 
       perspectiveData.columnFields = perspectiveData.columns
-        .map(column => this.fieldDict[compositeIdToString(column.field_id)]);
+        .map(column => this.fieldDict[id2str(column.field_id)]);
 
       perspectiveData.textFields = perspectiveData.columnFields
         .filter(field => field.data_type === 'Text');
@@ -313,7 +428,7 @@ class PhonologyModal extends React.Component
       perspectiveData.textFieldsOptions =
         perspectiveData.textFields.map((field, index) => ({
             key: index,
-            value: compositeIdToString(field.id),
+            value: id2str(field.id),
             text: field.translation,
           }));
 
@@ -321,7 +436,7 @@ class PhonologyModal extends React.Component
 
       linkPerspectiveDataList.push(perspectiveData);
 
-      const key = compositeIdToString(perspectiveData.id);
+      const key = id2str(perspectiveData.id);
 
       linkPerspectiveDataDict[key] = perspectiveData;
       linkPerspectiveDict[key] = 0;
@@ -342,7 +457,7 @@ class PhonologyModal extends React.Component
     var selectedLinkFieldSet = this.state.selectedLinkFieldSet;
     var linkPerspectiveDict = this.state.linkPerspectiveDict;
 
-    const key = compositeIdToString(field.id);
+    const key = id2str(field.id);
 
     if (enable)
     {
@@ -369,15 +484,46 @@ class PhonologyModal extends React.Component
   handleSelectLinkTranslation(perspectiveId, value)
   {
     var lpTranslationFieldDict = this.state.lpTranslationFieldDict;
-    lpTranslationFieldDict[compositeIdToString(perspectiveId)] = value;
+    lpTranslationFieldDict[id2str(perspectiveId)] = value;
 
     this.setState({ lpTranslationFieldDict });
   }
 
   handleCreate()
   {
-    const { perspectiveId, createPhonology, data } = this.props;
+    const { perspectiveId, computePSD, createPhonology, data } = this.props;
     const { all_fields: allFields } = data;
+
+    /* Maybe we are to compute phonological statistical comparison? */
+
+    if (this.props.mode == 'statistical_distance')
+    {
+      const idList = this.state.perspective_list.map(
+        ([perspective, perspective_str]) => perspective.id);
+
+      computePSD({
+        variables: {
+          idList,
+          vowelSelection: this.state.vowelsMode === 'longest',
+          chartThreshold: this.state.chartThreshold,
+        },
+      }).then(
+        () => {
+          window.logger.suc(
+            'Phonological statistical distance comparison is being computed. ' +
+            'Please check out tasks for details.');
+          this.props.closeModal();
+        },
+        () => {
+          window.logger.err(
+            'Failed to launch phonological statistical distance computation!');
+        }
+      );
+
+      return;
+    }
+
+    /* Standard phonology computation. */
 
     const translationField = this.fieldDict[this.state.translationFieldIdStr];
 
@@ -428,22 +574,25 @@ class PhonologyModal extends React.Component
   render()
   {
     const { data } = this.props;
-    const { perspective: { columns }, all_fields: allFields } = data;
+    const { perspective: { columns, tree }, all_fields: allFields } = data;
 
     const textFieldsOptions = this.textFields.map((f, k) => ({
       key: k,
-      value: compositeIdToString(f.id),
+      value: id2str(f.id),
       text: f.translation,
     }));
 
     const linkPerspectiveDataList =
       this.state.linkPerspectiveDataList.filter(perspectiveData =>
-        this.state.linkPerspectiveDict[compositeIdToString(perspectiveData.id)] > 0);
+        this.state.linkPerspectiveDict[id2str(perspectiveData.id)] > 0);
 
     return (
       <div>
         <Modal dimmer open size="fullscreen">
-          <Modal.Header>Phonology</Modal.Header>
+          <Modal.Header>{
+            this.props.mode == 'statistical_distance' ?
+            'Phonological statistical distance' :
+            'Phonology'}</Modal.Header>
           <Modal.Content>
             <List>
               <List.Item>
@@ -469,240 +618,325 @@ class PhonologyModal extends React.Component
               </List.Item>
             </List>
 
-            <div>
-              <Select
-                defaultValue={this.state.translationFieldIdStr}
-                placeholder="Translation field"
-                options={textFieldsOptions}
-                onChange={(e, { value }) => this.setState({ translationFieldIdStr: value })}
-              />
-            </div>
-
-            <List>
-              <List.Item>
-                <Checkbox
-                  radio
-                  label="Show all translations of each word."
-                  name="translationsRadioGroup"
-                  value="all"
-                  checked={this.state.translationsMode === 'all'}
-                  onChange={this.handleTranslationsChange}
+            {!this.props.mode && (
+              <div>
+                <Select
+                  defaultValue={this.state.translationFieldIdStr}
+                  placeholder="Translation field"
+                  options={textFieldsOptions}
+                  onChange={(e, { value }) => this.setState({ translationFieldIdStr: value })}
                 />
-              </List.Item>
+              </div>
+            )}
 
-              <List.Item>
-                <Checkbox
-                  radio
-                  label="Show only the first translation of each word."
-                  name="translationsRadioGroup"
-                  value="longest"
-                  checked={this.state.translationsMode === 'longest'}
-                  onChange={this.handleTranslationsChange}
-                />
-              </List.Item>
-            </List>
+            {!this.props.mode && (
+              <List>
+                <List.Item>
+                  <Checkbox
+                    radio
+                    label="Show all translations of each word."
+                    name="translationsRadioGroup"
+                    value="all"
+                    checked={this.state.translationsMode === 'all'}
+                    onChange={this.handleTranslationsChange}
+                  />
+                </List.Item>
 
-            <List>
-              <List.Item>
-                <Checkbox
-                  label="Use linked data"
-                  checked={this.state.useLinkedData}
-                  onChange={(e, { checked }) => this.handleLinkChange(checked)}
-                />
+                <List.Item>
+                  <Checkbox
+                    radio
+                    label="Show only the first translation of each word."
+                    name="translationsRadioGroup"
+                    value="longest"
+                    checked={this.state.translationsMode === 'longest'}
+                    onChange={this.handleTranslationsChange}
+                  />
+                </List.Item>
+              </List>
+            )}
 
-                {this.state.useLinkedData && !this.state.loadedLinkData && (
-                  <div style={{marginLeft: '1.5em'}}>
-                    <List>
-                      <List.Item>
-                        Loading linked perspective data... <Icon name="spinner" loading />
-                      </List.Item>
-                    </List>
-                  </div>
-                )}
+            {!this.props.mode && (
+              <List>
+                <List.Item>
+                  <Checkbox
+                    label="Use linked data"
+                    checked={this.state.useLinkedData}
+                    onChange={(e, { checked }) => this.handleLinkChange(checked)}
+                  />
 
-                {this.state.useLinkedData && this.state.loadedLinkData && (
-                  <div style={{marginLeft: '1.5em'}}>
-                    <List>
-                      {map(this.linkFields, field => (
-                        <List.Item key={compositeIdToString(field.id)}>
-                          <Checkbox
-                            label={field.translation}
-                            checked={this.state.selectedLinkFieldSet[compositeIdToString(field.id)]}
-                            onChange={(e, { checked }) => this.handleSelectLink(field, checked)}
-                          />
-                        </List.Item>
-                      ))}
-                    </List>
-
-                    {linkPerspectiveDataList.length > 0 && (
+                  {this.state.useLinkedData && !this.state.loadedLinkData && (
+                    <div style={{marginLeft: '1.5em'}}>
                       <List>
-                        {map(linkPerspectiveDataList, perspectiveData => (
-                          <List.Item key={compositeIdToString(perspectiveData.id)}>
-                            <Breadcrumb
-                              icon="right angle"
-                              sections={perspectiveData.tree.slice().reverse()
-                                .map(x => ({ key: x.id, content: x.translation, link: false }))}
+                        <List.Item>
+                          Loading linked perspective data... <Icon name="spinner" loading />
+                        </List.Item>
+                      </List>
+                    </div>
+                  )}
+
+                  {this.state.useLinkedData && this.state.loadedLinkData && (
+                    <div style={{marginLeft: '1.5em'}}>
+                      <List>
+                        {map(this.linkFields, field => (
+                          <List.Item key={id2str(field.id)}>
+                            <Checkbox
+                              label={field.translation}
+                              checked={this.state.selectedLinkFieldSet[id2str(field.id)]}
+                              onChange={(e, { checked }) => this.handleSelectLink(field, checked)}
                             />
-                            <span style={{marginLeft: '1em'}}>
-                              <Select
-                                defaultValue={
-                                  this.state.lpTranslationFieldDict.hasOwnProperty(
-                                    compositeIdToString(perspectiveData.id)) ?
-                                  this.state.lpTranslationFieldDict[compositeIdToString(perspectiveData.id)] :
-                                  ''}
-                                placeholder="Translation field"
-                                options={perspectiveData.textFieldsOptions}
-                                onChange={(e, { value }) =>
-                                  this.handleSelectLinkTranslation(perspectiveData.id, value)}
-                              />
-                            </span>
                           </List.Item>
                         ))}
                       </List>
-                    )}
-                  </div>
-                )}
-              </List.Item>
-            </List>
 
-            <List>
-              <List.Item>
-                <Checkbox
-                  label="Group phonology data by markup descriptions."
-                  checked={this.state.enabledGroup}
-                  onChange={(e, { checked }) => this.setState({ enabledGroup: checked })}
-                />
-              </List.Item>
-            </List>
+                      {linkPerspectiveDataList.length > 0 && (
+                        <List>
+                          {map(linkPerspectiveDataList, perspectiveData => (
+                            <List.Item key={id2str(perspectiveData.id)}>
+                              <Breadcrumb
+                                icon="right angle"
+                                sections={perspectiveData.tree.slice().reverse()
+                                  .map(x => ({ key: x.id, content: x.translation, link: false }))}
+                              />
+                              <span style={{marginLeft: '1em'}}>
+                                <Select
+                                  defaultValue={
+                                    this.state.lpTranslationFieldDict.hasOwnProperty(
+                                      id2str(perspectiveData.id)) ?
+                                    this.state.lpTranslationFieldDict[id2str(perspectiveData.id)] :
+                                    ''}
+                                  placeholder="Translation field"
+                                  options={perspectiveData.textFieldsOptions}
+                                  onChange={(e, { value }) =>
+                                    this.handleSelectLinkTranslation(perspectiveData.id, value)}
+                                />
+                              </span>
+                            </List.Item>
+                          ))}
+                        </List>
+                      )}
+                    </div>
+                  )}
+                </List.Item>
+              </List>
+            )}
 
-            <List>
-              <List.Item>
-                <Input
-                  label="Formant chart threshold"
-                  value={this.state.chartThreshold}
-                  onChange={(e, { value }) => this.setState({
-                    chartThreshold: parseInt(value) || DEFAULT_CHART_THRESHOLD })}
-                />
-              </List.Item>
-            </List>
+            {!this.props.mode && (
+              <List>
+                <List.Item>
+                  <Checkbox
+                    label="Group phonology data by markup descriptions."
+                    checked={this.state.enabledGroup}
+                    onChange={(e, { checked }) => this.setState({ enabledGroup: checked })}
+                  />
+                </List.Item>
+              </List>
+            )}
 
-            <List>
-              <List.Item>
-                <Checkbox
-                  label="Export phonology data to a CSV file."
-                  checked={this.state.enabledCsv}
-                  onChange={(e, { checked }) => this.setState({ enabledCsv: checked })}
-                />
-              </List.Item>
-            </List>
+            {!this.props.mode && (
+              <List>
+                <List.Item>{
+                  !this.props.mode ? (
+                    <Input
+                      label="Formant chart threshold"
+                      value={this.state.chartThreshold}
+                      onChange={(e, { value }) => this.setState({
+                        chartThreshold: parseInt(value) || DEFAULT_CHART_THRESHOLD })}
+                    />) : (
+                    <Input
+                      label="Vowel formant count threshold"
+                      value={this.state.chartThreshold}
+                      onChange={(e, { value }) => this.setState({
+                        chartThreshold: parseInt(value) || DEFAULT_STAT_THRESHOLD })}
+                    />)}
+                </List.Item>
+              </List>
+            )}
 
-            <List>
-              <List.Item>
-                <Checkbox
-                  label="Choose markup tiers"
-                  checked={this.state.enabledTiers}
-                  onChange={(e, { checked }) => this.handleTiersChange(checked)}
-                />
+            {!this.props.mode && (
+              <List>
+                <List.Item>
+                  <Checkbox
+                    label="Export phonology data to a CSV file."
+                    checked={this.state.enabledCsv}
+                    onChange={(e, { checked }) => this.setState({ enabledCsv: checked })}
+                  />
+                </List.Item>
+              </List>
+            )}
 
-                {this.state.enabledTiers && !this.state.loadedTiers && (
-                  <div style={{marginLeft: '1.5em'}}>
-                    <List>
-                      <List.Item>
-                        Loading tier data... <Icon name="spinner" loading />
-                      </List.Item>
-                    </List>
-                  </div>
-                )}
+            {!this.props.mode && (
+              <List>
+                <List.Item>
+                  <Checkbox
+                    label="Choose markup tiers"
+                    checked={this.state.enabledTiers}
+                    onChange={(e, { checked }) => this.handleTiersChange(checked)}
+                  />
 
-                {this.state.enabledTiers && this.state.tierList.length > 0 && (
-                  <div style={{marginLeft: '1.5em'}}>
-                    <List>
-                      {map(this.state.tierList, ([tier, count, fraction]) => (
-                        <List.Item key={tier}>
-                          <Checkbox
-                            label={`Tier "${tier}" (present at ${parseFloat(fraction * 100).toFixed(2)}% of markup records)`}
-                            checked={this.state.tierSet[tier]}
-                            onChange={(e, { checked }) => this.handleEnableTier(tier, checked)}
-                          />
+                  {this.state.enabledTiers && !this.state.loadedTiers && (
+                    <div style={{marginLeft: '1.5em'}}>
+                      <List>
+                        <List.Item>
+                          Loading tier data... <Icon name="spinner" loading />
                         </List.Item>
-                      ))}
-                    </List>
-                  </div>
-                )}
-              </List.Item>
-            </List>
+                      </List>
+                    </div>
+                  )}
 
-            <List>
-              <List.Item>
-                <Checkbox
-                  label="Keep skipped vowel interval characters"
-                  checked={this.state.enabledKeep}
-                  onChange={(e, { checked }) => this.handleKeepChange(checked)}
-                />
+                  {this.state.enabledTiers && this.state.tierList.length > 0 && (
+                    <div style={{marginLeft: '1.5em'}}>
+                      <List>
+                        {map(this.state.tierList, ([tier, count, fraction]) => (
+                          <List.Item key={tier}>
+                            <Checkbox
+                              label={`Tier "${tier}" (present at ${parseFloat(fraction * 100).toFixed(2)}% of markup records)`}
+                              checked={this.state.tierSet[tier]}
+                              onChange={(e, { checked }) => this.handleEnableTier(tier, checked)}
+                            />
+                          </List.Item>
+                        ))}
+                      </List>
+                    </div>
+                  )}
+                </List.Item>
+              </List>
+            )}
 
-                {this.state.enabledKeep && !this.state.loadedKeepJoin && (
-                  <div style={{marginLeft: '1.5em'}}>
-                    <List>
-                      <List.Item>
-                        Loading skipped character data... <Icon name="spinner" loading />
-                      </List.Item>
-                    </List>
-                  </div>
-                )}
+            {!this.props.mode && (
+              <List>
+                <List.Item>
+                  <Checkbox
+                    label="Keep skipped vowel interval characters"
+                    checked={this.state.enabledKeep}
+                    onChange={(e, { checked }) => this.handleKeepChange(checked)}
+                  />
 
-                {this.state.enabledKeep && this.state.keepList.length > 0 && (
-                  <div style={{marginLeft: '1.5em'}}>
-                    <List>
-                      {map(this.state.keepList, ([ord, count, str, name]) => (
-                        <List.Item key={ord}>
-                          <Checkbox
-                            label={`"${str}" U+${ord.toString(16).padStart(4, '0')} ${name}`}
-                            checked={this.state.selectedKeepSet.has(ord)}
-                            onChange={(e, { checked }) => this.handleSelectKeep(ord, checked)}
-                          />
+                  {this.state.enabledKeep && !this.state.loadedKeepJoin && (
+                    <div style={{marginLeft: '1.5em'}}>
+                      <List>
+                        <List.Item>
+                          Loading skipped character data... <Icon name="spinner" loading />
                         </List.Item>
-                      ))}
-                    </List>
-                  </div>
-                )}
-              </List.Item>
-            </List>
+                      </List>
+                    </div>
+                  )}
 
-            <List>
-              <List.Item>
-                <Checkbox
-                  label="Combine with adjacent interval characters"
-                  checked={this.state.enabledJoin}
-                  onChange={(e, { checked }) => this.handleJoinChange(checked)}
-                />
+                  {this.state.enabledKeep && this.state.keepList.length > 0 && (
+                    <div style={{marginLeft: '1.5em'}}>
+                      <List>
+                        {map(this.state.keepList, ([ord, count, str, name]) => (
+                          <List.Item key={ord}>
+                            <Checkbox
+                              label={`"${str}" U+${ord.toString(16).padStart(4, '0')} ${name}`}
+                              checked={this.state.selectedKeepSet.has(ord)}
+                              onChange={(e, { checked }) => this.handleSelectKeep(ord, checked)}
+                            />
+                          </List.Item>
+                        ))}
+                      </List>
+                    </div>
+                  )}
+                </List.Item>
+              </List>
+            )}
 
-                {this.state.enabledJoin && !this.state.loadedKeepJoin && (
-                  <div style={{marginLeft: '1.5em'}}>
-                    <List>
-                      <List.Item>
-                        Loading adjacent character data... <Icon name="spinner" loading />
-                      </List.Item>
-                    </List>
-                  </div>
-                )}
+            {!this.props.mode && (
+              <List>
+                <List.Item>
+                  <Checkbox
+                    label="Combine with adjacent interval characters"
+                    checked={this.state.enabledJoin}
+                    onChange={(e, { checked }) => this.handleJoinChange(checked)}
+                  />
 
-                {this.state.enabledJoin && this.state.joinList.length > 0 && (
-                  <div style={{marginLeft: '1.5em'}}>
-                    <List>
-                      {map(this.state.joinList, ([ord, count, str, name]) => (
-                        <List.Item key={ord}>
-                          <Checkbox
-                            label={`"${str}" U+${ord.toString(16).padStart(4, '0')} ${name}`}
-                            checked={this.state.selectedJoinSet.has(ord)}
-                            onChange={(e, { checked }) => this.handleSelectJoin(ord, checked)}
-                          />
+                  {this.state.enabledJoin && !this.state.loadedKeepJoin && (
+                    <div style={{marginLeft: '1.5em'}}>
+                      <List>
+                        <List.Item>
+                          Loading adjacent character data... <Icon name="spinner" loading />
                         </List.Item>
-                      ))}
-                    </List>
-                  </div>
-                )}
-              </List.Item>
-            </List>
+                      </List>
+                    </div>
+                  )}
+
+                  {this.state.enabledJoin && this.state.joinList.length > 0 && (
+                    <div style={{marginLeft: '1.5em'}}>
+                      <List>
+                        {map(this.state.joinList, ([ord, count, str, name]) => (
+                          <List.Item key={ord}>
+                            <Checkbox
+                              label={`"${str}" U+${ord.toString(16).padStart(4, '0')} ${name}`}
+                              checked={this.state.selectedJoinSet.has(ord)}
+                              onChange={(e, { checked }) => this.handleSelectJoin(ord, checked)}
+                            />
+                          </List.Item>
+                        ))}
+                      </List>
+                    </div>
+                  )}
+                </List.Item>
+              </List>
+            )}
+
+            {this.props.mode == 'statistical_distance' && (
+              <div style={{marginTop: '1.5em'}}>
+                <span>Perspectives selected for comparison:</span>
+                {map(this.state.perspective_list, ([perspective, perspective_str], index) => (
+                  <List
+                    style={{marginLeft: '1em'}}
+                    key={'perspective' + index}>
+                  <List.Item>
+                    <span>
+                    {perspective_str}
+                    <Icon
+                      name='delete'
+                      style={{paddingLeft: '0.5em', paddingRight: '0.5em'}}
+                      onClick={() =>
+                      {
+                        this.state.perspective_list.splice(index, 1);
+                        this.state.perspective_id_set.delete(id2str(perspective.id));
+
+                        this.setState({
+                          perspective_list: this.state.perspective_list,
+                          perspective_id_set: this.state.perspective_id_set
+                        });
+                      }}
+                    />
+                    </span>
+                  </List.Item>
+                  </List>
+                ))}
+                <List style={{marginLeft: '1em'}}>
+                <List.Item>
+                  {this.state.perspective_selection_loading ?
+                    <span>Loading perspective selection... <Icon name="spinner" loading /></span> :
+                    <Dropdown
+                      fluid
+                      placeholder='Add perspective'
+                      search
+                      selection
+                      options={this.state.perspective_selection}
+                      value={''}
+                      onChange={(event, data) =>
+                      {
+                        const perspective_info = this.perspective_info_dict[data.value];
+
+                        if (!this.state.perspective_id_set.hasOwnProperty(data.value))
+                        {
+                          this.state.perspective_list.push(perspective_info);
+                          this.state.perspective_id_set.add(id2str(data.value));
+                        }
+
+                        this.setState({
+                          perspective_list: this.state.perspective_list,
+                          perspective_id_set: this.state.perspective_id_set,
+                        });
+                      }}
+                    />}
+                </List.Item>
+                </List>
+              </div>
+            )}
           </Modal.Content>
 
           <Modal.Actions>
@@ -729,6 +963,7 @@ export default compose(
   branch(({ visible }) => !visible, renderNothing),
   graphql(perspectiveColumnsFieldsQuery),
   graphql(createPhonologyMutation, { name: 'createPhonology' }),
+  graphql(computePSDMutation, { name: 'computePSD' }),
   branch(({ data }) => data.loading, renderNothing),
   withApollo
 )(PhonologyModal);
