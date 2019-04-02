@@ -105,6 +105,7 @@ const ModeSelector = onlyUpdateForKeys([
   openCognateAcousticAnalysisModal,
   openPhonemicAnalysisModal,
   openPhonologyModal,
+  openPhonologicalStatisticalDistanceModal,
   soundAndMarkup,
   id,
 }) => (
@@ -124,6 +125,7 @@ const ModeSelector = onlyUpdateForKeys([
         <Dropdown.Item onClick={openCognateAcousticAnalysisModal}>{getTranslation("Cognate acoustic analysis")}</Dropdown.Item>
         <Dropdown.Item onClick={openPhonemicAnalysisModal}>{getTranslation("Phonemic analysis")}</Dropdown.Item>
         <Dropdown.Item onClick={openPhonologyModal}>{getTranslation("Phonology")}</Dropdown.Item>
+        <Dropdown.Item onClick={openPhonologicalStatisticalDistanceModal}>{getTranslation("Phonological statistical distance")}</Dropdown.Item>
         <Dropdown.Item onClick={soundAndMarkup}>{getTranslation("Sound and markup")}</Dropdown.Item>
       </Dropdown.Menu>
     </Dropdown>
@@ -177,6 +179,7 @@ const Perspective = ({
         openCognateAcousticAnalysisModal={() => openCognateAnalysisModal(id, 'acoustic')}
         openPhonemicAnalysisModal={() => openPhonemicAnalysisModal(id)}
         openPhonologyModal={() => openPhonologyModal(id)}
+        openPhonologicalStatisticalDistanceModal={() => openPhonologyModal(id, 'statistical_distance')}
         soundAndMarkup={() => soundAndMarkup(id, mode, launchSoundAndMarkup)}
       />
       <Switch>
