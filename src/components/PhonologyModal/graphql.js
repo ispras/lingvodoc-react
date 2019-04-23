@@ -86,7 +86,7 @@ export const phonologyLinkPerspectiveQuery = gql`
 
 export const phonologyPerspectiveInfoQuery = gql`
   query phonologyPerspectiveInfo {
-    perspectives {
+    perspectives(only_with_phonology_data: true) {
       id
       parent_id
       translation

@@ -71,6 +71,7 @@ class PhonologyModal extends React.Component
 
       perspective_selection: [],
       perspective_selection_loading: true,
+      perspective_selection_error: false,
 
       perspective_list: [],
       perspective_id_set: new Set(),
@@ -95,6 +96,7 @@ class PhonologyModal extends React.Component
      * efficiently. */
 
     const {
+      client,
       data: {
         all_fields: allFields,
         perspective,
@@ -146,24 +148,30 @@ class PhonologyModal extends React.Component
 
       this.state.perspective_id_set.add(id2str(perspectiveId));
 
-      this.initialize_perspective_data();
+      client.query({
+        query: phonologyPerspectiveInfoQuery,
+        variables: {},
+      }).then(
+
+        ({ data: {
+          perspectives, dictionaries, language_tree }}) =>
+        {
+          this.initialize_perspective_data(
+            perspectives, dictionaries, language_tree);
+        },
+
+        (error) =>
+        {
+          this.setState({
+            perspective_selection_loading: false,
+            perspective_selection_error: true });
+        }
+      );
     }
   }
 
-  async initialize_perspective_data()
+  initialize_perspective_data(perspectives, dictionaries, language_tree)
   {
-    const { client } = this.props;
-
-    /* Getting data of existing perspectives. */
-
-    const { data: {
-      perspectives, dictionaries, language_tree } } =
-      
-      await client.query({
-        query: phonologyPerspectiveInfoQuery,
-        variables: {},
-      });
-
     const tree =
       
       assignDictsToTree(
@@ -910,6 +918,8 @@ class PhonologyModal extends React.Component
                 <List.Item>
                   {this.state.perspective_selection_loading ?
                     <span>Loading perspective selection... <Icon name="spinner" loading /></span> :
+                    this.state.perspective_selection_error ?
+                    <span>Loading perspective selection... Failure.</span> :
                     <Dropdown
                       fluid
                       placeholder='Add perspective'
