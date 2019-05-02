@@ -4,6 +4,8 @@ import { compose, branch, renderNothing } from 'recompose';
 import { graphql, withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
 import { Breadcrumb, Button, Checkbox, Dimmer, Divider, Header, Icon, Input, List, Loader, Modal, Select } from 'semantic-ui-react';
+import Plot from 'react-plotly.js';
+
 import { closeModal } from 'ducks/cognateAnalysis';
 import { bindActionCreators } from 'redux';
 import { isEqual, map } from 'lodash';
@@ -90,6 +92,10 @@ const computeCognateAnalysisMutation = gql`
         result
         xlsx_url
         figure_url
+        minimum_spanning_tree
+        embedding_2d
+        embedding_3d
+        perspective_name_list
       }
     }
 `;
@@ -106,19 +112,40 @@ class CognateAnalysisModal extends React.Component
     this.state =
     {
       initialized: false,
+
       dictionary_count: 0,
       group_count: 0,
       not_enough_count: 0,
       transcription_count: 0,
       translation_count: 0,
+
       library_present: true,
+
       result: '',
       xlsx_url: '',
       figure_url: '',
+
+      minimum_spanning_tree: [],
+      embedding_2d: [],
+      embedding_3d: [],
+      perspective_name_list: [],
+
+      plotly_data: [],
+      plotly_3d_data: [],
+
+      x_range: null,
+      y_range: null,
+      z_range: null,
+
+      x_span: null,
+      y_span: null,
+      z_span: null,
+
       transcriptionFieldIdStrList: [],
       translationFieldIdStrList: [],
       perspectiveSelectionList: [],
       groupFieldIdStr: '',
+
       computing: false,
     };
 
@@ -413,8 +440,110 @@ class CognateAnalysisModal extends React.Component
           translation_count,
           result,
           xlsx_url,
-          figure_url }}}) =>
+          figure_url,
+          minimum_spanning_tree,
+          embedding_2d,
+          embedding_3d,
+          perspective_name_list }}}) =>
         {
+          /* Data of the 2d cognate distance plots. */
+
+          var plotly_data = [];
+
+          if (result.length > 0)
+          {
+            for (const arc of minimum_spanning_tree)
+
+              plotly_data.push({
+                x: [embedding_2d[arc[0]][0], embedding_2d[arc[1]][0]],
+                y: [embedding_2d[arc[0]][1], embedding_2d[arc[1]][1]],
+                mode: 'lines',
+                showlegend: false,
+                line: {color: '#666', width: 1}});
+
+            for (var i = 0; i < embedding_2d.length; i++)
+
+              plotly_data.push({
+                x: [embedding_2d[i][0]],
+                y: [embedding_2d[i][1]],
+                type: 'scatter',
+                mode: 'markers+text',
+                name: (i + 1) + ') ' + perspective_name_list[i],
+                text: [(i + 1).toString()],
+                textfont: {size: 14},
+                textposition: 'center right',
+                marker: {size: 8}});
+          }
+
+          /* Data of the 3d cognate distance plots. */
+
+          var plotly_3d_data = [];
+
+          var x_span = null;
+          var y_span = null;
+          var z_span = null;
+
+          var x_range = null;
+          var y_range = null;
+          var z_range = null;
+
+          if (result.length > 0)
+          {
+            for (const arc of minimum_spanning_tree)
+
+              plotly_3d_data.push({
+                x: [embedding_3d[arc[0]][0], embedding_3d[arc[1]][0]],
+                y: [embedding_3d[arc[0]][1], embedding_3d[arc[1]][1]],
+                z: [embedding_3d[arc[0]][2], embedding_3d[arc[1]][2]],
+                type: 'scatter3d',
+                mode: 'lines',
+                showlegend: false,
+                line: {color: '#666', width: 1}});
+
+            for (var i = 0; i < embedding_3d.length; i++)
+
+              plotly_3d_data.push({
+                x: [embedding_3d[i][0]],
+                y: [embedding_3d[i][1]],
+                z: [embedding_3d[i][2]],
+                type: 'scatter3d',
+                mode: 'markers+text',
+                name: (i + 1) + ') ' + perspective_name_list[i],
+                text: [(i + 1).toString()],
+                textfont: {size: 14},
+                textposition: 'center right',
+                marker: {size: 3}});
+
+            /* Computing 3d axes ranges. */
+
+            const x_max = Math.max(...embedding_3d.map(point => point[0]));
+            const x_min = Math.min(...embedding_3d.map(point => point[0]));
+
+            const y_max = Math.max(...embedding_3d.map(point => point[1]));
+            const y_min = Math.min(...embedding_3d.map(point => point[1]));
+
+            const z_max = Math.max(...embedding_3d.map(point => point[2]));
+            const z_min = Math.min(...embedding_3d.map(point => point[2]));
+
+            const range =
+              
+              1.1 * Math.max(
+                x_span = x_max - x_min,
+                y_span = y_max - y_min,
+                z_span = z_max - z_min);
+
+            const x_center = (x_max + x_min) / 2;
+            x_range = [x_center - range / 2, x_center + range / 2]
+
+            const y_center = (y_max + y_min) / 2;
+            y_range = [y_center - range / 2, y_center + range / 2]
+
+            const z_center = (z_max + z_min) / 2;
+            z_range = [z_center - range / 2, z_center + range / 2]
+          }
+
+          /* Updating state with computed analysis info. */
+
           this.setState({
             dictionary_count,
             group_count,
@@ -425,6 +554,18 @@ class CognateAnalysisModal extends React.Component
             result,
             xlsx_url,
             figure_url,
+            minimum_spanning_tree,
+            embedding_2d,
+            embedding_3d,
+            perspective_name_list,
+            plotly_data,
+            plotly_3d_data,
+            x_range,
+            y_range,
+            z_range,
+            x_span,
+            y_span,
+            z_span,
             computing: false });
         },
 
@@ -608,7 +749,64 @@ class CognateAnalysisModal extends React.Component
                   Etymological distance tree:
                 </List.Item>
                 <List.Item>
-                  <img src={this.state.figure_url}/>
+                  <Plot
+                    data={this.state.plotly_data}
+                    layout={{
+                      width: 1200,
+                      height: 800,
+                      xaxis: {
+                        color: "#DDD",
+                        gridcolor: "#DDD",
+                        tickfont: {color: "#444"}},
+                      yaxis: {
+                        color: "#DDD",
+                        gridcolor: "#DDD",
+                        tickfont: {color: "#444"},
+                        scaleanchor: "x"},
+                      legend: {
+                        x: -0.05,
+                        y: -0.05,
+                        yanchor: "top",
+                        font: {size: 14},
+                        itemsizing: "constant"},
+                      title: 'Minimum spanning tree (2d relative distance embedding)'}}
+                  />
+                </List.Item>
+                <List.Item>
+                  <Plot
+                    data={this.state.plotly_3d_data}
+                    layout={{
+                      width: 1200,
+                      height: 1200,
+                      scene: {
+                        xaxis: {
+                          color: "#DDD",
+                          gridcolor: "#DDD",
+                          tickfont: {color: "#444"},
+                          range: this.state.x_range},
+                        yaxis: {
+                          color: "#DDD",
+                          gridcolor: "#DDD",
+                          tickfont: {color: "#444"},
+                          range: this.state.y_range},
+                        zaxis: {
+                          color: "#DDD",
+                          gridcolor: "#DDD",
+                          tickfont: {color: "#444"},
+                          range: this.state.z_range},
+                        camera: {
+                          eye: {
+                            x: 0,
+                            y: -this.state.z_span / Math.max(this.state.y_span, this.state.z_span) * 1.5,
+                            z: this.state.y_span / Math.max(this.state.y_span, this.state.z_span) * 1.5}}},
+                      legend: {
+                        x: -0.05,
+                        y: -0.05,
+                        yanchor: "top",
+                        font: {size: 14},
+                        itemsizing: "constant"},
+                      title: 'Minimum spanning tree (3d relative distance embedding)'}}
+                  />
                 </List.Item>
               </List>
               <div><pre>{this.state.result}</pre></div>
