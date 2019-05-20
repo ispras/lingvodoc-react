@@ -665,7 +665,7 @@ const languagesWithDictionariesQuery = gql`
       id
       parent_id
       translation
-      dictionaries {
+      dictionaries(deleted:false published_and_limited_only: true) {
         id
         parent_id
         translation

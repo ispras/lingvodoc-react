@@ -4,6 +4,7 @@ export const perspectiveColumnsFieldsQuery = gql`
   query perspectiveColumnsFields($perspectiveId: LingvodocID!) {
     perspective(id: $perspectiveId) {
       id
+      parent_id
       translation
       columns {
         id
@@ -11,6 +12,10 @@ export const perspectiveColumnsFieldsQuery = gql`
         parent_id
         self_id
         position
+      }
+      tree {
+        id
+        translation
       }
     }
     all_fields {
@@ -79,6 +84,32 @@ export const phonologyLinkPerspectiveQuery = gql`
   }
 `;
 
+export const phonologyPerspectiveInfoQuery = gql`
+  query phonologyPerspectiveInfo {
+    perspectives(only_with_phonology_data: true) {
+      id
+      parent_id
+      translation
+      status
+    }
+    dictionaries {
+      id
+      parent_id
+      translation
+      status
+      perspectives {
+        id
+        translation
+      }
+    }
+    language_tree {
+      id
+      parent_id
+      translation
+    }
+  }
+`;
+
 export const createPhonologyMutation = gql`
   mutation createPhonology(
     $perspectiveId: LingvodocID!,
@@ -107,5 +138,20 @@ export const createPhonologyMutation = gql`
         link_perspective_list: $linkPerspectiveList) {
         triumph
       }
+  }
+`;
+
+export const computePSDMutation = gql`
+  mutation computePSD(
+    $idList: [LingvodocID]!,
+    $vowelSelection: Boolean!,
+    $chartThreshold: Int!)
+  {
+    phonological_statistical_distance(
+      id_list: $idList,
+      vowel_selection: $vowelSelection,
+      chart_threshold: $chartThreshold) {
+      triumph
+    }
   }
 `;

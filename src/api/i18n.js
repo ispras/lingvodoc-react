@@ -188,6 +188,7 @@ export const stringsToTranslate = [
   "Perspective state",
   "Phonemic analysis",
   "Phonology",
+  "Phonological statistical distance",
   "Please select a user",
   "Please, select the parent language",
   "Please sign in",
