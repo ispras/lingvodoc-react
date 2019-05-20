@@ -2,8 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Modal, Button } from 'semantic-ui-react';
 import styled from 'styled-components';
-import { LexicalEntryViewByIds } from 'components/PerspectiveView/index';
 import { getTranslation } from 'api/i18n';
+import LexicalEntryByIds from 'components/LexicalEntryByIds';
 
 export const LexicalEntryLink = styled.span`
   cursor: pointer;
@@ -15,24 +15,30 @@ export const LexicalEntryLink = styled.span`
   }
 `;
 
-function LexicalEntryModal({ node, actions, entitiesMode, mode, onClose }) {
-  const { id, translation, lexicalEntries } = node;
+function LexicalEntryModal({
+  node, actions, entitiesMode, defaultMode, onClose, onlyViewMode,
+}) {
+  const {
+    id, translation, lexicalEntries, parent_id: perspectiveParentId,
+  } = node;
 
   return (
     <Modal dimmer open size="fullscreen" closeOnDimmerClick={false} closeIcon onClose={onClose}>
       <Modal.Header>{translation}</Modal.Header>
       <Modal.Content scrolling>
-        <LexicalEntryViewByIds
+        <LexicalEntryByIds
           className="perspective"
           perspectiveId={id}
+          perspectiveParentId={perspectiveParentId}
           entriesIds={lexicalEntries.map(e => e.id)}
-          mode={mode}
+          defaultMode={defaultMode}
           entitiesMode={entitiesMode}
+          onlyViewMode={onlyViewMode}
           actions={actions}
         />
       </Modal.Content>
       <Modal.Actions>
-        <Button icon="minus" content={getTranslation("Cancel")} onClick={onClose} />
+        <Button icon="minus" content={getTranslation('Cancel')} onClick={onClose} />
       </Modal.Actions>
     </Modal>
   );
@@ -46,14 +52,14 @@ LexicalEntryModal.propTypes = {
   }).isRequired,
   actions: PropTypes.array,
   entitiesMode: PropTypes.string,
-  mode: PropTypes.string,
+  defaultMode: PropTypes.string.isRequired,
+  onlyViewMode: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
 };
 
 LexicalEntryModal.defaultProps = {
   actions: [],
   entitiesMode: 'published',
-  mode: 'view',
 };
 
 

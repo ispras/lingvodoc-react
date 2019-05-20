@@ -1,0 +1,11 @@
+.search-group {
+  .ui.checkbox,
+  .ui.radio {
+    margin-right: 15px;
+  }
+
+  .ui.checkbox:last-child,
+  .ui.radio:last-child {
+    margin-right: 0;
+  }
+}

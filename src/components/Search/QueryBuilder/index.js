@@ -13,6 +13,7 @@ import AdditionalFilter from 'components/Search/AdditionalFilter';
 import { getTranslation } from 'api/i18n';
 
 import { compositeIdToString } from 'utils/compositeId';
+import './index.scss';
 
 const mode2bool = (value) => {
   switch (value) {
@@ -24,6 +25,17 @@ const mode2bool = (value) => {
       return false;
     default:
       return null;
+  }
+};
+
+const modeBlocksBool = (value) => {
+  switch (value) {
+    case 'and':
+      return true;
+    case 'or':
+      return false;
+    default:
+      return false;
   }
 };
 
@@ -54,7 +66,7 @@ const OrWrapper = styled(Segment)`
   }
 `;
 
-const OrBlocks = styled.div`
+const InnerSearchBlocks = styled.div`
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -147,19 +159,25 @@ function Query({
 
 const QueryWithData = graphql(fieldsQuery)(Query);
 
-function OrBlock({
-  data, onFieldChange, onAddBlock, onDeleteBlock, onDelete,
+function SearchBlock({
+  data, subBlocksMode, onFieldChange, onAddInnerSearchBlock, onDeleteInnerSearchBlock, onDeleteSearchBlock,
 }) {
+  const subBlocksModeText = subBlocksMode.toUpperCase();
   return (
     <OrWrapper>
-      <OrBlocks>
+      <div>{subBlocksModeText} block</div>
+      <InnerSearchBlocks>
         {data.map((block, id) => (
-          <QueryWithData key={id} query={block} onFieldChange={onFieldChange(id)} onDelete={onDeleteBlock(id)} />
+          <QueryWithData key={id} query={block} onFieldChange={onFieldChange(id)} onDelete={onDeleteInnerSearchBlock(id)} />
         ))}
-        <Button primary basic icon="add" onClick={onAddBlock} />
-      </OrBlocks>
+        <div>
+          <Button primary basic onClick={onAddInnerSearchBlock}>
+            Add {subBlocksModeText} condition
+          </Button>
+        </div>
+      </InnerSearchBlocks>
 
-      <Button className="delete-and" compact basic icon="delete" onClick={onDelete} />
+      <Button className="delete-and" compact basic icon="delete" onClick={onDeleteSearchBlock} />
     </OrWrapper>
   );
 }
@@ -168,10 +186,10 @@ class QueryBuilder extends React.Component {
   constructor(props) {
     super(props);
 
-    this.onAddAndBlock = this.onAddAndBlock.bind(this);
-    this.onAddOrBlock = this.onAddOrBlock.bind(this);
-    this.onDeleteAndBlock = this.onDeleteAndBlock.bind(this);
-    this.onDeleteOrBlock = this.onDeleteOrBlock.bind(this);
+    this.onAddInnerSearchBlock = this.onAddInnerSearchBlock.bind(this);
+    this.onAddSearchBlock = this.onAddSearchBlock.bind(this);
+    this.onDeleteSearchBlock = this.onDeleteSearchBlock.bind(this);
+    this.onDeleteInnerSearchBlock = this.onDeleteInnerSearchBlock.bind(this);
     this.onFieldChange = this.onFieldChange.bind(this);
     this.onAdditionalFieldsChange = this.onAdditionalFieldsChange.bind(this);
     this.onSearchButtonClick = this.onSearchButtonClick.bind(this);
@@ -229,31 +247,32 @@ class QueryBuilder extends React.Component {
       mode: {
         adopted: 'ignore',
         etymology: 'ignore',
+        blocks: 'or',
       },
       allLangsDictsChecked: !this.props.langs && !this.props.dicts,
     };
   }
 
-  onAddAndBlock() {
+  onAddSearchBlock() {
     const { data } = this.state;
     this.setState({ data: data.push(List.of(this.newBlock)) });
   }
 
-  onAddOrBlock(id) {
+  onAddInnerSearchBlock(id) {
     return () => {
       const { data } = this.state;
       this.setState({ data: data.update(id, v => v.push(this.newBlock)) });
     };
   }
 
-  onDeleteAndBlock(id) {
+  onDeleteSearchBlock(id) {
     return () => {
       const { data } = this.state;
       this.setState({ data: data.delete(id) });
     };
   }
 
-  onDeleteOrBlock(id) {
+  onDeleteInnerSearchBlock(id) {
     return subid => () => {
       const { data } = this.state;
       this.setState({ data: data.deleteIn([id, subid]) });
@@ -285,6 +304,7 @@ class QueryBuilder extends React.Component {
     const adopted = mode2bool(this.state.mode.adopted);
     const etymology = mode2bool(this.state.mode.etymology);
     const category = bool2category(this.state.source.dictionaries, this.state.source.corpora);
+    const blocks = modeBlocksBool(this.state.mode.blocks);
     const searchMetadata = {
       hasAudio,
       kind: kind || null,
@@ -294,7 +314,25 @@ class QueryBuilder extends React.Component {
     };
     const query = this.addGrammaticalSigns(this.state.data.toJS());
 
-    actions.setQuery(searchId, query, category, adopted, etymology, langsToFilter, dictsToFilter, searchMetadata, grammaticalSigns, languageVulnerability);
+    actions.setQuery(searchId, query, category, adopted, etymology, langsToFilter, dictsToFilter, searchMetadata, grammaticalSigns, languageVulnerability, blocks);
+  }
+
+  getBlocksText() {
+    const { blocks } = this.state.mode;
+
+    return blocks.toUpperCase();
+  }
+
+  getSubBlocksMode() {
+    const { blocks } = this.state.mode;
+
+    if (blocks === 'or') {
+      return 'and';
+    } else if (blocks === 'and') {
+      return 'or';
+    }
+
+    return '';
   }
 
   addGrammaticalSigns(query) {
@@ -335,28 +373,49 @@ class QueryBuilder extends React.Component {
     });
 
     return resultQuery;
+
+    /* возможно, нужно будет использовать при переключении режима на AND */
+    // query.forEach((q) => {
+    //   addGrammaticalSigns.forEach(sign => q.push(sign));
+    // });
+
+    // return query;
   }
 
   changeSource(searchSourceType) {
-    const s = this.state.source;
-    s[searchSourceType] = !s[searchSourceType];
-    this.setState(s);
+    const newSource = {
+      ...this.state.source,
+    };
+
+    newSource[searchSourceType] = !newSource[searchSourceType];
+
+    this.setState({
+      source: newSource,
+    });
   }
 
   changeMode(modeType, value) {
-    const m = this.state.mode;
-    m[modeType] = value;
-    this.setState(m);
+    const newMode = {
+      ...this.state.mode,
+    };
+
+    newMode[modeType] = value;
+
+    this.setState({
+      mode: newMode,
+    });
   }
 
   render() {
     const blocks = this.state.data;
     const { showCreateSearchButton } = this.props;
     const { allLangsDictsChecked } = this.state;
+    const blocksText = this.getBlocksText();
+    const subBlocksMode = this.getSubBlocksMode();
 
     return (
       <div>
-        <Segment.Group>
+        <Segment.Group className="search-group">
           <Segment>Search in</Segment>
           <Segment.Group>
             <Segment>
@@ -378,7 +437,7 @@ class QueryBuilder extends React.Component {
                 {showCreateSearchButton ?
                   <Grid.Column>
                     <Button primary basic onClick={this.props.createSearchWithAdditionalFields}>
-                      {getTranslation('Поиск в найденном')}
+                      {getTranslation('Search in found')}
                     </Button>
                   </Grid.Column> :
                   null
@@ -394,7 +453,7 @@ class QueryBuilder extends React.Component {
           allLangsDictsChecked={allLangsDictsChecked}
         />
 
-        <Segment.Group>
+        <Segment.Group className="search-group">
           <Segment>Search options</Segment>
           <Segment.Group>
             <Segment>
@@ -449,23 +508,47 @@ class QueryBuilder extends React.Component {
             </Segment>
           </Segment.Group>
         </Segment.Group>
+        <Segment.Group className="search-group">
+          <Segment>
+            <div>{getTranslation('OR/AND mode')}</div>
+            <Segment.Group>
+              <Segment>
+                <Radio
+                  label="AND"
+                  name="blocksMode"
+                  value="and"
+                  checked={this.state.mode.blocks === 'and'}
+                  onChange={(e, { value }) => this.changeMode('blocks', value)}
+                />
+                <Radio
+                  label="OR"
+                  name="blocksMode"
+                  value="or"
+                  checked={this.state.mode.blocks === 'or'}
+                  onChange={(e, { value }) => this.changeMode('blocks', value)}
+                />
+              </Segment>
+            </Segment.Group>
+          </Segment>
+        </Segment.Group>
         <Wrapper>
-          {blocks.flatMap((subblocks, id) =>
-            List.of(
-              <OrBlock
-                key={`s_${id}`}
-                data={subblocks}
-                onFieldChange={this.onFieldChange(id)}
-                onAddBlock={this.onAddOrBlock(id)}
-                onDeleteBlock={this.onDeleteOrBlock(id)}
-                onDelete={this.onDeleteAndBlock(id)}
-              />,
-              <Divider key={`d_${id}`} horizontal>
-                Or
-              </Divider>
-            ))}
-          <Button primary basic fluid onClick={this.onAddAndBlock}>
-            Add Another OR Block
+          {blocks.flatMap((subBlocks, id) =>
+          List.of(
+            <SearchBlock
+              key={`s_${id}`}
+              data={subBlocks}
+              subBlocksMode={subBlocksMode}
+              onFieldChange={this.onFieldChange(id)}
+              onAddInnerSearchBlock={this.onAddInnerSearchBlock(id)}
+              onDeleteInnerSearchBlock={this.onDeleteInnerSearchBlock(id)}
+              onDeleteSearchBlock={this.onDeleteSearchBlock(id)}
+            />,
+            <Divider key={`d_${id}`} horizontal>
+              { blocksText }
+            </Divider>
+          ))}
+          <Button primary basic fluid onClick={this.onAddSearchBlock}>
+            Add { blocksText } block
           </Button>
 
           <Divider />

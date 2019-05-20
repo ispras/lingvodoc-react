@@ -16,7 +16,7 @@ function content(c) {
   return `${c.substr(c.lastIndexOf('/') + 1).substr(0, MAX_CONTENT_LENGTH)}...`;
 }
 
-const SoundEntityContent = onlyUpdateForKeys(['entity'])(({
+const SoundEntityContent = onlyUpdateForKeys(['entity', 'mode'])(({
   entity, mode, publish, accept, remove, actions,
 }) => {
   switch (mode) {

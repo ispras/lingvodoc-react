@@ -42,8 +42,8 @@ const mdColors = new Immutable.List([
 ]).sortBy(Math.random);
 
 const searchQuery = gql`
-  query Search($query: [[ObjectVal]]!, $category: Int, $adopted: Boolean, $etymology: Boolean, $mode: String, $langs: [LingvodocID], $dicts: [LingvodocID], $searchMetadata: ObjectVal) {
-    advanced_search(search_strings: $query, category: $category, adopted: $adopted, etymology: $etymology, mode: $mode, languages: $langs, dicts_to_filter: $dicts, search_metadata: $searchMetadata, simple: false) {
+  query Search($query: [[ObjectVal]]!, $category: Int, $adopted: Boolean, $etymology: Boolean, $mode: String, $langs: [LingvodocID], $dicts: [LingvodocID], $searchMetadata: ObjectVal, $blocks: Boolean) {
+    advanced_search(search_strings: $query, category: $category, adopted: $adopted, etymology: $etymology, mode: $mode, languages: $langs, dicts_to_filter: $dicts, search_metadata: $searchMetadata, simple: $blocks) {
       dictionaries {
         id
         parent_id
@@ -95,7 +95,7 @@ const searchQuery = gql`
 `;
 
 const isAdditionalParamsSet = (langs, dicts, searchMetadata) => {
-  if ((langs && langs.length) > 0 || (dicts && dicts.length > 0)) {
+  if ((langs && langs.length > 0) || (dicts && dicts.length > 0)) {
     return true;
   }
 
@@ -200,7 +200,7 @@ const WrapperWithData = compose(
 
 const Info = ({
   query, searchId, adopted, etymology, category,
-  langs, dicts, searchMetadata, subQuery,
+  langs, dicts, searchMetadata, blocks, subQuery,
 }) => {
   if (subQuery) {
     return null;
@@ -214,7 +214,7 @@ const Info = ({
     resultQuery = [];
   }
 
-  if (queryClean > 0 || additionalParamsSet) {
+  if (queryClean || additionalParamsSet) {
     return (
       <WrapperWithData
         searchId={searchId}
@@ -225,6 +225,7 @@ const Info = ({
         langs={langs}
         dicts={dicts}
         searchMetadata={searchMetadata}
+        blocks={blocks}
         mode="published"
       />
     );
@@ -242,6 +243,7 @@ Info.propTypes = {
   langs: PropTypes.array,
   dicts: PropTypes.array,
   searchMetadata: PropTypes.object,
+  blocks: PropTypes.bool,
   subQuery: PropTypes.bool.isRequired,
 };
 
@@ -623,6 +625,7 @@ class SearchTabs extends React.Component {
                 langs={search.langs}
                 dicts={search.dicts}
                 searchMetadata={search.searchMetadata}
+                blocks={search.blocks}
                 subQuery={search.subQuery}
               />
             </Container>

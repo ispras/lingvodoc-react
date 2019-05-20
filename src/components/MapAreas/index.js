@@ -166,25 +166,25 @@ class MapAreas extends PureComponent {
         icon: this.iconFunc(markerData),
         contextmenu: true,
         contextmenuItems: [{
-          text: getTranslation('Отключить маркер'),
+          text: getTranslation('Disable marker'),
           callback: () => { this.props.markersHandlers.deleteDictFromSearches(dictionary, markerGroups); },
         },
         {
-          text: getTranslation('Отключить все маркеры групп, к которым относится данный маркер'),
+          text: getTranslation('Disable all markers of the groups this marker belongs to.'),
           callback: () => { this.props.markersHandlers.deleteAllDictsOfGroups(markerGroups); },
         }, {
           separator: true,
         }, {
-          text: getTranslation('Добавить маркер в группу'),
+          text: getTranslation('Add marker to group'),
           contextmenuItems: this.getGroupItemsAddMarkerToGroup(markerGroups, dictionary),
         },
         {
-          text: getTranslation('Добавить все маркеры групп, к которым относится данный маркер, в группу'),
+          text: getTranslation('Add all markers of the groups to which this marker belongs to the group'),
           contextmenuItems: this.getGroupItemsAddAllMarkersToGroup(markerGroups),
         }, {
           separator: true,
         }, {
-          text: getTranslation('Перенести маркер в группу'),
+          text: getTranslation('Move marker to group'),
           contextmenuItems: this.getGroupItemsMoveMarkerToGroup(markerGroups, dictionary),
         }],
       })

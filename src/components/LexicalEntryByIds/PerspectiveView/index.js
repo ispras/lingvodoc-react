@@ -11,11 +11,11 @@ import { setSortByField, addLexicalEntry, selectLexicalEntry, resetEntriesSelect
 import { openModal } from 'ducks/modals';
 import Placeholder from 'components/Placeholder';
 import ApproveModal from 'components/ApproveModal';
-
-import TableHeader from './TableHeader';
-import TableBody from './TableBody';
-import Pagination from './Pagination';
 import { getTranslation } from 'api/i18n';
+
+import TableHeader from '../../PerspectiveView/TableHeader';
+import TableBody from '../../PerspectiveView/TableBody';
+import Pagination from './Pagination';
 
 const ROWS_PER_PAGE = 20;
 
@@ -56,6 +56,11 @@ export const queryLexicalEntries = gql`
         parent_id
         created_at
         marked_for_deletion
+        additional_metadata {
+          merge {
+            merge_tree
+          }
+        }
         entities(mode: $entitiesMode) {
           id
           parent_id
@@ -179,8 +184,10 @@ const P = ({
   allFields,
   columns,
   setSortByField: setSort,
+  changePage,
+  entriesIds,
   createLexicalEntry,
-  mergeLexicalEntries,
+  // mergeLexicalEntries,
   removeLexicalEntries,
   addLexicalEntry: addCreatedEntry,
   selectLexicalEntry: onEntrySelect,
@@ -202,7 +209,6 @@ const P = ({
     );
   }
 
-
   const lexicalEntries = !error ? data.perspective.lexical_entries : [];
 
   const addEntry = () => {
@@ -216,7 +222,14 @@ const P = ({
           query: queryLexicalEntries,
           variables: {
             id,
-            entitiesMode,
+            entitiesMode: 'published',
+          },
+        },
+        {
+          query: queryLexicalEntries,
+          variables: {
+            id,
+            entitiesMode: 'all',
           },
         },
       ],
@@ -230,25 +243,25 @@ const P = ({
     });
   };
 
-  const mergeEntries = () => {
-    const groupList = [selectedEntries];
-    mergeLexicalEntries({
-      variables: {
-        groupList,
-      },
-      refetchQueries: [
-        {
-          query: queryLexicalEntries,
-          variables: {
-            id,
-            entitiesMode,
-          },
-        },
-      ],
-    }).then(() => {
-      resetSelection();
-    });
-  };
+  // const mergeEntries = () => {
+  //   const groupList = [selectedEntries];
+  //   mergeLexicalEntries({
+  //     variables: {
+  //       groupList,
+  //     },
+  //     refetchQueries: [
+  //       {
+  //         query: queryLexicalEntries,
+  //         variables: {
+  //           id,
+  //           entitiesMode,
+  //         },
+  //       },
+  //     ],
+  //   }).then(() => {
+  //     resetSelection();
+  //   });
+  // };
 
   const removeEntries = () => {
     removeLexicalEntries({
@@ -260,7 +273,14 @@ const P = ({
           query: queryLexicalEntries,
           variables: {
             id,
-            entitiesMode,
+            entitiesMode: 'published',
+          },
+        },
+        {
+          query: queryLexicalEntries,
+          variables: {
+            id,
+            entitiesMode: 'all',
           },
         },
       ],
@@ -271,7 +291,7 @@ const P = ({
 
   const onApprove = () => {
     openNewModal(ApproveModal, { perspectiveId: id, mode });
-  }
+  };
 
   const processEntries = flow([
     // remove empty lexical entries, if not in edit mode
@@ -302,7 +322,7 @@ const P = ({
   ]);
 
   const newEntries = processEntries(lexicalEntries.filter(e => !!createdEntries.find(c => isEqual(e.id, c.id))));
-  const entries = processEntries(lexicalEntries);
+  const entries = processEntries(lexicalEntries.filter(e => !!entriesIds.find(entryId => isEqual(e.id, entryId))));
 
   const pageEntries =
     entries.length > ROWS_PER_PAGE ? take(drop(entries, ROWS_PER_PAGE * (page - 1)), ROWS_PER_PAGE) : entries;
@@ -328,42 +348,56 @@ const P = ({
   });
 
   function approveDisableCondition(entries) {
-    return entries.length == 0 || entries.every(entry => {
-      return entry.entities.every(entity => {
+    return entries.length == 0 || entries.every((entry) => {
+      return entry.entities.every((entity) => {
         return mode == 'publish' ? entity.published == true : entity.accepted == true;
       });
     });
   }
 
   const isAuthenticated = user && user.user.id;
-  
+
   return (
     <div style={{ overflowY: 'auto' }}>
-      {mode === 'edit' && <Button positive icon="plus" content={getTranslation("Add lexical entry")} onClick={addEntry} />}
-      {mode === 'edit' && (
-        <Button
-          negative
-          icon="minus"
-          content={getTranslation("Remove lexical entries")}
-          onClick={removeEntries}
-          disabled={selectedEntries.length < 1}
-        />
-      )}
-      {mode === 'edit' && (
-        <Button
-          positive
-          icon="plus"
-          content={getTranslation("Merge lexical entries")}
-          onClick={mergeEntries}
-          disabled={selectedEntries.length < 2}
-        />
-      )}
-      {mode === 'publish' && isAuthenticated &&
-        <Button positive content={getTranslation("Publish Entities")} disabled={approveDisableCondition(entries)} onClick={onApprove} />
-      }
-      {mode === 'contributions' && isAuthenticated &&
-        <Button positive content={getTranslation("Accept Contributions")} disabled={approveDisableCondition(entries)} onClick={onApprove} />
-      }
+      <div className={mode === 'edit' ? 'lexical-entries-actions' : ''}>
+        {mode === 'edit' &&
+          <Button positive icon="plus" content={getTranslation('Add lexical entry')} onClick={addEntry} />
+        }
+        {mode === 'edit' && (
+          <Button
+            negative
+            icon="minus"
+            content={getTranslation('Remove lexical entries')}
+            onClick={removeEntries}
+            disabled={selectedEntries.length < 1}
+          />
+        )}
+        {/* {mode === 'edit' && (
+          <Button
+            positive
+            icon="plus"
+            content={getTranslation('Merge lexical entries')}
+            onClick={mergeEntries}
+            disabled={selectedEntries.length < 2}
+          />
+        )} */}
+        {/* {mode === 'publish' && isAuthenticated &&
+          <Button
+            positive
+            content={getTranslation('Publish Entities')}
+            disabled={approveDisableCondition(entries)}
+            onClick={onApprove}
+          />
+        } */}
+        {mode === 'contributions' && isAuthenticated &&
+          <Button
+            positive
+            content={getTranslation('Accept Contributions')}
+            disabled={approveDisableCondition(entries)}
+            onClick={onApprove}
+          />
+        }
+      </div>
       <Table celled padded className={className}>
         <TableHeader
           columns={fields}
@@ -381,7 +415,7 @@ const P = ({
           onEntrySelect={onEntrySelect}
         />
       </Table>
-      <Pagination current={page} total={Math.floor(entries.length / ROWS_PER_PAGE) + 1} to={mode} />
+      <Pagination current={page} total={Math.floor(entries.length / ROWS_PER_PAGE) + 1} changePage={changePage} />
     </div>
   );
 };
@@ -437,7 +471,10 @@ const PerspectiveView = compose(
   graphql(mergeLexicalEntriesMutation, { name: 'mergeLexicalEntries' }),
   graphql(removeLexicalEntriesMutation, { name: 'removeLexicalEntries' }),
   graphql(queryLexicalEntries, {
-    options: { notifyOnNetworkStatusChange: true },
+    options: {
+      notifyOnNetworkStatusChange: true,
+      // fetchPolicy: 'network-only',
+    },
   })
 )(P);
 
@@ -463,191 +500,8 @@ export const queryLexicalEntry = gql`
   }
 `;
 
-const LexicalEntryViewBase = ({
-  perspectiveId,
-  entries,
-  mode,
-  entitiesMode,
-  data,
-  selectEntries,
-  selectedEntries,
-  onEntrySelect,
-  actions,
-}) => {
-  const { loading } = data;
-
-  if (loading) {
-    return null;
-  }
-
-  const {
-    all_fields,
-    perspective: { columns },
-  } = data;
-
-  const fields = columns.map((column) => {
-    const field = find(all_fields, f => isEqual(column.field_id, f.id));
-    return {
-      ...field,
-      self_id: column.self_id,
-      column_id: column.id,
-      position: column.position,
-    };
-  });
-
-  return (
-    <TableComponent
-      perspectiveId={perspectiveId}
-      entitiesMode={entitiesMode}
-      entries={entries}
-      columns={fields}
-      mode={mode}
-      actions={actions}
-      selectEntries={selectEntries}
-      selectedEntries={selectedEntries}
-      onEntrySelect={onEntrySelect}
-    />
-  );
-};
-
-LexicalEntryViewBase.propTypes = {
-  perspectiveId: PropTypes.array.isRequired,
-  entries: PropTypes.array.isRequired,
-  mode: PropTypes.string.isRequired,
-  entitiesMode: PropTypes.string.isRequired,
-  data: PropTypes.shape({
-    loading: PropTypes.bool.isRequired,
-    all_fields: PropTypes.array,
-    perspective: PropTypes.object,
-  }).isRequired,
-  selectEntries: PropTypes.bool,
-  selectedEntries: PropTypes.array,
-  onEntrySelect: PropTypes.func,
-  actions: PropTypes.array,
-};
-
-LexicalEntryViewBase.defaultProps = {
-  actions: [],
-  selectEntries: false,
-  selectedEntries: [],
-  onEntrySelect: () => {},
-};
-
-export const queryLexicalEntriesByIds = gql`
-  query queryLexicalEntry($perspectiveId: LingvodocID!, $entriesIds: [LingvodocID]!, $entitiesMode: String!) {
-    perspective(id: $perspectiveId) {
-      id
-      translation
-      columns {
-        id
-        field_id
-        parent_id
-        self_id
-        position
-      }
-      lexical_entries(mode: $entitiesMode, ids: $entriesIds) {
-        id
-        parent_id
-        created_at
-        entities(mode: $entitiesMode) {
-          id
-          parent_id
-          field_id
-          link_id
-          self_id
-          created_at
-          locale_id
-          content
-          published
-          accepted
-          additional_metadata {
-            link_perspective_id
-          }
-        }
-      }
-    }
-    all_fields {
-      id
-      translation
-      data_type
-      data_type_translation_gist_id
-    }
-  }
-`;
-
-const LexicalEntryViewBaseByIds = ({
-  perspectiveId, mode, entitiesMode, data, actions,
-}) => {
-  const { loading, error } = data;
-  if (loading || (!loading && !error && !data.perspective)) {
-     return (
-      <Dimmer.Dimmable dimmed style={{ minHeight: '600px' }}>
-        <Dimmer active inverted>
-          <Header as="h2" icon>
-            <Icon name="spinner" loading />
-          </Header>
-        </Dimmer>
-      </Dimmer.Dimmable>
-    ); 
-  }
-
-  const {
-    all_fields,
-    perspective: { columns, lexical_entries: entries },
-  } = data;
-
-  const fields = columns.map((column) => {
-    const field = find(all_fields, f => isEqual(column.field_id, f.id));
-    return {
-      ...field,
-      self_id: column.self_id,
-      column_id: column.id,
-      position: column.position,
-    };
-  });
-
-  return (
-    <TableComponent
-      perspectiveId={perspectiveId}
-      entitiesMode={entitiesMode}
-      entries={entries}
-      columns={fields}
-      mode={mode}
-      actions={actions}
-    />
-  );
-};
-
-LexicalEntryViewBaseByIds.propTypes = {
-  perspectiveId: PropTypes.array.isRequired,
-  entriesIds: PropTypes.array.isRequired,
-  mode: PropTypes.string.isRequired,
-  entitiesMode: PropTypes.string.isRequired,
-  data: PropTypes.shape({
-    loading: PropTypes.bool.isRequired,
-    all_fields: PropTypes.array,
-    perspective: PropTypes.object,
-  }).isRequired,
-  actions: PropTypes.array,
-};
-
-LexicalEntryViewBaseByIds.defaultProps = {
-  actions: [],
-};
-
-export const LexicalEntryView = graphql(queryLexicalEntry, {
-  options: { notifyOnNetworkStatusChange: true },
-})(LexicalEntryViewBase);
-
-export const LexicalEntryByIds = compose(
-  graphql(queryLexicalEntriesByIds, {
-    options: { notifyOnNetworkStatusChange: true },
-  }),
-  branch(({ data }) => data.loading, renderComponent(Placeholder)),
-)(LexicalEntryViewBaseByIds);
-
 const PerspectiveViewWrapper = ({
-  id, className, mode, entitiesMode, page, data, filter, sortByField
+  id, className, mode, entitiesMode, page, data, filter, sortByField, changePage, entriesIds,
 }) => {
   if (data.error) {
     return null;
@@ -679,11 +533,13 @@ const PerspectiveViewWrapper = ({
       className={className}
       mode={mode}
       entitiesMode={entitiesMode}
+      entriesIds={entriesIds}
       page={page}
       filter={filter}
       sortByField={sortByField}
       allFields={allFields}
       columns={columns}
+      changePage={changePage}
     />
   );
 };
@@ -697,6 +553,7 @@ PerspectiveViewWrapper.propTypes = {
   filter: PropTypes.string,
   data: PropTypes.object.isRequired,
   sortByField: PropTypes.object,
+  changePage: PropTypes.func.isRequired,
 };
 
 PerspectiveViewWrapper.defaultProps = {

@@ -18,11 +18,11 @@ const Link = styled.a`
 `;
 
 const LexicalEntryLinkComponent = ({
-  node, actions, entitiesMode, mode, openModal,
+  node, actions, entitiesMode, defaultMode, openModalAction, onlyViewMode,
 }) => {
   const { translation, lexicalEntries } = node;
   return (
-    <Link onClick={() => openModal(LexicalEntryModal, { node, actions, entitiesMode, mode })}>
+    <Link onClick={() => openModalAction(LexicalEntryModal, { node, actions, entitiesMode, defaultMode, onlyViewMode })}>
       {translation}: {lexicalEntries.length} result(s)
     </Link>
   );
@@ -36,16 +36,19 @@ LexicalEntryLinkComponent.propTypes = {
   }).isRequired,
   actions: PropTypes.array,
   entitiesMode: PropTypes.string,
-  mode: PropTypes.string,
-  openModal: PropTypes.func.isRequired,
+  defaultMode: PropTypes.string,
+  onlyViewMode: PropTypes.bool,
+  openModalAction: PropTypes.func.isRequired,
 };
 
 LexicalEntryLinkComponent.defaultProps = {
   actions: [],
   entitiesMode: 'published',
+  defaultMode: 'view',
+  onlyViewMode: false,
 };
 
-const mapDispatchToProps = dispatch => bindActionCreators({ openModal }, dispatch);
+const mapDispatchToProps = dispatch => bindActionCreators({ openModalAction: openModal }, dispatch);
 
 export const LexicalEntryLink = connect(
   null,
