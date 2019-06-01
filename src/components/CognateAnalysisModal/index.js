@@ -75,13 +75,15 @@ const computeCognateAnalysisMutation = gql`
     $groupFieldId: LingvodocID!,
     $baseLanguageId: LingvodocID!,
     $perspectiveInfoList: [[LingvodocID]]!,
-    $mode: String) {
+    $mode: String,
+    $debugFlag: Boolean) {
       cognate_analysis(
         base_language_id: $baseLanguageId,
         group_field_id: $groupFieldId,
         perspective_info_list: $perspectiveInfoList,
         mode: $mode,
-        figure_flag: true)
+        figure_flag: true,
+        debug_flag: $debugFlag)
       {
         triumph
         dictionary_count
@@ -145,6 +147,8 @@ class CognateAnalysisModal extends React.Component
       translationFieldIdStrList: [],
       perspectiveSelectionList: [],
       groupFieldIdStr: '',
+
+      debugFlag: false,
 
       computing: false,
     };
@@ -405,6 +409,7 @@ class CognateAnalysisModal extends React.Component
           groupFieldId: groupField.id,
           perspectiveInfoList: perspectiveInfoList,
           mode: this.props.mode,
+          debugFlag: this.state.debugFlag,
         },
       }).then(
         () => {
@@ -429,6 +434,7 @@ class CognateAnalysisModal extends React.Component
           groupFieldId: groupField.id,
           perspectiveInfoList: perspectiveInfoList,
           mode: this.props.mode,
+          debugFlag: this.state.debugFlag,
         },
       }).then(
 
@@ -572,6 +578,7 @@ class CognateAnalysisModal extends React.Component
         (error_data) =>
         {
           window.logger.err('Failed to compute cognate analysis!');
+          console.log(error_data);
 
           if (error_data.message ===
             'GraphQL error: Analysis library is absent, please contact system administrator.')
@@ -602,6 +609,8 @@ class CognateAnalysisModal extends React.Component
       value: id2str(f.id),
       text: f.translation,
     }));
+
+    const { user } = this.props;
 
     return (
       <div>
@@ -717,6 +726,15 @@ class CognateAnalysisModal extends React.Component
                 </div>
               </List>
             )}
+            {this.props.user.id == 1 && (
+              <Checkbox
+                label='Debug flag'
+                style={{marginTop: '1em', verticalAlign: 'middle'}}
+                checked={this.state.debugFlag}
+                onChange={(e, { checked }) => {
+                  this.setState({ debugFlag: checked });}}
+              />
+            )}
           </Modal.Content>
           <Modal.Actions>
             <Button
@@ -826,6 +844,7 @@ CognateAnalysisModal.propTypes = {
 
 export default compose(
   connect(state => state.cognateAnalysis, dispatch => bindActionCreators({ closeModal }, dispatch)),
+  connect(state => state.user),
   branch(({ visible }) => !visible, renderNothing),
   graphql(computeCognateAnalysisMutation, { name: 'computeCognateAnalysis' }),
   withApollo
