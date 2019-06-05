@@ -213,7 +213,7 @@ class PhonemicAnalysisModal extends React.Component
             <Button negative content="Close" onClick={this.props.closeModal} />
           </Modal.Actions>
           {this.state.library_present && this.state.result.length > 0 && (
-            <Modal.Content>
+            <Modal.Content scrolling style={{maxHeight: '95vh'}}>
               <h3>Analysis results ({this.state.entity_count} text entities analysed):</h3>
               <div><pre>{this.state.result}</pre></div>
             </Modal.Content>

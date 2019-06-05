@@ -751,7 +751,7 @@ class CognateAnalysisModal extends React.Component
             <Button negative content="Close" onClick={this.props.closeModal} />
           </Modal.Actions>
           {this.state.library_present && this.state.result.length > 0 && (
-            <Modal.Content>
+            <Modal.Content scrolling style={{maxHeight: '95vh'}}>
               <h3>Analysis results
                 ({this.state.dictionary_count} dictionaries, {this.state.group_count} cognate groups and {this.state.transcription_count} transcriptions analysed):</h3>
               <List>
