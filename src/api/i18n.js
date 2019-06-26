@@ -39,6 +39,7 @@ export const stringsToTranslate = [
   "Close",
   "Cognate acoustic analysis",
   "Cognate analysis",
+  "Cognate reconstruction",
   "Columns Mapping",
   "confidence",
   "Confirm Password",

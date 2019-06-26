@@ -76,13 +76,14 @@ const computeCognateAnalysisMutation = gql`
     $baseLanguageId: LingvodocID!,
     $perspectiveInfoList: [[LingvodocID]]!,
     $mode: String,
+    $figureFlag: Boolean,
     $debugFlag: Boolean) {
       cognate_analysis(
         base_language_id: $baseLanguageId,
         group_field_id: $groupFieldId,
         perspective_info_list: $perspectiveInfoList,
         mode: $mode,
-        figure_flag: true,
+        figure_flag: $figureFlag,
         debug_flag: $debugFlag)
       {
         triumph
@@ -409,6 +410,7 @@ class CognateAnalysisModal extends React.Component
           groupFieldId: groupField.id,
           perspectiveInfoList: perspectiveInfoList,
           mode: this.props.mode,
+          figureFlag: true,
           debugFlag: this.state.debugFlag,
         },
       }).then(
@@ -434,6 +436,7 @@ class CognateAnalysisModal extends React.Component
           groupFieldId: groupField.id,
           perspectiveInfoList: perspectiveInfoList,
           mode: this.props.mode,
+          figureFlag: this.props.mode == '',
           debugFlag: this.state.debugFlag,
         },
       }).then(
@@ -456,7 +459,7 @@ class CognateAnalysisModal extends React.Component
 
           var plotly_data = [];
 
-          if (result.length > 0)
+          if (result.length > 0 && minimum_spanning_tree)
           {
             for (const arc of minimum_spanning_tree)
 
@@ -493,7 +496,7 @@ class CognateAnalysisModal extends React.Component
           var y_range = null;
           var z_range = null;
 
-          if (result.length > 0)
+          if (result.length > 0 && minimum_spanning_tree)
           {
             for (const arc of minimum_spanning_tree)
 
@@ -615,9 +618,11 @@ class CognateAnalysisModal extends React.Component
     return (
       <div>
         <Modal dimmer open size="fullscreen">
-          <Modal.Header>{this.props.mode == 'acoustic' ?
-            'Cognate acoustic analysis' :
-            'Cognate analysis'}</Modal.Header>
+          <Modal.Header>{
+            this.props.mode == 'acoustic' ? 'Cognate acoustic analysis' :
+            this.props.mode == 'reconstruction' ? 'Cognate reconstruction' :
+              'Cognate analysis'}
+          </Modal.Header>
           <Modal.Content>
             <Header as="h2">
               <Breadcrumb
@@ -762,71 +767,73 @@ class CognateAnalysisModal extends React.Component
                   <a href={this.state.xlsx_url}>XLSX-exported analysis results</a>
                 </List.Item>
               </List>
-              <List>
-                <List.Item>
-                  Etymological distance tree:
-                </List.Item>
-                <List.Item>
-                  <Plot
-                    data={this.state.plotly_data}
-                    layout={{
-                      width: 1200,
-                      height: 800,
-                      xaxis: {
-                        color: "#DDD",
-                        gridcolor: "#DDD",
-                        tickfont: {color: "#444"}},
-                      yaxis: {
-                        color: "#DDD",
-                        gridcolor: "#DDD",
-                        tickfont: {color: "#444"},
-                        scaleanchor: "x"},
-                      legend: {
-                        x: -0.05,
-                        y: -0.05,
-                        yanchor: "top",
-                        font: {size: 14},
-                        itemsizing: "constant"},
-                      title: 'Minimum spanning tree (2d relative distance embedding)'}}
-                  />
-                </List.Item>
-                <List.Item>
-                  <Plot
-                    data={this.state.plotly_3d_data}
-                    layout={{
-                      width: 1200,
-                      height: 1200,
-                      scene: {
+              {this.state.plotly_data.length > 0 && (
+                <List>
+                  <List.Item>
+                    Etymological distance tree:
+                  </List.Item>
+                  <List.Item>
+                    <Plot
+                      data={this.state.plotly_data}
+                      layout={{
+                        width: 1200,
+                        height: 800,
                         xaxis: {
                           color: "#DDD",
                           gridcolor: "#DDD",
-                          tickfont: {color: "#444"},
-                          range: this.state.x_range},
+                          tickfont: {color: "#444"}},
                         yaxis: {
                           color: "#DDD",
                           gridcolor: "#DDD",
                           tickfont: {color: "#444"},
-                          range: this.state.y_range},
-                        zaxis: {
-                          color: "#DDD",
-                          gridcolor: "#DDD",
-                          tickfont: {color: "#444"},
-                          range: this.state.z_range},
-                        camera: {
-                          eye: {
-                            x: 0,
-                            y: -this.state.z_span / Math.max(this.state.y_span, this.state.z_span) * 1.5,
-                            z: this.state.y_span / Math.max(this.state.y_span, this.state.z_span) * 1.5}}},
-                      legend: {
-                        x: -0.05,
-                        y: -0.05,
-                        yanchor: "top",
-                        font: {size: 14},
-                        itemsizing: "constant"},
-                      title: 'Minimum spanning tree (3d relative distance embedding)'}}
-                  />
-                </List.Item>
-              </List>
+                          scaleanchor: "x"},
+                        legend: {
+                          x: -0.05,
+                          y: -0.05,
+                          yanchor: "top",
+                          font: {size: 14},
+                          itemsizing: "constant"},
+                        title: 'Minimum spanning tree (2d relative distance embedding)'}}
+                    />
+                  </List.Item>
+                  <List.Item>
+                    <Plot
+                      data={this.state.plotly_3d_data}
+                      layout={{
+                        width: 1200,
+                        height: 1200,
+                        scene: {
+                          xaxis: {
+                            color: "#DDD",
+                            gridcolor: "#DDD",
+                            tickfont: {color: "#444"},
+                            range: this.state.x_range},
+                          yaxis: {
+                            color: "#DDD",
+                            gridcolor: "#DDD",
+                            tickfont: {color: "#444"},
+                            range: this.state.y_range},
+                          zaxis: {
+                            color: "#DDD",
+                            gridcolor: "#DDD",
+                            tickfont: {color: "#444"},
+                            range: this.state.z_range},
+                          camera: {
+                            eye: {
+                              x: 0,
+                              y: -this.state.z_span / Math.max(this.state.y_span, this.state.z_span) * 1.5,
+                              z: this.state.y_span / Math.max(this.state.y_span, this.state.z_span) * 1.5}}},
+                        legend: {
+                          x: -0.05,
+                          y: -0.05,
+                          yanchor: "top",
+                          font: {size: 14},
+                          itemsizing: "constant"},
+                        title: 'Minimum spanning tree (3d relative distance embedding)'}}
+                    />
+                  </List.Item>
+                </List>
+              )}
               <div><pre>{this.state.result}</pre></div>
             </Modal.Content>
           )}
