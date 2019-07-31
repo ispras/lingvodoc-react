@@ -36,6 +36,7 @@ export const fieldsQuery = gql`
       id
       translation
       data_type
+      data_type_translation_gist_id
     }
     user_blobs(data_type: "starling/csv") {
       id

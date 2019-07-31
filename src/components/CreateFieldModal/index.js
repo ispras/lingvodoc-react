@@ -41,7 +41,13 @@ class CreateFieldModal extends React.Component {
   }
 
   saveField() {
-    const { data: { error, loading, all_data_types: dataTypes }, createField, actions } = this.props;
+
+    const {
+      data: { error, loading, all_data_types: dataTypes },
+      createField,
+      actions,
+      callback } = this.props;
+
     const translationAtoms = this.state.translations.map(t => ({ locale_id: t.localeId, content: t.content }));
     const dataType = dataTypes.find(d => compositeIdToString(d.id) === this.state.dataTypeId);
 
@@ -53,9 +59,14 @@ class CreateFieldModal extends React.Component {
             query: fieldsQuery,
           },
         ],
-      }).then(() => {
-        actions.closeCreateFieldModal();
-      });
+      }).then(
+        ({ data }) => {
+
+          if (callback != null)
+            callback(data.create_field.field.id);
+
+          actions.closeCreateFieldModal();
+        });
     }
   }
 
@@ -73,7 +84,7 @@ class CreateFieldModal extends React.Component {
     }));
 
     return (
-      <Modal dimmer open size="small">
+      <Modal dimmer open>
         <Modal.Header>{getTranslation('Create field')}</Modal.Header>
         <Modal.Content>
           <Grid centered divided columns={2}>
@@ -127,6 +138,7 @@ export default compose(
     gql`
       mutation createField($data_type_id: LingvodocID!, $translationAtoms: [ObjectVal]!) {
         create_field(data_type_translation_gist_id: $data_type_id, translation_atoms: $translationAtoms) {
+          field { id }
           triumph
         }
       }
