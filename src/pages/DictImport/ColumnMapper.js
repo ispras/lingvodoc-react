@@ -5,7 +5,6 @@ import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import { Popup, Button } from 'semantic-ui-react';
 import { openCreateFieldModal } from 'ducks/fields';
-import CreateFieldModal from 'components/CreateFieldModal';
 import { getTranslation } from 'api/i18n';
 
 function valueColor(value) {
@@ -159,7 +158,6 @@ function ColumnMapper({
           />
         ))
         .toArray()}
-      <CreateFieldModal />
     </div>
   );
 }

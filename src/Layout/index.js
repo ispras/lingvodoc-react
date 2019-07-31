@@ -20,6 +20,7 @@ import PhonologyModal from 'components/PhonologyModal';
 import ConverEafModal from 'components/ConverEafModal';
 import StatisticsModal from 'components/StatisticsModal';
 import BanModal from 'components/BanModal';
+import CreateFieldModal from 'components/CreateFieldModal';
 
 import NavBar from './NavBar';
 import TasksSidebar from './TasksSidebar';
@@ -88,6 +89,7 @@ class Layout extends React.Component {
         <ConverEafModal />
         <StatisticsModal />
         <BanModal />
+        <CreateFieldModal />
       </div>
     );
   }

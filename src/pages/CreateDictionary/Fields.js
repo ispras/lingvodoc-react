@@ -5,10 +5,13 @@ import { isEqual } from 'lodash';
 import { graphql, withApollo } from 'react-apollo';
 import { Button, List, Dropdown, Grid, Checkbox } from 'semantic-ui-react';
 import styled from 'styled-components';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import { compositeIdToString } from 'utils/compositeId';
 import { uuidv4 as uuid } from 'utils/uuid';
 import { allFieldsQuery, corpusTemplateFieldsQuery } from './graphql';
 import { getTranslation } from 'api/i18n';
+import { openCreateFieldModal } from 'ducks/fields';
 
 const CheckboxWithMargins = styled(Checkbox)`
   margin-left: 1em;
@@ -53,10 +56,25 @@ class Column extends React.Component {
     this.onFieldChange = this.onFieldChange.bind(this);
     this.onLinkChange = this.onLinkChange.bind(this);
     this.onNestedChange = this.onNestedChange.bind(this);
+    this.old_field_id = null;
   }
 
   onFieldChange(value) {
-    const { fields, onChange } = this.props;
+    const { actions, column, fields, onChange } = this.props;
+
+    if (value === 'new_field')
+    {
+      actions.openCreateFieldModal(
+        (field_id) => {
+          this.old_field_id = column.field_id;
+          this.setState(
+            { field_id },
+            () => onChange(this.state));
+        });
+
+      return;
+    }
+
     const field = fields.find(f => compositeIdToString(f.id) === value);
     if (field) {
       this.setState(
@@ -100,8 +118,17 @@ class Column extends React.Component {
       column, columns, fields, perspectives,
     } = this.props;
 
-    const field = fields.find(f => isEqual(f.id, column.field_id));
+    var field = fields.find(f => isEqual(f.id, column.field_id));
+
+    if (field == undefined)
+      field = fields.find(f => isEqual(f.id, this.old_field_id));
+
     const options = fields.map(f => ({ text: f.translation, value: compositeIdToString(f.id) }));
+
+    options.push({
+      text: getTranslation('Add new field...'),
+      value: 'new_field'})
+
     const availablePerspectives = perspectives.map(p => ({ text: getTranslation('Perspective') + ' ' + (p.index + 1), value: p.index }));
     const currentField = compositeIdToString(field.id);
 
@@ -109,7 +136,7 @@ class Column extends React.Component {
       <span>
         <Dropdown
           selection
-          defaultValue={currentField}
+          value={currentField}
           options={options}
           onChange={(a, { value }) => this.onFieldChange(value)}
         />
@@ -142,6 +169,10 @@ Column.propTypes = {
   fields: PropTypes.array.isRequired,
   onChange: PropTypes.func.isRequired,
 };
+
+const ColumnWithData = compose(connect(null, dispatch => ({
+  actions: bindActionCreators({ openCreateFieldModal }, dispatch),
+})))(Column);
 
 class Columns extends React.Component {
   constructor(props) {
@@ -247,7 +278,7 @@ class Columns extends React.Component {
 
     const { perspectives, data: { all_fields: allFields } } = this.props;
     const { columns } = this.state;
- 
+
     return (
       <div>
         <List divided relaxed>
@@ -255,7 +286,7 @@ class Columns extends React.Component {
             <List.Item key={column.id}>
               <Grid centered columns={2}>
                 <Grid.Column width={11}>
-                  <Column
+                  <ColumnWithData
                     column={column}
                     columns={columns}
                     fields={allFields}
