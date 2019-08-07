@@ -56,7 +56,6 @@ class Column extends React.Component {
     this.onFieldChange = this.onFieldChange.bind(this);
     this.onLinkChange = this.onLinkChange.bind(this);
     this.onNestedChange = this.onNestedChange.bind(this);
-    this.old_field_id = null;
   }
 
   onFieldChange(value) {
@@ -66,7 +65,6 @@ class Column extends React.Component {
     {
       actions.openCreateFieldModal(
         (field_id) => {
-          this.old_field_id = column.field_id;
           this.setState(
             { field_id },
             () => onChange(this.state));
@@ -118,11 +116,7 @@ class Column extends React.Component {
       column, columns, fields, perspectives,
     } = this.props;
 
-    var field = fields.find(f => isEqual(f.id, column.field_id));
-
-    if (field == undefined)
-      field = fields.find(f => isEqual(f.id, this.old_field_id));
-
+    const field = fields.find(f => isEqual(f.id, this.state.field_id));
     const options = fields.map(f => ({ text: f.translation, value: compositeIdToString(f.id) }));
 
     options.push({
@@ -130,7 +124,7 @@ class Column extends React.Component {
       value: 'new_field'})
 
     const availablePerspectives = perspectives.map(p => ({ text: getTranslation('Perspective') + ' ' + (p.index + 1), value: p.index }));
-    const currentField = compositeIdToString(field.id);
+    const currentField = compositeIdToString(this.state.field_id);
 
     return (
       <span>
@@ -139,6 +133,8 @@ class Column extends React.Component {
           value={currentField}
           options={options}
           onChange={(a, { value }) => this.onFieldChange(value)}
+          disabled={!field}
+          loading={!field}
         />
         {field &&
           field.data_type === 'Link' && (
