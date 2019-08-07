@@ -3,10 +3,13 @@ import PropTypes from 'prop-types';
 import { compose, onlyUpdateForKeys } from 'recompose';
 import { isEqual, findIndex } from 'lodash';
 import { graphql } from 'react-apollo';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import gql from 'graphql-tag';
 import { Button, List, Dropdown, Grid, Checkbox } from 'semantic-ui-react';
 import { compositeIdToString } from 'utils/compositeId';
 import { getTranslation } from 'api/i18n';
+import { openCreateFieldModal } from 'ducks/fields';
 
 const columnsQuery = gql`
   query ColumnsQuery($perspectiveId: LingvodocID!) {
@@ -158,7 +161,20 @@ class C extends React.Component {
   }
 
   onFieldChange(value) {
-    const { column, fields } = this.props;
+    const { actions, column, fields } = this.props;
+
+    if (value === 'new_field')
+    {
+      actions.openCreateFieldModal(
+        (field_id) => {
+          this.setState({ field_id }, () => {
+            this.update(column, field_id, column.link_id);
+          });
+        });
+
+      return;
+    }
+
     const field = fields.find(f => compositeIdToString(f.id) === value);
     if (field) {
       this.setState({ field_id: field.id }, () => {
@@ -221,18 +237,25 @@ class C extends React.Component {
       column, columns, fields, perspectives,
     } = this.props;
 
-    const field = fields.find(f => isEqual(f.id, column.field_id));
+    const field = fields.find(f => isEqual(f.id, this.state.field_id));
     const options = fields.map(f => ({ text: f.translation, value: compositeIdToString(f.id) }));
+
+    options.push({
+      text: getTranslation('Add new field...'),
+      value: 'new_field'})
+
     const availablePerspectives = perspectives.map(p => ({ text: p.translation, value: compositeIdToString(p.id) }));
-    const currentField = compositeIdToString(field.id);
+    const currentField = compositeIdToString(this.state.field_id);
 
     return (
       <span>
         <Dropdown
           selection
-          defaultValue={currentField}
+          value={currentField}
           options={options}
           onChange={(a, { value }) => this.onFieldChange(value)}
+          disabled={!field}
+          loading={!field}
         />
         {field &&
           field.data_type === 'Link' && (
@@ -271,6 +294,8 @@ C.propTypes = {
 };
 
 const Column = compose(
+  connect(null, dispatch => ({
+    actions: bindActionCreators({ openCreateFieldModal }, dispatch)})),
   graphql(updateColumnMutation, { name: 'updateColumn' }),
   graphql(updateNestedMutation, { name: 'updateNested' })
 )(C);
