@@ -69,13 +69,14 @@ class PhonologyModal extends React.Component
       linkPerspectiveDict: {},
       lpTranslationFieldDict: {},
 
-      perspective_selection: [],
       perspective_selection_loading: true,
       perspective_selection_error: false,
 
       perspective_list: [],
       perspective_id_set: new Set(),
     };
+
+    this.perspective_info_list = [];
 
     this.handleVowelsChange = this.handleVowelsChange.bind(this);
     this.handleTranslationsChange = this.handleTranslationsChange.bind(this);
@@ -220,18 +221,7 @@ class PhonologyModal extends React.Component
     this.perspective_info_list = perspective_info_list;
     this.perspective_info_dict = perspective_info_dict;
 
-    /* Compiling perspective selection data. */
-
-    const perspective_selection =
-
-      this.perspective_info_list.map(
-        ([perspective, perspective_str]) => ({
-          key: perspective.id,
-          value: id2str(perspective.id),
-          text: perspective_str}));
-
     this.setState({
-      perspective_selection,
       perspective_selection_loading: false });
   }
 
@@ -925,16 +915,30 @@ class PhonologyModal extends React.Component
                       placeholder='Add perspective'
                       search
                       selection
-                      options={this.state.perspective_selection}
+                      options={
+
+                        this.perspective_info_list
+
+                          .filter(
+                            ([perspective, perspective_str]) =>
+                              !this.state.perspective_id_set.has(id2str(perspective.id)))
+
+                          .map(
+                            ([perspective, perspective_str]) => ({
+                              key: perspective.id,
+                              value: id2str(perspective.id),
+                              text: perspective_str}))
+
+                      }
                       value={''}
                       onChange={(event, data) =>
                       {
                         const perspective_info = this.perspective_info_dict[data.value];
 
-                        if (!this.state.perspective_id_set.hasOwnProperty(data.value))
+                        if (!this.state.perspective_id_set.has(data.value))
                         {
                           this.state.perspective_list.push(perspective_info);
-                          this.state.perspective_id_set.add(id2str(data.value));
+                          this.state.perspective_id_set.add(data.value);
                         }
 
                         this.setState({
