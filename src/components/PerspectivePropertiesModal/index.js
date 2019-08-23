@@ -11,6 +11,7 @@ import TranslationGist from 'components/TranslationGist';
 import { closePerspectivePropertiesModal } from 'ducks/perspectiveProperties';
 import Columns from 'components/Columns';
 import { getTranslation } from 'api/i18n';
+import EditPerspectiveMetadata from 'components/EditPerspectiveMetadata';
 
 const query = gql`
   query PerspectivePropsQuery($id: LingvodocID!, $parentId: LingvodocID!) {
@@ -25,6 +26,10 @@ const query = gql`
       parent_id
       translation
       translation_gist_id
+      additional_metadata {
+        transcription_rules
+        tag_list
+      }
     }
   }
 `;
@@ -37,16 +42,16 @@ const updateAtomMutation = gql`
   }
 `;
 
-// const updateMetadataMutation = gql`
-//   mutation UpdateMetadata($id: LingvodocID!, $meta: ObjectVal!) {
-//     update_dictionary(id: $id, additional_metadata: $meta) {
-//       triumph
-//     }
-//   }
-// `;
+const updateMetadataMutation = gql`
+  mutation UpdateMetadata($id: LingvodocID!, $meta: ObjectVal!) {
+    update_perspective(id: $id, additional_metadata: $meta) {
+      triumph
+    }
+  }
+`;
 
 const Properties = (props) => {
-  const { id, data, actions, updateAtomMutation } = props;
+  const { id, parentId, data, actions, updateAtomMutation, updateMetadataMutation } = props;
   const {
     loading, error, dictionary, perspective,
   } = data;
@@ -61,15 +66,44 @@ const Properties = (props) => {
   return (
     <Modal open dimmer size="fullscreen">
       <Modal.Content>
+
         <Header>{getTranslation("Translations")}</Header>
         <TranslationGist objectId={perspective.id} id={gistId} editable updateAtomMutation={updateAtomMutation} />
+
         <Divider />
+
         <Header>{getTranslation("Fields")}</Header>
         <Columns perspectiveId={perspective.id} perspectives={perspectives} />
+
+        <Divider />
+
+        <EditPerspectiveMetadata
+          metadata={perspective.additional_metadata}
+          onSave={(meta) => {
+            updateMetadataMutation({
+              variables: {
+                id,
+                meta,
+              },
+              refetchQueries: [
+                {
+                  query,
+                  variables: {
+                    id,
+                    parentId,
+                  },
+                },
+              ],
+            });
+          }}
+        />
+
       </Modal.Content>
+
       <Modal.Actions>
         <Button icon="minus" content={getTranslation("Close")} onClick={actions.closePerspectivePropertiesModal} />
       </Modal.Actions>
+
     </Modal>
   );
 };
@@ -93,6 +127,7 @@ export default compose(
   branch(({ perspective }) => !perspective, renderNothing),
   withProps(({ perspective: { id, parentId } }) => ({ id, parentId })),
   graphql(updateAtomMutation, { name: 'updateAtomMutation' }),
+  graphql(updateMetadataMutation, { name: 'updateMetadataMutation' }),
   graphql(query),
   // graphql(updateMetadataMutation, { name: 'update' }),
   onlyUpdateForKeys(['perspective', 'data'])

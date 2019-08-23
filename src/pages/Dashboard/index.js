@@ -281,7 +281,7 @@ class D extends React.Component {
                   text={getTranslation("Statistics...")}
                   onClick={() => actions.openStatistics(id, 'dictionary')}
                 />
-                <Dropdown.Item icon="circle" text={getTranslation("Create a new perspective...")} />
+                {/*<Dropdown.Item icon="circle" text={getTranslation("Create a new perspective...")} />*/}
                 <Dropdown.Item icon="save" text={getTranslation("Save dictionary")} onClick={() => actions.openSaveDictionaryModal(id)} />
                 <Dropdown.Divider />
                 <Dropdown.Item icon="remove" text={getTranslation("Remove dictionary")} onClick={this.onRemoveDictionary} />

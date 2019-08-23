@@ -6,7 +6,7 @@ import { graphql } from 'react-apollo';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import gql from 'graphql-tag';
-import { Button, List, Dropdown, Grid, Checkbox } from 'semantic-ui-react';
+import { Button, List, Dropdown, Grid, Checkbox, Icon } from 'semantic-ui-react';
 import { compositeIdToString } from 'utils/compositeId';
 import { getTranslation } from 'api/i18n';
 import { openCreateFieldModal } from 'ducks/fields';
@@ -390,8 +390,16 @@ class Columns extends React.Component {
     const { data, perspectives } = this.props;
     const { loading, error } = data;
 
-    if (loading || error) {
+    if (error) {
       return null;
+    }
+    else if (loading)
+    {
+      return (
+        <div style={{'textAlign': 'center'}}>
+          <div><Icon name='spinner' size='big' loading/></div>
+          <div style={{'marginTop': '0.5em'}}>Loading</div>
+        </div>);
     }
 
     const { perspective: { columns }, all_fields: allFields } = data;
