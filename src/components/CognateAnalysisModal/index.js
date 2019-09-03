@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { compose, branch, renderNothing } from 'recompose';
 import { graphql, withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
-import { Breadcrumb, Button, Checkbox, Dimmer, Divider, Header, Icon, Input, List, Loader, Modal, Select } from 'semantic-ui-react';
+import { Breadcrumb, Button, Checkbox, Dimmer, Divider, Dropdown, Header, Icon, Input, List, Loader, Modal, Select } from 'semantic-ui-react';
 import Plot from 'react-plotly.js';
 
 import { closeModal } from 'ducks/cognateAnalysis';
@@ -11,7 +11,8 @@ import { bindActionCreators } from 'redux';
 import { isEqual, map } from 'lodash';
 import { connect } from 'react-redux';
 import { compositeIdToString as id2str } from 'utils/compositeId';
-import { checkLanguageId } from 'pages/Home/components/LangsNav';
+import { checkLanguageId, languageIdList } from 'pages/Home/components/LangsNav';
+import { getTranslation } from 'api/i18n';
 
 const cognateAnalysisDataQuery = gql`
   query cognateAnalysisData($perspectiveId: LingvodocID!) {
@@ -31,6 +32,59 @@ const cognateAnalysisDataQuery = gql`
       translation
       english_translation: translation(locale_id: 2)
       data_type
+    }
+  }
+`;
+
+const cognateAnalysisMultiDataQuery = gql`
+  query cognateAnalysisMultiData(
+    $perspectiveId: LingvodocID!,
+    $languageIdList: [LingvodocID]!) {
+    perspective(id: $perspectiveId) {
+      id
+      translation
+      columns {
+        field_id
+      }
+      tree {
+        id
+        translation
+      }
+    }
+    all_fields {
+      id
+      translation
+      english_translation: translation(locale_id: 2)
+      data_type
+    }
+    languages(id_list: $languageIdList) {
+      id
+      translation
+      dictionaries(deleted: false, published_and_limited_only: true) {
+        id
+        translation
+        status
+        perspectives {
+          id
+          translation
+          status
+          columns {
+            id
+            field_id
+            parent_id
+            self_id
+            position
+          }
+        }
+      }
+      languages(deleted: false) {
+        id
+        translation
+      }
+      tree {
+        id
+        translation
+      }
     }
   }
 `;
@@ -75,16 +129,20 @@ const computeCognateAnalysisMutation = gql`
     $groupFieldId: LingvodocID!,
     $baseLanguageId: LingvodocID!,
     $perspectiveInfoList: [[LingvodocID]]!,
+    $multiList: [ObjectVal],
     $mode: String,
     $figureFlag: Boolean,
-    $debugFlag: Boolean) {
+    $debugFlag: Boolean,
+    $intermediateFlag: Boolean) {
       cognate_analysis(
         base_language_id: $baseLanguageId,
         group_field_id: $groupFieldId,
         perspective_info_list: $perspectiveInfoList,
+        multi_list: $multiList,
         mode: $mode,
         figure_flag: $figureFlag,
-        debug_flag: $debugFlag)
+        debug_flag: $debugFlag,
+        intermediate_flag: $intermediateFlag)
       {
         triumph
         dictionary_count
@@ -99,6 +157,7 @@ const computeCognateAnalysisMutation = gql`
         embedding_2d
         embedding_3d
         perspective_name_list
+        intermediate_url_list
       }
     }
 `;
@@ -133,6 +192,8 @@ class CognateAnalysisModal extends React.Component
       embedding_3d: [],
       perspective_name_list: [],
 
+      intermediate_url_list: null,
+
       plotly_data: [],
       plotly_3d_data: [],
 
@@ -150,11 +211,22 @@ class CognateAnalysisModal extends React.Component
       groupFieldIdStr: '',
 
       debugFlag: false,
+      intermediateFlag: false,
 
       computing: false,
+
+      /* Related to multi-language cognate analysis. */
+
+      language_list: [],
+      language_id_set: new Set(),
+
+      transcriptionFieldIdStrMap: {},
+      translationFieldIdStrMap: {},
+      perspectiveSelectionMap: {},
     };
 
-    this.initialize = this.initialize.bind(this);
+    this.initialize_single = this.initialize_single.bind(this);
+    this.initialize_multi = this.initialize_multi.bind(this);
     this.initPerspectiveData = this.initPerspectiveData.bind(this);
     this.initPerspectiveList = this.initPerspectiveList.bind(this);
 
@@ -163,22 +235,13 @@ class CognateAnalysisModal extends React.Component
 
   componentDidMount()
   {
-    this.initialize();
+    (this.props.mode == 'multi' ?
+      this.initialize_multi :
+      this.initialize_single)();
   }
 
-  async initialize()
+  initialize_common(allFields, columns, tree)
   {
-    const { client, perspectiveId } = this.props;
-
-    const { data: {
-      all_fields: allFields,
-      perspective: { columns, tree } }} =
-        
-      await client.query({
-        query: cognateAnalysisDataQuery,
-        variables: { perspectiveId },
-      });
-
     /* Compiling dictionary of perspective field info so that later we would be able to retrieve this info
      * efficiently. */
 
@@ -187,12 +250,10 @@ class CognateAnalysisModal extends React.Component
     for (const field of allFields)
       this.fieldDict[id2str(field.id)] = field;
 
-    /* Additional info of fields of our perspective. */
+    /* Grouping fields of our perspective. */
 
-    this.columnFields = columns
-      .map(column => this.fieldDict[id2str(column.field_id)]);
-
-    this.groupFields = this.columnFields
+    this.groupFields = columns
+      .map(column => this.fieldDict[id2str(column.field_id)])
       .filter(field => field.data_type === 'Grouping Tag');
 
     /* Selecting default grouping field with 'cognate' in its name, or the first field. */
@@ -224,32 +285,145 @@ class CognateAnalysisModal extends React.Component
         break;
       }
     }
+  }
 
-    /* Recursively getting data of perspectives available for analysis. */
-
-    this.available_list = [];
-    await this.initPerspectiveData(this.baseLanguageId, []);
-
+  initialize_state()
+  {
     /* If we have selected a default cognate grouping field, we initialize perspectives available for
      * analysis. */
 
-    const set_state = { groupFieldIdStr, initialized: true };
-
-    if (groupFieldIdStr)
+    if (this.state.groupFieldIdStr)
     {
       const {
         transcriptionFieldIdStrList,
         translationFieldIdStrList,
         perspectiveSelectionList } =
 
-        this.initPerspectiveList(groupFieldIdStr);
+        this.initPerspectiveList(this.state.groupFieldIdStr);
 
-      set_state.transcriptionFieldIdStrList = transcriptionFieldIdStrList;
-      set_state.translationFieldIdStrList = translationFieldIdStrList;
-      set_state.perspectiveSelectionList = perspectiveSelectionList;
+      this.state.transcriptionFieldIdStrList = transcriptionFieldIdStrList;
+      this.state.translationFieldIdStrList = translationFieldIdStrList;
+      this.state.perspectiveSelectionList = perspectiveSelectionList;
+    }
+  }
+
+  async initialize_single()
+  {
+    const { client, perspectiveId } = this.props;
+
+    const { data: {
+      all_fields: allFields,
+      perspective: { columns, tree } }} =
+        
+      await client.query({
+        query: cognateAnalysisDataQuery,
+        variables: { perspectiveId },
+      });
+
+    this.initialize_common(allFields, columns, tree);
+
+    /* Recursively getting data of perspectives available for analysis. */
+
+    this.available_list = [];
+    await this.initPerspectiveData(this.baseLanguageId, []);
+
+    this.initialize_state();
+    this.setState({ initialized: true });
+  }
+
+  /*
+   * Initializes data for multi-language cognate analysis.
+   */
+  async initialize_multi()
+  {
+    const { client, perspectiveId } = this.props;
+
+    const { data: {
+      all_fields: allFields,
+      perspective: { columns, tree },
+      languages }} =
+        
+      await client.query({
+        query: cognateAnalysisMultiDataQuery,
+        variables: { perspectiveId, languageIdList },
+      });
+
+    this.initialize_common(allFields, columns, tree);
+
+    /* Preparing language info. */
+
+    this.language_dict = {}
+
+    for (const language of languages)
+      this.language_dict[id2str(language.id)] = language;
+
+    this.language_list = languages;
+
+    /* Getting info of perspectives of our base language. */
+
+    this.available_list = [];
+    await this.initPerspectiveData(this.baseLanguageId, []);
+
+    this.initialize_state();
+
+    const base_language = this.language_dict[id2str(this.baseLanguageId)];
+
+    base_language.loading = false;
+    base_language.treePath = this.treePath;
+    base_language.available_list = this.available_list;
+    base_language.perspective_list = this.perspective_list;
+
+    /* Preparing info of perspective and transcription/translation field selections. */
+
+    for (const [index, {perspective}] of this.perspective_list.entries())
+    {
+      const p_key = id2str(perspective.id);
+
+      this.state.transcriptionFieldIdStrMap[p_key] = this.state.transcriptionFieldIdStrList[index];
+      this.state.translationFieldIdStrMap[p_key] = this.state.translationFieldIdStrList[index];
+      this.state.perspectiveSelectionMap[p_key] = this.state.perspectiveSelectionList[index];
     }
 
-    this.setState(set_state);
+    this.state.language_id_set.add(id2str(this.baseLanguageId));
+
+    this.setState({
+      initialized: true,
+      language_list: [base_language]});
+  }
+
+  /*
+   * Initializes data of perspectives of a selected language.
+   */
+  async initialize_language(language)
+  {
+    this.available_list = [];
+    await this.initPerspectiveData(language.id, []);
+
+    this.initialize_state();
+
+    language.available_list = this.available_list;
+    language.perspective_list = this.perspective_list;
+
+    /* Preparing info of perspective and transcription/translation field selections. */
+
+    for (const [index, {perspective}] of this.perspective_list.entries())
+    {
+      const p_key = id2str(perspective.id);
+
+      if (!this.state.transcriptionFieldIdStrMap.hasOwnProperty(p_key))
+        this.state.transcriptionFieldIdStrMap[p_key] = this.state.transcriptionFieldIdStrList[index];
+
+      if (!this.state.translationFieldIdStrMap.hasOwnProperty(p_key))
+        this.state.translationFieldIdStrMap[p_key] = this.state.translationFieldIdStrList[index];
+
+      if (!this.state.perspectiveSelectionMap.hasOwnProperty(p_key))
+        this.state.perspectiveSelectionMap[p_key] = this.state.perspectiveSelectionList[index];
+    }
+
+    language.loading = false;
+
+    this.setState({
+      language_list: this.state.language_list });
   }
 
   /* Recursively initializes data of perspectives available for the cognate analysis dialog. */
@@ -383,6 +557,195 @@ class CognateAnalysisModal extends React.Component
       perspectiveSelectionList };
   }
 
+  select_group_field(value)
+  {
+    if (value == this.state.groupFieldIdStr)
+      return;
+
+    /* Selecting grouping field for many languages. */
+
+    if (this.props.mode == 'multi')
+    {
+      this.state.groupFieldIdStr = value;
+
+      for (const language of this.state.language_list)
+      {
+        this.available_list = language.available_list;
+        this.initialize_state();
+
+        language.perspective_list = this.perspective_list;
+      }
+
+      this.setState({
+        groupFieldIdStr: value });
+    }
+
+    /* Selecting grouping field for a single language. */
+
+    else
+    {
+      this.setState({
+        groupFieldIdStr: value,
+        ...this.initPerspectiveList(value) });
+    }
+  }
+
+  handleResult({
+    data: {
+      cognate_analysis: {
+        dictionary_count,
+        group_count,
+        not_enough_count,
+        transcription_count,
+        translation_count,
+        result,
+        xlsx_url,
+        figure_url,
+        minimum_spanning_tree,
+        embedding_2d,
+        embedding_3d,
+        perspective_name_list,
+        intermediate_url_list }}})
+  {
+    /* Data of the 2d cognate distance plots. */
+
+    var plotly_data = [];
+
+    if (result.length > 0 && minimum_spanning_tree)
+    {
+      for (const arc of minimum_spanning_tree)
+
+        plotly_data.push({
+          x: [embedding_2d[arc[0]][0], embedding_2d[arc[1]][0]],
+          y: [embedding_2d[arc[0]][1], embedding_2d[arc[1]][1]],
+          mode: 'lines',
+          showlegend: false,
+          line: {color: '#666', width: 1}});
+
+      for (var i = 0; i < embedding_2d.length; i++)
+
+        plotly_data.push({
+          x: [embedding_2d[i][0]],
+          y: [embedding_2d[i][1]],
+          type: 'scatter',
+          mode: 'markers+text',
+          name: (i + 1) + ') ' + perspective_name_list[i],
+          text: [(i + 1).toString()],
+          textfont: {size: 14},
+          textposition: 'center right',
+          marker: {size: 8}});
+    }
+
+    /* Data of the 3d cognate distance plots. */
+
+    var plotly_3d_data = [];
+
+    var x_span = null;
+    var y_span = null;
+    var z_span = null;
+
+    var x_range = null;
+    var y_range = null;
+    var z_range = null;
+
+    if (result.length > 0 && minimum_spanning_tree)
+    {
+      for (const arc of minimum_spanning_tree)
+
+        plotly_3d_data.push({
+          x: [embedding_3d[arc[0]][0], embedding_3d[arc[1]][0]],
+          y: [embedding_3d[arc[0]][1], embedding_3d[arc[1]][1]],
+          z: [embedding_3d[arc[0]][2], embedding_3d[arc[1]][2]],
+          type: 'scatter3d',
+          mode: 'lines',
+          showlegend: false,
+          line: {color: '#666', width: 1}});
+
+      for (var i = 0; i < embedding_3d.length; i++)
+
+        plotly_3d_data.push({
+          x: [embedding_3d[i][0]],
+          y: [embedding_3d[i][1]],
+          z: [embedding_3d[i][2]],
+          type: 'scatter3d',
+          mode: 'markers+text',
+          name: (i + 1) + ') ' + perspective_name_list[i],
+          text: [(i + 1).toString()],
+          textfont: {size: 14},
+          textposition: 'center right',
+          marker: {size: 3}});
+
+      /* Computing 3d axes ranges. */
+
+      const x_max = Math.max(...embedding_3d.map(point => point[0]));
+      const x_min = Math.min(...embedding_3d.map(point => point[0]));
+
+      const y_max = Math.max(...embedding_3d.map(point => point[1]));
+      const y_min = Math.min(...embedding_3d.map(point => point[1]));
+
+      const z_max = Math.max(...embedding_3d.map(point => point[2]));
+      const z_min = Math.min(...embedding_3d.map(point => point[2]));
+
+      const range =
+        
+        1.1 * Math.max(
+          x_span = x_max - x_min,
+          y_span = y_max - y_min,
+          z_span = z_max - z_min);
+
+      const x_center = (x_max + x_min) / 2;
+      x_range = [x_center - range / 2, x_center + range / 2]
+
+      const y_center = (y_max + y_min) / 2;
+      y_range = [y_center - range / 2, y_center + range / 2]
+
+      const z_center = (z_max + z_min) / 2;
+      z_range = [z_center - range / 2, z_center + range / 2]
+    }
+
+    /* Updating state with computed analysis info. */
+
+    this.setState({
+      dictionary_count,
+      group_count,
+      not_enough_count,
+      transcription_count,
+      translation_count,
+      library_present: true,
+      result,
+      xlsx_url,
+      figure_url,
+      minimum_spanning_tree,
+      embedding_2d,
+      embedding_3d,
+      perspective_name_list,
+      intermediate_url_list,
+      plotly_data,
+      plotly_3d_data,
+      x_range,
+      y_range,
+      z_range,
+      x_span,
+      y_span,
+      z_span,
+      computing: false });
+  }
+
+  handleError(error_data)
+  {
+    window.logger.err('Failed to compute cognate analysis!');
+    console.log(error_data);
+
+    if (error_data.message ===
+      'GraphQL error: Analysis library is absent, please contact system administrator.')
+
+      this.setState({
+        library_present: false });
+
+    this.setState({
+      computing: false });
+  }
+
   handleCreate()
   {
     const {
@@ -391,14 +754,46 @@ class CognateAnalysisModal extends React.Component
 
     const groupField = this.fieldDict[this.state.groupFieldIdStr];
 
-    const perspectiveInfoList = this.perspective_list
+    /* Gathering info of perspectives we are to analyze. */
 
-      .map(({perspective}, index) => [perspective.id,
-        this.fieldDict[this.state.transcriptionFieldIdStrList[index]].id,
-        this.fieldDict[this.state.translationFieldIdStrList[index]].id])
-      
-      .filter((perspective_info, index) =>
-        (this.state.perspectiveSelectionList[index]));
+    var perspectiveInfoList = [];
+    var multiList = [];
+    
+    if (this.props.mode == 'multi')
+    {
+      for (const language of this.state.language_list)
+      {
+        var p_count =  0;
+
+        for (const { perspective } of language.perspective_list)
+        {
+          const p_key = id2str(perspective.id);
+
+          if (this.state.perspectiveSelectionMap[p_key])
+          {
+            perspectiveInfoList.push([perspective.id,
+              this.fieldDict[this.state.transcriptionFieldIdStrMap[p_key]].id,
+              this.fieldDict[this.state.translationFieldIdStrMap[p_key]].id]);
+
+            p_count++;
+          }
+        }
+
+        multiList.push([language.id, p_count]);
+      }
+    }
+    
+    else
+    {
+      perspectiveInfoList = this.perspective_list
+
+        .map(({perspective}, index) => [perspective.id,
+          this.fieldDict[this.state.transcriptionFieldIdStrList[index]].id,
+          this.fieldDict[this.state.translationFieldIdStrList[index]].id])
+        
+        .filter((perspective_info, index) =>
+          (this.state.perspectiveSelectionList[index]));
+    }
 
     /* If we are to perform acoustic analysis, we will try to launch it in the background. */
 
@@ -412,6 +807,7 @@ class CognateAnalysisModal extends React.Component
           mode: this.props.mode,
           figureFlag: true,
           debugFlag: this.state.debugFlag,
+          intermediateFlag: this.state.intermediateFlag,
         },
       }).then(
         () => {
@@ -435,165 +831,356 @@ class CognateAnalysisModal extends React.Component
           baseLanguageId: this.baseLanguageId,
           groupFieldId: groupField.id,
           perspectiveInfoList: perspectiveInfoList,
+          multiList: multiList,
           mode: this.props.mode,
           figureFlag: this.props.mode == '',
           debugFlag: this.state.debugFlag,
+          intermediateFlag: this.state.intermediateFlag },
         },
-      }).then(
+      ).then(
 
-        ({ data: { cognate_analysis: {
-          dictionary_count,
-          group_count,
-          not_enough_count,
-          transcription_count,
-          translation_count,
-          result,
-          xlsx_url,
-          figure_url,
-          minimum_spanning_tree,
-          embedding_2d,
-          embedding_3d,
-          perspective_name_list }}}) =>
-        {
-          /* Data of the 2d cognate distance plots. */
+        (data) => this.handleResult(data),
+        (error_data) => this.handleError(error_data)
 
-          var plotly_data = [];
-
-          if (result.length > 0 && minimum_spanning_tree)
-          {
-            for (const arc of minimum_spanning_tree)
-
-              plotly_data.push({
-                x: [embedding_2d[arc[0]][0], embedding_2d[arc[1]][0]],
-                y: [embedding_2d[arc[0]][1], embedding_2d[arc[1]][1]],
-                mode: 'lines',
-                showlegend: false,
-                line: {color: '#666', width: 1}});
-
-            for (var i = 0; i < embedding_2d.length; i++)
-
-              plotly_data.push({
-                x: [embedding_2d[i][0]],
-                y: [embedding_2d[i][1]],
-                type: 'scatter',
-                mode: 'markers+text',
-                name: (i + 1) + ') ' + perspective_name_list[i],
-                text: [(i + 1).toString()],
-                textfont: {size: 14},
-                textposition: 'center right',
-                marker: {size: 8}});
-          }
-
-          /* Data of the 3d cognate distance plots. */
-
-          var plotly_3d_data = [];
-
-          var x_span = null;
-          var y_span = null;
-          var z_span = null;
-
-          var x_range = null;
-          var y_range = null;
-          var z_range = null;
-
-          if (result.length > 0 && minimum_spanning_tree)
-          {
-            for (const arc of minimum_spanning_tree)
-
-              plotly_3d_data.push({
-                x: [embedding_3d[arc[0]][0], embedding_3d[arc[1]][0]],
-                y: [embedding_3d[arc[0]][1], embedding_3d[arc[1]][1]],
-                z: [embedding_3d[arc[0]][2], embedding_3d[arc[1]][2]],
-                type: 'scatter3d',
-                mode: 'lines',
-                showlegend: false,
-                line: {color: '#666', width: 1}});
-
-            for (var i = 0; i < embedding_3d.length; i++)
-
-              plotly_3d_data.push({
-                x: [embedding_3d[i][0]],
-                y: [embedding_3d[i][1]],
-                z: [embedding_3d[i][2]],
-                type: 'scatter3d',
-                mode: 'markers+text',
-                name: (i + 1) + ') ' + perspective_name_list[i],
-                text: [(i + 1).toString()],
-                textfont: {size: 14},
-                textposition: 'center right',
-                marker: {size: 3}});
-
-            /* Computing 3d axes ranges. */
-
-            const x_max = Math.max(...embedding_3d.map(point => point[0]));
-            const x_min = Math.min(...embedding_3d.map(point => point[0]));
-
-            const y_max = Math.max(...embedding_3d.map(point => point[1]));
-            const y_min = Math.min(...embedding_3d.map(point => point[1]));
-
-            const z_max = Math.max(...embedding_3d.map(point => point[2]));
-            const z_min = Math.min(...embedding_3d.map(point => point[2]));
-
-            const range =
-              
-              1.1 * Math.max(
-                x_span = x_max - x_min,
-                y_span = y_max - y_min,
-                z_span = z_max - z_min);
-
-            const x_center = (x_max + x_min) / 2;
-            x_range = [x_center - range / 2, x_center + range / 2]
-
-            const y_center = (y_max + y_min) / 2;
-            y_range = [y_center - range / 2, y_center + range / 2]
-
-            const z_center = (z_max + z_min) / 2;
-            z_range = [z_center - range / 2, z_center + range / 2]
-          }
-
-          /* Updating state with computed analysis info. */
-
-          this.setState({
-            dictionary_count,
-            group_count,
-            not_enough_count,
-            transcription_count,
-            translation_count,
-            library_present: true,
-            result,
-            xlsx_url,
-            figure_url,
-            minimum_spanning_tree,
-            embedding_2d,
-            embedding_3d,
-            perspective_name_list,
-            plotly_data,
-            plotly_3d_data,
-            x_range,
-            y_range,
-            z_range,
-            x_span,
-            y_span,
-            z_span,
-            computing: false });
-        },
-
-        (error_data) =>
-        {
-          window.logger.err('Failed to compute cognate analysis!');
-          console.log(error_data);
-
-          if (error_data.message ===
-            'GraphQL error: Analysis library is absent, please contact system administrator.')
-
-            this.setState({
-              library_present: false });
-
-          this.setState({
-            computing: false });
-        }
       );
     }
+  }
+
+  /*
+   * Grouping field selection rendering.
+   */
+  grouping_field_render()
+  {
+    const groupFieldsOptions = this.groupFields.map((f, k) => ({
+      key: k,
+      value: id2str(f.id),
+      text: f.translation,
+    }));
+
+    if (this.groupFields.length > 0)
+
+      return (
+        <List>
+          <List.Item>
+            <span style={{marginRight: '0.5em'}}>
+              Grouping field:
+            </span>
+            <Select
+              defaultValue={this.state.groupFieldIdStr}
+              placeholder="Grouping field selection"
+              options={groupFieldsOptions}
+              onChange={(e, { value }) => this.select_group_field(value)}
+            />
+          </List.Item>
+        </List>
+      )
+
+    else
+      
+      return (
+        <span>Perspective does not have any grouping fields,
+          cognate analysis is impossible.</span>
+      )
+  }
+
+  /*
+   * Additional options for administrator.
+   */
+  admin_section_render()
+  {
+    return (
+      <List>
+        <List.Item>
+          <Checkbox
+            label='Debug flag'
+            style={{marginTop: '1em', verticalAlign: 'middle'}}
+            checked={this.state.debugFlag}
+            onChange={(e, { checked }) => {
+              this.setState({ debugFlag: checked });}}
+          />
+        </List.Item>
+        <List.Item>
+          <Checkbox
+            label='Save intermediate data'
+            style={{marginTop: '1em', verticalAlign: 'middle'}}
+            checked={this.state.intermediateFlag}
+            onChange={(e, { checked }) => {
+              this.setState({ intermediateFlag: checked });}}
+          />
+        </List.Item>
+      </List>
+    )
+  }
+
+  /*
+   * Perspective selection for a single language, e.g. for simple cognate analysis.
+   */
+  single_language_render()
+  {
+    return (
+      <Modal.Content>
+
+        <Header as="h2">
+          <Breadcrumb
+            icon="right angle"
+            sections={this.treePath.map(e => ({
+              key: e.id, content: e.translation, link: false }))}
+          />
+        </Header>
+
+        {this.grouping_field_render()}
+
+        <div style={{marginTop: '1.5em'}}>
+        {this.perspective_list.length > 1 && map(this.perspective_list,
+          ({treePathList, perspective, textFieldsOptions}, index) => (
+            <List key={'perspective' + index}>
+              <List.Item>
+              <Breadcrumb
+                style={this.state.perspectiveSelectionList[index] ? {} : {opacity: 0.5}}
+                icon="right angle"
+                sections={treePathList.map(e => ({
+                  key: e.id,
+                  content: e.hasOwnProperty('status') ?
+                    e.translation + ' (' + e.status + ')' :
+                    e.translation,
+                  link: false }))}
+              />
+              <Checkbox
+                style={{marginLeft: '0.5em', verticalAlign: 'middle'}}
+                checked={this.state.perspectiveSelectionList[index]}
+                onChange={(e, { checked }) => {
+                  const perspectiveSelectionList = this.state.perspectiveSelectionList;
+                  perspectiveSelectionList[index] = checked;
+                  this.setState({ perspectiveSelectionList });}}
+              />
+              </List.Item>
+              {this.state.perspectiveSelectionList[index] && (
+                <List.Item>
+                <List>
+                <List.Item>
+                  <span style={{marginLeft: '1em', marginRight: '0.5em'}}>
+                    Source transcription field:
+                  </span>
+                  <Select
+                    disabled={!this.state.perspectiveSelectionList[index]}
+                    defaultValue={this.state.transcriptionFieldIdStrList[index]}
+                    placeholder="Source transcription field selection"
+                    options={textFieldsOptions}
+                    onChange={(e, { value }) => {
+                      const transcriptionFieldIdStrList = this.state.transcriptionFieldIdStrList;
+                      transcriptionFieldIdStrList[index] = value;
+                      this.setState({ transcriptionFieldIdStrList });}}
+                  />
+                </List.Item>
+                <List.Item>
+                  <span style={{marginLeft: '1em', marginRight: '0.5em'}}>
+                    Source translation field:
+                  </span>
+                  <Select
+                    disabled={!this.state.perspectiveSelectionList[index]}
+                    defaultValue={this.state.translationFieldIdStrList[index]}
+                    placeholder="Source translation field selection"
+                    options={textFieldsOptions}
+                    onChange={(e, { value }) => {
+                      const translationFieldIdStrList = this.state.translationFieldIdStrList;
+                      translationFieldIdStrList[index] = value;
+                      this.setState({ translationFieldIdStrList });}}
+                  />
+                </List.Item>
+                </List>
+                </List.Item>
+              )}
+            </List>
+        ))}
+        {this.perspective_list.length <= 1 && (
+          <span>Dictionary group doesn't have multiple dictionaries with selected
+            cognate grouping field present, cognate analysis is impossible.</span>
+        )}
+        </div>
+
+        {!this.state.library_present && (
+          <List>
+            <div style={{color: 'red'}}>
+              Analysis library is absent, please contact system administrator.
+            </div>
+          </List>
+        )}
+
+        {this.props.user.id == 1 && this.admin_section_render()}
+
+      </Modal.Content>
+    )
+  }
+
+  /*
+   * Perspective selection for multiple languages, e.g. for multi-language cognate analysis.
+   */
+  multi_language_render()
+  {
+    return (
+      <Modal.Content>
+
+        {this.grouping_field_render()}
+
+        <List>
+          {map(this.state.language_list, (language_info, l_index) => (
+            <List.Item key={'language' + l_index}>
+              <Header as="h3">
+                <Breadcrumb
+                  icon="right angle"
+                  sections={language_info.treePath.map(e => ({
+                    key: e.id, content: e.translation, link: false }))}
+                />
+                <span>
+                  <Icon
+                    name='delete'
+                    style={{paddingLeft: '0.5em', paddingRight: '0.5em'}}
+                    onClick={() =>
+                    {
+                      this.state.language_list.splice(l_index, 1);
+                      this.state.language_id_set.delete(id2str(language_info.id));
+
+                      this.setState({
+                        language_list: this.state.language_list,
+                        language_id_set: this.state.language_id_set
+                      });
+                    }}
+                  />
+                </span>
+              </Header>
+
+              {language_info.loading ?
+
+                <List>
+                <List.Item>
+                <span>Loading perspective data... <Icon name="spinner" loading /></span>
+                </List.Item>
+                </List> :
+
+                map(language_info.perspective_list,
+                  ({treePathList, perspective, textFieldsOptions}, p_index) => {
+
+                    const p_key = id2str(perspective.id);
+                    
+                    return (
+                      <List key={'perspective' + p_key}>
+                        <List.Item>
+                        <Breadcrumb
+                          style={this.state.perspectiveSelectionMap[p_key] ? {} : {opacity: 0.5}}
+                          icon="right angle"
+                          sections={treePathList.map(e => ({
+                            key: e.id,
+                            content: e.hasOwnProperty('status') ?
+                              e.translation + ' (' + e.status + ')' :
+                              e.translation,
+                            link: false }))}
+                        />
+                        <Checkbox
+                          style={{marginLeft: '0.5em', verticalAlign: 'middle'}}
+                          checked={this.state.perspectiveSelectionMap[p_key]}
+                          onChange={(e, { checked }) => {
+                            const perspectiveSelectionMap = this.state.perspectiveSelectionMap;
+                            perspectiveSelectionMap[p_key] = checked;
+                            this.setState({ perspectiveSelectionMap });}}
+                        />
+                        </List.Item>
+                        {this.state.perspectiveSelectionMap[p_key] && (
+                          <List.Item>
+                          <List>
+                          <List.Item>
+                            <span style={{marginLeft: '1em', marginRight: '0.5em'}}>
+                              Source transcription field:
+                            </span>
+                            <Select
+                              disabled={!this.state.perspectiveSelectionMap[p_key]}
+                              defaultValue={this.state.transcriptionFieldIdStrMap[p_key]}
+                              placeholder="Source transcription field selection"
+                              options={textFieldsOptions}
+                              onChange={(e, { value }) => {
+                                const transcriptionFieldIdStrMap = this.state.transcriptionFieldIdStrMap;
+                                transcriptionFieldIdStrMap[p_key] = value;
+                                this.setState({ transcriptionFieldIdStrMap });}}
+                            />
+                          </List.Item>
+                          <List.Item>
+                            <span style={{marginLeft: '1em', marginRight: '0.5em'}}>
+                              Source translation field:
+                            </span>
+                            <Select
+                              disabled={!this.state.perspectiveSelectionMap[p_key]}
+                              defaultValue={this.state.translationFieldIdStrMap[p_key]}
+                              placeholder="Source translation field selection"
+                              options={textFieldsOptions}
+                              onChange={(e, { value }) => {
+                                const translationFieldIdStrMap = this.state.translationFieldIdStrMap;
+                                translationFieldIdStrMap[p_key] = value;
+                                this.setState({ translationFieldIdStrMap });}}
+                            />
+                          </List.Item>
+                          </List>
+                          </List.Item>
+                        )}
+                      </List>
+                    )
+                  })
+              }
+            </List.Item>
+          ))}
+
+          <List.Item>
+            <Dropdown
+              fluid
+              placeholder='Add language'
+              search
+              selection
+              options={
+
+                this.language_list
+
+                  .filter(language =>
+                    !this.state.language_id_set.has(id2str(language.id)))
+
+                  .map(language => ({
+                    key: language.id,
+                    value: id2str(language.id),
+                    text: language.translation}))
+
+              }
+              value={''}
+              onChange={(event, data) =>
+              {
+                const language = this.language_dict[data.value];
+
+                language.treePath = language.tree.slice().reverse();
+                language.perspective_list = [];
+
+                language.loading = true;
+                this.initialize_language(language);
+
+                this.state.language_list.push(language);
+                this.state.language_id_set.add(data.value);
+
+                this.setState({
+                  language_list: this.state.language_list,
+                  language_id_set: this.state.language_id_set,
+                });
+              }}
+            />
+          </List.Item>
+        </List>
+
+        {!this.state.library_present && (
+          <List>
+            <div style={{color: 'red'}}>
+              Analysis library is absent, please contact system administrator.
+            </div>
+          </List>
+        )}
+
+        {this.props.user.id == 1 && this.admin_section_render()}
+
+      </Modal.Content>
+    )
   }
 
   render()
@@ -607,140 +1194,27 @@ class CognateAnalysisModal extends React.Component
       );
     }
 
-    const groupFieldsOptions = this.groupFields.map((f, k) => ({
-      key: k,
-      value: id2str(f.id),
-      text: f.translation,
-    }));
-
-    const { user } = this.props;
+    const { mode, user } = this.props;
+    const object = this;
 
     return (
       <div>
         <Modal dimmer open size="fullscreen">
+
           <Modal.Header>{
-            this.props.mode == 'acoustic' ? 'Cognate acoustic analysis' :
-            this.props.mode == 'reconstruction' ? 'Cognate reconstruction' :
-              'Cognate analysis'}
+            mode == 'acoustic' ?
+              getTranslation('Cognate acoustic analysis') :
+            mode == 'multi' ?
+              getTranslation('Cognate multi-language reconstruction') :
+            mode == 'reconstruction' ?
+              getTranslation('Cognate reconstruction') :
+              getTranslation('Cognate analysis')}
           </Modal.Header>
-          <Modal.Content>
-            <Header as="h2">
-              <Breadcrumb
-                icon="right angle"
-                sections={this.treePath.map(e => ({
-                  key: e.id, content: e.translation, link: false }))}
-              />
-            </Header>
-            {this.groupFields.length > 0 && (
-              <List>
-                <List.Item>
-                  <span style={{marginRight: '0.5em'}}>
-                    Grouping field:
-                  </span>
-                  <Select
-                    defaultValue={this.state.groupFieldIdStr}
-                    placeholder="Grouping field selection"
-                    options={groupFieldsOptions}
-                    onChange={(e, { value }) => {
-                      if (value != this.state.groupFieldIdStr)
-                      {
-                        this.setState({
-                          groupFieldIdStr: value,
-                          ...this.initPerspectiveList(value) });
-                      }
-                    }}
-                  />
-                </List.Item>
-              </List>
-            )}
-            {this.groupFields.length <= 0 && (
-              <span>Perspective does not have any grouping fields,
-                phonemic analysis is impossible.</span>
-            )}
-            <div style={{marginTop: '1.5em'}}>
-            {this.perspective_list.length > 1 && map(this.perspective_list,
-              ({treePathList, perspective, textFieldsOptions}, index) => (
-                <List key={'perspective' + index}>
-                  <List.Item>
-                  <Breadcrumb
-                    style={this.state.perspectiveSelectionList[index] ? {} : {opacity: 0.5}}
-                    icon="right angle"
-                    sections={treePathList.map(e => ({
-                      key: e.id,
-                      content: e.hasOwnProperty('status') ?
-                        e.translation + ' (' + e.status + ')' :
-                        e.translation,
-                      link: false }))}
-                  />
-                  <Checkbox
-                    style={{marginLeft: '0.5em', verticalAlign: 'middle'}}
-                    checked={this.state.perspectiveSelectionList[index]}
-                    onChange={(e, { checked }) => {
-                      const perspectiveSelectionList = this.state.perspectiveSelectionList;
-                      perspectiveSelectionList[index] = checked;
-                      this.setState({ perspectiveSelectionList });}}
-                  />
-                  </List.Item>
-                  {this.state.perspectiveSelectionList[index] && (
-                    <List.Item>
-                    <List>
-                    <List.Item>
-                      <span style={{marginLeft: '1em', marginRight: '0.5em'}}>
-                        Source transcription field:
-                      </span>
-                      <Select
-                        disabled={!this.state.perspectiveSelectionList[index]}
-                        defaultValue={this.state.transcriptionFieldIdStrList[index]}
-                        placeholder="Source transcription field selection"
-                        options={textFieldsOptions}
-                        onChange={(e, { value }) => {
-                          const transcriptionFieldIdStrList = this.state.transcriptionFieldIdStrList;
-                          transcriptionFieldIdStrList[index] = value;
-                          this.setState({ transcriptionFieldIdStrList });}}
-                      />
-                    </List.Item>
-                    <List.Item>
-                      <span style={{marginLeft: '1em', marginRight: '0.5em'}}>
-                        Source translation field:
-                      </span>
-                      <Select
-                        disabled={!this.state.perspectiveSelectionList[index]}
-                        defaultValue={this.state.translationFieldIdStrList[index]}
-                        placeholder="Source translation field selection"
-                        options={textFieldsOptions}
-                        onChange={(e, { value }) => {
-                          const translationFieldIdStrList = this.state.translationFieldIdStrList;
-                          translationFieldIdStrList[index] = value;
-                          this.setState({ translationFieldIdStrList });}}
-                      />
-                    </List.Item>
-                    </List>
-                    </List.Item>
-                  )}
-                </List>
-            ))}
-            {this.perspective_list.length <= 1 && (
-              <span>Dictionary group doesn't have multiple dictionaries with selected
-                cognate grouping field present, cognate analysis is impossible.</span>
-            )}
-            </div>
-            {!this.state.library_present && (
-              <List>
-                <div style={{color: 'red'}}>
-                  Analysis library is absent, please contact system administrator.
-                </div>
-              </List>
-            )}
-            {this.props.user.id == 1 && (
-              <Checkbox
-                label='Debug flag'
-                style={{marginTop: '1em', verticalAlign: 'middle'}}
-                checked={this.state.debugFlag}
-                onChange={(e, { checked }) => {
-                  this.setState({ debugFlag: checked });}}
-              />
-            )}
-          </Modal.Content>
+
+          {mode == 'multi' ?
+            this.multi_language_render() :
+            this.single_language_render()}
+
           <Modal.Actions>
             <Button
               positive
@@ -749,24 +1223,47 @@ class CognateAnalysisModal extends React.Component
                 "Compute"}
               onClick={this.handleCreate}
               disabled={
-                this.perspective_list.length <= 1 ||
-                !this.state.perspectiveSelectionList.some(enabled => enabled) ||
+                (mode != 'multi' && (
+                  this.perspective_list.length <= 1 ||
+                  !this.state.perspectiveSelectionList.some(enabled => enabled))) ||
+                (mode == 'multi' &&
+                  this.state.language_list.length <= 0) ||
                 this.state.computing}
             />
             <Button negative content="Close" onClick={this.props.closeModal} />
           </Modal.Actions>
+
           {this.state.library_present && this.state.result.length > 0 && (
             <Modal.Content scrolling style={{maxHeight: '95vh'}}>
+
               <h3>Analysis results
                 ({this.state.dictionary_count} dictionaries, {this.state.group_count} cognate groups and {this.state.transcription_count} transcriptions analysed):</h3>
+
               <List>
                 <List.Item>
                   {this.state.not_enough_count} additional cognate groups were excluded from the analysis due to not having lexical entries in at least two dictionaries.
                 </List.Item>
+
                 <List.Item>
                   <a href={this.state.xlsx_url}>XLSX-exported analysis results</a>
                 </List.Item>
+
+                {this.state.intermediate_url_list && (
+                  <List.Item>
+                    <div style={{marginTop: '0.75em'}}>
+                      <span>Intermediate data:</span>
+                      <List>
+                        {map(this.state.intermediate_url_list, (intermediate_url) => (
+                          <List.Item key={intermediate_url}>
+                            <a href={intermediate_url}>{intermediate_url}</a>
+                          </List.Item>
+                        ))}
+                      </List>
+                    </div>
+                  </List.Item>
+                )}
               </List>
+
               {this.state.plotly_data.length > 0 && (
                 <List>
                   <List.Item>
