@@ -103,6 +103,7 @@ const ModeSelector = onlyUpdateForKeys([
   submitFilter,
   openCognateAnalysisModal,
   openCognateAcousticAnalysisModal,
+  openCognateMultiModal,
   openCognateReconstructionModal,
   openPhonemicAnalysisModal,
   openPhonologyModal,
@@ -124,6 +125,7 @@ const ModeSelector = onlyUpdateForKeys([
       <Dropdown.Menu>
         <Dropdown.Item onClick={openCognateAnalysisModal}>{getTranslation("Cognate analysis")}</Dropdown.Item>
         <Dropdown.Item onClick={openCognateAcousticAnalysisModal}>{getTranslation("Cognate acoustic analysis")}</Dropdown.Item>
+        <Dropdown.Item onClick={openCognateMultiModal}>{getTranslation("Cognate multi-language reconstruction")}</Dropdown.Item>
         <Dropdown.Item onClick={openCognateReconstructionModal}>{getTranslation("Cognate reconstruction")}</Dropdown.Item>
         <Dropdown.Item onClick={openPhonemicAnalysisModal}>{getTranslation("Phonemic analysis")}</Dropdown.Item>
         <Dropdown.Item onClick={openPhonologyModal}>{getTranslation("Phonology")}</Dropdown.Item>
@@ -179,6 +181,7 @@ const Perspective = ({
         submitFilter={submitFilter}
         openCognateAnalysisModal={() => openCognateAnalysisModal(id)}
         openCognateAcousticAnalysisModal={() => openCognateAnalysisModal(id, 'acoustic')}
+        openCognateMultiModal={() => openCognateAnalysisModal(id, 'multi')}
         openCognateReconstructionModal={() => openCognateAnalysisModal(id, 'reconstruction')}
         openPhonemicAnalysisModal={() => openPhonemicAnalysisModal(id)}
         openPhonologyModal={() => openPhonologyModal(id)}
