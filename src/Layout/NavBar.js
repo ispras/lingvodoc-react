@@ -67,6 +67,9 @@ const Dashboard = (props) => {
         <Dropdown.Item as={Link} to="/dashboard/corpora">
         {getTranslation("Corpora")}
         </Dropdown.Item>
+        <Dropdown.Item as={Link} to="/import_dialeqt">
+        {getTranslation("Import Dialeqt dictionary")}
+        </Dropdown.Item>
         <Dropdown.Item as={Link} to="/import">
         {getTranslation("Import Starling dictionaries")}
         </Dropdown.Item>

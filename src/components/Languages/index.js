@@ -6,6 +6,8 @@ import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import { compose, shouldUpdate } from 'recompose';
 import Immutable from 'immutable';
+import { Icon } from 'semantic-ui-react';
+
 import EditModal from 'components/EditLanguageModal';
 import CreateModal from 'components/CreateLanguageModal';
 import { openModalEdit, openModalCreate } from 'ducks/language';
@@ -24,8 +26,20 @@ const dictionariesQuery = gql`
 
 const Languages = (props) => {
   const { dictionariesData, languagesData, deleteLanguage, moveLanguage, actions, height, selected, onSelect, expanded, inverted } = props;
-  if (dictionariesData.error || dictionariesData.loading || languagesData.error || languagesData.loading) {
+
+  if (dictionariesData.error || languagesData.error) {
     return null;
+  }
+
+  if (dictionariesData.loading || languagesData.loading) {
+    return (
+      <span style={{
+        'backgroundColor': 'white',
+        'borderRadius': '0.25em',
+        'padding': '0.5em'}}>
+        Loading language data... <Icon loading name="spinner" />
+      </span>
+    )
   }
 
   const { language_tree: languages, is_authenticated: isAuthenticated } = languagesData;

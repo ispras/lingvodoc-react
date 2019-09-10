@@ -17,6 +17,8 @@ import { openStatistics } from 'ducks/statistics';
 import RolesModal from 'components/RolesModal';
 import { getTranslation } from 'api/i18n';
 
+import { dictionaryQuery } from 'pages/DialeqtImport';
+
 const dimmerStyle = { minHeight: '600px' };
 
 export const query = gql`
@@ -247,6 +249,7 @@ class D extends React.Component {
             category,
           },
         },
+        { query: dictionaryQuery },
       ],
     });
   }
