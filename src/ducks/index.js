@@ -9,6 +9,7 @@ import markup from './markup';
 import roles from './roles';
 import search from './search';
 import blobs from './blobs';
+import dialeqtImport from './dialeqtImport';
 import dictImport from './dictImport';
 import fields from './fields';
 import dictionaryProperties from './dictionaryProperties';
@@ -37,6 +38,7 @@ export default {
   roles,
   search,
   blobs,
+  dialeqtImport,
   dictImport,
   fields,
   dictionaryProperties,
