@@ -250,6 +250,7 @@ class QueryBuilder extends React.Component {
         blocks: 'or',
       },
       allLangsDictsChecked: !this.props.langs && !this.props.dicts,
+      xlsxExport: false,
     };
   }
 
@@ -314,7 +315,19 @@ class QueryBuilder extends React.Component {
     };
     const query = this.addGrammaticalSigns(this.state.data.toJS());
 
-    actions.setQuery(searchId, query, category, adopted, etymology, langsToFilter, dictsToFilter, searchMetadata, grammaticalSigns, languageVulnerability, blocks);
+    actions.setQuery(
+      searchId,
+      query,
+      category,
+      adopted,
+      etymology,
+      langsToFilter,
+      dictsToFilter,
+      searchMetadata,
+      grammaticalSigns,
+      languageVulnerability,
+      blocks,
+      this.state.xlsxExport);
   }
 
   getBlocksText() {
@@ -555,6 +568,13 @@ class QueryBuilder extends React.Component {
           <Button primary basic onClick={this.onSearchButtonClick}>
             Search
           </Button>
+          <Checkbox
+            style={{marginLeft: '0.5em'}}
+            label="Export to XLSX"
+            checked={this.state.xlsxExport}
+            onChange={() =>
+              this.setState({ xlsxExport: !this.state.xlsxExport })}
+          />
         </Wrapper>
       </div>
     );
