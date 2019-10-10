@@ -42,8 +42,8 @@ const mdColors = new Immutable.List([
 ]).sortBy(Math.random);
 
 const searchQuery = gql`
-  query Search($query: [[ObjectVal]]!, $category: Int, $adopted: Boolean, $etymology: Boolean, $mode: String, $langs: [LingvodocID], $dicts: [LingvodocID], $searchMetadata: ObjectVal, $blocks: Boolean) {
-    advanced_search(search_strings: $query, category: $category, adopted: $adopted, etymology: $etymology, mode: $mode, languages: $langs, dicts_to_filter: $dicts, search_metadata: $searchMetadata, simple: $blocks) {
+  query Search($query: [[ObjectVal]]!, $category: Int, $adopted: Boolean, $etymology: Boolean, $mode: String, $langs: [LingvodocID], $dicts: [LingvodocID], $searchMetadata: ObjectVal, $blocks: Boolean, $xlsxExport: Boolean) {
+    advanced_search(search_strings: $query, category: $category, adopted: $adopted, etymology: $etymology, mode: $mode, languages: $langs, dicts_to_filter: $dicts, search_metadata: $searchMetadata, simple: $blocks, xlsx_export: $xlsxExport) {
       dictionaries {
         id
         parent_id
@@ -84,6 +84,7 @@ const searchQuery = gql`
       entities {
         id
       }
+      xlsx_url
     }
     language_tree {
       id
@@ -175,10 +176,18 @@ class Wrapper extends React.Component {
 
     return <div>
       <Message positive>
-        Found {resultsCount.size} resuls on <a href="" onClick={(e) => {
-          e.preventDefault();
-          document.getElementById('mapResults').scrollIntoView();
-        }}>map</a>
+        <div>
+          Found {resultsCount.size} resuls on <a href="" onClick={(e) => {
+            e.preventDefault();
+            document.getElementById('mapResults').scrollIntoView();
+          }}>map</a>
+        </div>
+        {advancedSearch.xlsx_url ?
+          <div>
+            <a href={advancedSearch.xlsx_url}>XLSX-exported search results</a>
+          </div> :
+          null
+        }
       </Message>
       {needToRenderLanguageTree ?
         <LanguageTree searchResultsTree={searchResultsTree} /> :
@@ -200,7 +209,7 @@ const WrapperWithData = compose(
 
 const Info = ({
   query, searchId, adopted, etymology, category,
-  langs, dicts, searchMetadata, blocks, subQuery,
+  langs, dicts, searchMetadata, blocks, xlsxExport, subQuery,
 }) => {
   if (subQuery) {
     return null;
@@ -226,6 +235,7 @@ const Info = ({
         dicts={dicts}
         searchMetadata={searchMetadata}
         blocks={blocks}
+        xlsxExport={xlsxExport}
         mode="published"
       />
     );
@@ -244,6 +254,7 @@ Info.propTypes = {
   dicts: PropTypes.array,
   searchMetadata: PropTypes.object,
   blocks: PropTypes.bool,
+  xlsxExport: PropTypes.bool,
   subQuery: PropTypes.bool.isRequired,
 };
 
@@ -626,6 +637,7 @@ class SearchTabs extends React.Component {
                 dicts={search.dicts}
                 searchMetadata={search.searchMetadata}
                 blocks={search.blocks}
+                xlsxExport={search.xlsxExport}
                 subQuery={search.subQuery}
               />
             </Container>
