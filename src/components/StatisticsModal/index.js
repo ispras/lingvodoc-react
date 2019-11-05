@@ -42,11 +42,25 @@ const dictionaryStatisticsQuery = gql`
   }
 `;
 
-function sortTotalLast(keys) {
-  if (keys.indexOf('total') >= 0) {
-    return [...keys.filter(k => k !== 'total').sort(), 'total'];
-  }
-  return keys;
+function sortTotalLast(keys)
+{
+  /* Total goes after everything except 'unaccepted', and 'unaccepted' goes after total,
+   * because it does not count towards it. */
+
+  const tail_list = [];
+
+  if (keys.indexOf('total') >= 0)
+    tail_list.push('total');
+
+  if (keys.indexOf('unaccepted') >= 0)
+    tail_list.push('unaccepted');
+
+  const key_list =    
+    keys.filter(k => k !== 'total' && k !== 'unaccepted').sort();
+
+  key_list.push(...tail_list);
+
+  return key_list;
 }
 
 function entitiesDictionaryTable(block) {
@@ -188,8 +202,8 @@ PerspectiveEntities.propTypes = {
 };
 
 const Statistics = ({ statistics, mode }) => {
-  const LexicalEntriesComponent = mode === 'dictionary' ? LexicalEntries : LexicalEntries;
-  const EntitiesComponent = mode === 'dictionary' ? DictionaryEntities : PerspectiveEntities;
+  const EntitiesComponent = 
+    mode === 'dictionary' ? DictionaryEntities : PerspectiveEntities;
   return (
     <div>
       {statistics.map(user => (
@@ -198,7 +212,7 @@ const Statistics = ({ statistics, mode }) => {
           {user.lexical_entries && (
             <div>
               <Header size="small" content={getTranslation("Lexical entries")} />
-              <LexicalEntriesComponent entries={user.lexical_entries} />
+              <LexicalEntries entries={user.lexical_entries} />
             </div>
           )}
           {user.entities && (
