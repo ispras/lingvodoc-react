@@ -21,6 +21,7 @@ import ConverEafModal from 'components/ConverEafModal';
 import StatisticsModal from 'components/StatisticsModal';
 import BanModal from 'components/BanModal';
 import CreateFieldModal from 'components/CreateFieldModal';
+import RolesModal from 'components/RolesModal';
 
 import NavBar from './NavBar';
 import TasksSidebar from './TasksSidebar';
@@ -90,6 +91,7 @@ class Layout extends React.Component {
         <StatisticsModal />
         <BanModal />
         <CreateFieldModal />
+        <RolesModal />
       </div>
     );
   }

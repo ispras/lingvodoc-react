@@ -14,9 +14,20 @@ import { getTranslation } from 'api/i18n';
 import 'react-datepicker/dist/react-datepicker.css';
 import './style.scss';
 
+/*
+ * NOTE:
+ *
+ * We need an 'id' field in perspective / dictionary statistics query because otherwise these queries do not
+ * work when Statistics modal is called from the perspective view (PerspectivePath component), GraphQL
+ * Apollo's client.query() terminates with error "Error writing result to store for query...", see
+ * https://stackoverflow.com/questions/44403930/error-network-error-error-writing-result-to-store-for-query-apollo-client
+ * for this solution.
+ */
+
 const perspectiveStatisticsQuery = gql`
   query statisticsPerspective($id: LingvodocID!, $start: Int!, $end: Int!) {
     perspective(id: $id) {
+      id
       statistic(starting_time: $start, ending_time: $end)
     }
   }
@@ -25,6 +36,7 @@ const perspectiveStatisticsQuery = gql`
 const dictionaryStatisticsQuery = gql`
   query statisticsDictionary($id: LingvodocID!, $start: Int!, $end: Int!) {
     dictionary(id: $id) {
+      id
       statistic(starting_time: $start, ending_time: $end)
     }
   }

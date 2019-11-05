@@ -14,7 +14,6 @@ import { openSaveDictionaryModal } from 'ducks/saveDictionary';
 import { openDictionaryPropertiesModal } from 'ducks/dictionaryProperties';
 import { openPerspectivePropertiesModal } from 'ducks/perspectiveProperties';
 import { openStatistics } from 'ducks/statistics';
-import RolesModal from 'components/RolesModal';
 import { getTranslation } from 'api/i18n';
 
 import { dictionaryQuery } from 'pages/DialeqtImport';
@@ -369,7 +368,6 @@ const Dashboard = ({ data, mode, category }) => {
             ))}
         </List>
       </Dimmer.Dimmable>
-      <RolesModal />
     </Container>
   );
 };
