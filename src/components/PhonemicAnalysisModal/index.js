@@ -36,15 +36,20 @@ const computePhonemicAnalysisMutation = gql`
   mutation computePhonemicAnalysis(
     $perspectiveId: LingvodocID!,
     $transcriptionFieldId: LingvodocID!,
-    $translationFieldId: LingvodocID!) {
+    $translationFieldId: LingvodocID!,
+    $debugFlag: Boolean,
+    $intermediateFlag: Boolean) {
       phonemic_analysis(
         perspective_id: $perspectiveId,
         transcription_field_id: $transcriptionFieldId,
-        translation_field_id: $translationFieldId)
+        translation_field_id: $translationFieldId,
+        debug_flag: $debugFlag,
+        intermediate_flag: $intermediateFlag)
       {
         triumph
         entity_count
         result
+        intermediate_url_list
       }
     }
 `;
@@ -60,8 +65,14 @@ class PhonemicAnalysisModal extends React.Component
       entity_count: 0,
       library_present: true,
       result: '',
+
+      intermediate_url_list: null,
+
       transcriptionFieldIdStr: '',
       translationFieldIdStr: '',
+
+      debugFlag: false,
+      intermediateFlag: false,
     };
 
     this.handleCreate = this.handleCreate.bind(this);
@@ -127,15 +138,22 @@ class PhonemicAnalysisModal extends React.Component
         perspectiveId,
         transcriptionFieldId: transcriptionField.id,
         translationFieldId: translationField.id,
+        debugFlag: this.state.debugFlag,
+        intermediateFlag: this.state.intermediateFlag,
       },
     }).then(
 
-      ({ data: { phonemic_analysis: { entity_count, result }}}) =>
+      ({ data: {
+        phonemic_analysis: {
+          entity_count,
+          result,
+          intermediate_url_list }}}) =>
       {
         this.setState({
           entity_count,
           library_present: true,
-          result });
+          result,
+          intermediate_url_list });
       },
 
       (error_data) =>
@@ -165,8 +183,11 @@ class PhonemicAnalysisModal extends React.Component
     return (
       <div>
         <Modal dimmer open size="large">
+
           <Modal.Header>Phonemic analysis</Modal.Header>
+
           <Modal.Content>
+
             {this.textFields.length > 0 && (
               <List>
                 <List.Item>
@@ -193,10 +214,12 @@ class PhonemicAnalysisModal extends React.Component
                 </List.Item>
               </List>
             )}
+
             {this.textFields.length <= 0 && (
               <span>Perspective does not have any text fields,
                 phonemic analysis is impossible.</span>
             )}
+
             {!this.state.library_present && (
               <List>
                 <div style={{color: 'red'}}>
@@ -204,7 +227,32 @@ class PhonemicAnalysisModal extends React.Component
                 </div>
               </List>
             )}
+
+            {this.props.user.id == 1 && (
+              <List>
+                <List.Item>
+                  <Checkbox
+                    label='Debug flag'
+                    style={{marginTop: '1em', verticalAlign: 'middle'}}
+                    checked={this.state.debugFlag}
+                    onChange={(e, { checked }) => {
+                      this.setState({ debugFlag: checked });}}
+                  />
+                </List.Item>
+                <List.Item>
+                  <Checkbox
+                    label='Save intermediate data'
+                    style={{marginTop: '1em', verticalAlign: 'middle'}}
+                    checked={this.state.intermediateFlag}
+                    onChange={(e, { checked }) => {
+                      this.setState({ intermediateFlag: checked });}}
+                  />
+                </List.Item>
+              </List>
+            )}
+
           </Modal.Content>
+
           <Modal.Actions>
             <Button
               positive content="Compute" onClick={this.handleCreate}
@@ -212,12 +260,28 @@ class PhonemicAnalysisModal extends React.Component
             />
             <Button negative content="Close" onClick={this.props.closeModal} />
           </Modal.Actions>
+
           {this.state.library_present && this.state.result.length > 0 && (
             <Modal.Content scrolling style={{maxHeight: '95vh'}}>
               <h3>Analysis results ({this.state.entity_count} text entities analysed):</h3>
+              {this.state.intermediate_url_list && (
+                <List.Item>
+                  <div style={{marginTop: '0.75em'}}>
+                    <span>Intermediate data:</span>
+                    <List>
+                      {map(this.state.intermediate_url_list, (intermediate_url) => (
+                        <List.Item key={intermediate_url}>
+                          <a href={intermediate_url}>{intermediate_url}</a>
+                        </List.Item>
+                      ))}
+                    </List>
+                  </div>
+                </List.Item>
+              )}
               <div><pre>{this.state.result}</pre></div>
             </Modal.Content>
           )}
+
         </Modal>
       </div>
     );
@@ -235,6 +299,7 @@ PhonemicAnalysisModal.propTypes = {
 
 export default compose(
   connect(state => state.phonemicAnalysis, dispatch => bindActionCreators({ closeModal }, dispatch)),
+  connect(state => state.user),
   branch(({ visible }) => !visible, renderNothing),
   graphql(perspectiveColumnsFieldsQuery),
   graphql(computePhonemicAnalysisMutation, { name: 'computePhonemicAnalysis' }),
