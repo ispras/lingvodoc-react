@@ -25,6 +25,7 @@ import apolloClient from './apolloClient';
 import statistics from './statistics';
 import ban from './ban';
 import modals from './modals';
+import createOrganization from './createOrganization';
 
 export default {
   locale,
@@ -54,4 +55,5 @@ export default {
   statistics,
   ban,
   modals,
+  createOrganization,
 };
