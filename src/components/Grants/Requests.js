@@ -9,6 +9,7 @@ import Placeholder from 'components/Placeholder';
 import { getTranslation } from 'api/i18n';
 
 import { getUserRequestsQuery, acceptMutation } from './graphql';
+import { organizationsQuery } from 'pages/Organizations';
 
 const timestampToDate = ts => moment(ts * 1000).format('LLLL');
 const objectById = (id, objs) => objs.find(o => o.id === id);
@@ -21,32 +22,47 @@ function acceptRequest(mutation, id, accept) {
       accept,
     },
     refetchQueries: [
-      {
-        query: getUserRequestsQuery,
-      },
+      { query: getUserRequestsQuery, },
+      { query: organizationsQuery, },
     ],
   });
 }
 
 const Subject = ({
-  request, grants, dictionaries,
+  request, grants, dictionaries, organizations,
 }) => {
+
+  const { subject } = request;
+
   switch (request.type) {
+
     case 'add_dict_to_grant':
-      const { subject } = request;
+
       const dictionary = objectByCompositeId(subject.dictionary_id, dictionaries);
       const grant = objectById(subject.grant_id, grants);
-      return <Card header={grant.translation} meta={grant.grant_number} description={dictionary.translation} />;
-    case 'grant_permission':
+
+      return <Card
+        header={grant.translation}
+        meta={grant.grant_number}
+        description={dictionary ? dictionary.translation : getTranslation('Unknown dictionary')} />;
+
     case 'participate_org':
     case 'administrate_org':
+
+      const organization = objectById(subject.org_id, organizations);
+
+      return <Card
+        header={organization.translation}
+        description={organization.about} />;
+
+    case 'grant_permission':
     default:
       return <div>{getTranslation('Unknow request type!')}</div>;
   }
 };
 
 const RequestsPane = ({
-  requests, grants, users, dictionaries, accept,
+  requests, grants, users, dictionaries, organizations, accept,
 }) => (
   <Tab.Pane>
     <Table celled padded>
@@ -71,7 +87,13 @@ const RequestsPane = ({
             <Table.Cell>{objectById(r.sender_id, users).intl_name}</Table.Cell>
 
             <Table.Cell>
-              <Subject request={r} grants={grants} users={users} dictionaries={dictionaries} />
+              <Subject
+                request={r}
+                grants={grants}
+                users={users}
+                dictionaries={dictionaries}
+                organizations={organizations}
+              />
             </Table.Cell>
             <Table.Cell>{timestampToDate(r.created_at)}</Table.Cell>
             <Table.Cell>{r.message}</Table.Cell>
@@ -92,7 +114,7 @@ const RequestsPane = ({
 
 const Requests = ({ data, accept }) => {
   const {
-    userrequests, grants, users, dictionaries,
+    userrequests, grants, users, dictionaries, organizations,
   } = data;
   const requestsByType = groupBy(userrequests, u => u.type);
 
@@ -105,6 +127,7 @@ const Requests = ({ data, accept }) => {
           grants={grants}
           users={users}
           dictionaries={dictionaries}
+          organizations={organizations}
           accept={accept}
         />
       ),
@@ -117,6 +140,7 @@ const Requests = ({ data, accept }) => {
           grants={grants}
           users={users}
           dictionaries={dictionaries}
+          organizations={organizations}
           accept={accept}
         />
       ),
@@ -129,6 +153,7 @@ const Requests = ({ data, accept }) => {
           grants={grants}
           users={users}
           dictionaries={dictionaries}
+          organizations={organizations}
           accept={accept}
         />
       ),
@@ -141,6 +166,7 @@ const Requests = ({ data, accept }) => {
           grants={grants}
           users={users}
           dictionaries={dictionaries}
+          organizations={organizations}
           accept={accept}
         />
       ),

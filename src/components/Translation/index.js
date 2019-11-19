@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { compose } from 'recompose';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
-import { Button, List, Input, Select } from 'semantic-ui-react';
+import { Button, Form, Input, List, Select, TextArea } from 'semantic-ui-react';
 import { head, nth, difference, isEmpty } from 'lodash';
 import { getTranslation } from 'api/i18n';
 
@@ -41,7 +41,7 @@ export class Translation extends React.Component {
   }
 
   render() {
-    const { locales, usedLocaleIds } = this.props;
+    const { locales, usedLocaleIds, textArea } = this.props;
 
     const options = locales
       .filter(locale => usedLocaleIds.indexOf(locale.id) < 0 || locale.id === this.state.localeId)
@@ -49,11 +49,22 @@ export class Translation extends React.Component {
 
     const selectedLocale = locales.find(locale => locale.id === this.state.localeId);
 
-    return (
+    return textArea ? (
+
+      <div>
+      <Form>
+        <Form.Select value={selectedLocale.shortcut} options={options} onChange={this.onChangeLocale} />
+        <Form.TextArea placeholder="" value={this.state.content} onChange={this.onChangeContent} />
+      </Form>
+      </div>
+    
+      ) : (
+
       <Input placeholder="" value={this.state.content} onChange={this.onChangeContent} action>
         <input />
         <Select value={selectedLocale.shortcut} options={options} onChange={this.onChangeLocale} />
       </Input>
+      
     );
   }
 }
@@ -126,7 +137,9 @@ class Translations extends React.Component {
   }
 
   render() {
-    const { data: { error, loading, all_locales: locales } } = this.props;
+    const {
+      data: { error, loading, all_locales: locales },
+      textArea } = this.props;
     if (loading || error) {
       return null;
     }
@@ -136,12 +149,15 @@ class Translations extends React.Component {
       <div>
         <List>
           {translations.map(translation => (
-            <List.Item key={translation.id}>
+            <List.Item
+              key={translation.id}
+              style={{marginBottom: '1em', paddingTop: '0em', paddingBottom: '0em'}}>
               <Translation
                 locales={locales}
                 translation={translation}
                 usedLocaleIds={usedLocaleIds}
                 onChange={this.onChange}
+                textArea={textArea}
               />
             </List.Item>
           ))}

@@ -49,6 +49,7 @@ const Signed = ({ user, modal, signOut, launchEditForm, closeForm, openModal }) 
 
       <Dropdown.Item as={Link} to="/files">{getTranslation("My files")}</Dropdown.Item>
       <Dropdown.Item as={Link} to="/grants">{getTranslation("Grants")}</Dropdown.Item>
+      <Dropdown.Item as={Link} to="/organizations">{getTranslation("Organizations")}</Dropdown.Item>
       <Dropdown.Item as={Link} to="/requests">{getTranslation("Requests")}</Dropdown.Item>
       <Dropdown.Item as="a" onClick={signOut}>{getTranslation("Sign out")}</Dropdown.Item>
 

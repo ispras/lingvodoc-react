@@ -66,6 +66,11 @@ export const getUserRequestsQuery = gql`
       id
       translation
     }
+    organizations {
+      id
+      translation
+      about
+    }
   }
 `;
 
