@@ -105,6 +105,7 @@ const ModeSelector = onlyUpdateForKeys([
   openCognateAcousticAnalysisModal,
   openCognateMultiModal,
   openCognateReconstructionModal,
+  openCognateSuggestionsModal,
   openPhonemicAnalysisModal,
   openPhonologyModal,
   openPhonologicalStatisticalDistanceModal,
@@ -127,6 +128,7 @@ const ModeSelector = onlyUpdateForKeys([
         <Dropdown.Item onClick={openCognateAcousticAnalysisModal}>{getTranslation("Cognate acoustic analysis")}</Dropdown.Item>
         <Dropdown.Item onClick={openCognateMultiModal}>{getTranslation("Cognate multi-language reconstruction")}</Dropdown.Item>
         <Dropdown.Item onClick={openCognateReconstructionModal}>{getTranslation("Cognate reconstruction")}</Dropdown.Item>
+        <Dropdown.Item onClick={openCognateSuggestionsModal}>{getTranslation("Cognate suggestions")}</Dropdown.Item>
         <Dropdown.Item onClick={openPhonemicAnalysisModal}>{getTranslation("Phonemic analysis")}</Dropdown.Item>
         <Dropdown.Item onClick={openPhonologyModal}>{getTranslation("Phonology")}</Dropdown.Item>
         <Dropdown.Item onClick={openPhonologicalStatisticalDistanceModal}>{getTranslation("Phonological statistical distance")}</Dropdown.Item>
@@ -183,6 +185,7 @@ const Perspective = ({
         openCognateAcousticAnalysisModal={() => openCognateAnalysisModal(id, 'acoustic')}
         openCognateMultiModal={() => openCognateAnalysisModal(id, 'multi')}
         openCognateReconstructionModal={() => openCognateAnalysisModal(id, 'reconstruction')}
+        openCognateSuggestionsModal={() => openCognateAnalysisModal(id, 'suggestions')}
         openPhonemicAnalysisModal={() => openPhonemicAnalysisModal(id)}
         openPhonologyModal={() => openPhonologyModal(id)}
         openPhonologicalStatisticalDistanceModal={() => openPhonologyModal(id, 'statistical_distance')}
