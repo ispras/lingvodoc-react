@@ -1244,9 +1244,11 @@ class CognateAnalysisModal extends React.Component
                   {this.state.not_enough_count} additional cognate groups were excluded from the analysis due to not having lexical entries in at least two dictionaries.
                 </List.Item>
 
-                <List.Item>
-                  <a href={this.state.xlsx_url}>XLSX-exported analysis results</a>
-                </List.Item>
+                {mode != 'suggestions' && (
+                  <List.Item>
+                    <a href={this.state.xlsx_url}>XLSX-exported analysis results</a>
+                  </List.Item>
+                )}
 
                 {this.state.intermediate_url_list && (
                   <List.Item>
