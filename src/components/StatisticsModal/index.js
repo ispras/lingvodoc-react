@@ -115,7 +115,7 @@ function entriesDictionaryTable(block) {
   });
 }
 
-const LexicalEntries = ({ entries }) => {
+const DictionaryLexicalEntries = ({ entries }) => {
   const tableData = entriesDictionaryTable(entries);
   return (
     <Table celled structured textAlign="center">
@@ -132,13 +132,46 @@ const LexicalEntries = ({ entries }) => {
       </Table.Header>
 
       <Table.Body>
-        {tableData.map((row, i) => <Table.Row key={i}>{row.map(cell => <Table.Cell>{cell}</Table.Cell>)}</Table.Row>)}
+        {tableData.map((row, i) =>
+          <Table.Row key={i}>
+            {row.map((cell, j) =>
+              <Table.Cell key={j}>{cell}</Table.Cell>)}
+          </Table.Row>)}
       </Table.Body>
     </Table>
   );
 };
 
-LexicalEntries.propTypes = {
+DictionaryLexicalEntries.propTypes = {
+  entries: PropTypes.object.isRequired,
+};
+
+const PerspectiveLexicalEntries = ({ entries }) => {
+  return (
+    <Table celled structured textAlign="center">
+      <Table.Header>
+        <Table.Row>
+          <Table.HeaderCell colSpan="3">{getTranslation('Client type')}</Table.HeaderCell>
+        </Table.Row>
+        <Table.Row>
+          <Table.HeaderCell>{getTranslation('desktop')}</Table.HeaderCell>
+          <Table.HeaderCell>{getTranslation('web')}</Table.HeaderCell>
+          <Table.HeaderCell>{getTranslation('total')}</Table.HeaderCell>
+        </Table.Row>
+      </Table.Header>
+
+      <Table.Body>
+        <Table.Row>
+          <Table.Cell>{entries.desktop}</Table.Cell>
+          <Table.Cell>{entries.web}</Table.Cell>
+          <Table.Cell>{entries.total}</Table.Cell>
+        </Table.Row>
+      </Table.Body>
+    </Table>
+  );
+};
+
+PerspectiveLexicalEntries.propTypes = {
   entries: PropTypes.object.isRequired,
 };
 
@@ -162,7 +195,11 @@ const DictionaryEntities = ({ entities }) => {
       </Table.Header>
 
       <Table.Body>
-        {tableData.map((row, i) => <Table.Row key={i}>{row.map(cell => <Table.Cell>{cell}</Table.Cell>)}</Table.Row>)}
+        {tableData.map((row, i) =>
+          <Table.Row key={i}>
+            {row.map((cell, j) =>
+              <Table.Cell key={j}>{cell}</Table.Cell>)}
+          </Table.Row>)}
       </Table.Body>
     </Table>
   );
@@ -191,7 +228,11 @@ const PerspectiveEntities = ({ entities }) => {
       </Table.Header>
 
       <Table.Body>
-        {tableData.map((row, i) => <Table.Row key={i}>{row.map(cell => <Table.Cell>{cell}</Table.Cell>)}</Table.Row>)}
+        {tableData.map((row, i) =>
+          <Table.Row key={i}>
+            {row.map((cell, j) =>
+              <Table.Cell key={j}>{cell}</Table.Cell>)}
+          </Table.Row>)}
       </Table.Body>
     </Table>
   );
@@ -202,26 +243,30 @@ PerspectiveEntities.propTypes = {
 };
 
 const Statistics = ({ statistics, mode }) => {
+  const LexicalEntriesComponent = 
+    mode === 'dictionary' ? DictionaryLexicalEntries : PerspectiveLexicalEntries;
   const EntitiesComponent = 
     mode === 'dictionary' ? DictionaryEntities : PerspectiveEntities;
   return (
     <div>
       {statistics.map(user => (
-        <div key={user.name}>
-          <Header>{user.name}</Header>
-          {user.lexical_entries && (
-            <div>
-              <Header size="small" content={getTranslation("Lexical entries")} />
-              <LexicalEntries entries={user.lexical_entries} />
-            </div>
-          )}
-          {user.entities && (
-            <div>
-              <Header size="small" content={getTranslation("Entities")} />
-              <EntitiesComponent entities={user.entities} />
-            </div>
-          )}
-        </div>
+        (user.lexical_entries || user.entities) && (
+          <div key={user.name}>
+            <Header>{user.name}</Header>
+            {user.lexical_entries && (
+              <div>
+                <Header size="small" content={getTranslation("Lexical entries")} />
+                <LexicalEntriesComponent entries={user.lexical_entries} />
+              </div>
+            )}
+            {user.entities && (
+              <div>
+                <Header size="small" content={getTranslation("Entities")} />
+                <EntitiesComponent entities={user.entities} />
+              </div>
+            )}
+          </div>
+        )
       ))}
     </div>
   );
