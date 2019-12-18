@@ -108,10 +108,12 @@ class ApproveModal extends React.Component {
     if (user_id != null) {
       statistics.some(stat => {
         if (user_id == stat.user_id) {
-          toApprove = mode == 'publish' ? stat.entities.unpublished : stat.entities.unaccepted;
-          keys = Object.keys(toApprove).filter(key => key != 'total').map(key => {
-            return { id: toApprove[key].field_id, name: key };
-          });
+          if (stat.entities) {
+            toApprove = mode == 'publish' ? stat.entities.unpublished : stat.entities.unaccepted;
+            keys = Object.keys(toApprove).filter(key => key != 'total').map(key => {
+              return { id: toApprove[key].field_id, name: key };
+            });
+          }
           return true;
         }
       });
