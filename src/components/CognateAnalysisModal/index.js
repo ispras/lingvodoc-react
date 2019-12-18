@@ -60,7 +60,7 @@ const cognateAnalysisMultiDataQuery = gql`
     languages(id_list: $languageIdList) {
       id
       translation
-      dictionaries(deleted: false, published_and_limited_only: true) {
+      dictionaries(deleted: false, published: true) {
         id
         translation
         status
@@ -99,7 +99,7 @@ const languageQuery = gql`
   query language($languageId: LingvodocID!) {
     language(id: $languageId) {
       id
-      dictionaries(deleted: false, published_and_limited_only: true) {
+      dictionaries(deleted: false, published: true) {
         id
         translation
         status
@@ -126,21 +126,25 @@ const languageQuery = gql`
 
 const computeCognateAnalysisMutation = gql`
   mutation computeCognateAnalysis(
-    $groupFieldId: LingvodocID!,
+    $sourcePerspectiveId: LingvodocID!,
     $baseLanguageId: LingvodocID!,
+    $groupFieldId: LingvodocID!,
     $perspectiveInfoList: [[LingvodocID]]!,
     $multiList: [ObjectVal],
     $mode: String,
     $figureFlag: Boolean,
+    $matchTranslationsFlag: Boolean,
     $debugFlag: Boolean,
     $intermediateFlag: Boolean) {
       cognate_analysis(
+        source_perspective_id: $sourcePerspectiveId,
         base_language_id: $baseLanguageId,
         group_field_id: $groupFieldId,
         perspective_info_list: $perspectiveInfoList,
         multi_list: $multiList,
         mode: $mode,
         figure_flag: $figureFlag,
+        match_translations_flag: $matchTranslationsFlag,
         debug_flag: $debugFlag,
         intermediate_flag: $intermediateFlag)
       {
@@ -209,6 +213,8 @@ class CognateAnalysisModal extends React.Component
       translationFieldIdStrList: [],
       perspectiveSelectionList: [],
       groupFieldIdStr: '',
+
+      matchTranslationsFlag: true,
 
       debugFlag: false,
       intermediateFlag: false,
@@ -439,6 +445,13 @@ class CognateAnalysisModal extends React.Component
         variables: { languageId },
       });
 
+    /* First we look through sublanguages, just as on the main page. */
+
+    for (const language of languages)
+
+      await this.initPerspectiveData(
+        language.id, treePathList.concat([language]));
+
     /* We need perspectives containing at least one grouping and one text field. */
 
     for (const dictionary of dictionaries)
@@ -464,13 +477,6 @@ class CognateAnalysisModal extends React.Component
             treePathList.concat([dictionary, perspective]),
             perspective]);
       }
-
-    /* Also looking through sublanguages. */
-
-    for (const language of languages)
-
-      await this.initPerspectiveData(
-        language.id, treePathList.concat([language]));
   }
 
   /* Initializes list of perspectives available for analysis depending on currently selected
@@ -801,11 +807,13 @@ class CognateAnalysisModal extends React.Component
 
       computeCognateAnalysis({
         variables: {
+          sourcePerspectiveId: perspectiveId,
           baseLanguageId: this.baseLanguageId,
           groupFieldId: groupField.id,
           perspectiveInfoList: perspectiveInfoList,
           mode: this.props.mode,
           figureFlag: true,
+          matchTranslationsFlag: this.state.matchTranslationsFlag,
           debugFlag: this.state.debugFlag,
           intermediateFlag: this.state.intermediateFlag,
         },
@@ -828,12 +836,14 @@ class CognateAnalysisModal extends React.Component
 
       computeCognateAnalysis({
         variables: {
+          sourcePerspectiveId: perspectiveId,
           baseLanguageId: this.baseLanguageId,
           groupFieldId: groupField.id,
           perspectiveInfoList: perspectiveInfoList,
           multiList: multiList,
           mode: this.props.mode,
           figureFlag: this.props.mode == '',
+          matchTranslationsFlag: this.state.matchTranslationsFlag,
           debugFlag: this.state.debugFlag,
           intermediateFlag: this.state.intermediateFlag },
         },
@@ -1004,6 +1014,16 @@ class CognateAnalysisModal extends React.Component
               Analysis library is absent, please contact system administrator.
             </div>
           </List>
+        )}
+
+        {this.props.mode == 'suggestions' && (
+          <Checkbox
+            label={getTranslation('Match translations')}
+            style={{marginTop: '1em', verticalAlign: 'middle'}}
+            checked={this.state.matchTranslationsFlag}
+            onChange={(e, { checked }) => {
+              this.setState({ matchTranslationsFlag: checked });}}
+          />
         )}
 
         {this.props.user.id == 1 && this.admin_section_render()}
@@ -1208,6 +1228,8 @@ class CognateAnalysisModal extends React.Component
               getTranslation('Cognate multi-language reconstruction') :
             mode == 'reconstruction' ?
               getTranslation('Cognate reconstruction') :
+            mode == 'suggestions' ?
+              getTranslation('Cognate suggestions') :
               getTranslation('Cognate analysis')}
           </Modal.Header>
 

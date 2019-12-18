@@ -1,6 +1,6 @@
 /* eslint-disable */
 import React, { PureComponent } from 'react';
-import { Segment, Button, Modal } from 'semantic-ui-react';
+import { Segment, Button, Modal, Loader } from 'semantic-ui-react';
 import { graphql } from 'react-apollo';
 import { compose } from 'recompose';
 import PropTypes from 'prop-types';
@@ -145,6 +145,7 @@ class AdditionalFilter extends PureComponent {
     super();
 
     const rawLanguagesTree = buildLanguageTree(fromJS(props.languagesQuery.language_tree)).toJS();
+
     const {
       hasAudio, kind, years, humanSettlement, authors, languageVulnerability, grammaticalSigns,
     } = props.data;
@@ -638,8 +639,18 @@ const AdditionalFilterWrap = (props) => {
   const { languagesQuery } = props;
   const { error: languagesQueryError, loading: languagesQueryLoading } = languagesQuery;
 
-  if (languagesQueryError || languagesQueryLoading) {
+  if (languagesQueryError) {
     return null;
+  }
+
+  else if (languagesQueryLoading) {
+    return (
+      <Segment>
+        <Loader active={languagesQueryLoading} inline='centered'>
+          {getTranslation('Loading additional filter data...')}
+        </Loader>
+      </Segment>
+    );
   }
 
   const newProps = {
@@ -665,7 +676,7 @@ const languagesWithDictionariesQuery = gql`
       id
       parent_id
       translation
-      dictionaries(deleted:false published_and_limited_only: true) {
+      dictionaries(deleted: false, published: true) {
         id
         parent_id
         translation
