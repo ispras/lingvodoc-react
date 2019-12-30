@@ -23,6 +23,7 @@ import BanModal from 'components/BanModal';
 import CreateFieldModal from 'components/CreateFieldModal';
 import RolesModal from 'components/RolesModal';
 import CreateOrganizationModal from 'components/CreateOrganizationModal';
+import Home from 'components/Home';
 
 import NavBar from './NavBar';
 import TasksSidebar from './TasksSidebar';
@@ -73,12 +74,13 @@ class Layout extends React.Component {
       <div>
         <NavBar />
         <Snackbar />
-        <Sidebar.Pushable as="div">
+    {/*     <Sidebar.Pushable as="div">
           <TasksSidebar />
           <Sidebar.Pusher as={Content}>
             <Routes />
           </Sidebar.Pusher>
-        </Sidebar.Pushable>
+        </Sidebar.Pushable> */}
+        <Home/>
         <Modals />
         <PlayerModal />
         <MarkupModal />
