@@ -101,9 +101,10 @@ const ModeSelector = onlyUpdateForKeys([
 ])(({
   mode, baseUrl, filter,
   submitFilter,
-  openCognateAnalysisModal,
   openCognateAcousticAnalysisModal,
-  openCognateMultiModal,
+  openCognateAnalysisModal,
+  openCognateMultiReconstructionModal,
+  openCognateMultiSuggestionsModal,
   openCognateReconstructionModal,
   openCognateSuggestionsModal,
   openPhonemicAnalysisModal,
@@ -124,9 +125,10 @@ const ModeSelector = onlyUpdateForKeys([
     ))}
     <Dropdown item text={getTranslation("Tools")}>
       <Dropdown.Menu>
-        <Dropdown.Item onClick={openCognateAnalysisModal}>{getTranslation("Cognate analysis")}</Dropdown.Item>
         <Dropdown.Item onClick={openCognateAcousticAnalysisModal}>{getTranslation("Cognate acoustic analysis")}</Dropdown.Item>
-        <Dropdown.Item onClick={openCognateMultiModal}>{getTranslation("Cognate multi-language reconstruction")}</Dropdown.Item>
+        <Dropdown.Item onClick={openCognateAnalysisModal}>{getTranslation("Cognate analysis")}</Dropdown.Item>
+        <Dropdown.Item onClick={openCognateMultiReconstructionModal}>{getTranslation("Cognate multi-language reconstruction")}</Dropdown.Item>
+        <Dropdown.Item onClick={openCognateMultiSuggestionsModal}>{getTranslation("Cognate multi-language suggestions")}</Dropdown.Item>
         <Dropdown.Item onClick={openCognateReconstructionModal}>{getTranslation("Cognate reconstruction")}</Dropdown.Item>
         <Dropdown.Item onClick={openCognateSuggestionsModal}>{getTranslation("Cognate suggestions")}</Dropdown.Item>
         <Dropdown.Item onClick={openPhonemicAnalysisModal}>{getTranslation("Phonemic analysis")}</Dropdown.Item>
@@ -181,9 +183,10 @@ const Perspective = ({
         baseUrl={baseUrl}
         filter={perspective.filter}
         submitFilter={submitFilter}
-        openCognateAnalysisModal={() => openCognateAnalysisModal(id)}
         openCognateAcousticAnalysisModal={() => openCognateAnalysisModal(id, 'acoustic')}
-        openCognateMultiModal={() => openCognateAnalysisModal(id, 'multi')}
+        openCognateAnalysisModal={() => openCognateAnalysisModal(id)}
+        openCognateMultiReconstructionModal={() => openCognateAnalysisModal(id, 'multi_reconstruction')}
+        openCognateMultiSuggestionsModal={() => openCognateAnalysisModal(id, 'multi_suggestions')}
         openCognateReconstructionModal={() => openCognateAnalysisModal(id, 'reconstruction')}
         openCognateSuggestionsModal={() => openCognateAnalysisModal(id, 'suggestions')}
         openPhonemicAnalysisModal={() => openPhonemicAnalysisModal(id)}
