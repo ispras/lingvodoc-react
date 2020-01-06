@@ -20,6 +20,7 @@ const cognateAnalysisDataQuery = gql`
       id
       translation
       columns {
+        id
         field_id
       }
       tree {
@@ -44,6 +45,7 @@ const cognateAnalysisMultiDataQuery = gql`
       id
       translation
       columns {
+        id
         field_id
       }
       tree {
@@ -241,7 +243,11 @@ class CognateAnalysisModal extends React.Component
 
   componentDidMount()
   {
-    (this.props.mode == 'multi' ?
+    const multi =
+      this.props.mode == 'multi_reconstruction' ||
+      this.props.mode == 'multi_suggestions';
+
+    (multi ?
       this.initialize_multi :
       this.initialize_single)();
   }
@@ -570,7 +576,9 @@ class CognateAnalysisModal extends React.Component
 
     /* Selecting grouping field for many languages. */
 
-    if (this.props.mode == 'multi')
+    if (
+      this.props.mode == 'multi_reconstruction' ||
+      this.props.mode == 'multi_suggestions')
     {
       this.state.groupFieldIdStr = value;
 
@@ -765,7 +773,9 @@ class CognateAnalysisModal extends React.Component
     var perspectiveInfoList = [];
     var multiList = [];
     
-    if (this.props.mode == 'multi')
+    if (
+      this.props.mode == 'multi_reconstruction' ||
+      this.props.mode == 'multi_suggestions')
     {
       for (const language of this.state.language_list)
       {
@@ -811,7 +821,7 @@ class CognateAnalysisModal extends React.Component
           baseLanguageId: this.baseLanguageId,
           groupFieldId: groupField.id,
           perspectiveInfoList: perspectiveInfoList,
-          mode: this.props.mode,
+          mode: 'acoustic',
           figureFlag: true,
           matchTranslationsFlag: this.state.matchTranslationsFlag,
           debugFlag: this.state.debugFlag,
@@ -834,6 +844,11 @@ class CognateAnalysisModal extends React.Component
       this.setState({
         computing: true });
 
+      const backend_mode =
+        this.props.mode == 'multi_reconstruction' ? 'multi' :
+        this.props.mode == 'multi_suggestions' ? 'suggestions' :
+        this.props.mode;
+
       computeCognateAnalysis({
         variables: {
           sourcePerspectiveId: perspectiveId,
@@ -841,7 +856,7 @@ class CognateAnalysisModal extends React.Component
           groupFieldId: groupField.id,
           perspectiveInfoList: perspectiveInfoList,
           multiList: multiList,
-          mode: this.props.mode,
+          mode: backend_mode,
           figureFlag: this.props.mode == '',
           matchTranslationsFlag: this.state.matchTranslationsFlag,
           debugFlag: this.state.debugFlag,
@@ -1197,6 +1212,16 @@ class CognateAnalysisModal extends React.Component
           </List>
         )}
 
+        {this.props.mode == 'multi_suggestions' && (
+          <Checkbox
+            label={getTranslation('Match translations')}
+            style={{marginTop: '1em', verticalAlign: 'middle'}}
+            checked={this.state.matchTranslationsFlag}
+            onChange={(e, { checked }) => {
+              this.setState({ matchTranslationsFlag: checked });}}
+          />
+        )}
+
         {this.props.user.id == 1 && this.admin_section_render()}
 
       </Modal.Content>
@@ -1217,6 +1242,10 @@ class CognateAnalysisModal extends React.Component
     const { mode, user } = this.props;
     const object = this;
 
+    const multi =
+      this.props.mode == 'multi_reconstruction' ||
+      this.props.mode == 'multi_suggestions';
+
     return (
       <div>
         <Modal dimmer open size="fullscreen">
@@ -1224,8 +1253,10 @@ class CognateAnalysisModal extends React.Component
           <Modal.Header>{
             mode == 'acoustic' ?
               getTranslation('Cognate acoustic analysis') :
-            mode == 'multi' ?
+            mode == 'multi_reconstruction' ?
               getTranslation('Cognate multi-language reconstruction') :
+            mode == 'multi_suggestions' ?
+              getTranslation('Cognate multi-language suggestions') :
             mode == 'reconstruction' ?
               getTranslation('Cognate reconstruction') :
             mode == 'suggestions' ?
@@ -1233,7 +1264,7 @@ class CognateAnalysisModal extends React.Component
               getTranslation('Cognate analysis')}
           </Modal.Header>
 
-          {mode == 'multi' ?
+          {multi ?
             this.multi_language_render() :
             this.single_language_render()}
 
@@ -1245,10 +1276,10 @@ class CognateAnalysisModal extends React.Component
                 "Compute"}
               onClick={this.handleCreate}
               disabled={
-                (mode != 'multi' && (
+                (!multi && (
                   this.perspective_list.length <= 1 ||
                   !this.state.perspectiveSelectionList.some(enabled => enabled))) ||
-                (mode == 'multi' &&
+                (multi &&
                   this.state.language_list.length <= 0) ||
                 this.state.computing}
             />
