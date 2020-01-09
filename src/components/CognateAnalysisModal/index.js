@@ -189,7 +189,7 @@ class CognateAnalysisModal extends React.Component
 
       library_present: true,
 
-      result: '',
+      result: null,
       xlsx_url: '',
       figure_url: '',
 
@@ -1239,12 +1239,11 @@ class CognateAnalysisModal extends React.Component
       );
     }
 
-    const { mode, user } = this.props;
-    const object = this;
+    const { mode } = this.props;
 
     const multi =
-      this.props.mode == 'multi_reconstruction' ||
-      this.props.mode == 'multi_suggestions';
+      mode == 'multi_reconstruction' ||
+      mode == 'multi_suggestions';
 
     return (
       <div>
@@ -1286,7 +1285,7 @@ class CognateAnalysisModal extends React.Component
             <Button negative content="Close" onClick={this.props.closeModal} />
           </Modal.Actions>
 
-          {this.state.library_present && this.state.result.length > 0 && (
+          {this.state.library_present && this.state.result !== null && (
             <Modal.Content scrolling style={{maxHeight: '95vh'}}>
 
               <h3>Analysis results
@@ -1294,16 +1293,16 @@ class CognateAnalysisModal extends React.Component
 
               <List>
                 <List.Item>
-                  {this.state.not_enough_count} additional cognate groups were excluded from the analysis due to not having lexical entries in at least two dictionaries.
+                  {this.state.not_enough_count} cognate groups were excluded from the analysis due to not having lexical entries in at least two selected dictionaries.
                 </List.Item>
 
-                {mode != 'suggestions' && (
+                {this.state.result.length > 0 && mode != 'suggestions' && (
                   <List.Item>
                     <a href={this.state.xlsx_url}>XLSX-exported analysis results</a>
                   </List.Item>
                 )}
 
-                {this.state.intermediate_url_list && (
+                {this.state.result.length > 0 && this.state.intermediate_url_list && (
                   <List.Item>
                     <div style={{marginTop: '0.75em'}}>
                       <span>Intermediate data:</span>
@@ -1318,6 +1317,14 @@ class CognateAnalysisModal extends React.Component
                   </List.Item>
                 )}
               </List>
+
+              {this.state.result.length <= 0 && (
+                <List>
+                  <List.Item>
+                    No data for cognate analysis.
+                  </List.Item>
+                </List>
+              )}
 
               {this.state.plotly_data.length > 0 && (
                 <List>
