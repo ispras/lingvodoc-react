@@ -5,9 +5,14 @@ import imgTools from '../../images/tools.jpg';
 import imgDashboard from '../../images/dashboard.png';
 import imgOrganization from '../../images/organization.jpg';
 import imgSupport from '../../images/support.jpg';
+import { Link, withRouter } from 'react-router-dom';
+import TreeRoute from 'pages/TreeRoute';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { compose } from 'recompose';
 
 
-class Home extends React.Component {
+class TopSectionSelector extends React.Component {
     constructor(props) {
         super(props);
         this.state={show:false,showTab:''}
@@ -25,7 +30,10 @@ class Home extends React.Component {
       }
     render() {
       return (
-      <div className="home"> 
+      <div className="topSectionSelector"> 
+      <button>
+        <Link to="/TreeRoute">click</Link>
+        </button>
       <label className={this.state.show ? "hidden-label" : ""}>Tree</label>
       <img className={this.state.show ? "hidden" : "img-tree img"} src={imgTree} onClick={this.clickTab} name="tree" ></img>
       <label className={this.state.showTab ? "nonTab":''}>Tools</label>
@@ -42,4 +50,4 @@ class Home extends React.Component {
   }
 
 
-export default Home;
+export default compose(TopSectionSelector);

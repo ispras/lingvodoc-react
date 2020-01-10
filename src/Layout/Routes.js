@@ -18,12 +18,13 @@ import Grants from 'pages/Grants';
 import Requests from 'pages/Requests';
 import EditTranslations from 'pages/EditTranslations';
 import Organizations from 'pages/Organizations';
+import TreeRoute from 'pages/TreeRoute';
 
 import config from 'config';
 
 const Routes = () => (
   <Switch>
-    <Route exact path={config.homePath} component={Home} />
+    <Route exact path={config.homePath} component={TreeRoute} />
     <Route path="/info" component={Info} />
     <Route path="/desktop" component={Desktop} />
     <Route path="/languages" component={Languages} />
@@ -32,6 +33,7 @@ const Routes = () => (
     <Route path="/dashboard/create_dictionary" component={CreateDictionary} />
     <Route path="/dashboard/create_corpus" component={CreateCorpus} />
     <Route path="/grants" component={Grants} />
+    <Route path="/TreeRoute" component={TreeRoute}/>
     <Route path="/requests" component={Requests} />
     <Route path="/map" component={Map} />
     <Route path="/map_search" component={Search} />
