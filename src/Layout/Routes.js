@@ -18,13 +18,21 @@ import Grants from 'pages/Grants';
 import Requests from 'pages/Requests';
 import EditTranslations from 'pages/EditTranslations';
 import Organizations from 'pages/Organizations';
+
+
+
+
 import TreeRoute from 'pages/TreeRoute';
+import ToolsRoute from 'pages/ToolsRoute'
+import DashboardRoute from 'pages/DashboardRoute';
+import OrganizationRoute from 'pages/OrganizationRoute'
+import SupportRoute from 'pages/SupportRoute';
 
 import config from 'config';
 
 const Routes = () => (
   <Switch>
-    <Route exact path={config.homePath} component={TreeRoute} />
+    <Route exact path={config.homePath} component={Home} />
     <Route path="/info" component={Info} />
     <Route path="/desktop" component={Desktop} />
     <Route path="/languages" component={Languages} />
@@ -33,7 +41,6 @@ const Routes = () => (
     <Route path="/dashboard/create_dictionary" component={CreateDictionary} />
     <Route path="/dashboard/create_corpus" component={CreateCorpus} />
     <Route path="/grants" component={Grants} />
-    <Route path="/TreeRoute" component={TreeRoute}/>
     <Route path="/requests" component={Requests} />
     <Route path="/map" component={Map} />
     <Route path="/map_search" component={Search} />
@@ -46,6 +53,14 @@ const Routes = () => (
     <Route path="/edit_translations" component={EditTranslations} />
     <Route path="/organizations" component={Organizations} />
     <Route component={NotFound} />
+
+
+    <Route path="/treeRoute" component={TreeRoute}/>
+    <Route path="/toolsRoute" component={ToolsRoute}/>
+    <Route path="/dashboardRoute" component={DashboardRoute}/>
+    <Route path="/organizationRoute" component={OrganizationRoute}/>
+    <Route path="/supportRoute" component={SupportRoute}/>
+
   </Switch>
 );
 

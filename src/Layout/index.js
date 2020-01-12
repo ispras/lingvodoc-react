@@ -23,7 +23,7 @@ import BanModal from 'components/BanModal';
 import CreateFieldModal from 'components/CreateFieldModal';
 import RolesModal from 'components/RolesModal';
 import CreateOrganizationModal from 'components/CreateOrganizationModal';
-import TopSectionSelector from 'components/TopSectionSelector';
+
 
 import NavBar from './NavBar';
 import TasksSidebar from './TasksSidebar';
@@ -42,7 +42,6 @@ const getTranslationsQuery = gql`
 
 const Content = styled.div`
   padding: 10em 20px;
-  margin-top: 500px;
   height: 100vh !important;
   overflow-y: auto !important;
 `;
@@ -75,14 +74,13 @@ class Layout extends React.Component {
       <div>
         <NavBar />
         <Snackbar />
-        <TopSectionSelector/>
+    
      {     <Sidebar.Pushable as="div">
           <TasksSidebar />
           <Sidebar.Pusher as={Content}>
             <Routes />
           </Sidebar.Pusher>
         </Sidebar.Pushable> }
-        
         <Modals />
         <PlayerModal />
         <MarkupModal />

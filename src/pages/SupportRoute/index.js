@@ -11,7 +11,7 @@ class TreeRoute extends React.Component {
 
     render() {
       return (
-    <div>treeRoute</div>
+    <div>SRoute</div>
       );
     }  
 }

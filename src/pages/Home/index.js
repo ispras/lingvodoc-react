@@ -22,6 +22,8 @@ import { getScrollContainer } from './common';
 import { getTranslation } from 'api/i18n';
 import './published.scss';
 
+import TopSectionSelector from '../../components/TopSectionSelector';
+
 const authenticatedDictionariesQuery = gql`
   query AuthDictionaries {
     dictionaries(proxy: true) {
@@ -205,6 +207,7 @@ const Home = (props) => {
 
   return (
     <Container className="published">
+      <TopSectionSelector/>
       <Message padded="very" warning>
         <b>
           Старая версия системы доступна по адресу:
