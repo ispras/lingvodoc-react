@@ -52,14 +52,15 @@ const Routes = () => (
     <Route path="/files" component={Files} />
     <Route path="/edit_translations" component={EditTranslations} />
     <Route path="/organizations" component={Organizations} />
-    <Route component={NotFound} />
-
-
     <Route path="/treeRoute" component={TreeRoute}/>
     <Route path="/toolsRoute" component={ToolsRoute}/>
     <Route path="/dashboardRoute" component={DashboardRoute}/>
     <Route path="/organizationRoute" component={OrganizationRoute}/>
     <Route path="/supportRoute" component={SupportRoute}/>
+    <Route component={NotFound} />
+
+
+    
 
   </Switch>
 );

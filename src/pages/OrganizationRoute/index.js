@@ -1,21 +1,28 @@
 import React from 'react';
-import { Switch, Route } from 'react-router-dom';
-import { connect } from 'react-redux';
+
+import './styles.scss';
+import image from '../../images/maps.png';
+import { Link } from 'react-router-dom';
+
+class OrganizationRoute extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    return (
+      <div>
+        <div className='organizationRoute'>
+          <div className='background-img'></div>
+          <p>Organization</p>
+        
 
 
-class TreeRoute extends React.Component {
-    constructor(props) {
-      super(props);
-  
-    }
+        </div>
+      </div>
 
-    render() {
-      return (
-    <div>oRoute</div>
-      );
-    }  
+    );
+  }
 }
-//const mapStateToProps = state => state.treeRoute;
 
-//export default connect(state => state.treeRoute)(TreeRoute) ;
-export default TreeRoute;
+export default OrganizationRoute;

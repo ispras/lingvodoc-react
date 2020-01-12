@@ -1,21 +1,32 @@
 import React from 'react';
-import { Switch, Route } from 'react-router-dom';
-import { connect } from 'react-redux';
+
+import './styles.scss';
+import image from '../../images/support.jpg';
+import { Link } from 'react-router-dom';
+
+class SupportRoute extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    return (
+      <div>
+        <div className='supportRoute'>
+          <div className='background-img'></div>
+          <p>Support</p>
+          <div className="img-block">
+            <p>Help</p>
+            <a href='https://github.com/ispras/lingvodoc-react/wiki'> <img className='img ' src={image} /></a>
+          </div>
+       
 
 
-class TreeRoute extends React.Component {
-    constructor(props) {
-      super(props);
-  
-    }
+        </div>
+      </div>
 
-    render() {
-      return (
-    <div>SRoute</div>
-      );
-    }  
+    );
+  }
 }
-//const mapStateToProps = state => state.treeRoute;
 
-//export default connect(state => state.treeRoute)(TreeRoute) ;
-export default TreeRoute;
+export default SupportRoute;

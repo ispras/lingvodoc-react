@@ -1,21 +1,40 @@
 import React from 'react';
-import { Switch, Route } from 'react-router-dom';
-import { connect } from 'react-redux';
 
+import './styles.scss';
+import image from '../../images/bilingual.jpg';
+import { Link } from 'react-router-dom';
 
 class TreeRoute extends React.Component {
-    constructor(props) {
-      super(props);
-  
-    }
+  constructor(props) {
+    super(props);
+  }
 
-    render() {
-      return (
-    <div>treeRoute</div>
-      );
-    }  
+  render() {
+    return (
+      <div>
+        <div className='treeRoute'>
+          <div className='background-img'></div>
+          <p>Tree</p>
+          <div className="img-block">
+            <p>Dictionaries</p>
+
+            <Link to='/dashboard/dictionaries'> <img className='img ' src={image} /></Link>
+          </div>
+          <div className="img-block">
+            <p>Corpora</p>
+            <Link to='/dashboard/corpora'><img className='img ' src={image} /></Link>
+          </div>
+          <div className="img-block">
+            <p>Bilingual</p>
+            <Link to='/dashboard/bilingual'> <img className='img ' src={image} /></Link>
+          </div>
+
+
+        </div>
+      </div>
+
+    );
+  }
 }
-//const mapStateToProps = state => state.treeRoute;
 
-//export default connect(state => state.treeRoute)(TreeRoute) ;
 export default TreeRoute;
