@@ -2,6 +2,7 @@ import React from 'react';
 
 import './styles.scss';
 import image from '../../images/maps.png';
+import imageSearch from '../../images/search.jpg';
 import { Link } from 'react-router-dom';
 
 class ToolsRoute extends React.Component {
@@ -21,7 +22,7 @@ class ToolsRoute extends React.Component {
           </div>
           <div className="img-block">
             <p>Search</p>
-            <Link to='/map_search'><img className='img ' src={image} /></Link>
+            <Link to='/map_search'><img className='img ' src={imageSearch} /></Link>
           </div>
         </div>
       </div>
