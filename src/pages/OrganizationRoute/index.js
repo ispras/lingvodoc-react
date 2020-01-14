@@ -1,8 +1,7 @@
 import React from 'react';
 
 import './styles.scss';
-import image from '../../images/maps.png';
-import { Link } from 'react-router-dom';
+
 
 class OrganizationRoute extends React.Component {
   constructor(props) {

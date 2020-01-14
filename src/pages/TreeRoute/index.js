@@ -17,7 +17,6 @@ class TreeRoute extends React.Component {
           <p>Tree</p>
           <div className="img-block">
             <p>Dictionaries</p>
-
             <Link to='/dashboard/dictionaries'> <img className='img ' src={image} /></Link>
           </div>
           <div className="img-block">
@@ -28,8 +27,6 @@ class TreeRoute extends React.Component {
             <p>Bilingual</p>
             <Link to='/dashboard/bilingual'> <img className='img ' src={image} /></Link>
           </div>
-
-
         </div>
       </div>
 

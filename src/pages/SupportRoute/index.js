@@ -2,7 +2,7 @@ import React from 'react';
 
 import './styles.scss';
 import image from '../../images/support.jpg';
-import { Link } from 'react-router-dom';
+
 
 class SupportRoute extends React.Component {
   constructor(props) {
@@ -17,11 +17,8 @@ class SupportRoute extends React.Component {
           <p>Support</p>
           <div className="img-block">
             <p>Help</p>
-            <a href='https://github.com/ispras/lingvodoc-react/wiki'> <img className='img ' src={image} /></a>
+            <a  href='https://github.com/ispras/lingvodoc-react/wiki' target="_blank"> <img className='img ' src={image} /></a>
           </div>
-       
-
-
         </div>
       </div>
 

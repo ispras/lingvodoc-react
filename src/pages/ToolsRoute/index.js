@@ -23,8 +23,6 @@ class ToolsRoute extends React.Component {
             <p>Search</p>
             <Link to='/map_search'><img className='img ' src={image} /></Link>
           </div>
-
-
         </div>
       </div>
 
