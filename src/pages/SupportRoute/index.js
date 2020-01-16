@@ -1,12 +1,6 @@
 import React from 'react';
-
 import './styles.scss';
 import image from '../../images/support.jpg';
-import gql from 'graphql-tag';
-
-
-
-
 
 
 class SupportRoute extends React.Component {
@@ -26,7 +20,6 @@ class SupportRoute extends React.Component {
           </div>
         </div>
       </div>
-
     );
   }
 }

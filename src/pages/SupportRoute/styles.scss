@@ -1,13 +1,12 @@
 .supportRoute {
     position: relative;
-  
     width: 700px;
     height: 600px;
     margin: 0 auto;
     .background-img {
       position: absolute;
       background-image: url(../../images/support.jpg);
-      background-repeat: no-repeat; /* Отменяем повторение фона */
+      background-repeat: no-repeat;
       background-position: center center;
       background-size: contain;
       width: 850px;
@@ -25,7 +24,6 @@
         cursor: pointer;
         width: 150px;
         z-index: 100;
-        //margin-top: 50px;
         top: 10%;
       }
     }

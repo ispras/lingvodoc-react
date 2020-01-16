@@ -1,6 +1,5 @@
 .organizationRoute {
     position: relative;
-  
     width: 700px;
     height: 600px;
     margin: 0 auto;
@@ -14,20 +13,6 @@
       height: 600px;
       opacity: 0.5;
       z-index: -1;
-    }
-    .img-block {
-      p {
-        padding-left: 0;
-      }
-      margin-left: 62px;
-      display: inline-block;
-      .img {
-        cursor: pointer;
-        width: 150px;
-        z-index: 100;
-        //margin-top: 50px;
-        top: 10%;
-      }
     }
     p {
       font-weight: bold;

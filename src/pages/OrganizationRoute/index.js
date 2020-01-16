@@ -1,5 +1,4 @@
 import React from 'react';
-
 import './styles.scss';
 
 
@@ -14,9 +13,6 @@ class OrganizationRoute extends React.Component {
         <div className='organizationRoute'>
           <div className='background-img'></div>
           <p>Organization</p>
-        
-
-
         </div>
       </div>
 
