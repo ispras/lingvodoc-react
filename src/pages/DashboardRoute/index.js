@@ -1,5 +1,4 @@
 import React from 'react';
-
 import './styles.scss';
 import image from '../../images/dashboard.png';
 import { Link } from 'react-router-dom';

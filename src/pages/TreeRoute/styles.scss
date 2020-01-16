@@ -7,7 +7,7 @@
   .background-img {
     position: absolute;
     background-image: url(../../images/tree.jpg);
-    background-repeat: no-repeat; /* Отменяем повторение фона */
+    background-repeat: no-repeat; 
     background-position: center center;
     background-size: contain;
     width: 700px;
@@ -26,7 +26,6 @@
       width: 150px;
       height: 93px;
       z-index: 100;
-      //margin-top: 50px;
       top: 10%;
     }
   }

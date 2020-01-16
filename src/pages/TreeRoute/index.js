@@ -1,5 +1,4 @@
 import React from 'react';
-
 import './styles.scss';
 import image from '../../images/bilingual.jpg';
 import imageDictionaries from '../../images/dictionaries.jpg';
