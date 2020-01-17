@@ -1,40 +1,32 @@
 .organizationRoute {
-    position: relative;
-  
-    width: 700px;
-    height: 600px;
-    margin: 0 auto;
-    .background-img {
-      position: absolute;
-      background-image: url(../../images/organization.jpg);
-      background-repeat: no-repeat; /* Отменяем повторение фона */
-      background-position: center center;
-      background-size: contain;
-      width: 800px;
-      height: 600px;
-      opacity: 0.5;
-      z-index: -1;
-    }
-    .img-block {
-      p {
-        padding-left: 0;
-      }
-      margin-left: 62px;
-      display: inline-block;
-      .img {
-        cursor: pointer;
-        width: 150px;
-        z-index: 100;
-        //margin-top: 50px;
-        top: 10%;
-      }
-    }
-    p {
-      font-weight: bold;
-      color: white;
-      margin: 0;
-      padding-top: 10px;
-      padding-left: 10px;
-    }
+
+  .background-img {
+    background-image: url(../../images/organization.jpg);
+    background-repeat: no-repeat; 
+    background-position: center center;
+    background-size: contain;
+    width: 200px;
+    height: 150px;
+    cursor: pointer;
+
+    display: inline-block;
   }
-  
+  .container{
+    margin-top: 100px;
+  }
+  .block{
+     display: inline-block; 
+     margin-left: 50px;
+  }
+  .column-icon{
+    position: relative;
+left: 17%;
+  }
+  p {
+    font-weight: bold;
+    color: white;
+    margin: 0;
+    padding-top: 10px;
+    padding-left: 10px;
+  }
+}

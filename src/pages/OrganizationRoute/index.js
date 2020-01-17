@@ -1,7 +1,7 @@
 import React from 'react';
-
 import './styles.scss';
-
+import Info from '../Info';
+import { Link } from 'react-router-dom';
 
 class OrganizationRoute extends React.Component {
   constructor(props) {
@@ -12,16 +12,26 @@ class OrganizationRoute extends React.Component {
     return (
       <div>
         <div className='organizationRoute'>
-          <div className='background-img'></div>
-          <p>Organization</p>
-        
+          <div className="column-icon">
+           
+            <div className="block">
+              <p>Гранты и организации</p>
+         <Link to='/grants'>  <div className='background-img'></div></Link>    
+              </div ></div>
+              <div className="block" >
+              <p>Проекты вне гранта</p>
+              <div className='background-img'></div>
+            </div>
 
+          </div>
 
+          <Info />
         </div>
-      </div>
+   
 
     );
   }
 }
 
 export default OrganizationRoute;
+

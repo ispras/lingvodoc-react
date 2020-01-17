@@ -1,5 +1,4 @@
 import React from 'react';
-
 import './styles.scss';
 import image from '../../images/maps.png';
 import imageSearch from '../../images/search.jpg';
@@ -26,7 +25,6 @@ class ToolsRoute extends React.Component {
           </div>
         </div>
       </div>
-
     );
   }
 }
