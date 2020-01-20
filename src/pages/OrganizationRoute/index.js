@@ -13,21 +13,21 @@ class OrganizationRoute extends React.Component {
       <div>
         <div className='organizationRoute'>
           <div className="column-icon">
-           
+
             <div className="block">
               <p>Гранты и организации</p>
-         <Link to='/grants'>  <div className='background-img'></div></Link>    
-              </div ></div>
-              <div className="block" >
-              <p>Проекты вне гранта</p>
-              <div className='background-img'></div>
-            </div>
-
+              <Link to='/grants' className='background-img'>  <div ></div></Link>
+            </div >
+          <div className="block" >
+            <p>Проекты вне гранта</p>
+            <Link to='/no_grants' className='background-img'> <div ></div> </Link>
           </div>
-
-          <Info />
+          </div>
         </div>
-   
+
+        <Info />
+      </div>
+
 
     );
   }
