@@ -8,7 +8,7 @@ import imgSupport from '../../images/support.jpg';
 import { Link } from 'react-router-dom';
 import { compose } from 'recompose';
 
-
+import { getTranslation } from 'api/i18n';
 class TopSectionSelector extends React.Component {
   constructor(props) {
     super(props);
@@ -17,15 +17,15 @@ class TopSectionSelector extends React.Component {
   render() {
     return (
       <div className="topSectionSelector">
-        <label className= 'label'>Tree</label>
-        <Link to='/treeRoute'><img className= "img-tree img" src={imgTree}  ></img></Link>
-        <label className= 'label'>Tools</label>
+        <label className= 'label'>{getTranslation('Tree')}</label>
+        <Link to='/treeRoute'><img className= "img-tree img" src={imgTree}></img></Link>
+        <label className= 'label'>{getTranslation('Tools')}</label>
         <Link to='/toolsRoute'><img className= "img-tools img" src={imgTools} /></Link>
-        <label className= 'label'>Dashboard</label>
+        <label className= 'label'>{getTranslation('Dashboard')}</label>
         <Link to='/dashboardRoute'><img className= "img-dashboard img" src={imgDashboard} /></Link>
-        <label className= 'label'>Organization</label>
+        <label className= 'label'>{getTranslation('Organization')}</label>
         <Link to='/organizationRoute'><img className= "img-organization img" src={imgOrganization} /></Link>
-        <label className= 'label'>Support</label>
+        <label className= 'label'>{getTranslation('Support')}</label>
         <Link to='/supportRoute'><img className= "img-support img" src={imgSupport} /></Link>
       </div>
     );
