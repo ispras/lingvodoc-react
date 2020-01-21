@@ -17,15 +17,11 @@ class OrganizationRoute extends React.Component {
             <div className="block">
               <p>{getTranslation('Grants and organizations')}</p>
               <Link to='/grants' className='background-img'>
-                <div>
-                </div>
               </Link>
             </div >
             <div className="block" >
               <p>{getTranslation('Off-grant projects')}</p>
               <Link to='/no_grants' className='background-img'>
-                <div>
-                </div>
               </Link>
             </div>
           </div>
