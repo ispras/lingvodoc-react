@@ -3,6 +3,7 @@ import './styles.scss';
 import image from '../../images/dashboard.png';
 import { Link } from 'react-router-dom';
 
+import { getTranslation } from 'api/i18n';
 class DashboardRoute extends React.Component {
   constructor(props) {
     super(props);
@@ -13,21 +14,21 @@ class DashboardRoute extends React.Component {
       <div>
         <div className='dashboardRoute'>
           <div className='background-img'></div>
-          <p>Dashboard</p>
+          <p>{getTranslation('Dashboard')}</p>
           <div className="img-block">
-            <p>Create dictionary</p>
+            <p>{getTranslation('Create dictionary')}</p>
             <Link to='/dashboard/create_dictionary'> <img className='img ' src={image} /></Link>
           </div>
           <div className="img-block">
-            <p>Create corpus</p>
+            <p>{getTranslation('Create corpus')}</p>
             <Link to='/dashboard/create_corpus'><img className='img ' src={image} /></Link>
           </div>
           <div className="img-block">
-            <p>Import dialeqt</p>
+            <p>{getTranslation('Import dialeqt')}</p>
             <Link to='/import_dialeqt'> <img className='img ' src={image} /></Link>
           </div>
           <div className="img-block">
-            <p>Import</p>
+            <p>{getTranslation('Import')}</p>
             <Link to='/import'><img className='img ' src={image} /></Link>
           </div>
 

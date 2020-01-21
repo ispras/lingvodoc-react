@@ -27,7 +27,7 @@ import ToolsRoute from 'pages/ToolsRoute'
 import DashboardRoute from 'pages/DashboardRoute';
 import OrganizationRoute from 'pages/OrganizationRoute'
 import SupportRoute from 'pages/SupportRoute';
-
+import NoGrants from 'pages/NoGrants'
 import config from 'config';
 
 const Routes = () => (
@@ -57,6 +57,7 @@ const Routes = () => (
     <Route path="/dashboardRoute" component={DashboardRoute}/>
     <Route path="/organizationRoute" component={OrganizationRoute}/>
     <Route path="/supportRoute" component={SupportRoute}/>
+    <Route path="/no_grants" component={NoGrants}/>
     <Route component={NotFound} />
 
 

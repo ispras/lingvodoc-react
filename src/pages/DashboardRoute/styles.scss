@@ -1,7 +1,7 @@
 .dashboardRoute {
     position: relative;
-    width: 700px;
-    height: 600px;
+    width: 850px;
+    height: 500px;
     margin: 0 auto;
     .background-img {
       position: absolute;
@@ -18,7 +18,9 @@
       p {
         padding-left: 0;
       }
+      margin-top: 10px;
       margin-left: 62px;
+      margin-right: 40px;
       display: inline-block;
       .img {
         cursor: pointer;
