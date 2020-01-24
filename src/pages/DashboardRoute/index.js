@@ -1,6 +1,7 @@
 import React from 'react';
 import './styles.scss';
 import image from '../../images/dashboard.png';
+import imageDictionaries from '../../images/dictionaries.jpg';
 import { Link } from 'react-router-dom';
 
 import { getTranslation } from 'api/i18n';
@@ -15,6 +16,10 @@ class DashboardRoute extends React.Component {
         <div className='dashboardRoute'>
           <div className='background-img'></div>
           <p>{getTranslation('Dashboard')}</p>
+          <div className="img-block">
+            <p> {getTranslation('Dictionaries')}</p>
+            <Link to='/dashboard/dictionaries'> <img className='img ' src={imageDictionaries} /></Link>
+          </div>
           <div className="img-block">
             <p>{getTranslation('Create dictionary')}</p>
             <Link to='/dashboard/create_dictionary'> <img className='img ' src={image} /></Link>
