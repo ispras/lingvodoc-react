@@ -27,6 +27,7 @@ export const launchSoundAndMarkupMutation = gql`
 const queryCounter = gql`
   query qcounter($id: LingvodocID! $mode: String!) {
     perspective(id: $id) {
+      id
       counter(mode: $mode)
     }
   }
@@ -38,6 +39,99 @@ const Counter = graphql(queryCounter)(({ data }) => {
   }
   const { perspective: { counter } } = data;
   return ` (${counter})`;
+});
+
+const toolsQuery = gql`
+  query tools($id: LingvodocID!) {
+    perspective(id: $id) {
+      id
+      english_status: status(locale_id: 2)
+    }
+  }
+`;
+
+const Tools = graphql(toolsQuery)(({
+  data,
+  openCognateAnalysisModal,
+  openPhonemicAnalysisModal,
+  openPhonologyModal,
+  launchSoundAndMarkup,
+  id,
+  mode }) =>
+{
+  if (data.loading || data.error) {
+    return null;
+  }
+
+  const { perspective: { english_status } } = data;
+
+  const published =
+    english_status == 'Published' ||
+    english_status == 'Limited access';
+
+  return (
+    <Dropdown item text={getTranslation("Tools")}>
+      <Dropdown.Menu>
+
+        <Dropdown.Item
+          onClick={() => openCognateAnalysisModal(id, 'acoustic')}>
+          {getTranslation("Cognate acoustic analysis")}
+        </Dropdown.Item>
+
+        <Dropdown.Item
+          onClick={() => openCognateAnalysisModal(id)}>
+          {getTranslation("Cognate analysis")}
+        </Dropdown.Item>
+
+        <Dropdown.Item
+          onClick={() => openCognateAnalysisModal(id, 'multi_reconstruction')}>
+          {getTranslation("Cognate multi-language reconstruction")}
+        </Dropdown.Item>
+
+        <Dropdown.Item
+          onClick={() => openCognateAnalysisModal(id, 'multi_suggestions')}
+          disabled={!published}>
+          {getTranslation(published ?
+            "Cognate multi-language suggestions" :
+            "Cognate multi-language suggestions (disabled, perspective is not published)")}
+        </Dropdown.Item>
+
+        <Dropdown.Item
+          onClick={() => openCognateAnalysisModal(id, 'reconstruction')}>
+          {getTranslation("Cognate reconstruction")}
+        </Dropdown.Item>
+
+        <Dropdown.Item
+          onClick={() => openCognateAnalysisModal(id, 'suggestions')}
+          disabled={!published}>
+          {getTranslation(published ?
+            "Cognate suggestions" :
+            "Cognate suggestions (disabled, perspective is not published)")}
+        </Dropdown.Item>
+
+        <Dropdown.Item
+          onClick={() => openPhonemicAnalysisModal(id)}>
+          {getTranslation("Phonemic analysis")}
+        </Dropdown.Item>
+
+        <Dropdown.Item
+          onClick={() => openPhonologyModal(id)}>
+          {getTranslation("Phonology")}
+        </Dropdown.Item>
+
+        <Dropdown.Item
+          onClick={() => openPhonologyModal(id, 'statistical_distance')}>
+          {getTranslation("Phonological statistical distance")}
+        </Dropdown.Item>
+
+        <Dropdown.Item
+          onClick={() => soundAndMarkup(id, mode, launchSoundAndMarkup)}>
+          {getTranslation("Sound and markup")}
+        </Dropdown.Item>
+
+      </Dropdown.Menu>
+    </Dropdown>
+  );
 });
 
 const MODES = {
@@ -101,16 +195,10 @@ const ModeSelector = onlyUpdateForKeys([
 ])(({
   mode, baseUrl, filter,
   submitFilter,
-  openCognateAcousticAnalysisModal,
   openCognateAnalysisModal,
-  openCognateMultiReconstructionModal,
-  openCognateMultiSuggestionsModal,
-  openCognateReconstructionModal,
-  openCognateSuggestionsModal,
   openPhonemicAnalysisModal,
   openPhonologyModal,
-  openPhonologicalStatisticalDistanceModal,
-  soundAndMarkup,
+  launchSoundAndMarkup,
   id,
 }) => (
   <Menu tabular>
@@ -123,20 +211,17 @@ const ModeSelector = onlyUpdateForKeys([
         />) : null}
       </Menu.Item>
     ))}
-    <Dropdown item text={getTranslation("Tools")}>
-      <Dropdown.Menu>
-        <Dropdown.Item onClick={openCognateAcousticAnalysisModal}>{getTranslation("Cognate acoustic analysis")}</Dropdown.Item>
-        <Dropdown.Item onClick={openCognateAnalysisModal}>{getTranslation("Cognate analysis")}</Dropdown.Item>
-        <Dropdown.Item onClick={openCognateMultiReconstructionModal}>{getTranslation("Cognate multi-language reconstruction")}</Dropdown.Item>
-        <Dropdown.Item onClick={openCognateMultiSuggestionsModal}>{getTranslation("Cognate multi-language suggestions")}</Dropdown.Item>
-        <Dropdown.Item onClick={openCognateReconstructionModal}>{getTranslation("Cognate reconstruction")}</Dropdown.Item>
-        <Dropdown.Item onClick={openCognateSuggestionsModal}>{getTranslation("Cognate suggestions")}</Dropdown.Item>
-        <Dropdown.Item onClick={openPhonemicAnalysisModal}>{getTranslation("Phonemic analysis")}</Dropdown.Item>
-        <Dropdown.Item onClick={openPhonologyModal}>{getTranslation("Phonology")}</Dropdown.Item>
-        <Dropdown.Item onClick={openPhonologicalStatisticalDistanceModal}>{getTranslation("Phonological statistical distance")}</Dropdown.Item>
-        <Dropdown.Item onClick={soundAndMarkup}>{getTranslation("Sound and markup")}</Dropdown.Item>
-      </Dropdown.Menu>
-    </Dropdown>
+
+    <Tools
+      id={id}
+      mode={mode}
+      openCognateAnalysisModal={openCognateAnalysisModal}
+      openPhonemicAnalysisModal={openPhonemicAnalysisModal}
+      openPhonologyModal={openPhonologyModal}
+      launchSoundAndMarkup={launchSoundAndMarkup}
+    />
+  {/*
+  */}
 
     <Menu.Menu position="right">
       <Filter filter={filter} submitFilter={submitFilter} />
@@ -183,16 +268,10 @@ const Perspective = ({
         baseUrl={baseUrl}
         filter={perspective.filter}
         submitFilter={submitFilter}
-        openCognateAcousticAnalysisModal={() => openCognateAnalysisModal(id, 'acoustic')}
-        openCognateAnalysisModal={() => openCognateAnalysisModal(id)}
-        openCognateMultiReconstructionModal={() => openCognateAnalysisModal(id, 'multi_reconstruction')}
-        openCognateMultiSuggestionsModal={() => openCognateAnalysisModal(id, 'multi_suggestions')}
-        openCognateReconstructionModal={() => openCognateAnalysisModal(id, 'reconstruction')}
-        openCognateSuggestionsModal={() => openCognateAnalysisModal(id, 'suggestions')}
-        openPhonemicAnalysisModal={() => openPhonemicAnalysisModal(id)}
-        openPhonologyModal={() => openPhonologyModal(id)}
-        openPhonologicalStatisticalDistanceModal={() => openPhonologyModal(id, 'statistical_distance')}
-        soundAndMarkup={() => soundAndMarkup(id, mode, launchSoundAndMarkup)}
+        openCognateAnalysisModal={openCognateAnalysisModal}
+        openPhonemicAnalysisModal={openPhonemicAnalysisModal}
+        openPhonologyModal={openPhonologyModal}
+        launchSoundAndMarkup={launchSoundAndMarkup}
       />
       <Switch>
         <Redirect exact from={baseUrl} to={`${baseUrl}/view`} />

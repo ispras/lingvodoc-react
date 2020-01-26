@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { compose, branch, renderNothing } from 'recompose';
 import { graphql, withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
-import { Breadcrumb, Button, Checkbox, Dimmer, Divider, Dropdown, Header, Icon, Input, List, Loader, Modal, Select } from 'semantic-ui-react';
+import { Breadcrumb, Button, Checkbox, Dimmer, Divider, Dropdown, Header, Icon, Input, List, Loader, Message, Modal, Select } from 'semantic-ui-react';
 import Plot from 'react-plotly.js';
 
 import { closeModal } from 'ducks/cognateAnalysis';
@@ -19,6 +19,7 @@ const cognateAnalysisDataQuery = gql`
     perspective(id: $perspectiveId) {
       id
       translation
+      english_status: status(locale_id: 2)
       columns {
         id
         field_id
@@ -44,6 +45,7 @@ const cognateAnalysisMultiDataQuery = gql`
     perspective(id: $perspectiveId) {
       id
       translation
+      english_status: status(locale_id: 2)
       columns {
         id
         field_id
@@ -252,7 +254,11 @@ class CognateAnalysisModal extends React.Component
       this.initialize_single)();
   }
 
-  initialize_common(allFields, columns, tree)
+  initialize_common(
+    allFields,
+    columns,
+    tree,
+    english_status)
   {
     /* Compiling dictionary of perspective field info so that later we would be able to retrieve this info
      * efficiently. */
@@ -297,6 +303,10 @@ class CognateAnalysisModal extends React.Component
         break;
       }
     }
+
+    /* Remembering source perspective status. */
+
+    this.englishStatus = english_status;
   }
 
   initialize_state()
@@ -321,22 +331,38 @@ class CognateAnalysisModal extends React.Component
 
   async initialize_single()
   {
-    const { client, perspectiveId } = this.props;
+    const { client, perspectiveId, mode } = this.props;
 
     const { data: {
       all_fields: allFields,
-      perspective: { columns, tree } }} =
+      perspective: {
+        columns, tree, english_status } }} =
         
       await client.query({
         query: cognateAnalysisDataQuery,
         variables: { perspectiveId },
       });
 
-    this.initialize_common(allFields, columns, tree);
+    this.initialize_common(
+      allFields, columns, tree, english_status);
+
+    this.available_list = [];
+    this.perspective_list = [];
+
+    /* If we are selecting perspectives for cognate suggestions, and the source perspective is not
+     * published, we won't be able to proceed and therefore we need not bother with initialization. */
+
+    if (
+      mode == 'suggestions' &&
+      english_status != 'Published' &&
+      english_status != 'Limited access')
+    {
+      this.setState({ initialized: true });
+      return;
+    }
 
     /* Recursively getting data of perspectives available for analysis. */
 
-    this.available_list = [];
     await this.initPerspectiveData(this.baseLanguageId, []);
 
     this.initialize_state();
@@ -348,11 +374,12 @@ class CognateAnalysisModal extends React.Component
    */
   async initialize_multi()
   {
-    const { client, perspectiveId } = this.props;
+    const { client, perspectiveId, mode } = this.props;
 
     const { data: {
       all_fields: allFields,
-      perspective: { columns, tree },
+      perspective: {
+        columns, tree, english_status },
       languages }} =
         
       await client.query({
@@ -360,7 +387,20 @@ class CognateAnalysisModal extends React.Component
         variables: { perspectiveId, languageIdList },
       });
 
-    this.initialize_common(allFields, columns, tree);
+    this.initialize_common(
+      allFields, columns, tree, english_status);
+
+    /* If we are selecting perspectives for cognate suggestions, and the source perspective is not
+     * published, we won't be able to proceed and therefore we need not bother with initialization. */
+
+    if (
+      mode == 'multi_suggestions' &&
+      english_status != 'Published' &&
+      english_status != 'Limited access')
+    {
+      this.setState({ initialized: true });
+      return;
+    }
 
     /* Preparing language info. */
 
@@ -942,6 +982,26 @@ class CognateAnalysisModal extends React.Component
    */
   single_language_render()
   {
+    /* If we are selecting perspectives for cognate suggestions, we check the source perspective state. */
+
+    if (
+      this.props.mode == 'suggestions' &&
+      this.englishStatus != 'Published' &&
+      this.englishStatus != 'Limited access')
+
+      return (
+        <Modal.Content>
+          <Message negative>
+            <Message.Header>
+              Perspective is not published.
+            </Message.Header>
+            <p>
+              Cognate suggestions are available only for perspectives in the "Published" or "Limited access" state.
+            </p>
+          </Message>
+        </Modal.Content>
+      );
+
     return (
       <Modal.Content>
 
@@ -1044,7 +1104,7 @@ class CognateAnalysisModal extends React.Component
         {this.props.user.id == 1 && this.admin_section_render()}
 
       </Modal.Content>
-    )
+    );
   }
 
   /*
@@ -1052,6 +1112,26 @@ class CognateAnalysisModal extends React.Component
    */
   multi_language_render()
   {
+    /* If we are selecting perspectives for cognate suggestions, we check the source perspective state. */
+
+    if (
+      this.props.mode == 'multi_suggestions' &&
+      this.englishStatus != 'Published' &&
+      this.englishStatus != 'Limited access')
+
+      return (
+        <Modal.Content>
+          <Message negative>
+            <Message.Header>
+              Perspective is not published.
+            </Message.Header>
+            <p>
+              Cognate multi-language suggestions are available only for perspectives in the "Published" or "Limited access" state.
+            </p>
+          </Message>
+        </Modal.Content>
+      );
+
     return (
       <Modal.Content>
 
