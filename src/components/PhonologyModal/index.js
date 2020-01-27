@@ -4,13 +4,15 @@ import { compose, branch, renderNothing } from 'recompose';
 import { graphql, withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
 import { Breadcrumb, Button, Checkbox, Divider, Dropdown, Icon, Input, List, Modal, Select } from 'semantic-ui-react';
-import { closeModal } from 'ducks/phonology';
 import { bindActionCreators } from 'redux';
 import { isEqual, map } from 'lodash';
 import { connect } from 'react-redux';
+import { fromJS } from 'immutable';
+
+import { closeModal } from 'ducks/phonology';
 import { compositeIdToString as id2str } from 'utils/compositeId';
 import { buildLanguageTree, assignDictsToTree, buildDictTrees } from 'pages/Search/treeBuilder';
-import { fromJS } from 'immutable';
+import { getTranslation } from 'api/i18n';
 
 import {
   computePSDMutation,
@@ -596,7 +598,7 @@ class PhonologyModal extends React.Component
               <List.Item>
                 <Checkbox
                   radio
-                  label="All vowels."
+                  label={getTranslation('All vowels.')}
                   name="vowelsRadioGroup"
                   value="all"
                   checked={this.state.vowelsMode === 'all'}
@@ -607,7 +609,7 @@ class PhonologyModal extends React.Component
               <List.Item>
                 <Checkbox
                   radio
-                  label="Only longest vowels and vowels with highest intensity."
+                  label={getTranslation('Only longest vowels and vowels with highest intensity.')}
                   name="vowelsRadioGroup"
                   value="longest"
                   checked={this.state.vowelsMode === 'longest'}
