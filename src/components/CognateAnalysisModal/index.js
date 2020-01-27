@@ -137,7 +137,7 @@ const computeCognateAnalysisMutation = gql`
     $multiList: [ObjectVal],
     $mode: String,
     $figureFlag: Boolean,
-    $matchTranslationsFlag: Boolean,
+    $matchTranslationsValue: Int,
     $debugFlag: Boolean,
     $intermediateFlag: Boolean) {
       cognate_analysis(
@@ -147,8 +147,8 @@ const computeCognateAnalysisMutation = gql`
         perspective_info_list: $perspectiveInfoList,
         multi_list: $multiList,
         mode: $mode,
+        match_translations_value: $matchTranslationsValue,
         figure_flag: $figureFlag,
-        match_translations_flag: $matchTranslationsFlag,
         debug_flag: $debugFlag,
         intermediate_flag: $intermediateFlag)
       {
@@ -219,6 +219,7 @@ class CognateAnalysisModal extends React.Component
       groupFieldIdStr: '',
 
       matchTranslationsFlag: true,
+      matchTranslationsValue: 'first_three',
 
       debugFlag: false,
       intermediateFlag: false,
@@ -241,6 +242,9 @@ class CognateAnalysisModal extends React.Component
     this.initPerspectiveList = this.initPerspectiveList.bind(this);
 
     this.handleCreate = this.handleCreate.bind(this);
+
+    this.match_translations_render = this.match_translations_render.bind(this);
+    this.admin_section_render = this.admin_section_render.bind(this);
   }
 
   componentDidMount()
@@ -851,6 +855,14 @@ class CognateAnalysisModal extends React.Component
           (this.state.perspectiveSelectionList[index]));
     }
 
+    /* Match translations parameter for suggestions. */
+
+    const matchTranslationsValue =
+
+      this.state.matchTranslationsFlag ?
+        (this.state.matchTranslationsValue == 'first_three' ? 1 : 2) :
+        0;
+
     /* If we are to perform acoustic analysis, we will try to launch it in the background. */
 
     if (this.props.mode == 'acoustic')
@@ -862,8 +874,8 @@ class CognateAnalysisModal extends React.Component
           groupFieldId: groupField.id,
           perspectiveInfoList: perspectiveInfoList,
           mode: 'acoustic',
+          matchTranslationsValue,
           figureFlag: true,
-          matchTranslationsFlag: this.state.matchTranslationsFlag,
           debugFlag: this.state.debugFlag,
           intermediateFlag: this.state.intermediateFlag,
         },
@@ -897,8 +909,8 @@ class CognateAnalysisModal extends React.Component
           perspectiveInfoList: perspectiveInfoList,
           multiList: multiList,
           mode: backend_mode,
+          matchTranslationsValue,
           figureFlag: this.props.mode == '',
-          matchTranslationsFlag: this.state.matchTranslationsFlag,
           debugFlag: this.state.debugFlag,
           intermediateFlag: this.state.intermediateFlag },
         },
@@ -946,6 +958,55 @@ class CognateAnalysisModal extends React.Component
         <span>Perspective does not have any grouping fields,
           cognate analysis is impossible.</span>
       )
+  }
+
+  /*
+   * Match translations options used in cognate suggestions.
+   */
+  match_translations_render()
+  {
+    return (
+      <List>
+        <List.Item>
+          <Checkbox
+            label={getTranslation('Match translations')}
+            style={{marginTop: '1em', verticalAlign: 'middle'}}
+            checked={this.state.matchTranslationsFlag}
+            onChange={(e, { checked }) => {
+              this.setState({ matchTranslationsFlag: checked });}}
+          />
+        </List.Item>
+
+        <List.Item>
+          <List relaxed>
+            <List.Item>
+              <Checkbox
+                radio
+                disabled={!this.state.matchTranslationsFlag}
+                label={getTranslation('First three characters.')}
+                name='matchTranslationsRadioGroup'
+                value='first_three'
+                checked={this.state.matchTranslationsValue == 'first_three'}
+                onChange={(e, { value }) => {
+                  this.setState({ matchTranslationsValue: value });}}
+              />
+            </List.Item>
+            <List.Item>
+              <Checkbox
+                radio
+                disabled={!this.state.matchTranslationsFlag}
+                label={getTranslation('All characters.')}
+                name='matchTranslationsRadioGroup'
+                value='all'
+                checked={this.state.matchTranslationsValue == 'all'}
+                onChange={(e, { value }) => {
+                  this.setState({ matchTranslationsValue: value });}}
+              />
+            </List.Item>
+          </List>
+        </List.Item>
+      </List>
+    )
   }
 
   /*
@@ -1091,17 +1152,11 @@ class CognateAnalysisModal extends React.Component
           </List>
         )}
 
-        {this.props.mode == 'suggestions' && (
-          <Checkbox
-            label={getTranslation('Match translations')}
-            style={{marginTop: '1em', verticalAlign: 'middle'}}
-            checked={this.state.matchTranslationsFlag}
-            onChange={(e, { checked }) => {
-              this.setState({ matchTranslationsFlag: checked });}}
-          />
-        )}
+        {this.props.mode == 'suggestions' &&
+          this.match_translations_render()}
 
-        {this.props.user.id == 1 && this.admin_section_render()}
+        {this.props.user.id == 1 &&
+          this.admin_section_render()}
 
       </Modal.Content>
     );
@@ -1292,17 +1347,11 @@ class CognateAnalysisModal extends React.Component
           </List>
         )}
 
-        {this.props.mode == 'multi_suggestions' && (
-          <Checkbox
-            label={getTranslation('Match translations')}
-            style={{marginTop: '1em', verticalAlign: 'middle'}}
-            checked={this.state.matchTranslationsFlag}
-            onChange={(e, { checked }) => {
-              this.setState({ matchTranslationsFlag: checked });}}
-          />
-        )}
+        {this.props.mode == 'multi_suggestions' &&
+          this.match_translations_render()}
 
-        {this.props.user.id == 1 && this.admin_section_render()}
+        {this.props.user.id == 1 &&
+          this.admin_section_render()}
 
       </Modal.Content>
     )
