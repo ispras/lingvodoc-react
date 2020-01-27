@@ -983,7 +983,7 @@ class CognateAnalysisModal extends React.Component
               <Checkbox
                 radio
                 disabled={!this.state.matchTranslationsFlag}
-                label={getTranslation('First three characters.')}
+                label={getTranslation('Any three consecutive characters.')}
                 name='matchTranslationsRadioGroup'
                 value='first_three'
                 checked={this.state.matchTranslationsValue == 'first_three'}
