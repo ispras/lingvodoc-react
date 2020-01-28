@@ -34,7 +34,7 @@ The are two repositories for Lingvodoc project:
 
 #### Frontend commits
 5. If the feature or bug is assigned to you, fix it please. Regressions are more important than new bugs or features.
-6. Test your feature or fix locally with relevant database snapshot and docker-compose scenario from backend repository. The instructions for docker-compose scenario are located [here](https://github.com/ispras/lingvodoc/docker).
+6. Test your feature or fix locally with relevant database snapshot and docker-compose scenario from backend repository. The instructions for docker-compose scenario are located [here](https://github.com/ispras/lingvodoc/tree/heavy_refactor/docker).
 7. Make a pull request to default branch with a link to issue (use `#issue_number`)
 8. Wait for Travis to build new release (5-10 minutes) and grab it [here](https://github.com/ispras/lingvodoc-react/releases). Please pay attention to the artifact date/time since github doesn't always sort builds by time. The build may be the second or third in the list.
 9. In most cases you need to use the asset that is named `lingvodoc-react-server-build-<build-number>.tar.gz`
@@ -46,7 +46,7 @@ The are two repositories for Lingvodoc project:
 5. If the feature or bug is assigned to you, fix it please. Regressions are more important than new bugs or features.
 6. Grab the latest frontend build [here](https://github.com/ispras/lingvodoc-react/releases). Please pay attention to the artifact date/time since github doesn't always sort builds by time. The build may be the second or third in the list.
 7. In most cases you need to use the asset that is named `lingvodoc-react-server-build-<build-number>.tar.gz`
-8. Test your feature or fix locally with relevant database snapshot and docker-compose scenario from backend repository. The instructions for docker-compose scenario are located [here](https://github.com/ispras/lingvodoc/docker).
+8. Test your feature or fix locally with relevant database snapshot and docker-compose scenario from backend repository. The instructions for docker-compose scenario are located [here](https://github.com/ispras/lingvodoc/tree/heavy_refactor/docker).
 9. Test the feature or bugfix in our sandbox.
 10. If everything's ok, make a pull request to default branch with issue autoclose (use `fixes #issue_number` for bugs, `resolves #issue_number` for features/enhancements/etc).
 11. Wait for review from tester. If everything's ok, tester will write something like "ok" and close the feature again. If tester doesn't close your issue, read the comment carefully, discuss it and goto 5.
@@ -57,7 +57,7 @@ The are two repositories for Lingvodoc project:
 5. Make sure you have completed steps 1-4.
 6. Before sending pull-request you must synchronize and merge with master branch head (or ensure that it would be possible if you are planning to send a batch of pull requests).
 6. Try to make commits in such a way that would make possible to separate pull requests by issues they are supposed to close. If it's not possible, that's not critical, but just give a try at least please.
-7. Test your feature or fix locally with relevant database snapshot and docker-compose scenario from backend repository. The instructions for docker-compose scenario are located [here](https://github.com/ispras/lingvodoc/docker).
+7. Test your feature or fix locally with relevant database snapshot and docker-compose scenario from backend repository. The instructions for docker-compose scenario are located [here](https://github.com/ispras/lingvodoc/tree/heavy_refactor/docker).
 8. Make a pull request to default branch with reference to corresponding issue.
 9. Wait for ISP RAS to check and accept your pull request please.
 
