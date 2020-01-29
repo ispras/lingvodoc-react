@@ -24,13 +24,20 @@ const RolesModal = ({
 }) => {
   const Component = getComponent(id, mode);
   return (
-    <Modal open={visible} dimmer="blurring" size="small">
+    <Modal
+      closeIcon
+      onClose={actions.close}
+      open={visible}
+      dimmer="blurring"
+      size="small">
+
       <Modal.Content>
         <Component id={id} mode={mode} />
       </Modal.Content>
       <Modal.Actions>
         <Button icon="minus" content={getTranslation("Close")} onClick={actions.close} />
       </Modal.Actions>
+
     </Modal>
   );
 };

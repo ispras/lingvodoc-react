@@ -250,7 +250,14 @@ class Properties extends React.Component {
     const selectedParentName = this.state.selectedParent == null ? null : this.state.selectedParent.translation;
 
     return (
-      <Modal open dimmer size="fullscreen" closeOnDimmerClick={false} onClose={actions.closeDictionaryPropertiesModal}>
+      <Modal
+        open
+        dimmer
+        size="fullscreen"
+        closeOnDimmerClick={false}
+        closeIcon
+        onClose={actions.closeDictionaryPropertiesModal}>
+
         <Modal.Content>
           <Segment>
             <TranslationGist id={gistId} objectId={dictionary.id} editable updateAtomMutation={updateAtomMutation}/>
@@ -329,6 +336,7 @@ class Properties extends React.Component {
         <Modal.Actions>
           <Button icon="minus" content={getTranslation("Close")} onClick={actions.closeDictionaryPropertiesModal} />
         </Modal.Actions>
+
       </Modal>
     );
   }

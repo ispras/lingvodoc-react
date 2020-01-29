@@ -327,8 +327,15 @@ class StatisticsModal extends React.Component {
   render() {
     const { mode } = this.props;
     const { startDate, endDate, statistics } = this.state;
+
     return (
-      <Modal dimmer open size="fullscreen">
+      <Modal
+        closeIcon
+        onClose={this.props.closeStatistics}
+        dimmer
+        open
+        size="fullscreen">
+
         <Modal.Content>
           <div>
             {getTranslation('From:')}
@@ -361,6 +368,7 @@ class StatisticsModal extends React.Component {
         <Modal.Actions>
           <Button icon="minus" content={getTranslation("Cancel")} onClick={this.props.closeStatistics} />
         </Modal.Actions>
+
       </Modal>
     );
   }

@@ -588,7 +588,13 @@ class PhonologyModal extends React.Component
 
     return (
       <div>
-        <Modal dimmer open size="fullscreen">
+        <Modal
+          closeIcon
+          onClose={this.props.closeModal}
+          dimmer
+          open
+          size="fullscreen">
+
           <Modal.Header>{
             this.props.mode == 'statistical_distance' ?
             'Phonological statistical distance' :
@@ -959,6 +965,7 @@ class PhonologyModal extends React.Component
             <Button icon="plus" positive content="Create" onClick={this.handleCreate} />
             <Button icon="minus" negative content="Cancel" onClick={this.props.closeModal} />
           </Modal.Actions>
+
         </Modal>
       </div>
     );

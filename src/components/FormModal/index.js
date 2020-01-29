@@ -53,6 +53,7 @@ function FormModal(props) {
     <Modal
       trigger={trigger}
       open={open}
+      closeIcon
       onClose={close}
       size="small"
       dimmer="blurring"

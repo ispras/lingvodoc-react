@@ -182,7 +182,12 @@ class PhonemicAnalysisModal extends React.Component
 
     return (
       <div>
-        <Modal dimmer open size="large">
+        <Modal
+          closeIcon
+          onClose={this.props.closeModal}
+          dimmer
+          open
+          size="large">
 
           <Modal.Header>Phonemic analysis</Modal.Header>
 

@@ -82,8 +82,15 @@ class ConverEafModal extends React.Component {
       const id = compositeIdToString(d.id);
       return { key: id, value: d, text: d.translation };
     });
+
     return (
-      <Modal open={visible} dimmer size="large">
+      <Modal
+        closeIcon
+        onClick={actions.closeConvert}
+        open={visible}
+        dimmer
+        size="large">
+
         <Modal.Header>
           <Checkbox
             radio
@@ -139,6 +146,7 @@ class ConverEafModal extends React.Component {
           <Button positive icon="plus" content={getTranslation("Convert")} onClick={this.convert} disabled={!this.conversionEnabled()} />
           <Button negative icon="minus" content={getTranslation("Cancel")} onClick={actions.closeConvert} />
         </Modal.Actions>
+
       </Modal>
     );
   }
