@@ -1376,7 +1376,12 @@ class CognateAnalysisModal extends React.Component
 
     return (
       <div>
-        <Modal dimmer open size="fullscreen">
+        <Modal
+          closeIcon
+          onClose={this.props.closeModal}
+          dimmer
+          open
+          size="fullscreen">
 
           <Modal.Header>{
             mode == 'acoustic' ?
@@ -1525,6 +1530,7 @@ class CognateAnalysisModal extends React.Component
               <div><pre>{this.state.result}</pre></div>
             </Modal.Content>
           )}
+
         </Modal>
       </div>
     );

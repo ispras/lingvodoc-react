@@ -64,7 +64,13 @@ const Properties = (props) => {
   const perspectives = dictionary.perspectives.filter(p => !isEqual(p.id, id));
 
   return (
-    <Modal open dimmer size="fullscreen">
+    <Modal
+      closeIcon
+      onClose={actions.closePerspectivePropertiesModal}
+      open
+      dimmer
+      size="fullscreen">
+
       <Modal.Content>
 
         <Header>{getTranslation("Translations")}</Header>

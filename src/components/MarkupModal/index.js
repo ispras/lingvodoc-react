@@ -42,7 +42,13 @@ const MarkupModal = (props) => {
   const audioUrl = audio ? audio.content : null;
 
   return (
-    <Modal open={visible} dimmer size="large">
+    <Modal
+      closeIcon
+      onClose={actions.closeViewer}
+      open={visible}
+      dimmer
+      size="large">
+
       <Modal.Content>
         <MarkupEntity file={audioUrl} id={id} />
       </Modal.Content>
@@ -50,6 +56,7 @@ const MarkupModal = (props) => {
         <ConvertButton positive content={getTranslation("Convert to dictionary...")} onClick={() => actions.openConvert(audio, data.markup)} id={data.markup.id} />
         <Button icon="minus" content={getTranslation("Close")} onClick={actions.closeViewer} />
       </Modal.Actions>
+
     </Modal>
   );
 };

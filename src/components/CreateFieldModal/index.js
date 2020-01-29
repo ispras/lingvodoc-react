@@ -84,7 +84,12 @@ class CreateFieldModal extends React.Component {
     }));
 
     return (
-      <Modal dimmer open>
+      <Modal
+        closeIcon
+        onClose={actions.closeCreateFieldModal}
+        dimmer
+        open>
+
         <Modal.Header>{getTranslation('Create field')}</Modal.Header>
         <Modal.Content>
           <Grid centered divided columns={2}>
@@ -102,6 +107,7 @@ class CreateFieldModal extends React.Component {
           <Button icon="plus" content={getTranslation("Save")} onClick={this.saveField} disabled={this.isSaveDisabled()} />
           <Button icon="minus" content={getTranslation("Cancel")} onClick={actions.closeCreateFieldModal} />
         </Modal.Actions>
+
       </Modal>
     );
   }

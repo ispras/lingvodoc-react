@@ -70,7 +70,11 @@ class CreateOrganizationModal extends React.Component {
     }
 
     return (
-      <Modal dimmer open>
+      <Modal
+        closeIcon
+        onClose={closeCreateOrganizationModal}
+        dimmer
+        open>
 
         <Modal.Header>{getTranslation('Create organization')}</Modal.Header>
 
