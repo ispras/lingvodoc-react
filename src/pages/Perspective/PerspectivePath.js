@@ -14,6 +14,7 @@ import { getTranslation } from 'api/i18n';
 const queryPerspectivePath = gql`
   query queryPerspectivePath($id: LingvodocID!) {
     perspective(id: $id) {
+      id
       tree {
         id
         translation
