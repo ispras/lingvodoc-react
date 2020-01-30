@@ -23,7 +23,7 @@ const Image = (props) => {
   return (
     <Component className={className}>
       <Button.Group basic icon size="mini">
-        <Button as="a" href={content} icon="download" />
+        <Button as="a" href={content} icon="download" download/>
         <Modal basic trigger={<Button>{getTranslation("View")}</Button>}>
           <Modal.Content>
             <Img src={content} />
