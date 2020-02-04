@@ -23,7 +23,7 @@ class TreeRoute extends React.Component {
           </div>
           <div className="img-block">
             <p>{getTranslation('Language corpora')}</p>
-            <Link to='/dashboard/corpora'><img className='img ' src={imageLanguage} /></Link>
+            <Link to='/corpora_all'><img className='img ' src={imageLanguage} /></Link>
           </div>
           <div className="img-block">
             <p>{getTranslation('Bilingual corpora')}</p>
