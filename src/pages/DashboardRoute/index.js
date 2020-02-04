@@ -36,7 +36,10 @@ class DashboardRoute extends React.Component {
             <p>{getTranslation('Import')}</p>
             <Link to='/import'><img className='img ' src={image} /></Link>
           </div>
-
+          <div className="img-block">
+            <p>{getTranslation('Corpora')}</p>
+            <Link to='/dashboard/corpora'><img className='img ' src={image} /></Link>
+          </div>
         </div>
       </div>
 

@@ -22,7 +22,7 @@ import { getScrollContainer } from './common';
 import { getTranslation } from 'api/i18n';
 import './published.scss';
 
-import TopSectionSelector from '../TopSectionSelector';
+
 
 const authenticatedDictionariesQuery = gql`
   query AuthDictionaries {
