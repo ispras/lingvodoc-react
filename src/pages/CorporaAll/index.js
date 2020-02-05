@@ -2,46 +2,59 @@ import React from 'react';
 import { getTranslation } from 'api/i18n';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
-import {compose} from 'recompose';
-const dictionariesCopora= gql`
+import { compose } from 'recompose';
+
+
+const dictionariesCopora = gql`
 query dictionariesAll{
     dictionaries(category:1){
-      category
       parent_id
     }
-    }`;
- const entity=gql`
-    query entityAll($id:dictionariesAll){
-        entity(id:$id){
-            content 
-        }
-    }`;
+}`;
 
-    const test4 = (props) =>{
-            const { data: { dictionaries: dictionariesAll } } = props;
-            console.log(dictionariesAll,'dictionary')
-          /*   const test8 =compose(graphql(entity))(CorporaAll) */
-        /*     console.log(test8,'test8') */
-            return(
-                <div>
-                    test4
-                </div>
-            )
+
+const entity = gql`
+    query entityAll($id:LingvodocID!){
+      entity(id:$id){
+      content 
     }
+}`;
+
+const test1 = (props) => {
+  const { data: { error, loading } } = props
+  console.log(props, 'props tes1')
+}
 
 
-
-const CorporaAll = (props) => {
-
-/* graphql(entity(dictionariesAll[0].parent_id)) */
-    return (
-      <div>
-       CorporaAll
-     
-      </div>
-
-    );
+const test4 = (props) => {
+  const { data: { dictionaries: dictionariesAll } } = props;
+  console.log(dictionariesAll, 'dictionary');
+  if (dictionariesAll !== undefined) {
+    console.log(dictionariesAll.length, 'length')
+    for (let i = 0; i < dictionariesAll.length - 1; i++) {
+      let id = dictionariesAll[i].parent_id;
+      console.log(id, 'id')
+    }
   }
+return(
+  <div>
+    tgftergeh
+  </div>
+)
+}
 
 
-export default (graphql(dictionariesCopora))(test4) ;
+const qwe = (props) => {
+
+  console.log(props, 'props tes1')
+//  compose(graphql(dictionariesCopora)(test4));
+  return (
+    <div>
+      fsfsfsw
+    </div>
+  )
+}
+
+
+
+export default compose(graphql(dictionariesCopora)(test4));
