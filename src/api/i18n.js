@@ -301,11 +301,19 @@ export function getTranslation(string) {
   return (translation == undefined) ? string : translation;
 }
 
-export function setTranslation(string, translatedString) {
+function setTranslation(string, translatedString) {
   if (translatedString == null || translatedString == undefined) {
     i18n.set(string, string);
   }
   else {
     i18n.set(string, translatedString);
+  }
+}
+
+export function setTranslations(translations) {
+  for (let i = 0; i < stringsToTranslate.length; i++) {
+    const gist = translations[i];
+    if (gist != null)
+      setTranslation(stringsToTranslate[i], gist.translation);
   }
 }
