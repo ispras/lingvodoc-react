@@ -5,6 +5,7 @@ import locale from 'api/locale';
 export const REQUEST = '@locale/REQUEST';
 export const SELECT = '@locale/SELECT';
 export const SET = '@locale/SET';
+export const CHANGE = '@locale/CHANGE';
 
 // Reducers
 function locales(state = [], action = {}) {
@@ -23,7 +24,6 @@ const selectedInitial = {
 function selected(state = selectedInitial, action = {}) {
   switch (action.type) {
     case SELECT:
-      locale.set(action.payload.id);
       return action.payload;
     case SET:
       return action.payload.find(l => l.id === state.id) || selectedInitial;
@@ -35,8 +35,10 @@ function selected(state = selectedInitial, action = {}) {
 function loading(state = false, action = {}) {
   switch (action.type) {
     case REQUEST:
+    case CHANGE:
       return true;
     case SET:
+    case SELECT:
       return false;
     default:
       return state;
@@ -60,4 +62,8 @@ export function selectLocale(payload) {
 
 export function setLocales(payload) {
   return { type: SET, payload };
+}
+
+export function changeLocale(payload) {
+  return { type: CHANGE, payload };
 }
