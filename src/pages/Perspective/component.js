@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import { map } from 'lodash';
@@ -134,34 +135,6 @@ const Tools = graphql(toolsQuery)(({
   );
 });
 
-const MODES = {
-  edit: {
-    entitiesMode: 'all',
-    text: getTranslation('Edit'),
-    component: PerspectiveView,
-  },
-  publish: {
-    entitiesMode: 'all',
-    text: getTranslation('Publish'),
-    component: PerspectiveView,
-  },
-  view: {
-    entitiesMode: 'published',
-    text: getTranslation('View published'),
-    component: PerspectiveView,
-  },
-  contributions: {
-    entitiesMode: 'not_accepted',
-    text: getTranslation('View contributions'),
-    component: PerspectiveView,
-  },
-  merge: {
-    entitiesMode: 'all',
-    text: getTranslation('Merge suggestions'),
-    component: Merge,
-  },
-};
-
 const handlers = compose(
   withState('value', 'updateValue', props => props.filter),
   withHandlers({
@@ -188,46 +161,75 @@ const Filter = handlers(({ value, onChange, onSubmit }) => (
   </div>
 ));
 
-const ModeSelector = onlyUpdateForKeys([
-  'mode',
-  'baseUrl',
-  'filter',
-])(({
-  mode, baseUrl, filter,
+const ModeSelector = compose(
+  connect(state => state.user),
+  onlyUpdateForKeys([ 'mode', 'baseUrl', 'filter', 'user' ])
+)(({
+  mode,
+  baseUrl,
+  filter,
   submitFilter,
   openCognateAnalysisModal,
   openPhonemicAnalysisModal,
   openPhonologyModal,
   launchSoundAndMarkup,
   id,
-}) => (
-  <Menu tabular>
-    {map(MODES, (info, stub) => (
-      <Menu.Item key={stub} as={Link} to={`${baseUrl}/${stub}`} active={mode === stub}>
-        {info.text}
-        {info.component === PerspectiveView ? (<Counter
-          id={id}
-          mode={info.entitiesMode}
-        />) : null}
-      </Menu.Item>
-    ))}
+  user
+}) => {
+  const modes = {};
+  if (user.id !== undefined) {
+    Object.assign(modes, {
+      edit: {
+        entitiesMode: 'all',
+        text: getTranslation('Edit'),
+        component: PerspectiveView,
+      },
+      publish: {
+        entitiesMode: 'all',
+        text: getTranslation('Publish'),
+        component: PerspectiveView,
+      }
+    });
+  }
+  Object.assign(modes, {
+    view: {
+      entitiesMode: 'published',
+      text: getTranslation('View published'),
+      component: PerspectiveView,
+    },
+    contributions: {
+      entitiesMode: 'not_accepted',
+      text: getTranslation('View contributions'),
+      component: PerspectiveView,
+    },
+    merge: {
+      entitiesMode: 'all',
+      text: getTranslation('Merge suggestions'),
+      component: Merge,
+    }
+  });
 
-    <Tools
-      id={id}
-      mode={mode}
-      openCognateAnalysisModal={openCognateAnalysisModal}
-      openPhonemicAnalysisModal={openPhonemicAnalysisModal}
-      openPhonologyModal={openPhonologyModal}
-      launchSoundAndMarkup={launchSoundAndMarkup}
-    />
-  {/*
-  */}
-
-    <Menu.Menu position="right">
-      <Filter filter={filter} submitFilter={submitFilter} />
-    </Menu.Menu>
-  </Menu>
-));
+  return (
+    <Menu tabular>
+      { map(modes, (info, stub) =>
+        <Menu.Item key={stub} as={Link} to={`${baseUrl}/${stub}`} active={mode === stub}>
+          {info.text}
+          {info.component === PerspectiveView ? <Counter id={id} mode={info.entitiesMode}/> : null}
+        </Menu.Item>
+      )}
+      <Tools
+        id={id}
+        mode={mode}
+        openCognateAnalysisModal={openCognateAnalysisModal}
+        openPhonemicAnalysisModal={openPhonemicAnalysisModal}
+        openPhonologyModal={openPhonologyModal}
+        launchSoundAndMarkup={launchSoundAndMarkup}
+      />
+      <Menu.Menu position="right">
+        <Filter filter={filter} submitFilter={submitFilter} />
+      </Menu.Menu>
+    </Menu>
+  );});
 
 const soundAndMarkup = (perspectiveId, mode, launchSoundAndMarkup) => {
   launchSoundAndMarkup({
@@ -252,12 +254,45 @@ const Perspective = ({
   openPhonemicAnalysisModal,
   openPhonologyModal,
   launchSoundAndMarkup,
+  user
 }) => {
-  const {
-    id, parent_id, mode, page, baseUrl,
-  } = perspective.params;
+  const { id, parent_id, mode, page, baseUrl } = perspective.params;
+  if (!baseUrl) {
+    return null;
+  }
 
-  if (!baseUrl) return null;
+  const modes = {};
+  if (user.id !== undefined) {
+    Object.assign(modes, {
+      edit: {
+        entitiesMode: 'all',
+        text: getTranslation('Edit'),
+        component: PerspectiveView,
+      },
+      publish: {
+        entitiesMode: 'all',
+        text: getTranslation('Publish'),
+        component: PerspectiveView,
+      }
+    });
+  }
+  Object.assign(modes, {
+    view: {
+      entitiesMode: 'published',
+      text: getTranslation('View published'),
+      component: PerspectiveView,
+    },
+    contributions: {
+      entitiesMode: 'not_accepted',
+      text: getTranslation('View contributions'),
+      component: PerspectiveView,
+    },
+    merge: {
+      entitiesMode: 'all',
+      text: getTranslation('Merge suggestions'),
+      component: Merge,
+    }
+  });
 
   return (
     <Container fluid className="perspective inverted">
@@ -275,7 +310,7 @@ const Perspective = ({
       />
       <Switch>
         <Redirect exact from={baseUrl} to={`${baseUrl}/view`} />
-        {map(MODES, (info, stub) => (
+        { map(modes, (info, stub) => (
           <Route
             key={stub}
             path={`${baseUrl}/${stub}`}
@@ -305,5 +340,7 @@ Perspective.propTypes = {
   openPhonologyModal: PropTypes.func.isRequired,
 };
 
-export default
-graphql(launchSoundAndMarkupMutation, { name: 'launchSoundAndMarkup' })(Perspective);
+export default compose(
+  connect(state => state.user),
+  graphql(launchSoundAndMarkupMutation, { name: 'launchSoundAndMarkup' })
+)(Perspective);
