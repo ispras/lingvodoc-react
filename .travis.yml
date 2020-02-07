@@ -30,5 +30,6 @@ deploy:
   skip_cleanup: true
   on:
     repo: ispras/lingvodoc-react
-    branch: master
+    all_branches: true
+    condition: $TRAVIS_BRANCH =~ ^(master|staging)$
 
