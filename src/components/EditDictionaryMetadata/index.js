@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Form, Segment, Label } from 'semantic-ui-react';
+import { Button, Form, Segment, Label, Dropdown, Input } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
@@ -197,55 +197,95 @@ class EditDictionaryMetadata extends React.Component {
         </Segment>
         <Segment>
           <Form.Group widths='equal'>
-            <Label size='large'>{getTranslation("Authors")}</Label>
-            <Form.Dropdown fluid multiple selection search allowAdditions
-              options={this.authorsOptions}
-              value={authors}
-              onAddItem={this.onAddNewAlternative}
-              onChange={(event, data) => this.onChangeValue('authors', data)}
+            <Form.Field
+                fluid
+                search
+                multiple
+                required
+                selection
+                allowAdditions
+                onAddItem = { this.onAddNewAlternative }
+                onChange  = { ( event, data ) => this.onChangeValue( 'authors', data ) }
+                options   = { this.authorsOptions }
+                control   = { Dropdown }
+                label     = { getTranslation( 'Authors' ) }
+                value     = { authors }
             />
-            {mode != 'create' &&
-              <Button positive
-                content={getTranslation("Save")}
-                disabled={JSON.stringify(authors) == JSON.stringify(this.initialState.authors)}
-                onClick={() => this.onSaveValue('authors')}
-              />
+            {
+                mode !== 'create' &&
+                <Button
+                    positive
+                    disabled = { JSON.stringify( authors ) === JSON.stringify( this.initialState.authors ) }
+                    content  = { getTranslation( 'Save' ) }
+                    onClick  = { () => this.onSaveValue( 'authors' ) }
+                />
+            }
+
+            <Form.Field
+                fluid
+                required
+                control = { Input }
+                label = { getTranslation( 'Interrogator' ) }
+            />
+            <Form.Field
+                fluid
+                required
+                control = { Input }
+                label = { getTranslation( 'Informant' ) }
+            />
+          </Form.Group>
+        </Segment>
+        <Segment>
+          <Form.Group widths='equal'>
+            <Form.Field
+                fluid
+                search
+                multiple
+                required
+                selection
+                allowAdditions
+                onAddItem = { this.onAddNewAlternative }
+                onChange  = { ( event, data ) => this.onChangeValue( 'settlements', data ) }
+                options   = { this.settlementsOptions }
+                control   = { Dropdown }
+                label     = { getTranslation( 'Human settlement' ) }
+                value     = { humanSettlement }
+            />
+            {
+                mode !== 'create' &&
+                <Button
+                    positive
+                    disabled = { JSON.stringify( humanSettlement ) === JSON.stringify( this.initialState.humanSettlement ) }
+                    content  = { getTranslation( 'Save' ) }
+                    onClick  = { () => this.onSaveValue( 'settlements' ) }
+                />
             }
           </Form.Group>
         </Segment>
         <Segment>
           <Form.Group widths='equal'>
-            <Label size='large'>{getTranslation("Human settlement")}</Label>
-            <Form.Dropdown fluid multiple selection search allowAdditions
-              options={this.settlementsOptions}
-              value={humanSettlement}
-              onAddItem={this.onAddNewAlternative}
-              onChange={(event, data) => this.onChangeValue('settlements', data)}
+            <Form.Field
+                fluid
+                search
+                multiple
+                required
+                selection
+                allowAdditions
+                onAddItem = { this.onAddNewAlternative }
+                onChange  = { ( event, data ) => this.onChangeValue( 'years', data ) }
+                options   = { this.yearsOptions }
+                control   = { Dropdown }
+                label     = { getTranslation( 'Years' ) }
+                value     = { years }
             />
-            {mode != 'create' &&
-              <Button positive
-                content={getTranslation("Save")}
-                disabled={JSON.stringify(humanSettlement) == JSON.stringify(this.initialState.humanSettlement)}
-                onClick={() => this.onSaveValue('settlements')}
-              />
-            }
-          </Form.Group>
-        </Segment>
-        <Segment>
-          <Form.Group widths='equal'>
-            <Label size='large'>{getTranslation("Years")}</Label>
-            <Form.Dropdown fluid multiple selection search allowAdditions
-              options={this.yearsOptions}
-              value={years}
-              onAddItem={this.onAddNewAlternative}
-              onChange={(event, data) => this.onChangeValue('years', data)}
-            />
-            {mode != 'create' &&
-              <Button positive
-                content={getTranslation("Save")}
-                disabled={JSON.stringify(years) == JSON.stringify(this.initialState.years)}
-                onClick={() => this.onSaveValue('years')}
-              />
+            {
+                mode !== 'create' &&
+                <Button
+                    positive
+                    disabled = { JSON.stringify( years ) === JSON.stringify( this.initialState.years ) }
+                    content  = { getTranslation( 'Save' ) }
+                    onClick  = { () => this.onSaveValue( 'years' ) }
+                />
             }
           </Form.Group>
         </Segment>
