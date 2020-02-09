@@ -13,10 +13,9 @@ query dictionariesAll{
 
 
 const entity = gql`
-    query entityAll($id:id){
-      entity(id:$id){
-      content 
-    }
+query {
+  entity(id:id){content }
+  
 }`;
 
 const test1 = (props) => {
@@ -24,63 +23,59 @@ const test1 = (props) => {
   console.log(props, 'props tes1')
   for (let i = 0; i < props.length - 1; i++) {
     let id = props[i].parent_id;
-    // console.log(id, 'id');
-  // let ter = graphql(entity)
-  // console.log(ter,'ter')
-  // qwe(ter) 
+    let qwe = graphql(entity, { options: { variables: id } })
+
+    console.log(qwe, 'qwe entity')
+    return qwe
+
   }
+
 }
-
-
+const test3 = (props) => {
+  const { data } = props;
+  console.log(data, 'datatest3')
+}
+const testExport = (props) => {
+  const { data } = props;
+  console.log(data, 'data testExport')
+  return (
+    <div>
+      tgftergeh
+    </div>
+  )
+}
 const test4 = (props) => {
-  const { data: {dictionaries:dictionariesAll} } = props;
-  if (dictionariesAll !== undefined){
-      // console.log(dictionariesAll,'dictionariesAll')
-      // test1(dictionariesAll);
-   
+  const { data: { dictionaries: dictionariesAll } } = props;
+  if (dictionariesAll !== undefined) {
+    for (let i = 0; i < dictionariesAll.length - 1; i++) {
+      id = dictionariesAll[i].parent_id;
+
+      /*      compose(graphql(entity,
+            {options:{variables:id}})(test3)) */
+    }
   }
 
- // console.log(data, 'props test4');
-
-//  console.log(dictionariesAll, 'dictionary');
- /*  if (dictionariesAll !== undefined) {
-    console.log(dictionariesAll.length, 'length')
-    for (let i = 0; i < dictionariesAll.length - 1; i++) {
-      let id = dictionariesAll[i].parent_id;
-      console.log(id, 'id')
-    } */
-    return (
-      <div>
-        tgftergeh
-    </div>
-    )
-}
-
-
-const iop = ( props ) => {
-  return props;
-}
-
-const qwe = ( q ) => {
-  console.log( q );
-
   return (
     <div>
-      fsfsfsw
-    </div>
-  )
-};
-
-const zxc = ( z ) => {
-  return (
-    <div>
-      fsfsfsw
+      tgftergeh
     </div>
   )
 }
 
-export default compose( qwe, graphql( dictionariesCopora )( iop ) )( zxc );
+let id = [678,2];
 
-/* export default rty; */
+const testConst = compose(
+  graphql(entity,
+    {options:
+      {variables:
+        {id:id}
+      }}
+  ),
+  graphql(dictionariesCopora)
+)(testExport);
+
 // export default compose( asd, graphql(dictionariesCopora)(test4));
-// export default (graphql(dictionariesCopora)(test4))
+/* export default compose (graphql(entity,
+  {options:{variables:$id}}),graphql(dictionariesCopora))(test4) */
+/* export default test4; */
+export default testConst;
