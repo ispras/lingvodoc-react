@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Form, Segment, Label } from 'semantic-ui-react';
+import { Button, Form, Segment } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
@@ -197,8 +197,8 @@ class EditDictionaryMetadata extends React.Component {
         </Segment>
         <Segment>
           <Form.Group widths='equal'>
-            <Label size='large'>{getTranslation("Authors")}</Label>
             <Form.Dropdown fluid multiple selection search allowAdditions
+              label={getTranslation("Authors")}
               options={this.authorsOptions}
               value={authors}
               onAddItem={this.onAddNewAlternative}
@@ -211,12 +211,18 @@ class EditDictionaryMetadata extends React.Component {
                 onClick={() => this.onSaveValue('authors')}
               />
             }
+            <Form.Input fluid
+              label={getTranslation("Interrogator")}
+            />
+            <Form.Input fluid
+              label={getTranslation("Informant")}
+            />
           </Form.Group>
         </Segment>
         <Segment>
           <Form.Group widths='equal'>
-            <Label size='large'>{getTranslation("Human settlement")}</Label>
             <Form.Dropdown fluid multiple selection search allowAdditions
+              label={getTranslation("Human settlement")}
               options={this.settlementsOptions}
               value={humanSettlement}
               onAddItem={this.onAddNewAlternative}
@@ -233,8 +239,8 @@ class EditDictionaryMetadata extends React.Component {
         </Segment>
         <Segment>
           <Form.Group widths='equal'>
-            <Label size='large'>{getTranslation("Years")}</Label>
             <Form.Dropdown fluid multiple selection search allowAdditions
+              label={getTranslation("Years")}
               options={this.yearsOptions}
               value={years}
               onAddItem={this.onAddNewAlternative}
@@ -247,6 +253,33 @@ class EditDictionaryMetadata extends React.Component {
                 onClick={() => this.onSaveValue('years')}
               />
             }
+          </Form.Group>
+        </Segment>
+        <Segment>
+          <Form.Group widths='equal'>
+            <Form.Input fluid
+              label={getTranslation("Processing")}
+            />
+          </Form.Group>
+        </Segment>
+        <Segment>
+          <Form.Group widths='equal'>
+            <Form.Input fluid
+              label={getTranslation("Type of discourse")}
+            />
+            <Form.Input fluid
+              label={getTranslation("Type of speech")}
+            />
+            <Form.Input fluid
+              label={getTranslation("Speech genre")}
+            />
+          </Form.Group>
+        </Segment>
+        <Segment>
+          <Form.Group widths='equal'>
+            <Form.Input fluid
+              label={getTranslation("The theme of the text")}
+            />
           </Form.Group>
         </Segment>
       </Form>
