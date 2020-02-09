@@ -5,6 +5,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
 import { Sidebar } from 'semantic-ui-react';
+import { withRouter } from 'react-router-dom';
 
 import Modals from 'components/Modals';
 import PlayerModal from 'components/PlayerModal';
@@ -73,4 +74,8 @@ class Layout extends React.Component {
 
 }
 
-export default connect(state => state.locale)(Layout);
+/* 
+ * Without withRouter() using connect() breaks routing, see
+ * https://reacttraining.com/react-router/core/guides/redux-integration, "Blocked Updates".
+ */
+export default withRouter(connect(state => state.locale)(Layout));
