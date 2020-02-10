@@ -126,7 +126,7 @@ class EditDictionaryMetadata extends React.Component {
         this.setState({ years: data.value }, callback);
         break;
       case 'titleOfTheWork':
-        this.setState({ authors: [] }, callback);
+        this.setState({ titleOfTheWork: data.value }, callback);
         break;
       case 'genre':
         this.setState({ genre: data.value }, callback);
@@ -324,67 +324,94 @@ class EditDictionaryMetadata extends React.Component {
             }
           </Form.Group>
         </Segment>
-
-        {/* TitleOfTheWork
-        Genre
-        TimeOfWriting
-        QuantitativeCharacteristic
-        BibliographicDataOfTheSource
-        Translator
-        BibliographicDataOfTheTranslation
-
-        titleOfTheWork
-        genre
-        timeOfWriting
-        quantitativeCharacteristic
-        bibliographicDataOfTheSource
-        translator
-        bibliographicDataOfTheTranslation */}
-
         <Segment>
           <Form.Group widths='equal'>
             <Form.Input fluid
-              label={getTranslation("TitleOfTheWork")}
+              label={getTranslation("Title Of The Work")}
               value={titleOfTheWork}
-              // onChange={(event, data) => this.onChangeValue('titleOfTheWork', data)}
-              onChange={(event, data) => this.setState({ titleOfTheWork: data.value })}
+              onChange={(event, data) => this.onChangeValue('titleOfTheWork', data)}
             />
+            {mode != 'create' &&
+              <Form.Button
+                floated='right'
+                positive
+                content={getTranslation("Save")}
+                disabled={titleOfTheWork == this.initialState.titleOfTheWork}
+                onClick={() => this.onSaveValue('titleOfTheWork')}
+              />
+            }
           </Form.Group>
         </Segment>
-        {/* <Segment>
+        <Segment>
           <Form.Group widths='equal'>
             <Form.Input fluid
               label={getTranslation("Genre")}
               value={genre}
               onChange={(event, data) => this.onChangeValue('genre', data)}
             />
+            {mode != 'create' &&
+              <Form.Button
+                floated='right'
+                positive
+                content={getTranslation("Save")}
+                disabled={genre == this.initialState.genre}
+                onClick={() => this.onSaveValue('genre')}
+              />
+            }
           </Form.Group>
         </Segment>
         <Segment>
           <Form.Group widths='equal'>
             <Form.Input fluid
-              label={getTranslation("TimeOfWriting")}
+              label={getTranslation("Time Of Writing")}
               value={timeOfWriting}
               onChange={(event, data) => this.onChangeValue('timeOfWriting', data)}
             />
+            {mode != 'create' &&
+              <Form.Button
+                floated='right'
+                positive
+                content={getTranslation("Save")}
+                disabled={timeOfWriting == this.initialState.timeOfWriting}
+                onClick={() => this.onSaveValue('timeOfWriting')}
+              />
+            }
           </Form.Group>
         </Segment>
         <Segment>
           <Form.Group widths='equal'>
             <Form.Input fluid
-              label={getTranslation("QuantitativeCharacteristic")}
+              label={getTranslation("Quantitative Characteristic")}
               value={quantitativeCharacteristic}
               onChange={(event, data) => this.onChangeValue('quantitativeCharacteristic', data)}
             />
+            {mode != 'create' &&
+              <Form.Button
+                floated='right'
+                positive
+                content={getTranslation("Save")}
+                disabled={quantitativeCharacteristic == this.initialState.quantitativeCharacteristic}
+                onClick={() => this.onSaveValue('quantitativeCharacteristic')}
+              />
+            }
           </Form.Group>
         </Segment>
         <Segment>
           <Form.Group widths='equal'>
             <Form.Input fluid
-              label={getTranslation("BibliographicDataOfTheSource")}
+              label={getTranslation("Bibliographic Data Of The Source")}
               value={bibliographicDataOfTheSource}
               onChange={(event, data) => this.onChangeValue('bibliographicDataOfTheSource', data)}
             />
+            {mode != 'create' &&
+              <Form.Button
+                floated='right'
+                positive
+                content={getTranslation("Save")}
+                disabled={bibliographicDataOfTheSource == this.initialState.bibliographicDataOfTheSource}
+                onClick={() => this.onSaveValue('bibliographicDataOfTheSource')}
+              />
+            }
           </Form.Group>
         </Segment>
         <Segment>
@@ -394,17 +421,35 @@ class EditDictionaryMetadata extends React.Component {
               value={translator}
               onChange={(event, data) => this.onChangeValue('translator', data)}
             />
+            {mode != 'create' &&
+              <Form.Button
+                floated='right'
+                positive
+                content={getTranslation("Save")}
+                disabled={translator == this.initialState.translator}
+                onClick={() => this.onSaveValue('translator')}
+              />
+            }
           </Form.Group>
         </Segment>
         <Segment>
           <Form.Group widths='equal'>
             <Form.Input fluid
-              label={getTranslation("BibliographicDataOfTheTranslation")}
+              label={getTranslation("Bibliographic Data Of The Translation")}
               value={bibliographicDataOfTheTranslation}
               onChange={(event, data) => this.onChangeValue('bibliographicDataOfTheTranslation', data)}
             />
+            {mode != 'create' &&
+              <Form.Button
+                floated='right'
+                positive
+                content={getTranslation("Save")}
+                disabled={bibliographicDataOfTheTranslation == this.initialState.bibliographicDataOfTheTranslation}
+                onClick={() => this.onSaveValue('bibliographicDataOfTheTranslation')}
+              />
+            }
           </Form.Group>
-        </Segment> */}
+        </Segment>
         
       </Form>
     );
