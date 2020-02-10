@@ -290,11 +290,29 @@ class EditDictionaryMetadata extends React.Component {
               value={interrogator}
               onChange={(event, data) => this.onChangeValue('interrogator', data)}
             />
+            {mode != 'create' &&
+              <Form.Button
+                floated='right'
+                positive
+                content={getTranslation("Save")}
+                disabled={interrogator == this.initialState.interrogator}
+                onClick={() => this.onSaveValue('interrogator')}
+              />
+            }
             <Form.Input fluid
               label={getTranslation("Informant")}
               value={informant}
               onChange={(event, data) => this.onChangeValue('informant', data)}
             />
+            {mode != 'create' &&
+              <Form.Button
+                floated='right'
+                positive
+                content={getTranslation("Save")}
+                disabled={informant == this.initialState.informant}
+                onClick={() => this.onSaveValue('informant')}
+              />
+            }
           </Form.Group>
         </Segment>
         <Segment>
@@ -340,6 +358,15 @@ class EditDictionaryMetadata extends React.Component {
               value={processing}
               onChange={(event, data) => this.onChangeValue('processing', data)}
             />
+            {mode != 'create' &&
+              <Form.Button
+                floated='right'
+                positive
+                content={getTranslation("Save")}
+                disabled={processing == this.initialState.processing}
+                onClick={() => this.onSaveValue('processing')}
+              />
+            }
           </Form.Group>
         </Segment>
         <Segment>
@@ -349,16 +376,43 @@ class EditDictionaryMetadata extends React.Component {
               value={typeOfDiscourse}
               onChange={(event, data) => this.onChangeValue('typeOfDiscourse', data)}
             />
+            {mode != 'create' &&
+              <Form.Button
+                floated='right'
+                positive
+                content={getTranslation("Save")}
+                disabled={typeOfDiscourse == this.initialState.typeOfDiscourse}
+                onClick={() => this.onSaveValue('typeOfDiscourse')}
+              />
+            }
             <Form.Input fluid
               label={getTranslation("Type of speech")}
               value={typeOfSpeech}
               onChange={(event, data) => this.onChangeValue('typeOfSpeech', data)}
             />
+            {mode != 'create' &&
+              <Form.Button
+                floated='right'
+                positive
+                content={getTranslation("Save")}
+                disabled={typeOfSpeech == this.initialState.typeOfSpeech}
+                onClick={() => this.onSaveValue('typeOfSpeech')}
+              />
+            }
             <Form.Input fluid
               label={getTranslation("Speech genre")}
               value={speechGenre}
               onChange={(event, data) => this.onChangeValue('speechGenre', data)}
             />
+            {mode != 'create' &&
+              <Form.Button
+                floated='right'
+                positive
+                content={getTranslation("Save")}
+                disabled={speechGenre == this.initialState.speechGenre}
+                onClick={() => this.onSaveValue('speechGenre')}
+              />
+            }
           </Form.Group>
         </Segment>
         <Segment>
@@ -368,6 +422,15 @@ class EditDictionaryMetadata extends React.Component {
               value={theThemeOfTheText}
               onChange={(event, data) => this.onChangeValue('theThemeOfTheText', data)}
             />
+            {mode != 'create' &&
+              <Form.Button
+                floated='right'
+                positive
+                content={getTranslation("Save")}
+                disabled={theThemeOfTheText == this.initialState.theThemeOfTheText}
+                onClick={() => this.onSaveValue('theThemeOfTheText')}
+              />
+            }
           </Form.Group>
         </Segment>
       </Form>
