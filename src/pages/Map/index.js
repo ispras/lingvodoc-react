@@ -92,7 +92,7 @@ class Map extends React.Component {
 
   componentDidMount() {
     this.leaflet = L.map(this.map, { preferCanvas: true }).setView([61.32, 60.82], 4);
-    L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     }).addTo(this.leaflet);
   }
