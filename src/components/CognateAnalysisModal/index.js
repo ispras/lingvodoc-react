@@ -3,7 +3,9 @@ import PropTypes from 'prop-types';
 import { compose, branch, renderNothing } from 'recompose';
 import { graphql, withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
-import { Breadcrumb, Button, Checkbox, Dimmer, Divider, Dropdown, Header, Icon, Input, List, Loader, Message, Modal, Select } from 'semantic-ui-react';
+import {
+  Breadcrumb, Button, Checkbox, Dimmer, Divider, Dropdown, Header, Icon, Input, List, Loader, Message,
+  Modal, Segment, Select } from 'semantic-ui-react';
 import Plot from 'react-plotly.js';
 
 import { closeModal } from 'ducks/cognateAnalysis';
@@ -13,6 +15,7 @@ import { connect } from 'react-redux';
 import { compositeIdToString as id2str } from 'utils/compositeId';
 import { checkLanguageId, languageIdList } from 'pages/Home/components/LangsNav';
 import { getTranslation } from 'api/i18n';
+import { connectMutation } from 'components/GroupingTagModal/graphql';
 
 const cognateAnalysisDataQuery = gql`
   query cognateAnalysisData($perspectiveId: LingvodocID!) {
@@ -165,6 +168,8 @@ const computeCognateAnalysisMutation = gql`
         embedding_2d
         embedding_3d
         perspective_name_list
+        suggestion_list
+        suggestion_field_id
         intermediate_url_list
       }
     }
@@ -200,6 +205,9 @@ class CognateAnalysisModal extends React.Component
       embedding_3d: [],
       perspective_name_list: [],
 
+      suggestion_list: null,
+      suggestion_field_id: null,
+
       intermediate_url_list: null,
 
       plotly_data: [],
@@ -234,6 +242,10 @@ class CognateAnalysisModal extends React.Component
       transcriptionFieldIdStrMap: {},
       translationFieldIdStrMap: {},
       perspectiveSelectionMap: {},
+
+      sg_select_set: null,
+      sg_select_list: null,
+      sg_state_list: null,
     };
 
     this.initialize_single = this.initialize_single.bind(this);
@@ -245,6 +257,8 @@ class CognateAnalysisModal extends React.Component
 
     this.match_translations_render = this.match_translations_render.bind(this);
     this.admin_section_render = this.admin_section_render.bind(this);
+
+    this.suggestions_render = this.suggestions_render.bind(this);
   }
 
   componentDidMount()
@@ -663,6 +677,8 @@ class CognateAnalysisModal extends React.Component
         embedding_2d,
         embedding_3d,
         perspective_name_list,
+        suggestion_list,
+        suggestion_field_id,
         intermediate_url_list }}})
   {
     /* Data of the 2d cognate distance plots. */
@@ -761,6 +777,42 @@ class CognateAnalysisModal extends React.Component
       z_range = [z_center - range / 2, z_center + range / 2]
     }
 
+    /* Initializing suggestions data, if required. */
+
+    const sg_select_set = {};
+    const sg_select_list = [];
+
+    const sg_state_list = [];
+
+    if (suggestion_list)
+    {
+      for (var i = 0; i < suggestion_list.length; i++)
+      {
+        const [
+          perspective_index, word, word_entry_id, single_list, group_list] =
+          
+          suggestion_list[i];
+
+        sg_select_set[
+          id2str(word_entry_id)] = null;
+
+        const sg_select_item = {};
+
+        for (const [
+          perspective_index, [translation_str, transcription_str], entry_id] of single_list)
+
+          sg_select_item[id2str(entry_id)] = null;
+
+        for (const [
+          word_list, entry_id] of group_list)
+
+          sg_select_item[id2str(entry_id)] = null;
+
+        sg_select_list.push(sg_select_item);
+        sg_state_list.push(null);
+      }
+    }
+
     /* Updating state with computed analysis info. */
 
     this.setState({
@@ -777,6 +829,8 @@ class CognateAnalysisModal extends React.Component
       embedding_2d,
       embedding_3d,
       perspective_name_list,
+      suggestion_list,
+      suggestion_field_id,
       intermediate_url_list,
       plotly_data,
       plotly_3d_data,
@@ -786,7 +840,11 @@ class CognateAnalysisModal extends React.Component
       x_span,
       y_span,
       z_span,
-      computing: false });
+      computing: false,
+      sg_select_set,
+      sg_select_list,
+      sg_state_list,
+    });
   }
 
   handleError(error_data)
@@ -1054,7 +1112,7 @@ class CognateAnalysisModal extends React.Component
         <Modal.Content>
           <Message negative>
             <Message.Header>
-              Perspective is not published.
+              Perspective is not published
             </Message.Header>
             <p>
               Cognate suggestions are available only for perspectives in the "Published" or "Limited access" state.
@@ -1357,6 +1415,202 @@ class CognateAnalysisModal extends React.Component
     )
   }
 
+  suggestions_render()
+  {
+    return map(
+      this.state.suggestion_list,
+
+      ([perspective_index, word, word_entry_id, single_list, group_list],
+        index) => {
+
+      if (this.state.sg_state_list[index] == 'connected')
+        return null;
+
+      return (
+        <Segment key={'suggestion' + index}>
+
+          {/*
+          <Checkbox
+            label={
+              `${word} (${this.state.perspective_name_list[index]})`}
+            checked={this.state.sg_select_set[id2str(word_entry_id)]}
+          />
+          */}
+
+          <p>{`${word} (${this.state.perspective_name_list[perspective_index]}):`}</p>
+
+          <List>
+
+          {single_list.length > 0 && (
+            <List.Item>
+              <span>{getTranslation('Standalone words:')}</span>
+
+              <List>
+                {map(
+                  single_list,
+                  
+                  ([perspective_index, [transcription_str, translation_str], entry_id],
+                    single_index) => (
+
+                  <List.Item key={'sg' + index + 'single' + single_index}>
+                    <Checkbox
+
+                      label={
+                        `${transcription_str} ${translation_str}
+                          (${this.state.perspective_name_list[perspective_index]})`}
+
+                      checked={
+                        this.state.sg_select_list[index].hasOwnProperty(id2str(entry_id))}
+
+                      disabled={
+                        this.state.sg_state_list[index] == 'error'}
+
+                      onChange={(e, { checked }) => {
+
+                        if (checked)
+                          this.state.sg_select_list[index][id2str(entry_id)] = null;
+                        else
+                          delete this.state.sg_select_list[index][id2str(entry_id)];
+
+                        this.setState({ sg_select_list: this.state.sg_select_list });}}
+                    />
+                  </List.Item>
+
+                ))}
+              </List>
+            </List.Item>
+          )}
+
+          {group_list.length > 0 && (
+            <List.Item>
+              <span>{getTranslation('Groups:')}</span>
+
+              <List>
+                {map(
+                  group_list,
+                  
+                  ([word_list, entry_id],
+                    group_index) => (
+
+                  <List.Item
+                    key={'sg' + index + 'group' + group_index}>
+
+                    <Checkbox
+
+                      checked={
+                        this.state.sg_select_list[index].hasOwnProperty(id2str(entry_id))}
+
+                      disabled={
+                        this.state.sg_state_list[index] == 'error'}
+
+                      onChange={(e, { checked }) => {
+
+                        if (checked)
+                          this.state.sg_select_list[index][id2str(entry_id)] = null;
+                        else
+                          delete this.state.sg_select_list[index][id2str(entry_id)];
+
+                        this.setState({ sg_select_list: this.state.sg_select_list });}}
+
+                      label={
+                        <label>
+                        <div>
+
+                          {map(word_list,
+
+                            ([perspective_index, [transcription_str, translation_str]],
+                              word_index) => (
+
+                            <div
+                              key={'sg' + index + 'gr' + group_index + 'word' + word_index}>
+                              {`${transcription_str} ${translation_str}
+                                (${this.state.perspective_name_list[perspective_index]})`}
+                            </div>
+
+                          ))}
+                        </div>
+                        </label>
+                    }/>
+
+                  </List.Item>
+
+                ))}
+              </List>
+            </List.Item>
+          )}
+
+          </List>
+
+          {this.state.sg_state_list[index] == 'error' ?
+
+            <Message negative>
+              <Message.Header>
+                Query error
+              </Message.Header>
+              <p>
+                Failed to connect selected lexical entries, please contact developers.
+              </p>
+            </Message>
+            
+            :
+
+            <Button
+              basic
+              positive
+
+              content={
+                this.state.sg_state_list[index] == 'connecting' ?
+                getTranslation('Connecting...') :
+                getTranslation('Connect')}
+
+              disabled={
+                Object.keys(this.state.sg_select_list[index]).length <= 0 ||
+                this.state.sg_state_list[index] == 'connecting'}
+
+              size='mini'
+
+              onClick={() => {
+
+                this.state.sg_state_list[index] = 'connecting';
+                this.setState({ sg_state_list: this.state.sg_state_list });
+
+                const entry_id_list =
+                  Object.keys(this.state.sg_select_list[index]).map(
+                    id_str => id_str.split('/').map(str => parseInt(str)));
+
+                entry_id_list.push(word_entry_id);
+
+                console.log(entry_id_list);
+                console.log(this.state.suggestion_field_id);
+                console.log(this.props.connectGroup);
+
+                this.props.connectGroup({
+                  variables: {
+                    fieldId: this.state.suggestion_field_id,
+                    connections: entry_id_list },
+                }).then(
+
+                  () => {
+                    window.logger.suc(`${getTranslation('Connected')}.`);
+
+                    this.state.sg_state_list[index] = 'connected';
+                    this.setState({ sg_state_list: this.state.sg_state_list });
+                  },
+                
+                  () => {
+                    this.state.sg_state_list[index] = 'error';
+                    this.setState({ sg_state_list: this.state.sg_state_list });
+                  });
+
+              }}
+            />
+          }
+
+        </Segment>
+      );}
+    );
+  }
+
   render()
   {
     if (!this.state.initialized)
@@ -1425,14 +1679,18 @@ class CognateAnalysisModal extends React.Component
               <h3>Analysis results
                 ({this.state.dictionary_count} dictionaries, {this.state.group_count} cognate groups and {this.state.transcription_count} transcriptions analysed):</h3>
 
-              <List>
+              <List relaxed>
                 <List.Item>
                   {this.state.not_enough_count} cognate groups were excluded from the analysis due to not having lexical entries in at least two selected dictionaries.
                 </List.Item>
 
-                {this.state.result.length > 0 && mode != 'suggestions' && (
+                {this.state.result.length > 0 &&
+                  mode != 'suggestions' &&
+                  mode != 'multi_suggestions' && (
                   <List.Item>
-                    <a href={this.state.xlsx_url}>XLSX-exported analysis results</a>
+                    <a href={this.state.xlsx_url}>
+                      {getTranslation('XLSX-exported analysis results')}
+                    </a>
                   </List.Item>
                 )}
 
@@ -1458,6 +1716,35 @@ class CognateAnalysisModal extends React.Component
                     No data for cognate analysis.
                   </List.Item>
                 </List>
+              )}
+
+              {this.state.suggestion_list && (
+                <div>
+
+                  <Header style={{marginTop: '1em'}}>
+                    {this.state.suggestion_list.length} suggestions
+                  </Header>
+
+                  {this.props.user.id === undefined ? (
+
+                    <Message negative>
+                      <Message.Header>
+                        Unauthorized user
+                      </Message.Header>
+                      <p>
+                        Only authorized users can create new cognate connections based on cognate suggestions.
+                      </p>
+                    </Message>
+
+                  ) : (
+
+                    <div>
+                      {this.suggestions_render()}
+                    </div>
+
+                  )}
+
+                </div>
               )}
 
               {this.state.plotly_data.length > 0 && (
@@ -1548,5 +1835,6 @@ export default compose(
   connect(state => state.user),
   branch(({ visible }) => !visible, renderNothing),
   graphql(computeCognateAnalysisMutation, { name: 'computeCognateAnalysis' }),
+  graphql(connectMutation, { name: 'connectGroup' }),
   withApollo
 )(CognateAnalysisModal);
