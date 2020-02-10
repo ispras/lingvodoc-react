@@ -20,14 +20,28 @@ class EditDictionaryMetadata extends React.Component {
       kind: null,
       authors: [],
       humanSettlement: [],
-      years: []
+      years: [],
+      titleOfTheWork: '',
+      genre: '',
+      timeOfWriting: '',
+      quantitativeCharacteristic: '',
+      bibliographicDataOfTheSource: '',
+      translator: '',
+      bibliographicDataOfTheTranslation: 'a'
     };
 
     this.initialState = {
       kind: this.state.kind,
       authors: this.state.authors,
       humanSettlement: this.state.humanSettlement,
-      years: this.state.years
+      years: this.state.years,
+      titleOfTheWork: this.state.titleOfTheWork,
+      genre: this.state.genre,
+      timeOfWriting: this.state.timeOfWriting,
+      quantitativeCharacteristic: this.state.quantitativeCharacteristic,
+      bibliographicDataOfTheSource: this.state.bibliographicDataOfTheSource,
+      translator: this.state.translator,
+      bibliographicDataOfTheTranslation: this.state.bibliographicDataOfTheTranslation
     };
 
     this.onAddNewAlternative = this.onAddNewAlternative.bind(this);
@@ -111,6 +125,27 @@ class EditDictionaryMetadata extends React.Component {
       case 'years':
         this.setState({ years: data.value }, callback);
         break;
+      case 'titleOfTheWork':
+        this.setState({ authors: [] }, callback);
+        break;
+      case 'genre':
+        this.setState({ genre: data.value }, callback);
+        break;
+      case 'timeOfWriting':
+        this.setState({ timeOfWriting: data.value }, callback);
+        break;
+      case 'quantitativeCharacteristic':
+        this.setState({ quantitativeCharacteristic: data.value }, callback);
+        break;
+      case 'bibliographicDataOfTheSource':
+        this.setState({ bibliographicDataOfTheSource: data.value }, callback);
+        break;
+      case 'translator':
+        this.setState({ translator: data.value }, callback);
+        break;
+      case 'bibliographicDataOfTheTranslation':
+        this.setState({ bibliographicDataOfTheTranslation: data.value }, callback);
+        break;
       default:
         return;
     }
@@ -143,6 +178,34 @@ class EditDictionaryMetadata extends React.Component {
         toSave = { years: this.state.years };
         this.initialState.years = toSave.years;
         break;
+      case 'titleOfTheWork':
+        toSave = { titleOfTheWork: this.state.titleOfTheWork };
+        this.initialState.titleOfTheWork = toSave.titleOfTheWork;
+        break;
+      case 'genre':
+        toSave = { genre: this.state.genre };
+        this.initialState.genre = toSave.genre;
+        break;
+      case 'timeOfWriting':
+        toSave = { timeOfWriting: this.state.timeOfWriting };
+        this.initialState.timeOfWriting = toSave.timeOfWriting;
+        break;
+      case 'quantitativeCharacteristic':
+        toSave = { quantitativeCharacteristic: this.state.quantitativeCharacteristic };
+        this.initialState.quantitativeCharacteristic = toSave.quantitativeCharacteristic;
+        break;
+      case 'bibliographicDataOfTheSource':
+        toSave = { bibliographicDataOfTheSource: this.state.bibliographicDataOfTheSource };
+        this.initialState.bibliographicDataOfTheSource = toSave.bibliographicDataOfTheSource;
+        break;
+      case 'translator':
+        toSave = { translator: this.state.translator };
+        this.initialState.translator = toSave.translator;
+        break;
+      case 'bibliographicDataOfTheTranslation':
+        toSave = { bibliographicDataOfTheTranslation: this.state.bibliographicDataOfTheTranslation };
+        this.initialState.bibliographicDataOfTheTranslation = toSave.bibliographicDataOfTheTranslation;
+        break;
       default:
         return;
     }
@@ -174,7 +237,19 @@ class EditDictionaryMetadata extends React.Component {
     }
 
     const { mode } = this.props;
-    const { kind, authors, humanSettlement, years } = this.state;
+    const {
+      kind,
+      authors,
+      humanSettlement,
+      years,
+      titleOfTheWork,
+      genre,
+      timeOfWriting,
+      quantitativeCharacteristic,
+      bibliographicDataOfTheSource,
+      translator,
+      bibliographicDataOfTheTranslation
+    } = this.state;
 
     return (
       <Form>
@@ -197,8 +272,8 @@ class EditDictionaryMetadata extends React.Component {
         </Segment>
         <Segment>
           <Form.Group widths='equal'>
-            <Label size='large'>{getTranslation("Authors")}</Label>
             <Form.Dropdown fluid multiple selection search allowAdditions
+              label={getTranslation("Authors")}
               options={this.authorsOptions}
               value={authors}
               onAddItem={this.onAddNewAlternative}
@@ -215,8 +290,8 @@ class EditDictionaryMetadata extends React.Component {
         </Segment>
         <Segment>
           <Form.Group widths='equal'>
-            <Label size='large'>{getTranslation("Human settlement")}</Label>
             <Form.Dropdown fluid multiple selection search allowAdditions
+              label={getTranslation("Human settlement")}
               options={this.settlementsOptions}
               value={humanSettlement}
               onAddItem={this.onAddNewAlternative}
@@ -233,8 +308,8 @@ class EditDictionaryMetadata extends React.Component {
         </Segment>
         <Segment>
           <Form.Group widths='equal'>
-            <Label size='large'>{getTranslation("Years")}</Label>
             <Form.Dropdown fluid multiple selection search allowAdditions
+              label={getTranslation("Years")}
               options={this.yearsOptions}
               value={years}
               onAddItem={this.onAddNewAlternative}
@@ -249,6 +324,88 @@ class EditDictionaryMetadata extends React.Component {
             }
           </Form.Group>
         </Segment>
+
+        {/* TitleOfTheWork
+        Genre
+        TimeOfWriting
+        QuantitativeCharacteristic
+        BibliographicDataOfTheSource
+        Translator
+        BibliographicDataOfTheTranslation
+
+        titleOfTheWork
+        genre
+        timeOfWriting
+        quantitativeCharacteristic
+        bibliographicDataOfTheSource
+        translator
+        bibliographicDataOfTheTranslation */}
+
+        <Segment>
+          <Form.Group widths='equal'>
+            <Form.Input fluid
+              label={getTranslation("TitleOfTheWork")}
+              value={titleOfTheWork}
+              // onChange={(event, data) => this.onChangeValue('titleOfTheWork', data)}
+              onChange={(event, data) => this.setState({ titleOfTheWork: data.value })}
+            />
+          </Form.Group>
+        </Segment>
+        {/* <Segment>
+          <Form.Group widths='equal'>
+            <Form.Input fluid
+              label={getTranslation("Genre")}
+              value={genre}
+              onChange={(event, data) => this.onChangeValue('genre', data)}
+            />
+          </Form.Group>
+        </Segment>
+        <Segment>
+          <Form.Group widths='equal'>
+            <Form.Input fluid
+              label={getTranslation("TimeOfWriting")}
+              value={timeOfWriting}
+              onChange={(event, data) => this.onChangeValue('timeOfWriting', data)}
+            />
+          </Form.Group>
+        </Segment>
+        <Segment>
+          <Form.Group widths='equal'>
+            <Form.Input fluid
+              label={getTranslation("QuantitativeCharacteristic")}
+              value={quantitativeCharacteristic}
+              onChange={(event, data) => this.onChangeValue('quantitativeCharacteristic', data)}
+            />
+          </Form.Group>
+        </Segment>
+        <Segment>
+          <Form.Group widths='equal'>
+            <Form.Input fluid
+              label={getTranslation("BibliographicDataOfTheSource")}
+              value={bibliographicDataOfTheSource}
+              onChange={(event, data) => this.onChangeValue('bibliographicDataOfTheSource', data)}
+            />
+          </Form.Group>
+        </Segment>
+        <Segment>
+          <Form.Group widths='equal'>
+            <Form.Input fluid
+              label={getTranslation("Translator")}
+              value={translator}
+              onChange={(event, data) => this.onChangeValue('translator', data)}
+            />
+          </Form.Group>
+        </Segment>
+        <Segment>
+          <Form.Group widths='equal'>
+            <Form.Input fluid
+              label={getTranslation("BibliographicDataOfTheTranslation")}
+              value={bibliographicDataOfTheTranslation}
+              onChange={(event, data) => this.onChangeValue('bibliographicDataOfTheTranslation', data)}
+            />
+          </Form.Group>
+        </Segment> */}
+        
       </Form>
     );
   }
