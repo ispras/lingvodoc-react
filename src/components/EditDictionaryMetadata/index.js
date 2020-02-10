@@ -20,14 +20,28 @@ class EditDictionaryMetadata extends React.Component {
       kind: null,
       authors: [],
       humanSettlement: [],
-      years: []
+      years: [],
+      interrogator: '',
+      informant: '',
+      processing: '',
+      typeOfDiscourse: '',
+      typeOfSpeech: '',
+      speechGenre: '',
+      theThemeOfTheText: ''
     };
 
     this.initialState = {
       kind: this.state.kind,
       authors: this.state.authors,
       humanSettlement: this.state.humanSettlement,
-      years: this.state.years
+      years: this.state.years,
+      interrogator: this.state.interrogator,
+      informant: this.state.informant,
+      processing: this.state.processing,
+      typeOfDiscourse: this.state.typeOfDiscourse,
+      typeOfSpeech: this.state.typeOfSpeech,
+      speechGenre: this.state.speechGenre,
+      theThemeOfTheText: this.state.theThemeOfTheText
     };
 
     this.onAddNewAlternative = this.onAddNewAlternative.bind(this);
@@ -111,6 +125,27 @@ class EditDictionaryMetadata extends React.Component {
       case 'years':
         this.setState({ years: data.value }, callback);
         break;
+      case 'interrogator':
+        this.setState({ interrogator: data.value }, callback);
+        break;
+      case 'informant':
+        this.setState({ informant: data.value }, callback);
+        break;
+      case 'processing':
+        this.setState({ processing: data.value }, callback);
+        break;
+      case 'typeOfDiscourse':
+        this.setState({ typeOfDiscourse: data.value }, callback);
+        break;
+      case 'typeOfSpeech':
+        this.setState({ typeOfSpeech: data.value }, callback);
+        break;
+      case 'speechGenre':
+        this.setState({ speechGenre: data.value }, callback);
+        break;
+      case 'theThemeOfTheText':
+        this.setState({ theThemeOfTheText: data.value }, callback);
+        break;
       default:
         return;
     }
@@ -143,6 +178,34 @@ class EditDictionaryMetadata extends React.Component {
         toSave = { years: this.state.years };
         this.initialState.years = toSave.years;
         break;
+      case 'interrogator':
+        toSave = { interrogator: this.state.interrogator };
+        this.initialState.interrogator = toSave.interrogator;
+        break;
+      case 'informant':
+        toSave = { informant: this.state.informant };
+        this.initialState.informant = toSave.informant;
+        break;
+      case 'processing':
+        toSave = { processing: this.state.processing };
+        this.initialState.processing = toSave.processing;
+        break;
+      case 'typeOfDiscourse':
+        toSave = { typeOfDiscourse: this.state.typeOfDiscourse };
+        this.initialState.typeOfDiscourse = toSave.typeOfDiscourse;
+        break;
+      case 'typeOfSpeech':
+        toSave = { typeOfSpeech: this.state.typeOfSpeech };
+        this.initialState.typeOfSpeech = toSave.typeOfSpeech;
+        break;
+      case 'speechGenre':
+        toSave = { speechGenre: this.state.speechGenre };
+        this.initialState.speechGenre = toSave.speechGenre;
+        break;
+      case 'theThemeOfTheText':
+        toSave = { theThemeOfTheText: this.state.theThemeOfTheText };
+        this.initialState.theThemeOfTheText = toSave.theThemeOfTheText;
+        break;
       default:
         return;
     }
@@ -174,7 +237,18 @@ class EditDictionaryMetadata extends React.Component {
     }
 
     const { mode } = this.props;
-    const { kind, authors, humanSettlement, years } = this.state;
+    const {
+      kind,
+      authors,
+      humanSettlement,
+      years,
+      interrogator,
+      informant,
+      processing,
+      typeOfDiscourse,
+      typeOfSpeech,
+      speechGenre,
+      theThemeOfTheText } = this.state;
 
     return (
       <Form>
@@ -213,9 +287,13 @@ class EditDictionaryMetadata extends React.Component {
             }
             <Form.Input fluid
               label={getTranslation("Interrogator")}
+              value={interrogator}
+              onChange={(event, data) => this.onChangeValue('interrogator', data)}
             />
             <Form.Input fluid
               label={getTranslation("Informant")}
+              value={informant}
+              onChange={(event, data) => this.onChangeValue('informant', data)}
             />
           </Form.Group>
         </Segment>
@@ -259,6 +337,8 @@ class EditDictionaryMetadata extends React.Component {
           <Form.Group widths='equal'>
             <Form.Input fluid
               label={getTranslation("Processing")}
+              value={processing}
+              onChange={(event, data) => this.onChangeValue('processing', data)}
             />
           </Form.Group>
         </Segment>
@@ -266,12 +346,18 @@ class EditDictionaryMetadata extends React.Component {
           <Form.Group widths='equal'>
             <Form.Input fluid
               label={getTranslation("Type of discourse")}
+              value={typeOfDiscourse}
+              onChange={(event, data) => this.onChangeValue('typeOfDiscourse', data)}
             />
             <Form.Input fluid
               label={getTranslation("Type of speech")}
+              value={typeOfSpeech}
+              onChange={(event, data) => this.onChangeValue('typeOfSpeech', data)}
             />
             <Form.Input fluid
               label={getTranslation("Speech genre")}
+              value={speechGenre}
+              onChange={(event, data) => this.onChangeValue('speechGenre', data)}
             />
           </Form.Group>
         </Segment>
@@ -279,6 +365,8 @@ class EditDictionaryMetadata extends React.Component {
           <Form.Group widths='equal'>
             <Form.Input fluid
               label={getTranslation("The theme of the text")}
+              value={theThemeOfTheText}
+              onChange={(event, data) => this.onChangeValue('theThemeOfTheText', data)}
             />
           </Form.Group>
         </Segment>
