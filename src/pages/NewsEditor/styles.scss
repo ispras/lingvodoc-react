@@ -1,0 +1,26 @@
+.news_editor{
+.header{
+    color: white;
+    margin-bottom: 30px;
+    font-weight: bold;
+ 
+}
+.add_header{
+    margin-top: 0;
+    margin-bottom: 30px;
+    width: 50%;
+ 
+}
+.add_news{
+    height: 300px;
+    margin-bottom: 30px;
+    width: 60%;
+}
+display: grid;
+grid-template-columns: 1;
+grid-template-rows: 4;
+
+button{
+    width: 150px;
+}
+}

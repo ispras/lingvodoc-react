@@ -1,7 +1,7 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 
-import Home from 'pages/Home';
+
 import Info from 'pages/Info';
 import Search from 'pages/Search';
 import DialeqtImport from 'pages/DialeqtImport';
@@ -19,7 +19,7 @@ import Requests from 'pages/Requests';
 import EditTranslations from 'pages/EditTranslations';
 import Organizations from 'pages/Organizations';
 import TopSectionSelector from 'pages/TopSectionSelector';
-
+import NewsEditor from 'pages/NewsEditor';
 
 import DictionariesAll from 'pages/DictionaryAll';
 import TreeRoute from 'pages/TreeRoute';
@@ -61,6 +61,7 @@ const Routes = () => (
     <Route path="/supportRoute" component={SupportRoute} />
     <Route path="/no_grants" component={NoGrants} />
     <Route path="/corpora_all" component={CorporaAll} />
+    <Route path="/news_editor" component={NewsEditor}/>
     <Route component={NotFound} />
 
 

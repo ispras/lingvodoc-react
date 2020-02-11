@@ -10,7 +10,7 @@ import { graphql } from 'react-apollo';
 import { getTranslation } from 'api/i18n';
 import gql from 'graphql-tag';
 import { compose } from 'recompose';
-
+import News from '../../components/News'
 
 const IsAuthenticated = gql`
   query isAuthenticated {
@@ -23,6 +23,7 @@ const TopSectionSelector = (props) => {
   console.log(isAuthenticated, 'isAuthenticated')
   return (
     <div className="topSectionSelector">
+
       <label className='label'>{getTranslation("Tree")}</label>
       <Link to='/treeRoute'>
         <img className="img-tree img" src={imgTree}></img>
@@ -43,6 +44,8 @@ const TopSectionSelector = (props) => {
       <Link to='/supportRoute'>
         <img className="img-support img" src={imgSupport} />
       </Link>
+<News/>
+     
     </div>
 
 

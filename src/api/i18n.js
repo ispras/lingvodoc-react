@@ -15,6 +15,7 @@ export const stringsToTranslate = [
   "Add link",
   "Add marker to group",
   "Add new column",
+  "Add news",
   "Add one or more perspectives",
   "Add one or more translations",
   "Add perspective",
