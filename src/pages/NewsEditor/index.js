@@ -8,7 +8,7 @@ const NewsEditor = () => {
             <h1 className='header'>Редактор новостей</h1>
             <h3 className='header'>Превью новости</h3>
             <textarea className='add_header' ></textarea>
-            <button>Добавить картинку</button>
+            <input type="file"></input>
             <h3 className='header'>Текст новости</h3>
             <textarea className='add_news'></textarea>
             <button>Добавить </button>
