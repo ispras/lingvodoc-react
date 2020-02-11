@@ -6,7 +6,6 @@ import imgDashboard from '../../images/dashboard.png';
 import imgOrganization from '../../images/organization.jpg';
 import imgSupport from '../../images/support.jpg';
 import { Link } from 'react-router-dom';
-import { compose } from 'recompose';
 
 import { getTranslation } from 'api/i18n';
 class TopSectionSelector extends React.Component {
@@ -33,4 +32,4 @@ class TopSectionSelector extends React.Component {
 }
 
 
-export default compose(TopSectionSelector);
+export default TopSectionSelector;
