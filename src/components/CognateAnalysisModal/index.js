@@ -43,27 +43,7 @@ const cognateAnalysisDataQuery = gql`
 
 const cognateAnalysisMultiDataQuery = gql`
   query cognateAnalysisMultiData(
-    $perspectiveId: LingvodocID!,
     $languageIdList: [LingvodocID]!) {
-    perspective(id: $perspectiveId) {
-      id
-      translation
-      english_status: status(locale_id: 2)
-      columns {
-        id
-        field_id
-      }
-      tree {
-        id
-        translation
-      }
-    }
-    all_fields {
-      id
-      translation
-      english_translation: translation(locale_id: 2)
-      data_type
-    }
     languages(id_list: $languageIdList) {
       id
       translation
@@ -256,6 +236,10 @@ class CognateAnalysisModal extends React.Component
 
     this.handleCreate = this.handleCreate.bind(this);
 
+    this.language_render = this.language_render.bind(this);
+    this.single_language_render = this.single_language_render.bind(this);
+    this.multi_language_render = this.multi_language_render.bind(this);
+
     this.match_translations_render = this.match_translations_render.bind(this);
     this.admin_section_render = this.admin_section_render.bind(this);
 
@@ -313,6 +297,9 @@ class CognateAnalysisModal extends React.Component
 
     /* Finding the root language of the language group we are to perform cognate analysis in. */
 
+    this.treePath = tree.slice(tree.length - 1, tree.length).reverse();
+    this.baseLanguageId = tree[tree.length - 1].id;
+
     for (var i = 0; i < tree.length; i++)
     {
       if (checkLanguageId(tree[i].id))
@@ -350,17 +337,14 @@ class CognateAnalysisModal extends React.Component
 
   async initialize_single()
   {
-    const { client, perspectiveId, mode } = this.props;
-
-    const { data: {
-      all_fields: allFields,
-      perspective: {
-        columns, tree, english_status } }} =
-        
-      await client.query({
-        query: cognateAnalysisDataQuery,
-        variables: { perspectiveId },
-      });
+    const {
+      client,
+      perspectiveId,
+      mode,
+      data: {
+        all_fields: allFields,
+        perspective: {
+          columns, tree, english_status }}} = this.props;
 
     this.initialize_common(
       allFields, columns, tree, english_status);
@@ -393,17 +377,27 @@ class CognateAnalysisModal extends React.Component
    */
   async initialize_multi()
   {
-    const { client, perspectiveId, mode } = this.props;
+    const {
+      client,
+      perspectiveId,
+      mode,
+      data: {
+        all_fields: allFields,
+        perspective: {
+          columns, tree, english_status }}} = this.props;
+
+    const language_id_list = languageIdList.slice();
+
+    if (!checkLanguageId(tree[tree.length - 1].id))
+      language_id_list.push(tree[tree.length - 1].id);
 
     const { data: {
-      all_fields: allFields,
-      perspective: {
-        columns, tree, english_status },
       languages }} =
         
       await client.query({
         query: cognateAnalysisMultiDataQuery,
-        variables: { perspectiveId, languageIdList },
+        variables: {
+          languageIdList: language_id_list },
       });
 
     this.initialize_common(
@@ -1117,10 +1111,7 @@ class CognateAnalysisModal extends React.Component
     )
   }
 
-  /*
-   * Perspective selection for a single language, e.g. for simple cognate analysis.
-   */
-  single_language_render()
+  language_render(multi_flag)
   {
     /* If we are selecting perspectives for cognate suggestions, we check the source perspective state. */
 
@@ -1133,14 +1124,28 @@ class CognateAnalysisModal extends React.Component
         <Modal.Content>
           <Message negative>
             <Message.Header>
-              Perspective is not published
+              {getTranslation('Perspective is not published')}
             </Message.Header>
             <p>
-              Cognate suggestions are available only for perspectives in the "Published" or "Limited access" state.
+              {getTranslation('Cognate suggestions are available only for perspectives in the "Published" or "Limited access" state.')}
             </p>
           </Message>
         </Modal.Content>
       );
+
+    return multi_flag ?
+      this.multi_language_render() :
+      this.single_language_render();
+  }
+
+  /*
+   * Perspective selection for a single language, e.g. for simple cognate analysis.
+   */
+  single_language_render()
+  {
+    const error_flag =
+      this.perspective_list.length <= 1 ||
+      !this.state.library_present;
 
     return (
       <Modal.Content>
@@ -1218,23 +1223,28 @@ class CognateAnalysisModal extends React.Component
             </List>
         ))}
         {this.perspective_list.length <= 1 && (
-          <span>Dictionary group doesn't have multiple dictionaries with selected
-            cognate grouping field present, cognate analysis is impossible.</span>
+          <span>
+            {getTranslation(
+              'Selected dictionary group doesn\'t have multiple dictionaries with selected ' +
+              'cognate grouping field present, cognate analysis is impossible.')}
+          </span>
         )}
         </div>
 
         {!this.state.library_present && (
           <List>
             <div style={{color: 'red'}}>
-              Analysis library is absent, please contact system administrator.
+              {getTranslation('Analysis library is absent, please contact system administrator.')}
             </div>
           </List>
         )}
 
-        {this.props.mode == 'suggestions' &&
+        {!error_flag &&
+          this.props.mode == 'suggestions' &&
           this.match_translations_render()}
 
-        {this.props.user.id == 1 &&
+        {!error_flag &&
+          this.props.user.id == 1 &&
           this.admin_section_render()}
 
       </Modal.Content>
@@ -1246,25 +1256,8 @@ class CognateAnalysisModal extends React.Component
    */
   multi_language_render()
   {
-    /* If we are selecting perspectives for cognate suggestions, we check the source perspective state. */
-
-    if (
-      this.props.mode == 'multi_suggestions' &&
-      this.englishStatus != 'Published' &&
-      this.englishStatus != 'Limited access')
-
-      return (
-        <Modal.Content>
-          <Message negative>
-            <Message.Header>
-              Perspective is not published.
-            </Message.Header>
-            <p>
-              Cognate multi-language suggestions are available only for perspectives in the "Published" or "Limited access" state.
-            </p>
-          </Message>
-        </Modal.Content>
-      );
+    const error_flag =
+      !this.state.library_present;
 
     return (
       <Modal.Content>
@@ -1421,15 +1414,17 @@ class CognateAnalysisModal extends React.Component
         {!this.state.library_present && (
           <List>
             <div style={{color: 'red'}}>
-              Analysis library is absent, please contact system administrator.
+              {getTranslation('Analysis library is absent, please contact system administrator.')}
             </div>
           </List>
         )}
 
-        {this.props.mode == 'multi_suggestions' &&
+        {!error_flag &&
+          this.props.mode == 'multi_suggestions' &&
           this.match_translations_render()}
 
-        {this.props.user.id == 1 &&
+        {!error_flag &&
+          this.props.user.id == 1 &&
           this.admin_section_render()}
 
       </Modal.Content>
@@ -1725,13 +1720,6 @@ class CognateAnalysisModal extends React.Component
 
                       for (const entry_id_str of entry_id_str_list)
                       {
-                        console.log('entry_id_str');
-                        console.log(entry_id_str);
-                        console.log('sg_entry_map[entry_id_str]');
-                        console.log(sg_entry_map[entry_id_str]);
-                        console.log('Object.keys(sg_entry_map[entry_id_str])');
-                        console.log(Object.keys(sg_entry_map[entry_id_str]));
-
                         for (const sg_index of
                           Object.keys(sg_entry_map[entry_id_str]))
                         {
@@ -1816,9 +1804,7 @@ class CognateAnalysisModal extends React.Component
               getTranslation('Cognate analysis')}
           </Modal.Header>
 
-          {multi ?
-            this.multi_language_render() :
-            this.single_language_render()}
+          {this.language_render(multi)}
 
           <Modal.Actions>
             <Button
@@ -1999,6 +1985,7 @@ export default compose(
   connect(state => state.cognateAnalysis, dispatch => bindActionCreators({ closeModal }, dispatch)),
   connect(state => state.user),
   branch(({ visible }) => !visible, renderNothing),
+  graphql(cognateAnalysisDataQuery),
   graphql(computeCognateAnalysisMutation, { name: 'computeCognateAnalysis' }),
   graphql(connectMutation, { name: 'connectGroup' }),
   withApollo
