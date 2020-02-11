@@ -243,9 +243,10 @@ class CognateAnalysisModal extends React.Component
       translationFieldIdStrMap: {},
       perspectiveSelectionMap: {},
 
-      sg_select_set: null,
       sg_select_list: null,
       sg_state_list: null,
+      sg_count: null,
+      sg_entry_map: null,
     };
 
     this.initialize_single = this.initialize_single.bind(this);
@@ -779,10 +780,16 @@ class CognateAnalysisModal extends React.Component
 
     /* Initializing suggestions data, if required. */
 
-    const sg_select_set = {};
     const sg_select_list = [];
-
     const sg_state_list = [];
+
+    const sg_count = {
+      left: 0,
+      connected: 0,
+      error: 0,
+      invalidated: 0}
+
+    const sg_entry_map = {};
 
     if (suggestion_list)
     {
@@ -793,24 +800,37 @@ class CognateAnalysisModal extends React.Component
           
           suggestion_list[i];
 
-        sg_select_set[
-          id2str(word_entry_id)] = null;
-
         const sg_select_item = {};
+
+        function f(entry_id)
+        {
+          const id_str = id2str(entry_id);
+
+          sg_select_item[id_str] = null;
+
+          if (!sg_entry_map.hasOwnProperty(id_str))
+            sg_entry_map[id_str] = {};
+
+          sg_entry_map[id_str][i] = null;
+        };
+
+        f(word_entry_id);
 
         for (const [
           perspective_index, [translation_str, transcription_str], entry_id] of single_list)
 
-          sg_select_item[id2str(entry_id)] = null;
+          f(entry_id);
 
         for (const [
           word_list, entry_id] of group_list)
 
-          sg_select_item[id2str(entry_id)] = null;
+          f(entry_id);
 
         sg_select_list.push(sg_select_item);
         sg_state_list.push(null);
       }
+
+      sg_count.left = suggestion_list.length;
     }
 
     /* Updating state with computed analysis info. */
@@ -841,9 +861,10 @@ class CognateAnalysisModal extends React.Component
       y_span,
       z_span,
       computing: false,
-      sg_select_set,
       sg_select_list,
       sg_state_list,
+      sg_count,
+      sg_entry_map,
     });
   }
 
@@ -1417,198 +1438,342 @@ class CognateAnalysisModal extends React.Component
 
   suggestions_render()
   {
-    return map(
-      this.state.suggestion_list,
+    const {
+      suggestion_list,
+      suggestion_field_id,
+      sg_select_list,
+      sg_state_list,
+      sg_count,
+      sg_entry_map } = this.state;
 
-      ([perspective_index, word, word_entry_id, single_list, group_list],
-        index) => {
+    return (
+      <div>
 
-      if (this.state.sg_state_list[index] == 'connected')
-        return null;
+      {sg_count.left < suggestion_list.length && (
 
-      return (
-        <Segment key={'suggestion' + index}>
+        <List>
 
-          {/*
-          <Checkbox
-            label={
-              `${word} (${this.state.perspective_name_list[index]})`}
-            checked={this.state.sg_select_set[id2str(word_entry_id)]}
-          />
-          */}
+          <List.Item>
+            {sg_count.left} {getTranslation('left')}
+          </List.Item>
 
-          <p>{`${word} (${this.state.perspective_name_list[perspective_index]}):`}</p>
-
-          <List>
-
-          {single_list.length > 0 && (
+          {sg_count.connected > 0 && (
             <List.Item>
-              <span>{getTranslation('Standalone words:')}</span>
+              {sg_count.connected} {getTranslation('connected')}
+            </List.Item>
+          )}
 
-              <List>
-                {map(
-                  single_list,
-                  
-                  ([perspective_index, [transcription_str, translation_str], entry_id],
-                    single_index) => (
+          {sg_count.invalidated > 0 && (
+            <List.Item>
+              {sg_count.invalidated} {getTranslation('invalidated')}
+            </List.Item>
+          )}
 
-                  <List.Item key={'sg' + index + 'single' + single_index}>
+          {sg_count.error > 0 && (
+            <List.Item>
+              {sg_count.error} {getTranslation('errors')}
+            </List.Item>
+          )}
+
+        </List>
+
+      )}
+      
+      {map(
+        suggestion_list,
+
+        ([perspective_index, word, word_entry_id, single_list, group_list],
+          index) => {
+
+        const connected_flag =
+          sg_state_list[index] == 'connected';
+
+        const error_flag =
+          sg_state_list[index] == 'error';
+
+        const invalidated_flag =
+          sg_state_list[index] == 'invalidated';
+
+        const disabled_flag =
+          connected_flag || error_flag || invalidated_flag;
+
+        const opacity_style =
+          disabled_flag ? {opacity: 0.5} : {};
+
+        return (
+          <Segment
+            key={'suggestion' + index}>
+
+            <List>
+
+              <List.Item>
+                <span style={opacity_style}>
+                  {getTranslation('Source perspective word:')}
+                </span>
+
+                {/* List and List.Item for uniform appearance. */}
+
+                <List>
+                  <List.Item>
                     <Checkbox
 
                       label={
-                        `${transcription_str} ${translation_str}
-                          (${this.state.perspective_name_list[perspective_index]})`}
+                        `${word} (${this.state.perspective_name_list[perspective_index]})`}
 
                       checked={
-                        this.state.sg_select_list[index].hasOwnProperty(id2str(entry_id))}
+                        sg_select_list[index].hasOwnProperty(id2str(word_entry_id))}
 
-                      disabled={
-                        this.state.sg_state_list[index] == 'error'}
+                      disabled={disabled_flag}
 
                       onChange={(e, { checked }) => {
 
                         if (checked)
-                          this.state.sg_select_list[index][id2str(entry_id)] = null;
+                          sg_select_list[index][id2str(word_entry_id)] = null;
                         else
-                          delete this.state.sg_select_list[index][id2str(entry_id)];
+                          delete sg_select_list[index][id2str(word_entry_id)];
 
-                        this.setState({ sg_select_list: this.state.sg_select_list });}}
+                        this.setState({ sg_select_list });}}
                     />
                   </List.Item>
+                </List>
 
-                ))}
-              </List>
-            </List.Item>
-          )}
+                {/*
+                <p style={}>
+                  {`${word} (${this.state.perspective_name_list[perspective_index]}):`}
+                </p>
+                */}
+              </List.Item>
 
-          {group_list.length > 0 && (
-            <List.Item>
-              <span>{getTranslation('Groups:')}</span>
+            {single_list.length > 0 && (
+              <List.Item>
+                <span style={opacity_style}>
+                  {getTranslation('Suggested cognates:')}
+                </span>
 
-              <List>
-                {map(
-                  group_list,
+                <List>
+                  {map(
+                    single_list,
+                    
+                    ([perspective_index, [transcription_str, translation_str], entry_id],
+                      single_index) => (
+
+                    <List.Item key={'sg' + index + 'single' + single_index}>
+                      <Checkbox
+
+                        label={
+                          `${transcription_str} ${translation_str}
+                            (${this.state.perspective_name_list[perspective_index]})`}
+
+                        checked={
+                          sg_select_list[index].hasOwnProperty(id2str(entry_id))}
+
+                        disabled={disabled_flag}
+
+                        onChange={(e, { checked }) => {
+
+                          if (checked)
+                            sg_select_list[index][id2str(entry_id)] = null;
+                          else
+                            delete sg_select_list[index][id2str(entry_id)];
+
+                          this.setState({ sg_select_list });}}
+                      />
+                    </List.Item>
+
+                  ))}
+                </List>
+              </List.Item>
+            )}
+
+            {group_list.length > 0 && (
+              <List.Item>
+                <span style={opacity_style}>
+                  {getTranslation('Suggested cognate groups:')}
+                </span>
+
+                <List>
+                  {map(
+                    group_list,
+                    
+                    ([word_list, entry_id],
+                      group_index) => (
+
+                    <List.Item
+                      key={'sg' + index + 'group' + group_index}>
+
+                      <Checkbox
+
+                        checked={
+                          sg_select_list[index].hasOwnProperty(id2str(entry_id))}
+
+                        disabled={disabled_flag}
+
+                        onChange={(e, { checked }) => {
+
+                          if (checked)
+                            sg_select_list[index][id2str(entry_id)] = null;
+                          else
+                            delete sg_select_list[index][id2str(entry_id)];
+
+                          this.setState({ sg_select_list });}}
+
+                        label={
+                          <label>
+                          <div>
+
+                            {map(word_list,
+
+                              ([perspective_index, [transcription_str, translation_str]],
+                                word_index) => (
+
+                              <div
+                                key={'sg' + index + 'gr' + group_index + 'word' + word_index}>
+                                {`${transcription_str} ${translation_str}
+                                  (${this.state.perspective_name_list[perspective_index]})`}
+                              </div>
+
+                            ))}
+                          </div>
+                          </label>
+                      }/>
+
+                    </List.Item>
+
+                  ))}
+                </List>
+              </List.Item>
+            )}
+
+            </List>
+
+            {
+              connected_flag ?
+
+              <Message positive>
+                <Message.Header>
+                  {getTranslation('Connected')}
+                </Message.Header>
+              </Message> :
+
+              error_flag ?
+
+              <Message negative>
+                <Message.Header>
+                  {getTranslation('Query error')}
+                </Message.Header>
+                <p>
+                  {getTranslation('Failed to connect selected lexical entries, please contact developers.')}
+                </p>
+              </Message> :
+
+              invalidated_flag ?
+
+              <Message>
+                <Message.Header>
+                  {getTranslation('Invalidated')}
+                </Message.Header>
+                <p>
+                  {getTranslation(
+                    'Another suggestion was accepted, source perspective word and/or one of suggested ' +
+                    'cognate words or cognate groups have been connected.')}
+                </p>
+              </Message> :
+
+              <Button
+                basic
+                positive
+
+                content={
+                  sg_state_list[index] == 'connecting' ?
+                  getTranslation('Connecting...') :
+                  getTranslation('Connect')}
+
+                disabled={
+                  Object.keys(sg_select_list[index]).length <= 1 ||
+                  sg_state_list[index] == 'connecting'}
+
+                size='mini'
+
+                onClick={() => {
+
+                  const entry_id_str_list = 
+                    Object.keys(sg_select_list[index]);
+
+                  const entry_id_list =
+
+                    entry_id_str_list.map(id_str =>
+                      id_str.split('/').map(str => parseInt(str)));
+
+                  sg_state_list[index] = 'connecting';
+
+                  this.setState({
+                    sg_state_list });
+
+                  this.props.connectGroup({
+                    variables: {
+                      fieldId: suggestion_field_id,
+                      connections: entry_id_list },
+                  }).then(
+
+                    () => {
+                      window.logger.suc(`${getTranslation('Connected')}.`);
+
+                      sg_state_list[index] = 'connected';
+
+                      sg_count.connected++;
+                      sg_count.left--;
+
+                      for (const entry_id_str of entry_id_str_list)
+                      {
+                        console.log('entry_id_str');
+                        console.log(entry_id_str);
+                        console.log('sg_entry_map[entry_id_str]');
+                        console.log(sg_entry_map[entry_id_str]);
+                        console.log('Object.keys(sg_entry_map[entry_id_str])');
+                        console.log(Object.keys(sg_entry_map[entry_id_str]));
+
+                        for (const sg_index of
+                          Object.keys(sg_entry_map[entry_id_str]))
+                        {
+                          if (
+                            sg_state_list[sg_index] != 'error' &&
+                            sg_state_list[sg_index] != 'connected' &&
+                            sg_state_list[sg_index] != 'invalidated')
+                          {
+                            sg_state_list[sg_index] = 'invalidated';
+
+                            sg_count.invalidated++;
+                            sg_count.left--;
+                          }
+                        }
+                      }
+        
+                      this.setState({
+                        sg_state_list,
+                        sg_count, });
+                    },
                   
-                  ([word_list, entry_id],
-                    group_index) => (
+                    () => {
+                      sg_state_list[index] = 'error';
 
-                  <List.Item
-                    key={'sg' + index + 'group' + group_index}>
+                      sg_count.error++;
+                      sg_count.left--;
 
-                    <Checkbox
+                      this.setState({
+                        sg_state_list,
+                        sg_count, });
+                    });
 
-                      checked={
-                        this.state.sg_select_list[index].hasOwnProperty(id2str(entry_id))}
+                }}
+              />
+            }
 
-                      disabled={
-                        this.state.sg_state_list[index] == 'error'}
+          </Segment>
+        );}
+      )}
 
-                      onChange={(e, { checked }) => {
-
-                        if (checked)
-                          this.state.sg_select_list[index][id2str(entry_id)] = null;
-                        else
-                          delete this.state.sg_select_list[index][id2str(entry_id)];
-
-                        this.setState({ sg_select_list: this.state.sg_select_list });}}
-
-                      label={
-                        <label>
-                        <div>
-
-                          {map(word_list,
-
-                            ([perspective_index, [transcription_str, translation_str]],
-                              word_index) => (
-
-                            <div
-                              key={'sg' + index + 'gr' + group_index + 'word' + word_index}>
-                              {`${transcription_str} ${translation_str}
-                                (${this.state.perspective_name_list[perspective_index]})`}
-                            </div>
-
-                          ))}
-                        </div>
-                        </label>
-                    }/>
-
-                  </List.Item>
-
-                ))}
-              </List>
-            </List.Item>
-          )}
-
-          </List>
-
-          {this.state.sg_state_list[index] == 'error' ?
-
-            <Message negative>
-              <Message.Header>
-                Query error
-              </Message.Header>
-              <p>
-                Failed to connect selected lexical entries, please contact developers.
-              </p>
-            </Message>
-            
-            :
-
-            <Button
-              basic
-              positive
-
-              content={
-                this.state.sg_state_list[index] == 'connecting' ?
-                getTranslation('Connecting...') :
-                getTranslation('Connect')}
-
-              disabled={
-                Object.keys(this.state.sg_select_list[index]).length <= 0 ||
-                this.state.sg_state_list[index] == 'connecting'}
-
-              size='mini'
-
-              onClick={() => {
-
-                this.state.sg_state_list[index] = 'connecting';
-                this.setState({ sg_state_list: this.state.sg_state_list });
-
-                const entry_id_list =
-                  Object.keys(this.state.sg_select_list[index]).map(
-                    id_str => id_str.split('/').map(str => parseInt(str)));
-
-                entry_id_list.push(word_entry_id);
-
-                console.log(entry_id_list);
-                console.log(this.state.suggestion_field_id);
-                console.log(this.props.connectGroup);
-
-                this.props.connectGroup({
-                  variables: {
-                    fieldId: this.state.suggestion_field_id,
-                    connections: entry_id_list },
-                }).then(
-
-                  () => {
-                    window.logger.suc(`${getTranslation('Connected')}.`);
-
-                    this.state.sg_state_list[index] = 'connected';
-                    this.setState({ sg_state_list: this.state.sg_state_list });
-                  },
-                
-                  () => {
-                    this.state.sg_state_list[index] = 'error';
-                    this.setState({ sg_state_list: this.state.sg_state_list });
-                  });
-
-              }}
-            />
-          }
-
-        </Segment>
-      );}
-    );
+      </div>
+    )
   }
 
   render()
