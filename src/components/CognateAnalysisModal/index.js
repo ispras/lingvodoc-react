@@ -403,6 +403,9 @@ class CognateAnalysisModal extends React.Component
     this.initialize_common(
       allFields, columns, tree, english_status);
 
+    this.available_list = [];
+    this.perspective_list = [];
+
     /* If we are selecting perspectives for cognate suggestions, and the source perspective is not
      * published, we won't be able to proceed and therefore we need not bother with initialization. */
 
@@ -426,7 +429,6 @@ class CognateAnalysisModal extends React.Component
 
     /* Getting info of perspectives of our base language. */
 
-    this.available_list = [];
     await this.initPerspectiveData(this.baseLanguageId, []);
 
     this.initialize_state();
