@@ -244,6 +244,8 @@ class CognateAnalysisModal extends React.Component
     this.admin_section_render = this.admin_section_render.bind(this);
 
     this.suggestions_render = this.suggestions_render.bind(this);
+
+    this.sg_connect = this.sg_connect.bind(this);
   }
 
   componentDidMount()
@@ -781,6 +783,7 @@ class CognateAnalysisModal extends React.Component
 
     const sg_count = {
       left: 0,
+      connecting: 0,
       connected: 0,
       error: 0,
       invalidated: 0}
@@ -823,7 +826,7 @@ class CognateAnalysisModal extends React.Component
           f(entry_id);
 
         sg_select_list.push(sg_select_item);
-        sg_state_list.push(null);
+        sg_state_list.push('left');
       }
 
       sg_count.left = suggestion_list.length;
@@ -1433,6 +1436,87 @@ class CognateAnalysisModal extends React.Component
     )
   }
 
+  /* Launches connection of suggestion specified by index. */
+
+  sg_connect(
+    index,
+    window_log_flag = true)
+  {
+    const {
+      suggestion_field_id,
+      sg_select_list,
+      sg_state_list,
+      sg_count,
+      sg_entry_map } = this.state;
+
+    const entry_id_str_list = 
+      Object.keys(sg_select_list[index]);
+
+    const entry_id_list =
+
+      entry_id_str_list.map(id_str =>
+        id_str.split('/').map(str => parseInt(str)));
+
+    sg_state_list[index] = 'connecting';
+
+    sg_count.connecting++;
+    sg_count.left--;
+
+    this.setState({
+      sg_state_list,
+      sg_count, });
+
+    this.props.connectGroup({
+      variables: {
+        fieldId: suggestion_field_id,
+        connections: entry_id_list },
+    }).then(
+
+      () => {
+
+        if (window_log_flag)
+          window.logger.suc(`${getTranslation('Connected')}.`);
+
+        sg_state_list[index] = 'connected';
+
+        sg_count.connected++;
+        sg_count.connecting--;
+
+        for (const entry_id_str of entry_id_str_list)
+        {
+          for (const sg_index of
+            Object.keys(sg_entry_map[entry_id_str]))
+          {
+            if (sg_state_list[sg_index] == 'left')
+            {
+              sg_state_list[sg_index] = 'invalidated';
+
+              sg_count.invalidated++;
+              sg_count.left--;
+            }
+          }
+        }
+
+        this.setState({
+          sg_state_list,
+          sg_count, });
+
+      },
+    
+      () => {
+
+        sg_state_list[index] = 'error';
+
+        sg_count.error++;
+        sg_count.connecting--;
+
+        this.setState({
+          sg_state_list,
+          sg_count, });
+
+      });
+  }
+
   suggestions_render()
   {
     const {
@@ -1443,16 +1527,22 @@ class CognateAnalysisModal extends React.Component
       sg_count,
       sg_entry_map } = this.state;
 
-    return (
-      <div>
+    /* Shows current suggestion state counts. */
 
-      {sg_count.left < suggestion_list.length && (
-
+    function f_count()
+    {
+      return (
         <List>
 
           <List.Item>
             {sg_count.left} {getTranslation('left')}
           </List.Item>
+
+          {sg_count.connecting > 0 && (
+            <List.Item>
+              {sg_count.connecting} {getTranslation('connecting...')}
+            </List.Item>
+          )}
 
           {sg_count.connected > 0 && (
             <List.Item>
@@ -1473,8 +1563,14 @@ class CognateAnalysisModal extends React.Component
           )}
 
         </List>
+      );
+    }
 
-      )}
+    return (
+      <div>
+
+      {sg_count.left < suggestion_list.length &&
+        f_count()}
       
       {map(
         suggestion_list,
@@ -1533,12 +1629,6 @@ class CognateAnalysisModal extends React.Component
                     />
                   </List.Item>
                 </List>
-
-                {/*
-                <p style={}>
-                  {`${word} (${this.state.perspective_name_list[perspective_index]}):`}
-                </p>
-                */}
               </List.Item>
 
             {single_list.length > 0 && (
@@ -1690,77 +1780,65 @@ class CognateAnalysisModal extends React.Component
                   sg_state_list[index] == 'connecting'}
 
                 size='mini'
-
-                onClick={() => {
-
-                  const entry_id_str_list = 
-                    Object.keys(sg_select_list[index]);
-
-                  const entry_id_list =
-
-                    entry_id_str_list.map(id_str =>
-                      id_str.split('/').map(str => parseInt(str)));
-
-                  sg_state_list[index] = 'connecting';
-
-                  this.setState({
-                    sg_state_list });
-
-                  this.props.connectGroup({
-                    variables: {
-                      fieldId: suggestion_field_id,
-                      connections: entry_id_list },
-                  }).then(
-
-                    () => {
-                      window.logger.suc(`${getTranslation('Connected')}.`);
-
-                      sg_state_list[index] = 'connected';
-
-                      sg_count.connected++;
-                      sg_count.left--;
-
-                      for (const entry_id_str of entry_id_str_list)
-                      {
-                        for (const sg_index of
-                          Object.keys(sg_entry_map[entry_id_str]))
-                        {
-                          if (
-                            sg_state_list[sg_index] != 'error' &&
-                            sg_state_list[sg_index] != 'connected' &&
-                            sg_state_list[sg_index] != 'invalidated')
-                          {
-                            sg_state_list[sg_index] = 'invalidated';
-
-                            sg_count.invalidated++;
-                            sg_count.left--;
-                          }
-                        }
-                      }
-        
-                      this.setState({
-                        sg_state_list,
-                        sg_count, });
-                    },
-                  
-                    () => {
-                      sg_state_list[index] = 'error';
-
-                      sg_count.error++;
-                      sg_count.left--;
-
-                      this.setState({
-                        sg_state_list,
-                        sg_count, });
-                    });
-
-                }}
+                onClick={() => this.sg_connect(index)}
               />
             }
 
           </Segment>
         );}
       )}
+
+      {sg_count.left < suggestion_list.length &&
+        f_count()}
+
+      <Button
+        basic
+        positive
+
+        content={
+          getTranslation('Connect all selected')}
+
+        disabled={
+          sg_count.left <= 0 ||
+          sg_count.connecting > 0}
+
+        size='mini'
+
+        onClick={() => {
+
+          console.log('connect all selected');
+
+          /* Launching connections of all suggestions with enough selected lexical entries, skipping
+           * suggestions which would be invalidated if launched connections are successful. */
+
+          const invalid_set = {};
+
+          for (var i = 0; i < suggestion_list.length; i++)
+          {
+            if (
+              sg_state_list[i] != 'left' ||
+              invalid_set.hasOwnProperty(i))
+
+              continue;
+
+            const entry_id_str_list = 
+              Object.keys(sg_select_list[i]);
+
+            if (entry_id_str_list.length <= 1)
+              continue;
+
+            for (const entry_id_str of entry_id_str_list)
+            {
+              Object.assign(
+                invalid_set,
+                sg_entry_map[entry_id_str]);
+            }
+
+            this.sg_connect(i, false);
+          }
+
+        }}
+      />
 
       </div>
     )
