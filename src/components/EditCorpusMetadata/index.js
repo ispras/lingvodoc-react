@@ -27,7 +27,7 @@ class EditDictionaryMetadata extends React.Component {
       quantitativeCharacteristic: '',
       bibliographicDataOfTheSource: '',
       translator: '',
-      bibliographicDataOfTheTranslation: 'a'
+      bibliographicDataOfTheTranslation: ''
     };
 
     this.initialState = {
