@@ -4,6 +4,8 @@ import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { getTranslation } from 'api/i18n';
+import PickSettlementMap from './PickSettlementMap';
+import PickSettlementModal from './PickSettlementModal';
 
 const getMetadataAlternativesQuery = gql`
   query getMetadataAlternatives {
@@ -290,6 +292,12 @@ class EditCorpusMetadata extends React.Component {
         </Segment>
         <Segment>
           <Form.Group widths='equal'>
+            <PickSettlementModal
+              content={ PickSettlementMap }
+              trigger={
+                <Button>Open Map</Button>
+              }
+            />
             <Form.Dropdown fluid multiple selection search allowAdditions
               label={getTranslation("Human settlement")}
               options={this.settlementsOptions}
