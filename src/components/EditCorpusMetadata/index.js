@@ -217,6 +217,10 @@ class EditCorpusMetadata extends React.Component {
     }
   }
 
+  settlementSelected () {
+    console.log( 'settlementSelected' );
+  }
+
   componentWillMount() {
     if (!this.props.loading) {
       this.refetching = true;
@@ -297,6 +301,7 @@ class EditCorpusMetadata extends React.Component {
               trigger={
                 <Button>Open Map</Button>
               }
+              callback = { this.settlementSelected }
             />
             <Form.Dropdown fluid multiple selection search allowAdditions
               label={getTranslation("Human settlement")}

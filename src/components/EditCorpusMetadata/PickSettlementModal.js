@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { getTranslation } from 'api/i18n';
-import { Modal } from 'semantic-ui-react';
+import { Modal, Button } from 'semantic-ui-react';
 
 class PickSettlementModal extends React.Component {
   constructor ( props ) {
@@ -9,13 +9,13 @@ class PickSettlementModal extends React.Component {
   }
 
   render () {
-    const { trigger, content: PickSettlementMap } = this.props;
+    const { trigger, content: PickSettlementMap, callback } = this.props;
 
     return (
       <Modal trigger = { trigger } size = 'large'>
           <Modal.Header>PickSettlementMap</Modal.Header>
           <Modal.Content>
-            <PickSettlementMap/>
+            <PickSettlementMap callback={ callback }/>
           </Modal.Content>
       </Modal>
     )
