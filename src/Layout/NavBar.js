@@ -30,9 +30,10 @@ SyncButton.propTypes = {
 
 const Sync = compose(
   branch(() => config.buildType === 'server', renderNothing),
-  graphql(gql`
-  query isAuthenticatedProxy {
-    is_authenticated
+  graphql(
+    gql`
+      query isAuthenticatedProxy {
+        is_authenticated
   }`),
   graphql(
     gql`
@@ -56,22 +57,22 @@ const Dashboard = (props) => {
     <Dropdown item text={getTranslation("Dashboard")} className="top_menu">
       <Dropdown.Menu>
         <Dropdown.Item as={Link} to="/dashboard/create_dictionary">
-        {getTranslation("Create dictionary")}
+          {getTranslation("Create dictionary")}
         </Dropdown.Item>
         <Dropdown.Item as={Link} to="/dashboard/create_corpus">
-        {getTranslation("Create corpus")}
+          {getTranslation("Create corpus")}
         </Dropdown.Item>
         <Dropdown.Item as={Link} to="/dashboard/dictionaries">
-        {getTranslation("Dictionaries")}
+          {getTranslation("Dictionaries")}
         </Dropdown.Item>
         <Dropdown.Item as={Link} to="/dashboard/corpora">
-        {getTranslation("Corpora")}
+          {getTranslation("Corpora")}
         </Dropdown.Item>
         <Dropdown.Item as={Link} to="/import_dialeqt">
-        {getTranslation("Import Dialeqt dictionary")}
+          {getTranslation("Import Dialeqt dictionary")}
         </Dropdown.Item>
         <Dropdown.Item as={Link} to="/import">
-        {getTranslation("Import Starling dictionaries")}
+          {getTranslation("Import Starling dictionaries")}
         </Dropdown.Item>
       </Dropdown.Menu>
     </Dropdown>
@@ -107,10 +108,10 @@ const NavBar = () => (
     <Dropdown item text={getTranslation("Maps")} className="top_menu">
       <Dropdown.Menu>
         <Dropdown.Item as={Link} to="/map">
-        {getTranslation("Map")}
+          {getTranslation("Map")}
         </Dropdown.Item>
         <Dropdown.Item as={Link} to="/map_search">
-        {getTranslation("Search")}
+          {getTranslation("Search")}
         </Dropdown.Item>
         <Dropdown.Item onClick={openMapStorage}>
           {getTranslation("Storage")}
@@ -121,13 +122,13 @@ const NavBar = () => (
     <Dropdown item text={getTranslation("Info")} className="top_menu">
       <Dropdown.Menu>
         <Dropdown.Item as={Link} to="/info">
-        {getTranslation("Authors")}
+          {getTranslation("Authors")}
         </Dropdown.Item>
         <Dropdown.Item as={Link} to="/desktop">
-        {getTranslation("Desktop")}
+          {getTranslation("Desktop")}
         </Dropdown.Item>
         <Dropdown.Item as={Link} to="/languages">
-        {getTranslation("Languages")}
+          {getTranslation("Languages")}
         </Dropdown.Item>
       </Dropdown.Menu>
     </Dropdown>
