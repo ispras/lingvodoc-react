@@ -11,7 +11,7 @@ const getMetadataAlternativesQuery = gql`
   }
 `;
 
-class EditDictionaryMetadata extends React.Component {
+class EditCorpusMetadata extends React.Component {
 
   constructor(props) {
     super(props);
@@ -457,11 +457,11 @@ class EditDictionaryMetadata extends React.Component {
 
 }
 
-EditDictionaryMetadata.propTypes = {
+EditCorpusMetadata.propTypes = {
   mode: PropTypes.string.isRequired,
   metadata: PropTypes.object,
   onChange: PropTypes.func,
   onSave: PropTypes.func
 };
 
-export default graphql(getMetadataAlternativesQuery)(EditDictionaryMetadata);
+export default graphql(getMetadataAlternativesQuery)(EditCorpusMetadata);
