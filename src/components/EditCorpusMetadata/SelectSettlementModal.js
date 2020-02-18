@@ -10,25 +10,30 @@ class SelectSettlementModal extends React.Component {
     this.state = {};
   }
 
-  handleOpen = () => {
-    console.log( 'asd' );
-    this.setState({ modalOpen: true })
-  }
-
-  handleClose = () => this.setState({ modalOpen: false })
+  handleOpen = () => this.setState({ modalOpen: true });
+  handleClose = () => this.setState({ modalOpen: false });
 
   render () {
-    const { trigger, content: SelectSettlementMap, callback } = this.props;
+    const { content: SelectSettlementMap, callback } = this.props;
 
     return (
-      <Modal trigger = { trigger } size = 'large' open={ this.state.modalOpen }>
-          <Modal.Header>SelectSettlementMap</Modal.Header>
-          <Modal.Content>
-            <SelectSettlementMap closeModal={ this.handleClose } callback={ callback }/>
-          </Modal.Content>
+      <Modal
+        size = 'large'
+        open={ this.state.modalOpen }
+        trigger = { <Button onClick={ this.handleOpen }>{ getTranslation( 'Open Map' ) }</Button> }
+      >
+        <Modal.Header>{ getTranslation( 'Select settlement' ) }</Modal.Header>
+        <Modal.Content>
+          <SelectSettlementMap closeModal={ this.handleClose } callback={ callback }/>
+        </Modal.Content>
       </Modal>
     )
   }
+};
+
+SelectSettlementModal.propTypes = {
+  content: PropTypes.func,
+  callback: PropTypes.func.isRequired
 };
 
 export default SelectSettlementModal;

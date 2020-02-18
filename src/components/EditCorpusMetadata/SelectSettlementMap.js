@@ -155,9 +155,17 @@ class SelectSettlementMap extends React.Component {
           this.selected()
           this.props.closeModal()
         }}>{ getTranslation( 'Select' ) }</Button>
+        <Button onClick = { () => {
+          this.props.closeModal()
+        }}>{ getTranslation( 'Close' ) }</Button>
       </div>
     )
   }
+};
+
+SelectSettlementMap.propTypes = {
+  closeModal: PropTypes.func.isRequired,
+  callback: PropTypes.func.isRequired
 };
 
 export default SelectSettlementMap;

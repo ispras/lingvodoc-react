@@ -111,7 +111,6 @@ class EditCorpusMetadata extends React.Component {
   onChangeValue(kind, data) {
     const callback =() => {
       if (this.props.onChange) {
-        console.log( this.state );
         this.props.onChange(this.state);
       }
     };
@@ -312,9 +311,6 @@ class EditCorpusMetadata extends React.Component {
           <Form.Group widths='equal'>
             <SelectSettlementModal
               content={ SelectSettlementMap }
-              trigger={
-                <Button onClick={ () => { console.log(  ); } }>Open Map</Button>
-              }
               callback = { this.settlementSelected.bind( this ) }
             />
             <Form.Dropdown fluid multiple selection search allowAdditions
