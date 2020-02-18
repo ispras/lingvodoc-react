@@ -285,9 +285,11 @@ class EditDictionaryMetadata extends React.Component {
                 onClick={() => this.onSaveValue('authors')}
               />
             }
-            <Form.Input fluid
+            <Form.Dropdown fluid multiple selection search allowAdditions
               label={getTranslation("Interrogator")}
+              options={this.authorsOptions}
               value={interrogator}
+              onAddItem={this.onAddNewAlternative}
               onChange={(event, data) => this.onChangeValue('interrogator', data)}
             />
             {mode != 'create' &&
@@ -353,9 +355,11 @@ class EditDictionaryMetadata extends React.Component {
         </Segment>
         <Segment>
           <Form.Group widths='equal'>
-            <Form.Input fluid
+            <Form.Dropdown fluid multiple selection search allowAdditions
               label={getTranslation("Processing")}
+              options={this.authorsOptions}
               value={processing}
+              onAddItem={this.onAddNewAlternative}
               onChange={(event, data) => this.onChangeValue('processing', data)}
             />
             {mode != 'create' &&
