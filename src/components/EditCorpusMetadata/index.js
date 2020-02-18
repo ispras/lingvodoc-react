@@ -111,6 +111,7 @@ class EditCorpusMetadata extends React.Component {
   onChangeValue(kind, data) {
     const callback =() => {
       if (this.props.onChange) {
+        console.log( this.state );
         this.props.onChange(this.state);
       }
     };
@@ -217,8 +218,21 @@ class EditCorpusMetadata extends React.Component {
     }
   }
 
-  settlementSelected () {
-    console.log( 'settlementSelected' );
+  settlementSelected ( settlement ) {
+    const callback =() => {
+      if ( this.props.onChange ) {
+        this.props.onChange( this.state );
+      }
+    };
+
+    const isSettlementAdded = this.settlementsOptions.some( ( item ) => {
+      return item.value === settlement;
+    });
+
+    if ( !isSettlementAdded ) {
+      this.settlementsOptions.push({ text: settlement, value: settlement });
+      this.setState({ humanSettlement: this.state.humanSettlement.concat([ settlement ]) }, callback );
+    }
   }
 
   componentWillMount() {
@@ -299,9 +313,9 @@ class EditCorpusMetadata extends React.Component {
             <SelectSettlementModal
               content={ SelectSettlementMap }
               trigger={
-                <Button>Open Map</Button>
+                <Button onClick={ () => { console.log(  ); } }>Open Map</Button>
               }
-              callback = { this.settlementSelected }
+              callback = { this.settlementSelected.bind( this ) }
             />
             <Form.Dropdown fluid multiple selection search allowAdditions
               label={getTranslation("Human settlement")}
