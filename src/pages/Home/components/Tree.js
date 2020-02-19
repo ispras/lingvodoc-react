@@ -19,7 +19,7 @@ function toId(arr, prefix = null) {
 }
 
 const Perspective = ({ perspective: p }) => (
-  <Dropdown.Item as={Link} to={`dictionary/${toId(p.get('parent_id'))}/perspective/${toId(p.get('id'))}`}>
+  <Dropdown.Item as={Link} to={`/dictionary/${toId(p.get('parent_id'))}/perspective/${toId(p.get('id'))}`}>
     {/* Permissions are shown in desktop or proxy version only */}
     {(config.buildType === 'desktop' || config.buildType === 'proxy') && (
       <span>
