@@ -4,7 +4,7 @@ import image from '../../images/bilingual.jpg';
 import imageDictionaries from '../../images/dictionaries.jpg';
 import imageLanguage from '../../images/languages.png';
 import { Link } from 'react-router-dom';
-import Home from '../Home';
+
 import { getTranslation } from 'api/i18n';
 class TreeRoute extends React.Component {
   constructor(props) {
@@ -23,14 +23,14 @@ class TreeRoute extends React.Component {
           </div>
           <div className="img-block">
             <p>{getTranslation('Language corpora')}</p>
-            <Link to='/dashboard/corpora'><img className='img ' src={imageLanguage} /></Link>
+            <Link to='/corpora_all'><img className='img ' src={imageLanguage} /></Link>
           </div>
           <div className="img-block">
             <p>{getTranslation('Bilingual corpora')}</p>
             <Link to='/dashboard/bilingual'> <img className='img ' src={image} /></Link>
           </div>
         </div>
-        <Home/>
+     
       </div>
 
     );

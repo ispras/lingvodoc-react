@@ -1,7 +1,7 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 
-import Home from 'pages/Home';
+
 import Info from 'pages/Info';
 import Search from 'pages/Search';
 import DialeqtImport from 'pages/DialeqtImport';
@@ -19,7 +19,7 @@ import Requests from 'pages/Requests';
 import EditTranslations from 'pages/EditTranslations';
 import Organizations from 'pages/Organizations';
 import TopSectionSelector from 'pages/TopSectionSelector';
-
+import NewsEditor from 'pages/NewsEditor';
 
 import DictionariesAll from 'pages/DictionaryAll';
 import TreeRoute from 'pages/TreeRoute';
@@ -27,7 +27,8 @@ import ToolsRoute from 'pages/ToolsRoute'
 import DashboardRoute from 'pages/DashboardRoute';
 import OrganizationRoute from 'pages/OrganizationRoute'
 import SupportRoute from 'pages/SupportRoute';
-import NoGrants from 'pages/NoGrants'
+import NoGrants from 'pages/NoGrants';
+import CorporaAll from 'pages/CorporaAll';
 import config from 'config';
 
 const Routes = () => (
@@ -40,7 +41,7 @@ const Routes = () => (
     <Route path="/dashboard/corpora" component={CorpusDashboard} />
     <Route path="/dashboard/create_dictionary" component={CreateDictionary} />
     <Route path="/dashboard/create_corpus" component={CreateCorpus} />
-    <Route path="/dashboard/dictionaries_all" component={DictionariesAll}/>
+    <Route path="/dashboard/dictionaries_all" component={DictionariesAll} />
     <Route path="/grants" component={Grants} />
     <Route path="/requests" component={Requests} />
     <Route path="/map" component={Map} />
@@ -53,17 +54,18 @@ const Routes = () => (
     <Route path="/files" component={Files} />
     <Route path="/edit_translations" component={EditTranslations} />
     <Route path="/organizations" component={Organizations} />
-    <Route path="/treeRoute" component={TreeRoute}/>
-    <Route path="/toolsRoute" component={ToolsRoute}/>
-    <Route path="/dashboardRoute" component={DashboardRoute}/>
-    <Route path="/organizationRoute" component={OrganizationRoute}/>
-    <Route path="/supportRoute" component={SupportRoute}/>
-    <Route path="/no_grants" component={NoGrants}/>
-
+    <Route path="/treeRoute" component={TreeRoute} />
+    <Route path="/toolsRoute" component={ToolsRoute} />
+    <Route path="/dashboardRoute" component={DashboardRoute} />
+    <Route path="/organizationRoute" component={OrganizationRoute} />
+    <Route path="/supportRoute" component={SupportRoute} />
+    <Route path="/no_grants" component={NoGrants} />
+    <Route path="/corpora_all" component={CorporaAll} />
+    <Route path="/news_editor" component={NewsEditor}/>
     <Route component={NotFound} />
 
 
-    
+
 
   </Switch>
 );
