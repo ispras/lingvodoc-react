@@ -22,13 +22,14 @@ import TopSectionSelector from 'pages/TopSectionSelector';
 import NewsEditor from 'pages/NewsEditor';
 
 import DictionariesAll from 'pages/DictionaryAll';
-import TreeRoute from 'pages/TreeRoute';
+import LanguagesDatabasesRoute from 'pages/TreeRoute';
 import ToolsRoute from 'pages/ToolsRoute'
 import DashboardRoute from 'pages/DashboardRoute';
 import OrganizationRoute from 'pages/OrganizationRoute'
 import SupportRoute from 'pages/SupportRoute';
 import NoGrants from 'pages/NoGrants';
 import CorporaAll from 'pages/CorporaAll';
+import NewsList from 'pages/NewsList';
 import config from 'config';
 
 const Routes = () => (
@@ -54,7 +55,7 @@ const Routes = () => (
     <Route path="/files" component={Files} />
     <Route path="/edit_translations" component={EditTranslations} />
     <Route path="/organizations" component={Organizations} />
-    <Route path="/treeRoute" component={TreeRoute} />
+    <Route path="/LanguagesDatabasesRoute" component={LanguagesDatabasesRoute} />
     <Route path="/toolsRoute" component={ToolsRoute} />
     <Route path="/dashboardRoute" component={DashboardRoute} />
     <Route path="/organizationRoute" component={OrganizationRoute} />
@@ -62,6 +63,7 @@ const Routes = () => (
     <Route path="/no_grants" component={NoGrants} />
     <Route path="/corpora_all" component={CorporaAll} />
     <Route path="/news_editor" component={NewsEditor}/>
+    <Route path="/news_list" component={NewsList}/>
     <Route component={NotFound} />
 
 
