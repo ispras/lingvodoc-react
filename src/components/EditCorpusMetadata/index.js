@@ -4,8 +4,8 @@ import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { getTranslation } from 'api/i18n';
-import SelectSettlementMap from './SelectSettlementMap';
-import SelectSettlementModal from './SelectSettlementModal';
+import SelectSettlementMap from '../SelectSettlement/SelectSettlementMap';
+import SelectSettlementModal from '../SelectSettlement/SelectSettlementModal';
 
 const getMetadataAlternativesQuery = gql`
   query getMetadataAlternatives {
