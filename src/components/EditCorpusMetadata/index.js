@@ -350,7 +350,7 @@ class EditCorpusMetadata extends React.Component {
         <Segment>
           <Form.Group widths='equal'>
             <Form.Input fluid
-              label={getTranslation("Title Of The Work")}
+              label={getTranslation("Title of the work")}
               value={titleOfTheWork}
               onChange={(event, data) => this.onChangeValue('titleOfTheWork', data)}
             />
@@ -386,7 +386,7 @@ class EditCorpusMetadata extends React.Component {
         <Segment>
           <Form.Group widths='equal'>
             <Form.Input fluid
-              label={getTranslation("Time Of Writing")}
+              label={getTranslation("Time of writing")}
               value={timeOfWriting}
               onChange={(event, data) => this.onChangeValue('timeOfWriting', data)}
             />
@@ -404,7 +404,7 @@ class EditCorpusMetadata extends React.Component {
         <Segment>
           <Form.Group widths='equal'>
             <Form.Input fluid
-              label={getTranslation("Quantitative Characteristic")}
+              label={getTranslation("Quantitative characteristic")}
               value={quantitativeCharacteristic}
               onChange={(event, data) => this.onChangeValue('quantitativeCharacteristic', data)}
             />
@@ -422,7 +422,7 @@ class EditCorpusMetadata extends React.Component {
         <Segment>
           <Form.Group widths='equal'>
             <Form.Input fluid
-              label={getTranslation("Bibliographic Data Of The Source")}
+              label={getTranslation("Bibliographic data of the source")}
               value={bibliographicDataOfTheSource}
               onChange={(event, data) => this.onChangeValue('bibliographicDataOfTheSource', data)}
             />
@@ -458,7 +458,7 @@ class EditCorpusMetadata extends React.Component {
         <Segment>
           <Form.Group widths='equal'>
             <Form.Input fluid
-              label={getTranslation("Bibliographic Data Of The Translation")}
+              label={getTranslation("Bibliographic data of the translation")}
               value={bibliographicDataOfTheTranslation}
               onChange={(event, data) => this.onChangeValue('bibliographicDataOfTheTranslation', data)}
             />
