@@ -30,6 +30,7 @@ import SupportRoute from 'pages/SupportRoute';
 import NoGrants from 'pages/NoGrants';
 import CorporaAll from 'pages/CorporaAll';
 import NewsList from 'pages/NewsList';
+import News from '../components/News';
 import config from 'config';
 
 const Routes = () => (
@@ -64,6 +65,7 @@ const Routes = () => (
     <Route path="/corpora_all" component={CorporaAll} />
     <Route path="/news_editor" component={NewsEditor}/>
     <Route path="/news_list" component={NewsList}/>
+    <Route path="/news/:news_one" component={News}/>
     <Route component={NotFound} />
 
 

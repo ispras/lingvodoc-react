@@ -41,8 +41,7 @@ class arr extends React.Component {
             <div>{this.state.test5.map(news_one => (
                 <li key={news_one.news_id}>
                     <h2>{news_one.title}</h2>
-                    {/* <Link to="/news/${news.news_id}" component={News}></Link>
-    {news.description} */}
+                    <Link to={`/news/${news_one.news_id}`} ></Link>
                 </li>
             ))}</div>
         )
