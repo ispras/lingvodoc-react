@@ -256,6 +256,7 @@ const Home = (props) => {
         )}
         {!grantsMode && (
           <AllDicts
+            location={props.location}
             languagesTree={languagesTree}
             dictionaries={dicts}
             perspectives={perspectivesList}
