@@ -1,13 +1,19 @@
-.topSectionSelector {
+.top-section-selector_icon{
   position: relative;
   margin-top: 50px;
   margin-bottom: 200px;
   text-align: center;
+  width: 80vw;
+  display: flex;
   .img {
     width: 180px;
     height: 100px;
     cursor: pointer;
     margin: 20px;
+  }
+  .icon{
+    display: inline-flex;
+    position: relative;
   }
   label {
     position: absolute;
@@ -35,4 +41,7 @@
     opacity: 0;
   }
  
+}
+.top-section-selector{
+  display: flex;
 }

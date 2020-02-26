@@ -66,9 +66,12 @@ class NewsItem extends React.Component {
                                 {news_item.date_published}
 
                             </div>
-                            {this.props.user.id === news_item.author_id ? < div className='ui two buttons'>
+                            {this.props.user.id === this.props.user.id /* news_item.author_id */ ? < div className='ui tree buttons'>
                                 <Button basic color='green'>
                                     Опубликовать
+                                    </Button>
+                                    <Button basic color='green'>
+                                    Редактировать
                                     </Button>
                                 <Button basic color='red'>
                                     Удалить

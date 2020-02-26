@@ -1,11 +1,11 @@
 .news_list {
-    li{
-        list-style-type: none;
-        margin-bottom: 30px;
-    }
-    a{
-    color:black;
-    }
+  li {
+    list-style-type: none;
+    margin-bottom: 30px;
+  }
+  a {
+    color: black;
+  }
   .card {
     width: 100%;
     display: flex;
@@ -14,23 +14,24 @@
       font-size: 20px;
       text-decoration: underline;
     }
-    .content{
+    .content {
       display: inline-flex;
-      .description{
-          width: 50%;
+      width: 100%;
+      .description {
+        width: 50%;
       }
-      .date_published{
-          padding-left: 20px;
-        width: 30%;
+      .date_published {
+        padding-left: 20px;
+        width: 20%;
         font-size: 12px;
       }
-      .buttons{
+      .buttons {
         width: 20%;
         height: 60px;
       }
     }
   }
 }
-h1{
-    color: white;
+h1 {
+  color: white;
 }
