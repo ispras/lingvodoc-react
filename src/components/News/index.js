@@ -1,15 +1,21 @@
 import React from 'react';
+import { Header } from 'semantic-ui-react'
+import './styles.scss';
+const NewsItem = (props) => {
+    console.log(props, 'props news')
+    return (
+        <div className="news">
+            <Header as='h1'>
+                {props.location.props.title}
+            </Header>
+            <main>
+                {props.location.props.text}
+            </main>
 
-
-const test=()=>{
-    return(
-        <div>
-
-
-        <h1>sdafffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff</h1>
         </div>
     )
 }
 
-export default test;
+
+export default (NewsItem);
 

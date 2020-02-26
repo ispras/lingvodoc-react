@@ -1,71 +1,96 @@
 import React from 'react';
-import { graphql, withApollo } from 'react-apollo';
+import { withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
 import './styles.scss';
 import { Link } from 'react-router-dom';
-import News from '../../components/News';
-import test from '../../components/News';
-import { render } from 'enzyme';
+import { connect } from 'react-redux';
+import { Card, Button } from 'semantic-ui-react';
+
+
+
 const news = gql`
         query{
-            news(is_visible:true){
+            news(is_visible:true, locale: "russian"){
             news_id
             author
+            author_id
             title
             description
+            text
+            date_published
             }
      }`;
-class arr extends React.Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-            test5: []
-        }
-        this.myFun=this.myFun.bind(this)
-        this.myFun()
-    }
-    myFun = () => {
-        const { client } = this.props;
-        client.query({
-            query: news
-        }).then(result => {
-            console.log('yes', result.data.news)
-            this.setState({ test5: result.data.news })
-        }
-        )
-    }
-    render() {
 
 
-        return (
-            <div>{this.state.test5.map(news_one => (
-                <li key={news_one.news_id}>
-                    <h2>{news_one.title}</h2>
-                    <Link to={`/news/${news_one.news_id}`} ></Link>
-                </li>
-            ))}</div>
-        )
-    }
-
-}
-
-
-
-
-const Test = withApollo(arr)
-
-const NewsList = () => {
+const NewsList = (props) => {
+    const { user } = props;
     return (
         <div>
             <h1>Все новости</h1>
-            <Test />
+            <NewsItemApollo user={user} />
         </div>
     )
 }
 
-/* export default (graphql(news))(NewsList); */
+class NewsItem extends React.Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            newsArr: []
+        }
+        this.queryNews = this.queryNews.bind(this)
+        this.queryNews()
+    }
+    queryNews = () => {
+        const { client } = this.props;
 
-export default NewsList
+        client.query({
+            query: news
+        }).then(result => {
+
+            this.setState({ newsArr: result.data.news })
+        }
+        )
+    }
+    render() {
+        return (
+            <div className='news_list'>{this.state.newsArr.map(news_item => (
+
+                <li key={news_item.news_id}>
+                    <Card>
+                        <Card.Header><Link to={{ pathname: `/news/${news_item.news_id}`, props: news_item }}>{news_item.title}</Link></Card.Header>
+                        <Card.Content extra>
+                            <div className="description">     {news_item.description}</div>
+                            <div className="date_published">
+                                <h3>Дата публикации</h3>
+                                {news_item.date_published}
+
+                            </div>
+                            {this.props.user.id === news_item.author_id ? < div className='ui two buttons'>
+                                <Button basic color='green'>
+                                    Опубликовать
+                                    </Button>
+                                <Button basic color='red'>
+                                    Удалить
+                                    </Button>
+                            </div> : null}
+
+
+
+                        </Card.Content>
+                    </Card>
+
+                </li>
+            ))
+            }</div>
+
+        )
+    }
+
+}
+
+const NewsItemApollo = withApollo(NewsItem);
+export default connect(state => state.user)(NewsList)
 
 
 

@@ -1,3 +1,36 @@
-li{
+.news_list {
+    li{
+        list-style-type: none;
+        margin-bottom: 30px;
+    }
+    a{
+    color:black;
+    }
+  .card {
+    width: 100%;
+    display: flex;
+    .header {
+      font-weight: bold;
+      font-size: 20px;
+      text-decoration: underline;
+    }
+    .content{
+      display: inline-flex;
+      .description{
+          width: 50%;
+      }
+      .date_published{
+          padding-left: 20px;
+        width: 30%;
+        font-size: 12px;
+      }
+      .buttons{
+        width: 20%;
+        height: 60px;
+      }
+    }
+  }
+}
+h1{
     color: white;
 }
