@@ -10,6 +10,7 @@ import { openRoles } from 'ducks/roles';
 import { openPerspectivePropertiesModal } from 'ducks/perspectiveProperties';
 import { openStatistics } from 'ducks/statistics';
 import { getTranslation } from 'api/i18n';
+import { Link } from 'react-router-dom';
 
 const queryPerspectivePath = gql`
   query queryPerspectivePath($id: LingvodocID!) {
@@ -43,6 +44,62 @@ class PerspectivePath extends React.Component {
     super(props);
   }
 
+  getCommonTreeSection ({ treeElement }) {
+    const section = {
+      key:     null,
+      content: null
+    };
+
+    section.key     = treeElement.id;
+    section.link    = true;
+    section.content = treeElement.translation;
+    section.as      = Link;
+    section.to = `/dashboard/dictionaries_all?anchor=${ treeElement.id }`;
+
+    return section;
+  };
+
+  getPerspectiveTreeSection ({ treeElement, perspectives, mode, dictionary_id, tree, id, actions }) {
+    const section = {
+      key:     null,
+      content: null
+    };
+
+    section.key     = treeElement.id;
+    section.active  = true;
+    section.content = <Dropdown inline text={ treeElement.translation }>
+                        <Dropdown.Menu>
+                            {perspectives.filter(perspective => perspective.id != tree[0].id).map(perspective => (
+                            <Dropdown.Item
+                              as = 'a'
+                              key = { perspective.id }
+                              href = { `${ window.location.protocol }//${ window.location.host }/dictionary/${ perspective.parent_id.join( '/' ) }/perspective/${ perspective.id.join( '/' ) }/${ mode }` }
+                              icon = 'chevron right'
+                              text = { perspective.translation }
+                            />))
+                            }
+                          <Dropdown.Divider />
+                          <Dropdown.Item
+                            icon = 'users'
+                            text = { getTranslation( `'${ treeElement.translation }' roles...` ) }
+                            onClick = { () => actions.openRoles( id, 'perspective' ) }
+                          />
+                          <Dropdown.Item
+                            icon = 'setting'
+                            text = { getTranslation( `'${ treeElement.translation }' properties...` ) }
+                            onClick = { () => actions.openPerspectivePropertiesModal( id, dictionary_id ) }
+                          />
+                          <Dropdown.Item
+                            icon = 'percent'
+                            text = { getTranslation( `'${ treeElement.translation }' statistics...` ) }
+                            onClick = { () => actions.openStatistics( id, 'perspective' ) }
+                          />
+                        </Dropdown.Menu>
+                      </Dropdown>;
+
+    return section;
+  }
+
   render() {
     const { id, dictionary_id, queryPerspectivePath, queryAvailablePerspectives, mode, className, actions } = this.props;
 
@@ -52,55 +109,20 @@ class PerspectivePath extends React.Component {
 
     const { perspective: { tree } } = queryPerspectivePath;
     const { perspectives } = queryAvailablePerspectives.dictionary;
+
+    const sections = tree.slice().reverse().map((e, index) => {
+      if ( perspectives.length > 1 && index == tree.length - 1 ) {
+        return this.getPerspectiveTreeSection({ treeElement: e, perspectives, mode, dictionary_id, tree, id, actions })
+      } else {
+        return this.getCommonTreeSection({ treeElement: e });
+      }
+    });
  
     return (
       <Header as="h2" className={className}>
         <Breadcrumb
           icon="right angle"
-          sections={tree.slice().reverse().map((e, index) => {
-            return {
-              key: e.id,
-              content: perspectives.length > 1 && index == tree.length - 1 ?
-
-                <Dropdown inline text={e.translation}>
-                  <Dropdown.Menu>
-                    {perspectives.filter(pers => pers.id != tree[0].id).map(pers => (
-                      <Dropdown.Item
-                        key={pers.id}
-                        as="a"
-                        href={window.location.protocol + '//' + window.location.host + `/dictionary/${pers.parent_id.join('/')}/perspective/${pers.id.join('/')}/${mode}`}
-                        icon="chevron right"
-                        text={pers.translation}
-                      />))
-                    }
-
-                    <Dropdown.Divider />
-
-                    <Dropdown.Item
-                      icon="users"
-                      text={getTranslation(`'${e.translation}' roles...`)}
-                      onClick={() => actions.openRoles(id, 'perspective')}
-                    />
-                    <Dropdown.Item
-                      icon="setting"
-                      text={getTranslation(`'${e.translation}' properties...`)}
-                      onClick={() =>
-                        actions.openPerspectivePropertiesModal(id, dictionary_id)}
-                    />
-                    <Dropdown.Item
-                      icon="percent"
-                      text={getTranslation(`'${e.translation}' statistics...`)}
-                      onClick={() => actions.openStatistics(id, 'perspective')}
-                    />
-
-                  </Dropdown.Menu>
-                </Dropdown> :
-              
-                e.translation,
-
-              link: false
-            };
-          })}
+          sections={ sections }
         />
       </Header>
     );

@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 import { Dropdown, Checkbox, Icon } from 'semantic-ui-react';
 import { toggleDictionary } from 'ducks/home';
 import { checkLanguageId } from './LangsNav';
+import { goToLanguage } from '../common';
 
 import config from 'config';
 
@@ -19,7 +20,7 @@ function toId(arr, prefix = null) {
 }
 
 const Perspective = ({ perspective: p }) => (
-  <Dropdown.Item as={Link} to={`dictionary/${toId(p.get('parent_id'))}/perspective/${toId(p.get('id'))}`}>
+  <Dropdown.Item as={Link} to={`/dictionary/${toId(p.get('parent_id'))}/perspective/${toId(p.get('id'))}`}>
     {/* Permissions are shown in desktop or proxy version only */}
     {(config.buildType === 'desktop' || config.buildType === 'proxy') && (
       <span>
@@ -130,11 +131,35 @@ Node.propTypes = {
   canSelectDictionaries: PropTypes.bool.isRequired,
 };
 
-const Tree = ({ tree, canSelectDictionaries }) => (
-  <ul className="tree">
-    {tree.map(e => <Node key={e.get('id')} node={e} canSelectDictionaries={canSelectDictionaries} />)}
-  </ul>
-);
+class Tree extends React.Component {
+  constructor ( props ) {
+    super( props );
+  }
+
+  componentDidMount () {
+    let query = new URLSearchParams( this.props.location.search );
+    let anchor = query.get( 'anchor' );
+
+    if ( anchor ) {
+      const id = anchor.split( ',' );
+      const el = document.getElementById( `lang_${ id.toString() }`);
+      
+      if ( el ) {
+        goToLanguage( id );
+      }
+    }
+  }
+
+  render () {
+    const { tree, canSelectDictionaries } = this.props;
+    
+    return (
+      <ul className="tree">
+        {tree.map(e => <Node key={e.get('id')} node={e} canSelectDictionaries={canSelectDictionaries} />)}
+      </ul>
+    );
+  }
+}
 
 Tree.propTypes = {
   tree: PropTypes.instanceOf(Immutable.List).isRequired,
@@ -145,4 +170,4 @@ Tree.defaultProps = {
   canSelectDictionaries: false,
 };
 
-export default Tree;
+export default compose()( Tree );

@@ -11,6 +11,7 @@ import Merge from 'components/Merge';
 import NotFound from 'pages/NotFound';
 import PerspectivePath from './PerspectivePath';
 import { getTranslation } from 'api/i18n';
+import smoothScroll from 'utils/smoothscroll';
 
 import './style.scss';
 
@@ -158,62 +159,78 @@ const soundAndMarkup = (perspectiveId, mode, launchSoundAndMarkup) => {
   );
 };
 
-const Perspective = ({
-  perspective,
-  submitFilter,
-  openCognateAnalysisModal,
-  openPhonemicAnalysisModal,
-  openPhonologyModal,
-  launchSoundAndMarkup,
-}) => {
-  const {
-    id, parent_id, mode, page, baseUrl,
-  } = perspective.params;
+const getScrollContainer = ( className ) => document.querySelector(`.${className}`);
 
-  if (!baseUrl) return null;
+class Perspective extends React.Component {
+  constructor ( props ) {
+    super( props );
+  }
 
-  return (
-    <Container fluid className="perspective inverted">
-      <PerspectivePath id={id} dictionary_id={parent_id} mode={mode} />
-      <ModeSelector
-        mode={mode}
-        id={id}
-        baseUrl={baseUrl}
-        filter={perspective.filter}
-        submitFilter={submitFilter}
-        openCognateAnalysisModal={() => openCognateAnalysisModal(id)}
-        openCognateAcousticAnalysisModal={() => openCognateAnalysisModal(id, 'acoustic')}
-        openCognateMultiModal={() => openCognateAnalysisModal(id, 'multi')}
-        openCognateReconstructionModal={() => openCognateAnalysisModal(id, 'reconstruction')}
-        openCognateSuggestionsModal={() => openCognateAnalysisModal(id, 'suggestions')}
-        openPhonemicAnalysisModal={() => openPhonemicAnalysisModal(id)}
-        openPhonologyModal={() => openPhonologyModal(id)}
-        openPhonologicalStatisticalDistanceModal={() => openPhonologyModal(id, 'statistical_distance')}
-        soundAndMarkup={() => soundAndMarkup(id, mode, launchSoundAndMarkup)}
-      />
-      <Switch>
-        <Redirect exact from={baseUrl} to={`${baseUrl}/view`} />
-        {map(MODES, (info, stub) => (
-          <Route
-            key={stub}
-            path={`${baseUrl}/${stub}`}
-            render={() => (
-              <info.component
-                id={id}
-                mode={mode}
-                entitiesMode={info.entitiesMode}
-                page={page}
-                filter={perspective.filter}
-                className="content"
-              />
-            )}
-          />
-        ))}
-        <Route component={NotFound} />
-      </Switch>
-    </Container>
-  );
-};
+  componentDidMount () {
+    const container = getScrollContainer( 'pusher' );
+
+    smoothScroll(0, 0, null, container);
+  }
+
+  render () {
+    const {
+      perspective,
+      submitFilter,
+      openCognateAnalysisModal,
+      openPhonemicAnalysisModal,
+      openPhonologyModal,
+      launchSoundAndMarkup,
+    } = this.props;
+
+    const {
+      id, parent_id, mode, page, baseUrl,
+    } = perspective.params;
+
+    if (!baseUrl) return null;
+
+    return (
+      <Container fluid className="perspective inverted">
+        <PerspectivePath id={id} dictionary_id={parent_id} mode={mode} />
+        <ModeSelector
+          mode={mode}
+          id={id}
+          baseUrl={baseUrl}
+          filter={perspective.filter}
+          submitFilter={submitFilter}
+          openCognateAnalysisModal={() => openCognateAnalysisModal(id)}
+          openCognateAcousticAnalysisModal={() => openCognateAnalysisModal(id, 'acoustic')}
+          openCognateMultiModal={() => openCognateAnalysisModal(id, 'multi')}
+          openCognateReconstructionModal={() => openCognateAnalysisModal(id, 'reconstruction')}
+          openCognateSuggestionsModal={() => openCognateAnalysisModal(id, 'suggestions')}
+          openPhonemicAnalysisModal={() => openPhonemicAnalysisModal(id)}
+          openPhonologyModal={() => openPhonologyModal(id)}
+          openPhonologicalStatisticalDistanceModal={() => openPhonologyModal(id, 'statistical_distance')}
+          soundAndMarkup={() => soundAndMarkup(id, mode, launchSoundAndMarkup)}
+        />
+        <Switch>
+          <Redirect exact from={baseUrl} to={`${baseUrl}/view`} />
+          {map(MODES, (info, stub) => (
+            <Route
+              key={stub}
+              path={`${baseUrl}/${stub}`}
+              render={() => (
+                <info.component
+                  id={id}
+                  mode={mode}
+                  entitiesMode={info.entitiesMode}
+                  page={page}
+                  filter={perspective.filter}
+                  className="content"
+                />
+              )}
+            />
+          ))}
+          <Route component={NotFound} />
+        </Switch>
+      </Container>
+    );
+  }
+}
 
 Perspective.propTypes = {
   perspective: PropTypes.object.isRequired,
@@ -223,5 +240,4 @@ Perspective.propTypes = {
   openPhonologyModal: PropTypes.func.isRequired,
 };
 
-export default
-graphql(launchSoundAndMarkupMutation, { name: 'launchSoundAndMarkup' })(Perspective);
+export default compose(graphql(launchSoundAndMarkupMutation, { name: 'launchSoundAndMarkup' }))(Perspective);
