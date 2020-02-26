@@ -17,14 +17,13 @@ const news = gql`
             }
      }`;
 const News = (props) => {
-    const { data } = props;
-  
+    const {data} = props;
     return (
         <div className='news-widget '>
             <h1>Новости</h1>
             <main>
                 <ul>
-                    {data.news.slice(0,3).map(news_item => (
+                    {data.loading  ? null : data.news.slice(0,3).map(news_item => (
                         <li key={news_item.news_id}>
                             <Link to={{ pathname: `/news/${news_item.news_id}`, props: news_item }}>{news_item.title}</Link>
                           <div className=' description'> {news_item.description}</div> 
