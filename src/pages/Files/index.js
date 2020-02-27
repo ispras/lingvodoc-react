@@ -202,7 +202,7 @@ class Files extends React.Component {
 Files.propTypes = {
   data: PropTypes.shape({
     loading: PropTypes.bool,
-    error: PropTypes.bool,
+    error: PropTypes.object,
     user_blobs: PropTypes.array,
   }).isRequired,
   createBlob: PropTypes.func.isRequired,

@@ -16,7 +16,6 @@ const errorLink = onError(({ networkError = {}, graphQLErrors }) => {
   each(graphQLErrors, (error) => {
     if (error.message === 'this user account is deactivated') {
       window.dispatch(signOut());
-      window.dispatch(push('/'));
     }
     window.logger.err(`GraphQL error: ${error.message}`);
   });
