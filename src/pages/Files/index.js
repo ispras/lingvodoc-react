@@ -188,7 +188,7 @@ class Files extends React.Component {
         <Table.Footer fullWidth>
           <Table.Row>
             <Table.HeaderCell colSpan="5">
-              <input type="file" multiple="false" onChange={this.onFileChange} />
+              <input type="file" onChange={this.onFileChange} />
               <Dropdown button basic options={fileTypes} value={this.state.fileType} onChange={this.onFileTypeChange} />
               <Button basic content={getTranslation("Upload")} onClick={this.uploadBlob} />
             </Table.HeaderCell>
