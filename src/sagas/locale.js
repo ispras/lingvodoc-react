@@ -14,15 +14,15 @@ const getTranslationsQuery = gql`
 `;
 
 function* reloadTranslations(action) {
+  const client = yield select(state => state.apolloClient);
   if (action) {
     locale.set(action.payload.id);
+    yield call([client, client.clearStore]);
   }
-  const client = yield select(state => state.apolloClient);
   const response = yield call(
     client.query,
     {
       query: getTranslationsQuery,
-      fetchPolicy: "network-only",
       variables: { searchstrings: stringsToTranslate }
     }
   );
