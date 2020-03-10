@@ -63,7 +63,7 @@ Image.defaultProps = {
   className: '',
 };
 
-Image.Edit = ({ onSave }) => <input type="file" multiple="false" onChange={e => onSave(e.target.files[0])} />;
+Image.Edit = ({ onSave }) => <input type="file" onChange={e => onSave(e.target.files[0])} />;
 
 Image.Edit.propTypes = {
   onSave: PropTypes.func,

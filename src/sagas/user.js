@@ -30,6 +30,7 @@ export function* signOutRoutine() {
     const client = yield select(state => state.apolloClient);
     yield call([client, client.clearStore]);
     yield call(window.dispatch, push('/'));
+    yield call([client, client.reFetchObservableQueries]);
   } else {
     yield put(err('Could not sign out'));
   }

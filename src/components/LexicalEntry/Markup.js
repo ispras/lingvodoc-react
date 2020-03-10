@@ -117,7 +117,7 @@ Markup.defaultProps = {
   className: '',
 };
 
-Markup.Edit = ({ onSave }) => <input type="file" multiple="false" onChange={e => onSave(e.target.files[0])} />;
+Markup.Edit = ({ onSave }) => <input type="file" onChange={e => onSave(e.target.files[0])} />;
 
 Markup.Edit.propTypes = {
   onSave: PropTypes.func,

@@ -9,6 +9,16 @@ import { getTranslation } from 'api/i18n';
 
 import { grantsQuery, createGrantPermissionMutation } from './graphql';
 
+function dateFormat(timestamp)
+{
+  const date = new Date(timestamp * 1000);
+
+  return (
+    date.getUTCFullYear().toString().padStart(4, '0') + '.' +
+    (date.getUTCMonth() + 1).toString().padStart(2, '0') + '.' +
+    date.getUTCDate().toString().padStart(2, '0'));
+}
+
 class GrantsList extends React.Component {
   constructor(props) {
     super(props);
@@ -27,7 +37,7 @@ class GrantsList extends React.Component {
 
   isOwner(grant) {
     const { data: { user } } = this.props;
-    return !!grant.owners.find(u => user.id === u.id);
+    return !!grant.owners.find(u => user && user.id === u.id);
   }
 
   render() {
@@ -62,8 +72,8 @@ class GrantsList extends React.Component {
                   <a href={grant.grant_url}>{grant.grant_url}</a>
                 </Table.Cell>
                 <Table.Cell>{grant.grant_number}</Table.Cell>
-                <Table.Cell>b</Table.Cell>
-                <Table.Cell>e</Table.Cell>
+                <Table.Cell>{dateFormat(grant.begin)}</Table.Cell>
+                <Table.Cell>{dateFormat(grant.end)}</Table.Cell>
                 <Table.Cell>{grant.owners.map(owner => <div key={owner.id}>{owner.name}</div>)}</Table.Cell>
                 <Table.Cell>
                   {!this.isOwner(grant) && (
