@@ -17,6 +17,8 @@ export const grantsQuery = gql`
         intl_name
         email
       }
+      begin
+      end
     }
     user {
       id
