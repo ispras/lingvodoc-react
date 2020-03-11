@@ -57,6 +57,8 @@ function FormModal(props) {
       onClose={close}
       size="small"
       dimmer="blurring"
+      onClick={e => e.stopPropagation()}
+      onFocus={e => e.stopPropagation()}
     >
       <Modal.Header>{header} {submitting && <Icon loading name="spinner" />}</Modal.Header>
       <Modal.Content>
