@@ -279,6 +279,7 @@ export const stringsToTranslate = [
   "Update",
   "Update dictionary",
   "Upload",
+  "Upload successful",
   "URL with results of saving data should appear soon after clicking save button in the tasks",
   "User",
   "User account activation/deactivation",
