@@ -116,7 +116,8 @@ class Files extends React.Component {
     this.state = {
       fileType: fileTypes[0].value,
       file: undefined,
-      trigger: true
+      trigger: true,
+      filter: ''
     };
     this.uploadBlob = this.uploadBlob.bind(this);
     this.onFileTypeChange = this.onFileTypeChange.bind(this);
@@ -155,8 +156,14 @@ class Files extends React.Component {
     }
 
     const { user_blobs: userBlobs } = data;
-    const blobs = sortByField ? sortFiles(userBlobs, sortByField) : userBlobs;
-    const { file, trigger } = this.state;
+    const { file, trigger, filter } = this.state;
+    let blobs = userBlobs.filter(b => !b.marked_for_deletion);
+    if (filter !== '') {
+      blobs = blobs.filter(b => b.name.includes(filter));
+    }
+    if (sortByField) {
+      blobs = sortFiles(blobs, sortByField);
+    }
 
     return (
       <Table celled compact definition>
@@ -166,6 +173,12 @@ class Files extends React.Component {
               <Input key={trigger} type="file" transparent onChange={this.onFileChange} />
               <Dropdown button basic options={fileTypes} value={this.state.fileType} onChange={this.onFileTypeChange} />
               <Button color="green" content={getTranslation('Upload')} disabled={file === undefined} onClick={this.uploadBlob} />
+              <Input
+                icon={{ name: 'search' }}
+                placeholder={getTranslation('Search')}
+                onChange={event => this.setState({ filter: event.target.value })}
+                style={{ float: 'right', width: '300px' }}
+              />
             </Table.HeaderCell>
           </Table.Row>
           <Table.Row>
