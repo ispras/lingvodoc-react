@@ -98,14 +98,24 @@ const deletePerspectiveRoleMutation = gql`
 `;
 
 class Roles extends React.Component {
+
   static hasRole(user, role) {
     return some(role.users, u => u.id === user.id);
   }
 
   constructor(props) {
     super(props);
+
     this.onToggleRole = this.onToggleRole.bind(this);
     this.onAddUser = this.onAddUser.bind(this);
+  }
+
+  componentWillReceiveProps(props) {
+    const { data, close } = props;
+
+    if (data.error) {
+      close();
+    }
   }
 
   onToggleRole(user, role) {
@@ -131,11 +141,11 @@ class Roles extends React.Component {
   render() {
     const { mode, data } = this.props;
 
-    if (data.loading) {
+    if (data.loading || data.error) {
       return null;
     }
 
-    const { all_basegroups: baseGroups, users: allUsers, refetch } = data;
+    const { all_basegroups: baseGroups, users: allUsers } = data;
     const { roles: { roles_users: rolesUsers } } = data[mode];
 
     // list of all base groups that can be applied to target
@@ -173,13 +183,13 @@ class Roles extends React.Component {
           <Table.Header>
             <Table.Row>
               <Table.HeaderCell>{getTranslation('Role')}</Table.HeaderCell>
-              {users.map(user => <Table.HeaderCell>{user.name}</Table.HeaderCell>)}
+              {users.map(user => <Table.HeaderCell key={user.id}>{user.name}</Table.HeaderCell>)}
             </Table.Row>
           </Table.Header>
 
           <Table.Body>
             {permissions.map(role => (
-              <Table.Row key={role.id}>
+              <Table.Row key={role.group.id}>
                 <Table.Cell>{role.group.name}</Table.Cell>
                 {users.map(user => (
                   <Table.Cell key={user.id}>
@@ -217,6 +227,7 @@ Roles.propTypes = {
     all_basegroups: PropTypes.array,
     users: PropTypes.array,
   }).isRequired,
+  close: PropTypes.func.isRequired
 };
 
 export const DictionaryRoles = compose(
