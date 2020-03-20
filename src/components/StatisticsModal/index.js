@@ -334,8 +334,11 @@ class StatisticsModal extends React.Component {
         onClose={this.props.closeStatistics}
         dimmer
         open
-        size="fullscreen">
-
+        size="fullscreen"
+      >
+        <Modal.Header>
+          {getTranslation("Statistics")}
+        </Modal.Header>
         <Modal.Content>
           <div>
             {getTranslation('From:')}
@@ -360,13 +363,12 @@ class StatisticsModal extends React.Component {
           <Container textAlign="center">
             <Button basic content={getTranslation("Show statistics")} onClick={this.getStatistics} />
           </Container>
-
           <Container>
             <Statistics statistics={statistics} mode={mode} />
           </Container>
         </Modal.Content>
         <Modal.Actions>
-          <Button icon="minus" content={getTranslation("Cancel")} onClick={this.props.closeStatistics} />
+          <Button icon="minus" content={getTranslation("Close")} onClick={this.props.closeStatistics} />
         </Modal.Actions>
 
       </Modal>

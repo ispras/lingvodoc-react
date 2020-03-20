@@ -162,7 +162,7 @@ class P extends React.Component {
                 />
                 <Dropdown.Item
                   icon="percent"
-                  text={getTranslation("Statistics...")}
+                  text={`${getTranslation("Statistics")}...`}
                   onClick={() => actions.openStatistics(id, 'perspective')}
                 />
                 <Dropdown.Divider />
@@ -280,7 +280,7 @@ class D extends React.Component {
                 />
                 <Dropdown.Item
                   icon="percent"
-                  text={getTranslation("Statistics...")}
+                  text={`${getTranslation("Statistics")}...`}
                   onClick={() => actions.openStatistics(id, 'dictionary')}
                 />
                 {/*<Dropdown.Item icon="circle" text={getTranslation("Create a new perspective...")} />*/}

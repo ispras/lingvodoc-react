@@ -253,7 +253,7 @@ export const stringsToTranslate = [
   "Split contents of the field on whitespace before matching",
   "Spread",
   "Start typing language name",
-  "Statistics...",
+  "Statistics",
   "Storage",
   "Subject",
   "Submit",
