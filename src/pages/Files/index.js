@@ -170,8 +170,19 @@ class Files extends React.Component {
         <Table.Header fullWidth>
           <Table.Row>
             <Table.HeaderCell colSpan="5">
-              <Input key={trigger} type="file" transparent onChange={this.onFileChange} />
-              <Dropdown button basic options={fileTypes} value={this.state.fileType} onChange={this.onFileTypeChange} />
+              <Button onClick={() => document.getElementById('file-select').click()} style={{ marginRight: '1rem' }}>
+                {`${getTranslation('Browse')}...`}
+              </Button>
+              { file === undefined ? getTranslation('No file selected') : file.name }
+              <Input id="file-select" key={trigger} type="file" onChange={this.onFileChange} style={{ display: 'none' }} />
+              <Dropdown
+                button
+                basic
+                options={fileTypes}
+                value={this.state.fileType}
+                onChange={this.onFileTypeChange}
+                style={{ margin: '0 1rem 0 1rem' }}
+              />
               <Button color="green" content={getTranslation('Upload')} disabled={file === undefined} onClick={this.uploadBlob} />
               <Input
                 icon={{ name: 'search' }}
