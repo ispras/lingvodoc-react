@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { compose, onlyUpdateForKeys } from 'recompose';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
-import { Container, Dropdown, Table, Radio } from 'semantic-ui-react';
+import { Container, Dropdown, Table, Radio, Button, Icon } from 'semantic-ui-react';
 import { some, find, filter, union, uniq, without } from 'lodash';
 import { getTranslation } from 'api/i18n';
 
@@ -106,8 +106,13 @@ class Roles extends React.Component {
   constructor(props) {
     super(props);
 
+    this.state = {
+      selectedUser: undefined
+    };
+
     this.onToggleRole = this.onToggleRole.bind(this);
     this.onAddUser = this.onAddUser.bind(this);
+    this.onDeleteUser = this.onDeleteUser.bind(this);
   }
 
   componentWillReceiveProps(props) {
@@ -128,25 +133,33 @@ class Roles extends React.Component {
     }).then(refetch);
   }
 
-  onAddUser(event, data, permissions) {
+  onAddUser(permissions) {
     const { id, addRole, data: { refetch } } = this.props;
+    const { selectedUser } = this.state;
 
-    const userId = data.value;
-    const rolesIds = permissions.map(p => p.group.id);
     addRole({
-      variables: { id, userId, rolesIds },
+      variables: { id, userId: selectedUser, rolesIds: permissions.map(p => p.group.id) },
+    }).then(refetch);
+  }
+
+  onDeleteUser(user, permissions) {
+    const { id, deleteRole, data: { refetch } } = this.props;
+    deleteRole({
+      variables: { id, userId: user, rolesIds: permissions.map(p => p.group.id) }
     }).then(refetch);
   }
 
   render() {
     const { mode, data } = this.props;
 
-    if (data.loading || data.error) {
+    if (data.error) {
       return null;
     }
 
-    const { all_basegroups: baseGroups, users: allUsers } = data;
-    const { roles: { roles_users: rolesUsers } } = data[mode];
+    const { selectedUser } = this.state;
+    const baseGroups = data.all_basegroups ? data.all_basegroups : [];
+    const allUsers = data.users ? data.users : [];
+    const rolesUsers = data[mode] ? data[mode].roles.roles_users : [];
 
     // list of all base groups that can be applied to target
     const groups = filter(baseGroups, (g) => {
@@ -202,16 +215,33 @@ class Roles extends React.Component {
                 ))}
               </Table.Row>
             ))}
+            <Table.Row>
+              <Table.Cell />
+              {users.map(user => (
+                <Table.Cell key={user.id}>
+                  <Button
+                    circular
+                    icon="delete"
+                    color="red"
+                    title={getTranslation('Remove user')}
+                    onClick={() => this.onDeleteUser(user.id, permissions)}
+                  />
+                </Table.Cell>
+              ))}
+            </Table.Row>
           </Table.Body>
         </Table>
 
         <Dropdown
-          placeholder={getTranslation("Select user")}
+          placeholder={getTranslation('Select user')}
           search
           selection
           options={userOptions}
-          onChange={(e, d) => this.onAddUser(e, d, permissions)}
+          onChange={(e, d) => this.setState({ selectedUser: d.value })}
         />
+        <Button color="green" disabled={selectedUser === undefined} onClick={() => this.onAddUser(permissions)} style={{ marginLeft: '1rem' }}>
+          {getTranslation('Add')}
+        </Button>
       </Container>
     );
   }

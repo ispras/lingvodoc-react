@@ -29,15 +29,14 @@ const RolesModal = ({
       onClose={actions.close}
       open={visible}
       dimmer="blurring"
-      size="small">
-
+      size="large"
+    >
       <Modal.Content>
         <Component id={id} mode={mode} close={actions.close} />
       </Modal.Content>
       <Modal.Actions>
         <Button icon="minus" content={getTranslation("Close")} onClick={actions.close} />
       </Modal.Actions>
-
     </Modal>
   );
 };
