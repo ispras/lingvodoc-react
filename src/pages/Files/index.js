@@ -4,7 +4,7 @@ import { compose, pure, withReducer } from 'recompose';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import { sortBy, reverse } from 'lodash';
-import { Table, Button, Dropdown, Icon } from 'semantic-ui-react';
+import { Table, Button, Dropdown, Icon, Input } from 'semantic-ui-react';
 import { compositeIdToString } from 'utils/compositeId';
 import { getTranslation } from 'api/i18n';
 
@@ -57,7 +57,7 @@ const Blob = ({ blob, deleteBlob }) => {
       <Table.Cell>{blob.data_type}</Table.Cell>
       <Table.Cell>{new Date(blob.created_at * 1e3).toLocaleString()}</Table.Cell>
       <Table.Cell>
-        <Button basic content={getTranslation("Remove")} onClick={remove} />
+        <Button basic content={getTranslation('Remove')} onClick={remove} />
       </Table.Cell>
     </Table.Row>
   );
@@ -115,7 +115,9 @@ class Files extends React.Component {
 
     this.state = {
       fileType: fileTypes[0].value,
-      file: null,
+      file: undefined,
+      trigger: true,
+      filter: ''
     };
     this.uploadBlob = this.uploadBlob.bind(this);
     this.onFileTypeChange = this.onFileTypeChange.bind(this);
@@ -123,15 +125,11 @@ class Files extends React.Component {
   }
 
   onFileTypeChange(event, target) {
-    this.setState({
-      fileType: target.value,
-    });
+    this.setState({ fileType: target.value });
   }
 
   onFileChange(e) {
-    this.setState({
-      file: e.target.files[0],
-    });
+    this.setState({ file: e.target.files[0] });
   }
 
   uploadBlob() {
@@ -141,8 +139,12 @@ class Files extends React.Component {
       refetchQueries: [
         {
           query: userBlobsQuery,
-        },
+        }
       ],
+    }).then(() => {
+      const { trigger } = this.state;
+      window.logger.suc(getTranslation('Upload successful'));
+      this.setState({ file: undefined, trigger: !trigger });
     });
   }
 
@@ -154,11 +156,42 @@ class Files extends React.Component {
     }
 
     const { user_blobs: userBlobs } = data;
-    const blobs = sortByField ? sortFiles(userBlobs, sortByField) : userBlobs;
+    const { file, trigger, filter } = this.state;
+    let blobs = userBlobs.filter(b => !b.marked_for_deletion);
+    if (filter !== '') {
+      blobs = blobs.filter(b => b.name.includes(filter));
+    }
+    if (sortByField) {
+      blobs = sortFiles(blobs, sortByField);
+    }
 
     return (
       <Table celled compact definition>
         <Table.Header fullWidth>
+          <Table.Row>
+            <Table.HeaderCell colSpan="5">
+              <Button onClick={() => document.getElementById('file-select').click()} style={{ marginRight: '1rem' }}>
+                {`${getTranslation('Browse')}...`}
+              </Button>
+              { file === undefined ? getTranslation('No file selected') : file.name }
+              <Input id="file-select" key={trigger} type="file" onChange={this.onFileChange} style={{ display: 'none' }} />
+              <Dropdown
+                button
+                basic
+                options={fileTypes}
+                value={this.state.fileType}
+                onChange={this.onFileTypeChange}
+                style={{ margin: '0 1rem 0 1rem' }}
+              />
+              <Button color="green" content={getTranslation('Upload')} disabled={file === undefined} onClick={this.uploadBlob} />
+              <Input
+                icon={{ name: 'search' }}
+                placeholder={getTranslation('Search')}
+                onChange={event => this.setState({ filter: event.target.value })}
+                style={{ float: 'right', width: '300px' }}
+              />
+            </Table.HeaderCell>
+          </Table.Row>
           <Table.Row>
             <SortableColumnHeader
               onSortModeChange={order => dispatch({ type: 'SET_SORT_MODE', payload: { prop: 'name', order } })}
@@ -184,16 +217,6 @@ class Files extends React.Component {
             .filter(b => !b.marked_for_deletion)
             .map(blob => <BlobWithData key={compositeIdToString(blob.id)} blob={blob} />)}
         </Table.Body>
-
-        <Table.Footer fullWidth>
-          <Table.Row>
-            <Table.HeaderCell colSpan="5">
-              <input type="file" onChange={this.onFileChange} />
-              <Dropdown button basic options={fileTypes} value={this.state.fileType} onChange={this.onFileTypeChange} />
-              <Button basic content={getTranslation("Upload")} onClick={this.uploadBlob} />
-            </Table.HeaderCell>
-          </Table.Row>
-        </Table.Footer>
       </Table>
     );
   }

@@ -32,7 +32,7 @@ const RolesModal = ({
       size="small">
 
       <Modal.Content>
-        <Component id={id} mode={mode} />
+        <Component id={id} mode={mode} close={actions.close} />
       </Modal.Content>
       <Modal.Actions>
         <Button icon="minus" content={getTranslation("Close")} onClick={actions.close} />
