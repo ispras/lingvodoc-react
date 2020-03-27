@@ -212,6 +212,7 @@ export const stringsToTranslate = [
   "Remove dictionary",
   "Remove lexical entries",
   "Remove perspective",
+  "Remove user",
   "Request has been sent to the grant's owner.",
   "Requests",
   "Role",

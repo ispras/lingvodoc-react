@@ -10,6 +10,8 @@ import { isEqual, map } from 'lodash';
 import { connect } from 'react-redux';
 import { compositeIdToString as id2str } from 'utils/compositeId';
 
+import './style.scss';
+
 export const perspectiveColumnsFieldsQuery = gql`
   query perspectiveColumnsFields($perspectiveId: LingvodocID!) {
     perspective(id: $perspectiveId) {
