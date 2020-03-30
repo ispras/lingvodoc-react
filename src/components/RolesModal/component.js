@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { compose, onlyUpdateForKeys } from 'recompose';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
-import { Container, Dropdown, Table, Radio, Button, Icon } from 'semantic-ui-react';
+import { Container, Dropdown, Table, Radio, Button } from 'semantic-ui-react';
 import { some, find, filter, union, uniq, without } from 'lodash';
 import { getTranslation } from 'api/i18n';
 
@@ -139,7 +139,9 @@ class Roles extends React.Component {
 
     addRole({
       variables: { id, userId: selectedUser, rolesIds: permissions.map(p => p.group.id) },
-    }).then(refetch);
+    }).then(() => {
+      refetch().then(() => this.setState({ selectedUser: undefined }));
+    });
   }
 
   onDeleteUser(user, permissions) {
@@ -233,10 +235,13 @@ class Roles extends React.Component {
         </Table>
 
         <Dropdown
+          key={selectedUser}
           placeholder={getTranslation('Select user')}
           search
           selection
           options={userOptions}
+          selectOnBlur={false}
+          value={selectedUser}
           onChange={(e, d) => this.setState({ selectedUser: d.value })}
         />
         <Button color="green" disabled={selectedUser === undefined} onClick={() => this.onAddUser(permissions)} style={{ marginLeft: '1rem' }}>
