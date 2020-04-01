@@ -4,9 +4,9 @@ import { combineReducers } from 'redux';
 export const OPEN_ROLES = '@roles/OPEN';
 export const CLOSE_ROLES = '@roles/CLOSE';
 
-export const openRoles = (id, mode) => ({
+export const openRoles = (id, mode, title) => ({
   type: OPEN_ROLES,
-  payload: { id, mode },
+  payload: { id, mode, title }
 });
 
 export const closeRoles = () => ({ type: CLOSE_ROLES });
@@ -40,8 +40,18 @@ const mode = (state = 'dictionary', action) => {
   }
 };
 
+const title = (state = null, action) => {
+  switch (action.type) {
+    case OPEN_ROLES:
+      return action.payload.title;
+    default:
+      return state;
+  }
+};
+
 export default combineReducers({
   visible,
   id,
   mode,
+  title
 });

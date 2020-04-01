@@ -154,16 +154,20 @@ class P extends React.Component {
           <Menu>
             <Dropdown text={translation} pointing className="link item">
               <Dropdown.Menu>
-                <Dropdown.Item icon="users" text={getTranslation("Roles...")} onClick={() => actions.openRoles(id, 'perspective')} />
+                <Dropdown.Item
+                  icon="users"
+                  text={`${getTranslation('Roles')}...`}
+                  onClick={() => actions.openRoles(id, 'perspective', getTranslation('Roles'))}
+                />
                 <Dropdown.Item
                   icon="setting"
-                  text={getTranslation("Properties...")}
-                  onClick={() => actions.openPerspectivePropertiesModal(id, parent_id)}
+                  text={`${getTranslation('Properties')}...`}
+                  onClick={() => actions.openPerspectivePropertiesModal(id, parent_id, getTranslation('Properties'))}
                 />
                 <Dropdown.Item
                   icon="percent"
-                  text={`${getTranslation("Statistics")}...`}
-                  onClick={() => actions.openStatistics(id, 'perspective')}
+                  text={`${getTranslation('Statistics')}...`}
+                  onClick={() => actions.openStatistics(id, 'perspective', getTranslation('Statistics'))}
                 />
                 <Dropdown.Divider />
                 <Dropdown.Item icon="remove" text={getTranslation("Remove perspective")} onClick={this.onRemovePerspective} />
@@ -272,16 +276,20 @@ class D extends React.Component {
           <Menu>
             <Dropdown text={translation} pointing className="link item">
               <Dropdown.Menu>
-                <Dropdown.Item icon="users" text={getTranslation("Roles...")} onClick={() => actions.openRoles(id, 'dictionary')} />
+                <Dropdown.Item
+                  icon="users"
+                  text={`${getTranslation('Roles')}...`}
+                  onClick={() => actions.openRoles(id, 'dictionary', getTranslation('Roles'))}
+                />
                 <Dropdown.Item
                   icon="setting"
-                  text={getTranslation("Properties...")}
-                  onClick={() => actions.openDictionaryPropertiesModal(id)}
+                  text={`${getTranslation('Properties')}...`}
+                  onClick={() => actions.openDictionaryPropertiesModal(id, getTranslation('Properties'))}
                 />
                 <Dropdown.Item
                   icon="percent"
-                  text={`${getTranslation("Statistics")}...`}
-                  onClick={() => actions.openStatistics(id, 'dictionary')}
+                  text={`${getTranslation('Statistics')}...`}
+                  onClick={() => actions.openStatistics(id, 'dictionary', getTranslation('Statistics'))}
                 />
                 {/*<Dropdown.Item icon="circle" text={getTranslation("Create a new perspective...")} />*/}
                 <Dropdown.Item icon="save" text={getTranslation("Save dictionary")} onClick={() => actions.openSaveDictionaryModal(id)} />
