@@ -243,7 +243,7 @@ class Properties extends React.Component {
       return null;
     }
     
-    const { data: { dictionary, user_blobs: files }, actions, updateAtomMutation } = this.props;
+    const { title, data: { dictionary, user_blobs: files }, actions, updateAtomMutation } = this.props;
     const { translation_gist_id: gistId } = dictionary;
     const options = sortBy(files.map(file => ({ key: file.id, text: file.name, value: compositeIdToString(file.id) })), file => file.text);
     const parentName = this.state.parent == null ? null : this.state.parent.translation;
@@ -256,14 +256,16 @@ class Properties extends React.Component {
         size="fullscreen"
         closeOnDimmerClick={false}
         closeIcon
-        onClose={actions.closeDictionaryPropertiesModal}>
-
+        onClose={actions.closeDictionaryPropertiesModal}
+      >
+        <Modal.Header>
+          {title}
+        </Modal.Header>
         <Modal.Content>
           <Segment>
             <TranslationGist id={gistId} objectId={dictionary.id} editable updateAtomMutation={updateAtomMutation}/>
           </Segment>
           <EditDictionaryMetadata mode='edit' metadata={dictionary.additional_metadata} onSave={this.saveMeta} />
-
           {/*<Segment>
             <Grid>
               <Grid.Column width={12}>
@@ -274,7 +276,6 @@ class Properties extends React.Component {
               </Grid.Column>
             </Grid>
           </Segment>*/}
-
           <MarginForm>
             <Segment>
               <Form.Group widths='equal'>
@@ -336,7 +337,6 @@ class Properties extends React.Component {
         <Modal.Actions>
           <Button icon="minus" content={getTranslation("Close")} onClick={actions.closeDictionaryPropertiesModal} />
         </Modal.Actions>
-
       </Modal>
     );
   }
@@ -344,6 +344,7 @@ class Properties extends React.Component {
 
 Properties.propTypes = {
   id: PropTypes.array.isRequired,
+  title: PropTypes.string.isRequired,
   data: PropTypes.shape({
     loading: PropTypes.bool.isRequired,
   }).isRequired,

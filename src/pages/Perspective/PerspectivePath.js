@@ -79,22 +79,23 @@ class PerspectivePath extends React.Component {
                         <Dropdown.Item
                           key="roles"
                           icon="users"
-                          text={getTranslation(`'${e.translation}' roles...`)}
-                          onClick={() => actions.openRoles(id, 'perspective')}
+                          text={`'${e.translation}' ${getTranslation('Roles').toLowerCase()}...`}
+                          onClick={() => actions.openRoles(id, 'perspective', `'${e.translation}' ${getTranslation('Roles').toLowerCase()}`)}
                         />,
                         <Dropdown.Item
                           key="properties"
                           icon="setting"
-                          text={getTranslation(`'${e.translation}' properties...`)}
-                          onClick={() =>
-                            actions.openPerspectivePropertiesModal(id, dictionary_id)}
+                          text={`'${e.translation}' ${getTranslation('Properties').toLowerCase()}...`}
+                          onClick={() => actions.openPerspectivePropertiesModal(
+                            id, dictionary_id, `'${e.translation}' ${getTranslation('Propeties').toLowerCase()}`
+                          )}
                         />
                       ]
                     }
                     <Dropdown.Item
                       icon="percent"
-                      text={getTranslation(`'${e.translation}' statistics...`)}
-                      onClick={() => actions.openStatistics(id, 'perspective')}
+                      text={`'${e.translation}' ${getTranslation('Statistics').toLowerCase()}...`}
+                      onClick={() => actions.openStatistics(id, 'perspective', `'${e.translation}' ${getTranslation('Statistics').toLowerCase()}`)}
                     />
 
                   </Dropdown.Menu>

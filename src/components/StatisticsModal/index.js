@@ -325,7 +325,7 @@ class StatisticsModal extends React.Component {
   }
 
   render() {
-    const { mode } = this.props;
+    const { mode, title } = this.props;
     const { startDate, endDate, statistics } = this.state;
 
     return (
@@ -337,7 +337,7 @@ class StatisticsModal extends React.Component {
         size="fullscreen"
       >
         <Modal.Header>
-          {getTranslation("Statistics")}
+          {title}
         </Modal.Header>
         <Modal.Content>
           <div>
@@ -379,6 +379,7 @@ class StatisticsModal extends React.Component {
 StatisticsModal.propTypes = {
   id: PropTypes.arrayOf(PropTypes.number).isRequired,
   mode: PropTypes.string.isRequired,
+  title: PropTypes.string.isRequired,
   closeStatistics: PropTypes.func.isRequired,
   client: PropTypes.object.isRequired,
 };

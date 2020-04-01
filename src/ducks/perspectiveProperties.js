@@ -4,12 +4,13 @@ import { combineReducers } from 'redux';
 const OPEN_MODAL = '@perspective/properties/OPEN_MODAL';
 const CLOSE_MODAL = '@perspective/properties/CLOSE_MODAL';
 
-export const openPerspectivePropertiesModal = (id, parentId) => ({
+export const openPerspectivePropertiesModal = (id, parentId, title) => ({
   type: OPEN_MODAL,
   payload: {
     id,
     parentId,
-  },
+    title
+  }
 });
 
 export const closePerspectivePropertiesModal = () => ({ type: CLOSE_MODAL });
@@ -26,5 +27,5 @@ const perspective = (state = null, { type, payload }) => {
 };
 
 export default combineReducers({
-  perspective,
+  perspective
 });

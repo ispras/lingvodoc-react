@@ -51,7 +51,7 @@ const updateMetadataMutation = gql`
 `;
 
 const Properties = (props) => {
-  const { id, parentId, data, actions, updateAtomMutation, updateMetadataMutation } = props;
+  const { id, parentId, title, data, actions, updateAtomMutation, updateMetadataMutation } = props;
   const {
     loading, error, dictionary, perspective,
   } = data;
@@ -69,20 +69,18 @@ const Properties = (props) => {
       onClose={actions.closePerspectivePropertiesModal}
       open
       dimmer
-      size="fullscreen">
-
+      size="fullscreen"
+    >
+      <Modal.Header>
+        {title}
+      </Modal.Header>
       <Modal.Content>
-
         <Header>{getTranslation("Translations")}</Header>
         <TranslationGist objectId={perspective.id} id={gistId} editable updateAtomMutation={updateAtomMutation} />
-
         <Divider />
-
         <Header>{getTranslation("Fields")}</Header>
         <Columns perspectiveId={perspective.id} perspectives={perspectives} />
-
         <Divider />
-
         <EditPerspectiveMetadata
           metadata={perspective.additional_metadata}
           onSave={(meta) => {
@@ -103,20 +101,18 @@ const Properties = (props) => {
             });
           }}
         />
-
       </Modal.Content>
-
       <Modal.Actions>
         <Button icon="minus" content={getTranslation("Close")} onClick={actions.closePerspectivePropertiesModal} />
       </Modal.Actions>
-
     </Modal>
   );
 };
 
 Properties.propTypes = {
   id: PropTypes.array.isRequired,
-  // parentId: PropTypes.array.isRequired,
+  parentId: PropTypes.array.isRequired,
+  title: PropTypes.string.isRequired,
   data: PropTypes.shape({
     loading: PropTypes.bool.isRequired,
   }).isRequired,
@@ -131,7 +127,7 @@ export default compose(
     dispatch => ({ actions: bindActionCreators({ closePerspectivePropertiesModal }, dispatch) })
   ),
   branch(({ perspective }) => !perspective, renderNothing),
-  withProps(({ perspective: { id, parentId } }) => ({ id, parentId })),
+  withProps(({ perspective: { id, parentId, title } }) => ({ id, parentId, title })),
   graphql(updateAtomMutation, { name: 'updateAtomMutation' }),
   graphql(updateMetadataMutation, { name: 'updateMetadataMutation' }),
   graphql(query),
