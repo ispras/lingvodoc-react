@@ -86,11 +86,11 @@ class ConverEafModal extends React.Component {
     return (
       <Modal
         closeIcon
-        onClick={actions.closeConvert}
+        onClose={actions.closeConvert}
         open={visible}
         dimmer
-        size="large">
-
+        size="large"
+      >
         <Modal.Header>
           <Checkbox
             radio
@@ -109,7 +109,6 @@ class ConverEafModal extends React.Component {
             onChange={this.handleModeChange}
           />
         </Modal.Header>
-
         <Modal.Content>
           {mode === 'new' && (
             <div style={{ minHeight: '500px' }}>
@@ -146,7 +145,6 @@ class ConverEafModal extends React.Component {
           <Button positive icon="plus" content={getTranslation("Convert")} onClick={this.convert} disabled={!this.conversionEnabled()} />
           <Button negative icon="minus" content={getTranslation("Cancel")} onClick={actions.closeConvert} />
         </Modal.Actions>
-
       </Modal>
     );
   }
