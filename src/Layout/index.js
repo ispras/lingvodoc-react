@@ -22,6 +22,7 @@ import BanModal from 'components/BanModal';
 import CreateFieldModal from 'components/CreateFieldModal';
 import RolesModal from 'components/RolesModal';
 import CreateOrganizationModal from 'components/CreateOrganizationModal';
+import DictionaryOrganizationsModal from 'components/DictionaryOrganizationsModal';
 
 import NavBar from './NavBar';
 import TasksSidebar from './TasksSidebar';
@@ -68,6 +69,7 @@ class Layout extends React.Component {
         <CreateFieldModal />
         <RolesModal />
         <CreateOrganizationModal />
+        <DictionaryOrganizationsModal />
       </div>
     );
   }

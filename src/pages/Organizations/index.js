@@ -61,7 +61,6 @@ class Organizations extends React.Component {
 
   joinOrganization(organization)
   {
-    console.log('joinOrganization()');
     const { participateOrg } = this.props;
     participateOrg({
       variables: { organizationId: organization.id },
@@ -78,7 +77,6 @@ class Organizations extends React.Component {
 
   adminOrganization(organization)
   {
-    console.log('adminOrganization()');
     const { administrateOrg } = this.props;
     administrateOrg({
       variables: { organizationId: organization.id },

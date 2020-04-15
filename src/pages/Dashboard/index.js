@@ -11,6 +11,7 @@ import { isEqual } from 'lodash';
 import { compositeIdToString } from 'utils/compositeId';
 import { openRoles } from 'ducks/roles';
 import { openSaveDictionaryModal } from 'ducks/saveDictionary';
+import { openModal as openDictionaryOrganizationsModal } from 'ducks/dictionaryOrganizations';
 import { openDictionaryPropertiesModal } from 'ducks/dictionaryProperties';
 import { openPerspectivePropertiesModal } from 'ducks/perspectiveProperties';
 import { openStatistics } from 'ducks/statistics';
@@ -287,12 +288,21 @@ class D extends React.Component {
                   onClick={() => actions.openDictionaryPropertiesModal(id, getTranslation('Properties'))}
                 />
                 <Dropdown.Item
+                  icon="address book"
+                  text={`${getTranslation('Organizations')}...`}
+                  onClick={() => actions.openDictionaryOrganizationsModal(id)}
+                />
+                <Dropdown.Item
                   icon="percent"
                   text={`${getTranslation('Statistics')}...`}
                   onClick={() => actions.openStatistics(id, 'dictionary', getTranslation('Statistics'))}
                 />
                 {/*<Dropdown.Item icon="circle" text={getTranslation("Create a new perspective...")} />*/}
-                <Dropdown.Item icon="save" text={getTranslation("Save dictionary")} onClick={() => actions.openSaveDictionaryModal(id)} />
+                <Dropdown.Item
+                  icon="save"
+                  text={`${getTranslation("Save dictionary")}...`}
+                  onClick={() => actions.openSaveDictionaryModal(id)}
+                />
                 <Dropdown.Divider />
                 <Dropdown.Item icon="remove" text={getTranslation("Remove dictionary")} onClick={this.onRemoveDictionary} />
               </Dropdown.Menu>
@@ -343,6 +353,7 @@ const Dictionary = compose(
           openDictionaryPropertiesModal,
           openStatistics,
           openSaveDictionaryModal,
+          openDictionaryOrganizationsModal,
         },
         dispatch
       ),
