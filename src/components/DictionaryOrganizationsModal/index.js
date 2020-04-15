@@ -14,18 +14,7 @@ import { compositeIdToString as id2str } from 'utils/compositeId';
 import Translations from 'components/Translation';
 import { getTranslation } from 'api/i18n';
 import { getUserRequestsQuery } from 'components/Grants/graphql';
-
-export const organizationsQuery = gql`
-  query organizations {
-    organizations {
-      id
-      translation
-      additional_metadata {
-        participant
-      }
-    }
-  }
-`;
+import { organizationsQuery } from 'pages/Organizations';
 
 class DictionaryOrganizationsModal extends React.Component
 {
@@ -33,7 +22,9 @@ class DictionaryOrganizationsModal extends React.Component
   {
     super(props);
 
-    this.state = {};
+    this.state = {
+      requested_id_set: {},
+    };
 
     this.linked_list = [];
     this.link_to_list = [];
@@ -107,41 +98,67 @@ class DictionaryOrganizationsModal extends React.Component
             </span>
 
             <List>
-              {map(this.link_to_list, organization => (
-                <List.Item
-                  key={organization.id}
-                  style={{marginLeft: '0.75em'}}>
+              {map(this.link_to_list, organization => {
 
-                  <span>
-                    {organization.translation}
-                  </span>
+                const id_str = `${organization.id}`;
 
-                  <Button
-                    basic
-                    content={getTranslation('Request link')}
-                    positive
-                    size='mini'
-                    style={{marginLeft: '1em'}}
-                    onClick={() =>
-                    {
-                      addDictionaryToOrganization({
-                        variables: {
-                          dictionaryId,
-                          organizationId: organization.id },
-                        refetchQueries: [
+                const already = 
+                  this.state.requested_id_set.hasOwnProperty(id_str);
+
+                return (
+                  <List.Item
+                    key={organization.id}
+                    style={{marginLeft: '0.75em'}}>
+
+                    <span>
+                      {organization.translation}
+                    </span>
+
+                    <Button
+                      basic
+                      content={already ?
+                        getTranslation('Link requested') :
+                        getTranslation('Request link')}
+                      disabled={already}
+                      positive
+                      size='mini'
+                      style={{marginLeft: '1em'}}
+                      onClick={() =>
+                      {
+                        addDictionaryToOrganization({
+                          variables: {
+                            dictionaryId,
+                            organizationId: organization.id },
+                          refetchQueries: [
+                            {
+                              query: getUserRequestsQuery,
+                            },
+                          ],
+                        })
+                        .then(
+                          () =>
                           {
-                            query: getUserRequestsQuery,
-                          },
-                        ],
-                      }).then(() => {
-                        window.logger.suc(getTranslation(
-                          'Request has been sent to the organization\'s administrator.'));
-                      });
-                    }}
-                  />
+                            window.logger.suc(getTranslation(
+                              'Request has been sent to the organization\'s administrator.'));
 
-                </List.Item>
-              ))}
+                            this.state.requested_id_set[id_str] = null;
+                            this.setState({ requested_id_set: this.state.requested_id_set });
+                          },
+                          error =>
+                          {
+                            if (error.message == 'GraphQL error: Request already exists.')
+                            {
+                              this.state.requested_id_set[id_str] = null;
+                              this.setState({ requested_id_set: this.state.requested_id_set });
+                            }
+                          }
+                        );
+                      }}
+                    />
+
+                  </List.Item>
+                );
+              })}
             </List>
           </div>
 

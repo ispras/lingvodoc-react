@@ -21,7 +21,9 @@ export const organizationsQuery = gql`
       created_at
       about
       additional_metadata {
-        admins }
+        admins
+        participant
+      }
       members {
         id
         name

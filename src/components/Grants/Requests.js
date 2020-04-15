@@ -25,7 +25,10 @@ function acceptRequest(mutation, id, accept) {
       { query: getUserRequestsQuery, },
       { query: organizationsQuery, },
     ],
-  });
+  }).then(() => {
+    window.logger.suc(getTranslation(
+      'Request accepted successfully.'));
+  });;
 }
 
 const Subject = ({
