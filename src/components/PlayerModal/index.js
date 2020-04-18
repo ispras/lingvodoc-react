@@ -8,13 +8,20 @@ import Player from 'components/Player';
 import { getTranslation } from 'api/i18n';
 
 const PlayerModal = ({ visible, actions, play: { content } }) => (
-  <Modal open={visible} dimmer size="small">
+  <Modal
+    closeIcon
+    onClose={actions.closePlayer}
+    open={visible}
+    dimmer
+    size="small">
+
     <Modal.Content>
       <Player file={content} />
     </Modal.Content>
     <Modal.Actions>
       <Button icon="minus" content={getTranslation("Close")} onClick={actions.closePlayer} />
     </Modal.Actions>
+
   </Modal>
 );
 

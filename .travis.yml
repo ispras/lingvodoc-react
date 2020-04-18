@@ -14,9 +14,9 @@ script:
 if: tag IS blank
 
 before_deploy:
-  - tar -zcf ${TRAVIS_BUILD_DIR}${REPO}-server-build-${TRAVIS_BUILD_NUMBER}.tar.gz -C dist/server .
-  - tar -zcf ${TRAVIS_BUILD_DIR}${REPO}-proxy-build-${TRAVIS_BUILD_NUMBER}.tar.gz -C dist/proxy .
-  - tar -zcf ${TRAVIS_BUILD_DIR}${REPO}-desktop-build-${TRAVIS_BUILD_NUMBER}.tar.gz -C dist/desktop .
+  - tar -zcf ${TRAVIS_BUILD_DIR}${REPO}-server-build-${TRAVIS_BUILD_NUMBER}-${TRAVIS_BRANCH}.tar.gz -C dist/server .
+  - tar -zcf ${TRAVIS_BUILD_DIR}${REPO}-proxy-build-${TRAVIS_BUILD_NUMBER}-${TRAVIS_BRANCH}.tar.gz -C dist/proxy .
+  - tar -zcf ${TRAVIS_BUILD_DIR}${REPO}-desktop-build-${TRAVIS_BUILD_NUMBER}-${TRAVIS_BRANCH}.tar.gz -C dist/desktop .
 
 deploy:
   provider: releases
@@ -24,11 +24,12 @@ deploy:
     secure: CG9iga3+QZ7QKNzG8dMHdL+910An08zJGwwr47it6qartEfbB1WswqxUQ465f09fDtGfexsVmN2bqpw8VTps2Aca08YPiYkuhiwg+rz8ym3gjvffNATCC3wMuR7nZ93nUDVGNsY4hY/vvPfglBMj3hRDAa8JI93Gbsz3z96nRJcc03GSiZvoqrvmUW2pWuFvr5BtC0KJVaXBU+Szr8Eat+L9B1AdPLE7l8iAFKYMD1LcrW6znYcszeV2W6vxnJtuHtWraoxFOpd+t+Uz2w5dQno0cH85aUNs2akfuR8luA6NrJWiKL9Md7L0Xc5vKI3ZJKD/sWWpVsAI2te2FSHn4UzhbJww6kRyu42mHVVJ3qnx3Y6VgHMUtTQgY+UW/BYTM3esOjuquG72ZSpUD0Kxu/oTEizYW8DslD9EeY5b64ohhrInfU556qM7NL9OWGI2FqAJx1H+8EgCVYAjyqbowhSvyAU0tKDzhEqtWoPX0jm2VkPIIJQqxij8sAvN7OldrMVV6VxzQIs+Rlpu8H03iJ3i3ItM+IQHDEy1c68I4HzXJreTtNRVt3ZV6i/T4mjzwjnWMA65VGRrLrUjgGLs8SkfnmC2dR0T7aByeWDn8ytOdcOHbpVRKoZQR9Wvu7/mbc6hq3QD90Zl0GfRfEWkd0dEolEeozbgSphX79gHr5k=
   file_glob: true
   file:
-    - ${TRAVIS_BUILD_DIR}${REPO}-server-build-${TRAVIS_BUILD_NUMBER}.tar.gz
-    - ${TRAVIS_BUILD_DIR}${REPO}-proxy-build-${TRAVIS_BUILD_NUMBER}.tar.gz
-    - ${TRAVIS_BUILD_DIR}${REPO}-desktop-build-${TRAVIS_BUILD_NUMBER}.tar.gz
+    - ${TRAVIS_BUILD_DIR}${REPO}-server-build-${TRAVIS_BUILD_NUMBER}-${TRAVIS_BRANCH}.tar.gz
+    - ${TRAVIS_BUILD_DIR}${REPO}-proxy-build-${TRAVIS_BUILD_NUMBER}-${TRAVIS_BRANCH}.tar.gz
+    - ${TRAVIS_BUILD_DIR}${REPO}-desktop-build-${TRAVIS_BUILD_NUMBER}-${TRAVIS_BRANCH}.tar.gz
   skip_cleanup: true
   on:
     repo: ispras/lingvodoc-react
-    branch: master
+    all_branches: true
+    condition: $TRAVIS_BRANCH =~ ^(master|staging)$
 

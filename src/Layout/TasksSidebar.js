@@ -2,9 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
-import { Sidebar } from 'semantic-ui-react';
+import { Sidebar, Icon } from 'semantic-ui-react';
 
 import TaskList from 'components/TaskList';
+import { toggleTasks } from 'ducks/task';
 
 const Wrapper = styled.div`
   padding: 20px;
@@ -14,7 +15,7 @@ const Wrapper = styled.div`
   opacity: 0.9;
 `;
 
-const TasksSidebar = ({ visible, tasks }) =>
+const TasksSidebar = ({ visible, tasks, toggle }) =>
   <Sidebar
     animation="overlay"
     direction="right"
@@ -22,6 +23,7 @@ const TasksSidebar = ({ visible, tasks }) =>
     visible={visible}
     as={Wrapper}
   >
+    <Icon name="angle double right" size="big" onClick={toggle} style={{ marginLeft: '-8px', marginBottom: '10px', cursor: 'pointer' }}/>
     <TaskList tasks={tasks} />
   </Sidebar>;
 
@@ -34,4 +36,4 @@ function mapStateToProps(state) {
   return state.task;
 }
 
-export default connect(mapStateToProps)(TasksSidebar);
+export default connect(mapStateToProps, { toggle: toggleTasks } )(TasksSidebar);

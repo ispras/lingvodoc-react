@@ -24,11 +24,15 @@ const Blob = ({ data: { loading, error, userblob: blob } }) => {
     return null;
   }
   return (
-    <Modal trigger={<Button basic>{blob.name}</Button>}>
+    <Modal
+      closeIcon
+      trigger={<Button basic>{blob.name}</Button>}>
+
       <Modal.Header>{blob.name}</Modal.Header>
       <Modal.Content>
         <Embed icon="right circle arrow" active url={blob.content} />
       </Modal.Content>
+
     </Modal>
   );
 };
@@ -47,7 +51,13 @@ const BlobsModal = ({ visible, actions, blobs, dictionary }) => {
     return null;
   }
   return (
-    <Modal open={visible} dimmer size="small">
+    <Modal
+      closeIcon
+      onClose={actions.closeBlobsModal}
+      open={visible}
+      dimmer
+      size="small">
+
       <Modal.Header>{dictionary.translation}</Modal.Header>
       <Modal.Content>
         <List>
@@ -62,6 +72,7 @@ const BlobsModal = ({ visible, actions, blobs, dictionary }) => {
       <Modal.Actions>
         <Button icon="minus" content="Close" onClick={actions.closeBlobsModal} />
       </Modal.Actions>
+
     </Modal>);
 };
 

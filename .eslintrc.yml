@@ -24,11 +24,9 @@ settings:
       config: webpack/webpack.dev.js
 rules:
   max-len:
-    - warn
-    - 120
+    - off
   comma-dangle:
-    - warn
-    - always-multiline
+    - off
   no-constant-condition:
     - warn
     - checkLoops: false

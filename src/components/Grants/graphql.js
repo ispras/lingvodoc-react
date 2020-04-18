@@ -10,7 +10,18 @@ export const grantsQuery = gql`
       issuer
       issuer_url
       created_at
-      
+      owners {
+        id
+        name
+        login
+        intl_name
+        email
+      }
+      begin
+      end
+    }
+    user {
+      id
     }
    
   }

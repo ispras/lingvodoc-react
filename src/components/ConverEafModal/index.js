@@ -82,8 +82,15 @@ class ConverEafModal extends React.Component {
       const id = compositeIdToString(d.id);
       return { key: id, value: d, text: d.translation };
     });
+
     return (
-      <Modal open={visible} dimmer size="large">
+      <Modal
+        closeIcon
+        onClose={actions.closeConvert}
+        open={visible}
+        dimmer
+        size="large"
+      >
         <Modal.Header>
           <Checkbox
             radio
@@ -102,7 +109,6 @@ class ConverEafModal extends React.Component {
             onChange={this.handleModeChange}
           />
         </Modal.Header>
-
         <Modal.Content>
           {mode === 'new' && (
             <div style={{ minHeight: '500px' }}>

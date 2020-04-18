@@ -25,7 +25,10 @@ function acceptRequest(mutation, id, accept) {
       { query: getUserRequestsQuery, },
       { query: organizationsQuery, },
     ],
-  });
+  }).then(() => {
+    window.logger.suc(getTranslation(
+      'Request accepted successfully.'));
+  });;
 }
 
 const Subject = ({
@@ -37,14 +40,34 @@ const Subject = ({
   switch (request.type) {
 
     case 'add_dict_to_grant':
-
+    {
       const dictionary = objectByCompositeId(subject.dictionary_id, dictionaries);
       const grant = objectById(subject.grant_id, grants);
 
-      return <Card
-        header={grant.translation}
-        meta={grant.grant_number}
-        description={dictionary ? dictionary.translation : getTranslation('Unknown dictionary')} />;
+      return (
+        <div>
+          <p>Grant</p>
+          <Card
+            header={grant.translation}
+            meta={grant.grant_number}
+            description={dictionary ? dictionary.translation : getTranslation('Unknown dictionary')} />
+        </div>);
+    }
+
+    case 'add_dict_to_org':
+    {
+      const dictionary = objectByCompositeId(subject.dictionary_id, dictionaries);
+      const organization = objectById(subject.org_id, organizations);
+
+      return (
+        <div>
+          <p>Organization</p>
+          <Card
+            header={organization.translation}
+            meta={organization.about}
+            description={dictionary ? dictionary.translation : getTranslation('Unknown dictionary')} />
+        </div>);
+    }
 
     case 'participate_org':
     case 'administrate_org':
@@ -123,7 +146,9 @@ const Requests = ({ data, accept }) => {
       menuItem: getTranslation('Dictionaries'),
       render: () => (
         <RequestsPane
-          requests={requestsByType.add_dict_to_grant || []}
+          requests={[
+            ...requestsByType.add_dict_to_grant || [],
+            ...requestsByType.add_dict_to_org || []]}
           grants={grants}
           users={users}
           dictionaries={dictionaries}

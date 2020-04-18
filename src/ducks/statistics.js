@@ -4,9 +4,9 @@ import { combineReducers } from 'redux';
 export const OPEN_STATISTICS = '@statistics/OPEN';
 export const CLOSE_STATISTICS = '@statistics/CLOSE';
 
-export const openStatistics = (id, mode) => ({
+export const openStatistics = (id, mode, title) => ({
   type: OPEN_STATISTICS,
-  payload: { id, mode },
+  payload: { id, mode, title }
 });
 
 export const closeStatistics = () => ({ type: CLOSE_STATISTICS });
@@ -40,8 +40,18 @@ const mode = (state = 'dictionary', action) => {
   }
 };
 
+const title = (state = null, action) => {
+  switch (action.type) {
+    case OPEN_STATISTICS:
+      return action.payload.title;
+    default:
+      return state;
+  }
+};
+
 export default combineReducers({
   visible,
   id,
   mode,
+  title
 });

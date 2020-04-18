@@ -1,4 +1,5 @@
 import { call, put, select, takeLatest } from 'redux-saga/effects';
+import { push } from 'react-router-redux';
 import { getId, getUser, signIn, signUp, signOut, editProfile } from 'api/user';
 import { setUser, requestUser, SIGN_OUT, signInForm, signUpForm, editForm } from 'ducks/user';
 import { err } from 'ducks/snackbar';
@@ -7,7 +8,7 @@ import { SubmissionError } from 'redux-form';
 
 export function* resetApollo() {
   const client = yield select(state => state.apolloClient);
-  yield call(client.resetStore);
+  yield call([client, client.resetStore]);
 }
 
 export function* requestRoutine() {
@@ -26,7 +27,10 @@ export function* signOutRoutine() {
   const response = yield call(signOut);
   if (response.data) {
     yield put(setUser({}));
-    yield call(resetApollo);
+    const client = yield select(state => state.apolloClient);
+    yield call([client, client.clearStore]);
+    yield call(window.dispatch, push('/'));
+    yield call([client, client.reFetchObservableQueries]);
   } else {
     yield put(err('Could not sign out'));
   }

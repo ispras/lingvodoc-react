@@ -3,34 +3,6 @@ import { signUpForm } from 'ducks/user';
 import FormModal from 'components/FormModal';
 import { getTranslation } from 'api/i18n';
 
-const SIGN_UP_FIELDS = [
-  {
-    name: 'login',
-    type: 'text',
-    label: getTranslation('Login'),
-  },
-  {
-    name: 'name',
-    type: 'text',
-    label: getTranslation('Full name'),
-  },
-  {
-    name: 'email',
-    type: 'email',
-    label: getTranslation('Email'),
-  },
-  {
-    name: 'password',
-    type: 'password',
-    label: getTranslation('Password'),
-  },
-  {
-    name: 'password2',
-    type: 'password',
-    label: getTranslation('Confirm Password'),
-  },
-];
-
 function validate({ login, name, email }) {
   const errors = {};
   if (!login) {
@@ -47,14 +19,45 @@ function validate({ login, name, email }) {
   return errors;
 }
 
-const SignUpModal = props =>
-  <FormModal
-    form="signup"
-    header={getTranslation("Sign Up")}
-    actions={signUpForm}
-    fields={SIGN_UP_FIELDS}
-    validate={validate}
-    {...props}
-  />;
+const SignUpModal = props => {
+  const signUpFields = [
+    {
+      name: 'login',
+      type: 'text',
+      label: getTranslation('Login'),
+    },
+    {
+      name: 'name',
+      type: 'text',
+      label: getTranslation('Full name'),
+    },
+    {
+      name: 'email',
+      type: 'email',
+      label: getTranslation('Email'),
+    },
+    {
+      name: 'password',
+      type: 'password',
+      label: getTranslation('Password'),
+    },
+    {
+      name: 'password2',
+      type: 'password',
+      label: getTranslation('Confirm Password'),
+    },
+  ];
+
+  return (
+    <FormModal
+      form="signup"
+      header={getTranslation("Sign Up")}
+      actions={signUpForm}
+      fields={signUpFields}
+      validate={validate}
+      {...props}
+    />
+  );
+};
 
 export default SignUpModal;

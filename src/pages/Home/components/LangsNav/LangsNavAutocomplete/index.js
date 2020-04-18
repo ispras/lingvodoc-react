@@ -24,11 +24,6 @@ const classNames = {
   disableBesideButton: 'langs-nav-autocomplete__disable-beside',
 };
 
-const inputProps = {
-  placeholder: getTranslation('Start typing language name'),
-  className: classNames.input,
-};
-
 const wrapperProps = {
   className: classNames.main,
 };
@@ -127,7 +122,7 @@ const LangsNavAutocomplete = (props) => {
         <Form className={classNames.form}>
           <Form.Field>
             <Autocomplete
-              inputProps={inputProps}
+              inputProps={{ placeholder: getTranslation('Start typing language name'), className: classNames.input }}
               menuStyle={autocompleteStyle}
               wrapperProps={wrapperProps}
               getItemValue={getLangValue}

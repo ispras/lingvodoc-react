@@ -3,7 +3,9 @@ import PropTypes from 'prop-types';
 import { compose, branch, renderNothing } from 'recompose';
 import { graphql, withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
-import { Breadcrumb, Button, Checkbox, Dimmer, Divider, Dropdown, Header, Icon, Input, List, Loader, Modal, Select } from 'semantic-ui-react';
+import {
+  Breadcrumb, Button, Checkbox, Dimmer, Divider, Dropdown, Header, Icon, Input, List, Loader, Message,
+  Modal, Segment, Select } from 'semantic-ui-react';
 import Plot from 'react-plotly.js';
 
 import { closeModal } from 'ducks/cognateAnalysis';
@@ -13,13 +15,16 @@ import { connect } from 'react-redux';
 import { compositeIdToString as id2str } from 'utils/compositeId';
 import { checkLanguageId, languageIdList } from 'pages/Home/components/LangsNav';
 import { getTranslation } from 'api/i18n';
+import { connectMutation } from 'components/GroupingTagModal/graphql';
 
 const cognateAnalysisDataQuery = gql`
   query cognateAnalysisData($perspectiveId: LingvodocID!) {
     perspective(id: $perspectiveId) {
       id
       translation
+      english_status: status(locale_id: 2)
       columns {
+        id
         field_id
       }
       tree {
@@ -38,25 +43,7 @@ const cognateAnalysisDataQuery = gql`
 
 const cognateAnalysisMultiDataQuery = gql`
   query cognateAnalysisMultiData(
-    $perspectiveId: LingvodocID!,
     $languageIdList: [LingvodocID]!) {
-    perspective(id: $perspectiveId) {
-      id
-      translation
-      columns {
-        field_id
-      }
-      tree {
-        id
-        translation
-      }
-    }
-    all_fields {
-      id
-      translation
-      english_translation: translation(locale_id: 2)
-      data_type
-    }
     languages(id_list: $languageIdList) {
       id
       translation
@@ -133,7 +120,7 @@ const computeCognateAnalysisMutation = gql`
     $multiList: [ObjectVal],
     $mode: String,
     $figureFlag: Boolean,
-    $matchTranslationsFlag: Boolean,
+    $matchTranslationsValue: Int,
     $debugFlag: Boolean,
     $intermediateFlag: Boolean) {
       cognate_analysis(
@@ -143,8 +130,8 @@ const computeCognateAnalysisMutation = gql`
         perspective_info_list: $perspectiveInfoList,
         multi_list: $multiList,
         mode: $mode,
+        match_translations_value: $matchTranslationsValue,
         figure_flag: $figureFlag,
-        match_translations_flag: $matchTranslationsFlag,
         debug_flag: $debugFlag,
         intermediate_flag: $intermediateFlag)
       {
@@ -161,6 +148,8 @@ const computeCognateAnalysisMutation = gql`
         embedding_2d
         embedding_3d
         perspective_name_list
+        suggestion_list
+        suggestion_field_id
         intermediate_url_list
       }
     }
@@ -187,7 +176,7 @@ class CognateAnalysisModal extends React.Component
 
       library_present: true,
 
-      result: '',
+      result: null,
       xlsx_url: '',
       figure_url: '',
 
@@ -195,6 +184,9 @@ class CognateAnalysisModal extends React.Component
       embedding_2d: [],
       embedding_3d: [],
       perspective_name_list: [],
+
+      suggestion_list: null,
+      suggestion_field_id: null,
 
       intermediate_url_list: null,
 
@@ -215,6 +207,7 @@ class CognateAnalysisModal extends React.Component
       groupFieldIdStr: '',
 
       matchTranslationsFlag: true,
+      matchTranslationsValue: 'first_three',
 
       debugFlag: false,
       intermediateFlag: false,
@@ -229,6 +222,11 @@ class CognateAnalysisModal extends React.Component
       transcriptionFieldIdStrMap: {},
       translationFieldIdStrMap: {},
       perspectiveSelectionMap: {},
+
+      sg_select_list: null,
+      sg_state_list: null,
+      sg_count: null,
+      sg_entry_map: null,
     };
 
     this.initialize_single = this.initialize_single.bind(this);
@@ -237,16 +235,35 @@ class CognateAnalysisModal extends React.Component
     this.initPerspectiveList = this.initPerspectiveList.bind(this);
 
     this.handleCreate = this.handleCreate.bind(this);
+
+    this.language_render = this.language_render.bind(this);
+    this.single_language_render = this.single_language_render.bind(this);
+    this.multi_language_render = this.multi_language_render.bind(this);
+
+    this.match_translations_render = this.match_translations_render.bind(this);
+    this.admin_section_render = this.admin_section_render.bind(this);
+
+    this.suggestions_render = this.suggestions_render.bind(this);
+
+    this.sg_connect = this.sg_connect.bind(this);
   }
 
   componentDidMount()
   {
-    (this.props.mode == 'multi' ?
+    const multi =
+      this.props.mode == 'multi_reconstruction' ||
+      this.props.mode == 'multi_suggestions';
+
+    (multi ?
       this.initialize_multi :
       this.initialize_single)();
   }
 
-  initialize_common(allFields, columns, tree)
+  initialize_common(
+    allFields,
+    columns,
+    tree,
+    english_status)
   {
     /* Compiling dictionary of perspective field info so that later we would be able to retrieve this info
      * efficiently. */
@@ -282,6 +299,9 @@ class CognateAnalysisModal extends React.Component
 
     /* Finding the root language of the language group we are to perform cognate analysis in. */
 
+    this.treePath = tree.slice(tree.length - 1, tree.length).reverse();
+    this.baseLanguageId = tree[tree.length - 1].id;
+
     for (var i = 0; i < tree.length; i++)
     {
       if (checkLanguageId(tree[i].id))
@@ -291,6 +311,10 @@ class CognateAnalysisModal extends React.Component
         break;
       }
     }
+
+    /* Remembering source perspective status. */
+
+    this.englishStatus = english_status;
   }
 
   initialize_state()
@@ -315,22 +339,35 @@ class CognateAnalysisModal extends React.Component
 
   async initialize_single()
   {
-    const { client, perspectiveId } = this.props;
+    const {
+      client,
+      perspectiveId,
+      mode,
+      data: {
+        all_fields: allFields,
+        perspective: {
+          columns, tree, english_status }}} = this.props;
 
-    const { data: {
-      all_fields: allFields,
-      perspective: { columns, tree } }} =
-        
-      await client.query({
-        query: cognateAnalysisDataQuery,
-        variables: { perspectiveId },
-      });
+    this.initialize_common(
+      allFields, columns, tree, english_status);
 
-    this.initialize_common(allFields, columns, tree);
+    this.available_list = [];
+    this.perspective_list = [];
+
+    /* If we are selecting perspectives for cognate suggestions, and the source perspective is not
+     * published, we won't be able to proceed and therefore we need not bother with initialization. */
+
+    if (
+      mode == 'suggestions' &&
+      english_status != 'Published' &&
+      english_status != 'Limited access')
+    {
+      this.setState({ initialized: true });
+      return;
+    }
 
     /* Recursively getting data of perspectives available for analysis. */
 
-    this.available_list = [];
     await this.initPerspectiveData(this.baseLanguageId, []);
 
     this.initialize_state();
@@ -342,19 +379,46 @@ class CognateAnalysisModal extends React.Component
    */
   async initialize_multi()
   {
-    const { client, perspectiveId } = this.props;
+    const {
+      client,
+      perspectiveId,
+      mode,
+      data: {
+        all_fields: allFields,
+        perspective: {
+          columns, tree, english_status }}} = this.props;
+
+    const language_id_list = languageIdList.slice();
+
+    if (!checkLanguageId(tree[tree.length - 1].id))
+      language_id_list.push(tree[tree.length - 1].id);
 
     const { data: {
-      all_fields: allFields,
-      perspective: { columns, tree },
       languages }} =
         
       await client.query({
         query: cognateAnalysisMultiDataQuery,
-        variables: { perspectiveId, languageIdList },
+        variables: {
+          languageIdList: language_id_list },
       });
 
-    this.initialize_common(allFields, columns, tree);
+    this.initialize_common(
+      allFields, columns, tree, english_status);
+
+    this.available_list = [];
+    this.perspective_list = [];
+
+    /* If we are selecting perspectives for cognate suggestions, and the source perspective is not
+     * published, we won't be able to proceed and therefore we need not bother with initialization. */
+
+    if (
+      mode == 'multi_suggestions' &&
+      english_status != 'Published' &&
+      english_status != 'Limited access')
+    {
+      this.setState({ initialized: true });
+      return;
+    }
 
     /* Preparing language info. */
 
@@ -367,7 +431,6 @@ class CognateAnalysisModal extends React.Component
 
     /* Getting info of perspectives of our base language. */
 
-    this.available_list = [];
     await this.initPerspectiveData(this.baseLanguageId, []);
 
     this.initialize_state();
@@ -570,7 +633,9 @@ class CognateAnalysisModal extends React.Component
 
     /* Selecting grouping field for many languages. */
 
-    if (this.props.mode == 'multi')
+    if (
+      this.props.mode == 'multi_reconstruction' ||
+      this.props.mode == 'multi_suggestions')
     {
       this.state.groupFieldIdStr = value;
 
@@ -611,6 +676,8 @@ class CognateAnalysisModal extends React.Component
         embedding_2d,
         embedding_3d,
         perspective_name_list,
+        suggestion_list,
+        suggestion_field_id,
         intermediate_url_list }}})
   {
     /* Data of the 2d cognate distance plots. */
@@ -709,6 +776,62 @@ class CognateAnalysisModal extends React.Component
       z_range = [z_center - range / 2, z_center + range / 2]
     }
 
+    /* Initializing suggestions data, if required. */
+
+    const sg_select_list = [];
+    const sg_state_list = [];
+
+    const sg_count = {
+      left: 0,
+      connecting: 0,
+      connected: 0,
+      error: 0,
+      invalidated: 0}
+
+    const sg_entry_map = {};
+
+    if (suggestion_list)
+    {
+      for (var i = 0; i < suggestion_list.length; i++)
+      {
+        const [
+          perspective_index, word, word_entry_id, single_list, group_list] =
+          
+          suggestion_list[i];
+
+        const sg_select_item = {};
+
+        function f(entry_id)
+        {
+          const id_str = id2str(entry_id);
+
+          sg_select_item[id_str] = null;
+
+          if (!sg_entry_map.hasOwnProperty(id_str))
+            sg_entry_map[id_str] = {};
+
+          sg_entry_map[id_str][i] = null;
+        };
+
+        f(word_entry_id);
+
+        for (const [
+          perspective_index, [translation_str, transcription_str], entry_id] of single_list)
+
+          f(entry_id);
+
+        for (const [
+          word_list, entry_id] of group_list)
+
+          f(entry_id);
+
+        sg_select_list.push(sg_select_item);
+        sg_state_list.push('left');
+      }
+
+      sg_count.left = suggestion_list.length;
+    }
+
     /* Updating state with computed analysis info. */
 
     this.setState({
@@ -725,6 +848,8 @@ class CognateAnalysisModal extends React.Component
       embedding_2d,
       embedding_3d,
       perspective_name_list,
+      suggestion_list,
+      suggestion_field_id,
       intermediate_url_list,
       plotly_data,
       plotly_3d_data,
@@ -734,7 +859,12 @@ class CognateAnalysisModal extends React.Component
       x_span,
       y_span,
       z_span,
-      computing: false });
+      computing: false,
+      sg_select_list,
+      sg_state_list,
+      sg_count,
+      sg_entry_map,
+    });
   }
 
   handleError(error_data)
@@ -765,7 +895,9 @@ class CognateAnalysisModal extends React.Component
     var perspectiveInfoList = [];
     var multiList = [];
     
-    if (this.props.mode == 'multi')
+    if (
+      this.props.mode == 'multi_reconstruction' ||
+      this.props.mode == 'multi_suggestions')
     {
       for (const language of this.state.language_list)
       {
@@ -801,6 +933,14 @@ class CognateAnalysisModal extends React.Component
           (this.state.perspectiveSelectionList[index]));
     }
 
+    /* Match translations parameter for suggestions. */
+
+    const matchTranslationsValue =
+
+      this.state.matchTranslationsFlag ?
+        (this.state.matchTranslationsValue == 'first_three' ? 1 : 2) :
+        0;
+
     /* If we are to perform acoustic analysis, we will try to launch it in the background. */
 
     if (this.props.mode == 'acoustic')
@@ -811,9 +951,9 @@ class CognateAnalysisModal extends React.Component
           baseLanguageId: this.baseLanguageId,
           groupFieldId: groupField.id,
           perspectiveInfoList: perspectiveInfoList,
-          mode: this.props.mode,
+          mode: 'acoustic',
+          matchTranslationsValue,
           figureFlag: true,
-          matchTranslationsFlag: this.state.matchTranslationsFlag,
           debugFlag: this.state.debugFlag,
           intermediateFlag: this.state.intermediateFlag,
         },
@@ -834,6 +974,11 @@ class CognateAnalysisModal extends React.Component
       this.setState({
         computing: true });
 
+      const backend_mode =
+        this.props.mode == 'multi_reconstruction' ? 'multi' :
+        this.props.mode == 'multi_suggestions' ? 'suggestions' :
+        this.props.mode;
+
       computeCognateAnalysis({
         variables: {
           sourcePerspectiveId: perspectiveId,
@@ -841,9 +986,9 @@ class CognateAnalysisModal extends React.Component
           groupFieldId: groupField.id,
           perspectiveInfoList: perspectiveInfoList,
           multiList: multiList,
-          mode: this.props.mode,
+          mode: backend_mode,
+          matchTranslationsValue,
           figureFlag: this.props.mode == '',
-          matchTranslationsFlag: this.state.matchTranslationsFlag,
           debugFlag: this.state.debugFlag,
           intermediateFlag: this.state.intermediateFlag },
         },
@@ -894,6 +1039,55 @@ class CognateAnalysisModal extends React.Component
   }
 
   /*
+   * Match translations options used in cognate suggestions.
+   */
+  match_translations_render()
+  {
+    return (
+      <List>
+        <List.Item>
+          <Checkbox
+            label={getTranslation('Match translations')}
+            style={{marginTop: '1em', verticalAlign: 'middle'}}
+            checked={this.state.matchTranslationsFlag}
+            onChange={(e, { checked }) => {
+              this.setState({ matchTranslationsFlag: checked });}}
+          />
+        </List.Item>
+
+        <List.Item>
+          <List relaxed>
+            <List.Item>
+              <Checkbox
+                radio
+                disabled={!this.state.matchTranslationsFlag}
+                label={getTranslation('Any three consecutive characters.')}
+                name='matchTranslationsRadioGroup'
+                value='first_three'
+                checked={this.state.matchTranslationsValue == 'first_three'}
+                onChange={(e, { value }) => {
+                  this.setState({ matchTranslationsValue: value });}}
+              />
+            </List.Item>
+            <List.Item>
+              <Checkbox
+                radio
+                disabled={!this.state.matchTranslationsFlag}
+                label={getTranslation('All characters.')}
+                name='matchTranslationsRadioGroup'
+                value='all'
+                checked={this.state.matchTranslationsValue == 'all'}
+                onChange={(e, { value }) => {
+                  this.setState({ matchTranslationsValue: value });}}
+              />
+            </List.Item>
+          </List>
+        </List.Item>
+      </List>
+    )
+  }
+
+  /*
    * Additional options for administrator.
    */
   admin_section_render()
@@ -922,11 +1116,42 @@ class CognateAnalysisModal extends React.Component
     )
   }
 
+  language_render(multi_flag)
+  {
+    /* If we are selecting perspectives for cognate suggestions, we check the source perspective state. */
+
+    if (
+      this.props.mode == 'suggestions' &&
+      this.englishStatus != 'Published' &&
+      this.englishStatus != 'Limited access')
+
+      return (
+        <Modal.Content>
+          <Message negative>
+            <Message.Header>
+              {getTranslation('Perspective is not published')}
+            </Message.Header>
+            <p>
+              {getTranslation('Cognate suggestions are available only for perspectives in the "Published" or "Limited access" state.')}
+            </p>
+          </Message>
+        </Modal.Content>
+      );
+
+    return multi_flag ?
+      this.multi_language_render() :
+      this.single_language_render();
+  }
+
   /*
    * Perspective selection for a single language, e.g. for simple cognate analysis.
    */
   single_language_render()
   {
+    const error_flag =
+      this.perspective_list.length <= 1 ||
+      !this.state.library_present;
+
     return (
       <Modal.Content>
 
@@ -1003,33 +1228,32 @@ class CognateAnalysisModal extends React.Component
             </List>
         ))}
         {this.perspective_list.length <= 1 && (
-          <span>Dictionary group doesn't have multiple dictionaries with selected
-            cognate grouping field present, cognate analysis is impossible.</span>
+          <span>
+            {getTranslation(
+              'Selected dictionary group doesn\'t have multiple dictionaries with selected ' +
+              'cognate grouping field present, cognate analysis is impossible.')}
+          </span>
         )}
         </div>
 
         {!this.state.library_present && (
           <List>
             <div style={{color: 'red'}}>
-              Analysis library is absent, please contact system administrator.
+              {getTranslation('Analysis library is absent, please contact system administrator.')}
             </div>
           </List>
         )}
 
-        {this.props.mode == 'suggestions' && (
-          <Checkbox
-            label={getTranslation('Match translations')}
-            style={{marginTop: '1em', verticalAlign: 'middle'}}
-            checked={this.state.matchTranslationsFlag}
-            onChange={(e, { checked }) => {
-              this.setState({ matchTranslationsFlag: checked });}}
-          />
-        )}
+        {!error_flag &&
+          this.props.mode == 'suggestions' &&
+          this.match_translations_render()}
 
-        {this.props.user.id == 1 && this.admin_section_render()}
+        {!error_flag &&
+          this.props.user.id == 1 &&
+          this.admin_section_render()}
 
       </Modal.Content>
-    )
+    );
   }
 
   /*
@@ -1037,6 +1261,9 @@ class CognateAnalysisModal extends React.Component
    */
   multi_language_render()
   {
+    const error_flag =
+      !this.state.library_present;
+
     return (
       <Modal.Content>
 
@@ -1192,14 +1419,428 @@ class CognateAnalysisModal extends React.Component
         {!this.state.library_present && (
           <List>
             <div style={{color: 'red'}}>
-              Analysis library is absent, please contact system administrator.
+              {getTranslation('Analysis library is absent, please contact system administrator.')}
             </div>
           </List>
         )}
 
-        {this.props.user.id == 1 && this.admin_section_render()}
+        {!error_flag &&
+          this.props.mode == 'multi_suggestions' &&
+          this.match_translations_render()}
+
+        {!error_flag &&
+          this.props.user.id == 1 &&
+          this.admin_section_render()}
 
       </Modal.Content>
+    )
+  }
+
+  /* Launches connection of suggestion specified by index. */
+
+  sg_connect(
+    index,
+    window_log_flag = true)
+  {
+    const {
+      suggestion_field_id,
+      sg_select_list,
+      sg_state_list,
+      sg_count,
+      sg_entry_map } = this.state;
+
+    const entry_id_str_list = 
+      Object.keys(sg_select_list[index]);
+
+    const entry_id_list =
+
+      entry_id_str_list.map(id_str =>
+        id_str.split('/').map(str => parseInt(str)));
+
+    sg_state_list[index] = 'connecting';
+
+    sg_count.connecting++;
+    sg_count.left--;
+
+    this.setState({
+      sg_state_list,
+      sg_count, });
+
+    this.props.connectGroup({
+      variables: {
+        fieldId: suggestion_field_id,
+        connections: entry_id_list },
+    }).then(
+
+      () => {
+
+        if (window_log_flag)
+          window.logger.suc(`${getTranslation('Connected')}.`);
+
+        sg_state_list[index] = 'connected';
+
+        sg_count.connected++;
+        sg_count.connecting--;
+
+        for (const entry_id_str of entry_id_str_list)
+        {
+          for (const sg_index of
+            Object.keys(sg_entry_map[entry_id_str]))
+          {
+            if (sg_state_list[sg_index] == 'left')
+            {
+              sg_state_list[sg_index] = 'invalidated';
+
+              sg_count.invalidated++;
+              sg_count.left--;
+            }
+          }
+        }
+
+        this.setState({
+          sg_state_list,
+          sg_count, });
+
+      },
+    
+      () => {
+
+        sg_state_list[index] = 'error';
+
+        sg_count.error++;
+        sg_count.connecting--;
+
+        this.setState({
+          sg_state_list,
+          sg_count, });
+
+      });
+  }
+
+  suggestions_render()
+  {
+    const {
+      suggestion_list,
+      suggestion_field_id,
+      sg_select_list,
+      sg_state_list,
+      sg_count,
+      sg_entry_map } = this.state;
+
+    /* Shows current suggestion state counts. */
+
+    function f_count()
+    {
+      return (
+        <List>
+
+          <List.Item>
+            {sg_count.left} {getTranslation('left')}
+          </List.Item>
+
+          {sg_count.connecting > 0 && (
+            <List.Item>
+              {sg_count.connecting} {getTranslation('connecting...')}
+            </List.Item>
+          )}
+
+          {sg_count.connected > 0 && (
+            <List.Item>
+              {sg_count.connected} {getTranslation('connected')}
+            </List.Item>
+          )}
+
+          {sg_count.invalidated > 0 && (
+            <List.Item>
+              {sg_count.invalidated} {getTranslation('invalidated')}
+            </List.Item>
+          )}
+
+          {sg_count.error > 0 && (
+            <List.Item>
+              {sg_count.error} {getTranslation('errors')}
+            </List.Item>
+          )}
+
+        </List>
+      );
+    }
+
+    return (
+      <div>
+
+      {sg_count.left < suggestion_list.length &&
+        f_count()}
+      
+      {map(
+        suggestion_list,
+
+        ([perspective_index, word, word_entry_id, single_list, group_list],
+          index) => {
+
+        const connected_flag =
+          sg_state_list[index] == 'connected';
+
+        const error_flag =
+          sg_state_list[index] == 'error';
+
+        const invalidated_flag =
+          sg_state_list[index] == 'invalidated';
+
+        const disabled_flag =
+          connected_flag || error_flag || invalidated_flag;
+
+        const opacity_style =
+          disabled_flag ? {opacity: 0.5} : {};
+
+        return (
+          <Segment
+            key={'suggestion' + index}>
+
+            <List>
+
+              <List.Item>
+                <span style={opacity_style}>
+                  {getTranslation('Source perspective word:')}
+                </span>
+
+                {/* List and List.Item for uniform appearance. */}
+
+                <List>
+                  <List.Item>
+                    <Checkbox
+
+                      label={
+                        `${word} (${this.state.perspective_name_list[perspective_index]})`}
+
+                      checked={
+                        sg_select_list[index].hasOwnProperty(id2str(word_entry_id))}
+
+                      disabled={disabled_flag}
+
+                      onChange={(e, { checked }) => {
+
+                        if (checked)
+                          sg_select_list[index][id2str(word_entry_id)] = null;
+                        else
+                          delete sg_select_list[index][id2str(word_entry_id)];
+
+                        this.setState({ sg_select_list });}}
+                    />
+                  </List.Item>
+                </List>
+              </List.Item>
+
+            {single_list.length > 0 && (
+              <List.Item>
+                <span style={opacity_style}>
+                  {getTranslation('Suggested cognates:')}
+                </span>
+
+                <List>
+                  {map(
+                    single_list,
+                    
+                    ([perspective_index, [transcription_str, translation_str], entry_id],
+                      single_index) => (
+
+                    <List.Item key={'sg' + index + 'single' + single_index}>
+                      <Checkbox
+
+                        label={
+                          `${transcription_str} ${translation_str}
+                            (${this.state.perspective_name_list[perspective_index]})`}
+
+                        checked={
+                          sg_select_list[index].hasOwnProperty(id2str(entry_id))}
+
+                        disabled={disabled_flag}
+
+                        onChange={(e, { checked }) => {
+
+                          if (checked)
+                            sg_select_list[index][id2str(entry_id)] = null;
+                          else
+                            delete sg_select_list[index][id2str(entry_id)];
+
+                          this.setState({ sg_select_list });}}
+                      />
+                    </List.Item>
+
+                  ))}
+                </List>
+              </List.Item>
+            )}
+
+            {group_list.length > 0 && (
+              <List.Item>
+                <span style={opacity_style}>
+                  {getTranslation('Suggested cognate groups:')}
+                </span>
+
+                <List>
+                  {map(
+                    group_list,
+                    
+                    ([word_list, entry_id],
+                      group_index) => (
+
+                    <List.Item
+                      key={'sg' + index + 'group' + group_index}>
+
+                      <Checkbox
+
+                        checked={
+                          sg_select_list[index].hasOwnProperty(id2str(entry_id))}
+
+                        disabled={disabled_flag}
+
+                        onChange={(e, { checked }) => {
+
+                          if (checked)
+                            sg_select_list[index][id2str(entry_id)] = null;
+                          else
+                            delete sg_select_list[index][id2str(entry_id)];
+
+                          this.setState({ sg_select_list });}}
+
+                        label={
+                          <label>
+                          <div>
+
+                            {map(word_list,
+
+                              ([perspective_index, [transcription_str, translation_str]],
+                                word_index) => (
+
+                              <div
+                                key={'sg' + index + 'gr' + group_index + 'word' + word_index}>
+                                {`${transcription_str} ${translation_str}
+                                  (${this.state.perspective_name_list[perspective_index]})`}
+                              </div>
+
+                            ))}
+                          </div>
+                          </label>
+                      }/>
+
+                    </List.Item>
+
+                  ))}
+                </List>
+              </List.Item>
+            )}
+
+            </List>
+
+            {
+              connected_flag ?
+
+              <Message positive>
+                <Message.Header>
+                  {getTranslation('Connected')}
+                </Message.Header>
+              </Message> :
+
+              error_flag ?
+
+              <Message negative>
+                <Message.Header>
+                  {getTranslation('Query error')}
+                </Message.Header>
+                <p>
+                  {getTranslation('Failed to connect selected lexical entries, please contact developers.')}
+                </p>
+              </Message> :
+
+              invalidated_flag ?
+
+              <Message>
+                <Message.Header>
+                  {getTranslation('Invalidated')}
+                </Message.Header>
+                <p>
+                  {getTranslation(
+                    'Another suggestion was accepted, source perspective word and/or one of suggested ' +
+                    'cognate words or cognate groups have been connected.')}
+                </p>
+              </Message> :
+
+              <Button
+                basic
+                positive
+
+                content={
+                  sg_state_list[index] == 'connecting' ?
+                  getTranslation('Connecting...') :
+                  getTranslation('Connect')}
+
+                disabled={
+                  Object.keys(sg_select_list[index]).length <= 1 ||
+                  sg_state_list[index] == 'connecting'}
+
+                size='mini'
+                onClick={() => this.sg_connect(index)}
+              />
+            }
+
+          </Segment>
+        );}
+      )}
+
+      {sg_count.left < suggestion_list.length &&
+        f_count()}
+
+      <Button
+        basic
+        positive
+
+        content={
+          getTranslation('Connect all selected')}
+
+        disabled={
+          sg_count.left <= 0 ||
+          sg_count.connecting > 0}
+
+        size='mini'
+
+        onClick={() => {
+
+          console.log('connect all selected');
+
+          /* Launching connections of all suggestions with enough selected lexical entries, skipping
+           * suggestions which would be invalidated if launched connections are successful. */
+
+          const invalid_set = {};
+
+          for (var i = 0; i < suggestion_list.length; i++)
+          {
+            if (
+              sg_state_list[i] != 'left' ||
+              invalid_set.hasOwnProperty(i))
+
+              continue;
+
+            const entry_id_str_list = 
+              Object.keys(sg_select_list[i]);
+
+            if (entry_id_str_list.length <= 1)
+              continue;
+
+            for (const entry_id_str of entry_id_str_list)
+            {
+              Object.assign(
+                invalid_set,
+                sg_entry_map[entry_id_str]);
+            }
+
+            this.sg_connect(i, false);
+          }
+
+        }}
+      />
+
+      </div>
     )
   }
 
@@ -1214,18 +1855,28 @@ class CognateAnalysisModal extends React.Component
       );
     }
 
-    const { mode, user } = this.props;
-    const object = this;
+    const { mode } = this.props;
+
+    const multi =
+      mode == 'multi_reconstruction' ||
+      mode == 'multi_suggestions';
 
     return (
       <div>
-        <Modal dimmer open size="fullscreen">
+        <Modal
+          closeIcon
+          onClose={this.props.closeModal}
+          dimmer
+          open
+          size="fullscreen">
 
           <Modal.Header>{
             mode == 'acoustic' ?
               getTranslation('Cognate acoustic analysis') :
-            mode == 'multi' ?
+            mode == 'multi_reconstruction' ?
               getTranslation('Cognate multi-language reconstruction') :
+            mode == 'multi_suggestions' ?
+              getTranslation('Cognate multi-language suggestions') :
             mode == 'reconstruction' ?
               getTranslation('Cognate reconstruction') :
             mode == 'suggestions' ?
@@ -1233,9 +1884,7 @@ class CognateAnalysisModal extends React.Component
               getTranslation('Cognate analysis')}
           </Modal.Header>
 
-          {mode == 'multi' ?
-            this.multi_language_render() :
-            this.single_language_render()}
+          {this.language_render(multi)}
 
           <Modal.Actions>
             <Button
@@ -1245,34 +1894,38 @@ class CognateAnalysisModal extends React.Component
                 "Compute"}
               onClick={this.handleCreate}
               disabled={
-                (mode != 'multi' && (
+                (!multi && (
                   this.perspective_list.length <= 1 ||
                   !this.state.perspectiveSelectionList.some(enabled => enabled))) ||
-                (mode == 'multi' &&
+                (multi &&
                   this.state.language_list.length <= 0) ||
                 this.state.computing}
             />
             <Button negative content="Close" onClick={this.props.closeModal} />
           </Modal.Actions>
 
-          {this.state.library_present && this.state.result.length > 0 && (
+          {this.state.library_present && this.state.result !== null && (
             <Modal.Content scrolling style={{maxHeight: '95vh'}}>
 
               <h3>Analysis results
                 ({this.state.dictionary_count} dictionaries, {this.state.group_count} cognate groups and {this.state.transcription_count} transcriptions analysed):</h3>
 
-              <List>
+              <List relaxed>
                 <List.Item>
-                  {this.state.not_enough_count} additional cognate groups were excluded from the analysis due to not having lexical entries in at least two dictionaries.
+                  {this.state.not_enough_count} cognate groups were excluded from the analysis due to not having lexical entries in at least two selected dictionaries.
                 </List.Item>
 
-                {mode != 'suggestions' && (
+                {this.state.result.length > 0 &&
+                  mode != 'suggestions' &&
+                  mode != 'multi_suggestions' && (
                   <List.Item>
-                    <a href={this.state.xlsx_url}>XLSX-exported analysis results</a>
+                    <a href={this.state.xlsx_url}>
+                      {getTranslation('XLSX-exported analysis results')}
+                    </a>
                   </List.Item>
                 )}
 
-                {this.state.intermediate_url_list && (
+                {this.state.result.length > 0 && this.state.intermediate_url_list && (
                   <List.Item>
                     <div style={{marginTop: '0.75em'}}>
                       <span>Intermediate data:</span>
@@ -1287,6 +1940,43 @@ class CognateAnalysisModal extends React.Component
                   </List.Item>
                 )}
               </List>
+
+              {this.state.result.length <= 0 && (
+                <List>
+                  <List.Item>
+                    No data for cognate analysis.
+                  </List.Item>
+                </List>
+              )}
+
+              {this.state.suggestion_list && (
+                <div>
+
+                  <Header style={{marginTop: '1em'}}>
+                    {this.state.suggestion_list.length} suggestions
+                  </Header>
+
+                  {this.props.user.id === undefined ? (
+
+                    <Message negative>
+                      <Message.Header>
+                        Unauthorized user
+                      </Message.Header>
+                      <p>
+                        Only authorized users can create new cognate connections based on cognate suggestions.
+                      </p>
+                    </Message>
+
+                  ) : (
+
+                    <div>
+                      {this.suggestions_render()}
+                    </div>
+
+                  )}
+
+                </div>
+              )}
 
               {this.state.plotly_data.length > 0 && (
                 <List>
@@ -1358,6 +2048,7 @@ class CognateAnalysisModal extends React.Component
               <div><pre>{this.state.result}</pre></div>
             </Modal.Content>
           )}
+
         </Modal>
       </div>
     );
@@ -1374,6 +2065,8 @@ export default compose(
   connect(state => state.cognateAnalysis, dispatch => bindActionCreators({ closeModal }, dispatch)),
   connect(state => state.user),
   branch(({ visible }) => !visible, renderNothing),
+  graphql(cognateAnalysisDataQuery),
   graphql(computeCognateAnalysisMutation, { name: 'computeCognateAnalysis' }),
+  graphql(connectMutation, { name: 'connectGroup' }),
   withApollo
 )(CognateAnalysisModal);
