@@ -41,6 +41,7 @@ base.plugins.push(
     'process.env.NODE_ENV': JSON.stringify('production'),
     __DEVELOPMENT__: false,
     __DEVTOOLS__: false,
+    __VERSION__: JSON.stringify(_.versionString),
   }),
   new webpack.optimize.UglifyJsPlugin({
     sourceMap: true,
