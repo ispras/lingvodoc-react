@@ -219,12 +219,7 @@ export const stringsToTranslate = [
   "Please select a user",
   "Please, select the parent language",
   "Please sign in",
-<<<<<<< HEAD
-  "Properties...",
-  "Preview",
-=======
   "Properties",
->>>>>>> master
   "Publish",
   "Publication date",
   "Publish Entities",

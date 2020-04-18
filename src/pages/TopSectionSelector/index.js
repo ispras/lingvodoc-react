@@ -55,7 +55,7 @@ const TopSectionSelector = (props) => {
           </Link>
         </div>
       </div>
-      <News />
+   {/*    <News /> */}
     </div>
 
 

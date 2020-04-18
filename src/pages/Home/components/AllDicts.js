@@ -9,6 +9,7 @@ function AllDicts(props) {
   const {
     languagesTree, dictionaries, perspectives, isAuthenticated, location
   } = props;
+
   const tree = assignDictsToTree(
     buildDictTrees(fromJS({
       lexical_entries: [],

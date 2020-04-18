@@ -1,9 +1,9 @@
 import base from './base';
 
 const dist = {
-/* 
-    apiUrl: 'http://localhost:9999', */
-  apiUrl: 'api-mock',
+
+    apiUrl: 'http://localhost:9999',
+/*   apiUrl: 'api-mock', */
   env: 'dist',
   homePath: '/',
 };

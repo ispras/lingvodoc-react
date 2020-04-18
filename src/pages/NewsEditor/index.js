@@ -19,20 +19,21 @@ const test =()=>{
 export default test;   */
 
 import React, { Component } from 'react';
-import { EditorState, convertToRaw } from 'draft-js';
+/* import { EditorState, convertToRaw } from 'draft-js'; */
 import { Editor } from 'react-draft-wysiwyg';
-import draftToHtml from 'draftjs-to-html';
-import htmlToDraft from 'html-to-draftjs';
+/* import draftToHtml from 'draftjs-to-html';
+import htmlToDraft from 'html-to-draftjs'; */
 import { Button } from 'semantic-ui-react';
-import "../../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css"
+/* import "../../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css" */
 import "./styles.scss"
 import { getTranslation } from 'api/i18n';
 class EditorConvertToHTML extends Component {
   state = {
-    editorState: EditorState.createEmpty(),
+    /* editorState: EditorState.createEmpty(), */
+    editorState:null
   }
 
-  onEditorStateChange: Function = (editorState) => {
+  onEditorStateChange = (editorState) => {
     this.setState({
       editorState,
     });

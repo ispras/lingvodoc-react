@@ -14,7 +14,7 @@ import { openPerspectivePropertiesModal } from 'ducks/perspectiveProperties';
 import { openSaveDictionaryModal } from 'ducks/saveDictionary';
 import { openStatistics } from 'ducks/statistics';
 import { getTranslation } from 'api/i18n';
-import { Link } from 'react-router-dom';
+
 
 const queryPerspectivePath = gql`
   query queryPerspectivePath($id: LingvodocID!) {
