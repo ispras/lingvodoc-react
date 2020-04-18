@@ -2,7 +2,7 @@
   "name": "lingvodoc",
   "version": "0.0.1",
   "main": "src/index.js",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "scripts": {
     "build": "webpack --config webpack/webpack.prod.js",
     "start": "node webpack/server.js",
