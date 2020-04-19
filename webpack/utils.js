@@ -22,7 +22,7 @@ try
   const describeMatch =
     describeOutput.match(/v(.*?)-(\d+)-g([0-9a-fA-F]+(-dirty)?)?/);
 
-  var versionString = describeOutput;
+  var versionString = describeOutput.trim();
 
   if (describeMatch)
   {
