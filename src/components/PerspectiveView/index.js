@@ -271,7 +271,7 @@ const P = ({
 
   const onApprove = () => {
     openNewModal(ApproveModal, { perspectiveId: id, mode });
-  }
+  };
 
   const processEntries = flow([
     // remove empty lexical entries, if not in edit mode
@@ -328,23 +328,19 @@ const P = ({
   });
 
   function approveDisableCondition(entries) {
-    return entries.length == 0 || entries.every(entry => {
-      return entry.entities.every(entity => {
-        return mode == 'publish' ? entity.published == true : entity.accepted == true;
-      });
-    });
+    return entries.length == 0 || entries.every(entry => entry.entities.every(entity => (mode == 'publish' ? entity.published == true : entity.accepted == true)));
   }
 
   const isAuthenticated = user && user.user.id;
-  
+
   return (
     <div style={{ overflowY: 'auto' }}>
-      {mode === 'edit' && <Button positive icon="plus" content={getTranslation("Add lexical entry")} onClick={addEntry} />}
+      {mode === 'edit' && <Button positive icon="plus" content={getTranslation('Add lexical entry')} onClick={addEntry} />}
       {mode === 'edit' && (
         <Button
           negative
           icon="minus"
-          content={getTranslation("Remove lexical entries")}
+          content={getTranslation('Remove lexical entries')}
           onClick={removeEntries}
           disabled={selectedEntries.length < 1}
         />
@@ -353,16 +349,16 @@ const P = ({
         <Button
           positive
           icon="plus"
-          content={getTranslation("Merge lexical entries")}
+          content={getTranslation('Merge lexical entries')}
           onClick={mergeEntries}
           disabled={selectedEntries.length < 2}
         />
       )}
       {mode === 'publish' && isAuthenticated &&
-        <Button positive content={getTranslation("Publish Entities")} disabled={approveDisableCondition(entries)} onClick={onApprove} />
+        <Button positive content={getTranslation('Publish Entities')} disabled={approveDisableCondition(entries)} onClick={onApprove} />
       }
       {mode === 'contributions' && isAuthenticated &&
-        <Button positive content={getTranslation("Accept Contributions")} disabled={approveDisableCondition(entries)} onClick={onApprove} />
+        <Button positive content={getTranslation('Accept Contributions')} disabled={approveDisableCondition(entries)} onClick={onApprove} />
       }
       <Table celled padded className={className}>
         <TableHeader
@@ -580,7 +576,7 @@ const LexicalEntryViewBaseByIds = ({
 }) => {
   const { loading, error } = data;
   if (loading || (!loading && !error && !data.perspective)) {
-     return (
+    return (
       <Dimmer.Dimmable dimmed style={{ minHeight: '600px' }}>
         <Dimmer active inverted>
           <Header as="h2" icon>
@@ -588,7 +584,7 @@ const LexicalEntryViewBaseByIds = ({
           </Header>
         </Dimmer>
       </Dimmer.Dimmable>
-    ); 
+    );
   }
 
   const {
@@ -653,8 +649,7 @@ const PerspectiveViewWrapper = ({
     return null;
   }
 
-  if (data.perspective === undefined)
-  {
+  if (data.perspective === undefined) {
     /* If we refetch data of this perspective with a different set of column fields during initialization
      * of CognateAnalysisModal, data.perspective becomes undefined and errors and query refetching ensue.
      *

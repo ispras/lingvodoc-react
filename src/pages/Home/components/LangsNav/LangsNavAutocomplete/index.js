@@ -33,7 +33,7 @@ const getComponentContainer = () => document.querySelector(`.${classNames.substr
 
 /* ----------- ENHANCERS ----------- */
 const addHandlers = withHandlers({
-  onLangChange: ({ setLanguage }) => (ev) => setLanguage(ev.target.value),
+  onLangChange: ({ setLanguage }) => ev => setLanguage(ev.target.value),
   onLangSelect: ({ setLanguage, langsNavAcBeside, setLangsNavAcBeside }) => (value, item) => {
     if (!langsNavAcBeside) {
       setLangsNavAcBeside(true);

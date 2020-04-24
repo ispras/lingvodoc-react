@@ -8,7 +8,7 @@ import LangsNavList from 'pages/Home/components/LangsNav/LangsNavList/index';
 import { sortLangsAlphabetically } from '../../common';
 import { getTranslation } from 'api/i18n';
 
-/* 
+/*
  * Used for filtering languages based on a list provided by Julia Normanskaya.
  *
  * Filtering is performed by checking name of the language in the 2nd locale --- we assume that it changes
@@ -221,19 +221,14 @@ export const languageIdList = [
   [678, 9], // Yakut
 ];
 
-const languageSet = languageIdList.reduce(
-  (object, id) => {
-    object['' + id] = '';
-    return object;
-  }, {})
+const languageSet = languageIdList.reduce((object, id) => {
+  object[`${id}`] = '';
+  return object;
+}, {});
 
-export const checkLanguage = (language) => {
-  return languageSet.hasOwnProperty('' + language.id);
-}
+export const checkLanguage = language => languageSet.hasOwnProperty(`${language.id}`);
 
-export const checkLanguageId = (id) => {
-  return languageSet.hasOwnProperty('' + id);
-}
+export const checkLanguageId = id => languageSet.hasOwnProperty(`${id}`);
 
 /* ----------- COMPONENT HELPERS ----------- */
 const prepareData = (resultData, language) => {

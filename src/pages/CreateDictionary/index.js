@@ -73,8 +73,7 @@ class CreateDictionaryWizard extends React.Component {
       dictionaryTranslations,
       perspectives
     };
-    if (metadata)
-      variables.metadata = metadata.toJS();
+    if (metadata) { variables.metadata = metadata.toJS(); }
     createDictionary({
       variables,
       refetchQueries: [
@@ -87,7 +86,7 @@ class CreateDictionaryWizard extends React.Component {
         },
       ],
     }).then((result) => {
-      const dictionary = result.data.create_dictionary.dictionary;
+      const { dictionary } = result.data.create_dictionary;
       this.createdDictionary = { id: dictionary.id, perspective_id: dictionary.perspectives[0].id };
       this.props.goToStep('FINISH');
     });
@@ -113,8 +112,8 @@ class CreateDictionaryWizard extends React.Component {
 
           <Step link active={step === 'TRANSLATIONS'} onClick={this.onStepClick('TRANSLATIONS')}>
             <Step.Content>
-              <Step.Title>{getTranslation(mode.replace(/^\w/, c => c.toUpperCase()) + ' names and metadata')}</Step.Title>
-              <Step.Description>{getTranslation('Set ' + mode + ' name, translations and metadata')}</Step.Description>
+              <Step.Title>{getTranslation(`${mode.replace(/^\w/, c => c.toUpperCase())} names and metadata`)}</Step.Title>
+              <Step.Description>{getTranslation(`Set ${mode} name, translations and metadata`)}</Step.Description>
             </Step.Content>
           </Step>
 
@@ -150,9 +149,9 @@ class CreateDictionaryWizard extends React.Component {
               <Segment>
                 <Translations translations={translations.toJS()} onChange={t => this.props.setTranslations(t)} />
               </Segment>
-              <Divider/>
+              <Divider />
               <Header inverted>{getTranslation('Fill metadata information')}</Header>
-              <EditDictionaryMetadata mode='create' metadata={metadata ? metadata.toJS() : metadata} onChange={metadata => this.props.setMetadata(metadata)} />
+              <EditDictionaryMetadata mode="create" metadata={metadata ? metadata.toJS() : metadata} onChange={metadata => this.props.setMetadata(metadata)} />
             </div>
           )}
 
@@ -168,13 +167,13 @@ class CreateDictionaryWizard extends React.Component {
 
           {step === 'FINISH' && (
             <Message>
-              <Message.Header>{getTranslation(mode.replace(/^\w/, c => c.toUpperCase()) + ' created')}</Message.Header>
+              <Message.Header>{getTranslation(`${mode.replace(/^\w/, c => c.toUpperCase())} created`)}</Message.Header>
               <Message.Content>
-                {getTranslation('Your ' + mode + ' is created, click') + ' '}
-                <a href={window.location.protocol + '//' + window.location.host + `/dictionary/${this.createdDictionary.id.join('/')}/perspective/${this.createdDictionary.perspective_id.join('/')}/edit`}>
+                {`${getTranslation(`Your ${mode} is created, click`)} `}
+                <a href={`${window.location.protocol}//${window.location.host}/dictionary/${this.createdDictionary.id.join('/')}/perspective/${this.createdDictionary.perspective_id.join('/')}/edit`}>
                   {getTranslation('here')}
                 </a>
-                {' ' + getTranslation('to view.')}
+                {` ${getTranslation('to view.')}`}
               </Message.Content>
             </Message>
           )}

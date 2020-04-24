@@ -30,6 +30,8 @@ rules:
   no-constant-condition:
     - warn
     - checkLoops: false
+  no-unused-vars:
+    - warn
 
   react/jsx-filename-extension: 'off'
   react/jsx-wrap-multilines: 'off'

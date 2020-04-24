@@ -57,7 +57,7 @@ const Dict = ({
       {(config.buildType === 'desktop' || config.buildType === 'proxy') && isDownloaded && <Icon name="download" />}
 
       <span className="dict-name">{translation} {config.buildType === 'server' && canSelectDictionaries && status === 'Published' && <Icon name="globe" />}</span>
-      {authors && authors.size != 0 && <span className="dict-authors">({authors.toArray().join(", ")})</span>}
+      {authors && authors.size != 0 && <span className="dict-authors">({authors.toArray().join(', ')})</span>}
       {perspectives &&
         perspectives.valueSeq && (
           <Dropdown inline text={`View (${perspectives.size})`}>
@@ -89,14 +89,13 @@ const Language = ({ language, canSelectDictionaries }) => {
   const children = language.get('children');
   const id = language.get('id').toJS().toString();
   const parent_id = language.get('parent_id');
-  let langClass = "lang-name";
+  let langClass = 'lang-name';
   if (parent_id == null) {
-    langClass = "root-lang-name";
+    langClass = 'root-lang-name';
+  } else if (checkLanguageId(id)) {
+    langClass = 'confirmed-lang-name';
   }
-  else if (checkLanguageId(id)) {
-    langClass = "confirmed-lang-name";
-  }
-  
+
   return (
     <li className="lang" id={`lang_${id}`}>
       <span className={langClass}>{translation}</span>

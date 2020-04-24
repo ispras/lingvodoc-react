@@ -26,21 +26,18 @@ function acceptRequest(mutation, id, accept) {
       { query: organizationsQuery, },
     ],
   }).then(() => {
-    window.logger.suc(getTranslation(
-      accept ?
-        'Request accepted successfully.' :
-        'Request rejected successfully.'));
-  });;
+    window.logger.suc(getTranslation(accept ?
+      'Request accepted successfully.' :
+      'Request rejected successfully.'));
+  });
 }
 
 const Subject = ({
   request, grants, dictionaries, organizations,
 }) => {
-
   const { subject } = request;
 
   switch (request.type) {
-
     case 'add_dict_to_grant':
     {
       const dictionary = objectByCompositeId(subject.dictionary_id, dictionaries);
@@ -52,7 +49,8 @@ const Subject = ({
           <Card
             header={grant.translation}
             meta={grant.grant_number}
-            description={dictionary ? dictionary.translation : getTranslation('Unknown dictionary')} />
+            description={dictionary ? dictionary.translation : getTranslation('Unknown dictionary')}
+          />
         </div>);
     }
 
@@ -67,7 +65,8 @@ const Subject = ({
           <Card
             header={organization.translation}
             meta={organization.about}
-            description={dictionary ? dictionary.translation : getTranslation('Unknown dictionary')} />
+            description={dictionary ? dictionary.translation : getTranslation('Unknown dictionary')}
+          />
         </div>);
     }
 
@@ -78,7 +77,8 @@ const Subject = ({
 
       return <Card
         header={organization.translation}
-        description={organization.about} />;
+        description={organization.about}
+      />;
 
     case 'grant_permission':
     default:

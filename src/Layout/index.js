@@ -36,16 +36,15 @@ const Content = styled.div`
 `;
 
 class Layout extends React.Component {
-
   constructor(props) {
     super(props);
   }
 
   render() {
     const { selected, loading } = this.props;
-    
+
     return (
-      <div key={'' + selected.id + loading}>
+      <div key={`${selected.id}${loading}`}>
         <NavBar />
         <Snackbar />
         <Sidebar.Pushable as="div">
@@ -73,10 +72,9 @@ class Layout extends React.Component {
       </div>
     );
   }
-
 }
 
-/* 
+/*
  * Without withRouter() using connect() breaks routing, see
  * https://reacttraining.com/react-router/core/guides/redux-integration, "Blocked Updates".
  */

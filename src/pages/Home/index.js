@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -135,7 +135,7 @@ const Home = (props) => {
 
   if (loading) {
     return (
-      <Placeholder/>
+      <Placeholder />
     );
   }
 
@@ -219,14 +219,14 @@ const Home = (props) => {
               <Form.Field
                 control={Radio}
                 label={{ children: <div className="toggle-label">{getTranslation('By Languages')}</div> }}
-                value='1'
+                value="1"
                 checked={!grantsMode}
                 onChange={() => actions.setGrantsMode(false)}
               />
               <Form.Field
                 control={Radio}
                 label={{ children: <div className="toggle-label">{getTranslation('By Grants')}</div> }}
-                value='2'
+                value="2"
                 checked={grantsMode}
                 onChange={() => actions.setGrantsMode(true)}
               />

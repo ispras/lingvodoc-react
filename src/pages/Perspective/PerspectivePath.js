@@ -43,9 +43,10 @@ const queryAvailablePerspectives = gql`
  * Perspective breadcrumb component.
  */
 class PerspectivePath extends React.Component {
-
   render() {
-    const { id, dictionary_id, queryPerspectivePath, queryAvailablePerspectives, mode, className, actions, user } = this.props;
+    const {
+      id, dictionary_id, queryPerspectivePath, queryAvailablePerspectives, mode, className, actions, user
+    } = this.props;
 
     if (queryPerspectivePath.loading || queryPerspectivePath.error || queryAvailablePerspectives.loading || queryAvailablePerspectives.error) {
       return null;
@@ -53,16 +54,15 @@ class PerspectivePath extends React.Component {
 
     const { perspective: { tree } } = queryPerspectivePath;
     const { perspectives } = queryAvailablePerspectives.dictionary;
- 
+
     return (
       <Header as="h2" className={className}>
         <Breadcrumb
           icon="right angle"
-          sections={tree.slice().reverse().map((e, index) => {
-            return {
+          sections={tree.slice().reverse().map((e, index) => ({
               key: e.id,
               content:
-              
+
                 index === tree.length - 1 ?
 
                   <Dropdown inline text={e.translation}>
@@ -81,7 +81,8 @@ class PerspectivePath extends React.Component {
                         ),
 
                         <Dropdown.Divider
-                          key='divider'/>
+                          key="divider"
+                        />
                       ]}
 
                       { user.id !== undefined &&
@@ -96,9 +97,7 @@ class PerspectivePath extends React.Component {
                             key="properties"
                             icon="setting"
                             text={`'${e.translation}' ${getTranslation('Properties').toLowerCase()}...`}
-                            onClick={() => actions.openPerspectivePropertiesModal(
-                              id, dictionary_id, `'${e.translation}' ${getTranslation('Propeties').toLowerCase()}`
-                            )}
+                            onClick={() => actions.openPerspectivePropertiesModal(id, dictionary_id, `'${e.translation}' ${getTranslation('Propeties').toLowerCase()}`)}
                           />
                         ]
                       }
@@ -130,18 +129,14 @@ class PerspectivePath extends React.Component {
                           key="properties"
                           icon="setting"
                           text={`'${e.translation}' ${getTranslation('Properties').toLowerCase()}...`}
-                          onClick={() => actions.openDictionaryPropertiesModal(
-                            dictionary_id, `'${e.translation}' ${getTranslation('Propeties').toLowerCase()}`
-                          )}
+                          onClick={() => actions.openDictionaryPropertiesModal(dictionary_id, `'${e.translation}' ${getTranslation('Propeties').toLowerCase()}`)}
                         />,
 
                         <Dropdown.Item
                           key="organizations"
                           icon="address book"
                           text={`'${e.translation}' ${getTranslation('Organizations').toLowerCase()}...`}
-                          onClick={() => actions.openDictionaryOrganizationsModal(
-                            dictionary_id, `'${e.translation}' ${getTranslation('Propeties').toLowerCase()}`
-                          )}
+                          onClick={() => actions.openDictionaryOrganizationsModal(dictionary_id, `'${e.translation}' ${getTranslation('Propeties').toLowerCase()}`)}
                         />,
 
                       ]}
@@ -156,18 +151,17 @@ class PerspectivePath extends React.Component {
                       <Dropdown.Item
                         key="save"
                         icon="save"
-                        text={`${getTranslation("Save dictionary")} '${e.translation}'...`}
+                        text={`${getTranslation('Save dictionary')} '${e.translation}'...`}
                         onClick={() => actions.openSaveDictionaryModal(dictionary_id)}
                       />
 
                     </Dropdown.Menu>
                   </Dropdown> :
-              
+
                 e.translation,
 
               link: false
-            };
-          })}
+            }))}
         />
       </Header>
     );
@@ -187,13 +181,16 @@ export default compose(
     state => state.user,
     dispatch => ({
       actions: bindActionCreators(
-        {openDictionaryOrganizationsModal,
+        {
+          openDictionaryOrganizationsModal,
           openDictionaryPropertiesModal,
           openPerspectivePropertiesModal,
           openRoles,
           openSaveDictionaryModal,
-          openStatistics},
-        dispatch),
+          openStatistics
+        },
+        dispatch
+      ),
     })
   ),
   graphql(queryPerspectivePath, {
