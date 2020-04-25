@@ -71,15 +71,14 @@ const Subject = ({
     }
 
     case 'participate_org':
-    case 'administrate_org':
-
+    case 'administrate_org': {
       const organization = objectById(subject.org_id, organizations);
 
       return <Card
         header={organization.translation}
         description={organization.about}
       />;
-
+    }
     case 'grant_permission':
     default:
       return <div>{getTranslation('Unknow request type!')}</div>;
