@@ -44,6 +44,8 @@ rules:
     - off
   no-prototype-builtins:
     - warn
+  camelcase:
+    - warn
 
   react/jsx-filename-extension: 'off'
   react/jsx-wrap-multilines: 'off'
