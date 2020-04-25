@@ -8,10 +8,10 @@ import { Dropdown, Menu, Button, List } from 'semantic-ui-react';
 import styled from 'styled-components';
 import config from 'config';
 
+import { getTranslation } from 'api/i18n';
 import User from './User';
 import Tasks from './Tasks';
 import Locale from './Locale';
-import { getTranslation } from 'api/i18n';
 
 import './style.scss';
 

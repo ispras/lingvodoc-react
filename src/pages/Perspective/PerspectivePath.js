@@ -44,10 +44,11 @@ const queryAvailablePerspectives = gql`
  */
 class PerspectivePath extends React.Component {
   render() {
+    /* eslint-disable no-shadow */
     const {
       id, dictionary_id, queryPerspectivePath, queryAvailablePerspectives, mode, className, actions, user
     } = this.props;
-
+    /* eslint-enable no-shadow */
     if (queryPerspectivePath.loading || queryPerspectivePath.error || queryAvailablePerspectives.loading || queryAvailablePerspectives.error) {
       return null;
     }

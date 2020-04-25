@@ -5,8 +5,8 @@ import { Segment, Header } from 'semantic-ui-react';
 
 import LangsNavAutocomplete from 'pages/Home/components/LangsNav/LangsNavAutocomplete/index';
 import LangsNavList from 'pages/Home/components/LangsNav/LangsNavList/index';
-import { sortLangsAlphabetically } from '../../common';
 import { getTranslation } from 'api/i18n';
+import { sortLangsAlphabetically } from '../../common';
 
 /*
  * Used for filtering languages based on a list provided by Julia Normanskaya.

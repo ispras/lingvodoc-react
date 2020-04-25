@@ -8,8 +8,8 @@ import moment from 'moment';
 import Placeholder from 'components/Placeholder';
 import { getTranslation } from 'api/i18n';
 
-import { getUserRequestsQuery, acceptMutation } from './graphql';
 import { organizationsQuery } from 'pages/Organizations';
+import { getUserRequestsQuery, acceptMutation } from './graphql';
 
 const timestampToDate = ts => moment(ts * 1000).format('LLLL');
 const objectById = (id, objs) => objs.find(o => o.id === id);

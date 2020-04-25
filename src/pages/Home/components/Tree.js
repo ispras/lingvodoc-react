@@ -7,9 +7,8 @@ import Immutable from 'immutable';
 import { Link } from 'react-router-dom';
 import { Dropdown, Checkbox, Icon } from 'semantic-ui-react';
 import { toggleDictionary } from 'ducks/home';
-import { checkLanguageId } from './LangsNav';
-
 import config from 'config';
+import { checkLanguageId } from './LangsNav';
 
 import '../published.scss';
 

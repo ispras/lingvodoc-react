@@ -38,7 +38,7 @@ Anonymous.propTypes = {
   launchSignUpForm: PropTypes.func.isRequired,
   closeForm: PropTypes.func.isRequired,
 };
-
+/* eslint-disable no-shadow */
 const Signed = ({
   user, modal, signOut, launchEditForm, closeForm, openModal
 }) =>
@@ -63,7 +63,7 @@ const Signed = ({
       )}
     </Dropdown.Menu>
   </Dropdown>;
-
+/* eslint-enable no-shadow */
 Signed.propTypes = {
   modal: PropTypes.any.isRequired,
   user: PropTypes.object.isRequired,

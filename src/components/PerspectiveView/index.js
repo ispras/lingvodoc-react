@@ -11,11 +11,11 @@ import { setSortByField, addLexicalEntry, selectLexicalEntry, resetEntriesSelect
 import { openModal } from 'ducks/modals';
 import Placeholder from 'components/Placeholder';
 import ApproveModal from 'components/ApproveModal';
+import { getTranslation } from 'api/i18n';
 
 import TableHeader from './TableHeader';
 import TableBody from './TableBody';
 import Pagination from './Pagination';
-import { getTranslation } from 'api/i18n';
 
 const ROWS_PER_PAGE = 20;
 
@@ -326,11 +326,11 @@ const P = ({
       position: column.position,
     };
   });
-
+  /* eslint-disable no-shadow */
   function approveDisableCondition(entries) {
     return entries.length == 0 || entries.every(entry => entry.entities.every(entity => (mode == 'publish' ? entity.published == true : entity.accepted == true)));
   }
-
+  /* eslint-enable no-shadow */
   const isAuthenticated = user && user.user.id;
 
   return (

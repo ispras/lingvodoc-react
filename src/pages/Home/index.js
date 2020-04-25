@@ -15,11 +15,11 @@ import { setGrantsMode, resetDictionaries } from 'ducks/home';
 import config from 'config';
 
 import BackTopButton from 'components/BackTopButton';
+import { getTranslation } from 'api/i18n';
+import Placeholder from 'components/Placeholder';
 import GrantedDicts from './components/GrantedDicts';
 import AllDicts from './components/AllDicts';
-import Placeholder from 'components/Placeholder';
 import { getScrollContainer } from './common';
-import { getTranslation } from 'api/i18n';
 import './published.scss';
 
 const authenticatedDictionariesQuery = gql`

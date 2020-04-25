@@ -10,8 +10,8 @@ import { Container, Menu, Dropdown } from 'semantic-ui-react';
 import PerspectiveView from 'components/PerspectiveView';
 import Merge from 'components/Merge';
 import NotFound from 'pages/NotFound';
-import PerspectivePath from './PerspectivePath';
 import { getTranslation } from 'api/i18n';
+import PerspectivePath from './PerspectivePath';
 
 import './style.scss';
 

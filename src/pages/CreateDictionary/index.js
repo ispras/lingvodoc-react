@@ -18,10 +18,10 @@ import {
 import Languages from 'components/Languages';
 import Translations from 'components/Translation';
 import EditDictionaryMetadata from 'components/EditDictionaryMetadata';
-import Perspectives from './Perspectives';
-import { createDictionaryMutation } from './graphql';
 import { query as dashboardQuery } from 'pages/Dashboard';
 import { getTranslation } from 'api/i18n';
+import Perspectives from './Perspectives';
+import { createDictionaryMutation } from './graphql';
 
 class CreateDictionaryWizard extends React.Component {
   constructor(props) {
