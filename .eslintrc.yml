@@ -42,6 +42,8 @@ rules:
     - warn
   no-useless-constructor:
     - off
+  no-prototype-builtins:
+    - warn
 
   react/jsx-filename-extension: 'off'
   react/jsx-wrap-multilines: 'off'

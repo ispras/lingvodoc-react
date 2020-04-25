@@ -328,7 +328,7 @@ const P = ({
   });
   /* eslint-disable no-shadow */
   function approveDisableCondition(entries) {
-    return entries.length == 0 || entries.every(entry => entry.entities.every(entity => (mode == 'publish' ? entity.published == true : entity.accepted == true)));
+    return entries.length === 0 || entries.every(entry => entry.entities.every(entity => (mode === 'publish' ? entity.published === true : entity.accepted === true)));
   }
   /* eslint-enable no-shadow */
   const isAuthenticated = user && user.user.id;

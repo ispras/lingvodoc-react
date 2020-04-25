@@ -68,7 +68,7 @@ class CreateDictionaryWizard extends React.Component {
       .toJS();
 
     const variables = {
-      category: mode == 'dictionary' ? 0 : 1,
+      category: mode === 'dictionary' ? 0 : 1,
       parentId,
       dictionaryTranslations,
       perspectives
@@ -80,7 +80,7 @@ class CreateDictionaryWizard extends React.Component {
         {
           query: dashboardQuery,
           variables: {
-            mode: mode == 'dictionary' ? 0 : 1,
+            mode: mode === 'dictionary' ? 0 : 1,
             category: 0,
           },
         },

@@ -302,11 +302,11 @@ export const stringsToTranslate = [
 
 export function getTranslation(string) {
   const translation = i18n.get(string);
-  return (translation == undefined) ? string : translation;
+  return (translation === undefined) ? string : translation;
 }
 
 function setTranslation(string, translatedString) {
-  if (translatedString == null || translatedString == undefined) {
+  if (translatedString == null || translatedString === undefined) {
     i18n.set(string, string);
   } else {
     i18n.set(string, translatedString);

@@ -87,7 +87,7 @@ class EditDictionaryMetadata extends React.Component {
   }
 
   onAddNewAlternative(event, data) {
-    if (data.options.every(option => option.value != data.value)) { data.options.push({ text: data.value, value: data.value }); }
+    if (data.options.every(option => option.value !== data.value)) { data.options.push({ text: data.value, value: data.value }); }
   }
 
   onChangeValue(kind, data) {
@@ -180,15 +180,15 @@ class EditDictionaryMetadata extends React.Component {
         <Segment>
           <Form.Group widths="equal">
             <Form.Group>
-              <Form.Radio label={getTranslation('Expedition')} checked={kind == 'Expedition'} onClick={(event, data) => this.onChangeValue('kind', data)} />
-              <Form.Radio label={getTranslation('Archive')} checked={kind == 'Archive'} onClick={(event, data) => this.onChangeValue('kind', data)} />
+              <Form.Radio label={getTranslation('Expedition')} checked={kind === 'Expedition'} onClick={(event, data) => this.onChangeValue('kind', data)} />
+              <Form.Radio label={getTranslation('Archive')} checked={kind === 'Archive'} onClick={(event, data) => this.onChangeValue('kind', data)} />
             </Form.Group>
-            {mode != 'create' &&
+            {mode !== 'create' &&
               <Form.Button
                 floated="right"
                 positive
                 content={getTranslation('Save')}
-                disabled={kind == this.initialState.kind}
+                disabled={kind === this.initialState.kind}
                 onClick={() => this.onSaveValue('kind')}
               />
             }
@@ -208,11 +208,11 @@ class EditDictionaryMetadata extends React.Component {
               onAddItem={this.onAddNewAlternative}
               onChange={(event, data) => this.onChangeValue('authors', data)}
             />
-            {mode != 'create' &&
+            {mode !== 'create' &&
               <Button
                 positive
                 content={getTranslation('Save')}
-                disabled={JSON.stringify(authors) == JSON.stringify(this.initialState.authors)}
+                disabled={JSON.stringify(authors) === JSON.stringify(this.initialState.authors)}
                 onClick={() => this.onSaveValue('authors')}
               />
             }
@@ -232,11 +232,11 @@ class EditDictionaryMetadata extends React.Component {
               onAddItem={this.onAddNewAlternative}
               onChange={(event, data) => this.onChangeValue('settlements', data)}
             />
-            {mode != 'create' &&
+            {mode !== 'create' &&
               <Button
                 positive
                 content={getTranslation('Save')}
-                disabled={JSON.stringify(humanSettlement) == JSON.stringify(this.initialState.humanSettlement)}
+                disabled={JSON.stringify(humanSettlement) === JSON.stringify(this.initialState.humanSettlement)}
                 onClick={() => this.onSaveValue('settlements')}
               />
             }
@@ -256,11 +256,11 @@ class EditDictionaryMetadata extends React.Component {
               onAddItem={this.onAddNewAlternative}
               onChange={(event, data) => this.onChangeValue('years', data)}
             />
-            {mode != 'create' &&
+            {mode !== 'create' &&
               <Button
                 positive
                 content={getTranslation('Save')}
-                disabled={JSON.stringify(years) == JSON.stringify(this.initialState.years)}
+                disabled={JSON.stringify(years) === JSON.stringify(this.initialState.years)}
                 onClick={() => this.onSaveValue('years')}
               />
             }

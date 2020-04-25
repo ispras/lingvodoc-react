@@ -58,7 +58,7 @@ const Signed = ({
       <Dropdown.Item as="a" onClick={signOut}>{getTranslation('Sign out')}</Dropdown.Item>
 
 
-      {user.id == 1 && (
+      {user.id === 1 && (
         <Dropdown.Item onClick={openModal}>{getTranslation('User account activation/deactivation')}</Dropdown.Item>
       )}
     </Dropdown.Menu>

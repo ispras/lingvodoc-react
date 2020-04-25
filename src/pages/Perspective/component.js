@@ -67,8 +67,8 @@ const Tools = graphql(toolsQuery)(({
   const { perspective: { english_status } } = data;
 
   const published =
-    english_status == 'Published' ||
-    english_status == 'Limited access';
+    english_status === 'Published' ||
+    english_status === 'Limited access';
 
   return (
     <Dropdown item text={getTranslation('Tools')}>
@@ -245,7 +245,7 @@ const soundAndMarkup = (perspectiveId, mode, launchSoundAndMarkup) => {
   launchSoundAndMarkup({
     variables: {
       perspectiveId,
-      publishedMode: mode == 'edit' ? 'all' : 'published',
+      publishedMode: mode === 'edit' ? 'all' : 'published',
     },
   }).then(
     () => {
