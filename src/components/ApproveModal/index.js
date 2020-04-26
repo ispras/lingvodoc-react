@@ -23,7 +23,8 @@ const perspectiveStatisticsQuery = gql`
 const approveMutation = gql`
   mutation approve($perspective_id: LingvodocID!, $user_id: Int!, $accepted: Boolean, $published: Boolean, $field_ids: [LingvodocID]!) {
     approve_all_for_user(perspective_id: $perspective_id, user_id: $user_id, accepted: $accepted, published: $published, field_ids: $field_ids) {
-     triumph
+      triumph
+      update_count
     }
   }
 `;
@@ -79,7 +80,8 @@ class ApproveModal extends React.Component {
       variables.accepted = true;
     }
     approve({ variables: variables }).then(
-      () => {
+      ({ data: { approve_all_for_user: { update_count }}}) =>
+      {
         let updatedApproveMap = clone(approveMap);
         let approvedKeys = updatedApproveMap[user_id];
         if (!approvedKeys) {
@@ -88,6 +90,9 @@ class ApproveModal extends React.Component {
         }
         keys.forEach(key => approvedKeys.push(key.name));
         this.setState({ approveMap: updatedApproveMap });
+
+        window.logger.suc(
+          `Updated ${update_count} entit${update_count == 1 ? 'y' : 'ies'}.`);
       }
     );
   }
