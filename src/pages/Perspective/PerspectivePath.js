@@ -172,12 +172,12 @@ class PerspectivePath extends React.Component {
 PerspectivePath.propTypes = {
   id: PropTypes.string.isRequired,
   dictionary_id: PropTypes.string.isRequired,
-  queryPerspectivePath: PropTypes.node.isRequired,
-  queryAvailablePerspectives: PropTypes.node.isRequired,
+  queryPerspectivePath: PropTypes.object.isRequired,
+  queryAvailablePerspectives: PropTypes.object.isRequired,
   mode: PropTypes.string.isRequired,
   className: PropTypes.string,
-  actions: PropTypes.node.isRequired,
-  user: PropTypes.node.isRequired
+  actions: PropTypes.object.isRequired,
+  user: PropTypes.object.isRequired
 };
 
 PerspectivePath.defaultProps = {

@@ -277,7 +277,7 @@ EditDictionaryMetadata.propTypes = {
   onChange: PropTypes.func.isRequired,
   onSave: PropTypes.func.isRequired,
   data: PropTypes.object.isRequired,
-  loading: PropTypes.node.isRequired
+  loading: PropTypes.bool.isRequired
 };
 
 export default graphql(getMetadataAlternativesQuery)(EditDictionaryMetadata);

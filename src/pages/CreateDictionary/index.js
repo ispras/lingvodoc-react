@@ -211,7 +211,7 @@ CreateDictionaryWizard.propTypes = {
   createDictionary: PropTypes.func.isRequired,
   mode: PropTypes.string.isRequired,
   parentLanguage: PropTypes.object.isRequired,
-  metadata: PropTypes.node.isRequired,
+  metadata: PropTypes.object.isRequired,
 };
 
 function mapStateToProps(state) {
