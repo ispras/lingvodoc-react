@@ -210,6 +210,8 @@ CreateDictionaryWizard.propTypes = {
   setPerspectives: PropTypes.func.isRequired,
   createDictionary: PropTypes.func.isRequired,
   mode: PropTypes.string.isRequired,
+  parentLanguage: PropTypes.object.isRequired,
+  metadata: PropTypes.node.isRequired,
 };
 
 function mapStateToProps(state) {

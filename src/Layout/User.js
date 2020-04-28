@@ -70,6 +70,7 @@ Signed.propTypes = {
   signOut: PropTypes.func.isRequired,
   launchEditForm: PropTypes.func.isRequired,
   closeForm: PropTypes.func.isRequired,
+  openModal: PropTypes.func.isRequired,
 };
 
 function UserDropdown({ user, ...rest }) {

@@ -391,6 +391,8 @@ P.propTypes = {
   filter: PropTypes.string,
   data: PropTypes.object.isRequired,
   sortByField: PropTypes.object,
+  allFields: PropTypes.object.isRequired,
+  columns: PropTypes.object.isRequired,
   setSortByField: PropTypes.func.isRequired,
   addLexicalEntry: PropTypes.func.isRequired,
   createLexicalEntry: PropTypes.func.isRequired,
@@ -401,7 +403,7 @@ P.propTypes = {
   openModal: PropTypes.func.isRequired,
   createdEntries: PropTypes.array.isRequired,
   selectedEntries: PropTypes.array.isRequired,
-  user: PropTypes.object
+  user: PropTypes.object.isRequired,
 };
 
 P.defaultProps = {

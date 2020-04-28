@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import { connect } from 'react-redux';
 import { Sidebar } from 'semantic-ui-react';
 import { withRouter } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 import Modals from 'components/Modals';
 import PlayerModal from 'components/PlayerModal';
@@ -73,7 +74,10 @@ class Layout extends React.Component {
     );
   }
 }
-
+Layout.propTypes = {
+  selected: PropTypes.node.isRequired,
+  loading: PropTypes.node.isRequired,
+};
 /*
  * Without withRouter() using connect() breaks routing, see
  * https://reacttraining.com/react-router/core/guides/redux-integration, "Blocked Updates".

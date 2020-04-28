@@ -163,7 +163,9 @@ const NavBar =
       </Menu.Menu>
     </Menu>
   );
-
+NavBar.propTypes = {
+  data: PropTypes.node.isRequired,
+};
 export default compose(
   graphql(gql`query version { version }`),
   withRouter,

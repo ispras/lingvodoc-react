@@ -350,6 +350,8 @@ Perspective.propTypes = {
   openCognateAnalysisModal: PropTypes.func.isRequired,
   openPhonemicAnalysisModal: PropTypes.func.isRequired,
   openPhonologyModal: PropTypes.func.isRequired,
+  launchSoundAndMarkup: PropTypes.func.isRequired,
+  user: PropTypes.object.isRequired
 };
 
 export default compose(

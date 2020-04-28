@@ -14,7 +14,7 @@ import { getUserRequestsQuery, acceptMutation } from './graphql';
 const timestampToDate = ts => moment(ts * 1000).format('LLLL');
 const objectById = (id, objs) => objs.find(o => o.id === id);
 const objectByCompositeId = (id, objs) => objs.find(o => isEqual(o.id, id));
-
+/* eslint-disable react/prop-types */
 function acceptRequest(mutation, id, accept) {
   mutation({
     variables: {
@@ -201,7 +201,7 @@ const Requests = ({ data, accept }) => {
 
   return <Tab className="inverted" menu={{ fluid: true, vertical: true, tabular: 'right' }} panes={panes} />;
 };
-
+/* eslint-enable react/prop-types */
 export default compose(
   graphql(getUserRequestsQuery),
   graphql(acceptMutation, { name: 'accept' }),
