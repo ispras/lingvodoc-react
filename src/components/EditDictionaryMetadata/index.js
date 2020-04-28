@@ -85,11 +85,11 @@ class EditDictionaryMetadata extends React.Component {
       this.yearsOptions.push({ text: year, value: year });
     });
   }
-
+  /* eslint-disable react/sort-comp */
   onAddNewAlternative(event, data) {
     if (data.options.every(option => option.value !== data.value)) { data.options.push({ text: data.value, value: data.value }); }
   }
-
+  /* eslint-enable react/sort-comp */
   onChangeValue(kind, data) {
     const callback = () => {
       if (this.props.onChange) {

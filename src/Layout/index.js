@@ -75,8 +75,8 @@ class Layout extends React.Component {
   }
 }
 Layout.propTypes = {
-  selected: PropTypes.node.isRequired,
-  loading: PropTypes.node.isRequired,
+  selected: PropTypes.object.isRequired,
+  loading: PropTypes.bool.isRequired,
 };
 /*
  * Without withRouter() using connect() breaks routing, see
