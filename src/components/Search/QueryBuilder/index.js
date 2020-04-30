@@ -2,7 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router'
 import { graphql } from 'react-apollo';
+import { Link } from 'react-router-dom';
 import gql from 'graphql-tag';
 import { compose, pure } from 'recompose';
 import { List, fromJS } from 'immutable';
@@ -198,7 +200,7 @@ class QueryBuilder extends React.Component {
 
     this.newBlock = fromJS(newBlock);
     const {
-      langs, dicts, searchMetadata, grammaticalSigns: gramSigns, languageVulnerability: langVulnerability,
+      actions, langs, dicts, searchMetadata, grammaticalSigns: gramSigns, languageVulnerability: langVulnerability,
     } = this.props;
     const languages = langs || [];
     const dictionaries = dicts || [];
@@ -209,6 +211,17 @@ class QueryBuilder extends React.Component {
     let years = [];
     let humanSettlement = [];
     let authors = [];
+
+    if (this.props.location.hash) {
+      let hashJSON = decodeURI(this.props.location.hash.slice(1))
+      let hashObj = JSON.parse(hashJSON);
+      let hashArray = Object.keys(hashObj).map(key => hashObj[key])
+
+      actions.setQuery(...hashArray);
+
+    }
+
+
 
     if (searchMetadata) {
       if (typeof searchMetadata.hasAudio === 'boolean') {
@@ -314,7 +327,7 @@ class QueryBuilder extends React.Component {
       authors,
     };
     const query = this.addGrammaticalSigns(this.state.data.toJS());
-
+    let xlsxExport = this.state.xlsxExport
     actions.setQuery(
       searchId,
       query,
@@ -327,7 +340,26 @@ class QueryBuilder extends React.Component {
       grammaticalSigns,
       languageVulnerability,
       blocks,
-      this.state.xlsxExport);
+      xlsxExport);
+
+
+
+    let hashObj = {
+      searchId,
+      query,
+      category,
+      adopted,
+      etymology,
+      langsToFilter,
+      dictsToFilter,
+      searchMetadata,
+      grammaticalSigns,
+      languageVulnerability,
+      blocks,
+      xlsxExport
+    }
+
+    history.pushState(null, null, '#' + JSON.stringify(hashObj))
   }
 
   getBlocksText() {
@@ -425,6 +457,8 @@ class QueryBuilder extends React.Component {
     const { allLangsDictsChecked } = this.state;
     const blocksText = this.getBlocksText();
     const subBlocksMode = this.getSubBlocksMode();
+
+
 
     return (
       <div>
@@ -546,30 +580,32 @@ class QueryBuilder extends React.Component {
         </Segment.Group>
         <Wrapper>
           {blocks.flatMap((subBlocks, id) =>
-          List.of(
-            <SearchBlock
-              key={`s_${id}`}
-              data={subBlocks}
-              subBlocksMode={subBlocksMode}
-              onFieldChange={this.onFieldChange(id)}
-              onAddInnerSearchBlock={this.onAddInnerSearchBlock(id)}
-              onDeleteInnerSearchBlock={this.onDeleteInnerSearchBlock(id)}
-              onDeleteSearchBlock={this.onDeleteSearchBlock(id)}
-            />,
-            <Divider key={`d_${id}`} horizontal>
-              { blocksText }
-            </Divider>
-          ))}
+            List.of(
+              <SearchBlock
+                key={`s_${id}`}
+                data={subBlocks}
+                subBlocksMode={subBlocksMode}
+                onFieldChange={this.onFieldChange(id)}
+                onAddInnerSearchBlock={this.onAddInnerSearchBlock(id)}
+                onDeleteInnerSearchBlock={this.onDeleteInnerSearchBlock(id)}
+                onDeleteSearchBlock={this.onDeleteSearchBlock(id)}
+              />,
+              <Divider key={`d_${id}`} horizontal>
+                {blocksText}
+              </Divider>
+            ))}
           <Button primary basic fluid onClick={this.onAddSearchBlock}>
-            Add { blocksText } block
+            Add {blocksText} block
           </Button>
 
           <Divider />
+
           <Button primary basic onClick={this.onSearchButtonClick}>
             Search
           </Button>
+
           <Checkbox
-            style={{marginLeft: '0.5em'}}
+            style={{ marginLeft: '0.5em' }}
             label="Export to XLSX"
             checked={this.state.xlsxExport}
             onChange={() =>
@@ -608,6 +644,6 @@ export default compose(
     dispatch => ({
       actions: bindActionCreators({ setQuery }, dispatch),
     })
-  ),
+  ), withRouter,
   pure
 )(QueryBuilder);

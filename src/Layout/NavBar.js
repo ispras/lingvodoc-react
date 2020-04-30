@@ -97,52 +97,68 @@ function openMapStorage() {
   window.open('https://github.com/ispras/lingvodoc-react/wiki/%D0%A5%D1%80%D0%B0%D0%BD%D0%B8%D0%BB%D0%B8%D1%89%D0%B5-%D0%BA%D0%B0%D1%80%D1%82', '_blank');
 }
 
-const NavBar = () => (
-  <Menu fixed="top" className="top_menu">
-    <Menu.Item as={Link} to={config.homePath} className="top_menu">
-      <Logo>Lingvodoc 3.0</Logo>
-    </Menu.Item>
 
-    <DashboardWithData />
+class NavBar extends React.Component {
+  constructor(props) {
+    super(props)
+    this.updateData = this.updateData.bind(this)
+    this.state = {
+      name: ''
+    }
+  }
+  updateData = (value) => {
+    this.setState({ name: value })
+  }
+  render() {
+    return (
+      <Menu fixed="top" className="top_menu">
+        <Menu.Item as={Link} to={config.homePath} className="top_menu">
+          <Logo>Lingvodoc 3.0</Logo>
+        </Menu.Item>
 
-    <Dropdown item text={getTranslation("Maps")} className="top_menu">
-      <Dropdown.Menu>
-        <Dropdown.Item as={Link} to="/map">
-          {getTranslation("Map")}
-        </Dropdown.Item>
-        <Dropdown.Item as={Link} to="/map_search">
-          {getTranslation("Search")}
-        </Dropdown.Item>
-        <Dropdown.Item onClick={openMapStorage}>
-          {getTranslation("Storage")}
-        </Dropdown.Item>
-      </Dropdown.Menu>
-    </Dropdown>
+        <DashboardWithData />
 
-    <Dropdown item text={getTranslation("Info")} className="top_menu">
-      <Dropdown.Menu>
-        <Dropdown.Item as={Link} to="/info">
-          {getTranslation("Authors")}
-        </Dropdown.Item>
-        <Dropdown.Item as={Link} to="/desktop">
-          {getTranslation("Desktop")}
-        </Dropdown.Item>
-        <Dropdown.Item as={Link} to="/languages">
-          {getTranslation("Languages")}
-        </Dropdown.Item>
-      </Dropdown.Menu>
-    </Dropdown>
+        <Dropdown item text={getTranslation("Maps")} className="top_menu">
+          <Dropdown.Menu>
+            <Dropdown.Item as={Link} to="/map">
+              {getTranslation("Map")}
+            </Dropdown.Item>
+            <Dropdown.Item as={Link} to="/map_search" onClick={this.updateData}>
+              {getTranslation("Search")}
+            </Dropdown.Item>
+            <Dropdown.Item onClick={openMapStorage}>
+              {getTranslation("Storage")}
+            </Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
 
-    <Menu.Menu position="right">
-      <Sync />
-      <User />
-      <Tasks />
-      <Locale />
-      <Menu.Item>
-        <Button primary negative onClick={openHelp}>{getTranslation("Help")}</Button>
-      </Menu.Item>
-    </Menu.Menu>
-  </Menu>
-);
+        <Dropdown item text={getTranslation("Info")} className="top_menu">
+          <Dropdown.Menu>
+            <Dropdown.Item as={Link} to="/info">
+              {getTranslation("Authors")}
+            </Dropdown.Item>
+            <Dropdown.Item as={Link} to="/desktop">
+              {getTranslation("Desktop")}
+            </Dropdown.Item>
+            <Dropdown.Item as={Link} to="/languages">
+              {getTranslation("Languages")}
+            </Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
+
+        <Menu.Menu position="right">
+          <Sync />
+          <User />
+          <Tasks />
+          <Locale />
+          <Menu.Item>
+            <Button primary negative onClick={openHelp}>{getTranslation("Help")}</Button>
+          </Menu.Item>
+        </Menu.Menu>
+      </Menu>
+    )
+  }
+
+};
 
 export default withRouter(NavBar);
