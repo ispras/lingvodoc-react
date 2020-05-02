@@ -39,7 +39,7 @@ export function* signOutRoutine() {
   }
   yield* requestRoutine();
   if (success) {
-    yield* stopTrackUser();
+    stopTrackUser();
   }
 }
 
