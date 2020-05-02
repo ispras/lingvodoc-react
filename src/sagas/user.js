@@ -2,6 +2,7 @@ import { call, put, select, takeLatest } from 'redux-saga/effects';
 import { push } from 'react-router-redux';
 import { getId, getUser, signIn, signUp, signOut, editProfile } from 'api/user';
 import { setUser, requestUser, SIGN_OUT, signInForm, signUpForm, editForm } from 'ducks/user';
+import { startTrackUser, stopTrackUser } from './matomo';
 import { err } from 'ducks/snackbar';
 
 import { SubmissionError } from 'redux-form';
@@ -24,8 +25,10 @@ export function* requestRoutine() {
 }
 
 export function* signOutRoutine() {
+  let success = false;
   const response = yield call(signOut);
   if (response.data) {
+    success = true;
     yield put(setUser({}));
     const client = yield select(state => state.apolloClient);
     yield call([client, client.clearStore]);
@@ -35,11 +38,16 @@ export function* signOutRoutine() {
     yield put(err('Could not sign out'));
   }
   yield* requestRoutine();
+  if (success) {
+    yield* stopTrackUser();
+  }
 }
 
 export function* signInRoutine({ payload }) {
+  let success = false;
   const response = yield call(signIn, payload);
   if (response.data) {
+    success = true;
     yield put(signInForm.success());
     yield call(resetApollo);
   } else {
@@ -48,14 +56,15 @@ export function* signInRoutine({ payload }) {
     })));
   }
   yield* requestRoutine();
+  if (success) {
+    yield* startTrackUser();
+  }
 }
 
-export function* signUpRoutine({ payload })
-{
+export function* signUpRoutine({ payload }) {
   const response = yield call(signUp, payload);
 
-  if (response.data)
-  {
+  if (response.data) {
     yield put(signUpForm.success());
 
     if (response.data.result == 'Signup success.')

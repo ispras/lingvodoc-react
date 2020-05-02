@@ -203,6 +203,7 @@ class Columns extends React.Component {
         },
         () => {
           this.fetching = false;
+          props.onChange(this.state.columns);
         });
       });
     }
