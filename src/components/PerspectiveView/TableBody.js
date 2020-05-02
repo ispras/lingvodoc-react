@@ -6,7 +6,20 @@ import { Table } from 'semantic-ui-react';
 import Row from './Row';
 
 const TableBody = ({
-  perspectiveId, entitiesMode, entries, columns, mode, actions, selectEntries, selectedEntries, onEntrySelect,
+  perspectiveId,
+  entitiesMode,
+  entries,
+  columns,
+  mode,
+  actions,
+  selectEntries,
+  selectedEntries,
+  onEntrySelect,
+  showEntryId,
+  selectDisabled,
+  selectDisabledIndeterminate,
+  disabledEntrySet,
+  removeSelectionEntrySet,
 }) => (
   <Table.Body>
     {entries.map(entry => (
@@ -21,6 +34,11 @@ const TableBody = ({
         selectEntries={selectEntries}
         selectedEntries={selectedEntries}
         onEntrySelect={onEntrySelect}
+        showEntryId={showEntryId}
+        selectDisabled={selectDisabled}
+        selectDisabledIndeterminate={selectDisabledIndeterminate}
+        disabledEntrySet={disabledEntrySet}
+        removeSelectionEntrySet={removeSelectionEntrySet}
       />
     ))}
   </Table.Body>
