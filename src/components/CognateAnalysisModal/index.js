@@ -121,6 +121,7 @@ const computeCognateAnalysisMutation = gql`
     $mode: String,
     $figureFlag: Boolean,
     $matchTranslationsValue: Int,
+    $onlyOrphansFlag: Boolean,
     $debugFlag: Boolean,
     $intermediateFlag: Boolean) {
       cognate_analysis(
@@ -131,6 +132,7 @@ const computeCognateAnalysisMutation = gql`
         multi_list: $multiList,
         mode: $mode,
         match_translations_value: $matchTranslationsValue,
+        only_orphans_flag: $onlyOrphansFlag,
         figure_flag: $figureFlag,
         debug_flag: $debugFlag,
         intermediate_flag: $intermediateFlag)
@@ -208,6 +210,8 @@ class CognateAnalysisModal extends React.Component
 
       matchTranslationsFlag: true,
       matchTranslationsValue: 'first_three',
+
+      onlyOrphansFlag: true,
 
       debugFlag: false,
       intermediateFlag: false,
@@ -953,6 +957,7 @@ class CognateAnalysisModal extends React.Component
           perspectiveInfoList: perspectiveInfoList,
           mode: 'acoustic',
           matchTranslationsValue,
+          onlyOrphansFlag: this.state.onlyOrphansFlag,
           figureFlag: true,
           debugFlag: this.state.debugFlag,
           intermediateFlag: this.state.intermediateFlag,
@@ -988,6 +993,7 @@ class CognateAnalysisModal extends React.Component
           multiList: multiList,
           mode: backend_mode,
           matchTranslationsValue,
+          onlyOrphansFlag: this.state.onlyOrphansFlag,
           figureFlag: this.props.mode == '',
           debugFlag: this.state.debugFlag,
           intermediateFlag: this.state.intermediateFlag },
@@ -1082,6 +1088,16 @@ class CognateAnalysisModal extends React.Component
               />
             </List.Item>
           </List>
+        </List.Item>
+
+        <List.Item>
+          <Checkbox
+            label={getTranslation('Only for orphans (words not included in existing etymology groups)')}
+            style={{marginTop: '0.75em', verticalAlign: 'middle'}}
+            checked={this.state.onlyOrphansFlag}
+            onChange={(e, { checked }) => {
+              this.setState({ onlyOrphansFlag: checked });}}
+          />
         </List.Item>
       </List>
     )
