@@ -799,7 +799,12 @@ class CognateAnalysisModal extends React.Component
       for (var i = 0; i < suggestion_list.length; i++)
       {
         const [
-          perspective_index, word, word_entry_id, single_list, group_list] =
+          perspective_index,
+          word,
+          word_entry_id,
+          word_group,
+          single_list,
+          group_list] =
           
           suggestion_list[i];
 
@@ -1591,7 +1596,13 @@ class CognateAnalysisModal extends React.Component
       {map(
         suggestion_list,
 
-        ([perspective_index, word, word_entry_id, single_list, group_list],
+        ([perspective_index,
+          word,
+          word_entry_id,
+          word_group,
+          single_list,
+          group_list],
+          
           index) => {
 
         const connected_flag =
@@ -1627,7 +1638,40 @@ class CognateAnalysisModal extends React.Component
                     <Checkbox
 
                       label={
-                        `${word} (${this.state.perspective_name_list[perspective_index]})`}
+
+                        word_group
+                        
+                        ?
+
+                        (<label>
+                          <div>
+                            {word} ({this.state.perspective_name_list[perspective_index]})
+                          </div>
+
+                          <div style={{marginTop: '0.5em', marginBottom: '0.5em'}}>
+                            {getTranslation('Belongs to a group:')}
+                          </div>
+
+                          <div>
+
+                            {map(word_group[0],
+
+                              ([perspective_index, [transcription_str, translation_str]],
+                                word_index) => (
+
+                              <div
+                                key={'sg' + index + 'gr_self_word' + word_index}>
+                                {`${transcription_str} ${translation_str}
+                                  (${this.state.perspective_name_list[perspective_index]})`}
+                              </div>
+
+                            ))}
+                          </div>
+                          </label>)
+                        
+                        :
+
+                        (`${word} (${this.state.perspective_name_list[perspective_index]})`)}
 
                       checked={
                         sg_select_list[index].hasOwnProperty(id2str(word_entry_id))}
@@ -1737,8 +1781,8 @@ class CognateAnalysisModal extends React.Component
 
                             ))}
                           </div>
-                          </label>
-                      }/>
+                          </label>}
+                      />
 
                     </List.Item>
 
