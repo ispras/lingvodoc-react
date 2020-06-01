@@ -137,6 +137,10 @@ class Tree extends React.Component {
   }
 
   componentDidMount () {
+    if ( !this.props.location ) {
+      return
+    }
+    
     let query = new URLSearchParams( this.props.location.search );
     let anchor = query.get( 'anchor' );
 
