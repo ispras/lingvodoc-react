@@ -30,6 +30,7 @@ const queryPerspectivePath = gql`
 const queryAvailablePerspectives = gql`
   query availablePerspectives($dictionary_id: LingvodocID!) {
     dictionary(id: $dictionary_id) {
+      id
       perspectives {
         id
         parent_id
