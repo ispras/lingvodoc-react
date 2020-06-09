@@ -257,21 +257,23 @@ class GroupingTagModal extends React.Component {
   joinGroup(targetEntry) {
     // connect to lexical group
     const {
-      connect: mutate, lexicalEntry, fieldId,
+      connect: mutate, lexicalEntry, fieldId, entitiesMode,
     } = this.props;
 
     mutate({
       variables: { fieldId, connections: [lexicalEntry.id, targetEntry.id] },
       refetchQueries: [
-      // XXX: https://github.com/apollographql/react-apollo/issues/1314
-      //  {
-      //    query: connectedQuery,
-      //    variables: {
-      //      id: lexicalEntry.id,
-      //      fieldId,
-      //      mode: entitiesMode,
-      //    },
-      //  },
+        // XXX: https://github.com/apollographql/react-apollo/issues/1314
+        // It seems that with fetchPolicy: 'network-only' works ok.
+        {
+          query: connectedQuery,
+          variables: {
+            id: lexicalEntry.id,
+            fieldId,
+            entitiesMode,
+          },
+          fetchPolicy: 'network-only',
+        },
       ],
     }).then(() => {
       window.logger.suc(getTranslation('Connected'));
@@ -357,7 +359,7 @@ class GroupingTagModal extends React.Component {
 
     if (loading || connectedQueryData.loading) {
       return (
-        <Dimmer active inverted style={{ minHeight: '600px', background: 'none' }}>
+        <Dimmer active style={{ minHeight: '600px', background: 'none' }}>
           <Header as="h2" icon>
             <Icon name="spinner" loading />
           </Header>
@@ -430,7 +432,7 @@ export default compose(
         fieldId: props.fieldId,
         entitiesMode: props.entitiesMode
       },
-      fetchPolicy: 'no-cache'
+      fetchPolicy: 'network-only',
     })
   }),
   graphql(disconnectMutation, { name: 'disconnect' }),
