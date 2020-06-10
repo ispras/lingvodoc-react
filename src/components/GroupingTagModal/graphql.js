@@ -1,11 +1,18 @@
 import gql from 'graphql-tag';
 
+/*
+ *  Additional not really used fields, such as created_at in lexical_entires and additional_metadata in
+ *  entities, are needed to be present in the query because otherwise, it seems, results of this query
+ *  invalidate data of queryLexicalEntries from PerspectiveView/index.js while not forcing it to reload,
+ *  breaking perspective view.
+ */
 export const connectedQuery = gql`
   query connectedWords($id: LingvodocID!, $fieldId: LingvodocID!, $entitiesMode: String!) {
     connected_words(id: $id, field_id: $fieldId, mode: $entitiesMode) {
       lexical_entries {
         id
         parent_id
+        created_at
         entities(mode: $entitiesMode) {
           id
           parent_id
@@ -17,6 +24,9 @@ export const connectedQuery = gql`
           content
           published
           accepted
+          additional_metadata {
+            link_perspective_id
+          }
         }
       }
     }
