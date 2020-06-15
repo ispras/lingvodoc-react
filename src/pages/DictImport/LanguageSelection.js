@@ -26,7 +26,14 @@ class Dictionary extends React.Component {
       <div className="blob">
         <b className="blob-name">{blob.get('name')}</b>
         <div className="blob-lang">
-          <Modal dimmer="blurring" open={this.state.open} onClose={this.toggle} trigger={trigger}>
+
+          <Modal
+            dimmer="blurring"
+            open={this.state.open}
+            closeIcon
+            onClose={this.toggle}
+            trigger={trigger}>
+
             <Modal.Header>{getTranslation('Select Language for')} {blob.get('name')}</Modal.Header>
             <Modal.Content style={{ minHeight: '500px' }}>
               <div style={{ height: '500px' }}>
@@ -38,6 +45,7 @@ class Dictionary extends React.Component {
                 />
               </div>
             </Modal.Content>
+
           </Modal>
 
           <Form>

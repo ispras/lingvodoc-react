@@ -177,7 +177,7 @@ class Wrapper extends React.Component {
     return <div>
       <Message positive>
         <div>
-          Found {resultsCount.size} resuls on <a href="" onClick={(e) => {
+          Found {resultsCount.size} results on <a href="" onClick={(e) => {
             e.preventDefault();
             document.getElementById('mapResults').scrollIntoView();
           }}>map</a>

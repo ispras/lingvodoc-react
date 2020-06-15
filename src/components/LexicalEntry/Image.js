@@ -23,7 +23,7 @@ const Image = (props) => {
   return (
     <Component className={className}>
       <Button.Group basic icon size="mini">
-        <Button as="a" href={content} icon="download" />
+        <Button as="a" href={content} icon="download" download/>
         <Modal basic trigger={<Button>{getTranslation("View")}</Button>}>
           <Modal.Content>
             <Img src={content} />
@@ -63,7 +63,7 @@ Image.defaultProps = {
   className: '',
 };
 
-Image.Edit = ({ onSave }) => <input type="file" multiple="false" onChange={e => onSave(e.target.files[0])} />;
+Image.Edit = ({ onSave }) => <input type="file" onChange={e => onSave(e.target.files[0])} />;
 
 Image.Edit.propTypes = {
   onSave: PropTypes.func,

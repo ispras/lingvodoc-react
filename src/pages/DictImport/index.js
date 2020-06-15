@@ -194,7 +194,7 @@ class Info extends React.Component {
           </Step>
         </Step.Group>
 
-        <div style={{ minHeight: '400px' }}>
+        <div style={{ minHeight: '400px', background: 'white' }}>
           {step === 'LINKING' && (
             <Linker
               blobs={blobs}

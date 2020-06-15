@@ -79,7 +79,13 @@ class BanModal extends React.Component
 
     return (
       <div>
-        <Modal dimmer open size="small">
+        <Modal
+          closeIcon
+          onClose={this.props.closeModal}
+          dimmer
+          open
+          size="small">
+
           <Modal.Header>{getTranslation('User account activation/deactivation')}</Modal.Header>
           <Modal.Content>
             <div style={{width: '80%'}}>
@@ -111,6 +117,7 @@ class BanModal extends React.Component
               content={getTranslation("Cancel")}
               onClick={this.props.closeModal} />
           </Modal.Actions>
+
         </Modal>
       </div>
     );

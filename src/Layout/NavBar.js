@@ -4,7 +4,7 @@ import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import { compose, branch, renderNothing } from 'recompose';
 import { Link, withRouter } from 'react-router-dom';
-import { Dropdown, Menu, Button } from 'semantic-ui-react';
+import { Dropdown, Menu, Button, List } from 'semantic-ui-react';
 import styled from 'styled-components';
 import config from 'config';
 
@@ -12,6 +12,8 @@ import User from './User';
 import Tasks from './Tasks';
 import Locale from './Locale';
 import { getTranslation } from 'api/i18n';
+
+import './style.scss';
 
 const Logo = styled.span`
   font-size: 1.4em;
@@ -97,7 +99,9 @@ function openMapStorage() {
   window.open('https://github.com/ispras/lingvodoc-react/wiki/%D0%A5%D1%80%D0%B0%D0%BD%D0%B8%D0%BB%D0%B8%D1%89%D0%B5-%D0%BA%D0%B0%D1%80%D1%82', '_blank');
 }
 
-const NavBar = () => (
+const NavBar =
+  ({ data: { version } }) => (
+
   <Menu fixed="top" className="top_menu">
     <Menu.Item as={Link} to={config.homePath} className="top_menu">
       <Logo>Lingvodoc 3.0</Logo>
@@ -130,6 +134,22 @@ const NavBar = () => (
         <Dropdown.Item as={Link} to="/languages">
           {getTranslation("Languages")}
         </Dropdown.Item>
+        <Dropdown item text='Version'>
+          <Dropdown.Menu style={{fontSize: '1.05rem'}} className='version'>
+            <Dropdown.Item className='version'>
+              <List>
+                <List.Item className='version'>
+                  <p style={{marginBottom: '0.5em'}}>Backend:</p>
+                  <p style={{marginLeft: '0.5em'}}>{version}</p>
+                </List.Item>
+                <List.Item className='version'>
+                  <p style={{marginBottom: '0.5em'}}>Frontend:</p>
+                  <p style={{marginLeft: '0.5em'}}>{__VERSION__}</p>
+                </List.Item>
+              </List>
+            </Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
       </Dropdown.Menu>
     </Dropdown>
 
@@ -145,4 +165,7 @@ const NavBar = () => (
   </Menu>
 );
 
-export default withRouter(NavBar);
+export default compose(
+  graphql(gql`query version { version }`),
+  withRouter,
+)(NavBar);

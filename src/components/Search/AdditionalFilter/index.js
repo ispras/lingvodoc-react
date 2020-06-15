@@ -559,6 +559,7 @@ class AdditionalFilter extends PureComponent {
           <Modal
             className={classNames.modal}
             open={this.state.showSearchSelectLanguages}
+            closeIcon
             onClose={this.onShowLangsButtonClick}
           >
             <Modal.Header>{showLanguagesTreeText}</Modal.Header>
@@ -583,6 +584,7 @@ class AdditionalFilter extends PureComponent {
           <Modal
             className={classNames.modal}
             open={this.state.showGrammarFilter}
+            closeIcon
             onClose={this.onShowGrammarFilterButtonClick}
           >
             <Modal.Header>{showGrammarFilterText}</Modal.Header>
@@ -601,6 +603,7 @@ class AdditionalFilter extends PureComponent {
           <Modal
             className={classNames.modal}
             open={this.state.showAdvancedFilter}
+            closeIcon
             onClose={this.onShowAdvancedFilterButtonClick}
           >
             <Modal.Header>{showAdvancedFilterText}</Modal.Header>

@@ -5,7 +5,7 @@ import { pure, branch, renderComponent, compose } from 'recompose';
 
 import { Dropdown, Flag, Menu, Icon } from 'semantic-ui-react';
 
-import { selectLocale } from 'ducks/locale';
+import { changeLocale } from 'ducks/locale';
 import { getTranslation } from 'api/i18n';
 
 const TITLE = getTranslation('Languages');
@@ -59,5 +59,5 @@ Locale.propTypes = {
 
 export default connect(
   state => state.locale,
-  { select: selectLocale }
+  { select: changeLocale }
 )(Locale);

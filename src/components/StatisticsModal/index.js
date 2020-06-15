@@ -325,10 +325,20 @@ class StatisticsModal extends React.Component {
   }
 
   render() {
-    const { mode } = this.props;
+    const { mode, title } = this.props;
     const { startDate, endDate, statistics } = this.state;
+
     return (
-      <Modal dimmer open size="fullscreen">
+      <Modal
+        closeIcon
+        onClose={this.props.closeStatistics}
+        dimmer
+        open
+        size="fullscreen"
+      >
+        <Modal.Header>
+          {title}
+        </Modal.Header>
         <Modal.Content>
           <div>
             {getTranslation('From:')}
@@ -353,14 +363,14 @@ class StatisticsModal extends React.Component {
           <Container textAlign="center">
             <Button basic content={getTranslation("Show statistics")} onClick={this.getStatistics} />
           </Container>
-
           <Container>
             <Statistics statistics={statistics} mode={mode} />
           </Container>
         </Modal.Content>
         <Modal.Actions>
-          <Button icon="minus" content={getTranslation("Cancel")} onClick={this.props.closeStatistics} />
+          <Button icon="minus" content={getTranslation("Close")} onClick={this.props.closeStatistics} />
         </Modal.Actions>
+
       </Modal>
     );
   }
@@ -369,6 +379,7 @@ class StatisticsModal extends React.Component {
 StatisticsModal.propTypes = {
   id: PropTypes.arrayOf(PropTypes.number).isRequired,
   mode: PropTypes.string.isRequired,
+  title: PropTypes.string.isRequired,
   closeStatistics: PropTypes.func.isRequired,
   client: PropTypes.object.isRequired,
 };
