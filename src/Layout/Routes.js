@@ -23,9 +23,9 @@ import NewsEditor from 'pages/NewsEditor';
 
 import DictionariesAll from 'pages/DictionaryAll';
 import TreeRoute from 'pages/TreeRoute';
-import ToolsRoute from 'pages/ToolsRoute'
+import ToolsRoute from 'pages/ToolsRoute';
 import DashboardRoute from 'pages/DashboardRoute';
-import OrganizationRoute from 'pages/OrganizationRoute'
+import OrganizationRoute from 'pages/OrganizationRoute';
 import SupportRoute from 'pages/SupportRoute';
 import NoGrants from 'pages/NoGrants';
 import CorporaAll from 'pages/CorporaAll';
@@ -61,11 +61,8 @@ const Routes = () => (
     <Route path="/supportRoute" component={SupportRoute} />
     <Route path="/no_grants" component={NoGrants} />
     <Route path="/corpora_all" component={CorporaAll} />
-    <Route path="/news_editor" component={NewsEditor}/>
+    <Route path="/news_editor" component={NewsEditor} />
     <Route component={NotFound} />
-
-
-
 
   </Switch>
 );

@@ -22,8 +22,6 @@ import AllDicts from './components/AllDicts';
 import { getScrollContainer } from './common';
 import './published.scss';
 
-
-
 const authenticatedDictionariesQuery = gql`
   query AuthDictionaries {
     dictionaries(proxy: true) {

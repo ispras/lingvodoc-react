@@ -14,15 +14,9 @@ import SignUpModal from 'components/SignUpModal';
 import EditUserModal from 'components/EditUserModal';
 import { getTranslation } from 'api/i18n';
 
-<<<<<<< HEAD
-
-
-const Anonymous = ({ modal, launchSignInForm, launchSignUpForm, closeForm }) =>
-=======
 const Anonymous = ({
   modal, launchSignInForm, launchSignUpForm, closeForm
 }) =>
->>>>>>> eslint
   <Dropdown item text={getTranslation('User')} className="top_menu">
     <Dropdown.Menu>
       <SignInModal
@@ -64,20 +58,9 @@ const Signed = ({
       <Dropdown.Item as="a" onClick={signOut}>{getTranslation('Sign out')}</Dropdown.Item>
 
 
-<<<<<<< HEAD
-      {user.id == 1 && (
-      <div>
-         <Dropdown.Item onClick={openModal}>{getTranslation("User account activation/deactivation")}</Dropdown.Item>
-         <Dropdown.Item as={Link} to="/news_editor">{getTranslation("Add news")}</Dropdown.Item>
-      </div>
-       
-=======
       {user.id === 1 && (
         <Dropdown.Item onClick={openModal}>{getTranslation('User account activation/deactivation')}</Dropdown.Item>
->>>>>>> eslint
       )}
-
-  
 
     </Dropdown.Menu>
   </Dropdown>;
@@ -92,11 +75,9 @@ Signed.propTypes = {
 };
 
 function UserDropdown({ user, ...rest }) {
-
   return isEmpty(user)
     ? <Anonymous {...rest} />
     : <Signed user={user} {...rest} />;
-
 }
 
 UserDropdown.propTypes = {

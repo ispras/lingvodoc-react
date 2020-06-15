@@ -6,8 +6,8 @@ class dictionary extends React.Component {
     return (
       <div>
         <Home />
-      </div>)
+      </div>);
   }
-
 }
+
 export default dictionary;

@@ -49,13 +49,14 @@ class Layout extends React.Component {
       <div key={`${selected.id}${loading}`}>
         <NavBar />
         <Snackbar />
-    
-     {     <Sidebar.Pushable as="div">
-          <TasksSidebar />
-          <Sidebar.Pusher as={Content}>
-            <Routes />
-          </Sidebar.Pusher>
-        </Sidebar.Pushable> }
+        {
+          <Sidebar.Pushable as="div">
+            <TasksSidebar />
+            <Sidebar.Pusher as={Content}>
+              <Routes />
+            </Sidebar.Pusher>
+          </Sidebar.Pushable>
+        }
         <Modals />
         <PlayerModal />
         <MarkupModal />
