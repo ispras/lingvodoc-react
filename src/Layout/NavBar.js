@@ -8,10 +8,10 @@ import { Dropdown, Menu, Button, List } from 'semantic-ui-react';
 import styled from 'styled-components';
 import config from 'config';
 
+import { getTranslation } from 'api/i18n';
 import User from './User';
 import Tasks from './Tasks';
 import Locale from './Locale';
-import { getTranslation } from 'api/i18n';
 
 import './style.scss';
 
@@ -22,7 +22,7 @@ const Logo = styled.span`
 
 const SyncButton = ({ synchronize }) => (
   <Menu.Item>
-    <Button color="purple" onClick={synchronize}>{getTranslation("Sync")}</Button>
+    <Button color="purple" onClick={synchronize}>{getTranslation('Sync')}</Button>
   </Menu.Item>
 );
 
@@ -56,25 +56,25 @@ const Dashboard = (props) => {
     return null;
   }
   return (
-    <Dropdown item text={getTranslation("Dashboard")} className="top_menu">
+    <Dropdown item text={getTranslation('Dashboard')} className="top_menu">
       <Dropdown.Menu>
         <Dropdown.Item as={Link} to="/dashboard/create_dictionary">
-          {getTranslation("Create dictionary")}
+          {getTranslation('Create dictionary')}
         </Dropdown.Item>
         <Dropdown.Item as={Link} to="/dashboard/create_corpus">
-          {getTranslation("Create corpus")}
+          {getTranslation('Create corpus')}
         </Dropdown.Item>
         <Dropdown.Item as={Link} to="/dashboard/dictionaries">
-          {getTranslation("Dictionaries")}
+          {getTranslation('Dictionaries')}
         </Dropdown.Item>
         <Dropdown.Item as={Link} to="/dashboard/corpora">
-          {getTranslation("Corpora")}
+          {getTranslation('Corpora')}
         </Dropdown.Item>
         <Dropdown.Item as={Link} to="/import_dialeqt">
-          {getTranslation("Import Dialeqt dictionary")}
+          {getTranslation('Import Dialeqt dictionary')}
         </Dropdown.Item>
         <Dropdown.Item as={Link} to="/import">
-          {getTranslation("Import Starling dictionaries")}
+          {getTranslation('Import Starling dictionaries')}
         </Dropdown.Item>
       </Dropdown.Menu>
     </Dropdown>
@@ -102,69 +102,71 @@ function openMapStorage() {
 const NavBar =
   ({ data: { version } }) => (
 
-  <Menu fixed="top" className="top_menu">
-    <Menu.Item as={Link} to={config.homePath} className="top_menu">
-      <Logo>Lingvodoc 3.0</Logo>
-    </Menu.Item>
-
-    <DashboardWithData />
-
-    <Dropdown item text={getTranslation("Maps")} className="top_menu">
-      <Dropdown.Menu>
-        <Dropdown.Item as={Link} to="/map">
-          {getTranslation("Map")}
-        </Dropdown.Item>
-        <Dropdown.Item as={Link} to="/map_search">
-          {getTranslation("Search")}
-        </Dropdown.Item>
-        <Dropdown.Item onClick={openMapStorage}>
-          {getTranslation("Storage")}
-        </Dropdown.Item>
-      </Dropdown.Menu>
-    </Dropdown>
-
-    <Dropdown item text={getTranslation("Info")} className="top_menu">
-      <Dropdown.Menu>
-        <Dropdown.Item as={Link} to="/info">
-          {getTranslation("Authors")}
-        </Dropdown.Item>
-        <Dropdown.Item as={Link} to="/desktop">
-          {getTranslation("Desktop")}
-        </Dropdown.Item>
-        <Dropdown.Item as={Link} to="/languages">
-          {getTranslation("Languages")}
-        </Dropdown.Item>
-        <Dropdown item text='Version'>
-          <Dropdown.Menu style={{fontSize: '1.05rem'}} className='version'>
-            <Dropdown.Item className='version'>
-              <List>
-                <List.Item className='version'>
-                  <p style={{marginBottom: '0.5em'}}>Backend:</p>
-                  <p style={{marginLeft: '0.5em'}}>{version}</p>
-                </List.Item>
-                <List.Item className='version'>
-                  <p style={{marginBottom: '0.5em'}}>Frontend:</p>
-                  <p style={{marginLeft: '0.5em'}}>{__VERSION__}</p>
-                </List.Item>
-              </List>
-            </Dropdown.Item>
-          </Dropdown.Menu>
-        </Dropdown>
-      </Dropdown.Menu>
-    </Dropdown>
-
-    <Menu.Menu position="right">
-      <Sync />
-      <User />
-      <Tasks />
-      <Locale />
-      <Menu.Item>
-        <Button primary negative onClick={openHelp}>{getTranslation("Help")}</Button>
+    <Menu fixed="top" className="top_menu">
+      <Menu.Item as={Link} to={config.homePath} className="top_menu">
+        <Logo>Lingvodoc 3.0</Logo>
       </Menu.Item>
-    </Menu.Menu>
-  </Menu>
-);
 
+      <DashboardWithData />
+
+      <Dropdown item text={getTranslation('Maps')} className="top_menu">
+        <Dropdown.Menu>
+          <Dropdown.Item as={Link} to="/map">
+            {getTranslation('Map')}
+          </Dropdown.Item>
+          <Dropdown.Item as={Link} to="/map_search">
+            {getTranslation('Search')}
+          </Dropdown.Item>
+          <Dropdown.Item onClick={openMapStorage}>
+            {getTranslation('Storage')}
+          </Dropdown.Item>
+        </Dropdown.Menu>
+      </Dropdown>
+
+      <Dropdown item text={getTranslation('Info')} className="top_menu">
+        <Dropdown.Menu>
+          <Dropdown.Item as={Link} to="/info">
+            {getTranslation('Authors')}
+          </Dropdown.Item>
+          <Dropdown.Item as={Link} to="/desktop">
+            {getTranslation('Desktop')}
+          </Dropdown.Item>
+          <Dropdown.Item as={Link} to="/languages">
+            {getTranslation('Languages')}
+          </Dropdown.Item>
+          <Dropdown item text="Version">
+            <Dropdown.Menu style={{ fontSize: '1.05rem' }} className="version">
+              <Dropdown.Item className="version">
+                <List>
+                  <List.Item className="version">
+                    <p style={{ marginBottom: '0.5em' }}>Backend:</p>
+                    <p style={{ marginLeft: '0.5em' }}>{version}</p>
+                  </List.Item>
+                  <List.Item className="version">
+                    <p style={{ marginBottom: '0.5em' }}>Frontend:</p>
+                    <p style={{ marginLeft: '0.5em' }}>{/* eslint-disable no-undef */__VERSION__ /* eslint-enable no-undef */}</p>
+                  </List.Item>
+                </List>
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
+        </Dropdown.Menu>
+      </Dropdown>
+
+      <Menu.Menu position="right">
+        <Sync />
+        <User />
+        <Tasks />
+        <Locale />
+        <Menu.Item>
+          <Button primary negative onClick={openHelp}>{getTranslation('Help')}</Button>
+        </Menu.Item>
+      </Menu.Menu>
+    </Menu>
+  );
+NavBar.propTypes = {
+  data: PropTypes.object.isRequired,
+};
 export default compose(
   graphql(gql`query version { version }`),
   withRouter,

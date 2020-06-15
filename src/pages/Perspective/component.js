@@ -10,8 +10,8 @@ import { Container, Menu, Dropdown } from 'semantic-ui-react';
 import PerspectiveView from 'components/PerspectiveView';
 import Merge from 'components/Merge';
 import NotFound from 'pages/NotFound';
-import PerspectivePath from './PerspectivePath';
 import { getTranslation } from 'api/i18n';
+import PerspectivePath from './PerspectivePath';
 
 import './style.scss';
 
@@ -58,8 +58,8 @@ const Tools = graphql(toolsQuery)(({
   openPhonologyModal,
   launchSoundAndMarkup,
   id,
-  mode }) =>
-{
+  mode
+}) => {
   if (data.loading || data.error) {
     return null;
   }
@@ -67,67 +67,78 @@ const Tools = graphql(toolsQuery)(({
   const { perspective: { english_status } } = data;
 
   const published =
-    english_status == 'Published' ||
-    english_status == 'Limited access';
+    english_status === 'Published' ||
+    english_status === 'Limited access';
 
   return (
-    <Dropdown item text={getTranslation("Tools")}>
+    <Dropdown item text={getTranslation('Tools')}>
       <Dropdown.Menu>
 
         <Dropdown.Item
-          onClick={() => openCognateAnalysisModal(id, 'acoustic')}>
-          {getTranslation("Cognate acoustic analysis")}
+          onClick={() => openCognateAnalysisModal(id, 'acoustic')}
+        >
+          {getTranslation('Cognate acoustic analysis')}
         </Dropdown.Item>
 
         <Dropdown.Item
-          onClick={() => openCognateAnalysisModal(id)}>
-          {getTranslation("Cognate analysis")}
+          onClick={() => openCognateAnalysisModal(id)}
+        >
+          {getTranslation('Cognate analysis')}
         </Dropdown.Item>
 
         <Dropdown.Item
-          onClick={() => openCognateAnalysisModal(id, 'multi_reconstruction')}>
-          {getTranslation("Cognate multi-language reconstruction")}
+          onClick={() => openCognateAnalysisModal(id, 'multi_reconstruction')}
+        >
+          {getTranslation('Cognate multi-language reconstruction')}
         </Dropdown.Item>
 
         <Dropdown.Item
           onClick={() => openCognateAnalysisModal(id, 'multi_suggestions')}
-          disabled={!published}>
+          disabled={!published}
+        >
           {getTranslation(published ?
-            "Cognate multi-language suggestions" :
-            "Cognate multi-language suggestions (disabled, perspective is not published)")}
+            'Cognate multi-language suggestions' :
+            'Cognate multi-language suggestions (disabled, perspective is not published)')}
         </Dropdown.Item>
 
         <Dropdown.Item
-          onClick={() => openCognateAnalysisModal(id, 'reconstruction')}>
-          {getTranslation("Cognate reconstruction")}
+          onClick={() => openCognateAnalysisModal(id, 'reconstruction')}
+        >
+          {getTranslation('Cognate reconstruction')}
         </Dropdown.Item>
 
         <Dropdown.Item
           onClick={() => openCognateAnalysisModal(id, 'suggestions')}
-          disabled={!published}>
+          disabled={!published}
+        >
           {getTranslation(published ?
-            "Cognate suggestions" :
-            "Cognate suggestions (disabled, perspective is not published)")}
+            'Cognate suggestions' :
+            'Cognate suggestions (disabled, perspective is not published)')}
         </Dropdown.Item>
 
         <Dropdown.Item
-          onClick={() => openPhonemicAnalysisModal(id)}>
-          {getTranslation("Phonemic analysis")}
+          onClick={() => openPhonemicAnalysisModal(id)}
+        >
+          {getTranslation('Phonemic analysis')}
         </Dropdown.Item>
 
         <Dropdown.Item
-          onClick={() => openPhonologyModal(id)}>
-          {getTranslation("Phonology")}
+          onClick={() => openPhonologyModal(id)}
+        >
+          {getTranslation('Phonology')}
         </Dropdown.Item>
 
         <Dropdown.Item
-          onClick={() => openPhonologyModal(id, 'statistical_distance')}>
-          {getTranslation("Phonological statistical distance")}
+          onClick={() => openPhonologyModal(id, 'statistical_distance')}
+        >
+          {getTranslation('Phonological statistical distance')}
         </Dropdown.Item>
 
         <Dropdown.Item
-          onClick={() => soundAndMarkup(id, mode, launchSoundAndMarkup)}>
-          {getTranslation("Sound and markup")}
+          // eslint-disable-next-line no-use-before-define
+          onClick={() => soundAndMarkup(id, mode, launchSoundAndMarkup)}
+        >
+          {getTranslation('Sound and markup')}
         </Dropdown.Item>
 
       </Dropdown.Menu>
@@ -153,7 +164,7 @@ const handlers = compose(
 const Filter = handlers(({ value, onChange, onSubmit }) => (
   <div className="ui right aligned category search item">
     <form className="ui transparent icon input" onSubmit={onSubmit}>
-      <input className="white" type="text" placeholder={getTranslation("Filter")} value={value} onChange={onChange} />
+      <input className="white" type="text" placeholder={getTranslation('Filter')} value={value} onChange={onChange} />
       <button type="submit" className="white">
         <i className="search link icon" />
       </button>
@@ -163,7 +174,7 @@ const Filter = handlers(({ value, onChange, onSubmit }) => (
 
 const ModeSelector = compose(
   connect(state => state.user),
-  onlyUpdateForKeys([ 'mode', 'baseUrl', 'filter', 'user' ])
+  onlyUpdateForKeys(['mode', 'baseUrl', 'filter', 'user'])
 )(({
   mode,
   baseUrl,
@@ -214,9 +225,8 @@ const ModeSelector = compose(
       { map(modes, (info, stub) =>
         <Menu.Item key={stub} as={Link} to={`${baseUrl}/${stub}`} active={mode === stub}>
           {info.text}
-          {info.component === PerspectiveView ? <Counter id={id} mode={info.entitiesMode}/> : null}
-        </Menu.Item>
-      )}
+          {info.component === PerspectiveView ? <Counter id={id} mode={info.entitiesMode} /> : null}
+        </Menu.Item>)}
       <Tools
         id={id}
         mode={mode}
@@ -229,13 +239,14 @@ const ModeSelector = compose(
         <Filter filter={filter} submitFilter={submitFilter} />
       </Menu.Menu>
     </Menu>
-  );});
+  );
+});
 
 const soundAndMarkup = (perspectiveId, mode, launchSoundAndMarkup) => {
   launchSoundAndMarkup({
     variables: {
       perspectiveId,
-      publishedMode: mode == 'edit' ? 'all' : 'published',
+      publishedMode: mode === 'edit' ? 'all' : 'published',
     },
   }).then(
     () => {
@@ -256,7 +267,9 @@ const Perspective = ({
   launchSoundAndMarkup,
   user
 }) => {
-  const { id, parent_id, mode, page, baseUrl } = perspective.params;
+  const {
+    id, parent_id, mode, page, baseUrl
+  } = perspective.params;
   if (!baseUrl) {
     return null;
   }
@@ -338,6 +351,8 @@ Perspective.propTypes = {
   openCognateAnalysisModal: PropTypes.func.isRequired,
   openPhonemicAnalysisModal: PropTypes.func.isRequired,
   openPhonologyModal: PropTypes.func.isRequired,
+  launchSoundAndMarkup: PropTypes.func.isRequired,
+  user: PropTypes.object.isRequired
 };
 
 export default compose(

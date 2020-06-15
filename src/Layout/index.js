@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import { connect } from 'react-redux';
 import { Sidebar } from 'semantic-ui-react';
 import { withRouter } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 import Modals from 'components/Modals';
 import PlayerModal from 'components/PlayerModal';
@@ -37,16 +38,15 @@ const Content = styled.div`
 `;
 
 class Layout extends React.Component {
-
   constructor(props) {
     super(props);
   }
 
   render() {
     const { selected, loading } = this.props;
-    
+
     return (
-      <div key={'' + selected.id + loading}>
+      <div key={`${selected.id}${loading}`}>
         <NavBar />
         <Snackbar />
     
@@ -75,10 +75,12 @@ class Layout extends React.Component {
       </div>
     );
   }
-
 }
-
-/* 
+Layout.propTypes = {
+  selected: PropTypes.object.isRequired,
+  loading: PropTypes.bool.isRequired,
+};
+/*
  * Without withRouter() using connect() breaks routing, see
  * https://reacttraining.com/react-router/core/guides/redux-integration, "Blocked Updates".
  */

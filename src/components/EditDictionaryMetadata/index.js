@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Form, Segment } from 'semantic-ui-react';
+import { Button, Form, Segment, Label } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
@@ -12,7 +12,6 @@ const getMetadataAlternativesQuery = gql`
 `;
 
 class EditDictionaryMetadata extends React.Component {
-
   constructor(props) {
     super(props);
 
@@ -50,11 +49,11 @@ class EditDictionaryMetadata extends React.Component {
   }
 
   initDropdownOptions() {
-    const select_tags_metadata = this.props.data.select_tags_metadata;
+    const { select_tags_metadata } = this.props.data;
 
     let toAdd = this.state.authors.slice();
-    this.authorsOptions = select_tags_metadata.authors.map(author => {
-      let index = toAdd.indexOf(author);
+    this.authorsOptions = select_tags_metadata.authors.map((author) => {
+      const index = toAdd.indexOf(author);
       if (index > -1) {
         toAdd.splice(index, 1);
       }
@@ -64,13 +63,13 @@ class EditDictionaryMetadata extends React.Component {
         value: author
       };
     });
-    toAdd.forEach(author => {
+    toAdd.forEach((author) => {
       this.authorsOptions.push({ text: author, value: author });
     });
 
     toAdd = this.state.humanSettlement.slice();
-    this.settlementsOptions = select_tags_metadata.humanSettlement.map(settlement => {
-      let index = toAdd.indexOf(settlement);
+    this.settlementsOptions = select_tags_metadata.humanSettlement.map((settlement) => {
+      const index = toAdd.indexOf(settlement);
       if (index > -1) {
         toAdd.splice(index, 1);
       }
@@ -80,13 +79,13 @@ class EditDictionaryMetadata extends React.Component {
         value: settlement
       };
     });
-    toAdd.forEach(settlement => {
+    toAdd.forEach((settlement) => {
       this.settlementsOptions.push({ text: settlement, value: settlement });
     });
 
     toAdd = this.state.years.slice();
-    this.yearsOptions = select_tags_metadata.years.map(year => {
-      let index = toAdd.indexOf(year);
+    this.yearsOptions = select_tags_metadata.years.map((year) => {
+      const index = toAdd.indexOf(year);
       if (index > -1) {
         toAdd.splice(index, 1);
       }
@@ -96,18 +95,18 @@ class EditDictionaryMetadata extends React.Component {
         value: year
       };
     });
-    toAdd.forEach(year => {
+    toAdd.forEach((year) => {
       this.yearsOptions.push({ text: year, value: year });
     });
   }
-
+  /* eslint-disable react/sort-comp */
+  // eslint-disable-next-line class-methods-use-this
   onAddNewAlternative(event, data) {
-    if (data.options.every(option => option.value != data.value))
-      data.options.push({ text: data.value, value: data.value });
+    if (data.options.every(option => option.value !== data.value)) { data.options.push({ text: data.value, value: data.value }); }
   }
-
+  /* eslint-enable react/sort-comp */
   onChangeValue(kind, data) {
-    const callback =() => {
+    const callback = () => {
       if (this.props.onChange) {
         this.props.onChange(this.state);
       }
@@ -147,7 +146,6 @@ class EditDictionaryMetadata extends React.Component {
         this.setState({ theThemeOfTheText: data.value }, callback);
         break;
       default:
-        return;
     }
   }
 
@@ -171,7 +169,7 @@ class EditDictionaryMetadata extends React.Component {
         this.initialState.humanSettlement = toSave.humanSettlement;
         break;
       case 'speakers':
-        toSave =  { speakersAmount: this.state.speakersAmount };
+        toSave = { speakersAmount: this.state.speakersAmount };
         this.initialState.speakersAmount = toSave.speakersAmount;
         break;
       case 'years':
@@ -248,190 +246,224 @@ class EditDictionaryMetadata extends React.Component {
       typeOfDiscourse,
       typeOfSpeech,
       speechGenre,
-      theThemeOfTheText } = this.state;
+      theThemeOfTheText
+    } = this.state;
 
     return (
       <Form>
         <Segment>
-          <Form.Group widths='equal'>
+          <Form.Group widths="equal">
             <Form.Group>
-              <Form.Radio label={getTranslation("Expedition")} checked={kind == 'Expedition'} onClick={(event, data) => this.onChangeValue('kind', data)} />
-              <Form.Radio label={getTranslation("Archive")} checked={kind == 'Archive'} onClick={(event, data) => this.onChangeValue('kind', data)} />
+              <Form.Radio label={getTranslation('Expedition')} checked={kind === 'Expedition'} onClick={(event, data) => this.onChangeValue('kind', data)} />
+              <Form.Radio label={getTranslation('Archive')} checked={kind === 'Archive'} onClick={(event, data) => this.onChangeValue('kind', data)} />
             </Form.Group>
-            {mode != 'create' &&
+            {mode !== 'create' &&
               <Form.Button
-                floated='right'
+                floated="right"
                 positive
-                content={getTranslation("Save")}
-                disabled={kind == this.initialState.kind}
+                content={getTranslation('Save')}
+                disabled={kind === this.initialState.kind}
                 onClick={() => this.onSaveValue('kind')}
               />
             }
           </Form.Group>
         </Segment>
         <Segment>
-          <Form.Group widths='equal'>
-            <Form.Dropdown fluid multiple selection search allowAdditions
-              label={getTranslation("Authors")}
+          <Form.Group widths="equal">
+            <Label size="large">{getTranslation('Authors')}</Label>
+            <Form.Dropdown
+              fluid
+              multiple
+              selection
+              search
+              allowAdditions
               options={this.authorsOptions}
               value={authors}
               onAddItem={this.onAddNewAlternative}
               onChange={(event, data) => this.onChangeValue('authors', data)}
             />
-            {mode != 'create' &&
-              <Button positive
-                content={getTranslation("Save")}
-                disabled={JSON.stringify(authors) == JSON.stringify(this.initialState.authors)}
+            {mode !== 'create' &&
+              <Button
+                positive
+                content={getTranslation('Save')}
+                disabled={JSON.stringify(authors) === JSON.stringify(this.initialState.authors)}
                 onClick={() => this.onSaveValue('authors')}
               />
             }
-            <Form.Dropdown fluid multiple selection search allowAdditions
-              label={getTranslation("Interrogator")}
+            <Form.Dropdown
+              fluid
+              multiple
+              selection
+              search
+              allowAdditions
+              label={getTranslation('Interrogator')}
               options={this.authorsOptions}
               value={interrogator}
               onAddItem={this.onAddNewAlternative}
               onChange={(event, data) => this.onChangeValue('interrogator', data)}
             />
-            {mode != 'create' &&
+            {mode !== 'create' &&
               <Form.Button
-                floated='right'
+                floated="right"
                 positive
-                content={getTranslation("Save")}
-                disabled={interrogator == this.initialState.interrogator}
+                content={getTranslation('Save')}
+                disabled={interrogator === this.initialState.interrogator}
                 onClick={() => this.onSaveValue('interrogator')}
               />
             }
-            <Form.Input fluid
-              label={getTranslation("Informant")}
+            <Form.Input
+              fluid
+              label={getTranslation('Informant')}
               value={informant}
               onChange={(event, data) => this.onChangeValue('informant', data)}
             />
-            {mode != 'create' &&
+            {mode !== 'create' &&
               <Form.Button
-                floated='right'
+                floated="right"
                 positive
-                content={getTranslation("Save")}
-                disabled={informant == this.initialState.informant}
+                content={getTranslation('Save')}
+                disabled={informant === this.initialState.informant}
                 onClick={() => this.onSaveValue('informant')}
               />
             }
           </Form.Group>
         </Segment>
         <Segment>
-          <Form.Group widths='equal'>
-            <Form.Dropdown fluid multiple selection search allowAdditions
-              label={getTranslation("Human settlement")}
+          <Form.Group widths="equal">
+            <Label size="large">{getTranslation('Human settlement')}</Label>
+            <Form.Dropdown
+              fluid
+              multiple
+              selection
+              search
+              allowAdditions
               options={this.settlementsOptions}
               value={humanSettlement}
               onAddItem={this.onAddNewAlternative}
               onChange={(event, data) => this.onChangeValue('settlements', data)}
             />
-            {mode != 'create' &&
-              <Button positive
-                content={getTranslation("Save")}
-                disabled={JSON.stringify(humanSettlement) == JSON.stringify(this.initialState.humanSettlement)}
+            {mode !== 'create' &&
+              <Button
+                positive
+                content={getTranslation('Save')}
+                disabled={JSON.stringify(humanSettlement) === JSON.stringify(this.initialState.humanSettlement)}
                 onClick={() => this.onSaveValue('settlements')}
               />
             }
           </Form.Group>
         </Segment>
         <Segment>
-          <Form.Group widths='equal'>
-            <Form.Dropdown fluid multiple selection search allowAdditions
-              label={getTranslation("Years")}
+          <Form.Group widths="equal">
+            <Label size="large">{getTranslation('Years')}</Label>
+            <Form.Dropdown
+              fluid
+              multiple
+              selection
+              search
+              allowAdditions
               options={this.yearsOptions}
               value={years}
               onAddItem={this.onAddNewAlternative}
               onChange={(event, data) => this.onChangeValue('years', data)}
             />
-            {mode != 'create' &&
-              <Button positive
-                content={getTranslation("Save")}
-                disabled={JSON.stringify(years) == JSON.stringify(this.initialState.years)}
+            {mode !== 'create' &&
+              <Button
+                positive
+                content={getTranslation('Save')}
+                disabled={JSON.stringify(years) === JSON.stringify(this.initialState.years)}
                 onClick={() => this.onSaveValue('years')}
               />
             }
           </Form.Group>
         </Segment>
         <Segment>
-          <Form.Group widths='equal'>
-            <Form.Dropdown fluid multiple selection search allowAdditions
-              label={getTranslation("Processing")}
+          <Form.Group widths="equal">
+            <Form.Dropdown
+              fluid
+              multiple
+              selection
+              search
+              allowAdditions
+              label={getTranslation('Processing')}
               options={this.authorsOptions}
               value={processing}
               onAddItem={this.onAddNewAlternative}
               onChange={(event, data) => this.onChangeValue('processing', data)}
             />
-            {mode != 'create' &&
+            {mode !== 'create' &&
               <Form.Button
-                floated='right'
+                floated="right"
                 positive
-                content={getTranslation("Save")}
-                disabled={processing == this.initialState.processing}
+                content={getTranslation('Save')}
+                disabled={processing === this.initialState.processing}
                 onClick={() => this.onSaveValue('processing')}
               />
             }
           </Form.Group>
         </Segment>
         <Segment>
-          <Form.Group widths='equal'>
-            <Form.Input fluid
-              label={getTranslation("Type of discourse")}
+          <Form.Group widths="equal">
+            <Form.Input
+              fluid
+              label={getTranslation('Type of discourse')}
               value={typeOfDiscourse}
               onChange={(event, data) => this.onChangeValue('typeOfDiscourse', data)}
             />
-            {mode != 'create' &&
+            {mode !== 'create' &&
               <Form.Button
-                floated='right'
+                floated="right"
                 positive
-                content={getTranslation("Save")}
-                disabled={typeOfDiscourse == this.initialState.typeOfDiscourse}
+                content={getTranslation('Save')}
+                disabled={typeOfDiscourse === this.initialState.typeOfDiscourse}
                 onClick={() => this.onSaveValue('typeOfDiscourse')}
               />
             }
-            <Form.Input fluid
-              label={getTranslation("Type of speech")}
+            <Form.Input
+              fluid
+              label={getTranslation('Type of speech')}
               value={typeOfSpeech}
               onChange={(event, data) => this.onChangeValue('typeOfSpeech', data)}
             />
-            {mode != 'create' &&
+            {mode !== 'create' &&
               <Form.Button
-                floated='right'
+                floated="right"
                 positive
-                content={getTranslation("Save")}
-                disabled={typeOfSpeech == this.initialState.typeOfSpeech}
+                content={getTranslation('Save')}
+                disabled={typeOfSpeech === this.initialState.typeOfSpeech}
                 onClick={() => this.onSaveValue('typeOfSpeech')}
               />
             }
-            <Form.Input fluid
-              label={getTranslation("Speech genre")}
+            <Form.Input
+              fluid
+              label={getTranslation('Speech genre')}
               value={speechGenre}
               onChange={(event, data) => this.onChangeValue('speechGenre', data)}
             />
-            {mode != 'create' &&
+            {mode !== 'create' &&
               <Form.Button
-                floated='right'
+                floated="right"
                 positive
-                content={getTranslation("Save")}
-                disabled={speechGenre == this.initialState.speechGenre}
+                content={getTranslation('Save')}
+                disabled={speechGenre === this.initialState.speechGenre}
                 onClick={() => this.onSaveValue('speechGenre')}
               />
             }
           </Form.Group>
         </Segment>
         <Segment>
-          <Form.Group widths='equal'>
-            <Form.Input fluid
-              label={getTranslation("The theme of the text")}
+          <Form.Group widths="equal">
+            <Form.Input
+              fluid
+              label={getTranslation('The theme of the text')}
               value={theThemeOfTheText}
               onChange={(event, data) => this.onChangeValue('theThemeOfTheText', data)}
             />
-            {mode != 'create' &&
+            {mode !== 'create' &&
               <Form.Button
-                floated='right'
+                floated="right"
                 positive
-                content={getTranslation("Save")}
-                disabled={theThemeOfTheText == this.initialState.theThemeOfTheText}
+                content={getTranslation('Save')}
+                disabled={theThemeOfTheText === this.initialState.theThemeOfTheText}
                 onClick={() => this.onSaveValue('theThemeOfTheText')}
               />
             }
@@ -440,14 +472,15 @@ class EditDictionaryMetadata extends React.Component {
       </Form>
     );
   }
-
 }
 
 EditDictionaryMetadata.propTypes = {
   mode: PropTypes.string.isRequired,
-  metadata: PropTypes.object,
-  onChange: PropTypes.func,
-  onSave: PropTypes.func
+  metadata: PropTypes.object.isRequired,
+  onChange: PropTypes.func.isRequired,
+  onSave: PropTypes.func.isRequired,
+  data: PropTypes.object.isRequired,
+  loading: PropTypes.bool.isRequired
 };
 
 export default graphql(getMetadataAlternativesQuery)(EditDictionaryMetadata);
