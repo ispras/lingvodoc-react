@@ -135,6 +135,7 @@ const Tools = graphql(toolsQuery)(({
         </Dropdown.Item>
 
         <Dropdown.Item
+          // eslint-disable-next-line no-use-before-define
           onClick={() => soundAndMarkup(id, mode, launchSoundAndMarkup)}
         >
           {getTranslation('Sound and markup')}

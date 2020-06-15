@@ -65,6 +65,7 @@ class PerspectivePath extends React.Component {
               key: e.id,
               content:
 
+                // eslint-disable-next-line no-nested-ternary
                 index === tree.length - 1 ?
 
                   <Dropdown inline text={e.translation}>

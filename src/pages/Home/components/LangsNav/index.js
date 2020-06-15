@@ -222,8 +222,9 @@ export const languageIdList = [
 ];
 
 const languageSet = languageIdList.reduce((object, id) => {
-  object[`${id}`] = '';
-  return object;
+  const objectId = object;
+  objectId[`${id}`] = '';
+  return objectId;
 }, {});
 
 export const checkLanguage = language => languageSet.hasOwnProperty(`${language.id}`);
@@ -255,6 +256,7 @@ const prepareData = (resultData, language) => {
     });
   }
 
+  // eslint-disable-next-line no-param-reassign
   language.dictsCount = resultDictsCount;
 
   if (language.type === 'language') {

@@ -151,7 +151,7 @@ class CreateDictionaryWizard extends React.Component {
               </Segment>
               <Divider />
               <Header inverted>{getTranslation('Fill metadata information')}</Header>
-              <EditDictionaryMetadata mode="create" metadata={metadata ? metadata.toJS() : metadata} onChange={metadata => this.props.setMetadata(metadata)} />
+              <EditDictionaryMetadata mode="create" metadata={metadata ? metadata.toJS() : metadata} onChange={/* eslint-disable no-shadow */ metadata /* eslint-enabled no-shadow */ => this.props.setMetadata(metadata)} />
             </div>
           )}
 

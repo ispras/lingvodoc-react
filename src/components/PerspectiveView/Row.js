@@ -17,13 +17,14 @@ const Row = ({
   selectEntries,
   selectedEntries,
   onEntrySelect,
+  /* eslint-disable react/prop-types */
   showEntryId,
   selectDisabled,
   selectDisabledIndeterminate,
   disabledEntrySet,
   removeSelectionEntrySet,
+  /* eslint-enable react/prop-types */
 }) => {
-
   const entry_id_str = id2str(entry.id);
 
   const disabled_flag =
@@ -38,7 +39,8 @@ const Row = ({
 
   return (
     <Table.Row
-      style={disabled_flag ? {opacity: '0.5'} : {}}>
+      style={disabled_flag ? { opacity: '0.5' } : {}}
+    >
 
       {selectEntries && (
         <Table.Cell>
@@ -80,14 +82,15 @@ const Row = ({
               key={action.title}
               basic
               content={action.title}
-              onClick={() => action.action(entry)} />
+              onClick={() => action.action(entry)}
+            />
           ))}
         </Table.Cell>
       )}
 
     </Table.Row>
   );
-}
+};
 
 Row.propTypes = {
   perspectiveId: PropTypes.array.isRequired,

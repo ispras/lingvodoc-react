@@ -143,7 +143,7 @@ const NavBar =
                   </List.Item>
                   <List.Item className="version">
                     <p style={{ marginBottom: '0.5em' }}>Frontend:</p>
-                    <p style={{ marginLeft: '0.5em' }}>{__VERSION__}</p>
+                    <p style={{ marginLeft: '0.5em' }}>{/* eslint-disable no-undef */__VERSION__ /* eslint-enable no-undef */}</p>
                   </List.Item>
                 </List>
               </Dropdown.Item>

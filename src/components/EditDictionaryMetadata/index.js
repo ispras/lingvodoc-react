@@ -86,6 +86,7 @@ class EditDictionaryMetadata extends React.Component {
     });
   }
   /* eslint-disable react/sort-comp */
+  // eslint-disable-next-line class-methods-use-this
   onAddNewAlternative(event, data) {
     if (data.options.every(option => option.value !== data.value)) { data.options.push({ text: data.value, value: data.value }); }
   }

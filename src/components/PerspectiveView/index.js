@@ -128,6 +128,7 @@ const TableComponent = ({
   selectEntries,
   selectedEntries,
   onEntrySelect,
+  /* eslint-disable react/prop-types */
   selectAllEntries,
   selectAllIndeterminate,
   selectAllChecked,
@@ -138,6 +139,7 @@ const TableComponent = ({
   disabledEntrySet,
   disabledHeader,
   removeSelectionEntrySet,
+  /*  eslint-enable react/prop-types */
   actions,
 }) => (
   <div style={{ overflowY: 'auto' }}>
@@ -156,7 +158,8 @@ const TableComponent = ({
         selectDisabled={selectDisabled}
         selectDisabledIndeterminate={selectDisabledIndeterminate}
         disabled={disabledHeader}
-        actions={actions} />
+        actions={actions}
+      />
       <TableBody
         perspectiveId={perspectiveId}
         entitiesMode={entitiesMode}
@@ -499,6 +502,7 @@ const LexicalEntryViewBase = ({
   selectEntries,
   selectedEntries,
   onEntrySelect,
+  /* eslint-disable react/prop-types */
   selectAllEntries,
   selectAllIndeterminate,
   selectAllChecked,
@@ -509,6 +513,7 @@ const LexicalEntryViewBase = ({
   disabledEntrySet,
   disabledHeader,
   removeSelectionEntrySet,
+  /*  eslint-enable react/prop-types */
   actions,
 }) => {
   const { loading } = data;

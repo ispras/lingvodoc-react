@@ -7,7 +7,7 @@ import { Redirect, matchPath } from 'react-router-dom';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import Immutable, { fromJS, Map } from 'immutable';
-import { Container, Form, Radio, Segment, Button } from 'semantic-ui-react';
+import { Container, Form, Radio, Segment, Button, Label } from 'semantic-ui-react';
 
 import { buildLanguageTree } from 'pages/Search/treeBuilder';
 import { setGrantsMode, resetDictionaries } from 'ducks/home';
@@ -208,7 +208,7 @@ const Home = (props) => {
       <Segment className="rose_background">
         <Form>
           <Form.Group inline className="toggle-label">
-            <label>{getTranslation('Display mode')}</label>
+            <Label>{getTranslation('Display mode')}</Label>
             <Segment>
               <Form.Field
                 control={Radio}
