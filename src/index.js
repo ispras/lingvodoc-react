@@ -17,6 +17,8 @@ import mainFlow from './sagas';
 import Layout from './Layout';
 import apollo from './graphql';
 import WebFont from 'webfontloader';
+import config from 'config';
+import matomo from './sagas/matomo';
 
 const sagaMiddleware = createSagaMiddleware();
 const history = createHistory();
@@ -35,6 +37,9 @@ store.dispatch(setApolloClient(apollo));
 
 sagaMiddleware.run(mainFlow);
 sagaMiddleware.run(formActionSaga);
+if (!__DEVELOPMENT__ && config.buildType !== 'desktop') {
+  sagaMiddleware.run(matomo);
+}
 store.dispatch(setRunner(sagaMiddleware.run));
 
 window.logger = bindActionCreators(

@@ -242,7 +242,7 @@ class Entities extends React.Component {
 
   render() {
     const {
-      perspectiveId, entry, column, columns, mode, entitiesMode, parentEntity,
+      perspectiveId, entry, column, columns, mode, entitiesMode, parentEntity, disabled,
     } = this.props;
 
     const Component = getComponent(column.data_type);
@@ -275,6 +275,7 @@ class Entities extends React.Component {
             accept={this.accept}
             update={this.update}
             className={(mode != 'edit' && entities.indexOf(entity) == entities.length - 1) ? 'last' : ''}
+            disabled={disabled}
           />
         ))}
         {mode == 'edit' && (

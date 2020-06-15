@@ -7,7 +7,7 @@ import { Redirect, matchPath } from 'react-router-dom';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import Immutable, { fromJS, Map } from 'immutable';
-import { Container, Form, Radio, Segment, Button, Message } from 'semantic-ui-react';
+import { Container, Form, Radio, Segment, Button } from 'semantic-ui-react';
 
 import { buildLanguageTree } from 'pages/Search/treeBuilder';
 import { setGrantsMode, resetDictionaries } from 'ducks/home';
@@ -205,12 +205,6 @@ const Home = (props) => {
 
   return (
     <Container className="published">
-      <Message padded="very" warning>
-        <b>
-          Старая версия системы доступна по адресу:
-          <a href="http://old.lingvodoc.at.ispras.ru"> http://old.lingvodoc.at.ispras.ru</a>
-        </b>
-      </Message>
       <Segment className="rose_background">
         <Form>
           <Form.Group inline className="toggle-label">

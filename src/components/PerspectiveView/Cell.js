@@ -5,10 +5,16 @@ import { Table } from 'semantic-ui-react';
 import Entities from 'components/LexicalEntry';
 import 'styles/main.scss';
 
-const Cell = (props) => {
-  const {
-    perspectiveId, entry, column, columns, mode, entitiesMode
-  } = props;
+const Cell = ({
+  perspectiveId,
+  entry,
+  column,
+  columns,
+  mode,
+  entitiesMode,
+  disabled,
+}) => {
+
   return (
     <Table.Cell className="entity gentium">
       <Entities
@@ -18,6 +24,7 @@ const Cell = (props) => {
         entry={entry}
         mode={mode}
         entitiesMode={entitiesMode}
+        disabled={disabled}
       />
     </Table.Cell>
   );
@@ -32,4 +39,4 @@ Cell.propTypes = {
   entitiesMode: PropTypes.string.isRequired,
 };
 
-export default onlyUpdateForKeys(['perspectiveId', 'entry', 'mode'])(Cell);
+export default onlyUpdateForKeys(['perspectiveId', 'entry', 'mode', 'disabled'])(Cell);

@@ -16,6 +16,7 @@ import EditPerspectiveMetadata from 'components/EditPerspectiveMetadata';
 const query = gql`
   query PerspectivePropsQuery($id: LingvodocID!, $parentId: LingvodocID!) {
     dictionary(id: $parentId) {
+      id
       perspectives {
         id
         translation

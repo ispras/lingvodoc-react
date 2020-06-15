@@ -1,7 +1,7 @@
 import base from './base';
 
 const dist = {
-  apiUrl: '/api',
+  apiUrl: 'http://localhost:9999/api',
   env: 'dist',
   homePath: '/',
 };
