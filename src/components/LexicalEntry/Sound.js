@@ -125,7 +125,7 @@ Sound.defaultProps = {
   className: '',
 };
 
-Sound.Edit = ({ onSave }) => <input type="file" multiple="false" onChange={e => onSave(e.target.files[0])} />;
+Sound.Edit = ({ onSave }) => <input type="file" onChange={e => onSave(e.target.files[0])} />;
 
 Sound.Edit.propTypes = {
   onSave: PropTypes.func,

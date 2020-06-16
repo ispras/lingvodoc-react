@@ -4,9 +4,9 @@ import { combineReducers } from 'redux';
 const OPEN_MODAL = '@dictionary/properties/OPEN_MODAL';
 const CLOSE_MODAL = '@dictionary/properties/CLOSE_MODAL';
 
-export const openDictionaryPropertiesModal = id => ({
+export const openDictionaryPropertiesModal = (id, title) => ({
   type: OPEN_MODAL,
-  payload: id,
+  payload: { id, title }
 });
 
 export const closeDictionaryPropertiesModal = () => ({ type: CLOSE_MODAL });
@@ -14,7 +14,18 @@ export const closeDictionaryPropertiesModal = () => ({ type: CLOSE_MODAL });
 const id = (state = null, { type, payload }) => {
   switch (type) {
     case OPEN_MODAL:
-      return payload;
+      return payload.id;
+    case CLOSE_MODAL:
+      return null;
+    default:
+      return state;
+  }
+};
+
+const title = (state = null, { type, payload }) => {
+  switch (type) {
+    case OPEN_MODAL:
+      return payload.title;
     case CLOSE_MODAL:
       return null;
     default:
@@ -24,5 +35,6 @@ const id = (state = null, { type, payload }) => {
 
 export default combineReducers({
   id,
+  title
 });
 

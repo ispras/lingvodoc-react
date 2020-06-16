@@ -10,12 +10,13 @@ import GroupingTagModal from 'components/GroupingTagModal';
 
 const GroupingTag = (props) => {
   const {
-    entry, column, mode, entitiesMode, as: Component = 'div', openModal,
+    entry, column, mode, entitiesMode, as: Component = 'div', openModal, disabled,
   } = props;
 
   return (
     <Component className="gentium">
       <Button
+        disabled={disabled}
         basic
         as="button"
         content={column.translation}

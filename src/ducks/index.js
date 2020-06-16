@@ -26,6 +26,7 @@ import statistics from './statistics';
 import ban from './ban';
 import modals from './modals';
 import createOrganization from './createOrganization';
+import dictionaryOrganizations from './dictionaryOrganizations';
 
 export default {
   locale,
@@ -56,4 +57,5 @@ export default {
   ban,
   modals,
   createOrganization,
+  dictionaryOrganizations,
 };

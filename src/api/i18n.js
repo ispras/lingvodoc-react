@@ -29,9 +29,7 @@ export const stringsToTranslate = [
   "Available dictionaries",
   "Base blob",
   "Begin",
-  "Bibliographic data of the source",
-  "Bibliographic data of the translation",
-  "Bilingual corpora",
+  "Browse",
   "By Grants",
   "By Languages",
   "Cancel",
@@ -44,7 +42,9 @@ export const stringsToTranslate = [
   "Cognate acoustic analysis",
   "Cognate analysis",
   "Cognate multi-language reconstruction",
+  "Cognate multi-language suggestions",
   "Cognate reconstruction",
+  "Cognate suggestions",
   "Columns Mapping",
   "confidence",
   "Confirm Password",
@@ -178,6 +178,7 @@ export const stringsToTranslate = [
   "No authors found",
   "No background tasks",
   "No entries",
+  "No file selected",
   "No fields, click button below to add a new one",
   "No groups to select",
   "No language degree of endangerment found",
@@ -216,6 +217,7 @@ export const stringsToTranslate = [
   "Processing",
   "Properties...",
   "Preview",
+  "Properties",
   "Publish",
   "Publication date",
   "Publish Entities",
@@ -229,10 +231,11 @@ export const stringsToTranslate = [
   "Remove dictionary",
   "Remove lexical entries",
   "Remove perspective",
+  "Remove user",
   "Request has been sent to the grant's owner.",
   "Requests",
   "Role",
-  "Roles...",
+  "Roles",
   "Safe",
   "Save",
   "Save all",
@@ -273,7 +276,7 @@ export const stringsToTranslate = [
   "Split contents of the field on whitespace before matching",
   "Spread",
   "Start typing language name",
-  "Statistics...",
+  "Statistics",
   "Storage",
   "Subject",
   "Submit",
@@ -308,6 +311,7 @@ export const stringsToTranslate = [
   "Update",
   "Update dictionary",
   "Upload",
+  "Upload successful",
   "URL with results of saving data should appear soon after clicking save button in the tasks",
   "User",
   "User account activation/deactivation",
@@ -330,11 +334,19 @@ export function getTranslation(string) {
   return (translation == undefined) ? string : translation;
 }
 
-export function setTranslation(string, translatedString) {
+function setTranslation(string, translatedString) {
   if (translatedString == null || translatedString == undefined) {
     i18n.set(string, string);
   }
   else {
     i18n.set(string, translatedString);
+  }
+}
+
+export function setTranslations(translations) {
+  for (let i = 0; i < stringsToTranslate.length; i++) {
+    const gist = translations[i];
+    if (gist != null)
+      setTranslation(stringsToTranslate[i], gist.translation);
   }
 }

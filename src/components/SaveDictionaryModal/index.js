@@ -77,20 +77,26 @@ class Properties extends React.Component {
     const { translation } = dictionary;
 
     return (
-      <Modal open dimmer size="fullscreen">
+      <Modal
+        closeIcon
+        onClose={actions.closeSaveDictionaryModal}
+        open
+        dimmer
+        size="fullscreen">
+
         <Modal.Content>
+          <Header size="large">{getTranslation('Save')} {translation}?</Header>
           <Segment>
-            <Header size="large">{getTranslation('Save')} {translation}?</Header>
+            {getTranslation('URL with results of saving data should appear soon after clicking save button in the tasks.')}
           </Segment>
-            <Segment>
-              {getTranslation('URL with results of saving data should appear soon after clicking save button in the tasks')}
-            </Segment>
         </Modal.Content>
+
         <Modal.Actions>
             <Button icon="save" content={getTranslation("Save all")} value="all" onClick={this.onSaveData} />
             <Button icon="save" content={getTranslation("Save only published")} value="published" onClick={this.onSaveData} />
           <Button icon="minus" content={getTranslation("Close")} onClick={actions.closeSaveDictionaryModal} />
         </Modal.Actions>
+
       </Modal>
     );
   }

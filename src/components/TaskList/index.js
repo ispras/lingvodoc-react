@@ -22,7 +22,7 @@ const OrWrapper = styled(Segment)`
     top: 0;
   }
 `;
-const Empty = () => <h3>{getTranslation('No background tasks')}</h3>;
+const Empty = () => <h3 style={{ marginTop: 0 }}>{getTranslation('No background tasks')}</h3>;
 
 const enhance = branch(({ tasks }) => tasks.length === 0, renderComponent(Empty));
 

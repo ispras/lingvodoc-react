@@ -20,13 +20,22 @@ function getComponent(id, mode) {
 }
 
 const RolesModal = ({
-  visible, id, mode, actions,
+  visible, id, mode, title, actions,
 }) => {
   const Component = getComponent(id, mode);
   return (
-    <Modal open={visible} dimmer="blurring" size="small">
+    <Modal
+      closeIcon
+      onClose={actions.close}
+      open={visible}
+      dimmer="blurring"
+      size="large"
+    >
+      <Modal.Header>
+        {title}
+      </Modal.Header>
       <Modal.Content>
-        <Component id={id} mode={mode} />
+        <Component id={id} mode={mode} close={actions.close} />
       </Modal.Content>
       <Modal.Actions>
         <Button icon="minus" content={getTranslation("Close")} onClick={actions.close} />
@@ -39,6 +48,7 @@ RolesModal.propTypes = {
   visible: PropTypes.bool.isRequired,
   mode: PropTypes.oneOf(['dictionary', 'perspective']),
   id: PropTypes.array.isRequired,
+  title: PropTypes.string.isRequired,
   actions: PropTypes.shape({
     close: PropTypes.func.isRequired,
   }).isRequired,

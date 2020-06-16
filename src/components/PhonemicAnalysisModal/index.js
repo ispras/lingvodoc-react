@@ -3,12 +3,14 @@ import PropTypes from 'prop-types';
 import { compose, branch, renderNothing } from 'recompose';
 import { graphql, withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
-import { Breadcrumb, Button, Checkbox, Divider, Icon, Input, List, Modal, Select } from 'semantic-ui-react';
+import { Button, Checkbox, List, Modal, Select, Divider } from 'semantic-ui-react';
 import { closeModal } from 'ducks/phonemicAnalysis';
 import { bindActionCreators } from 'redux';
-import { isEqual, map } from 'lodash';
+import { map } from 'lodash';
 import { connect } from 'react-redux';
 import { compositeIdToString as id2str } from 'utils/compositeId';
+
+import './style.scss';
 
 export const perspectiveColumnsFieldsQuery = gql`
   query perspectiveColumnsFields($perspectiveId: LingvodocID!) {
@@ -169,11 +171,7 @@ class PhonemicAnalysisModal extends React.Component
     );
   }
 
-  render()
-  {
-    const { data } = this.props;
-    const { perspective: { columns }, all_fields: allFields } = data;
-
+  render() {
     const textFieldsOptions = this.textFields.map((f, k) => ({
       key: k,
       value: id2str(f.id),
@@ -182,7 +180,14 @@ class PhonemicAnalysisModal extends React.Component
 
     return (
       <div>
-        <Modal dimmer open size="large">
+        <Modal
+          closeIcon
+          onClose={this.props.closeModal}
+          dimmer
+          open
+          centered
+          size="large"
+        >
 
           <Modal.Header>Phonemic analysis</Modal.Header>
 
@@ -253,23 +258,16 @@ class PhonemicAnalysisModal extends React.Component
 
           </Modal.Content>
 
-          <Modal.Actions>
-            <Button
-              positive content="Compute" onClick={this.handleCreate}
-              disabled={this.textFields.length <= 0}
-            />
-            <Button negative content="Close" onClick={this.props.closeModal} />
-          </Modal.Actions>
-
-          {this.state.library_present && this.state.result.length > 0 && (
-            <Modal.Content scrolling style={{maxHeight: '95vh'}}>
+          {this.state.library_present && this.state.result.length > 0 && ([
+            <Divider key="divider" />,
+            <Modal.Content key="content" scrolling>
               <h3>Analysis results ({this.state.entity_count} text entities analysed):</h3>
               {this.state.intermediate_url_list && (
                 <List.Item>
-                  <div style={{marginTop: '0.75em'}}>
+                  <div style={{ marginTop: '0.75em' }}>
                     <span>Intermediate data:</span>
                     <List>
-                      {map(this.state.intermediate_url_list, (intermediate_url) => (
+                      {map(this.state.intermediate_url_list, intermediate_url => (
                         <List.Item key={intermediate_url}>
                           <a href={intermediate_url}>{intermediate_url}</a>
                         </List.Item>
@@ -280,7 +278,15 @@ class PhonemicAnalysisModal extends React.Component
               )}
               <div><pre>{this.state.result}</pre></div>
             </Modal.Content>
-          )}
+          ])}
+
+          <Modal.Actions>
+            <Button
+              positive content="Compute" onClick={this.handleCreate}
+              disabled={this.textFields.length <= 0}
+            />
+            <Button negative content="Close" onClick={this.props.closeModal} />
+          </Modal.Actions>
 
         </Modal>
       </div>

@@ -3,7 +3,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { AppContainer } from 'react-hot-loader';
 import { Provider } from 'react-redux';
-import injectTapEventPlugin from 'react-tap-event-plugin';
 import { createStore, applyMiddleware, compose, bindActionCreators } from 'redux';
 import createHistory from 'history/createBrowserHistory';
 import { ConnectedRouter, routerMiddleware } from 'react-router-redux';
@@ -18,6 +17,8 @@ import mainFlow from './sagas';
 import Layout from './Layout';
 import apollo from './graphql';
 import WebFont from 'webfontloader';
+import config from 'config';
+import matomo from './sagas/matomo';
 
 const sagaMiddleware = createSagaMiddleware();
 const history = createHistory();
@@ -36,6 +37,9 @@ store.dispatch(setApolloClient(apollo));
 
 sagaMiddleware.run(mainFlow);
 sagaMiddleware.run(formActionSaga);
+if (!__DEVELOPMENT__ && config.buildType !== 'desktop') {
+  sagaMiddleware.run(matomo);
+}
 store.dispatch(setRunner(sagaMiddleware.run));
 
 window.logger = bindActionCreators(
@@ -72,10 +76,6 @@ function render() {
     dest
   );
 }
-
-// Needed for onTouchTap
-// http://stackoverflow.com/a/34015469/988941
-injectTapEventPlugin();
 
 render(Layout);
 
