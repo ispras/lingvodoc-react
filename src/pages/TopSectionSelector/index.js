@@ -1,4 +1,7 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
+import PropTypes from 'prop-types';
+import { Label } from 'semantic-ui-react';
 import './styles.scss';
 import imgTree from '../../images/tree.jpg';
 import imgTools from '../../images/tools.jpg';
@@ -10,7 +13,7 @@ import { graphql } from 'react-apollo';
 import { getTranslation } from 'api/i18n';
 import gql from 'graphql-tag';
 import { compose } from 'recompose';
-import News from '../../components/News'
+import News from '../../components/News';
 
 const IsAuthenticated = gql`
   query isAuthenticated {
@@ -19,40 +22,41 @@ const IsAuthenticated = gql`
 `;
 
 const TopSectionSelector = (props) => {
-  const { data: { loading, error, is_authenticated: isAuthenticated } } = props;
-  console.log(isAuthenticated, 'isAuthenticated')
+  const { data: { is_authenticated: isAuthenticated } } = props;
   return (
     <div className="topSectionSelector">
 
-      <label className='label'>{getTranslation("Tree")}</label>
-      <Link to='/treeRoute'>
-        <img className="img-tree img" src={imgTree}></img>
+      <Label className="label">{getTranslation('Tree')}</Label>
+      <Link to="/treeRoute">
+        <img className="img-tree img" src={imgTree} alt="tree" />
       </Link>
-      <label className='label'>{getTranslation('Tools')}</label>
-      <Link to='/toolsRoute'>
-        <img className="img-tools img" src={imgTools} />
+      <Label className="label">{getTranslation('Tools')}</Label>
+      <Link to="/toolsRoute">
+        <img className="img-tools img" src={imgTools} alt="tools" />
       </Link>
-      {isAuthenticated ? <label className='label'>{getTranslation('Dashboard')}</label> : null}
-      {isAuthenticated ? <Link to='/dashboardRoute'>
-        <img className="img-dashboard img" src={imgDashboard} />
-      </Link> : null}
-      <label className='label'>{getTranslation('Organization')}</label>
-      <Link to='/organizationRoute'>
-        <img className="img-organization img" src={imgOrganization} />
+      {isAuthenticated ? <Label className="label">{getTranslation('Dashboard')}</Label> : null}
+      {isAuthenticated ?
+        <Link to="/dashboardRoute">
+          <img className="img-dashboard img" src={imgDashboard} alt="dashboard" />
+        </Link> : null}
+      <Label className="label">{getTranslation('Organization')}</Label>
+      <Link to="/organizationRoute">
+        <img className="img-organization img" src={imgOrganization} alt="organization" />
       </Link>
-      <label className='label'>{getTranslation('Support')}</label>
-      <Link to='/supportRoute'>
-        <img className="img-support img" src={imgSupport} />
+      <Label className="label">{getTranslation('Support')}</Label>
+      <Link to="/supportRoute">
+        <img className="img-support img" src={imgSupport} alt="support" />
       </Link>
-<News/>
-     
+      <News />
+
     </div>
 
 
-
   );
-
-}
-
-export default compose(
-  graphql(IsAuthenticated)(TopSectionSelector))
+};
+TopSectionSelector.propTypes = {
+  data: PropTypes.shape({
+    loading: PropTypes.bool.isRequired,
+  }).isRequired,
+};
+export default compose(graphql(IsAuthenticated)(TopSectionSelector));

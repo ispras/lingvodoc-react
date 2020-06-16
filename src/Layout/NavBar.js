@@ -32,8 +32,7 @@ SyncButton.propTypes = {
 
 const Sync = compose(
   branch(() => config.buildType === 'server', renderNothing),
-  graphql(
-    gql`
+  graphql(gql`
       query isAuthenticatedProxy {
         is_authenticated
   }`),

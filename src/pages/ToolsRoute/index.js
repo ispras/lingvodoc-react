@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
 import './styles.scss';
 import image from '../../images/maps.png';
@@ -24,7 +25,7 @@ class ToolsRoute extends React.Component {
           </div>
           <div className="img-block">
             <p>{getTranslation('Search')}</p>
-            <Link to='/map_search'>
+            <Link to="/map_search">
               <img className="img" src={imageSearch} alt="Map search" />
             </Link>
           </div>
