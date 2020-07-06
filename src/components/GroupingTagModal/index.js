@@ -359,11 +359,17 @@ class GroupingTagModal extends React.Component {
 
     if (loading || connectedQueryData.loading) {
       return (
-        <Dimmer active style={{ minHeight: '600px', background: 'none' }}>
-          <Header as="h2" icon>
-            <Icon name="spinner" loading />
-          </Header>
-        </Dimmer>
+        <Modal dimmer open size="fullscreen" closeOnDimmerClick={false} closeIcon onClose={onClose}>
+          <Modal.Content>
+            <ModalContentWrapper>
+              <Dimmer active style={{ minHeight: '60vh', background: 'none' }}>
+                <Header as="h2" icon>
+                  <Icon name="spinner" loading />
+                </Header>
+              </Dimmer>
+            </ModalContentWrapper>
+          </Modal.Content>
+        </Modal>
       ); 
     }
 
