@@ -7,6 +7,8 @@ import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import { isEqual, find, take, drop, flow, sortBy, reverse } from 'lodash';
 import { Table, Dimmer, Header, Icon, Button } from 'semantic-ui-react';
+import styled from 'styled-components';
+
 import { setSortByField, addLexicalEntry, selectLexicalEntry, resetEntriesSelection } from 'ducks/perspective';
 import { openModal } from 'ducks/modals';
 import Placeholder from 'components/Placeholder';
@@ -18,6 +20,10 @@ import Pagination from './Pagination';
 import { getTranslation } from 'api/i18n';
 
 const ROWS_PER_PAGE = 20;
+
+const ModalContentWrapper = styled('div')`
+  min-height: 15vh;
+`;
 
 export const queryPerspective = gql`
   query queryPerspective1($id: LingvodocID!) {
@@ -628,15 +634,16 @@ const LexicalEntryViewBaseByIds = ({
   perspectiveId, mode, entitiesMode, data, actions,
 }) => {
   const { loading, error } = data;
+
   if (loading || (!loading && !error && !data.perspective)) {
-     return (
-      <Dimmer.Dimmable dimmed style={{ minHeight: '600px' }}>
-        <Dimmer active inverted>
+    return (
+      <ModalContentWrapper>
+        <Dimmer active style={{ minHeight: '15vh', background: 'none' }}>
           <Header as="h2" icon>
             <Icon name="spinner" loading />
           </Header>
         </Dimmer>
-      </Dimmer.Dimmable>
+      </ModalContentWrapper>
     ); 
   }
 
@@ -692,7 +699,6 @@ export const LexicalEntryByIds = compose(
   graphql(queryLexicalEntriesByIds, {
     options: { notifyOnNetworkStatusChange: true },
   }),
-  branch(({ data }) => data.loading, renderComponent(Placeholder)),
 )(LexicalEntryViewBaseByIds);
 
 const PerspectiveViewWrapper = ({
