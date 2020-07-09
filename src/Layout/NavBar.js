@@ -119,6 +119,9 @@ const NavBar =
         <Dropdown.Item onClick={openMapStorage}>
           {getTranslation("Storage")}
         </Dropdown.Item>
+        <Dropdown.Item as={Link} to="/nearby_languages">
+        Отображение близости языков
+        </Dropdown.Item>
       </Dropdown.Menu>
     </Dropdown>
 
