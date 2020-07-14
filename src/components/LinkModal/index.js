@@ -336,7 +336,9 @@ class LinkModalContent extends React.PureComponent {
       ); 
     }
 
-    const column = perspective.columns.find(c => isEqual(c.field_id, fieldId));
+    const column =
+      perspective.columns.find(c =>
+        isEqual(c.field_id, fieldId) && !!c.link_id);
 
     const Component = getComponent(mode);
 
