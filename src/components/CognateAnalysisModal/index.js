@@ -1006,6 +1006,7 @@ class CognateAnalysisModal extends React.Component
       ).then(
 
         (data) => this.handleResult(data),
+       (data)=> console.log('data',data),
         (error_data) => this.handleError(error_data)
 
       );

@@ -10,7 +10,7 @@ import Perspective from 'pages/Perspective';
 import Languages from 'pages/Languages';
 import Files from 'pages/Files';
 import Map from 'pages/Map';
-import NearbyLanguages from 'pages/NearbyLanguages';
+import DistanceMap from 'pages/Distance_map';
 import Desktop from 'pages/Desktop';
 import NotFound from 'pages/NotFound';
 import { DictionaryDashboard, CorpusDashboard } from 'pages/Dashboard';
@@ -36,7 +36,7 @@ const Routes = () => (
     <Route path="/requests" component={Requests} />
     <Route path="/map" component={Map} />
     <Route path="/map_search" component={Search} />
-    <Route path="/nearby_languages" component={NearbyLanguages}/>
+    <Route path="/distance_map" component={DistanceMap}/>
     <Route path="/import" component={DictImport} />
     <Route path="/import_dialeqt" component={DialeqtImport} />
     <Route path="/dictionary/:pcid/:poid/perspective/:cid/:oid/:mode" component={Perspective} />
