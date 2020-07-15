@@ -10,7 +10,7 @@ import Perspective from 'pages/Perspective';
 import Languages from 'pages/Languages';
 import Files from 'pages/Files';
 import Map from 'pages/Map';
-import DistanceMap from 'pages/Distance_map';
+import DistanceMap from 'pages/DistanceMap';
 import Desktop from 'pages/Desktop';
 import NotFound from 'pages/NotFound';
 import { DictionaryDashboard, CorpusDashboard } from 'pages/Dashboard';
