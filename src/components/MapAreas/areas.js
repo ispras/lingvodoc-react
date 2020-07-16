@@ -8,9 +8,6 @@ const getRectangles = (width, height, pointX, pointY) => ({
 });
 
 const getAreaOutline = (points, itemWidth, itemHeight) => {
-  console.log(points)
-  console.log(itemWidth)
-  console.log(itemHeight)
   const pad = 5;
   const rectangles = points.map(pointItem => getRectangles(itemWidth, itemHeight, pointItem.x, pointItem.y));
   const bubbles = new BubbleSet();
