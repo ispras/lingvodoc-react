@@ -32,41 +32,41 @@ function initMap(mountPoint) {
 
   return map;
 }
-
-
+function pointIcon(colors) {
+  console.log('4654', colors)
+  const html = `<span style="background-color: ${colors};"></span>`;
+  return {
+    className: 'point',
+    html,
+  };
+}
+function wrapDivIcon(func) {
+  return options => L.divIcon(func(options));
+}
 class MapAreas extends PureComponent {
   constructor(props) {
     super();
     initializeContextMenu(L);
     this.areasPathsLeafletElements = {}
-
+    this.iconFunc = wrapDivIcon(pointIcon);
     this.map = null;
     this.coors = []
     this.state = {
       arrPoint: null,
-      test: [],outline:null
+      test: [], 
+      outline: null,
+      color:'#5E35B1'
     }
   }
   componentDidMount() {
     this.map = initMap(this.mapContainer);
     this.areasLayer = L.svg({ padding: 0 }).addTo(this.map);
-    this.updateAreaPath(1, this.state.outline, '#5E35B1');
+
   }
   componentDidUpdate() {
-    console.log(this.state.outline)
     this.checkArea()
   }
 
-  /*   removeAreasEventHandlers() {
-      this.map.on('zoomstart', () => { });
-      this.map.on('zoomend', () => { });
-    }
-    resetAreas() {
-      this.areas = [];
-      this.removeAreasFromMap();
-  
-      this.removeAreasEventHandlers();
-    } */
   latLngToLayerPoint(coords) {
     return this.map.latLngToLayerPoint(coords);
   }
@@ -86,17 +86,17 @@ class MapAreas extends PureComponent {
     this.areasPathsLeafletElements = {};
   }
   checkArea() {
-      this.map.on('zoomstart', () => {
-        console.log('zoomstart')
-        this.removeAreasFromMap()
-        this.updateAreaPath(1, this.state.outline, '#5E35B1');
-      });
-      this.map.on('zoomend', () => {
-        console.log('zoomend')
-        this.removeAreasFromMap()
-        this.updateAreaPath(1, this.state.outline, '#5E35B1');
-      });
-   
+    this.map.on('zoomstart', () => {
+      console.log('zoomstart')
+      this.removeAreasFromMap()
+      this.updateAreaPath(1, this.state.outline, this.state.color);
+    });
+    this.map.on('zoomend', () => {
+      console.log('zoomend')
+      this.removeAreasFromMap()
+      this.updateAreaPath(1, this.state.outline, this.state.color);
+    });
+
   }
   updateAreaPath(areaId, outline, color) {
     const path = this.getAreaPath(areaId);
@@ -112,21 +112,23 @@ class MapAreas extends PureComponent {
       if (!loading) {
         const searchResults = Immutable.fromJS(allDictionary)
         const resultsCount = searchResults.filter(d => (d.getIn(['additional_metadata', 'location']) !== null));
-      
-   const       test= resultsCount.map((searches, dictionary) => {
-            const location = searches.getIn(['additional_metadata', 'location']);
-            return {
-              coords: [parseFloat(location.get('lat')), parseFloat(location.get('lng'))],
-              colors: "#5E35B1",
-              values: [dictionary],
-              dictionary: searches,
-            };
 
-          }).toJS()
-        
+        const test = resultsCount.map((searches, dictionary) => {
+          const location = searches.getIn(['additional_metadata', 'location']);
+          return {
+            coords: [parseFloat(location.get('lat')), parseFloat(location.get('lng'))],
+            colors: "#5E35B1",
+            values: [dictionary],
+            dictionary: searches,
+          };
+
+        }).toJS()
+
         const pointsInPixel = test.map(point => this.latLngToLayerPoint(point.coords));
+        test.forEach(point => { L.marker(point.coords, { icon: this.iconFunc(point.colors) }).addTo(this.map) })
         const outline = getAreaOutline(pointsInPixel, 24, 24)
-      this.setState({outline:outline})
+        this.setState({ outline: outline })
+        this.updateAreaPath(1, outline, this.state.color);
       }
     }
     return (
