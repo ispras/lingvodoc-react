@@ -82,6 +82,7 @@ class MapAreas extends PureComponent {
 
   renderMarkers() {
     const { points } = this;
+
     points.forEach(point => this.addMarkerToMap(point));
   }
 
@@ -219,10 +220,6 @@ class MapAreas extends PureComponent {
   }
 
   updateMap(points, areas, areasMode, markersGroups) {
-    console.log(points)
-    console.log(areas)
-    console.log(areasMode)
-    console.log(markersGroups)
     if (!this.areasLayer && areas) {
       this.createAreasLayer();
     }
@@ -243,7 +240,6 @@ class MapAreas extends PureComponent {
 
       this.renderMarkers();
       this.showAreas();
-
     } else if (areas !== this.areas) {
       this.resetAreas();
 
@@ -262,7 +258,6 @@ class MapAreas extends PureComponent {
   }
 
   updateArea(areaPoints, areaId, color) {
-
     const { markerWidth, markerHeight } = this;
     const pointsInPixel = areaPoints.map(point => this.latLngToLayerPoint(point.coords));
 
@@ -332,7 +327,6 @@ class MapAreas extends PureComponent {
   }
 
   onZoomEndEventHandler() {
-
     this.showAreas();
   }
 
@@ -342,7 +336,6 @@ class MapAreas extends PureComponent {
   }
 
   showAreas() {
- 
     if (this.areas && this.areas.length > 0) {
       this.renderAreas();
       this.setAreasEventHandlers();
@@ -380,4 +373,4 @@ MapAreas.propTypes = {
   markersHandlers: PropTypes.object.isRequired,
 };
 
-export default MapAreas
+export default MapAreas;

@@ -91,4 +91,3 @@ ResultsMap.propTypes = {
 export default compose(connect(null, dispatch => ({
   actions: bindActionCreators({ openBlobsModal }, dispatch),
 })))(ResultsMap);
-
