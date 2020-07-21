@@ -45,6 +45,7 @@ class SelectorDictionary extends React.Component {
 
     render() {
         const { data: { dictionaries: dictionaries } } = this.props
+        
         return (
             <div>
                 <label>Выберите словарь</label>
