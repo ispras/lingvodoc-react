@@ -1,8 +1,13 @@
 
 import React from 'react';
-function Limiter({mainGroup,dictionaries,mainDictionary}){
+import { graphql, withApollo } from 'react-apollo';
+import gql from 'graphql-tag';
+import { compose, branch, renderNothing } from 'recompose';
 
-  console.log(mainDictionary.toJS())
+
+function Limiter({mainGroup,dictionaries,mainDictionary,client}){
+
+  console.log(client)
   return(
     <div>
       fsdfsfs
@@ -19,4 +24,4 @@ function Limiter({mainGroup,dictionaries,mainDictionary}){
 
 
 
-export default Limiter
+export default compose(withApollo)(Limiter)
