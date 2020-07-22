@@ -4,6 +4,7 @@ import gql from 'graphql-tag';
 import MapDict from './map'
 import { Dropdown } from 'semantic-ui-react';
 import SelectorDict from './selectorDict'
+import SelectorLangGropu from './selectorLangGroup'
 
 
 const dictionaryWithPerspectives = gql`
@@ -36,25 +37,33 @@ const dictionaryWithPerspectives = gql`
   }
 `;
 class SelectorDictionary extends React.Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-            mainDictionary: null
-        }
-    }
+  constructor(props) {
+    super(props)
 
-    render() {
-        const { data: { dictionaries: dictionaries } } = this.props
-        
-        return (
-            <div>
-                <label>Выберите словарь</label>
-                {(this.state.mainDictionary === null && <SelectorDict dictWithPersp={this.props.data} />)}
-                {(this.state.mainDictionary !== null && <MapDict dictionaries={dictionaries} />)}
-
-            </div>
-        )
+    this.state={
+      dictionary:null,
+      groupLang:null
     }
+  }
+
+  render() {
+    const { data: { dictionaries: dictionaries } } = this.props
+    const mainDictionary = (e) => {
+      this.setState({dictionary:e})
+    }
+    const mainGroup = (e)=>{
+      this.setState({groupLang:e})
+    }
+    return (
+      <div>
+        <label>Выберите словарь</label>
+        {(this.state.dictionary === null && this.state.groupLang === null && <SelectorDict dictWithPersp={this.props.data} mainDictionary={mainDictionary} />)}
+        {(this.state.dictionary !== null &&  <SelectorLangGropu dictionaries={dictionaries} mainGroup={mainGroup} mainDictionary={this.state.dictionary}  />)}
+        {(this.state.groupLang !== null && <MapDict dictionaries={dictionaries}  mainDictionary={this.state.dictionary} />)}
+
+      </div>
+    )
+  }
 }
 
 

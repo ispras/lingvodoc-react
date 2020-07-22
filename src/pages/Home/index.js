@@ -252,6 +252,7 @@ const Home = (props) => {
             dictionaries={dicts}
             perspectives={perspectivesList}
             isAuthenticated={isAuthenticated}
+            selectorMode={false}
           />
         )}
       </Segment>

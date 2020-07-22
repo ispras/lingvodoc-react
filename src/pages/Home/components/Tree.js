@@ -5,14 +5,19 @@ import { connect } from 'react-redux';
 import { compose, onlyUpdateForKeys } from 'recompose';
 import Immutable from 'immutable';
 import { Link } from 'react-router-dom';
-import { Dropdown, Checkbox, Icon } from 'semantic-ui-react';
+import { Dropdown, Checkbox, Icon, Button } from 'semantic-ui-react';
 import { toggleDictionary } from 'ducks/home';
 import { checkLanguageId } from './LangsNav';
+
 
 import config from 'config';
 
 import '../published.scss';
 
+function localSelectedDict(e){
+return e
+}
+let selectorStatus = false
 function toId(arr, prefix = null) {
   const joiner = prefix ? arr[prefix] : arr;
   return joiner.join('/');
@@ -40,6 +45,7 @@ Perspective.propTypes = {
 const Dict = ({
   dictionary, actions, selected, canSelectDictionaries,
 }) => {
+
   const id = dictionary.get('id');
   const translation = dictionary.get('translation');
   const status = dictionary.get('status');
@@ -47,7 +53,6 @@ const Dict = ({
   const authors = dictionary.getIn(['additional_metadata', 'authors']);
   const isDownloaded = dictionary.get('isDownloaded');
   const isChecked = selected.has(id);
-
   return (
     <li className="dict">
       {(config.buildType === 'desktop' || config.buildType === 'proxy') &&
@@ -58,7 +63,7 @@ const Dict = ({
 
       <span className="dict-name">{translation} {config.buildType === 'server' && canSelectDictionaries && status === 'Published' && <Icon name="globe" />}</span>
       {authors && authors.size != 0 && <span className="dict-authors">({authors.toArray().join(", ")})</span>}
-      {perspectives &&
+      {perspectives && !selectorStatus &&
         perspectives.valueSeq && (
           <Dropdown inline text={`View (${perspectives.size})`}>
             <Dropdown.Menu>
@@ -66,6 +71,10 @@ const Dict = ({
             </Dropdown.Menu>
           </Dropdown>
         )}
+      {perspectives && selectorStatus && (
+        <Button onClick={() => localSelectedDict(perspectives)}> Выбрать словарь</Button>
+      )
+      }
     </li>
   );
 };
@@ -96,7 +105,7 @@ const Language = ({ language, canSelectDictionaries }) => {
   else if (checkLanguageId(id)) {
     langClass = "confirmed-lang-name";
   }
-  
+
   return (
     <li className="lang" id={`lang_${id}`}>
       <span className={langClass}>{translation}</span>
@@ -115,6 +124,7 @@ Language.defaultProps = {
 };
 
 const Node = ({ node, canSelectDictionaries }) => {
+
   switch (node.get('type')) {
     case 'language':
       return <Language language={node} canSelectDictionaries={canSelectDictionaries} />;
@@ -130,11 +140,15 @@ Node.propTypes = {
   canSelectDictionaries: PropTypes.bool.isRequired,
 };
 
-const Tree = ({ tree, canSelectDictionaries }) => (
-  <ul className="tree">
-    {tree.map(e => <Node key={e.get('id')} node={e} canSelectDictionaries={canSelectDictionaries} />)}
-  </ul>
-);
+const Tree = ({ tree, canSelectDictionaries, selectorMode, selectedDict }) => {
+  selectorStatus = selectorMode
+  localSelectedDict=selectedDict
+  return (
+    <ul className="tree">
+      {tree.map(e => <Node selectedDict={selectedDict} key={e.get('id')} node={e} canSelectDictionaries={canSelectDictionaries} />)}
+    </ul>
+  );
+}
 
 Tree.propTypes = {
   tree: PropTypes.instanceOf(Immutable.List).isRequired,

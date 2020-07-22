@@ -4,10 +4,24 @@ import 'leaflet/dist/leaflet.css';
 import L, { point, Point } from 'leaflet';
 import initializeContextMenu from '../../components/MapAreas/leaflet.contextmenu';
 import '../../components/MapAreas/leaflet.contextmenu.scss';
-import { graphql } from 'react-apollo';
+import { graphql, withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
 import Immutable, { fromJS } from 'immutable';
 import getAreaOutline from '../../components/MapAreas/areas'
+import { compose } from 'recompose'
+
+
+
+const mainDictionaryQuery = gql`
+query mainDictionaryQuery($id: LingvodocID){
+  dictionary(id:$id){
+    id
+    translation
+    additional_metadata{
+      location
+    }
+  }
+}`
 
 function initMap(mountPoint) {
   const map = L.map(mountPoint, {
@@ -21,7 +35,6 @@ function initMap(mountPoint) {
   return map;
 }
 function pointIcon(colors) {
-  console.log('4654', colors)
   const html = `<span style="background-color: ${colors};"></span>`;
   return {
     className: 'point',
@@ -41,11 +54,13 @@ class MapAreas extends PureComponent {
     this.coors = []
     this.state = {
       arrPoint: null,
-      test: [], 
+      test: [],
       outline: null,
-      color:'#5E35B1'
+      color: '#5E35B1'
     }
+
   }
+
   componentDidMount() {
     this.map = initMap(this.mapContainer);
     this.areasLayer = L.svg({ padding: 0 }).addTo(this.map);
@@ -75,12 +90,12 @@ class MapAreas extends PureComponent {
   }
   checkArea() {
     this.map.on('zoomstart', () => {
-      console.log('zoomstart')
+
       this.removeAreasFromMap()
       this.updateAreaPath(1, this.state.outline, this.state.color);
     });
     this.map.on('zoomend', () => {
-      console.log('zoomend')
+
       this.removeAreasFromMap()
       this.updateAreaPath(1, this.state.outline, this.state.color);
     });
@@ -95,29 +110,51 @@ class MapAreas extends PureComponent {
   }
   render() {
 
-    const { dictionaries } = this.props
+    const { dictionaries, mainDictionary, client } = this.props
     const allDicts = () => {
-    
-        const searchResults = Immutable.fromJS(dictionaries)
-        const resultsCount = searchResults.filter(d => (d.getIn(['additional_metadata', 'location']) !== null));
-
-        const test = resultsCount.map((searches, dictionary) => {
-          const location = searches.getIn(['additional_metadata', 'location']);
-          return {
-            coords: [parseFloat(location.get('lat')), parseFloat(location.get('lng'))],
-            colors: "#5E35B1",
-            values: [dictionary],
-            dictionary: searches,
-          };
-
-        }).toJS()
-
-        const pointsInPixel = test.map(point => this.latLngToLayerPoint(point.coords));
-        test.forEach(point => { L.marker(point.coords, { icon: this.iconFunc(point.colors) }).addTo(this.map) })
+      const mainDict = mainDictionary.toJS()
+      const idMainDict = mainDict[0].parent_id
+      client.query({
+        query: mainDictionaryQuery,
+        variables: { id: idMainDict },
+      }).then(result => {
+        const shortName = result.data.dictionary
+        const test666 = {
+          coords: [shortName.additional_metadata.location.lat, shortName.additional_metadata.location.lng],
+          colors: "rgb(243, 0, 0)",
+          values: [1],
+          dictionary: shortName,
+        }
+        L.marker(test666.coords, { icon: this.iconFunc(test666.colors) }).addTo(this.map)
+        const pointsInPixel =[test666].map(e=>this.latLngToLayerPoint(e.coords)) 
         const outline = getAreaOutline(pointsInPixel, 24, 24)
-        this.setState({ outline: outline })
-        this.updateAreaPath(1, outline, this.state.color);
-      
+        this.updateAreaPath(1, outline, "rgb(243, 0, 0)");
+
+
+
+
+      })
+
+      const searchResults = Immutable.fromJS(dictionaries)
+      const resultsCount = searchResults.filter(d => (d.getIn(['additional_metadata', 'location']) !== null));
+
+      const test = resultsCount.map((searches, dictionary) => {
+        const location = searches.getIn(['additional_metadata', 'location']);
+        return {
+          coords: [parseFloat(location.get('lat')), parseFloat(location.get('lng'))],
+          colors: "#5E35B1",
+          values: [dictionary],
+          dictionary: searches,
+        };
+
+      }).toJS()
+
+      const pointsInPixel = test.map(point => this.latLngToLayerPoint(point.coords));
+      test.forEach(point => { L.marker(point.coords, { icon: this.iconFunc(point.colors) }).addTo(this.map) })
+      const outline = getAreaOutline(pointsInPixel, 24, 24)
+      this.setState({ outline: outline })
+      this.updateAreaPath(1, outline, this.state.color);
+
     }
     return (
       <Segment>
@@ -136,4 +173,4 @@ class MapAreas extends PureComponent {
 }
 
 
-export default (MapAreas) 
+export default compose(withApollo)(MapAreas) 
