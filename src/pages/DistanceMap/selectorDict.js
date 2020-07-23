@@ -115,138 +115,140 @@ const downloadDictionariesMutation = gql`
 `;
 
 const Home = (props) => {
-    const {
-        grantsMode,
-        selected,
-        actions,
-        downloadDictionaries,
-        dictionaries: localDictionaries,
-        perspectives,
-        grants,
-        languages,
-        isAuthenticated,
-        data: {
-            loading, error, dictionaries, permission_lists: permissionLists,
-        },
-        location: { hash },
-        mainDictionary
-    } = props;
+  const {
+    grantsMode,
+    selected,
+    actions,
+    downloadDictionaries,
+    dictionaries: localDictionaries,
+    perspectives,
+    grants,
+    languages,
+    isAuthenticated,
+    data: {
+      loading, error, dictionaries, permission_lists: permissionLists,
+    },
+    location: { hash },
+    mainDictionary,
+    languagesGroup
+  } = props;
 
-    if (error) {
-        return null;
-    }
+  if (error) {
+    return null;
+  }
 
-    if (loading) {
-        return (
-            <Placeholder />
-        );
-    }
-
-    // handle legacy links from Lingvodoc 2.0
-    // if link has hash like #/dictionary/1/2/perspective/3/4/edit redirect to this version's
-    // PerspectiveView page
-    if (hash) {
-        const match = matchPath(hash, {
-            path: '#/dictionary/:pcid/:poid/perspective/:cid/:oid/:mode',
-        });
-        if (match) {
-            const {
-                pcid, poid, cid, oid, mode,
-            } = match.params;
-            return <Redirect to={`/dictionary/${pcid}/${poid}/perspective/${cid}/${oid}/${mode}`} />;
-        }
-    }
-
-    const grantsList = fromJS(grants);
-    const languagesTree = buildLanguageTree(fromJS(languages));
-
-    // skip permissions if buildType == 'server'
-    const permissions =
-        config.buildType === 'server'
-            ? null
-            : fromJS({
-                view: permissionLists.view,
-                edit: permissionLists.edit,
-                publish: permissionLists.publish,
-                limited: permissionLists.limited,
-            }).map(ps => new Immutable.Set(ps.map(p => p.get('id'))));
-
-    const dictsSource = fromJS(dictionaries);
-
-    // pre-process dictionary list
-    const localDicts = fromJS(localDictionaries);
-    const isDownloaded = dict => !!localDicts.find(d => d.get('id').equals(dict.get('id')));
-    const hasPermission = (p, permission) =>
-        (config.buildType === 'server' ? false : permissions.get(permission).has(p.get('id')));
-
-    const dicts = dictsSource.reduce(
-        (acc, dict) => acc.set(dict.get('id'), dict.set('isDownloaded', isDownloaded(dict))),
-        new Map()
-    );
-
-    const perspectivesList = fromJS(perspectives).map(perspective =>
-        // for every perspective set 4 boolean property: edit, view, publish, limited
-        // according to permission_list result
-        fromJS({
-            ...perspective.toJS(),
-            view: hasPermission(perspective, 'view'),
-            edit: hasPermission(perspective, 'edit'),
-            publish: hasPermission(perspective, 'publish'),
-            limited: hasPermission(perspective, 'limited'),
-        }));
-
-    function download() {
-        const ids = selected.toJS();
-        downloadDictionaries({
-            variables: { ids },
-        }).then(() => {
-            actions.resetDictionaries();
-        });
-    }
-
-    const scrollContainer = getScrollContainer();
-
+  if (loading) {
     return (
-        <Container className="published">
-
-            <Segment>
-                {!grantsMode && (
-                    <AllDicts
-                        languagesTree={languagesTree}
-                        dictionaries={dicts}
-                        perspectives={perspectivesList}
-                        isAuthenticated={isAuthenticated}
-                        selectorMode={true}
-                        selectedDict={mainDictionary}
-                    />
-                )}
-            </Segment>
-            <BackTopButton scrollContainer={scrollContainer} />
-        </Container>
+      <Placeholder />
     );
+  }
+
+  // handle legacy links from Lingvodoc 2.0
+  // if link has hash like #/dictionary/1/2/perspective/3/4/edit redirect to this version's
+  // PerspectiveView page
+  if (hash) {
+    const match = matchPath(hash, {
+      path: '#/dictionary/:pcid/:poid/perspective/:cid/:oid/:mode',
+    });
+    if (match) {
+      const {
+        pcid, poid, cid, oid, mode,
+      } = match.params;
+      return <Redirect to={`/dictionary/${pcid}/${poid}/perspective/${cid}/${oid}/${mode}`} />;
+    }
+  }
+
+  const grantsList = fromJS(grants);
+  const languagesTree = buildLanguageTree(fromJS(languages));
+
+  // skip permissions if buildType == 'server'
+  const permissions =
+        config.buildType === 'server'
+          ? null
+          : fromJS({
+            view: permissionLists.view,
+            edit: permissionLists.edit,
+            publish: permissionLists.publish,
+            limited: permissionLists.limited,
+          }).map(ps => new Immutable.Set(ps.map(p => p.get('id'))));
+
+  const dictsSource = fromJS(dictionaries);
+
+  // pre-process dictionary list
+  const localDicts = fromJS(localDictionaries);
+  const isDownloaded = dict => !!localDicts.find(d => d.get('id').equals(dict.get('id')));
+  const hasPermission = (p, permission) =>
+    (config.buildType === 'server' ? false : permissions.get(permission).has(p.get('id')));
+
+  const dicts = dictsSource.reduce(
+    (acc, dict) => acc.set(dict.get('id'), dict.set('isDownloaded', isDownloaded(dict))),
+    new Map()
+  );
+
+  const perspectivesList = fromJS(perspectives).map(perspective =>
+    // for every perspective set 4 boolean property: edit, view, publish, limited
+    // according to permission_list result
+    fromJS({
+      ...perspective.toJS(),
+      view: hasPermission(perspective, 'view'),
+      edit: hasPermission(perspective, 'edit'),
+      publish: hasPermission(perspective, 'publish'),
+      limited: hasPermission(perspective, 'limited'),
+    }));
+
+  function download() {
+    const ids = selected.toJS();
+    downloadDictionaries({
+      variables: { ids },
+    }).then(() => {
+      actions.resetDictionaries();
+    });
+  }
+
+  const scrollContainer = getScrollContainer();
+
+  return (
+    <Container className="published">
+
+      <Segment>
+        {!grantsMode && (
+        <AllDicts
+          languagesTree={languagesTree}
+          dictionaries={dicts}
+          perspectives={perspectivesList}
+          isAuthenticated={isAuthenticated}
+          selectorMode
+          selectedDict={mainDictionary}
+          languagesGroup={languagesGroup}
+        />
+                )}
+      </Segment>
+      <BackTopButton scrollContainer={scrollContainer} />
+    </Container>
+  );
 };
 
 Home.propTypes = {
-    data: PropTypes.shape({
-        loading: PropTypes.bool.isRequired,
-    }).isRequired,
-    dictionaries: PropTypes.array,
-    perspectives: PropTypes.array.isRequired,
-    grants: PropTypes.array.isRequired,
-    languages: PropTypes.array.isRequired,
-    isAuthenticated: PropTypes.bool.isRequired,
-    grantsMode: PropTypes.bool.isRequired,
-    selected: PropTypes.instanceOf(Immutable.Set).isRequired,
-    actions: PropTypes.shape({
-        setGrantsMode: PropTypes.func.isRequired,
-        resetDictionaries: PropTypes.func.isRequired,
-    }).isRequired,
-    location: PropTypes.object.isRequired,
-    downloadDictionaries: PropTypes.func.isRequired,
+  data: PropTypes.shape({
+    loading: PropTypes.bool.isRequired,
+  }).isRequired,
+  dictionaries: PropTypes.array,
+  perspectives: PropTypes.array.isRequired,
+  grants: PropTypes.array.isRequired,
+  languages: PropTypes.array.isRequired,
+  isAuthenticated: PropTypes.bool.isRequired,
+  grantsMode: PropTypes.bool.isRequired,
+  selected: PropTypes.instanceOf(Immutable.Set).isRequired,
+  actions: PropTypes.shape({
+    setGrantsMode: PropTypes.func.isRequired,
+    resetDictionaries: PropTypes.func.isRequired,
+  }).isRequired,
+  location: PropTypes.object.isRequired,
+  downloadDictionaries: PropTypes.func.isRequired,
 };
 
 Home.defaultProps = {
-    dictionaries: [],
+  dictionaries: [],
 };
 
 const dictionaryWithPerspectivesQuery = gql`
@@ -315,53 +317,60 @@ const dictionaryWithPerspectivesProxyQuery = gql`
 `;
 
 const AuthWrapper = ({
-    data: {
-        perspectives, grants, language_tree: languages, is_authenticated: isAuthenticated, dictionaries,
-    }, mainDictionary
+  data: {
+    perspectives, grants, language_tree: languages, is_authenticated: isAuthenticated, dictionaries,
+  }, mainDictionary, languagesGroup
 }) => {
+  const Component = compose(
+    connect(
+      state => ({ ...state.home, ...state.router }),
+      dispatch => ({ actions: bindActionCreators({ setGrantsMode, resetDictionaries }, dispatch) })
+    ),
+    graphql(isAuthenticated ? authenticatedDictionariesQuery : guestDictionariesQuery, {
+      options: {
+        fetchPolicy: 'network-only'
+      }
+    }),
+    graphql(downloadDictionariesMutation, { name: 'downloadDictionaries' })
+  )(Home);
 
-    const Component = compose(
-        connect(
-            state => ({ ...state.home, ...state.router }),
-            dispatch => ({ actions: bindActionCreators({ setGrantsMode, resetDictionaries }, dispatch) })
-        ),
-        graphql(isAuthenticated ? authenticatedDictionariesQuery : guestDictionariesQuery, {
-            options: {
-                fetchPolicy: 'network-only'
-            }
-        }),
-        graphql(downloadDictionariesMutation, { name: 'downloadDictionaries' })
-    )(Home);
-
-    if (config.buildType === 'server') {
-        return (
-            <Component perspectives={perspectives} grants={grants} languages={languages} isAuthenticated={isAuthenticated} mainDictionary={mainDictionary}/>
-        );
-    }
-    // proxy and desktop has additional parameter - local dictionaries
+  if (config.buildType === 'server') {
     return (
-        <Component
-            dictionaries={dictionaries}
-            perspectives={perspectives}
-            grants={grants}
-            languages={languages}
-            isAuthenticated={isAuthenticated}
-            mainDictionary={mainDictionary}
-        />
+      <Component
+        languagesGroup={languagesGroup}
+        perspectives={perspectives}
+        grants={grants}
+        languages={languages}
+        isAuthenticated={isAuthenticated}
+        mainDictionary={mainDictionary}
+      />
     );
+  }
+  // proxy and desktop has additional parameter - local dictionaries
+  return (
+    <Component
+      dictionaries={dictionaries}
+      perspectives={perspectives}
+      grants={grants}
+      languages={languages}
+      isAuthenticated={isAuthenticated}
+      mainDictionary={mainDictionary}
+      languagesGroup={languagesGroup}
+    />
+  );
 };
 
 AuthWrapper.propTypes = {
-    data: PropTypes.shape({
-        loading: PropTypes.bool.isRequired,
-        perspectives: PropTypes.array,
-        grants: PropTypes.array,
-        language_tree: PropTypes.array,
-        is_authenticated: PropTypes.bool,
-    }).isRequired,
+  data: PropTypes.shape({
+    loading: PropTypes.bool.isRequired,
+    perspectives: PropTypes.array,
+    grants: PropTypes.array,
+    language_tree: PropTypes.array,
+    is_authenticated: PropTypes.bool,
+  }).isRequired,
 };
 
 export default compose(
-    graphql(config.buildType === 'server' ? dictionaryWithPerspectivesQuery : dictionaryWithPerspectivesProxyQuery),
-    branch(({ data }) => data.loading || data.error, renderNothing)
+  graphql(config.buildType === 'server' ? dictionaryWithPerspectivesQuery : dictionaryWithPerspectivesProxyQuery),
+  branch(({ data }) => data.loading || data.error, renderNothing)
 )(AuthWrapper);

@@ -7,7 +7,7 @@ import Tree from './Tree';
 
 function AllDicts(props) {
   const {
-    languagesTree, dictionaries, perspectives, isAuthenticated, selectorMode,selectedDict
+    languagesTree, dictionaries, perspectives, isAuthenticated, selectorMode, selectedDict,languagesGroup
   } = props;
 
   const tree = assignDictsToTree(
@@ -22,7 +22,7 @@ function AllDicts(props) {
   return (
     <div>
       <LangsNav data={tree} />
-      <Tree tree={tree} canSelectDictionaries={isAuthenticated} selectorMode={selectorMode} selectedDict={selectedDict} />
+      <Tree tree={tree} canSelectDictionaries={isAuthenticated} selectorMode={selectorMode} selectedDict={selectedDict} languagesGroup={languagesGroup} />
     </div>
   );
 }
