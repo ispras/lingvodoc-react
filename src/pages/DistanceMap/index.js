@@ -58,12 +58,13 @@ class SelectorDictionary extends React.Component {
     const languagesGroup = (e) => {
       this.arrLang.push(e);
     };
+
     return (
       <div>
 
         {(this.state.dictionary === null && this.state.groupLang === null && <SelectorDict languagesGroup={languagesGroup} dictWithPersp={this.props.data} mainDictionary={mainDictionary} />)}
-        {(this.state.dictionary !== null && <SelectorLangGropu languagesGroup={this.arrLang} dictionaries={dictionaries} mainGroup={mainGroup} mainDictionary={this.state.dictionary} />)}
-        {(this.state.groupLang !== null && <MapDict dictionaries={dictionaries} mainDictionary={this.state.dictionary} />)}
+        {(this.state.dictionary !== null && this.state.groupLang === null && <SelectorLangGropu languagesGroup={this.arrLang} dictionaries={dictionaries} mainGroup={mainGroup} mainDictionary={this.state.dictionary} />)}
+        {(this.state.groupLang !== null && <MapDict dictionaries={this.state.groupLang} mainDictionary={this.state.dictionary} />)}
 
       </div>
     );

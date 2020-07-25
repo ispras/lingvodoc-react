@@ -110,7 +110,7 @@ const Language = ({ language, canSelectDictionaries,languagesGroup }) => {
   } else if (checkLanguageId(id)) {
     langClass = 'confirmed-lang-name';
   }
-  if(!children.toJS()[0].children[0].children ){
+  if(!children.toJS()[0].children[0].children && selectorStatus ){
       languagesGroup(language.toJS())
   }
 

@@ -34,6 +34,8 @@ function initMap(mountPoint) {
 
   return map;
 }
+
+
 function pointIcon(colors) {
   const html = `<span style="background-color: ${colors};"></span>`;
   return {
@@ -41,9 +43,15 @@ function pointIcon(colors) {
     html,
   };
 }
+
+
 function wrapDivIcon(func) {
   return options => L.divIcon(func(options));
 }
+
+
+
+
 class MapAreas extends PureComponent {
   constructor(props) {
     super();
@@ -64,6 +72,7 @@ class MapAreas extends PureComponent {
   componentDidMount() {
     this.map = initMap(this.mapContainer);
     this.areasLayer = L.svg({ padding: 0 }).addTo(this.map);
+    this.allDicts()
 
   }
   componentDidUpdate() {
@@ -108,58 +117,60 @@ class MapAreas extends PureComponent {
     path.setAttribute('stroke', 'black');
     path.setAttribute('d', outline);
   }
+ allDicts() {
+
+  const { dictionaries, mainDictionary, client } = this.props
+  const mainDict = mainDictionary.toJS()
+    const idMainDict = mainDict[0].parent_id
+    client.query({
+      query: mainDictionaryQuery,
+      variables: { id: idMainDict },
+    }).then(result => {
+      const shortName = result.data.dictionary
+      const test666 = {
+        coords: [shortName.additional_metadata.location.lat, shortName.additional_metadata.location.lng],
+        colors: "rgb(243, 0, 0)",
+        values: [1],
+        dictionary: shortName,
+      }
+      L.marker(test666.coords, { icon: this.iconFunc(test666.colors) }).addTo(this.map)
+      const pointsInPixel =[test666].map(e=>this.latLngToLayerPoint(e.coords)) 
+      const outline = getAreaOutline(pointsInPixel, 24, 24)
+      this.updateAreaPath(1, outline, "rgb(243, 0, 0)");
+
+
+
+
+    })
+
+    const searchResults = Immutable.fromJS(dictionaries)
+    const resultsCount = searchResults.filter(d => (d.getIn(['additional_metadata', 'location']) !== null));
+
+    const test = resultsCount.map((searches, dictionary) => {
+      const location = searches.getIn(['additional_metadata', 'location']);
+      return {
+        coords: [parseFloat(location.get('lat')), parseFloat(location.get('lng'))],
+        colors: "#5E35B1",
+        values: [dictionary],
+        dictionary: searches,
+      };
+
+    }).toJS()
+
+    const pointsInPixel = test.map(point => this.latLngToLayerPoint(point.coords));
+    test.forEach(point => { L.marker(point.coords, { icon: this.iconFunc(point.colors) }).addTo(this.map) })
+    const outline = getAreaOutline(pointsInPixel, 24, 24)
+    this.setState({ outline: outline })
+    this.updateAreaPath(1, outline, this.state.color);
+
+  }
   render() {
 
-    const { dictionaries, mainDictionary, client } = this.props
-    const allDicts = () => {
-      const mainDict = mainDictionary.toJS()
-      const idMainDict = mainDict[0].parent_id
-      client.query({
-        query: mainDictionaryQuery,
-        variables: { id: idMainDict },
-      }).then(result => {
-        const shortName = result.data.dictionary
-        const test666 = {
-          coords: [shortName.additional_metadata.location.lat, shortName.additional_metadata.location.lng],
-          colors: "rgb(243, 0, 0)",
-          values: [1],
-          dictionary: shortName,
-        }
-        L.marker(test666.coords, { icon: this.iconFunc(test666.colors) }).addTo(this.map)
-        const pointsInPixel =[test666].map(e=>this.latLngToLayerPoint(e.coords)) 
-        const outline = getAreaOutline(pointsInPixel, 24, 24)
-        this.updateAreaPath(1, outline, "rgb(243, 0, 0)");
 
-
-
-
-      })
-
-      const searchResults = Immutable.fromJS(dictionaries)
-      const resultsCount = searchResults.filter(d => (d.getIn(['additional_metadata', 'location']) !== null));
-
-      const test = resultsCount.map((searches, dictionary) => {
-        const location = searches.getIn(['additional_metadata', 'location']);
-        return {
-          coords: [parseFloat(location.get('lat')), parseFloat(location.get('lng'))],
-          colors: "#5E35B1",
-          values: [dictionary],
-          dictionary: searches,
-        };
-
-      }).toJS()
-
-      const pointsInPixel = test.map(point => this.latLngToLayerPoint(point.coords));
-      test.forEach(point => { L.marker(point.coords, { icon: this.iconFunc(point.colors) }).addTo(this.map) })
-      const outline = getAreaOutline(pointsInPixel, 24, 24)
-      this.setState({ outline: outline })
-      this.updateAreaPath(1, outline, this.state.color);
-
-    }
+    
     return (
       <Segment>
         <div className="leaflet">
-          <button onClick={allDicts} > загрузить точки</button>
           <div
             ref={(ref) => {
               this.mapContainer = ref;
