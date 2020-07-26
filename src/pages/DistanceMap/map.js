@@ -1,15 +1,15 @@
+/* eslint-disable no-restricted-syntax */
 import React, { PureComponent } from 'react';
 import { Segment, Dropdown } from 'semantic-ui-react';
 import 'leaflet/dist/leaflet.css';
 import L, { point, Point } from 'leaflet';
 import initializeContextMenu from '../../components/MapAreas/leaflet.contextmenu';
 import '../../components/MapAreas/leaflet.contextmenu.scss';
-import { graphql, withApollo } from 'react-apollo';
+import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import Immutable, { fromJS } from 'immutable';
-import getAreaOutline from '../../components/MapAreas/areas'
-import { compose } from 'recompose'
-
+import getAreaOutline from '../../components/MapAreas/areas';
+import { compose } from 'recompose';
 
 
 const mainDictionaryQuery = gql`
@@ -21,7 +21,17 @@ query mainDictionaryQuery($id: LingvodocID){
       location
     }
   }
-}`
+}`;
+
+
+const distanceDict= '{"operationName":"computeCognateAnalysis","variables":{"sourcePerspectiveId":[657,4],"baseLanguageId":[508,45],"groupFieldId":[66,25],"perspectiveInfoList":[[[688,14233],[66,8],[66,10]],[[656,3],[66,8],[66,10]],[[660,8],[66,8],[66,10]],[[657,4],[66,8],[66,10]],[[2872,20255],[66,8],[66,10]],[[2685,1654],[66,8],[66,10]],[[2685,847],[66,8],[66,10]],[[2685,7],[66,8],[66,10]],[[867,10],[66,8],[66,10]],[[652,3],[66,8],[66,10]],[[2654,9324],[66,8],[66,10]],[[1393,29132],[66,8],[66,10]]],"multiList":[],"mode":"","matchTranslationsValue":1,"onlyOrphansFlag":true,"figureFlag":true,"debugFlag":false,"intermediateFlag":false},"query":"mutation computeCognateAnalysis($sourcePerspectiveId: LingvodocID!, $baseLanguageId: LingvodocID!, $groupFieldId: LingvodocID!, $perspectiveInfoList: [[LingvodocID]]!, $multiList: [ObjectVal], $mode: String, $figureFlag: Boolean, $matchTranslationsValue: Int, $onlyOrphansFlag: Boolean, $debugFlag: Boolean, $intermediateFlag: Boolean) {\n  cognate_analysis(source_perspective_id: $sourcePerspectiveId, base_language_id: $baseLanguageId, group_field_id: $groupFieldId, perspective_info_list: $perspectiveInfoList, multi_list: $multiList, mode: $mode, match_translations_value: $matchTranslationsValue, only_orphans_flag: $onlyOrphansFlag, figure_flag: $figureFlag, debug_flag: $debugFlag, intermediate_flag: $intermediateFlag, distance_flag: true, reference_perspective_id: [657,4]) {\n    triumph\n    dictionary_count\n    group_count\n    not_enough_count\n    transcription_count\n    translation_count\n    xlsx_url\n    figure_url\n    minimum_spanning_tree\n    embedding_2d\n    embedding_3d\n    perspective_name_list\n    suggestion_list\n    suggestion_field_id\n    intermediate_url_list\n    distance_list  __typename\n  }\n}\n"}'
+
+
+
+
+
+
+
 
 function initMap(mountPoint) {
   const map = L.map(mountPoint, {
@@ -50,33 +60,28 @@ function wrapDivIcon(func) {
 }
 
 
-
-
 class MapAreas extends PureComponent {
   constructor(props) {
     super();
     initializeContextMenu(L);
-    this.areasPathsLeafletElements = {}
+    this.areasPathsLeafletElements = {};
     this.iconFunc = wrapDivIcon(pointIcon);
     this.map = null;
-    this.coors = []
+    this.coors = [];
     this.state = {
-      arrPoint: null,
-      test: [],
+      groupDictionaryCoords: [],
       outline: null,
       color: '#5E35B1'
-    }
-
+    };
   }
 
   componentDidMount() {
     this.map = initMap(this.mapContainer);
     this.areasLayer = L.svg({ padding: 0 }).addTo(this.map);
-    this.allDicts()
-
+    this.allDicts();
   }
   componentDidUpdate() {
-    this.checkArea()
+    this.checkArea();
   }
 
   latLngToLayerPoint(coords) {
@@ -99,16 +104,13 @@ class MapAreas extends PureComponent {
   }
   checkArea() {
     this.map.on('zoomstart', () => {
-
-      this.removeAreasFromMap()
-      this.updateAreaPath(1, this.state.outline, this.state.color);
+      this.removeAreasFromMap();
+      this.areaDictionaryGroup(this.state.groupDictionaryCoords, this.state.color);
     });
     this.map.on('zoomend', () => {
-
-      this.removeAreasFromMap()
-      this.updateAreaPath(1, this.state.outline, this.state.color);
+      this.removeAreasFromMap();
+      this.areaDictionaryGroup(this.state.groupDictionaryCoords, this.state.color);
     });
-
   }
   updateAreaPath(areaId, outline, color) {
     const path = this.getAreaPath(areaId);
@@ -117,57 +119,57 @@ class MapAreas extends PureComponent {
     path.setAttribute('stroke', 'black');
     path.setAttribute('d', outline);
   }
- allDicts() {
-
-  const { dictionaries, mainDictionary, client } = this.props
-  const mainDict = mainDictionary.toJS()
-    const idMainDict = mainDict[0].parent_id
-    client.query({
-      query: mainDictionaryQuery,
-      variables: { id: idMainDict },
-    }).then(result => {
-      const shortName = result.data.dictionary
-      const test666 = {
-        coords: [shortName.additional_metadata.location.lat, shortName.additional_metadata.location.lng],
-        colors: "rgb(243, 0, 0)",
-        values: [1],
-        dictionary: shortName,
+  areaDictionaryGroup(mainDictionaryCoords, color) {
+    const pointsInPixel = mainDictionaryCoords.map(point => this.latLngToLayerPoint(point.coords));
+    const outline = getAreaOutline(pointsInPixel, 24, 24);
+    this.updateAreaPath(1, outline, color);
+  }
+  allDicts() {
+    const { dictionaries, mainDictionary } = this.props;
+    for (const dictionary of dictionaries) {
+      if (dictionary.id[0] === mainDictionary.id[0] && dictionary.id[1] === mainDictionary.id[1]) {
+        const mainDictionaryCoords = {
+          coords: [dictionary.additional_metadata.location.lat, dictionary.additional_metadata.location.lng],
+          colors: this.state.color,
+          values: [1],
+        };
+        L.marker(mainDictionaryCoords.coords, { icon: this.iconFunc(mainDictionaryCoords.colors) }).addTo(this.map);
+        this.areaDictionaryGroup([mainDictionaryCoords],this.state.color)
       }
-      L.marker(test666.coords, { icon: this.iconFunc(test666.colors) }).addTo(this.map)
-      const pointsInPixel =[test666].map(e=>this.latLngToLayerPoint(e.coords)) 
-      const outline = getAreaOutline(pointsInPixel, 24, 24)
-      this.updateAreaPath(1, outline, "rgb(243, 0, 0)");
+    }
+
+    // Обработка и прорисовка главного словаря
+    /*  const mainDictionaryCoords = {
+      coords: [mainDictionary.additional_metadata.location.lat, mainDictionary.additional_metadata.location.lng],
+      colors: 'rgb(243, 0, 0)',
+      values: [1],
+    };
+    // Маркер главного словаря
+    L.marker(mainDictionaryCoords.coords, { icon: this.iconFunc(mainDictionaryCoords.colors) }).addTo(this.map);
+    // Область главного словаря
+    this.areaDictionaryGroup([mainDictionaryCoords],'rgb(243, 0, 0)')
 
 
-
-
-    })
-
-    const searchResults = Immutable.fromJS(dictionaries)
+    // Обработка и прорисовка словарей языковой группы
+    const searchResults = Immutable.fromJS(dictionaries);
     const resultsCount = searchResults.filter(d => (d.getIn(['additional_metadata', 'location']) !== null));
 
-    const test = resultsCount.map((searches, dictionary) => {
+    const groupDictionaryCoords = resultsCount.map((searches, dictionary) => {
       const location = searches.getIn(['additional_metadata', 'location']);
       return {
         coords: [parseFloat(location.get('lat')), parseFloat(location.get('lng'))],
-        colors: "#5E35B1",
+        colors: '#5E35B1',
         values: [dictionary],
         dictionary: searches,
       };
-
-    }).toJS()
-
-    const pointsInPixel = test.map(point => this.latLngToLayerPoint(point.coords));
-    test.forEach(point => { L.marker(point.coords, { icon: this.iconFunc(point.colors) }).addTo(this.map) })
-    const outline = getAreaOutline(pointsInPixel, 24, 24)
-    this.setState({ outline: outline })
-    this.updateAreaPath(1, outline, this.state.color);
-
+    }).toJS();
+    // Маркеры словарей
+    groupDictionaryCoords.forEach((point) => { L.marker(point.coords, { icon: this.iconFunc(point.colors) }).addTo(this.map); });
+   this.setState({groupDictionaryCoords:groupDictionaryCoords})
+    // Области словарей
+    this.areaDictionaryGroup(groupDictionaryCoords,this.state.color) */
   }
   render() {
-
-
-    
     return (
       <Segment>
         <div className="leaflet">
@@ -184,4 +186,4 @@ class MapAreas extends PureComponent {
 }
 
 
-export default compose(withApollo)(MapAreas) 
+export default MapAreas;

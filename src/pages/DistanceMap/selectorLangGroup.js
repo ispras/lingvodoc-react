@@ -14,11 +14,12 @@ const dictName = gql`query dictName($id:LingvodocID) {
    `;
 
 function Limiter({
-  mainGroup, dictionaries, mainDictionary, client, languagesGroup
+  mainGroup, mainDictionary, client, languagesGroup, mainDictionaryFun
 }) {
   const parent_id = mainDictionary.toJS()[0].parent_id;
   const [labelDict, setLabelDict] = useState(null);
-  let arrLanguages = [];
+  let rootLanguage = {}
+  let mainDict = []
   const arrDictionaryGroup = [];
   client.query({
     query: dictName,
@@ -31,29 +32,33 @@ function Limiter({
       for (const perspective of children.perspectives) {
         if (perspective.id[0] === mainDictionary.toJS()[0].id[0] &&
           perspective.id[1] === mainDictionary.toJS()[0].id[1]) {
-   /*          language.children.splice(language.children.indexOf(children),1) */
-          arrLanguages = language;
-          console.log(language)
-
+           
+          rootLanguage = language;
+          mainDict = children
         }
       }
     }
   }
 
   const filterDictionary = (e) => {
+
     arrDictionaryGroup.push(e);
+
   };
   const sendDict = () => {
     mainGroup(arrDictionaryGroup);
+    mainDictionaryFun(mainDict);
   };
+
+
   return (
     <div>
       <Label size="massive" >{labelDict}</Label>
       <Segment.Group>
-        {arrLanguages.children.map(dict =>
-          <Segment>
+        {rootLanguage.children.map(dict =>
+          <Segment key={dict.id}>
             <Checkbox
-              onChange={() => { filterDictionary(dict); }}
+              onChange={() => { filterDictionary(dict) }}
               label={dict.translation}
             />
           </Segment>)}
