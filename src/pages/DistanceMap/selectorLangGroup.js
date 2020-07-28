@@ -32,7 +32,7 @@ function Limiter({
       for (const perspective of children.perspectives) {
         if (perspective.id[0] === mainDictionary.toJS()[0].id[0] &&
           perspective.id[1] === mainDictionary.toJS()[0].id[1]) {
-           
+           console.log(children)
           rootLanguage = language;
           mainDict = children
         }
@@ -45,6 +45,7 @@ function Limiter({
     arrDictionaryGroup.push(e);
 
   };
+
   const sendDict = () => {
     mainGroup(arrDictionaryGroup);
     mainDictionaryFun(mainDict);

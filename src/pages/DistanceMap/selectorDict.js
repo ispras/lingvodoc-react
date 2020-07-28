@@ -37,6 +37,7 @@ const authenticatedDictionariesQuery = gql`
       perspectives {
         id
         translation
+        
       }
     }
     permission_lists(proxy: true) {
@@ -257,6 +258,7 @@ const dictionaryWithPerspectivesQuery = gql`
       id
       parent_id
       translation
+      
     }
     grants {
       id

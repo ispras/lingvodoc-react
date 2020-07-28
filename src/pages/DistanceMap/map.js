@@ -24,12 +24,6 @@ query mainDictionaryQuery($id: LingvodocID){
 }`;
 
 
-const distanceDict= '{"operationName":"computeCognateAnalysis","variables":{"sourcePerspectiveId":[657,4],"baseLanguageId":[508,45],"groupFieldId":[66,25],"perspectiveInfoList":[[[688,14233],[66,8],[66,10]],[[656,3],[66,8],[66,10]],[[660,8],[66,8],[66,10]],[[657,4],[66,8],[66,10]],[[2872,20255],[66,8],[66,10]],[[2685,1654],[66,8],[66,10]],[[2685,847],[66,8],[66,10]],[[2685,7],[66,8],[66,10]],[[867,10],[66,8],[66,10]],[[652,3],[66,8],[66,10]],[[2654,9324],[66,8],[66,10]],[[1393,29132],[66,8],[66,10]]],"multiList":[],"mode":"","matchTranslationsValue":1,"onlyOrphansFlag":true,"figureFlag":true,"debugFlag":false,"intermediateFlag":false},"query":"mutation computeCognateAnalysis($sourcePerspectiveId: LingvodocID!, $baseLanguageId: LingvodocID!, $groupFieldId: LingvodocID!, $perspectiveInfoList: [[LingvodocID]]!, $multiList: [ObjectVal], $mode: String, $figureFlag: Boolean, $matchTranslationsValue: Int, $onlyOrphansFlag: Boolean, $debugFlag: Boolean, $intermediateFlag: Boolean) {\n  cognate_analysis(source_perspective_id: $sourcePerspectiveId, base_language_id: $baseLanguageId, group_field_id: $groupFieldId, perspective_info_list: $perspectiveInfoList, multi_list: $multiList, mode: $mode, match_translations_value: $matchTranslationsValue, only_orphans_flag: $onlyOrphansFlag, figure_flag: $figureFlag, debug_flag: $debugFlag, intermediate_flag: $intermediateFlag, distance_flag: true, reference_perspective_id: [657,4]) {\n    triumph\n    dictionary_count\n    group_count\n    not_enough_count\n    transcription_count\n    translation_count\n    xlsx_url\n    figure_url\n    minimum_spanning_tree\n    embedding_2d\n    embedding_3d\n    perspective_name_list\n    suggestion_list\n    suggestion_field_id\n    intermediate_url_list\n    distance_list  __typename\n  }\n}\n"}'
-
-
-
-
-
 
 
 
