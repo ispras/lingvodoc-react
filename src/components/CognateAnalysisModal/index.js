@@ -107,7 +107,7 @@ const languageQuery = gql`
         id
         translation
       }
-    }
+    } 
   }
 `;
 

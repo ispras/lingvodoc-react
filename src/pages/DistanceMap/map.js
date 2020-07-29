@@ -10,23 +10,50 @@ import gql from 'graphql-tag';
 import Immutable, { fromJS } from 'immutable';
 import getAreaOutline from '../../components/MapAreas/areas';
 import { compose } from 'recompose';
+import calculateColorForDict from './calculateColorForDictionary';
 
-
-const mainDictionaryQuery = gql`
-query mainDictionaryQuery($id: LingvodocID){
-  dictionary(id:$id){
-    id
-    translation
-    additional_metadata{
-      location
+const allField=gql`
+query{
+    all_fields{
+      id
+          translation
+          english_translation: translation(locale_id: 2)
+          data_type
     }
-  }
-}`;
-
-
-
-
-
+    }`
+    const test = gql` mutation computeCognateAnalysis(
+      $sourcePerspectiveId: LingvodocID!, 
+      $baseLanguageId: LingvodocID!,
+      $groupFieldId: LingvodocID!,
+      $perspectiveInfoList: [[LingvodocID]]!,
+      $multiList: [ObjectVal],
+      $mode: String,
+      $figureFlag: Boolean,
+      $matchTranslationsValue: Int,
+      $onlyOrphansFlag: Boolean,
+      $debugFlag: Boolean,
+      $intermediateFlag: Boolean,
+      $distanceFlag :Boolean
+      $referencePerspectiveId:LingvodocID!) {
+        cognate_analysis(
+          source_perspective_id: $sourcePerspectiveId,
+          base_language_id: $baseLanguageId,
+          group_field_id: $groupFieldId,
+          perspective_info_list: $perspectiveInfoList,
+          multi_list: $multiList,
+          mode: $mode,
+          match_translations_value: $matchTranslationsValue,
+          only_orphans_flag: $onlyOrphansFlag,
+          figure_flag: $figureFlag,
+          debug_flag: $debugFlag,
+          intermediate_flag: $intermediateFlag,
+          distance_flag: $distanceFlag,
+         reference_perspective_id: $referencePerspectiveId)
+        {
+          distance_list
+        }
+    }`;
+  
 function initMap(mountPoint) {
   const map = L.map(mountPoint, {
     contextmenu: true,
@@ -67,12 +94,14 @@ class MapAreas extends PureComponent {
       outline: null,
       color: '#5E35B1'
     };
+
   }
 
   componentDidMount() {
     this.map = initMap(this.mapContainer);
     this.areasLayer = L.svg({ padding: 0 }).addTo(this.map);
     this.allDicts();
+   
   }
   componentDidUpdate() {
     this.checkArea();
@@ -99,6 +128,8 @@ class MapAreas extends PureComponent {
   checkArea() {
     this.map.on('zoomstart', () => {
       this.removeAreasFromMap();
+ 
+  /*     calculateColorForDict() */
       this.areaDictionaryGroup(this.state.groupDictionaryCoords, this.state.color);
     });
     this.map.on('zoomend', () => {
@@ -119,7 +150,7 @@ class MapAreas extends PureComponent {
     this.updateAreaPath(1, outline, color);
   }
   allDicts() {
-    const { dictionaries, mainDictionary } = this.props;
+    const { dictionaries, mainDictionary, data:{all_fields:all_fields},test ,rootLanguage} = this.props;
     for (const dictionary of dictionaries) {
       if (dictionary.id[0] === mainDictionary.id[0] && dictionary.id[1] === mainDictionary.id[1]) {
         const mainDictionaryCoords = {
@@ -127,9 +158,13 @@ class MapAreas extends PureComponent {
           colors: this.state.color,
           values: [1],
         };
+
         L.marker(mainDictionaryCoords.coords, { icon: this.iconFunc(mainDictionaryCoords.colors) }).addTo(this.map);
+        calculateColorForDict(dictionaries,all_fields,mainDictionary,test,rootLanguage)
         this.areaDictionaryGroup([mainDictionaryCoords],this.state.color)
+      
       }
+      
     }
 
     // Обработка и прорисовка главного словаря
@@ -180,4 +215,4 @@ class MapAreas extends PureComponent {
 }
 
 
-export default MapAreas;
+export default compose(graphql(allField),graphql(test,{name:'test'})) (MapAreas);
