@@ -101,18 +101,7 @@ const calculateColorForDict = (dictionaries, all_fields, mainDictionary, test, r
   const baseLanguageId = rootLanguage.parent_id;
   const perspectiveInfoList = searchField.perspectiveInfoList;
   const groupFieldId = searchField.cognates;
-//   console.log( rootLanguage )
-//   console.log( dictionaries )
 
-//     console.log( 'sourcePerspectiveId' )
-//     console.log( sourcePerspectiveId )
-//     console.log( 'baseLanguageId' )
-//     console.log( baseLanguageId )
-//     console.log( 'groupFieldId' )
-//     console.log( groupFieldId )
-    // console.log( 'perspectiveInfoos' )
-    // console.log( perspectiveInfoList )
-    console.log()
 
 
   test({

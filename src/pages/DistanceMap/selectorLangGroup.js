@@ -25,19 +25,27 @@ function Limiter({
     query: dictName,
     variables: { id: parent_id },
   }).then(result => setLabelDict(result.data.dictionary.translation));
+  searchDictionary(languagesGroup)
 
+  function searchDictionary(entities) {
 
-  for (const language of languagesGroup) {
-    for (const children of language.children) {
-      for (const perspective of children.perspectives) {
-        if (perspective.id[0] === mainDictionary.toJS()[0].id[0] &&
-          perspective.id[1] === mainDictionary.toJS()[0].id[1]) {
-          rootLanguage = language;
-          mainDict = children
+    for (const entity of entities ){
+      if (entity.type === "dictionary") {
+        for (const perspective of entity.perspectives) {
+          if (perspective.id[0] === mainDictionary.toJS()[0].id[0] &&
+            perspective.id[1] === mainDictionary.toJS()[0].id[1]) {
+            console.log(mainDictionary.toJS())
+          }
         }
       }
+    /*   for (const language of entity.children) {
+        searchDictionary(language)
+      } */
     }
+   
+
   }
+
 
   const filterDictionary = (e) => {
 
@@ -45,25 +53,29 @@ function Limiter({
 
   };
 
-  const sendDict = () => {
+  function sendDict() {
     mainGroup(arrDictionaryGroup);
-    mainDictionaryFun(mainDict,rootLanguage);
+    mainDictionaryFun(mainDict, rootLanguage);
   };
-
+  function back() {
+    mainDictionaryFun(null)
+  }
 
   return (
     <div>
       <Label size="massive" >{labelDict}</Label>
-      <Segment.Group>
+      {/*  <Segment.Group>
         {rootLanguage.children.map(dict =>
-          <Segment key={dict.id}>
+          (dict.translation !== mainDict.translation) && (<Segment key={dict.id}>
             <Checkbox
               onChange={() => { filterDictionary(dict) }}
               label={dict.translation}
             />
-          </Segment>)}
-      </Segment.Group>
+          </Segment>)
+        )}
+      </Segment.Group> */}
       <Button onClick={sendDict}>Готово </Button>
+      <Button onClick={back}>Назад</Button>
     </div >
   );
 }
