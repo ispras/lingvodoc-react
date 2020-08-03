@@ -60,7 +60,7 @@ class SelectorDictionary extends React.Component {
 
     const mainDictionary = (e,rootLanguage) => {
       this.setState({ dictionary: e });
-      this,this.setState({rootLanguage:rootLanguage})
+      this.setState({rootLanguage:rootLanguage})
     };
     const mainGroup = (e) => {
       this.setState({ groupLang: e });
@@ -74,7 +74,7 @@ class SelectorDictionary extends React.Component {
 
         {(this.state.dictionary === null && this.state.groupLang === null && <SelectorDict languagesGroup={languagesGroup} dictWithPersp={this.props.data} mainDictionary={mainDictionary} />)}
         {(this.state.dictionary !== null && this.state.groupLang === null && <SelectorLangGropu mainDictionaryFun={mainDictionary} languagesGroup={this.arrLang} mainGroup={mainGroup} mainDictionary={this.state.dictionary} />)}
-        {(this.state.groupLang !== null && <MapDict dictionaries={this.state.groupLang} mainDictionary={this.state.dictionary} rootLanguage={this.state.rootLanguage} />)}
+        {(this.state.groupLang !== null && <MapDict dictionaries={this.state.groupLang} mainDictionary={this.state.dictionary} rootLanguage={this.state.rootLanguage} backToDictionaries={mainDictionary} />)}
 
       </div>
     );

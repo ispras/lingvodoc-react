@@ -1,6 +1,6 @@
 /* eslint-disable no-restricted-syntax */
 import React, { PureComponent } from 'react';
-import { Segment, Dropdown } from 'semantic-ui-react';
+import { Segment, Dropdown, Button } from 'semantic-ui-react';
 import 'leaflet/dist/leaflet.css';
 import L, { point, Point } from 'leaflet';
 import initializeContextMenu from '../../components/MapAreas/leaflet.contextmenu';
@@ -11,8 +11,10 @@ import Immutable, { fromJS } from 'immutable';
 import getAreaOutline from '../../components/MapAreas/areas';
 import { compose } from 'recompose';
 import calculateColorForDict from './calculateColorForDictionary';
+import Placeholder from 'components/Placeholder';
 
-const allField=gql`
+
+const allField = gql`
 query{
     all_fields{
       id
@@ -21,7 +23,7 @@ query{
           data_type
     }
     }`
-    const test = gql` mutation computeCognateAnalysis(
+const test = gql` mutation computeCognateAnalysis(
       $sourcePerspectiveId: LingvodocID!, 
       $baseLanguageId: LingvodocID!,
       $groupFieldId: LingvodocID!,
@@ -53,7 +55,7 @@ query{
           distance_list
         }
     }`;
-  
+
 function initMap(mountPoint) {
   const map = L.map(mountPoint, {
     contextmenu: true,
@@ -92,16 +94,18 @@ class MapAreas extends PureComponent {
     this.state = {
       groupDictionaryCoords: [],
       outline: null,
-      color: '#5E35B1'
-    };
+      color: '#5E35B1',
 
+    };
+    this.statusLoadingPoint = false
+    this.backToDictionaries = props.backToDictionaries;
   }
 
   componentDidMount() {
     this.map = initMap(this.mapContainer);
     this.areasLayer = L.svg({ padding: 0 }).addTo(this.map);
     this.allDicts();
-   
+
   }
   componentDidUpdate() {
     this.checkArea();
@@ -128,8 +132,8 @@ class MapAreas extends PureComponent {
   checkArea() {
     this.map.on('zoomstart', () => {
       this.removeAreasFromMap();
- 
-  /*     calculateColorForDict() */
+
+      /*     calculateColorForDict() */
       this.areaDictionaryGroup(this.state.groupDictionaryCoords, this.state.color);
     });
     this.map.on('zoomend', () => {
@@ -150,23 +154,28 @@ class MapAreas extends PureComponent {
     this.updateAreaPath(1, outline, color);
   }
   allDicts() {
-    const { dictionaries, mainDictionary, data:{all_fields:all_fields},test ,rootLanguage} = this.props;
-    for (const dictionary of dictionaries) {
+    const { dictionaries, mainDictionary, data: { all_fields: all_fields }, test, rootLanguage } = this.props;
+    /* 
+        if (!this.statusLoadingPoint) {
+          return <Placeholder />
+        } */
+    /* for (const dictionary of dictionaries) {
       if (dictionary.id[0] === mainDictionary.id[0] && dictionary.id[1] === mainDictionary.id[1]) {
         const mainDictionaryCoords = {
           coords: [dictionary.additional_metadata.location.lat, dictionary.additional_metadata.location.lng],
           colors: this.state.color,
           values: [1],
         };
-
+        console.log(dictionaries)
         L.marker(mainDictionaryCoords.coords, { icon: this.iconFunc(mainDictionaryCoords.colors) }).addTo(this.map);
-        calculateColorForDict(dictionaries,all_fields,mainDictionary,test,rootLanguage)
-        this.areaDictionaryGroup([mainDictionaryCoords],this.state.color)
-      
-      }
-      
-    }
 
+       
+        this.areaDictionaryGroup([mainDictionaryCoords], this.state.color)
+
+      }
+
+    } */
+    const distanceList = calculateColorForDict(dictionaries, all_fields, mainDictionary, test, rootLanguage)
     // Обработка и прорисовка главного словаря
     /*  const mainDictionaryCoords = {
       coords: [mainDictionary.additional_metadata.location.lat, mainDictionary.additional_metadata.location.lng],
@@ -198,6 +207,9 @@ class MapAreas extends PureComponent {
     // Области словарей
     this.areaDictionaryGroup(groupDictionaryCoords,this.state.color) */
   }
+  back = () => {
+    this.backToDictionaries(null)
+  }
   render() {
     return (
       <Segment>
@@ -209,10 +221,11 @@ class MapAreas extends PureComponent {
             className="leaflet__map"
           />
         </div>
+       {/*  <Button onClick={this.back}>Назад</Button> */}
       </Segment>
     );
   }
 }
 
 
-export default compose(graphql(allField),graphql(test,{name:'test'})) (MapAreas);
+export default compose(graphql(allField), graphql(test, { name: 'test' }))(MapAreas);

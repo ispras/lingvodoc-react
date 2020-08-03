@@ -25,9 +25,9 @@ function Limiter({
     query: dictName,
     variables: { id: parent_id },
   }).then(result => setLabelDict(result.data.dictionary.translation));
-  searchDictionary(languagesGroup)
+/*   searchDictionary(languagesGroup) */
 
-  function searchDictionary(entities) {
+/*   function searchDictionary(entities) {
 
     for (const entity of entities ){
       if (entity.type === "dictionary") {
@@ -38,14 +38,22 @@ function Limiter({
           }
         }
       }
-    /*   for (const language of entity.children) {
-        searchDictionary(language)
-      } */
     }
    
 
   }
-
+ */
+for (const language of languagesGroup) {
+  for (const children of language.children) {
+    for (const perspective of children.perspectives) {
+      if (perspective.id[0] === mainDictionary.toJS()[0].id[0] &&
+        perspective.id[1] === mainDictionary.toJS()[0].id[1]) {
+        rootLanguage = language;
+        mainDict = children
+      }
+    }
+  }
+}
 
   const filterDictionary = (e) => {
 
@@ -64,7 +72,7 @@ function Limiter({
   return (
     <div>
       <Label size="massive" >{labelDict}</Label>
-      {/*  <Segment.Group>
+       <Segment.Group>
         {rootLanguage.children.map(dict =>
           (dict.translation !== mainDict.translation) && (<Segment key={dict.id}>
             <Checkbox
@@ -73,7 +81,7 @@ function Limiter({
             />
           </Segment>)
         )}
-      </Segment.Group> */}
+      </Segment.Group>
       <Button onClick={sendDict}>Готово </Button>
       <Button onClick={back}>Назад</Button>
     </div >
