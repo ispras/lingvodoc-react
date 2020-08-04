@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { graphql, withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
-import { Label, Checkbox, Segment, Button } from 'semantic-ui-react';
+import { Label, Checkbox, Segment, Button, Step } from 'semantic-ui-react';
 import { compose, branch, renderNothing } from 'recompose';
 
 const dictName = gql`query dictName($id:LingvodocID) {
@@ -14,10 +14,11 @@ const dictName = gql`query dictName($id:LingvodocID) {
    `;
 
 function Limiter({
-  mainGroup, mainDictionary, client, languagesGroup, mainDictionaryFun
+  mainGroup, mainDictionary, client, languagesGroup, mainDictionaryFun, allLanguages
 }) {
   const parent_id = mainDictionary.toJS()[0].parent_id;
   const [labelDict, setLabelDict] = useState(null);
+  const nodeLanguages = [];
   let rootLanguage = {}
   let mainDict = []
   const arrDictionaryGroup = [];
@@ -25,42 +26,32 @@ function Limiter({
     query: dictName,
     variables: { id: parent_id },
   }).then(result => setLabelDict(result.data.dictionary.translation));
-/*   searchDictionary(languagesGroup) */
 
-/*   function searchDictionary(entities) {
-
-    for (const entity of entities ){
-      if (entity.type === "dictionary") {
-        for (const perspective of entity.perspectives) {
-          if (perspective.id[0] === mainDictionary.toJS()[0].id[0] &&
-            perspective.id[1] === mainDictionary.toJS()[0].id[1]) {
-            console.log(mainDictionary.toJS())
-          }
+  for (const language of languagesGroup) {
+    for (const children of language.children) {
+      for (const perspective of children.perspectives) {
+        if (perspective.id[0] === mainDictionary.toJS()[0].id[0] &&
+          perspective.id[1] === mainDictionary.toJS()[0].id[1]) {
+          rootLanguage = language;
+          mainDict = children
         }
       }
     }
-   
-
   }
- */
-for (const language of languagesGroup) {
-  for (const children of language.children) {
-    for (const perspective of children.perspectives) {
-      if (perspective.id[0] === mainDictionary.toJS()[0].id[0] &&
-        perspective.id[1] === mainDictionary.toJS()[0].id[1]) {
-        rootLanguage = language;
-        mainDict = children
-      }
-    }
-  }
-}
 
   const filterDictionary = (e) => {
 
     arrDictionaryGroup.push(e);
 
   };
-
+  function addLanguages() {
+    for (const nodeLang of allLanguages) {
+      if (nodeLang.parent_id === null) {
+        console.log(nodeLang)
+        nodeLanguages.push(nodeLang)
+      }
+    }
+  }
   function sendDict() {
     mainGroup(arrDictionaryGroup);
     mainDictionaryFun(mainDict, rootLanguage);
@@ -72,14 +63,23 @@ for (const language of languagesGroup) {
   return (
     <div>
       <Label size="massive" >{labelDict}</Label>
-       <Segment.Group>
-        {rootLanguage.children.map(dict =>
-          (dict.translation !== mainDict.translation) && (<Segment key={dict.id}>
+      <Segment.Group>
+         {rootLanguage.children.map(dict =>
+          (dict.translation !== mainDict.translation) && (dict.additional_metadata.location !== null) && (<Segment key={dict.id}>
             <Checkbox
               onChange={() => { filterDictionary(dict) }}
               label={dict.translation}
             />
           </Segment>)
+        )}
+      </Segment.Group>
+      <Segment.Group>
+        {(nodeLanguages.length === 0) && (<Button onClick={addLanguages}>Добавить словари других языковых групп</Button>)}
+        {(nodeLanguages.length !== 0) && (
+          <Segment>
+            {nodeLanguages.map(lang =>
+              <Button>{lang.translation}</Button>)}
+          </Segment>
         )}
       </Segment.Group>
       <Button onClick={sendDict}>Готово </Button>

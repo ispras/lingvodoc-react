@@ -95,6 +95,7 @@ class MapAreas extends PureComponent {
       groupDictionaryCoords: [],
       outline: null,
       color: '#5E35B1',
+      dictionariesWithColors: []
 
     };
     this.statusLoadingPoint = false
@@ -106,6 +107,7 @@ class MapAreas extends PureComponent {
     this.areasLayer = L.svg({ padding: 0 }).addTo(this.map);
     this.allDicts();
 
+
   }
   componentDidUpdate() {
     this.checkArea();
@@ -114,6 +116,7 @@ class MapAreas extends PureComponent {
   latLngToLayerPoint(coords) {
     return this.map.latLngToLayerPoint(coords);
   }
+
   getAreaPath(areaId) {
     const areaPath = L.SVG.create('path');
     this.areasPathsLeafletElements[areaId] = areaPath;
@@ -132,13 +135,11 @@ class MapAreas extends PureComponent {
   checkArea() {
     this.map.on('zoomstart', () => {
       this.removeAreasFromMap();
-
-      /*     calculateColorForDict() */
-      this.areaDictionaryGroup(this.state.groupDictionaryCoords, this.state.color);
+      this.pointAndAreaDictionary(this.state.dictionariesWithColors)
     });
     this.map.on('zoomend', () => {
       this.removeAreasFromMap();
-      this.areaDictionaryGroup(this.state.groupDictionaryCoords, this.state.color);
+      this.pointAndAreaDictionary(this.state.dictionariesWithColors)
     });
   }
   updateAreaPath(areaId, outline, color) {
@@ -148,68 +149,43 @@ class MapAreas extends PureComponent {
     path.setAttribute('stroke', 'black');
     path.setAttribute('d', outline);
   }
+
   areaDictionaryGroup(mainDictionaryCoords, color) {
     const pointsInPixel = mainDictionaryCoords.map(point => this.latLngToLayerPoint(point.coords));
     const outline = getAreaOutline(pointsInPixel, 24, 24);
     this.updateAreaPath(1, outline, color);
   }
-  allDicts() {
+
+
+  async allDicts() {
     const { dictionaries, mainDictionary, data: { all_fields: all_fields }, test, rootLanguage } = this.props;
-    /* 
-        if (!this.statusLoadingPoint) {
-          return <Placeholder />
-        } */
-    /* for (const dictionary of dictionaries) {
-      if (dictionary.id[0] === mainDictionary.id[0] && dictionary.id[1] === mainDictionary.id[1]) {
-        const mainDictionaryCoords = {
-          coords: [dictionary.additional_metadata.location.lat, dictionary.additional_metadata.location.lng],
-          colors: this.state.color,
-          values: [1],
-        };
-        console.log(dictionaries)
-        L.marker(mainDictionaryCoords.coords, { icon: this.iconFunc(mainDictionaryCoords.colors) }).addTo(this.map);
 
-       
-        this.areaDictionaryGroup([mainDictionaryCoords], this.state.color)
-
-      }
-
-    } */
-    const distanceList = calculateColorForDict(dictionaries, all_fields, mainDictionary, test, rootLanguage)
-    // Обработка и прорисовка главного словаря
-    /*  const mainDictionaryCoords = {
-      coords: [mainDictionary.additional_metadata.location.lat, mainDictionary.additional_metadata.location.lng],
-      colors: 'rgb(243, 0, 0)',
-      values: [1],
-    };
-    // Маркер главного словаря
-    L.marker(mainDictionaryCoords.coords, { icon: this.iconFunc(mainDictionaryCoords.colors) }).addTo(this.map);
-    // Область главного словаря
-    this.areaDictionaryGroup([mainDictionaryCoords],'rgb(243, 0, 0)')
-
-
-    // Обработка и прорисовка словарей языковой группы
-    const searchResults = Immutable.fromJS(dictionaries);
-    const resultsCount = searchResults.filter(d => (d.getIn(['additional_metadata', 'location']) !== null));
-
-    const groupDictionaryCoords = resultsCount.map((searches, dictionary) => {
-      const location = searches.getIn(['additional_metadata', 'location']);
-      return {
-        coords: [parseFloat(location.get('lat')), parseFloat(location.get('lng'))],
-        colors: '#5E35B1',
-        values: [dictionary],
-        dictionary: searches,
-      };
-    }).toJS();
-    // Маркеры словарей
-    groupDictionaryCoords.forEach((point) => { L.marker(point.coords, { icon: this.iconFunc(point.colors) }).addTo(this.map); });
-   this.setState({groupDictionaryCoords:groupDictionaryCoords})
-    // Области словарей
-    this.areaDictionaryGroup(groupDictionaryCoords,this.state.color) */
+    const dictionariesWithColors = await calculateColorForDict(dictionaries, all_fields, mainDictionary, test, rootLanguage)
+    this.setState({ dictionariesWithColors: dictionariesWithColors })
+    this.pointAndAreaDictionary(this.state.dictionariesWithColors)
   }
+
+
+  pointAndAreaDictionary = (dictionariesWithColors) => {
+
+    dictionariesWithColors.forEach((mainDictionary) => {
+      const mainDictionaryCoords = {
+        coords: [mainDictionary.additional_metadata.location.lat, mainDictionary.additional_metadata.location.lng],
+        colors: mainDictionary.color,
+        values: [1],
+      };
+      // Маркер главного словаря
+      L.marker(mainDictionaryCoords.coords, { icon: this.iconFunc(mainDictionaryCoords.colors) }).addTo(this.map);
+      // Область главного словаря
+      this.areaDictionaryGroup([mainDictionaryCoords], mainDictionary.color);
+    });
+
+  }
+
   back = () => {
     this.backToDictionaries(null)
   }
+
   render() {
     return (
       <Segment>
@@ -221,7 +197,7 @@ class MapAreas extends PureComponent {
             className="leaflet__map"
           />
         </div>
-       {/*  <Button onClick={this.back}>Назад</Button> */}
+        {/*  <Button onClick={this.back}>Назад</Button> */}
       </Segment>
     );
   }

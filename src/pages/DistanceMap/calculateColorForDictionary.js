@@ -1,7 +1,7 @@
 import React from 'react';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
-
+import util from 'utils/string'
 /*   this.props.test({
     variables: {
       sourcePerspectiveId: [657, 4],
@@ -47,7 +47,6 @@ import gql from 'graphql-tag';
 
 
 function formationPerspectiveInfoList(dictionaries, all_fields, mainDictionary) {
-  /* return mainDictionary.perspectives[0].id */
   const perspectiveInfoList = [];
   let phonemicTranscription;
   let meaning;
@@ -56,7 +55,7 @@ function formationPerspectiveInfoList(dictionaries, all_fields, mainDictionary) 
   if (all_fields) {
     for (const field of all_fields) {
       if (field.translation === 'Phonemic  transcription') {
-        phonemicTranscription = phonemicTranscription ? phonemicTranscription : field.id;
+        phonemicTranscription = phonemicTranscription || field.id;
       }
       if (field.translation === 'Meaning') {
         meaning = field.id;
@@ -68,16 +67,15 @@ function formationPerspectiveInfoList(dictionaries, all_fields, mainDictionary) 
     }
   }
 
-  dictionaries.push(mainDictionary)
+  dictionaries.push(mainDictionary);
+
   dictionaries.map((dict) => {
     if (dict && dict.perspectives) {
-
       dict.perspectives.forEach((perspective) => {
-        let perspectiveInfo = [perspective.id, phonemicTranscription, meaning]
-
-        perspectiveInfoList.push(perspectiveInfo)
-      })
-
+        /*  let perspectiveInfo = [perspective.id, phonemicTranscription, meaning] */
+        const perspectiveInfo = [perspective.id, [66, 8], [66, 10]];
+        perspectiveInfoList.push(perspectiveInfo);
+      });
     }
   });
 
@@ -85,15 +83,28 @@ function formationPerspectiveInfoList(dictionaries, all_fields, mainDictionary) 
   return { perspectiveInfoList, cognates };
 }
 
-
-const calculateColorForDict = (dictionaries, all_fields, mainDictionary, test, rootLanguage) => {
+const calculateColorForDict = async (dictionaries, all_fields, mainDictionary, test, rootLanguage) => {
   const searchField = formationPerspectiveInfoList(dictionaries, all_fields, mainDictionary);
   const sourcePerspectiveId = mainDictionary.perspectives[0].id;
   const baseLanguageId = rootLanguage.parent_id;
-  const perspectiveInfoList = searchField.perspectiveInfoList;
+  const { perspectiveInfoList } = searchField;
   const groupFieldId = searchField.cognates;
 
-  test({
+
+const makeColorOfNumber = (number) => {
+  const baseColor = 8366700;
+
+  if (number >= 1) {
+    number = number * 1000
+  } else {
+    number = number * 100
+  }
+  const numberOf10In16 = (baseColor + number).toString(16);
+  return '#' + numberOf10In16
+
+};
+
+  const e = await test({
     variables: {
       sourcePerspectiveId,
       baseLanguageId,
@@ -107,35 +118,31 @@ const calculateColorForDict = (dictionaries, all_fields, mainDictionary, test, r
       debugFlag: false,
       intermediateFlag: false,
       distanceFlag: true,
-      referencePerspectiveId: sourcePerspectiveId
+      referencePerspectiveId: perspectiveInfoList[0][0]
     },
   })
-    .then((e) => {
-      console.log(mainDictionary.perspectives)
-      console.log(e.data.cognate_analysis.distance_list)
-      return e.data.cognate_analysis.distance_list
-    })
-    .then((distanceList) => {
-      /*  distanceList.forEach((distance) => {
-         dictionaries.forEach((dict) => {
-           dict.perspectives.forEach((persp) => {
-             if (persp.id[0] === distance[0][0] && persp.id[1] === distance[0][1]) {
-               console.log('********')
-               console.log(distance)
-               dict.distance = distance[1]
-             }
-           })
-           
-         }
-         )
-       }) */
 
-      console.log(distanceList);
-      //console.log()
+  const distanceList = e.data.cognate_analysis.distance_list;
+  const dictionariesWithColors = []
+
+  distanceList.forEach((distance) => {
+    dictionaries.forEach((dict) => {
+      dict.perspectives.forEach((persp) => {
+        if (persp.id[0] === distance[0][0] && persp.id[1] === distance[0][1]) {
+          const color = makeColorOfNumber(distance[1]);
+
+          dictionariesWithColors.push({
+            ...dict,
+            color
+          })
+        }
+      });
     });
+  });
+
+  return dictionariesWithColors;
 
 
 };
-
 
 export default calculateColorForDict;
