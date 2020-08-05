@@ -207,7 +207,7 @@ const Home = (props) => {
   }
 
   const scrollContainer = getScrollContainer();
-  console.log(languagesTree)
+
   return (
     <Container className="published">
 
@@ -323,6 +323,7 @@ const AuthWrapper = ({
     perspectives, grants, language_tree: languages, is_authenticated: isAuthenticated, dictionaries,
   }, mainDictionary, languagesGroup
 }) => {
+
   const Component = compose(
     connect(
       state => ({ ...state.home, ...state.router }),

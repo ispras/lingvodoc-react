@@ -4,7 +4,8 @@ import { graphql, withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
 import { Label, Checkbox, Segment, Button, Step } from 'semantic-ui-react';
 import { compose, branch, renderNothing } from 'recompose';
-
+import Immutable, { fromJS, Map } from 'immutable';
+import { buildLanguageTree } from 'pages/Search/treeBuilder';
 const dictName = gql`query dictName($id:LingvodocID) {
   dictionary(id:$id){
     id
@@ -45,59 +46,60 @@ function Limiter({
 
   };
   function addLanguages() {
-    const arr = []
-    if (nodeLanguages.length === 0) {
 
-      for (const nodeLang of allLanguages) {
+    if (nodeLanguages.length === 0) {
+      const arr = allLanguages(fromJS(buildLanguageTree))
+         setNodeLanguages(arr)
+      /* for (const nodeLang of allLanguages) {
         if (nodeLang.parent_id === null) {
           arr.push(nodeLang)
         }
-      }
+      }*/
     }
-    setNodeLanguages(arr)
-    console.log(nodeLanguages)
+ 
+    console.log(nodeLanguages) 
   }
 
-  function selectNodeLanguage(id) {
-    console.log(id)
+    function selectNodeLanguage(id) {
+      console.log(id)
+    }
+
+
+    function sendDict() {
+      mainGroup(arrDictionaryGroup);
+      mainDictionaryFun(mainDict, rootLanguage);
+    };
+    function back() {
+      mainDictionaryFun(null)
+    }
+
+    return (
+      <div>
+        <Label size="massive" >{labelDict}</Label>
+        <Segment.Group>
+          {rootLanguage.children.map(dict =>
+            (dict.translation !== mainDict.translation) && (dict.additional_metadata.location !== null) && (<Segment key={dict.id}>
+              <Checkbox
+                onChange={() => { filterDictionary(dict) }}
+                label={dict.translation}
+              />
+            </Segment>)
+          )}
+        </Segment.Group>
+        <Segment.Group>
+          {(nodeLanguages.length === 0) && (<Button onClick={addLanguages}>Добавить словари других языковых групп</Button>)}
+          {(nodeLanguages.length !== 0) && (
+            <Segment >
+              {nodeLanguages.map(lang =>
+                <Button key={lang.id[0]} onClick={() => selectNodeLanguage(lang)}>{lang.translation}</Button>)}
+            </Segment>
+          )}
+        </Segment.Group>
+        <Button onClick={sendDict}>Готово </Button>
+        <Button onClick={back}>Назад</Button>
+      </div >
+    );
   }
 
 
-  function sendDict() {
-    mainGroup(arrDictionaryGroup);
-    mainDictionaryFun(mainDict, rootLanguage);
-  };
-  function back() {
-    mainDictionaryFun(null)
-  }
-
-  return (
-    <div>
-      <Label size="massive" >{labelDict}</Label>
-      <Segment.Group>
-        {rootLanguage.children.map(dict =>
-          (dict.translation !== mainDict.translation) && (dict.additional_metadata.location !== null) && (<Segment key={dict.id}>
-            <Checkbox
-              onChange={() => { filterDictionary(dict) }}
-              label={dict.translation}
-            />
-          </Segment>)
-        )}
-      </Segment.Group>
-      <Segment.Group>
-        {(nodeLanguages.length === 0) && (<Button onClick={addLanguages}>Добавить словари других языковых групп</Button>)}
-        {(nodeLanguages.length !== 0) && (
-          <Segment >
-            {nodeLanguages.map(lang =>
-              <Button key={lang.id[0]} onClick={() => selectNodeLanguage(lang)}>{lang.translation}</Button>)}
-          </Segment>
-        )}
-      </Segment.Group>
-      <Button onClick={sendDict}>Готово </Button>
-      <Button onClick={back}>Назад</Button>
-    </div >
-  );
-}
-
-
-export default compose(withApollo)(Limiter);
+  export default compose(withApollo)(Limiter);
