@@ -155,7 +155,6 @@ const Tree = ({
 }) => {
   selectorStatus = selectorMode;
   localSelectedDict = selectedDict;
-
   return (
     <ul className="tree">
       {tree.map(e => <Node selectedDict={selectedDict} key={e.get('id')} node={e} canSelectDictionaries={canSelectDictionaries} languagesGroup={languagesGroup} />)}

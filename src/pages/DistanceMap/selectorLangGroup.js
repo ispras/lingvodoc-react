@@ -18,7 +18,7 @@ function Limiter({
 }) {
   const parent_id = mainDictionary.toJS()[0].parent_id;
   const [labelDict, setLabelDict] = useState(null);
-  const nodeLanguages = [];
+  const [nodeLanguages, setNodeLanguages] = useState([])
   let rootLanguage = {}
   let mainDict = []
   const arrDictionaryGroup = [];
@@ -45,13 +45,24 @@ function Limiter({
 
   };
   function addLanguages() {
-    for (const nodeLang of allLanguages) {
-      if (nodeLang.parent_id === null) {
-        console.log(nodeLang)
-        nodeLanguages.push(nodeLang)
+    const arr = []
+    if (nodeLanguages.length === 0) {
+
+      for (const nodeLang of allLanguages) {
+        if (nodeLang.parent_id === null) {
+          arr.push(nodeLang)
+        }
       }
     }
+    setNodeLanguages(arr)
+    console.log(nodeLanguages)
   }
+
+  function selectNodeLanguage(id) {
+    console.log(id)
+  }
+
+
   function sendDict() {
     mainGroup(arrDictionaryGroup);
     mainDictionaryFun(mainDict, rootLanguage);
@@ -64,7 +75,7 @@ function Limiter({
     <div>
       <Label size="massive" >{labelDict}</Label>
       <Segment.Group>
-         {rootLanguage.children.map(dict =>
+        {rootLanguage.children.map(dict =>
           (dict.translation !== mainDict.translation) && (dict.additional_metadata.location !== null) && (<Segment key={dict.id}>
             <Checkbox
               onChange={() => { filterDictionary(dict) }}
@@ -76,9 +87,9 @@ function Limiter({
       <Segment.Group>
         {(nodeLanguages.length === 0) && (<Button onClick={addLanguages}>Добавить словари других языковых групп</Button>)}
         {(nodeLanguages.length !== 0) && (
-          <Segment>
+          <Segment >
             {nodeLanguages.map(lang =>
-              <Button>{lang.translation}</Button>)}
+              <Button key={lang.id[0]} onClick={() => selectNodeLanguage(lang)}>{lang.translation}</Button>)}
           </Segment>
         )}
       </Segment.Group>

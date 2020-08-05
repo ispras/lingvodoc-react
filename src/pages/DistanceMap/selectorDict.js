@@ -164,14 +164,14 @@ const Home = (props) => {
 
   // skip permissions if buildType == 'server'
   const permissions =
-        config.buildType === 'server'
-          ? null
-          : fromJS({
-            view: permissionLists.view,
-            edit: permissionLists.edit,
-            publish: permissionLists.publish,
-            limited: permissionLists.limited,
-          }).map(ps => new Immutable.Set(ps.map(p => p.get('id'))));
+    config.buildType === 'server'
+      ? null
+      : fromJS({
+        view: permissionLists.view,
+        edit: permissionLists.edit,
+        publish: permissionLists.publish,
+        limited: permissionLists.limited,
+      }).map(ps => new Immutable.Set(ps.map(p => p.get('id'))));
 
   const dictsSource = fromJS(dictionaries);
 
@@ -207,22 +207,22 @@ const Home = (props) => {
   }
 
   const scrollContainer = getScrollContainer();
-
+  console.log(languagesTree)
   return (
     <Container className="published">
 
       <Segment>
         {!grantsMode && (
-        <AllDicts
-          languagesTree={languagesTree}
-          dictionaries={dicts}
-          perspectives={perspectivesList}
-          isAuthenticated={isAuthenticated}
-          selectorMode
-          selectedDict={mainDictionary}
-          languagesGroup={languagesGroup}
-        />
-                )}
+          <AllDicts
+            languagesTree={languagesTree}
+            dictionaries={dicts}
+            perspectives={perspectivesList}
+            isAuthenticated={isAuthenticated}
+            selectorMode
+            selectedDict={mainDictionary}
+            languagesGroup={languagesGroup}
+          />
+        )}
       </Segment>
       <BackTopButton scrollContainer={scrollContainer} />
     </Container>
