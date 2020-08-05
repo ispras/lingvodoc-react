@@ -1,7 +1,7 @@
 import React from 'react';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
-import MapDict from './map';
+import MapDict from './map2';
 import { Dropdown, Label } from 'semantic-ui-react';
 import SelectorDict from './selectorDict';
 import SelectorLangGropu from './selectorLangGroup';
@@ -55,7 +55,7 @@ class SelectorDictionary extends React.Component {
   }
 
   render() {
-    const { data: { language_tree:language_tree } } = this.props;
+    const { data: { language_tree:language_tree,dictionaries:dictionaries } } = this.props;
 
     const mainDictionary = (e, rootLanguage) => {
       this.setState({ dictionary: e });
@@ -78,7 +78,8 @@ class SelectorDictionary extends React.Component {
             languagesGroup={this.arrLang}
             mainGroup={mainGroup}
             mainDictionary={this.state.dictionary}
-            allLanguages={language_tree} />)}
+            allLanguages={language_tree}
+            allDictionaries={dictionaries} />)}
         {(this.state.groupLang !== null && <MapDict dictionaries={this.state.groupLang} mainDictionary={this.state.dictionary} rootLanguage={this.state.rootLanguage} backToDictionaries={mainDictionary} />)}
 
       </div>
