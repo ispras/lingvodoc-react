@@ -71,6 +71,7 @@
     "js-cookie": "^2.2.0",
     "leaflet": "^1.2.0",
     "leaflet-geosearch": "^2.7.0",
+    "leaflet-heatmap": "^1.0.0",
     "leaflet-path-drag": "^1.1.0",
     "leaflet.markercluster": "^1.4.1",
     "lodash": "^4.17.4",

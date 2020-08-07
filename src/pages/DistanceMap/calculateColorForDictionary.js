@@ -1,7 +1,7 @@
 import React from 'react';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
-import util from 'utils/string'
+import util from 'utils/string';
 /*   this.props.test({
     variables: {
       sourcePerspectiveId: [657, 4],
@@ -46,14 +46,15 @@ import util from 'utils/string'
  */
 
 
-function formationPerspectiveInfoList(dictionaries, all_fields, mainDictionary) {
+function formationPerspectiveInfoList(dictionaries, allField, mainDictionary) {
   const perspectiveInfoList = [];
   let phonemicTranscription;
   let meaning;
   let cognates;
+  const allFieldList = allField.all_fields;
 
-  if (all_fields) {
-    for (const field of all_fields) {
+  if (allFieldList) {
+    for (const field of allFieldList) {
       if (field.translation === 'Phonemic  transcription') {
         phonemicTranscription = phonemicTranscription || field.id;
       }
@@ -83,26 +84,13 @@ function formationPerspectiveInfoList(dictionaries, all_fields, mainDictionary) 
   return { perspectiveInfoList, cognates };
 }
 
-const calculateColorForDict = async (dictionaries, all_fields, mainDictionary, test, rootLanguage) => {
-  const searchField = formationPerspectiveInfoList(dictionaries, all_fields, mainDictionary);
+const calculateColorForDict = async (dictionaries, allField, mainDictionary, test, rootLanguage) => {
+  const searchField = formationPerspectiveInfoList(dictionaries, allField, mainDictionary);
   const sourcePerspectiveId = mainDictionary.perspectives[0].id;
   const baseLanguageId = rootLanguage.parent_id;
   const { perspectiveInfoList } = searchField;
   const groupFieldId = searchField.cognates;
 
-
-const makeColorOfNumber = (number) => {
-  const baseColor = 8366700;
-
-  if (number >= 1) {
-    number = number * 1000
-  } else {
-    number = number * 100
-  }
-  const numberOf10In16 = (baseColor + number).toString(16);
-  return '#' + numberOf10In16
-
-};
 
   const e = await test({
     variables: {
@@ -120,29 +108,28 @@ const makeColorOfNumber = (number) => {
       distanceFlag: true,
       referencePerspectiveId: perspectiveInfoList[0][0]
     },
-  })
+  });
 
   const distanceList = e.data.cognate_analysis.distance_list;
-  const dictionariesWithColors = []
+  const dictionariesWithColors = [];
 
   distanceList.forEach((distance) => {
     dictionaries.forEach((dict) => {
       dict.perspectives.forEach((persp) => {
         if (persp.id[0] === distance[0][0] && persp.id[1] === distance[0][1]) {
-          const color = makeColorOfNumber(distance[1]);
+          console.log('dist', distance)
+          const distanceDict = distance[1];
 
           dictionariesWithColors.push({
             ...dict,
-            color
-          })
+            distanceDict
+          });
         }
       });
     });
   });
 
   return dictionariesWithColors;
-
-
 };
 
 export default calculateColorForDict;

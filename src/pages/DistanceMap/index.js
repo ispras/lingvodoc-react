@@ -7,7 +7,15 @@ import SelectorDict from './selectorDict';
 import SelectorLangGropu from './selectorLangGroup';
 import { compose } from 'recompose';
 
-
+const allField = gql`
+query{
+    all_fields{
+      id
+          translation
+          english_translation: translation(locale_id: 2)
+          data_type
+    }
+    }`;
 
 const dictionaryWithPerspectives = gql`
   query DictionaryWithPerspectivesProxy {
@@ -55,7 +63,7 @@ class SelectorDictionary extends React.Component {
   }
 
   render() {
-    const { data: { language_tree:language_tree,dictionaries:dictionaries } } = this.props;
+    const { data: { language_tree: language_tree, dictionaries: dictionaries }, allField } = this.props;
 
     const mainDictionary = (e, rootLanguage) => {
       this.setState({ dictionary: e });
@@ -80,7 +88,7 @@ class SelectorDictionary extends React.Component {
             mainDictionary={this.state.dictionary}
             allLanguages={language_tree}
             allDictionaries={dictionaries} />)}
-        {(this.state.groupLang !== null && <MapDict dictionaries={this.state.groupLang} mainDictionary={this.state.dictionary} rootLanguage={this.state.rootLanguage} backToDictionaries={mainDictionary} />)}
+        {(this.state.groupLang !== null && <MapDict dictionaries={this.state.groupLang} mainDictionary={this.state.dictionary} rootLanguage={this.state.rootLanguage} backToDictionaries={mainDictionary} allField={allField} />)}
 
       </div>
     );
@@ -88,5 +96,5 @@ class SelectorDictionary extends React.Component {
 }
 
 
-export default compose(graphql(dictionaryWithPerspectives))(SelectorDictionary);
+export default compose(graphql(dictionaryWithPerspectives), graphql(allField, { name: 'allField' }))(SelectorDictionary);
 
