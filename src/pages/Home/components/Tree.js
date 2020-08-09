@@ -45,6 +45,7 @@ Perspective.propTypes = {
 const Dict = ({
   dictionary, actions, selected, canSelectDictionaries,
 }) => {
+
   const id = dictionary.get('id');
   const translation = dictionary.get('translation');
   const status = dictionary.get('status');
@@ -53,6 +54,7 @@ const Dict = ({
   const location = dictionary.getIn(['additional_metadata', 'location']);
   const isDownloaded = dictionary.get('isDownloaded');
   const isChecked = selected.has(id);
+
 
   return (
     <li className="dict">
@@ -72,14 +74,16 @@ const Dict = ({
             </Dropdown.Menu>
           </Dropdown>
         )}
-      {perspectives && selectorStatus && location !== null && (
+      {(perspectives && selectorStatus && location !== null) && (
         <Button onClick={() => localSelectedDict(perspectives)}> Выбрать словарь</Button>
       )
       }
-      {perspectives && selectorStatus && location === null && (
+
+      {(perspectives && selectorStatus && location === null) && (
         <Label>Нет данных о координатах</Label>
       )
       }
+
     </li>
   );
 };
@@ -98,7 +102,7 @@ const Dictionary = compose(
   onlyUpdateForKeys(['selected'])
 )(Dict);
 
-const Language = ({ language, canSelectDictionaries,languagesGroup }) => {
+const Language = ({ language, canSelectDictionaries, languagesGroup }) => {
 
   const translation = language.get('translation');
   const children = language.get('children');
@@ -111,9 +115,9 @@ const Language = ({ language, canSelectDictionaries,languagesGroup }) => {
     langClass = 'confirmed-lang-name';
   }
 
-  if(!children.toJS()[0].children[0].children && selectorStatus ){
+  if (!children.toJS()[0].children[0].children && selectorStatus) {
 
-      languagesGroup(language.toJS())
+    languagesGroup(language.toJS())
   }
 
   return (

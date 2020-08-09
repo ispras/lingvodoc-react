@@ -160,6 +160,7 @@ class MapAreas extends PureComponent {
   async allDicts() {
     const { dictionaries, mainDictionary, data: { all_fields: all_fields }, test, rootLanguage } = this.props;
     const dictionariesWithColors = await calculateColorForDict(dictionaries, all_fields, mainDictionary, test, rootLanguage)
+    console.log('dictionariesWithColors',dictionariesWithColors)
     this.setState({ dictionariesWithColors: dictionariesWithColors })
     this.pointAndAreaDictionary(this.state.dictionariesWithColors)
   }

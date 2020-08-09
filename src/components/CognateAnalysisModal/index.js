@@ -446,6 +446,7 @@ class CognateAnalysisModal extends React.Component
     base_language.available_list = this.available_list;
     base_language.perspective_list = this.perspective_list;
 
+
     /* Preparing info of perspective and transcription/translation field selections. */
 
     for (const [index, {perspective}] of this.perspective_list.entries())
@@ -574,7 +575,7 @@ class CognateAnalysisModal extends React.Component
           value: id2str(f.id),
           text: f.translation,
         }));
-
+console.log('this.perspective_list',this.perspective_list)
       this.perspective_list.push({
         treePathList,
         perspective,
@@ -893,6 +894,7 @@ class CognateAnalysisModal extends React.Component
 
   handleCreate()
   {
+ 
     const {
       perspectiveId,
       computeCognateAnalysis } = this.props;
@@ -931,7 +933,7 @@ class CognateAnalysisModal extends React.Component
     }
     
     else
-    {
+    { 
       perspectiveInfoList = this.perspective_list
 
         .map(({perspective}, index) => [perspective.id,
@@ -988,7 +990,7 @@ class CognateAnalysisModal extends React.Component
         this.props.mode == 'multi_reconstruction' ? 'multi' :
         this.props.mode == 'multi_suggestions' ? 'suggestions' :
         this.props.mode;
-
+        console.log('perspectiveInfoList',perspectiveInfoList)
       computeCognateAnalysis({
         variables: {
           sourcePerspectiveId: perspectiveId,

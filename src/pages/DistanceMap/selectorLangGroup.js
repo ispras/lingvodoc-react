@@ -19,11 +19,11 @@ function Limiter({
 }) {
   const parent_id = mainDictionary.toJS()[0].parent_id;
   const [labelDict, setLabelDict] = useState(null);
-  const [childLanguages, setChildLanguages] = useState([])
-  const [nodeLanguages, setNodeLanguages] = useState([])
-  const [twoChildLanguages, setTwoChildLanguages] = useState([])
-  const [selectedLanguage, setSelectedLanguage] = useState([])
-  let rootLanguage = {}
+  const [childLanguages, setChildLanguages] = useState([]);
+  const [nodeLanguages, setNodeLanguages] = useState([]);
+  const [twoChildLanguages, setTwoChildLanguages] = useState([]);
+  const [selectedLanguage, setSelectedLanguage] = useState([]);
+  let rootLanguage = {};
   let mainDict = [];
 
   const arrDictionaryGroup = [];
@@ -38,66 +38,59 @@ function Limiter({
         if (perspective.id[0] === mainDictionary.toJS()[0].id[0] &&
           perspective.id[1] === mainDictionary.toJS()[0].id[1]) {
           rootLanguage = language;
-          mainDict = children
+          mainDict = children;
         }
       }
     }
   }
 
   const filterDictionary = (e) => {
-
     arrDictionaryGroup.push(e);
-
   };
   function addLanguages() {
-
     if (nodeLanguages.length === 0) {
-      const arr = buildLanguageTree(fromJS(allLanguages))
-      setNodeLanguages(arr.toJS())
-
+      const arr = buildLanguageTree(fromJS(allLanguages));
+      setNodeLanguages(arr.toJS());
     }
-
   }
 
   function selectNodeLanguage(language) {
-    setSelectedLanguage([])
-    setTwoChildLanguages([])
-    const languageChildren = language.children
+    setSelectedLanguage([]);
+    setTwoChildLanguages([]);
+    const languageChildren = language.children;
     if (languageChildren.length !== 0) {
-      return setChildLanguages(languageChildren)
-    } else {
-      dictionariesSelectedLanguges(language)
+      return setChildLanguages(languageChildren);
     }
-
+    dictionariesSelectedLanguges(language);
   }
 
   function selectChildLanguage(language) {
-    console.log('clik')
-    const languageChildren = language.children
-    setSelectedLanguage([])
-    setTwoChildLanguages([])
+    const languageChildren = language.children;
+    setSelectedLanguage([]);
+    setTwoChildLanguages([]);
     if (languageChildren.length !== 0) {
-      return setTwoChildLanguages(languageChildren)
-    } else {
-      dictionariesSelectedLanguges(language)
+      return setTwoChildLanguages(languageChildren);
     }
-
+    dictionariesSelectedLanguges(language);
   }
   function dictionariesSelectedLanguges(lang) {
-    setSelectedLanguage(lang)
-    const arrDictionary = []
+    setSelectedLanguage(lang);
+    const arrDictionary = [];
     for (const dict of allDictionaries) {
-      if (dict.parent_id[0] === lang.id[0] && dict.parent_id[1] === lang.id[1])
-        arrDictionary.push(dict)
+      if (dict.parent_id[0] === lang.id[0] && dict.parent_id[1] === lang.id[1] && dict.perspectives[1] && dict.perspectives[0]) {
+        if (dict.perspectives[0].translation === 'Lexical Entries' || dict.perspectives[1].translation === 'Lexical Entries') {
+          arrDictionary.push(dict);
+        }
+      }
     }
-    setSelectedLanguage(arrDictionary)
+    setSelectedLanguage(arrDictionary);
   }
   function sendDict() {
     mainGroup(arrDictionaryGroup);
     mainDictionaryFun(mainDict, rootLanguage);
-  };
+  }
   function back() {
-    mainDictionaryFun(null)
+    mainDictionaryFun(null);
   }
 
   return (
@@ -107,24 +100,26 @@ function Limiter({
         {rootLanguage.children.map(dict =>
           (dict.translation !== mainDict.translation) && (dict.additional_metadata.location !== null) && (<Segment key={dict.id}>
             <Checkbox
-              onChange={() => { filterDictionary(dict) }}
+              onChange={() => { filterDictionary(dict); }}
               label={dict.translation}
             />
-          </Segment>)
-        )}
+          </Segment>))}
       </Segment.Group>
       <Segment.Group>
         {(nodeLanguages.length === 0) && (<Button onClick={addLanguages}>Добавить словари других языковых групп</Button>)}
         {(nodeLanguages.length !== 0) && (
           <Segment >
             {nodeLanguages.map(lang =>
-              <Button key={lang.id.join('_')} onClick={() => selectNodeLanguage(lang)}>{lang.translation}</Button>)}
+              (lang.translation) && (<Button key={lang.id.join('_')} onClick={() => selectNodeLanguage(lang)}>{lang.translation}</Button>)
+
+
+            )}
           </Segment>
         )}
         {(childLanguages.length !== 0) && (
           <Segment >
             {childLanguages.map(lang =>
-              <Button key={lang.id.join('_')} onClick={() => selectChildLanguage(lang)}>{lang.translation}</Button>)}
+              (lang.translation) && (<Button key={lang.id.join('_')} onClick={() => selectChildLanguage(lang)}>{lang.translation}</Button>))}
           </Segment>
         )}
         {(twoChildLanguages.length !== 0) && (
@@ -135,19 +130,24 @@ function Limiter({
         )}
         {(selectedLanguage.length !== 0) && (
           selectedLanguage.map(dict =>
-            <Segment>
-              {(dict.additional_metadata.location !== null) && (
+
+            (dict.additional_metadata.location !== null) && (
+              <Segment key={dict.id.join('_')}>
                 <Checkbox
-                  onChange={() => { filterDictionary(dict) }}
-                  key={dict.id.join('_')}
+                  onChange={() => { filterDictionary(dict); }}
                   label={dict.translation}
                 />
-              )}
+              </Segment>
 
-            </Segment>
+            )
           )
         )
         }
+        {(selectedLanguage.length === 0) && (nodeLanguages.length !== 0) && (
+          <Segment>
+            <Label> Нет подходящих словарей</Label>
+          </Segment>
+        )}
       </Segment.Group>
       <Button onClick={sendDict}>Готово </Button>
       <Button onClick={back}>Назад</Button>

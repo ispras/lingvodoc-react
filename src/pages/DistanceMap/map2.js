@@ -65,7 +65,7 @@ function initMap(mountPoint) {
     contextmenu: true,
     contextmenuWidth: 270,
     layers: [heatmapLayer]
-  }).setView([62.8818649, 117.4730521], 4);
+  }).setView([62.8818649, 117.4730521], 3);
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
@@ -83,11 +83,14 @@ class MapAreas extends PureComponent {
   constructor(props) {
     super();
     initializeContextMenu(L);
+    this.state = {
+      statusMap: false
+    }
   }
 
 
   componentDidMount() {
-    this.map = initMap(this.mapContainer);
+
     this.allDicts();
   }
   async allDicts() {
@@ -96,6 +99,9 @@ class MapAreas extends PureComponent {
     } = this.props;
 
     const dictionariesWithColors = await calculateColorForDict(dictionaries, allField, mainDictionary, test, rootLanguage);
+    console.log('dictionariesWithColors', dictionariesWithColors)
+    this.setState({ statusMap: true })
+    this.map = initMap(this.mapContainer);
     let maxCount = 0;
     data = dictionariesWithColors.map((el) => {
       const lat = Number(el.additional_metadata.location.lat);
@@ -114,17 +120,26 @@ class MapAreas extends PureComponent {
 
   render() {
     return (
-      <Segment>
-        <div className="leaflet">
-          <div
-            ref={(ref) => {
-              this.mapContainer = ref;
-            }}
-            className="leaflet__map"
-          />
-        </div>
-        {/*  <Button onClick={this.back}>Назад</Button> */}
-      </Segment>
+      <div>
+        {(this.state.statusMap === false) && (
+          <Placeholder />
+        )}
+        {(this.state.statusMap) && (
+          <Segment>
+            <div className="leaflet">
+              <div
+                ref={(ref) => {
+                  this.mapContainer = ref;
+                }}
+                className="leaflet__map"
+              />
+            </div>
+            {/*  <Button onClick={this.back}>Назад</Button> */}
+          </Segment>
+        )}
+
+      </div>
+
     );
   }
 }

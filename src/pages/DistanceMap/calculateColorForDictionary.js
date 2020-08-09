@@ -52,7 +52,7 @@ function formationPerspectiveInfoList(dictionaries, allField, mainDictionary) {
   let meaning;
   let cognates;
   const allFieldList = allField.all_fields;
-
+  console.log('7878787', dictionaries);
   if (allFieldList) {
     for (const field of allFieldList) {
       if (field.translation === 'Phonemic  transcription') {
@@ -68,18 +68,27 @@ function formationPerspectiveInfoList(dictionaries, allField, mainDictionary) {
     }
   }
 
-  dictionaries.push(mainDictionary);
+
+  console.log(mainDictionary);
+
+  mainDictionary.perspectives.forEach((perspective) => {
+    /*  let perspectiveInfo = [perspective.id, phonemicTranscription, meaning] */
+    const perspectiveInfo = [perspective.id, [66, 8], [66, 10]];
+    perspectiveInfoList.push(perspectiveInfo);
+  });
+
 
   dictionaries.map((dict) => {
     if (dict && dict.perspectives) {
       dict.perspectives.forEach((perspective) => {
-        /*  let perspectiveInfo = [perspective.id, phonemicTranscription, meaning] */
-        const perspectiveInfo = [perspective.id, [66, 8], [66, 10]];
-        perspectiveInfoList.push(perspectiveInfo);
+        if (perspective.translation === 'Lexical Entries') {
+          /*  let perspectiveInfo = [perspective.id, phonemicTranscription, meaning] */
+          const perspectiveInfo = [perspective.id, [66, 8], [66, 10]];
+          perspectiveInfoList.push(perspectiveInfo);
+        }
       });
     }
   });
-
 
   return { perspectiveInfoList, cognates };
 }
@@ -106,7 +115,7 @@ const calculateColorForDict = async (dictionaries, allField, mainDictionary, tes
       debugFlag: false,
       intermediateFlag: false,
       distanceFlag: true,
-      referencePerspectiveId: perspectiveInfoList[0][0]
+      referencePerspectiveId: sourcePerspectiveId
     },
   });
 
@@ -117,7 +126,6 @@ const calculateColorForDict = async (dictionaries, allField, mainDictionary, tes
     dictionaries.forEach((dict) => {
       dict.perspectives.forEach((persp) => {
         if (persp.id[0] === distance[0][0] && persp.id[1] === distance[0][1]) {
-          console.log('dist', distance)
           const distanceDict = distance[1];
 
           dictionariesWithColors.push({
