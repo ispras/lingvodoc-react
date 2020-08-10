@@ -49,17 +49,26 @@ const test = gql` mutation computeCognateAnalysis(
 
 const cfg = {
   radius: 5,
-  maxOpacity: 0.8,
+/*   maxOpacity: 0.8, */
   scaleRadius: true,
-  useLocalExtrema: false,
+  useLocalExtrema: true,
   latField: 'lat',
   lngField: 'lng',
-  valueField: 'count'
+  valueField: 'count',
+  gradient: {
+    // enter n keys between 0 and 1 here
+    // for gradient color customization
+    '.5': 'rgb(3, 120, 255)',
+    '.8': 'rgb(7, 197, 240)',
+    '.95': 'rgb(7, 240, 220)'
+  }
+
 };
 
 
 let data = [];
 const heatmapLayer = new HeatMapOverlay(cfg);
+console.log(heatmapLayer)
 function initMap(mountPoint) {
   const map = L.map(mountPoint, {
     contextmenu: true,
@@ -77,7 +86,7 @@ function initMap(mountPoint) {
 
 const pointIcon = L.icon({
   iconUrl: icon,
-  iconSize: [5, 5],
+  iconSize: [7, 7],
 });
 class MapAreas extends PureComponent {
   constructor(props) {
@@ -103,18 +112,24 @@ class MapAreas extends PureComponent {
     this.setState({ statusMap: true })
     this.map = initMap(this.mapContainer);
     let maxCount = 0;
+
     data = dictionariesWithColors.map((el) => {
+      let localMaxCount = 0;
       const lat = Number(el.additional_metadata.location.lat);
       const lng = Number(el.additional_metadata.location.lng);
+      const translation = el.translation;
       const count = el.distanceDict;
       if (maxCount < count) {
         maxCount = count;
       }
-      L.marker([lat, lng], { icon: pointIcon }).addTo(this.map);
+
+      L.marker([lat, lng], { icon: pointIcon, title: (translation + '  distance:' + count/10) }).addTo(this.map)
 
       return { lat, lng, count };
     });
     console.log({ data, max: maxCount });
+
+
     heatmapLayer.setData({ data, max: maxCount });
   }
 

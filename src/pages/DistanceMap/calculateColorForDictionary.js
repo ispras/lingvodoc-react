@@ -69,15 +69,9 @@ function formationPerspectiveInfoList(dictionaries, allField, mainDictionary) {
   }
 
 
-  console.log(mainDictionary);
-
-  mainDictionary.perspectives.forEach((perspective) => {
-    /*  let perspectiveInfo = [perspective.id, phonemicTranscription, meaning] */
-    const perspectiveInfo = [perspective.id, [66, 8], [66, 10]];
-    perspectiveInfoList.push(perspectiveInfo);
-  });
 
 
+  dictionaries.push(mainDictionary)
   dictionaries.map((dict) => {
     if (dict && dict.perspectives) {
       dict.perspectives.forEach((perspective) => {
@@ -89,7 +83,7 @@ function formationPerspectiveInfoList(dictionaries, allField, mainDictionary) {
       });
     }
   });
-
+console.log(perspectiveInfoList)
   return { perspectiveInfoList, cognates };
 }
 
