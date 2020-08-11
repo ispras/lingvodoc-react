@@ -1,21 +1,21 @@
 import React from 'react';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
-import MapDict from './map2';
-import { Dropdown, Label } from 'semantic-ui-react';
+import MapDict from './map';
 import SelectorDict from './selectorDict';
 import SelectorLangGropu from './selectorLangGroup';
 import { compose } from 'recompose';
+import Placeholder from 'components/Placeholder';
 
 const allField = gql`
-query{
+  query{
     all_fields{
       id
-          translation
-          english_translation: translation(locale_id: 2)
-          data_type
-    }
-    }`;
+      translation
+      english_translation: translation(locale_id: 2)
+      data_type
+  }
+}`;
 
 const dictionaryWithPerspectives = gql`
   query DictionaryWithPerspectivesProxy {
@@ -30,7 +30,9 @@ const dictionaryWithPerspectives = gql`
       perspectives {
         id
         translation
-        
+        columns{
+          field_id
+        }
       }
     }
     perspectives {
@@ -57,17 +59,17 @@ class SelectorDictionary extends React.Component {
     this.state = {
       dictionary: null,
       groupLang: null,
-      rootLanguage: null
+      rootLanguage: null,
     };
     this.arrLang = [];
   }
 
   render() {
-    const { data: { language_tree: language_tree, dictionaries: dictionaries }, allField } = this.props;
+    const { data: { language_tree: languageTree, dictionaries, loading }, allField } = this.props;
 
     const mainDictionary = (e, rootLanguage) => {
       this.setState({ dictionary: e });
-      this.setState({ rootLanguage: rootLanguage })
+      this.setState({ rootLanguage });
     };
     const mainGroup = (e) => {
       this.setState({ groupLang: e });
@@ -76,19 +78,37 @@ class SelectorDictionary extends React.Component {
       this.arrLang.push(e);
     };
 
+    if (loading) {
+      return <Placeholder />;
+    }
+
+    console.log('loading', loading);
+    console.log('languageTree', languageTree);
     return (
       <div>
-
-        {(this.state.dictionary === null && this.state.groupLang === null && <SelectorDict languagesGroup={languagesGroup} dictWithPersp={this.props.data} mainDictionary={mainDictionary} />)}
+        {(this.state.dictionary === null && this.state.groupLang === null && !loading &&
+          <SelectorDict
+            languagesGroup={languagesGroup}
+            dictWithPersp={this.props.data}
+            mainDictionary={mainDictionary}
+          />)}
         {(this.state.dictionary !== null && this.state.groupLang === null &&
           <SelectorLangGropu
             mainDictionaryFun={mainDictionary}
             languagesGroup={this.arrLang}
             mainGroup={mainGroup}
             mainDictionary={this.state.dictionary}
-            allLanguages={language_tree}
-            allDictionaries={dictionaries} />)}
-        {(this.state.groupLang !== null && <MapDict dictionaries={this.state.groupLang} mainDictionary={this.state.dictionary} rootLanguage={this.state.rootLanguage} backToDictionaries={mainDictionary} allField={allField} />)}
+            allLanguages={languageTree}
+            allDictionaries={dictionaries}
+          />)}
+        {(this.state.groupLang !== null &&
+          <MapDict
+            dictionaries={this.state.groupLang}
+            mainDictionary={this.state.dictionary}
+            rootLanguage={this.state.rootLanguage}
+            backToDictionaries={mainDictionary}
+            allField={allField}
+          />)}
 
       </div>
     );

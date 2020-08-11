@@ -575,7 +575,6 @@ class CognateAnalysisModal extends React.Component
           value: id2str(f.id),
           text: f.translation,
         }));
-console.log('this.perspective_list',this.perspective_list)
       this.perspective_list.push({
         treePathList,
         perspective,
@@ -990,7 +989,6 @@ console.log('this.perspective_list',this.perspective_list)
         this.props.mode == 'multi_reconstruction' ? 'multi' :
         this.props.mode == 'multi_suggestions' ? 'suggestions' :
         this.props.mode;
-        console.log('perspectiveInfoList',perspectiveInfoList)
       computeCognateAnalysis({
         variables: {
           sourcePerspectiveId: perspectiveId,

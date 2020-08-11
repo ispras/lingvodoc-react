@@ -1,50 +1,4 @@
-import React from 'react';
-import { graphql } from 'react-apollo';
-import gql from 'graphql-tag';
-import util from 'utils/string';
-/*   this.props.test({
-    variables: {
-      sourcePerspectiveId: [657, 4],
-      baseLanguageId: [508, 45],
-      groupFieldId: [66, 25],
-      perspectiveInfoList: [
-        [[688, 14233], [66, 8], [66, 10]],
-        [[656, 3], [66, 8], [66, 10]],
-        [[660, 8], [66, 8], [66, 10]],
-        [[657, 4], [66, 8], [66, 10]],
-        [[2872, 20255], [66, 8], [66, 10]],
-        [[2685, 1654], [66, 8], [66, 10]],
-        [[2685, 847], [66, 8], [66, 10]],
-        [[2685, 7], [66, 8], [66, 10]],
-        [[867, 10], [66, 8], [66, 10]],
-        [[652, 3], [66, 8], [66, 10]],
-        [[2654, 9324], [66, 8], [66, 10]],
-        [[1393, 29132], [66, 8], [66, 10]]],
-      multiList: [],
-      mode: "",
-      matchTranslationsValue: 1,
-      onlyOrphansFlag: true,
-      figureFlag: true,
-      debugFlag: false,
-      intermediateFlag: false,
-      distanceFlag: true,
-      referencePerspectiveId: [657, 4]
-    },
-  }).then(e => this.handleResult(e)
-  );
-
-
-  handleResult = ({
-    data: {
-      cognate_analysis: {
-        distance_list } } }) => {
-    console.log(distance_list)
-
-  }
-
-
- */
-
+import { compositeIdToString as id2str } from 'utils/compositeId';
 
 function formationPerspectiveInfoList(dictionaries, allField, mainDictionary) {
   const perspectiveInfoList = [];
@@ -52,7 +6,6 @@ function formationPerspectiveInfoList(dictionaries, allField, mainDictionary) {
   let meaning;
   let cognates;
   const allFieldList = allField.all_fields;
-  console.log('7878787', dictionaries);
   if (allFieldList) {
     for (const field of allFieldList) {
       if (field.translation === 'Phonemic  transcription') {
@@ -88,11 +41,11 @@ console.log(perspectiveInfoList)
 }
 
 const calculateColorForDict = async (dictionaries, allField, mainDictionary, test, rootLanguage) => {
-  const searchField = formationPerspectiveInfoList(dictionaries, allField, mainDictionary);
-  const sourcePerspectiveId = mainDictionary.perspectives[0].id;
-  const baseLanguageId = rootLanguage.parent_id;
-  const { perspectiveInfoList } = searchField;
-  const groupFieldId = searchField.cognates;
+  // const searchField = formationPerspectiveInfoList(dictionaries, allField, mainDictionary);
+  // const sourcePerspectiveId = mainDictionary.perspectives[0].id;
+  // const baseLanguageId = rootLanguage.parent_id;
+  // const { perspectiveInfoList } = searchField;
+  // const groupFieldId = searchField.cognates;
 
 
   const e = await test({

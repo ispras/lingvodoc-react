@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 import { Dropdown, Checkbox, Icon, Button, Label } from 'semantic-ui-react';
 import { toggleDictionary } from 'ducks/home';
 import { checkLanguageId } from './LangsNav';
-
+import { getTranslation } from 'api/i18n';
 
 import config from 'config';
 
@@ -45,7 +45,6 @@ Perspective.propTypes = {
 const Dict = ({
   dictionary, actions, selected, canSelectDictionaries,
 }) => {
-
   const id = dictionary.get('id');
   const translation = dictionary.get('translation');
   const status = dictionary.get('status');
@@ -54,7 +53,13 @@ const Dict = ({
   const location = dictionary.getIn(['additional_metadata', 'location']);
   const isDownloaded = dictionary.get('isDownloaded');
   const isChecked = selected.has(id);
+  let statusLexicalEntries = false;
 
+  for (const perspective of perspectives.toJS()) {
+    if (perspective.translation === 'Lexical Entries') {
+      statusLexicalEntries = true;
+    }
+  }
 
   return (
     <li className="dict">
@@ -74,15 +79,20 @@ const Dict = ({
             </Dropdown.Menu>
           </Dropdown>
         )}
-      {(perspectives && selectorStatus && location !== null) && (
+      {((perspectives && selectorStatus && location !== null && statusLexicalEntries) && (
         <Button onClick={() => localSelectedDict(perspectives)}> Выбрать словарь</Button>
+      )) || (
+      <Label>{getTranslation('Lexical entries no found')} </Label>
+        )
+      }
+      {/*       {(statusLexicalEntries && perspectives) && (
+        <Label>{getTranslation("Lexical entries no found")} </Label>
+      )} */}
+      {(perspectives && selectorStatus && location === null) && (
+        <Label>{getTranslation('No coordinate data')}</Label>
       )
       }
 
-      {(perspectives && selectorStatus && location === null) && (
-        <Label>Нет данных о координатах</Label>
-      )
-      }
 
     </li>
   );
@@ -103,7 +113,6 @@ const Dictionary = compose(
 )(Dict);
 
 const Language = ({ language, canSelectDictionaries, languagesGroup }) => {
-
   const translation = language.get('translation');
   const children = language.get('children');
   const id = language.get('id').toJS().toString();
@@ -116,8 +125,7 @@ const Language = ({ language, canSelectDictionaries, languagesGroup }) => {
   }
 
   if (!children.toJS()[0].children[0].children && selectorStatus) {
-
-    languagesGroup(language.toJS())
+    languagesGroup(language.toJS());
   }
 
   return (
@@ -138,7 +146,6 @@ Language.defaultProps = {
 };
 
 const Node = ({ node, canSelectDictionaries, languagesGroup }) => {
-
   switch (node.get('type')) {
     case 'language':
       return <Language language={node} canSelectDictionaries={canSelectDictionaries} languagesGroup={languagesGroup} />;

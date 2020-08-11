@@ -6,23 +6,32 @@ import { Label, Checkbox, Segment, Button, Step } from 'semantic-ui-react';
 import { compose, branch, renderNothing } from 'recompose';
 import Immutable, { fromJS, Map } from 'immutable';
 import { buildLanguageTree } from 'pages/Search/treeBuilder';
+import { getTranslation } from 'api/i18n';
 
 const dictName = gql`query dictName($id:LingvodocID) {
   dictionary(id:$id){
     id
     translation
+    perspectives {
+      columns{
+        field_id
+      }
+    }
   }
 }`;
 
 function Limiter({
   mainGroup, mainDictionary, client, languagesGroup, mainDictionaryFun, allLanguages, allDictionaries
 }) {
+  console.log('allLanguages', allLanguages);
+
   const parent_id = mainDictionary.toJS()[0].parent_id;
   const [labelDict, setLabelDict] = useState(null);
   const [childLanguages, setChildLanguages] = useState([]);
   const [nodeLanguages, setNodeLanguages] = useState([]);
   const [twoChildLanguages, setTwoChildLanguages] = useState([]);
   const [selectedLanguage, setSelectedLanguage] = useState([]);
+
   let rootLanguage = {};
   let mainDict = [];
 
@@ -89,31 +98,46 @@ function Limiter({
     mainGroup(arrDictionaryGroup);
     mainDictionaryFun(mainDict, rootLanguage);
   }
-  function back() {
-    mainDictionaryFun(null);
-  }
+
+
+  const dictionaryWithLexicalEntries = [];
+
+  rootLanguage.children.forEach((dict) => {
+    if (dict.translation !== mainDict.translation && dict.additional_metadata.location !== null) {
+      dict.perspectives.forEach((perspective) => {
+        if (perspective.translation === 'Lexical Entries') {
+          dictionaryWithLexicalEntries.push(dict);
+        }
+      });
+    }
+  });
 
   return (
     <div>
       <Label size="massive" >{labelDict}</Label>
       <Segment.Group>
-        {rootLanguage.children.map(dict =>
-          (dict.translation !== mainDict.translation) && (dict.additional_metadata.location !== null) && (<Segment key={dict.id}>
+        {dictionaryWithLexicalEntries.map(dict =>
+          (dictionaryWithLexicalEntries.length !== 0) &&
+          (<Segment
+            key={dict.id}
+          >
             <Checkbox
               onChange={() => { filterDictionary(dict); }}
               label={dict.translation}
             />
-          </Segment>))}
+           </Segment>))}
+        {(dictionaryWithLexicalEntries.length === 0) && (
+          <Segment>
+            {getTranslation('No analysis dictionaries found')}
+          </Segment>
+        )}
       </Segment.Group>
       <Segment.Group>
         {(nodeLanguages.length === 0) && (<Button onClick={addLanguages}>Добавить словари других языковых групп</Button>)}
         {(nodeLanguages.length !== 0) && (
           <Segment >
             {nodeLanguages.map(lang =>
-              (lang.translation) && (<Button key={lang.id.join('_')} onClick={() => selectNodeLanguage(lang)}>{lang.translation}</Button>)
-
-
-            )}
+              (lang.translation) && (<Button key={lang.id.join('_')} onClick={() => selectNodeLanguage(lang)}>{lang.translation}</Button>))}
           </Segment>
         )}
         {(childLanguages.length !== 0) && (
@@ -139,8 +163,7 @@ function Limiter({
                 />
               </Segment>
 
-            )
-          )
+            ))
         )
         }
         {(selectedLanguage.length === 0) && (nodeLanguages.length !== 0) && (
@@ -150,7 +173,6 @@ function Limiter({
         )}
       </Segment.Group>
       <Button onClick={sendDict}>Готово </Button>
-      <Button onClick={back}>Назад</Button>
     </div >
   );
 }
