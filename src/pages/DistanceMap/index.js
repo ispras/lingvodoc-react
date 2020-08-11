@@ -62,6 +62,8 @@ class SelectorDictionary extends React.Component {
       rootLanguage: null,
     };
     this.arrLang = [];
+    this.languageTree = [];
+    this.dictionaries = [];
   }
 
   render() {
@@ -82,8 +84,9 @@ class SelectorDictionary extends React.Component {
       return <Placeholder />;
     }
 
-    console.log('loading', loading);
-    console.log('languageTree', languageTree);
+    this.languageTree = languageTree || this.languageTree;
+    this.dictionaries = dictionaries || this.dictionaries;
+
     return (
       <div>
         {(this.state.dictionary === null && this.state.groupLang === null && !loading &&
@@ -92,14 +95,14 @@ class SelectorDictionary extends React.Component {
             dictWithPersp={this.props.data}
             mainDictionary={mainDictionary}
           />)}
-        {(this.state.dictionary !== null && this.state.groupLang === null &&
+        {(this.state.dictionary !== null && this.state.groupLang === null && !loading &&
           <SelectorLangGropu
             mainDictionaryFun={mainDictionary}
             languagesGroup={this.arrLang}
             mainGroup={mainGroup}
             mainDictionary={this.state.dictionary}
-            allLanguages={languageTree}
-            allDictionaries={dictionaries}
+            allLanguages={this.languageTree}
+            allDictionaries={this.dictionaries}
           />)}
         {(this.state.groupLang !== null &&
           <MapDict

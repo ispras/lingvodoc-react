@@ -13,19 +13,14 @@ const calculateColorForDict = async (dictionaries, allField, mainDictionary, tes
     fieldDict[id2str(field.id)] = field;
   }
 
-  sourcePerspectiveId = mainDictionary.perspectives[1].id;
-  groupFields = mainDictionary.perspectives[1].columns
-    .map(column => fieldDict[id2str(column.field_id)])
-    .filter(field => field.data_type === 'Grouping Tag');
-
-  // mainDictionary.perspectives.forEach((el) => {
-  //   if (el.translation === 'Lexical Entries') {
-  //     sourcePerspectiveId = el.id;
-  //     groupFields = el.columns
-  //       .map(column => fieldDict[id2str(column.field_id)])
-  //       .filter(field => field.data_type === 'Grouping Tag');
-  //   }
-  // });
+  mainDictionary.perspectives.forEach((el) => {
+    if (el.translation === 'Lexical Entries') {
+      sourcePerspectiveId = el.id;
+      groupFields = el.columns
+        .map(column => fieldDict[id2str(column.field_id)])
+        .filter(field => field.data_type === 'Grouping Tag');
+    }
+  });
 
 
   for (const field of groupFields) {
@@ -108,8 +103,7 @@ const calculateColorForDict = async (dictionaries, allField, mainDictionary, tes
       fieldDict[translationFieldIdStrList[index]].id])
     .filter((perspective_info, index) =>
       (perspectiveSelectionList[index]));
-
-  console.log('bestPerspectiveInfoList', bestPerspectiveInfoList);
+      
   const e = await test({
     variables: {
       sourcePerspectiveId,

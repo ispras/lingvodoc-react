@@ -123,7 +123,7 @@ class MapAreas extends PureComponent {
         maxCount = count;
       }
 
-      L.marker([lat, lng], { icon: pointIcon, title: (translation + '  distance:' + count/10) }).addTo(this.map)
+      L.marker([lat, lng], { icon: pointIcon, title: (translation + '  distance:' + count/* /10 */) }).addTo(this.map)
 
       return { lat, lng, count };
     });

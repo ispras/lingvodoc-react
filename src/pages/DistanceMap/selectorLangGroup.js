@@ -7,6 +7,8 @@ import { compose, branch, renderNothing } from 'recompose';
 import Immutable, { fromJS, Map } from 'immutable';
 import { buildLanguageTree } from 'pages/Search/treeBuilder';
 import { getTranslation } from 'api/i18n';
+import { compositeIdToString as id2str } from 'utils/compositeId';
+
 
 const dictName = gql`query dictName($id:LingvodocID) {
   dictionary(id:$id){
@@ -23,8 +25,6 @@ const dictName = gql`query dictName($id:LingvodocID) {
 function Limiter({
   mainGroup, mainDictionary, client, languagesGroup, mainDictionaryFun, allLanguages, allDictionaries
 }) {
-  console.log('allLanguages', allLanguages);
-
   const parent_id = mainDictionary.toJS()[0].parent_id;
   const [labelDict, setLabelDict] = useState(null);
   const [childLanguages, setChildLanguages] = useState([]);
@@ -35,7 +35,7 @@ function Limiter({
   let rootLanguage = {};
   let mainDict = [];
 
-  const arrDictionaryGroup = [];
+  let arrDictionaryGroup = [];
   client.query({
     query: dictName,
     variables: { id: parent_id },
@@ -53,8 +53,16 @@ function Limiter({
     }
   }
 
-  const filterDictionary = (e) => {
-    arrDictionaryGroup.push(e);
+  const filterDictionary = (dict, checked) => {
+    if (checked) {
+      arrDictionaryGroup.push(dict);
+    } else {
+      arrDictionaryGroup = arrDictionaryGroup.filter((element) => {
+        return id2str(element.id) !== id2str(dict.id);
+      });
+    }
+
+    console.log(arrDictionaryGroup);
   };
   function addLanguages() {
     if (nodeLanguages.length === 0) {
@@ -122,7 +130,7 @@ function Limiter({
             key={dict.id}
           >
             <Checkbox
-              onChange={() => { filterDictionary(dict); }}
+              onChange={(event, { checked }) => { filterDictionary(dict, checked); }}
               label={dict.translation}
             />
            </Segment>))}
@@ -158,7 +166,7 @@ function Limiter({
             (dict.additional_metadata.location !== null) && (
               <Segment key={dict.id.join('_')}>
                 <Checkbox
-                  onChange={() => { filterDictionary(dict); }}
+                  onChange={(event, { checked }) => { filterDictionary(dict, checked); }}
                   label={dict.translation}
                 />
               </Segment>
