@@ -88,7 +88,7 @@ const Dict = ({
       {/*       {(statusLexicalEntries && perspectives) && (
         <Label>{getTranslation("Lexical entries no found")} </Label>
       )} */}
-      {(perspectives && selectorStatus && location === null) && (
+      {(perspectives && selectorStatus && location === null && selectorStatus) && (
         <Label>{getTranslation('No coordinate data')}</Label>
       )
       }
