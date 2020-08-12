@@ -1,6 +1,7 @@
 import React from 'react';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
+import { Segment } from 'semantic-ui-react';
 import MapDict from './map';
 import SelectorDict from './selectorDict';
 import SelectorLangGropu from './selectorLangGroup';
@@ -60,10 +61,12 @@ class SelectorDictionary extends React.Component {
       dictionary: null,
       groupLang: null,
       rootLanguage: null,
+
     };
     this.arrLang = [];
     this.languageTree = [];
     this.dictionaries = [];
+
   }
 
   render() {

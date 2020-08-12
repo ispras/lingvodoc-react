@@ -37,6 +37,7 @@ const Routes = () => (
     <Route path="/map" component={Map} />
     <Route path="/map_search" component={Search} />
     <Route path="/distance_map" component={DistanceMap}/>
+{/*     <Route path="/distance_map" component={}/> */}
     <Route path="/import" component={DictImport} />
     <Route path="/import_dialeqt" component={DialeqtImport} />
     <Route path="/dictionary/:pcid/:poid/perspective/:cid/:oid/:mode" component={Perspective} />

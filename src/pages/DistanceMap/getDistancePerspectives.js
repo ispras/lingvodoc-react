@@ -1,13 +1,20 @@
 
 import { compositeIdToString as id2str } from 'utils/compositeId';
 
-const calculateColorForDict = async (dictionaries, allField, mainDictionary, test, rootLanguage) => {
+const calculateColorForDict = async (
+  dictionaries,
+  allField,
+  mainDictionary,
+  computeDistancePerspectives,
+  rootLanguage,
+) => {
   dictionaries.push(mainDictionary);
+  const baseLanguageId = rootLanguage.parent_id;
   const fieldDict = {};
   let groupFieldIdStr = '';
   let groupFields = null;
   let sourcePerspectiveId = {};
-  const baseLanguageId = rootLanguage.parent_id;
+
 
   for (const field of allField.all_fields) {
     fieldDict[id2str(field.id)] = field;
@@ -33,10 +40,6 @@ const calculateColorForDict = async (dictionaries, allField, mainDictionary, tes
   if (!groupFieldIdStr && groupFields.length > 0) { groupFieldIdStr = id2str(groupFields[0].id); }
 
   const groupField = fieldDict[groupFieldIdStr];
-
-  console.log('Best groupField:', groupField.id);
-
-  /* ******************************************************************************** */
 
   const available_list = [];
   const perspective_list = [];
@@ -99,12 +102,12 @@ const calculateColorForDict = async (dictionaries, allField, mainDictionary, tes
 
   const bestPerspectiveInfoList = perspective_list
     .map(({ perspective }, index) => [perspective.id,
-      fieldDict[transcriptionFieldIdStrList[index]].id,
-      fieldDict[translationFieldIdStrList[index]].id])
+    fieldDict[transcriptionFieldIdStrList[index]].id,
+    fieldDict[translationFieldIdStrList[index]].id])
     .filter((perspective_info, index) =>
       (perspectiveSelectionList[index]));
-      
-  const e = await test({
+
+  const e = await computeDistancePerspectives({
     variables: {
       sourcePerspectiveId,
       baseLanguageId,
@@ -120,11 +123,14 @@ const calculateColorForDict = async (dictionaries, allField, mainDictionary, tes
       distanceFlag: true,
       referencePerspectiveId: sourcePerspectiveId
     },
-  });
+  })
+
 
   const distanceList = e.data.cognate_analysis.distance_list;
   const dictionariesWithColors = [];
-
+  if (distanceList[0] === 0) {
+    return ;
+  }
   distanceList.forEach((distance) => {
     dictionaries.forEach((dict) => {
       dict.perspectives.forEach((persp) => {

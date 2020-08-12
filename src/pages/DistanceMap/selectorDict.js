@@ -1,28 +1,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
-import gql from 'graphql-tag';
 import Immutable, { fromJS, Map } from 'immutable';
-import { Container, Form, Radio, Segment, Button } from 'semantic-ui-react';
-
+import { Container,  Segment} from 'semantic-ui-react';
 import { buildLanguageTree } from 'pages/Search/treeBuilder';
-
-
 import config from 'config';
-
 import BackTopButton from 'components/BackTopButton';
 import AllDicts from 'pages/Home/components/AllDicts';
-import Placeholder from 'components/Placeholder';
 import { getScrollContainer } from 'pages/Home/common';
-
 import 'pages/Home/published.scss';
 
 
-const Home = (props) => {
+const selectorDict = (props) => {
   const {
     dictWithPersp: {
       perspectives,
-      grants,
       language_tree: languages,
       is_authenticated: isAuthenticated,
       dictionaries,
@@ -35,7 +26,6 @@ const Home = (props) => {
 
   const languagesTree = buildLanguageTree(fromJS(languages));
 
-  // skip permissions if buildType == 'server'
   const permissions =
      config.buildType === 'server'
        ? null
@@ -47,8 +37,6 @@ const Home = (props) => {
        }).map(ps => new Immutable.Set(ps.map(p => p.get('id'))));
 
   const dictsSource = fromJS(dictionaries);
-
-  // pre-process dictionary list
   const localDicts = fromJS(localDictionaries);
   const isDownloaded = dict => !!localDicts.find(d => d.get('id').equals(dict.get('id')));
   const hasPermission = (p, permission) =>
@@ -98,4 +86,4 @@ const Home = (props) => {
 };
 
 
-export default (Home);
+export default selectorDict;

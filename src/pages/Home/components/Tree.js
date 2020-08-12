@@ -81,19 +81,14 @@ const Dict = ({
         )}
       {((perspectives && selectorStatus && location !== null && statusLexicalEntries) && (
         <Button onClick={() => localSelectedDict(perspectives)}> Выбрать словарь</Button>
-      )) || (
+      )) || (selectorStatus)&&(
       <Label>{getTranslation('Lexical entries no found')} </Label>
         )
       }
-      {/*       {(statusLexicalEntries && perspectives) && (
-        <Label>{getTranslation("Lexical entries no found")} </Label>
-      )} */}
       {(perspectives && selectorStatus && location === null && selectorStatus) && (
         <Label>{getTranslation('No coordinate data')}</Label>
       )
       }
-
-
     </li>
   );
 };

@@ -62,7 +62,6 @@ function Limiter({
       });
     }
 
-    console.log(arrDictionaryGroup);
   };
   function addLanguages() {
     if (nodeLanguages.length === 0) {

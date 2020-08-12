@@ -1,19 +1,19 @@
 /* eslint-disable no-restricted-syntax */
 import React, { PureComponent } from 'react';
-import { Segment, Dropdown, Button } from 'semantic-ui-react';
+import { Segment, Button } from 'semantic-ui-react';
 import 'leaflet/dist/leaflet.css';
-import L, { point, Point } from 'leaflet';
+import L from 'leaflet';
 import HeatMapOverlay from 'leaflet-heatmap';
-import initializeContextMenu from '../../components/MapAreas/leaflet.contextmenu';
-import '../../components/MapAreas/leaflet.contextmenu.scss';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import { compose } from 'recompose';
 import getDistancePoint from './getDistancePerspectives';
 import Placeholder from 'components/Placeholder';
-import icon from '../../images/point.png'
+import icon from '../../images/point.png';
+import normolizeMethod from './normolizeMethod';
 
-const test = gql` mutation computeCognateAnalysis(
+const computeDistancePerspectives = gql` 
+mutation computeCognateAnalysis(
       $sourcePerspectiveId: LingvodocID!, 
       $baseLanguageId: LingvodocID!,
       $groupFieldId: LingvodocID!,
@@ -45,29 +45,25 @@ const test = gql` mutation computeCognateAnalysis(
           distance_list
         }
     }`;
-
-
 const cfg = {
   radius: 5,
-/*   maxOpacity: 0.8, */
   scaleRadius: true,
-  useLocalExtrema: true,
+  useLocalExtrema: false,
   latField: 'lat',
   lngField: 'lng',
   valueField: 'count',
   gradient: {
-    // enter n keys between 0 and 1 here
-    // for gradient color customization
-    '.5': 'rgb(3, 120, 255)',
-    '.8': 'rgb(7, 197, 240)',
-    '.95': 'rgb(7, 240, 220)'
+    '.5': 'rgb(8, 74, 18)',
+    '.8': 'rgb(8, 74, 18)',
+    '.95': 'rgb(8, 74, 18)'
   }
-
 };
-
-
-let data = [];
+const pointIcon = L.icon({
+  iconUrl: icon,
+  iconSize: [7, 7],
+});
 const heatmapLayer = new HeatMapOverlay(cfg);
+
 
 function initMap(mountPoint) {
   const map = L.map(mountPoint, {
@@ -84,51 +80,59 @@ function initMap(mountPoint) {
   return map;
 }
 
-const pointIcon = L.icon({
-  iconUrl: icon,
-  iconSize: [7, 7],
-});
+
 class MapAreas extends PureComponent {
   constructor(props) {
     super();
-    initializeContextMenu(L);
     this.state = {
-      statusMap: false
+      statusMap: false,
+      statusRequest: true
     }
+    this.dictionariesWithColors = []
   }
-
 
   componentDidMount() {
-
     this.allDicts();
   }
+
   async allDicts() {
     const {
-      dictionaries, mainDictionary, test, rootLanguage, allField
+      dictionaries,
+      mainDictionary,
+      computeDistancePerspectives,
+      rootLanguage,
+      allField,
     } = this.props;
-
-    const dictionariesWithColors = await getDistancePoint(dictionaries, allField, mainDictionary, test, rootLanguage);
-
-    this.setState({ statusMap: true })
-    this.map = initMap(this.mapContainer);
     let maxCount = 0;
 
-    data = dictionariesWithColors.map((el) => {
-      let localMaxCount = 0;
+    this.dictionariesWithColors = await getDistancePoint(dictionaries, allField, mainDictionary, computeDistancePerspectives, rootLanguage);
+    console.log(this.dictionariesWithColors)
+
+    if (!this.dictionariesWithColors) {
+      this.setState({ statusRequest: false });
+      return;
+    }
+    this.setState({ statusMap: true })
+    this.map = initMap(this.mapContainer);
+    ;
+
+    this.dictionariesWithColors = normolizeMethod(this.dictionariesWithColors);
+
+    const data = this.dictionariesWithColors.map((el) => {
       const lat = Number(el.additional_metadata.location.lat);
       const lng = Number(el.additional_metadata.location.lng);
       const translation = el.translation;
-      const count = el.distanceDict;
+      const distanceDict = el.distanceDict;
+      const count = el.normolizeDistanceList;
+
       if (maxCount < count) {
         maxCount = count;
       }
 
-      L.marker([lat, lng], { icon: pointIcon, title: (translation + '  distance:' + count/* /10 */) }).addTo(this.map)
+      L.marker([lat, lng], { icon: pointIcon, title: (translation + '  distance:' + distanceDict) }).addTo(this.map)
 
       return { lat, lng, count };
     });
-    console.log({ data, max: maxCount });
-
 
     heatmapLayer.setData({ data, max: maxCount });
   }
@@ -136,10 +140,20 @@ class MapAreas extends PureComponent {
   render() {
     return (
       <div>
-        {(this.state.statusMap === false) && (
+        {(!this.state.statusRequest) && (
+          <div>
+            <Segment>
+              Данные для анализа не найдены, выберите другой словарь
+          </Segment>
+            <Button /* onClick={} */>
+              Назад
+          </Button>
+          </div>
+        )}
+        {(this.state.statusMap === false) && (this.state.statusRequest) && (
           <Placeholder />
         )}
-        {(this.state.statusMap) && (
+        {(this.state.statusMap) && (this.state.statusRequest) && (
           <Segment>
             <div className="leaflet">
               <div
@@ -149,10 +163,8 @@ class MapAreas extends PureComponent {
                 className="leaflet__map"
               />
             </div>
-            {/*  <Button onClick={this.back}>Назад</Button> */}
           </Segment>
         )}
-
       </div>
 
     );
@@ -160,4 +172,4 @@ class MapAreas extends PureComponent {
 }
 
 
-export default compose(graphql(test, { name: 'test' }))(MapAreas);
+export default compose(graphql(computeDistancePerspectives, { name: 'computeDistancePerspectives' }))(MapAreas);
