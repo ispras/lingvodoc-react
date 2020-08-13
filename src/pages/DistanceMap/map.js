@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import { Segment, Button } from 'semantic-ui-react';
+import PropTypes from 'prop-types';
 import { getTranslation } from 'api/i18n';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -91,6 +92,7 @@ class MapAreas extends PureComponent {
       statusRequest: true
     };
     this.dictionariesWithColors = [];
+    this.back = this.back.bind(this);
   }
 
   componentDidMount() {
@@ -111,6 +113,7 @@ class MapAreas extends PureComponent {
 
     if (this.dictionariesWithColors.length === 0) {
       this.setState({ statusRequest: false });
+      return [];
     }
 
     this.setState({ statusMap: true });
@@ -135,7 +138,10 @@ class MapAreas extends PureComponent {
 
     heatmapLayer.setData({ data, max: maxCount });
   }
-
+  back() {
+    const { backToDictionaries } = this.props;
+    backToDictionaries();
+  }
   render() {
     return (
       <div>
@@ -162,16 +168,21 @@ class MapAreas extends PureComponent {
           </Segment>
 
         )}
-        {(this.state.statusMap) && (
-        <Button /* onClick={} */>
-          {getTranslation('Back')}
-        </Button>)}
-        dddddddddddddddddddddddddddddddddddddddddddddddddd
-      </div>
+        {((this.state.statusMap) || (!this.state.statusRequest)) && (
+
+          <Button onClick={this.back}>
+            {getTranslation('Back')}
+          </Button>
+
+        )
+        }
+      </div >
 
     );
   }
 }
-
+MapAreas.propTypes = {
+  backToDictionaries: PropTypes.func.isRequired
+};
 
 export default compose(graphql(mutationDistancePerspectives, { name: 'computeDistancePerspectives' }))(MapAreas);

@@ -179,8 +179,8 @@ Tree.propTypes = {
 
 Tree.defaultProps = {
   canSelectDictionaries: false,
-  selectedDict: null,
-  languagesGroup: null,
+  selectedDict: undefined,
+  languagesGroup: undefined,
 
 };
 

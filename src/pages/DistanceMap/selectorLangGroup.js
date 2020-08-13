@@ -30,7 +30,7 @@ function selectorLangGroup({
   languagesGroup,
   mainDictionaryFun,
   allLanguages,
-  allDictionaries
+  allDictionaries,
 }) {
   const parentId = mainDictionary.toJS()[0].parent_id;
   const [labelDict, setLabelDict] = useState(null);

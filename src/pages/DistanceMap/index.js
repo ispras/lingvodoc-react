@@ -3,10 +3,11 @@ import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import MapDict from './map';
-import SelectorDict from './selectorDictionary';
+import SelectorDictionary from './selectorDictionary';
 import SelectorLangGropu from './selectorLangGroup';
 import { compose } from 'recompose';
 import Placeholder from 'components/Placeholder';
+import { connect } from 'react-redux';
 
 const allFieldQuery = gql`
   query{
@@ -52,8 +53,7 @@ const dictionaryWithPerspectives = gql`
   }
 `;
 
-
-class SelectorDictionary extends React.Component {
+class DistanceMap extends React.Component {
   constructor(props) {
     super(props);
 
@@ -61,24 +61,31 @@ class SelectorDictionary extends React.Component {
       dictionary: null,
       groupLang: null,
       rootLanguage: null,
-
     };
     this.arrLang = [];
     this.languageTree = [];
     this.dictionaries = [];
+    this.reset = this.reset.bind(this);
   }
 
+  reset() {
+    this.setState({
+      dictionary: null,
+      groupLang: null
+    });
+  }
   render() {
     const {
       data: {
         language_tree: languageTree,
         dictionaries,
-        loading
+        loading,
+        perspectives,
+        is_authenticated: isAuthenticated
       },
       allField
     }
       = this.props;
-
 
     const mainDictionary = (e, rootLanguage) => {
       this.setState({ dictionary: e });
@@ -97,14 +104,19 @@ class SelectorDictionary extends React.Component {
 
     this.languageTree = languageTree || this.languageTree;
     this.dictionaries = dictionaries || this.dictionaries;
-
+    this.perspectives = perspectives || this.perspectives;
+    this.isAuthenticated = isAuthenticated || this.isAuthenticated;
     return (
       <div>
-        {(this.state.dictionary === null && this.state.groupLang === null && !loading &&
-          <SelectorDict
+        {(((this.state.dictionary === null && this.state.groupLang === null && !loading) ||
+          (this.state.statusTest)) &&
+          <SelectorDictionary
             languagesGroup={languagesGroup}
-            dictWithPersp={this.props.data}
             mainDictionary={mainDictionary}
+            languageTree={this.languageTree}
+            dictionaries={this.dictionaries}
+            perspectives={this.perspectives}
+            isAuthenticated={this.isAuthenticated}
           />)}
         {(this.state.dictionary !== null && this.state.groupLang === null && !loading &&
           <SelectorLangGropu
@@ -114,7 +126,6 @@ class SelectorDictionary extends React.Component {
             mainDictionary={this.state.dictionary}
             allLanguages={this.languageTree}
             allDictionaries={this.dictionaries}
-            allField={allField}
             groupLang={this.state.groupLang}
           />)}
         {(this.state.groupLang !== null &&
@@ -122,7 +133,7 @@ class SelectorDictionary extends React.Component {
             dictionaries={this.state.groupLang}
             mainDictionary={this.state.dictionary}
             rootLanguage={this.state.rootLanguage}
-            backToDictionaries={mainDictionary}
+            backToDictionaries={this.reset}
             allField={allField}
           />)}
 
@@ -131,7 +142,7 @@ class SelectorDictionary extends React.Component {
   }
 }
 
-SelectorDictionary.propTypes = {
+DistanceMap.propTypes = {
   data: PropTypes.shape({
     language_tree: PropTypes.array,
     dictionaries: PropTypes.array,
@@ -140,5 +151,5 @@ SelectorDictionary.propTypes = {
   allField: PropTypes.object.isRequired
 
 };
-export default compose(graphql(dictionaryWithPerspectives), graphql(allFieldQuery, { name: 'allField' }))(SelectorDictionary);
+export default compose(graphql(dictionaryWithPerspectives), graphql(allFieldQuery, { name: 'allField' }))(DistanceMap);
 

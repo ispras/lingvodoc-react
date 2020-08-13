@@ -12,14 +12,12 @@ import 'pages/Home/published.scss';
 
 const selectorDict = (props) => {
   const {
-    dictWithPersp: {
-      perspectives,
-      language_tree: languages,
-      is_authenticated: isAuthenticated,
-      dictionaries,
-    },
     mainDictionary,
-    languagesGroup
+    languagesGroup,
+    languageTree: languages,
+    dictionaries,
+    perspectives,
+    isAuthenticated
   } = props;
 
   const localDictionaries = dictionaries;
@@ -63,16 +61,17 @@ const selectorDict = (props) => {
   );
 };
 
-
+selectorDict.defaultProps = {
+  isAuthenticated: false
+}
 selectorDict.propTypes = {
   mainDictionary: PropTypes.func.isRequired,
   languagesGroup: PropTypes.func.isRequired,
-  dictWithPersp: PropTypes.shape({
-    perspectives: PropTypes.array,
-    language_tree: PropTypes.array,
-    is_authenticated: PropTypes.bool,
-    dictionaries: PropTypes.array,
-  }).isRequired
+  perspectives: PropTypes.array.isRequired,
+  languageTree: PropTypes.array.isRequired,
+  isAuthenticated: PropTypes.bool,
+  dictionaries: PropTypes.array.isRequired,
+
 };
 
 export default selectorDict;
