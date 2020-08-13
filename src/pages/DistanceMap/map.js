@@ -1,6 +1,6 @@
-/* eslint-disable no-restricted-syntax */
 import React, { PureComponent } from 'react';
 import { Segment, Button } from 'semantic-ui-react';
+import { getTranslation } from 'api/i18n';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import HeatMapOverlay from 'leaflet-heatmap';
@@ -12,8 +12,8 @@ import Placeholder from 'components/Placeholder';
 import icon from '../../images/point.png';
 import normolizeMethod from './normolizeMethod';
 
-const computeDistancePerspectives = gql` 
-mutation computeCognateAnalysis(
+const mutationDistancePerspectives = gql` 
+mutation computeDistancePerspectives(
       $sourcePerspectiveId: LingvodocID!, 
       $baseLanguageId: LingvodocID!,
       $groupFieldId: LingvodocID!,
@@ -44,7 +44,8 @@ mutation computeCognateAnalysis(
         {
           distance_list
         }
-    }`;
+}`;
+
 const cfg = {
   radius: 5,
   scaleRadius: true,
@@ -58,12 +59,13 @@ const cfg = {
     '.95': 'rgb(8, 74, 18)'
   }
 };
+
 const pointIcon = L.icon({
   iconUrl: icon,
   iconSize: [7, 7],
 });
-const heatmapLayer = new HeatMapOverlay(cfg);
 
+const heatmapLayer = new HeatMapOverlay(cfg);
 
 function initMap(mountPoint) {
   const map = L.map(mountPoint, {
@@ -82,13 +84,13 @@ function initMap(mountPoint) {
 
 
 class MapAreas extends PureComponent {
-  constructor(props) {
+  constructor() {
     super();
     this.state = {
       statusMap: false,
       statusRequest: true
-    }
-    this.dictionariesWithColors = []
+    };
+    this.dictionariesWithColors = [];
   }
 
   componentDidMount() {
@@ -106,32 +108,29 @@ class MapAreas extends PureComponent {
     let maxCount = 0;
 
     this.dictionariesWithColors = await getDistancePoint(dictionaries, allField, mainDictionary, computeDistancePerspectives, rootLanguage);
-    console.log(this.dictionariesWithColors)
 
-    if (!this.dictionariesWithColors) {
+    if (this.dictionariesWithColors.length === 0) {
       this.setState({ statusRequest: false });
-      return;
     }
-    this.setState({ statusMap: true })
-    this.map = initMap(this.mapContainer);
-    ;
 
-    this.dictionariesWithColors = normolizeMethod(this.dictionariesWithColors);
+    this.setState({ statusMap: true });
+    this.map = initMap(this.mapContainer);
+
+
+    this.dictionariesWithColors = normolizeMethod(this.dictionariesWithColors, 255);
 
     const data = this.dictionariesWithColors.map((el) => {
       const lat = Number(el.additional_metadata.location.lat);
       const lng = Number(el.additional_metadata.location.lng);
-      const translation = el.translation;
-      const distanceDict = el.distanceDict;
-      const count = el.normolizeDistanceList;
+      const { translation, distanceDict, normolizeDistanceNumber } = el;
 
-      if (maxCount < count) {
-        maxCount = count;
+      if (maxCount < normolizeDistanceNumber) {
+        maxCount = normolizeDistanceNumber;
       }
 
-      L.marker([lat, lng], { icon: pointIcon, title: (translation + '  distance:' + distanceDict) }).addTo(this.map)
+      L.marker([lat, lng], { icon: pointIcon, title: (`${translation}  distance:${distanceDict}`) }).addTo(this.map);
 
-      return { lat, lng, count };
+      return { lat, lng, count: normolizeDistanceNumber };
     });
 
     heatmapLayer.setData({ data, max: maxCount });
@@ -143,11 +142,8 @@ class MapAreas extends PureComponent {
         {(!this.state.statusRequest) && (
           <div>
             <Segment>
-              Данные для анализа не найдены, выберите другой словарь
-          </Segment>
-            <Button /* onClick={} */>
-              Назад
-          </Button>
+              {getTranslation('No data found for analysis, please select another dictionary')}
+            </Segment>
           </div>
         )}
         {(this.state.statusMap === false) && (this.state.statusRequest) && (
@@ -164,7 +160,13 @@ class MapAreas extends PureComponent {
               />
             </div>
           </Segment>
+
         )}
+        {(this.state.statusMap) && (
+        <Button /* onClick={} */>
+          {getTranslation('Back')}
+        </Button>)}
+        dddddddddddddddddddddddddddddddddddddddddddddddddd
       </div>
 
     );
@@ -172,4 +174,4 @@ class MapAreas extends PureComponent {
 }
 
 
-export default compose(graphql(computeDistancePerspectives, { name: 'computeDistancePerspectives' }))(MapAreas);
+export default compose(graphql(mutationDistancePerspectives, { name: 'computeDistancePerspectives' }))(MapAreas);

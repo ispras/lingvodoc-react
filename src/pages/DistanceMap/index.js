@@ -1,14 +1,14 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
-import { Segment } from 'semantic-ui-react';
 import MapDict from './map';
-import SelectorDict from './selectorDict';
+import SelectorDict from './selectorDictionary';
 import SelectorLangGropu from './selectorLangGroup';
 import { compose } from 'recompose';
 import Placeholder from 'components/Placeholder';
 
-const allField = gql`
+const allFieldQuery = gql`
   query{
     all_fields{
       id
@@ -66,11 +66,19 @@ class SelectorDictionary extends React.Component {
     this.arrLang = [];
     this.languageTree = [];
     this.dictionaries = [];
-
   }
 
   render() {
-    const { data: { language_tree: languageTree, dictionaries, loading }, allField } = this.props;
+    const {
+      data: {
+        language_tree: languageTree,
+        dictionaries,
+        loading
+      },
+      allField
+    }
+      = this.props;
+
 
     const mainDictionary = (e, rootLanguage) => {
       this.setState({ dictionary: e });
@@ -106,6 +114,8 @@ class SelectorDictionary extends React.Component {
             mainDictionary={this.state.dictionary}
             allLanguages={this.languageTree}
             allDictionaries={this.dictionaries}
+            allField={allField}
+            groupLang={this.state.groupLang}
           />)}
         {(this.state.groupLang !== null &&
           <MapDict
@@ -121,6 +131,14 @@ class SelectorDictionary extends React.Component {
   }
 }
 
+SelectorDictionary.propTypes = {
+  data: PropTypes.shape({
+    language_tree: PropTypes.array,
+    dictionaries: PropTypes.array,
+    loading: PropTypes.bool
+  }).isRequired,
+  allField: PropTypes.object.isRequired
 
-export default compose(graphql(dictionaryWithPerspectives), graphql(allField, { name: 'allField' }))(SelectorDictionary);
+};
+export default compose(graphql(dictionaryWithPerspectives), graphql(allFieldQuery, { name: 'allField' }))(SelectorDictionary);
 

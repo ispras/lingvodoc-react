@@ -5,9 +5,17 @@ import { assignDictsToTree, buildDictTrees } from 'pages/Search/treeBuilder';
 import LangsNav from 'pages/Home/components/LangsNav';
 import Tree from './Tree';
 
+
 function AllDicts(props) {
   const {
-    languagesTree, dictionaries, perspectives, isAuthenticated, selectorMode, selectedDict,languagesGroup
+    languagesTree,
+    dictionaries,
+    perspectives,
+    isAuthenticated,
+    selectorMode,
+    selectedDict,
+    languagesGroup,
+    statusLangsNav
   } = props;
 
   const tree = assignDictsToTree(
@@ -21,7 +29,7 @@ function AllDicts(props) {
 
   return (
     <div>
-      <LangsNav data={tree} />
+      {(statusLangsNav) && (<LangsNav data={tree} />)}
       <Tree tree={tree} canSelectDictionaries={isAuthenticated} selectorMode={selectorMode} selectedDict={selectedDict} languagesGroup={languagesGroup} />
     </div>
   );
@@ -32,6 +40,11 @@ AllDicts.propTypes = {
   dictionaries: PropTypes.instanceOf(Immutable.Map).isRequired,
   perspectives: PropTypes.instanceOf(Immutable.List).isRequired,
   isAuthenticated: PropTypes.bool,
+  selectorMode: PropTypes.bool.isRequired,
+  selectedDict: PropTypes.func.isRequired,
+  languagesGroup: PropTypes.func.isRequired,
+  statusLangsNav: PropTypes.bool.isRequired
+
 };
 
 AllDicts.defaultProps = {

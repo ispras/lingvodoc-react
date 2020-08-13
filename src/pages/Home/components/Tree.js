@@ -55,11 +55,11 @@ const Dict = ({
   const isChecked = selected.has(id);
   let statusLexicalEntries = false;
 
-  for (const perspective of perspectives.toJS()) {
+  perspectives.toJS().forEach((perspective) => {
     if (perspective.translation === 'Lexical Entries') {
       statusLexicalEntries = true;
     }
-  }
+  });
 
   return (
     <li className="dict">
@@ -80,10 +80,10 @@ const Dict = ({
           </Dropdown>
         )}
       {((perspectives && selectorStatus && location !== null && statusLexicalEntries) && (
-        <Button onClick={() => localSelectedDict(perspectives)}> Выбрать словарь</Button>
-      )) || (selectorStatus)&&(
-      <Label>{getTranslation('Lexical entries no found')} </Label>
-        )
+        <Button onClick={() => localSelectedDict(perspectives)}> {getTranslation('Select dictionary')}</Button>
+      )) || ((selectorStatus) && (
+        <Label>{getTranslation('Lexical entries no found')} </Label>
+      ))
       }
       {(perspectives && selectorStatus && location === null && selectorStatus) && (
         <Label>{getTranslation('No coordinate data')}</Label>
@@ -171,10 +171,17 @@ const Tree = ({
 Tree.propTypes = {
   tree: PropTypes.instanceOf(Immutable.List).isRequired,
   canSelectDictionaries: PropTypes.bool,
+  selectedDict: PropTypes.func,
+  languagesGroup: PropTypes.func,
+  selectorMode: PropTypes.bool.isRequired,
+
 };
 
 Tree.defaultProps = {
   canSelectDictionaries: false,
+  selectedDict: null,
+  languagesGroup: null,
+
 };
 
 export default Tree;

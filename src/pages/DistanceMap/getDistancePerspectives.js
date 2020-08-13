@@ -1,7 +1,7 @@
 
 import { compositeIdToString as id2str } from 'utils/compositeId';
 
-const calculateColorForDict = async (
+const getDistance = async (
   dictionaries,
   allField,
   mainDictionary,
@@ -11,14 +11,20 @@ const calculateColorForDict = async (
   dictionaries.push(mainDictionary);
   const baseLanguageId = rootLanguage.parent_id;
   const fieldDict = {};
+  const availableList = [];
+  const perspectiveList = [];
+  const transcriptionFieldIdStrList = [];
+  const translationFieldIdStrList = [];
+  const perspectiveSelectionList = [];
+  let textFields = [];
   let groupFieldIdStr = '';
   let groupFields = null;
   let sourcePerspectiveId = {};
 
-
-  for (const field of allField.all_fields) {
+  allField.all_fields.forEach((field) => {
     fieldDict[id2str(field.id)] = field;
-  }
+  });
+
 
   mainDictionary.perspectives.forEach((el) => {
     if (el.translation === 'Lexical Entries') {
@@ -29,48 +35,37 @@ const calculateColorForDict = async (
     }
   });
 
-
-  for (const field of groupFields) {
+  groupFields.forEach((field) => {
     if (field.english_translation.toLowerCase().includes('cognate')) {
       groupFieldIdStr = id2str(field.id);
-      break;
     }
-  }
+  });
+
 
   if (!groupFieldIdStr && groupFields.length > 0) { groupFieldIdStr = id2str(groupFields[0].id); }
 
   const groupField = fieldDict[groupFieldIdStr];
 
-  const available_list = [];
-  const perspective_list = [];
-  const transcriptionFieldIdStrList = [];
-  const translationFieldIdStrList = [];
-  const perspectiveSelectionList = [];
-  let textFields = [];
 
-
-  for (const dictionary of dictionaries) {
-    for (const perspective of dictionary.perspectives) {
-      let group_flag = false;
-      let text_flag = false;
-
-      for (const column of perspective.columns) {
+  dictionaries.forEach((dictionary) => {
+    dictionary.perspectives.forEach((perspective) => {
+      let pgroupFlag = false;
+      let textFlag = false;
+      perspective.columns.forEach((column) => {
         const field = fieldDict[id2str(column.field_id)];
 
-        if (field.data_type === 'Grouping Tag') { group_flag = true; }
+        if (field.data_type === 'Grouping Tag') { pgroupFlag = true; }
 
-        if (field.data_type === 'Text') { text_flag = true; }
+        if (field.data_type === 'Text') { textFlag = true; }
+      });
+      if (pgroupFlag && textFlag) {
+        availableList.push([perspective]);
       }
+    });
+  });
 
-      if (group_flag && text_flag) {
-        available_list.push([perspective]);
-      }
-    }
-  }
-
-
-  for (const [perspective] of available_list) {
-    perspective_list.push({ perspective });
+  availableList.forEach(([perspective]) => {
+    perspectiveList.push({ perspective });
 
     textFields = perspective.columns
       .map(column => fieldDict[id2str(column.field_id)])
@@ -78,16 +73,15 @@ const calculateColorForDict = async (
 
     let transcriptionFieldIdStr = '';
     let translationFieldIdStr = '';
-
-    for (const field of textFields) {
-      const check_str = field.english_translation.toLowerCase();
+    textFields.forEach((field) => {
+      const checkStr = field.english_translation.toLowerCase();
 
       if (!transcriptionFieldIdStr &&
-        check_str.includes('transcription')) { transcriptionFieldIdStr = id2str(field.id); }
+        checkStr.includes('transcription')) { transcriptionFieldIdStr = id2str(field.id); }
 
       if (!translationFieldIdStr &&
-        (check_str.includes('translation') || check_str.includes('meaning'))) { translationFieldIdStr = id2str(field.id); }
-    }
+        (checkStr.includes('translation') || checkStr.includes('meaning'))) { translationFieldIdStr = id2str(field.id); }
+    });
 
     if (textFields.length > 0) {
       if (!transcriptionFieldIdStr) { transcriptionFieldIdStr = id2str(textFields[0].id); }
@@ -98,21 +92,22 @@ const calculateColorForDict = async (
     transcriptionFieldIdStrList.push(transcriptionFieldIdStr);
     translationFieldIdStrList.push(translationFieldIdStr);
     perspectiveSelectionList.push(true);
-  }
+  });
 
-  const bestPerspectiveInfoList = perspective_list
+
+  const perspectiveInfoList = perspectiveList
     .map(({ perspective }, index) => [perspective.id,
-    fieldDict[transcriptionFieldIdStrList[index]].id,
-    fieldDict[translationFieldIdStrList[index]].id])
-    .filter((perspective_info, index) =>
+      fieldDict[transcriptionFieldIdStrList[index]].id,
+      fieldDict[translationFieldIdStrList[index]].id])
+    .filter((_perspectiveInfo, index) =>
       (perspectiveSelectionList[index]));
 
-  const e = await computeDistancePerspectives({
+  const responseMutanion = await computeDistancePerspectives({
     variables: {
       sourcePerspectiveId,
       baseLanguageId,
       groupFieldId: groupField.id,
-      perspectiveInfoList: bestPerspectiveInfoList,
+      perspectiveInfoList,
       multiList: [],
       mode: '',
       matchTranslationsValue: 1,
@@ -123,21 +118,22 @@ const calculateColorForDict = async (
       distanceFlag: true,
       referencePerspectiveId: sourcePerspectiveId
     },
-  })
+  });
 
 
-  const distanceList = e.data.cognate_analysis.distance_list;
-  const dictionariesWithColors = [];
+  const distanceList = responseMutanion.data.cognate_analysis.distance_list;
+  const dictionariesWithDistance = [];
   if (distanceList[0] === 0) {
-    return ;
+    return [];
   }
+
   distanceList.forEach((distance) => {
     dictionaries.forEach((dict) => {
       dict.perspectives.forEach((persp) => {
         if (persp.id[0] === distance[0][0] && persp.id[1] === distance[0][1]) {
           const distanceDict = distance[1];
 
-          dictionariesWithColors.push({
+          dictionariesWithDistance.push({
             ...dict,
             distanceDict
           });
@@ -146,7 +142,7 @@ const calculateColorForDict = async (
     });
   });
 
-  return dictionariesWithColors;
+  return dictionariesWithDistance;
 };
 
-export default calculateColorForDict;
+export default getDistance;
