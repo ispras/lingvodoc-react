@@ -46,6 +46,9 @@ mutation computeDistancePerspectives(
           distance_list
         }
 }`;
+const ButtonBack = {
+  margin: '10px 0',
+};
 
 const cfg = {
   radius: 5,
@@ -170,7 +173,7 @@ class MapAreas extends PureComponent {
         )}
         {((this.state.statusMap) || (!this.state.statusRequest)) && (
 
-          <Button onClick={this.back}>
+          <Button style={ButtonBack} onClick={this.back}>
             {getTranslation('Back')}
           </Button>
 
