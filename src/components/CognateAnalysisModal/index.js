@@ -5,7 +5,7 @@ import { graphql, withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
 import {
   Breadcrumb, Button, Checkbox, Dimmer, Divider, Dropdown, Header, Icon, Input, List, Loader, Message,
-  Modal, Segment, Select } from 'semantic-ui-react';
+  Modal, Pagination, Segment, Select } from 'semantic-ui-react';
 import Plot from 'react-plotly.js';
 
 import { closeModal } from 'ducks/cognateAnalysis';
@@ -157,6 +157,8 @@ const computeCognateAnalysisMutation = gql`
     }
 `;
 
+const SUGGESTIONS_PER_PAGE = 50;
+
 function equalIds(id_a, id_b) {
   return id_a[0] == id_b[0] && id_a[1] == id_b[1]; }
 
@@ -231,6 +233,8 @@ class CognateAnalysisModal extends React.Component
       sg_state_list: null,
       sg_count: null,
       sg_entry_map: null,
+
+      sg_current_page: 1,
     };
 
     this.initialize_single = this.initialize_single.bind(this);
@@ -684,6 +688,9 @@ class CognateAnalysisModal extends React.Component
         suggestion_field_id,
         intermediate_url_list }}})
   {
+    if (result.length > 262144)
+      result = getTranslation('Skipping text output, too long.');
+
     /* Data of the 2d cognate distance plots. */
 
     var plotly_data = [];
@@ -1546,7 +1553,8 @@ class CognateAnalysisModal extends React.Component
       sg_select_list,
       sg_state_list,
       sg_count,
-      sg_entry_map } = this.state;
+      sg_entry_map,
+      sg_current_page } = this.state;
 
     /* Shows current suggestion state counts. */
 
@@ -1587,14 +1595,32 @@ class CognateAnalysisModal extends React.Component
       );
     }
 
+    const total_pages =
+
+      Math.floor(
+        (suggestion_list.length + SUGGESTIONS_PER_PAGE - 1) /
+        SUGGESTIONS_PER_PAGE);
+
+    const start_index =
+      (sg_current_page - 1) * SUGGESTIONS_PER_PAGE;
+
     return (
       <div>
 
       {sg_count.left < suggestion_list.length &&
         f_count()}
+
+      <Pagination
+        activePage={sg_current_page}
+        totalPages={total_pages}
+        onPageChange={(e, { activePage }) => this.setState({ sg_current_page: activePage })}
+      />
       
       {map(
-        suggestion_list,
+
+        suggestion_list.slice(
+          start_index,
+          start_index + SUGGESTIONS_PER_PAGE),
 
         ([perspective_index,
           word,
@@ -1603,7 +1629,9 @@ class CognateAnalysisModal extends React.Component
           single_list,
           group_list],
           
-          index) => {
+          in_page_index) => {
+
+        const index = start_index + in_page_index;
 
         const connected_flag =
           sg_state_list[index] == 'connected';
@@ -1848,57 +1876,66 @@ class CognateAnalysisModal extends React.Component
         );}
       )}
 
+      <Pagination
+        activePage={sg_current_page}
+        totalPages={total_pages}
+        onPageChange={(e, { activePage }) => this.setState({ sg_current_page: activePage })}
+      />
+
       {sg_count.left < suggestion_list.length &&
         f_count()}
 
-      <Button
-        basic
-        positive
+      <div
+        style={{'marginTop': '1em'}}>
 
-        content={
-          getTranslation('Connect all selected')}
+        <Button
+          basic
+          positive
 
-        disabled={
-          sg_count.left <= 0 ||
-          sg_count.connecting > 0}
+          content={
+            getTranslation('Connect all selected')}
 
-        size='mini'
+          disabled={
+            sg_count.left <= 0 ||
+            sg_count.connecting > 0}
 
-        onClick={() => {
+          size='mini'
 
-          console.log('connect all selected');
+          onClick={() => {
 
-          /* Launching connections of all suggestions with enough selected lexical entries, skipping
-           * suggestions which would be invalidated if launched connections are successful. */
+            /* Launching connections of all suggestions with enough selected lexical entries, skipping
+             * suggestions which would be invalidated if launched connections are successful. */
 
-          const invalid_set = {};
+            const invalid_set = {};
 
-          for (var i = 0; i < suggestion_list.length; i++)
-          {
-            if (
-              sg_state_list[i] != 'left' ||
-              invalid_set.hasOwnProperty(i))
-
-              continue;
-
-            const entry_id_str_list = 
-              Object.keys(sg_select_list[i]);
-
-            if (entry_id_str_list.length <= 1)
-              continue;
-
-            for (const entry_id_str of entry_id_str_list)
+            for (var i = 0; i < suggestion_list.length; i++)
             {
-              Object.assign(
-                invalid_set,
-                sg_entry_map[entry_id_str]);
+              if (
+                sg_state_list[i] != 'left' ||
+                invalid_set.hasOwnProperty(i))
+
+                continue;
+
+              const entry_id_str_list = 
+                Object.keys(sg_select_list[i]);
+
+              if (entry_id_str_list.length <= 1)
+                continue;
+
+              for (const entry_id_str of entry_id_str_list)
+              {
+                Object.assign(
+                  invalid_set,
+                  sg_entry_map[entry_id_str]);
+              }
+
+              this.sg_connect(i, false);
             }
 
-            this.sg_connect(i, false);
-          }
+          }}
+        />
 
-        }}
-      />
+      </div>
 
       </div>
     )
