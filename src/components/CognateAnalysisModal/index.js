@@ -259,6 +259,7 @@ class CognateAnalysisModal extends React.Component
   componentDidMount()
   {
     const multi =
+      this.props.mode == 'multi_analysis' ||
       this.props.mode == 'multi_reconstruction' ||
       this.props.mode == 'multi_suggestions';
 
@@ -642,6 +643,7 @@ class CognateAnalysisModal extends React.Component
     /* Selecting grouping field for many languages. */
 
     if (
+      this.props.mode == 'multi_analysis' ||
       this.props.mode == 'multi_reconstruction' ||
       this.props.mode == 'multi_suggestions')
     {
@@ -915,6 +917,7 @@ class CognateAnalysisModal extends React.Component
     var multiList = [];
     
     if (
+      this.props.mode == 'multi_analysis' ||
       this.props.mode == 'multi_reconstruction' ||
       this.props.mode == 'multi_suggestions')
     {
@@ -995,6 +998,7 @@ class CognateAnalysisModal extends React.Component
         computing: true });
 
       const backend_mode =
+        this.props.mode == 'multi_analysis' ? '' :
         this.props.mode == 'multi_reconstruction' ? 'multi' :
         this.props.mode == 'multi_suggestions' ? 'suggestions' :
         this.props.mode;
@@ -1114,6 +1118,22 @@ class CognateAnalysisModal extends React.Component
               this.setState({ onlyOrphansFlag: checked });}}
           />
         </List.Item>
+
+        {
+          !this.state.suggestion_list &&
+          this.props.user.id === undefined && (
+
+          <Message negative>
+            <Message.Header>
+              {getTranslation('Unauthorized user')}
+            </Message.Header>
+            <p>
+              {getTranslation(
+                'Only authorized users can create new cognate connections based on cognate suggestions.')}
+            </p>
+          </Message>
+
+        )}
       </List>
     )
   }
@@ -1958,6 +1978,7 @@ class CognateAnalysisModal extends React.Component
     const { mode } = this.props;
 
     const multi =
+      mode == 'multi_analysis' ||
       mode == 'multi_reconstruction' ||
       mode == 'multi_suggestions';
 
@@ -1973,6 +1994,8 @@ class CognateAnalysisModal extends React.Component
           <Modal.Header>{
             mode == 'acoustic' ?
               getTranslation('Cognate acoustic analysis') :
+            mode == 'multi_analysis' ?
+              getTranslation('Cognate multi-language analysis') :
             mode == 'multi_reconstruction' ?
               getTranslation('Cognate multi-language reconstruction') :
             mode == 'multi_suggestions' ?
@@ -2060,10 +2083,11 @@ class CognateAnalysisModal extends React.Component
 
                     <Message negative>
                       <Message.Header>
-                        Unauthorized user
+                        {getTranslation('Unauthorized user')}
                       </Message.Header>
                       <p>
-                        Only authorized users can create new cognate connections based on cognate suggestions.
+                        {getTranslation(
+                          'Only authorized users can create new cognate connections based on cognate suggestions.')}
                       </p>
                     </Message>
 
