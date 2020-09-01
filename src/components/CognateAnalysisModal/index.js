@@ -688,7 +688,10 @@ class CognateAnalysisModal extends React.Component
         suggestion_field_id,
         intermediate_url_list }}})
   {
-    if (result.length > 262144)
+    if (
+      result.length > 1048576 &&
+      (this.props.mode == 'suggestions' || this.props.mode == 'multi_suggestions'))
+
       result = getTranslation('Skipping text output, too long.');
 
     /* Data of the 2d cognate distance plots. */
