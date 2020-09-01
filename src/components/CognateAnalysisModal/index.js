@@ -1483,6 +1483,21 @@ class CognateAnalysisModal extends React.Component
           this.props.user.id == 1 &&
           this.admin_section_render()}
 
+        {!error_flag &&
+          this.props.mode == 'multi_reconstruction' &&
+          this.state.language_list.length <= 1 && (
+
+          <Message>
+            <Message.Header>
+              {getTranslation('Multiple languages required')}
+            </Message.Header>
+            <p>
+              {getTranslation(
+                'Cognate multi-language reconstruction requires dictionaries from at least 2 languages.')}
+            </p>
+          </Message>
+        )}
+
       </Modal.Content>
     )
   }
@@ -2020,8 +2035,9 @@ class CognateAnalysisModal extends React.Component
                 (!multi && (
                   this.perspective_list.length <= 1 ||
                   !this.state.perspectiveSelectionList.some(enabled => enabled))) ||
-                (multi &&
-                  this.state.language_list.length <= 0) ||
+                (multi && (
+                  this.state.language_list.length <= 0 ||
+                  mode == 'multi_reconstruction' && this.state.language_list.length <= 1)) ||
                 this.state.computing}
             />
             <Button negative content="Close" onClick={this.props.closeModal} />
