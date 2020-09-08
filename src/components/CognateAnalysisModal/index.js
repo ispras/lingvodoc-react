@@ -1013,7 +1013,7 @@ class CognateAnalysisModal extends React.Component
           mode: backend_mode,
           matchTranslationsValue,
           onlyOrphansFlag: this.state.onlyOrphansFlag,
-          figureFlag: this.props.mode == '',
+          figureFlag: backend_mode == '',
           debugFlag: this.state.debugFlag,
           intermediateFlag: this.state.intermediateFlag },
         },
