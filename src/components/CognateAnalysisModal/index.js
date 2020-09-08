@@ -2128,7 +2128,7 @@ class CognateAnalysisModal extends React.Component
                       data={this.state.plotly_data}
                       layout={{
                         width: 1200,
-                        height: 800 + 20 * this.state.embedding_2d.length,
+                        height: 800 + 28 * this.state.embedding_2d.length,
                         xaxis: {
                           color: "#DDD",
                           gridcolor: "#DDD",
@@ -2152,7 +2152,7 @@ class CognateAnalysisModal extends React.Component
                       data={this.state.plotly_3d_data}
                       layout={{
                         width: 1200,
-                        height: 900 + 20 * this.state.embedding_2d.length,
+                        height: 900 + 28 * this.state.embedding_2d.length,
                         scene: {
                           xaxis: {
                             color: "#DDD",
