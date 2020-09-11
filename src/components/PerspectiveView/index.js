@@ -76,6 +76,7 @@ export const queryLexicalEntries = gql`
           additional_metadata {
             link_perspective_id
           }
+          is_subject_for_parsing
         }
       }
     }

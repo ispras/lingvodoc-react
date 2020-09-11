@@ -1,0 +1,25 @@
+#markup-content {
+  line-height: 2;
+
+  p {
+    line-height: 2;
+  }
+  
+  span .result {
+    display: none;
+  }
+
+  .unverified {
+    background-color: #FFDCE5;
+    cursor: pointer;
+  }
+
+  .verified {
+    background-color: #D1F7C4;
+    cursor: pointer;
+  }
+
+  .selected {
+    border: 2px solid #7C39ED;
+  }
+}

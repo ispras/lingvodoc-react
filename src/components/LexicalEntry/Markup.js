@@ -6,8 +6,11 @@ import { connect } from 'react-redux';
 import { Button, Checkbox, Popup } from 'semantic-ui-react';
 import { find, isEqual } from 'lodash';
 import { openViewer } from 'ducks/markup';
+import { openModal } from 'ducks/modals';
 
 import Entities from './index';
+import RunParserModal from './RunParserModal';
+import ParserResults from './ParserResults';
 
 function content(c) {
   const MAX_CONTENT_LENGTH = 12;
@@ -20,15 +23,19 @@ function content(c) {
 const MarkupEntityContent = onlyUpdateForKeys([
   'entity', 'mode',
 ])(({
-  entity, parentEntity, mode, publish, accept, remove, actions,
+  entity, parentEntity, mode, publish, accept, remove, actions
 }) => {
   switch (mode) {
     case 'edit':
+      const forParse = entity.is_subject_for_parsing;
       return (
         <Button.Group basic icon size="mini">
           <Button as="a" href={entity.content} icon="download" />
           <Popup trigger={<Button content={content(entity.content)} />} content={entity.content} />
-          <Button icon="table" onClick={() => actions.openViewer(parentEntity, entity)} />
+          <Button
+            icon={forParse ? "power" : "table"}
+            onClick={() => forParse ? actions.openModal(RunParserModal, { entityId: entity.id }) : actions.openViewer(parentEntity, entity)}
+          />
           <Button icon="remove" onClick={() => remove(entity)} />
         </Button.Group>
       );
@@ -43,7 +50,7 @@ const MarkupEntityContent = onlyUpdateForKeys([
           <Checkbox
             size="tiny"
             checked={entity.published}
-            onChange={(e, { checked }) => publish(entity, checked)}
+            onChange={(_e, { checked }) => publish(entity, checked)}
           />
         </div>
       );
@@ -92,6 +99,7 @@ const Markup = (props) => {
     <Component className={className}>
       <MarkupEntityContent entity={entity} parentEntity={parentEntity} mode={mode} publish={publish} accept={accept} remove={remove} actions={actions} />
       {subColumn && <Entities column={subColumn} columns={columns} entry={entry} parentEntity={entity} mode={mode} />}
+      {!subColumn && entity.is_subject_for_parsing && <ParserResults entityId={entity.id} mode={mode} />}
     </Component>
   );
 };
@@ -134,7 +142,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  actions: bindActionCreators({ openViewer }, dispatch),
+  actions: bindActionCreators({ openViewer, openModal }, dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Markup);
