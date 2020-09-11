@@ -25,11 +25,12 @@ class UserVariantModal extends React.Component {
   save() {
     const { parent, variant, onSubmit, onClose } = this.props;
     if (variant) {
-      // TODO: !!!
+      variant.result.innerHTML = JSON.stringify(this.state);
     }
     else {
       const elem = document.createElement("span");
       elem.classList.add('result');
+      elem.classList.add('user');
       elem.innerHTML = JSON.stringify(this.state);
       parent.append(elem);
       elem.id = elem.previousElementSibling.id + '!';
@@ -50,23 +51,23 @@ class UserVariantModal extends React.Component {
           <Form>
             <Form.Field required>
               <label>Lex</label>
-              <Input onChange={(_e, data) => this.setState({ lex: data.value })}/>
+              <Input value={lex} onChange={(_e, data) => this.setState({ lex: data.value })}/>
             </Form.Field>
             <Form.Field required>
               <label>Parts</label>
-              <Input onChange={(_e, data) => this.setState({ parts: data.value })}/>
+              <Input value={parts} onChange={(_e, data) => this.setState({ parts: data.value })}/>
             </Form.Field>
             <Form.Field required>
               <label>Gloss</label>
-              <Input onChange={(_e, data) => this.setState({ gloss: data.value })}/>
+              <Input value={gloss} onChange={(_e, data) => this.setState({ gloss: data.value })}/>
             </Form.Field>
             <Form.Field required>
               <label>Gr</label>
-              <Input onChange={(_e, data) => this.setState({ gr: data.value })}/>
+              <Input value={gr} onChange={(_e, data) => this.setState({ gr: data.value })}/>
             </Form.Field>
             <Form.Field required>
               <label>Trans_ru</label>
-              <Input onChange={(_e, data) => this.setState({ trans_ru: data.value })}/>
+              <Input value={trans_ru} onChange={(_e, data) => this.setState({ trans_ru: data.value })}/>
             </Form.Field>
           </Form>
         </Modal.Content>
@@ -81,7 +82,7 @@ class UserVariantModal extends React.Component {
 }
 
 UserVariantModal.propTypes = {
-  parent: PropTypes.object.isRequired,
+  parent: PropTypes.object,
   variant: PropTypes.object,
   onSubmit: PropTypes.func.isRequired,
   onClose: PropTypes.func.isRequired
