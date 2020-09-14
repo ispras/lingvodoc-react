@@ -87,9 +87,13 @@ const Tools = graphql(toolsQuery)(({
         </Dropdown.Item>
 
         <Dropdown.Item
-          onClick={() => openCognateAnalysisModal(id, 'multi_reconstruction')}
-        >
-          {getTranslation('Cognate multi-language reconstruction')}
+          onClick={() => openCognateAnalysisModal(id, 'multi_analysis')}>
+          {getTranslation("Cognate multi-language analysis")}
+        </Dropdown.Item>
+
+        <Dropdown.Item
+          onClick={() => openCognateAnalysisModal(id, 'multi_reconstruction')}>
+          {getTranslation("Cognate multi-language reconstruction")}
         </Dropdown.Item>
 
         <Dropdown.Item

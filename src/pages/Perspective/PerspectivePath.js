@@ -100,7 +100,9 @@ class PerspectivePath extends React.Component {
                             key="properties"
                             icon="setting"
                             text={`'${e.translation}' ${getTranslation('Properties').toLowerCase()}...`}
-                            onClick={() => actions.openPerspectivePropertiesModal(id, dictionary_id, `'${e.translation}' ${getTranslation('Propeties').toLowerCase()}`)}
+                            onClick={() => actions.openPerspectivePropertiesModal(
+                              id, dictionary_id, `'${e.translation}' ${getTranslation('Properties').toLowerCase()}`
+                            )}
                           />
                         ]
                       }
@@ -132,14 +134,16 @@ class PerspectivePath extends React.Component {
                           key="properties"
                           icon="setting"
                           text={`'${e.translation}' ${getTranslation('Properties').toLowerCase()}...`}
-                          onClick={() => actions.openDictionaryPropertiesModal(dictionary_id, `'${e.translation}' ${getTranslation('Propeties').toLowerCase()}`)}
+                          onClick={() => actions.openDictionaryPropertiesModal(
+                            dictionary_id, `'${e.translation}' ${getTranslation('Properties').toLowerCase()}`
+                          )}
                         />,
 
                         <Dropdown.Item
                           key="organizations"
                           icon="address book"
                           text={`'${e.translation}' ${getTranslation('Organizations').toLowerCase()}...`}
-                          onClick={() => actions.openDictionaryOrganizationsModal(dictionary_id, `'${e.translation}' ${getTranslation('Propeties').toLowerCase()}`)}
+                          onClick={() => actions.openDictionaryOrganizationsModal(dictionary_id)}
                         />,
 
                       ]}
