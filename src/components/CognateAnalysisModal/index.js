@@ -982,11 +982,16 @@ class CognateAnalysisModal extends React.Component
         },
       }).then(
         () => {
-          window.logger.suc('Cognate acoustic analysis is launched. Please check out tasks for details.');
+
+          window.logger.suc(
+            getTranslation('Cognate acoustic analysis is launched. Please check out tasks for details.'));
+
           this.props.closeModal();
         },
         () => {
-          window.logger.err('Failed launch cognate acoustic analysis!');
+
+          window.logger.err(
+            getTranslation('Failed to launch cognate acoustic analysis!'));
         }
       );
 

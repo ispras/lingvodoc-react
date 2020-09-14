@@ -5,7 +5,7 @@ import { branch, compose, onlyUpdateForKeys, renderNothing } from 'recompose';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import { connect } from 'react-redux';
-import { Button, Modal, Segment,  Header } from 'semantic-ui-react';
+import { Button, Checkbox, Modal, Segment, Header } from 'semantic-ui-react';
 import { closeSaveDictionaryModal } from 'ducks/saveDictionary';
 import { getTranslation } from 'api/i18n';
 
@@ -19,8 +19,16 @@ query Dictionary($id: LingvodocID!){
 `;
 
 const saveDictionaryMutation = gql`
-  mutation SaveDictionary($id: LingvodocID!, $mode: String!) {
-    save_dictionary(id: $id, mode: $mode) {
+  mutation SaveDictionary(
+    $id: LingvodocID!,
+    $mode: String!,
+    $soundFlag: Boolean)
+  {
+    save_dictionary(
+      id: $id,
+      mode: $mode,
+      sound_flag: $soundFlag)
+    {
       triumph
     }
   }
@@ -31,6 +39,7 @@ class Properties extends React.Component {
     super(props);
     this.state = {
       mode: 'all',
+      save_sound: false,
     };
 
     this.onChangeMode = this.onChangeMode.bind(this);
@@ -60,16 +69,20 @@ class Properties extends React.Component {
       variables: {
         id,
         mode,
+        soundFlag: this.state.save_sound
       },
-      refetchQueries: [
-        {
-          query,
-          variables: {
-            id,
-          },
-        },
-      ],
-    });
+    }).then(
+      () => {
+
+        window.logger.suc(
+          getTranslation('Saving dictionary task is launched. Please check out tasks for details.'));
+      },
+      () => {
+
+        window.logger.err(
+          getTranslation('Failed to launch saving dictionary task.'));
+      }
+    );
   }
 
   render() {
@@ -90,11 +103,17 @@ class Properties extends React.Component {
           <Segment>
             {getTranslation('URL with results of saving data should appear soon after clicking save button in the tasks.')}
           </Segment>
+          <Checkbox
+            label={getTranslation('Save sound recordings')}
+            checked={this.state.save_sound}
+            onChange={(e, { checked }) =>
+              this.setState({ save_sound: checked })}
+          />
         </Modal.Content>
 
         <Modal.Actions>
-            <Button icon="save" content={getTranslation("Save all")} value="all" onClick={this.onSaveData} />
-            <Button icon="save" content={getTranslation("Save only published")} value="published" onClick={this.onSaveData} />
+          <Button icon="save" content={getTranslation("Save all")} value="all" onClick={this.onSaveData} />
+          <Button icon="save" content={getTranslation("Save only published")} value="published" onClick={this.onSaveData} />
           <Button icon="minus" content={getTranslation("Close")} onClick={actions.closeSaveDictionaryModal} />
         </Modal.Actions>
 
