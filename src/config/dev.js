@@ -1,7 +1,7 @@
 import base from './base';
 
 const dev = {
-  apiUrl: '/api',
+  apiUrl: 'http://localhost:9999/api',
   pollingInterval: 20000,
 };
 

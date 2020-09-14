@@ -1,7 +1,7 @@
 import build from 'buildType';
 
 export default {
-  apiUrl: ' ',
+  apiUrl: 'http://localhost:9999',
   homePath: '/',
   pollingInterval: 2000,
   buildType: build.type,

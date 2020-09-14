@@ -476,11 +476,17 @@ class EditDictionaryMetadata extends React.Component {
 
 EditDictionaryMetadata.propTypes = {
   mode: PropTypes.string.isRequired,
-  metadata: PropTypes.object.isRequired,
+  metadata: PropTypes.object,
   onChange: PropTypes.func.isRequired,
-  onSave: PropTypes.func.isRequired,
+  onSave: PropTypes.func,
   data: PropTypes.object.isRequired,
-  loading: PropTypes.bool.isRequired
+  loading: PropTypes.bool
+};
+
+EditDictionaryMetadata.defaultProps = {
+  metadata: {},
+  onSave: null,
+  loading: false
 };
 
 export default graphql(getMetadataAlternativesQuery)(EditDictionaryMetadata);
