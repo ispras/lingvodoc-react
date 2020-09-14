@@ -14,7 +14,7 @@ const Cell = ({
   mode,
   entitiesMode,
   disabled,
-// eslint-disable-next-line arrow-body-style
+  // eslint-disable-next-line arrow-body-style
 }) => {
 
   return (
@@ -39,7 +39,10 @@ Cell.propTypes = {
   columns: PropTypes.array.isRequired,
   mode: PropTypes.string.isRequired,
   entitiesMode: PropTypes.string.isRequired,
-  disabled: PropTypes.bool.isRequired,
+  disabled: PropTypes.bool,
 };
 
+Cell.defaultProps = {
+  disabled: undefined
+};
 export default onlyUpdateForKeys(['perspectiveId', 'entry', 'mode', 'disabled'])(Cell);
