@@ -1,6 +1,8 @@
 import React from 'react';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
+import { Segment } from 'semantic-ui-react';
+
 const grantsQuery = gql`
   query publicGrants {
     grants {
@@ -52,19 +54,12 @@ const dictionaryWithPerspectivesQuery = gql`
     is_authenticated
   }
 `;
-class NoGrants extends React.Component {
-  constructor(props) {
-    super(props);
-  console.log(props,'werwpe!!!!!!!!!!!!!!!!!!!!!!!!!!')
-  }
-  
-  render(){
-    return(
-      <div>
 
-      </div>
-    )
-  }
+function noGrants() {
+  return (
+    <Segment />
+  );
 }
 
-export default  graphql(dictionaryWithPerspectivesQuery)(NoGrants) ;
+
+export default graphql(dictionaryWithPerspectivesQuery)(noGrants);

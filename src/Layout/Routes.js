@@ -18,19 +18,18 @@ import Grants from 'pages/Grants';
 import Requests from 'pages/Requests';
 import EditTranslations from 'pages/EditTranslations';
 import Organizations from 'pages/Organizations';
-import TopSectionSelector from 'pages/TopSectionSelector';
-import NewsEditor from 'pages/NewsEditor';
 
-import DictionariesAll from 'pages/DictionaryAll';
+import TopSectionSelector from 'pages/TopSectionSelector';
+import DictionariesAll from 'pages/DictionariesAll';
 import LanguagesDatabasesRoute from 'pages/TreeRoute';
-import ToolsRoute from 'pages/ToolsRoute'
+import ToolsRoute from 'pages/ToolsRoute';
 import DashboardRoute from 'pages/DashboardRoute';
-import OrganizationRoute from 'pages/OrganizationRoute'
+import OrganizationRoute from 'pages/OrganizationRoute';
 import SupportRoute from 'pages/SupportRoute';
 import NoGrants from 'pages/NoGrants';
 import CorporaAll from 'pages/CorporaAll';
-import NewsList from 'pages/NewsList';
-import News from '../components/News';
+
+
 import config from 'config';
 
 const Routes = () => (
@@ -63,9 +62,6 @@ const Routes = () => (
     <Route path="/supportRoute" component={SupportRoute} />
     <Route path="/no_grants" component={NoGrants} />
     <Route path="/corpora_all" component={CorporaAll} />
-    <Route path="/news_editor" component={NewsEditor}/>
-    <Route path="/news_list" component={NewsList}/>
-    <Route path="/news/:news_one" component={News}/>
     <Route component={NotFound} />
 
 

@@ -1,32 +1,26 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { compose, branch, renderNothing } from 'recompose';
 import { Redirect, matchPath } from 'react-router-dom';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import Immutable, { fromJS, Map } from 'immutable';
-import { Container, Form, Radio, Segment, Button, Message } from 'semantic-ui-react';
+import { Container, Segment } from 'semantic-ui-react';
 
 import { buildLanguageTree } from 'pages/Search/treeBuilder';
-import { setGrantsMode, resetDictionaries } from 'ducks/home';
+
 
 import config from 'config';
 
 import BackTopButton from 'components/BackTopButton';
-/* import GrantedDicts from '../Home/components/GrantedDicts'; */
 import AllDicts from '../Home/components/AllDicts';
 import Placeholder from 'components/Placeholder';
 import { getScrollContainer } from '../Home/common';
-/* import { getScrollContainer } from './common'; */
-import { getTranslation } from 'api/i18n';
-/* import './published.scss';
- */
 
 
-const authenticatedDictionariesQuery = gql`
-  query AuthDictionaries {
+const authenticatedCorporaQuery = gql`
+  query AuthCorpora {
     dictionaries(proxy: true, category:1) {
       id
       parent_id
@@ -66,8 +60,8 @@ const authenticatedDictionariesQuery = gql`
   }
 `;
 
-const guestDictionariesQuery = gql`
-  query GuestDictionaries {
+const guestCorporaQuery = gql`
+  query GuestCorpora {
     dictionaries(proxy: false, published: true, category:1) {
       id
       parent_id
@@ -107,23 +101,10 @@ const guestDictionariesQuery = gql`
   }
 `;
 
-const downloadDictionariesMutation = gql`
-  mutation DownloadDictionaries($ids: [LingvodocID]!) {
-    download_dictionaries(ids: $ids) {
-      triumph
-    }
-  }
-`;
-
-const Home = (props) => {
+const CorporaAll = (props) => {
   const {
-    grantsMode,
-    selected,
-    actions,
-    downloadDictionaries,
     dictionaries: localDictionaries,
     perspectives,
-    grants,
     languages,
     isAuthenticated,
     data: {
@@ -138,13 +119,11 @@ const Home = (props) => {
 
   if (loading) {
     return (
-      <Placeholder/>
+      <Placeholder />
     );
   }
 
-  // handle legacy links from Lingvodoc 2.0
-  // if link has hash like #/dictionary/1/2/perspective/3/4/edit redirect to this version's
-  // PerspectiveView page
+
   if (hash) {
     const match = matchPath(hash, {
       path: '#/dictionary/:pcid/:poid/perspective/:cid/:oid/:mode',
@@ -157,10 +136,9 @@ const Home = (props) => {
     }
   }
 
-  const grantsList = fromJS(grants);
+
   const languagesTree = buildLanguageTree(fromJS(languages));
 
-  // skip permissions if buildType == 'server'
   const permissions =
     config.buildType === 'server'
       ? null
@@ -173,7 +151,6 @@ const Home = (props) => {
 
   const dictsSource = fromJS(dictionaries);
 
-  // pre-process dictionary list
   const localDicts = fromJS(localDictionaries);
   const isDownloaded = dict => !!localDicts.find(d => d.get('id').equals(dict.get('id')));
   const hasPermission = (p, permission) =>
@@ -185,8 +162,6 @@ const Home = (props) => {
   );
 
   const perspectivesList = fromJS(perspectives).map(perspective =>
-    // for every perspective set 4 boolean property: edit, view, publish, limited
-    // according to permission_list result
     fromJS({
       ...perspective.toJS(),
       view: hasPermission(perspective, 'view'),
@@ -195,14 +170,6 @@ const Home = (props) => {
       limited: hasPermission(perspective, 'limited'),
     }));
 
-  function download() {
-    const ids = selected.toJS();
-    downloadDictionaries({
-      variables: { ids },
-    }).then(() => {
-      actions.resetDictionaries();
-    });
-  }
 
   const scrollContainer = getScrollContainer();
 
@@ -224,26 +191,18 @@ const Home = (props) => {
   );
 };
 
-Home.propTypes = {
+CorporaAll.propTypes = {
   data: PropTypes.shape({
     loading: PropTypes.bool.isRequired,
   }).isRequired,
   dictionaries: PropTypes.array,
   perspectives: PropTypes.array.isRequired,
-  grants: PropTypes.array.isRequired,
   languages: PropTypes.array.isRequired,
   isAuthenticated: PropTypes.bool.isRequired,
-  grantsMode: PropTypes.bool.isRequired,
-  selected: PropTypes.instanceOf(Immutable.Set).isRequired,
-  actions: PropTypes.shape({
-    setGrantsMode: PropTypes.func.isRequired,
-    resetDictionaries: PropTypes.func.isRequired,
-  }).isRequired,
   location: PropTypes.object.isRequired,
-  downloadDictionaries: PropTypes.func.isRequired,
 };
 
-Home.defaultProps = {
+CorporaAll.defaultProps = {
   dictionaries: [],
 };
 
@@ -317,24 +276,20 @@ const AuthWrapper = ({
   },
 }) => {
   const Component = compose(
-    connect(
-      state => ({ ...state.home, ...state.router }),
-      dispatch => ({ actions: bindActionCreators({ setGrantsMode, resetDictionaries }, dispatch) })
-    ),
-    graphql(isAuthenticated ? authenticatedDictionariesQuery : guestDictionariesQuery, {
+    connect(state => ({ ...state.router })),
+    graphql(isAuthenticated ? authenticatedCorporaQuery : guestCorporaQuery, {
       options: {
         fetchPolicy: 'network-only'
       }
-    }),
-    graphql(downloadDictionariesMutation, { name: 'downloadDictionaries' })
-  )(Home);
+    })
+  )(CorporaAll);
 
   if (config.buildType === 'server') {
     return (
       <Component perspectives={perspectives} grants={grants} languages={languages} isAuthenticated={isAuthenticated} />
     );
   }
-  // proxy and desktop has additional parameter - local dictionaries
+
   return (
     <Component
       dictionaries={dictionaries}

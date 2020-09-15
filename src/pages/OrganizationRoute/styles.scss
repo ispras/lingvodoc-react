@@ -2,25 +2,28 @@
 
   .background-img {
     background-image: url(../../images/organization.jpg);
-    background-repeat: no-repeat; 
+    background-repeat: no-repeat;
     background-position: center center;
     background-size: contain;
-    width: 200px;
-    height: 150px;
+    width: 300px;
+    height: 250px;
     cursor: pointer;
-
     display: inline-block;
   }
-  .container{
+  .container {
     margin-top: 100px;
   }
-  .block{
-     display: inline-block; 
-     margin-left: 50px;
+  .block {
+    display: inline-block;
+
+   
   }
-  .column-icon{
+  .off-grant{
+    margin-left: 50px;
+  }
+  .column-icon {
     position: relative;
-left: 17%;
+    left: 17%;
   }
   p {
     font-weight: bold;
