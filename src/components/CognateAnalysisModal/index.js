@@ -13,7 +13,7 @@ import { bindActionCreators } from 'redux';
 import { isEqual, map } from 'lodash';
 import { connect } from 'react-redux';
 import { compositeIdToString as id2str } from 'utils/compositeId';
-import { checkLanguageId, languageIdList } from 'pages/Home/components/LangsNav';
+import { checkLanguageId, languageIdList } from 'components/Home/components/LangsNav';
 import { getTranslation } from 'api/i18n';
 import { connectMutation } from 'components/GroupingTagModal/graphql';
 

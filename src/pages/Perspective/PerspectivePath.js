@@ -15,7 +15,6 @@ import { openSaveDictionaryModal } from 'ducks/saveDictionary';
 import { openStatistics } from 'ducks/statistics';
 import { getTranslation } from 'api/i18n';
 
-
 const queryPerspectivePath = gql`
   query queryPerspectivePath($id: LingvodocID!) {
     perspective(id: $id) {
@@ -31,6 +30,7 @@ const queryPerspectivePath = gql`
 const queryAvailablePerspectives = gql`
   query availablePerspectives($dictionary_id: LingvodocID!) {
     dictionary(id: $dictionary_id) {
+      id
       perspectives {
         id
         parent_id
@@ -54,14 +54,6 @@ class PerspectivePath extends React.Component {
 
     const { perspective: { tree } } = queryPerspectivePath;
     const { perspectives } = queryAvailablePerspectives.dictionary;
-
-    const sections = tree.slice().reverse().map((e, index) => {
-      if ( perspectives.length > 1 && index == tree.length - 1 ) {
-        return this.getPerspectiveTreeSection({ treeElement: e, perspectives, mode, dictionary_id, tree, id, actions })
-      } else {
-        return this.getCommonTreeSection({ treeElement: e });
-      }
-    });
  
     return (
       <Header as="h2" className={className}>
@@ -106,7 +98,7 @@ class PerspectivePath extends React.Component {
                             icon="setting"
                             text={`'${e.translation}' ${getTranslation('Properties').toLowerCase()}...`}
                             onClick={() => actions.openPerspectivePropertiesModal(
-                              id, dictionary_id, `'${e.translation}' ${getTranslation('Propeties').toLowerCase()}`
+                              id, dictionary_id, `'${e.translation}' ${getTranslation('Properties').toLowerCase()}`
                             )}
                           />
                         ]
@@ -140,7 +132,7 @@ class PerspectivePath extends React.Component {
                           icon="setting"
                           text={`'${e.translation}' ${getTranslation('Properties').toLowerCase()}...`}
                           onClick={() => actions.openDictionaryPropertiesModal(
-                            dictionary_id, `'${e.translation}' ${getTranslation('Propeties').toLowerCase()}`
+                            dictionary_id, `'${e.translation}' ${getTranslation('Properties').toLowerCase()}`
                           )}
                         />,
 
@@ -148,9 +140,7 @@ class PerspectivePath extends React.Component {
                           key="organizations"
                           icon="address book"
                           text={`'${e.translation}' ${getTranslation('Organizations').toLowerCase()}...`}
-                          onClick={() => actions.openDictionaryOrganizationsModal(
-                            dictionary_id, `'${e.translation}' ${getTranslation('Propeties').toLowerCase()}`
-                          )}
+                          onClick={() => actions.openDictionaryOrganizationsModal(dictionary_id)}
                         />,
 
                       ]}

@@ -14,9 +14,9 @@ import { buildLanguageTree } from 'pages/Search/treeBuilder';
 import config from 'config';
 
 import BackTopButton from 'components/BackTopButton';
-import AllDicts from '../Home/components/AllDicts';
+import AllDicts from 'components/Home/components/AllDicts';
 import Placeholder from 'components/Placeholder';
-import { getScrollContainer } from '../Home/common';
+import { getScrollContainer } from 'components/Home/common';
 
 
 const authenticatedCorporaQuery = gql`

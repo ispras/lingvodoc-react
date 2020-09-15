@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import { compose, mapProps } from 'recompose';
 import { Segment, Header } from 'semantic-ui-react';
 
-import LangsNavAutocomplete from 'pages/Home/components/LangsNav/LangsNavAutocomplete/index';
-import LangsNavList from 'pages/Home/components/LangsNav/LangsNavList/index';
+import LangsNavAutocomplete from 'components/Home/components/LangsNav/LangsNavAutocomplete/index';
+import LangsNavList from 'components/Home/components/LangsNav/LangsNavList/index';
 import { sortLangsAlphabetically } from '../../common';
 import { getTranslation } from 'api/i18n';
 

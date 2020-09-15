@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Immutable, { fromJS } from 'immutable';
 import { assignDictsToTree, buildDictTrees } from 'pages/Search/treeBuilder';
-import LangsNav from 'pages/Home/components/LangsNav';
+import LangsNav from 'components/Home/components/LangsNav';
 import Tree from './Tree';
 
 function AllDicts(props) {
