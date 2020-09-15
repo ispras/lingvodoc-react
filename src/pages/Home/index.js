@@ -128,14 +128,14 @@ const Home = (props) => {
     },
     location: { hash },
   } = props;
-
+  const statusLangsNav = true;
   if (error) {
     return null;
   }
 
   if (loading) {
     return (
-      <Placeholder/>
+      <Placeholder />
     );
   }
 
@@ -252,6 +252,8 @@ const Home = (props) => {
             dictionaries={dicts}
             perspectives={perspectivesList}
             isAuthenticated={isAuthenticated}
+            selectorMode={false}
+            statusLangsNav={statusLangsNav}
           />
         )}
       </Segment>
