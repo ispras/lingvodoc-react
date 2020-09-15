@@ -12,6 +12,7 @@ import { getTranslation } from 'api/i18n';
 const query = gql`
 query Dictionary($id: LingvodocID!){
   dictionary(id: $id){
+    id
     translation
   }
 }
@@ -85,7 +86,7 @@ class Properties extends React.Component {
         size="fullscreen">
 
         <Modal.Content>
-          <Header size="large">{getTranslation('Save')} {translation}?</Header>
+          <Header size="large">{`${getTranslation('Save')} '${translation}'?`}</Header>
           <Segment>
             {getTranslation('URL with results of saving data should appear soon after clicking save button in the tasks.')}
           </Segment>
