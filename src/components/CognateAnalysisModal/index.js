@@ -983,11 +983,16 @@ class CognateAnalysisModal extends React.Component
         },
       }).then(
         () => {
-          window.logger.suc('Cognate acoustic analysis is launched. Please check out tasks for details.');
+
+          window.logger.suc(
+            getTranslation('Cognate acoustic analysis is launched. Please check out tasks for details.'));
+
           this.props.closeModal();
         },
         () => {
-          window.logger.err('Failed launch cognate acoustic analysis!');
+
+          window.logger.err(
+            getTranslation('Failed to launch cognate acoustic analysis!'));
         }
       );
 
@@ -1013,7 +1018,7 @@ class CognateAnalysisModal extends React.Component
           mode: backend_mode,
           matchTranslationsValue,
           onlyOrphansFlag: this.state.onlyOrphansFlag,
-          figureFlag: this.props.mode == '',
+          figureFlag: backend_mode == '',
           debugFlag: this.state.debugFlag,
           intermediateFlag: this.state.intermediateFlag },
         },
@@ -2129,7 +2134,7 @@ class CognateAnalysisModal extends React.Component
                       data={this.state.plotly_data}
                       layout={{
                         width: 1200,
-                        height: 800 + 20 * this.state.embedding_2d.length,
+                        height: 800 + 28 * this.state.embedding_2d.length,
                         xaxis: {
                           color: "#DDD",
                           gridcolor: "#DDD",
@@ -2153,7 +2158,7 @@ class CognateAnalysisModal extends React.Component
                       data={this.state.plotly_3d_data}
                       layout={{
                         width: 1200,
-                        height: 900 + 20 * this.state.embedding_2d.length,
+                        height: 900 + 28 * this.state.embedding_2d.length,
                         scene: {
                           xaxis: {
                             color: "#DDD",
