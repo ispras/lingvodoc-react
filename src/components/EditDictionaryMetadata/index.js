@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Form, Segment } from 'semantic-ui-react';
+import { Button, Form, Segment, Label } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
@@ -20,28 +20,14 @@ class EditDictionaryMetadata extends React.Component {
       kind: null,
       authors: [],
       humanSettlement: [],
-      years: [],
-      interrogator: '',
-      informant: '',
-      processing: '',
-      typeOfDiscourse: '',
-      typeOfSpeech: '',
-      speechGenre: '',
-      theThemeOfTheText: ''
+      years: []
     };
 
     this.initialState = {
       kind: this.state.kind,
       authors: this.state.authors,
       humanSettlement: this.state.humanSettlement,
-      years: this.state.years,
-      interrogator: this.state.interrogator,
-      informant: this.state.informant,
-      processing: this.state.processing,
-      typeOfDiscourse: this.state.typeOfDiscourse,
-      typeOfSpeech: this.state.typeOfSpeech,
-      speechGenre: this.state.speechGenre,
-      theThemeOfTheText: this.state.theThemeOfTheText
+      years: this.state.years
     };
 
     this.onAddNewAlternative = this.onAddNewAlternative.bind(this);
@@ -125,27 +111,6 @@ class EditDictionaryMetadata extends React.Component {
       case 'years':
         this.setState({ years: data.value }, callback);
         break;
-      case 'interrogator':
-        this.setState({ interrogator: data.value }, callback);
-        break;
-      case 'informant':
-        this.setState({ informant: data.value }, callback);
-        break;
-      case 'processing':
-        this.setState({ processing: data.value }, callback);
-        break;
-      case 'typeOfDiscourse':
-        this.setState({ typeOfDiscourse: data.value }, callback);
-        break;
-      case 'typeOfSpeech':
-        this.setState({ typeOfSpeech: data.value }, callback);
-        break;
-      case 'speechGenre':
-        this.setState({ speechGenre: data.value }, callback);
-        break;
-      case 'theThemeOfTheText':
-        this.setState({ theThemeOfTheText: data.value }, callback);
-        break;
       default:
         return;
     }
@@ -178,34 +143,6 @@ class EditDictionaryMetadata extends React.Component {
         toSave = { years: this.state.years };
         this.initialState.years = toSave.years;
         break;
-      case 'interrogator':
-        toSave = { interrogator: this.state.interrogator };
-        this.initialState.interrogator = toSave.interrogator;
-        break;
-      case 'informant':
-        toSave = { informant: this.state.informant };
-        this.initialState.informant = toSave.informant;
-        break;
-      case 'processing':
-        toSave = { processing: this.state.processing };
-        this.initialState.processing = toSave.processing;
-        break;
-      case 'typeOfDiscourse':
-        toSave = { typeOfDiscourse: this.state.typeOfDiscourse };
-        this.initialState.typeOfDiscourse = toSave.typeOfDiscourse;
-        break;
-      case 'typeOfSpeech':
-        toSave = { typeOfSpeech: this.state.typeOfSpeech };
-        this.initialState.typeOfSpeech = toSave.typeOfSpeech;
-        break;
-      case 'speechGenre':
-        toSave = { speechGenre: this.state.speechGenre };
-        this.initialState.speechGenre = toSave.speechGenre;
-        break;
-      case 'theThemeOfTheText':
-        toSave = { theThemeOfTheText: this.state.theThemeOfTheText };
-        this.initialState.theThemeOfTheText = toSave.theThemeOfTheText;
-        break;
       default:
         return;
     }
@@ -237,18 +174,7 @@ class EditDictionaryMetadata extends React.Component {
     }
 
     const { mode } = this.props;
-    const {
-      kind,
-      authors,
-      humanSettlement,
-      years,
-      interrogator,
-      informant,
-      processing,
-      typeOfDiscourse,
-      typeOfSpeech,
-      speechGenre,
-      theThemeOfTheText } = this.state;
+    const { kind, authors, humanSettlement, years } = this.state;
 
     return (
       <Form>
@@ -271,8 +197,8 @@ class EditDictionaryMetadata extends React.Component {
         </Segment>
         <Segment>
           <Form.Group widths='equal'>
+            <Label size='large'>{getTranslation("Authors")}</Label>
             <Form.Dropdown fluid multiple selection search allowAdditions
-              label={getTranslation("Authors")}
               options={this.authorsOptions}
               value={authors}
               onAddItem={this.onAddNewAlternative}
@@ -285,40 +211,12 @@ class EditDictionaryMetadata extends React.Component {
                 onClick={() => this.onSaveValue('authors')}
               />
             }
-            <Form.Input fluid
-              label={getTranslation("Interrogator")}
-              value={interrogator}
-              onChange={(event, data) => this.onChangeValue('interrogator', data)}
-            />
-            {mode != 'create' &&
-              <Form.Button
-                floated='right'
-                positive
-                content={getTranslation("Save")}
-                disabled={interrogator == this.initialState.interrogator}
-                onClick={() => this.onSaveValue('interrogator')}
-              />
-            }
-            <Form.Input fluid
-              label={getTranslation("Informant")}
-              value={informant}
-              onChange={(event, data) => this.onChangeValue('informant', data)}
-            />
-            {mode != 'create' &&
-              <Form.Button
-                floated='right'
-                positive
-                content={getTranslation("Save")}
-                disabled={informant == this.initialState.informant}
-                onClick={() => this.onSaveValue('informant')}
-              />
-            }
           </Form.Group>
         </Segment>
         <Segment>
           <Form.Group widths='equal'>
+            <Label size='large'>{getTranslation("Human settlement")}</Label>
             <Form.Dropdown fluid multiple selection search allowAdditions
-              label={getTranslation("Human settlement")}
               options={this.settlementsOptions}
               value={humanSettlement}
               onAddItem={this.onAddNewAlternative}
@@ -335,8 +233,8 @@ class EditDictionaryMetadata extends React.Component {
         </Segment>
         <Segment>
           <Form.Group widths='equal'>
+            <Label size='large'>{getTranslation("Years")}</Label>
             <Form.Dropdown fluid multiple selection search allowAdditions
-              label={getTranslation("Years")}
               options={this.yearsOptions}
               value={years}
               onAddItem={this.onAddNewAlternative}
@@ -347,88 +245,6 @@ class EditDictionaryMetadata extends React.Component {
                 content={getTranslation("Save")}
                 disabled={JSON.stringify(years) == JSON.stringify(this.initialState.years)}
                 onClick={() => this.onSaveValue('years')}
-              />
-            }
-          </Form.Group>
-        </Segment>
-        <Segment>
-          <Form.Group widths='equal'>
-            <Form.Input fluid
-              label={getTranslation("Processing")}
-              value={processing}
-              onChange={(event, data) => this.onChangeValue('processing', data)}
-            />
-            {mode != 'create' &&
-              <Form.Button
-                floated='right'
-                positive
-                content={getTranslation("Save")}
-                disabled={processing == this.initialState.processing}
-                onClick={() => this.onSaveValue('processing')}
-              />
-            }
-          </Form.Group>
-        </Segment>
-        <Segment>
-          <Form.Group widths='equal'>
-            <Form.Input fluid
-              label={getTranslation("Type of discourse")}
-              value={typeOfDiscourse}
-              onChange={(event, data) => this.onChangeValue('typeOfDiscourse', data)}
-            />
-            {mode != 'create' &&
-              <Form.Button
-                floated='right'
-                positive
-                content={getTranslation("Save")}
-                disabled={typeOfDiscourse == this.initialState.typeOfDiscourse}
-                onClick={() => this.onSaveValue('typeOfDiscourse')}
-              />
-            }
-            <Form.Input fluid
-              label={getTranslation("Type of speech")}
-              value={typeOfSpeech}
-              onChange={(event, data) => this.onChangeValue('typeOfSpeech', data)}
-            />
-            {mode != 'create' &&
-              <Form.Button
-                floated='right'
-                positive
-                content={getTranslation("Save")}
-                disabled={typeOfSpeech == this.initialState.typeOfSpeech}
-                onClick={() => this.onSaveValue('typeOfSpeech')}
-              />
-            }
-            <Form.Input fluid
-              label={getTranslation("Speech genre")}
-              value={speechGenre}
-              onChange={(event, data) => this.onChangeValue('speechGenre', data)}
-            />
-            {mode != 'create' &&
-              <Form.Button
-                floated='right'
-                positive
-                content={getTranslation("Save")}
-                disabled={speechGenre == this.initialState.speechGenre}
-                onClick={() => this.onSaveValue('speechGenre')}
-              />
-            }
-          </Form.Group>
-        </Segment>
-        <Segment>
-          <Form.Group widths='equal'>
-            <Form.Input fluid
-              label={getTranslation("The theme of the text")}
-              value={theThemeOfTheText}
-              onChange={(event, data) => this.onChangeValue('theThemeOfTheText', data)}
-            />
-            {mode != 'create' &&
-              <Form.Button
-                floated='right'
-                positive
-                content={getTranslation("Save")}
-                disabled={theThemeOfTheText == this.initialState.theThemeOfTheText}
-                onClick={() => this.onSaveValue('theThemeOfTheText')}
               />
             }
           </Form.Group>

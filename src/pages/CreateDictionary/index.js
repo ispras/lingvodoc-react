@@ -18,7 +18,6 @@ import {
 import Languages from 'components/Languages';
 import Translations from 'components/Translation';
 import EditDictionaryMetadata from 'components/EditDictionaryMetadata';
-import EditCorpusMetadata from 'components/EditCorpusMetadata';
 import Perspectives from './Perspectives';
 import { createDictionaryMutation } from './graphql';
 import { query as dashboardQuery } from 'pages/Dashboard';
@@ -102,7 +101,6 @@ class CreateDictionaryWizard extends React.Component {
     const {
       step, isNextStep, parentLanguage, translations, metadata, perspectives, mode,
     } = this.props;
-
     return (
       <div>
         <Step.Group widths={4}>
@@ -154,13 +152,7 @@ class CreateDictionaryWizard extends React.Component {
               </Segment>
               <Divider/>
               <Header inverted>{getTranslation('Fill metadata information')}</Header>
-              {mode === 'dictionary' && (
-                <EditDictionaryMetadata mode='create' metadata={metadata ? metadata.toJS() : metadata} onChange={metadata => this.props.setMetadata(metadata)} />
-              )}
-              {mode === 'corpus' && (
-                <EditCorpusMetadata mode='create' metadata={metadata ? metadata.toJS() : metadata} onChange={metadata => this.props.setMetadata(metadata)} />
-              )}
-              {}
+              <EditDictionaryMetadata mode='create' metadata={metadata ? metadata.toJS() : metadata} onChange={metadata => this.props.setMetadata(metadata)} />
             </div>
           )}
 
