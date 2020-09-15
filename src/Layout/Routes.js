@@ -26,9 +26,8 @@ import ToolsRoute from 'pages/ToolsRoute';
 import DashboardRoute from 'pages/DashboardRoute';
 import OrganizationRoute from 'pages/OrganizationRoute';
 import SupportRoute from 'pages/SupportRoute';
-import NoGrants from 'pages/NoGrants';
+import WithoutGrants from 'pages/WithoutGrants';
 import CorporaAll from 'pages/CorporaAll';
-
 
 import config from 'config';
 
@@ -60,7 +59,7 @@ const Routes = () => (
     <Route path="/dashboardRoute" component={DashboardRoute} />
     <Route path="/organizationRoute" component={OrganizationRoute} />
     <Route path="/supportRoute" component={SupportRoute} />
-    <Route path="/no_grants" component={NoGrants} />
+    <Route path="/without_grants" component={WithoutGrants} />
     <Route path="/corpora_all" component={CorporaAll} />
     <Route component={NotFound} />
 

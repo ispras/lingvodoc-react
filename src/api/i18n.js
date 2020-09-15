@@ -86,6 +86,7 @@ export const stringsToTranslate = [
   "Dictionaries",
   "Dictionary",
   "Dictionary created",
+  "Dictionaries created out of grant",
   "Dictionary names and metadata",
   "Disable all markers of the groups this marker belongs to.",
   "Disable marker",

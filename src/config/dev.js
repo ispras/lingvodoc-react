@@ -1,8 +1,7 @@
 import base from './base';
 
 const dev = {
-  apiUrl: 'http://localhost:9999/api',
-/*   apiUrl:'api-mock', */
+  apiUrl: '/api',
   pollingInterval: 20000,
 };
 

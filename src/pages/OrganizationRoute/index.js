@@ -17,7 +17,7 @@ function organizationRoute() {
         </div >
         <div className="block off-grant" >
           <p>{getTranslation('Off-grant projects')}</p>
-          <Link to="/no_grants" className="background-img" />
+          <Link to="/without_grants" className="background-img" />
         </div>
 
       </Container>

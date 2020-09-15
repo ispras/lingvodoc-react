@@ -6,7 +6,7 @@ import { Redirect, matchPath } from 'react-router-dom';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import Immutable, { fromJS, Map } from 'immutable';
-import { Container, Segment } from 'semantic-ui-react';
+import { Container, Segment, Label } from 'semantic-ui-react';
 
 import { buildLanguageTree } from 'pages/Search/treeBuilder';
 
@@ -14,10 +14,10 @@ import { buildLanguageTree } from 'pages/Search/treeBuilder';
 import config from 'config';
 
 import BackTopButton from 'components/BackTopButton';
-import GrantedDicts from './treeNoGrants';
+import TreeWithoutGrants from './builderTreeWithoutGrants';
 import Placeholder from 'components/Placeholder';
 import { getScrollContainer } from 'components/Home/common';
-
+import { getTranslation } from 'api/i18n';
 
 const authenticatedCorporaQuery = gql`
   query AuthCorpora {
@@ -176,15 +176,16 @@ const CorporaAll = (props) => {
 
   return (
     <Container className="published">
+      <Label size="huge">{getTranslation('Dictionaries created out of grant')}</Label>
       <Segment>
         {
-           <GrantedDicts
-           languagesTree={languagesTree}
-           dictionaries={dicts}
-           perspectives={perspectivesList}
-           grants={grantsList}
-           isAuthenticated={isAuthenticated}
-         />
+          <TreeWithoutGrants
+            languagesTree={languagesTree}
+            dictionaries={dicts}
+            perspectives={perspectivesList}
+            grants={grantsList}
+            isAuthenticated={isAuthenticated}
+          />
         }
       </Segment>
       <BackTopButton scrollContainer={scrollContainer} />
@@ -196,6 +197,7 @@ CorporaAll.propTypes = {
   data: PropTypes.shape({
     loading: PropTypes.bool.isRequired,
   }).isRequired,
+  grants: PropTypes.array.isRequired,
   dictionaries: PropTypes.array,
   perspectives: PropTypes.array.isRequired,
   languages: PropTypes.array.isRequired,
@@ -311,6 +313,7 @@ AuthWrapper.propTypes = {
     is_authenticated: PropTypes.bool,
   }).isRequired,
 };
+
 
 export default compose(
   graphql(config.buildType === 'server' ? dictionaryWithPerspectivesQuery : dictionaryWithPerspectivesProxyQuery),
