@@ -8,6 +8,11 @@ const FriendlyErrors = require('friendly-errors-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const _ = require('./utils');
 
+if (_.versionString)
+  _.versionString += '-';
+
+_.versionString += 'development';
+
 base.devtool = 'eval-source-map';
 base.module.loaders.push(
   {
@@ -31,6 +36,7 @@ base.plugins.push(
     'process.env.NODE_ENV': JSON.stringify('development'),
     __DEVELOPMENT__: true,
     __DEVTOOLS__: true,
+    __VERSION__: JSON.stringify(_.versionString),
   }),
   new webpack.HotModuleReplacementPlugin(),
   new webpack.NoEmitOnErrorsPlugin(),

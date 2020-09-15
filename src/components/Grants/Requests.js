@@ -27,7 +27,9 @@ function acceptRequest(mutation, id, accept) {
     ],
   }).then(() => {
     window.logger.suc(getTranslation(
-      'Request accepted successfully.'));
+      accept ?
+        'Request accepted successfully.' :
+        'Request rejected successfully.'));
   });;
 }
 

@@ -10,7 +10,7 @@ import LinkModal from 'components/LinkModal';
 
 const DirectedLink = (props) => {
   const {
-    entry, column, mode, entitiesMode, as: Component = 'div', openModal,
+    entry, column, mode, entitiesMode, as: Component = 'div', openModal, disabled,
   } = props;
 
   const count = entry.entities.filter(e => isEqual(e.field_id, column.id)).length;
@@ -19,6 +19,7 @@ const DirectedLink = (props) => {
   return (
     <Component className="gentium">
       <Button
+        disabled={disabled}
         basic
         as="button"
         content={content}

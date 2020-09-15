@@ -88,6 +88,18 @@ const updatePositionMutation = gql`
   }
 `;
 
+const setNestedMutation = gql`
+  mutation UpdateColumnMutation(
+    $id1: LingvodocID!
+    $perspectiveId: LingvodocID
+    $selfId1: LingvodocID!
+  ) {
+    update_column(id: $id1, parent_id: $perspectiveId, self_id: $selfId1) {
+      triumph
+    }
+  }
+`;
+
 const updateNestedMutation = gql`
   mutation UpdateColumnMutation(
     $id1: LingvodocID!
@@ -192,8 +204,8 @@ class C extends React.Component {
   }
 
   onNestedChange(nested) {
-    const { column, updateNested } = this.props;
-    updateNested({
+    const { column, setNested, updateNested } = this.props;
+    (nested[1].id ? updateNested : setNested)({
       variables: {
         id1: nested[0].id,
         id2: nested[1].id,
@@ -290,6 +302,7 @@ C.propTypes = {
   perspectives: PropTypes.array.isRequired,
   fields: PropTypes.array.isRequired,
   updateColumn: PropTypes.func.isRequired,
+  setNested: PropTypes.func.isRequired,
   updateNested: PropTypes.func.isRequired,
 };
 
@@ -297,6 +310,7 @@ const Column = compose(
   connect(null, dispatch => ({
     actions: bindActionCreators({ openCreateFieldModal }, dispatch)})),
   graphql(updateColumnMutation, { name: 'updateColumn' }),
+  graphql(setNestedMutation, { name: 'setNested' }),
   graphql(updateNestedMutation, { name: 'updateNested' })
 )(C);
 

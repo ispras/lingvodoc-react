@@ -17,7 +17,7 @@ class SearchLexicalEntries extends React.Component {
     const entity = lexicalEntry.entities.find(e => e.content && e.content.length >= 2 && e.content.length < 8);
 
     this.state = {
-      searchString: entity ? entity.content : '',
+      searchString: entity ? entity.content.trim() : '',
       resultsTree: null,
       searchInProgress: false
     };
@@ -71,7 +71,7 @@ class SearchLexicalEntries extends React.Component {
           onChange={(e, data) => this.setState({ searchString: data.value })}
         />
         {this.state.searchInProgress &&
-          <Dimmer active inverted style={{ minHeight: '600px', background: 'none' }}>
+          <Dimmer active style={{ minHeight: '600px', background: 'none' }}>
             <Header as="h2" icon>
               <Icon name="spinner" loading />
             </Header>
