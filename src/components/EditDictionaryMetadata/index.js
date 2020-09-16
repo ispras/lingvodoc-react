@@ -270,15 +270,15 @@ class EditDictionaryMetadata extends React.Component {
         </Segment>
         <Segment>
           <Form.Group widths="equal">
-            <Label size="large">{getTranslation('Authors')}</Label>
             <Form.Dropdown
               fluid
+              label={getTranslation('Authors')}
               multiple
               selection
               search
               allowAdditions
               options={this.authorsOptions}
-              value={authors}
+              defaultValue={authors}
               onAddItem={this.onAddNewAlternative}
               onChange={(event, data) => this.onChangeValue('authors', data)}
             />
@@ -298,7 +298,7 @@ class EditDictionaryMetadata extends React.Component {
               allowAdditions
               label={getTranslation('Interrogator')}
               options={this.authorsOptions}
-              value={interrogator}
+              defaultValue={interrogator}
               onAddItem={this.onAddNewAlternative}
               onChange={(event, data) => this.onChangeValue('interrogator', data)}
             />
@@ -314,7 +314,7 @@ class EditDictionaryMetadata extends React.Component {
             <Form.Input
               fluid
               label={getTranslation('Informant')}
-              value={informant}
+              defaultValue={informant}
               onChange={(event, data) => this.onChangeValue('informant', data)}
             />
             {mode !== 'create' &&
@@ -338,7 +338,7 @@ class EditDictionaryMetadata extends React.Component {
               search
               allowAdditions
               options={this.settlementsOptions}
-              value={humanSettlement}
+              defaultValue={humanSettlement}
               onAddItem={this.onAddNewAlternative}
               onChange={(event, data) => this.onChangeValue('settlements', data)}
             />
@@ -362,7 +362,7 @@ class EditDictionaryMetadata extends React.Component {
               search
               allowAdditions
               options={this.yearsOptions}
-              value={years}
+              defaultValue={years}
               onAddItem={this.onAddNewAlternative}
               onChange={(event, data) => this.onChangeValue('years', data)}
             />
@@ -386,7 +386,7 @@ class EditDictionaryMetadata extends React.Component {
               allowAdditions
               label={getTranslation('Processing')}
               options={this.authorsOptions}
-              value={processing}
+              defaultValue={processing}
               onAddItem={this.onAddNewAlternative}
               onChange={(event, data) => this.onChangeValue('processing', data)}
             />
@@ -406,7 +406,7 @@ class EditDictionaryMetadata extends React.Component {
             <Form.Input
               fluid
               label={getTranslation('Type of discourse')}
-              value={typeOfDiscourse}
+              defaultValue={typeOfDiscourse}
               onChange={(event, data) => this.onChangeValue('typeOfDiscourse', data)}
             />
             {mode !== 'create' &&
@@ -421,7 +421,7 @@ class EditDictionaryMetadata extends React.Component {
             <Form.Input
               fluid
               label={getTranslation('Type of speech')}
-              value={typeOfSpeech}
+              defaultValue={typeOfSpeech}
               onChange={(event, data) => this.onChangeValue('typeOfSpeech', data)}
             />
             {mode !== 'create' &&
@@ -436,7 +436,7 @@ class EditDictionaryMetadata extends React.Component {
             <Form.Input
               fluid
               label={getTranslation('Speech genre')}
-              value={speechGenre}
+              defaultValue={speechGenre}
               onChange={(event, data) => this.onChangeValue('speechGenre', data)}
             />
             {mode !== 'create' &&
@@ -455,8 +455,8 @@ class EditDictionaryMetadata extends React.Component {
             <Form.Input
               fluid
               label={getTranslation('The theme of the text')}
-              value={theThemeOfTheText}
-              onChange={(event, data) => this.onChangeValue('theThemeOfTheText', data)}
+              defaultValue={theThemeOfTheText}
+              onBlur={(event) => this.onChangeValue('theThemeOfTheText', event.currentTarget )}
             />
             {mode !== 'create' &&
               <Form.Button
