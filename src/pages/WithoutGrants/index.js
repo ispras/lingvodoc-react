@@ -176,7 +176,7 @@ const CorporaAll = (props) => {
 
   return (
     <Container className="published">
-      <Label size="huge">{getTranslation('Dictionaries created out of grant')}</Label>
+      <Segment size='huge'>{getTranslation('Dictionaries created out of grant')}</Segment>
       <Segment>
         {
           <TreeWithoutGrants
