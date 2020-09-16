@@ -34,25 +34,60 @@ class OdtMarkupModal extends React.Component {
     super(props);
 
     this.initialized = false;
+    this.availableId = 0;
     this.content = null;
 
     this.state = {
       selection: null,
+      browserSelection: null,
       dirty: false,
       saving: false,
       confirmClose: false
     };
 
     this.addClickHandlers = this.addClickHandlers.bind(this);
+    this.onBrowserSelection = this.onBrowserSelection.bind(this);
+    this.addToMarkup = this.addToMarkup.bind(this);
     this.save = this.save.bind(this);
     this.onClose = this.onClose.bind(this);
+  }
+
+  componentDidUpdate() {
+    if (this.initialized) {
+      return;
+    }
+
+    const root = document.getElementById("markup-content");
+    if (!root) {
+      return;
+    }
+
+    Array.from(root.getElementsByTagName('span')).forEach(elem => {
+      if (elem.id !== undefined) {
+        const numId = Number.parseInt(elem.id);
+        if (numId !== NaN && this.availableId <= numId) {
+          this.availableId = numId + 1;
+        }
+      }
+    });
+    this.addClickHandlers(root.getElementsByClassName('unverified'));
+    this.addClickHandlers(root.getElementsByClassName('verified'));
+    if (this.props.mode === 'edit') {
+      document.addEventListener('selectionchange', this.onBrowserSelection);
+    }
+
+    this.initialized = true;
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('selectionchange', this.onBrowserSelection);
   }
 
   addClickHandlers(elems) {
     Array.from(elems).forEach(elem => {
       elem.onclick = () => {
         const { selection, saving } = this.state;
-        if (saving) {
+        if (saving || !document.getSelection().isCollapsed) {
           return;
         }
 
@@ -70,20 +105,58 @@ class OdtMarkupModal extends React.Component {
     });
   }
 
-  componentDidUpdate() {
-    if (this.initialized) {
+  onBrowserSelection() {
+    const sel = document.getSelection();
+    if (sel.rangeCount !== 1 || sel.anchorNode !== sel.focusNode) {
+      this.setState({ browserSelection: null });
       return;
     }
 
-    const root = document.getElementById("markup-content");
-    if (!root) {
+    const range = sel.getRangeAt(0);
+    const text = range.toString().trim();
+    if (text.length === 0 || text.indexOf(' ') !== -1 || text !== range.toString()) {
+      this.setState({ browserSelection: null });
       return;
     }
 
-    this.addClickHandlers(root.getElementsByClassName('unverified'));
-    this.addClickHandlers(root.getElementsByClassName('verified'));
+    const elem = sel.anchorNode.parentElement;
+    if (!document.getElementById("markup-content").contains(elem) ||
+      elem.classList.contains('verified') ||
+      elem.classList.contains('unverified')) {
+      this.setState({ browserSelection: null });
+      return;
+    }
 
-    this.initialized = true;
+    this.setState({ browserSelection: range });
+  }
+
+  addToMarkup() {
+    const { browserSelection } = this.state;
+    const textNode = browserSelection.startContainer;
+    const parentNode = textNode.parentElement;
+    const text = textNode.textContent;
+
+    let str = text.substring(0, browserSelection.startOffset);
+    if (str !== '') {
+      parentNode.insertBefore(document.createTextNode(str), textNode);
+    }
+    const span = document.createElement('span');
+    span.id = this.availableId;
+    span.classList.add('unverified');
+    span.innerText = browserSelection.toString();
+    this.addClickHandlers([span]);
+    parentNode.insertBefore(span, textNode);
+    str = text.substring(browserSelection.endOffset);
+    if (str !== '') {
+      parentNode.insertBefore(document.createTextNode(str), textNode);
+    }
+    parentNode.removeChild(textNode);
+    this.setState({
+      browserSelection: null,
+      dirty: true
+    });
+    this.availableId++;
+    span.click();
   }
 
   save() {
@@ -142,16 +215,21 @@ class OdtMarkupModal extends React.Component {
       this.content = bodies[0].innerHTML;
     }
 
-    const { selection, dirty, saving, confirmClose } = this.state;
+    const { selection, browserSelection, dirty, saving, confirmClose } = this.state;
 
     return (
       <Modal open dimmer size="fullscreen" closeIcon onClose={this.onClose} closeOnDimmerClick={false}>
         <Modal.Header>{getTranslation('Text markup')}</Modal.Header>
         <div style={{ display: 'flex', flexDirection: 'row' }}>
-          <PropertiesView selection={selection} mode={saving ? 'view' : mode} setDirty={() => this.setState({ dirty: true })}/>
-          <Modal.Content id="markup-content" scrolling dangerouslySetInnerHTML={{ __html: this.content }} style={{ padding: '10px' }}/>
+          <PropertiesView selection={selection} mode={saving ? 'view' : mode} setDirty={() => this.setState({ dirty: true })} />
+          <Modal.Content id="markup-content" scrolling dangerouslySetInnerHTML={{ __html: this.content }} style={{ padding: '10px' }} />
         </div>
         <Modal.Actions>
+          { browserSelection &&
+            <Button color="violet" onClick={this.addToMarkup} style={{ float: 'left' }}>
+              {`${getTranslation('Add to markup')} '${browserSelection.toString().trim()}'`}
+            </Button>
+          }
           { mode === 'edit' &&
             <Button
               positive
@@ -173,7 +251,7 @@ class OdtMarkupModal extends React.Component {
         <Confirm
           open={confirmClose}
           header={getTranslation('Confirmation')}
-          content={getTranslation('There are unsaved changes present. Are you sure you want to discard it?' )}
+          content={getTranslation('There are unsaved changes present. Are you sure you want to discard it?')}
           onConfirm={onClose}
           onCancel={() => this.setState({ confirmClose: false })}
         />
@@ -190,6 +268,6 @@ OdtMarkupModal.propTypes = {
 };
 
 export default compose(
-  graphql(getParserResultContentQuery, { options: props => ({ variables: { id: props.resultId }, fetchPolicy: "network-only" })}),
+  graphql(getParserResultContentQuery, { options: props => ({ variables: { id: props.resultId }, fetchPolicy: "network-only" }) }),
   graphql(updateParserResultMutation, { name: "updateParserResult" })
 )(OdtMarkupModal);

@@ -18,6 +18,7 @@ export const stringsToTranslate = [
   "Add one or more perspectives",
   "Add one or more translations",
   "Add perspective",
+  "Add to markup",
   "Add Translation",
   "Add variant",
   "All",

@@ -33,7 +33,7 @@ class UserVariantModal extends React.Component {
       elem.classList.add('user');
       elem.innerHTML = JSON.stringify(this.state);
       parent.append(elem);
-      elem.id = elem.previousElementSibling.id + '!';
+      elem.id = `${elem.previousElementSibling ? elem.previousElementSibling.id : parent.id}!`;
     }
     onSubmit();
     onClose();

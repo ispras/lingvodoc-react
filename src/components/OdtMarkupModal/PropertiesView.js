@@ -66,8 +66,9 @@ class PropertiesView extends React.Component {
     const { selection, openModal } = this.props;
     const { elemToDelete } = this.state;
     const isEdit = this.props.mode === 'edit';
-    let results = selection !== null ? Array.from(document.getElementById(selection).getElementsByClassName('result')) : [];
-    if (selection && !isEdit && document.getElementById(selection).classList.contains('verified')) {
+    const selectedElem = selection !== null ? document.getElementById(selection) : null;
+    let results = selection !== null ? Array.from(selectedElem.getElementsByClassName('result')) : [];
+    if (selection && !isEdit && selectedElem.classList.contains('verified')) {
       results = results.filter(result => result.classList.contains('approved'));
     }
     const variants = results.map(result => Object.assign( { result }, JSON.parse(result.innerText)));
@@ -77,7 +78,7 @@ class PropertiesView extends React.Component {
         <Header size="small">
           {selection !== null ? getTranslation('Proposed variants') : getTranslation('Please select an element')}
         </Header>
-        { variants.length !== 0 &&
+        { selection !== null &&
           <div>
             <Divider/>
             <List divided relaxed>
@@ -132,7 +133,7 @@ class PropertiesView extends React.Component {
                     fluid
                     icon="plus"
                     content={getTranslation('Add variant')}
-                    onClick={() => openModal(UserVariantModal, { parent: variants[0].result.parentElement, onSubmit: this.onVariantsChanged})}
+                    onClick={() => openModal(UserVariantModal, { parent: selectedElem, onSubmit: this.onVariantsChanged})}
                   />
                 </List.Item>
               }
