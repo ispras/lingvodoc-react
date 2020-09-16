@@ -48,12 +48,15 @@ const Dict = ({
   const id = dictionary.get('id');
   const translation = dictionary.get('translation');
   const status = dictionary.get('status');
-  const perspectives = dictionary.get('children');
+  let perspectives = dictionary.get('children');
   const authors = dictionary.getIn(['additional_metadata', 'authors']);
   const location = dictionary.getIn(['additional_metadata', 'location']);
   const isDownloaded = dictionary.get('isDownloaded');
   const isChecked = selected.has(id);
   let statusLexicalEntries = false;
+
+  if (Array.isArray(perspectives))
+    perspectives = Immutable.fromJS(perspectives);
 
   perspectives.toJS().forEach((perspective) => {
     if (perspective.translation === 'Lexical Entries') {
