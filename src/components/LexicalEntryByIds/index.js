@@ -4,12 +4,19 @@ import { connect } from 'react-redux';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import { compose, branch, renderComponent, pure } from 'recompose';
+import styled from 'styled-components';
+import { Dimmer, Header, Icon } from 'semantic-ui-react';
+
 import Placeholder from 'components/Placeholder';
 import { LexicalEntryByIds as LexicalEntryByIdsViewMode } from 'components/PerspectiveView/index';
 import LexicalEntryByIdsAdvanced from './LexicalEntryByIdsAdvanced';
 import { isOnlyViewModeAllowed } from './utils';
 
 import './style.scss';
+
+const ModalContentWrapper = styled('div')`
+  min-height: 15vh;
+`;
 
 const PermissionLists = graphql(gql`
   query PermissionLists {
@@ -28,6 +35,19 @@ const LexicalEntryByIdsWrapper = ({ data, ...restProps }) => {
   const { permission_lists: permissionLists } = data;
   const { perspectiveId, onlyViewMode, user } = restProps;
   const onlyViewModeAllowed = isOnlyViewModeAllowed(permissionLists, perspectiveId);
+
+  if (data.loading)
+  {
+    return (
+      <ModalContentWrapper>
+        <Dimmer active style={{ minHeight: '15vh', background: 'none' }}>
+          <Header as="h2" icon>
+            <Icon name="spinner" loading />
+          </Header>
+        </Dimmer>
+      </ModalContentWrapper>
+    );
+  }
 
   if (onlyViewMode) {
     return (
@@ -55,7 +75,6 @@ const withConnect = connect(
 
 export default compose(
   PermissionLists,
-  branch(({ data }) => data.loading, renderComponent(Placeholder)),
   withConnect,
   pure
 )(LexicalEntryByIdsWrapper);

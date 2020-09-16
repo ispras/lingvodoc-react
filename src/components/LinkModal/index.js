@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { compose } from 'recompose';
 import { graphql } from 'react-apollo';
-import { Segment, Checkbox, Button, Modal, Tab } from 'semantic-ui-react';
+import { Segment, Checkbox, Button, Modal, Tab, Dimmer, Header, Icon } from 'semantic-ui-react';
 import { isEqual } from 'lodash';
 import styled from 'styled-components';
 import { queryPerspective, LexicalEntryByIds } from 'components/PerspectiveView';
@@ -320,11 +320,25 @@ class LinkModalContent extends React.PureComponent {
       perspective,
     } = data;
 
-    if (loading || error) {
+    if (error) {
       return null;
     }
 
-    const column = perspective.columns.find(c => isEqual(c.field_id, fieldId));
+    if (loading) {
+      return (
+        <ModalContentWrapper>
+          <Dimmer active style={{ minHeight: '60vh', background: 'none' }}>
+            <Header as="h2" icon>
+              <Icon name="spinner" loading />
+            </Header>
+          </Dimmer>
+        </ModalContentWrapper>
+      ); 
+    }
+
+    const column =
+      perspective.columns.find(c =>
+        isEqual(c.field_id, fieldId) && !!c.link_id);
 
     const Component = getComponent(mode);
 

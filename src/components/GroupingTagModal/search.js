@@ -17,7 +17,7 @@ class SearchLexicalEntries extends React.Component {
     const entity = lexicalEntry.entities.find(e => e.content && e.content.length >= 2 && e.content.length < 8);
 
     this.state = {
-      searchString: entity ? entity.content : '',
+      searchString: entity ? entity.content.trim() : '',
       resultsTree: null,
       searchInProgress: false
     };
