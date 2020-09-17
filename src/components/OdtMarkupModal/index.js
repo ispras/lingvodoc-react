@@ -42,12 +42,13 @@ class OdtMarkupModal extends React.Component {
       browserSelection: null,
       dirty: false,
       saving: false,
-      confirmClose: false
+      confirmation: null
     };
 
     this.addClickHandlers = this.addClickHandlers.bind(this);
     this.onBrowserSelection = this.onBrowserSelection.bind(this);
     this.addToMarkup = this.addToMarkup.bind(this);
+    this.removeFromMarkup = this.removeFromMarkup.bind(this);
     this.save = this.save.bind(this);
     this.onClose = this.onClose.bind(this);
   }
@@ -127,7 +128,11 @@ class OdtMarkupModal extends React.Component {
       return;
     }
 
-    this.setState({ browserSelection: range });
+    const { selection } = this.state;
+    if (selection !== null) {
+      document.getElementById(selection).classList.remove('selected');
+    }
+    this.setState({ selection: null, browserSelection: range });
   }
 
   addToMarkup() {
@@ -142,7 +147,7 @@ class OdtMarkupModal extends React.Component {
     }
     const span = document.createElement('span');
     span.id = this.availableId;
-    span.classList.add('unverified');
+    span.classList.add('unverified', 'user');
     span.innerText = browserSelection.toString();
     this.addClickHandlers([span]);
     parentNode.insertBefore(span, textNode);
@@ -157,6 +162,32 @@ class OdtMarkupModal extends React.Component {
     });
     this.availableId++;
     span.click();
+  }
+
+  removeFromMarkup() {
+    const elem = document.getElementById(this.state.selection);
+
+    this.setState({
+      confirmation: {
+        content: getTranslation('Are you sure you want to remove selected element from markup?'),
+        func: () => {
+          const prev = elem.previousSibling;
+          let content = '';
+          if (prev && prev.nodeType === Node.TEXT_NODE) {
+            content += prev.textContent;
+            prev.remove();
+          }
+          content += elem.innerText;
+          const next = elem.nextSibling;
+          if (next && next.nodeType === Node.TEXT_NODE) {
+            content += next.textContent;
+            next.remove();
+          }
+          elem.parentElement.replaceChild(document.createTextNode(content), elem);
+          this.setState({ selection: null, dirty: true, confirmation: null });
+        }
+      }
+    });
   }
 
   save() {
@@ -183,7 +214,12 @@ class OdtMarkupModal extends React.Component {
 
   onClose() {
     if (this.state.dirty) {
-      this.setState({ confirmClose: true });
+      this.setState({
+        confirmation: {
+          content: getTranslation('There are unsaved changes present. Are you sure you want to discard it?'),
+          func: this.props.onClose
+        }
+      });
     }
     else {
       this.props.onClose();
@@ -191,7 +227,7 @@ class OdtMarkupModal extends React.Component {
   }
 
   render() {
-    const { data, mode, onClose } = this.props;
+    const { data, mode } = this.props;
     const { loading, error } = this.props.data;
     if (error) {
       return null;
@@ -215,7 +251,8 @@ class OdtMarkupModal extends React.Component {
       this.content = bodies[0].innerHTML;
     }
 
-    const { selection, browserSelection, dirty, saving, confirmClose } = this.state;
+    const { selection, browserSelection, dirty, saving, confirmation } = this.state;
+    const selectedElem = selection === null ? null : document.getElementById(selection);
 
     return (
       <Modal open dimmer size="fullscreen" closeIcon onClose={this.onClose} closeOnDimmerClick={false}>
@@ -225,10 +262,23 @@ class OdtMarkupModal extends React.Component {
           <Modal.Content id="markup-content" scrolling dangerouslySetInnerHTML={{ __html: this.content }} style={{ padding: '10px' }} />
         </div>
         <Modal.Actions>
-          { browserSelection &&
-            <Button color="violet" onClick={this.addToMarkup} style={{ float: 'left' }}>
-              {`${getTranslation('Add to markup')} '${browserSelection.toString().trim()}'`}
-            </Button>
+          { browserSelection !== null &&
+            <Button
+              color="violet"
+              icon="plus"
+              content={`${getTranslation('Add to markup')} '${browserSelection.toString()}'`}
+              onClick={this.addToMarkup}
+              style={{ float: 'left' }}
+            />
+          }
+          { selectedElem && mode === 'edit' && selectedElem.classList.contains('user') &&
+            <Button
+              color="orange"
+              icon="minus"
+              content={`${getTranslation('Remove from markup')} '${selectedElem.innerText}'`}
+              onClick={this.removeFromMarkup}
+              style={{ float: 'left' }}
+            />
           }
           { mode === 'edit' &&
             <Button
@@ -249,11 +299,11 @@ class OdtMarkupModal extends React.Component {
           />
         </Modal.Actions>
         <Confirm
-          open={confirmClose}
+          open={confirmation !== null}
           header={getTranslation('Confirmation')}
-          content={getTranslation('There are unsaved changes present. Are you sure you want to discard it?')}
-          onConfirm={onClose}
-          onCancel={() => this.setState({ confirmClose: false })}
+          content={confirmation ? confirmation.content : null}
+          onConfirm={confirmation ? confirmation.func : null}
+          onCancel={() => this.setState({ confirmation: null })}
         />
       </Modal>
     );
