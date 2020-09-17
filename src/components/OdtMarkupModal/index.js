@@ -36,6 +36,7 @@ class OdtMarkupModal extends React.Component {
     this.initialized = false;
     this.availableId = 0;
     this.content = null;
+    this.docToSave = null;
 
     this.state = {
       selection: null,
@@ -197,9 +198,9 @@ class OdtMarkupModal extends React.Component {
     if (selection) {
       document.getElementById(selection).classList.remove('selected');
     }
-    const content = document.getElementById("markup-content").innerHTML;
     this.setState({ saving: true });
-    updateParserResult({ variables: { id: resultId, content } }).then(() => {
+    this.docToSave.getElementsByTagName('body')[0].innerHTML = document.getElementById("markup-content").innerHTML;
+    updateParserResult({ variables: { id: resultId, content: new XMLSerializer().serializeToString(this.docToSave) } }).then(() => {
       if (selection) {
         document.getElementById(selection).classList.add('selected');
       }
@@ -248,6 +249,7 @@ class OdtMarkupModal extends React.Component {
       if (!bodies.length) {
         return null;
       }
+      this.docToSave = doc;
       this.content = bodies[0].innerHTML;
     }
 
@@ -262,7 +264,7 @@ class OdtMarkupModal extends React.Component {
           <Modal.Content id="markup-content" scrolling dangerouslySetInnerHTML={{ __html: this.content }} style={{ padding: '10px' }} />
         </div>
         <Modal.Actions>
-          { browserSelection !== null &&
+          { !saving && browserSelection !== null &&
             <Button
               color="violet"
               icon="plus"
@@ -271,7 +273,7 @@ class OdtMarkupModal extends React.Component {
               style={{ float: 'left' }}
             />
           }
-          { selectedElem && mode === 'edit' && selectedElem.classList.contains('user') &&
+          { !saving && selectedElem && mode === 'edit' && selectedElem.classList.contains('user') &&
             <Button
               color="orange"
               icon="minus"
