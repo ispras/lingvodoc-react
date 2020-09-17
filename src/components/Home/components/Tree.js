@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 import { Dropdown, Checkbox, Icon } from 'semantic-ui-react';
 import { toggleDictionary } from 'ducks/home';
 import { checkLanguageId } from './LangsNav';
-import { goToLanguage } from '../common';
+
 
 import config from 'config';
 
@@ -136,23 +136,7 @@ class Tree extends React.Component {
     super( props );
   }
 
-  componentDidMount () {
-    if ( !this.props.location ) {
-      return
-    }
-    
-    let query = new URLSearchParams( this.props.location.search );
-    let anchor = query.get( 'anchor' );
 
-    if ( anchor ) {
-      const id = anchor.split( ',' );
-      const el = document.getElementById( `lang_${ id.toString() }`);
-      
-      if ( el ) {
-        goToLanguage( id );
-      }
-    }
-  }
 
   render () {
     const { tree, canSelectDictionaries } = this.props;

@@ -7,7 +7,7 @@ import Tree from './Tree';
 
 function AllDicts(props) {
   const {
-    languagesTree, dictionaries, perspectives, isAuthenticated, location
+    languagesTree, dictionaries, perspectives, isAuthenticated, 
   } = props;
 
   const tree = assignDictsToTree(
@@ -22,13 +22,12 @@ function AllDicts(props) {
   return (
     <div>
       <LangsNav data={tree} />
-      <Tree tree={tree} canSelectDictionaries={isAuthenticated} location={location} />
+      <Tree tree={tree} canSelectDictionaries={isAuthenticated} />
     </div>
   );
 }
 
 AllDicts.propTypes = {
-  location: PropTypes.object,
   languagesTree: PropTypes.instanceOf(Immutable.List).isRequired,
   dictionaries: PropTypes.instanceOf(Immutable.Map).isRequired,
   perspectives: PropTypes.instanceOf(Immutable.List).isRequired,
