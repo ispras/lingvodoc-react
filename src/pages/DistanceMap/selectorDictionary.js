@@ -23,6 +23,9 @@ const selectorDict = (props) => {
   const localDictionaries = dictionaries;
   const languagesTree = buildLanguageTree(fromJS(languages));
 
+  if (languagesTree.size <= 0)
+    return null;
+
   const dictsSource = fromJS(dictionaries);
   const localDicts = fromJS(localDictionaries);
   const isDownloaded = dict => !!localDicts.find(d => d.get('id').equals(dict.get('id')));
