@@ -107,7 +107,7 @@ const languageQuery = gql`
         id
         translation
       }
-    }
+    } 
   }
 `;
 
@@ -451,6 +451,7 @@ class CognateAnalysisModal extends React.Component
     base_language.available_list = this.available_list;
     base_language.perspective_list = this.perspective_list;
 
+
     /* Preparing info of perspective and transcription/translation field selections. */
 
     for (const [index, {perspective}] of this.perspective_list.entries())
@@ -579,7 +580,6 @@ class CognateAnalysisModal extends React.Component
           value: id2str(f.id),
           text: f.translation,
         }));
-
       this.perspective_list.push({
         treePathList,
         perspective,
@@ -905,6 +905,7 @@ class CognateAnalysisModal extends React.Component
 
   handleCreate()
   {
+ 
     const {
       perspectiveId,
       computeCognateAnalysis } = this.props;
@@ -944,7 +945,7 @@ class CognateAnalysisModal extends React.Component
     }
     
     else
-    {
+    { 
       perspectiveInfoList = this.perspective_list
 
         .map(({perspective}, index) => [perspective.id,
@@ -982,11 +983,16 @@ class CognateAnalysisModal extends React.Component
         },
       }).then(
         () => {
-          window.logger.suc('Cognate acoustic analysis is launched. Please check out tasks for details.');
+
+          window.logger.suc(
+            getTranslation('Cognate acoustic analysis is launched. Please check out tasks for details.'));
+
           this.props.closeModal();
         },
         () => {
-          window.logger.err('Failed launch cognate acoustic analysis!');
+
+          window.logger.err(
+            getTranslation('Failed to launch cognate acoustic analysis!'));
         }
       );
 
@@ -1002,7 +1008,6 @@ class CognateAnalysisModal extends React.Component
         this.props.mode == 'multi_reconstruction' ? 'multi' :
         this.props.mode == 'multi_suggestions' ? 'suggestions' :
         this.props.mode;
-
       computeCognateAnalysis({
         variables: {
           sourcePerspectiveId: perspectiveId,
@@ -1013,13 +1018,14 @@ class CognateAnalysisModal extends React.Component
           mode: backend_mode,
           matchTranslationsValue,
           onlyOrphansFlag: this.state.onlyOrphansFlag,
-          figureFlag: this.props.mode == '',
+          figureFlag: backend_mode == '',
           debugFlag: this.state.debugFlag,
           intermediateFlag: this.state.intermediateFlag },
         },
       ).then(
 
         (data) => this.handleResult(data),
+       (data)=> console.log('data',data),
         (error_data) => this.handleError(error_data)
 
       );
@@ -2128,7 +2134,7 @@ class CognateAnalysisModal extends React.Component
                       data={this.state.plotly_data}
                       layout={{
                         width: 1200,
-                        height: 800 + 20 * this.state.embedding_2d.length,
+                        height: 800 + 28 * this.state.embedding_2d.length,
                         xaxis: {
                           color: "#DDD",
                           gridcolor: "#DDD",
@@ -2152,7 +2158,7 @@ class CognateAnalysisModal extends React.Component
                       data={this.state.plotly_3d_data}
                       layout={{
                         width: 1200,
-                        height: 900 + 20 * this.state.embedding_2d.length,
+                        height: 900 + 28 * this.state.embedding_2d.length,
                         scene: {
                           xaxis: {
                             color: "#DDD",
