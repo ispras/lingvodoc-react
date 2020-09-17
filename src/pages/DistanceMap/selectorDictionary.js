@@ -5,9 +5,9 @@ import { fromJS, Map } from 'immutable';
 import { Container, Segment, Label } from 'semantic-ui-react';
 import { buildLanguageTree } from 'pages/Search/treeBuilder';
 import BackTopButton from 'components/BackTopButton';
-import AllDicts from 'pages/Home/components/AllDicts';
-import { getScrollContainer } from 'pages/Home/common';
-import 'pages/Home/published.scss';
+import AllDicts from 'components/Home/components/AllDicts';
+import { getScrollContainer } from 'components/Home/common';
+import 'components/Home/published.scss';
 
 
 const selectorDict = (props) => {

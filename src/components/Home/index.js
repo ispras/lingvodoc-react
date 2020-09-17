@@ -22,9 +22,11 @@ import { getScrollContainer } from './common';
 import { getTranslation } from 'api/i18n';
 import './published.scss';
 
+
+
 const authenticatedDictionariesQuery = gql`
   query AuthDictionaries {
-    dictionaries(proxy: true) {
+    dictionaries(proxy: true,category:0) {
       id
       parent_id
       translation
@@ -65,7 +67,7 @@ const authenticatedDictionariesQuery = gql`
 
 const guestDictionariesQuery = gql`
   query GuestDictionaries {
-    dictionaries(proxy: false, published: true) {
+    dictionaries(proxy: false, published: true,category:0) {
       id
       parent_id
       translation
@@ -248,6 +250,7 @@ const Home = (props) => {
         )}
         {!grantsMode && (
           <AllDicts
+            location={props.location}
             languagesTree={languagesTree}
             dictionaries={dicts}
             perspectives={perspectivesList}
@@ -313,7 +316,7 @@ const dictionaryWithPerspectivesQuery = gql`
 
 const dictionaryWithPerspectivesProxyQuery = gql`
   query DictionaryWithPerspectivesProxy {
-    dictionaries(proxy: false, published: true) {
+    dictionaries(proxy: false, published: true,category:0) {
       id
       parent_id
       translation

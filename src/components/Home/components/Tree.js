@@ -10,6 +10,7 @@ import { toggleDictionary } from 'ducks/home';
 import { checkLanguageId } from './LangsNav';
 import { getTranslation } from 'api/i18n';
 
+
 import config from 'config';
 
 import '../published.scss';
@@ -24,7 +25,7 @@ function toId(arr, prefix = null) {
 }
 
 const Perspective = ({ perspective: p }) => (
-  <Dropdown.Item as={Link} to={`dictionary/${toId(p.get('parent_id'))}/perspective/${toId(p.get('id'))}`}>
+  <Dropdown.Item as={Link} to={`/dictionary/${toId(p.get('parent_id'))}/perspective/${toId(p.get('id'))}`}>
     {/* Permissions are shown in desktop or proxy version only */}
     {(config.buildType === 'desktop' || config.buildType === 'proxy') && (
       <span>
@@ -176,7 +177,7 @@ Tree.propTypes = {
   canSelectDictionaries: PropTypes.bool,
   selectedDict: PropTypes.func,
   languagesGroup: PropTypes.func,
-  selectorMode: PropTypes.bool.isRequired,
+  selectorMode: PropTypes.bool,
 
 };
 
@@ -184,7 +185,7 @@ Tree.defaultProps = {
   canSelectDictionaries: false,
   selectedDict: undefined,
   languagesGroup: undefined,
-
+  selectorMode: false
 };
 
-export default Tree;
+export default compose()(Tree);

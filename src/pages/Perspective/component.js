@@ -12,6 +12,7 @@ import Merge from 'components/Merge';
 import NotFound from 'pages/NotFound';
 import PerspectivePath from './PerspectivePath';
 import { getTranslation } from 'api/i18n';
+import smoothScroll from 'utils/smoothscroll';
 
 import './style.scss';
 

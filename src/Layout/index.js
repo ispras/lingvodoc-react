@@ -24,13 +24,14 @@ import RolesModal from 'components/RolesModal';
 import CreateOrganizationModal from 'components/CreateOrganizationModal';
 import DictionaryOrganizationsModal from 'components/DictionaryOrganizationsModal';
 
+
 import NavBar from './NavBar';
 import TasksSidebar from './TasksSidebar';
 import Snackbar from './Snackbar';
 import Routes from './Routes';
 
 const Content = styled.div`
-  padding: 5em 20px;
+  padding: 10em 20px;
   height: 100vh !important;
   overflow-y: auto !important;
 `;
@@ -48,12 +49,13 @@ class Layout extends React.Component {
       <div key={'' + selected.id + loading}>
         <NavBar />
         <Snackbar />
-        <Sidebar.Pushable as="div">
+    
+     {     <Sidebar.Pushable as="div">
           <TasksSidebar />
           <Sidebar.Pusher as={Content}>
             <Routes />
           </Sidebar.Pusher>
-        </Sidebar.Pushable>
+        </Sidebar.Pushable> }
         <Modals />
         <PlayerModal />
         <MarkupModal />

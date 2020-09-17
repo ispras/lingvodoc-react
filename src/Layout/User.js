@@ -14,6 +14,8 @@ import SignUpModal from 'components/SignUpModal';
 import EditUserModal from 'components/EditUserModal';
 import { getTranslation } from 'api/i18n';
 
+
+
 const Anonymous = ({ modal, launchSignInForm, launchSignUpForm, closeForm }) =>
   <Dropdown item text={getTranslation('User')} className="top_menu">
     <Dropdown.Menu>
@@ -55,8 +57,15 @@ const Signed = ({ user, modal, signOut, launchEditForm, closeForm, openModal }) 
 
 
       {user.id == 1 && (
-        <Dropdown.Item onClick={openModal}>{getTranslation("User account activation/deactivation")}</Dropdown.Item>
+      <div>
+         <Dropdown.Item onClick={openModal}>{getTranslation("User account activation/deactivation")}</Dropdown.Item>
+         <Dropdown.Item as={Link} to="/news_editor">{getTranslation("Add news")}</Dropdown.Item>
+      </div>
+       
       )}
+
+  
+
     </Dropdown.Menu>
   </Dropdown>;
 
@@ -69,9 +78,11 @@ Signed.propTypes = {
 };
 
 function UserDropdown({ user, ...rest }) {
+
   return isEmpty(user)
     ? <Anonymous {...rest} />
     : <Signed user={user} {...rest} />;
+
 }
 
 UserDropdown.propTypes = {
@@ -87,5 +98,5 @@ export default connect(
     closeForm: userActions.closeForm,
     signOut: userActions.signOut,
     openModal,
-  },
+  }
 )(UserDropdown);
