@@ -47,7 +47,7 @@ mutation computeDistancePerspectives(
         }
 }`;
 const ButtonBack = {
-  margin: '10px 0',
+  margin: ' 10px 10px 0  0',
 };
 
 const cfg = {
@@ -95,7 +95,7 @@ class MapAreas extends PureComponent {
       statusRequest: true
     };
     this.dictionariesWithColors = [];
-    this.back = this.back.bind(this);
+    this.returnToTree = this.returnToTree.bind(this);
   }
 
   componentDidMount() {
@@ -141,9 +141,12 @@ class MapAreas extends PureComponent {
 
     heatmapLayer.setData({ data, max: maxCount });
   }
-  back() {
+  returnToTree() {
     const { backToDictionaries } = this.props;
     backToDictionaries();
+  }
+  back(){
+console.log('sada')
   }
   render() {
     return (
@@ -172,10 +175,14 @@ class MapAreas extends PureComponent {
 
         )}
         {((this.state.statusMap) || (!this.state.statusRequest)) && (
-
+        <div>
+          <Button style={ButtonBack} onClick={this.returnToTree}>
+            {getTranslation('Return to tree')}
+          </Button>
           <Button style={ButtonBack} onClick={this.back}>
             {getTranslation('Back')}
           </Button>
+        </div>
 
         )
         }

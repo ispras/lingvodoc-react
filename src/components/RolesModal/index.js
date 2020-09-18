@@ -38,7 +38,7 @@ const RolesModal = ({
         <Component id={id} mode={mode} close={actions.close} />
       </Modal.Content>
       <Modal.Actions>
-        <Button icon="minus" content={getTranslation("Close")} onClick={actions.close} />
+        <Button icon="minus" content={getTranslation('Close')} onClick={actions.close} />
       </Modal.Actions>
     </Modal>
   );
@@ -48,7 +48,7 @@ RolesModal.propTypes = {
   visible: PropTypes.bool.isRequired,
   mode: PropTypes.oneOf(['dictionary', 'perspective']),
   id: PropTypes.array.isRequired,
-  title: PropTypes.string.isRequired,
+  title: PropTypes.string,
   actions: PropTypes.shape({
     close: PropTypes.func.isRequired,
   }).isRequired,
@@ -56,6 +56,7 @@ RolesModal.propTypes = {
 
 RolesModal.defaultProps = {
   mode: 'dictionary',
+  title: ''
 };
 
 const mapStateToProps = state => state.roles;

@@ -213,6 +213,7 @@ export const stringsToTranslate = [
   "Publish",
   "Publish Entities",
   "Publish result of entity merge if any merged entity is published",
+  "Return to tree",
   "Refresh",
   "Reject",
   "Relation",
