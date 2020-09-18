@@ -119,6 +119,9 @@ const NavBar =
           <Dropdown.Item onClick={openMapStorage}>
             {getTranslation('Storage')}
           </Dropdown.Item>
+          <Dropdown.Item as={Link} to="/distance_map">
+            {getTranslation('Distance map')}
+          </Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>
 

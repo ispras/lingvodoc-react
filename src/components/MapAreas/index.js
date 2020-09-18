@@ -56,7 +56,6 @@ class MapAreas extends PureComponent {
     const {
       points, areas, areasMode, markersGroups,
     } = this.props;
-
     this.updateMap(points, areas, areasMode, markersGroups);
   }
 
@@ -156,8 +155,8 @@ class MapAreas extends PureComponent {
 
   addMarkerToMap(markerData) {
     const { coords, values: markerGroups, dictionary } = markerData;
+    console.log(coords)
     let markerLeafletElement = null;
-
     if (this.areasMode) {
       markerLeafletElement = L.marker(coords, { icon: this.iconFunc(markerData) })
         .addTo(this.map);
@@ -261,8 +260,8 @@ class MapAreas extends PureComponent {
   updateArea(areaPoints, areaId, color) {
     const { markerWidth, markerHeight } = this;
     const pointsInPixel = areaPoints.map(point => this.latLngToLayerPoint(point.coords));
-    const outline = getAreaOutline(pointsInPixel, markerWidth, markerHeight);
 
+    const outline = getAreaOutline(pointsInPixel, markerWidth, markerHeight);
     this.updateAreaPath(areaId, outline, color);
   }
 

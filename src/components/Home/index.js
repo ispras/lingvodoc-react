@@ -24,7 +24,7 @@ import './published.scss';
 
 const authenticatedDictionariesQuery = gql`
   query AuthDictionaries {
-    dictionaries(proxy: true) {
+    dictionaries(proxy: true,category:0) {
       id
       parent_id
       translation
@@ -65,7 +65,7 @@ const authenticatedDictionariesQuery = gql`
 
 const guestDictionariesQuery = gql`
   query GuestDictionaries {
-    dictionaries(proxy: false, published: true) {
+    dictionaries(proxy: false, published: true,category:0) {
       id
       parent_id
       translation
@@ -128,7 +128,7 @@ const Home = (props) => {
     },
     location: { hash },
   } = props;
-
+  const statusLangsNav = true;
   if (error) {
     return null;
   }
@@ -248,10 +248,13 @@ const Home = (props) => {
         )}
         {!grantsMode && (
           <AllDicts
+            location={props.location}
             languagesTree={languagesTree}
             dictionaries={dicts}
             perspectives={perspectivesList}
             isAuthenticated={isAuthenticated}
+            selectorMode={false}
+            statusLangsNav={statusLangsNav}
           />
         )}
       </Segment>
@@ -311,7 +314,7 @@ const dictionaryWithPerspectivesQuery = gql`
 
 const dictionaryWithPerspectivesProxyQuery = gql`
   query DictionaryWithPerspectivesProxy {
-    dictionaries(proxy: false, published: true) {
+    dictionaries(proxy: false, published: true,category:0) {
       id
       parent_id
       translation

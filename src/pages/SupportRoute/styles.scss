@@ -1,0 +1,38 @@
+.supportRoute {
+    position: relative;
+    width: 850px;
+    height: 500px;
+    margin: 0 auto;
+    .background-img {
+      position: absolute;
+      background-image: url(../../images/support.jpg);
+      background-repeat: no-repeat;
+      background-position: center center;
+      background-size: contain;
+      width: 850px;
+      height: 500px;
+      opacity: 0.5;
+      z-index: -1;
+    }
+    .img-block {
+      p {
+        padding-left: 0;
+      }
+      margin-left: 62px;
+      display: inline-block;
+      .img {
+        cursor: pointer;
+        width: 250px;
+        z-index: 100;
+        top: 10%;
+      }
+    }
+    p {
+      font-weight: bold;
+      color: white;
+      margin: 0;
+      padding-top: 10px;
+      padding-left: 10px;
+    }
+  }
+  

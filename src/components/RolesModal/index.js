@@ -56,7 +56,7 @@ RolesModal.propTypes = {
 
 RolesModal.defaultProps = {
   mode: 'dictionary',
-  title:''
+  title: ' '
 };
 
 const mapStateToProps = state => state.roles;

@@ -19,28 +19,14 @@ class EditDictionaryMetadata extends React.Component {
       kind: null,
       authors: [],
       humanSettlement: [],
-      years: [],
-      interrogator: '',
-      informant: '',
-      processing: '',
-      typeOfDiscourse: '',
-      typeOfSpeech: '',
-      speechGenre: '',
-      theThemeOfTheText: ''
+      years: []
     };
 
     this.initialState = {
       kind: this.state.kind,
       authors: this.state.authors,
       humanSettlement: this.state.humanSettlement,
-      years: this.state.years,
-      interrogator: this.state.interrogator,
-      informant: this.state.informant,
-      processing: this.state.processing,
-      typeOfDiscourse: this.state.typeOfDiscourse,
-      typeOfSpeech: this.state.typeOfSpeech,
-      speechGenre: this.state.speechGenre,
-      theThemeOfTheText: this.state.theThemeOfTheText
+      years: this.state.years
     };
 
     this.onAddNewAlternative = this.onAddNewAlternative.bind(this);
@@ -124,27 +110,6 @@ class EditDictionaryMetadata extends React.Component {
       case 'years':
         this.setState({ years: data.value }, callback);
         break;
-      case 'interrogator':
-        this.setState({ interrogator: data.value }, callback);
-        break;
-      case 'informant':
-        this.setState({ informant: data.value }, callback);
-        break;
-      case 'processing':
-        this.setState({ processing: data.value }, callback);
-        break;
-      case 'typeOfDiscourse':
-        this.setState({ typeOfDiscourse: data.value }, callback);
-        break;
-      case 'typeOfSpeech':
-        this.setState({ typeOfSpeech: data.value }, callback);
-        break;
-      case 'speechGenre':
-        this.setState({ speechGenre: data.value }, callback);
-        break;
-      case 'theThemeOfTheText':
-        this.setState({ theThemeOfTheText: data.value }, callback);
-        break;
       default:
     }
   }
@@ -175,34 +140,6 @@ class EditDictionaryMetadata extends React.Component {
       case 'years':
         toSave = { years: this.state.years };
         this.initialState.years = toSave.years;
-        break;
-      case 'interrogator':
-        toSave = { interrogator: this.state.interrogator };
-        this.initialState.interrogator = toSave.interrogator;
-        break;
-      case 'informant':
-        toSave = { informant: this.state.informant };
-        this.initialState.informant = toSave.informant;
-        break;
-      case 'processing':
-        toSave = { processing: this.state.processing };
-        this.initialState.processing = toSave.processing;
-        break;
-      case 'typeOfDiscourse':
-        toSave = { typeOfDiscourse: this.state.typeOfDiscourse };
-        this.initialState.typeOfDiscourse = toSave.typeOfDiscourse;
-        break;
-      case 'typeOfSpeech':
-        toSave = { typeOfSpeech: this.state.typeOfSpeech };
-        this.initialState.typeOfSpeech = toSave.typeOfSpeech;
-        break;
-      case 'speechGenre':
-        toSave = { speechGenre: this.state.speechGenre };
-        this.initialState.speechGenre = toSave.speechGenre;
-        break;
-      case 'theThemeOfTheText':
-        toSave = { theThemeOfTheText: this.state.theThemeOfTheText };
-        this.initialState.theThemeOfTheText = toSave.theThemeOfTheText;
         break;
       default:
         return;
