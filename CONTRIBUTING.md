@@ -35,7 +35,7 @@ The are two repositories for Lingvodoc project:
 #### Frontend commits
 5. If the feature or bug is assigned to you, fix it please. Regressions are more important than new bugs or features.
 6. Test your feature or fix locally with relevant database snapshot and docker-compose scenario from backend repository. The instructions for docker-compose scenario are located [here](https://github.com/ispras/lingvodoc/tree/heavy_refactor/docker).
-7. Make a pull request to default branch with a link to issue (use `#issue_number`)
+7. Make a pull request to "staging" branch with a link to issue (use `#issue_number`)
 8. Wait for Travis to build new release (5-10 minutes) and grab it [here](https://github.com/ispras/lingvodoc-react/releases). Please pay attention to the artifact date/time since github doesn't always sort builds by time. The build may be the second or third in the list.
 9. In most cases you need to use the asset that is named `lingvodoc-react-server-build-<build-number>.tar.gz`
 10. Test the feature or bugfix in our sandbox.
@@ -55,10 +55,10 @@ The are two repositories for Lingvodoc project:
 ### For external to ISP RAS contributors
 
 5. Make sure you have completed steps 1-4.
-6. Before sending pull-request you must synchronize and merge with master branch head (or ensure that it would be possible if you are planning to send a batch of pull requests).
+6. Before sending pull-request you must synchronize and merge with default branch head (for backend) / "staging" branch head (for frontend), or ensure that it would be possible if you are planning to send a batch of pull requests.
 6. Try to make commits in such a way that would make possible to separate pull requests by issues they are supposed to close. If it's not possible, that's not critical, but just give a try at least please.
 7. Test your feature or fix locally with relevant database snapshot and docker-compose scenario from backend repository. The instructions for docker-compose scenario are located [here](https://github.com/ispras/lingvodoc/tree/heavy_refactor/docker).
-8. Make a pull request to default branch with reference to corresponding issue.
+8. Make a pull request to default branch (for backend) / "staging" branch (for frontend) with reference to corresponding issue.
 9. Wait for ISP RAS to check and accept your pull request please.
 
 
