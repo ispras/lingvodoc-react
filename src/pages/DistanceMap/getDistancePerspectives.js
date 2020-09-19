@@ -97,8 +97,8 @@ const getDistance = async (
 
   const perspectiveInfoList = perspectiveList
     .map(({ perspective }, index) => [perspective.id,
-      fieldDict[transcriptionFieldIdStrList[index]].id,
-      fieldDict[translationFieldIdStrList[index]].id])
+    fieldDict[transcriptionFieldIdStrList[index]].id,
+    fieldDict[translationFieldIdStrList[index]].id])
     .filter((_perspectiveInfo, index) =>
       (perspectiveSelectionList[index]));
 
@@ -123,7 +123,8 @@ const getDistance = async (
 
   const distanceList = responseMutanion.data.cognate_analysis.distance_list;
   const dictionariesWithDistance = [];
-  if (distanceList[0] === 0) {
+
+  if (distanceList[0] === 0 || distanceList[0] === -1) {
     return [];
   }
 
