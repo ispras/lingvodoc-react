@@ -10,7 +10,9 @@ import { toggleDictionary } from 'ducks/home';
 import { checkLanguageId } from './LangsNav';
 import { getTranslation } from 'api/i18n';
 
+
 import config from 'config';
+
 
 import '../published.scss';
 
@@ -24,7 +26,7 @@ function toId(arr, prefix = null) {
 }
 
 const Perspective = ({ perspective: p }) => (
-  <Dropdown.Item as={Link} to={`dictionary/${toId(p.get('parent_id'))}/perspective/${toId(p.get('id'))}`}>
+  <Dropdown.Item as={Link} to={`/dictionary/${toId(p.get('parent_id'))}/perspective/${toId(p.get('id'))}`}>
     {/* Permissions are shown in desktop or proxy version only */}
     {(config.buildType === 'desktop' || config.buildType === 'proxy') && (
       <span>
@@ -48,12 +50,15 @@ const Dict = ({
   const id = dictionary.get('id');
   const translation = dictionary.get('translation');
   const status = dictionary.get('status');
-  const perspectives = dictionary.get('children');
+  let perspectives = dictionary.get('children');
   const authors = dictionary.getIn(['additional_metadata', 'authors']);
   const location = dictionary.getIn(['additional_metadata', 'location']);
   const isDownloaded = dictionary.get('isDownloaded');
   const isChecked = selected.has(id);
   let statusLexicalEntries = false;
+
+  if (Array.isArray(perspectives))
+    perspectives = Immutable.fromJS(perspectives);
 
   perspectives.toJS().forEach((perspective) => {
     if (perspective.translation === 'Lexical Entries') {
@@ -82,7 +87,7 @@ const Dict = ({
       {((perspectives && selectorStatus && location !== null && statusLexicalEntries) && (
         <Button onClick={() => localSelectedDict(perspectives)}> {getTranslation('Select dictionary')}</Button>
       )) || ((selectorStatus) && (
-        <Label>{getTranslation('Lexical entries no found')} </Label>
+        <Label>{getTranslation('Lexical entries not found')} </Label>
       ))
       }
       {(perspectives && selectorStatus && location === null && selectorStatus) && (
@@ -173,7 +178,7 @@ Tree.propTypes = {
   canSelectDictionaries: PropTypes.bool,
   selectedDict: PropTypes.func,
   languagesGroup: PropTypes.func,
-  selectorMode: PropTypes.bool.isRequired,
+  selectorMode: PropTypes.bool,
 
 };
 
@@ -181,7 +186,7 @@ Tree.defaultProps = {
   canSelectDictionaries: false,
   selectedDict: undefined,
   languagesGroup: undefined,
-
+  selectorMode: false
 };
 
-export default Tree;
+export default compose()(Tree);

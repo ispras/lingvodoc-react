@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Immutable, { fromJS } from 'immutable';
 import { assignDictsToTree, buildDictTrees } from 'pages/Search/treeBuilder';
-import LangsNav from 'pages/Home/components/LangsNav';
+import LangsNav from 'components/Home/components/LangsNav';
 import Tree from './Tree';
 
 
@@ -40,15 +40,19 @@ AllDicts.propTypes = {
   dictionaries: PropTypes.instanceOf(Immutable.Map).isRequired,
   perspectives: PropTypes.instanceOf(Immutable.List).isRequired,
   isAuthenticated: PropTypes.bool,
-  selectorMode: PropTypes.bool.isRequired,
-  selectedDict: PropTypes.func.isRequired,
-  languagesGroup: PropTypes.func.isRequired,
-  statusLangsNav: PropTypes.bool.isRequired
+  selectorMode: PropTypes.bool,
+  selectedDict: PropTypes.func,
+  languagesGroup: PropTypes.func,
+  statusLangsNav: PropTypes.bool
 
 };
 
 AllDicts.defaultProps = {
   isAuthenticated: false,
+  languagesGroup: null,
+  selectedDict: null,
+  selectorMode: false,
+  statusLangsNav: true
 };
 
 export default AllDicts;
