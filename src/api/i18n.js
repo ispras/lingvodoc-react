@@ -77,6 +77,7 @@ export const stringsToTranslate = [
   "desktop",
   "Desktop",
   "Dialeqt file",
+  "Distance map",
   "Dictionaries",
   "Dictionary",
   "Dictionary created",
