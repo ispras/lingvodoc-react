@@ -1,5 +1,4 @@
 import build from 'buildType';
-
 export default {
   apiUrl: '',
   homePath: '/',
