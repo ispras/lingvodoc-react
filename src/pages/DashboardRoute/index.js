@@ -25,11 +25,11 @@ function dashboardRoute() {
           <Link to="/dashboard/create_corpus"><img className="img " src={image} /></Link>
         </div>
         <div className="img-block">
-          <p>{getTranslation('Import dialeqt')}</p>
+          <p>{getTranslation('Import Dialeqt dictionary')}</p>
           <Link to="/import_dialeqt"> <img className="img " src={image} /></Link>
         </div>
         <div className="img-block">
-          <p>{getTranslation('Import')}</p>
+          <p>{getTranslation('Import Starling dictionaries')}</p>
           <Link to="/import"><img className="img " src={image} /></Link>
         </div>
         <div className="img-block">
