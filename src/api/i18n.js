@@ -132,6 +132,7 @@ export const stringsToTranslate = [
   'Language edit',
   'Language Selection',
   'Languages',
+  'Language corpora',
   'Levenshtein distance limit for entity content matching',
   'Lexical entries',
   'Link',

@@ -267,9 +267,9 @@ class EditDictionaryMetadata extends React.Component {
         </Segment>
         <Segment>
           <Form.Group widths="equal">
-            <Label size="large">{getTranslation('Human settlement')}</Label>
             <Form.Dropdown
               fluid
+              label={getTranslation('Human settlement')}
               multiple
               selection
               search
@@ -291,9 +291,9 @@ class EditDictionaryMetadata extends React.Component {
         </Segment>
         <Segment>
           <Form.Group widths="equal">
-            <Label size="large">{getTranslation('Years')}</Label>
             <Form.Dropdown
               fluid
+              label={getTranslation('Years')}
               multiple
               selection
               search
