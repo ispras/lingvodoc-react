@@ -65,7 +65,7 @@ const Perspectives = (props) => {
 Perspectives.propTypes = {
   perspectives: PropTypes.instanceOf(Immutable.List).isRequired,
   onChange: PropTypes.func.isRequired,
-  mode: PropTypes.string.isRequired,  
+  mode: PropTypes.string.isRequired,
 };
 
 export default Perspectives;

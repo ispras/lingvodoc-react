@@ -27,7 +27,8 @@ export const setQuery = (searchId, query, category, adopted, etymology, langs, d
 
 export const storeSearchResult = (searchId, results) => ({
   type: STORE_SEARCH_RESULT,
-  payload: { searchId, results },
+  
+  payload: { searchId, results, },
 });
 
 export const newSearch = () => ({
@@ -92,6 +93,7 @@ const initialState = {
 
 
 const searches = (state = [initialState], action) => {
+
   switch (action.type) {
     case NEW_SEARCH:
       return [...state, buildNewQuery()];
@@ -107,6 +109,7 @@ const searches = (state = [initialState], action) => {
     case DELETE_SEARCH:
       return state.length > 1 ? state.filter(search => search.id !== action.payload) : state;
     case SET_QUERY:
+   
       return state.map(search =>
         (search.id === action.payload.searchId
           ? {

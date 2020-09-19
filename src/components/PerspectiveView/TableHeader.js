@@ -12,6 +12,7 @@ const TableHeader = ({
   columns,
   actions,
   selectEntries,
+  /* eslint-disable react/prop-types */
   selectAllEntries,
   selectAllIndeterminate,
   selectAllChecked,
@@ -20,10 +21,12 @@ const TableHeader = ({
   selectDisabled,
   selectDisabledIndeterminate,
   disabled,
+  /* eslint-enable react/prop-types */
   onSortModeChange,
 }) => (
   <Table.Header
-    style={disabled ? {opacity: '0.5'} : {}}>
+    style={disabled ? { opacity: '0.5' } : {}}
+  >
 
     <Table.Row>
       {selectEntries && (

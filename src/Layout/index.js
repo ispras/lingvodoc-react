@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import { connect } from 'react-redux';
 import { Sidebar } from 'semantic-ui-react';
 import { withRouter } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 import Modals from 'components/Modals';
 import PlayerModal from 'components/PlayerModal';
@@ -24,36 +25,38 @@ import RolesModal from 'components/RolesModal';
 import CreateOrganizationModal from 'components/CreateOrganizationModal';
 import DictionaryOrganizationsModal from 'components/DictionaryOrganizationsModal';
 
+
 import NavBar from './NavBar';
 import TasksSidebar from './TasksSidebar';
 import Snackbar from './Snackbar';
 import Routes from './Routes';
 
 const Content = styled.div`
-  padding: 5em 20px;
+  padding: 10em 20px;
   height: 100vh !important;
   overflow-y: auto !important;
 `;
 
 class Layout extends React.Component {
-
   constructor(props) {
     super(props);
   }
 
   render() {
     const { selected, loading } = this.props;
-    
+
     return (
-      <div key={'' + selected.id + loading}>
+      <div key={`${selected.id}${loading}`}>
         <NavBar />
         <Snackbar />
-        <Sidebar.Pushable as="div">
-          <TasksSidebar />
-          <Sidebar.Pusher as={Content}>
-            <Routes />
-          </Sidebar.Pusher>
-        </Sidebar.Pushable>
+        {
+          <Sidebar.Pushable as="div">
+            <TasksSidebar />
+            <Sidebar.Pusher as={Content}>
+              <Routes />
+            </Sidebar.Pusher>
+          </Sidebar.Pushable>
+        }
         <Modals />
         <PlayerModal />
         <MarkupModal />
@@ -73,10 +76,12 @@ class Layout extends React.Component {
       </div>
     );
   }
-
 }
-
-/* 
+Layout.propTypes = {
+  selected: PropTypes.object.isRequired,
+  loading: PropTypes.bool.isRequired,
+};
+/*
  * Without withRouter() using connect() breaks routing, see
  * https://reacttraining.com/react-router/core/guides/redux-integration, "Blocked Updates".
  */

@@ -39,7 +39,8 @@ export default enhance({
     submitFilter,
     openCognateAnalysisModal,
     openPhonemicAnalysisModal,
-    openPhonologyModal },
+    openPhonologyModal
+  },
   updateWhen({ perspective: np }, { perspective: op }) {
     return !shallowEqual(np, op);
   },
