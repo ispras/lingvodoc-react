@@ -87,7 +87,7 @@ const Dict = ({
       {((perspectives && selectorStatus && location !== null && statusLexicalEntries) && (
         <Button onClick={() => localSelectedDict(perspectives)}> {getTranslation('Select dictionary')}</Button>
       )) || ((selectorStatus) && (
-        <Label>{getTranslation('Lexical entries no found')} </Label>
+        <Label>{getTranslation('Lexical entries not found')} </Label>
       ))
       }
       {(perspectives && selectorStatus && location === null && selectorStatus) && (
