@@ -501,12 +501,13 @@ class EditCorpusMetadata extends React.Component {
 
 EditCorpusMetadata.propTypes = {
   mode: PropTypes.string.isRequired,
-  metadata: PropTypes.object.isRequired,
+  metadata: PropTypes.object,
   onChange: PropTypes.func.isRequired,
   onSave: PropTypes.func
 };
 
 EditCorpusMetadata.defaultProps = {
-  onSave: undefined
+  onSave: undefined,
+  metadata: {}
 };
 export default graphql(getMetadataAlternativesQuery)(EditCorpusMetadata);
