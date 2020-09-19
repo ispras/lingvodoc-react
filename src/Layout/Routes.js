@@ -24,7 +24,7 @@ import DictionariesAll from 'pages/DictionariesAll';
 import LanguagesDatabasesRoute from 'pages/TreeRoute';
 import ToolsRoute from 'pages/ToolsRoute';
 import DashboardRoute from 'pages/DashboardRoute';
-import OrganizationRoute from 'pages/OrganizationRoute';
+import AuthorsRoute from 'pages/AuthorsRoute';
 import SupportRoute from 'pages/SupportRoute';
 import WithoutGrants from 'pages/WithoutGrants';
 import CorporaAll from 'pages/CorporaAll';
@@ -58,7 +58,7 @@ const Routes = () => (
     <Route path="/LanguagesDatabasesRoute" component={LanguagesDatabasesRoute} />
     <Route path="/toolsRoute" component={ToolsRoute} />
     <Route path="/dashboardRoute" component={DashboardRoute} />
-    <Route path="/organizationRoute" component={OrganizationRoute} />
+    <Route path="/authorsRoute" component={AuthorsRoute} />
     <Route path="/supportRoute" component={SupportRoute} />
     <Route path="/without_grants" component={WithoutGrants} />
     <Route path="/corpora_all" component={CorporaAll} />
