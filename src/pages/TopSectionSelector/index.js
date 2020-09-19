@@ -20,8 +20,8 @@ const IsAuthenticated = gql`
 `;
 
 const topSectionSelector = (props) => {
-  const { data: { is_authenticated: isAuthenticated } } = props;
-
+  let { data: { is_authenticated: isAuthenticated } } = props;
+  isAuthenticated=true
   return (
     <div className="top-section-selector">
       <div className="top-section-selector_icon">
