@@ -9,14 +9,13 @@ import { getTranslation } from 'api/i18n';
 
 import { grantsQuery, createGrantPermissionMutation } from './graphql';
 
-function dateFormat(timestamp)
-{
+function dateFormat(timestamp) {
   const date = new Date(timestamp * 1000);
 
   return (
-    date.getUTCFullYear().toString().padStart(4, '0') + '.' +
-    (date.getUTCMonth() + 1).toString().padStart(2, '0') + '.' +
-    date.getUTCDate().toString().padStart(2, '0'));
+    `${date.getUTCFullYear().toString().padStart(4, '0')}.${
+      (date.getUTCMonth() + 1).toString().padStart(2, '0')}.${
+      date.getUTCDate().toString().padStart(2, '0')}`);
 }
 
 class GrantsList extends React.Component {
@@ -43,10 +42,7 @@ class GrantsList extends React.Component {
   render() {
     const { data } = this.props;
     const { grants } = data;
-    console.log(GrantsList,'GrantsList')
-    console.log(this.props,'props')
     return (
-      
       <div style={{ overflowY: 'auto' }}>
         <Table celled padded>
           <Table.Header>

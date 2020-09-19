@@ -8,13 +8,13 @@ import moment from 'moment';
 import Placeholder from 'components/Placeholder';
 import { getTranslation } from 'api/i18n';
 
-import { getUserRequestsQuery, acceptMutation } from './graphql';
 import { organizationsQuery } from 'pages/Organizations';
+import { getUserRequestsQuery, acceptMutation } from './graphql';
 
 const timestampToDate = ts => moment(ts * 1000).format('LLLL');
 const objectById = (id, objs) => objs.find(o => o.id === id);
 const objectByCompositeId = (id, objs) => objs.find(o => isEqual(o.id, id));
-
+/* eslint-disable react/prop-types */
 function acceptRequest(mutation, id, accept) {
   mutation({
     variables: {
@@ -26,21 +26,18 @@ function acceptRequest(mutation, id, accept) {
       { query: organizationsQuery, },
     ],
   }).then(() => {
-    window.logger.suc(getTranslation(
-      accept ?
-        'Request accepted successfully.' :
-        'Request rejected successfully.'));
-  });;
+    window.logger.suc(getTranslation(accept ?
+      'Request accepted successfully.' :
+      'Request rejected successfully.'));
+  });
 }
 
 const Subject = ({
   request, grants, dictionaries, organizations,
 }) => {
-
   const { subject } = request;
 
   switch (request.type) {
-
     case 'add_dict_to_grant':
     {
       const dictionary = objectByCompositeId(subject.dictionary_id, dictionaries);
@@ -52,7 +49,8 @@ const Subject = ({
           <Card
             header={grant.translation}
             meta={grant.grant_number}
-            description={dictionary ? dictionary.translation : getTranslation('Unknown dictionary')} />
+            description={dictionary ? dictionary.translation : getTranslation('Unknown dictionary')}
+          />
         </div>);
     }
 
@@ -67,19 +65,20 @@ const Subject = ({
           <Card
             header={organization.translation}
             meta={organization.about}
-            description={dictionary ? dictionary.translation : getTranslation('Unknown dictionary')} />
+            description={dictionary ? dictionary.translation : getTranslation('Unknown dictionary')}
+          />
         </div>);
     }
 
     case 'participate_org':
-    case 'administrate_org':
-
+    case 'administrate_org': {
       const organization = objectById(subject.org_id, organizations);
 
       return <Card
         header={organization.translation}
-        description={organization.about} />;
-
+        description={organization.about}
+      />;
+    }
     case 'grant_permission':
     default:
       return <div>{getTranslation('Unknow request type!')}</div>;
@@ -202,7 +201,7 @@ const Requests = ({ data, accept }) => {
 
   return <Tab className="inverted" menu={{ fluid: true, vertical: true, tabular: 'right' }} panes={panes} />;
 };
-
+/* eslint-enable react/prop-types */
 export default compose(
   graphql(getUserRequestsQuery),
   graphql(acceptMutation, { name: 'accept' }),

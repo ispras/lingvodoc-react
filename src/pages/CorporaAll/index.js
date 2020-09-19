@@ -6,8 +6,8 @@ import { Redirect, matchPath } from 'react-router-dom';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import Immutable, { fromJS, Map } from 'immutable';
-import { Container, Segment } from 'semantic-ui-react';
-
+import { Container, Segment, Label } from 'semantic-ui-react';
+import { getTranslation } from 'api/i18n';
 import { buildLanguageTree } from 'pages/Search/treeBuilder';
 
 
@@ -175,6 +175,7 @@ const CorporaAll = (props) => {
 
   return (
     <Container className="published">
+      <Segment size="huge">{getTranslation('Language corpora')}</Segment>
       <Segment>
         {
           <AllDicts

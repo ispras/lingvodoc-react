@@ -15,11 +15,13 @@ const TableBody = ({
   selectEntries,
   selectedEntries,
   onEntrySelect,
+  /* eslint-disable react/prop-types */
   showEntryId,
   selectDisabled,
   selectDisabledIndeterminate,
   disabledEntrySet,
   removeSelectionEntrySet,
+  /* eslint-enable react/prop-types */
 }) => (
   <Table.Body>
     {entries.map(entry => (

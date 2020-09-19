@@ -46,7 +46,7 @@ const selectorDict = (props) => {
 
   return (
     <Container className="published">
-      <Label size="huge"> {getTranslation('Select a dictionary for analysis')}</Label>)
+      <Segment size="huge"> {getTranslation('Select a dictionary for analysis')}</Segment>
       <Segment>
         <AllDicts
           languagesTree={languagesTree}

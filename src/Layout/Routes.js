@@ -1,7 +1,6 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 
-
 import Info from 'pages/Info';
 import Search from 'pages/Search';
 import DialeqtImport from 'pages/DialeqtImport';
@@ -64,10 +63,6 @@ const Routes = () => (
     <Route path="/without_grants" component={WithoutGrants} />
     <Route path="/corpora_all" component={CorporaAll} />
     <Route component={NotFound} />
-
-
-
-
   </Switch>
 );
 

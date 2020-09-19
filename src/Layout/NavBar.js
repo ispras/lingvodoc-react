@@ -8,10 +8,10 @@ import { Dropdown, Menu, Button, List } from 'semantic-ui-react';
 import styled from 'styled-components';
 import config from 'config';
 
+import { getTranslation } from 'api/i18n';
 import User from './User';
 import Tasks from './Tasks';
 import Locale from './Locale';
-import { getTranslation } from 'api/i18n';
 
 import './style.scss';
 
@@ -146,7 +146,7 @@ const NavBar =
                   </List.Item>
                   <List.Item className="version">
                     <p style={{ marginBottom: '0.5em' }}>Frontend:</p>
-                    <p style={{ marginLeft: '0.5em' }}>{__VERSION__}</p>
+                    <p style={{ marginLeft: '0.5em' }}>{/* eslint-disable no-undef */__VERSION__ /* eslint-enable no-undef */}</p>
                   </List.Item>
                 </List>
               </Dropdown.Item>
@@ -154,6 +154,7 @@ const NavBar =
           </Dropdown>
         </Dropdown.Menu>
       </Dropdown>
+
       <Menu.Menu position="right">
         <Sync />
         <User />
@@ -165,8 +166,9 @@ const NavBar =
       </Menu.Menu>
     </Menu>
   );
-
-
+NavBar.propTypes = {
+  data: PropTypes.object.isRequired,
+};
 export default compose(
   graphql(gql`query version { version }`),
   withRouter,

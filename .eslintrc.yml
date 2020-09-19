@@ -30,6 +30,22 @@ rules:
   no-constant-condition:
     - warn
     - checkLoops: false
+  no-unused-vars:
+    - warn
+  no-plusplus:
+    - off
+  react/prefer-stateless-function:
+    - 0
+  import/first:
+    - warn
+  react/no-unused-prop-types:
+    - warn
+  no-useless-constructor:
+    - off
+  no-prototype-builtins:
+    - warn
+  camelcase:
+    - warn
 
   react/jsx-filename-extension: 'off'
   react/jsx-wrap-multilines: 'off'

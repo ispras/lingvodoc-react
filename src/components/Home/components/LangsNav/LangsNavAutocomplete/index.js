@@ -5,8 +5,8 @@ import Autocomplete from 'react-autocomplete';
 import { Form, Segment, Icon } from 'semantic-ui-react';
 
 import debounce from 'utils/debounce';
-import { getScrollContainer, goToLanguage } from '../../../common/';
 import { getTranslation } from 'api/i18n';
+import { getScrollContainer, goToLanguage } from '../../../common/';
 import './styles.scss';
 
 /* ----------- PROPS ----------- */
@@ -33,7 +33,7 @@ const getComponentContainer = () => document.querySelector(`.${classNames.substr
 
 /* ----------- ENHANCERS ----------- */
 const addHandlers = withHandlers({
-  onLangChange: ({ setLanguage }) => (ev) => setLanguage(ev.target.value),
+  onLangChange: ({ setLanguage }) => ev => setLanguage(ev.target.value),
   onLangSelect: ({ setLanguage, langsNavAcBeside, setLangsNavAcBeside }) => (value, item) => {
     if (!langsNavAcBeside) {
       setLangsNavAcBeside(true);
