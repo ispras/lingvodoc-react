@@ -11,6 +11,9 @@ export function buildLanguageTree(data) {
       .set('children', byParentId.get(langId, new List()).map(innerBuild));
   }
 
+  if (byParentId.size <= 0)
+    return new List();
+
   return byParentId.get(null).map(innerBuild);
 }
 

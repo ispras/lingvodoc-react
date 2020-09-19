@@ -13,11 +13,11 @@ import { setSortByField, addLexicalEntry, selectLexicalEntry, resetEntriesSelect
 import { openModal } from 'ducks/modals';
 import Placeholder from 'components/Placeholder';
 import ApproveModal from 'components/ApproveModal';
+import { getTranslation } from 'api/i18n';
 
 import TableHeader from './TableHeader';
 import TableBody from './TableBody';
 import Pagination from './Pagination';
-import { getTranslation } from 'api/i18n';
 
 const ROWS_PER_PAGE = 20;
 
@@ -134,6 +134,7 @@ const TableComponent = ({
   selectEntries,
   selectedEntries,
   onEntrySelect,
+  /* eslint-disable react/prop-types */
   selectAllEntries,
   selectAllIndeterminate,
   selectAllChecked,
@@ -144,6 +145,7 @@ const TableComponent = ({
   disabledEntrySet,
   disabledHeader,
   removeSelectionEntrySet,
+  /*  eslint-enable react/prop-types */
   actions,
 }) => (
   <div style={{ overflowY: 'auto' }}>
@@ -162,7 +164,8 @@ const TableComponent = ({
         selectDisabled={selectDisabled}
         selectDisabledIndeterminate={selectDisabledIndeterminate}
         disabled={disabledHeader}
-        actions={actions} />
+        actions={actions}
+      />
       <TableBody
         perspectiveId={perspectiveId}
         entitiesMode={entitiesMode}
@@ -306,7 +309,7 @@ const P = ({
 
   const onApprove = () => {
     openNewModal(ApproveModal, { perspectiveId: id, mode });
-  }
+  };
 
   const processEntries = flow([
     // remove empty lexical entries, if not in edit mode
@@ -361,25 +364,21 @@ const P = ({
       position: column.position,
     };
   });
-
+  /* eslint-disable no-shadow */
   function approveDisableCondition(entries) {
-    return entries.length == 0 || entries.every(entry => {
-      return entry.entities.every(entity => {
-        return mode == 'publish' ? entity.published == true : entity.accepted == true;
-      });
-    });
+    return entries.length === 0 || entries.every(entry => entry.entities.every(entity => (mode === 'publish' ? entity.published === true : entity.accepted === true)));
   }
-
+  /* eslint-enable no-shadow */
   const isAuthenticated = user && user.user.id;
-  
+
   return (
     <div style={{ overflowY: 'auto' }}>
-      {mode === 'edit' && <Button positive icon="plus" content={getTranslation("Add lexical entry")} onClick={addEntry} />}
+      {mode === 'edit' && <Button positive icon="plus" content={getTranslation('Add lexical entry')} onClick={addEntry} />}
       {mode === 'edit' && (
         <Button
           negative
           icon="minus"
-          content={getTranslation("Remove lexical entries")}
+          content={getTranslation('Remove lexical entries')}
           onClick={removeEntries}
           disabled={selectedEntries.length < 1}
         />
@@ -388,16 +387,16 @@ const P = ({
         <Button
           positive
           icon="plus"
-          content={getTranslation("Merge lexical entries")}
+          content={getTranslation('Merge lexical entries')}
           onClick={mergeEntries}
           disabled={selectedEntries.length < 2}
         />
       )}
       {mode === 'publish' && isAuthenticated &&
-        <Button positive content={getTranslation("Publish Entities")} disabled={approveDisableCondition(entries)} onClick={onApprove} />
+        <Button positive content={getTranslation('Publish Entities')} disabled={approveDisableCondition(entries)} onClick={onApprove} />
       }
       {mode === 'contributions' && isAuthenticated &&
-        <Button positive content={getTranslation("Accept Contributions")} disabled={approveDisableCondition(entries)} onClick={onApprove} />
+        <Button positive content={getTranslation('Accept Contributions')} disabled={approveDisableCondition(entries)} onClick={onApprove} />
       }
       <Table celled padded className={className}>
         <TableHeader
@@ -430,6 +429,8 @@ P.propTypes = {
   filter: PropTypes.string,
   data: PropTypes.object.isRequired,
   sortByField: PropTypes.object,
+  allFields: PropTypes.array.isRequired,
+  columns: PropTypes.array.isRequired,
   setSortByField: PropTypes.func.isRequired,
   addLexicalEntry: PropTypes.func.isRequired,
   createLexicalEntry: PropTypes.func.isRequired,
@@ -440,7 +441,7 @@ P.propTypes = {
   openModal: PropTypes.func.isRequired,
   createdEntries: PropTypes.array.isRequired,
   selectedEntries: PropTypes.array.isRequired,
-  user: PropTypes.object
+  user: PropTypes.object.isRequired,
 };
 
 P.defaultProps = {
@@ -507,6 +508,7 @@ const LexicalEntryViewBase = ({
   selectEntries,
   selectedEntries,
   onEntrySelect,
+  /* eslint-disable react/prop-types */
   selectAllEntries,
   selectAllIndeterminate,
   selectAllChecked,
@@ -517,6 +519,7 @@ const LexicalEntryViewBase = ({
   disabledEntrySet,
   disabledHeader,
   removeSelectionEntrySet,
+  /*  eslint-enable react/prop-types */
   actions,
 }) => {
   const { loading } = data;
@@ -708,8 +711,7 @@ const PerspectiveViewWrapper = ({
     return null;
   }
 
-  if (data.perspective === undefined)
-  {
+  if (data.perspective === undefined) {
     /* If we refetch data of this perspective with a different set of column fields during initialization
      * of CognateAnalysisModal, data.perspective becomes undefined and errors and query refetching ensue.
      *

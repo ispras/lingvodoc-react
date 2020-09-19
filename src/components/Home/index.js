@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -7,7 +7,7 @@ import { Redirect, matchPath } from 'react-router-dom';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import Immutable, { fromJS, Map } from 'immutable';
-import { Container, Form, Radio, Segment, Button } from 'semantic-ui-react';
+import { Container, Form, Radio, Segment, Button, Label } from 'semantic-ui-react';
 
 import { buildLanguageTree } from 'pages/Search/treeBuilder';
 import { setGrantsMode, resetDictionaries } from 'ducks/home';
@@ -15,18 +15,16 @@ import { setGrantsMode, resetDictionaries } from 'ducks/home';
 import config from 'config';
 
 import BackTopButton from 'components/BackTopButton';
+import { getTranslation } from 'api/i18n';
+import Placeholder from 'components/Placeholder';
 import GrantedDicts from './components/GrantedDicts';
 import AllDicts from './components/AllDicts';
-import Placeholder from 'components/Placeholder';
 import { getScrollContainer } from './common';
-import { getTranslation } from 'api/i18n';
 import './published.scss';
-
-
 
 const authenticatedDictionariesQuery = gql`
   query AuthDictionaries {
-    dictionaries(proxy: true) {
+    dictionaries(proxy: true,category:0) {
       id
       parent_id
       translation
@@ -67,7 +65,7 @@ const authenticatedDictionariesQuery = gql`
 
 const guestDictionariesQuery = gql`
   query GuestDictionaries {
-    dictionaries(proxy: false, published: true) {
+    dictionaries(proxy: false, published: true,category:0) {
       id
       parent_id
       translation
@@ -130,14 +128,14 @@ const Home = (props) => {
     },
     location: { hash },
   } = props;
-
+  const statusLangsNav = true;
   if (error) {
     return null;
   }
 
   if (loading) {
     return (
-      <Placeholder/>
+      <Placeholder />
     );
   }
 
@@ -210,19 +208,19 @@ const Home = (props) => {
       <Segment className="rose_background">
         <Form>
           <Form.Group inline className="toggle-label">
-            <label>{getTranslation('Display mode')}</label>
+            <Label>{getTranslation('Display mode')}</Label>
             <Segment>
               <Form.Field
                 control={Radio}
                 label={{ children: <div className="toggle-label">{getTranslation('By Languages')}</div> }}
-                value='1'
+                value="1"
                 checked={!grantsMode}
                 onChange={() => actions.setGrantsMode(false)}
               />
               <Form.Field
                 control={Radio}
                 label={{ children: <div className="toggle-label">{getTranslation('By Grants')}</div> }}
-                value='2'
+                value="2"
                 checked={grantsMode}
                 onChange={() => actions.setGrantsMode(true)}
               />
@@ -250,10 +248,13 @@ const Home = (props) => {
         )}
         {!grantsMode && (
           <AllDicts
+            location={props.location}
             languagesTree={languagesTree}
             dictionaries={dicts}
             perspectives={perspectivesList}
             isAuthenticated={isAuthenticated}
+            selectorMode={false}
+            statusLangsNav={statusLangsNav}
           />
         )}
       </Segment>
@@ -313,7 +314,7 @@ const dictionaryWithPerspectivesQuery = gql`
 
 const dictionaryWithPerspectivesProxyQuery = gql`
   query DictionaryWithPerspectivesProxy {
-    dictionaries(proxy: false, published: true) {
+    dictionaries(proxy: false, published: true,category:0) {
       id
       parent_id
       translation

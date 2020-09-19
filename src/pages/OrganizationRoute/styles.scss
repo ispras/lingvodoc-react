@@ -1,0 +1,35 @@
+.organizationRoute {
+
+  .background-img {
+    background-image: url(../../images/organization.jpg);
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: contain;
+    width: 300px;
+    height: 250px;
+    cursor: pointer;
+    display: inline-block;
+  }
+  .container {
+    margin-top: 100px;
+  }
+  .block {
+    display: inline-block;
+
+   
+  }
+  .off-grant{
+    margin-left: 50px;
+  }
+  .column-icon {
+    position: relative;
+    left: 17%;
+  }
+  p {
+    font-weight: bold;
+    color: white;
+    margin: 0;
+    padding-top: 10px;
+    padding-left: 10px;
+  }
+}

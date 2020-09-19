@@ -5,21 +5,28 @@ import { connect } from 'react-redux';
 import { compose, onlyUpdateForKeys } from 'recompose';
 import Immutable from 'immutable';
 import { Link } from 'react-router-dom';
-import { Dropdown, Checkbox, Icon } from 'semantic-ui-react';
+import { Dropdown, Checkbox, Icon, Button, Label } from 'semantic-ui-react';
 import { toggleDictionary } from 'ducks/home';
 import { checkLanguageId } from './LangsNav';
+import { getTranslation } from 'api/i18n';
+
 
 import config from 'config';
 
+
 import '../published.scss';
 
+function localSelectedDict(e) {
+  return e;
+}
+let selectorStatus = false;
 function toId(arr, prefix = null) {
   const joiner = prefix ? arr[prefix] : arr;
   return joiner.join('/');
 }
 
 const Perspective = ({ perspective: p }) => (
-  <Dropdown.Item as={Link} to={`dictionary/${toId(p.get('parent_id'))}/perspective/${toId(p.get('id'))}`}>
+  <Dropdown.Item as={Link} to={`/dictionary/${toId(p.get('parent_id'))}/perspective/${toId(p.get('id'))}`}>
     {/* Permissions are shown in desktop or proxy version only */}
     {(config.buildType === 'desktop' || config.buildType === 'proxy') && (
       <span>
@@ -43,10 +50,21 @@ const Dict = ({
   const id = dictionary.get('id');
   const translation = dictionary.get('translation');
   const status = dictionary.get('status');
-  const perspectives = dictionary.get('children');
+  let perspectives = dictionary.get('children');
   const authors = dictionary.getIn(['additional_metadata', 'authors']);
+  const location = dictionary.getIn(['additional_metadata', 'location']);
   const isDownloaded = dictionary.get('isDownloaded');
   const isChecked = selected.has(id);
+  let statusLexicalEntries = false;
+
+  if (Array.isArray(perspectives))
+    perspectives = Immutable.fromJS(perspectives);
+
+  perspectives.toJS().forEach((perspective) => {
+    if (perspective.translation === 'Lexical Entries') {
+      statusLexicalEntries = true;
+    }
+  });
 
   return (
     <li className="dict">
@@ -57,8 +75,8 @@ const Dict = ({
       {(config.buildType === 'desktop' || config.buildType === 'proxy') && isDownloaded && <Icon name="download" />}
 
       <span className="dict-name">{translation} {config.buildType === 'server' && canSelectDictionaries && status === 'Published' && <Icon name="globe" />}</span>
-      {authors && authors.size != 0 && <span className="dict-authors">({authors.toArray().join(", ")})</span>}
-      {perspectives &&
+      {authors && authors.size != 0 && <span className="dict-authors">({authors.toArray().join(', ')})</span>}
+      {perspectives && !selectorStatus &&
         perspectives.valueSeq && (
           <Dropdown inline text={`View (${perspectives.size})`}>
             <Dropdown.Menu>
@@ -66,6 +84,16 @@ const Dict = ({
             </Dropdown.Menu>
           </Dropdown>
         )}
+      {((perspectives && selectorStatus && location !== null && statusLexicalEntries) && (
+        <Button onClick={() => localSelectedDict(perspectives)}> {getTranslation('Select dictionary')}</Button>
+      )) || ((selectorStatus) && (
+        <Label>{getTranslation('Lexical entries no found')} </Label>
+      ))
+      }
+      {(perspectives && selectorStatus && location === null && selectorStatus) && (
+        <Label>{getTranslation('No coordinate data')}</Label>
+      )
+      }
     </li>
   );
 };
@@ -84,23 +112,26 @@ const Dictionary = compose(
   onlyUpdateForKeys(['selected'])
 )(Dict);
 
-const Language = ({ language, canSelectDictionaries }) => {
+const Language = ({ language, canSelectDictionaries, languagesGroup }) => {
   const translation = language.get('translation');
   const children = language.get('children');
   const id = language.get('id').toJS().toString();
   const parent_id = language.get('parent_id');
-  let langClass = "lang-name";
+  let langClass = 'lang-name';
   if (parent_id == null) {
-    langClass = "root-lang-name";
+    langClass = 'root-lang-name';
+  } else if (checkLanguageId(id)) {
+    langClass = 'confirmed-lang-name';
   }
-  else if (checkLanguageId(id)) {
-    langClass = "confirmed-lang-name";
+
+  if (!children.toJS()[0].children[0].children && selectorStatus) {
+    languagesGroup(language.toJS());
   }
-  
+
   return (
     <li className="lang" id={`lang_${id}`}>
       <span className={langClass}>{translation}</span>
-      <ul>{children.map(n => <Node key={n.get('id')} node={n} canSelectDictionaries={canSelectDictionaries} />)}</ul>
+      <ul>{children.map(n => <Node key={n.get('id')} node={n} canSelectDictionaries={canSelectDictionaries} languagesGroup={languagesGroup} />)}</ul>
     </li>
   );
 };
@@ -114,10 +145,10 @@ Language.defaultProps = {
   canSelectDictionaries: false,
 };
 
-const Node = ({ node, canSelectDictionaries }) => {
+const Node = ({ node, canSelectDictionaries, languagesGroup }) => {
   switch (node.get('type')) {
     case 'language':
-      return <Language language={node} canSelectDictionaries={canSelectDictionaries} />;
+      return <Language language={node} canSelectDictionaries={canSelectDictionaries} languagesGroup={languagesGroup} />;
     case 'dictionary':
       return <Dictionary dictionary={node} canSelectDictionaries={canSelectDictionaries} />;
     default:
@@ -130,19 +161,32 @@ Node.propTypes = {
   canSelectDictionaries: PropTypes.bool.isRequired,
 };
 
-const Tree = ({ tree, canSelectDictionaries }) => (
-  <ul className="tree">
-    {tree.map(e => <Node key={e.get('id')} node={e} canSelectDictionaries={canSelectDictionaries} />)}
-  </ul>
-);
+const Tree = ({
+  tree, canSelectDictionaries, selectorMode, selectedDict, languagesGroup
+}) => {
+  selectorStatus = selectorMode;
+  localSelectedDict = selectedDict;
+  return (
+    <ul className="tree">
+      {tree.map(e => <Node selectedDict={selectedDict} key={e.get('id')} node={e} canSelectDictionaries={canSelectDictionaries} languagesGroup={languagesGroup} />)}
+    </ul>
+  );
+};
 
 Tree.propTypes = {
   tree: PropTypes.instanceOf(Immutable.List).isRequired,
   canSelectDictionaries: PropTypes.bool,
+  selectedDict: PropTypes.func,
+  languagesGroup: PropTypes.func,
+  selectorMode: PropTypes.bool,
+
 };
 
 Tree.defaultProps = {
   canSelectDictionaries: false,
+  selectedDict: undefined,
+  languagesGroup: undefined,
+  selectorMode: false
 };
 
-export default Tree;
+export default compose()(Tree);
