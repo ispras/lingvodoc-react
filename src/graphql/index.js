@@ -6,7 +6,7 @@ import { onError } from 'apollo-link-error';
 import { each } from 'lodash';
 import config from 'config';
 import { signOut } from 'ducks/user';
-import { push } from 'react-router-redux';
+
 
 const errorLink = onError(({ networkError = {}, graphQLErrors }) => {
   if (networkError.statusCode === 500) {
@@ -23,8 +23,7 @@ const errorLink = onError(({ networkError = {}, graphQLErrors }) => {
 
 const httpLink = createUploadLink({
   uri: `${config.apiUrl}/graphql`,
-  /*   credentials: 'same-origin', */
-  credentials: 'include'
+  credentials: 'same-origin',
 });
 
 // register global GraphQL error handler

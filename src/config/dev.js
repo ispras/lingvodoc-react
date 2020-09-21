@@ -1,7 +1,7 @@
 import base from './base';
 
 const dev = {
-  apiUrl: 'http://itksb.com:8077/api',
+  apiUrl: '/api',
   pollingInterval: 20000,
 };
 
