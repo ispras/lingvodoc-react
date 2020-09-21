@@ -9,7 +9,7 @@ import { Dropdown, Checkbox, Icon, Button, Label } from 'semantic-ui-react';
 import { toggleDictionary } from 'ducks/home';
 import { checkLanguageId } from './LangsNav';
 import { getTranslation } from 'api/i18n';
-
+import checkLexicalEntries from 'pages/DistanceMap/checkLexicalEntries';
 
 import config from 'config';
 
@@ -57,11 +57,10 @@ const Dict = ({
   const isChecked = selected.has(id);
   let statusLexicalEntries = false;
 
-  if (Array.isArray(perspectives))
-    perspectives = Immutable.fromJS(perspectives);
+  if (Array.isArray(perspectives)) { perspectives = Immutable.fromJS(perspectives); }
 
   perspectives.toJS().forEach((perspective) => {
-    if (perspective.translation === 'Lexical Entries') {
+    if (checkLexicalEntries(perspective.translation)) {
       statusLexicalEntries = true;
     }
   });
@@ -84,16 +83,21 @@ const Dict = ({
             </Dropdown.Menu>
           </Dropdown>
         )}
-      {((perspectives && selectorStatus && location !== null && statusLexicalEntries) && (
-        <Button onClick={() => localSelectedDict(perspectives)}> {getTranslation('Select dictionary')}</Button>
-      )) || ((selectorStatus) && (
-        <Label>{getTranslation('Lexical entries not found')} </Label>
-      ))
+
+      {(perspectives && selectorStatus && location !== null && statusLexicalEntries) && (
+        <Button onClick={() => localSelectedDict(perspectives)}> {getTranslation('Select dictionary') }</Button>
+      )
       }
-      {(perspectives && selectorStatus && location === null && selectorStatus) && (
+
+      {(perspectives && selectorStatus && location === null) && (
         <Label>{getTranslation('No coordinate data')}</Label>
       )
       }
+
+      {selectorStatus && !statusLexicalEntries && perspectives && (
+      <Label>{getTranslation('Lexical entries not found')}
+      </Label>
+      )}
     </li>
   );
 };

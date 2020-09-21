@@ -8,7 +8,7 @@ import Immutable, { fromJS } from 'immutable';
 import { buildLanguageTree } from 'pages/Search/treeBuilder';
 import { getTranslation } from 'api/i18n';
 import { compositeIdToString as id2str } from 'utils/compositeId';
-
+import checkLexicalEntries from './checkLexicalEntries';
 
 const dictionaryName = gql`
 query dictionaryName($id:LingvodocID) {
@@ -76,7 +76,7 @@ function selectorLangGroup({
     const arrDictionary = [];
     allDictionaries.forEach((dict) => {
       if ((id2str(dict.parent_id) === id2str(lang.id)) && dict.perspectives[1] && dict.perspectives[0]) {
-        if (dict.perspectives[0].translation === 'Lexical Entries' || dict.perspectives[1].translation === 'Lexical Entries') {
+        if (checkLexicalEntries(dict.perspectives[0].translation) || checkLexicalEntries(dict.perspectives[1].translation)) {
           arrDictionary.push(dict);
         }
       }
@@ -119,7 +119,7 @@ function selectorLangGroup({
   rootLanguage.children.forEach((dict) => {
     if (dict.translation !== mainDict.translation && dict.additional_metadata.location !== null) {
       dict.perspectives.forEach((perspective) => {
-        if (perspective.translation === 'Lexical Entries') {
+        if (checkLexicalEntries(perspective.translation)) {
           dictionaryWithLexicalEntries.push(dict);
         }
       });
@@ -189,7 +189,7 @@ function selectorLangGroup({
                 onClick={() => {
                   setFocusTwoChildLanguages(lang.translation);
                   dictionariesSelectedLanguges(lang);
-}}
+                }}
               >
                 {lang.translation}
               </Button>)}
