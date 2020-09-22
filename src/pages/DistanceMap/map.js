@@ -104,15 +104,20 @@ class MapAreas extends PureComponent {
 
   async allDicts() {
     const {
-      dictionaries,
-      mainDictionary,
-      computeDistancePerspectives,
-      rootLanguage,
-      allField,
+      location
     } = this.props;
-    let maxCount = 0;
 
-    this.dictionariesWithColors = await getDistancePoint(dictionaries, allField, mainDictionary, computeDistancePerspectives, rootLanguage);
+    let maxCount = 0;
+    const
+      {
+        dictionaries,
+        mainDictionary,
+        computeDistancePerspectives,
+        rootLanguage,
+        allField
+      } = location.state;
+      console.log(location.state)
+    this.dictionariesWithColors = await getDistancePoint(dictionaries, allField, mainDictionary.toJS(), computeDistancePerspectives, rootLanguage);
 
     if (this.dictionariesWithColors.length === 0) {
       this.setState({ statusRequest: false });
@@ -145,8 +150,8 @@ class MapAreas extends PureComponent {
     const { backToDictionaries } = this.props;
     backToDictionaries();
   }
-  back(){
-console.log('sada')
+  back() {
+    console.log('sada');
   }
   render() {
     return (

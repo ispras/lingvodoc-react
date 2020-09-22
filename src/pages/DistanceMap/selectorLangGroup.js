@@ -8,7 +8,7 @@ import Immutable, { fromJS } from 'immutable';
 import { buildLanguageTree } from 'pages/Search/treeBuilder';
 import { getTranslation } from 'api/i18n';
 import { compositeIdToString as id2str } from 'utils/compositeId';
-
+import { Link } from 'react-router-dom';
 
 const dictionaryName = gql`
 query dictionaryName($id:LingvodocID) {
@@ -23,15 +23,15 @@ query dictionaryName($id:LingvodocID) {
   }
 }`;
 
-function selectorLangGroup({
-  mainGroup,
-  mainDictionary,
-  client,
-  languagesGroup,
-  mainDictionaryFun,
-  allLanguages,
-  allDictionaries,
-}) {
+function selectorLangGroup({ client, location }) {
+  const {
+    allDictionaries,
+    allLanguages,
+    languagesGroup,
+    mainDictionary,
+    allField
+  } = location.state;
+
   const parentId = mainDictionary.toJS()[0].parent_id;
   const [labelDict, setLabelDict] = useState(null);
   const [nodeLanguages, setNodeLanguages] = useState([]);
@@ -189,7 +189,7 @@ function selectorLangGroup({
                 onClick={() => {
                   setFocusTwoChildLanguages(lang.translation);
                   dictionariesSelectedLanguges(lang);
-}}
+                }}
               >
                 {lang.translation}
               </Button>)}
@@ -214,12 +214,25 @@ function selectorLangGroup({
           </Segment>
         )}
       </Segment.Group>
-      <Button onClick={sendDict}> {getTranslation('Next')} </Button>
+      <Button  onClick={sendDict}> {getTranslation('Next')} </Button>
+      <Link to={{
+          pathname: '/distance_map/test/test',
+          state: {
+            dictionaries:allDictionaries,
+            mainDictionary,
+            rootLanguage,
+            allField,
+}
+        }}
+        > <Button > Ссылка </Button>
+        </Link>
+
+        
     </div >
   );
 }
 
-selectorLangGroup.propTypes = {
+/* selectorLangGroup.propTypes = {
   mainGroup: PropTypes.func.isRequired,
   mainDictionary: PropTypes.instanceOf(Immutable.List).isRequired,
   client: PropTypes.object.isRequired,
@@ -228,6 +241,6 @@ selectorLangGroup.propTypes = {
   allLanguages: PropTypes.array.isRequired,
   allDictionaries: PropTypes.array.isRequired,
 
-};
+}; */
 
 export default compose(withApollo)(selectorLangGroup);

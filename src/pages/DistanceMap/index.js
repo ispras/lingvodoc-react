@@ -3,11 +3,12 @@ import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import MapDict from './map';
+import { Button } from 'semantic-ui-react';
 import SelectorDictionary from './selectorDictionary';
 import SelectorLangGropu from './selectorLangGroup';
 import { compose } from 'recompose';
 import Placeholder from 'components/Placeholder';
-import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 
 const allFieldQuery = gql`
   query{
@@ -84,9 +85,10 @@ class DistanceMap extends React.Component {
         is_authenticated: isAuthenticated
       },
       allField
+
     }
       = this.props;
-
+    /*    console.log(this.props) */
     const mainDictionary = (e, rootLanguage) => {
       this.setState({ dictionary: e });
       this.setState({ rootLanguage });
@@ -108,6 +110,20 @@ class DistanceMap extends React.Component {
     this.isAuthenticated = isAuthenticated || this.isAuthenticated;
     return (
       <div>
+        <Link to={{
+          pathname: '/distance_map/test',
+          state: {
+            languagesGroup:this.arrLang,
+            mainDictionary:this.state.dictionary,
+            allLanguages:this.languageTree,
+            allDictionaries:this.dictionaries,
+            groupLang:this.state.groupLang,
+            allField:allField.all_fields
+}
+        }}
+        > <Button > Ссылка </Button>
+        </Link>
+
         {(((this.state.dictionary === null && this.state.groupLang === null && !loading) ||
           (this.state.statusTest)) &&
           <SelectorDictionary
@@ -118,7 +134,8 @@ class DistanceMap extends React.Component {
             perspectives={this.perspectives}
             isAuthenticated={this.isAuthenticated}
           />)}
-        {(this.state.dictionary !== null && this.state.groupLang === null && !loading &&
+
+        {/* {(this.state.dictionary !== null && this.state.groupLang === null && !loading &&
           <SelectorLangGropu
             mainDictionaryFun={mainDictionary}
             languagesGroup={this.arrLang}
@@ -137,7 +154,7 @@ class DistanceMap extends React.Component {
             rootLanguage={this.state.rootLanguage}
             backToDictionaries={this.reset}
             allField={allField}
-          />)}
+          />)} */}
 
       </div>
     );
