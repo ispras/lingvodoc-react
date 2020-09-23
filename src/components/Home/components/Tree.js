@@ -10,16 +10,23 @@ import { toggleDictionary } from 'ducks/home';
 import { checkLanguageId } from './LangsNav';
 import { getTranslation } from 'api/i18n';
 
-
 import config from 'config';
 
 
 import '../published.scss';
 
-function localSelectedDict(e) {
-  return e;
-}
 let selectorStatus = false;
+const arrLang = [];
+let allFieldLocal,
+  languagesTreeLocal,
+  dictionariesLocal,
+  perspectivesLocal;
+
+
+const languagesGroup = (e) => {
+  arrLang.push(e);
+};
+
 function toId(arr, prefix = null) {
   const joiner = prefix ? arr[prefix] : arr;
   return joiner.join('/');
@@ -57,8 +64,7 @@ const Dict = ({
   const isChecked = selected.has(id);
   let statusLexicalEntries = false;
 
-  if (Array.isArray(perspectives))
-    perspectives = Immutable.fromJS(perspectives);
+  if (Array.isArray(perspectives)) { perspectives = Immutable.fromJS(perspectives); }
 
   perspectives.toJS().forEach((perspective) => {
     if (perspective.translation === 'Lexical Entries') {
@@ -85,7 +91,21 @@ const Dict = ({
           </Dropdown>
         )}
       {((perspectives && selectorStatus && location !== null && statusLexicalEntries) && (
-        <Button onClick={() => localSelectedDict(perspectives)}> {getTranslation('Select dictionary')}</Button>
+
+      <Link to={{
+          pathname: '/distance_map/test',
+          state: {
+            languagesGroup: arrLang,
+            mainDictionary: perspectives,
+            allLanguages: languagesTreeLocal,
+            allDictionaries: dictionariesLocal,
+/*             groupLang: groupLang, */
+            allField:allFieldLocal
+}
+        }}
+      > <Button > Ссылка </Button>
+      </Link>
+
       )) || ((selectorStatus) && (
         <Label>{getTranslation('Lexical entries not found')} </Label>
       ))
@@ -112,7 +132,7 @@ const Dictionary = compose(
   onlyUpdateForKeys(['selected'])
 )(Dict);
 
-const Language = ({ language, canSelectDictionaries, languagesGroup }) => {
+const Language = ({ language, canSelectDictionaries }) => {
   const translation = language.get('translation');
   const children = language.get('children');
   const id = language.get('id').toJS().toString();
@@ -145,12 +165,19 @@ Language.defaultProps = {
   canSelectDictionaries: false,
 };
 
-const Node = ({ node, canSelectDictionaries, languagesGroup }) => {
+const Node = ({
+  node,
+  canSelectDictionaries,
+
+}) => {
   switch (node.get('type')) {
     case 'language':
-      return <Language language={node} canSelectDictionaries={canSelectDictionaries} languagesGroup={languagesGroup} />;
+      return <Language language={node} canSelectDictionaries={canSelectDictionaries} />;
     case 'dictionary':
-      return <Dictionary dictionary={node} canSelectDictionaries={canSelectDictionaries} />;
+      return <Dictionary
+        dictionary={node}
+        canSelectDictionaries={canSelectDictionaries}
+      />;
     default:
       return <div>Unknown type</div>;
   }
@@ -162,18 +189,33 @@ Node.propTypes = {
 };
 
 const Tree = ({
-  tree, canSelectDictionaries, selectorMode, selectedDict, languagesGroup
+  tree,
+  canSelectDictionaries,
+  selectorMode,
+  allField,
+  languagesTree,
+  dictionaries,
+  perspectives,
+  dictionariesAll
 }) => {
   selectorStatus = selectorMode;
-  localSelectedDict = selectedDict;
+  allFieldLocal = allField;
+  languagesTreeLocal = languagesTree;
+  dictionariesLocal = dictionariesAll;
+  perspectivesLocal = perspectives;
   return (
     <ul className="tree">
-      {tree.map(e => <Node selectedDict={selectedDict} key={e.get('id')} node={e} canSelectDictionaries={canSelectDictionaries} languagesGroup={languagesGroup} />)}
+      {tree.map(e => <Node
+        key={e.get('id')}
+        node={e}
+        canSelectDictionaries={canSelectDictionaries}
+
+      />)}
     </ul>
   );
 };
 
-Tree.propTypes = {
+/* Tree.propTypes = {
   tree: PropTypes.instanceOf(Immutable.List).isRequired,
   canSelectDictionaries: PropTypes.bool,
   selectedDict: PropTypes.func,
@@ -188,5 +230,5 @@ Tree.defaultProps = {
   languagesGroup: undefined,
   selectorMode: false
 };
-
+ */
 export default compose()(Tree);

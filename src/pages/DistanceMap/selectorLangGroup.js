@@ -31,7 +31,7 @@ function selectorLangGroup({ client, location }) {
     mainDictionary,
     allField
   } = location.state;
-console.log(location.state)
+
   const parentId = mainDictionary.toJS()[0].parent_id;
   const [labelDict, setLabelDict] = useState(null);
   const [nodeLanguages, setNodeLanguages] = useState([]);
@@ -72,8 +72,10 @@ console.log(location.state)
     }
   };
   function dictionariesSelectedLanguges(lang) {
+    
     setSelectedLanguage(lang);
     const arrDictionary = [];
+    
     allDictionaries.forEach((dict) => {
       if ((id2str(dict.parent_id) === id2str(lang.id)) && dict.perspectives[1] && dict.perspectives[0]) {
         if (dict.perspectives[0].translation === 'Lexical Entries' || dict.perspectives[1].translation === 'Lexical Entries') {
@@ -86,12 +88,12 @@ console.log(location.state)
   }
   function addLanguages() {
     if (nodeLanguages.length === 0) {
-      const arr = buildLanguageTree(fromJS(allLanguages));
-      setNodeLanguages(arr.toJS());
+      setNodeLanguages(allLanguages.toJS())
     }
   }
 
   function selectNodeLanguage(language) {
+
     setSelectedLanguage([]);
     setTwoChildLanguages([]);
     const languageChildren = language.children;
@@ -102,6 +104,7 @@ console.log(location.state)
   }
 
   function selectChildLanguage(language) {
+
     const languageChildren = language.children;
     setSelectedLanguage([]);
     setTwoChildLanguages([]);

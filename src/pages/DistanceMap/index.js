@@ -108,6 +108,7 @@ class DistanceMap extends React.Component {
     this.dictionaries = dictionaries || this.dictionaries;
     this.perspectives = perspectives || this.perspectives;
     this.isAuthenticated = isAuthenticated || this.isAuthenticated;
+
     return (
       <div>
         <Link to={{
@@ -127,12 +128,13 @@ class DistanceMap extends React.Component {
         {(((this.state.dictionary === null && this.state.groupLang === null && !loading) ||
           (this.state.statusTest)) &&
           <SelectorDictionary
-            languagesGroup={languagesGroup}
-            mainDictionary={mainDictionary}
+            /* languagesGroup={languagesGroup} */
+/*             mainDictionary={mainDictionary} */
             languageTree={this.languageTree}
             dictionaries={this.dictionaries}
             perspectives={this.perspectives}
             isAuthenticated={this.isAuthenticated}
+            allField={allField.all_fields}
           />)}
 
         {/* {(this.state.dictionary !== null && this.state.groupLang === null && !loading &&
@@ -161,7 +163,7 @@ class DistanceMap extends React.Component {
   }
 }
 
-DistanceMap.propTypes = {
+/* DistanceMap.propTypes = {
   data: PropTypes.shape({
     language_tree: PropTypes.array,
     dictionaries: PropTypes.array,
@@ -169,6 +171,6 @@ DistanceMap.propTypes = {
   }).isRequired,
   allField: PropTypes.object.isRequired
 
-};
+}; */
 export default compose(graphql(dictionaryWithPerspectives), graphql(allFieldQuery, { name: 'allField' }))(DistanceMap);
 

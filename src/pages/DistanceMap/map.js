@@ -106,7 +106,7 @@ class MapAreas extends PureComponent {
     const {
       location,computeDistancePerspectives
     } = this.props;
-
+console.log(this.props)
     let maxCount = 0;
     const
       {
