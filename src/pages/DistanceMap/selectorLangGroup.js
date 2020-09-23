@@ -31,7 +31,7 @@ function selectorLangGroup({ client, location }) {
     mainDictionary,
     allField
   } = location.state;
-
+console.log(location.state)
   const parentId = mainDictionary.toJS()[0].parent_id;
   const [labelDict, setLabelDict] = useState(null);
   const [nodeLanguages, setNodeLanguages] = useState([]);
@@ -219,7 +219,7 @@ function selectorLangGroup({ client, location }) {
           pathname: '/distance_map/test/test',
           state: {
             dictionaries:allDictionaries,
-            mainDictionary,
+            mainDictionary:mainDict,
             rootLanguage,
             allField,
 }

@@ -104,7 +104,7 @@ class MapAreas extends PureComponent {
 
   async allDicts() {
     const {
-      location
+      location,computeDistancePerspectives
     } = this.props;
 
     let maxCount = 0;
@@ -112,12 +112,11 @@ class MapAreas extends PureComponent {
       {
         dictionaries,
         mainDictionary,
-        computeDistancePerspectives,
         rootLanguage,
         allField
       } = location.state;
-      console.log(location.state)
-    this.dictionariesWithColors = await getDistancePoint(dictionaries, allField, mainDictionary.toJS(), computeDistancePerspectives, rootLanguage);
+
+    this.dictionariesWithColors = await getDistancePoint(dictionaries, allField, mainDictionary, computeDistancePerspectives, rootLanguage);
 
     if (this.dictionariesWithColors.length === 0) {
       this.setState({ statusRequest: false });

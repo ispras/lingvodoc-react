@@ -144,8 +144,8 @@ class DistanceMap extends React.Component {
             allLanguages={this.languageTree}
             allDictionaries={this.dictionaries}
             groupLang={this.state.groupLang}
-          />)}
-        {(this.state.groupLang !== null &&
+          />)}*/}
+{/*         {(this.state.groupLang !== null &&
           <MapDict
             mainDictionaryFun={mainDictionary}
             mainGroup={mainGroup}
@@ -154,7 +154,7 @@ class DistanceMap extends React.Component {
             rootLanguage={this.state.rootLanguage}
             backToDictionaries={this.reset}
             allField={allField}
-          />)} */}
+          />)}  */}
 
       </div>
     );
