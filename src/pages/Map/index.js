@@ -21,9 +21,11 @@ const Wrapper = styled.div`
   height: 90%;
   border: 1px solid grey;
   border-radius: 2px;
+
   .leaflet {
     width: 100%;
     height: 100%;
+
     .point {
       display: flex;
       flex-direction: column;
@@ -31,8 +33,10 @@ const Wrapper = styled.div`
       width: 2em !important;
       border-radius: 2px;
       border: 1px solid black;
+
       span {
         flex: 1 1 auto;
+
         &:not(:last-child) {
           border-bottom: 1px solid black;
         }
