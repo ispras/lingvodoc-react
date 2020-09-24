@@ -32,8 +32,8 @@ function selectorLangGroup({ client, location }) {
     mainDictionary,
     allField
   } = location.state;
-
-  const parentId = mainDictionary.toJS()[0].parent_id;
+console.log(location)
+  const parentId = mainDictionary[0].parent_id;
   const [labelDict, setLabelDict] = useState(null);
   const [nodeLanguages, setNodeLanguages] = useState([]);
   const [childLanguages, setChildLanguages] = useState([]);
@@ -47,7 +47,7 @@ function selectorLangGroup({ client, location }) {
   let rootLanguage = {};
   let mainDict = [];
   let arrDictionariesGroup = [];
-
+  console.log(nodeLanguages)
   client.query({
     query: dictionaryName,
     variables: { id: parentId },
@@ -56,7 +56,7 @@ function selectorLangGroup({ client, location }) {
   languagesGroup.forEach((language) => {
     language.children.forEach((children) => {
       children.perspectives.forEach((perspective) => {
-        if (id2str(perspective.id) === id2str(mainDictionary.toJS()[0].id)) {
+        if (id2str(perspective.id) === id2str(mainDictionary[0].id)) {
           rootLanguage = language;
           mainDict = children;
         }
@@ -89,7 +89,7 @@ function selectorLangGroup({ client, location }) {
   }
   function addLanguages() {
     if (nodeLanguages.length === 0) {
-      setNodeLanguages(allLanguages.toJS())
+      setNodeLanguages(allLanguages)
     }
   }
 
@@ -222,7 +222,7 @@ function selectorLangGroup({ client, location }) {
       <Link to={{
           pathname: '/distance_map/test/test',
           state: {
-            dictionaries:allDictionaries,
+            dictionaries:arrDictionariesGroup,
             mainDictionary:mainDict,
             rootLanguage,
             allField,

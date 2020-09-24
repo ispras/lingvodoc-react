@@ -97,10 +97,9 @@ const Dict = ({
           pathname: '/distance_map/test',
           state: {
             languagesGroup: arrLang,
-            mainDictionary: perspectives,
+            mainDictionary: perspectives.toJS(),
             allLanguages: languagesTreeLocal,
             allDictionaries: dictionariesLocal,
-/*             groupLang: groupLang, */
             allField:allFieldLocal
 }
         }}

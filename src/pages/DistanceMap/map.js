@@ -12,6 +12,7 @@ import getDistancePoint from './getDistancePerspectives';
 import Placeholder from 'components/Placeholder';
 import icon from '../../images/point.png';
 import normolizeMethod from './normolizeMethod';
+import { Link } from 'react-router-dom';
 
 const mutationDistancePerspectives = gql` 
 mutation computeDistancePerspectives(
@@ -96,6 +97,7 @@ class MapAreas extends PureComponent {
     };
     this.dictionariesWithColors = [];
     this.returnToTree = this.returnToTree.bind(this);
+    this.back = this.back.bind(this);
   }
 
   componentDidMount() {
@@ -104,9 +106,9 @@ class MapAreas extends PureComponent {
 
   async allDicts() {
     const {
-      location,computeDistancePerspectives
+      location, computeDistancePerspectives
     } = this.props;
-console.log(this.props)
+
     let maxCount = 0;
     const
       {
@@ -146,11 +148,13 @@ console.log(this.props)
     heatmapLayer.setData({ data, max: maxCount });
   }
   returnToTree() {
-    const { backToDictionaries } = this.props;
-    backToDictionaries();
+    const { history } = this.props;
+    history.go(-2);
   }
   back() {
-    console.log('sada');
+    const { history } = this.props;
+
+    history.goBack();
   }
   render() {
     return (
@@ -179,14 +183,14 @@ console.log(this.props)
 
         )}
         {((this.state.statusMap) || (!this.state.statusRequest)) && (
-        <div>
-          <Button style={ButtonBack} onClick={this.returnToTree}>
-            {getTranslation('Return to tree')}
-          </Button>
-          <Button style={ButtonBack} onClick={this.back}>
-            {getTranslation('Back')}
-          </Button>
-        </div>
+          <div>
+            <Button style={ButtonBack} onClick={this.returnToTree}>
+              {getTranslation('Return to tree')}
+            </Button>
+            <Button style={ButtonBack} onClick={this.back}>
+              {getTranslation('Back')}
+            </Button>
+          </div>
 
         )
         }

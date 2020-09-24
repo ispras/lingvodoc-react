@@ -124,7 +124,7 @@ const getDistance = async (
 
   const distanceList = responseMutanion.data.cognate_analysis.distance_list;
   const dictionariesWithDistance = [];
-
+console.log('distanceList',distanceList)
   if (distanceList[0] === 0 || distanceList[0] === -1) {
     return [];
   }
