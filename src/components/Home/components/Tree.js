@@ -98,7 +98,7 @@ const Dict = ({
           state: {
             languagesGroup: arrLang,
             mainDictionary: perspectives.toJS(),
-            allLanguages: languagesTreeLocal,
+            allLanguages: languagesTreeLocal.toJS(),
             allDictionaries: dictionariesLocal,
             allField:allFieldLocal
 }

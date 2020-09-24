@@ -10,6 +10,9 @@ import { getTranslation } from 'api/i18n';
 import { compositeIdToString as id2str } from 'utils/compositeId';
 import { Link } from 'react-router-dom';
 import checkLexicalEntries from './checkLexicalEntries';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { setLanguagesGroup } from 'ducks/distanceMap';
 
 const dictionaryName = gql`
 query dictionaryName($id:LingvodocID) {
@@ -24,7 +27,10 @@ query dictionaryName($id:LingvodocID) {
   }
 }`;
 
-function selectorLangGroup({ client, location }) {
+function selectorLangGroup(props) {
+  const {
+    client, location, actions, arrDictionariesGroup
+  } = props;
   const {
     allDictionaries,
     allLanguages,
@@ -32,7 +38,7 @@ function selectorLangGroup({ client, location }) {
     mainDictionary,
     allField
   } = location.state;
-console.log(location)
+
   const parentId = mainDictionary[0].parent_id;
   const [labelDict, setLabelDict] = useState(null);
   const [nodeLanguages, setNodeLanguages] = useState([]);
@@ -46,13 +52,13 @@ console.log(location)
   const dictionaryWithLexicalEntries = [];
   let rootLanguage = {};
   let mainDict = [];
-  let arrDictionariesGroup = [];
-  console.log(nodeLanguages)
+
+
   client.query({
     query: dictionaryName,
     variables: { id: parentId },
   }).then(result => setLabelDict(result.data.dictionary.translation));
-
+  console.log(props);
   languagesGroup.forEach((language) => {
     language.children.forEach((children) => {
       children.perspectives.forEach((perspective) => {
@@ -69,14 +75,13 @@ console.log(location)
     if (checked) {
       arrDictionariesGroup.push(dict);
     } else {
-      arrDictionariesGroup = arrDictionariesGroup.filter(element => id2str(element.id) !== id2str(dict.id));
+      arrDictionariesGroup.filter(element => id2str(element.id) !== id2str(dict.id));
     }
   };
   function dictionariesSelectedLanguges(lang) {
-    
     setSelectedLanguage(lang);
     const arrDictionary = [];
-    
+
     allDictionaries.forEach((dict) => {
       if ((id2str(dict.parent_id) === id2str(lang.id)) && dict.perspectives[1] && dict.perspectives[0]) {
         if (checkLexicalEntries(dict.perspectives[0].translation) || checkLexicalEntries(dict.perspectives[1].translation)) {
@@ -89,12 +94,11 @@ console.log(location)
   }
   function addLanguages() {
     if (nodeLanguages.length === 0) {
-      setNodeLanguages(allLanguages)
+      setNodeLanguages(allLanguages);
     }
   }
 
   function selectNodeLanguage(language) {
-
     setSelectedLanguage([]);
     setTwoChildLanguages([]);
     const languageChildren = language.children;
@@ -105,7 +109,6 @@ console.log(location)
   }
 
   function selectChildLanguage(language) {
-
     const languageChildren = language.children;
     setSelectedLanguage([]);
     setTwoChildLanguages([]);
@@ -115,10 +118,6 @@ console.log(location)
     return dictionariesSelectedLanguges(language);
   }
 
-  function sendDict() {
-    mainGroup(arrDictionariesGroup);
-    mainDictionaryFun(mainDict, rootLanguage);
-  }
 
   rootLanguage.children.forEach((dict) => {
     if (dict.translation !== mainDict.translation && dict.additional_metadata.location !== null) {
@@ -218,33 +217,48 @@ console.log(location)
           </Segment>
         )}
       </Segment.Group>
-      <Button  onClick={sendDict}> {getTranslation('Next')} </Button>
+      <Button > {getTranslation('Next')} </Button>
       <Link to={{
           pathname: '/distance_map/test/test',
           state: {
-            dictionaries:arrDictionariesGroup,
-            mainDictionary:mainDict,
+            dictionaries: arrDictionariesGroup,
+            mainDictionary: mainDict,
             rootLanguage,
             allField,
 }
         }}
-        > <Button > Ссылка </Button>
-        </Link>
+      > <Button onClick={() => actions.setLanguagesGroup(arrDictionariesGroup:arrDictionariesGroup)}> Ссылка </Button>
+      </Link>
 
-        
+
     </div >
   );
 }
 
-/* selectorLangGroup.propTypes = {
-  mainGroup: PropTypes.func.isRequired,
-  mainDictionary: PropTypes.instanceOf(Immutable.List).isRequired,
+selectorLangGroup.propTypes = {
+/*   mainGroup: PropTypes.func.isRequired,
+  mainDictionary: PropTypes.instanceOf(Immutable.List).isRequired, */
   client: PropTypes.object.isRequired,
-  languagesGroup: PropTypes.array.isRequired,
+  /*   languagesGroup: PropTypes.array.isRequired,
   mainDictionaryFun: PropTypes.func.isRequired,
   allLanguages: PropTypes.array.isRequired,
-  allDictionaries: PropTypes.array.isRequired,
-
-}; */
-
-export default compose(withApollo)(selectorLangGroup);
+  allDictionaries: PropTypes.array.isRequired, */
+  arrDictionariesGroup: PropTypes.array,
+  location: PropTypes.object.isRequired,
+  actions: PropTypes.object.isRequired,
+};
+selectorLangGroup.defaultProps = {
+  arrDictionariesGroup: []
+};
+/* export default compose(
+  connect(state => ({ ...state.distanceMap })),
+  withApollo
+)(selectorLangGroup); */
+/* export default compose(withApollo)(selectorLangGroup); */
+export default compose(
+  connect(
+    state => ({ ...state.distanceMap })
+    , dispatch => ({ actions: bindActionCreators({ setLanguagesGroup }, dispatch) })
+  ),
+  withApollo
+)(selectorLangGroup);
