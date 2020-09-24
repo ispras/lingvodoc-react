@@ -1,14 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
-import MapDict from './map';
-import { Button } from 'semantic-ui-react';
 import SelectorDictionary from './selectorDictionary';
-import SelectorLangGropu from './selectorLangGroup';
 import { compose } from 'recompose';
 import Placeholder from 'components/Placeholder';
-import { Link } from 'react-router-dom';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { setDataWithTree } from 'ducks/distanceMap';
+
 
 const allFieldQuery = gql`
   query{
@@ -21,7 +21,7 @@ const allFieldQuery = gql`
 }`;
 
 const dictionaryWithPerspectives = gql`
-  query DictionaryWithPerspectivesProxy {
+  query DictionaryWithPerspectives{
     dictionaries(proxy: false, published: true) {
       id
       parent_id
@@ -54,123 +54,57 @@ const dictionaryWithPerspectives = gql`
   }
 `;
 
-class DistanceMap extends React.Component {
-  constructor(props) {
-    super(props);
+function distanceMap(props) {
+  const {
+    dictionaryWithPerspectives,
+    allField,
+    actions,
+    location
+  } = props;
+  const {
+    language_tree: languageTree,
+    dictionaries,
+    loading,
+    perspectives,
+    is_authenticated: isAuthenticated
+  } = dictionaryWithPerspectives;
 
-    this.state = {
-      dictionary: null,
-      groupLang: null,
-      rootLanguage: null,
-    };
-    this.arrLang = [];
-    this.languageTree = [];
-    this.dictionaries = [];
-    this.reset = this.reset.bind(this);
+  if (loading && !location.state) {
+    return <Placeholder />;
   }
 
-  reset() {
-    this.setState({
-      dictionary: null,
-      groupLang: null
-    });
-  }
-  render() {
-    const {
-      data: {
-        language_tree: languageTree,
-        dictionaries,
-        loading,
-        perspectives,
-        is_authenticated: isAuthenticated
-      },
+  useEffect(() => {
+    actions.setDataWithTree({
+      ...dictionaryWithPerspectives,
       allField
+    });
+  }, []);
 
-    }
-      = this.props;
-    /*    console.log(this.props) */
-    const mainDictionary = (e, rootLanguage) => {
-      this.setState({ dictionary: e });
-      this.setState({ rootLanguage });
-    };
-    const mainGroup = (e) => {
-      this.setState({ groupLang: e });
-    };
-    const languagesGroup = (e) => {
-      this.arrLang.push(e);
-    };
-
-    if (loading) {
-      return <Placeholder />;
-    }
-
-    this.languageTree = languageTree || this.languageTree;
-    this.dictionaries = dictionaries || this.dictionaries;
-    this.perspectives = perspectives || this.perspectives;
-    this.isAuthenticated = isAuthenticated || this.isAuthenticated;
-
-    return (
-      <div>
-        <Link to={{
-          pathname: '/distance_map/test',
-          state: {
-            languagesGroup:this.arrLang,
-            mainDictionary:this.state.dictionary,
-            allLanguages:this.languageTree,
-            allDictionaries:this.dictionaries,
-            groupLang:this.state.groupLang,
-            allField:allField.all_fields
-}
-        }}
-        > <Button > Ссылка </Button>
-        </Link>
-
-        {(((this.state.dictionary === null && this.state.groupLang === null && !loading) ||
-          (this.state.statusTest)) &&
-          <SelectorDictionary
-            /* languagesGroup={languagesGroup} */
-/*             mainDictionary={mainDictionary} */
-            languageTree={this.languageTree}
-            dictionaries={this.dictionaries}
-            perspectives={this.perspectives}
-            isAuthenticated={this.isAuthenticated}
-            allField={allField.all_fields}
-          />)}
-
-        {/* {(this.state.dictionary !== null && this.state.groupLang === null && !loading &&
-          <SelectorLangGropu
-            mainDictionaryFun={mainDictionary}
-            languagesGroup={this.arrLang}
-            mainGroup={mainGroup}
-            mainDictionary={this.state.dictionary}
-            allLanguages={this.languageTree}
-            allDictionaries={this.dictionaries}
-            groupLang={this.state.groupLang}
-          />)}*/}
-{/*         {(this.state.groupLang !== null &&
-          <MapDict
-            mainDictionaryFun={mainDictionary}
-            mainGroup={mainGroup}
-            dictionaries={this.state.groupLang}
-            mainDictionary={this.state.dictionary}
-            rootLanguage={this.state.rootLanguage}
-            backToDictionaries={this.reset}
-            allField={allField}
-          />)}  */}
-
-      </div>
-    );
-  }
+  return (
+    <div>
+      <SelectorDictionary
+        languageTree={languageTree || location.state.languageTree}
+        dictionaries={dictionaries || location.state.dictionaries}
+        perspectives={perspectives || location.state.perspectives}
+        isAuthenticated={isAuthenticated}
+        allField={allField.all_fields || location.state.allField}
+      />
+    </div>
+  );
 }
 
-/* DistanceMap.propTypes = {
-  data: PropTypes.shape({
+distanceMap.propTypes = {
+  dictionaryWithPerspectives: PropTypes.shape({
     language_tree: PropTypes.array,
     dictionaries: PropTypes.array,
     loading: PropTypes.bool
   }).isRequired,
-  allField: PropTypes.object.isRequired
-
-}; */
-export default compose(graphql(dictionaryWithPerspectives), graphql(allFieldQuery, { name: 'allField' }))(DistanceMap);
+  allField: PropTypes.object.isRequired,
+  actions: PropTypes.object.isRequired,
+  dataWithTree: PropTypes.object.isRequired
+};
+export default compose(
+  connect(state => state.distanceMap, dispatch => ({ actions: bindActionCreators({ setDataWithTree }, dispatch) })),
+  graphql(dictionaryWithPerspectives, { name: 'dictionaryWithPerspectives' }), graphql(allFieldQuery, { name: 'allField' }),
+)(distanceMap);
 

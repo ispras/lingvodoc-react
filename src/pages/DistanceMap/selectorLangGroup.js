@@ -29,8 +29,9 @@ query dictionaryName($id:LingvodocID) {
 
 function selectorLangGroup(props) {
   const {
-    client, location, actions, arrDictionariesGroup
+    client, location, actions,
   } = props;
+  let { arrDictionariesGroup } = props;
   const {
     allDictionaries,
     allLanguages,
@@ -58,7 +59,7 @@ function selectorLangGroup(props) {
     query: dictionaryName,
     variables: { id: parentId },
   }).then(result => setLabelDict(result.data.dictionary.translation));
-  console.log(props);
+
   languagesGroup.forEach((language) => {
     language.children.forEach((children) => {
       children.perspectives.forEach((perspective) => {
@@ -75,7 +76,7 @@ function selectorLangGroup(props) {
     if (checked) {
       arrDictionariesGroup.push(dict);
     } else {
-      arrDictionariesGroup.filter(element => id2str(element.id) !== id2str(dict.id));
+      arrDictionariesGroup = arrDictionariesGroup.filter(element => id2str(element.id) !== id2str(dict.id));
     }
   };
   function dictionariesSelectedLanguges(lang) {
@@ -138,6 +139,7 @@ function selectorLangGroup(props) {
           (
             <Segment key={dict.id}>
               <Checkbox
+                defaultChecked={arrDictionariesGroup.some(element => id2str(element.id) === id2str(dict.id))}
                 onChange={(event, { checked }) => { filterDictionary(dict, checked); }}
                 label={dict.translation}
               />
@@ -203,6 +205,7 @@ function selectorLangGroup(props) {
             (dict.additional_metadata.location !== null) && (
               <Segment key={dict.id.join('_')}>
                 <Checkbox
+                  defaultChecked={arrDictionariesGroup.some(element => id2str(element.id) === id2str(dict.id))}
                   onChange={(event, { checked }) => { filterDictionary(dict, checked); }}
                   label={dict.translation}
                 />
@@ -227,7 +230,8 @@ function selectorLangGroup(props) {
             allField,
 }
         }}
-      > <Button onClick={() => actions.setLanguagesGroup(arrDictionariesGroup:arrDictionariesGroup)}> Ссылка </Button>
+      >
+        <Button onClick={() => actions.setLanguagesGroup({ arrDictionariesGroup })}> Ссылка </Button>
       </Link>
 
 

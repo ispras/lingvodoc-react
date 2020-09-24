@@ -13,6 +13,9 @@ import Placeholder from 'components/Placeholder';
 import icon from '../../images/point.png';
 import normolizeMethod from './normolizeMethod';
 import { Link } from 'react-router-dom';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { setDefaultGroup } from 'ducks/distanceMap';
 
 const mutationDistancePerspectives = gql` 
 mutation computeDistancePerspectives(
@@ -89,7 +92,7 @@ function initMap(mountPoint) {
 
 
 class MapAreas extends PureComponent {
-  constructor() {
+  constructor(props) {
     super();
     this.state = {
       statusMap: false,
@@ -98,6 +101,7 @@ class MapAreas extends PureComponent {
     this.dictionariesWithColors = [];
     this.returnToTree = this.returnToTree.bind(this);
     this.back = this.back.bind(this);
+
   }
 
   componentDidMount() {
@@ -147,15 +151,18 @@ class MapAreas extends PureComponent {
 
     heatmapLayer.setData({ data, max: maxCount });
   }
-  returnToTree() {
-    const { history } = this.props;
-    history.go(-2);
-  }
   back() {
     const { history } = this.props;
 
     history.goBack();
   }
+  returnToTree() {
+    const { history, actions,dataWithTree } = this.props;
+    actions.setDefaultGroup({});
+    console.log(this.props)
+    history.push('/distance_map',dataWithTree);
+  }
+
   render() {
     return (
       <div>
@@ -199,8 +206,11 @@ class MapAreas extends PureComponent {
     );
   }
 }
-MapAreas.propTypes = {
-  backToDictionaries: PropTypes.func.isRequired
-};
 
-export default compose(graphql(mutationDistancePerspectives, { name: 'computeDistancePerspectives' }))(MapAreas);
+export default compose(
+  connect(
+    state => ({ ...state.distanceMap })
+    , dispatch => ({ actions: bindActionCreators({ setDefaultGroup }, dispatch) })
+  ),
+  graphql(mutationDistancePerspectives, { name: 'computeDistancePerspectives' })
+)(MapAreas);
