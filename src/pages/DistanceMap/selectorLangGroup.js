@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
@@ -8,11 +8,11 @@ import Immutable, { fromJS } from 'immutable';
 import { buildLanguageTree } from 'pages/Search/treeBuilder';
 import { getTranslation } from 'api/i18n';
 import { compositeIdToString as id2str } from 'utils/compositeId';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import checkLexicalEntries from './checkLexicalEntries';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { setLanguagesGroup } from 'ducks/distanceMap';
+import { setLanguagesGroup, setDefaultGroup } from 'ducks/distanceMap';
 
 const dictionaryName = gql`
 query dictionaryName($id:LingvodocID) {
@@ -29,16 +29,26 @@ query dictionaryName($id:LingvodocID) {
 
 function selectorLangGroup(props) {
   const {
-    client, location, actions,
+    client, location, actions, languagesGroupState, history, dataForTree
   } = props;
-  let { arrDictionariesGroup } = props;
+
+  if (!location.state) {
+    history.push('/distance_map');
+  }
+
+  let { arrDictionariesGroup } = languagesGroupState;
   const {
-    allDictionaries,
-    allLanguages,
-    languagesGroup,
+    allField,
+    dictionaries: allDictionaries,
+    languageTree
+  } = dataForTree;
+  const {
     mainDictionary,
-    allField
+    languagesGroup,
   } = location.state;
+
+
+  const allLanguages = buildLanguageTree(fromJS(languageTree)).toJS();
 
   const parentId = mainDictionary[0].parent_id;
   const [labelDict, setLabelDict] = useState(null);
@@ -53,7 +63,6 @@ function selectorLangGroup(props) {
   const dictionaryWithLexicalEntries = [];
   let rootLanguage = {};
   let mainDict = [];
-
 
   client.query({
     query: dictionaryName,
@@ -220,18 +229,25 @@ function selectorLangGroup(props) {
           </Segment>
         )}
       </Segment.Group>
-      <Button > {getTranslation('Next')} </Button>
-      <Link to={{
-          pathname: '/distance_map/test/test',
+      <Button onClick={() => {
+        actions.setDefaultGroup();
+        history.goBack();
+      }}
+      > {getTranslation('Back')}
+      </Button>
+
+      <Link
+        to={{
+          pathname: '/distance_map/selected_languages/map',
           state: {
             dictionaries: arrDictionariesGroup,
             mainDictionary: mainDict,
             rootLanguage,
-            allField,
-}
+            allField
+          }
         }}
       >
-        <Button onClick={() => actions.setLanguagesGroup({ arrDictionariesGroup })}> Ссылка </Button>
+        <Button onClick={() => actions.setLanguagesGroup({ arrDictionariesGroup })}> {getTranslation('Next')} </Button>
       </Link>
 
 
@@ -240,29 +256,18 @@ function selectorLangGroup(props) {
 }
 
 selectorLangGroup.propTypes = {
-/*   mainGroup: PropTypes.func.isRequired,
-  mainDictionary: PropTypes.instanceOf(Immutable.List).isRequired, */
+  languagesGroupState: PropTypes.object.isRequired,
+  history: PropTypes.object.isRequired,
+  dataForTree: PropTypes.object.isRequired,
   client: PropTypes.object.isRequired,
-  /*   languagesGroup: PropTypes.array.isRequired,
-  mainDictionaryFun: PropTypes.func.isRequired,
-  allLanguages: PropTypes.array.isRequired,
-  allDictionaries: PropTypes.array.isRequired, */
-  arrDictionariesGroup: PropTypes.array,
   location: PropTypes.object.isRequired,
   actions: PropTypes.object.isRequired,
 };
-selectorLangGroup.defaultProps = {
-  arrDictionariesGroup: []
-};
-/* export default compose(
-  connect(state => ({ ...state.distanceMap })),
-  withApollo
-)(selectorLangGroup); */
-/* export default compose(withApollo)(selectorLangGroup); */
+
 export default compose(
   connect(
     state => ({ ...state.distanceMap })
-    , dispatch => ({ actions: bindActionCreators({ setLanguagesGroup }, dispatch) })
+    , dispatch => ({ actions: bindActionCreators({ setLanguagesGroup, setDefaultGroup }, dispatch) })
   ),
   withApollo
 )(selectorLangGroup);

@@ -15,8 +15,7 @@ const selectorDict = (props) => {
     languageTree: languages,
     dictionaries,
     perspectives,
-    isAuthenticated,
-    allField
+    isAuthenticated
   } = props;
 
   const localDictionaries = dictionaries;
@@ -54,7 +53,6 @@ const selectorDict = (props) => {
           perspectives={perspectivesList}
           selectorMode
           statusLangsNav={false}
-          allField={allField}
         />
       </Segment>
       { (scrollContainer) && (<BackTopButton scrollContainer={scrollContainer} />)}
@@ -62,17 +60,15 @@ const selectorDict = (props) => {
   );
 };
 
-/* selectorDict.defaultProps = {
+selectorDict.defaultProps = {
   isAuthenticated: false
-}
+};
 selectorDict.propTypes = {
-  mainDictionary: PropTypes.func.isRequired,
-  languagesGroup: PropTypes.func.isRequired,
   perspectives: PropTypes.array.isRequired,
   languageTree: PropTypes.array.isRequired,
   isAuthenticated: PropTypes.bool,
   dictionaries: PropTypes.array.isRequired,
 
 };
- */
+
 export default selectorDict;

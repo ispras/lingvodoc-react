@@ -7,7 +7,7 @@ import { compose } from 'recompose';
 import Placeholder from 'components/Placeholder';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { setDataWithTree } from 'ducks/distanceMap';
+import { setDataForTree, setDefaultGroup } from 'ducks/distanceMap';
 
 
 const allFieldQuery = gql`
@@ -20,7 +20,7 @@ const allFieldQuery = gql`
   }
 }`;
 
-const dictionaryWithPerspectives = gql`
+const dictionaryWithPerspectivesQuery = gql`
   query DictionaryWithPerspectives{
     dictionaries(proxy: false, published: true) {
       id
@@ -56,38 +56,53 @@ const dictionaryWithPerspectives = gql`
 
 function distanceMap(props) {
   const {
+    dataForTree,
     dictionaryWithPerspectives,
     allField,
     actions,
-    location
+    languagesGroupState
   } = props;
+
+
   const {
     language_tree: languageTree,
     dictionaries,
     loading,
     perspectives,
     is_authenticated: isAuthenticated
-  } = dictionaryWithPerspectives;
+  } = props.dictionaryWithPerspectives;
 
-  if (loading && !location.state) {
+  const { arrDictionariesGroup } = languagesGroupState;
+
+
+  if (loading && !dataForTree.dictionaries) {
     return <Placeholder />;
   }
 
-  useEffect(() => {
-    actions.setDataWithTree({
-      ...dictionaryWithPerspectives,
-      allField
+  if (arrDictionariesGroup.length) {
+    useEffect(() => {
+      actions.setDefaultGroup();
     });
-  }, []);
+  }
+
+
+  if (!dataForTree.dictionaries) {
+    useEffect(() => {
+      actions.setDataForTree({
+        ...dictionaryWithPerspectives,
+        allField
+      });
+    }, []);
+  }
 
   return (
     <div>
       <SelectorDictionary
-        languageTree={languageTree || location.state.languageTree}
-        dictionaries={dictionaries || location.state.dictionaries}
-        perspectives={perspectives || location.state.perspectives}
+        languageTree={languageTree || dataForTree.languageTree}
+        dictionaries={dictionaries || dataForTree.dictionaries}
+        perspectives={perspectives || dataForTree.perspectives}
         isAuthenticated={isAuthenticated}
-        allField={allField.all_fields || location.state.allField}
+        allField={allField.all_fields || dataForTree.allField}
       />
     </div>
   );
@@ -101,10 +116,11 @@ distanceMap.propTypes = {
   }).isRequired,
   allField: PropTypes.object.isRequired,
   actions: PropTypes.object.isRequired,
-  dataWithTree: PropTypes.object.isRequired
+  dataForTree: PropTypes.object.isRequired,
+  languagesGroupState: PropTypes.object.isRequired
 };
 export default compose(
-  connect(state => state.distanceMap, dispatch => ({ actions: bindActionCreators({ setDataWithTree }, dispatch) })),
-  graphql(dictionaryWithPerspectives, { name: 'dictionaryWithPerspectives' }), graphql(allFieldQuery, { name: 'allField' }),
+  connect(state => state.distanceMap, dispatch => ({ actions: bindActionCreators({ setDataForTree, setDefaultGroup }, dispatch) })),
+  graphql(dictionaryWithPerspectivesQuery, { name: 'dictionaryWithPerspectives' }), graphql(allFieldQuery, { name: 'allField' }),
 )(distanceMap);
 

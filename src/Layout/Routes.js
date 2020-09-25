@@ -50,8 +50,8 @@ const Routes = () => (
     <Route path="/requests" component={Requests} />
     <Route path="/map" component={Map} />
     <Route path="/map_search" component={Search} />
-    <Route path="/distance_map/test/test" component={Test1} />
-    <Route path="/distance_map/test" component={Test} />
+    <Route path="/distance_map/selected_languages/map" component={Test1} />
+    <Route path="/distance_map/selected_languages" component={Test} />
     <Route path="/distance_map" component={DistanceMap} />
     <Route path="/import" component={DictImport} />
     <Route path="/import_dialeqt" component={DialeqtImport} />

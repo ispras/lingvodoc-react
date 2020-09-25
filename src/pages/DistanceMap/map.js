@@ -12,7 +12,6 @@ import getDistancePoint from './getDistancePerspectives';
 import Placeholder from 'components/Placeholder';
 import icon from '../../images/point.png';
 import normolizeMethod from './normolizeMethod';
-import { Link } from 'react-router-dom';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { setDefaultGroup } from 'ducks/distanceMap';
@@ -101,7 +100,6 @@ class MapAreas extends PureComponent {
     this.dictionariesWithColors = [];
     this.returnToTree = this.returnToTree.bind(this);
     this.back = this.back.bind(this);
-
   }
 
   componentDidMount() {
@@ -110,8 +108,12 @@ class MapAreas extends PureComponent {
 
   async allDicts() {
     const {
-      location, computeDistancePerspectives
+      location, computeDistancePerspectives, history
     } = this.props;
+
+    if (!location.state) {
+      history.push('/distance_map');
+    }
 
     let maxCount = 0;
     const
@@ -149,7 +151,7 @@ class MapAreas extends PureComponent {
       return { lat, lng, count: normolizeDistanceNumber };
     });
 
-    heatmapLayer.setData({ data, max: maxCount });
+    return heatmapLayer.setData({ data, max: maxCount });
   }
   back() {
     const { history } = this.props;
@@ -157,10 +159,9 @@ class MapAreas extends PureComponent {
     history.goBack();
   }
   returnToTree() {
-    const { history, actions,dataWithTree } = this.props;
-    actions.setDefaultGroup({});
-    console.log(this.props)
-    history.push('/distance_map',dataWithTree);
+    const { history, actions } = this.props;
+    actions.setDefaultGroup();
+    history.push('/distance_map');
   }
 
   render() {
@@ -206,6 +207,15 @@ class MapAreas extends PureComponent {
     );
   }
 }
+
+
+MapAreas.propTypes = {
+  history: PropTypes.object.isRequired,
+  actions: PropTypes.object.isRequired,
+  dataForTree: PropTypes.object.isRequired,
+
+};
+
 
 export default compose(
   connect(

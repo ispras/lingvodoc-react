@@ -18,11 +18,6 @@ import '../published.scss';
 
 let selectorStatus = false;
 const arrLang = [];
-let allFieldLocal,
-  languagesTreeLocal,
-  dictionariesLocal,
-  perspectivesLocal;
-
 
 const languagesGroup = (e) => {
   arrLang.push(e);
@@ -93,14 +88,12 @@ const Dict = ({
         )}
 
       {(perspectives && selectorStatus && location !== null && statusLexicalEntries) && (
-         <Link to={{
-          pathname: '/distance_map/test',
+      <Link to={{
+          pathname: '/distance_map/selected_languages',
           state: {
             languagesGroup: arrLang,
             mainDictionary: perspectives.toJS(),
-            allLanguages: languagesTreeLocal,
-            allDictionaries: dictionariesLocal,
-            allField:allFieldLocal
+            status:'init'
 }
         }}
       > <Button > Ссылка </Button>
@@ -194,18 +187,10 @@ Node.propTypes = {
 const Tree = ({
   tree,
   canSelectDictionaries,
-  selectorMode,
-  allField,
-  languagesTree,
-  dictionaries,
-  perspectives,
-  dictionariesAll
+  selectorMode
 }) => {
   selectorStatus = selectorMode;
-  allFieldLocal = allField;
-  languagesTreeLocal = languagesTree;
-  dictionariesLocal = dictionariesAll;
-  perspectivesLocal = perspectives;
+
   return (
     <ul className="tree">
       {tree.map(e => <Node
@@ -218,20 +203,16 @@ const Tree = ({
   );
 };
 
-/* Tree.propTypes = {
+Tree.propTypes = {
   tree: PropTypes.instanceOf(Immutable.List).isRequired,
   canSelectDictionaries: PropTypes.bool,
-  selectedDict: PropTypes.func,
-  languagesGroup: PropTypes.func,
   selectorMode: PropTypes.bool,
 
 };
 
 Tree.defaultProps = {
   canSelectDictionaries: false,
-  selectedDict: undefined,
-  languagesGroup: undefined,
   selectorMode: false
 };
- */
+
 export default compose()(Tree);
