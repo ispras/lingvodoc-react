@@ -12,6 +12,9 @@ import getDistancePoint from './getDistancePerspectives';
 import Placeholder from 'components/Placeholder';
 import icon from '../../images/point.png';
 import normolizeMethod from './normolizeMethod';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { setDefaultGroup } from 'ducks/distanceMap';
 
 const mutationDistancePerspectives = gql` 
 mutation computeDistancePerspectives(
@@ -47,7 +50,7 @@ mutation computeDistancePerspectives(
         }
 }`;
 const ButtonBack = {
-  margin: '10px 0',
+  margin: ' 10px 10px 0  0',
 };
 
 const cfg = {
@@ -88,13 +91,14 @@ function initMap(mountPoint) {
 
 
 class MapAreas extends PureComponent {
-  constructor() {
+  constructor(props) {
     super();
     this.state = {
       statusMap: false,
       statusRequest: true
     };
     this.dictionariesWithColors = [];
+    this.returnToTree = this.returnToTree.bind(this);
     this.back = this.back.bind(this);
   }
 
@@ -104,13 +108,21 @@ class MapAreas extends PureComponent {
 
   async allDicts() {
     const {
-      dictionaries,
-      mainDictionary,
-      computeDistancePerspectives,
-      rootLanguage,
-      allField,
+      location, computeDistancePerspectives, history
     } = this.props;
+
+    if (!location.state) {
+      history.push('/distance_map');
+    }
+
     let maxCount = 0;
+    const
+      {
+        dictionaries,
+        mainDictionary,
+        rootLanguage,
+        allField
+      } = location.state;
 
     this.dictionariesWithColors = await getDistancePoint(dictionaries, allField, mainDictionary, computeDistancePerspectives, rootLanguage);
 
@@ -139,12 +151,19 @@ class MapAreas extends PureComponent {
       return { lat, lng, count: normolizeDistanceNumber };
     });
 
-    heatmapLayer.setData({ data, max: maxCount });
+    return heatmapLayer.setData({ data, max: maxCount });
   }
   back() {
-    const { backToDictionaries } = this.props;
-    backToDictionaries();
+    const { history } = this.props;
+
+    history.goBack();
   }
+  returnToTree() {
+    const { history, actions } = this.props;
+    actions.setDefaultGroup();
+    history.push('/distance_map');
+  }
+
   render() {
     return (
       <div>
@@ -172,10 +191,14 @@ class MapAreas extends PureComponent {
 
         )}
         {((this.state.statusMap) || (!this.state.statusRequest)) && (
-
-          <Button style={ButtonBack} onClick={this.back}>
-            {getTranslation('Back')}
-          </Button>
+          <div>
+            <Button style={ButtonBack} onClick={this.returnToTree}>
+              {getTranslation('Return to tree')}
+            </Button>
+            <Button style={ButtonBack} onClick={this.back}>
+              {getTranslation('Back')}
+            </Button>
+          </div>
 
         )
         }
@@ -184,8 +207,20 @@ class MapAreas extends PureComponent {
     );
   }
 }
+
+
 MapAreas.propTypes = {
-  backToDictionaries: PropTypes.func.isRequired
+  history: PropTypes.object.isRequired,
+  actions: PropTypes.object.isRequired,
+  dataForTree: PropTypes.object.isRequired,
+
 };
 
-export default compose(graphql(mutationDistancePerspectives, { name: 'computeDistancePerspectives' }))(MapAreas);
+
+export default compose(
+  connect(
+    state => ({ ...state.distanceMap })
+    , dispatch => ({ actions: bindActionCreators({ setDefaultGroup }, dispatch) })
+  ),
+  graphql(mutationDistancePerspectives, { name: 'computeDistancePerspectives' })
+)(MapAreas);

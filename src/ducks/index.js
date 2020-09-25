@@ -28,6 +28,7 @@ import modals from './modals';
 import createOrganization from './createOrganization';
 import dictionaryOrganizations from './dictionaryOrganizations';
 
+import distanceMap from './distanceMap'
 export default {
   locale,
   task,
@@ -58,4 +59,6 @@ export default {
   modals,
   createOrganization,
   dictionaryOrganizations,
+
+  distanceMap
 };

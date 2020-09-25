@@ -229,6 +229,7 @@ export const stringsToTranslate = [
   "Publication date",
   "Publish Entities",
   "Publish result of entity merge if any merged entity is published",
+  "Return to tree",
   "Quantitative characteristic",
   "Refresh",
   "Reject",

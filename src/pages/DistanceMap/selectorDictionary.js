@@ -12,8 +12,6 @@ import 'components/Home/published.scss';
 
 const selectorDict = (props) => {
   const {
-    mainDictionary,
-    languagesGroup,
     languageTree: languages,
     dictionaries,
     perspectives,
@@ -23,8 +21,7 @@ const selectorDict = (props) => {
   const localDictionaries = dictionaries;
   const languagesTree = buildLanguageTree(fromJS(languages));
 
-  if (languagesTree.size <= 0)
-    return null;
+  if (languagesTree.size <= 0) { return null; }
 
   const dictsSource = fromJS(dictionaries);
   const localDicts = fromJS(localDictionaries);
@@ -51,25 +48,22 @@ const selectorDict = (props) => {
         <AllDicts
           languagesTree={languagesTree}
           dictionaries={dicts}
+          dictionariesAll={dictionaries}
           isAuthenticated={isAuthenticated}
           perspectives={perspectivesList}
           selectorMode
-          selectedDict={mainDictionary}
-          languagesGroup={languagesGroup}
           statusLangsNav={false}
         />
       </Segment>
-      <BackTopButton scrollContainer={scrollContainer} />
+      { (scrollContainer) && (<BackTopButton scrollContainer={scrollContainer} />)}
     </Container>
   );
 };
 
 selectorDict.defaultProps = {
   isAuthenticated: false
-}
+};
 selectorDict.propTypes = {
-  mainDictionary: PropTypes.func.isRequired,
-  languagesGroup: PropTypes.func.isRequired,
   perspectives: PropTypes.array.isRequired,
   languageTree: PropTypes.array.isRequired,
   isAuthenticated: PropTypes.bool,
