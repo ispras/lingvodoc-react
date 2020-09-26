@@ -1,6 +1,6 @@
 import build from 'buildType';
 export default {
-  apiUrl: 'http://itksb.com:8077',
+  apiUrl: '',
   homePath: '/',
   pollingInterval: 2000,
   buildType: build.type,

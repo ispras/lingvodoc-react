@@ -1,7 +1,7 @@
 import base from './base';
 
 const dist = {
-    apiUrl: 'http://itksb.com:8077/api',
+    apiUrl: '/api',
   env: 'dist',
   homePath: '/',
 };

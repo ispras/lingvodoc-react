@@ -6,12 +6,12 @@
   .background-img {
     position: absolute;
     background-image: url(../../images/tree.jpg);
-    background-repeat: no-repeat; 
+    background-repeat: no-repeat;
     background-position: center center;
     background-size: contain;
     width: 700px;
     height: 600px;
-    opacity: 0.5;
+    opacity: 0.4;
     z-index: -1;
   }
   .img-block {
@@ -23,16 +23,26 @@
     .img {
       cursor: pointer;
       width: 190px;
-      height: 133px;
+      padding-top: 20px;
       z-index: 100;
       top: 10%;
     }
   }
   p {
+    width: 190px;
+    text-align: center;
     font-weight: bold;
-    color: white;
+    color: black;
     margin: 0;
-    padding-top: 10px;
-    padding-left: 10px;
+    font-size: 20px;
+
+    padding-left: 20px;
+  }
+  .languages_databases {
+    position: absolute;
+    top: -50px;
+    left: 50px;
+    font-weight: bold;
+    font-size: 30px;
   }
 }

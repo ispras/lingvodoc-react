@@ -10,7 +10,9 @@
   background: transparent !important;
   color: rgb(0, 0, 0) !important;
 }
-
+.ui.menu .dropdown.item .menu{
+  background: rgb(216, 180, 138);
+}
 .ui.dropdown .menu .version > .item {
   cursor: auto;
 }

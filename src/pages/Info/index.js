@@ -45,7 +45,7 @@ const developersContributors = [
 
 const Info = pure(() =>
   <Container>
-    <h3 className="white">Проект выполняется при финансовой поддержке грантов</h3>
+    <h3 className="black">Проект выполняется при финансовой поддержке грантов</h3>
     <Segment>
       <ul>
         <li>
@@ -83,7 +83,7 @@ const Info = pure(() =>
       </p>
     </Segment>
 
-    <h2 className="white">Участники проекта</h2>
+    <h2 className="black">Участники проекта</h2>
     <Segment>
       <Header color='blue'>Институт языкознания РАН, Томский государственный университет</Header>
       <Card.Group items={linguistsContributors} itemsPerRow={2} />
@@ -93,7 +93,7 @@ const Info = pure(() =>
       <Card.Group items={developersContributors} itemsPerRow={3} />
     </Segment>
 
-    <h2 className="white">Контакты</h2>
+    <h2 className="black">Контакты</h2>
     <Segment>
       <p>Вопросы по поводу работы программы LingvoDoc задавайте по адресу <a href="mailto:al@somestuff.ru">al@somestuff.ru</a></p>
     </Segment>
