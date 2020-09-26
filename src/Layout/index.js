@@ -32,7 +32,7 @@ import Snackbar from './Snackbar';
 import Routes from './Routes';
 
 const Content = styled.div`
-  padding: 10em 20px;
+  padding: 5em 20px;
   height: 100vh !important;
   overflow-y: auto !important;
 `;
