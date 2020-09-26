@@ -3,19 +3,28 @@ import { pure } from 'recompose';
 import { Link } from 'react-router-dom';
 import { Container, Segment, Header, Card } from 'semantic-ui-react';
 
-const linguistsContributors = [
+const linguistsContributorsRAN = [
   {
     header: 'Норманская Юлия Викторовна',
     description: 'главный редактор сайта, ответственный редактор Уральских словарей',
     href: 'http://iling-ran.ru/main/scholars/normanskaya',
-  },
+  }
+];
+
+const linguistsContributors = [
   {
     header: 'Дыбо Анна Владимировна',
     description: 'ответственный редактор Алтайских словарей',
     href: 'http://iling-ran.ru/main/scholars/dybo',
   }
 ];
-
+const linguistsContributorsTSU = [
+  {
+    header: 'Резанова Зоя Ивановна ',
+    description: 'ответственный редактор корпусов русской речи тюркско-русских билингвов',
+    href: 'https://persona.tsu.ru/Home/UserProfile/1040',
+  },
+];
 const developersContributors = [
   {
     header: 'Борисенко Олег Дмитриевич',
@@ -43,6 +52,16 @@ const developersContributors = [
   }
 ];
 
+const developersElecardMedContributors = [
+  {
+    header: 'Рожков Артём Владимирович',
+    description: 'фронтенд'
+  },
+  {
+    header: 'Наумова Александра Владимировна',
+    description: 'фронтенд'
+  }
+];
 const Info = pure(() =>
   <Container>
     <h3 className="white">Проект выполняется при финансовой поддержке грантов</h3>
@@ -85,14 +104,25 @@ const Info = pure(() =>
 
     <h2 className="white">Участники проекта</h2>
     <Segment>
+      <Header color='blue'>Институт языкознания РАН, Институт системного программирования им. В.П.Иванникова РАН</Header>
+      <Card.Group items={linguistsContributorsRAN} itemsPerRow={1} />
+    </Segment>
+    <Segment>
       <Header color='blue'>Институт языкознания РАН, Томский государственный университет</Header>
-      <Card.Group items={linguistsContributors} itemsPerRow={2} />
+      <Card.Group items={linguistsContributors} itemsPerRow={1} />
+    </Segment>
+    <Segment>
+      <Header color='blue'>Томский государственный университет</Header>
+      <Card.Group items={linguistsContributorsTSU} itemsPerRow={1} />
     </Segment>
     <Segment>
       <Header color='blue'>Институт системного программирования им. В. П. Иванникова РАН</Header>
       <Card.Group items={developersContributors} itemsPerRow={3} />
     </Segment>
-
+    <Segment>
+      <Header color='blue'>ООО Элекард-Мед</Header>
+      <Card.Group items={developersElecardMedContributors} itemsPerRow={2} />
+    </Segment>
     <h2 className="white">Контакты</h2>
     <Segment>
       <p>Вопросы по поводу работы программы LingvoDoc задавайте по адресу <a href="mailto:al@somestuff.ru">al@somestuff.ru</a></p>
