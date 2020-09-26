@@ -22,7 +22,7 @@ const getDistance = async (
   let groupFields = null;
   let sourcePerspectiveId = {};
 
-  allField.all_fields.forEach((field) => {
+  allField.forEach((field) => {
     fieldDict[id2str(field.id)] = field;
   });
 

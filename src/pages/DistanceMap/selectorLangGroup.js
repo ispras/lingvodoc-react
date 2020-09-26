@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
@@ -8,7 +8,11 @@ import Immutable, { fromJS } from 'immutable';
 import { buildLanguageTree } from 'pages/Search/treeBuilder';
 import { getTranslation } from 'api/i18n';
 import { compositeIdToString as id2str } from 'utils/compositeId';
+import { Link, Redirect } from 'react-router-dom';
 import checkLexicalEntries from './checkLexicalEntries';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { setLanguagesGroup, setDefaultGroup } from 'ducks/distanceMap';
 
 const dictionaryName = gql`
 query dictionaryName($id:LingvodocID) {
@@ -23,16 +27,30 @@ query dictionaryName($id:LingvodocID) {
   }
 }`;
 
-function selectorLangGroup({
-  mainGroup,
-  mainDictionary,
-  client,
-  languagesGroup,
-  mainDictionaryFun,
-  allLanguages,
-  allDictionaries,
-}) {
-  const parentId = mainDictionary.toJS()[0].parent_id;
+function selectorLangGroup(props) {
+  const {
+    client, location, actions, languagesGroupState, history, dataForTree
+  } = props;
+
+  if (!location.state) {
+    history.push('/distance_map');
+  }
+
+  let { arrDictionariesGroup } = languagesGroupState;
+  const {
+    allField,
+    dictionaries: allDictionaries,
+    languageTree
+  } = dataForTree;
+  const {
+    mainDictionary,
+    languagesGroup,
+  } = location.state;
+
+
+  const allLanguages = buildLanguageTree(fromJS(languageTree)).toJS();
+
+  const parentId = mainDictionary[0].parent_id;
   const [labelDict, setLabelDict] = useState(null);
   const [nodeLanguages, setNodeLanguages] = useState([]);
   const [childLanguages, setChildLanguages] = useState([]);
@@ -45,7 +63,6 @@ function selectorLangGroup({
   const dictionaryWithLexicalEntries = [];
   let rootLanguage = {};
   let mainDict = [];
-  let arrDictionariesGroup = [];
 
   client.query({
     query: dictionaryName,
@@ -55,7 +72,7 @@ function selectorLangGroup({
   languagesGroup.forEach((language) => {
     language.children.forEach((children) => {
       children.perspectives.forEach((perspective) => {
-        if (id2str(perspective.id) === id2str(mainDictionary.toJS()[0].id)) {
+        if (id2str(perspective.id) === id2str(mainDictionary[0].id)) {
           rootLanguage = language;
           mainDict = children;
         }
@@ -74,6 +91,7 @@ function selectorLangGroup({
   function dictionariesSelectedLanguges(lang) {
     setSelectedLanguage(lang);
     const arrDictionary = [];
+
     allDictionaries.forEach((dict) => {
       if ((id2str(dict.parent_id) === id2str(lang.id)) && dict.perspectives[1] && dict.perspectives[0]) {
         if (checkLexicalEntries(dict.perspectives[0].translation) || checkLexicalEntries(dict.perspectives[1].translation)) {
@@ -86,8 +104,7 @@ function selectorLangGroup({
   }
   function addLanguages() {
     if (nodeLanguages.length === 0) {
-      const arr = buildLanguageTree(fromJS(allLanguages));
-      setNodeLanguages(arr.toJS());
+      setNodeLanguages(allLanguages);
     }
   }
 
@@ -111,10 +128,6 @@ function selectorLangGroup({
     return dictionariesSelectedLanguges(language);
   }
 
-  function sendDict() {
-    mainGroup(arrDictionariesGroup);
-    mainDictionaryFun(mainDict, rootLanguage);
-  }
 
   rootLanguage.children.forEach((dict) => {
     if (dict.translation !== mainDict.translation && dict.additional_metadata.location !== null) {
@@ -135,6 +148,7 @@ function selectorLangGroup({
           (
             <Segment key={dict.id}>
               <Checkbox
+                defaultChecked={arrDictionariesGroup.some(element => id2str(element.id) === id2str(dict.id))}
                 onChange={(event, { checked }) => { filterDictionary(dict, checked); }}
                 label={dict.translation}
               />
@@ -200,6 +214,7 @@ function selectorLangGroup({
             (dict.additional_metadata.location !== null) && (
               <Segment key={dict.id.join('_')}>
                 <Checkbox
+                  defaultChecked={arrDictionariesGroup.some(element => id2str(element.id) === id2str(dict.id))}
                   onChange={(event, { checked }) => { filterDictionary(dict, checked); }}
                   label={dict.translation}
                 />
@@ -214,20 +229,45 @@ function selectorLangGroup({
           </Segment>
         )}
       </Segment.Group>
-      <Button onClick={sendDict}> {getTranslation('Next')} </Button>
+      <Button onClick={() => {
+        actions.setDefaultGroup();
+        history.goBack();
+      }}
+      > {getTranslation('Back')}
+      </Button>
+
+      <Link
+        to={{
+          pathname: '/distance_map/selected_languages/map',
+          state: {
+            dictionaries: arrDictionariesGroup,
+            mainDictionary: mainDict,
+            rootLanguage,
+            allField
+          }
+        }}
+      >
+        <Button onClick={() => actions.setLanguagesGroup({ arrDictionariesGroup })}> {getTranslation('Next')} </Button>
+      </Link>
+
+
     </div >
   );
 }
 
 selectorLangGroup.propTypes = {
-  mainGroup: PropTypes.func.isRequired,
-  mainDictionary: PropTypes.instanceOf(Immutable.List).isRequired,
+  languagesGroupState: PropTypes.object.isRequired,
+  history: PropTypes.object.isRequired,
+  dataForTree: PropTypes.object.isRequired,
   client: PropTypes.object.isRequired,
-  languagesGroup: PropTypes.array.isRequired,
-  mainDictionaryFun: PropTypes.func.isRequired,
-  allLanguages: PropTypes.array.isRequired,
-  allDictionaries: PropTypes.array.isRequired,
-
+  location: PropTypes.object.isRequired,
+  actions: PropTypes.object.isRequired,
 };
 
-export default compose(withApollo)(selectorLangGroup);
+export default compose(
+  connect(
+    state => ({ ...state.distanceMap })
+    , dispatch => ({ actions: bindActionCreators({ setLanguagesGroup, setDefaultGroup }, dispatch) })
+  ),
+  withApollo
+)(selectorLangGroup);
