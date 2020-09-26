@@ -54,6 +54,7 @@ const Dashboard = (props) => {
   if (loading || error || !isAuthenticated) {
     return null;
   }
+
   return (
     <Dropdown item text={getTranslation('Dashboard')} className="top_menu">
       <Dropdown.Menu>

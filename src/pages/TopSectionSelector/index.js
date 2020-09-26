@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import './styles.scss';
 import imgTree from '../../images/tree.jpg';
@@ -20,8 +20,11 @@ const IsAuthenticated = gql`
 `;
 
 const topSectionSelector = (props) => {
-  const { data: { is_authenticated: isAuthenticated } } = props;
- 
+  const { data } = props;
+  const { is_authenticated: isAuthenticated } = data;
+
+  console.log('test', test);
+  console.log('data', data);
   return (
     <div className="top-section-selector">
       <div className="top-section-selector_icon">
