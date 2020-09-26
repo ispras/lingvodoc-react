@@ -208,7 +208,7 @@ const Home = (props) => {
       <Segment className="rose_background">
         <Form>
           <Form.Group inline className="toggle-label">
-            <Label>{getTranslation('Display mode')}</Label>
+            <label>{getTranslation('Display mode')}</label>
             <Segment>
               <Form.Field
                 control={Radio}

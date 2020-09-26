@@ -1,5 +1,6 @@
 
 import { compositeIdToString as id2str } from 'utils/compositeId';
+import checkLexicalEntries from './checkLexicalEntries';
 
 const getDistance = async (
   dictionaries,
@@ -21,13 +22,13 @@ const getDistance = async (
   let groupFields = null;
   let sourcePerspectiveId = {};
 
-  allField.all_fields.forEach((field) => {
+  allField.forEach((field) => {
     fieldDict[id2str(field.id)] = field;
   });
 
 
   mainDictionary.perspectives.forEach((el) => {
-    if (el.translation === 'Lexical Entries') {
+    if (checkLexicalEntries(el.translation)) {
       sourcePerspectiveId = el.id;
       groupFields = el.columns
         .map(column => fieldDict[id2str(column.field_id)])
@@ -97,8 +98,8 @@ const getDistance = async (
 
   const perspectiveInfoList = perspectiveList
     .map(({ perspective }, index) => [perspective.id,
-    fieldDict[transcriptionFieldIdStrList[index]].id,
-    fieldDict[translationFieldIdStrList[index]].id])
+      fieldDict[transcriptionFieldIdStrList[index]].id,
+      fieldDict[translationFieldIdStrList[index]].id])
     .filter((_perspectiveInfo, index) =>
       (perspectiveSelectionList[index]));
 

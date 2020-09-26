@@ -9,7 +9,11 @@ import Perspective from 'pages/Perspective';
 import Languages from 'pages/Languages';
 import Files from 'pages/Files';
 import Map from 'pages/Map';
+
 import DistanceMap from 'pages/DistanceMap';
+import Test from 'pages/DistanceMap/selectorLangGroup';
+import Test1 from 'pages/DistanceMap/map';
+
 import Desktop from 'pages/Desktop';
 import NotFound from 'pages/NotFound';
 import { DictionaryDashboard, CorpusDashboard } from 'pages/Dashboard';
@@ -24,7 +28,7 @@ import DictionariesAll from 'pages/DictionariesAll';
 import LanguagesDatabasesRoute from 'pages/LanguagesDatabasesRoute';
 import ToolsRoute from 'pages/ToolsRoute';
 import DashboardRoute from 'pages/DashboardRoute';
-import OrganizationRoute from 'pages/OrganizationRoute';
+import AuthorsRoute from 'pages/AuthorsRoute';
 import SupportRoute from 'pages/SupportRoute';
 import WithoutGrants from 'pages/WithoutGrants';
 import CorporaAll from 'pages/CorporaAll';
@@ -46,6 +50,8 @@ const Routes = () => (
     <Route path="/requests" component={Requests} />
     <Route path="/map" component={Map} />
     <Route path="/map_search" component={Search} />
+    <Route path="/distance_map/selected_languages/map" component={Test1} />
+    <Route path="/distance_map/selected_languages" component={Test} />
     <Route path="/distance_map" component={DistanceMap} />
     <Route path="/import" component={DictImport} />
     <Route path="/import_dialeqt" component={DialeqtImport} />
@@ -58,7 +64,7 @@ const Routes = () => (
     <Route path="/LanguagesDatabasesRoute" component={LanguagesDatabasesRoute} />
     <Route path="/toolsRoute" component={ToolsRoute} />
     <Route path="/dashboardRoute" component={DashboardRoute} />
-    <Route path="/organizationRoute" component={OrganizationRoute} />
+    <Route path="/authorsRoute" component={AuthorsRoute} />
     <Route path="/supportRoute" component={SupportRoute} />
     <Route path="/without_grants" component={WithoutGrants} />
     <Route path="/corpora_all" component={CorporaAll} />

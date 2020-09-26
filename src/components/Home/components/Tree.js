@@ -9,17 +9,20 @@ import { Dropdown, Checkbox, Icon, Button, Label } from 'semantic-ui-react';
 import { toggleDictionary } from 'ducks/home';
 import { checkLanguageId } from './LangsNav';
 import { getTranslation } from 'api/i18n';
-
+import checkLexicalEntries from 'pages/DistanceMap/checkLexicalEntries';
 
 import config from 'config';
 
 
 import '../published.scss';
 
-function localSelectedDict(e) {
-  return e;
-}
 let selectorStatus = false;
+const arrLang = [];
+
+const languagesGroup = (e) => {
+  arrLang.push(e);
+};
+
 function toId(arr, prefix = null) {
   const joiner = prefix ? arr[prefix] : arr;
   return joiner.join('/');
@@ -57,11 +60,10 @@ const Dict = ({
   const isChecked = selected.has(id);
   let statusLexicalEntries = false;
 
-  if (Array.isArray(perspectives))
-    perspectives = Immutable.fromJS(perspectives);
+  if (Array.isArray(perspectives)) { perspectives = Immutable.fromJS(perspectives); }
 
   perspectives.toJS().forEach((perspective) => {
-    if (perspective.translation === 'Lexical Entries') {
+    if (checkLexicalEntries(perspective.translation)) {
       statusLexicalEntries = true;
     }
   });
@@ -84,16 +86,30 @@ const Dict = ({
             </Dropdown.Menu>
           </Dropdown>
         )}
-      {((perspectives && selectorStatus && location !== null && statusLexicalEntries) && (
-        <Button onClick={() => localSelectedDict(perspectives)}> {getTranslation('Select dictionary')}</Button>
-      )) || ((selectorStatus) && (
-        <Label>{getTranslation('Lexical entries no found')} </Label>
-      ))
+
+      {(perspectives && selectorStatus && location !== null && statusLexicalEntries) && (
+      <Link to={{
+          pathname: '/distance_map/selected_languages',
+          state: {
+            languagesGroup: arrLang,
+            mainDictionary: perspectives.toJS(),
+            status:'init'
+}
+        }}
+      > <Button > Ссылка </Button>
+      </Link>
+      )
       }
-      {(perspectives && selectorStatus && location === null && selectorStatus) && (
+
+      {(perspectives && selectorStatus && location === null) && (
         <Label>{getTranslation('No coordinate data')}</Label>
       )
       }
+
+      {selectorStatus && !statusLexicalEntries && perspectives && (
+      <Label>{getTranslation('Lexical entries not found')}
+      </Label>
+      )}
     </li>
   );
 };
@@ -112,7 +128,7 @@ const Dictionary = compose(
   onlyUpdateForKeys(['selected'])
 )(Dict);
 
-const Language = ({ language, canSelectDictionaries, languagesGroup }) => {
+const Language = ({ language, canSelectDictionaries }) => {
   const translation = language.get('translation');
   const children = language.get('children');
   const id = language.get('id').toJS().toString();
@@ -145,12 +161,19 @@ Language.defaultProps = {
   canSelectDictionaries: false,
 };
 
-const Node = ({ node, canSelectDictionaries, languagesGroup }) => {
+const Node = ({
+  node,
+  canSelectDictionaries,
+
+}) => {
   switch (node.get('type')) {
     case 'language':
-      return <Language language={node} canSelectDictionaries={canSelectDictionaries} languagesGroup={languagesGroup} />;
+      return <Language language={node} canSelectDictionaries={canSelectDictionaries} />;
     case 'dictionary':
-      return <Dictionary dictionary={node} canSelectDictionaries={canSelectDictionaries} />;
+      return <Dictionary
+        dictionary={node}
+        canSelectDictionaries={canSelectDictionaries}
+      />;
     default:
       return <div>Unknown type</div>;
   }
@@ -162,13 +185,20 @@ Node.propTypes = {
 };
 
 const Tree = ({
-  tree, canSelectDictionaries, selectorMode, selectedDict, languagesGroup
+  tree,
+  canSelectDictionaries,
+  selectorMode
 }) => {
   selectorStatus = selectorMode;
-  localSelectedDict = selectedDict;
+
   return (
     <ul className="tree">
-      {tree.map(e => <Node selectedDict={selectedDict} key={e.get('id')} node={e} canSelectDictionaries={canSelectDictionaries} languagesGroup={languagesGroup} />)}
+      {tree.map(e => <Node
+        key={e.get('id')}
+        node={e}
+        canSelectDictionaries={canSelectDictionaries}
+
+      />)}
     </ul>
   );
 };
@@ -176,16 +206,12 @@ const Tree = ({
 Tree.propTypes = {
   tree: PropTypes.instanceOf(Immutable.List).isRequired,
   canSelectDictionaries: PropTypes.bool,
-  selectedDict: PropTypes.func,
-  languagesGroup: PropTypes.func,
   selectorMode: PropTypes.bool,
 
 };
 
 Tree.defaultProps = {
   canSelectDictionaries: false,
-  selectedDict: undefined,
-  languagesGroup: undefined,
   selectorMode: false
 };
 

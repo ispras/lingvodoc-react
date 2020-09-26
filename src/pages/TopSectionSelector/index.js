@@ -4,7 +4,7 @@ import './styles.scss';
 import imgTree from '../../images/tree.jpg';
 import imgTools from '../../images/tools.jpg';
 import imgDashboard from '../../images/dashboard.png';
-import imgOrganization from '../../images/organization.jpg';
+import imgAuthors from '../../images/organization.jpg';
 import imgSupport from '../../images/support.jpg';
 import { Link } from 'react-router-dom';
 import { graphql } from 'react-apollo';
@@ -44,9 +44,9 @@ const topSectionSelector = (props) => {
           </Link> : null}
         </div>
         <div className="icon">
-          <label className="label">{getTranslation('Organization')}</label>
-          <Link to="/organizationRoute">
-            <img className="img-organization img" src={imgOrganization} />
+          <label className="label">{getTranslation('Authors')}</label>
+          <Link to="/authorsRoute">
+            <img className="img-authors img" src={imgAuthors} />
           </Link>
         </div>
         <div className="icon">

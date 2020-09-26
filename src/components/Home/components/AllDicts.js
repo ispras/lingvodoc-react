@@ -13,9 +13,7 @@ function AllDicts(props) {
     perspectives,
     isAuthenticated,
     selectorMode,
-    selectedDict,
-    languagesGroup,
-    statusLangsNav
+    statusLangsNav,
   } = props;
 
   const tree = assignDictsToTree(
@@ -30,7 +28,11 @@ function AllDicts(props) {
   return (
     <div>
       {(statusLangsNav) && (<LangsNav data={tree} />)}
-      <Tree tree={tree} canSelectDictionaries={isAuthenticated} selectorMode={selectorMode} selectedDict={selectedDict} languagesGroup={languagesGroup} />
+      <Tree
+        tree={tree}
+        canSelectDictionaries={isAuthenticated}
+        selectorMode={selectorMode}
+      />
     </div>
   );
 }
@@ -41,16 +43,12 @@ AllDicts.propTypes = {
   perspectives: PropTypes.instanceOf(Immutable.List).isRequired,
   isAuthenticated: PropTypes.bool,
   selectorMode: PropTypes.bool,
-  selectedDict: PropTypes.func,
-  languagesGroup: PropTypes.func,
   statusLangsNav: PropTypes.bool
 
 };
 
 AllDicts.defaultProps = {
   isAuthenticated: false,
-  languagesGroup: null,
-  selectedDict: null,
   selectorMode: false,
   statusLangsNav: true
 };
