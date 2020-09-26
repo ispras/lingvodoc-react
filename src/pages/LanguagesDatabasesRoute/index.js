@@ -12,7 +12,7 @@ function treeRoute() {
     <div>
       <div className="treeRoute">
         <div className="background-img" />
-        <label className="languages_databases">{getTranslation('Languages databases')}</label>
+        <p className="languages_databases">{getTranslation('Languages databases')}</p>
         <div className="img-block">
           <Link to="/dashboard/dictionaries_all"> <img className="img " src={imageDictionaries} /></Link>
           <p> {getTranslation('Dictionaries')}</p>
