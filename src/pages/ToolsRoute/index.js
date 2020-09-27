@@ -28,6 +28,10 @@ function toolsRoute() {
           <p>{getTranslation('Distance map')}</p>
           <Link to="/distance_map"><img className="img " src={image} /></Link>
         </div>
+        <div className="img-block">
+          <p>{getTranslation('Languages')}</p>
+          <Link to="/languages"><img className="img " src={image} /></Link>
+        </div>
       </div>
     </div>
   );
