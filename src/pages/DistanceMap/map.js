@@ -108,13 +108,15 @@ class MapAreas extends PureComponent {
 
   async allDicts() {
     const {
-      location, computeDistancePerspectives, history
+      location, computeDistancePerspectives, history, selected, dataForTree
     } = this.props;
 
     if (!location.state) {
       history.push('/distance_map');
     }
-
+    if (selected && (selected.id !== dataForTree.idLocale)) {
+      history.push('/distance_map');
+    }
     let maxCount = 0;
     const
       {
@@ -222,5 +224,6 @@ export default compose(
     state => ({ ...state.distanceMap })
     , dispatch => ({ actions: bindActionCreators({ setDefaultGroup }, dispatch) })
   ),
+  connect(state => state.locale),
   graphql(mutationDistancePerspectives, { name: 'computeDistancePerspectives' })
 )(MapAreas);
