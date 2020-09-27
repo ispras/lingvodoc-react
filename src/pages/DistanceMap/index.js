@@ -8,7 +8,7 @@ import Placeholder from 'components/Placeholder';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { setDataForTree, setDefaultGroup } from 'ducks/distanceMap';
-
+import checkCoorAndLexicalEntries from './checkCoordinatesAndLexicalEntries';
 
 const allFieldQuery = gql`
   query{
@@ -26,6 +26,7 @@ const dictionaryWithPerspectivesQuery = gql`
       id
       parent_id
       translation
+      category
       additional_metadata {
         authors
         location
@@ -79,6 +80,7 @@ function distanceMap(props) {
     return <Placeholder />;
   }
 
+
   if (arrDictionariesGroup.length) {
     useEffect(() => {
       actions.setDefaultGroup();
@@ -94,12 +96,12 @@ function distanceMap(props) {
       });
     }, []);
   }
-
+  const newDictionaries = checkCoorAndLexicalEntries(dictionaries || dataForTree.dictionaries);
   return (
     <div>
       <SelectorDictionary
         languageTree={languageTree || dataForTree.languageTree}
-        dictionaries={dictionaries || dataForTree.dictionaries}
+        dictionaries={newDictionaries}
         perspectives={perspectives || dataForTree.perspectives}
         isAuthenticated={isAuthenticated}
         allField={allField.all_fields || dataForTree.allField}
