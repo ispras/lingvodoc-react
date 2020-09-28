@@ -48,11 +48,11 @@ function selectorLangGroup(props) {
   } = location.state;
 
 
-  const allLanguages = buildLanguageTree(fromJS(languageTree)).toJS();
+  const nodeLanguages = buildLanguageTree(fromJS(languageTree)).toJS();
 
   const parentId = mainDictionary[0].parent_id;
   const [labelDict, setLabelDict] = useState(null);
-  const [nodeLanguages, setNodeLanguages] = useState([]);
+  const [availabilityOfDictionary, setAvailabilityOfDictionary] = useState(true)
   const [childLanguages, setChildLanguages] = useState([]);
   const [twoChildLanguages, setTwoChildLanguages] = useState([]);
   const [selectedLanguage, setSelectedLanguage] = useState([]);
@@ -91,28 +91,30 @@ function selectorLangGroup(props) {
   function dictionariesSelectedLanguges(lang) {
     setSelectedLanguage(lang);
     const arrDictionary = [];
-
+    setAvailabilityOfDictionary(true)
     allDictionaries.forEach((dict) => {
-      if ((id2str(dict.parent_id) === id2str(lang.id)) && dict.perspectives[1] && dict.perspectives[0]) {
+      if ((id2str(dict.parent_id) === id2str(lang.id)) && dict.perspectives[1] && dict.perspectives[0] && dict.additional_metadata.location !== null) {
         if (checkLexicalEntries(dict.perspectives[0].translation) || checkLexicalEntries(dict.perspectives[1].translation)) {
           arrDictionary.push(dict);
         }
       }
     });
-
-    setSelectedLanguage(arrDictionary);
-  }
-  function addLanguages() {
-    if (nodeLanguages.length === 0) {
-      setNodeLanguages(allLanguages);
+    console.log(arrDictionary)
+    if (arrDictionary.length === 0) {
+      setAvailabilityOfDictionary(false)
+      console.log('arrDictionary')
     }
+    setSelectedLanguage(arrDictionary);
+
+
   }
 
   function selectNodeLanguage(language) {
     setSelectedLanguage([]);
     setTwoChildLanguages([]);
     const languageChildren = language.children;
-    if (languageChildren.length !== 0) {
+    if (languageChildren.length !== 0) {  
+
       return setChildLanguages(languageChildren);
     }
     return dictionariesSelectedLanguges(language);
@@ -123,6 +125,7 @@ function selectorLangGroup(props) {
     setSelectedLanguage([]);
     setTwoChildLanguages([]);
     if (languageChildren.length !== 0) {
+      setAvailabilityOfDictionary(true)
       return setTwoChildLanguages(languageChildren);
     }
     return dictionariesSelectedLanguges(language);
@@ -142,42 +145,22 @@ function selectorLangGroup(props) {
   return (
     <div>
       <Label size="massive" >{labelDict}</Label>
-      <Segment.Group>
-        {dictionaryWithLexicalEntries.map(dict =>
-          (dictionaryWithLexicalEntries.length !== 0) &&
-          (
-            <Segment key={dict.id}>
-              <Checkbox
-                defaultChecked={arrDictionariesGroup.some(element => id2str(element.id) === id2str(dict.id))}
-                onChange={(event, { checked }) => { filterDictionary(dict, checked); }}
-                label={dict.translation}
-              />
-            </Segment>
-          ))}
-        {(dictionaryWithLexicalEntries.length === 0) && (
-          <Segment>
-            {getTranslation('No analysis dictionaries found')}
-          </Segment>
-        )}
-      </Segment.Group>
-      <Segment.Group>
-        {(nodeLanguages.length === 0) && (<Button onClick={addLanguages}>{getTranslation('Add dictionaries of other language groups')}</Button>)}
-        {(nodeLanguages.length !== 0) && (
-          <Segment >
-            {nodeLanguages.map(lang =>
-              (lang.translation) && (
-                <Button
-                  active={focusNodeLanguages === lang.translation}
-                  key={lang.id.join('_')}
-                  onClick={() => {
-                    setFocusNodeLanguages(lang.translation);
-                    selectNodeLanguage(lang);
-                  }}
-                >
-                  {lang.translation}
-                </Button>))}
-          </Segment>
-        )}
+      <Segment.Group >
+        <Segment >
+          {nodeLanguages.map(lang =>
+            (lang.translation) && (
+              <Button
+                active={focusNodeLanguages === lang.translation}
+                key={lang.id.join('_')}
+                onClick={() => {
+                  setFocusNodeLanguages(lang.translation);
+                  selectNodeLanguage(lang);
+                }}
+              >
+                {lang.translation}
+              </Button>))}
+        </Segment>
+
         {(childLanguages.length !== 0) && (
           <Segment >
             {childLanguages.map(lang =>
@@ -223,9 +206,9 @@ function selectorLangGroup(props) {
             ))
         )
         }
-        {(selectedLanguage.length === 0) && (nodeLanguages.length !== 0) && (
+                {(!availabilityOfDictionary) && (
           <Segment>
-            <Label> {getTranslation('No matching dictionaries')}</Label>
+            <Label> {getTranslation('выбери язык')}</Label>
           </Segment>
         )}
       </Segment.Group>
