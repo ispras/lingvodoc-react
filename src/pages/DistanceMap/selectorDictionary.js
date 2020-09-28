@@ -8,7 +8,7 @@ import BackTopButton from 'components/BackTopButton';
 import AllDicts from 'components/Home/components/AllDicts';
 import { getScrollContainer } from 'components/Home/common';
 import 'components/Home/published.scss';
-import { assignDictsToTree, buildDictTrees, buildLanguageTree } from 'pages/Search/treeBuilder';
+
 
 const selectorDict = (props) => {
   const {
@@ -38,19 +38,11 @@ const selectorDict = (props) => {
       ...perspective.toJS()
     }));
 
-  const tree = assignDictsToTree(
-    buildDictTrees(fromJS({
-      lexical_entries: [],
-      perspectives,
-      dictionaries,
-    })),
-    languagesTree
-  );
   const scrollContainer = getScrollContainer();
 
   return (
     <Container className="published">
-      <h1 className="white" style={{ margin: '20px 0' }}> {getTranslation('Select a dictionary for analysis')}</h1>
+      <Segment size="huge"> {getTranslation('Select a dictionary for analysis')}</Segment>
       <Segment>
         <AllDicts
           languagesTree={languagesTree}
@@ -59,9 +51,10 @@ const selectorDict = (props) => {
           isAuthenticated={isAuthenticated}
           perspectives={perspectivesList}
           selectorMode
+          statusLangsNav={false}
         />
       </Segment>
-      <BackTopButton scrollContainer={scrollContainer} />
+      { (scrollContainer) && (<BackTopButton scrollContainer={scrollContainer} />)}
     </Container>
   );
 };

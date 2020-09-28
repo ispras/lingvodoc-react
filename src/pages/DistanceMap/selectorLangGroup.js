@@ -5,7 +5,7 @@ import gql from 'graphql-tag';
 import { Label, Checkbox, Segment, Button } from 'semantic-ui-react';
 import { compose } from 'recompose';
 import Immutable, { fromJS } from 'immutable';
-import { buildLanguageTree } from 'pages/Search/treeBuilder';
+import { buildLanguageTree,assignDictsToTree,buildDictTrees } from 'pages/Search/treeBuilder';
 import { getTranslation } from 'api/i18n';
 import { compositeIdToString as id2str } from 'utils/compositeId';
 import { Link, Redirect } from 'react-router-dom';
@@ -43,14 +43,25 @@ function selectorLangGroup(props) {
   const {
     allField,
     dictionaries: allDictionaries,
-    languageTree
+    languageTree,
+    perspectives
   } = dataForTree;
   const {
     mainDictionary,
     languagesGroup,
   } = location.state;
-
-
+console.log(dataForTree)
+  const languageTreeNew = buildLanguageTree(fromJS(languageTree)).toJS();
+  const nodeLanguagesNew = assignDictsToTree(
+    buildDictTrees(fromJS({
+      lexical_entries: [],
+      perspectives,
+      allDictionaries,
+    })),
+    languageTreeNew
+  );
+/*   const nodeLanguages = nodeLanguagesNew.toJS() */
+console.log(nodeLanguagesNew.toJS() )
   const nodeLanguages = buildLanguageTree(fromJS(languageTree)).toJS();
 
   const parentId = mainDictionary[0].parent_id;
