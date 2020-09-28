@@ -25,7 +25,7 @@ import Organizations from 'pages/Organizations';
 
 import TopSectionSelector from 'pages/TopSectionSelector';
 import DictionariesAll from 'pages/DictionariesAll';
-import LanguagesDatabasesRoute from 'pages/TreeRoute';
+import LanguagesDatabasesRoute from 'pages/LanguagesDatabasesRoute';
 import ToolsRoute from 'pages/ToolsRoute';
 import DashboardRoute from 'pages/DashboardRoute';
 import AuthorsRoute from 'pages/AuthorsRoute';

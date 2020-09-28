@@ -1,8 +1,9 @@
 .toolsRoute {
     position: relative;
     width: 800px;
-    height: 450px;
+    height: 500px;
     margin: 0 auto;
+    margin-top: 5em;
     .background-img {
       position: absolute;
       background-image: url(../../images/tools.jpg);
@@ -10,11 +11,12 @@
       background-position: center center;
       background-size: contain;
       width: 800px;
-      height: 450px;
-      opacity: 0.5;
+      height: 600px;
+      opacity: 0.4;
       z-index: -1;
     }
     .img-block {
+      padding-top: 20px;
       p {
         padding-left: 0;
       }
@@ -22,17 +24,26 @@
       display: inline-block;
       .img {
         cursor: pointer;
-        width: 150px;
-        height:93px ;
+        width: 190px;
+
         z-index: 100;
         top: 10%;
       }
     }
     p {
+      width: 190px;
+      text-align: center;
       font-weight: bold;
-      color: white;
+      color: black;
       margin: 0;
-      padding-top: 10px;
-      padding-left: 10px;
+      font-size: 20px;
+  
+      padding-left: 20px;
+    }
+    .tools{
+      position: absolute;
+      top: -50px;
+      font-weight: bold;
+      font-size: 30px;
     }
   }
