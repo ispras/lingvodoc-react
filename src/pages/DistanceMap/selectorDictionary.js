@@ -50,7 +50,7 @@ const selectorDict = (props) => {
 
   return (
     <Container className="published">
-      <Segment size="huge"> {getTranslation('Select a dictionary for analysis')}</Segment>
+      <h1 className="white" style={{ margin: '20px 0' }}> {getTranslation('Select a dictionary for analysis')}</h1>
       <Segment>
         <AllDicts
           languagesTree={languagesTree}
@@ -59,10 +59,9 @@ const selectorDict = (props) => {
           isAuthenticated={isAuthenticated}
           perspectives={perspectivesList}
           selectorMode
-          statusLangsNav={false}
         />
       </Segment>
-      { (scrollContainer) && (<BackTopButton scrollContainer={scrollContainer} />)}
+      <BackTopButton scrollContainer={scrollContainer} />
     </Container>
   );
 };

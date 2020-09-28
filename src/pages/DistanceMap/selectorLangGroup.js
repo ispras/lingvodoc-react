@@ -29,10 +29,13 @@ query dictionaryName($id:LingvodocID) {
 
 function selectorLangGroup(props) {
   const {
-    client, location, actions, languagesGroupState, history, dataForTree
+    client, location, actions, languagesGroupState, history, dataForTree, selected
   } = props;
 
   if (!location.state) {
+    history.push('/distance_map');
+  }
+  if (selected && (selected.id !== dataForTree.idLocale)) {
     history.push('/distance_map');
   }
 
@@ -245,6 +248,7 @@ selectorLangGroup.propTypes = {
   client: PropTypes.object.isRequired,
   location: PropTypes.object.isRequired,
   actions: PropTypes.object.isRequired,
+  selected: PropTypes.object.isRequired
 };
 
 export default compose(
@@ -252,5 +256,6 @@ export default compose(
     state => ({ ...state.distanceMap })
     , dispatch => ({ actions: bindActionCreators({ setLanguagesGroup, setDefaultGroup }, dispatch) })
   ),
+  connect(state => state.locale),
   withApollo
 )(selectorLangGroup);
