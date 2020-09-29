@@ -16,6 +16,7 @@ function AllDicts(props) {
     statusLangsNav,
   } = props;
 
+
   const tree = assignDictsToTree(
     buildDictTrees(fromJS({
       lexical_entries: [],
