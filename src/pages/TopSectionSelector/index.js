@@ -23,8 +23,6 @@ const topSectionSelector = (props) => {
   const { data } = props;
   const { is_authenticated: isAuthenticated } = data;
 
-  console.log('test', test);
-  console.log('data', data);
   return (
     <div className="top-section-selector">
       <div className="top-section-selector_icon">

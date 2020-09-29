@@ -91,12 +91,12 @@ const Dict = ({
       <Link to={{
           pathname: '/distance_map/selected_languages',
           state: {
-            languagesGroup: arrLang,
+            languagesGroup: [],
             mainDictionary: perspectives.toJS(),
             status:'init'
 }
         }}
-      > <Button > Ссылка </Button>
+      > <Button onClick={()=>console.log(arrLang)} > Ссылка </Button>
       </Link>
       )
       }

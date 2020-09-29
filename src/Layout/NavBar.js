@@ -7,6 +7,9 @@ import { Link, withRouter } from 'react-router-dom';
 import { Dropdown, Menu, Button, List } from 'semantic-ui-react';
 import styled from 'styled-components';
 import config from 'config';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { setIsAuthenticated } from 'ducks/auth';
 
 import { getTranslation } from 'api/i18n';
 import User from './User';
@@ -50,9 +53,10 @@ const Sync = compose(
 )(SyncButton);
 
 const Dashboard = (props) => {
-  const { data: { loading, error, is_authenticated: isAuthenticated } } = props;
-  if (loading || error || !isAuthenticated) {
-    return null;
+  const { is_authenticated: isAuthenticated } = props;
+
+  if ( !isAuthenticated ) {
+    return null
   }
 
   return (
@@ -81,15 +85,15 @@ const Dashboard = (props) => {
   );
 };
 
-Dashboard.propTypes = {
-  data: PropTypes.shape({ loading: PropTypes.bool.isRequired }).isRequired,
-};
+// Dashboard.propTypes = {
+//   data: PropTypes.shape({ loading: PropTypes.bool.isRequired }).isRequired,
+// };
 
-const DashboardWithData = graphql(gql`
-  query isAuthenticated {
-    is_authenticated
-  }
-`)(Dashboard);
+// const DashboardWithData = graphql(gql`
+//   query isAuthenticated {
+//     is_authenticated
+//   }
+// `)(Dashboard);
 
 function openHelp() {
   window.open('https://github.com/ispras/lingvodoc-react/wiki', '_blank');
@@ -100,77 +104,100 @@ function openMapStorage() {
 }
 
 const NavBar =
-  ({ data: { version } }) => (
+  (props) => {
+    const { data: { version } } = props;
+    console.log( props )
+    return (
 
-    <Menu fixed="top" className="top_menu">
-      <Menu.Item as={Link} to={config.homePath} className="top_menu">
-        <Logo>Lingvodoc 3.0</Logo>
-      </Menu.Item>
-
-      <DashboardWithData />
-
-      <Dropdown item text={getTranslation('Maps')} className="top_menu">
-        <Dropdown.Menu>
-          <Dropdown.Item as={Link} to="/map">
-            {getTranslation('Map')}
-          </Dropdown.Item>
-          <Dropdown.Item as={Link} to="/map_search">
-            {getTranslation('Search')}
-          </Dropdown.Item>
-          <Dropdown.Item onClick={openMapStorage}>
-            {getTranslation('Storage')}
-          </Dropdown.Item>
-          <Dropdown.Item as={Link} to="/distance_map">
-            {getTranslation('Distance map')}
-          </Dropdown.Item>
-        </Dropdown.Menu>
-      </Dropdown>
-
-      <Dropdown item text={getTranslation('Info')} className="top_menu">
-        <Dropdown.Menu>
-          <Dropdown.Item as={Link} to="/info">
-            {getTranslation('Authors')}
-          </Dropdown.Item>
-          <Dropdown.Item as={Link} to="/desktop">
-            {getTranslation('Desktop')}
-          </Dropdown.Item>
-          <Dropdown.Item as={Link} to="/languages">
-            {getTranslation('Languages')}
-          </Dropdown.Item>
-          <Dropdown item text="Version">
-            <Dropdown.Menu style={{ fontSize: '1.05rem' }} className="version">
-              <Dropdown.Item className="version">
-                <List>
-                  <List.Item className="version">
-                    <p style={{ marginBottom: '0.5em' }}>Backend:</p>
-                    <p style={{ marginLeft: '0.5em' }}>{version}</p>
-                  </List.Item>
-                  <List.Item className="version">
-                    <p style={{ marginBottom: '0.5em' }}>Frontend:</p>
-                    <p style={{ marginLeft: '0.5em' }}>{/* eslint-disable no-undef */__VERSION__ /* eslint-enable no-undef */}</p>
-                  </List.Item>
-                </List>
-              </Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
-        </Dropdown.Menu>
-      </Dropdown>
-
-      <Menu.Menu position="right">
-        <Sync />
-        <User />
-        <Tasks />
-        <Locale />
-        <Menu.Item>
-          <Button primary negative onClick={openHelp}>{getTranslation('Help')}</Button>
+      <Menu fixed="top" className="top_menu">
+        <Menu.Item as={Link} to={config.homePath} className="top_menu">
+          <Logo>Lingvodoc 3.0</Logo>
         </Menu.Item>
-      </Menu.Menu>
-    </Menu>
-  );
+
+        <Dashboard
+          is_authenticated={props.isAuthenticated}
+        />
+
+        <Dropdown item text={getTranslation('Maps')} className="top_menu">
+          <Dropdown.Menu>
+            <Dropdown.Item as={Link} to="/map">
+              {getTranslation('Map')}
+            </Dropdown.Item>
+            <Dropdown.Item as={Link} to="/map_search">
+              {getTranslation('Search')}
+            </Dropdown.Item>
+            <Dropdown.Item onClick={openMapStorage}>
+              {getTranslation('Storage')}
+            </Dropdown.Item>
+            <Dropdown.Item as={Link} to="/distance_map">
+              {getTranslation('Distance map')}
+            </Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
+
+        <Dropdown item text={getTranslation('Info')} className="top_menu">
+          <Dropdown.Menu>
+            <Dropdown.Item as={Link} to="/info">
+              {getTranslation('Authors')}
+            </Dropdown.Item>
+            <Dropdown.Item as={Link} to="/desktop">
+              {getTranslation('Desktop')}
+            </Dropdown.Item>
+            <Dropdown.Item as={Link} to="/languages">
+              {getTranslation('Languages')}
+            </Dropdown.Item>
+            <Dropdown item text="Version">
+              <Dropdown.Menu style={{ fontSize: '1.05rem' }} className="version">
+                <Dropdown.Item className="version">
+                  <List>
+                    <List.Item className="version">
+                      <p style={{ marginBottom: '0.5em' }}>Backend:</p>
+                      <p style={{ marginLeft: '0.5em' }}>{version}</p>
+                    </List.Item>
+                    <List.Item className="version">
+                      <p style={{ marginBottom: '0.5em' }}>Frontend:</p>
+                      <p style={{ marginLeft: '0.5em' }}>{/* eslint-disable no-undef */__VERSION__ /* eslint-enable no-undef */}</p>
+                    </List.Item>
+                  </List>
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+          </Dropdown.Menu>
+        </Dropdown>
+
+        <Menu.Menu position="right">
+          <Sync />
+          <User />
+          <Tasks />
+          <Locale />
+          <Menu.Item>
+            <Button primary negative onClick={openHelp}>{getTranslation('Help')}</Button>
+          </Menu.Item>
+        </Menu.Menu>
+      </Menu>
+    );
+  };
+
+
 NavBar.propTypes = {
   data: PropTypes.object.isRequired,
 };
 export default compose(
+  graphql(gql`
+    query isAuthenticated {
+      is_authenticated
+    }
+  `),
+  connect(
+    ( state, { data } ) => {
+      return { ...state.auth }
+    },
+    ( dispatch, { data } ) => {
+      dispatch( setIsAuthenticated({ isAuthenticated: data.is_authenticated }) )
+
+      return { actions: bindActionCreators({ setIsAuthenticated }, dispatch) }
+    }
+  ),
   graphql(gql`query version { version }`),
   withRouter,
 )(NavBar);
