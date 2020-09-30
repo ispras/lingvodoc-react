@@ -11,7 +11,7 @@ import { Link, Redirect } from 'react-router-dom';
 import checkLexicalEntries from './checkLexicalEntries';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { setLanguagesGroup, setDefaultGroup } from 'ducks/distanceMap';
+import { setLanguagesGroup, setDefaultGroup,setMainGroupLanguages } from 'ducks/distanceMap';
 import TreeBtn from './treeBtn';
 import { compositeIdToString } from 'utils/compositeId';
 
@@ -73,7 +73,7 @@ class selectorLangGroup extends React.Component {
 
   render() {
     const {
-      client, location, actions, languagesGroupState, history, dataForTree, selected
+      client, location, actions, languagesGroupState, history, dataForTree, selected,mainGroupDict
     } = this.props;
 
     const { arrDictionariesGroup } = languagesGroupState;
@@ -115,6 +115,8 @@ class selectorLangGroup extends React.Component {
       data={item.children}
       ref={this.setTextInputRef}
       dataLang={item}
+      actions={actions}
+      mainGroupDict={mainGroupDict}
     />);
     return (
       <Segment>
@@ -138,7 +140,7 @@ selectorLangGroup.propTypes = {
 export default compose(
   connect(
     state => ({ ...state.distanceMap })
-    , dispatch => ({ actions: bindActionCreators({ setLanguagesGroup, setDefaultGroup }, dispatch) })
+    , dispatch => ({ actions: bindActionCreators({ setLanguagesGroup, setDefaultGroup,setMainGroupLanguages }, dispatch) })
   ),
   connect(state => state.locale),
   withApollo

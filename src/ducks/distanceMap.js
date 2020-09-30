@@ -3,7 +3,7 @@ import { combineReducers } from 'redux';
 export const SET_LANGUAGES_GROUP = '@home/SET_LANGUAGES_GROUP';
 export const SET_DEFAULT_GROUP = '@home/SET_DEFAULT_GROUP';
 export const SET_DATA_FOR_TREE = '@home/SET_DATA_FOR_TREE';
-
+export const SET_MAIN_GROUP_LANGUAGES = '@home/SET_MAIN_GROUP_LANGUAGES';
 // Action Creators
 
 export function setLanguagesGroup(payload) {
@@ -14,6 +14,9 @@ export function setDefaultGroup(payload) {
 }
 export function setDataForTree(payload) {
   return { type: SET_DATA_FOR_TREE, payload };
+}
+export function setMainGroupLanguages(payload) {
+  return { type: SET_MAIN_GROUP_LANGUAGES, payload };
 }
 // Reducer
 
@@ -42,5 +45,14 @@ function dataForTree(state = {}, { type, payload }) {
       return state;
   }
 }
-export default combineReducers({ dataForTree, languagesGroupState });
+
+function mainGroupDict(state = [], { type, payload }) {
+  switch (type) {
+    case SET_MAIN_GROUP_LANGUAGES:
+      return payload
+    default:
+      return state;
+  }
+}
+export default combineReducers({ dataForTree, languagesGroupState,mainGroupDict });
 
