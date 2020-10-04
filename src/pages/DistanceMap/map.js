@@ -108,7 +108,7 @@ class MapAreas extends PureComponent {
 
   async allDicts() {
     const {
-      location, computeDistancePerspectives, history, selected, dataForTree
+      location, computeDistancePerspectives, history, selected, dataForTree, languagesGroupState: { arrDictionariesGroup: dictionaries }
     } = this.props;
 
     if (!location.state) {
@@ -118,12 +118,11 @@ class MapAreas extends PureComponent {
       history.push('/distance_map');
     }
     let maxCount = 0;
+    const { allField } = dataForTree;
     const
       {
-        dictionaries,
         mainDictionary,
         rootLanguage,
-        allField
       } = location.state;
 
     this.dictionariesWithColors = await getDistancePoint(dictionaries, allField, mainDictionary, computeDistancePerspectives, rootLanguage);
@@ -140,6 +139,7 @@ class MapAreas extends PureComponent {
     this.dictionariesWithColors = normolizeMethod(this.dictionariesWithColors, 255);
 
     const data = this.dictionariesWithColors.map((el) => {
+      console.log(el)
       const lat = Number(el.additional_metadata.location.lat);
       const lng = Number(el.additional_metadata.location.lng);
       const { translation, distanceDict, normolizeDistanceNumber } = el;

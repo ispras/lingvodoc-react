@@ -9,7 +9,7 @@ import { Dropdown, Checkbox, Icon, Button, Label } from 'semantic-ui-react';
 import { toggleDictionary } from 'ducks/home';
 import { checkLanguageId } from './LangsNav';
 import { getTranslation } from 'api/i18n';
-import checkLexicalEntries from 'pages/DistanceMap/checkLexicalEntries';
+
 
 import config from 'config';
 
@@ -84,7 +84,6 @@ const Dict = ({
       <Link to={{
           pathname: '/distance_map/selected_languages',
           state: {
-            languagesGroup: arrLang,
             mainDictionary: perspectives.toJS(),
 }
         }}

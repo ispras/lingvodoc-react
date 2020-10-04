@@ -26,8 +26,8 @@ const getDistance = async (
     fieldDict[id2str(field.id)] = field;
   });
 
-
   mainDictionary.perspectives.forEach((el) => {
+   
     if (checkLexicalEntries(el.translation)) {
       sourcePerspectiveId = el.id;
       groupFields = el.columns

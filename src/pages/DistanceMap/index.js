@@ -51,6 +51,26 @@ const dictionaryWithPerspectivesQuery = gql`
       parent_id
       translation
       created_at
+      dictionaries(deleted: false, published: true) {
+        id
+        parent_id
+        translation
+        category
+        additional_metadata {
+          authors
+          location
+        }
+        perspectives {
+          id
+          translation
+          columns{
+            field_id
+          }
+        }
+      }
+      additional_metadata {
+        speakersAmount
+      }
     }
     is_authenticated
   }
@@ -111,10 +131,16 @@ function distanceMap(props) {
     }
   }
   const newDictionaries = checkCoorAndLexicalEntries(dictionaries || dataForTree.dictionaries);
+  const newLanguagesTree = languageTree || dataForTree.languageTree;
+  const fileredLanguageTree = newLanguagesTree.map((lang) => {
+    lang.dictionaries = checkCoorAndLexicalEntries(lang.dictionaries);
+    return lang;
+  });
+
   return (
     <div>
       <SelectorDictionary
-        languageTree={languageTree || dataForTree.languageTree}
+        languageTree={fileredLanguageTree}
         dictionaries={newDictionaries}
         perspectives={perspectives || dataForTree.perspectives}
         isAuthenticated={isAuthenticated}

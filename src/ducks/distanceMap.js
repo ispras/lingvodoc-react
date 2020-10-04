@@ -19,7 +19,7 @@ export function setMainGroupLanguages(payload) {
   return { type: SET_MAIN_GROUP_LANGUAGES, payload };
 }
 // Reducer
-
+// без главного словаря
 function languagesGroupState(state = { arrDictionariesGroup: [] }, { type, payload }) {
   switch (type) {
     case SET_LANGUAGES_GROUP:
@@ -45,7 +45,7 @@ function dataForTree(state = {}, { type, payload }) {
       return state;
   }
 }
-
+// группа выбраных словарей
 function mainGroupDict(state = [], { type, payload }) {
   switch (type) {
     case SET_MAIN_GROUP_LANGUAGES:
