@@ -84,7 +84,7 @@ const Dict = ({
       <Link to={{
           pathname: '/distance_map/selected_languages',
           state: {
-            mainDictionary: perspectives.toJS(),
+            mainPerspectives: perspectives.toJS(),
 }
         }}
       > <Button size='tiny' style={{margin:"0 0 3px 0"}}> {getTranslation('Select dictionary')} </Button>

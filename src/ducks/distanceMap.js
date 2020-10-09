@@ -46,13 +46,13 @@ function dataForTree(state = {}, { type, payload }) {
   }
 }
 // группа выбраных словарей
-function mainGroupDict(state = [], { type, payload }) {
+function mainGroupDict(state = {}, { type, payload }) {
   switch (type) {
     case SET_MAIN_GROUP_LANGUAGES:
-      return payload
+      return payload;
     default:
       return state;
   }
 }
-export default combineReducers({ dataForTree, languagesGroupState,mainGroupDict });
+export default combineReducers({ dataForTree, languagesGroupState, mainGroupDict });
 

@@ -1,15 +1,14 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
 import { Label, Checkbox, Segment, Button } from 'semantic-ui-react';
 import { compose } from 'recompose';
-import Immutable, { fromJS, Map } from 'immutable';
+import { fromJS, Map } from 'immutable';
 import { buildLanguageTree, assignDictsToTree, buildDictTrees } from 'pages/Search/treeBuilder';
 import { getTranslation } from 'api/i18n';
-import { Link, Redirect } from 'react-router-dom';
-import checkLexicalEntries from './checkLexicalEntries';
+import { Link } from 'react-router-dom';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { setLanguagesGroup, setDefaultGroup, setMainGroupLanguages } from 'ducks/distanceMap';
@@ -43,31 +42,36 @@ class SelectorLangGroup extends React.Component {
   constructor(props) {
     super(props);
 
+    const { newProps } = this.props;
+
+
     const {
-      client, location, actions, languagesGroupState, history, dataForTree, selected, mainGroupDict, labelDict
-    } = this.props.props;
+      location,
+      actions,
+      history,
+      dataForTree,
+      selected,
+      mainGroupDict,
+      mainDictionary
+    } = newProps;
+
+
+    const {
+      dictionaries,
+      languageTree,
+      perspectives
+    } = dataForTree;
+
     if (!location.state) {
       history.push('/distance_map');
     }
     if (selected && (selected.id !== dataForTree.idLocale)) {
       history.push('/distance_map');
     }
-    console.log(props);
+
     this.state = {
-      labelDict: null,
       filterMode: false,
       showSearchSelectLanguages: true,
-      showAdvancedFilter: false,
-      showGrammarFilter: false,
-      hasAudio: null,
-      kind: null,
-      years: null,
-      humanSettlement: null,
-      authors: null,
-      languageVulnerability: null,
-      grammaticalSigns: null,
-      isDataDefault: true,
-      languagesTree: [],
     };
 
 
@@ -76,23 +80,16 @@ class SelectorLangGroup extends React.Component {
     this.isLanguageWithDictsDeep = this.isLanguageWithDictsDeep.bind(this);
 
 
-    const { arrDictionariesGroup } = languagesGroupState;
-    const {
-      allField,
-      dictionaries,
-      languageTree,
-      perspectives
-    } = dataForTree;
-    const allDictionaries = dictionaries.filter(dict => compositeIdToString(dict.id) !== compositeIdToString(labelDict.id));
+    const allDictionaries = dictionaries.filter(dict => compositeIdToString(dict.id) !== compositeIdToString(mainDictionary.id));
 
     const copyLanguageTree = JSON.parse(JSON.stringify(languageTree));
 
     const fileredLanguageTree = copyLanguageTree.map((lang) => {
-      lang.dictionaries = lang.dictionaries.filter(dict => compositeIdToString(dict.id) !== compositeIdToString(labelDict.id));
+      lang.dictionaries = lang.dictionaries.filter(dict => compositeIdToString(dict.id) !== compositeIdToString(mainDictionary.id));
       return lang;
     });
 
-    if (mainGroupDict.length === 0) {
+    if (!mainGroupDict.length ) {
       this.languages = fileredLanguageTree.map(el => el.id);
       this.dictsChecked = allDictionaries.map(el => el.id);
       actions.setMainGroupLanguages({ dictsChecked: this.dictsChecked, languages: this.languages });
@@ -172,14 +169,17 @@ class SelectorLangGroup extends React.Component {
 
 
   render() {
+    const { newProps } = this.props;
+
     const {
-      client, location, actions, languagesGroupState, history, dataForTree, selected, mainGroupDict, onLangsDictsChange
-    } = this.props.props;
+      mainGroupDict,
+      onLangsDictsChange
+    } = newProps;
+
 
     return (
       <Segment>
-
-        <Languages
+        {(mainGroupDict.languages) && (<Languages
           onChange={onLangsDictsChange}
           languagesTree={this.test2}
           langsChecked={mainGroupDict.languages}
@@ -188,41 +188,61 @@ class SelectorLangGroup extends React.Component {
           filterMode={this.state.filterMode}
           checkAllButtonText="Check all"
           uncheckAllButtonText="Uncheck all"
-        />
+        />)}
+
       </Segment>
 
     );
   }
 }
 
-/* selectorLangGroup.propTypes = {
-  languagesGroupState: PropTypes.object.isRequired,
-  history: PropTypes.object.isRequired,
-  dataForTree: PropTypes.object.isRequired,
-  client: PropTypes.object.isRequired,
-  location: PropTypes.object.isRequired,
-  actions: PropTypes.object.isRequired,
-  selected: PropTypes.object.isRequired
-}; */
+SelectorLangGroup.propTypes = {
+  newProps: PropTypes.shape({
+    languagesGroupState: PropTypes.object,
+    history: PropTypes.object,
+    dataForTree: PropTypes.object,
+    client: PropTypes.object,
+    location: PropTypes.object,
+    actions: PropTypes.object,
+    selected: PropTypes.object
+  }).isRequired
+
+};
 
 
 function testQWE(props) {
   const {
-    history, actions, dataForTree, client, location,mainGroupDict
+    location,
+    actions,
+    history,
+    dataForTree,
+    client,
+    mainGroupDict,
+    /*     mainDictionary */
   } = props;
-
+console.log(mainGroupDict)
   const {
-    mainDictionary,
+    mainPerspectives,
   } = location.state;
-  const [test9, setTest9] = useState({});
-  const [labelDict, setLabelDict] = useState(null);
+
+
+  const [test9, setTest9] = useState(mainGroupDict);
+  const [mainDictionary, setLabelDict] = useState(null);
+  const parentId = mainPerspectives[0].parent_id;
+
+  client.query({
+    query: dictionaryName,
+    variables: { id: parentId },
+  }).then(result => setLabelDict(result.data.dictionary));
+
   function onLangsDictsChange(list) {
     setTest9(list);
-
   }
+console.log('test9',test9)
+
   const arrDictionariesGroup = [];
   let rootLanguage = {};
-  console.log(mainGroupDict)
+
 
   if (test9.dictionaries) {
     test9.dictionaries.forEach(el => dataForTree.dictionaries.forEach((dict) => {
@@ -230,33 +250,30 @@ function testQWE(props) {
         arrDictionariesGroup.push(dict);
       }
     }));
-    /*     console.log('list', arrDictionariesGroup); */
   }
-  if (labelDict) {
+
+
+  if (mainDictionary) {
     dataForTree.languageTree.forEach((lang) => {
-      if (compositeIdToString(lang.id) === compositeIdToString(labelDict.parent_id)) { rootLanguage = lang; }
+      if (compositeIdToString(lang.id) === compositeIdToString(mainDictionary.parent_id)) { rootLanguage = lang; }
     });
   }
 
-  const parentId = mainDictionary[0].parent_id;
-  client.query({
-    query: dictionaryName,
-    variables: { id: parentId },
-  }).then(result => setLabelDict(result.data.dictionary));
 
   function send() {
-    actions.setLanguagesGroup({ arrDictionariesGroup })
-    actions.setMainGroupLanguages({ dictsChecked: test9.dictsChecked || [], languages: test9.languages || [] });
+    actions.setLanguagesGroup({ arrDictionariesGroup });
+    actions.setMainGroupLanguages({ dictsChecked: test9.dictionaries || [], languages: test9.languages || [] });
   }
+
   return (
     <div>
-      {(labelDict) && (
+      {(mainDictionary) && (
         <div>
-          <Label size="massive" >{labelDict.translation}</Label>
-          <SelectorLangGroup props={{
+          <Label size="massive" >{mainDictionary.translation}</Label>
+          <SelectorLangGroup newProps={{
             ...props,
             onLangsDictsChange,
-            labelDict
+            mainDictionary
           }}
           />
         </div>
@@ -273,7 +290,7 @@ function testQWE(props) {
         to={{
           pathname: '/distance_map/selected_languages/map',
           state: {
-            mainDictionary: labelDict,
+            mainDictionary,
             rootLanguage
           }
         }}
