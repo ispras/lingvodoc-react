@@ -2,37 +2,49 @@
   position: relative;
   width: 700px;
   height: 600px;
-  margin: 0 auto;
+  margin: 0 auto;  
+  margin-top: 5em;
   .background-img {
     position: absolute;
     background-image: url(../../images/tree.jpg);
-    background-repeat: no-repeat; 
+    background-repeat: no-repeat;
     background-position: center center;
     background-size: contain;
     width: 700px;
     height: 600px;
-    opacity: 0.5;
+    opacity: 0.4;
     z-index: -1;
   }
   .img-block {
     p {
       padding-left: 0;
     }
-    margin-left: 62px;
+    margin-right: 62px;
     display: inline-block;
     .img {
       cursor: pointer;
       width: 190px;
-      height: 133px;
+      padding-top: 20px;
       z-index: 100;
       top: 10%;
     }
   }
   p {
+    width: 190px;
+    text-align: center;
     font-weight: bold;
-    color: white;
+    color: black;
     margin: 0;
-    padding-top: 10px;
-    padding-left: 10px;
+    font-size: 20px;
+
+    padding-left: 20px;
+  }
+  .languages_databases {
+    padding-left: 0;
+    position: absolute;
+    top: -50px;
+width:350px ;
+    font-weight: bold;
+    font-size: 30px;
   }
 }

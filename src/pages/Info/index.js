@@ -64,7 +64,7 @@ const developersElecardMedContributors = [
 ];
 const Info = pure(() =>
   <Container>
-    <h3 className="white">Проект выполняется при финансовой поддержке грантов</h3>
+    <h3 className="black">Проект выполняется при финансовой поддержке грантов</h3>
     <Segment>
       <ul>
         <li style={{ margin: "0 0 5px 0" }}>
@@ -117,7 +117,7 @@ const Info = pure(() =>
       </p>
     </Segment>
 
-    <h2 className="white">Участники проекта</h2>
+    <h2 className="black">Участники проекта</h2>
     <Segment>
       <Header color='blue'>Институт языкознания РАН, Институт системного программирования им. В.П.Иванникова РАН</Header>
       <Card.Group items={linguistsContributorsRAN} itemsPerRow={1} />
