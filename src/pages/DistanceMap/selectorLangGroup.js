@@ -38,7 +38,7 @@ query dictionaryName($id:LingvodocID) {
   }
 }`;
 
-class SelectorLangGroup extends React.Component {
+class FilterDictionaries extends React.Component {
   constructor(props) {
     super(props);
 
@@ -51,7 +51,7 @@ class SelectorLangGroup extends React.Component {
       history,
       dataForTree,
       selected,
-      mainGroupDict,
+      mainGroupDictionaresAndLanguages,
       mainDictionary
     } = newProps;
 
@@ -89,7 +89,7 @@ class SelectorLangGroup extends React.Component {
       return lang;
     });
 
-    if (!mainGroupDict.length) {
+    if (!mainGroupDictionaresAndLanguages.length) {
       this.languages = fileredLanguageTree.map(el => el.id);
       this.dictsChecked = allDictionaries.map(el => el.id);
       actions.setMainGroupLanguages({ dictsChecked: this.dictsChecked, languages: this.languages });
@@ -172,18 +172,18 @@ class SelectorLangGroup extends React.Component {
     const { newProps } = this.props;
 
     const {
-      mainGroupDict,
+      mainGroupDictionaresAndLanguages,
       onLangsDictsChange
     } = newProps;
 
 
     return (
       <Segment>
-        {(mainGroupDict.languages) && (<Languages
+        {(mainGroupDictionaresAndLanguages.languages) && (<Languages
           onChange={onLangsDictsChange}
           languagesTree={this.test2}
-          langsChecked={mainGroupDict.languages}
-          dictsChecked={mainGroupDict.dictsChecked}
+          langsChecked={mainGroupDictionaresAndLanguages.languages}
+          dictsChecked={mainGroupDictionaresAndLanguages.dictsChecked}
           showTree={this.state.showSearchSelectLanguages}
           filterMode={this.state.filterMode}
           checkAllButtonText="Check all"
@@ -196,9 +196,9 @@ class SelectorLangGroup extends React.Component {
   }
 }
 
-SelectorLangGroup.propTypes = {
+FilterDictionaries.propTypes = {
   newProps: PropTypes.shape({
-    languagesGroupState: PropTypes.object,
+    dictionariesGroupState: PropTypes.object,
     history: PropTypes.object,
     dataForTree: PropTypes.object,
     client: PropTypes.object,
@@ -210,15 +210,14 @@ SelectorLangGroup.propTypes = {
 };
 
 
-function testQWE(props) {
+function SelectorLangGroup(props) {
   const {
     location,
     actions,
     history,
     dataForTree,
     client,
-    mainGroupDict,
-    /*     mainDictionary */
+    mainGroupDictionaresAndLanguages,
   } = props;
 
   const {
@@ -226,7 +225,7 @@ function testQWE(props) {
   } = location.state;
   console.log(props);
 
-  const [test9, setTest9] = useState(mainGroupDict);
+  const [test9, setTest9] = useState(mainGroupDictionaresAndLanguages);
   const [mainDictionary, setLabelDict] = useState(null);
   const parentId = mainPerspectives[0].parent_id;
 
@@ -270,7 +269,7 @@ function testQWE(props) {
       {(mainDictionary) && (
         <div>
           <h1 style={{ margin: '15px 0' }}>{mainDictionary.translation}</h1>
-          <SelectorLangGroup newProps={{
+          <FilterDictionaries newProps={{
             ...props,
             onLangsDictsChange,
             mainDictionary
@@ -279,7 +278,9 @@ function testQWE(props) {
         </div>
 
       )}
-      <Button style={{ margin: '15px 15px 0 0' }} onClick={() => {
+      <Button
+        style={{ margin: '15px 15px 0 0' }}
+        onClick={() => {
         actions.setDefaultGroup();
         history.goBack();
       }}
@@ -309,4 +310,4 @@ export default compose(
   ),
   connect(state => state.locale),
   withApollo
-)(testQWE);
+)(SelectorLangGroup);

@@ -83,7 +83,7 @@ function distanceMap(props) {
     allField,
     actions,
     selected,
-    mainGroupDict
+    mainGroupDictionaresAndLanguages 
   } = props;
 
   const {
@@ -124,7 +124,7 @@ function distanceMap(props) {
 
 
   useEffect(() => {
-    if (mainGroupDict.length !== 0) {
+    if (mainGroupDictionaresAndLanguages .length !== 0) {
       actions.setMainGroupLanguages({});
     }
   }, []);
@@ -160,7 +160,7 @@ distanceMap.propTypes = {
   actions: PropTypes.object.isRequired,
   dataForTree: PropTypes.object.isRequired,
   selected: PropTypes.object.isRequired,
-  mainGroupDict: PropTypes.object.isRequired
+  mainGroupDictionaresAndLanguages : PropTypes.object.isRequired
 };
 export default compose(
   connect(state => state.distanceMap, dispatch => ({

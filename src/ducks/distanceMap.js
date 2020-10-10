@@ -20,7 +20,7 @@ export function setMainGroupLanguages(payload) {
 }
 // Reducer
 
-function languagesGroupState(state = { arrDictionariesGroup: [] }, { type, payload }) {
+function dictionariesGroupState(state = { arrDictionariesGroup: [] }, { type, payload }) {
   switch (type) {
     case SET_DICTIONARIES_GROUP:
       return payload;
@@ -46,7 +46,7 @@ function dataForTree(state = {}, { type, payload }) {
   }
 }
 
-function mainGroupDict(state = {}, { type, payload }) {
+function mainGroupDictionaresAndLanguages(state = {}, { type, payload }) {
   switch (type) {
     case SET_MAIN_GROUP_LANGUAGES:
       return payload;
@@ -54,5 +54,5 @@ function mainGroupDict(state = {}, { type, payload }) {
       return state;
   }
 }
-export default combineReducers({ dataForTree, languagesGroupState, mainGroupDict });
+export default combineReducers({ dataForTree, dictionariesGroupState, mainGroupDictionaresAndLanguages });
 

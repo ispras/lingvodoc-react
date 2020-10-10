@@ -108,7 +108,7 @@ class MapAreas extends PureComponent {
 
   async allDicts() {
     const {
-      location, computeDistancePerspectives, history, selected, dataForTree, languagesGroupState: { arrDictionariesGroup: dictionaries }
+      location, computeDistancePerspectives, history, selected, dataForTree, dictionariesGroupState: { arrDictionariesGroup: dictionaries }
     } = this.props;
 
     if (!location.state) {
