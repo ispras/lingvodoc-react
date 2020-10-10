@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { getTranslation } from 'api/i18n';
 import { fromJS, Map } from 'immutable';
-import { Container, Segment, Label } from 'semantic-ui-react';
+import { Container, Segment } from 'semantic-ui-react';
 import { buildLanguageTree } from 'pages/Search/treeBuilder';
 import BackTopButton from 'components/BackTopButton';
 import AllDicts from 'components/Home/components/AllDicts';

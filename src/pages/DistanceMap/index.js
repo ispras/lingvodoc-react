@@ -82,7 +82,6 @@ function distanceMap(props) {
     dictionaryWithPerspectives,
     allField,
     actions,
-    languagesGroupState,
     selected,
     mainGroupDict
   } = props;
@@ -95,24 +94,21 @@ function distanceMap(props) {
     is_authenticated: isAuthenticated
   } = props.dictionaryWithPerspectives;
 
-  const { arrDictionariesGroup } = languagesGroupState;
-
 
   if (loading && !dataForTree.dictionaries) {
-    return <Placeholder/>;
+    return <Placeholder />;
   }
 
 
-
-
-    useEffect(() => {
-      if (!dataForTree.dictionaries) {
+  useEffect(() => {
+    if (!dataForTree.dictionaries) {
       actions.setDataForTree({
         ...dictionaryWithPerspectives,
         allField,
         id: selected.id
-      });}
-    }, []);
+      });
+    }
+  }, []);
 
 
   if (selected.id !== dataForTree.idLocale) {
@@ -122,7 +118,7 @@ function distanceMap(props) {
         allField,
         id: selected.id
       });
-      return <Placeholder/>;
+      return <Placeholder />;
     }
   }
 
@@ -163,7 +159,6 @@ distanceMap.propTypes = {
   allField: PropTypes.object.isRequired,
   actions: PropTypes.object.isRequired,
   dataForTree: PropTypes.object.isRequired,
-  languagesGroupState: PropTypes.object.isRequired,
   selected: PropTypes.object.isRequired,
   mainGroupDict: PropTypes.object.isRequired
 };

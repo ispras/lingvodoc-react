@@ -11,7 +11,7 @@ import { getTranslation } from 'api/i18n';
 import { Link } from 'react-router-dom';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { setLanguagesGroup, setDefaultGroup, setMainGroupLanguages } from 'ducks/distanceMap';
+import { setDictionariesGroup, setDefaultGroup, setMainGroupLanguages } from 'ducks/distanceMap';
 
 import { compositeIdToString } from 'utils/compositeId';
 
@@ -89,7 +89,7 @@ class SelectorLangGroup extends React.Component {
       return lang;
     });
 
-    if (!mainGroupDict.length ) {
+    if (!mainGroupDict.length) {
       this.languages = fileredLanguageTree.map(el => el.id);
       this.dictsChecked = allDictionaries.map(el => el.id);
       actions.setMainGroupLanguages({ dictsChecked: this.dictsChecked, languages: this.languages });
@@ -220,11 +220,11 @@ function testQWE(props) {
     mainGroupDict,
     /*     mainDictionary */
   } = props;
-console.log(mainGroupDict)
+
   const {
     mainPerspectives,
   } = location.state;
-
+  console.log(props);
 
   const [test9, setTest9] = useState(mainGroupDict);
   const [mainDictionary, setLabelDict] = useState(null);
@@ -238,7 +238,7 @@ console.log(mainGroupDict)
   function onLangsDictsChange(list) {
     setTest9(list);
   }
-console.log('test9',test9)
+
 
   const arrDictionariesGroup = [];
   let rootLanguage = {};
@@ -261,7 +261,7 @@ console.log('test9',test9)
 
 
   function send() {
-    actions.setLanguagesGroup({ arrDictionariesGroup });
+    actions.setDictionariesGroup({ arrDictionariesGroup });
     actions.setMainGroupLanguages({ dictsChecked: test9.dictionaries || [], languages: test9.languages || [] });
   }
 
@@ -269,7 +269,7 @@ console.log('test9',test9)
     <div>
       {(mainDictionary) && (
         <div>
-          <Label size="massive" >{mainDictionary.translation}</Label>
+          <h1 style={{ margin: '15px 0' }}>{mainDictionary.translation}</h1>
           <SelectorLangGroup newProps={{
             ...props,
             onLangsDictsChange,
@@ -279,7 +279,7 @@ console.log('test9',test9)
         </div>
 
       )}
-      <Button onClick={() => {
+      <Button style={{ margin: '15px 15px 0 0' }} onClick={() => {
         actions.setDefaultGroup();
         history.goBack();
       }}
@@ -295,7 +295,7 @@ console.log('test9',test9)
           }
         }}
       >
-        <Button onClick={() => send()}> {getTranslation('Next')} </Button>
+        <Button style={{ margin: '15px 0' }} onClick={() => send()}> {getTranslation('Next')} </Button>
       </Link>
     </div>
 
@@ -305,7 +305,7 @@ console.log('test9',test9)
 export default compose(
   connect(
     state => ({ ...state.distanceMap })
-    , dispatch => ({ actions: bindActionCreators({ setLanguagesGroup, setDefaultGroup, setMainGroupLanguages }, dispatch) })
+    , dispatch => ({ actions: bindActionCreators({ setDictionariesGroup, setDefaultGroup, setMainGroupLanguages }, dispatch) })
   ),
   connect(state => state.locale),
   withApollo
