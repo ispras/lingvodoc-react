@@ -52,48 +52,6 @@ const Sync = compose(
   branch(({ data }) => data.loading || !data.is_authenticated, renderNothing),
 )(SyncButton);
 
-const Dashboard = (props) => {
-  const { is_authenticated: isAuthenticated } = props;
-
-  if ( !isAuthenticated ) {
-    return null
-  }
-
-  return (
-    <Dropdown item text={getTranslation('Dashboard')} className="top_menu">
-      <Dropdown.Menu>
-        <Dropdown.Item as={Link} to="/dashboard/create_dictionary">
-          {getTranslation('Create dictionary')}
-        </Dropdown.Item>
-        <Dropdown.Item as={Link} to="/dashboard/create_corpus">
-          {getTranslation('Create corpus')}
-        </Dropdown.Item>
-        <Dropdown.Item as={Link} to="/dashboard/dictionaries">
-          {getTranslation('Dictionaries')}
-        </Dropdown.Item>
-        <Dropdown.Item as={Link} to="/dashboard/corpora">
-          {getTranslation('Corpora')}
-        </Dropdown.Item>
-        <Dropdown.Item as={Link} to="/import_dialeqt">
-          {getTranslation('Import Dialeqt dictionary')}
-        </Dropdown.Item>
-        <Dropdown.Item as={Link} to="/import">
-          {getTranslation('Import Starling dictionaries')}
-        </Dropdown.Item>
-      </Dropdown.Menu>
-    </Dropdown>
-  );
-};
-
-// Dashboard.propTypes = {
-//   data: PropTypes.shape({ loading: PropTypes.bool.isRequired }).isRequired,
-// };
-
-// const DashboardWithData = graphql(gql`
-//   query isAuthenticated {
-//     is_authenticated
-//   }
-// `)(Dashboard);
 
 function openHelp() {
   window.open('https://github.com/ispras/lingvodoc-react/wiki', '_blank');
@@ -106,17 +64,12 @@ function openMapStorage() {
 const NavBar =
   (props) => {
     const { data: { version } } = props;
-    console.log( props )
     return (
 
       <Menu fixed="top" className="top_menu">
         <Menu.Item as={Link} to={config.homePath} className="top_menu">
           <Logo>Lingvodoc 3.0</Logo>
         </Menu.Item>
-
-        <Dashboard
-          is_authenticated={props.isAuthenticated}
-        />
 
         <Dropdown item text={getTranslation('Maps')} className="top_menu">
           <Dropdown.Menu>

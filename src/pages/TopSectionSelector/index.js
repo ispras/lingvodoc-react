@@ -1,28 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import './styles.scss';
+import { Placeholder } from 'semantic-ui-react';
 import imgTree from '../../images/tree.jpg';
 import imgTools from '../../images/tools.jpg';
 import imgDashboard from '../../images/dashboard.png';
 import imgAuthors from '../../images/organization.jpg';
 import imgSupport from '../../images/support.jpg';
 import { Link } from 'react-router-dom';
-import { graphql } from 'react-apollo';
 import { getTranslation } from 'api/i18n';
-import gql from 'graphql-tag';
 import { compose } from 'recompose';
+import { connect } from 'react-redux';
 
-
-const IsAuthenticated = gql`
-  query isAuthenticated {
-    is_authenticated
-  }
-`;
 
 const topSectionSelector = (props) => {
-  const { data } = props;
-  const { is_authenticated: isAuthenticated } = data;
-
+  const { isAuthenticated } = props;
   return (
     <div className="top-section-selector">
       <div className="top-section-selector_icon">
@@ -38,12 +30,20 @@ const topSectionSelector = (props) => {
             <img className="img-tools img" src={imgTools} />
           </Link>
         </div>
-        <div className="icon">
-          {isAuthenticated ? <label className="label">{getTranslation('Dashboard')}</label> : null}
-          {isAuthenticated ? <Link to="/dashboardRoute">
-            <img className="img-dashboard img" src={imgDashboard} />
-          </Link> : null}
-        </div>
+        {(isAuthenticated === undefined) && (
+          <div className="icon">
+            <label className="label">{getTranslation('Dashboard')}</label>
+            <Placeholder className="img">
+              <Placeholder.Image rectangular />
+            </Placeholder>
+          </div>)}
+        {(isAuthenticated) && (
+          <div className="icon">
+            <label className="label">{getTranslation('Dashboard')}</label>
+            <Link to="/dashboardRoute">
+              <img className="img-dashboard img" src={imgDashboard} />
+            </Link>
+          </div>)}
         <div className="icon">
           <label className="label">{getTranslation('Authors')}</label>
           <Link to="/authorsRoute">
@@ -64,9 +64,12 @@ const topSectionSelector = (props) => {
 };
 
 topSectionSelector.propTypes = {
-  data: PropTypes.shape({
-    is_authenticated: PropTypes.bool,
-  }).isRequired,
+  isAuthenticated: PropTypes.bool
 };
 
-export default compose(graphql(IsAuthenticated)(topSectionSelector));
+topSectionSelector.defaultProps = {
+  isAuthenticated: false
+};
+
+
+export default compose(connect(state => state.auth)(topSectionSelector));

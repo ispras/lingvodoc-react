@@ -1,5 +1,3 @@
-import { combineReducers } from 'redux';
-
 // Actions
 export const SET_IS_AUTHENTICATED = '@home/SET_IS_AUTHENTICATED';
 
