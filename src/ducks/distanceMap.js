@@ -35,7 +35,8 @@ function dataForTree(state = {}, { type, payload }) {
         languageTree: payload.language_tree,
         perspectives: payload.perspectives,
         isAuthenticated: payload.is_authenticated,
-        allField: payload.allField.all_fields
+        allField: payload.allField.all_fields,
+        idLocale: payload.id
       };
     default:
       return state;

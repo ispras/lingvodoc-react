@@ -17,7 +17,8 @@ import 'components/DictionaryPropertiesModal/style.scss';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 
 const Wrapper = styled.div`
-  width: 100%;
+  position:absolute;
+  width: 98%;
   height: 90%;
   border: 1px solid grey;
   border-radius: 2px;
@@ -118,7 +119,7 @@ class Map extends React.Component {
         popUpText += '</ul>';
         L.popup({ maxHeight: 300 }).setLatLng(event.layer.getLatLng()).setContent(popUpText).openOn(map);
         markers.forEach(marker => {
-          document.getElementById(marker._leaflet_id).onclick = function() {
+          document.getElementById(marker._leaflet_id).onclick = function () {
             map.closePopup();
             if (marker._icon) {
               toggleHighlighting(marker);

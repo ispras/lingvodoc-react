@@ -1,22 +1,24 @@
 .organizationRoute {
-
-  .background-img {
-    background-image: url(../../images/organization.jpg);
-    background-repeat: no-repeat;
-    background-position: center center;
-    background-size: contain;
-    width: 300px;
-    height: 250px;
-    cursor: pointer;
+  position: relative;
+  margin-top: 5em;
+  .img-block {
+    p {
+      padding-left: 0;
+    }
+    margin-bottom: 100px;
     display: inline-block;
+    .img {
+      cursor: pointer;
+      width: 180px;
+      z-index: 100;
+      top: 10%;
+    }
   }
   .container {
     margin-top: 100px;
   }
   .block {
     display: inline-block;
-
-   
   }
   .off-grant{
     margin-left: 50px;
@@ -26,10 +28,20 @@
     left: 17%;
   }
   p {
+    width: 190px;
+    text-align: center;
     font-weight: bold;
-    color: white;
+    color: black;
     margin: 0;
-    padding-top: 10px;
-    padding-left: 10px;
+    font-size: 20px;
+    position: absolute;
+    padding-left: 20px;
+  }
+  .organization {
+    padding-left: 0px;
+    position: absolute;
+    top: -50px;
+    font-weight: bold;
+    font-size: 30px;
   }
 }

@@ -142,13 +142,11 @@ export default compose(
     }
   `),
   connect(
-    ( state, { data } ) => {
-      return { ...state.auth }
-    },
-    ( dispatch, { data } ) => {
-      dispatch( setIsAuthenticated({ isAuthenticated: data.is_authenticated }) )
+    (state, { data }) => ({ ...state.auth }),
+    (dispatch, { data }) => {
+      dispatch(setIsAuthenticated({ isAuthenticated: data.is_authenticated }));
 
-      return { actions: bindActionCreators({ setIsAuthenticated }, dispatch) }
+      return { actions: bindActionCreators({ setIsAuthenticated }, dispatch) };
     }
   ),
   graphql(gql`query version { version }`),

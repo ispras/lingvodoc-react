@@ -55,18 +55,11 @@ const Dict = ({
   const status = dictionary.get('status');
   let perspectives = dictionary.get('children');
   const authors = dictionary.getIn(['additional_metadata', 'authors']);
-  const location = dictionary.getIn(['additional_metadata', 'location']);
   const isDownloaded = dictionary.get('isDownloaded');
   const isChecked = selected.has(id);
-  let statusLexicalEntries = false;
 
   if (Array.isArray(perspectives)) { perspectives = Immutable.fromJS(perspectives); }
 
-  perspectives.toJS().forEach((perspective) => {
-    if (checkLexicalEntries(perspective.translation)) {
-      statusLexicalEntries = true;
-    }
-  });
 
   return (
     <li className="dict">
@@ -87,29 +80,20 @@ const Dict = ({
           </Dropdown>
         )}
 
-      {(perspectives && selectorStatus && location !== null && statusLexicalEntries) && (
+      {(selectorStatus) && (
       <Link to={{
           pathname: '/distance_map/selected_languages',
           state: {
             languagesGroup: [],
             mainDictionary: perspectives.toJS(),
-            status:'init'
 }
         }}
-      > <Button onClick={()=>console.log(arrLang)} > Ссылка </Button>
+      > <Button size='tiny' style={{margin:"0 0 3px 0"}}> {getTranslation('Select dictionary')} </Button>
       </Link>
       )
       }
 
-      {(perspectives && selectorStatus && location === null) && (
-        <Label>{getTranslation('No coordinate data')}</Label>
-      )
-      }
 
-      {selectorStatus && !statusLexicalEntries && perspectives && (
-      <Label>{getTranslation('Lexical entries not found')}
-      </Label>
-      )}
     </li>
   );
 };

@@ -15,6 +15,7 @@ import { connect } from 'react-redux';
 
 const topSectionSelector = (props) => {
   const { isAuthenticated } = props;
+
   return (
     <div className="top-section-selector">
       <div className="top-section-selector_icon">

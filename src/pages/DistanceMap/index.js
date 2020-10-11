@@ -8,6 +8,7 @@ import Placeholder from 'components/Placeholder';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { setDataForTree, setDefaultGroup } from 'ducks/distanceMap';
+import checkCoorAndLexicalEntries from './checkCoordinatesAndLexicalEntries';
 
 
 const allFieldQuery = gql`
@@ -26,6 +27,7 @@ const dictionaryWithPerspectivesQuery = gql`
       id
       parent_id
       translation
+      category
       additional_metadata {
         authors
         location
@@ -60,9 +62,9 @@ function distanceMap(props) {
     dictionaryWithPerspectives,
     allField,
     actions,
-    languagesGroupState
+    languagesGroupState,
+    selected
   } = props;
-
 
   const {
     language_tree: languageTree,
@@ -79,6 +81,7 @@ function distanceMap(props) {
     return <Placeholder />;
   }
 
+
   if (arrDictionariesGroup.length) {
     useEffect(() => {
       actions.setDefaultGroup();
@@ -90,16 +93,29 @@ function distanceMap(props) {
     useEffect(() => {
       actions.setDataForTree({
         ...dictionaryWithPerspectives,
-        allField
+        allField,
+        id: selected.id
       });
     }, []);
   }
 
+
+  if (selected.id !== dataForTree.idLocale) {
+    if (!dictionaries) {
+      actions.setDataForTree({
+        ...dictionaryWithPerspectives,
+        allField,
+        id: selected.id
+      });
+      return <Placeholder />;
+    }
+  }
+  const newDictionaries = checkCoorAndLexicalEntries(dictionaries || dataForTree.dictionaries);
   return (
     <div>
       <SelectorDictionary
         languageTree={languageTree || dataForTree.languageTree}
-        dictionaries={dictionaries || dataForTree.dictionaries}
+        dictionaries={newDictionaries}
         perspectives={perspectives || dataForTree.perspectives}
         isAuthenticated={isAuthenticated}
         allField={allField.all_fields || dataForTree.allField}
@@ -117,10 +133,12 @@ distanceMap.propTypes = {
   allField: PropTypes.object.isRequired,
   actions: PropTypes.object.isRequired,
   dataForTree: PropTypes.object.isRequired,
-  languagesGroupState: PropTypes.object.isRequired
+  languagesGroupState: PropTypes.object.isRequired,
+  selected: PropTypes.object.isRequired
 };
 export default compose(
   connect(state => state.distanceMap, dispatch => ({ actions: bindActionCreators({ setDataForTree, setDefaultGroup }, dispatch) })),
+  connect(state => state.locale),
   graphql(dictionaryWithPerspectivesQuery, { name: 'dictionaryWithPerspectives' }), graphql(allFieldQuery, { name: 'allField' }),
 )(distanceMap);
 

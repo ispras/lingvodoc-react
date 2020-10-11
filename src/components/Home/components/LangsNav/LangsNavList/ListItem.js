@@ -21,7 +21,14 @@ const ListItem = ({ data, onLangSelect }) => {
 
   const itemList = list.map((lang, index, arr) => {
     const thinSpace = '\u2009';
-    const text = `${lang.translation} [${lang.dictsCount.dicts}${thinSpace}|${thinSpace}${lang.dictsCount.corps}]`;
+    let text = null;
+    if (!lang.dictsCount.dicts) {
+      text = `${lang.translation} [${lang.dictsCount.corps}]`;
+    } else if (!lang.dictsCount.corps) {
+      text = `${lang.translation} [${lang.dictsCount.dicts}]`;
+    } else {
+      text = `${lang.translation} [${lang.dictsCount.dicts}${thinSpace}|${thinSpace}${lang.dictsCount.corps}]`;
+    }
 
     return (
       <li key={lang.id} className={classNames.innerItem}>
