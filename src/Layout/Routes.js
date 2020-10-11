@@ -28,10 +28,11 @@ import DictionariesAll from 'pages/DictionariesAll';
 import LanguagesDatabasesRoute from 'pages/LanguagesDatabasesRoute';
 import ToolsRoute from 'pages/ToolsRoute';
 import DashboardRoute from 'pages/DashboardRoute';
-import AuthorsRoute from 'pages/AuthorsRoute';
+import GrantsRoute from 'pages/GrantsRoute';
 import SupportRoute from 'pages/SupportRoute';
 import WithoutGrants from 'pages/WithoutGrants';
 import CorporaAll from 'pages/CorporaAll';
+import AuthorsRoute from 'pages/AuthorsRoute';
 
 import config from 'config';
 
@@ -64,10 +65,11 @@ const Routes = () => (
     <Route path="/LanguagesDatabasesRoute" component={LanguagesDatabasesRoute} />
     <Route path="/toolsRoute" component={ToolsRoute} />
     <Route path="/dashboardRoute" component={DashboardRoute} />
-    <Route path="/authorsRoute" component={AuthorsRoute} />
+    <Route path="/grantsRoute" component={GrantsRoute} />
     <Route path="/supportRoute" component={SupportRoute} />
     <Route path="/without_grants" component={WithoutGrants} />
     <Route path="/corpora_all" component={CorporaAll} />
+    <Route path="/authors_route" component={AuthorsRoute} />
     <Route component={NotFound} />
   </Switch>
 );

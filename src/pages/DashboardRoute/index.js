@@ -13,7 +13,7 @@ function dashboardRoute() {
     <div>
       <div className="dashboardRoute">
         <div className="background-img" />
-        <p className="dashboard">{getTranslation('Dashboard')}</p>
+        <span className="dashboard">{getTranslation('Dashboard')}</span>
         <div className="img-block">
           <Link to="/dashboard/dictionaries"> <img className="img " src={imageVocabulary} /></Link>
           <p> {getTranslation('Dictionaries')}</p>
@@ -40,7 +40,6 @@ function dashboardRoute() {
           <p>{getTranslation('Import Dialeqt dictionary')}</p>
         </div>
         <div className="img-block">
-
           <Link to="/import"><img className="img " src={imageImport} /></Link>
           <p>{getTranslation('Import Starling dictionaries')}</p>
         </div>

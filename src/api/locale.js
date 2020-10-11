@@ -10,7 +10,6 @@ export function getLocales() {
 
 export function setLocaleId(localeId = DEFAULT) {
   Cookie.set(FIELD, localeId);
-  
 }
 
 export function getLocaleId() {

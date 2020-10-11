@@ -1,46 +1,10 @@
-.organizationRoute {
+.authorsRoute {
   position: relative;
   margin-top: 5em;
-  .img-block {
-    p {
-      padding-left: 0;
-    }
-    margin-bottom: 100px;
-    display: inline-block;
-    .img {
-      cursor: pointer;
-      width: 180px;
-      z-index: 100;
-      top: 10%;
-    }
-  }
-  .container {
-    margin-top: 100px;
-  }
-  .block {
-    display: inline-block;
-  }
-  .off-grant{
-    margin-left: 50px;
-  }
-  .column-icon {
-    position: relative;
-    left: 17%;
-  }
-  p {
-    width: 190px;
-    text-align: center;
-    font-weight: bold;
-    color: black;
-    margin: 0;
-    font-size: 20px;
-    position: absolute;
-    padding-left: 20px;
-  }
-  .organization {
-    padding-left: 0px;
-    position: absolute;
-    top: -50px;
+  .authors {
+    width: 1127px;
+    margin-left: auto ;
+    margin-right: auto ;
     font-weight: bold;
     font-size: 30px;
   }

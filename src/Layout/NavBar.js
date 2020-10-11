@@ -49,111 +49,14 @@ const Sync = compose(
   branch(({ data }) => data.loading || !data.is_authenticated, renderNothing),
 )(SyncButton);
 
-const Dashboard = (props) => {
-  const { data: { loading, error, is_authenticated: isAuthenticated } } = props;
-  if (loading || error || !isAuthenticated) {
-    return null;
-  }
-  return (
-    <Dropdown item text={getTranslation('Dashboard')} className="top_menu">
-      <Dropdown.Menu>
-        <Dropdown.Item as={Link} to="/dashboard/create_dictionary">
-          {getTranslation('Create dictionary')}
-        </Dropdown.Item>
-        <Dropdown.Item as={Link} to="/dashboard/create_corpus">
-          {getTranslation('Create corpus')}
-        </Dropdown.Item>
-        <Dropdown.Item as={Link} to="/dashboard/dictionaries">
-          {getTranslation('Dictionaries')}
-        </Dropdown.Item>
-        <Dropdown.Item as={Link} to="/dashboard/corpora">
-          {getTranslation('Corpora')}
-        </Dropdown.Item>
-        <Dropdown.Item as={Link} to="/import_dialeqt">
-          {getTranslation('Import Dialeqt dictionary')}
-        </Dropdown.Item>
-        <Dropdown.Item as={Link} to="/import">
-          {getTranslation('Import Starling dictionaries')}
-        </Dropdown.Item>
-      </Dropdown.Menu>
-    </Dropdown>
-  );
-};
-
-Dashboard.propTypes = {
-  data: PropTypes.shape({ loading: PropTypes.bool.isRequired }).isRequired,
-};
-
-const DashboardWithData = graphql(gql`
-  query isAuthenticated {
-    is_authenticated
-  }
-`)(Dashboard);
-
-function openHelp() {
-  window.open('https://github.com/ispras/lingvodoc-react/wiki', '_blank');
-}
-
-function openMapStorage() {
-  window.open('https://github.com/ispras/lingvodoc-react/wiki/%D0%A5%D1%80%D0%B0%D0%BD%D0%B8%D0%BB%D0%B8%D1%89%D0%B5-%D0%BA%D0%B0%D1%80%D1%82', '_blank');
-}
 
 const NavBar =
-  ({ data: { version } }) => (
+  () => (
 
     <Menu fixed="top" className="top_menu">
       <Menu.Item as={Link} to={config.homePath} className="top_menu">
         <Logo>Lingvodoc 3.0</Logo>
       </Menu.Item>
-
-      <DashboardWithData />
-
-      <Dropdown item text={getTranslation('Maps')} className="top_menu">
-        <Dropdown.Menu>
-          <Dropdown.Item as={Link} to="/map">
-            {getTranslation('Map')}
-          </Dropdown.Item>
-          <Dropdown.Item as={Link} to="/map_search">
-            {getTranslation('Search')}
-          </Dropdown.Item>
-          <Dropdown.Item onClick={openMapStorage}>
-            {getTranslation('Storage')}
-          </Dropdown.Item>
-          <Dropdown.Item as={Link} to="/distance_map">
-            {getTranslation('Distance map')}
-          </Dropdown.Item>
-        </Dropdown.Menu>
-      </Dropdown>
-
-      <Dropdown item text={getTranslation('Info')} className="top_menu">
-        <Dropdown.Menu>
-          <Dropdown.Item as={Link} to="/info">
-            {getTranslation('Authors')}
-          </Dropdown.Item>
-          <Dropdown.Item as={Link} to="/desktop">
-            {getTranslation('Desktop')}
-          </Dropdown.Item>
-          <Dropdown.Item as={Link} to="/languages">
-            {getTranslation('Languages')}
-          </Dropdown.Item>
-          <Dropdown item text="Version">
-            <Dropdown.Menu style={{ fontSize: '1.05rem' }} className="version">
-              <Dropdown.Item className="version">
-                <List>
-                  <List.Item className="version">
-                    <p style={{ marginBottom: '0.5em' }}>Backend:</p>
-                    <p style={{ marginLeft: '0.5em' }}>{version}</p>
-                  </List.Item>
-                  <List.Item className="version">
-                    <p style={{ marginBottom: '0.5em' }}>Frontend:</p>
-                    <p style={{ marginLeft: '0.5em' }}>{/* eslint-disable no-undef */__VERSION__ /* eslint-enable no-undef */}</p>
-                  </List.Item>
-                </List>
-              </Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
-        </Dropdown.Menu>
-      </Dropdown>
 
       <Menu.Menu position="right">
         <Sync />
@@ -163,10 +66,5 @@ const NavBar =
       </Menu.Menu>
     </Menu>
   );
-NavBar.propTypes = {
-  data: PropTypes.object.isRequired,
-};
-export default compose(
-  graphql(gql`query version { version }`),
-  withRouter,
-)(NavBar);
+
+export default compose(withRouter)(NavBar);

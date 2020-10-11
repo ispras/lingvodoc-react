@@ -6,6 +6,7 @@ import imgTools from '../../images/tools.jpg';
 import imgDashboard from '../../images/dashboard.png';
 import imgAuthors from '../../images/organization.jpg';
 import imgSupport from '../../images/support.jpg';
+import imageScholarship from '../../images/scholarship.png';
 import { Link } from 'react-router-dom';
 import { graphql } from 'react-apollo';
 import { getTranslation } from 'api/i18n';
@@ -21,7 +22,6 @@ const IsAuthenticated = gql`
 
 const topSectionSelector = (props) => {
   let { data: { is_authenticated: isAuthenticated } } = props;
-  isAuthenticated=true
   return (
     <div className="top-section-selector">
       <div className="top-section-selector_icon">
@@ -44,9 +44,15 @@ const topSectionSelector = (props) => {
           </Link> : null}
         </div>
         <div className="icon">
+          <label className="label">{getTranslation('Grants')}</label>
+          <Link to="/grantsRoute">
+            <img className=" img" src={imageScholarship} />
+          </Link>
+        </div>
+        <div className="icon">
           <label className="label">{getTranslation('Authors')}</label>
-          <Link to="/authorsRoute">
-            <img className="img-authors img" src={imgAuthors} />
+          <Link to="/authors_route">
+            <img className=" img" src={imgAuthors} />
           </Link>
         </div>
         <div className="icon">
