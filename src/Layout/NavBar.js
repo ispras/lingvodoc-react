@@ -123,9 +123,6 @@ const NavBar =
           <User />
           <Tasks />
           <Locale />
-          <Menu.Item>
-            <Button primary negative onClick={openHelp}>{getTranslation('Help')}</Button>
-          </Menu.Item>
         </Menu.Menu>
       </Menu>
     );
