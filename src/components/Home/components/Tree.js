@@ -84,7 +84,7 @@ const Dict = ({
       <Link to={{
           pathname: '/distance_map/selected_languages',
           state: {
-            languagesGroup: arrLang,
+            languagesGroup: [],
             mainDictionary: perspectives.toJS(),
 }
         }}

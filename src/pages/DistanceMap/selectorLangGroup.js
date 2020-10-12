@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
 import { Label, Checkbox, Segment, Button } from 'semantic-ui-react';
 import { compose } from 'recompose';
-import Immutable, { fromJS } from 'immutable';
+import { fromJS } from 'immutable';
 import { buildLanguageTree } from 'pages/Search/treeBuilder';
 import { getTranslation } from 'api/i18n';
 import { compositeIdToString as id2str } from 'utils/compositeId';
-import { Link, Redirect } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import checkLexicalEntries from './checkLexicalEntries';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
