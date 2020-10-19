@@ -16,10 +16,12 @@ import QueryBuilder from 'components/Search/QueryBuilder';
 import LanguageTree from 'components/Search/LanguageTree';
 import BlobsModal from 'components/Search/blobsModal';
 import { buildLanguageTree, buildSearchResultsTree } from 'pages/Search/treeBuilder';
+import { setDefaultGroup, setMainGroupLanguages, setCheckStateTreeFlat, setDefaultDataForTree } from 'ducks/distanceMap';
 
 import './style.scss';
 
 import { newSearch, deleteSearch, storeSearchResult, newSearchWithAdditionalFields } from 'ducks/search';
+
 
 const mdColors = new Immutable.List([
   '#E53935',
@@ -295,11 +297,13 @@ class SearchTabs extends React.Component {
     this.clickLabel = this.clickLabel.bind(this);
     this.onAreasModeChange = this.onAreasModeChange.bind(this);
     this.onSelectedAreaGroupsChange = this.onSelectedAreaGroupsChange.bind(this);
-    
-    
 
+    const { actions } = props
 
-    
+    actions.setDefaultDataForTree({})
+    actions.setDefaultGroup({})
+    actions.setMainGroupLanguages({})
+    actions.setCheckStateTreeFlat({})
   }
 
   componentWillReceiveProps(nextProps) {
@@ -618,7 +622,6 @@ class SearchTabs extends React.Component {
         </Menu.Item>
       ),
       render: () => {
-   /*      console.log(search) */
         const showCreateSearchButton = this.isNeedToShowCreateSearchButton(search);
         return (
           <Tab.Pane attached={false} key={search.id}>
@@ -730,9 +733,14 @@ SearchTabs.propTypes = {
   }).isRequired,
 };
 
-export default connect(
-  state => state.search,
+export default compose(connect(
+  state => state.distanceMap
+), connect(
+  state => (state.search),
   dispatch => ({
-    actions: bindActionCreators({ newSearch, deleteSearch, newSearchWithAdditionalFields }, dispatch),
-  })
+    actions: bindActionCreators({
+      newSearch, deleteSearch, newSearchWithAdditionalFields,
+       setDefaultGroup, setCheckStateTreeFlat, setDefaultDataForTree,setMainGroupLanguages
+    }, dispatch),
+  }))
 )(SearchTabs);

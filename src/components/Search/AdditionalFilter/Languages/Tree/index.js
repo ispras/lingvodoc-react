@@ -9,6 +9,8 @@ import {
 } from '../helpers';
 
 import './index.scss';
+import { connect } from 'react-redux';
+import { compose } from 'recompose';
 
 /* ----------- PROPS ----------- */
 const classNames = {
@@ -72,13 +74,19 @@ class Tree extends PureComponent {
 
   constructor(props) {
     super(props);
-
+    const { checkStateTreeFlat } = props
     this.flatNodes = {};
-    flattenNodes(props.nodes, this.flatNodes);
+
+    if (checkStateTreeFlat.selectedLanguagesChecken) {
+      this.flatNodes = checkStateTreeFlat.selectedLanguagesChecken
+    } else {
+      flattenNodes(props.nodes, this.flatNodes);
+    }
+
     this.updateNodesWithChecked(props.checked, props.filterMode);
 
     this.state = {
-      expanded: [],
+      expanded: Object.values(this.flatNodes).filter(item => item.expanded).map(item => item.value) || [],
     };
 
     this.updateNodesWithExpanded(this.state.expanded);
@@ -97,7 +105,9 @@ class Tree extends PureComponent {
    * Updates the tree data if the props were changed.
    * @param {Object} - next component properties
    */
+
   componentWillReceiveProps({ nodes: netxtNodes, checked: nextChecked, filterMode: nextFilterMode }) {
+
     const { nodes: currentNodes, checked: currentChecked, filterMode: currentFilterMode } = this.props;
     if (!isEqual(currentNodes, netxtNodes)) {
       flattenNodes(netxtNodes, this.getFlatNodes());
@@ -461,6 +471,7 @@ class Tree extends PureComponent {
    * @param {Array} checkedLists - list of expanded tree nodes
    */
   updateNodesWithExpanded(expandedList) {
+
     const flatNodes = this.getFlatNodes();
 
     Object.keys(flatNodes).forEach((value) => {
@@ -483,9 +494,20 @@ class Tree extends PureComponent {
    * @return {TreeNode} - object represents all tree nodes for rendering
    */
   renderTreeNodes(nodes, parent = {}) {
+
+    const { checkStateTreeFlat } = this.props
+
+    let flatNode = null;
     const treeNodes = nodes.map((node) => {
       const nodeValue = getNodeValue(node);
-      const flatNode = this.getFlatNodeByValue(nodeValue);
+
+      if (!checkStateTreeFlat.selectedLanguagesChecken || (event && event.type === "click")) {
+        flatNode = this.getFlatNodeByValue(nodeValue);
+      } else {
+        flatNode = checkStateTreeFlat.selectedLanguagesChecken[nodeValue] || this.getFlatNodeByValue(nodeValue)
+      }
+
+
       const childrenLanguages = flatNode.isParentWithLanguages ?
         this.renderTreeNodes(node[propsNames.languages], node) :
         null;
@@ -532,8 +554,13 @@ class Tree extends PureComponent {
   }
 
   render() {
-    const { nodes, showTree } = this.props;
+    const { nodes, showTree, selectedLanguages } = this.props;
     const groupClassName = showTree ? `${classNames.group}` : `${classNames.group} ${classNames.groupHidden}`;
+
+    if (selectedLanguages) {
+      selectedLanguages(this.flatNodes)
+    }
+
 
     return (
       <Segment.Group className={groupClassName}>
@@ -555,11 +582,16 @@ class Tree extends PureComponent {
               </div>
             </div>
           </Segment> :
-        null
+          null
         }
       </Segment.Group>
     );
   }
 }
-
-export default Tree;
+Tree.PropTypes = {
+  selectedLanguages: PropTypes.func
+}
+Tree.defaultProps = {
+  selectedLanguages: null
+}
+export default compose(connect(state => state.distanceMap))(Tree);

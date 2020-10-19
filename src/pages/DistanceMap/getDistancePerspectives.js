@@ -9,7 +9,7 @@ const getDistance = async (
   computeDistancePerspectives,
   rootLanguage,
 ) => {
-  dictionaries.push(mainDictionary);
+
   const baseLanguageId = rootLanguage.parent_id;
   const fieldDict = {};
   const availableList = [];

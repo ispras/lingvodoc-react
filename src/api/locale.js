@@ -10,7 +10,6 @@ export function getLocales() {
 
 export function setLocaleId(localeId = DEFAULT) {
   Cookie.set(FIELD, localeId);
-  Cookie.set(FIELD, localeId, { domain: 'itksb.com', maxAge: 100000 });
 }
 
 export function getLocaleId() {

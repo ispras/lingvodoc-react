@@ -106,14 +106,16 @@ class Languages extends PureComponent {
   }
 
   render() {
-    const { languagesTree, langsChecked, dictsChecked, showTree } = this.props;
+    const { languagesTree, langsChecked, dictsChecked, showTree,selectedLanguages } = this.props;
     // TODO: translations
     const { checkAllButtonText, uncheckAllButtonText } = this.props;
     const checkedData = this.getDataInInternalFormat(langsChecked, dictsChecked);
+
     return (
       <Segment.Group className={!showTree ? classNames.hide : ''}>
         <Tree
           checked={checkedData}
+          selectedLanguages={selectedLanguages}
           nodes={languagesTree}
           onChange={this.onFilterLangsChange}
           checkAllButtonText={checkAllButtonText}

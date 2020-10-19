@@ -5,7 +5,7 @@ import { getTranslation } from 'api/i18n';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import HeatMapOverlay from 'leaflet-heatmap';
-import { graphql } from 'react-apollo';
+import { graphql, withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
 import { compose } from 'recompose';
 import getDistancePoint from './getDistancePerspectives';
@@ -14,7 +14,9 @@ import icon from '../../images/point.png';
 import normolizeMethod from './normolizeMethod';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { setDefaultGroup } from 'ducks/distanceMap';
+import { setDefaultGroup, setDictionariesGroup } from 'ducks/distanceMap';
+import { dictionaryName } from './graphql';
+
 
 const mutationDistancePerspectives = gql` 
 mutation computeDistancePerspectives(
@@ -100,6 +102,7 @@ class MapAreas extends PureComponent {
     this.dictionariesWithColors = [];
     this.returnToTree = this.returnToTree.bind(this);
     this.back = this.back.bind(this);
+    this.newDict = [];
   }
 
   componentDidMount() {
@@ -108,14 +111,24 @@ class MapAreas extends PureComponent {
 
   async allDicts() {
     const {
-      location, computeDistancePerspectives, history, selected, dataForTree, dictionariesGroupState: { arrDictionariesGroup: dictionaries }
+      location, computeDistancePerspectives, history, selected, dataForTree, dictionariesGroupState: { arrDictionariesGroup: dictionaries }, client, actions
     } = this.props;
 
     if (!location.state) {
       history.push('/distance_map');
     }
+
     if (selected && (selected.id !== dataForTree.idLocale)) {
-      history.push('/distance_map');
+      for (const dictionary of dictionaries) {
+        const result = await client.query({
+          query: dictionaryName,
+          variables: { id: dictionary.id },
+        });
+        this.newDict.push(result.data.dictionary);
+      }
+
+    } else {
+      this.newDict = dictionaries;
     }
     let maxCount = 0;
     const { allField } = dataForTree;
@@ -125,7 +138,7 @@ class MapAreas extends PureComponent {
         rootLanguage,
       } = location.state;
 
-    this.dictionariesWithColors = await getDistancePoint(dictionaries, allField, mainDictionary, computeDistancePerspectives, rootLanguage);
+    this.dictionariesWithColors = await getDistancePoint(this.newDict, allField, mainDictionary, computeDistancePerspectives, rootLanguage);
 
     if (this.dictionariesWithColors.length === 0) {
       this.setState({ statusRequest: false });
@@ -221,8 +234,9 @@ MapAreas.propTypes = {
 export default compose(
   connect(
     state => ({ ...state.distanceMap })
-    , dispatch => ({ actions: bindActionCreators({ setDefaultGroup }, dispatch) })
+    , dispatch => ({ actions: bindActionCreators({ setDefaultGroup, setDictionariesGroup }, dispatch) })
   ),
   connect(state => state.locale),
-  graphql(mutationDistancePerspectives, { name: 'computeDistancePerspectives' })
+  graphql(mutationDistancePerspectives, { name: 'computeDistancePerspectives' }),
+  withApollo
 )(MapAreas);

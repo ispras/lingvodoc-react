@@ -7,74 +7,10 @@ import { compose } from 'recompose';
 import Placeholder from 'components/Placeholder';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { setDataForTree, setDefaultGroup, setMainGroupLanguages } from 'ducks/distanceMap';
+import { setDataForTree, setDefaultGroup, setMainGroupLanguages, setCheckStateTreeFlat } from 'ducks/distanceMap';
 import checkCoordAndLexicalEntries from './checkCoordinatesAndLexicalEntries';
+import { dictionaryWithPerspectivesQuery, allFieldQuery } from './graphql';
 
-
-const allFieldQuery = gql`
-    query{
-        all_fields{
-            id
-            translation
-            english_translation: translation(locale_id: 2)
-            data_type
-        }
-    }`;
-
-const dictionaryWithPerspectivesQuery = gql`
-    query DictionaryWithPerspectives{
-        dictionaries(proxy: false, published: true) {
-            id
-            parent_id
-            translation
-            category
-            additional_metadata {
-                authors
-                location
-            }
-            perspectives {
-                id
-                translation
-                columns{
-                    field_id
-                }
-            }
-        }
-        perspectives {
-            id
-            parent_id
-            translation
-
-        }
-        language_tree {
-            id
-            parent_id
-            translation
-            created_at
-            dictionaries(deleted: false, published: true) {
-                id
-                parent_id
-                translation
-                category
-                additional_metadata {
-                    authors
-                    location
-                }
-                perspectives {
-                    id
-                    translation
-                    columns{
-                        field_id
-                    }
-                }
-            }
-            additional_metadata {
-                speakersAmount
-            }
-        }
-        is_authenticated
-    }
-`;
 
 function distanceMap(props) {
   const {
@@ -83,7 +19,7 @@ function distanceMap(props) {
     allField,
     actions,
     selected,
-    mainGroupDictionaresAndLanguages 
+    mainGroupDictionaresAndLanguages
   } = props;
 
   const {
@@ -104,7 +40,7 @@ function distanceMap(props) {
     if (!dataForTree.dictionaries) {
       actions.setDataForTree({
         ...dictionaryWithPerspectives,
-        allField,
+        allField: allField.all_fields,
         id: selected.id
       });
     }
@@ -115,7 +51,7 @@ function distanceMap(props) {
     if (!dictionaries) {
       actions.setDataForTree({
         ...dictionaryWithPerspectives,
-        allField,
+        allField: allField.all_fields,
         id: selected.id
       });
       return <Placeholder />;
@@ -124,8 +60,9 @@ function distanceMap(props) {
 
 
   useEffect(() => {
-    if (mainGroupDictionaresAndLanguages .length !== 0) {
+    if (mainGroupDictionaresAndLanguages.length !== 0) {
       actions.setMainGroupLanguages({});
+      actions.setCheckStateTreeFlat({});
     }
   }, []);
 
@@ -160,14 +97,15 @@ distanceMap.propTypes = {
   actions: PropTypes.object.isRequired,
   dataForTree: PropTypes.object.isRequired,
   selected: PropTypes.object.isRequired,
-  mainGroupDictionaresAndLanguages : PropTypes.object.isRequired
+  mainGroupDictionaresAndLanguages: PropTypes.object.isRequired
 };
 export default compose(
   connect(state => state.distanceMap, dispatch => ({
     actions: bindActionCreators({
       setDataForTree,
       setDefaultGroup,
-      setMainGroupLanguages
+      setMainGroupLanguages,
+      setCheckStateTreeFlat
     }, dispatch)
   })),
   connect(state => state.locale),

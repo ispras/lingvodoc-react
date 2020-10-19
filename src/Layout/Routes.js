@@ -11,8 +11,8 @@ import Files from 'pages/Files';
 import Map from 'pages/Map';
 
 import DistanceMap from 'pages/DistanceMap';
-import Test from 'pages/DistanceMap/selectorLangGroup';
-import Test1 from 'pages/DistanceMap/map';
+import SelectedLanguages from 'pages/DistanceMap/selectorLangGroup';
+import MapSelectedLanguages from 'pages/DistanceMap/map';
 
 import Desktop from 'pages/Desktop';
 import NotFound from 'pages/NotFound';
@@ -50,8 +50,8 @@ const Routes = () => (
     <Route path="/requests" component={Requests} />
     <Route path="/map" component={Map} />
     <Route path="/map_search" component={Search} />
-    <Route path="/distance_map/selected_languages/map" component={Test1} />
-    <Route path="/distance_map/selected_languages" component={Test} />
+    <Route path="/distance_map/selected_languages/map" component={MapSelectedLanguages} />
+    <Route path="/distance_map/selected_languages" component={SelectedLanguages} />
     <Route path="/distance_map" component={DistanceMap} />
     <Route path="/import" component={DictImport} />
     <Route path="/import_dialeqt" component={DialeqtImport} />
