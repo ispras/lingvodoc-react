@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { getTranslation } from 'api/i18n';
 import { fromJS, Map } from 'immutable';
-import { Container, Segment } from 'semantic-ui-react';
+import { Container, Segment, Label } from 'semantic-ui-react';
 import { buildLanguageTree } from 'pages/Search/treeBuilder';
 import BackTopButton from 'components/BackTopButton';
 import AllDicts from 'components/Home/components/AllDicts';
@@ -38,11 +38,12 @@ const selectorDict = (props) => {
       ...perspective.toJS()
     }));
 
+
   const scrollContainer = getScrollContainer();
 
   return (
     <Container className="published">
-      <Segment size="huge"> {getTranslation('Select a dictionary for analysis')}</Segment>
+      <h1 className="black" style={{ margin: '20px 0' }}> {getTranslation('Select a dictionary for analysis')}</h1>
       <Segment>
         <AllDicts
           languagesTree={languagesTree}
@@ -51,10 +52,9 @@ const selectorDict = (props) => {
           isAuthenticated={isAuthenticated}
           perspectives={perspectivesList}
           selectorMode
-          statusLangsNav={false}
         />
       </Segment>
-      { (scrollContainer) && (<BackTopButton scrollContainer={scrollContainer} />)}
+      <BackTopButton scrollContainer={scrollContainer} />
     </Container>
   );
 };

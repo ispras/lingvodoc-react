@@ -13,7 +13,7 @@ function AllDicts(props) {
     perspectives,
     isAuthenticated,
     selectorMode,
-    statusLangsNav,
+
   } = props;
 
 
@@ -28,7 +28,7 @@ function AllDicts(props) {
 
   return (
     <div>
-      {(statusLangsNav) && (<LangsNav data={tree} />)}
+      <LangsNav data={tree} />
       <Tree
         tree={tree}
         canSelectDictionaries={isAuthenticated}
@@ -44,14 +44,14 @@ AllDicts.propTypes = {
   perspectives: PropTypes.instanceOf(Immutable.List).isRequired,
   isAuthenticated: PropTypes.bool,
   selectorMode: PropTypes.bool,
-  statusLangsNav: PropTypes.bool
+
 
 };
 
 AllDicts.defaultProps = {
   isAuthenticated: false,
   selectorMode: false,
-  statusLangsNav: true
+
 };
 
 export default AllDicts;
