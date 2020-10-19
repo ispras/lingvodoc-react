@@ -27,9 +27,11 @@ import ban from './ban';
 import modals from './modals';
 import createOrganization from './createOrganization';
 import dictionaryOrganizations from './dictionaryOrganizations';
+import auth from './auth'
 
 import distanceMap from './distanceMap'
 export default {
+  auth,
   locale,
   task,
   user,
