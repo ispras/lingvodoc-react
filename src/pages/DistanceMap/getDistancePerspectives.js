@@ -9,7 +9,7 @@ const getDistance = async (
   computeDistancePerspectives,
   rootLanguage,
 ) => {
-  dictionaries.push(mainDictionary);
+
   const baseLanguageId = rootLanguage.parent_id;
   const fieldDict = {};
   const availableList = [];
@@ -26,8 +26,8 @@ const getDistance = async (
     fieldDict[id2str(field.id)] = field;
   });
 
-
   mainDictionary.perspectives.forEach((el) => {
+   
     if (checkLexicalEntries(el.translation)) {
       sourcePerspectiveId = el.id;
       groupFields = el.columns
