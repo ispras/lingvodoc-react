@@ -7,54 +7,10 @@ import { compose } from 'recompose';
 import Placeholder from 'components/Placeholder';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { setDataForTree, setDefaultGroup } from 'ducks/distanceMap';
-import checkCoorAndLexicalEntries from './checkCoordinatesAndLexicalEntries';
+import { setDataForTree, setDefaultGroup, setMainGroupLanguages, setCheckStateTreeFlat } from 'ducks/distanceMap';
+import checkCoordAndLexicalEntries from './checkCoordinatesAndLexicalEntries';
+import { dictionaryWithPerspectivesQuery, allFieldQuery } from './graphql';
 
-
-const allFieldQuery = gql`
-  query{
-    all_fields{
-      id
-      translation
-      english_translation: translation(locale_id: 2)
-      data_type
-  }
-}`;
-
-const dictionaryWithPerspectivesQuery = gql`
-  query DictionaryWithPerspectives{
-    dictionaries(proxy: false, published: true) {
-      id
-      parent_id
-      translation
-      category
-      additional_metadata {
-        authors
-        location
-      }
-      perspectives {
-        id
-        translation
-        columns{
-          field_id
-        }
-      }
-    }
-    perspectives {
-      id
-      parent_id
-      translation
-      
-    }
-    language_tree {
-      id
-      parent_id
-      translation
-      created_at
-    }
-    is_authenticated
-  }
-`;
 
 function distanceMap(props) {
   const {
@@ -62,8 +18,8 @@ function distanceMap(props) {
     dictionaryWithPerspectives,
     allField,
     actions,
-    languagesGroupState,
-    selected
+    selected,
+    mainGroupDictionaresAndLanguages
   } = props;
 
   const {
@@ -74,47 +30,54 @@ function distanceMap(props) {
     is_authenticated: isAuthenticated
   } = props.dictionaryWithPerspectives;
 
-  const { arrDictionariesGroup } = languagesGroupState;
-
 
   if (loading && !dataForTree.dictionaries) {
     return <Placeholder />;
   }
 
 
-  if (arrDictionariesGroup.length) {
-    useEffect(() => {
-      actions.setDefaultGroup();
-    });
-  }
-
-
-  if (!dataForTree.dictionaries) {
-    useEffect(() => {
+  useEffect(() => {
+    if (!dataForTree.dictionaries) {
       actions.setDataForTree({
         ...dictionaryWithPerspectives,
-        allField,
+        allField: allField.all_fields,
         id: selected.id
       });
-    }, []);
-  }
+    }
+  }, []);
 
 
   if (selected.id !== dataForTree.idLocale) {
     if (!dictionaries) {
       actions.setDataForTree({
         ...dictionaryWithPerspectives,
-        allField,
+        allField: allField.all_fields,
         id: selected.id
       });
       return <Placeholder />;
     }
   }
-  const newDictionaries = checkCoorAndLexicalEntries(dictionaries || dataForTree.dictionaries);
+
+
+  useEffect(() => {
+    if (mainGroupDictionaresAndLanguages.length !== 0) {
+      actions.setMainGroupLanguages({});
+      actions.setCheckStateTreeFlat({});
+    }
+  }, []);
+
+
+  const newDictionaries = checkCoordAndLexicalEntries(dictionaries || dataForTree.dictionaries);
+  const newLanguagesTree = languageTree || dataForTree.languageTree;
+  const fileredLanguageTree = newLanguagesTree.map((lang) => {
+    lang.dictionaries = checkCoordAndLexicalEntries(lang.dictionaries);
+    return lang;
+  });
+
   return (
     <div>
       <SelectorDictionary
-        languageTree={languageTree || dataForTree.languageTree}
+        languageTree={fileredLanguageTree}
         dictionaries={newDictionaries}
         perspectives={perspectives || dataForTree.perspectives}
         isAuthenticated={isAuthenticated}
@@ -133,11 +96,18 @@ distanceMap.propTypes = {
   allField: PropTypes.object.isRequired,
   actions: PropTypes.object.isRequired,
   dataForTree: PropTypes.object.isRequired,
-  languagesGroupState: PropTypes.object.isRequired,
-  selected: PropTypes.object.isRequired
+  selected: PropTypes.object.isRequired,
+  mainGroupDictionaresAndLanguages: PropTypes.object.isRequired
 };
 export default compose(
-  connect(state => state.distanceMap, dispatch => ({ actions: bindActionCreators({ setDataForTree, setDefaultGroup }, dispatch) })),
+  connect(state => state.distanceMap, dispatch => ({
+    actions: bindActionCreators({
+      setDataForTree,
+      setDefaultGroup,
+      setMainGroupLanguages,
+      setCheckStateTreeFlat
+    }, dispatch)
+  })),
   connect(state => state.locale),
   graphql(dictionaryWithPerspectivesQuery, { name: 'dictionaryWithPerspectives' }), graphql(allFieldQuery, { name: 'allField' }),
 )(distanceMap);

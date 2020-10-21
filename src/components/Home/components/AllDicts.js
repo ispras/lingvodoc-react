@@ -13,7 +13,9 @@ function AllDicts(props) {
     perspectives,
     isAuthenticated,
     selectorMode,
+
   } = props;
+
 
   const tree = assignDictsToTree(
     buildDictTrees(fromJS({
@@ -49,6 +51,7 @@ AllDicts.propTypes = {
 AllDicts.defaultProps = {
   isAuthenticated: false,
   selectorMode: false,
+
 };
 
 export default AllDicts;

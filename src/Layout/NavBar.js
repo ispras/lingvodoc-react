@@ -7,6 +7,9 @@ import { Link, withRouter } from 'react-router-dom';
 import { Dropdown, Menu, Button, List } from 'semantic-ui-react';
 import styled from 'styled-components';
 import config from 'config';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { setIsAuthenticated } from 'ducks/auth';
 
 import { getTranslation } from 'api/i18n';
 import User from './User';
@@ -67,4 +70,20 @@ const NavBar =
     </Menu>
   );
 
-export default compose(withRouter)(NavBar);
+
+export default compose(
+  graphql(gql`
+      query isAuthenticated {
+        is_authenticated
+      }
+    `),
+  connect(
+    (state, { data }) => ({ ...state.auth }),
+    (dispatch, { data }) => {
+      dispatch(setIsAuthenticated({ isAuthenticated: data.is_authenticated }));
+
+      return { actions: bindActionCreators({ setIsAuthenticated }, dispatch) };
+    }
+  ),
+  withRouter,
+)(NavBar);

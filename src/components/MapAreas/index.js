@@ -155,7 +155,6 @@ class MapAreas extends PureComponent {
 
   addMarkerToMap(markerData) {
     const { coords, values: markerGroups, dictionary } = markerData;
-    console.log(coords)
     let markerLeafletElement = null;
     if (this.areasMode) {
       markerLeafletElement = L.marker(coords, { icon: this.iconFunc(markerData) })

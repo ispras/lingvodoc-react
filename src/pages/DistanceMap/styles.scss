@@ -1,0 +1,32 @@
+.treeBtn{
+display: flex;
+flex-direction: column;
+
+.checkBox{
+   /*  width: 17px; */
+    color: black;
+    padding: 0;
+}
+.btn{
+    width: 17px;
+    height: 17px;
+}
+.node {
+    background-color: blue;
+}
+
+.group {
+    margin-left: 10px;
+    background-color: #b59a00;
+}
+.leaf {
+    margin-left: 30px;
+    background-color: #00B5AD;
+}
+.dict{
+    margin-left: 30px;
+}
+
+}
+
+
