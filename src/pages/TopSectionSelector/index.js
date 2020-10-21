@@ -53,7 +53,7 @@ const topSectionSelector = (props) => {
           </Link>
         </div>
         <div className="icon">
-          <label className="label">{getTranslation('Authors')}</label>
+          <label className="label">{getTranslation('Lingvodoc creators')}</label>
           <Link to="/authors_route">
             <img className=" img" src={imgAuthors} />
           </Link>
