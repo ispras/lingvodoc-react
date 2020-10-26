@@ -1,11 +1,11 @@
 .top-section-selector_icon {
-position: absolute;
+  position: absolute;
   text-align: center;
   justify-content: center;
   align-content: center;
   display: flex;
   top: 50%;
-  left: 50%;
+  left: 45%;
   margin-left: -600px;
   margin-top: -140px;
   .img {
@@ -22,14 +22,12 @@ position: absolute;
   }
 
   .label {
-
-    bottom:  0;
+    bottom: 0;
     color: rgb(0, 0, 0);
     font-size: 22px;
     font-weight: 900;
   }
   .hidden {
-
     width: 70%;
     top: -150px;
     height: 800px;
@@ -37,7 +35,6 @@ position: absolute;
     z-index: 10;
   }
   .hidden-label {
-
     top: -140px;
     opacity: 1;
     z-index: 10;

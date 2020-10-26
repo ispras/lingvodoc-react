@@ -1,24 +1,12 @@
-.supportRoute {
+.grantsRoute {
   position: relative;
   width: 800px;
-  height: 500px;
   margin: 0 auto;
   margin-top: 5em;
-  .version-block {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    .version {
-      font-weight: bold;
-      font-size: 20px;
-      text-align: center;
-    }
-  }
-
   .background-img {
     position: absolute;
-    background-image: url(../../images/support.jpg);
-    background-repeat: no-repeat;
+    background-image: url(../../images/scholarship.png);
+    background-repeat: no-repeat; 
     background-position: center center;
     background-size: contain;
     width: 800px;
@@ -27,34 +15,36 @@
     z-index: -1;
   }
   .img-block {
-    padding-top: 20px;
     p {
       padding-left: 0;
     }
     margin-left: 62px;
+    margin-bottom: 50px;
     display: inline-block;
     .img {
       cursor: pointer;
-      width: 190px;
+      width: 180px;
+      padding-top: 20px;
       z-index: 100;
       top: 10%;
     }
   }
-  p {
-    width: 190px;
+  .name {
+    
     text-align: center;
     font-weight: bold;
     color: black;
     margin: 0;
     font-size: 20px;
-
+    position: absolute;
     padding-left: 20px;
   }
-  .help {
+  .grants {
+    padding-left: 0px;
+    text-align: left;
     position: absolute;
     top: -50px;
-    padding-left: 0;
-    left: 30px;
+    left: 50px;
     font-weight: bold;
     font-size: 30px;
   }

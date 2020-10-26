@@ -136,7 +136,7 @@ class CreateDictionaryWizard extends React.Component {
 
         <div style={{ minHeight: '500px' }}>
           {step === 'PARENT_LANGUAGE' && (
-            <div className="inverted" style={{ height: '400px' }}>
+            <div className="inverted" style={{ height: '600px' }}>
               {!parentLanguage && <Header>{getTranslation('Please, select the parent language')}</Header>}
               {parentLanguage && (
                 <Header>

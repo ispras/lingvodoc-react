@@ -7,6 +7,7 @@ import imgTools from '../../images/tools.jpg';
 import imgDashboard from '../../images/dashboard.png';
 import imgAuthors from '../../images/organization.jpg';
 import imgSupport from '../../images/support.jpg';
+import imageScholarship from '../../images/scholarship.png';
 import { Link } from 'react-router-dom';
 import { getTranslation } from 'api/i18n';
 import { compose } from 'recompose';
@@ -46,9 +47,15 @@ const topSectionSelector = (props) => {
             </Link>
           </div>)}
         <div className="icon">
-          <label className="label">{getTranslation('Authors')}</label>
-          <Link to="/authorsRoute">
-            <img className="img-authors img" src={imgAuthors} />
+          <label className="label">{getTranslation('Grants')}</label>
+          <Link to="/grantsRoute">
+            <img className=" img" src={imageScholarship} />
+          </Link>
+        </div>
+        <div className="icon">
+          <label className="label">{getTranslation('Lingvodoc creators')}</label>
+          <Link to="/authors_route">
+            <img className=" img" src={imgAuthors} />
           </Link>
         </div>
         <div className="icon">
