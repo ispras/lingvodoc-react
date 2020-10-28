@@ -64,7 +64,6 @@ class ResultsMap extends React.PureComponent {
     if (!areasMode) {
       resultAreaGroups = [];
     }
-
     return (
       <MapAreas
         pointIcon={pointIcon}

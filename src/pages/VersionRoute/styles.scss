@@ -1,0 +1,12 @@
+.version-block {
+border-radius: 5px;
+    margin-top: 100px;
+    background-color: white;
+    padding-bottom: 25px;
+    .version {
+        padding-top: 15px;
+        font-weight: bold;
+        font-size: 20px;
+        text-align: center;
+    }
+}

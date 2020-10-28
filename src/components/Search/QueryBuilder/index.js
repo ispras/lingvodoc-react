@@ -70,7 +70,6 @@ const InnerSearchBlocks = styled.div`
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-
   .ui.action.input {
     margin-right: 2em;
     margin-bottom: 0.5em;
@@ -84,7 +83,6 @@ const QueryInput = styled(Input)`
     border-bottom-right-radius: 0;
     border-right: transparent;
   }
-
   & > input {
     border-top-left-radius: 0 !important;
     border-bottom-left-radius: 0 !important;

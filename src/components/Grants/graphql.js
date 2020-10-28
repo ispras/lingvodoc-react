@@ -23,6 +23,7 @@ export const grantsQuery = gql`
     user {
       id
     }
+   
   }
 `;
 

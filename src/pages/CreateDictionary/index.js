@@ -18,6 +18,7 @@ import {
 import Languages from 'components/Languages';
 import Translations from 'components/Translation';
 import EditDictionaryMetadata from 'components/EditDictionaryMetadata';
+import EditCorpusMetadata from 'components/EditCorpusMetadata';
 import Perspectives from './Perspectives';
 import { createDictionaryMutation } from './graphql';
 import { query as dashboardQuery } from 'pages/Dashboard';
@@ -101,6 +102,7 @@ class CreateDictionaryWizard extends React.Component {
     const {
       step, isNextStep, parentLanguage, translations, metadata, perspectives, mode,
     } = this.props;
+
     return (
       <div>
         <Step.Group widths={4}>
@@ -134,7 +136,7 @@ class CreateDictionaryWizard extends React.Component {
 
         <div style={{ minHeight: '500px' }}>
           {step === 'PARENT_LANGUAGE' && (
-            <div className="inverted" style={{ height: '400px' }}>
+            <div className="inverted" style={{ height: '600px' }}>
               {!parentLanguage && <Header>{getTranslation('Please, select the parent language')}</Header>}
               {parentLanguage && (
                 <Header>
@@ -152,7 +154,13 @@ class CreateDictionaryWizard extends React.Component {
               </Segment>
               <Divider/>
               <Header inverted>{getTranslation('Fill metadata information')}</Header>
-              <EditDictionaryMetadata mode='create' metadata={metadata ? metadata.toJS() : metadata} onChange={metadata => this.props.setMetadata(metadata)} />
+              {mode === 'dictionary' && (
+                <EditDictionaryMetadata mode='create' metadata={metadata ? metadata.toJS() : metadata} onChange={metadata => this.props.setMetadata(metadata)} />
+              )}
+              {mode === 'corpus' && (
+                <EditCorpusMetadata mode='create' metadata={metadata ? metadata.toJS() : metadata} onChange={metadata => this.props.setMetadata(metadata)} />
+              )}
+              {}
             </div>
           )}
 

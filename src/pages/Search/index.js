@@ -16,10 +16,12 @@ import QueryBuilder from 'components/Search/QueryBuilder';
 import LanguageTree from 'components/Search/LanguageTree';
 import BlobsModal from 'components/Search/blobsModal';
 import { buildLanguageTree, buildSearchResultsTree } from 'pages/Search/treeBuilder';
+import { setDefaultGroup, setMainGroupLanguages, setCheckStateTreeFlat, setDefaultDataForTree } from 'ducks/distanceMap';
 
 import './style.scss';
 
 import { newSearch, deleteSearch, storeSearchResult, newSearchWithAdditionalFields } from 'ducks/search';
+
 
 const mdColors = new Immutable.List([
   '#E53935',
@@ -101,11 +103,11 @@ const isAdditionalParamsSet = (langs, dicts, searchMetadata) => {
   }
 
   if (searchMetadata &&
-      searchMetadata.hasAudio !== null &&
-      searchMetadata.kind !== null &&
-      searchMetadata.years.length > 0 &&
-      searchMetadata.humanSettlement.length > 0 &&
-      searchMetadata.authors.length > 0) {
+    searchMetadata.hasAudio !== null &&
+    searchMetadata.kind !== null &&
+    searchMetadata.years.length > 0 &&
+    searchMetadata.humanSettlement.length > 0 &&
+    searchMetadata.authors.length > 0) {
     return true;
   }
 
@@ -135,6 +137,7 @@ const isNeedToRenderLanguageTree = (query) => {
 };
 
 class Wrapper extends React.Component {
+
   componentWillReceiveProps(props) {
     // store search results aquired with graphql into Redux state
     const { data, searchId, actions } = props;
@@ -149,7 +152,6 @@ class Wrapper extends React.Component {
 
   render() {
     const { data } = this.props;
-
     if (data.error) {
       return null;
     }
@@ -197,9 +199,11 @@ class Wrapper extends React.Component {
   }
 }
 
+
 const WrapperWithData = compose(
   connect(
     state => state.search,
+
     dispatch => ({
       actions: bindActionCreators({ storeSearchResult }, dispatch),
     })
@@ -209,7 +213,7 @@ const WrapperWithData = compose(
 
 const Info = ({
   query, searchId, adopted, etymology, category,
-  langs, dicts, searchMetadata, blocks, xlsxExport, subQuery,
+  langs, dicts, searchMetadata, blocks, xlsxExport, subQuery, props
 }) => {
   if (subQuery) {
     return null;
@@ -293,6 +297,13 @@ class SearchTabs extends React.Component {
     this.clickLabel = this.clickLabel.bind(this);
     this.onAreasModeChange = this.onAreasModeChange.bind(this);
     this.onSelectedAreaGroupsChange = this.onSelectedAreaGroupsChange.bind(this);
+
+    const { actions } = props
+
+    actions.setDefaultDataForTree({})
+    actions.setDefaultGroup({})
+    actions.setMainGroupLanguages({})
+    actions.setCheckStateTreeFlat({})
   }
 
   componentWillReceiveProps(nextProps) {
@@ -551,7 +562,7 @@ class SearchTabs extends React.Component {
       .filter(dict => dict.additional_metadata && dict.additional_metadata.location)
       .map(dict => dict.id)
       .length;
-    
+
     if (dictionariesCount === 0) {
       return false;
     }
@@ -628,6 +639,7 @@ class SearchTabs extends React.Component {
                 createSearchWithAdditionalFields={this.createSearchWithAdditionalFields(search)}
               />
               <Info
+                props={this.props}
                 searchId={search.id}
                 query={search.query}
                 category={search.category}
@@ -721,9 +733,14 @@ SearchTabs.propTypes = {
   }).isRequired,
 };
 
-export default connect(
-  state => state.search,
+export default compose(connect(
+  state => state.distanceMap
+), connect(
+  state => (state.search),
   dispatch => ({
-    actions: bindActionCreators({ newSearch, deleteSearch, newSearchWithAdditionalFields }, dispatch),
-  })
+    actions: bindActionCreators({
+      newSearch, deleteSearch, newSearchWithAdditionalFields,
+       setDefaultGroup, setCheckStateTreeFlat, setDefaultDataForTree,setMainGroupLanguages
+    }, dispatch),
+  }))
 )(SearchTabs);
