@@ -10,7 +10,7 @@ import { connect } from 'react-redux';
 import { setDataForTree, setDefaultGroup, setMainGroupLanguages, setCheckStateTreeFlat } from 'ducks/distanceMap';
 import checkCoordAndLexicalEntries from './checkCoordinatesAndLexicalEntries';
 import { dictionaryWithPerspectivesQuery, allFieldQuery } from './graphql';
-
+import './styles.scss';
 
 function distanceMap(props) {
   const {

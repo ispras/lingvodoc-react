@@ -48,6 +48,7 @@ class Tree extends PureComponent {
    * @param {Array} checkedList - list of checked tree nodes
    */
   static isAllNodesChecked(numOfNodes, checkedList) {
+
     if (!numOfNodes || !checkedList) {
       return false;
     }
@@ -78,6 +79,7 @@ class Tree extends PureComponent {
     this.flatNodes = {};
 
     if (checkStateTreeFlat.selectedLanguagesChecken) {
+
       this.flatNodes = checkStateTreeFlat.selectedLanguagesChecken
     } else {
       flattenNodes(props.nodes, this.flatNodes);
@@ -455,6 +457,7 @@ class Tree extends PureComponent {
       checkedLists.forEach((item) => {
         item.checked.forEach((value) => {
           const flatNode = this.getFlatNodeByValue(value);
+
           if (flatNode !== undefined && flatNode.type === item.type) {
             flatNode.checked = true;
             if (filterMode) {

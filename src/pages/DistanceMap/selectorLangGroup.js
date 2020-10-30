@@ -12,7 +12,7 @@ import { Link } from 'react-router-dom';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { setDictionariesGroup, setDefaultGroup, setMainGroupLanguages, setCheckStateTreeFlat, setDataForTree } from 'ducks/distanceMap';
-import { dictionaryWithPerspectivesQuery,dictionaryName } from './graphql';
+import { dictionaryWithPerspectivesQuery, dictionaryName } from './graphql';
 import { compositeIdToString } from 'utils/compositeId';
 import Placeholder from 'components/Placeholder';
 import Languages from 'components/Search/AdditionalFilter/Languages';
@@ -61,9 +61,10 @@ class FilterDictionaries extends React.Component {
     });
 
     if ((mainGroupDictionaresAndLanguages && !mainGroupDictionaresAndLanguages.dictsChecked) || (selected.id !== dataForTree.idLocale)) {
+
       this.languages = fileredLanguageTree.map(el => el.id);
       this.dictsChecked = allDictionaries.map(el => el.id);
-      actions.setMainGroupLanguages({ dictsChecked: this.dictsChecked, languages: this.languages });
+      actions.setMainGroupLanguages({ dictsChecked: [], languages: [] });
     }
 
     const rawLanguagesTree = buildLanguageTree(fromJS(fileredLanguageTree)).toJS();
@@ -122,9 +123,11 @@ class FilterDictionaries extends React.Component {
       onLangsDictsChange,
       selectedLanguages
     } = newProps;
+
     return (
-      <Segment >
+      <Segment className='filter-dictionaries'>
         {(mainGroupDictionaresAndLanguages.languages) && (<Languages
+
           onChange={onLangsDictsChange}
           languagesTree={this.languagesTree}
           langsChecked={mainGroupDictionaresAndLanguages.languages}
@@ -232,6 +235,7 @@ function SelectorLangGroup(props) {
     }
 
     function send() {
+      console.log(mainGroupDictsAndLangs)
       if (arrDictionariesGroup.length) {
         arrDictionariesGroup.push(mainDictionary);
         actions.setDictionariesGroup({ arrDictionariesGroup });

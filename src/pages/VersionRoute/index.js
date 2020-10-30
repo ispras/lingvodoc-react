@@ -6,11 +6,11 @@ import { compose } from 'recompose';
 import { getTranslation } from 'api/i18n';
 import {Label} from 'semantic-ui-react'
 
-const supportRoute = (props) => {
+const versionRoute = (props) => {
   const { data: { version } } = props;
 
   return (
-    <div>
+    <div className='version-route'>
       <div className="version-block">
         <div className="version">
         <h1 className="help">{getTranslation('Version')}</h1>
@@ -26,4 +26,4 @@ const supportRoute = (props) => {
   );
 };
 
-export default compose(graphql(gql`query version { version }`))(supportRoute);
+export default compose(graphql(gql`query version { version }`))(versionRoute);
