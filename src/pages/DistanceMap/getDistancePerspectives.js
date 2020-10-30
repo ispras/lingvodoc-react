@@ -9,7 +9,6 @@ const getDistance = async (
   computeDistancePerspectives,
   rootLanguage,
 ) => {
-
   const baseLanguageId = rootLanguage.parent_id;
   const fieldDict = {};
   const availableList = [];
@@ -27,7 +26,6 @@ const getDistance = async (
   });
 
   mainDictionary.perspectives.forEach((el) => {
-   
     if (checkLexicalEntries(el.translation)) {
       sourcePerspectiveId = el.id;
       groupFields = el.columns
@@ -102,24 +100,28 @@ const getDistance = async (
       fieldDict[translationFieldIdStrList[index]].id])
     .filter((_perspectiveInfo, index) =>
       (perspectiveSelectionList[index]));
-
-  const responseMutanion = await computeDistancePerspectives({
-    variables: {
-      sourcePerspectiveId,
-      baseLanguageId,
-      groupFieldId: groupField.id,
-      perspectiveInfoList,
-      multiList: [],
-      mode: '',
-      matchTranslationsValue: 1,
-      onlyOrphansFlag: true,
-      figureFlag: true,
-      debugFlag: false,
-      intermediateFlag: false,
-      distanceFlag: true,
-      referencePerspectiveId: sourcePerspectiveId
-    },
-  });
+  let responseMutanion = null;
+  try {
+    responseMutanion = await computeDistancePerspectives({
+      variables: {
+        sourcePerspectiveId,
+        baseLanguageId,
+        groupFieldId: groupField.id,
+        perspectiveInfoList,
+        multiList: [],
+        mode: '',
+        matchTranslationsValue: 1,
+        onlyOrphansFlag: true,
+        figureFlag: true,
+        debugFlag: false,
+        intermediateFlag: false,
+        distanceFlag: true,
+        referencePerspectiveId: sourcePerspectiveId
+      },
+    });
+  } catch (error) {
+    return [];
+  }
 
 
   const distanceList = responseMutanion.data.cognate_analysis.distance_list;

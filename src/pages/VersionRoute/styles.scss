@@ -1,12 +1,17 @@
-.version-block {
-border-radius: 5px;
-    margin-top: 100px;
-    background-color: white;
-    padding-bottom: 25px;
-    .version {
-        padding-top: 15px;
-        font-weight: bold;
-        font-size: 20px;
+.version-route {
+    text-align: center;
+    .version-block {
+        border-radius: 5px;
+        margin-top: 100px;
         text-align: center;
+        background-color: white;
+        display: inline-block;
+        padding: 0 30px 30px 30px;
+        .version {
+            padding-top: 15px;
+            font-weight: bold;
+            font-size: 20px;
+            text-align: center;
+        }
     }
 }
