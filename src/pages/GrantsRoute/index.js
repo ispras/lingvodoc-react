@@ -33,7 +33,7 @@ function grantsRoute(props) {
         <p className="grants">{getTranslation('Grants')}</p>
         <div className="img-block">
           <Link to="/grants"  ><img className="img" src={imageScholarship} /></Link>
-          <p className="name">{getTranslation('Grants and grants')}</p>
+          <p className="name">{getTranslation('Grants')}</p>
         </div >
         <div className="img-block" >
           <Link to="/without_grants"  ><img className="img" src={imageLegalDocument} /></Link>
