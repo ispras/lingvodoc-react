@@ -7,7 +7,7 @@ export function setIsAuthenticated(payload) {
 }
 
 // Reducer
-function isAuthenticatedState(state = { isAuthenticatedState: false }, { type, payload }) {
+function isAuthenticatedState(state = { isAuthenticated: false }, { type, payload }) {
   switch (type) {
     case SET_IS_AUTHENTICATED:
       return payload;

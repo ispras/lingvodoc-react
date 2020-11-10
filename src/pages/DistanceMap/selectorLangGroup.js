@@ -235,7 +235,6 @@ function SelectorLangGroup(props) {
     }
 
     function send() {
-      console.log(mainGroupDictsAndLangs)
       if (arrDictionariesGroup.length) {
         arrDictionariesGroup.push(mainDictionary);
         actions.setDictionariesGroup({ arrDictionariesGroup });
