@@ -31,7 +31,7 @@ function filter(state = '', action = {}) {
   }
 }
 
-function sortByField(state = null, { type, payload }) {
+function sortByField(state = {field: [66, 10], order: 'a'}, { type, payload }) {
   switch (type) {
     case SET_SORT_MODE:
       return payload;
