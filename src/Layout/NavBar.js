@@ -80,7 +80,10 @@ export default compose(
   connect(
     (state, { data }) => ({ ...state.auth }),
     (dispatch, { data }) => {
-      dispatch(setIsAuthenticated({ isAuthenticated: data.is_authenticated }));
+        if ( typeof data.is_authenticated !== 'undefined') {
+            dispatch(setIsAuthenticated({ isAuthenticated: data.is_authenticated }));
+        }
+
 
       return { actions: bindActionCreators({ setIsAuthenticated }, dispatch) };
     }
