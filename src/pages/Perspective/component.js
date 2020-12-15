@@ -58,6 +58,7 @@ const Tools = graphql(toolsQuery)(({
   openPhonologyModal,
   launchSoundAndMarkup,
   id,
+  user_id,
   mode
 }) => {
   if (data.loading || data.error) {
@@ -74,51 +75,55 @@ const Tools = graphql(toolsQuery)(({
     <Dropdown item text={getTranslation('Tools')}>
       <Dropdown.Menu>
 
-        <Dropdown.Item
-          onClick={() => openCognateAnalysisModal(id, 'acoustic')}
-        >
-          {getTranslation('Cognate acoustic analysis')}
-        </Dropdown.Item>
+        {user_id == 1 && (
+          <React.Fragment>
+            <Dropdown.Item
+              onClick={() => openCognateAnalysisModal(id, 'acoustic')}
+            >
+              {getTranslation('Cognate acoustic analysis')}
+            </Dropdown.Item>
 
-        <Dropdown.Item
-          onClick={() => openCognateAnalysisModal(id)}
-        >
-          {getTranslation('Cognate analysis')}
-        </Dropdown.Item>
+            <Dropdown.Item
+              onClick={() => openCognateAnalysisModal(id)}
+            >
+              {getTranslation('Cognate analysis')}
+            </Dropdown.Item>
 
-        <Dropdown.Item
-          onClick={() => openCognateAnalysisModal(id, 'multi_analysis')}>
-          {getTranslation("Cognate multi-language analysis")}
-        </Dropdown.Item>
+            <Dropdown.Item
+              onClick={() => openCognateAnalysisModal(id, 'multi_analysis')}>
+              {getTranslation("Cognate multi-language analysis")}
+            </Dropdown.Item>
 
-        <Dropdown.Item
-          onClick={() => openCognateAnalysisModal(id, 'multi_reconstruction')}>
-          {getTranslation("Cognate multi-language reconstruction")}
-        </Dropdown.Item>
+            <Dropdown.Item
+              onClick={() => openCognateAnalysisModal(id, 'multi_reconstruction')}>
+              {getTranslation("Cognate multi-language reconstruction")}
+            </Dropdown.Item>
 
-        <Dropdown.Item
-          onClick={() => openCognateAnalysisModal(id, 'multi_suggestions')}
-          disabled={!published}
-        >
-          {getTranslation(published ?
-            'Cognate multi-language suggestions' :
-            'Cognate multi-language suggestions (disabled, perspective is not published)')}
-        </Dropdown.Item>
+            <Dropdown.Item
+              onClick={() => openCognateAnalysisModal(id, 'multi_suggestions')}
+              disabled={!published}
+            >
+              {getTranslation(published ?
+                'Cognate multi-language suggestions' :
+                'Cognate multi-language suggestions (disabled, perspective is not published)')}
+            </Dropdown.Item>
 
-        <Dropdown.Item
-          onClick={() => openCognateAnalysisModal(id, 'reconstruction')}
-        >
-          {getTranslation('Cognate reconstruction')}
-        </Dropdown.Item>
+            <Dropdown.Item
+              onClick={() => openCognateAnalysisModal(id, 'reconstruction')}
+            >
+              {getTranslation('Cognate reconstruction')}
+            </Dropdown.Item>
 
-        <Dropdown.Item
-          onClick={() => openCognateAnalysisModal(id, 'suggestions')}
-          disabled={!published}
-        >
-          {getTranslation(published ?
-            'Cognate suggestions' :
-            'Cognate suggestions (disabled, perspective is not published)')}
-        </Dropdown.Item>
+            <Dropdown.Item
+              onClick={() => openCognateAnalysisModal(id, 'suggestions')}
+              disabled={!published}
+            >
+              {getTranslation(published ?
+                'Cognate suggestions' :
+                'Cognate suggestions (disabled, perspective is not published)')}
+            </Dropdown.Item>
+          </React.Fragment>
+        )}
 
         <Dropdown.Item
           onClick={() => openPhonemicAnalysisModal(id)}
@@ -233,6 +238,7 @@ const ModeSelector = compose(
         </Menu.Item>)}
       <Tools
         id={id}
+        user_id={user.id}
         mode={mode}
         openCognateAnalysisModal={openCognateAnalysisModal}
         openPhonemicAnalysisModal={openPhonemicAnalysisModal}
