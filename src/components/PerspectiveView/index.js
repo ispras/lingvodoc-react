@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import { isEqual, find, take, drop, flow, sortBy, reverse } from 'lodash';
-import { Table, Dimmer, Header, Icon, Button, Label } from 'semantic-ui-react';
+import { Table, Dimmer, Header, Icon, Button } from 'semantic-ui-react';
 import styled from 'styled-components';
 
 import { setSortByField, addLexicalEntry, selectLexicalEntry, resetEntriesSelection } from 'ducks/perspective';
@@ -29,7 +29,6 @@ export const queryPerspective = gql`
   query queryPerspective1($id: LingvodocID!) {
     perspective(id: $id) {
       id
-      is_hidden_for_client
       translation
       columns {
         id
@@ -729,19 +728,8 @@ const PerspectiveViewWrapper = ({
 
   const {
     all_fields: allFields,
-    perspective: {
-      is_hidden_for_client,
-      columns },
+    perspective: { columns },
   } = data;
-
-  if (is_hidden_for_client)
-
-    return (
-      <div style={{'marginTop': '1em'}}>
-        <Label>
-          {getTranslation('Perspective is hidden and you don\'t have permissions to access it.')}
-        </Label>
-      </div>);
 
   return (
     <PerspectiveView

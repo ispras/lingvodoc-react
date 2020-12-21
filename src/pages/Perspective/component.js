@@ -4,9 +4,9 @@ import { connect } from 'react-redux';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import { map } from 'lodash';
-import { onlyUpdateForKeys, withHandlers, withState, compose } from 'recompose';
+import { onlyUpdateForKeys, withHandlers, withState, compose, branch, renderNothing } from 'recompose';
 import { Switch, Route, Redirect, Link } from 'react-router-dom';
-import { Container, Menu, Dropdown } from 'semantic-ui-react';
+import { Container, Menu, Dropdown, Label } from 'semantic-ui-react';
 import PerspectiveView from 'components/PerspectiveView';
 import Merge from 'components/Merge';
 import NotFound from 'pages/NotFound';
@@ -14,6 +14,15 @@ import { getTranslation } from 'api/i18n';
 import PerspectivePath from './PerspectivePath';
 
 import './style.scss';
+
+export const perspectiveIsHiddenQuery = gql`
+  query perspectiveIsHidden($id: LingvodocID!) {
+    perspective(id: $id) {
+      id
+      is_hidden_for_client
+    }
+  }
+`;
 
 export const launchSoundAndMarkupMutation = gql`
   mutation launchSoundAndMarkup(
@@ -269,6 +278,7 @@ const soundAndMarkup = (perspectiveId, mode, launchSoundAndMarkup) => {
 };
 
 const Perspective = ({
+  data,
   perspective,
   submitFilter,
   openCognateAnalysisModal,
@@ -283,6 +293,18 @@ const Perspective = ({
   if (!baseUrl) {
     return null;
   }
+
+  if (data.loading || data.error)
+    return null;
+
+  if (data.perspective.is_hidden_for_client)
+
+    return (
+      <div style={{'marginTop': '1em'}}>
+        <Label>
+          {getTranslation('Perspective is hidden and you don\'t have permissions to access it.')}
+        </Label>
+      </div>);
 
   const modes = {};
   if (user.id !== undefined) {
@@ -367,5 +389,11 @@ Perspective.propTypes = {
 
 export default compose(
   connect(state => state.user),
+  branch(({ perspective }) => !perspective.params.id, renderNothing),
+  graphql(perspectiveIsHiddenQuery, {
+    options: ({ perspective }) => ({
+      variables: {id: perspective.params.id}
+    })
+  }),
   graphql(launchSoundAndMarkupMutation, { name: 'launchSoundAndMarkup' })
 )(Perspective);
