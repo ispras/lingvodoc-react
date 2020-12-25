@@ -21,8 +21,10 @@ const TableHeader = ({
   selectDisabled,
   selectDisabledIndeterminate,
   disabled,
+  sortByField,
   /* eslint-enable react/prop-types */
   onSortModeChange,
+  onSortModeReset,
 }) => (
   <Table.Header
     style={disabled ? { opacity: '0.5' } : {}}
@@ -53,7 +55,9 @@ const TableHeader = ({
           key={compositeIdToString(column.column_id)}
           field={column}
           fields={columns}
+          sortByField={sortByField}
           onSortModeChange={onSortModeChange}
+          onSortModeReset={onSortModeReset}
         />
       ))}
       {!isEmpty(actions) && <Table.HeaderCell />}

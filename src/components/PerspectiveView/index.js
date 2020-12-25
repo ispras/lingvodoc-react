@@ -9,7 +9,14 @@ import { isEqual, find, take, drop, flow, sortBy, reverse } from 'lodash';
 import { Table, Dimmer, Header, Icon, Button } from 'semantic-ui-react';
 import styled from 'styled-components';
 
-import { setSortByField, addLexicalEntry, selectLexicalEntry, resetEntriesSelection } from 'ducks/perspective';
+import {
+  addLexicalEntry,
+  selectLexicalEntry,
+  setSortByField,
+  resetEntriesSelection,
+  resetSortByField }
+  from 'ducks/perspective';
+
 import { openModal } from 'ducks/modals';
 import Placeholder from 'components/Placeholder';
 import ApproveModal from 'components/ApproveModal';
@@ -218,6 +225,7 @@ const P = ({
   allFields,
   columns,
   setSortByField: setSort,
+  resetSortByField: resetSort,
   createLexicalEntry,
   mergeLexicalEntries,
   removeLexicalEntries,
@@ -402,7 +410,9 @@ const P = ({
       <Table celled padded className={className}>
         <TableHeader
           columns={fields}
+          sortByField={sortByField}
           onSortModeChange={(fieldId, order) => setSort(fieldId, order)}
+          onSortModeReset={() => resetSort()}
           selectEntries={mode === 'edit'}
         />
         <TableBody
@@ -433,6 +443,7 @@ P.propTypes = {
   allFields: PropTypes.array.isRequired,
   columns: PropTypes.array.isRequired,
   setSortByField: PropTypes.func.isRequired,
+  resetSortByField: PropTypes.func.isRequired,
   addLexicalEntry: PropTypes.func.isRequired,
   createLexicalEntry: PropTypes.func.isRequired,
   mergeLexicalEntries: PropTypes.func.isRequired,
@@ -463,6 +474,7 @@ const PerspectiveView = compose(
         {
           addLexicalEntry,
           setSortByField,
+          resetSortByField,
           selectLexicalEntry,
           resetEntriesSelection,
           openModal,

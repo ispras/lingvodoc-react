@@ -94,6 +94,10 @@ export function setSortByField(field, order) {
   return { type: SET_SORT_MODE, payload: { field, order } };
 }
 
+export function resetSortByField() {
+  return { type: RESET_SORT_MODE, payload: null };
+}
+
 export function addLexicalEntry(entry) {
   return { type: ADD_LEXICAL_ENTRY, payload: entry };
 }
