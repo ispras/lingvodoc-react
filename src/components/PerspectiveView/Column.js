@@ -13,16 +13,41 @@ const Column = ({
   onSortModeChange,
   onSortModeReset}) =>
 {
-  const subFields = fields.filter(f => isEqual(f.self_id, field.column_id));
+  const subFields =
+
+    fields.filter(
+      f => isEqual(f.self_id, field.column_id));
+
+  const sort_flag =
+
+    field &&
+    sortByField &&
+    id2str(field.id) == id2str(sortByField.field);
+
   return (
     <Table.HeaderCell className="entityHeader">
       <ul>
         <li className="last">
-          {field.translation}{' '}
+          {onSortModeChange
+            ?
+            <label onClick={() =>
+              !sort_flag
+                ? onSortModeChange(field.id, 'a') :
+              sortByField.order == 'a'
+                ? onSortModeChange(field.id, 'd')
+                : onSortModeReset()}>
+              {field.translation}
+            </label>
+            :
+            <span>
+              {field.translation}
+            </span>
+          }
           {onSortModeChange && (
-            sortByField && id2str(field.id) == id2str(sortByField.field)
+            sort_flag
               ? 
               <span>
+                {' '}
                 {sortByField.order == 'a' ?
                   <Icon fitted size="large" name="angle up" onClick={() => onSortModeReset()} /> :
                   <Icon fitted size="large" name="caret up" onClick={() => onSortModeChange(field.id, 'a')} />}
@@ -33,6 +58,7 @@ const Column = ({
               </span>
               :
               <span>
+                {' '}
                 <Icon fitted size="large" name="caret up" onClick={() => onSortModeChange(field.id, 'a')} />
                 {' '}
                 <Icon fitted size="large" name="caret down" onClick={() => onSortModeChange(field.id, 'd')} />
