@@ -7,6 +7,8 @@ import { compose } from 'recompose';
 import Placeholder from 'components/Placeholder';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { Label } from 'semantic-ui-react';
+import { getTranslation } from 'api/i18n';
 import { setDataForTree, setDefaultGroup, setMainGroupLanguages, setCheckStateTreeFlat } from 'ducks/distanceMap';
 import checkCoordAndLexicalEntries from './checkCoordinatesAndLexicalEntries';
 import { dictionaryWithPerspectivesQuery, allFieldQuery } from './graphql';
@@ -19,8 +21,18 @@ function distanceMap(props) {
     allField,
     actions,
     selected,
-    mainGroupDictionaresAndLanguages
+    mainGroupDictionaresAndLanguages,
+    user
   } = props;
+
+  if (!user || user.id != 1)
+
+    return (
+      <div style={{'marginTop': '1em'}}>
+        <Label>
+          {getTranslation('For the time being Distance Map functionality is available only for the administrator.')}
+        </Label>
+      </div>);
 
   const {
     language_tree: languageTree,
@@ -109,6 +121,7 @@ export default compose(
     }, dispatch)
   })),
   connect(state => state.locale),
+  connect(state => state.user),
   graphql(dictionaryWithPerspectivesQuery, { name: 'dictionaryWithPerspectives' }), graphql(allFieldQuery, { name: 'allField' }),
 )(distanceMap);
 

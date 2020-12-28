@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Segment, Button } from 'semantic-ui-react';
+import { Segment, Button, Label } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import { getTranslation } from 'api/i18n';
 import 'leaflet/dist/leaflet.css';
@@ -116,6 +116,7 @@ class MapAreas extends PureComponent {
 
     if (!location.state) {
       history.push('/distance_map');
+      return null;
     }
 
     if (selected && (selected.id !== dataForTree.idLocale)) {
@@ -179,6 +180,23 @@ class MapAreas extends PureComponent {
   }
 
   render() {
+
+    const { history, location, user } = this.props;
+
+    if (!location.state) {
+      history.push('/distance_map');
+      return null;
+    }
+
+    if (!user || user.id != 1)
+
+      return (
+        <div style={{'marginTop': '1em'}}>
+          <Label>
+            {getTranslation('For the time being Distance Map functionality is available only for the administrator.')}
+          </Label>
+        </div>);
+
     return (
       <div>
         {(!this.state.statusRequest) && (
@@ -237,6 +255,7 @@ export default compose(
     , dispatch => ({ actions: bindActionCreators({ setDefaultGroup, setDictionariesGroup }, dispatch) })
   ),
   connect(state => state.locale),
+  connect(state => state.user),
   graphql(mutationDistancePerspectives, { name: 'computeDistancePerspectives' }),
   withApollo
 )(MapAreas);

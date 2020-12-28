@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
-import { Segment, Button } from 'semantic-ui-react';
+import { Segment, Button, Label } from 'semantic-ui-react';
 import { compose } from 'recompose';
 import { fromJS } from 'immutable';
 import { buildLanguageTree } from 'pages/Search/treeBuilder';
@@ -168,12 +168,23 @@ function SelectorLangGroup(props) {
       dataForTree,
       client,
       mainGroupDictionaresAndLanguages,
-      selected
+      selected,
+      user
     } = props;
 
     if (!location.state) {
       history.push('/distance_map');
+      return null;
     }
+
+    if (!user || user.id != 1)
+
+      return (
+        <div style={{'marginTop': '1em'}}>
+          <Label>
+            {getTranslation('For the time being Distance Map functionality is available only for the administrator.')}
+          </Label>
+        </div>);
 
     const {
       mainPerspectives,
@@ -322,5 +333,6 @@ export default compose(
     })
   ),
   connect(state => state.locale),
+  connect(state => state.user),
   withApollo
 )(SelectorLangGroup);

@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { isEmpty } from 'lodash';
 
-import { Dropdown } from 'semantic-ui-react';
+import { Dropdown, Icon } from 'semantic-ui-react';
 
 import * as userActions from 'ducks/user';
 import { openModal } from 'ducks/ban';
@@ -15,9 +15,17 @@ import EditUserModal from 'components/EditUserModal';
 import { getTranslation } from 'api/i18n';
 
 const Anonymous = ({
-  modal, launchSignInForm, launchSignUpForm, closeForm
+  modal, launchSignInForm, launchSignUpForm, closeForm, loading
 }) =>
-  <Dropdown item text={getTranslation('User')} className="top_menu">
+
+  <Dropdown
+    item
+    trigger={
+      loading ?
+        <span>{getTranslation('User')}{' '}<Icon loading name="spinner"/></span> :
+        <span>{getTranslation('User')}</span>}
+    className="top_menu">
+
     <Dropdown.Menu>
       <SignInModal
         trigger={<Dropdown.Item as="a" onClick={launchSignInForm}>{getTranslation('Sign In')}</Dropdown.Item>}
@@ -30,6 +38,7 @@ const Anonymous = ({
         handleClose={closeForm}
       />
     </Dropdown.Menu>
+
   </Dropdown>;
 
 Anonymous.propTypes = {

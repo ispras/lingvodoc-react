@@ -15,13 +15,13 @@ function checkCountry(shortcut) {
 }
 
 function title({ intl_name: text }) {
-  const extra = text ? `(${text})` : '';
+  const extra = text ? ` (${text})` : '';
   return TITLE + extra;
 }
 
 const WithSpinner = () =>
   <Menu.Item as="a" className="top_menu">
-    {TITLE} <Icon loading name="spinner" />
+    <span>{TITLE}{' '}<Icon loading name="spinner"/></span>
   </Menu.Item>;
 
 const enhance = compose(
