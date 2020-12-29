@@ -24,24 +24,32 @@ const Column = ({
     sortByField &&
     id2str(field.id) == id2str(sortByField.field);
 
+  const sort_f = (
+    
+    () => 
+      !sort_flag
+        ? onSortModeChange(field.id, 'a') :
+      sortByField.order == 'a'
+        ? onSortModeChange(field.id, 'd')
+        : onSortModeReset())
+
   return (
-    <Table.HeaderCell className="entityHeader">
+
+    <Table.HeaderCell
+      className="entityHeader"
+      onClick={() => onSortModeChange && sort_f()}>
+
       <ul>
         <li className="last">
           {onSortModeChange
             ?
-            <label onClick={() =>
-              !sort_flag
-                ? onSortModeChange(field.id, 'a') :
-              sortByField.order == 'a'
-                ? onSortModeChange(field.id, 'd')
-                : onSortModeReset()}>
+            <label onClick={e => (e.stopPropagation(), sort_f())}>
               {field.translation}
             </label>
             :
-            <span>
+            <label>
               {field.translation}
-            </span>
+            </label>
           }
           {onSortModeChange && (
             sort_flag
@@ -49,19 +57,25 @@ const Column = ({
               <span>
                 {' '}
                 {sortByField.order == 'a' ?
-                  <Icon fitted size="large" name="angle up" onClick={() => onSortModeReset()} /> :
-                  <Icon fitted size="large" name="caret up" onClick={() => onSortModeChange(field.id, 'a')} />}
+                  <Icon fitted size="large" name="angle up" onClick={
+                    e => (e.stopPropagation(), onSortModeReset())} /> :
+                  <Icon fitted size="large" name="caret up" onClick={
+                    e => (e.stopPropagation(), onSortModeChange(field.id, 'a'))} />}
                 {' '}
                 {sortByField.order == 'd' ?
-                  <Icon fitted size="large" name="angle down" onClick={() => onSortModeReset()} /> :
-                  <Icon fitted size="large" name="caret down" onClick={() => onSortModeChange(field.id, 'd')} />}
+                  <Icon fitted size="large" name="angle down" onClick={
+                    e => (e.stopPropagation(), onSortModeReset())} /> :
+                  <Icon fitted size="large" name="caret down" onClick={
+                    e => (e.stopPropagation(), onSortModeChange(field.id, 'd'))} />}
               </span>
               :
               <span>
                 {' '}
-                <Icon fitted size="large" name="caret up" onClick={() => onSortModeChange(field.id, 'a')} />
+                <Icon fitted size="large" name="caret up" onClick={
+                  e => (e.stopPropagation(), onSortModeChange(field.id, 'a'))} />
                 {' '}
-                <Icon fitted size="large" name="caret down" onClick={() => onSortModeChange(field.id, 'd')} />
+                <Icon fitted size="large" name="caret down" onClick={
+                  e => (e.stopPropagation(), onSortModeChange(field.id, 'd'))} />
               </span>
           )}
           <ul>
@@ -77,6 +91,7 @@ const Column = ({
           </ul>
         </li>
       </ul>
+
     </Table.HeaderCell>
   );
 };
