@@ -276,8 +276,12 @@ class SearchTabs extends React.Component {
   constructor(props) {
     super(props);
 
+    const sourceSearches =
+      searchesFromProps(props.searches);
+
     this.state = {
-      mapSearches: this.addDefaultActiveStateToMapSearches(searchesFromProps(props.searches)),
+      mapSearches: this.addDefaultActiveStateToMapSearches(sourceSearches),
+      sourceSearches,
       intersec: 0,
       areasMode: false,
       selectedAreaGroups: [],
@@ -306,9 +310,14 @@ class SearchTabs extends React.Component {
     actions.setCheckStateTreeFlat({})
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps)
+  {
+    const [mapSearches, sourceSearches] = 
+      this.updateMapSearchesActiveState(searchesFromProps(nextProps.searches));
+
     this.setState({
-      mapSearches: this.updateMapSearchesActiveState(searchesFromProps(nextProps.searches)),
+      mapSearches,
+      sourceSearches,
       intersec: 0,
     });
   }
@@ -387,30 +396,62 @@ class SearchTabs extends React.Component {
   addDefaultActiveStateToMapSearches = memoize(
     mapSearches => mapSearches.map(search => search.set('isActive', true)));
 
-  updateMapSearchesActiveState = memoize(
-    (mapSearches) => {
-      const { mapSearches: oldMapSearches } = this.state;
+  updateMapSearchesActiveState =
+    (mapSearches) =>
+    {
+      let {
+        mapSearches: oldMapSearches,
+        sourceSearches: oldSourceSearches } = this.state;
 
-      return mapSearches.map((search) => {
-        let isActive = false;
-        let updatedSearch = null;
-        const searchInOld = oldMapSearches.get(search.get('id'));
+      mapSearches =
 
-        if (searchInOld) {
-          isActive = searchInOld.get('isActive');
-        } else {
-          isActive = true;
-        }
+        mapSearches.map(
+          (search) =>
+          {
+            const search_id = search.get('id');
 
-        if (typeof isActive !== 'boolean') {
-          isActive = true;
-        }
+            const searchInOld = oldMapSearches.get(search_id);
+            const sourceSearch = oldSourceSearches.get(search_id);
 
-        updatedSearch = search.update('isActive', () => isActive);
+            let isActive = false;
 
-        return updatedSearch;
-      });
-    });
+            /* 
+             * Updating map search state only if the initial source search data changed, otherwise map
+             * search state, e.g. disabling / enabling of markers, will be reset, and we don't want that.
+             */
+
+            const no_update_flag = 
+
+              searchInOld &&
+                search.equals(sourceSearch);
+            
+            let updatedSearch =
+              no_update_flag ? searchInOld : search;
+
+            if (!no_update_flag)
+
+              oldSourceSearches =
+                oldSourceSearches.set(search_id, search);
+
+            if (searchInOld) {
+              isActive = searchInOld.get('isActive');
+            } else {
+              isActive = true;
+            }
+
+            if (typeof isActive !== 'boolean') {
+              isActive = true;
+            }
+
+            updatedSearch =
+              updatedSearch.update(
+                'isActive', () => isActive);
+
+            return updatedSearch;
+          });
+
+      return [mapSearches, oldSourceSearches];
+    };
 
   labels() {
     return this.getSearchGroups(this.state.mapSearches).valueSeq().toJS();
