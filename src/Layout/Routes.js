@@ -51,6 +51,7 @@ const Routes = () => (
     <Route path="/grants" component={Grants} />
     <Route path="/requests" component={Requests} />
     <Route path="/map" component={Map} />
+    <Route path="/map_search/:searchId" component={Search} />
     <Route path="/map_search" component={Search} />
     <Route path="/distance_map/selected_languages/map" component={MapSelectedLanguages} />
     <Route path="/distance_map/selected_languages" component={SelectedLanguages} />

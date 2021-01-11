@@ -6,6 +6,7 @@ export const STORE_SEARCH_RESULT = '@search/STORE_SEARCH_RESULT';
 export const NEW_SEARCH = '@search/NEW_SEARCH';
 export const NEW_SEARCH_WITH_ADDITIONAL_FIELDS = '@search/NEW_SEARCH_WITH_ADDITIONAL_FIELDS';
 export const DELETE_SEARCH = '@search/DELETE_SEARCH';
+export const SET_SEARCHES = '@search/SET_SEARCHES';
 
 export const setQuery = (searchId, query, category, adopted, etymology, langs, dicts, searchMetadata, grammaticalSigns, languageVulnerability, blocks, xlsxExport) => ({
   type: SET_QUERY,
@@ -47,6 +48,11 @@ export const deleteSearch = searchId => ({
   payload: searchId,
 });
 
+export const setSearches = searches => ({
+  type: SET_SEARCHES,
+  payload: searches,
+});
+
 const newBlock = {
   search_string: '',
   matching_type: 'full_string',
@@ -61,7 +67,7 @@ function buildNewQuery() {
   return {
     id: counter,
     query: emptyQuery,
-    categoty: null,
+    category: null,
     adopted: null,
     etymology: null,
     langs: null,
@@ -78,7 +84,7 @@ function buildNewQuery() {
 const initialState = {
   id: 1,
   query: emptyQuery,
-  categoty: null,
+  category: null,
   adopted: null,
   etymology: null,
   langs: null,
@@ -87,7 +93,7 @@ const initialState = {
   grammaticalSigns: null,
   languageVulnerability: null,
   blocks: false,
-  results: [],
+  results: null,
   subQuery: false,
 };
 
@@ -130,6 +136,8 @@ const searches = (state = [initialState], action) => {
           : search));
     case STORE_SEARCH_RESULT:
       return state.map(search => (search.id === action.payload.searchId ? { ...search, results: action.payload.results } : search));
+    case SET_SEARCHES:
+      return action.payload;
     default:
       return state;
   }

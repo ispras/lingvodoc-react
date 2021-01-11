@@ -7,12 +7,14 @@ import gql from 'graphql-tag';
 import { compose, pure } from 'recompose';
 import { List, fromJS } from 'immutable';
 import styled from 'styled-components';
-import { Checkbox, Grid, Radio, Segment, Button, Divider, Select, Input } from 'semantic-ui-react';
+import { Checkbox, Grid, Radio, Segment, Button, Divider, Select, Input, Icon, Message } from 'semantic-ui-react';
+import { Link } from 'react-router-dom';
+
 import { setQuery } from 'ducks/search';
 import AdditionalFilter from 'components/Search/AdditionalFilter';
 import { getTranslation } from 'api/i18n';
-
 import { compositeIdToString } from 'utils/compositeId';
+
 import './index.scss';
 
 const mode2bool = (value) => {
@@ -417,9 +419,19 @@ class QueryBuilder extends React.Component {
     });
   }
 
-  render() {
+  render()
+  {
     const blocks = this.state.data;
-    const { showCreateSearchButton } = this.props;
+
+    const {
+      showCreateSearchButton,
+      searchURLId,
+      searchURLIdMap,
+      getSearchURL,
+      searchLinkLoading,
+      searchLinkError,
+      user } = this.props;
+
     const { allLangsDictsChecked } = this.state;
     const blocksText = this.getBlocksText();
     const subBlocksMode = this.getSubBlocksMode();
@@ -564,7 +576,7 @@ class QueryBuilder extends React.Component {
 
           <Divider />
           <Button primary basic onClick={this.onSearchButtonClick}>
-            Search
+            {getTranslation('Search')}
           </Button>
           <Checkbox
             style={{marginLeft: '0.5em'}}
@@ -573,6 +585,63 @@ class QueryBuilder extends React.Component {
             onChange={() =>
               this.setState({ xlsxExport: !this.state.xlsxExport })}
           />
+          {
+            searchURLId
+              ?
+              <div style={{
+                padding: '0.78571429em 0.25em 0.78571429em',
+                float: 'right'}}>
+                {getTranslation('Link to search results:')}
+                {' '}
+                <Link to={`/map_search/${searchURLId}`}>
+                  {`${window.location.protocol}\/\/${window.location.host}/map_search/${searchURLId}`}
+                </Link>
+              </div>
+            :
+            searchLinkError
+              ?
+              <div style={{
+                float: 'right'}}>
+                <Message
+                  compact
+                  negative
+                  style={{
+                    padding: '0.78571429em 1.5em'}}>
+                  {getTranslation('Failed to get search link, please contact adiministrators.')}
+                </Message>
+              </div>
+            :
+            !user.id || !getSearchURL
+              ?
+              <Button
+                basic
+                floated='right'
+                disabled>
+                {!user.id ?
+                  getTranslation('Only registered users can create new search links') :
+                  getTranslation('Nothing in search results, can\'t create search link')}
+              </Button>
+            :
+            searchLinkLoading ?
+              <Button
+                basic
+                positive
+                floated='right'
+                disabled>
+                <span>
+                  {getTranslation('Getting link to search results')}{'... '}
+                  <Icon name="spinner" loading />
+                </span>
+              </Button>
+            :
+              <Button
+                basic
+                positive
+                floated='right'
+                onClick={getSearchURL}>
+                {getTranslation('Get link to search results')}
+              </Button>
+          }
         </Wrapper>
       </div>
     );
@@ -607,5 +676,6 @@ export default compose(
       actions: bindActionCreators({ setQuery }, dispatch),
     })
   ),
+  connect(state => state.user),
   pure
 )(QueryBuilder);

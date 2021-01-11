@@ -8,6 +8,8 @@ import gql from 'graphql-tag';
 import Immutable, { fromJS } from 'immutable';
 import { Container, Dimmer, Loader, Tab, Button, Divider, Menu, Message, Segment } from 'semantic-ui-react';
 import { isEqual, memoize } from 'lodash';
+import { withRouter } from 'react-router-dom'
+
 import Labels from 'components/Search/Labels';
 import ResultsMap from 'components/Search/ResultsMap';
 import IntersectionControl from 'components/Search/IntersectionControl';
@@ -17,10 +19,11 @@ import LanguageTree from 'components/Search/LanguageTree';
 import BlobsModal from 'components/Search/blobsModal';
 import { buildLanguageTree, buildSearchResultsTree } from 'pages/Search/treeBuilder';
 import { setDefaultGroup, setMainGroupLanguages, setCheckStateTreeFlat, setDefaultDataForTree } from 'ducks/distanceMap';
+import { getTranslation } from 'api/i18n';
 
 import './style.scss';
 
-import { newSearch, deleteSearch, storeSearchResult, newSearchWithAdditionalFields } from 'ducks/search';
+import { newSearch, deleteSearch, storeSearchResult, newSearchWithAdditionalFields, setSearches } from 'ducks/search';
 
 
 const mdColors = new Immutable.List([
@@ -95,6 +98,32 @@ const searchQuery = gql`
       created_at
     }
   }
+`;
+
+const unstructuredDataQuery = gql`
+  query unstructuredData(
+    $id: String!)
+  {
+    unstructured_data(id: $id) {
+      id
+      data
+      additional_metadata
+    }
+  }
+`;
+
+const newUnstructuredDataMutation = gql`
+  mutation newUnstructuredData(
+    $data: ObjectVal!,
+    $metadata: ObjectVal) {
+      new_unstructured_data(
+        data: $data,
+        metadata: $metadata)
+      {
+        triumph
+        id
+      }
+    }
 `;
 
 const isAdditionalParamsSet = (langs, dicts, searchMetadata) => {
@@ -279,12 +308,23 @@ class SearchTabs extends React.Component {
     const sourceSearches =
       searchesFromProps(props.searches);
 
+    const source_searches_info = 
+
+      sourceSearches.map(
+        search => search.delete('results'));
+
     this.state = {
       mapSearches: this.addDefaultActiveStateToMapSearches(sourceSearches),
       sourceSearches,
+      source_searches_info,
       intersec: 0,
       areasMode: false,
       selectedAreaGroups: [],
+      search_id_map: new Immutable.Map(),
+      search_id_set: new Immutable.Set(),
+      search_link_loading: false,
+      search_link_error: false,
+      error_flag: false,
     };
 
     this.dictsHandlers = {
@@ -301,6 +341,7 @@ class SearchTabs extends React.Component {
     this.clickLabel = this.clickLabel.bind(this);
     this.onAreasModeChange = this.onAreasModeChange.bind(this);
     this.onSelectedAreaGroupsChange = this.onSelectedAreaGroupsChange.bind(this);
+    this.getSearchURL = this.getSearchURL.bind(this);
 
     const { actions } = props
 
@@ -312,12 +353,81 @@ class SearchTabs extends React.Component {
 
   componentWillReceiveProps(nextProps)
   {
+    const {
+      actions,
+      match: {
+        params: {
+          searchId: search_id }},
+      data } =
+      
+      nextProps;
+
+    if (
+      search_id &&
+      !this.state.search_id_set.has(search_id))
+    {
+
+      if (!data.loading && !data.error)
+      {
+        const {
+          unstructured_data: {
+            data: search_data }} =
+          
+          data;
+
+        const source_searches_info =
+          fromJS(search_data);
+
+        const searches = [];
+
+        for (
+          const [key, value] of
+          Object.entries(search_data).sort((a, b) => a[0] - b[0]))
+
+          searches.push(value);
+
+        const search_id_map =
+
+          this.state.search_id_map.set(
+            source_searches_info,
+            search_id);
+
+        const search_id_set =
+
+          this.state.search_id_set.add(
+            search_id);
+
+        this.setState({
+          error_flag: false,
+          search_id_map,
+          search_id_set,
+        });
+
+        actions.setSearches(searches);
+      }
+
+      else if (data.error)
+        this.setState({ error_flag: true });
+
+      return;
+    }
+
     const [mapSearches, sourceSearches] = 
       this.updateMapSearchesActiveState(searchesFromProps(nextProps.searches));
+
+    /* toJS() / fromJS() for canonical representation. */
+
+    const source_searches_info = 
+
+      fromJS(
+        sourceSearches
+          .map(search => search.delete('results'))
+          .toJS());
 
     this.setState({
       mapSearches,
       sourceSearches,
+      source_searches_info,
       intersec: 0,
     });
   }
@@ -397,21 +507,21 @@ class SearchTabs extends React.Component {
     mapSearches => mapSearches.map(search => search.set('isActive', true)));
 
   updateMapSearchesActiveState =
-    (mapSearches) =>
+    (sourceSearches) =>
     {
-      let {
+      const {
         mapSearches: oldMapSearches,
         sourceSearches: oldSourceSearches } = this.state;
 
-      mapSearches =
+      const mapSearches =
 
-        mapSearches.map(
-          (search) =>
+        sourceSearches.map(
+          (sourceSearch) =>
           {
-            const search_id = search.get('id');
+            const search_id = sourceSearch.get('id');
 
-            const searchInOld = oldMapSearches.get(search_id);
-            const sourceSearch = oldSourceSearches.get(search_id);
+            const mapSearchOld = oldMapSearches.get(search_id);
+            const sourceSearchOld = oldSourceSearches.get(search_id);
 
             let isActive = false;
 
@@ -422,19 +532,14 @@ class SearchTabs extends React.Component {
 
             const no_update_flag = 
 
-              searchInOld &&
-                search.equals(sourceSearch);
+              mapSearchOld &&
+                sourceSearch.equals(sourceSearchOld);
             
             let updatedSearch =
-              no_update_flag ? searchInOld : search;
+              no_update_flag ? mapSearchOld : sourceSearch;
 
-            if (!no_update_flag)
-
-              oldSourceSearches =
-                oldSourceSearches.set(search_id, search);
-
-            if (searchInOld) {
-              isActive = searchInOld.get('isActive');
+            if (mapSearchOld) {
+              isActive = mapSearchOld.get('isActive');
             } else {
               isActive = true;
             }
@@ -450,7 +555,7 @@ class SearchTabs extends React.Component {
             return updatedSearch;
           });
 
-      return [mapSearches, oldSourceSearches];
+      return [mapSearches, sourceSearches];
     };
 
   labels() {
@@ -466,6 +571,47 @@ class SearchTabs extends React.Component {
 
   clickLabel(id) {
     this.toggleSearchGroup(id);
+  }
+
+  getSearchURL()
+  {
+    const { newUnstructuredData } = this.props;
+    const { source_searches_info } = this.state;
+
+    this.setState({
+      search_link_loading: true });
+
+    newUnstructuredData({
+      variables: {
+        data: source_searches_info.toJS(),
+        metadata: {tag: 'search'}
+      },
+    }).then(
+
+      ({ data: { new_unstructured_data: { id } } }) => {
+
+        this.setState({
+
+          search_id_map:
+            this.state.search_id_map.set(
+              source_searches_info, id),
+
+          search_link_loading:
+            false,
+        });
+
+      },
+
+      (error_data) => {
+
+        window.logger.err('Failed save search data!');
+        console.log(error_data);
+        
+        this.setState({
+          search_link_loading: false,
+          search_link_error: true });
+      }
+    );
   }
 
   deleteDictFromSearches(dictionary, groupsIds) {
@@ -640,7 +786,43 @@ class SearchTabs extends React.Component {
   }
 
   render() {
-    const { searches, actions } = this.props;
+    const { searches, actions, match, data } = this.props;
+
+    if (match.params.searchId)
+    {
+      if (this.state.error_flag || data.error)
+
+        return (
+          <Message compact negative style={{marginTop: '1em'}}>
+            {getTranslation('Can\'t get data of the') +
+              ` '${match.params.searchId}' ` +
+              getTranslation('search') +
+              '.'}
+          </Message>);
+
+      else if (data.loading)
+
+        return (
+          <Dimmer active={data.loading} inverted>
+            <Loader>Loading</Loader>
+          </Dimmer>);
+    }
+
+    const search_url_id =
+
+      this.state.search_id_map.get(
+        this.state.source_searches_info);
+
+    let search_result_flag = false;
+
+    for (const search_info of searches)
+      if (
+        search_info.results &&
+        search_info.results.lexical_entries.length > 0)
+      {
+        search_result_flag = true;
+        break;
+      }
 
     function onSearchClose(id) {
       return (event) => {
@@ -678,6 +860,11 @@ class SearchTabs extends React.Component {
                 languageVulnerability={search.languageVulnerability}
                 showCreateSearchButton={showCreateSearchButton}
                 createSearchWithAdditionalFields={this.createSearchWithAdditionalFields(search)}
+                getSearchURL={search_result_flag && this.getSearchURL}
+                searchURLId={search_url_id}
+                searchURLIdMap={this.state.search_id_map}
+                searchLinkLoading={this.state.search_link_loading}
+                searchLinkError={this.state.search_link_error}
               />
               <Info
                 props={this.props}
@@ -780,8 +967,22 @@ export default compose(connect(
   state => (state.search),
   dispatch => ({
     actions: bindActionCreators({
-      newSearch, deleteSearch, newSearchWithAdditionalFields,
-       setDefaultGroup, setCheckStateTreeFlat, setDefaultDataForTree,setMainGroupLanguages
+      newSearch, deleteSearch, newSearchWithAdditionalFields, setSearches,
+      setDefaultGroup, setCheckStateTreeFlat, setDefaultDataForTree, setMainGroupLanguages
     }, dispatch),
-  }))
+  })),
+  graphql(
+    unstructuredDataQuery,
+    {
+      skip:
+        ({ match: { params } }) =>
+          !params.searchId,
+      options:
+        ({ match: { params } }) =>
+          ({ variables: { id: params.searchId }}),
+    }),
+  graphql(
+    newUnstructuredDataMutation,
+    { name: 'newUnstructuredData' }),
+  withRouter,
 )(SearchTabs);
