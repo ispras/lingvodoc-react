@@ -813,17 +813,6 @@ class SearchTabs extends React.Component {
       this.state.search_id_map.get(
         this.state.source_searches_info);
 
-    let search_result_flag = false;
-
-    for (const search_info of searches)
-      if (
-        search_info.results &&
-        search_info.results.lexical_entries.length > 0)
-      {
-        search_result_flag = true;
-        break;
-      }
-
     function onSearchClose(id) {
       return (event) => {
         event.stopPropagation();
@@ -860,7 +849,7 @@ class SearchTabs extends React.Component {
                 languageVulnerability={search.languageVulnerability}
                 showCreateSearchButton={showCreateSearchButton}
                 createSearchWithAdditionalFields={this.createSearchWithAdditionalFields(search)}
-                getSearchURL={search_result_flag && this.getSearchURL}
+                getSearchURL={this.getSearchURL}
                 searchURLId={search_url_id}
                 searchURLIdMap={this.state.search_id_map}
                 searchLinkLoading={this.state.search_link_loading}

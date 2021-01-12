@@ -611,15 +611,13 @@ class QueryBuilder extends React.Component {
                 </Message>
               </div>
             :
-            !user.id || !getSearchURL
+            !user.id
               ?
               <Button
                 basic
                 floated='right'
                 disabled>
-                {!user.id ?
-                  getTranslation('Only registered users can create new search links') :
-                  getTranslation('Nothing in search results, can\'t create search link')}
+                {getTranslation('Only registered users can create new search links')}
               </Button>
             :
             searchLinkLoading ?
