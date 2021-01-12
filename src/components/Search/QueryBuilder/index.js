@@ -607,7 +607,7 @@ class QueryBuilder extends React.Component {
                   negative
                   style={{
                     padding: '0.78571429em 1.5em'}}>
-                  {getTranslation('Failed to get search link, please contact adiministrators.')}
+                  {getTranslation('Failed to get search link, please contact administrators.')}
                 </Message>
               </div>
             :
