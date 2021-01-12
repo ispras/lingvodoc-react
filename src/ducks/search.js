@@ -76,7 +76,7 @@ function buildNewQuery() {
     grammaticalSigns: null,
     languageVulnerability: null,
     blocks: false,
-    results: [],
+    results: null,
     subQuery: false,
   };
 }
