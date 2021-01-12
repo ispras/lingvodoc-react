@@ -27,24 +27,24 @@ import { newSearch, deleteSearch, storeSearchResult, newSearchWithAdditionalFiel
 
 
 const mdColors = new Immutable.List([
-  '#E53935',
-  '#D81B60',
-  '#8E24AA',
-  '#5E35B1',
-  '#3949AB',
-  '#1E88E5',
-  '#039BE5',
-  '#00ACC1',
   '#00897B',
-  '#43A047',
-  '#7CB342',
-  '#C0CA33',
+  '#E53935',
+  '#3949AB',
   '#FDD835',
+  '#43A047',
+  '#D81B60',
+  '#1E88E5',
   '#FFB300',
+  '#7CB342',
+  '#8E24AA',
+  '#039BE5',
   '#FB8C00',
+  '#C0CA33',
+  '#5E35B1',
+  '#00ACC1',
   '#F4511E',
   '#6D4C41',
-]).sortBy(Math.random);
+]);
 
 const searchQuery = gql`
   query Search($query: [[ObjectVal]]!, $category: Int, $adopted: Boolean, $etymology: Boolean, $mode: String, $langs: [LingvodocID], $dicts: [LingvodocID], $searchMetadata: ObjectVal, $blocks: Boolean, $xlsxExport: Boolean) {
