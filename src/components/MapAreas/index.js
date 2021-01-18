@@ -1,4 +1,5 @@
 import { isEqual } from 'lodash';
+import Immutable, { fromJS } from 'immutable';
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { Segment } from 'semantic-ui-react';
@@ -40,6 +41,7 @@ class MapAreas extends PureComponent {
     this.iconFunc = wrapDivIcon(props.pointIcon);
 
     this.points = [];
+    this.pointsSet = new Immutable.Set();
     this.areas = [];
     this.areasMode = false;
 
@@ -246,13 +248,33 @@ class MapAreas extends PureComponent {
       this.updatePoints(points);
       this.updateAreas(areas);
 
-      if (points.length > 0)
+      /* 
+       * If we are adding never before seen markers to the map,
+       * we refit the map to include all of them.
+       */
+
+      let new_point_flag = false;
+
+      for (const point of points)
+      {
+        const point_signature =
+          fromJS({...point, dictionary: point.dictionary.get('id').toJS()});
+
+        if (!this.pointsSet.has(point_signature))
+        {
+          this.pointsSet = this.pointsSet.add(point_signature);
+          new_point_flag = true;
+        }
+      }
+
+      if (new_point_flag)
       {
         const coord_list =
           points.map(point => point.coords);
 
         this.map.fitBounds(
-          L.latLngBounds(coord_list).pad(0.05),
+          this.map.getBounds().extend(
+            L.latLngBounds(coord_list).pad(0.05)),
           { maxZoom: this.map.getZoom() });
       }
 

@@ -463,7 +463,7 @@ class SearchTabs extends React.Component {
               query: searchQuery,
               variables: {
                 mode: 'published',
-                query: value.query,
+                query: isQueriesClean(value.query) ? value.query : [],
                 category: value.category,
                 adopted: value.adopted,
                 etymology: value.etymology,
