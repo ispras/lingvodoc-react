@@ -1,3 +1,4 @@
+import { isEqual } from 'lodash';
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { Segment } from 'semantic-ui-react';
@@ -13,6 +14,8 @@ function initMap(mountPoint) {
   const map = L.map(mountPoint, {
     contextmenu: true,
     contextmenuWidth: 270,
+    zoomSnap: 0.5,
+    zoomDelta: 0.5,
   }).setView([62.8818649, 117.4730521], 4);
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -230,16 +233,34 @@ class MapAreas extends PureComponent {
     this.areasMode = areasMode;
     this.markersGroups = markersGroups.toJS();
 
-    if (points !== this.points) {
+    points.sort((a, b) => {
+      const [ax, ay] = a.coords;
+      const [bx, by] = b.coords;
+      return (ax - bx || ay - by); });
+
+    if (!isEqual(points, this.points))
+    {
       this.resetMarkers();
       this.resetAreas();
 
       this.updatePoints(points);
       this.updateAreas(areas);
 
+      if (points.length > 0)
+      {
+        const coord_list =
+          points.map(point => point.coords);
+
+        this.map.fitBounds(
+          L.latLngBounds(coord_list).pad(0.05),
+          { maxZoom: this.map.getZoom() });
+      }
+
       this.renderMarkers();
       this.showAreas();
-    } else if (areas !== this.areas) {
+    }
+    else if (areas !== this.areas)
+    {
       this.resetAreas();
 
       this.updateAreas(areas);

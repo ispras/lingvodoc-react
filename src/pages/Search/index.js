@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
-import { graphql } from 'react-apollo';
+import { graphql, withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
 import Immutable, { fromJS } from 'immutable';
 import { Container, Dimmer, Loader, Tab, Button, Divider, Menu, Message, Segment } from 'semantic-ui-react';
@@ -47,8 +47,30 @@ const mdColors = new Immutable.List([
 ]);
 
 const searchQuery = gql`
-  query Search($query: [[ObjectVal]]!, $category: Int, $adopted: Boolean, $etymology: Boolean, $mode: String, $langs: [LingvodocID], $dicts: [LingvodocID], $searchMetadata: ObjectVal, $blocks: Boolean, $xlsxExport: Boolean) {
-    advanced_search(search_strings: $query, category: $category, adopted: $adopted, etymology: $etymology, mode: $mode, languages: $langs, dicts_to_filter: $dicts, search_metadata: $searchMetadata, simple: $blocks, xlsx_export: $xlsxExport) {
+  query Search(
+    $query: [[ObjectVal]]!,
+    $category: Int,
+    $adopted: Boolean,
+    $etymology: Boolean,
+    $mode: String,
+    $langs: [LingvodocID],
+    $dicts: [LingvodocID],
+    $searchMetadata: ObjectVal,
+    $blocks: Boolean,
+    $xlsxExport: Boolean)
+  {
+    advanced_search(
+      search_strings: $query,
+      category: $category,
+      adopted: $adopted,
+      etymology: $etymology,
+      mode: $mode,
+      languages: $langs,
+      dicts_to_filter: $dicts,
+      search_metadata: $searchMetadata,
+      simple: $blocks,
+      xlsx_export: $xlsxExport)
+    {
       dictionaries {
         id
         parent_id
@@ -167,7 +189,11 @@ const isNeedToRenderLanguageTree = (query) => {
 
 class Wrapper extends React.Component {
 
-  componentWillReceiveProps(props) {
+  componentWillReceiveProps(props)
+  {
+    if (props.preloadFlag)
+      return;
+
     // store search results aquired with graphql into Redux state
     const { data, searchId, actions } = props;
     if (!data.error && !data.loading) {
@@ -179,7 +205,15 @@ class Wrapper extends React.Component {
     }
   }
 
-  render() {
+  render()
+  {
+    if (this.props.preloadFlag)
+      return (
+        <Dimmer active={true} inverted>
+          <Loader>Loading</Loader>
+        </Dimmer>
+      );
+
     const { data } = this.props;
     if (data.error) {
       return null;
@@ -237,13 +271,18 @@ const WrapperWithData = compose(
       actions: bindActionCreators({ storeSearchResult }, dispatch),
     })
   ),
-  graphql(searchQuery)
+  graphql(
+    searchQuery,
+    { skip: ({ preloadFlag }) => preloadFlag })
 )(Wrapper);
 
 const Info = ({
   query, searchId, adopted, etymology, category,
-  langs, dicts, searchMetadata, blocks, xlsxExport, subQuery, props
+  langs, dicts, searchMetadata, blocks, xlsxExport, subQuery,
+  preloadFlag,
+  props
 }) => {
+
   if (subQuery) {
     return null;
   }
@@ -270,6 +309,7 @@ const Info = ({
         blocks={blocks}
         xlsxExport={xlsxExport}
         mode="published"
+        preloadFlag={preloadFlag}
       />
     );
   }
@@ -305,6 +345,8 @@ class SearchTabs extends React.Component {
   constructor(props) {
     super(props);
 
+    this.is_mounted = false;
+
     const sourceSearches =
       searchesFromProps(props.searches);
 
@@ -325,6 +367,7 @@ class SearchTabs extends React.Component {
       search_link_loading: false,
       search_link_error: false,
       error_flag: false,
+      preload_count: 0,
     };
 
     this.dictsHandlers = {
@@ -351,6 +394,20 @@ class SearchTabs extends React.Component {
     actions.setCheckStateTreeFlat({})
   }
 
+  componentDidMount()
+  {
+    this.is_mounted = true;
+  }
+
+  componentWillUnmount()
+  {
+    /* Preventing 'setState on umounted component' warning, copied from
+     * https://stackoverflow.com/questions/53949393/cant-perform-a-react-state-update-on-an-unmounted-component. */
+
+    this.is_mounted = false;
+    this.setState = (state, callback) => null;
+  }
+
   componentWillReceiveProps(nextProps)
   {
     const {
@@ -358,15 +415,17 @@ class SearchTabs extends React.Component {
       match: {
         params: {
           searchId: search_id }},
-      data } =
+      data,
+      client } =
       
       nextProps;
+
+    /* We have new search data loaded by a search data id. */
 
     if (
       search_id &&
       !this.state.search_id_set.has(search_id))
     {
-
       if (!data.loading && !data.error)
       {
         const {
@@ -378,13 +437,63 @@ class SearchTabs extends React.Component {
         const source_searches_info =
           fromJS(search_data);
 
+        const entry_list =
+          Object.entries(search_data).sort((a, b) => a[0] - b[0]);
+
         const searches = [];
 
-        for (
-          const [key, value] of
-          Object.entries(search_data).sort((a, b) => a[0] - b[0]))
-
+        for (const [key, value] of entry_list)
           searches.push(value);
+
+        actions.setSearches(searches);
+
+        this.state.preload_count = entry_list.length;
+
+        for (const [key, value] of entry_list)
+        {
+          if (value.subQuery)
+          {
+            this.state.preload_count--;
+            continue;
+          }
+
+          client
+            
+            .query({
+              query: searchQuery,
+              variables: {
+                mode: 'published',
+                query: value.query,
+                category: value.category,
+                adopted: value.adopted,
+                etymology: value.etymology,
+                langs: value.langs,
+                dicts: value.dicts,
+                searchMetadata: value.searchMetadata,
+                blocks: value.blocks,
+                xlsxExport: value.xlsxExport,
+              },
+            })
+
+            .then(
+
+              ({ data: { advanced_search } }) =>
+              {
+                this.setState({ preload_count: this.state.preload_count - 1 });
+
+                if (this.is_mounted)
+                  actions.storeSearchResult(value.id, advanced_search);
+              },
+
+              error_data =>
+              {
+                window.logger.err('Failed search query!');
+                console.log(error_data);
+
+                this.setState({ preload_count: this.state.preload_count - 1 });
+              }
+            );
+        }
 
         const search_id_map =
 
@@ -402,8 +511,6 @@ class SearchTabs extends React.Component {
           search_id_map,
           search_id_set,
         });
-
-        actions.setSearches(searches);
       }
 
       else if (data.error)
@@ -604,7 +711,7 @@ class SearchTabs extends React.Component {
 
       (error_data) => {
 
-        window.logger.err('Failed save search data!');
+        window.logger.err('Failed to save search data!');
         console.log(error_data);
         
         this.setState({
@@ -835,6 +942,7 @@ class SearchTabs extends React.Component {
       ),
       render: () => {
         const showCreateSearchButton = this.isNeedToShowCreateSearchButton(search);
+
         return (
           <Tab.Pane attached={false} key={search.id}>
             <Container>
@@ -868,6 +976,7 @@ class SearchTabs extends React.Component {
                 blocks={search.blocks}
                 xlsxExport={search.xlsxExport}
                 subQuery={search.subQuery}
+                preloadFlag={this.state.preload_count > 0}
               />
             </Container>
           </Tab.Pane>
@@ -957,7 +1066,8 @@ export default compose(connect(
   dispatch => ({
     actions: bindActionCreators({
       newSearch, deleteSearch, newSearchWithAdditionalFields, setSearches,
-      setDefaultGroup, setCheckStateTreeFlat, setDefaultDataForTree, setMainGroupLanguages
+      setDefaultGroup, setCheckStateTreeFlat, setDefaultDataForTree, setMainGroupLanguages,
+      storeSearchResult
     }, dispatch),
   })),
   graphql(
@@ -974,4 +1084,5 @@ export default compose(connect(
     newUnstructuredDataMutation,
     { name: 'newUnstructuredData' }),
   withRouter,
+  withApollo,
 )(SearchTabs);
