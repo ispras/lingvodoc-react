@@ -184,11 +184,62 @@ export const selectors = {
   },
   getNextStep(state) {
     switch (state.dictImport.get('step')) {
+
       case 'LINKING':
-        return state.dictImport.get('linking').size > 0;
+
+        return (
+          
+          state
+            .dictImport
+            .get('linking')
+            .toArray()
+            .reduce(
+              (count, info) => count + info.get('values').filter(value => value).size,
+              0)
+
+            > 0);
+
       case 'COLUMNS':
-        return state.dictImport.get('columnTypes')
-          .every(values => values.every(field => field !== null));
+
+        const linking = 
+          state.dictImport.get('linking');
+
+        return (
+
+          state
+            .dictImport
+            .get('columnTypes')
+            .every(
+
+              (field_map, blob_id) => 
+              {
+                const linking_map =
+                  linking.getIn([blob_id, 'values']);
+
+                return (
+
+                  field_map.every(
+
+                    (field_id, field_name) =>
+                      field_id !== null ||
+                      !linking_map.get(field_name)));
+              }));
+
+      case 'LANGUAGES':
+
+        const languages =
+          state.dictImport.get('languages');
+
+        return (
+
+          state
+            .dictImport
+            .get('linking')
+            .every(
+
+              (_, blob_id) =>
+                languages.has(blob_id)));
+
       default:
         return false;
     }

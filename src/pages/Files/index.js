@@ -7,6 +7,7 @@ import { sortBy, reverse } from 'lodash';
 import { Table, Button, Dropdown, Icon, Input } from 'semantic-ui-react';
 import { compositeIdToString } from 'utils/compositeId';
 import { getTranslation } from 'api/i18n';
+import { fieldsQuery } from 'pages/DictImport';
 
 const userBlobsQuery = gql`
   query userBlobs {
@@ -137,9 +138,8 @@ class Files extends React.Component {
     createBlob({
       variables: { data_type: this.state.fileType, content: this.state.file },
       refetchQueries: [
-        {
-          query: userBlobsQuery,
-        }
+        { query: userBlobsQuery },
+        { query: fieldsQuery }
       ],
     }).then(() => {
       const { trigger } = this.state;

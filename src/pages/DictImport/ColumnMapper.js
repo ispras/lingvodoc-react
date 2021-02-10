@@ -44,7 +44,13 @@ function Column({
 
   const selectedField = fieldOptions.find(x => is(x.value, type));
   const triggerColor = selectedField ? { color: 'blue' } : {};
-  const triggerText = (selectedField && selectedField.text) || getTranslation('Field Type');
+
+  /* 
+   * Without something in the text button can sometimes be not full height, so we in such cases we place
+   * zero-width space there.
+   */
+
+  const triggerText = selectedField ? (selectedField.text || '\u200b') : getTranslation('Field Type');
 
   let inner;
 

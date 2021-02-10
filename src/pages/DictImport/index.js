@@ -233,16 +233,44 @@ class Info extends React.Component {
             </Message>
           )}
         </div>
-        {step === 'LANGUAGES' && (
-          <Button fluid color="blue" onClick={this.onSubmit}>
-            {getTranslation('Submit')}
-          </Button>
-        )}
-        {isNextStep && (
-          <Button fluid color="blue" onClick={this.onNextClick}>
-            {getTranslation('Next Step')}
-          </Button>
-        )}
+        {step === 'LANGUAGES' ?
+
+          (isNextStep ? (
+
+            <Button fluid color="blue" onClick={this.onSubmit}>
+              {getTranslation('Submit')}
+            </Button>) : (
+
+            <Message style={{'margin': 0, 'textAlign': 'center'}}>
+              <Message.Content>
+                {getTranslation('Please select parent language for each Starling dictionary.')}
+              </Message.Content>
+            </Message>)) :
+
+          isNextStep ? (
+
+            <Button fluid color="blue" onClick={this.onNextClick}>
+              {getTranslation('Next Step')}
+            </Button>) :
+
+          step === 'LINKING' ? (
+
+            <Message style={{'margin': 0, 'textAlign': 'center'}}>
+              <Message.Content>
+                {getTranslation('Please use at least one Starling column.')}
+              </Message.Content>
+            </Message>) :
+
+          step === 'COLUMNS' ? (
+
+            <Message style={{'margin': 0, 'textAlign': 'center'}}>
+              <Message.Content>
+                {getTranslation('Please map all Starling columns to Lingvodoc types.')}
+              </Message.Content>
+            </Message>) :
+
+            null
+        }
       </div>
     );
   }
