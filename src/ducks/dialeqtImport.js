@@ -10,6 +10,7 @@ const SET_DIALEQT_ACTION = '@import_dialeqt/SET_DIALEQT_ACTION';
 const SET_PARENT_LANGUAGE = '@create/SET_PARENT_LANGUAGE';
 const SET_DICTIONARY_TRANSLATIONS = '@create/SET_DICTIONARY_TRANSLATIONS';
 const SET_UPDATE_DICTIONARY_ID = '@create/SET_UPDATE_DICTIONARY_ID';
+const SET_LICENSE = '@create/SET_LICENSE';
 
 // Reducers
 function meta(blob) {
@@ -36,6 +37,7 @@ const initial = new Map({
   parentLanguage: null,
   translations: new List(),
   update_dictionary_id: null,
+  license: 'proprietary',
 });
 
 export default function (state = initial, { type, payload }) {
@@ -64,6 +66,9 @@ export default function (state = initial, { type, payload }) {
       break;
     case SET_UPDATE_DICTIONARY_ID:
       newState = state.set('update_dictionary_id', payload);
+      break;
+    case SET_LICENSE:
+      newState = state.set('license', payload);
       break;
     default:
       return state;
@@ -123,6 +128,10 @@ export const selectors = {
   getUpdateDictionaryId(state) {
     return state.dialeqtImport.get('update_dictionary_id');
   },
+
+  getLicense(state) {
+    return state.dialeqtImport.get('license');
+  },
 };
 
 // Action Creators
@@ -162,5 +171,9 @@ export function setTranslations(translations) {
 
 export function setUpdateDictionaryId(payload) {
   return { type: SET_UPDATE_DICTIONARY_ID, payload };
+}
+
+export function setLicense(payload) {
+  return { type: SET_LICENSE, payload };
 }
 

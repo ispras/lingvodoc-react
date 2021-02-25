@@ -17,6 +17,7 @@ import {
   setParentLanguage,
   setTranslations,
   setUpdateDictionaryId,
+  setLicense,
   selectors,
 } from 'ducks/dialeqtImport';
 
@@ -26,6 +27,7 @@ import Translations from 'components/Translation';
 import 'pages/DictImport/styles.scss';
 
 import { buildExport } from 'pages/DictImport/api';
+import { license_options } from 'components/EditDictionaryMetadata';
 
 export const blobQuery = gql`
   query dialeqt_blobs {
@@ -55,13 +57,15 @@ const convertDialeqtMutation = gql`
     $blobId: LingvodocID!,
     $languageId: LingvodocID,
     $dictionaryId: LingvodocID,
-    $translationAtoms: [ObjectVal])
+    $translationAtoms: [ObjectVal],
+    $license: String)
   {
     convert_dialeqt(
       blob_id: $blobId,
       language_id: $languageId,
       dictionary_id: $dictionaryId,
-      translation_atoms: $translationAtoms)
+      translation_atoms: $translationAtoms,
+      license: $license)
     {
       triumph
     }
@@ -105,6 +109,7 @@ class DialeqtImport extends React.Component {
       dialeqt_blob_id,
       parentLanguage,
       translations,
+      license,
     } = this.props;
 
     convert_dialeqt({
@@ -118,7 +123,9 @@ class DialeqtImport extends React.Component {
 
           translations.map(translation => ({
             locale_id: translation.get('localeId'),
-            content: translation.get('content'), }))},
+            content: translation.get('content'), })),
+
+        license},
 
       /* 
        * No point in refetching, as dictionary creation happens in the background and takes quite some time,
@@ -159,6 +166,7 @@ class DialeqtImport extends React.Component {
       parentLanguage,
       translations,
       update_dictionary_id,
+      license,
       data,
       dictionaryData,
     } = this.props;
@@ -323,12 +331,27 @@ class DialeqtImport extends React.Component {
 
           {step === 'TRANSLATIONS' && (
             <div>
+
               <Header inverted>{getTranslation('Add one or more translations')}</Header>
               <Segment>
                 <Translations
                   translations={translations.toJS()}
                   onChange={t => this.props.setTranslations(t)} />
               </Segment>
+
+              <Header inverted>{getTranslation('Select a license')}</Header>
+              <Segment>
+                <Dropdown
+                  fluid
+                  label={getTranslation('License')}
+                  selection
+                  search
+                  options={license_options}
+                  defaultValue={license}
+                  onChange={(event, data) => this.props.setLicense(data.value)}
+                />
+              </Segment>
+
             </div>
           )}
 
@@ -391,6 +414,7 @@ function mapStateToProps(state) {
     parentLanguage: selectors.getParentLanguage(state),
     translations: selectors.getTranslations(state),
     update_dictionary_id: selectors.getUpdateDictionaryId(state),
+    license: selectors.getLicense(state),
   };
 }
 
@@ -403,6 +427,7 @@ const mapDispatchToProps = {
   setParentLanguage,
   setTranslations,
   setUpdateDictionaryId,
+  setLicense,
 };
 
 export default compose(

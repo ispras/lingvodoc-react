@@ -26,7 +26,7 @@ function singleColumn(name, value, columnTypes) {
   return result;
 }
 
-function blobExport(blob, columnTypes, language) {
+function blobExport(blob, columnTypes, language, license) {
   const blob_id = blob.get('id').toArray();
 
   const translation_atoms = blob
@@ -54,14 +54,15 @@ function blobExport(blob, columnTypes, language) {
     parent_id,
     field_map,
     add_etymology,
+    license,
   };
 
   return result;
 }
 
-export function buildExport({ linking, columnTypes, languages }) {
+export function buildExport({ linking, columnTypes, languages, licenses }) {
   return linking.reduce(
-    (acc, blob, id) => [...acc, blobExport(blob, columnTypes.get(id), languages.get(id))],
+    (acc, blob, id) => [...acc, blobExport(blob, columnTypes.get(id), languages.get(id), licenses.get(id))],
     []
   );
 }

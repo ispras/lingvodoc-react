@@ -36,9 +36,22 @@ const queryAvailablePerspectives = gql`
         parent_id
         translation
       }
+      additional_metadata {
+        license
+      }
     }
   }
 `;
+
+const proprietary_str =
+  getTranslation('Proprietary');
+
+const license_dict = {
+  'proprietary': [proprietary_str, null],
+  'cc-by-4.0': ['CC-BY-4.0', 'https://creativecommons.org/licenses/by/4.0/legalcode'],
+  'cc-by-sa-4.0': ['CC-BY-SA-4.0', 'https://creativecommons.org/licenses/by-sa/4.0/legalcode'],
+  'cc-by-nc-sa-4.0': ['CC-BY-NC-SA-4.0', 'https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode'],
+};
 
 /**
  * Perspective breadcrumb component.
@@ -54,8 +67,19 @@ class PerspectivePath extends React.Component {
       return null;
     }
 
-    const { perspective: { tree } } = queryPerspectivePath;
-    const { perspectives } = queryAvailablePerspectives.dictionary;
+    const {
+      perspective: { tree } } =
+      
+      queryPerspectivePath;
+
+    const {
+      perspectives,
+      additional_metadata: { license } } =
+
+      queryAvailablePerspectives.dictionary;
+
+    const [license_str, license_url] =
+      license_dict.hasOwnProperty(license) ? license_dict[license] : [proprietary_str, null];
 
     return (
       <Header as="h2" className={className}>
@@ -170,6 +194,21 @@ class PerspectivePath extends React.Component {
               link: false
             }))}
         />
+        <div style={{
+          'float': 'right',
+          'fontSize': '1rem'}}>
+          <span>
+            {getTranslation('license') + ': '}
+            {license_url ?
+              <a className='license' href={license_url}>{license_str}</a> :
+              <span>{license_str}</span>}
+          </span>
+          <style type="text/css">
+            {'a.license:link { color: white }'}
+            {'a.license:visited { color: white }'}
+            {'a.license:hover { color: #1e70bf }'}
+          </style>
+        </div>
       </Header>
     );
   }

@@ -6,6 +6,7 @@ import { graphql } from 'react-apollo';
 import { getTranslation } from 'api/i18n';
 import SelectSettlementMap from '../SelectSettlement/SelectSettlementMap';
 import SelectSettlementModal from '../SelectSettlement/SelectSettlementModal';
+import { license_options } from '../EditDictionaryMetadata';
 
 const getMetadataAlternativesQuery = gql`
   query getMetadataAlternatives {
@@ -28,7 +29,8 @@ class EditCorpusMetadata extends React.Component {
       quantitativeCharacteristic: '',
       bibliographicDataOfTheSource: '',
       translator: '',
-      bibliographicDataOfTheTranslation: ''
+      bibliographicDataOfTheTranslation: '',
+      license: 'proprietary',
     };
 
     this.initialState = {
@@ -42,7 +44,8 @@ class EditCorpusMetadata extends React.Component {
       quantitativeCharacteristic: this.state.quantitativeCharacteristic,
       bibliographicDataOfTheSource: this.state.bibliographicDataOfTheSource,
       translator: this.state.translator,
-      bibliographicDataOfTheTranslation: this.state.bibliographicDataOfTheTranslation
+      bibliographicDataOfTheTranslation: this.state.bibliographicDataOfTheTranslation,
+      license: this.state.license,
     };
 
     this.onAddNewAlternative = this.onAddNewAlternative.bind(this);
@@ -145,6 +148,9 @@ class EditCorpusMetadata extends React.Component {
         break;
       case 'bibliographicDataOfTheTranslation':
         this.setState({ bibliographicDataOfTheTranslation: data.value }, callback);
+        break;
+      case 'license':
+        this.setState({ license: data.value }, callback);
         break;
       default:
     }
@@ -262,7 +268,8 @@ class EditCorpusMetadata extends React.Component {
       quantitativeCharacteristic,
       bibliographicDataOfTheSource,
       translator,
-      bibliographicDataOfTheTranslation
+      bibliographicDataOfTheTranslation,
+      license,
     } = this.state;
 
     return (
@@ -308,6 +315,23 @@ class EditCorpusMetadata extends React.Component {
             }
           </Form.Group>
         </Segment>
+
+        {mode == 'create' && (
+          <Segment>
+            <Form.Group widths="equal">
+              <Form.Dropdown
+                fluid
+                label={getTranslation('License')}
+                selection
+                search
+                options={license_options}
+                defaultValue={license}
+                onChange={(event, data) => this.onChangeValue('license', data)}
+              />
+            </Form.Group>
+          </Segment>
+        )}
+
         <Segment>
           <Form.Group widths="equal">
             <SelectSettlementModal

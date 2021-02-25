@@ -19,6 +19,7 @@ import {
   setColumnType,
   setLanguage,
   setTranslation,
+  setLicense,
   selectors,
 } from 'ducks/dictImport';
 
@@ -92,6 +93,7 @@ class Info extends React.Component {
     this.onToggleColumn = this.onToggleColumn.bind(this);
     this.onSetColumnType = this.onSetColumnType.bind(this);
     this.onSetLanguage = this.onSetLanguage.bind(this);
+    this.onSetLicense = this.onSetLicense.bind(this);
     this.onSetTranslation = this.onSetTranslation.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
   }
@@ -143,6 +145,10 @@ class Info extends React.Component {
     return (locale, value) => this.props.setTranslation(id, locale, value);
   }
 
+  onSetLicense(id) {
+    return license => this.props.setLicense(id, license);
+  }
+
   onSubmit() {
     const { convert } = this.props;
     const params = buildExport(this.props);
@@ -153,7 +159,7 @@ class Info extends React.Component {
 
   render() {
     const {
-      step, isNextStep, blobs, linking, spreads, columnTypes, languages, locales, data,
+      step, isNextStep, blobs, linking, spreads, columnTypes, languages, licenses, locales, data,
     } = this.props;
 
     if (data.loading || data.error) {
@@ -219,9 +225,11 @@ class Info extends React.Component {
             <LanguageSelection
               state={linking}
               languages={languages}
+              licenses={licenses}
               locales={locales}
               onSetLanguage={this.onSetLanguage}
               onSetTranslation={this.onSetTranslation}
+              onSetLicense={this.onSetLicense}
             />
           )}
           {step === 'FINISH' && (
@@ -285,6 +293,7 @@ function mapStateToProps(state) {
     spreads: selectors.getSpreads(state),
     columnTypes: selectors.getColumnTypes(state),
     languages: selectors.getLanguages(state),
+    licenses: selectors.getLicenses(state),
     locales: state.locale.locales,
   };
 }
@@ -300,6 +309,7 @@ const mapDispatchToProps = {
   setColumnType,
   setLanguage,
   setTranslation,
+  setLicense,
 };
 
 export default compose(

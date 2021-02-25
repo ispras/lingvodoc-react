@@ -5,6 +5,8 @@ import { Form, Input, Modal, Button } from 'semantic-ui-react';
 import Languages from 'components/Languages';
 import { getTranslation } from 'api/i18n';
 
+import { license_options } from 'components/EditDictionaryMetadata';
+
 class Dictionary extends React.Component {
   constructor(props) {
     super(props);
@@ -16,7 +18,7 @@ class Dictionary extends React.Component {
 
   render() {
     const {
-      blob, language, locales, onSetLanguage, onSetTranslation,
+      blob, language, license, locales, onSetLanguage, onSetTranslation, onSetLicense
     } = this.props;
 
     const triggerText = (language && language.get('translation', false)) || getTranslation('Select Parent Language');
@@ -60,6 +62,18 @@ class Dictionary extends React.Component {
                 </Form.Field>
               ))}
             </Form.Group>
+
+            <Form.Group widths="equal">
+              <Form.Dropdown
+                fluid
+                label={getTranslation('License')}
+                selection
+                search
+                options={license_options}
+                defaultValue={license || 'proprietary'}
+                onChange={(event, data) => onSetLicense(data.value)}
+              />
+            </Form.Group>
           </Form>
         </div>
       </div>
@@ -68,8 +82,9 @@ class Dictionary extends React.Component {
 }
 
 function LanguageSelection({
-  state, languages, locales, onSetLanguage, onSetTranslation,
+  state, languages, licenses, locales, onSetLanguage, onSetTranslation, onSetLicense,
 }) {
+
   return (
     <div className="language-selection">
       {state
@@ -78,8 +93,10 @@ function LanguageSelection({
             key={id.join('/')}
             blob={v}
             language={languages.get(id)}
+            license={licenses.get(id)}
             onSetLanguage={onSetLanguage(id)}
             onSetTranslation={onSetTranslation(id)}
+            onSetLicense={onSetLicense(id)}
             locales={locales}
           />
         ))

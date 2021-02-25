@@ -12,6 +12,7 @@ const LINKING_SET_COLUMN = '@import/LINKING_SET_COLUMN';
 const LINKING_TOGGLE_ADD_COLUMN = '@import/LINKING_TOGGLE_ADD_COLUMN';
 const COLUMN_SET_TYPE = '@import/COLUMN_SET_TYPE';
 const LANGUAGE_SET = '@import/LANGUAGE_SET';
+const LICENSE_SET = '@import/LICENSE_SET';
 const LOCALE_SET = '@import/LOCALE_SET';
 
 // Reducers
@@ -128,6 +129,7 @@ const initial = new Map({
   spreads: new Map(),
   columnTypes: new OrderedMap(),
   languages: new Map(),
+  licenses: new Map(),
 });
 
 const computeStore = compose(
@@ -167,6 +169,9 @@ export default function (state = initial, { type, payload }) {
       break;
     case LANGUAGE_SET:
       newState = state.setIn(['languages', payload.id], fromJS(payload.language));
+      break;
+    case LICENSE_SET:
+      newState = state.setIn(['licenses', payload.id], payload.license);
       break;
     case LOCALE_SET:
       return state.setIn(['linking', payload.id, 'translation', payload.locale], payload.value);
@@ -259,6 +264,9 @@ export const selectors = {
   getLanguages(state) {
     return state.dictImport.get('languages');
   },
+  getLicenses(state) {
+    return state.dictImport.get('licenses');
+  },
 };
 
 // Action Creators
@@ -312,6 +320,13 @@ export function setLanguage(id, language) {
   return {
     type: LANGUAGE_SET,
     payload: { id, language },
+  };
+}
+
+export function setLicense(id, license) {
+  return {
+    type: LICENSE_SET,
+    payload: { id, license },
   };
 }
 

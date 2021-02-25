@@ -11,6 +11,18 @@ const getMetadataAlternativesQuery = gql`
   }
 `;
 
+const license_name_key_list = [
+  [getTranslation('Proprietary license'), 'proprietary'],
+  ['Creative Commons Attribution 4.0', 'cc-by-4.0'],
+  ['Creative Commons Attribution-ShareAlike 4.0', 'cc-by-sa-4.0'],
+  ['Creative Commons Attribution-NonCommercial-ShareAlike 4.0', 'cc-by-nc-sa-4.0'],
+];
+
+export const license_options =
+
+  license_name_key_list.map(
+    ([name, key]) => ({ text: name, value: key }));
+
 class EditDictionaryMetadata extends React.Component {
   constructor(props) {
     super(props);
@@ -26,7 +38,8 @@ class EditDictionaryMetadata extends React.Component {
       typeOfDiscourse: '',
       typeOfSpeech: '',
       speechGenre: '',
-      theThemeOfTheText: ''
+      theThemeOfTheText: '',
+      license: 'proprietary',
     };
 
     this.initialState = {
@@ -40,7 +53,8 @@ class EditDictionaryMetadata extends React.Component {
       typeOfDiscourse: this.state.typeOfDiscourse,
       typeOfSpeech: this.state.typeOfSpeech,
       speechGenre: this.state.speechGenre,
-      theThemeOfTheText: this.state.theThemeOfTheText
+      theThemeOfTheText: this.state.theThemeOfTheText,
+      license: this.state.license,
     };
 
     this.onAddNewAlternative = this.onAddNewAlternative.bind(this);
@@ -145,6 +159,9 @@ class EditDictionaryMetadata extends React.Component {
       case 'theThemeOfTheText':
         this.setState({ theThemeOfTheText: data.value }, callback);
         break;
+      case 'license':
+        this.setState({ license: data.value }, callback);
+        break;
       default:
     }
   }
@@ -246,7 +263,8 @@ class EditDictionaryMetadata extends React.Component {
       typeOfDiscourse,
       typeOfSpeech,
       speechGenre,
-      theThemeOfTheText
+      theThemeOfTheText,
+      license,
     } = this.state;
 
     return (
@@ -328,6 +346,23 @@ class EditDictionaryMetadata extends React.Component {
             }
           </Form.Group>
         </Segment>
+
+        {mode == 'create' && (
+          <Segment>
+            <Form.Group widths="equal">
+              <Form.Dropdown
+                fluid
+                label={getTranslation('License')}
+                selection
+                search
+                options={license_options}
+                defaultValue={license}
+                onChange={(event, data) => this.onChangeValue('license', data)}
+              />
+            </Form.Group>
+          </Segment>
+        )}
+
         <Segment>
           <Form.Group widths="equal">
             <Form.Dropdown

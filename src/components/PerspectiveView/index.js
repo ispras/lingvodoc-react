@@ -320,6 +320,12 @@ const P = ({
     openNewModal(ApproveModal, { perspectiveId: id, mode });
   };
 
+  /* Basic case-insensitive, case-sensitive compare. */
+  const ci_cs_compare = (str_a, str_b) => {
+    const result = str_a.toLowerCase().localeCompare(str_b.toLowerCase());
+    return result ? result : str_a.localeCompare(str_b);
+  };
+
   const processEntries = flow([
     // remove empty lexical entries, if not in edit mode
     es => (mode !== 'edit' ? es.filter(e => e.entities.length > 0) : es),
@@ -336,15 +342,19 @@ const P = ({
         return es;
       }
       const { field, order } = sortByField;
-      // XXX: sorts by first entity only
-      const sortedEntries = sortBy(es, (e) => {
-        const entities = e.entities.filter(entity => isEqual(entity.field_id, field));
-        if (entities.length > 0) {
-          return entities[0].content;
-        }
-        return '';
-      });
-      return order === 'a' ? sortedEntries : reverse(sortedEntries);
+
+      /* Getting a sort key for each entry. */
+
+      for (const entry of es)
+      {
+        const entities = entry.entities.filter(entity => isEqual(entity.field_id, field));
+        entities.sort((ea, eb) => ci_cs_compare(ea.content, eb.content));
+        entry.entity_sort_key = entities.length > 0 ? entities[0].content : '';
+      }
+
+      es.sort((ea, eb) => ci_cs_compare(ea.entity_sort_key, eb.entity_sort_key));
+
+      return order === 'a' ? es : reverse(es);
     },
   ]);
 
