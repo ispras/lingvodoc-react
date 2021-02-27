@@ -5,7 +5,7 @@ import { compose, branch, renderNothing } from 'recompose';
 import { Redirect, matchPath } from 'react-router-dom';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
-import Immutable, { fromJS, Map } from 'immutable';
+import Immutable, { fromJS, Map, OrderedMap } from 'immutable';
 import { Container, Segment, Label } from 'semantic-ui-react';
 import { getTranslation } from 'api/i18n';
 import { buildLanguageTree } from 'pages/Search/treeBuilder';
@@ -156,9 +156,11 @@ const CorporaAll = (props) => {
   const hasPermission = (p, permission) =>
     (config.buildType === 'server' ? false : permissions.get(permission).has(p.get('id')));
 
+  /* Ordered map for preservation of server dictionary order, which is by creation time from new to old. */
+
   const dicts = dictsSource.reduce(
     (acc, dict) => acc.set(dict.get('id'), dict.set('isDownloaded', isDownloaded(dict))),
-    new Map()
+    new OrderedMap()
   );
 
   const perspectivesList = fromJS(perspectives).map(perspective =>
