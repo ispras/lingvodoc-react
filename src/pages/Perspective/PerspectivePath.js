@@ -6,6 +6,7 @@ import gql from 'graphql-tag';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
 import { compose } from 'recompose';
+import { Redirect } from 'react-router-dom';
 import { Header, Breadcrumb, Dropdown } from 'semantic-ui-react';
 import { openRoles } from 'ducks/roles';
 import { openModal as openDictionaryOrganizationsModal } from 'ducks/dictionaryOrganizations';
@@ -72,11 +73,28 @@ class PerspectivePath extends React.Component {
       
       queryPerspectivePath;
 
+    const dictionary_id_tree = tree[1].id;
+
     const {
       perspectives,
       additional_metadata: { license } } =
 
       queryAvailablePerspectives.dictionary;
+
+    /* If the dictionary in the URL is not actually the perspective's dictionary,
+     * we redirect to the proper URL with the perspective's dictionary. */
+
+    if (
+      dictionary_id_tree[0] != dictionary_id[0] || 
+      dictionary_id_tree[1] != dictionary_id[1])
+    {
+      const redirect_url = 
+        `/dictionary/${dictionary_id_tree[0]}/${dictionary_id_tree[1]}` +
+        `/perspective/${id[0]}/${id[1]}/${mode}`;
+
+      return (
+        <Redirect to={redirect_url}/>);
+    }
 
     const [license_str, license_url] =
       license_dict.hasOwnProperty(license) ? license_dict[license] : [proprietary_str, null];
