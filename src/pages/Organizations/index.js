@@ -112,7 +112,7 @@ class Organizations extends React.Component {
   }
 
   render() {
-    const { data } = this.props;
+    const { data, user } = this.props;
     const { organizations } = data;
 
     return (
@@ -171,11 +171,13 @@ class Organizations extends React.Component {
           </Table>
         </div>
 
-        <Button
-          style={{marginTop: '1em'}}
-          onClick={() => this.createOrganization()}>
-          {getTranslation('Create organization...')}
-        </Button>
+        {user.id == 1 && (
+          <Button
+            style={{marginTop: '1em'}}
+            onClick={() => this.createOrganization()}>
+            {getTranslation('Create organization...')}
+          </Button>
+        )}
 
       </div>
     );
