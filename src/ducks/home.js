@@ -6,8 +6,7 @@ import config from 'config';
 // Actions
 export const TOGGLE_DICT = '@home/TOGGLE_DICT';
 export const RESET_DICTS = '@home/RESET_DICTS';
-export const TOGGLE_GRANTS_MODE = '@home/TOGGLE_GRANTS_MODE';
-export const SET_GRANTS_MODE = '@home/SET_GRANTS_MODE';
+export const SET_SORT_MODE = '@home/SET_SORT_MODE';
 
 export const toggleDictionary = id => ({
   type: TOGGLE_DICT,
@@ -16,11 +15,7 @@ export const toggleDictionary = id => ({
 
 export const resetDictionaries = () => ({ type: RESET_DICTS });
 
-export const toggleGrantsMode = () => ({
-  type: TOGGLE_GRANTS_MODE,
-});
-
-export const setGrantsMode = mode => ({ type: SET_GRANTS_MODE, payload: mode });
+export const setSortMode = mode => ({ type: SET_SORT_MODE, payload: mode });
 
 function selected(state = new Immutable.Set(), { type, payload }) {
   const id = fromJS(payload);
@@ -34,17 +29,15 @@ function selected(state = new Immutable.Set(), { type, payload }) {
   }
 }
 
-function grantsMode(state = false, { type, payload }) {
+function sortMode(state = false, { type, payload }) {
   switch (type) {
-    case TOGGLE_GRANTS_MODE:
-      return !state;
-    case SET_GRANTS_MODE:
+    case SET_SORT_MODE:
       return payload;
     case LOCATION_CHANGE:
       if (payload.pathname === config.homePath) {
         const params = new URLSearchParams(payload.search);
         const mode = params.get('mode');
-        return mode ? mode !== 'dicts' : state;
+        return mode ? mode : state;
       }
       return state;
     default:
@@ -54,5 +47,5 @@ function grantsMode(state = false, { type, payload }) {
 
 export default combineReducers({
   selected,
-  grantsMode,
+  sortMode,
 });

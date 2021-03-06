@@ -5,6 +5,7 @@ import Immutable, { fromJS, Map } from 'immutable';
 import { assignDictsToTree, buildDictTrees } from 'pages/Search/treeBuilder';
 import { Segment, Header, List } from 'semantic-ui-react';
 
+import { getTranslation } from 'api/i18n';
 import Tree from './Tree';
 
 const grantId = id => `grant_entry_${id}`;
@@ -18,7 +19,7 @@ function restDictionaries(dicts, grants) {
 
 function GrantedDicts(props) {
   const {
-    languagesTree, dictionaries, perspectives, grants, isAuthenticated,
+    mode, languagesTree, dictionaries, perspectives, grants, isAuthenticated,
   } = props;
 
   const dicts = fromJS(dictionaries)
@@ -29,11 +30,10 @@ function GrantedDicts(props) {
     // list of dictionary ids involved in this grant
     const dictIds = grant.getIn(['additional_metadata', 'participant']) || new Immutable.List();
     const pickedDicts = dictIds.map(id => dicts.get(id)).filter(d => !!d);
-    return {
+
+    const result = {
       id: grant.get('id'),
       title: grant.get('translation'),
-      issuer: grant.get('issuer'),
-      number: grant.get('grant_number'),
       tree: assignDictsToTree(
         buildDictTrees(fromJS({
           lexical_entries: [],
@@ -43,6 +43,15 @@ function GrantedDicts(props) {
         languagesTree
       ),
     };
+
+    if (mode == 'grant')
+    {
+      result.issuer = grant.get('issuer');
+      result.number = grant.get('grant_number');
+    }
+
+    return result;
+
   }).filter(t => t.tree.size > 0);
 
 
@@ -64,31 +73,30 @@ function GrantedDicts(props) {
   return (
     <div>
       <Segment>
-        <Header>The work is supported by the following grants:</Header>
+        {mode == 'grant' && (
+          <Header>The work is supported by the following grants:</Header>)}
         <List ordered>
           {trees.map(grant => (
             <List.Item key={grant.id} as="a" onClick={e => navigateToGrant(e, grant)}>
-              {grant.title} ({grant.issuer} {grant.number})
+              {grant.title + (mode == 'grant' ? ` (${grant.issuer} ${grant.number})` : '')}
             </List.Item>
           ))}
         </List>
       </Segment>
 
       <Segment>
-        {trees.map(({
- id, title, issuer, number, tree,
-}) => (
-  <div id={grantId(id)} key={id} className="grant">
-    <Header>
-      {title} ({issuer} {number})
-    </Header>
-    <Tree tree={tree} canSelectDictionaries={isAuthenticated} />
-  </div>
+        {trees.map(grant => (
+          <div id={grantId(grant.id)} key={grant.id} className="grant">
+            <Header>
+              {grant.title + (mode == 'grant' ? `(${grant.issuer} ${grant.number})` : '')}
+            </Header>
+            <Tree tree={grant.tree} canSelectDictionaries={isAuthenticated} />
+          </div>
         ))}
       </Segment>
       <Segment>
         <div className="grant">
-          <div className="grant-title">Индивидуальная работа</div>
+          <div className="grant-title">{getTranslation('Индивидуальная работа')}</div>
           <Tree tree={restTree} canSelectDictionaries={isAuthenticated} />
         </div>
       </Segment>

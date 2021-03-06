@@ -10,7 +10,7 @@ import Immutable, { fromJS, Map, OrderedMap } from 'immutable';
 import { Container, Form, Radio, Segment, Button, Label } from 'semantic-ui-react';
 
 import { buildLanguageTree } from 'pages/Search/treeBuilder';
-import { setGrantsMode, resetDictionaries } from 'ducks/home';
+import { setSortMode, resetDictionaries } from 'ducks/home';
 
 import config from 'config';
 
@@ -114,13 +114,14 @@ const downloadDictionariesMutation = gql`
 
 const Home = (props) => {
   const {
-    grantsMode,
+    sortMode,
     selected,
     actions,
     downloadDictionaries,
     dictionaries: localDictionaries,
     perspectives,
     grants,
+    organizations,
     languages,
     isAuthenticated,
     data: {
@@ -155,6 +156,7 @@ const Home = (props) => {
   }
 
   const grantsList = fromJS(grants);
+  const organizationsList = fromJS(organizations);
   const languagesTree = buildLanguageTree(fromJS(languages));
 
   // skip permissions if buildType == 'server'
@@ -216,15 +218,22 @@ const Home = (props) => {
                 control={Radio}
                 label={{ children: <div className="toggle-label">{getTranslation('By Languages')}</div> }}
                 value="1"
-                checked={!grantsMode}
-                onChange={() => actions.setGrantsMode(false)}
+                checked={!sortMode}
+                onChange={() => actions.setSortMode(null)}
               />
               <Form.Field
                 control={Radio}
                 label={{ children: <div className="toggle-label">{getTranslation('By Grants')}</div> }}
                 value="2"
-                checked={grantsMode}
-                onChange={() => actions.setGrantsMode(true)}
+                checked={sortMode == 'grant'}
+                onChange={() => actions.setSortMode('grant')}
+              />
+              <Form.Field
+                control={Radio}
+                label={{ children: <div className="toggle-label">{getTranslation('By Organizations')}</div> }}
+                value="3"
+                checked={sortMode == 'organization'}
+                onChange={() => actions.setSortMode('organization')}
               />
             </Segment>
           </Form.Group>
@@ -239,8 +248,9 @@ const Home = (props) => {
           )}
       </Segment>
       <Segment>
-        {grantsMode && (
+        {sortMode == 'grant' && (
           <GrantedDicts
+            mode='grant'
             languagesTree={languagesTree}
             dictionaries={dicts}
             perspectives={perspectivesList}
@@ -248,7 +258,17 @@ const Home = (props) => {
             isAuthenticated={isAuthenticated}
           />
         )}
-        {!grantsMode && (
+        {sortMode == 'organization' && (
+          <GrantedDicts
+            mode='organization'
+            languagesTree={languagesTree}
+            dictionaries={dicts}
+            perspectives={perspectivesList}
+            grants={organizationsList}
+            isAuthenticated={isAuthenticated}
+          />
+        )}
+        {!sortMode && (
           <AllDicts
             location={props.location}
             languagesTree={languagesTree}
@@ -256,7 +276,6 @@ const Home = (props) => {
             perspectives={perspectivesList}
             isAuthenticated={isAuthenticated}
             selectorMode={false}
-
           />
         )}
       </Segment>
@@ -274,10 +293,9 @@ Home.propTypes = {
   grants: PropTypes.array.isRequired,
   languages: PropTypes.array.isRequired,
   isAuthenticated: PropTypes.bool.isRequired,
-  grantsMode: PropTypes.bool.isRequired,
   selected: PropTypes.instanceOf(Immutable.Set).isRequired,
   actions: PropTypes.shape({
-    setGrantsMode: PropTypes.func.isRequired,
+    setSortMode: PropTypes.func.isRequired,
     resetDictionaries: PropTypes.func.isRequired,
   }).isRequired,
   location: PropTypes.object.isRequired,
@@ -300,6 +318,13 @@ const dictionaryWithPerspectivesQuery = gql`
       translation
       issuer
       grant_number
+      additional_metadata {
+        participant
+      }
+    }
+    organizations {
+      id
+      translation
       additional_metadata {
         participant
       }
@@ -342,6 +367,13 @@ const dictionaryWithPerspectivesProxyQuery = gql`
         participant
       }
     }
+    organizations {
+      id
+      translation
+      additional_metadata {
+        participant
+      }
+    }
     language_tree {
       id
       parent_id
@@ -354,13 +386,13 @@ const dictionaryWithPerspectivesProxyQuery = gql`
 
 const AuthWrapper = ({
   data: {
-    perspectives, grants, language_tree: languages, is_authenticated: isAuthenticated, dictionaries,
+    perspectives, grants, organizations, language_tree: languages, is_authenticated: isAuthenticated, dictionaries,
   },
 }) => {
   const Component = compose(
     connect(
       state => ({ ...state.home, ...state.router }),
-      dispatch => ({ actions: bindActionCreators({ setGrantsMode, resetDictionaries }, dispatch) })
+      dispatch => ({ actions: bindActionCreators({ setSortMode, resetDictionaries }, dispatch) })
     ),
     graphql(isAuthenticated ? authenticatedDictionariesQuery : guestDictionariesQuery, {
       options: {
@@ -372,7 +404,12 @@ const AuthWrapper = ({
 
   if (config.buildType === 'server') {
     return (
-      <Component perspectives={perspectives} grants={grants} languages={languages} isAuthenticated={isAuthenticated} />
+      <Component
+        perspectives={perspectives}
+        grants={grants}
+        organizations={organizations}
+        languages={languages}
+        isAuthenticated={isAuthenticated} />
     );
   }
   // proxy and desktop has additional parameter - local dictionaries
@@ -381,6 +418,7 @@ const AuthWrapper = ({
       dictionaries={dictionaries}
       perspectives={perspectives}
       grants={grants}
+      organizations={organizations}
       languages={languages}
       isAuthenticated={isAuthenticated}
     />
