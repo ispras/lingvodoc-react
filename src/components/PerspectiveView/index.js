@@ -59,6 +59,10 @@ export const queryPerspective = gql`
   }
 `;
 
+/*
+ * If you modify this query by adding field to 'entities', please modify query 'connectedQuery' in
+ * src/components/GroupingTagModal/graphql.js accordingly, see comment there.
+ */
 export const queryLexicalEntries = gql`
   query queryPerspective2($id: LingvodocID!, $entitiesMode: String!) {
     perspective(id: $id) {
