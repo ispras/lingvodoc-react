@@ -247,6 +247,7 @@ class QueryBuilder extends React.Component {
       mode: {
         adopted: 'ignore',
         etymology: 'ignore',
+        diacritics: '',
         blocks: 'or',
       },
       allLangsDictsChecked: !this.props.langs && !this.props.dicts,
@@ -304,6 +305,7 @@ class QueryBuilder extends React.Component {
 
     const adopted = mode2bool(this.state.mode.adopted);
     const etymology = mode2bool(this.state.mode.etymology);
+    const diacritics = this.state.mode.diacritics;
     const category = bool2category(this.state.source.dictionaries, this.state.source.corpora);
     const blocks = modeBlocksBool(this.state.mode.blocks);
     const searchMetadata = {
@@ -321,6 +323,7 @@ class QueryBuilder extends React.Component {
       category,
       adopted,
       etymology,
+      diacritics,
       langsToFilter,
       dictsToFilter,
       searchMetadata,
@@ -529,6 +532,14 @@ class QueryBuilder extends React.Component {
                 </Grid.Column>
               </Grid>
             </Segment>
+          <Segment>
+            <Checkbox
+              label={getTranslation('Ignore diacritics')}
+              checked={this.state.mode.diacritics === 'ignore'}
+              onChange={() =>
+                this.changeMode('diacritics', this.state.mode.diacritics === 'ignore' ? '' : 'ignore')}
+            />
+          </Segment>
           </Segment.Group>
         </Segment.Group>
         <Segment.Group className="search-group">
@@ -580,7 +591,7 @@ class QueryBuilder extends React.Component {
           </Button>
           <Checkbox
             style={{marginLeft: '0.5em'}}
-            label="Export to XLSX"
+            label={getTranslation('Export to XLSX')}
             checked={this.state.xlsxExport}
             onChange={() =>
               this.setState({ xlsxExport: !this.state.xlsxExport })}

@@ -52,6 +52,7 @@ const searchQuery = gql`
     $category: Int,
     $adopted: Boolean,
     $etymology: Boolean,
+    $diacritics: String,
     $mode: String,
     $langs: [LingvodocID],
     $dicts: [LingvodocID],
@@ -64,6 +65,7 @@ const searchQuery = gql`
       category: $category,
       adopted: $adopted,
       etymology: $etymology,
+      diacritics: $diacritics,
       mode: $mode,
       languages: $langs,
       dicts_to_filter: $dicts,
@@ -277,7 +279,7 @@ const WrapperWithData = compose(
 )(Wrapper);
 
 const Info = ({
-  query, searchId, adopted, etymology, category,
+  query, searchId, adopted, etymology, diacritics, category,
   langs, dicts, searchMetadata, blocks, xlsxExport, subQuery,
   preloadFlag,
   props
@@ -303,6 +305,7 @@ const Info = ({
         category={category}
         adopted={adopted}
         etymology={etymology}
+        diacritics={diacritics}
         langs={langs}
         dicts={dicts}
         searchMetadata={searchMetadata}
@@ -467,6 +470,7 @@ class SearchTabs extends React.Component {
                 category: value.category,
                 adopted: value.adopted,
                 etymology: value.etymology,
+                diacritics: value.diacritics,
                 langs: value.langs,
                 dicts: value.dicts,
                 searchMetadata: value.searchMetadata,
@@ -970,6 +974,7 @@ class SearchTabs extends React.Component {
                 category={search.category}
                 adopted={search.adopted}
                 etymology={search.etymology}
+                diacritics={search.diacritics}
                 langs={search.langs}
                 dicts={search.dicts}
                 searchMetadata={search.searchMetadata}

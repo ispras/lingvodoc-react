@@ -8,7 +8,23 @@ export const NEW_SEARCH_WITH_ADDITIONAL_FIELDS = '@search/NEW_SEARCH_WITH_ADDITI
 export const DELETE_SEARCH = '@search/DELETE_SEARCH';
 export const SET_SEARCHES = '@search/SET_SEARCHES';
 
-export const setQuery = (searchId, query, category, adopted, etymology, langs, dicts, searchMetadata, grammaticalSigns, languageVulnerability, blocks, xlsxExport) => ({
+export const setQuery =
+(
+  searchId,
+  query,
+  category,
+  adopted,
+  etymology,
+  diacritics,
+  langs,
+  dicts,
+  searchMetadata,
+  grammaticalSigns,
+  languageVulnerability,
+  blocks,
+  xlsxExport
+) =>
+({
   type: SET_QUERY,
   payload: {
     searchId,
@@ -16,6 +32,7 @@ export const setQuery = (searchId, query, category, adopted, etymology, langs, d
     category,
     adopted,
     etymology,
+    diacritics,
     langs,
     dicts,
     searchMetadata,
@@ -70,6 +87,7 @@ function buildNewQuery() {
     category: null,
     adopted: null,
     etymology: null,
+    diacritics: null,
     langs: null,
     dicts: null,
     searchMetadata: null,
@@ -87,6 +105,7 @@ const initialState = {
   category: null,
   adopted: null,
   etymology: null,
+  diacritics: null,
   langs: null,
   dicts: null,
   searchMetadata: null,
@@ -124,6 +143,7 @@ const searches = (state = [initialState], action) => {
             category: action.payload.category,
             adopted: action.payload.adopted,
             etymology: action.payload.etymology,
+            diacritics: action.payload.diacritics,
             langs: action.payload.langs,
             dicts: action.payload.dicts,
             searchMetadata: action.payload.searchMetadata,
