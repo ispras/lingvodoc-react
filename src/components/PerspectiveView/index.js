@@ -351,12 +351,18 @@ const P = ({
 
       for (const entry of es)
       {
-        const entities = entry.entities.filter(entity => isEqual(entity.field_id, field));
-        entities.sort((ea, eb) => ci_cs_compare(ea.content, eb.content));
-        entry.entity_sort_key = entities.length > 0 ? entities[0].content : '';
+        const entities =
+          entry.entities.filter(entity => isEqual(entity.field_id, field));
+
+        entities.sort(
+          (ea, eb) => ci_cs_compare(ea.content || '', eb.content || ''));
+
+        entry.entity_sort_key =
+          (entities.length > 0 && entities[0].content) ? entities[0].content : '';
       }
 
-      es.sort((ea, eb) => ci_cs_compare(ea.entity_sort_key, eb.entity_sort_key));
+      es.sort(
+        (ea, eb) => ci_cs_compare(ea.entity_sort_key, eb.entity_sort_key));
 
       return order === 'a' ? es : reverse(es);
     },
