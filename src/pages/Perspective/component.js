@@ -56,6 +56,9 @@ const toolsQuery = gql`
     perspective(id: $id) {
       id
       english_status: status(locale_id: 2)
+      author {
+        id
+      }
     }
   }
 `;
@@ -66,7 +69,7 @@ const Tools = graphql(toolsQuery)(({
   openPhonemicAnalysisModal,
   openPhonologyModal,
   launchSoundAndMarkup,
-  id,
+  id, /* perspective_id */
   user_id,
   mode
 }) => {
@@ -74,7 +77,11 @@ const Tools = graphql(toolsQuery)(({
     return null;
   }
 
-  const { perspective: { english_status } } = data;
+  const {
+    perspective: {
+      english_status,
+      author: {
+        id: author_id }}} = data;
 
   const published =
     english_status === 'Published' ||
@@ -84,7 +91,7 @@ const Tools = graphql(toolsQuery)(({
     <Dropdown item text={getTranslation('Tools')}>
       <Dropdown.Menu>
 
-        {user_id == 1 && (
+        {(user_id == 1 || user_id == author_id) && (
           <React.Fragment>
             <Dropdown.Item
               onClick={() => openCognateAnalysisModal(id, 'acoustic')}
