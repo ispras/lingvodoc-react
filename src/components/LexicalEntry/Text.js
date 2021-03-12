@@ -32,15 +32,15 @@ class TextEntityContent extends React.Component {
 
   render() {
     const {
-      entity, mode, publish, accept, remove,
+      entity, mode, publish, accept, remove, is_being_removed, is_being_updated
     } = this.props;
 
     switch (mode) {
       case 'edit':
         return (
           <div>
-            {!this.state.edit && this.state.content}
-            {this.state.edit && (
+            {!(is_being_updated || this.state.edit) && this.state.content}
+            {(is_being_updated || this.state.edit) && (
               <Input
                 size="mini"
                 onChange={(event, target) => this.setState({ content: target.value })}
@@ -48,8 +48,16 @@ class TextEntityContent extends React.Component {
               />
             )}
             <Button.Group basic icon size="mini">
-              <Button icon="edit" onClick={this.onEdit} />
-              <Button icon="remove" onClick={() => remove(entity)} />
+              <Button
+                icon={
+                  is_being_updated ? "spinner" :
+                  this.state.edit ? "save" : "edit"}
+                onClick={this.onEdit}
+                disabled={is_being_updated}
+              />
+              {is_being_removed ?
+                <Button icon="spinner" disabled /> :
+                <Button icon="remove" onClick={() => remove(entity)} />}
             </Button.Group>
           </div>
         );
@@ -81,7 +89,9 @@ class TextEntityContent extends React.Component {
   }
 }
 
-const Text = onlyUpdateForKeys(['entry', 'entity', 'mode'])((props) => {
+const Text = onlyUpdateForKeys([
+  'entry', 'entity', 'mode', 'is_being_removed', 'is_being_updated'])((props) =>
+{
   const {
     perspectiveId,
     column,
@@ -96,6 +106,8 @@ const Text = onlyUpdateForKeys(['entry', 'entity', 'mode'])((props) => {
     accept,
     remove,
     update,
+    is_being_removed,
+    is_being_updated,
   } = props;
 
   const subColumn = find(columns, c => isEqual(c.self_id, column.column_id));
@@ -109,6 +121,8 @@ const Text = onlyUpdateForKeys(['entry', 'entity', 'mode'])((props) => {
         accept={accept}
         remove={remove}
         update={update}
+        is_being_removed={is_being_removed}
+        is_being_updated={is_being_updated}
       />
       {subColumn && (
         <Entities
@@ -179,7 +193,7 @@ class Edit extends React.Component {
   }
 
   render() {
-    const { onSave, onCancel } = this.props;
+    const { onSave, onCancel, is_being_created } = this.props;
     return (
       <Input
         size="mini"
@@ -189,7 +203,10 @@ class Edit extends React.Component {
         onBlur={() => onSave(this.state.content)}
         action={
           <Button.Group basic size="mini">
-            <Button icon="save" />
+            <Button
+              icon={is_being_created ? "spinner" : "save"}
+              disabled={is_being_created}
+            />
             <Button icon="remove" onClick={onCancel} />
           </Button.Group>
         }

@@ -355,14 +355,20 @@ const P = ({
           entry.entities.filter(entity => isEqual(entity.field_id, field));
 
         entities.sort(
-          (ea, eb) => ci_cs_compare(ea.content || '', eb.content || ''));
+          (ea, eb) =>
+            ci_cs_compare(ea.content || '', eb.content || '') ||
+            ea.id[0] - eb.id[0] ||
+            ea.id[1] - eb.id[1]);
 
         entry.entity_sort_key =
           (entities.length > 0 && entities[0].content) ? entities[0].content : '';
       }
 
       es.sort(
-        (ea, eb) => ci_cs_compare(ea.entity_sort_key, eb.entity_sort_key));
+        (ea, eb) =>
+          ci_cs_compare(ea.entity_sort_key, eb.entity_sort_key) ||
+          ea.id[0] - eb.id[0] ||
+          ea.id[1] - eb.id[1]);
 
       return order === 'a' ? es : reverse(es);
     },

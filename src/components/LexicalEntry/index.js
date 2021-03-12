@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { compose, pure } from 'recompose';
-import { graphql } from 'react-apollo';
+import { graphql, withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
 import { isEqual, filter, flow } from 'lodash';
 import { Button } from 'semantic-ui-react';
@@ -14,6 +14,8 @@ import Link from './Link';
 import Image from './Image';
 import GroupingTag from './GroupingTag';
 import Unknown from './Unknown';
+import { queryLexicalEntries } from 'components/PerspectiveView';
+import { compositeIdToString as id2str } from 'utils/compositeId';
 
 const createEntityMutation = gql`
   mutation createEntity($parent_id: LingvodocID!, $field_id: LingvodocID!, $self_id : LingvodocID, $content: String, $file_content: Upload) {
@@ -62,6 +64,7 @@ const lexicalEntryQuery = gql`
       id
       parent_id
       created_at
+      marked_for_deletion
       entities(mode: $entitiesMode) {
         id
         parent_id
@@ -98,15 +101,113 @@ class Entities extends React.Component {
     super(props);
     this.state = {
       edit: false,
+      is_being_created: false,
+      remove_set: {},
+      update_set: {},
     };
     this.create = this.create.bind(this);
     this.publish = this.publish.bind(this);
     this.accept = this.accept.bind(this);
     this.remove = this.remove.bind(this);
     this.update = this.update.bind(this);
+    this.update_check = this.update_check.bind(this);
+  }
+
+  update_check()
+  {
+    /* Checking if we need to manually update perspective data. */
+
+    const {
+      entry,
+      client,
+      perspectiveId,
+      entitiesMode } =
+      
+      this.props;
+
+    const data_entities = 
+
+      client.readQuery({
+        query: lexicalEntryQuery,
+        variables: {
+          id: entry.id,
+          entitiesMode,
+        },
+      });
+
+    const data_perspective =
+
+      client.readQuery({
+        query: queryLexicalEntries,
+        variables: {
+          id: perspectiveId,
+          entitiesMode,
+        },
+      });
+
+    const {
+      perspective: {
+        lexical_entries } } =
+      
+      data_perspective;
+
+    const entry_id_str = id2str(entry.id);
+
+    for (const lexical_entry of lexical_entries)
+    {
+      if (id2str(lexical_entry.id) == entry_id_str)
+      {
+        const before_id_set = new Set();
+        const after_id_set = new Set();
+        
+        for (const entity of lexical_entry.entities)
+          before_id_set.add(id2str(entity.id));
+        
+        for (const entity of data_entities.lexicalentry.entities)
+          after_id_set.add(id2str(entity.id));
+
+        let change_flag =
+          before_id_set.size != after_id_set.size;
+
+        if (!change_flag)
+        {
+          for (const id_str of after_id_set)
+            if (!before_id_set.has(id_str))
+            {
+              change_flag = true;
+              break;
+            }
+        }
+
+        /* If for some reason queryLexicalEntries failed to update (e.g. when there are several thousand
+         * entries and Apollo GraphQL cache glitches), we update it manually. */
+
+        if (change_flag)
+        {
+          lexical_entry.entities =
+            data_entities.lexicalentry.entities;
+
+          client.writeQuery({
+            query: queryLexicalEntries,
+            variables: {
+              id: perspectiveId,
+              entitiesMode,
+            },
+            data: data_perspective,
+          });
+        }
+
+        break;
+      }
+    }
+
+    this.setState({ edit: false });
   }
 
   create(content, self_id) {
+
+    this.setState({ is_being_created: true });
+
     const {
       entry, column, createEntity,
     } = this.props;
@@ -141,9 +242,10 @@ class Entities extends React.Component {
           },
         },
       ],
-    }).then(() => {
-      this.setState({ edit: false });
-    });
+      awaitRefetchQueries: true,
+    }).then(
+      () => this.update_check()
+    );
   }
 
   publish(entity, published) {
@@ -167,7 +269,10 @@ class Entities extends React.Component {
           },
         },
       ],
-    });
+      awaitRefetchQueries: true,
+    }).then(
+      () => this.update_check()
+    );
   }
 
   accept(entity, accepted) {
@@ -191,10 +296,20 @@ class Entities extends React.Component {
           },
         },
       ],
-    });
+      awaitRefetchQueries: true,
+    }).then(
+      () => this.update_check()
+    );
   }
 
   remove(entity) {
+
+    const entity_id_str = id2str(entity.id);
+
+    const remove_set = this.state.remove_set;
+    remove_set[entity_id_str] = null;
+    this.setState({ remove_set });
+
     const { entry, removeEntity } = this.props;
     removeEntity({
       variables: { id: entity.id },
@@ -214,10 +329,27 @@ class Entities extends React.Component {
           },
         },
       ],
+      awaitRefetchQueries: true,
+    }).then(() => {
+      
+      const remove_set = this.state.remove_set;
+
+      delete remove_set[entity_id_str];
+      this.setState({ remove_set });
+
+      this.update_check();
+
     });
   }
 
   update(entity, content) {
+
+    const entity_id_str = id2str(entity.id);
+
+    const update_set = this.state.update_set;
+    update_set[entity_id_str] = null;
+    this.setState({ update_set });
+
     const { entry, updateEntity } = this.props;
     updateEntity({
       variables: { id: entity.id, content },
@@ -237,6 +369,16 @@ class Entities extends React.Component {
           },
         },
       ],
+      awaitRefetchQueries: true,
+    }).then(() => {
+      
+      const update_set = this.state.update_set;
+
+      delete update_set[entity_id_str];
+      this.setState({ update_set });
+
+      this.update_check();
+
     });
   }
 
@@ -277,6 +419,8 @@ class Entities extends React.Component {
             update={this.update}
             className={(mode != 'edit' && entities.indexOf(entity) == entities.length - 1) ? 'last' : ''}
             disabled={disabled}
+            is_being_removed={this.state.remove_set.hasOwnProperty(id2str(entity.id))}
+            is_being_updated={this.state.update_set.hasOwnProperty(id2str(entity.id))}
           />
         ))}
         {mode == 'edit' && (
@@ -287,7 +431,11 @@ class Entities extends React.Component {
               </Button.Group>
             )}
 
-            {this.state.edit && <Component.Edit onSave={content => this.create(content, parentEntity == null ? null : parentEntity.id)} onCancel={() => this.setState({ edit: false })} />}
+            {this.state.edit &&
+              <Component.Edit
+                is_being_created={this.state.is_being_created}
+                onSave={content => this.create(content, parentEntity == null ? null : parentEntity.id)}
+                onCancel={() => this.setState({ edit: false })} />}
           </li>
         )}
       </ul>
@@ -320,5 +468,6 @@ export default compose(
   graphql(createEntityMutation, { name: 'createEntity' }),
   graphql(removeEntityMutation, { name: 'removeEntity' }),
   graphql(updateEntityMutation, { name: 'updateEntity' }),
+  withApollo,
   pure
 )(Entities);
