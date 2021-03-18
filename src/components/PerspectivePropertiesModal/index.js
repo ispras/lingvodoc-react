@@ -23,7 +23,11 @@ const query = gql`
       }
     }
     perspective(id: $id) {
+      created_at
       id
+      created_by {
+        id
+        name }
       parent_id
       translation
       translation_gist_id
@@ -31,6 +35,7 @@ const query = gql`
         transcription_rules
         tag_list
       }
+      last_modified_at
     }
   }
 `;
@@ -76,6 +81,13 @@ const Properties = (props) => {
         {title}
       </Modal.Header>
       <Modal.Content>
+        <p>{getTranslation('Created by')}{': '}
+          {perspective.created_by.name}</p>
+        <p>{getTranslation('Created at')}{': '}
+          {new Date(perspective.created_at * 1e3).toLocaleString()}</p>
+        <p>{getTranslation('Last modified at')}{': '}
+          {new Date(perspective.last_modified_at * 1e3).toLocaleString()}</p>
+        <Divider />
         <Header>{getTranslation("Translations")}</Header>
         <TranslationGist objectId={perspective.id} id={gistId} editable updateAtomMutation={updateAtomMutation} />
         <Divider />

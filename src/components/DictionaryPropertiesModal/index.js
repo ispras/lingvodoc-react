@@ -8,7 +8,7 @@ import Languages from 'components/Languages';
 import EditDictionaryMetadata from 'components/EditDictionaryMetadata';
 import gql from 'graphql-tag';
 import { connect } from 'react-redux';
-import { Button, Modal, Segment, Grid, Label, Form } from 'semantic-ui-react';
+import { Button, Modal, Segment, Grid, Label, Form, Header } from 'semantic-ui-react';
 import styled from 'styled-components';
 import { closeDictionaryPropertiesModal } from 'ducks/dictionaryProperties';
 import { isEqual, sortBy } from 'lodash';
@@ -19,7 +19,11 @@ import { getTranslation } from 'api/i18n';
 const query = gql`
   query dictionaryProps($id: LingvodocID!) {
     dictionary(id: $id) {
+      created_at
       id
+      created_by {
+        id
+        name }
       parent_id
       translation_gist_id
       additional_metadata {
@@ -32,6 +36,7 @@ const query = gql`
         blobs
         tag_list
       }
+      last_modified_at
     }
     user_blobs(data_type: "pdf", is_global: true) {
       id
@@ -262,7 +267,14 @@ class Properties extends React.Component {
           {title}
         </Modal.Header>
         <Modal.Content>
+          <p>{getTranslation('Created by')}{': '}
+            {dictionary.created_by.name}</p>
+          <p>{getTranslation('Created at')}{': '}
+            {new Date(dictionary.created_at * 1e3).toLocaleString()}</p>
+          <p>{getTranslation('Last modified at')}{': '}
+            {new Date(dictionary.last_modified_at * 1e3).toLocaleString()}</p>
           <Segment>
+            <Header as='h3'>{getTranslation("Translations")}</Header>
             <TranslationGist id={gistId} objectId={dictionary.id} editable updateAtomMutation={updateAtomMutation}/>
           </Segment>
           <EditDictionaryMetadata mode='edit' metadata={dictionary.additional_metadata} onSave={this.saveMeta} />

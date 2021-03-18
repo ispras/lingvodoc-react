@@ -56,7 +56,7 @@ const toolsQuery = gql`
     perspective(id: $id) {
       id
       english_status: status(locale_id: 2)
-      author {
+      created_by {
         id
       }
     }
@@ -80,7 +80,7 @@ const Tools = graphql(toolsQuery)(({
   const {
     perspective: {
       english_status,
-      author: {
+      created_by: {
         id: author_id }}} = data;
 
   const published =
