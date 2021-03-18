@@ -123,7 +123,7 @@ const createLexicalEntryMutation = gql`
 
 const mergeLexicalEntriesMutation = gql`
   mutation mergeEntries($groupList: [[LingvodocID]]!) {
-    merge_bulk(group_list: $groupList, publish_any: false, async: false) {
+    merge_bulk(group_list: $groupList, publish_any: false, async_execution: false) {
       triumph
     }
   }

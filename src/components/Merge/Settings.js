@@ -48,7 +48,7 @@ const mergeSuggestionsQuery = gql`
 
 const mergeLexicalEntriesMutation = gql`
   mutation mergeEntries($groupList: [[LingvodocID]]!, $publish_any: Boolean!, $async: Boolean!) {
-    merge_bulk(group_list: $groupList, publish_any: $publish_any, async: $async) {
+    merge_bulk(group_list: $groupList, publish_any: $publish_any, async_execution: $async) {
       triumph
     }
   }
