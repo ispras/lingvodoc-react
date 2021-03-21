@@ -561,10 +561,16 @@ const LexicalEntryViewBase = ({
   /*  eslint-enable react/prop-types */
   actions,
 }) => {
-  const { loading } = data;
+  const { loading, error } = data;
 
-  if (loading) {
-    return null;
+  if (loading || (!loading && !error && !data.perspective)) {
+    return (
+      <Dimmer active style={{ minHeight: '15vh', background: 'none' }}>
+        <Header as="h2" icon>
+          <Icon name="spinner" loading />
+        </Header>
+      </Dimmer>
+    ); 
   }
 
   const {
