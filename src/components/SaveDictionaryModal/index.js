@@ -22,12 +22,14 @@ const saveDictionaryMutation = gql`
   mutation SaveDictionary(
     $id: LingvodocID!,
     $mode: String!,
-    $soundFlag: Boolean)
+    $soundFlag: Boolean,
+    $markupFlag: Boolean)
   {
     save_dictionary(
       id: $id,
       mode: $mode,
-      sound_flag: $soundFlag)
+      sound_flag: $soundFlag,
+      markup_flag: $markupFlag)
     {
       triumph
     }
@@ -40,6 +42,7 @@ class Properties extends React.Component {
     this.state = {
       mode: 'all',
       save_sound: false,
+      save_markup: false,
     };
 
     this.onChangeMode = this.onChangeMode.bind(this);
@@ -69,7 +72,8 @@ class Properties extends React.Component {
       variables: {
         id,
         mode,
-        soundFlag: this.state.save_sound
+        soundFlag: this.state.save_sound,
+        markupFlag: this.state.save_markup,
       },
     }).then(
       () => {
@@ -108,6 +112,13 @@ class Properties extends React.Component {
             checked={this.state.save_sound}
             onChange={(e, { checked }) =>
               this.setState({ save_sound: checked })}
+          />
+          <Checkbox
+            style={{marginLeft: '1em'}}
+            label={getTranslation('Save markup')}
+            checked={this.state.save_markup}
+            onChange={(e, { checked }) =>
+              this.setState({ save_markup: checked })}
           />
         </Modal.Content>
 
