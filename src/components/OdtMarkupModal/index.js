@@ -43,13 +43,17 @@ class OdtMarkupModal extends React.Component {
       browserSelection: null,
       dirty: false,
       saving: false,
-      confirmation: null
+      confirmation: null,
+      movingElem: false,
+      copiedElem: null
     };
 
     this.addClickHandlers = this.addClickHandlers.bind(this);
     this.onBrowserSelection = this.onBrowserSelection.bind(this);
     this.addToMarkup = this.addToMarkup.bind(this);
     this.removeFromMarkup = this.removeFromMarkup.bind(this);
+    this.addCopiedMarkup = this.addCopiedMarkup.bind(this);
+    this.moveMarkup = this.moveMarkup.bind(this);
     this.save = this.save.bind(this);
     this.onClose = this.onClose.bind(this);
   }
@@ -191,6 +195,62 @@ class OdtMarkupModal extends React.Component {
     });
   }
 
+  moveMarkup() {
+    const elem = document.getElementById(this.state.selection);
+
+    this.setState({
+      confirmation: {
+        content: getTranslation('Are you sure you want to move selected element?'),
+        func: () => {
+          const prev = elem.previousSibling;
+          let copiedElem = elem;
+          let content = '';
+          if (prev && prev.nodeType === Node.TEXT_NODE) {
+            content += prev.textContent;
+            prev.remove();
+          }
+          content += elem.innerText;
+          const next = elem.nextSibling;
+          if (next && next.nodeType === Node.TEXT_NODE) {
+            content += next.textContent;
+            next.remove();
+          }
+          elem.parentElement.replaceChild(document.createTextNode(content), elem);
+          this.setState({ selection: null, dirty: true, confirmation: null, copiedElem: copiedElem, movingElem: true });
+        }
+      }
+    });
+  }
+
+  addCopiedMarkup() {
+    const { browserSelection } = this.state;
+    const textNode = browserSelection.startContainer;
+    const parentNode = textNode.parentElement;
+    const text = textNode.textContent;
+
+    let str = text.substring(0, browserSelection.startOffset);
+    if (str !== '') {
+      parentNode.insertBefore(document.createTextNode(str), textNode);
+    }
+    let copiedElem = this.state.copiedElem;
+    copiedElem.lastChild.nodeValue = browserSelection.toString();
+    this.addClickHandlers([copiedElem]);
+    parentNode.insertBefore(copiedElem, textNode);
+    str = text.substring(browserSelection.endOffset);
+    if (str !== '') {
+      parentNode.insertBefore(document.createTextNode(str), textNode);
+    }
+    parentNode.removeChild(textNode);
+    this.setState({
+      browserSelection: null,
+      dirty: true,
+      copiedElem: null,
+      movingElem: false
+    });
+    this.availableId++;
+    copiedElem.click();
+  }
+
   save() {
     const { resultId, updateParserResult } = this.props;
     const { selection } = this.state;
@@ -253,7 +313,7 @@ class OdtMarkupModal extends React.Component {
       this.content = bodies[0].innerHTML;
     }
 
-    const { selection, browserSelection, dirty, saving, confirmation } = this.state;
+    const { selection, browserSelection, dirty, saving, confirmation, movingElem, copiedElem } = this.state;
     const selectedElem = selection === null ? null : document.getElementById(selection);
 
     return (
@@ -264,7 +324,7 @@ class OdtMarkupModal extends React.Component {
           <Modal.Content id="markup-content" scrolling dangerouslySetInnerHTML={{ __html: this.content }} style={{ padding: '10px' }} />
         </div>
         <Modal.Actions>
-          { !saving && browserSelection !== null &&
+          { !saving && !movingElem && browserSelection !== null &&
             <Button
               color="violet"
               icon="plus"
@@ -273,14 +333,35 @@ class OdtMarkupModal extends React.Component {
               style={{ float: 'left' }}
             />
           }
-          { !saving && selectedElem && mode === 'edit' && selectedElem.classList.contains('user') &&
+          { !saving && !movingElem && selectedElem && mode === 'edit' &&
+            <div style={{ display: 'flex', flexDirection: 'row' , float: 'left'}}>
+              <Button
+                color="orange"
+                icon="minus"
+                content={`${getTranslation('Remove from markup')} '${selectedElem.innerText}'`}
+                onClick={this.removeFromMarkup}
+              />
+              <Button
+                color="blue"
+                icon="minus"
+                content={`${getTranslation('Move markup elem')} '${selectedElem.innerText}'`}
+                onClick={this.moveMarkup}
+              />
+            </div>
+          }
+          { !saving && movingElem && copiedElem !== null && browserSelection !== null &&
             <Button
-              color="orange"
-              icon="minus"
-              content={`${getTranslation('Remove from markup')} '${selectedElem.innerText}'`}
-              onClick={this.removeFromMarkup}
+              color="violet"
+              icon="plus"
+              content={`${getTranslation('Move copied markup element')} '${copiedElem.lastChild.nodeValue}'`}
+              onClick={this.addCopiedMarkup}
               style={{ float: 'left' }}
             />
+          }
+          { movingElem && browserSelection == null &&
+            <div style={{ float: 'left'}}>
+              {getTranslation('Select a new position for a markup element')} {copiedElem.lastChild.nodeValue}
+            </div>
           }
           { mode === 'edit' &&
             <Button
