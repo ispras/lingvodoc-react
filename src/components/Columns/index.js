@@ -7,9 +7,11 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import gql from 'graphql-tag';
 import { Button, List, Dropdown, Grid, Checkbox, Icon } from 'semantic-ui-react';
+
 import { compositeIdToString } from 'utils/compositeId';
 import { getTranslation } from 'api/i18n';
 import { openCreateFieldModal } from 'ducks/fields';
+import { queryPerspective } from 'components/PerspectiveView';
 
 const columnsQuery = gql`
   query ColumnsQuery($perspectiveId: LingvodocID!) {
@@ -220,6 +222,12 @@ class C extends React.Component {
             perspectiveId: column.parent_id,
           },
         },
+        {
+          query: queryPerspective,
+          variables: {
+            id: column.parent_id,
+          },
+        },
       ],
     });
   }
@@ -238,6 +246,12 @@ class C extends React.Component {
           query: columnsQuery,
           variables: {
             perspectiveId: column.parent_id,
+          },
+        },
+        {
+          query: queryPerspective,
+          variables: {
+            id: column.parent_id,
           },
         },
       ],
@@ -379,6 +393,12 @@ class Columns extends React.Component {
             perspectiveId: perspective.id,
           },
         },
+        {
+          query: queryPerspective,
+          variables: {
+            id: perspective.id,
+          },
+        },
       ],
     });
   }
@@ -394,6 +414,12 @@ class Columns extends React.Component {
           query: columnsQuery,
           variables: {
             perspectiveId,
+          },
+        },
+        {
+          query: queryPerspective,
+          variables: {
+            id: perspectiveId,
           },
         },
       ],

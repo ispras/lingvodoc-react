@@ -26,10 +26,11 @@ import statistics from './statistics';
 import ban from './ban';
 import modals from './modals';
 import createOrganization from './createOrganization';
+import createPerspective from './createPerspective';
 import dictionaryOrganizations from './dictionaryOrganizations';
-import auth from './auth'
+import auth from './auth';
+import distanceMap from './distanceMap';
 
-import distanceMap from './distanceMap'
 export default {
   auth,
   locale,
@@ -61,6 +62,6 @@ export default {
   modals,
   createOrganization,
   dictionaryOrganizations,
-
+  createPerspective,
   distanceMap
 };

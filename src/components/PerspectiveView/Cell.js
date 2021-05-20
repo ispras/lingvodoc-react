@@ -45,4 +45,4 @@ Cell.propTypes = {
 Cell.defaultProps = {
   disabled: undefined
 };
-export default onlyUpdateForKeys(['perspectiveId', 'entry', 'mode', 'disabled'])(Cell);
+export default onlyUpdateForKeys(['perspectiveId', 'entry', 'mode', 'disabled', 'column'])(Cell);

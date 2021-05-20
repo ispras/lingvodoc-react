@@ -111,4 +111,4 @@ Row.defaultProps = {
   onEntrySelect: () => {},
 };
 
-export default onlyUpdateForKeys(['perspectiveId', 'entry', 'mode', 'selectedEntries'])(Row);
+export default onlyUpdateForKeys(['perspectiveId', 'entry', 'mode', 'selectedEntries', 'columns'])(Row);

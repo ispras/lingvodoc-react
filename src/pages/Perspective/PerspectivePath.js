@@ -10,6 +10,7 @@ import { Redirect } from 'react-router-dom';
 import { Header, Breadcrumb, Dropdown } from 'semantic-ui-react';
 import { openRoles } from 'ducks/roles';
 import { openModal as openDictionaryOrganizationsModal } from 'ducks/dictionaryOrganizations';
+import { openModal as openCreatePerspectiveModal } from 'ducks/createPerspective';
 import { openDictionaryPropertiesModal } from 'ducks/dictionaryProperties';
 import { openPerspectivePropertiesModal } from 'ducks/perspectiveProperties';
 import { openSaveDictionaryModal } from 'ducks/saveDictionary';
@@ -28,7 +29,7 @@ const queryPerspectivePath = gql`
   }
 `;
 
-const queryAvailablePerspectives = gql`
+export const queryAvailablePerspectives = gql`
   query availablePerspectives($dictionary_id: LingvodocID!) {
     dictionary(id: $dictionary_id) {
       id
@@ -76,6 +77,7 @@ class PerspectivePath extends React.Component {
     const dictionary_id_tree = tree[1].id;
 
     const {
+      category,
       perspectives,
       additional_metadata: { license } } =
 
@@ -198,6 +200,13 @@ class PerspectivePath extends React.Component {
                       />
 
                       <Dropdown.Item
+                        key="create_perspective"
+                        icon="file outline"
+                        text={`${getTranslation('Create new')} '${e.translation}' ${getTranslation('perspective')}...`}
+                        onClick={() => actions.openCreatePerspectiveModal(dictionary_id)}
+                      />
+
+                      <Dropdown.Item
                         key="save"
                         icon="save"
                         text={`${getTranslation('Save dictionary')} '${e.translation}'...`}
@@ -253,6 +262,7 @@ export default compose(
     dispatch => ({
       actions: bindActionCreators(
         {
+          openCreatePerspectiveModal,
           openDictionaryOrganizationsModal,
           openDictionaryPropertiesModal,
           openPerspectivePropertiesModal,

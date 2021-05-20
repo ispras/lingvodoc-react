@@ -123,7 +123,15 @@ class Column extends React.Component {
       text: getTranslation('Add new field...'),
       value: 'new_field'})
 
-    const availablePerspectives = perspectives.map(p => ({ text: getTranslation('Perspective') + ' ' + (p.index + 1), value: p.index }));
+    const availablePerspectives = perspectives.map(p => ({
+
+      text:
+        p.hasOwnProperty('name') ?
+        `${getTranslation('Perspective')} ${p.index + 1}: ${p.name}` :
+        getTranslation('Perspective') + ' ' + (p.index + 1),
+
+      value: p.index }));
+
     const currentField = compositeIdToString(this.state.field_id);
 
     return (
