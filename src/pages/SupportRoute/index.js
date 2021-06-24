@@ -2,6 +2,7 @@ import React from 'react';
 import './styles.scss';
 import imageQuestion from '../../images/question.png';
 import imageComputer from '../../images/computer.png';
+import imageTelegram from '../../images/telegram.png';
 import imageVersion from '../../images/history.png';
 import { Link } from 'react-router-dom';
 import { getTranslation } from 'api/i18n';
@@ -18,9 +19,15 @@ const supportRoute = (props) => {
           <a href="https://github.com/ispras/lingvodoc-react/wiki" target="_blank"> <img className="img " src={imageQuestion} /></a>
           <p>{getTranslation('Help')}</p>
         </div>
+        {/*
         <div className="img-block" >
           <Link to="/desktop"><img className="img " src={imageComputer} /></Link>
           <p> {getTranslation('Desktop')}</p>
+        </div>
+        */}
+        <div className="img-block" >
+          <a href="https://t.me/lingvodoc_support" target="_blank"> <img className="img " src={imageTelegram} /></a>
+          <p> {getTranslation('Support@Telegram')}</p>
         </div>
         <div className="img-block" >
           <Link to="/version_route"><img className="img " src={imageVersion} /></Link>
