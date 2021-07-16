@@ -30,6 +30,7 @@ import createPerspective from './createPerspective';
 import dictionaryOrganizations from './dictionaryOrganizations';
 import auth from './auth';
 import distanceMap from './distanceMap';
+import confirm from './confirm';
 
 export default {
   auth,
@@ -63,5 +64,6 @@ export default {
   createOrganization,
   dictionaryOrganizations,
   createPerspective,
-  distanceMap
+  distanceMap,
+  confirm
 };

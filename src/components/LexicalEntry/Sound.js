@@ -6,6 +6,8 @@ import { connect } from 'react-redux';
 import { Button, Checkbox, Popup } from 'semantic-ui-react';
 import { find, isEqual } from 'lodash';
 import { openPlayer } from 'ducks/player';
+import { openModal as openConfirmModal } from 'ducks/confirm';
+import { getTranslation } from 'api/i18n';
 import Entities from './index';
 
 function content(c) {
@@ -26,7 +28,8 @@ const SoundEntityContent = onlyUpdateForKeys(['entity', 'mode'])(({
           <Button as="a" href={entity.content} icon="download" />
           <Popup trigger={<Button content={content(entity.content)} />} content={entity.content} />
           <Button icon="play" onClick={() => actions.openPlayer(entity)} />
-          <Button icon="remove" onClick={() => remove(entity)} />
+          <Button icon="remove" onClick={() =>
+            actions.openConfirmModal(getTranslation('Delete sound file?'), () => remove(entity))} />
         </Button.Group>
       );
     case 'publish':
@@ -142,7 +145,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  actions: bindActionCreators({ openPlayer }, dispatch),
+  actions: bindActionCreators({ openPlayer, openConfirmModal }, dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Sound);

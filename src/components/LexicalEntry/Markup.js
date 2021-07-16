@@ -7,6 +7,8 @@ import { Button, Checkbox, Popup } from 'semantic-ui-react';
 import { find, isEqual } from 'lodash';
 import { openViewer } from 'ducks/markup';
 import { openModal } from 'ducks/modals';
+import { openModal as openConfirmModal } from 'ducks/confirm';
+import { getTranslation } from 'api/i18n';
 
 import Entities from './index';
 import RunParserModal from './RunParserModal';
@@ -36,7 +38,9 @@ const MarkupEntityContent = onlyUpdateForKeys([
             icon={forParse ? "power" : "table"}
             onClick={() => forParse ? actions.openModal(RunParserModal, { entityId: entity.id }) : actions.openViewer(parentEntity, entity)}
           />
-          <Button icon="remove" onClick={() => remove(entity)} />
+          <Button icon="remove" onClick={() =>
+            actions.openConfirmModal(getTranslation('Delete markup file?'), () => remove(entity))}
+        />
         </Button.Group>
       );
     case 'publish':
@@ -142,7 +146,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  actions: bindActionCreators({ openViewer, openModal }, dispatch),
+  actions: bindActionCreators({ openViewer, openModal, openConfirmModal }, dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Markup);

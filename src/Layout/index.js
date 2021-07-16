@@ -25,6 +25,7 @@ import RolesModal from 'components/RolesModal';
 import CreateOrganizationModal from 'components/CreateOrganizationModal';
 import DictionaryOrganizationsModal from 'components/DictionaryOrganizationsModal';
 import CreatePerspectiveModal from 'components/CreatePerspectiveModal';
+import ConfirmModal from 'components/ConfirmModal';
 
 import NavBar from './NavBar';
 import TasksSidebar from './TasksSidebar';
@@ -74,6 +75,7 @@ class Layout extends React.Component {
         <CreateOrganizationModal />
         <DictionaryOrganizationsModal />
         <CreatePerspectiveModal />
+        <ConfirmModal />
       </div>
     );
   }
