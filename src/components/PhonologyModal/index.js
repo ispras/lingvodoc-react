@@ -61,6 +61,8 @@ class PhonologyModal extends React.Component
       enabledJoin: false,
       selectedJoinSet: new Set(),
 
+      enabledFastTrack: false,
+
       useLinkedData: false,
       loadedLinkedData: false,
       selectedLinkFieldSet: new Set(),
@@ -559,6 +561,7 @@ class PhonologyModal extends React.Component
         generateCsv: this.state.enabledCsv,
         linkFieldList,
         linkPerspectiveList,
+        useFastTrack: this.state.enabledFastTrack,
       },
     }).then(
       () => {
@@ -595,10 +598,13 @@ class PhonologyModal extends React.Component
           open
           size="fullscreen">
 
-          <Modal.Header>{
-            this.props.mode == 'statistical_distance' ?
-            'Phonological statistical distance' :
-            'Phonology'}</Modal.Header>
+          <Modal.Header>
+            {getTranslation(
+              this.props.mode == 'statistical_distance' ?
+              'Phonological statistical distance' :
+              'Phonology')}
+          </Modal.Header>
+
           <Modal.Content>
             <List>
               <List.Item>
@@ -640,7 +646,7 @@ class PhonologyModal extends React.Component
                 <List.Item>
                   <Checkbox
                     radio
-                    label="Show all translations of each word."
+                    label={getTranslation('Show all translations of each word.')}
                     name="translationsRadioGroup"
                     value="all"
                     checked={this.state.translationsMode === 'all'}
@@ -651,7 +657,7 @@ class PhonologyModal extends React.Component
                 <List.Item>
                   <Checkbox
                     radio
-                    label="Show only the first translation of each word."
+                    label={getTranslation('Show only the first translation of each word.')}
                     name="translationsRadioGroup"
                     value="longest"
                     checked={this.state.translationsMode === 'longest'}
@@ -665,7 +671,7 @@ class PhonologyModal extends React.Component
               <List>
                 <List.Item>
                   <Checkbox
-                    label="Use linked data"
+                    label={getTranslation('Use linked data')}
                     checked={this.state.useLinkedData}
                     onChange={(e, { checked }) => this.handleLinkChange(checked)}
                   />
@@ -730,7 +736,7 @@ class PhonologyModal extends React.Component
               <List>
                 <List.Item>
                   <Checkbox
-                    label="Group phonology data by markup descriptions."
+                    label={getTranslation('Group phonology data by markup descriptions.')}
                     checked={this.state.enabledGroup}
                     onChange={(e, { checked }) => this.setState({ enabledGroup: checked })}
                   />
@@ -743,13 +749,13 @@ class PhonologyModal extends React.Component
                 <List.Item>{
                   !this.props.mode ? (
                     <Input
-                      label="Formant chart threshold"
+                      label={getTranslation('Formant chart threshold')}
                       value={this.state.chartThreshold}
                       onChange={(e, { value }) => this.setState({
                         chartThreshold: parseInt(value) || DEFAULT_CHART_THRESHOLD })}
                     />) : (
                     <Input
-                      label="Vowel formant count threshold"
+                      label={getTranslation('Vowel formant count threshold')}
                       value={this.state.chartThreshold}
                       onChange={(e, { value }) => this.setState({
                         chartThreshold: parseInt(value) || DEFAULT_STAT_THRESHOLD })}
@@ -762,7 +768,7 @@ class PhonologyModal extends React.Component
               <List>
                 <List.Item>
                   <Checkbox
-                    label="Export phonology data to a CSV file."
+                    label={getTranslation('Export phonology data to a CSV file.')}
                     checked={this.state.enabledCsv}
                     onChange={(e, { checked }) => this.setState({ enabledCsv: checked })}
                   />
@@ -774,7 +780,7 @@ class PhonologyModal extends React.Component
               <List>
                 <List.Item>
                   <Checkbox
-                    label="Choose markup tiers"
+                    label={getTranslation('Choose markup tiers')}
                     checked={this.state.enabledTiers}
                     onChange={(e, { checked }) => this.handleTiersChange(checked)}
                   />
@@ -812,7 +818,7 @@ class PhonologyModal extends React.Component
               <List>
                 <List.Item>
                   <Checkbox
-                    label="Keep skipped vowel interval characters"
+                    label={getTranslation('Keep skipped vowel interval characters')}
                     checked={this.state.enabledKeep}
                     onChange={(e, { checked }) => this.handleKeepChange(checked)}
                   />
@@ -850,7 +856,7 @@ class PhonologyModal extends React.Component
               <List>
                 <List.Item>
                   <Checkbox
-                    label="Combine with adjacent interval characters"
+                    label={getTranslation('Combine with adjacent interval characters')}
                     checked={this.state.enabledJoin}
                     onChange={(e, { checked }) => this.handleJoinChange(checked)}
                   />
@@ -880,6 +886,18 @@ class PhonologyModal extends React.Component
                       </List>
                     </div>
                   )}
+                </List.Item>
+              </List>
+            )}
+
+            {!this.props.mode && (
+              <List>
+                <List.Item>
+                  <Checkbox
+                    label={getTranslation('\'Fast Track\' formant extraction')}
+                    checked={this.state.enabledFastTrack}
+                    onChange={(e, { checked }) => this.setState({ enabledFastTrack: checked })}
+                  />
                 </List.Item>
               </List>
             )}

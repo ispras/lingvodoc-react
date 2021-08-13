@@ -123,8 +123,10 @@ export const createPhonologyMutation = gql`
     $joinList: [Int]!,
     $generateCsv: Boolean!,
     $linkFieldList: [LingvodocID],
-    $linkPerspectiveList: [[LingvodocID]]) {
-      phonology(perspective_id: $perspectiveId,
+    $linkPerspectiveList: [[LingvodocID]],
+    $useFastTrack: Boolean!) {
+      phonology(
+        perspective_id: $perspectiveId,
         vowel_selection: $vowelSelection,
         group_by_description: $groupByDescription,
         only_first_translation: $firstTranslation,
@@ -135,7 +137,8 @@ export const createPhonologyMutation = gql`
         join_list: $joinList,
         generate_csv: $generateCsv,
         link_field_list: $linkFieldList,
-        link_perspective_list: $linkPerspectiveList) {
+        link_perspective_list: $linkPerspectiveList,
+        use_fast_track: $useFastTrack) {
         triumph
       }
   }
