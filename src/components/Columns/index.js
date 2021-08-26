@@ -171,6 +171,7 @@ class C extends React.Component {
     };
     this.onFieldChange = this.onFieldChange.bind(this);
     this.onLinkChange = this.onLinkChange.bind(this);
+    this.onNestedCheckboxChange = this.onNestedCheckboxChange.bind(this);
     this.onNestedChange = this.onNestedChange.bind(this);
   }
 
@@ -203,6 +204,46 @@ class C extends React.Component {
     this.setState({ link_id: perspective.id }, () => {
       this.update(column, column.field_id, perspective.id);
     });
+  }
+
+  onNestedCheckboxChange(checked)
+  {
+    this.setState({ hasNestedField: checked });
+
+    // If we disable selected nested column, we should unlink it.
+
+    if (!checked)
+    {
+      const { column, columns, setNested } = this.props;
+
+      const nested =
+        columns.find(({ self_id: s }) => isEqual(column.id, s));
+
+      if (nested)
+      {
+        setNested({
+          variables: {
+            id1: nested.id,
+            selfId1: [-1, -1],
+            perspectiveId: column.parent_id,
+          },
+          refetchQueries: [
+            {
+              query: columnsQuery,
+              variables: {
+                perspectiveId: column.parent_id,
+              },
+            },
+            {
+              query: queryPerspective,
+              variables: {
+                id: column.parent_id,
+              },
+            },
+          ],
+        });
+      }
+    }
   }
 
   onNestedChange(nested) {
@@ -298,7 +339,7 @@ class C extends React.Component {
           field.data_type !== 'Grouping Tag' && (
             <Checkbox
               defaultChecked={this.state.hasNestedField}
-              onChange={(e, { checked }) => this.setState({ hasNestedField: checked })}
+              onChange={(e, { checked }) => this.onNestedCheckboxChange(checked)}
               label={getTranslation("has linked field")}
             />
           )}
