@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { isEmpty } from 'lodash';
 
-import { Dropdown, Icon } from 'semantic-ui-react';
+import { Dropdown, Icon, Menu } from 'semantic-ui-react';
 
 import * as userActions from 'ducks/user';
 import { openModal } from 'ducks/ban';
@@ -17,29 +17,22 @@ import { getTranslation } from 'api/i18n';
 const Anonymous = ({
   modal, launchSignInForm, launchSignUpForm, closeForm, loading
 }) =>
-
-  <Dropdown
-    item
-    trigger={
-      loading ?
-        <span>{getTranslation('User')}{' '}<Icon loading name="spinner"/></span> :
-        <span>{getTranslation('User')}</span>}
-    className="top_menu">
-
-    <Dropdown.Menu>
-      <SignInModal
-        trigger={<Dropdown.Item as="a" onClick={launchSignInForm}>{getTranslation('Sign In')}</Dropdown.Item>}
-        open={modal === 'signin'}
-        handleClose={closeForm}
-      />
-      <SignUpModal
-        trigger={<Dropdown.Item as="a" onClick={launchSignUpForm}>{getTranslation('Sign Up')}</Dropdown.Item>}
-        open={modal === 'signup'}
-        handleClose={closeForm}
-      />
-    </Dropdown.Menu>
-
-  </Dropdown>;
+<React.Fragment>
+  <Menu.Item className="top_menu">
+    <SignInModal
+      trigger={<Dropdown.Item as="a" onClick={launchSignInForm}>{getTranslation('Sign In')}</Dropdown.Item>}
+      open={modal === 'signin'}
+      handleClose={closeForm}
+    />
+  </Menu.Item>
+  <Menu.Item className="top_menu">
+    <SignUpModal
+      trigger={<Dropdown.Item as="a" onClick={launchSignUpForm}>{getTranslation('Sign Up')}</Dropdown.Item>}
+      open={modal === 'signup'}
+      handleClose={closeForm}
+    />
+  </Menu.Item>
+  </React.Fragment>;
 
 Anonymous.propTypes = {
   modal: PropTypes.any.isRequired,

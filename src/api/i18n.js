@@ -342,11 +342,16 @@ export const stringsToTranslate = [
    "to view.",
    "total",
    "web",
+   "Welcome Back",
+   "Please sign in to continue",
    "yes"
 ];
 
 export function getTranslation(string) {
   const translation = i18n.get(string);
+
+  console.log('translation');
+  console.log(translation);
   return (translation === undefined) ? string : translation;
 }
 

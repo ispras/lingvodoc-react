@@ -8,14 +8,15 @@ import { Dropdown, Flag, Menu, Icon } from 'semantic-ui-react';
 import { changeLocale } from 'ducks/locale';
 import { getTranslation } from 'api/i18n';
 
-const TITLE = getTranslation('Languages');
+/*const TITLE = getTranslation('Languages');*/
+const TITLE = '';
 
 function checkCountry(shortcut) {
   return shortcut === 'en' ? 'gb' : shortcut;
 }
 
 function title({ intl_name: text }) {
-  const extra = text ? ` (${text})` : '';
+  const extra = text ? ` ${text}` : '';
   return TITLE + extra;
 }
 

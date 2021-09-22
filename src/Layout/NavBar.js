@@ -56,7 +56,7 @@ const Sync = compose(
 const NavBar =
   () => (
 
-    <Menu fixed="top" className="top_menu">
+    <Menu fixed="top" className="top_menu" borderless>
       <Menu.Item as={Link} to={config.homePath} className="top_menu">
         <Logo>Lingvodoc 3.0</Logo>
       </Menu.Item>

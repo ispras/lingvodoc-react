@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Form, Modal, Button, Icon, Message } from 'semantic-ui-react';
+import { Form, Modal, Button, Icon, Message, Header } from 'semantic-ui-react';
 import { Field, reduxForm } from 'redux-form';
 import { getTranslation } from 'api/i18n';
 
@@ -35,6 +35,7 @@ function FormModal(props) {
   const {
     open,
     header,
+    subheader,
     actions,
     fields,
     trigger,
@@ -53,15 +54,20 @@ function FormModal(props) {
     <Modal
       trigger={trigger}
       open={open}
+      className="lingvo-modal"
       closeIcon
       onClose={close}
-      size="small"
+      size="mini"
       dimmer="blurring"
       onClick={e => e.stopPropagation()}
       onFocus={e => e.stopPropagation()}
     >
-      <Modal.Header>{header} {submitting && <Icon loading name="spinner" />}</Modal.Header>
-      <Modal.Content>
+      <Modal.Content className="lingvo-modal-content">
+        <Header textAlign="center" as="h1">{header} {submitting && <Icon loading name="spinner" />}
+          {subheader && <Header.Subheader>
+            {subheader}
+          </Header.Subheader>}
+        </Header>
         <Form onSubmit={handleSubmit(actions)} onKeyDown={handleKeyDown(handleSubmit(actions))}>
           {
             fields.map(field =>
@@ -73,11 +79,9 @@ function FormModal(props) {
           <Message visible={!!message} error>
             {message}
           </Message>
-          <Button basic color="red" type="button" onClick={close}>
-            <Icon name="remove" /> {getTranslation("Close")}
-          </Button>
-          <Button color="green" type="submit" disabled={pristine || submitting}>
-            <Icon name="checkmark" /> {getTranslation("Submit")}
+          
+          <Button color="violet" fluid="true" size="huge" type="submit" disabled={pristine || submitting}>
+            {getTranslation("Submit")}
           </Button>
         </Form>
       </Modal.Content>

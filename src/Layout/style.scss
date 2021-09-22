@@ -10,9 +10,41 @@
   background: transparent !important;
   color: rgb(0, 0, 0) !important;
 }
-.ui.menu .dropdown.item .menu{
+/*.ui.menu .dropdown.item .menu {
   background: rgb(216, 180, 138);
-}
+}*/
 .ui.dropdown .menu .version > .item {
   cursor: auto;
+}
+
+//@import "./style.variables";
+
+.lingvo-label {
+  background-color: #DBD9F1 !important;
+  color: #372F9D !important;
+}
+
+.lingvo-modal {
+  border-radius: 32px !important;
+
+  & > :first-child:not(.icon),
+  & > .icon:first-child + * {
+      border-top-left-radius: 32px !important;
+      border-top-right-radius: 32px !important;
+  }
+
+  & > :last-child {
+      border-bottom-left-radius: 32px !important;
+      border-bottom-right-radius: 32px !important;
+  }
+  
+  & > .content.lingvo-modal-content {
+    padding: 40px !important;
+    background: #FAFAFA !important;
+  }
+
+  & .ui.button {
+    border-radius: 16px !important;
+  }
+
 }

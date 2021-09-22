@@ -15,7 +15,7 @@ const Tasks = pure(({ count, loading, toggle }) =>
     </Menu.Item>
     :
     <Menu.Item as="a" onClick={toggle} className="top_menu">
-      {getTranslation('Tasks')}<Label color="blue">{count}</Label>
+      {getTranslation('Tasks')}<Label className="lingvo-label" size="big">{count}</Label>
     </Menu.Item>
 );
 

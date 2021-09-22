@@ -1,0 +1,3 @@
+@pageBackground: #f0f0f0;
+
+@defaultBorderRadius: 32px

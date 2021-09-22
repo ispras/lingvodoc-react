@@ -22,6 +22,7 @@ const SignInModal = props => {
     <FormModal
       form="signin"
       header={getTranslation("Please sign in")}
+      subheader={getTranslation("Welcome Back")}
       actions={signInForm}
       fields={signInFields}
       {...props}
