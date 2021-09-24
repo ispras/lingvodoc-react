@@ -350,8 +350,8 @@ export const stringsToTranslate = [
 export function getTranslation(string) {
   const translation = i18n.get(string);
 
-  console.log('translation');
-  console.log(translation);
+  /*console.log('translation');
+  console.log(translation);*/
   return (translation === undefined) ? string : translation;
 }
 

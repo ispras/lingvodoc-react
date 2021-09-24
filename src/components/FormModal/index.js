@@ -63,12 +63,13 @@ function FormModal(props) {
       onFocus={e => e.stopPropagation()}
     >
       <Modal.Content className="lingvo-modal-content">
-        <Header textAlign="center" as="h1">{header} {submitting && <Icon loading name="spinner" />}
+        <Header textAlign="center" as="h1">{header}
           {subheader && <Header.Subheader>
             {subheader}
           </Header.Subheader>}
+          {submitting && <Icon loading name="spinner" />}
         </Header>
-        <Form onSubmit={handleSubmit(actions)} onKeyDown={handleKeyDown(handleSubmit(actions))}>
+        <Form size="big" onSubmit={handleSubmit(actions)} onKeyDown={handleKeyDown(handleSubmit(actions))}>
           {
             fields.map(field =>
               <Field key={field.name} component={field.component || Rf} {...field} />)
@@ -80,7 +81,7 @@ function FormModal(props) {
             {message}
           </Message>
           
-          <Button color="violet" fluid="true" size="huge" type="submit" disabled={pristine || submitting}>
+          <Button color="violet" fluid size="huge" type="submit" disabled={pristine || submitting}>
             {getTranslation("Submit")}
           </Button>
         </Form>

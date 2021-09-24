@@ -18,16 +18,16 @@ const Anonymous = ({
   modal, launchSignInForm, launchSignUpForm, closeForm, loading
 }) =>
 <React.Fragment>
-  <Menu.Item className="top_menu">
+  <Menu.Item className="top_menu top_menu__item_signin">
     <SignInModal
-      trigger={<Dropdown.Item as="a" onClick={launchSignInForm}>{getTranslation('Sign In')}</Dropdown.Item>}
+      trigger={<div className="sign_in" onClick={launchSignInForm}>{getTranslation('Sign In')}</div>}
       open={modal === 'signin'}
       handleClose={closeForm}
     />
   </Menu.Item>
-  <Menu.Item className="top_menu">
+  <Menu.Item className="top_menu top_menu__item_signup">
     <SignUpModal
-      trigger={<Dropdown.Item as="a" onClick={launchSignUpForm}>{getTranslation('Sign Up')}</Dropdown.Item>}
+      trigger={<div className="sign_up" onClick={launchSignUpForm}>{getTranslation('Sign Up')}</div>}
       open={modal === 'signup'}
       handleClose={closeForm}
     />

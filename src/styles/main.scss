@@ -9,10 +9,58 @@
   src: url("fonts/GentiumPlus-I.woff");
 }
 
+@font-face {
+  font-family: Rubik;
+  src: url('fonts/Rubik-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: Rubik;
+  src: url('fonts/Rubik-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: Mulish;
+  src: url('fonts/Mulish-Regular.woff2') format('woff2'), 
+        url('fonts/Mulish-Regular.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: Mulish;
+  src: url('fonts/Mulish-Bold.woff2') format('woff2'), 
+        url('fonts/Mulish-Bold.woff') format('woff');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: Mulish;
+  src: url('fonts/Mulish-ExtraBold.woff2') format('woff2'), 
+        url('fonts/Mulish-ExtraBold.woff') format('woff');
+  font-weight: 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: Karla;
+  src: url('fonts/karla-variablefont_wght-webfont.woff2') format('woff2'), 
+        url('fonts/karla-variablefont_wght-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
 body {
   //background-color: rgb(240, 202, 158);
-  background-color: #372F9D;
-  font-family: "Noto Sans", "Helvetica Neue", Arial, Helvetica, sans-serif;
+  /*background-color: #372F9D;*/
+  //font-family: "Noto Sans", "Helvetica Neue", Arial, Helvetica, sans-serif;
+  font-family: Rubik, Arial, sans-serif;
+  font-weight: normal;
 }
 body:before {
   z-index: -1;
@@ -21,14 +69,20 @@ body:before {
   left: 0;
   top: 0;
   right: 0;
-  bottom: 0;
-  opacity: 0.4;
+  //bottom: 0;
+  //opacity: 0.4;
   width: 100%;
-  height: 100%;
-  background: url(../images/background2.png);
+  //height: 100%;
+  
+  /*background: url(../images/background2.png);
   background-size: 80%;
   background-repeat: no-repeat;
-  background-position: center center;
+  background-position: center center;*/
+
+  /*new */
+  height: 340px;
+  background: url("../images/rectangle1.svg") 0 0 no-repeat, url("../images/rectangle2.svg") 100% 200px no-repeat;
+  background-color: #372F9D;
 }
 
 .gentium {
@@ -92,11 +146,51 @@ body:before {
   background: url(../images/display_mode_background.png) !important;
 }
 
+.top-wrapper {
+  display: flex;
+  min-width: 1200px;
+  max-width: 1200px;
+  margin: 0 auto;
+  height: 80px;
+}
+
 .top_menu {
-  font-size: 1.2em !important;
+  /*font-size: 1.2em !important;*/
+
+  font-family: Rubik, Arial, sans-serif;
+  font-weight: 500 !important;
+  font-size: 16px !important;
   //background-color: rgb(216, 180, 138) !important;
   background-color: #FAFAFA !important;
-  color: rgb(0, 0, 0) !important;
+  //color: rgb(0, 0, 0) !important;
+  color: #0B132A !important;
+
+  &__item_signin {
+    padding-right: 0 !important;
+  }
+
+  &__item_signup {
+    padding-right: 40px !important;
+  }
+
+  & .sign_in {
+    display: block;
+    padding: 13px 0 14px 0;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 18.9px;
+  }
+
+  & .sign_up {
+    display: block;
+    padding: 13px 24px 14px 24px;
+    background: #5D54CD;
+    color: #fff;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 18.9px;
+  }
 }
 
 /** Inverted colors support */

@@ -19,8 +19,10 @@ import Locale from './Locale';
 import './style.scss';
 
 const Logo = styled.span`
-  font-size: 1.4em;
-  font-weight: bold;
+  font-family: Mulish;
+  font-size: 24px;
+  font-weight: 900;
+  color: #4F5665;
 `;
 
 const SyncButton = ({ synchronize }) => (
@@ -55,18 +57,19 @@ const Sync = compose(
 
 const NavBar =
   () => (
-
     <Menu fixed="top" className="top_menu" borderless>
-      <Menu.Item as={Link} to={config.homePath} className="top_menu">
-        <Logo>Lingvodoc 3.0</Logo>
-      </Menu.Item>
+      <div className="top-wrapper">
+        <Menu.Item as={Link} to={config.homePath} className="top_menu">
+          <Logo>Lingvodoc 3.0</Logo>
+        </Menu.Item>
 
-      <Menu.Menu position="right">
-        <Sync />
-        <User />
-        <Tasks />
-        <Locale />
-      </Menu.Menu>
+        <Menu.Menu position="right">
+          <Sync />
+          <User />
+          <Tasks />
+          <Locale />
+        </Menu.Menu>
+      </div>
     </Menu>
   );
 
