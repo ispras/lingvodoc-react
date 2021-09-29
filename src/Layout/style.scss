@@ -22,6 +22,14 @@
 .lingvo-label {
   background-color: #DBD9F1 !important;
   color: #372F9D !important;
+  margin-left: 6px !important;
+  padding: 11px 11px 10px 11px !important;
+  border-radius: 10px !important;
+  font-size: 16px !important;
+  line-height: 19px !important;
+  min-width: 42px;
+  text-align: center;
+  font-weight: 500 !important;
 }
 
 .lingvo-modal {
@@ -125,4 +133,16 @@
     border-radius: 10px !important;
   }
 
+}
+
+.lingvo-button-violet {
+  border-radius: 16px !important;
+  font-family: Rubik, Arial, sans-serif !important;
+  font-weight: 500 !important;
+  background: #5D54CD !important;
+  color: #fff !important;
+}
+
+.lingvo-spinner {
+  color: #DBD9F1 !important;
 }

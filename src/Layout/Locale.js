@@ -6,23 +6,29 @@ import { pure, branch, renderComponent, compose } from 'recompose';
 import { Dropdown, Flag, Menu, Icon } from 'semantic-ui-react';
 
 import { changeLocale } from 'ducks/locale';
-import { getTranslation } from 'api/i18n';
+//import { getTranslation } from 'api/i18n';
 
 /*const TITLE = getTranslation('Languages');*/
-const TITLE = '';
 
 function checkCountry(shortcut) {
   return shortcut === 'en' ? 'gb' : shortcut;
 }
 
+function icon({ shortcut }) {
+  return <React.Fragment>
+    <Flag name={checkCountry(shortcut)} />
+    <Icon name="caret down" />
+  </React.Fragment>;
+}
+
 function title({ intl_name: text }) {
-  const extra = text ? ` ${text}` : '';
-  return TITLE + extra;
+  const extra = text ? ` ${text.slice(0, 3)}` : '';
+  return extra;
 }
 
 const WithSpinner = () =>
   <Menu.Item as="a" className="top_menu">
-    <span>{TITLE}{' '}<Icon loading name="spinner"/></span>
+    <span><Icon loading name="spinner"/></span>
   </Menu.Item>;
 
 const enhance = compose(
@@ -34,7 +40,7 @@ const enhance = compose(
 );
 
 const Locale = enhance(({ locales, selected, select }) =>
-  <Dropdown item text={title(selected)} className="top_menu">
+  <Dropdown item text={title(selected)} icon={icon(selected)} className="top_menu top_menu__item_locale">
     <Dropdown.Menu>
       {
         locales.map(loc =>

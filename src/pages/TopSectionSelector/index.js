@@ -14,40 +14,37 @@ class topSectionSelector extends React.Component {
         return (
             <div className="top-section-selector">
                 <div className="top-section-selector_icon">
-                    <Link className="icon" to="/LanguagesDatabasesRoute">
-                        <label className="label">{getTranslation('Languages databases')}</label>
-                        <img className="img-tree img" src={imageCard}/>
+                    <Link className="card" to="/LanguagesDatabasesRoute">
+                        <label className="card__label">{getTranslation('Languages databases')}</label>
+                        <img className="card__img" src={imageCard}/>
                     </Link>
-                    <Link className="icon" to="/toolsRoute">
-                        <label className="label">{getTranslation('Tools')}</label>
-                        <img className="img-tools img" src={imageCard}/>
+                    <Link className="card" to="/toolsRoute">
+                        <label className="card__label">{getTranslation('Tools')}</label>
+                        <img className="card__img" src={imageCard}/>
                     </Link>
                     {(isAuthenticated) && (
-                        <Link className="icon" to="/dashboardRoute">
-                            <label className="label">{getTranslation('Dashboard')}</label>
-                            <img className="img-dashboard img" src={imageCard}/>
+                        <Link className="card" to="/dashboardRoute">
+                            <label className="card__label">{getTranslation('Dashboard')}</label>
+                            <img className="card__img" src={imageCard}/>
                         </Link>)}
 
-                    <Link className="icon" to="/grantsRoute">
-                        <label className="label">{getTranslation('Grants')}</label>
-                        <img className=" img" src={imageCard}/>
+                    <Link className="card" to="/grantsRoute">
+                        <label className="card__label">{getTranslation('Grants')}</label>
+                        <img className="card__img" src={imageCard}/>
                     </Link>
-                    <Link className="icon" to="/authors_route">
-                        <label className="label">{getTranslation('Lingvodoc creators')}</label>
-                        <img className=" img" src={imageCard}/>
+                    <Link className="card" to="/authors_route">
+                        <label className="card__label">{getTranslation('Lingvodoc creators')}</label>
+                        <img className="card__img" src={imageCard}/>
                     </Link>
-                    <Link className="icon" to="/supportRoute">
-                        <label className="label">{getTranslation('Support')}</label>
-                        <img className="img-support img" src={imageCard}/>
+                    <Link className="card" to="/supportRoute">
+                        <label className="card__label">{getTranslation('Support')}</label>
+                        <img className="card__img" src={imageCard}/>
                     </Link>
                 </div>
             </div>
-
-
         );
     }
 }
-
 
 topSectionSelector.propTypes = {
     isAuthenticated: PropTypes.bool

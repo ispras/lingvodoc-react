@@ -3,48 +3,25 @@
   width: 700px;
   height: 600px;
   margin: 0 auto;  
-  margin-top: 5em;
-  .background-img {
-    position: absolute;
-    background-image: url(../../images/tree.jpg);
-    background-repeat: no-repeat;
-    background-position: center center;
-    background-size: contain;
-    width: 700px;
-    height: 600px;
-    opacity: 0.4;
-    z-index: -1;
-  }
-  .img-block {
-    p {
-      padding-left: 0;
-    }
-    margin-right: 62px;
-    display: inline-block;
-    .img {
-      cursor: pointer;
-      width: 190px;
-      padding-top: 20px;
-      z-index: 100;
-      top: 10%;
-    }
-  }
-  p {
-    width: 190px;
-    text-align: center;
-    font-weight: bold;
-    color: black;
-    margin: 0;
-    font-size: 20px;
+  /*margin-top: 5em;*/
+  margin-top: 70px;
 
-    padding-left: 20px;
+  .cards-list {
+    padding-top: 100px;
   }
-  .languages_databases {
-    padding-left: 0;
+
+  .tree-header {
+    display: block;
     position: absolute;
-    top: -50px;
-width:350px ;
-    font-weight: bold;
-    font-size: 30px;
+    left: 0;
+    right: 0;
+    top: 34px;
+    text-align: center;
+    font-family: Rubik, Arial, sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 18.75px;
+    color: #fff;
   }
+
 }

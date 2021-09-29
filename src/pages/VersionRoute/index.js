@@ -23,7 +23,7 @@ const versionRoute = (props) => {
   }
 
   return (
-    <div className='version-route'>
+    <div className="version-route">
       <div className="version-block">
 
         <div className="version">

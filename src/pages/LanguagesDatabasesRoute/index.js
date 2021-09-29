@@ -1,32 +1,30 @@
 import React from 'react';
 import './styles.scss';
-import imageDictionaries from '../../images/dictionaries.png';
-import imageLanguage from '../../images/languages.png';
+import imageCard from '../../images/cat.svg';
 import { Link } from 'react-router-dom';
 
 import { getTranslation } from 'api/i18n';
-
 
 function treeRoute() {
   return (
     <div>
       <div className="treeRoute">
-        <div className="background-img" />
-        <p className="languages_databases">{getTranslation('Languages databases')}</p>
-        <div className="img-block">
-          <Link to="/dashboard/dictionaries_all"> <img className="img " src={imageDictionaries} /></Link>
-          <p> {getTranslation('Dictionaries')}</p>
-        </div>
-        <div className="img-block">
-          <Link to="/corpora_all"><img className="img " src={imageLanguage} /></Link>
-          <p>{getTranslation('Language corpora')}</p>
+        <h2 className="tree-header">{getTranslation('Languages databases')}</h2>
+        
+        <div class="cards-list">
+          <Link className="card" to="/dashboard/dictionaries_all">
+            <label className="card__label">{getTranslation('Dictionaries')}</label>
+            <img className="card__img" src={imageCard} />
+          </Link>
+          <Link className="card" to="/corpora_all">
+            <label className="card__label">{getTranslation('Language corpora')}</label>
+            <img className="card__img" src={imageCard} />
+          </Link>
         </div>
       </div>
 
     </div>
-
   );
 }
-
 
 export default treeRoute;

@@ -3,49 +3,24 @@
   width: 800px;
   height: 600px;
   margin: 0 auto;
-  margin-top: 5em;
-  .background-img {
-    position: absolute;
-    background-image: url(../../images/dashboard.png);
-    background-repeat: no-repeat;
-    background-position: center center;
-    background-size: contain;
-    width: 800px;
-    height: 600px;
-    opacity: 0.4;
-    z-index: -1;
-  }
-  .img-block {
-    p {
-      padding-left: 0;
-    }
+  margin-top: 70px;
 
-    margin-left: 62px;
-    margin-bottom: 50px;
-    display: inline-block;
-    .img {
-      cursor: pointer;
-      width: 180px;
-      z-index: 100;
-      top: 10%;
-    }
+  .cards-list {
+    padding-top: 100px;
   }
-  p {
-    width: 190px;
+
+  .dashboard-header {
+    display: block;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 34px;
     text-align: center;
-    font-weight: bold;
-    color: black;
-    margin: 0;
-    font-size: 20px;
-    position: absolute;
-    padding-left: 20px;
+    font-family: Rubik, Arial, sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 18.75px;
+    color: #fff;
   }
-  .dashboard {
-    padding-left: 0px;
-    position: absolute;
-    top: -50px;
-    left: 50px;
-    font-weight: bold;
-    font-size: 30px;
-  }
+  
 }

@@ -209,7 +209,7 @@ const Home = (props) => {
 
   return (
     <Container className="published">
-      <Segment className="rose_background">
+      <Segment className="rose_background!!!!!!!!!!!!!!!">
         <Form>
           <Form.Group inline className="toggle-label">
             <label>{getTranslation('Display mode')}</label>

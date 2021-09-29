@@ -1,8 +1,7 @@
 import React from 'react';
 import './styles.scss';
 import { Link } from 'react-router-dom';
-import imageScholarship from '../../images/scholarship.png';
-import imageLegalDocument from '../../images/legal-document.png';
+import imageCard from '../../images/cat.svg';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import { getTranslation } from 'api/i18n';
@@ -30,15 +29,17 @@ function grantsRoute(props) {
   return (
     <div>
       <div className="grantsRoute">
-        <div className="background-img" />
-        <p className="grants">{getTranslation('Grants')}</p>
-        <div className="img-block">
-          <Link to="/grants" ><img className="img" src={imageScholarship} /></Link>
-          <p className="name">{getTranslation('Grants')}</p>
-        </div >
-        <div className="img-block" >
-          <Link to="/without_grants" ><img className="img" src={imageLegalDocument} /></Link>
-          <p className="name">{getTranslation('Off-grant projects')}</p>
+        <h2 className="grants-header">{getTranslation('Grants')}</h2>
+
+        <div className="cards-list">
+          <Link className="card" to="/grants">
+            <label className="card__label">{getTranslation('Grants')}</label>
+            <img className="card__img" src={imageCard} />
+          </Link>
+          <Link className="card" to="/without_grants">
+            <label className="card__label">{getTranslation('Off-grant projects')}</label>
+            <img className="card__img" src={imageCard} />
+          </Link>
         </div>
         <Segment>
           <h3 className="black">{getTranslation('Project funded by grants')}</h3>
@@ -75,6 +76,4 @@ function grantsRoute(props) {
   );
 }
 
-
 export default graphql(grants)(grantsRoute);
-
