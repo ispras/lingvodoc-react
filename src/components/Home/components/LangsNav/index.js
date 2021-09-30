@@ -8,7 +8,6 @@ import LangsNavList from 'components/Home/components/LangsNav/LangsNavList/index
 import { sortLangsAlphabetically } from '../../common';
 import { getTranslation } from 'api/i18n';
 
-
 /*
  * Used for filtering languages based on a list provided by Julia Normanskaya.
  *
@@ -300,11 +299,11 @@ const enhance = compose(propsHandler);
 
 /* ----------- COMPONENT ----------- */
 const LangsNav = ({ autocompleteData, listData }) => (
-  <Segment className="rose_background!!!!!!!">
+  <React.Fragment>
     <Header as="h3">{getTranslation('Select language')}</Header>
     <LangsNavAutocomplete data={autocompleteData} />
     <LangsNavList data={listData} />
-  </Segment>
+  </React.Fragment>
 );
 
 /* ----------- PROPS VALIDATION ----------- */

@@ -209,10 +209,10 @@ const Home = (props) => {
 
   return (
     <Container className="published">
-      <Segment className="rose_background!!!!!!!!!!!!!!!">
+      <div>
         <Form>
           <Form.Group inline className="toggle-label">
-            <label>{getTranslation('Display mode')}</label>
+            {/*<label>{getTranslation('Display mode')}</label>*/}
             <Segment>
               <Form.Field
                 control={Radio}
@@ -246,8 +246,8 @@ const Home = (props) => {
               {selected.size === 0 && <p>Download</p>}
             </Button>
           )}
-      </Segment>
-      <Segment>
+      </div>
+      <div>
         {sortMode == 'grant' && (
           <GrantedDicts
             mode='grant'
@@ -278,7 +278,7 @@ const Home = (props) => {
             selectorMode={false}
           />
         )}
-      </Segment>
+      </div>
       <BackTopButton scrollContainer={scrollContainer} />
     </Container>
   );

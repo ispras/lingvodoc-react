@@ -4,6 +4,7 @@ import Immutable, { fromJS } from 'immutable';
 import { assignDictsToTree, buildDictTrees } from 'pages/Search/treeBuilder';
 import LangsNav from 'components/Home/components/LangsNav';
 import Tree from './Tree';
+import { Segment } from 'semantic-ui-react';
 
 
 function AllDicts(props) {
@@ -29,11 +30,14 @@ function AllDicts(props) {
   return (
     <div>
       <LangsNav data={tree} />
-      <Tree
-        tree={tree}
-        canSelectDictionaries={isAuthenticated}
-        selectorMode={selectorMode}
-      />
+      
+      <Segment>
+        <Tree
+          tree={tree}
+          canSelectDictionaries={isAuthenticated}
+          selectorMode={selectorMode}
+        />
+      </Segment>
     </div>
   );
 }
