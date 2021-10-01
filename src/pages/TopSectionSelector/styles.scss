@@ -1,3 +1,4 @@
+
 .top-section-selector_icon {
   /*position: absolute;*/
   text-align: center;
@@ -8,6 +9,8 @@
   margin-top: -140px;*/
   width: 100%;
   padding-top: 170px;
+
+  flex-wrap: wrap;
   
   .hidden {
     width: 70%;

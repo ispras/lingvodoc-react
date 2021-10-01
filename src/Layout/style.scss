@@ -10,14 +10,11 @@
   background: transparent !important;
   color: rgb(0, 0, 0) !important;
 }
-/*.ui.menu .dropdown.item .menu {
-  background: rgb(216, 180, 138);
-}*/
+
 .ui.dropdown .menu .version > .item {
   cursor: auto;
 }
 
-//@import "./style.variables";
 
 .lingvo-label {
   background-color: #DBD9F1 !important;
@@ -31,6 +28,8 @@
   text-align: center;
   font-weight: 500 !important;
 }
+
+/* modal */
 
 .lingvo-modal {
   border-radius: 32px !important;
@@ -51,10 +50,6 @@
     padding: 55px 40px !important;
     background: #FAFAFA !important;
   }
-
-  /*& > .close {
-
-  }*/
 
   & i.icon.close:before {
     content: "";
@@ -133,7 +128,14 @@
     border-radius: 10px !important;
   }
 
+  @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+    & {
+      width: 95% !important;
+    }
+  }
+
 }
+/* /modal */
 
 .lingvo-button-violet {
   border-radius: 16px !important;

@@ -5,7 +5,7 @@ import { assignDictsToTree, buildDictTrees } from 'pages/Search/treeBuilder';
 import LangsNav from 'components/Home/components/LangsNav';
 import { compositeIdToString as id2str } from 'utils/compositeId';
 import Tree from 'components/Home/components/Tree';
-
+import { Container } from 'semantic-ui-react';
 
 function TreeWithoutGrants(props) {
   const {
@@ -40,7 +40,9 @@ function TreeWithoutGrants(props) {
   return (
     <div>
       <LangsNav data={treeNoGrants} />
-      <Tree tree={treeNoGrants} canSelectDictionaries={isAuthenticated} />
+      <Container className="container-gray">
+        <Tree tree={treeNoGrants} canSelectDictionaries={isAuthenticated} />
+      </Container>
     </div>
   );
 }

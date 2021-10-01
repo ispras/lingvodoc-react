@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { pure } from 'recompose';
 import Immutable, { fromJS, Map } from 'immutable';
 import { assignDictsToTree, buildDictTrees } from 'pages/Search/treeBuilder';
-import { Segment, Header, List } from 'semantic-ui-react';
+import { Container, Segment, Header, List } from 'semantic-ui-react';
 
 import { getTranslation } from 'api/i18n';
 import Tree from './Tree';
@@ -72,7 +72,7 @@ function GrantedDicts(props) {
 
   return (
     <div>
-      <Segment>
+      <Container className="container-gray">
         {mode == 'grant' && (
           <Header>The work is supported by the following grants:</Header>)}
         <List ordered>
@@ -82,9 +82,9 @@ function GrantedDicts(props) {
             </List.Item>
           ))}
         </List>
-      </Segment>
+      </Container>
 
-      <Segment>
+      <Container className="container-gray">
         {trees.map(grant => (
           <div id={grantId(grant.id)} key={grant.id} className="grant">
             <Header>
@@ -93,13 +93,14 @@ function GrantedDicts(props) {
             <Tree tree={grant.tree} canSelectDictionaries={isAuthenticated} />
           </div>
         ))}
-      </Segment>
-      <Segment>
+      </Container>
+
+      <Container className="container-gray">
         <div className="grant">
           <div className="grant-title">{getTranslation('Индивидуальная работа')}</div>
           <Tree tree={restTree} canSelectDictionaries={isAuthenticated} />
         </div>
-      </Segment>
+      </Container>
     </div>
   );
 }

@@ -177,21 +177,26 @@ const CorporaAll = (props) => {
   const scrollContainer = getScrollContainer();
 
   return (
-    <Container className="published">
-      <Segment size="huge">{getTranslation('Language corpora')}</Segment>
-      <Segment>
-        {
-          <AllDicts
-            location={props.location}
-            languagesTree={languagesTree}
-            dictionaries={dicts}
-            perspectives={perspectivesList}
-            isAuthenticated={isAuthenticated}
-          />
-        }
-      </Segment>
-      <BackTopButton scrollContainer={scrollContainer} />
-    </Container>
+    <React.Fragment>
+      <div className="background-header">
+        <Container className="published">
+          <h2 className="page-title">{getTranslation('Language corpora')}</h2>
+        </Container>
+      </div>
+
+      <Container className="published">
+        {/*<Segment size="huge">{getTranslation('Enter the name of the language')}</Segment>*/}
+        <AllDicts
+          location={props.location}
+          languagesTree={languagesTree}
+          dictionaries={dicts}
+          perspectives={perspectivesList}
+          isAuthenticated={isAuthenticated}
+        />
+          
+        <BackTopButton scrollContainer={scrollContainer} />
+      </Container>
+    </React.Fragment>
   );
 };
 

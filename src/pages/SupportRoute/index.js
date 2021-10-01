@@ -7,32 +7,37 @@ import { getTranslation } from 'api/i18n';
 const supportRoute = (props) => {
 
   return (
-    <div>
+  <div class="lingvodoc-page">
+    <div className="background-cards lingvodoc-page__content">
       <div className="supportRoute">
         <h2 class="support-header">{getTranslation('Support')}</h2>
 
         <div class="cards-list">
-          <a className="card" href="https://github.com/ispras/lingvodoc-react/wiki" target="_blank">
-            <label className="card__label">{getTranslation('Help')}</label>
-            <img className="card__img" src={imageCard} />
+          <a className="card-item" href="https://github.com/ispras/lingvodoc-react/wiki" target="_blank">
+            <label className="card-item__label">{getTranslation('Help')}</label>
+            <img className="card-item__img" src={imageCard} />
           </a>
           {/*
-            <Link className="card" to="/desktop">
-              <label className="card__label">{getTranslation('Desktop')}</label>
-              <img className="card__img" src={imageCard} />
+            <Link className="card-item" to="/desktop">
+              <label className="card-item__label">{getTranslation('Desktop')}</label>
+              <img className="card-item__img" src={imageCard} />
             </Link>
           */}
-          <a className="card" href="https://t.me/lingvodoc_support" target="_blank">
-            <label className="card__label card__label_telegram">{getTranslation('Support@Telegram')}</label>
-            <img className="card__img" src={imageCard} />
+          <a className="card-item" href="https://t.me/lingvodoc_support" target="_blank">
+            <label className="card-item__label card__label_telegram">{getTranslation('Support@Telegram')}</label>
+            <img className="card-item__img" src={imageCard} />
           </a>
-          <Link className="card" to="/version_route">
-            <label className="card__label">{getTranslation('Version')}</label>
-            <img className="card__img" src={imageCard} />
+          <Link className="card-item" to="/version_route">
+            <label className="card-item__label">{getTranslation('Version')}</label>
+            <img className="card-item__img" src={imageCard} />
           </Link>
         </div>
       </div>
     </div>
+    <div class="lingvodoc-page__footer lingvodoc-footer">
+        Copyright © 2012-2021 Institute of Linguistics Russian Academy of Sciences, Ivannikov Institute for System Programming of the Russian Academy of Sciences, Tomsk State University
+    </div>
+  </div>
   );
 };
 

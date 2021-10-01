@@ -56,33 +56,43 @@
 }
 
 body {
-  //background-color: rgb(240, 202, 158);
-  /*background-color: #372F9D;*/
-  //font-family: "Noto Sans", "Helvetica Neue", Arial, Helvetica, sans-serif;
   font-family: Rubik, Arial, sans-serif;
   font-weight: normal;
 }
-body:before {
-  z-index: -1;
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0;
-  right: 0;
-  //bottom: 0;
-  //opacity: 0.4;
-  width: 100%;
-  //height: 100%;
-  
-  /*background: url(../images/background2.png);
-  background-size: 80%;
-  background-repeat: no-repeat;
-  background-position: center center;*/
 
-  /*new */
-  height: 340px;
-  background: url("../images/rectangle1.svg") 0 0 no-repeat, url("../images/rectangle2.svg") 100% 190px no-repeat;
+.background-cards {
+  position: relative;
+
+  &:before {
+    z-index: -1;
+    content: "";
+    position: absolute;
+    left: 0;
+    top: -6px;
+    right: 0;
+    
+    width: 100%;
+    
+    height: 260px;
+    background: url("../images/rectangle1.svg") 0 -80px no-repeat, url("../images/rectangle2.svg") 100% 110px no-repeat;
+    background-color: #372F9D;
+  }
+}
+
+.background-header {
+  background: url("../images/rectangle1.svg") 0 -138px no-repeat, url("../images/rectangle2.svg") 100% 35px no-repeat;
   background-color: #372F9D;
+
+  padding: 26px 0;
+  margin: -6px 0 26px 0;
+}
+
+.background-content {
+  background: url("../images/rectangle1.svg") 0 -80px no-repeat, url("../images/rectangle2.svg") 100% 110px no-repeat;
+  background-color: #372F9D;
+
+  padding: 26px 20px;
+  margin: -6px 0 26px 0;
 }
 
 .gentium {
@@ -146,23 +156,21 @@ body:before {
   background: url(../images/display_mode_background.png) !important;
 }
 
+/* top menu */
+
 .top-wrapper {
   display: flex;
-  min-width: 1200px;
+  width: 100%;
   max-width: 1200px;
   margin: 0 auto;
   height: 80px;
 }
 
 .top_menu {
-  /*font-size: 1.2em !important;*/
-
   font-family: Rubik, Arial, sans-serif;
   font-weight: 500 !important;
   font-size: 16px !important;
-  //background-color: rgb(216, 180, 138) !important;
   background-color: #FAFAFA !important;
-  //color: rgb(0, 0, 0) !important;
   color: #0B132A !important;
 
   &__item_signin {
@@ -207,6 +215,14 @@ body:before {
     }
   }
 
+  & .lingvodoc-logo {
+    font-family: Mulish;
+    font-size: 24px;
+    line-height: 30px;
+    font-weight: 900;
+    color: #4F5665;
+  }
+
   & .sign_in {
     display: block;
     padding: 13px 0 14px 0;
@@ -225,7 +241,78 @@ body:before {
     font-size: 16px;
     line-height: 18.9px;
   }
+
+  @media only screen and (max-device-width: 710px), only screen and (max-width: 710px) {
+    
+    & .lingvodoc-logo {
+      font-size: 18px !important;
+    }
+
+    &__item_signin {
+      padding-left: 15px !important;
+    }
+
+    &__item_signup {
+      padding-right: 0px !important;
+      padding-left: 15px !important;
+    }
+
+    &__item_tasks {
+      padding-left: 15px !important;
+    }
+
+    &__item_locale {
+      padding-left: 10px !important;
+      padding-right: 5px !important;
+    }
+  }
+
+  @media only screen and (max-device-width: 610px), only screen and (max-width: 610px) {
+    &__logo {
+      display: none !important;
+    }
+  }
+
+  @media only screen and (max-device-width: 420px), only screen and (max-width: 420px) {
+    
+    &__item_signup {
+      padding-left: 10px !important;
+    }
+
+    &__item_tasks {
+      padding-left: 10px !important;
+      font-size: 14px !important;
+    }
+
+    &__item_locale {
+      padding-left: 5px !important;
+      padding-right: 5px !important;
+    }
+
+    & .sign_in {
+      font-size: 14px;
+      line-height: 16px;
+    }
+
+    & .sign_up {
+      padding: 10px 14px;
+      font-size: 14px;
+      line-height: 16px;
+    }
+
+    & .lingvo-label {
+      font-size: 14px !important;
+      padding: 8px !important;
+      min-width: 34px !important;
+    }
+
+    & .ui.dropdown > .text {
+      font-size: 14px !important;
+    }
+  }
 }
+
+/* /top menu */
 
 /** Inverted colors support */
 
@@ -256,16 +343,94 @@ body:before {
   color: black !important;
 }
 
+.container-white {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 22px;
+}
+
+.container-gray {
+  background-color: #FAFAFA;
+  border-radius: 8px;
+  padding: 22px;
+
+  & + & {
+    margin-top: 32px;
+  }
+
+  .cards-list + & {
+    margin-top: 32px;
+  }
+
+  &_education {
+    background: #FAFAFA;
+    position: relative;
+
+    & .langs-nav-list {
+      position: relative;
+    }
+
+    &::before {
+      content: "";
+      position: absolute;
+      right: 32px;
+      bottom: 0;
+      background: url("../images/education.svg") 0 0 no-repeat;
+      width: 188px;
+      height: 136px;
+    }
+  }
+
+}
+
+.page-title {
+  text-align: center;
+  font-family: Rubik, Arial, sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 18.75px;
+  color: #fff;
+}
+
+.lingvodoc-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+
+  &__content {
+    flex: 1 0 auto;
+  }
+
+  &__footer {
+    flex: 0 0 auto;
+  }
+}
+
+.lingvodoc-footer {
+  background: #F4F4F4;
+  padding: 40px;
+  font-family: Rubik, Arial, sans-serif;
+  font-size: 12px;
+  line-height: 14px;
+  font-weight: normal;
+  color: #4E4E4E;
+  margin-top: 30px;
+}
+
+/* cards */
+
 .cards-list {
   text-align: center;
   justify-content: center;
   align-content: center;
   display: flex;
   width: 100%;
-  /*padding-top: 170px;*/
+  padding-top: 170px;
+
+  flex-wrap: wrap;
 }
 
-.card {
+.card-item {
   display: flex;
   flex-direction: column;
   text-align: center;
@@ -276,8 +441,7 @@ body:before {
   max-width: 176px;
   background: #fff;
   position: relative;
-  margin-left: 15px;
-  margin-right: 15px;
+  margin: 0 15px 30px 15px;
 
   min-height: 246px;
 
@@ -334,5 +498,6 @@ body:before {
   &:hover &__label {
     color: #fff;
   }
-
 }
+
+/* /cards */

@@ -7,7 +7,9 @@ function authorsRoute() {
   return (
     <div>
       <div className="authorsRoute">
-        <p className="authors">{getTranslation('Lingvodoc creators')}</p>
+        <div className="background-header">
+          <h2 className="page-title">{getTranslation('Lingvodoc creators')}</h2>
+        </div>
         <Info />
       </div>
     </div>

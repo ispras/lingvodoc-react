@@ -23,29 +23,36 @@ const versionRoute = (props) => {
   }
 
   return (
-    <div className="version-route">
-      <div className="version-block">
+  <div class="lingvodoc-page">
+    <div className="background-cards lingvodoc-page__content">
+      <div className="version-route">
+        <div className="version-block">
 
-        <div className="version">
-          <h1 className="help">{getTranslation('Version')}</h1>
-          <span className="version" style={{ marginBottom: '0.5em' }}>Backend:</span>
-          <span className="version" style={{ marginLeft: '0.5em' }}>{version}</span>
+          <div className="version">
+            <h1 className="help">{getTranslation('Version')}</h1>
+            <span className="version" style={{ marginBottom: '0.5em' }}>Backend:</span>
+            <span className="version" style={{ marginLeft: '0.5em' }}>{version}</span>
+          </div>
+
+          {version_uniparser &&
+            map(uniparser_str_list, uniparser_str => (
+              <div className="version">
+                <span className="version" style={{ marginBottom: '0.5em' }}>{uniparser_str}:</span>
+                <span className="version" style={{ marginLeft: '0.5em' }}>{version_uniparser[uniparser_str]}</span>
+              </div>))}
+
+          <div className="version">
+            <span className="version" style={{ marginBottom: '0.5em' }}>Frontend:</span>
+            <span className="version" style={{ marginLeft: '0.5em' }}>{__VERSION__}</span>
+          </div>
+
         </div>
-
-        {version_uniparser &&
-          map(uniparser_str_list, uniparser_str => (
-            <div className="version">
-              <span className="version" style={{ marginBottom: '0.5em' }}>{uniparser_str}:</span>
-              <span className="version" style={{ marginLeft: '0.5em' }}>{version_uniparser[uniparser_str]}</span>
-            </div>))}
-
-        <div className="version">
-          <span className="version" style={{ marginBottom: '0.5em' }}>Frontend:</span>
-          <span className="version" style={{ marginLeft: '0.5em' }}>{__VERSION__}</span>
-        </div>
-
       </div>
     </div>
+    <div class="lingvodoc-page__footer lingvodoc-footer">
+        Copyright © 2012-2021 Institute of Linguistics Russian Academy of Sciences, Ivannikov Institute for System Programming of the Russian Academy of Sciences, Tomsk State University
+    </div>
+  </div>
   );
 };
 

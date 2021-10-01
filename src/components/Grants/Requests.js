@@ -199,7 +199,11 @@ const Requests = ({ data, accept }) => {
     },
   ];
 
-  return <Tab className="inverted" menu={{ fluid: true, vertical: true, tabular: 'right' }} panes={panes} />;
+  return (
+    <div className="background-content">
+      <Tab className="inverted" menu={{ fluid: true, vertical: true, tabular: 'right' }} panes={panes} />
+    </div>
+  );
 };
 /* eslint-enable react/prop-types */
 export default compose(

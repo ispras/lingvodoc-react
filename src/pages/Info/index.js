@@ -1,8 +1,6 @@
 import React from 'react';
 import { Container, Segment, Header, Card } from 'semantic-ui-react';
 
-
-
 const linguistsContributorsRAN = [
   {
     header: 'Норманская Юлия Викторовна',
@@ -65,30 +63,31 @@ const developersElecardMedContributors = [
 const Info = () => { 
   return (
     <Container>
-      <Segment>
-        <Header color='blue'>Институт языкознания РАН, Институт системного программирования им. В.П.Иванникова РАН</Header>
+      <Container className="container-gray">
+        <h3 className="creator-title">Институт языкознания РАН, Институт системного программирования им. В.П.Иванникова РАН</h3>
         <Card.Group items={linguistsContributorsRAN} itemsPerRow={1} />
-      </Segment>
-      <Segment>
-        <Header color='blue'>Институт языкознания РАН, Томский государственный университет</Header>
+      </Container>
+      <Container className="container-gray">
+        <h3 className="creator-title">Институт языкознания РАН, Томский государственный университет</h3>
         <Card.Group items={linguistsContributors} itemsPerRow={1} />
-      </Segment>
-      <Segment>
-        <Header color='blue'>Томский государственный университет</Header>
+      </Container>
+      <Container className="container-gray">
+        <h3 className="creator-title">Томский государственный университет</h3>
         <Card.Group items={linguistsContributorsTSU} itemsPerRow={1} />
-      </Segment>
-      <Segment>
-        <Header color='blue'>Институт системного программирования им. В. П. Иванникова РАН</Header>
+      </Container>
+      <Container className="container-gray">
+        <h3 className="creator-title">Институт системного программирования им. В. П. Иванникова РАН</h3>
         <Card.Group items={developersContributors} itemsPerRow={3} />
-      </Segment>
-      <Segment>
-        <Header color='blue'>ООО Элекард-Мед</Header>
+      </Container>
+      <Container className="container-gray">
+        <h3 className="creator-title">ООО Элекард-Мед</h3>
         <Card.Group items={developersElecardMedContributors} itemsPerRow={2} />
-      </Segment>
-      <h2 className="black">Контакты</h2>
-      <Segment>
+      </Container>
+
+      <Container className="container-gray">
+        <h2 className="black">Контакты</h2>
         <p>Вопросы по поводу работы программы LingvoDoc задавайте по адресу <a href="mailto:al@somestuff.ru">al@somestuff.ru</a></p>
-      </Segment>
+      </Container>
     </Container>
   )
 }

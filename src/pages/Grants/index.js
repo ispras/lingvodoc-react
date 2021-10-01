@@ -10,7 +10,11 @@ import GrantsList from 'components/Grants/GrantsList';
 
 class Grants extends React.Component {
   render() {
-    return <GrantsList />;
+    return (
+      <div className="background-content">
+        <GrantsList />
+      </div>
+    );
   }
 }
 

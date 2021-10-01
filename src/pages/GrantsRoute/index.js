@@ -5,7 +5,7 @@ import imageCard from '../../images/cat.svg';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import { getTranslation } from 'api/i18n';
-import { Segment } from 'semantic-ui-react';
+import { Container } from 'semantic-ui-react';
 
 const grants = gql`
   query grants{
@@ -27,24 +27,26 @@ function grantsRoute(props) {
     return newDate.getFullYear();
   }
   return (
-    <div>
+  <div class="lingvodoc-page">
+    <div className="background-cards lingvodoc-page__content">
       <div className="grantsRoute">
         <h2 className="grants-header">{getTranslation('Grants')}</h2>
 
         <div className="cards-list">
-          <Link className="card" to="/grants">
-            <label className="card__label">{getTranslation('Grants')}</label>
-            <img className="card__img" src={imageCard} />
+          <Link className="card-item" to="/grants">
+            <label className="card-item__label">{getTranslation('Grants')}</label>
+            <img className="card-item__img" src={imageCard} />
           </Link>
-          <Link className="card" to="/without_grants">
-            <label className="card__label">{getTranslation('Off-grant projects')}</label>
-            <img className="card__img" src={imageCard} />
+          <Link className="card-item" to="/without_grants">
+            <label className="card-item__label">{getTranslation('Off-grant projects')}</label>
+            <img className="card-item__img" src={imageCard} />
           </Link>
         </div>
-        <Segment>
+        
+        <Container className="container-gray">
           <h3 className="black">{getTranslation('Project funded by grants')}</h3>
 
-          <Segment>
+          <Container className="container-white">
             <p>
               <b>
                 Внимание!
@@ -59,7 +61,7 @@ function grantsRoute(props) {
             <p>
               <Link to="/desktop">Настольные приложения, связанные с системой, можно скачать в разделе Desktop software</Link>
             </p>
-          </Segment>
+          </Container>
 
           <ul>
             {(grants) && (grants.map(grant => (<li key={grant.id} style={{ margin: '0 0 5px 0' }} >
@@ -70,9 +72,13 @@ function grantsRoute(props) {
             </li>)))}
 
           </ul>
-        </Segment>
+        </Container>
       </div>
     </div>
+    <div class="lingvodoc-page__footer lingvodoc-footer">
+        Copyright © 2012-2021 Institute of Linguistics Russian Academy of Sciences, Ivannikov Institute for System Programming of the Russian Academy of Sciences, Tomsk State University
+    </div>
+  </div>
   );
 }
 

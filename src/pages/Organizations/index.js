@@ -188,7 +188,7 @@ class Organizations extends React.Component {
     const { organizations } = data;
 
     return (
-      <div>
+      <div className="background-content">
 
         <div style={{ overflowY: 'auto' }}>
           <Table celled padded>
