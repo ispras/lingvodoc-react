@@ -3,6 +3,7 @@ import './styles.scss';
 import imageCard from '../../images/cat.svg';
 import { Link } from 'react-router-dom';
 import { getTranslation } from 'api/i18n';
+import Footer from 'components/Footer';
 
 const supportRoute = (props) => {
 
@@ -34,9 +35,7 @@ const supportRoute = (props) => {
         </div>
       </div>
     </div>
-    <div class="lingvodoc-page__footer lingvodoc-footer">
-        Copyright © 2012-2021 Institute of Linguistics Russian Academy of Sciences, Ivannikov Institute for System Programming of the Russian Academy of Sciences, Tomsk State University
-    </div>
+    <Footer />
   </div>
   );
 };

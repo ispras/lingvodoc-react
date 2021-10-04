@@ -6,6 +6,7 @@ import { compose } from 'recompose';
 import { getTranslation } from 'api/i18n';
 import {Label} from 'semantic-ui-react';
 import { map } from 'lodash';
+import Footer from 'components/Footer';
 
 const versionRoute = (props) => {
 
@@ -49,9 +50,7 @@ const versionRoute = (props) => {
         </div>
       </div>
     </div>
-    <div class="lingvodoc-page__footer lingvodoc-footer">
-        Copyright © 2012-2021 Institute of Linguistics Russian Academy of Sciences, Ivannikov Institute for System Programming of the Russian Academy of Sciences, Tomsk State University
-    </div>
+    <Footer />
   </div>
   );
 };

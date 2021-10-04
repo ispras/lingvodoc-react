@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { compose, mapProps } from 'recompose';
-import { Segment, Header } from 'semantic-ui-react';
+import { Container, Segment, Header } from 'semantic-ui-react';
 
 import LangsNavAutocomplete from 'components/Home/components/LangsNav/LangsNavAutocomplete/index';
 import LangsNavList from 'components/Home/components/LangsNav/LangsNavList/index';
@@ -300,8 +300,10 @@ const enhance = compose(propsHandler);
 /* ----------- COMPONENT ----------- */
 const LangsNav = ({ autocompleteData, listData }) => (
   <React.Fragment>
-    <Header as="h3">{getTranslation('Select language')}</Header>
-    <LangsNavAutocomplete data={autocompleteData} />
+    <Container>
+      <Header as="h3">{getTranslation('Select language')}</Header>
+      <LangsNavAutocomplete data={autocompleteData} />
+    </Container>
     <LangsNavList data={listData} />
   </React.Fragment>
 );

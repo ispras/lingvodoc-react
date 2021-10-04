@@ -2,7 +2,7 @@ import React from 'react';
 import { compose, mapProps, withState, withHandlers, lifecycle } from 'recompose';
 import PropTypes from 'prop-types';
 import Autocomplete from 'react-autocomplete';
-import { Form, Segment, Icon } from 'semantic-ui-react';
+import { Container, Form, Segment, Icon } from 'semantic-ui-react';
 
 import debounce from 'utils/debounce';
 import { getTranslation } from 'api/i18n';

@@ -6,6 +6,7 @@ import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import { getTranslation } from 'api/i18n';
 import { Container } from 'semantic-ui-react';
+import Footer from 'components/Footer';
 
 const grants = gql`
   query grants{
@@ -75,9 +76,7 @@ function grantsRoute(props) {
         </Container>
       </div>
     </div>
-    <div class="lingvodoc-page__footer lingvodoc-footer">
-        Copyright © 2012-2021 Institute of Linguistics Russian Academy of Sciences, Ivannikov Institute for System Programming of the Russian Academy of Sciences, Tomsk State University
-    </div>
+    <Footer />
   </div>
   );
 }

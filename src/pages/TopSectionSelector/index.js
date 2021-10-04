@@ -1,11 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import './styles.scss';
-import imageCard from '../../images/cat.svg';
+import imageLanguages from '../../images/book_lover.svg';
+import imageTools from '../../images/noted.svg';
+import imageDashboard from '../../images/responsive.svg';
+import imageGrants from '../../images/winners.svg';
+import imageCreators from '../../images/conference_call.svg';
+import imageSupport from '../../images/connecting.svg';
 import {Link} from 'react-router-dom';
 import {getTranslation} from 'api/i18n';
 import {compose} from 'recompose';
 import {connect} from 'react-redux';
+import Footer from 'components/Footer';
 
 class topSectionSelector extends React.Component {
 
@@ -17,35 +23,33 @@ class topSectionSelector extends React.Component {
                 <div className="top-section-selector_icon">
                     <Link className="card-item" to="/LanguagesDatabasesRoute">
                         <label className="card-item__label">{getTranslation('Languages databases')}</label>
-                        <img className="card-item__img" src={imageCard}/>
+                        <img className="card-item__img card-item__img_languages" src={imageLanguages} />
                     </Link>
                     <Link className="card-item" to="/toolsRoute">
                         <label className="card-item__label">{getTranslation('Tools')}</label>
-                        <img className="card-item__img" src={imageCard}/>
+                        <img className="card-item__img" src={imageTools} />
                     </Link>
                     {(isAuthenticated) && (
                         <Link className="card-item" to="/dashboardRoute">
                             <label className="card-item__label">{getTranslation('Dashboard')}</label>
-                            <img className="card-item__img" src={imageCard}/>
+                            <img className="card-item__img" src={imageDashboard} />
                         </Link>)}
 
                     <Link className="card-item" to="/grantsRoute">
                         <label className="card-item__label">{getTranslation('Grants')}</label>
-                        <img className="card-item__img" src={imageCard}/>
+                        <img className="card-item__img card-item__img_grants" src={imageGrants} />
                     </Link>
                     <Link className="card-item" to="/authors_route">
                         <label className="card-item__label">{getTranslation('Lingvodoc creators')}</label>
-                        <img className="card-item__img" src={imageCard}/>
+                        <img className="card-item__img card-item__img_creators" src={imageCreators} />
                     </Link>
                     <Link className="card-item" to="/supportRoute">
                         <label className="card-item__label">{getTranslation('Support')}</label>
-                        <img className="card-item__img" src={imageCard}/>
+                        <img className="card-item__img card-item__img_support" src={imageSupport} />
                     </Link>
                 </div>
             </div>
-            <div class="lingvodoc-page__footer lingvodoc-footer">
-                Copyright © 2012-2021 Institute of Linguistics Russian Academy of Sciences, Ivannikov Institute for System Programming of the Russian Academy of Sciences, Tomsk State University
-            </div>
+            <Footer />
         </div>
         );
     }

@@ -57,7 +57,7 @@ const enhance = compose(
 const BackTopButton = ({ show, onClick }) => (
   <Button
     /*color="blue"*/
-    className={`${classNames.main} lingvo-button-violet ${show ? classNames.show : ''}`}
+    className={`${classNames.main} lingvo-button-lite-violet ${show ? classNames.show : ''}`}
     onClick={onClick}
     aria-label="Вернуться наверх"
   >

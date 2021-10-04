@@ -1,9 +1,11 @@
 import React from 'react';
 import './styles.scss';
-import imageCard from '../../images/cat.svg';
+import imageDictionares from '../../images/bookshelves.svg';
+import imageCorpora from '../../images/file_bundle.svg';
 import { Link } from 'react-router-dom';
 
 import { getTranslation } from 'api/i18n';
+import Footer from 'components/Footer';
 
 function treeRoute() {
   return (
@@ -15,18 +17,16 @@ function treeRoute() {
         <div class="cards-list">
           <Link className="card-item" to="/dashboard/dictionaries_all">
             <label className="card-item__label">{getTranslation('Dictionaries')}</label>
-            <img className="card-item__img" src={imageCard} />
+            <img className="card-item__img" src={imageDictionares} />
           </Link>
           <Link className="card-item" to="/corpora_all">
             <label className="card-item__label">{getTranslation('Language corpora')}</label>
-            <img className="card-item__img" src={imageCard} />
+            <img className="card-item__img card-item__img_corpora" src={imageCorpora} />
           </Link>
         </div>
       </div>
     </div>
-    <div class="lingvodoc-page__footer lingvodoc-footer">
-        Copyright © 2012-2021 Institute of Linguistics Russian Academy of Sciences, Ivannikov Institute for System Programming of the Russian Academy of Sciences, Tomsk State University
-    </div>
+    <Footer />
   </div>
   );
 }
