@@ -4,8 +4,7 @@ import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import { compose, branch, renderNothing } from 'recompose';
 import { Link, withRouter } from 'react-router-dom';
-import { Dropdown, Menu, Button, List } from 'semantic-ui-react';
-import styled from 'styled-components';
+import { Menu, Button } from 'semantic-ui-react';
 import config from 'config';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -17,11 +16,6 @@ import Tasks from './Tasks';
 import Locale from './Locale';
 
 import './style.scss';
-
-const Logo = styled.span`
-  font-size: 1.4em;
-  font-weight: bold;
-`;
 
 const SyncButton = ({ synchronize }) => (
   <Menu.Item>
@@ -55,18 +49,19 @@ const Sync = compose(
 
 const NavBar =
   () => (
+    <Menu fixed="top" className="top_menu" borderless>
+      <div className="top-wrapper">
+        <Menu.Item as={Link} to={config.homePath} className="top_menu top_menu__logo">
+          <span className="lingvodoc-logo">Lingvodoc 3.0</span>
+        </Menu.Item>
 
-    <Menu fixed="top" className="top_menu">
-      <Menu.Item as={Link} to={config.homePath} className="top_menu">
-        <Logo>Lingvodoc 3.0</Logo>
-      </Menu.Item>
-
-      <Menu.Menu position="right">
-        <Sync />
-        <User />
-        <Tasks />
-        <Locale />
-      </Menu.Menu>
+        <Menu.Menu position="right">
+          <Sync />
+          <User />
+          <Tasks />
+          <Locale />
+        </Menu.Menu>
+      </div>
     </Menu>
   );
 

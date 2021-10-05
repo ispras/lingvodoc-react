@@ -166,58 +166,60 @@ class Files extends React.Component {
     }
 
     return (
-      <Table celled compact definition>
-        <Table.Header fullWidth>
-          <Table.Row>
-            <Table.HeaderCell colSpan="5">
-              <Button onClick={() => document.getElementById('file-select').click()} style={{ marginRight: '1rem' }}>
-                {`${getTranslation('Browse')}...`}
-              </Button>
-              { file === undefined ? getTranslation('No file selected') : file.name }
-              <Input id="file-select" key={trigger} type="file" onChange={this.onFileChange} style={{ display: 'none' }} />
-              <Dropdown
-                button
-                basic
-                options={fileTypes}
-                value={this.state.fileType}
-                onChange={this.onFileTypeChange}
-                style={{ margin: '0 1rem 0 1rem' }}
-              />
-              <Button color="green" content={getTranslation('Upload')} disabled={file === undefined} onClick={this.uploadBlob} />
-              <Input
-                icon={{ name: 'search' }}
-                placeholder={getTranslation('Search')}
-                onChange={event => this.setState({ filter: event.target.value })}
-                style={{ float: 'right', width: '300px' }}
-              />
-            </Table.HeaderCell>
-          </Table.Row>
-          <Table.Row>
-            <SortableColumnHeader
-              onSortModeChange={order => dispatch({ type: 'SET_SORT_MODE', payload: { prop: 'name', order } })}
-            >
-              {getTranslation('Name')}
-            </SortableColumnHeader>
-            <SortableColumnHeader
-              onSortModeChange={order => dispatch({ type: 'SET_SORT_MODE', payload: { prop: 'data_type', order } })}
-            >
-              {getTranslation('Type')}
-            </SortableColumnHeader>
-            <SortableColumnHeader
-              onSortModeChange={order => dispatch({ type: 'SET_SORT_MODE', payload: { prop: 'created_at', order } })}
-            >
-              {getTranslation('Created')}
-            </SortableColumnHeader>
-            <Table.HeaderCell>{getTranslation('Actions')}</Table.HeaderCell>
-          </Table.Row>
-        </Table.Header>
+      <div className="background-content">
+        <Table celled compact definition>
+          <Table.Header fullWidth>
+            <Table.Row>
+              <Table.HeaderCell colSpan="5">
+                <Button onClick={() => document.getElementById('file-select').click()} style={{ marginRight: '1rem' }}>
+                  {`${getTranslation('Browse')}...`}
+                </Button>
+                { file === undefined ? getTranslation('No file selected') : file.name }
+                <Input id="file-select" key={trigger} type="file" onChange={this.onFileChange} style={{ display: 'none' }} />
+                <Dropdown
+                  button
+                  basic
+                  options={fileTypes}
+                  value={this.state.fileType}
+                  onChange={this.onFileTypeChange}
+                  style={{ margin: '0 1rem 0 1rem' }}
+                />
+                <Button color="green" content={getTranslation('Upload')} disabled={file === undefined} onClick={this.uploadBlob} />
+                <Input
+                  icon={{ name: 'search' }}
+                  placeholder={getTranslation('Search')}
+                  onChange={event => this.setState({ filter: event.target.value })}
+                  style={{ float: 'right', width: '300px' }}
+                />
+              </Table.HeaderCell>
+            </Table.Row>
+            <Table.Row>
+              <SortableColumnHeader
+                onSortModeChange={order => dispatch({ type: 'SET_SORT_MODE', payload: { prop: 'name', order } })}
+              >
+                {getTranslation('Name')}
+              </SortableColumnHeader>
+              <SortableColumnHeader
+                onSortModeChange={order => dispatch({ type: 'SET_SORT_MODE', payload: { prop: 'data_type', order } })}
+              >
+                {getTranslation('Type')}
+              </SortableColumnHeader>
+              <SortableColumnHeader
+                onSortModeChange={order => dispatch({ type: 'SET_SORT_MODE', payload: { prop: 'created_at', order } })}
+              >
+                {getTranslation('Created')}
+              </SortableColumnHeader>
+              <Table.HeaderCell>{getTranslation('Actions')}</Table.HeaderCell>
+            </Table.Row>
+          </Table.Header>
 
-        <Table.Body>
-          {blobs
-            .filter(b => !b.marked_for_deletion)
-            .map(blob => <BlobWithData key={compositeIdToString(blob.id)} blob={blob} />)}
-        </Table.Body>
-      </Table>
+          <Table.Body>
+            {blobs
+              .filter(b => !b.marked_for_deletion)
+              .map(blob => <BlobWithData key={compositeIdToString(blob.id)} blob={blob} />)}
+          </Table.Body>
+        </Table>
+      </div>
     );
   }
 }

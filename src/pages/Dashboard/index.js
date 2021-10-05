@@ -441,7 +441,15 @@ const CORPORA_TABS = [
   },
 ];
 
-const DictionaryDashboard = () => <Tab className="inverted" panes={DICTIONARIES_TABS} renderActiveOnly />;
-const CorpusDashboard = () => <Tab className="inverted" panes={CORPORA_TABS} renderActiveOnly />;
+const DictionaryDashboard = () => (
+  <div className="background-content">
+    <Tab className="inverted" panes={DICTIONARIES_TABS} renderActiveOnly />
+  </div>
+);
+const CorpusDashboard = () => (
+  <div className="background-content">
+    <Tab className="inverted" panes={CORPORA_TABS} renderActiveOnly />
+  </div>
+);
 
 export { DictionaryDashboard, CorpusDashboard };

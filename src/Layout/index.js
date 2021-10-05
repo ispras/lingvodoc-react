@@ -33,7 +33,8 @@ import Snackbar from './Snackbar';
 import Routes from './Routes';
 
 const Content = styled.div`
-  padding: 5em 20px;
+  padding: 0;
+  padding-top: 86px;
   height: 100vh !important;
   overflow-y: auto !important;
 `;
@@ -57,7 +58,7 @@ class Layout extends React.Component {
               <Routes />
             </Sidebar.Pusher>
           </Sidebar.Pushable>
-        }
+        }  
         <Modals />
         <PlayerModal />
         <MarkupModal />

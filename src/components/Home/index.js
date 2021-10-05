@@ -208,79 +208,83 @@ const Home = (props) => {
   const scrollContainer = getScrollContainer();
 
   return (
-    <Container className="published">
-      <Segment className="rose_background">
-        <Form>
-          <Form.Group inline className="toggle-label">
-            <label>{getTranslation('Display mode')}</label>
-            <Segment>
-              <Form.Field
-                control={Radio}
-                label={{ children: <div className="toggle-label">{getTranslation('By Languages')}</div> }}
-                value="1"
-                checked={!sortMode}
-                onChange={() => actions.setSortMode(null)}
-              />
-              <Form.Field
-                control={Radio}
-                label={{ children: <div className="toggle-label">{getTranslation('By Grants')}</div> }}
-                value="2"
-                checked={sortMode == 'grant'}
-                onChange={() => actions.setSortMode('grant')}
-              />
-              <Form.Field
-                control={Radio}
-                label={{ children: <div className="toggle-label">{getTranslation('By Organizations')}</div> }}
-                value="3"
-                checked={sortMode == 'organization'}
-                onChange={() => actions.setSortMode('organization')}
-              />
-            </Segment>
-          </Form.Group>
-        </Form>
+    <React.Fragment>
+      <div className="background-header">
+        <Container className="published">
+          <Form>
+            <Form.Group inline className="toggle-label">
+              {/*<label>{getTranslation('Display mode')}</label>*/}
+              <Segment>
+                <Form.Field
+                  control={Radio}
+                  label={{ children: <div className="toggle-label">{getTranslation('By Languages')}</div> }}
+                  value="1"
+                  checked={!sortMode}
+                  onChange={() => actions.setSortMode(null)}
+                />
+                <Form.Field
+                  control={Radio}
+                  label={{ children: <div className="toggle-label">{getTranslation('By Grants')}</div> }}
+                  value="2"
+                  checked={sortMode == 'grant'}
+                  onChange={() => actions.setSortMode('grant')}
+                />
+                <Form.Field
+                  control={Radio}
+                  label={{ children: <div className="toggle-label">{getTranslation('By Organizations')}</div> }}
+                  value="3"
+                  checked={sortMode == 'organization'}
+                  onChange={() => actions.setSortMode('organization')}
+                />
+              </Segment>
+            </Form.Group>
+          </Form>
 
-        {isAuthenticated &&
-          (config.buildType === 'desktop' || config.buildType === 'proxy') && (
-            <Button positive onClick={download} disabled={selected.size === 0}>
-              {selected.size > 0 && <p>Download ({selected.size})</p>}
-              {selected.size === 0 && <p>Download</p>}
-            </Button>
+          {isAuthenticated &&
+            (config.buildType === 'desktop' || config.buildType === 'proxy') && (
+              <Button positive onClick={download} disabled={selected.size === 0}>
+                {selected.size > 0 && <p>Download ({selected.size})</p>}
+                {selected.size === 0 && <p>Download</p>}
+              </Button>
+            )}
+          </Container>
+      </div>
+      <Container className="published">
+        <div>
+          {sortMode == 'grant' && (
+            <GrantedDicts
+              mode='grant'
+              languagesTree={languagesTree}
+              dictionaries={dicts}
+              perspectives={perspectivesList}
+              grants={grantsList}
+              isAuthenticated={isAuthenticated}
+            />
           )}
-      </Segment>
-      <Segment>
-        {sortMode == 'grant' && (
-          <GrantedDicts
-            mode='grant'
-            languagesTree={languagesTree}
-            dictionaries={dicts}
-            perspectives={perspectivesList}
-            grants={grantsList}
-            isAuthenticated={isAuthenticated}
-          />
-        )}
-        {sortMode == 'organization' && (
-          <GrantedDicts
-            mode='organization'
-            languagesTree={languagesTree}
-            dictionaries={dicts}
-            perspectives={perspectivesList}
-            grants={organizationsList}
-            isAuthenticated={isAuthenticated}
-          />
-        )}
-        {!sortMode && (
-          <AllDicts
-            location={props.location}
-            languagesTree={languagesTree}
-            dictionaries={dicts}
-            perspectives={perspectivesList}
-            isAuthenticated={isAuthenticated}
-            selectorMode={false}
-          />
-        )}
-      </Segment>
-      <BackTopButton scrollContainer={scrollContainer} />
-    </Container>
+          {sortMode == 'organization' && (
+            <GrantedDicts
+              mode='organization'
+              languagesTree={languagesTree}
+              dictionaries={dicts}
+              perspectives={perspectivesList}
+              grants={organizationsList}
+              isAuthenticated={isAuthenticated}
+            />
+          )}
+          {!sortMode && (
+            <AllDicts
+              location={props.location}
+              languagesTree={languagesTree}
+              dictionaries={dicts}
+              perspectives={perspectivesList}
+              isAuthenticated={isAuthenticated}
+              selectorMode={false}
+            />
+          )}
+        </div>
+        <BackTopButton scrollContainer={scrollContainer} />
+      </Container>
+    </React.Fragment>
   );
 };
 

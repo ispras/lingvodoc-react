@@ -1,32 +1,34 @@
 import React from 'react';
 import './styles.scss';
-import imageDictionaries from '../../images/dictionaries.png';
-import imageLanguage from '../../images/languages.png';
+import imageDictionares from '../../images/bookshelves.svg';
+import imageCorpora from '../../images/file_bundle.svg';
 import { Link } from 'react-router-dom';
 
 import { getTranslation } from 'api/i18n';
-
+import Footer from 'components/Footer';
 
 function treeRoute() {
   return (
-    <div>
+  <div class="lingvodoc-page">
+    <div className="background-cards lingvodoc-page__content">
       <div className="treeRoute">
-        <div className="background-img" />
-        <p className="languages_databases">{getTranslation('Languages databases')}</p>
-        <div className="img-block">
-          <Link to="/dashboard/dictionaries_all"> <img className="img " src={imageDictionaries} /></Link>
-          <p> {getTranslation('Dictionaries')}</p>
-        </div>
-        <div className="img-block">
-          <Link to="/corpora_all"><img className="img " src={imageLanguage} /></Link>
-          <p>{getTranslation('Language corpora')}</p>
+        <h2 className="tree-header">{getTranslation('Languages databases')}</h2>
+        
+        <div className="cards-list">
+          <Link className="card-item" to="/dashboard/dictionaries_all">
+            <label className="card-item__label">{getTranslation('Dictionaries')}</label>
+            <img className="card-item__img" src={imageDictionares} />
+          </Link>
+          <Link className="card-item" to="/corpora_all">
+            <label className="card-item__label">{getTranslation('Language corpora')}</label>
+            <img className="card-item__img card-item__img_corpora" src={imageCorpora} />
+          </Link>
         </div>
       </div>
-
     </div>
-
+    <Footer />
+  </div>
   );
 }
-
 
 export default treeRoute;

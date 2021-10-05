@@ -104,7 +104,7 @@ class CreateDictionaryWizard extends React.Component {
     } = this.props;
 
     return (
-      <div>
+      <div className="background-content">
         <Step.Group widths={4}>
           <Step link active={step === 'PARENT_LANGUAGE'} onClick={this.onStepClick('PARENT_LANGUAGE')}>
             <Step.Content>
@@ -137,9 +137,9 @@ class CreateDictionaryWizard extends React.Component {
         <div style={{ minHeight: '500px' }}>
           {step === 'PARENT_LANGUAGE' && (
             <div className="inverted" style={{ height: '600px' }}>
-              {!parentLanguage && <Header>{getTranslation('Please, select the parent language')}</Header>}
+              {!parentLanguage && <Header className="inverted">{getTranslation('Please, select the parent language')}</Header>}
               {parentLanguage && (
-                <Header>
+                <Header className="inverted">
                   {getTranslation('You have selected:')} <b>{parentLanguage.translation}</b>
                 </Header>
               )}
@@ -166,7 +166,7 @@ class CreateDictionaryWizard extends React.Component {
 
           {step === 'PERSPECTIVES' && (
             <div>
-              <Header>{getTranslation('Add one or more perspectives')}</Header>
+              <Header className="inverted">{getTranslation('Add one or more perspectives')}</Header>
               <Perspectives perspectives={perspectives} onChange={p => this.props.setPerspectives(p)} mode={mode} />
               <Button fluid positive onClick={this.props.createPerspective}>
                 {getTranslation('Add perspective')}
@@ -190,13 +190,13 @@ class CreateDictionaryWizard extends React.Component {
         <Divider />
         {isNextStep &&
           step === 'PERSPECTIVES' && (
-            <Button fluid color="blue" onClick={this.onCreateDictionary}>
+            <Button fluid className="lingvo-button-lite-violet" onClick={this.onCreateDictionary}>
               {getTranslation('Create')}
             </Button>
           )}
         {isNextStep &&
           (step !== 'PERSPECTIVES' && step !== 'FINISH') && (
-            <Button fluid color="blue" onClick={this.onNextClick}>
+            <Button fluid className="lingvo-button-lite-violet" onClick={this.onNextClick}>
               {getTranslation('Next Step')}
             </Button>
           )}

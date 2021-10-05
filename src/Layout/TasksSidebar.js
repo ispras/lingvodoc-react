@@ -9,7 +9,7 @@ import { toggleTasks } from 'ducks/task';
 
 const Wrapper = styled.div`
   padding: 20px;
-  padding-top: 5em;
+  padding-top: 85px;
   min-height: 100vh;
   background: #ccc;
   opacity: 0.9;

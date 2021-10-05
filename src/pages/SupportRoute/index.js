@@ -1,40 +1,44 @@
 import React from 'react';
 import './styles.scss';
-import imageQuestion from '../../images/question.png';
-import imageComputer from '../../images/computer.png';
-import imageTelegram from '../../images/telegram.png';
-import imageVersion from '../../images/history.png';
+import imageHelp from '../../images/active_support.svg';
+import imageTelegram from '../../images/ideas.svg';
+import imageVersion from '../../images/version_control.svg';
 import { Link } from 'react-router-dom';
 import { getTranslation } from 'api/i18n';
-
+import Footer from 'components/Footer';
 
 const supportRoute = (props) => {
 
   return (
-    <div>
+  <div class="lingvodoc-page">
+    <div className="background-cards lingvodoc-page__content">
       <div className="supportRoute">
-        <div className="background-img" />
-        <p className="help">{getTranslation('Support')}</p>
-        <div className="img-block">
-          <a href="https://github.com/ispras/lingvodoc-react/wiki" target="_blank"> <img className="img " src={imageQuestion} /></a>
-          <p>{getTranslation('Help')}</p>
-        </div>
-        {/*
-        <div className="img-block" >
-          <Link to="/desktop"><img className="img " src={imageComputer} /></Link>
-          <p> {getTranslation('Desktop')}</p>
-        </div>
-        */}
-        <div className="img-block" >
-          <a href="https://t.me/lingvodoc_support" target="_blank"> <img className="img " src={imageTelegram} /></a>
-          <p> {getTranslation('Support@Telegram')}</p>
-        </div>
-        <div className="img-block" >
-          <Link to="/version_route"><img className="img " src={imageVersion} /></Link>
-          <p> {getTranslation('Version')}</p>
+        <h2 className="support-header">{getTranslation('Support')}</h2>
+
+        <div className="cards-list">
+          <a className="card-item" href="https://github.com/ispras/lingvodoc-react/wiki" target="_blank">
+            <label className="card-item__label">{getTranslation('Help')}</label>
+            <img className="card-item__img card-item__img_help" src={imageHelp} />
+          </a>
+          {/*
+            <Link className="card-item" to="/desktop">
+              <label className="card-item__label">{getTranslation('Desktop')}</label>
+              <img className="card-item__img" src={imageCard} />
+            </Link>
+          */}
+          <a className="card-item" href="https://t.me/lingvodoc_support" target="_blank">
+            <label className="card-item__label card__label_telegram">{getTranslation('Support@Telegram')}</label>
+            <img className="card-item__img card-item__img_telegram" src={imageTelegram} />
+          </a>
+          <Link className="card-item" to="/version_route">
+            <label className="card-item__label">{getTranslation('Version')}</label>
+            <img className="card-item__img" src={imageVersion} />
+          </Link>
         </div>
       </div>
     </div>
+    <Footer />
+  </div>
   );
 };
 

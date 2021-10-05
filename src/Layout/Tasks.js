@@ -10,12 +10,12 @@ import { getTranslation } from 'api/i18n';
 const Tasks = pure(({ count, loading, toggle }) =>
   loading
     ?
-    <Menu.Item as="a" onClick={toggle} className="top_menu">
+    <Menu.Item as="a" onClick={toggle} className="top_menu top_menu__item_tasks">
       <span>{getTranslation('Tasks')}{' '}<Icon loading name="spinner"/></span>
     </Menu.Item>
     :
-    <Menu.Item as="a" onClick={toggle} className="top_menu">
-      {getTranslation('Tasks')}<Label color="blue">{count}</Label>
+    <Menu.Item as="a" onClick={toggle} className="top_menu top_menu__item_tasks">
+      {getTranslation('Tasks')}<Label className="lingvo-label">{count}</Label>
     </Menu.Item>
 );
 

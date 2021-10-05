@@ -9,25 +9,105 @@
   src: url("fonts/GentiumPlus-I.woff");
 }
 
-body {
-  background-color: rgb(240, 202, 158);
-  font-family: "Noto Sans", "Helvetica Neue", Arial, Helvetica, sans-serif;
+@font-face {
+  font-family: Rubik;
+  src: url('fonts/Rubik-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
 }
-body:before {
-  z-index: -1;
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  opacity: 0.4;
-  width: 100%;
-  height: 100%;
-  background: url(../images/background2.png);
-  background-size: 80%;
-  background-repeat: no-repeat;
-  background-position: center center;
+
+@font-face {
+  font-family: Rubik;
+  src: url('fonts/Rubik-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: Mulish;
+  src: url('fonts/Mulish-Regular.woff2') format('woff2'), 
+        url('fonts/Mulish-Regular.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: Mulish;
+  src: url('fonts/Mulish-Bold.woff2') format('woff2'), 
+        url('fonts/Mulish-Bold.woff') format('woff');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: Mulish;
+  src: url('fonts/Mulish-ExtraBold.woff2') format('woff2'), 
+        url('fonts/Mulish-ExtraBold.woff') format('woff');
+  font-weight: 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: Karla;
+  src: url('fonts/karla-variablefont_wght-webfont.woff2') format('woff2'), 
+        url('fonts/karla-variablefont_wght-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+body {
+  font-family: Rubik, Arial, sans-serif;
+  font-weight: normal;
+}
+
+.background-cards {
+  position: relative;
+
+  &:before {
+    z-index: -1;
+    content: "";
+    position: absolute;
+    left: 0;
+    top: -6px;
+    right: 0;
+    
+    width: 100%;
+    
+    height: 260px;
+    background: url("../images/rectangle1.svg") 0 -80px no-repeat, url("../images/rectangle2.svg") 100% 110px no-repeat;
+    background-color: #372F9D;
+  }
+}
+
+.background-header {
+  background: url("../images/rectangle1.svg") 0 -138px no-repeat, url("../images/rectangle2.svg") 100% 35px no-repeat;
+  background-color: #372F9D;
+
+  padding: 26px 0;
+  margin: -6px 0 26px 0;
+}
+
+.page-content {
+  padding: 20px 20px 70px 20px;
+  margin: 0;
+  min-height: 100%;
+
+  &_relative {
+    position: relative;
+  }
+}
+
+.background-content {
+  background: url("../images/rectangle1.svg") 0 -80px no-repeat, url("../images/rectangle2.svg") 100% 110px no-repeat;
+  background-color: #372F9D;
+
+  padding: 26px 20px 70px 20px;
+  margin: -6px 0 0 0;
+  min-height: calc(100% + 6px);
+
+  &_fix-height {
+    height: calc(100% + 6px);
+  }
 }
 
 .gentium {
@@ -91,11 +171,163 @@ body:before {
   background: url(../images/display_mode_background.png) !important;
 }
 
-.top_menu {
-  font-size: 1.2em !important;
-  background-color: rgb(216, 180, 138) !important;
-  color: rgb(0, 0, 0) !important;
+/* top menu */
+
+.top-wrapper {
+  display: flex;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  height: 80px;
 }
+
+.top_menu {
+  font-family: Rubik, Arial, sans-serif;
+  font-weight: 500 !important;
+  font-size: 16px !important;
+  background-color: #FAFAFA !important;
+  color: #0B132A !important;
+
+  &__item_signin {
+    padding-right: 0 !important;
+  }
+
+  &__item_signup {
+    padding-right: 40px !important;
+  }
+
+  &__item_tasks {
+    padding-right: 10px !important;
+  }
+
+  &__item_locale {
+    font-size: 14px !important;
+    font-weight: 400 !important;
+    display: flex !important;
+    align-items: center !important;
+
+    .ui.menu &.ui.dropdown .menu > .active.item {
+      font-weight: 500 !important;
+    }
+
+    & .flag {
+      margin-right: 4px !important;
+      margin-top: -2px !important;
+      order: 1;
+    }
+
+    & .text {
+      order: 2;
+      color: #4F5665;
+    }
+
+    .ui.menu &.item > .icon {
+      margin-left: 1px !important;
+      order: 3;
+      color: #4F5665;
+      font-size: 18px !important;
+      margin-top: -2px !important;
+    }
+  }
+
+  & .lingvodoc-logo {
+    font-family: Mulish;
+    font-size: 24px;
+    line-height: 30px;
+    font-weight: 900;
+    color: #4F5665;
+  }
+
+  & .sign_in {
+    display: block;
+    padding: 13px 0 14px 0;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 18.9px;
+  }
+
+  & .sign_up {
+    display: block;
+    padding: 13px 24px 14px 24px;
+    background: #5D54CD;
+    color: #fff;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 18.9px;
+  }
+
+  @media only screen and (max-device-width: 710px), only screen and (max-width: 710px) {
+    
+    & .lingvodoc-logo {
+      font-size: 18px !important;
+    }
+
+    &__item_signin {
+      padding-left: 15px !important;
+    }
+
+    &__item_signup {
+      padding-right: 0px !important;
+      padding-left: 15px !important;
+    }
+
+    &__item_tasks {
+      padding-left: 15px !important;
+    }
+
+    &__item_locale {
+      padding-left: 10px !important;
+      padding-right: 5px !important;
+    }
+  }
+
+  @media only screen and (max-device-width: 610px), only screen and (max-width: 610px) {
+    &__logo {
+      display: none !important;
+    }
+  }
+
+  @media only screen and (max-device-width: 420px), only screen and (max-width: 420px) {
+    
+    &__item_signup {
+      padding-left: 10px !important;
+    }
+
+    &__item_tasks {
+      padding-left: 10px !important;
+      font-size: 14px !important;
+    }
+
+    &__item_locale {
+      padding-left: 5px !important;
+      padding-right: 5px !important;
+    }
+
+    & .sign_in {
+      font-size: 14px;
+      line-height: 16px;
+    }
+
+    & .sign_up {
+      padding: 10px 14px;
+      font-size: 14px;
+      line-height: 16px;
+    }
+
+    & .lingvo-label {
+      font-size: 14px !important;
+      padding: 8px !important;
+      min-width: 34px !important;
+    }
+
+    & .ui.dropdown > .text {
+      font-size: 14px !important;
+    }
+  }
+}
+
+/* /top menu */
 
 /** Inverted colors support */
 
@@ -124,4 +356,264 @@ body:before {
 }
 .black {
   color: black !important;
+}
+
+.container-white {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 22px;
+}
+
+.container-gray {
+  background-color: #FAFAFA;
+  border-radius: 8px;
+  padding: 22px;
+
+  & + & {
+    margin-top: 32px;
+  }
+
+  .cards-list + & {
+    margin-top: 32px;
+  }
+
+  &_education {
+    background: #FAFAFA;
+    position: relative;
+
+    & .langs-nav-list {
+      position: relative;
+    }
+
+    &::before {
+      content: "";
+      position: absolute;
+      right: 32px;
+      bottom: 0;
+      background: url("../images/education.svg") 0 0 no-repeat;
+      width: 188px;
+      height: 136px;
+    }
+
+    @media only screen and (max-device-width: 1000px), only screen and (max-width: 1000px) {
+      & {
+        padding-bottom: 150px;
+      }
+    }
+  }
+
+}
+
+.page-title {
+  text-align: center;
+  font-family: Rubik, Arial, sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 18.75px;
+  color: #fff;
+}
+
+.lingvodoc-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+
+  &__content {
+    flex: 1 0 auto;
+  }
+
+  &__footer {
+    flex: 0 0 auto;
+  }
+}
+
+.lingvodoc-footer {
+  background: #F4F4F4;
+  padding: 40px;
+  font-family: Rubik, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 26px;
+  font-weight: normal;
+  color: #4E4E4E;
+  margin-top: 30px;
+
+    &__inner {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    & a {
+      color: #4E4E4E;
+    }
+
+    & a:hover {
+      color: #4E46B4;
+    }
+}
+
+/* cards */
+
+.cards-list {
+  text-align: center;
+  justify-content: center;
+  align-content: center;
+  display: flex;
+  width: 100%;
+  padding-top: 170px;
+
+  flex-wrap: wrap;
+}
+
+.card-item {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+
+  align-items: flex-start;
+  border-radius: 12px;
+  padding: 24px 20px 57px 20px;
+  max-width: 176px;
+  background: #fff;
+  position: relative;
+  margin: 0 15px 36px 15px;
+
+  min-height: 246px;
+
+  box-shadow: 0px 100px 309px rgba(210, 208, 225, 0.24), 0px 41.7776px 129.093px rgba(210, 208, 225, 0.172525), 0px 22.3363px 69.0192px rgba(210, 208, 225, 0.143066), 0px 12.5216px 38.6916px rgba(210, 208, 225, 0.12), 0px 6.6501px 20.5488px rgba(210, 208, 225, 0.0969343), 0px 2.76726px 8.55082px rgba(210, 208, 225, 0.0674749);
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    background: url("../images/arrow.svg") 20px 74px no-repeat;
+    width: 100%;
+    height: 110px;
+    border-radius: 0 0 12px 12px;
+    transition: 0.3s;
+  }
+
+  &:hover::after {
+    background-color: #5D54CD;
+    background-image: url("../images/arrow_hover.svg");
+  }
+
+  &:active::after {
+    background-color: #4E46B4;
+    background-image: url("../images/arrow_hover.svg");
+    transition: none;
+  }
+
+  &__img {
+    /*width: 124px;*/
+    width: 136px;
+    height: 98px;
+    cursor: pointer;
+    margin: 0 auto 25px auto;
+  
+    order: 1;
+
+    &_languages {
+      width: 124px;
+    }
+
+    &_grants,
+    &_creators {
+      height: 90px;
+      margin-bottom: 33px;
+    }
+
+    &_offgrant {
+      height: 104px;
+      margin-bottom: 19px;
+    }
+
+    &_support {
+      height: 108px;
+      margin-bottom: 15px;
+    }
+
+    &_corpora {
+      height: 80px;
+      margin-bottom: 43px;
+    }
+
+    &_map {
+      height: 101px;
+      margin-bottom: 22px;
+    }
+
+    &_search,
+    &_help,
+    &_telegram,
+    &_dialeqt,
+    &_import {
+      height: 108px;
+      margin-bottom: 15px;
+    }
+
+  }
+
+  &__label {
+    font-family: Mulish, Arial, sans-serif;
+    font-weight: bold;
+    font-size: 16px;
+    line-height: 20px;
+  
+    color: rgb(0, 0, 0);
+    text-align: left;
+    position: relative;
+    z-index: 1;
+    transition: 0.3s;
+  
+    order: 2;
+    cursor: pointer;
+  }
+
+  &:hover &__label {
+    color: #fff;
+  }
+}
+
+/* /cards */
+
+.lingvo-button-violet {
+  border-radius: 16px !important;
+  font-family: Rubik, Arial, sans-serif !important;
+  font-weight: 500 !important;
+  background: #5D54CD !important;
+  color: #fff !important;
+}
+
+.lingvo-button-lite-violet {
+  border-radius: 10px !important;
+  font-family: Rubik, Arial, sans-serif !important;
+  font-weight: 500 !important;
+  background: #DBD9F1 !important;
+  color: #5D54CD !important;
+
+  & .icon {
+    color: #5D54CD !important;
+    opacity: 1 !important;
+  }
+
+  &:hover {
+    background: #5D54CD !important;
+    color: #fff !important;
+
+    & .icon {
+      color: #fff !important;
+    }
+  }
+
+  &_bradius-bottom {
+    border-radius: 0 0 10px 10px !important;
+  }
+}
+
+
+.lingvo-spinner {
+  /*color: #DBD9F1 !important;*/
+  color: #5D54CD !important;
 }

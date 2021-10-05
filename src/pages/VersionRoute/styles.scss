@@ -1,15 +1,19 @@
 .version-route {
     text-align: center;
+    padding: 0 20px;
+
     .version-block {
-        border-radius: 5px;
+        border-radius: 12px;
         margin-top: 100px;
         text-align: center;
         background-color: white;
         display: inline-block;
         padding: 0 30px 30px 30px;
+        box-shadow: 0px 100px 309px rgba(210, 208, 225, 0.24), 0px 41.7776px 129.093px rgba(210, 208, 225, 0.172525), 0px 22.3363px 69.0192px rgba(210, 208, 225, 0.143066), 0px 12.5216px 38.6916px rgba(210, 208, 225, 0.12), 0px 6.6501px 20.5488px rgba(210, 208, 225, 0.0969343), 0px 2.76726px 8.55082px rgba(210, 208, 225, 0.0674749);
+
         .version {
             padding-top: 15px;
-            font-weight: bold;
+            font-weight: normal;
             font-size: 20px;
             text-align: center;
         }

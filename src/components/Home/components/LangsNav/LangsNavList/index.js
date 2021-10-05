@@ -1,7 +1,7 @@
 import React from 'react';
 import { compose, withHandlers, pure } from 'recompose';
 import PropTypes from 'prop-types';
-import { Segment } from 'semantic-ui-react';
+import { Container } from 'semantic-ui-react';
 
 import { goToLanguage } from '../../../common/';
 import ListItem from './ListItem';
@@ -9,7 +9,7 @@ import './styles.scss';
 
 /* ----------- PROPS ----------- */
 const classNames = {
-  wrap: 'langs-nav-list__wrap',
+  wrap: 'container-gray container-gray_education langs-nav-list__wrap',
   main: 'langs-nav-list',
   short: 'langs-nav-list_short',
   mainHeader: 'menu',
@@ -34,11 +34,11 @@ const LangsNavList = ({ data, onLangSelect }) => {
   const list = data.map(langSet => <ListItem key={langSet[0]} data={langSet} onLangSelect={onLangSelect} />);
 
   return (
-    <Segment className={classNames.wrap}>
+    <Container className={classNames.wrap}>
       <div className={classNames.main}>
         {list}
       </div>
-    </Segment>
+    </Container>
   );
 };
 

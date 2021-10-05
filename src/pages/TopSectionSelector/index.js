@@ -1,72 +1,61 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import './styles.scss';
-import imgTree from '../../images/tree.jpg';
-import imgTools from '../../images/tools.jpg';
-import imgDashboard from '../../images/dashboard.png';
-import imgAuthors from '../../images/organization.jpg';
-import imgSupport from '../../images/support.jpg';
-import imageScholarship from '../../images/scholarship.png';
+import imageLanguages from '../../images/book_lover.svg';
+import imageTools from '../../images/noted.svg';
+import imageDashboard from '../../images/responsive.svg';
+import imageGrants from '../../images/winners.svg';
+import imageCreators from '../../images/conference_call.svg';
+import imageSupport from '../../images/connecting.svg';
 import {Link} from 'react-router-dom';
 import {getTranslation} from 'api/i18n';
 import {compose} from 'recompose';
 import {connect} from 'react-redux';
-
+import Footer from 'components/Footer';
 
 class topSectionSelector extends React.Component {
-
 
     render() {
         const {isAuthenticated} = this.props;
         return (
-            <div className="top-section-selector">
-                <div className="top-section-selector_icon">
-                    <div className="icon">
-                        <label className="label">{getTranslation('Languages databases')}</label>
-                        <Link to="/LanguagesDatabasesRoute">
-                            <img className="img-tree img" src={imgTree}/>
+        <div class="lingvodoc-page">
+            <div className="top-section-selector background-cards lingvodoc-page__content">
+                <div className="main-page">
+                    <div className="top-section-selector_icon">
+                        <Link className="card-item" to="/LanguagesDatabasesRoute">
+                            <label className="card-item__label">{getTranslation('Languages databases')}</label>
+                            <img className="card-item__img card-item__img_languages" src={imageLanguages} />
                         </Link>
-                    </div>
-                    <div className="icon">
-                        <label className="label">{getTranslation('Tools')}</label>
-                        <Link to="/toolsRoute">
-                            <img className="img-tools img" src={imgTools}/>
+                        <Link className="card-item" to="/toolsRoute">
+                            <label className="card-item__label">{getTranslation('Tools')}</label>
+                            <img className="card-item__img" src={imageTools} />
                         </Link>
-                    </div>
-                    {(isAuthenticated) && (
-                        <div className="icon">
-                            <label className="label">{getTranslation('Dashboard')}</label>
-                            <Link to="/dashboardRoute">
-                                <img className="img-dashboard img" src={imgDashboard}/>
-                            </Link>
-                        </div>)}
+                        {(isAuthenticated) && (
+                            <Link className="card-item" to="/dashboardRoute">
+                                <label className="card-item__label">{getTranslation('Dashboard')}</label>
+                                <img className="card-item__img" src={imageDashboard} />
+                            </Link>)}
 
-                    <div className="icon">
-                        <label className="label">{getTranslation('Grants')}</label>
-                        <Link to="/grantsRoute">
-                            <img className=" img" src={imageScholarship}/>
+                        <Link className="card-item" to="/grantsRoute">
+                            <label className="card-item__label">{getTranslation('Grants')}</label>
+                            <img className="card-item__img card-item__img_grants" src={imageGrants} />
                         </Link>
-                    </div>
-                    <div className="icon">
-                        <label className="label">{getTranslation('Lingvodoc creators')}</label>
-                        <Link to="/authors_route">
-                            <img className=" img" src={imgAuthors}/>
+                        <Link className="card-item" to="/authors_route">
+                            <label className="card-item__label">{getTranslation('Lingvodoc creators')}</label>
+                            <img className="card-item__img card-item__img_creators" src={imageCreators} />
                         </Link>
-                    </div>
-                    <div className="icon">
-                        <label className="label">{getTranslation('Support')}</label>
-                        <Link to="/supportRoute">
-                            <img className="img-support img" src={imgSupport}/>
+                        <Link className="card-item" to="/supportRoute">
+                            <label className="card-item__label">{getTranslation('Support')}</label>
+                            <img className="card-item__img card-item__img_support" src={imageSupport} />
                         </Link>
                     </div>
                 </div>
             </div>
-
-
+            <Footer />
+        </div>
         );
     }
 }
-
 
 topSectionSelector.propTypes = {
     isAuthenticated: PropTypes.bool

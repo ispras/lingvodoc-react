@@ -1,4 +1,7 @@
 .langs-nav-list {
+  font-size: 16px;
+  line-height: 24px;
+
   &__wrap.segment.ui {
     margin-top: 14px;
   }
@@ -17,18 +20,27 @@
   }
 
   &__inner-item {
-    font-size: 1.1rem;
     display: inline;
   }
 
   &__letter {
     min-width: 20px;
+    font-family: Mulish, Arial, sans-serif;
+    font-weight: bold;
+    font-size: 16px;
+    line-height: 22px;
+    color: #5D54CD;
+
   }
 
   &__button {
+    font-family: Rubik, Arial, sans-serif;
+    font-weight: normal;
+    font-size: 16px;
+    line-height: 18px;
     padding: 0;
     margin: 0;
-    color: #4183C4;
+    color: #333;
     text-decoration: none;
     border: none;
     outline: none;
@@ -36,7 +48,7 @@
   }
 
   &__button:hover {
-    color: #1e70bf;
+    color: #4E46B4;
     cursor: pointer;
   }
 }

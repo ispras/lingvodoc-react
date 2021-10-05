@@ -219,7 +219,7 @@ class DialeqtImport extends React.Component {
     }
 
     return (
-      <div>
+      <div className="background-content">
         <Step.Group widths={4}>
 
           <Step link active={step === 'CHOICE'} onClick={this.onStepClick('CHOICE')}>
@@ -382,20 +382,20 @@ class DialeqtImport extends React.Component {
         </div>
 
         {isNextStep && step === 'TRANSLATIONS' && (
-          <Button fluid color="blue" onClick={this.importCreate}>
+          <Button fluid className="lingvo-button-lite-violet" onClick={this.importCreate}>
             {getTranslation('Create dictionary')}
           </Button>
         )}
 
         {isNextStep && step === 'UPDATE_DICTIONARY' && (
-          <Button fluid color="blue" onClick={this.importUpdate}>
+          <Button fluid className="lingvo-button-lite-violet" onClick={this.importUpdate}>
             {getTranslation('Update dictionary')}
           </Button>
         )}
 
         {isNextStep &&
           (step !== 'TRANSLATIONS' && step !== 'UPDATE_DICTIONARY') && (
-          <Button fluid color="blue" onClick={this.onNextClick}>
+          <Button fluid className="lingvo-button-lite-violet" onClick={this.onNextClick}>
             {getTranslation('Next Step')}
           </Button>
         )}

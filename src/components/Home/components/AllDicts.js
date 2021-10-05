@@ -4,7 +4,7 @@ import Immutable, { fromJS } from 'immutable';
 import { assignDictsToTree, buildDictTrees } from 'pages/Search/treeBuilder';
 import LangsNav from 'components/Home/components/LangsNav';
 import Tree from './Tree';
-
+import { Container } from 'semantic-ui-react';
 
 function AllDicts(props) {
   const {
@@ -15,7 +15,6 @@ function AllDicts(props) {
     selectorMode,
 
   } = props;
-
 
   const tree = assignDictsToTree(
     buildDictTrees(fromJS({
@@ -29,11 +28,14 @@ function AllDicts(props) {
   return (
     <div>
       <LangsNav data={tree} />
-      <Tree
-        tree={tree}
-        canSelectDictionaries={isAuthenticated}
-        selectorMode={selectorMode}
-      />
+      
+      <Container className="container-gray">
+        <Tree
+          tree={tree}
+          canSelectDictionaries={isAuthenticated}
+          selectorMode={selectorMode}
+        />
+      </Container>
     </div>
   );
 }
@@ -44,8 +46,6 @@ AllDicts.propTypes = {
   perspectives: PropTypes.instanceOf(Immutable.List).isRequired,
   isAuthenticated: PropTypes.bool,
   selectorMode: PropTypes.bool,
-
-
 };
 
 AllDicts.defaultProps = {

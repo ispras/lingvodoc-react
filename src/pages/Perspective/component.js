@@ -349,40 +349,42 @@ const Perspective = ({
   });
 
   return (
-    <Container fluid className="perspective inverted">
-      <PerspectivePath id={id} dictionary_id={parent_id} mode={mode} />
-      <ModeSelector
-        mode={mode}
-        id={id}
-        baseUrl={baseUrl}
-        filter={perspective.filter}
-        submitFilter={submitFilter}
-        openCognateAnalysisModal={openCognateAnalysisModal}
-        openPhonemicAnalysisModal={openPhonemicAnalysisModal}
-        openPhonologyModal={openPhonologyModal}
-        launchSoundAndMarkup={launchSoundAndMarkup}
-      />
-      <Switch>
-        <Redirect exact from={baseUrl} to={`${baseUrl}/view`} />
-        { map(modes, (info, stub) => (
-          <Route
-            key={stub}
-            path={`${baseUrl}/${stub}`}
-            render={() => (
-              <info.component
-                id={id}
-                mode={mode}
-                entitiesMode={info.entitiesMode}
-                page={page}
-                filter={perspective.filter}
-                className="content"
-              />
-            )}
-          />
-        ))}
-        <Route component={NotFound} />
-      </Switch>
-    </Container>
+    <div className="background-content">
+      <Container fluid className="perspective inverted">
+        <PerspectivePath id={id} dictionary_id={parent_id} mode={mode} />
+        <ModeSelector
+          mode={mode}
+          id={id}
+          baseUrl={baseUrl}
+          filter={perspective.filter}
+          submitFilter={submitFilter}
+          openCognateAnalysisModal={openCognateAnalysisModal}
+          openPhonemicAnalysisModal={openPhonemicAnalysisModal}
+          openPhonologyModal={openPhonologyModal}
+          launchSoundAndMarkup={launchSoundAndMarkup}
+        />
+        <Switch>
+          <Redirect exact from={baseUrl} to={`${baseUrl}/view`} />
+          { map(modes, (info, stub) => (
+            <Route
+              key={stub}
+              path={`${baseUrl}/${stub}`}
+              render={() => (
+                <info.component
+                  id={id}
+                  mode={mode}
+                  entitiesMode={info.entitiesMode}
+                  page={page}
+                  filter={perspective.filter}
+                  className="content"
+                />
+              )}
+            />
+          ))}
+          <Route component={NotFound} />
+        </Switch>
+      </Container>
+    </div>
   );
 };
 

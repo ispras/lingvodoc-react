@@ -297,7 +297,7 @@ class OdtMarkupModal extends React.Component {
       return (
         <Dimmer active style={{ minHeight: '600px', background: 'none' }}>
           <Header as="h2" icon>
-            <Icon name="spinner" color="yellow" loading />
+            <Icon name="spinner" loading className="lingvo-spinner" />
           </Header>
         </Dimmer>
       );

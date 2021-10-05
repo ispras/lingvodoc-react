@@ -10,9 +10,129 @@
   background: transparent !important;
   color: rgb(0, 0, 0) !important;
 }
-.ui.menu .dropdown.item .menu{
-  background: rgb(216, 180, 138);
-}
+
 .ui.dropdown .menu .version > .item {
   cursor: auto;
 }
+
+
+.lingvo-label {
+  background-color: #DBD9F1 !important;
+  color: #372F9D !important;
+  margin-left: 6px !important;
+  padding: 11px 11px 10px 11px !important;
+  border-radius: 10px !important;
+  font-size: 16px !important;
+  line-height: 19px !important;
+  min-width: 42px;
+  text-align: center;
+  font-weight: 500 !important;
+}
+
+/* modal */
+
+.lingvo-modal {
+  border-radius: 32px !important;
+  width: 455px !important;
+
+  & > :first-child:not(.icon),
+  & > .icon:first-child + * {
+      border-top-left-radius: 32px !important;
+      border-top-right-radius: 32px !important;
+  }
+
+  & > :last-child {
+      border-bottom-left-radius: 32px !important;
+      border-bottom-right-radius: 32px !important;
+  }
+  
+  & > .content.lingvo-modal-content {
+    padding: 55px 40px !important;
+    background: #FAFAFA !important;
+  }
+
+  & i.icon.close:before {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 10px;
+    right: 8px;
+    width: 16px;
+    height: 16px;
+    background-color: #fff !important;
+    -webkit-mask-image: url("../images/close.svg");
+    mask-image: url("../images/close.svg");
+   
+    @media only screen and (max-width: 991px) { 
+      & {
+        background-color: #372F9D !important;
+      }
+    }
+  }
+
+  & .ui.header {
+    font-family: Rubik, Arial, sans-serif;
+    font-weight: 500;
+    font-size: 36px;
+    color: #333;
+
+    .sub.header {
+      font-family: Karla, Arial, sans-serif;
+      font-weight: normal;
+      font-size: 15px !important;
+      color: #333;
+      margin-top: 5px;
+    }
+
+    .spinner {
+      display: inline-block !important;
+      margin-top: 10px;
+    }
+  }
+
+  & .ui.form .field > label {
+    font-weight: 500 !important;
+    font-size: 16px;
+  }
+
+  & .ui.form input {
+    border-radius: 10px !important;
+    font-family: Rubik, Arial, sans-serif;
+    font-weight: normal;
+    font-size: 16px;
+    line-height: 19.5px;
+    padding: 17px 22px;
+
+    &:focus {
+      border-color: #5D54CD;
+    }
+  }
+
+  & .ui.button {
+    border-radius: 16px !important;
+    font-family: Rubik, Arial, sans-serif;
+    font-weight: 500;
+  }
+
+  & .ui.huge.button {
+    font-size: 22px;
+    line-height: 28.6px;
+    margin-top: 26px;
+  }
+
+  & .ui.violet.button {
+    background: #5D54CD !important;
+  }
+
+  & .ui.message {
+    border-radius: 10px !important;
+  }
+
+  @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+    & {
+      width: 95% !important;
+    }
+  }
+
+}
+/* /modal */

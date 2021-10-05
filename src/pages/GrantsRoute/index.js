@@ -1,12 +1,13 @@
 import React from 'react';
 import './styles.scss';
 import { Link } from 'react-router-dom';
-import imageScholarship from '../../images/scholarship.png';
-import imageLegalDocument from '../../images/legal-document.png';
+import imageGrants from '../../images/winners.svg';
+import imageOffGrant from '../../images/add_document.svg';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import { getTranslation } from 'api/i18n';
-import { Segment } from 'semantic-ui-react';
+import { Container } from 'semantic-ui-react';
+import Footer from 'components/Footer';
 
 const grants = gql`
   query grants{
@@ -28,22 +29,26 @@ function grantsRoute(props) {
     return newDate.getFullYear();
   }
   return (
-    <div>
+  <div class="lingvodoc-page">
+    <div className="background-cards lingvodoc-page__content">
       <div className="grantsRoute">
-        <div className="background-img" />
-        <p className="grants">{getTranslation('Grants')}</p>
-        <div className="img-block">
-          <Link to="/grants" ><img className="img" src={imageScholarship} /></Link>
-          <p className="name">{getTranslation('Grants')}</p>
-        </div >
-        <div className="img-block" >
-          <Link to="/without_grants" ><img className="img" src={imageLegalDocument} /></Link>
-          <p className="name">{getTranslation('Off-grant projects')}</p>
+        <h2 className="grants-header">{getTranslation('Grants')}</h2>
+
+        <div className="cards-list">
+          <Link className="card-item" to="/grants">
+            <label className="card-item__label">{getTranslation('Grants')}</label>
+            <img className="card-item__img card-item__img_grants" src={imageGrants} />
+          </Link>
+          <Link className="card-item" to="/without_grants">
+            <label className="card-item__label">{getTranslation('Off-grant projects')}</label>
+            <img className="card-item__img card-item__img_offgrant" src={imageOffGrant} />
+          </Link>
         </div>
-        <Segment>
+        
+        <Container className="container-gray">
           <h3 className="black">{getTranslation('Project funded by grants')}</h3>
 
-          <Segment>
+          <Container className="container-white">
             <p>
               <b>
                 Внимание!
@@ -58,7 +63,7 @@ function grantsRoute(props) {
             <p>
               <Link to="/desktop">Настольные приложения, связанные с системой, можно скачать в разделе Desktop software</Link>
             </p>
-          </Segment>
+          </Container>
 
           <ul>
             {(grants) && (grants.map(grant => (<li key={grant.id} style={{ margin: '0 0 5px 0' }} >
@@ -69,12 +74,12 @@ function grantsRoute(props) {
             </li>)))}
 
           </ul>
-        </Segment>
+        </Container>
       </div>
     </div>
+    <Footer />
+  </div>
   );
 }
 
-
 export default graphql(grants)(grantsRoute);
-

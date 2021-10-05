@@ -11,7 +11,7 @@ import './styles.scss';
 /* ----------- PROPS ----------- */
 const classNames = {
   main: 'back-top-button',
-  show: 'back-top-button_show',
+  show: 'back-top-button_show'
 };
 
 /* ----------- ENHANCERS ----------- */
@@ -56,8 +56,7 @@ const enhance = compose(
 /* ----------- COMPONENT ----------- */
 const BackTopButton = ({ show, onClick }) => (
   <Button
-    color="blue"
-    className={`${classNames.main} ${show ? classNames.show : ''}`}
+    className={`${classNames.main} lingvo-button-lite-violet ${show ? classNames.show : ''}`}
     onClick={onClick}
     aria-label="Вернуться наверх"
   >

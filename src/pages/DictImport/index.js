@@ -170,7 +170,7 @@ class Info extends React.Component {
     const fieldTypes = fromJS(fields).filter(field => field.get('data_type') === 'Text');
 
     return (
-      <div>
+      <div className="background-content">
         <Step.Group widths={4}>
           <Step link active={step === 'LINKING'} onClick={this.onStepClick('LINKING')}>
             <Step.Content>
@@ -245,7 +245,7 @@ class Info extends React.Component {
 
           (isNextStep ? (
 
-            <Button fluid color="blue" onClick={this.onSubmit}>
+            <Button fluid className="lingvo-button-lite-violet lingvo-button-lite-violet_bradius-bottom" onClick={this.onSubmit}>
               {getTranslation('Submit')}
             </Button>) : (
 
@@ -257,7 +257,7 @@ class Info extends React.Component {
 
           isNextStep ? (
 
-            <Button fluid color="blue" onClick={this.onNextClick}>
+            <Button fluid className="lingvo-button-lite-violet lingvo-button-lite-violet_bradius-bottom" onClick={this.onNextClick}>
               {getTranslation('Next Step')}
             </Button>) :
 
