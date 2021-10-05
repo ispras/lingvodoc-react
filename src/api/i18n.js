@@ -95,7 +95,6 @@ export const stringsToTranslate = [
    "Email",
    "Email is required",
    "End",
-   "Enter the name of the language",
    "Entities",
    "Entity matching algorithm",
    "Entity matching threshold",
@@ -343,8 +342,6 @@ export const stringsToTranslate = [
    "to view.",
    "total",
    "web",
-   "Welcome Back",
-   "Please sign in to continue",
    "yes"
 ];
 
