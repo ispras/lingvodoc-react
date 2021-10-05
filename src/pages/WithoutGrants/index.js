@@ -1,4 +1,5 @@
 import React from 'react';
+import './styles.scss';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { compose, branch, renderNothing } from 'recompose';
@@ -6,10 +7,9 @@ import { Redirect, matchPath } from 'react-router-dom';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import Immutable, { fromJS, Map } from 'immutable';
-import { Container, Segment, Label } from 'semantic-ui-react';
+import { Container } from 'semantic-ui-react';
 
 import { buildLanguageTree } from 'pages/Search/treeBuilder';
-
 
 import config from 'config';
 
@@ -175,7 +175,7 @@ const CorporaAll = (props) => {
   const scrollContainer = getScrollContainer();
 
   return (
-    <React.Fragment>
+    <div className="withoutGrants">
       <div className="background-header">
         <Container className="published">
           <h2 className="page-title">{getTranslation('Dictionaries created out of grant')}</h2>
@@ -192,7 +192,7 @@ const CorporaAll = (props) => {
         
         <BackTopButton scrollContainer={scrollContainer} />
       </Container>
-    </React.Fragment>
+    </div>
   );
 };
 

@@ -1,6 +1,8 @@
 import React from 'react';
 import './styles.scss';
-import imageCard from '../../images/cat.svg';
+import imageHelp from '../../images/active_support.svg';
+import imageTelegram from '../../images/ideas.svg';
+import imageVersion from '../../images/version_control.svg';
 import { Link } from 'react-router-dom';
 import { getTranslation } from 'api/i18n';
 import Footer from 'components/Footer';
@@ -11,12 +13,12 @@ const supportRoute = (props) => {
   <div class="lingvodoc-page">
     <div className="background-cards lingvodoc-page__content">
       <div className="supportRoute">
-        <h2 class="support-header">{getTranslation('Support')}</h2>
+        <h2 className="support-header">{getTranslation('Support')}</h2>
 
-        <div class="cards-list">
+        <div className="cards-list">
           <a className="card-item" href="https://github.com/ispras/lingvodoc-react/wiki" target="_blank">
             <label className="card-item__label">{getTranslation('Help')}</label>
-            <img className="card-item__img" src={imageCard} />
+            <img className="card-item__img card-item__img_help" src={imageHelp} />
           </a>
           {/*
             <Link className="card-item" to="/desktop">
@@ -26,11 +28,11 @@ const supportRoute = (props) => {
           */}
           <a className="card-item" href="https://t.me/lingvodoc_support" target="_blank">
             <label className="card-item__label card__label_telegram">{getTranslation('Support@Telegram')}</label>
-            <img className="card-item__img" src={imageCard} />
+            <img className="card-item__img card-item__img_telegram" src={imageTelegram} />
           </a>
           <Link className="card-item" to="/version_route">
             <label className="card-item__label">{getTranslation('Version')}</label>
-            <img className="card-item__img" src={imageCard} />
+            <img className="card-item__img" src={imageVersion} />
           </Link>
         </div>
       </div>

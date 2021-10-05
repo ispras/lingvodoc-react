@@ -16,9 +16,9 @@ function toolsRoute(props) {
   <div class="lingvodoc-page">
     <div className="background-cards lingvodoc-page__content">
       <div className="toolsRoute">
-        <h2 class="tools-header">{getTranslation('Tools')}</h2>
+        <h2 className="tools-header">{getTranslation('Tools')}</h2>
 
-        <div class="cards-list">
+        <div className="cards-list">
           <Link className="card-item" to="/map">
             <label className="card-item__label">{getTranslation('Maps')}</label>
             <img className="card-item__img card-item__img_map" src={imageMap} />

@@ -156,15 +156,17 @@ class Map extends React.Component {
 
   render() {
     return (
-      <Wrapper>
-        <div
-          ref={(ref) => {
-            this.map = ref;
-          }}
-          className="leaflet"
-        />
-        <BlobsModal />
-      </Wrapper>
+      <div className="page-content page-content_relative">
+        <Wrapper>
+          <div
+            ref={(ref) => {
+              this.map = ref;
+            }}
+            className="leaflet"
+          />
+          <BlobsModal />
+        </Wrapper>
+      </div>
     );
   }
 }

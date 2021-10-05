@@ -1008,49 +1008,51 @@ class SearchTabs extends React.Component {
     const intersectMax = activeSearchGroups.size === 0 ? 0 : activeSearchGroups.size - 1;
 
     return (
-      <Container>
-        <div
-          ref={(ref) => {
-            this.tabsRef = ref;
-          }}
-        >
-          <Tab
-            menu={{ pointing: true }}
-            panes={panes}
-          />
-        </div>
-        <Divider id="mapResults" section />
-        <Labels
-          data={labels}
-          isActive={!areasMode}
-          onClick={this.clickLabel}
-        />
-        <Segment>
-          <AreasMode
-            isAreasModeOn={areasMode}
-            areasGroups={activeSearchGroups}
-            onAreasModeChange={this.onAreasModeChange}
-            onSelectedAreaGroupsChange={this.onSelectedAreaGroupsChange}
-          />
-        </Segment>
-        <Segment>
-          <IntersectionControl
-            max={intersectMax}
-            value={intersec}
+      <div className="page-content">
+        <Container>
+          <div
+            ref={(ref) => {
+              this.tabsRef = ref;
+            }}
+          >
+            <Tab
+              menu={{ pointing: true }}
+              panes={panes}
+            />
+          </div>
+          <Divider id="mapResults" section />
+          <Labels
+            data={labels}
             isActive={!areasMode}
-            onChange={e => this.setState({ intersec: parseInt(e.target.value, 10) })}
+            onClick={this.clickLabel}
           />
-        </Segment>
-        <ResultsMap
-          data={dictsResults}
-          meta={activeSearchGroups}
-          intersect={intersec}
-          areasMode={areasMode}
-          areaGroups={selectedAreaGroups}
-          markersHandlers={this.dictsHandlers}
-        />
-        <BlobsModal />
-      </Container>
+          <Segment>
+            <AreasMode
+              isAreasModeOn={areasMode}
+              areasGroups={activeSearchGroups}
+              onAreasModeChange={this.onAreasModeChange}
+              onSelectedAreaGroupsChange={this.onSelectedAreaGroupsChange}
+            />
+          </Segment>
+          <Segment>
+            <IntersectionControl
+              max={intersectMax}
+              value={intersec}
+              isActive={!areasMode}
+              onChange={e => this.setState({ intersec: parseInt(e.target.value, 10) })}
+            />
+          </Segment>
+          <ResultsMap
+            data={dictsResults}
+            meta={activeSearchGroups}
+            intersect={intersec}
+            areasMode={areasMode}
+            areaGroups={selectedAreaGroups}
+            markersHandlers={this.dictsHandlers}
+          />
+          <BlobsModal />
+        </Container>
+      </div>
     );
   }
 }

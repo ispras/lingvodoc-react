@@ -52,7 +52,6 @@ const SignUpModal = props => {
     <FormModal
       form="signup"
       header={getTranslation("Sign Up")}
-      subheader="Пожалуйста, зарегистрируйтесь, чтобы продолжить"
       actions={signUpForm}
       fields={signUpFields}
       validate={validate}

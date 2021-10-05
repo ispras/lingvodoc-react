@@ -1,9 +1,11 @@
 import React from 'react';
 import Home from 'components/Home';
 
+import './styles.scss';
+
 function dictionariesAll() {
   return (
-    <div>
+    <div className="dictionariesAll">
       <Home />
     </div>);
 }

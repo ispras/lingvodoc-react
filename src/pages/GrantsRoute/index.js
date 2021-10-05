@@ -1,7 +1,8 @@
 import React from 'react';
 import './styles.scss';
 import { Link } from 'react-router-dom';
-import imageCard from '../../images/cat.svg';
+import imageGrants from '../../images/winners.svg';
+import imageOffGrant from '../../images/add_document.svg';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import { getTranslation } from 'api/i18n';
@@ -36,11 +37,11 @@ function grantsRoute(props) {
         <div className="cards-list">
           <Link className="card-item" to="/grants">
             <label className="card-item__label">{getTranslation('Grants')}</label>
-            <img className="card-item__img" src={imageCard} />
+            <img className="card-item__img card-item__img_grants" src={imageGrants} />
           </Link>
           <Link className="card-item" to="/without_grants">
             <label className="card-item__label">{getTranslation('Off-grant projects')}</label>
-            <img className="card-item__img" src={imageCard} />
+            <img className="card-item__img card-item__img_offgrant" src={imageOffGrant} />
           </Link>
         </div>
         

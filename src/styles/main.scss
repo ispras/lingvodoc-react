@@ -87,12 +87,27 @@ body {
   margin: -6px 0 26px 0;
 }
 
+.page-content {
+  padding: 20px 20px 70px 20px;
+  margin: 0;
+  min-height: 100%;
+
+  &_relative {
+    position: relative;
+  }
+}
+
 .background-content {
   background: url("../images/rectangle1.svg") 0 -80px no-repeat, url("../images/rectangle2.svg") 100% 110px no-repeat;
   background-color: #372F9D;
 
-  padding: 26px 20px;
-  margin: -6px 0 26px 0;
+  padding: 26px 20px 70px 20px;
+  margin: -6px 0 0 0;
+  min-height: calc(100% + 6px);
+
+  &_fix-height {
+    height: calc(100% + 6px);
+  }
 }
 
 .gentium {
@@ -509,6 +524,11 @@ body {
       margin-bottom: 33px;
     }
 
+    &_offgrant {
+      height: 104px;
+      margin-bottom: 19px;
+    }
+
     &_support {
       height: 108px;
       margin-bottom: 15px;
@@ -524,10 +544,15 @@ body {
       margin-bottom: 22px;
     }
 
-    &_search {
+    &_search,
+    &_help,
+    &_telegram,
+    &_dialeqt,
+    &_import {
       height: 108px;
       margin-bottom: 15px;
     }
+
   }
 
   &__label {
@@ -581,9 +606,14 @@ body {
       color: #fff !important;
     }
   }
+
+  &_bradius-bottom {
+    border-radius: 0 0 10px 10px !important;
+  }
 }
 
 
 .lingvo-spinner {
-  color: #DBD9F1 !important;
+  /*color: #DBD9F1 !important;*/
+  color: #5D54CD !important;
 }

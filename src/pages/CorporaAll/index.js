@@ -7,10 +7,9 @@ import { Redirect, matchPath } from 'react-router-dom';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import Immutable, { fromJS, Map, OrderedMap } from 'immutable';
-import { Container, Segment, Label } from 'semantic-ui-react';
+import { Container } from 'semantic-ui-react';
 import { getTranslation } from 'api/i18n';
 import { buildLanguageTree } from 'pages/Search/treeBuilder';
-
 
 import config from 'config';
 
@@ -18,7 +17,6 @@ import BackTopButton from 'components/BackTopButton';
 import AllDicts from 'components/Home/components/AllDicts';
 import Placeholder from 'components/Placeholder';
 import { getScrollContainer } from 'components/Home/common';
-
 
 const authenticatedCorporaQuery = gql`
   query AuthCorpora {
@@ -177,7 +175,7 @@ const CorporaAll = (props) => {
   const scrollContainer = getScrollContainer();
 
   return (
-    <React.Fragment>
+    <div className="corporaAll">
       <div className="background-header">
         <Container className="published">
           <h2 className="page-title">{getTranslation('Language corpora')}</h2>
@@ -185,7 +183,6 @@ const CorporaAll = (props) => {
       </div>
 
       <Container className="published">
-        {/*<Segment size="huge">{getTranslation('Enter the name of the language')}</Segment>*/}
         <AllDicts
           location={props.location}
           languagesTree={languagesTree}
@@ -196,7 +193,7 @@ const CorporaAll = (props) => {
           
         <BackTopButton scrollContainer={scrollContainer} />
       </Container>
-    </React.Fragment>
+    </div>
   );
 };
 
