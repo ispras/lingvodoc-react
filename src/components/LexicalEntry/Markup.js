@@ -27,9 +27,9 @@ const MarkupEntityContent = onlyUpdateForKeys([
 ])(({
   entity, parentEntity, mode, publish, accept, remove, actions
 }) => {
+  const forParse = entity.is_subject_for_parsing;
   switch (mode) {
     case 'edit':
-      const forParse = entity.is_subject_for_parsing;
       return (
         <Button.Group basic icon size="mini">
           <Button as="a" href={entity.content} icon="download" />
@@ -49,7 +49,8 @@ const MarkupEntityContent = onlyUpdateForKeys([
           <Button.Group basic icon size="mini">
             <Button as="a" href={entity.content} icon="download" />
             <Popup trigger={<Button content={content(entity.content)} />} content={entity.content} />
-            <Button icon="table" onClick={() => actions.openViewer(parentEntity, entity)} />
+            {!forParse &&
+              <Button icon="table" onClick={() => actions.openViewer(parentEntity, entity)} />}
           </Button.Group>
           <Checkbox
             size="tiny"
@@ -64,7 +65,8 @@ const MarkupEntityContent = onlyUpdateForKeys([
         <Button.Group basic icon size="mini">
           <Button as="a" href={entity.content} icon="download" />
           <Popup trigger={<Button content={content(entity.content)} />} content={entity.content} />
-          <Button icon="table" onClick={() => actions.openViewer(parentEntity, entity)} />
+          {!forParse &&
+            <Button icon="table" onClick={() => actions.openViewer(parentEntity, entity)} />}
         </Button.Group>
       );
 
@@ -73,13 +75,14 @@ const MarkupEntityContent = onlyUpdateForKeys([
         <Button.Group icon size="mini">
           <Button basic color='black' as="a" href={entity.content} icon="download" />
           <Popup trigger={<Button basic color='black' content={content(entity.content)} />} content={entity.content} />
-          <Button basic color='black' icon="table" onClick={() => actions.openViewer(parentEntity, entity)} />
+          {!forParse &&
+            <Button basic color='black' icon="table" onClick={() => actions.openViewer(parentEntity, entity)} />}
           {!entity.accepted && <Button basic color='black' icon="check" onClick={() => accept(entity, true)} />}
         </Button.Group>
       );
     default:
       return null;
-  }
+  };
 });
 
 const Markup = (props) => {
