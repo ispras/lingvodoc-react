@@ -18,8 +18,6 @@ import Placeholder from 'components/Placeholder';
 import Languages from 'components/Search/AdditionalFilter/Languages';
 import checkCoordAndLexicalEntries from './checkCoordinatesAndLexicalEntries';
 
-
-
 class FilterDictionaries extends React.Component {
   constructor(props) {
     super(props);
@@ -266,7 +264,7 @@ function SelectorLangGroup(props) {
 
 
     return (
-      <div>
+      <div className="page-content">
         {(mainDictionary) && (
           <div>
             <h1 style={{ margin: '15px 0' }}>{mainDictionary.translation}</h1>
