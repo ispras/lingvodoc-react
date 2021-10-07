@@ -246,7 +246,7 @@ const ModeSelector = compose(
   });
 
   return (
-    <Menu tabular>
+    <Menu tabular className="perspective-menu-adaptive">
       { map(modes, (info, stub) =>
         <Menu.Item key={stub} as={Link} to={`${baseUrl}/${stub}`} active={mode === stub}>
           {info.text}

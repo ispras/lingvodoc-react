@@ -7,15 +7,21 @@ import { Menu, Label, Icon } from 'semantic-ui-react';
 import { toggleTasks } from 'ducks/task';
 import { getTranslation } from 'api/i18n';
 
+import imageTasks from '../images/tasks.svg';
+
 const Tasks = pure(({ count, loading, toggle }) =>
   loading
     ?
     <Menu.Item as="a" onClick={toggle} className="top_menu top_menu__item_tasks">
-      <span>{getTranslation('Tasks')}{' '}<Icon loading name="spinner"/></span>
+      <span className="tasks-elem" title={getTranslation('Tasks')}>
+        <img src={imageTasks} alt={getTranslation('Tasks')} className="icon-tasks" />{' '}<Icon loading name="spinner"/>
+      </span>
     </Menu.Item>
     :
     <Menu.Item as="a" onClick={toggle} className="top_menu top_menu__item_tasks">
-      {getTranslation('Tasks')}<Label className="lingvo-label">{count}</Label>
+      <span className="tasks-elem" title={getTranslation('Tasks')}>
+        <img src={imageTasks} alt={getTranslation('Tasks')} className="icon-tasks" /><Label circular floating className="tasks-label">{count}</Label>
+      </span>
     </Menu.Item>
 );
 

@@ -18,7 +18,7 @@ class topSectionSelector extends React.Component {
     render() {
         const {isAuthenticated} = this.props;
         return (
-        <div class="lingvodoc-page">
+        <div className="lingvodoc-page">
             <div className="top-section-selector background-cards lingvodoc-page__content">
                 <div className="main-page">
                     <div className="top-section-selector_icon">

@@ -24,7 +24,7 @@ const versionRoute = (props) => {
   }
 
   return (
-  <div class="lingvodoc-page">
+  <div className="lingvodoc-page">
     <div className="background-cards lingvodoc-page__content">
       <div className="version-route">
         <div className="version-block">

@@ -217,7 +217,6 @@ const Home = (props) => {
                 {/*<label>{getTranslation('Display mode')}</label>*/}
                 <Form.Field
                   control={Radio}
-                  /*label={{ children: <div className="toggle-label">{getTranslation('By Languages')}</div> }}*/
                   label={getTranslation('By Languages')}
                   value="1"
                   checked={!sortMode}
@@ -227,7 +226,6 @@ const Home = (props) => {
                 <Form.Field
                   control={Radio}
                   label={getTranslation('By Grants')}
-                  /*label={{ children: <div className="toggle-label">{getTranslation('By Grants')}</div> }}*/
                   value="2"
                   checked={sortMode === 'grant'}
                   onChange={() => actions.setSortMode('grant')}
@@ -235,7 +233,6 @@ const Home = (props) => {
                 />
                 <Form.Field
                   control={Radio}
-                  /*label={{ children: <div className="toggle-label">{getTranslation('By Organizations')}</div> }}*/
                   label={getTranslation('By Organizations')}
                   value="3"
                   checked={sortMode === 'organization'}

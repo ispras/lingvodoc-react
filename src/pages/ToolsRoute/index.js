@@ -13,7 +13,7 @@ import Footer from 'components/Footer';
 
 function toolsRoute(props) {
   return (
-  <div class="lingvodoc-page">
+  <div className="lingvodoc-page">
     <div className="background-cards lingvodoc-page__content">
       <div className="toolsRoute">
         <h2 className="tools-header">{getTranslation('Tools')}</h2>
