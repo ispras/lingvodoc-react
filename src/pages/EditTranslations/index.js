@@ -7,7 +7,7 @@ import { getTranslation } from 'api/i18n';
 
 const CategorySelector = styled(Menu)`
   position: fixed;
-  top: 4rem;
+  top: 78px;
   z-index: 100;
 `;
 
@@ -43,19 +43,19 @@ class EditTranslations extends React.Component {
 
     const { selectedCategory } = this.state;
     return (
-      <Container fluid>
-        <CategorySelector size='massive' compact>
-          {categories.map((category, index) => (
-            <Menu.Item key={index}
-              name={getTranslation(category)}
-              index={index}
-              active={selectedCategory == index}
-              onClick={this.handleCategoryClick}
-            />
-          ))}
-        </CategorySelector>
-        {selectedCategory == -1 ? null : <TranslationsBlock gists_type={selectedCategory == 6 ? "" : categories[selectedCategory]}></TranslationsBlock>}
-      </Container>
+      <div className="page-content">
+          <CategorySelector size='massive' compact>
+            {categories.map((category, index) => (
+              <Menu.Item key={index}
+                name={getTranslation(category)}
+                index={index}
+                active={selectedCategory == index}
+                onClick={this.handleCategoryClick}
+              />
+            ))}
+          </CategorySelector>
+          {selectedCategory == -1 ? null : <TranslationsBlock gists_type={selectedCategory == 6 ? "" : categories[selectedCategory]}></TranslationsBlock>}
+      </div>
     );
   }
 

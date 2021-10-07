@@ -16,13 +16,13 @@ const linguistsContributors = [
     href: 'http://iling-ran.ru/main/scholars/dybo',
   }
 ];
-const linguistsContributorsTSU = [
+/*const linguistsContributorsTSU = [
   {
     header: 'Резанова Зоя Ивановна ',
     description: 'ответственный редактор корпусов русской речи тюркско-русских билингвов',
     href: 'https://persona.tsu.ru/Home/UserProfile/1040',
   },
-];
+];*/
 const developersContributors = [
   {
     header: 'Борисенко Олег Дмитриевич',
@@ -71,10 +71,10 @@ const Info = () => {
         <h3 className="creator-title">Институт языкознания РАН, Томский государственный университет</h3>
         <Card.Group items={linguistsContributors} itemsPerRow={1} />
       </Container>
-      <Container className="container-gray">
+      {/*<Container className="container-gray">
         <h3 className="creator-title">Томский государственный университет</h3>
         <Card.Group items={linguistsContributorsTSU} itemsPerRow={1} />
-      </Container>
+      </Container>*/}
       <Container className="container-gray">
         <h3 className="creator-title">Институт системного программирования им. В. П. Иванникова РАН</h3>
         <Card.Group items={developersContributors} itemsPerRow={3} />

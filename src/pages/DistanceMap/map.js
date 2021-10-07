@@ -198,7 +198,7 @@ class MapAreas extends PureComponent {
         </div>);
 
     return (
-      <div>
+      <div className="page-content">
         {(!this.state.statusRequest) && (
           <div>
             <Segment>

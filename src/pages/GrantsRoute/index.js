@@ -29,7 +29,7 @@ function grantsRoute(props) {
     return newDate.getFullYear();
   }
   return (
-  <div class="lingvodoc-page">
+  <div className="lingvodoc-page">
     <div className="background-cards lingvodoc-page__content">
       <div className="grantsRoute">
         <h2 className="grants-header">{getTranslation('Grants')}</h2>

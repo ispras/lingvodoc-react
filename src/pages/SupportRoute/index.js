@@ -10,7 +10,7 @@ import Footer from 'components/Footer';
 const supportRoute = (props) => {
 
   return (
-  <div class="lingvodoc-page">
+  <div className="lingvodoc-page">
     <div className="background-cards lingvodoc-page__content">
       <div className="supportRoute">
         <h2 className="support-header">{getTranslation('Support')}</h2>

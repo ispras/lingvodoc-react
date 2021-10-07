@@ -777,6 +777,7 @@ class MergeSettings extends React.Component {
               label={getTranslation("Entity matching threshold")}
               value={Math.round(threshold) == threshold ? threshold.toString() + ".0" : threshold}
               onChange={(e, { value }) => dispatch({ type: 'SET_THRESHOLD', payload: value })}
+              className="perspective-label-input-adaptive"
             />
           )}
 

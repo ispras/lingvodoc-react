@@ -9,7 +9,7 @@ import Footer from 'components/Footer';
 
 function treeRoute() {
   return (
-  <div class="lingvodoc-page">
+  <div className="lingvodoc-page">
     <div className="background-cards lingvodoc-page__content">
       <div className="treeRoute">
         <h2 className="tree-header">{getTranslation('Languages databases')}</h2>

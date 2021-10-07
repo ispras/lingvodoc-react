@@ -210,34 +210,37 @@ const Home = (props) => {
   return (
     <React.Fragment>
       <div className="background-header">
-        <Container className="published">
+        <Container className="published" textAlign="center">
           <Form>
-            <Form.Group inline className="toggle-label">
-              {/*<label>{getTranslation('Display mode')}</label>*/}
-              <Segment>
+            <Segment className="lingvo-group-radios">
+              <Form.Group inline>
+                {/*<label>{getTranslation('Display mode')}</label>*/}
                 <Form.Field
                   control={Radio}
-                  label={{ children: <div className="toggle-label">{getTranslation('By Languages')}</div> }}
+                  label={getTranslation('By Languages')}
                   value="1"
                   checked={!sortMode}
                   onChange={() => actions.setSortMode(null)}
+                  className="lingvo-group-radios__item"
                 />
                 <Form.Field
                   control={Radio}
-                  label={{ children: <div className="toggle-label">{getTranslation('By Grants')}</div> }}
+                  label={getTranslation('By Grants')}
                   value="2"
-                  checked={sortMode == 'grant'}
+                  checked={sortMode === 'grant'}
                   onChange={() => actions.setSortMode('grant')}
+                  className="lingvo-group-radios__item"
                 />
                 <Form.Field
                   control={Radio}
-                  label={{ children: <div className="toggle-label">{getTranslation('By Organizations')}</div> }}
+                  label={getTranslation('By Organizations')}
                   value="3"
-                  checked={sortMode == 'organization'}
+                  checked={sortMode === 'organization'}
                   onChange={() => actions.setSortMode('organization')}
+                  className="lingvo-group-radios__item"
                 />
-              </Segment>
-            </Form.Group>
+              </Form.Group>
+            </Segment>
           </Form>
 
           {isAuthenticated &&

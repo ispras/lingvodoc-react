@@ -14,7 +14,7 @@ import Footer from 'components/Footer';
 
 function dashboardRoute() {
   return (
-  <div class="lingvodoc-page">
+  <div className="lingvodoc-page">
     <div className="background-cards lingvodoc-page__content">
       <div className="dashboardRoute">
         <h2 className="dashboard-header">{getTranslation('Dashboard')}</h2>

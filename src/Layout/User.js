@@ -14,6 +14,8 @@ import SignUpModal from 'components/SignUpModal';
 import EditUserModal from 'components/EditUserModal';
 import { getTranslation } from 'api/i18n';
 
+import imageUser from '../images/user.svg';
+
 const Anonymous = ({
   modal, launchSignInForm, launchSignUpForm, closeForm, loading
 }) =>
@@ -32,6 +34,27 @@ const Anonymous = ({
       handleClose={closeForm}
     />
   </Menu.Item>
+  <Dropdown
+    item
+    trigger={
+      loading ?
+        <span><img src={imageUser} alt={getTranslation('User')} className="icon-user" />{' '}<Icon loading name="spinner"/></span> :
+        <span><img src={imageUser} alt={getTranslation('User')} className="icon-user" /></span>}
+    className="top_menu top_menu__dropdown-user top_menu__item_user">
+
+    <Dropdown.Menu>
+      <SignInModal
+        trigger={<Dropdown.Item as="a" onClick={launchSignInForm}>{getTranslation('Sign In')}</Dropdown.Item>}
+        open={modal === 'signin'}
+        handleClose={closeForm}
+      />
+      <SignUpModal
+        trigger={<Dropdown.Item as="a" onClick={launchSignUpForm}>{getTranslation('Sign Up')}</Dropdown.Item>}
+        open={modal === 'signup'}
+        handleClose={closeForm}
+      />
+    </Dropdown.Menu>
+  </Dropdown>
   </React.Fragment>;
 
 Anonymous.propTypes = {
@@ -44,7 +67,12 @@ Anonymous.propTypes = {
 const Signed = ({
   user, modal, signOut, launchEditForm, closeForm, openModal
 }) =>
-  <Dropdown item text={user.name} className="top_menu">
+  <Dropdown item 
+    trigger={<span>
+      <img src={imageUser} alt={user.name} className="top_menu__signed-icon icon-user" />
+      <span className="top_menu__signed-user">{user.name}</span>
+    </span>}
+    className="top_menu top_menu__item_user">
     <Dropdown.Menu>
       <EditUserModal
         trigger={<Dropdown.Item as="a" onClick={launchEditForm}>{getTranslation('Edit profile')}</Dropdown.Item>}

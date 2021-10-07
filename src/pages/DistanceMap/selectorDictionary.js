@@ -8,6 +8,7 @@ import BackTopButton from 'components/BackTopButton';
 import AllDicts from 'components/Home/components/AllDicts';
 import { getScrollContainer } from 'components/Home/common';
 import 'components/Home/published.scss';
+import './styles.scss';
 
 
 const selectorDict = (props) => {
@@ -42,9 +43,14 @@ const selectorDict = (props) => {
   const scrollContainer = getScrollContainer();
 
   return (
-    <Container className="published">
-      <h1 className="black" style={{ margin: '20px 0' }}> {getTranslation('Select a dictionary for analysis')}</h1>
-      <Segment>
+    <div className="distanceMapPage">
+      <div className="background-header">
+        <Container className="published">
+          <h1 className="page-title"> {getTranslation('Select a dictionary for analysis')}</h1>
+        </Container>
+      </div>
+
+      <Container className="published">
         <AllDicts
           languagesTree={languagesTree}
           dictionaries={dicts}
@@ -53,9 +59,9 @@ const selectorDict = (props) => {
           perspectives={perspectivesList}
           selectorMode
         />
-      </Segment>
-      <BackTopButton scrollContainer={scrollContainer} />
-    </Container>
+        <BackTopButton scrollContainer={scrollContainer} />
+      </Container>
+    </div>
   );
 };
 
