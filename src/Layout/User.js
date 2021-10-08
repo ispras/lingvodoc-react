@@ -21,18 +21,10 @@ const Anonymous = ({
 }) =>
 <React.Fragment>
   <Menu.Item className="top_menu top_menu__item_signin">
-    <SignInModal
-      trigger={<div className="sign_in" onClick={launchSignInForm}>{getTranslation('Sign In')}</div>}
-      open={modal === 'signin'}
-      handleClose={closeForm}
-    />
+    <div className="sign_in" onClick={launchSignInForm}>{getTranslation('Sign In')}</div>
   </Menu.Item>
   <Menu.Item className="top_menu top_menu__item_signup">
-    <SignUpModal
-      trigger={<div className="sign_up" onClick={launchSignUpForm}>{getTranslation('Sign Up')}</div>}
-      open={modal === 'signup'}
-      handleClose={closeForm}
-    />
+    <div className="sign_up" onClick={launchSignUpForm}>{getTranslation('Sign Up')}</div>
   </Menu.Item>
   <Dropdown
     item
@@ -41,21 +33,20 @@ const Anonymous = ({
         <span><img src={imageUser} alt={getTranslation('User')} className="icon-user" />{' '}<Icon loading name="spinner"/></span> :
         <span><img src={imageUser} alt={getTranslation('User')} className="icon-user" /></span>}
     className="top_menu top_menu__dropdown-user top_menu__item_user">
-
     <Dropdown.Menu>
-      <SignInModal
-        trigger={<Dropdown.Item as="a" onClick={launchSignInForm}>{getTranslation('Sign In')}</Dropdown.Item>}
-        open={modal === 'signin'}
-        handleClose={closeForm}
-      />
-      <SignUpModal
-        trigger={<Dropdown.Item as="a" onClick={launchSignUpForm}>{getTranslation('Sign Up')}</Dropdown.Item>}
-        open={modal === 'signup'}
-        handleClose={closeForm}
-      />
+      <Dropdown.Item as="a" onClick={launchSignInForm}>{getTranslation('Sign In')}</Dropdown.Item>
+      <Dropdown.Item as="a" onClick={launchSignUpForm}>{getTranslation('Sign Up')}</Dropdown.Item>
     </Dropdown.Menu>
   </Dropdown>
-  </React.Fragment>;
+  <SignInModal
+    open={modal === 'signin'}
+    handleClose={closeForm}
+  />
+  <SignUpModal
+    open={modal === 'signup'}
+    handleClose={closeForm}
+  />
+</React.Fragment>;
 
 Anonymous.propTypes = {
   modal: PropTypes.any.isRequired,

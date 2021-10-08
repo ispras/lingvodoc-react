@@ -94,7 +94,6 @@ FormModal.propTypes = {
   header: PropTypes.node.isRequired,
   open: PropTypes.bool.isRequired,
   handleClose: PropTypes.func.isRequired,
-  trigger: PropTypes.element.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   reset: PropTypes.func.isRequired,
   submitting: PropTypes.bool.isRequired,
