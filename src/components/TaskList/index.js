@@ -22,7 +22,7 @@ const OrWrapper = styled(Segment)`
     top: 0;
   }
 `;
-const Empty = () => <h3 style={{ marginTop: 0 }}>{getTranslation('No background tasks')}</h3>;
+const Empty = () => <h3 style={{ marginTop: '14px' }}>{getTranslation('No background tasks')}</h3>;
 
 const enhance = branch(({ tasks }) => tasks.length === 0, renderComponent(Empty));
 
@@ -40,7 +40,7 @@ function Task(props) {
   } = props;
 
   const links = result_link_list.map(link => (
-    <div key={link}>
+    <div key={link} className="lingvo-tasks-link">
       <a href={link} key={link}>
         {link}
       </a>
@@ -64,7 +64,6 @@ function Task(props) {
 }
 
 const Task1 = connect(null, dispatch => bindActionCreators({ removeTask }, dispatch))(Task);
-
 
 const TaskList = enhance(({ tasks }) => (
   <List divided relaxed>

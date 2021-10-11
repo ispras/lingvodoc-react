@@ -2,17 +2,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
-import { Sidebar, Icon } from 'semantic-ui-react';
+import { Button, Sidebar } from 'semantic-ui-react';
 
 import TaskList from 'components/TaskList';
 import { toggleTasks } from 'ducks/task';
 
 const Wrapper = styled.div`
-  padding: 20px;
-  padding-top: 85px;
+  padding: 16px;
+  padding-top: 96px;
   min-height: 100vh;
-  background: #ccc;
-  opacity: 0.9;
 `;
 
 const TasksSidebar = ({ visible, tasks, toggle }) =>
@@ -22,8 +20,18 @@ const TasksSidebar = ({ visible, tasks, toggle }) =>
     width="wide"
     visible={visible}
     as={Wrapper}
+    className="lingvo-sidebar"
   >
-    <Icon name="angle double right" size="big" onClick={toggle} style={{ marginLeft: '-8px', marginBottom: '10px', cursor: 'pointer' }}/>
+
+    <Button
+      className="lingvo-button-lite-violet"
+      onClick={toggle}
+      icon
+      style={{ marginBottom: '4px' }}
+    >
+      <i className="lingvo-icon-close" />
+    </Button>
+    
     <TaskList tasks={tasks} />
   </Sidebar>;
 
