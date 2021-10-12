@@ -190,6 +190,11 @@ body {
   background-color: #FAFAFA !important;
   color: #0B132A !important;
 
+  &.ui.menu {
+    border-bottom: 0;
+    box-shadow: none;
+  }
+
   &__item_signin {
     padding-right: 0 !important;
   }
@@ -696,12 +701,29 @@ body {
     opacity: 1 !important;
   }
 
+  &.icon {
+    padding: 10px !important;
+  }
+
+  & .lingvo-icon-close {
+    display: block;
+    width: 20px;
+    height: 20px;
+    -webkit-mask-image: url("../images/close_sm.svg");
+    mask-image: url("../images/close_sm.svg");
+    background-color: #5D54CD;
+  }
+
   &:hover {
     background: #5D54CD !important;
     color: #fff !important;
 
     & .icon {
       color: #fff !important;
+    }
+
+    & .lingvo-icon-close {
+      background-color: #fff;
     }
   }
 
@@ -795,3 +817,21 @@ body {
   }
 }
 /* /list */
+
+/* sidebar */
+.lingvo-sidebar {
+  background: #F5F5F5;
+
+  @media only screen and (max-device-width: 350px), only screen and (max-width: 350px) {
+    & {
+      width: 320px !important;
+    }
+  }
+}
+/* /sidebar */
+
+/* tasks bar */
+.lingvo-tasks-link {
+  word-break: break-all;
+}
+/* /tasks bar */

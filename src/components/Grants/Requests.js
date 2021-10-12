@@ -75,8 +75,8 @@ const Subject = ({
       const organization = objectById(subject.org_id, organizations);
 
       return <Card
-        header={organization.translation}
-        description={organization.about}
+        header={organization ? organization.translation : ''}
+        description={organization ? organization.about : ''}
       />;
     }
     case 'grant_permission':
