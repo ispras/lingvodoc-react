@@ -125,7 +125,7 @@ class ApproveModal extends React.Component {
     }
 
     return (
-      <Modal open closeIcon closeOnDimmerClick={false} onClose={onClose}>
+      <Modal open closeIcon closeOnDimmerClick={false} onClose={onClose} className="lingvo-modal2">
         <Modal.Header>{mode == 'publish' ? getTranslation('Publish Entities') : getTranslation('Accept Contributions')}</Modal.Header>
         <Modal.Content scrolling>
           <div>

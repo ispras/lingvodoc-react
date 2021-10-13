@@ -100,7 +100,8 @@ class Properties extends React.Component {
         onClose={actions.closeSaveDictionaryModal}
         open
         dimmer
-        size="fullscreen">
+        size="fullscreen" 
+        className="lingvo-modal2">
 
         <Modal.Content>
           <Header size="large">{`${getTranslation('Save')} '${translation}'?`}</Header>

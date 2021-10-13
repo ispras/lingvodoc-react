@@ -67,7 +67,7 @@ class RunParserModal extends React.Component {
     const { parserId, success } = this.state;
 
     return (
-      <Modal open dimmer size="small" closeIcon onClose={onClose}>
+      <Modal open dimmer size="small" closeIcon onClose={onClose} className="lingvo-modal2">
         <Modal.Header>{getTranslation('Parser execution')}</Modal.Header>
         <Modal.Content>
           { success && getTranslation('Parser task has been started') }

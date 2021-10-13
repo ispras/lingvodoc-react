@@ -47,7 +47,8 @@ const MarkupModal = (props) => {
       onClose={actions.closeViewer}
       open={visible}
       dimmer
-      size="large">
+      size="large" 
+      className="lingvo-modal2">
 
       <Modal.Content>
         <MarkupEntity file={audioUrl} id={id} />

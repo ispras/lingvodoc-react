@@ -48,7 +48,7 @@ class CreateLanguageModal extends React.Component {
     }
 
     return (
-      <Modal dimmer open size="small" closeIcon closeOnDimmerClick={false} onClose={actions.closeModal}>
+      <Modal dimmer open size="small" closeIcon closeOnDimmerClick={false} onClose={actions.closeModal} className="lingvo-modal2">
         <Modal.Header>{getTranslation('Create language')}</Modal.Header>
         <Modal.Content>
           <h4>{getTranslation('Translations')}</h4>

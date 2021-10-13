@@ -13,7 +13,8 @@ const PlayerModal = ({ visible, actions, play: { content } }) => (
     onClose={actions.closePlayer}
     open={visible}
     dimmer
-    size="small">
+    size="small"
+    className="lingvo-modal2">
 
     <Modal.Content>
       <Player file={content} />

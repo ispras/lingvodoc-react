@@ -30,6 +30,7 @@ const RolesModal = ({
       open={visible}
       dimmer="blurring"
       size="large"
+      className="lingvo-modal2"
     >
       <Modal.Header>
         {title}

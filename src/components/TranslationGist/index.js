@@ -77,7 +77,7 @@ export default class TranslationGist extends React.Component {
     const locales = data.all_locales || [];
 
     return (
-      <Container>
+      <Container className="lingvo-container_margin-auto">
         <List>
           {atoms.map(atom => (
             <List.Item key={compositeIdToString(atom.id)}>

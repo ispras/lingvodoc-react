@@ -98,6 +98,7 @@ export default class TranslationAtom extends React.Component {
         onChange={this.onChangeContent}
         disabled={!editable}
         action
+        className="label-input-adaptive"
       >
         <input />
         <Select

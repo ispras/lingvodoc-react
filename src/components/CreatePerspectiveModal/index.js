@@ -123,7 +123,8 @@ class CreatePerspectiveModal extends React.Component
         closeIcon
         onClose={closeCreatePerspectiveModal}
         dimmer
-        open>
+        open
+        className="lingvo-modal2">
 
         <Modal.Header>{getTranslation('Create perspective')}</Modal.Header>
 

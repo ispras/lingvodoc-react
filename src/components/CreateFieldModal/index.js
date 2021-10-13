@@ -88,7 +88,8 @@ class CreateFieldModal extends React.Component {
         closeIcon
         onClose={actions.closeCreateFieldModal}
         dimmer
-        open>
+        open 
+        className="lingvo-modal2">
 
         <Modal.Header>{getTranslation('Create field')}</Modal.Header>
         <Modal.Content>

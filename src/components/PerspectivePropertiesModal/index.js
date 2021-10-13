@@ -76,6 +76,7 @@ const Properties = (props) => {
       open
       dimmer
       size="fullscreen"
+      className="lingvo-modal2"
     >
       <Modal.Header>
         {title}

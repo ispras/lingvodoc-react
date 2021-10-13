@@ -187,6 +187,7 @@ class PhonemicAnalysisModal extends React.Component
           open
           centered
           size="large"
+          className="lingvo-modal2"
         >
 
           <Modal.Header>Phonemic analysis</Modal.Header>

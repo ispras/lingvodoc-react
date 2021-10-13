@@ -23,7 +23,7 @@ function LexicalEntryModal({
   } = node;
 
   return (
-    <Modal dimmer open size="fullscreen" closeOnDimmerClick={false} closeIcon onClose={onClose}>
+    <Modal dimmer open size="fullscreen" closeOnDimmerClick={false} closeIcon onClose={onClose} className="lingvo-modal2">
       <Modal.Header>{translation}</Modal.Header>
       <Modal.Content scrolling>
         <LexicalEntryByIds
