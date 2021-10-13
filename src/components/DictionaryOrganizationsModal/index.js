@@ -60,7 +60,8 @@ class DictionaryOrganizationsModal extends React.Component
         closeIcon
         onClose={closeDictionaryOrganizationsModal}
         dimmer
-        open>
+        open
+        className="lingvo-modal2">
 
         <Modal.Header>{getTranslation('Organizations')}</Modal.Header>
 

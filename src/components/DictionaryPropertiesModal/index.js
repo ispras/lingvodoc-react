@@ -262,6 +262,7 @@ class Properties extends React.Component {
         closeOnDimmerClick={false}
         closeIcon
         onClose={actions.closeDictionaryPropertiesModal}
+        className="lingvo-modal2"
       >
         <Modal.Header>
           {title}

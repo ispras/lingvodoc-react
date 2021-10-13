@@ -317,7 +317,7 @@ class OdtMarkupModal extends React.Component {
     const selectedElem = selection === null ? null : document.getElementById(selection);
 
     return (
-      <Modal open dimmer size="fullscreen" closeIcon onClose={this.onClose} closeOnDimmerClick={false}>
+      <Modal open dimmer size="fullscreen" closeIcon onClose={this.onClose} closeOnDimmerClick={false} className="lingvo-modal2">
         <Modal.Header>{getTranslation('Text markup')}</Modal.Header>
         <div style={{ display: 'flex', flexDirection: 'row' }}>
           <PropertiesView selection={selection} mode={saving ? 'view' : mode} setDirty={() => this.setState({ dirty: true })} />

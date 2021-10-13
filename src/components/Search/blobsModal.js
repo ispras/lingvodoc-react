@@ -56,7 +56,8 @@ const BlobsModal = ({ visible, actions, blobs, dictionary }) => {
       onClose={actions.closeBlobsModal}
       open={visible}
       dimmer
-      size="small">
+      size="small"
+      className="lingvo-modal2">
 
       <Modal.Header>{dictionary.translation}</Modal.Header>
       <Modal.Content>

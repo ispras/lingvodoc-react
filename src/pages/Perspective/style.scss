@@ -39,24 +39,6 @@
         }
       }
     }
-
   }
 
-  &-label-input-adaptive {
-    @media only screen and (max-device-width: 500px), only screen and (max-width: 500px) {
-      & {
-        display: flex !important;
-        flex-direction: column !important;
-
-        & .label:first-child {
-          border-radius: 4px 4px 0 0 !important;
-
-          & + input {
-            border-radius: 0 0 4px 4px !important;
-            border: 1px solid rgba(34, 36, 38, 0.15) !important;
-          }
-        }
-      }
-    }
-  }
 }

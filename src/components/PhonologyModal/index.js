@@ -596,7 +596,8 @@ class PhonologyModal extends React.Component
           onClose={this.props.closeModal}
           dimmer
           open
-          size="fullscreen">
+          size="fullscreen"
+          className="lingvo-modal2">
 
           <Modal.Header>
             {getTranslation(
@@ -753,6 +754,7 @@ class PhonologyModal extends React.Component
                       value={this.state.chartThreshold}
                       onChange={(e, { value }) => this.setState({
                         chartThreshold: parseInt(value) || DEFAULT_CHART_THRESHOLD })}
+                      className="label-input-adaptive"
                     />) : (
                     <Input
                       label={getTranslation('Vowel formant count threshold')}

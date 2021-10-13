@@ -2023,7 +2023,8 @@ class CognateAnalysisModal extends React.Component
           onClose={this.props.closeModal}
           dimmer
           open
-          size="fullscreen">
+          size="fullscreen"
+          className="lingvo-modal2">
 
           <Modal.Header>{
             mode == 'acoustic' ?

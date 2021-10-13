@@ -74,7 +74,8 @@ class CreateOrganizationModal extends React.Component {
         closeIcon
         onClose={closeCreateOrganizationModal}
         dimmer
-        open>
+        open 
+        className="lingvo-modal2">
 
         <Modal.Header>{getTranslation('Create organization')}</Modal.Header>
 

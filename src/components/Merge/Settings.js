@@ -712,7 +712,7 @@ class MergeSettings extends React.Component {
           </List>
 
           {mode === 'fields' && (
-            <Container>
+            <Container className="lingvo-container_margin-auto">
               {fields.size === 0 && (
                 <Segment textAlign="center">{getTranslation('No fields, click button below to add a new one')}</Segment>
               )}
@@ -743,6 +743,7 @@ class MergeSettings extends React.Component {
                         onChange={(ev, { value }) =>
                           dispatch({ type: 'SET_LEVENSHTEIN', payload: { index: i, levenshtein: value } })
                         }
+                        className="label-input-adaptive"
                       />
                     </List.Item>
                     <List.Item>
@@ -777,7 +778,7 @@ class MergeSettings extends React.Component {
               label={getTranslation("Entity matching threshold")}
               value={Math.round(threshold) == threshold ? threshold.toString() + ".0" : threshold}
               onChange={(e, { value }) => dispatch({ type: 'SET_THRESHOLD', payload: value })}
-              className="perspective-label-input-adaptive"
+              className="label-input-adaptive"
             />
           )}
 

@@ -60,7 +60,7 @@ export class Translation extends React.Component {
     
       ) : (
 
-      <Input placeholder="" value={this.state.content} onChange={this.onChangeContent} action>
+      <Input placeholder="" value={this.state.content} onChange={this.onChangeContent} action className="label-input-adaptive">
         <input />
         <Select value={selectedLocale.shortcut} options={options} onChange={this.onChangeLocale} />
       </Input>

@@ -90,6 +90,7 @@ class ConverEafModal extends React.Component {
         open={visible}
         dimmer
         size="large"
+        className="lingvo-modal2"
       >
         <Modal.Header>
           <Checkbox

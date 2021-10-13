@@ -84,7 +84,8 @@ class BanModal extends React.Component
           onClose={this.props.closeModal}
           dimmer
           open
-          size="small">
+          size="small"
+          className="lingvo-modal2">
 
           <Modal.Header>{getTranslation('User account activation/deactivation')}</Modal.Header>
           <Modal.Content>

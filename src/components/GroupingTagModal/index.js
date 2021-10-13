@@ -359,7 +359,7 @@ class GroupingTagModal extends React.Component {
 
     if (loading || connectedQueryData.loading) {
       return (
-        <Modal dimmer open size="fullscreen" closeOnDimmerClick={false} closeIcon onClose={onClose}>
+        <Modal dimmer open size="fullscreen" closeOnDimmerClick={false} closeIcon onClose={onClose} className="lingvo-modal2">
           <Modal.Content>
             <ModalContentWrapper>
               <Dimmer active style={{ minHeight: '60vh', background: 'none' }}>
@@ -377,7 +377,7 @@ class GroupingTagModal extends React.Component {
 
     return (
       <div>
-        <Modal dimmer open size="fullscreen" closeOnDimmerClick={false} closeIcon onClose={onClose}>
+        <Modal dimmer open size="fullscreen" closeOnDimmerClick={false} closeIcon onClose={onClose} className="lingvo-modal2">
           <Modal.Header>{getTranslation('Grouping tag')}</Modal.Header>
           <Modal.Content scrolling>
             <ModalContentWrapper>

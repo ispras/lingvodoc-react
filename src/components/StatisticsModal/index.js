@@ -335,6 +335,7 @@ class StatisticsModal extends React.Component {
         dimmer
         open
         size="fullscreen"
+        className="lingvo-modal2"
       >
         <Modal.Header>
           {title}

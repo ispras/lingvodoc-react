@@ -3,7 +3,7 @@ import './styles.scss';
 import imageMap from '../../images/connected_world.svg';
 import imageSearch from '../../images/location_search.svg';
 import imageStorage from '../../images/collecting.svg';
-import imageCard from '../../images/cat.svg';
+import imageDistanceMap from '../../images/distance_map.svg';
 import imageLanguages from '../../images/around_world.svg';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
@@ -34,7 +34,7 @@ function toolsRoute(props) {
           {props.user && props.user.id == 1 && (
             <Link className="card-item" to="/distance_map">
               <label className="card-item__label">{getTranslation('Distance map')}</label>
-              <img className="card-item__img" src={imageCard} />
+              <img className="card-item__img card-item__img_distance-map" src={imageDistanceMap} />
             </Link>
           )}
           <Link className="card-item" to="/languages">

@@ -45,7 +45,7 @@ class UserVariantModal extends React.Component {
     const isValid = lex.trim() !== "" && parts.trim() !== "" && gloss.trim() !== "" && gr.trim() !== "" && trans_ru.trim() !== "";
 
     return (
-      <Modal open dimmer size="small" closeIcon onClose={onClose} closeOnDimmerClick={false}>
+      <Modal open dimmer size="small" closeIcon onClose={onClose} closeOnDimmerClick={false} className="lingvo-modal2">
         <Modal.Header>{getTranslation('User defined variant')}</Modal.Header>
         <Modal.Content>
           <Form>

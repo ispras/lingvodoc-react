@@ -122,3 +122,48 @@
 
 }
 /* /modal */
+
+/* modal2 */
+.lingvo-modal2 {
+  border-radius: 12px !important;
+
+  & > :first-child:not(.icon),
+  & > .icon:first-child + * {
+      border-top-left-radius: 12px !important;
+      border-top-right-radius: 12px !important;
+  }
+
+  & > :last-child {
+      border-bottom-left-radius: 12px !important;
+      border-bottom-right-radius: 12px !important;
+  }
+  
+  & i.icon.close:before {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 10px;
+    right: 8px;
+    width: 16px;
+    height: 16px;
+    background-color: #fff !important;
+    -webkit-mask-image: url("../images/close.svg");
+    mask-image: url("../images/close.svg");
+   
+    @media only screen and (max-width: 991px) { 
+      & {
+        background-color: #372F9D !important;
+      }
+    }
+  }
+
+  &.ui.fullscreen.modal {
+    left: auto !important;
+
+    & i.icon.close:before {
+      background-color: #372F9D !important;
+    }
+  }
+
+}
+/* /modal2 */

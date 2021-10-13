@@ -63,10 +63,10 @@ class GrantsList extends React.Component {
               <Table.Row key={grant.id}>
                 <Table.Cell>{grant.issuer}</Table.Cell>
                 <Table.Cell>{grant.translation}</Table.Cell>
-                <Table.Cell>
+                <Table.Cell className="lingvo-column-issuer-url">
                   <a href={grant.issuer_url}>{grant.issuer_url}</a>
                 </Table.Cell>
-                <Table.Cell>
+                <Table.Cell className="lingvo-column-grant-url">
                   <a href={grant.grant_url}>{grant.grant_url}</a>
                 </Table.Cell>
                 <Table.Cell>{grant.grant_number}</Table.Cell>

@@ -34,7 +34,8 @@ class Dictionary extends React.Component {
             open={this.state.open}
             closeIcon
             onClose={this.toggle}
-            trigger={trigger}>
+            trigger={trigger}
+            className="lingvo-modal2">
 
             <Modal.Header>{getTranslation('Select Language for')} {blob.get('name')}</Modal.Header>
             <Modal.Content style={{ minHeight: '500px' }}>

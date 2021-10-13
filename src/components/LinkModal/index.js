@@ -389,7 +389,7 @@ const Content = compose(
 
 const LinkModal = (props) => {
   return (
-    <Modal dimmer open size="fullscreen" closeOnDimmerClick={false} closeIcon onClose={props.onClose}>
+    <Modal dimmer open size="fullscreen" closeOnDimmerClick={false} closeIcon onClose={props.onClose} className="lingvo-modal2">
       <Modal.Content>
         <Content {...props} />
       </Modal.Content>
