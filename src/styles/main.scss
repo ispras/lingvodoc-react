@@ -244,21 +244,16 @@ body {
     & .ui.circular.label.tasks-label {
       background-color: #DBD9F1 !important;
       color: #372F9D !important;
-      /*font-size: 16px !important;*/
       font-size: 14px !important;
       line-height: 19px !important;
       text-align: center;
       font-weight: 500 !important;
       box-sizing: border-box;
 
-      /*padding: 8px 7px 7px 7px !important;*/
       padding: 6px 7px 5px 7px !important;
-      /*min-width: 33px !important;
-      min-height: 33px !important;*/
       min-width: 30px !important;
       min-height: 30px !important;
       margin-left: -12px !important;
-      /*margin-top: -5px !important;*/
       margin-top: 0 !important;
     }
 
@@ -296,8 +291,6 @@ body {
 
   & .lingvodoc-logo {
     font-family: Mulish;
-    /*font-size: 24px;
-    line-height: 30px;*/
     font-size: 22px;
     line-height: 27.5px;
     font-weight: 900;
