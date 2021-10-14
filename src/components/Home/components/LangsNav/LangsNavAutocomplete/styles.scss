@@ -2,6 +2,17 @@
   position: relative;
   display: block !important;
 
+  &_search:after {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 12px;
+    left: 16px;
+    background: url("../../../../../images/icon_search.svg") 0 0 no-repeat;
+    width: 24px;
+    height: 24px;
+  }
+
   &__item {
     padding: 12px;
     border-radius: 8px;
@@ -14,12 +25,12 @@
   &__item:hover {
     cursor: pointer;
     color: #372F9D !important;
-    background: #F5F5F5 !important;
+    background: #EDECF6 !important;
   }
 
   &__item_highlighted {
     color: #372F9D !important;
-    background: #F5F5F5 !important;
+    background: #EDECF6 !important;
     font-weight: 500 !important;
   }
 
@@ -31,6 +42,16 @@
     border-color: transparent !important;
     font-family: Rubik, Arial, sans-serif !important;
     font-weight: 400 !important;
+  }
+
+  &_search &__input {
+    padding-left: 56px !important;
+
+    @media only screen and (max-device-width: 340px), only screen and (max-width: 340px) {
+      & {
+        padding-left: 45px !important;
+      }
+    }
   }
 
   &__input:hover {

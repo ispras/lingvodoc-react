@@ -14,7 +14,7 @@ const autocompleteStyle = {};
 
 const classNames = {
   substrateContainer: 'langs-nav-autocomplete__substrate',
-  main: 'langs-nav-autocomplete',
+  main: 'langs-nav-autocomplete langs-nav-autocomplete_search',
   item: 'langs-nav-autocomplete__item',
   itemHighlighted: 'langs-nav-autocomplete__item_highlighted',
   wrap: 'langs-nav-autocomplete__wrap',

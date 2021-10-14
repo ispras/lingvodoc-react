@@ -1,12 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { compose, mapProps } from 'recompose';
-import { Container, Segment, Header } from 'semantic-ui-react';
+import { Container } from 'semantic-ui-react';
 
 import LangsNavAutocomplete from 'components/Home/components/LangsNav/LangsNavAutocomplete/index';
 import LangsNavList from 'components/Home/components/LangsNav/LangsNavList/index';
 import { sortLangsAlphabetically } from '../../common';
-import { getTranslation } from 'api/i18n';
 
 /*
  * Used for filtering languages based on a list provided by Julia Normanskaya.
@@ -301,7 +300,6 @@ const enhance = compose(propsHandler);
 const LangsNav = ({ autocompleteData, listData }) => (
   <React.Fragment>
     <Container>
-      <Header as="h3">{getTranslation('Select language')}</Header>
       <LangsNavAutocomplete data={autocompleteData} />
     </Container>
     <LangsNavList data={listData} />

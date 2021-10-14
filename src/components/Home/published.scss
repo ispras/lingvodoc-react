@@ -51,7 +51,7 @@ ul.tree {
 
 .lang {
   padding: 4px 2em;
-  transition: background-color 0.25s ease-in;
+  transition: background-color 0.25s ease-in, border-radius 0.25s ease-in;
 
   .lang-name {
     padding-right: 9px;
@@ -72,7 +72,8 @@ ul.tree {
   }
 
   &.highlighted {
-    background-color: rgba(23,167,219,0.3);
+    background-color: #EDECF6;
+    border-radius: 0 12px 12px 0;
   }
 }
 

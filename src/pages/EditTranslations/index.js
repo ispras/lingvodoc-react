@@ -7,7 +7,7 @@ import { getTranslation } from 'api/i18n';
 
 const CategorySelector = styled(Menu)`
   position: fixed;
-  top: 78px;
+  top: 58px;
   z-index: 100;
 `;
 

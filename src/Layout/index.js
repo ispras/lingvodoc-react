@@ -34,8 +34,8 @@ import Routes from './Routes';
 
 const Content = styled.div`
   padding: 0;
-  margin-top: 80px;
-  height: calc(100vh - 80px) !important;
+  margin-top: 60px;
+  height: calc(100vh - 60px) !important;
   overflow-y: auto !important;
 `;
 

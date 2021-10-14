@@ -37,7 +37,7 @@ const versionRoute = (props) => {
 
           {version_uniparser &&
             map(uniparser_str_list, uniparser_str => (
-              <div className="version">
+              <div className="version" key={uniparser_str}>
                 <span className="version" style={{ marginBottom: '0.5em' }}>{uniparser_str}:</span>
                 <span className="version" style={{ marginLeft: '0.5em' }}>{version_uniparser[uniparser_str]}</span>
               </div>))}
