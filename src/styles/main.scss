@@ -73,10 +73,8 @@ body {
     
     width: 100%;
     
-    /*height: 260px;*/
     height: 200px;
     background: url("../images/rectangle1.svg") 0 -110px no-repeat, url("../images/rectangle2.svg") 100% 60px no-repeat;
-    /*background: url("../images/rectangle1.svg") 0 -80px no-repeat, url("../images/rectangle2.svg") 100% 110px no-repeat;*/
     background-color: #372F9D;
   }
 }
@@ -180,7 +178,7 @@ body {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  height: 80px;
+  height: 60px;
 }
 
 .top_menu {
@@ -232,6 +230,9 @@ body {
 
     & .tasks-elem {
       position: relative;
+      display: inline-block;
+      vertical-align: middle;
+      margin-top: 2px;
     }
 
     & .icon-tasks {
@@ -243,17 +244,22 @@ body {
     & .ui.circular.label.tasks-label {
       background-color: #DBD9F1 !important;
       color: #372F9D !important;
-      font-size: 16px !important;
+      /*font-size: 16px !important;*/
+      font-size: 14px !important;
       line-height: 19px !important;
       text-align: center;
       font-weight: 500 !important;
       box-sizing: border-box;
 
-      padding: 8px 7px 7px 7px !important;
-      min-width: 33px !important;
-      min-height: 33px !important;
+      /*padding: 8px 7px 7px 7px !important;*/
+      padding: 6px 7px 5px 7px !important;
+      /*min-width: 33px !important;
+      min-height: 33px !important;*/
+      min-width: 30px !important;
+      min-height: 30px !important;
       margin-left: -12px !important;
-      margin-top: -5px !important;
+      /*margin-top: -5px !important;*/
+      margin-top: 0 !important;
     }
 
   }
@@ -290,15 +296,17 @@ body {
 
   & .lingvodoc-logo {
     font-family: Mulish;
-    font-size: 24px;
-    line-height: 30px;
+    /*font-size: 24px;
+    line-height: 30px;*/
+    font-size: 22px;
+    line-height: 27.5px;
     font-weight: 900;
     color: #4F5665;
   }
 
   & .sign_in {
     display: block;
-    padding: 13px 0 14px 0;
+    padding: 12px 0 12px 0;
     cursor: pointer;
     font-size: 16px;
     line-height: 18.9px;
@@ -306,7 +314,7 @@ body {
 
   & .sign_up {
     display: block;
-    padding: 13px 24px 14px 24px;
+    padding: 12px 24px 12px 24px;
     background: #5D54CD;
     color: #fff;
     border-radius: 50px;
@@ -330,7 +338,6 @@ body {
     }
 
     &__item_signup {
-      /*padding-right: 0px !important;*/
       padding-left: 15px !important;
     }
 
@@ -392,7 +399,6 @@ body {
     }
 
     &__item_locale {
-      /*padding-left: 5px !important;*/
       padding-right: 5px !important;
 
       & > .text {
@@ -413,6 +419,10 @@ body {
       padding: 10px 14px;
       font-size: 14px;
       line-height: 16px;
+    }
+
+    & .tasks-elem {
+      margin-top: 0;
     }
 
     & .ui.circular.label.tasks-label {
@@ -609,7 +619,6 @@ body {
   }
 
   &__img {
-    /*width: 124px;*/
     width: 136px;
     height: 98px;
     cursor: pointer;
