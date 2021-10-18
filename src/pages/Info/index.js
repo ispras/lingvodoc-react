@@ -77,11 +77,11 @@ const Info = () => {
       </Container>*/}
       <Container className="container-gray">
         <h3 className="creator-title">Институт системного программирования им. В. П. Иванникова РАН</h3>
-        <Card.Group items={developersContributors} itemsPerRow={3} />
+        <Card.Group items={developersContributors} itemsPerRow={3} stackable />
       </Container>
       <Container className="container-gray">
         <h3 className="creator-title">ООО Элекард-Мед</h3>
-        <Card.Group items={developersElecardMedContributors} itemsPerRow={2} />
+        <Card.Group items={developersElecardMedContributors} itemsPerRow={2} stackable />
       </Container>
 
       <Container className="container-gray">

@@ -22,7 +22,7 @@ import './index.scss';
 const classNames = {
   container: 'additional-filter',
   buttonGroup: 'additional-filter__button-group',
-  modal: 'additional-filter__modal',
+  modal: 'additional-filter__modal lingvo-modal2',
 };
 
 /* ----------- COMPONENT ----------- */

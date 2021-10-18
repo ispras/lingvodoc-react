@@ -43,7 +43,7 @@ const EditGroupingTag = (props) => {
           <Segment textAlign="center">
             <Button negative content={getTranslation("Disconnect")} onClick={leaveGroup} />
           </Segment>
-          <Segment padded="very" textAlign="center">
+          <Segment padded="very" textAlign="center" className="lingvo-grouping-tag">
             <ConnectedEntries
               id={lexicalEntry.id}
               fieldId={fieldId}
@@ -99,7 +99,7 @@ const ViewGroupingTag = (props) => {
       menuItem: getTranslation('View'),
       render: () => (
         <div>
-          <Segment padded="very" textAlign="center">
+          <Segment padded="very" textAlign="center" className="lingvo-grouping-tag">
             <ConnectedEntries
               id={lexicalEntry.id}
               fieldId={fieldId}
@@ -151,7 +151,7 @@ const PublishGroupingTag = (props) => {
               {!entity.published && <span>{getTranslation('The entity is NOT currently published. Click to publish.')}</span>}
             </Segment>
           )}
-          <Segment padded="very" textAlign="center">
+          <Segment padded="very" textAlign="center" className="lingvo-grouping-tag">
             <ConnectedEntries
               id={lexicalEntry.id}
               fieldId={fieldId}
@@ -198,7 +198,7 @@ const ContributionsGroupingTag = (props) => {
               <Button positive content={getTranslation("Accept")} disabled={entity.accepted} onClick={() => accept(entity, true)} />
             </Segment>
           )}
-          <Segment padded="very" textAlign="center">
+          <Segment padded="very" textAlign="center" className="lingvo-grouping-tag">
             <ConnectedEntries
               id={lexicalEntry.id}
               fieldId={fieldId}
