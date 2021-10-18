@@ -211,6 +211,7 @@ export const stringsToTranslate = [
    "Old password",
    "Open map",
    "Organization",
+   "Organizations",
    "Organization admins",
    "Organization users",
    "Owners",
