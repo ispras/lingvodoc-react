@@ -312,6 +312,7 @@ export const stringsToTranslate = [
    "Text markup",
    "The entity is NOT currently published. Click to publish.",
    "The entity is currently published. Click to unpublish.",
+   "The work is supported by the following grants",
    "There are unsaved changes present. Are you sure you want to discard it?",
    "There is no languages and dictionaries with chosen language degree of endangerment. The search will be performed with all languages and dictionaries.",
    "This page is available for administrator only",
