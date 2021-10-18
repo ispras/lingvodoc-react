@@ -55,7 +55,16 @@ const bool2category = (dicts, corpora) => {
   return null;
 };
 
-const Wrapper = styled.div`margin-bottom: 1em;`;
+const Wrapper = styled.div`
+  margin-bottom: 1em;
+  position: relative;
+
+  &:after {
+    content: '';
+    display: block;
+    clear: both;
+  }
+`;
 
 const OrWrapper = styled(Segment)`
   .delete-and {
@@ -137,7 +146,7 @@ function Query({
   };
 
   return (
-    <QueryInput action type="text" placeholder="Search String" value={str} onChange={onFieldChange('search_string')}>
+    <QueryInput action type="text" placeholder="Search String" value={str} onChange={onFieldChange('search_string')} className="group-fields-adaptive">
       <Select
         placeholder="Field"
         options={fieldOptions}
@@ -445,7 +454,7 @@ class QueryBuilder extends React.Component {
           <Segment>Search in</Segment>
           <Segment.Group>
             <Segment>
-              <Grid columns="equal">
+              <Grid columns="equal" stackable>
                 <Grid.Column>
                   <Checkbox
                     label="Dictionaries"
@@ -483,7 +492,7 @@ class QueryBuilder extends React.Component {
           <Segment>Search options</Segment>
           <Segment.Group>
             <Segment>
-              <Grid columns="equal" divided>
+              <Grid columns="equal" divided stackable>
                 <Grid.Column>
                   <Radio
                     label="Ignore adoptions"
@@ -590,7 +599,7 @@ class QueryBuilder extends React.Component {
             {getTranslation('Search')}
           </Button>
           <Checkbox
-            style={{marginLeft: '0.5em'}}
+            style={{margin: '10px'}}
             label={getTranslation('Export to XLSX')}
             checked={this.state.xlsxExport}
             onChange={() =>

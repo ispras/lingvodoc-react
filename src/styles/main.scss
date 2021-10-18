@@ -903,3 +903,68 @@ body {
     }
   }
 }
+
+.group-fields-adaptive {
+  @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+    & {
+      display: flex !important;
+      flex-wrap: wrap !important;
+      margin-right: 0 !important;
+      width: 100%;
+
+      &.ui.action.input > .dropdown:first-child {
+        border-radius: 4px 4px 0 0 !important;
+        border-right: 1px solid rgba(34, 36, 38, 0.15) !important;
+        border-bottom: transparent !important;
+        min-width: auto !important;
+        width: 100% !important;
+
+        &:focus {
+          border-right-color: #85B7D9 !important;
+        }
+
+        & + input {
+          border-radius: 0 0 0 4px !important;
+        }
+      }
+
+    }
+  }
+
+  @media only screen and (max-device-width: 500px), only screen and (max-width: 500px) {
+    & {
+      &.ui.action.input > .dropdown:first-child {
+        & + input {
+          width: 100% !important;
+          border-radius: 0 !important;
+          border-right-color: rgba(34, 36, 38, 0.15) !important;
+
+          &:focus {
+            border-right-color: #85B7D9 !important;
+          }
+
+          & + .dropdown {
+            border-radius: 0 0 0 4px !important;
+            flex: 1 1 auto;
+            border-top: transparent !important;
+
+            &:focus {
+              border-top: 1px solid #85B7D9 !important;
+              border-radius: 0 !important;
+            }
+          }
+        }
+      }
+
+    }
+  }
+
+}
+
+.lingvo-grouping-tag {
+  @media only screen and (max-device-width: 580px), only screen and (max-width: 580px) {
+    &.very.padded.segment {
+      padding: 10px !important;
+    }
+  }
+}
