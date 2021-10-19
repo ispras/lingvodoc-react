@@ -1,6 +1,7 @@
 const i18n = new Map();
 
 export const stringsToTranslate = [
+   "About",
    "Accept",
    "Accept Contributions",
    "Action",
@@ -23,6 +24,7 @@ export const stringsToTranslate = [
    "Add perspective",
    "Add to markup",
    "Add variant",
+   "Administrators",
    "All",
    "Archive",
    "Are you sure you want to remove selected element from markup?",
@@ -169,6 +171,7 @@ export const stringsToTranslate = [
    "Map linked columns to LingvoDoc types",
    "Maps",
    "Match translations",
+   "Members",
    "Merge group",
    "Merge lexical entries",
    "Merge suggestions",
@@ -211,6 +214,7 @@ export const stringsToTranslate = [
    "Old password",
    "Open map",
    "Organization",
+   "Organization name",
    "Organizations",
    "Organization admins",
    "Organization users",
