@@ -127,7 +127,7 @@ class EditDictionaryMetadata extends React.Component {
     };
     switch (kind) {
       case 'kind':
-        this.setState({ kind: data.label }, callback);
+        this.setState({ kind: data }, callback);
         break;
       case 'authors':
         this.setState({ authors: data.value }, callback);
@@ -272,8 +272,8 @@ class EditDictionaryMetadata extends React.Component {
         <Segment>
           <Form.Group widths="equal">
             <Form.Group>
-              <Form.Radio label={getTranslation('Expedition')} checked={kind === 'Expedition'} onClick={(event, data) => this.onChangeValue('kind', data)} />
-              <Form.Radio label={getTranslation('Archive')} checked={kind === 'Archive'} onClick={(event, data) => this.onChangeValue('kind', data)} />
+              <Form.Radio label={getTranslation('Expedition')} checked={kind === 'Expedition'} onClick={() => this.onChangeValue('kind', 'Expedition')} />
+              <Form.Radio label={getTranslation('Archive')} checked={kind === 'Archive'} onClick={() => this.onChangeValue('kind', 'Archive')} />
             </Form.Group>
             {mode !== 'create' &&
               <Form.Button
