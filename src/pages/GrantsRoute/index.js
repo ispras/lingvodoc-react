@@ -48,7 +48,7 @@ function grantsRoute(props) {
         <Container className="container-gray">
           <h3 className="black">{getTranslation('Project funded by grants')}</h3>
 
-          <Container className="container-white">
+          <Container className="container-white lingvo-container_margin-auto">
             <p>
               <b>
                 Внимание!

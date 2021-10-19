@@ -949,7 +949,7 @@ class SearchTabs extends React.Component {
 
         return (
           <Tab.Pane attached={false} key={search.id}>
-            <Container>
+            <Container className="lingvo-container_margin-auto">
               <h3>Search</h3>
               <QueryBuilder
                 searchId={search.id}
@@ -1016,7 +1016,7 @@ class SearchTabs extends React.Component {
             }}
           >
             <Tab
-              menu={{ pointing: true }}
+              menu={{ pointing: true, stackable: true }}
               panes={panes}
             />
           </div>

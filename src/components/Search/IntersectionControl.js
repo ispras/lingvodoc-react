@@ -27,7 +27,7 @@ const IntersectionControl = ({
       onChange={onChange}
     />
     <span>{max}</span>
-    <span>Более {value} пересечений</span>
+    <span className="intersection-control__text">Более {value} пересечений</span>
   </Range>;
 
 IntersectionControl.propTypes = {

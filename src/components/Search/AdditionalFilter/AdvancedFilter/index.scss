@@ -5,6 +5,12 @@
 
   &__field .ui.dropdown {
     min-width: 25em;
+
+    @media only screen and (max-device-width: 500px), only screen and (max-width: 500px) {
+      & {
+        min-width: 100%;
+      }
+    }
   }
 
   &__field .button {

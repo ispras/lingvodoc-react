@@ -15,4 +15,13 @@
     font-family: Mulish, Arial, sans-serif;
     font-weight: bold;
   }
+
+  .ui.stackable.cards {
+    @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+      & {
+        margin-top: 0;
+      }
+    }
+  }
+
 }

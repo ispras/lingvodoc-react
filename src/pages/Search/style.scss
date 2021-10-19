@@ -22,6 +22,18 @@
     opacity: 1;
     cursor: auto;
   }
+
+  @media only screen and (max-device-width: 500px), only screen and (max-width: 500px) {
+    & {
+      flex-wrap: wrap;
+
+      &__text {
+        display: block;
+        margin-top: 5px;
+        width: 100%;
+      }
+    }
+  }
 }
 
 .area-groups-select {  
