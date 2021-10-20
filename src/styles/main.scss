@@ -190,7 +190,8 @@ body {
 
   &.ui.menu {
     border-bottom: 0;
-    box-shadow: none;
+    box-shadow: 0px 1px 0 rgba(8, 35, 48, 0.1);
+    /*box-shadow: none;*/
   }
 
   &__item_signin {
@@ -696,6 +697,22 @@ body {
   color: #fff !important;
 }
 
+.lingvo-button-basic-black {
+  border-radius: 12px !important;
+  font-family: Rubik, Arial, sans-serif !important;
+  font-weight: 500 !important;
+  background: #fff !important;
+  box-shadow: 0px 0px 0px 1px #333 inset !important;
+  color: #333 !important;
+  min-height: 40px !important;
+
+  &:hover {
+    background: #333 !important;
+    box-shadow: 0px 0px 0px 1px #333 inset !important;
+    color: #fff !important;
+  }
+}
+
 .lingvo-button-lite-violet {
   border-radius: 10px !important;
   font-family: Rubik, Arial, sans-serif !important;
@@ -737,6 +754,33 @@ body {
   &_bradius-bottom {
     border-radius: 0 0 10px 10px !important;
   }
+}
+
+.lingvo-button-close {
+  border-radius: 10px !important;
+  font-family: Rubik, Arial, sans-serif !important;
+  font-weight: 500 !important;
+  background: transparent !important;
+  color: #5D54CD !important;
+
+  &.icon.button {
+    padding: 5px !important;
+    margin: 0 !important;
+  }
+
+  & .lingvo-icon-close {
+    display: block;
+    width: 20px;
+    height: 20px;
+    -webkit-mask-image: url("../images/close_sm.svg");
+    mask-image: url("../images/close_sm.svg");
+    background-color: #5D54CD;
+  }
+
+  &:hover {
+    background: #DBD9F1 !important;
+  }
+  
 }
 
 
@@ -827,11 +871,65 @@ body {
 
 /* sidebar */
 .lingvo-sidebar {
-  background: #F5F5F5;
+  background: #FAFAFA;
+  box-shadow: -2px 0px 8px rgba(8, 35, 48, 0.1) !important;
+
+  &__bottom-close {
+    display: none !important;
+  }
+
+  @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+    & {
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+
+      &__content {
+        flex: 1 0 auto;
+      }
+    
+      &__footer {
+        flex: 0 0 auto;
+        text-align: center;
+        padding: 0 0 24px 0;
+      }
+
+      &__bottom-close {
+        display: inline-block !important;
+        min-width: 156px;
+        margin: 0 !important;
+      }
+    }
+  }
 
   @media only screen and (max-device-width: 350px), only screen and (max-width: 350px) {
     & {
-      width: 320px !important;
+      width: 250px !important;
+    }
+  }
+
+  &__close {
+    position: absolute;
+    right: 16px;
+    top: 72px;
+  }
+
+  &__empty {
+    text-align: center;
+    margin: 0 0 22px 0;
+
+    & h3 {
+      margin: 14px 0 0 0 !important;
+      font-family: Mulish;
+      font-weight: bold;
+      font-size: 17px;
+      line-height: 20px;
+    }
+
+    &-img {
+      width: 72px;
+      height: 71px;
+      margin-top: 24px;
     }
   }
 }

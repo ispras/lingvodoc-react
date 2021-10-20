@@ -12,6 +12,8 @@ import { run, stop } from 'ducks/saga';
 import saga from './saga';
 import { getTranslation } from 'api/i18n';
 
+import imageEmpty from '../../images/no_data.svg';
+
 const OrWrapper = styled(Segment)`
   .delete-task-button {
     box-shadow: none !important;
@@ -22,7 +24,12 @@ const OrWrapper = styled(Segment)`
     top: 0;
   }
 `;
-const Empty = () => <h3 style={{ marginTop: '14px' }}>{getTranslation('No background tasks')}</h3>;
+const Empty = () => (
+  <div className="lingvo-sidebar__empty">
+    <h3>{getTranslation('No background tasks')}</h3>
+    <img src={imageEmpty} className="lingvo-sidebar__empty-img" />
+  </div>
+);
 
 const enhance = branch(({ tasks }) => tasks.length === 0, renderComponent(Empty));
 

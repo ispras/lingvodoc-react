@@ -29,8 +29,9 @@ const versionRoute = (props) => {
       <div className="version-route">
         <div className="version-block">
 
+          <h1 className="help">{getTranslation('Version')}</h1>
+
           <div className="version">
-            <h1 className="help">{getTranslation('Version')}</h1>
             <span className="version" style={{ marginBottom: '0.5em' }}>Backend:</span>
             <span className="version" style={{ marginLeft: '0.5em' }}>{version}</span>
           </div>

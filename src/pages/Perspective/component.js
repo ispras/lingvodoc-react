@@ -191,7 +191,7 @@ const handlers = compose(
 const Filter = handlers(({ value, onChange, onSubmit }) => (
   <div className="ui right aligned category search item">
     <form className="ui transparent icon input" onSubmit={onSubmit}>
-      <input className="white" type="text" placeholder={getTranslation('Filter')} value={value} onChange={onChange} />
+      <input className="white" type="text" placeholder={getTranslation('Search')} value={value} onChange={onChange} />
       <button type="submit" className="white">
         <i className="search link icon" />
       </button>
