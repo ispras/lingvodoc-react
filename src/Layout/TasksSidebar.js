@@ -6,10 +6,11 @@ import { Button, Sidebar } from 'semantic-ui-react';
 
 import TaskList from 'components/TaskList';
 import { toggleTasks } from 'ducks/task';
+import { getTranslation } from 'api/i18n';
 
 const Wrapper = styled.div`
   padding: 16px;
-  padding-top: 76px;
+  padding-top: 106px;
   min-height: 100vh;
 `;
 
@@ -22,17 +23,27 @@ const TasksSidebar = ({ visible, tasks, toggle }) =>
     as={Wrapper}
     className="lingvo-sidebar"
   >
+    <div className="lingvo-sidebar__content">
+      <Button
+        className="lingvo-button-close lingvo-sidebar__close"
+        onClick={toggle}
+        icon
+      >
+        <i className="lingvo-icon-close" />
+      </Button>
+      
+      <TaskList tasks={tasks} />
+    </div>
 
-    <Button
-      className="lingvo-button-lite-violet"
-      onClick={toggle}
-      icon
-      style={{ marginBottom: '4px' }}
-    >
-      <i className="lingvo-icon-close" />
-    </Button>
-    
-    <TaskList tasks={tasks} />
+    <div className="lingvo-sidebar__footer">
+      <Button
+        className="lingvo-button-basic-black lingvo-sidebar__bottom-close"
+        onClick={toggle}
+      >
+        {getTranslation('Close')}
+      </Button>
+    </div>
+
   </Sidebar>;
 
 TasksSidebar.propTypes = {
