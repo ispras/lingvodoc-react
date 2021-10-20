@@ -59,6 +59,7 @@ const toolsQuery = gql`
       created_by {
         id
       }
+      edit_check: role_check(subject: "perspective", action: "edit")
     }
   }
 `;
@@ -81,7 +82,8 @@ const Tools = graphql(toolsQuery)(({
     perspective: {
       english_status,
       created_by: {
-        id: author_id }}} = data;
+        id: author_id },
+      edit_check }} = data;
 
   const published =
     english_status === 'Published' ||
@@ -91,7 +93,7 @@ const Tools = graphql(toolsQuery)(({
     <Dropdown item text={getTranslation('Tools')}>
       <Dropdown.Menu>
 
-        {(user_id == 1 || user_id == author_id) && (
+        {(user_id == 1 || user_id == author_id || edit_check) && (
           <React.Fragment>
             <Dropdown.Item
               onClick={() => openCognateAnalysisModal(id, 'acoustic')}

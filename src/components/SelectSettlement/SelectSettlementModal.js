@@ -20,7 +20,7 @@ class SelectSettlementModal extends React.Component {
       <Modal
         size = 'large'
         open={ this.state.modalOpen }
-        trigger = { <Button onClick={ this.handleOpen }>{ getTranslation( 'Open map' ) }</Button> }
+        trigger = { <Button type="button" onClick={ this.handleOpen }>{ getTranslation( 'Open map' ) }</Button> }
       >
         <Modal.Header>{ getTranslation( 'Select settlement' ) }</Modal.Header>
         <Modal.Content>

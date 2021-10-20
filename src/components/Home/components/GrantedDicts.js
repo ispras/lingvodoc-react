@@ -74,7 +74,7 @@ function GrantedDicts(props) {
     <div>
       <Container className="container-gray">
         {mode == 'grant' && (
-          <Header>The work is supported by the following grants:</Header>)}
+          <Header>{`${getTranslation('The work is supported by the following grants')}:`}</Header>)}
         <List ordered className="lingvo-list">
           {trees.map(grant => (
             <List.Item key={grant.id} as="a" onClick={e => navigateToGrant(e, grant)}>

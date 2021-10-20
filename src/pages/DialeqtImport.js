@@ -286,7 +286,7 @@ class DialeqtImport extends React.Component {
                       'backgroundColor': 'white',
                       'borderRadius': '0.25em',
                       'padding': '0.5em'}}
-                    label='Create dictionary'
+                    label={getTranslation('Create dictionary')}
                     name='dictionaryGroup'
                     value='create'
                     checked={dialeqt_action === 'create'}
@@ -299,7 +299,7 @@ class DialeqtImport extends React.Component {
                       'backgroundColor': 'white',
                       'borderRadius': '0.25em',
                       'padding': '0.5em'}}
-                    label='Update dictionary'
+                    label={getTranslation('Update dictionary')}
                     name='dictionaryGroup'
                     value='update'
                     checked={dialeqt_action === 'update'}
