@@ -473,17 +473,20 @@ class OdtMarkupModal extends React.Component {
           }
           { mode === 'edit' &&
             <Button
+              positive
+              icon="save"
               disabled={saving || !dirty}
               loading={saving}
               content={getTranslation('Save')}
               onClick={this.save}
-              className="lingvo-button-violet"
             />
           }
           <Button
+            positive={mode !== 'edit'}
+            negative={mode === 'edit'}
+            icon="close"
             content={getTranslation('Close')}
             onClick={this.onClose}
-            className="lingvo-button-basic-black"
           />
         </Modal.Actions>
         <Confirm
