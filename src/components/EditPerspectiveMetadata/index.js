@@ -57,11 +57,11 @@ class EditPerspectiveMetadata extends React.Component {
         <input />
 
         <Button
-          positive
           content={getTranslation('Save')}
           disabled={
             this.state.transcription_rules == this.initialState.transcription_rules}
           onClick={() => this.onSaveValue('transcription_rules')}
+          className="lingvo-button-violet lingvo-button-violet_bradius-right"
         />
 
       </Input>

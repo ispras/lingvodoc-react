@@ -143,8 +143,8 @@ class ConverEafModal extends React.Component {
           )}
         </Modal.Content>
         <Modal.Actions>
-          <Button positive icon="plus" content={getTranslation("Convert")} onClick={this.convert} disabled={!this.conversionEnabled()} />
-          <Button negative icon="minus" content={getTranslation("Cancel")} onClick={actions.closeConvert} />
+          <Button content={getTranslation("Convert")} onClick={this.convert} disabled={!this.conversionEnabled()} className="lingvo-button-violet" />
+          <Button content={getTranslation("Cancel")} onClick={actions.closeConvert} className="lingvo-button-basic-black" />
         </Modal.Actions>
       </Modal>
     );

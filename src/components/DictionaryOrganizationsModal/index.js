@@ -166,9 +166,7 @@ class DictionaryOrganizationsModal extends React.Component
         </Modal.Content>
 
         <Modal.Actions>
-          <Button
-            content={getTranslation("Close")}
-            onClick={closeDictionaryOrganizationsModal} />
+          <Button content={getTranslation("Close")} onClick={closeDictionaryOrganizationsModal} className="lingvo-button-basic-black" />
         </Modal.Actions>
 
       </Modal>

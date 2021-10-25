@@ -253,8 +253,8 @@ class EditAtoms extends React.Component {
           </Grid>
           <Grid columns={1} centered>
             <Grid.Column textAlign='center'>
-              <Button disabled={this.getFreeLocale() == null} onClick={this.onAddTranslation}>{getTranslation('Add Translation')}</Button>
-              <Button disabled={JSON.stringify(this.state) === JSON.stringify(this.initialState)} onClick={this.onSave}>{getTranslation('Save')}</Button>
+              <Button disabled={this.getFreeLocale() == null} onClick={this.onAddTranslation} className="lingvo-button-basic-black">{getTranslation('Add Translation')}</Button>
+              <Button disabled={JSON.stringify(this.state) === JSON.stringify(this.initialState)} onClick={this.onSave} className="lingvo-button-violet">{getTranslation('Save')}</Button>
             </Grid.Column>
           </Grid>
       </Segment>

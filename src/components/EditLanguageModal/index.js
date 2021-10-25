@@ -99,7 +99,7 @@ class EditModal extends React.Component {
           <EditLanguageMetadata mode='edit' metadata={this.state.metadata} onSave={metadata => this.onUpdateMetadata(metadata)} />
         </Modal.Content>
         <Modal.Actions>
-          <Button icon="minus" content={getTranslation("Close")} onClick={actions.closeModal} />
+          <Button content={getTranslation("Close")} onClick={actions.closeModal} className="lingvo-button-basic-black" />
         </Modal.Actions>
       </Modal>
     );

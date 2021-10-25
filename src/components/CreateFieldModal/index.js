@@ -105,8 +105,8 @@ class CreateFieldModal extends React.Component {
           </Grid>
         </Modal.Content>
         <Modal.Actions>
-          <Button icon="plus" content={getTranslation("Save")} onClick={this.saveField} disabled={this.isSaveDisabled()} />
-          <Button icon="minus" content={getTranslation("Cancel")} onClick={actions.closeCreateFieldModal} />
+          <Button content={getTranslation("Save")} onClick={this.saveField} disabled={this.isSaveDisabled()} className="lingvo-button-violet" />
+          <Button content={getTranslation("Cancel")} onClick={actions.closeCreateFieldModal} className="lingvo-button-basic-black" />
         </Modal.Actions>
 
       </Modal>

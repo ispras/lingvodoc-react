@@ -147,8 +147,8 @@ class CreatePerspectiveModal extends React.Component
         </Modal.Content>
 
         <Modal.Actions>
-          <Button icon="plus" content={getTranslation("Save")} onClick={this.savePerspective} disabled={this.isSaveDisabled()} />
-          <Button icon="minus" content={getTranslation("Cancel")} onClick={closeCreatePerspectiveModal} />
+          <Button content={getTranslation("Save")} onClick={this.savePerspective} disabled={this.isSaveDisabled()} className="lingvo-button-violet" />
+          <Button content={getTranslation("Cancel")} onClick={closeCreatePerspectiveModal} className="lingvo-button-basic-black" />
         </Modal.Actions>
 
       </Modal>

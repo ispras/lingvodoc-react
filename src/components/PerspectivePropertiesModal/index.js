@@ -117,7 +117,7 @@ const Properties = (props) => {
         />
       </Modal.Content>
       <Modal.Actions>
-        <Button icon="minus" content={getTranslation("Close")} onClick={actions.closePerspectivePropertiesModal} />
+        <Button content={getTranslation("Close")} onClick={actions.closePerspectivePropertiesModal} className="lingvo-button-basic-black" />
       </Modal.Actions>
     </Modal>
   );

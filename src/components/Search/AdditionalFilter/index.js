@@ -576,7 +576,7 @@ class AdditionalFilter extends PureComponent {
               />
             </Modal.Content>
             <Modal.Actions>
-              <Button primary basic onClick={this.onShowLangsButtonClick}>
+              <Button onClick={this.onShowLangsButtonClick} className="lingvo-button-basic-black">
                 {closeText}
               </Button>
             </Modal.Actions>
@@ -595,7 +595,7 @@ class AdditionalFilter extends PureComponent {
               />
             </Modal.Content>
             <Modal.Actions>
-              <Button primary basic onClick={this.onShowGrammarFilterButtonClick}>
+              <Button onClick={this.onShowGrammarFilterButtonClick} className="lingvo-button-basic-black">
                 {closeText}
               </Button>
             </Modal.Actions>
@@ -622,7 +622,7 @@ class AdditionalFilter extends PureComponent {
               />
             </Modal.Content>
             <Modal.Actions>
-              <Button primary basic onClick={this.onShowAdvancedFilterButtonClick}>
+              <Button onClick={this.onShowAdvancedFilterButtonClick} className="lingvo-button-basic-black">
                 {closeText}
               </Button>
             </Modal.Actions>

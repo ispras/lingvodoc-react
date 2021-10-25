@@ -154,10 +154,10 @@ class SelectSettlementMap extends React.Component {
         <Button onClick = { () => {
           this.selected()
           this.props.closeModal()
-        }}>{ getTranslation( 'Select' ) }</Button>
+        }} className="lingvo-button-violet">{ getTranslation('Select') }</Button>
         <Button onClick = { () => {
           this.props.closeModal()
-        }}>{ getTranslation( 'Close' ) }</Button>
+        }} className="lingvo-button-basic-black">{ getTranslation('Close') }</Button>
       </div>
     )
   }

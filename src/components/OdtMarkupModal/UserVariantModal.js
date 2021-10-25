@@ -72,8 +72,8 @@ class UserVariantModal extends React.Component {
           </Form>
         </Modal.Content>
         <Modal.Actions>
-          <Button positive disabled={!isValid} content={getTranslation(variant ? 'Save' : 'Create')} onClick={this.save}/>
-          <Button negative content={getTranslation('Cancel')} onClick={onClose}/>
+          <Button disabled={!isValid} content={getTranslation(variant ? 'Save' : 'Create')} onClick={this.save} className="lingvo-button-violet" />
+          <Button content={getTranslation('Cancel')} onClick={onClose} className="lingvo-button-basic-black" />
         </Modal.Actions>
       </Modal>
     );

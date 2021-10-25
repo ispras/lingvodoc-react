@@ -397,7 +397,7 @@ class GroupingTagModal extends React.Component {
             </ModalContentWrapper>
           </Modal.Content>
           <Modal.Actions>
-            <Button icon="minus" content={getTranslation("Cancel")} onClick={onClose} />
+            <Button content={getTranslation("Cancel")} onClick={onClose} className="lingvo-button-basic-black" />
           </Modal.Actions>
         </Modal>
       </div>

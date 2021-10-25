@@ -394,7 +394,7 @@ const LinkModal = (props) => {
         <Content {...props} />
       </Modal.Content>
       <Modal.Actions>
-        <Button icon="minus" content={getTranslation("Cancel")} onClick={props.onClose} />
+        <Button content={getTranslation("Cancel")} onClick={props.onClose} className="lingvo-button-basic-black" />
       </Modal.Actions>
     </Modal>
   );

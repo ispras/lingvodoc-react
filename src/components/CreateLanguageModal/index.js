@@ -57,8 +57,8 @@ class CreateLanguageModal extends React.Component {
           <EditLanguageMetadata mode='create' onChange={metadata => this.setState({ metadata })} />
         </Modal.Content>
         <Modal.Actions>
-          <Button icon="minus" content={getTranslation("Save")} onClick={this.saveLanguage} />
-          <Button icon="minus" content={getTranslation("Cancel")} onClick={actions.closeModal} />
+          <Button content={getTranslation("Save")} onClick={this.saveLanguage} className="lingvo-button-violet" />
+          <Button content={getTranslation("Cancel")} onClick={actions.closeModal} className="lingvo-button-basic-black" />
         </Modal.Actions>
       </Modal>
     );

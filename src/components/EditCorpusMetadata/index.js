@@ -283,10 +283,10 @@ class EditCorpusMetadata extends React.Component {
             {mode != 'create' &&
               <Form.Button
                 floated="right"
-                positive
                 content={getTranslation('Save')}
                 disabled={kind == this.initialState.kind}
                 onClick={() => this.onSaveValue('kind')}
+                className="lingvo-button-violet"
               />
             }
           </Form.Group>
@@ -307,10 +307,10 @@ class EditCorpusMetadata extends React.Component {
             />
             {mode != 'create' &&
               <Button
-                positive
                 content={getTranslation('Save')}
                 disabled={JSON.stringify(authors) == JSON.stringify(this.initialState.authors)}
                 onClick={() => this.onSaveValue('authors')}
+                className="lingvo-button-violet"
               />
             }
           </Form.Group>
@@ -352,10 +352,10 @@ class EditCorpusMetadata extends React.Component {
             />
             {mode != 'create' &&
               <Button
-                positive
                 content={getTranslation('Save')}
                 disabled={JSON.stringify(humanSettlement) == JSON.stringify(this.initialState.humanSettlement)}
                 onClick={() => this.onSaveValue('settlements')}
+                className="lingvo-button-violet"
               />
             }
           </Form.Group>
@@ -376,10 +376,10 @@ class EditCorpusMetadata extends React.Component {
             />
             {mode != 'create' &&
               <Button
-                positive
                 content={getTranslation('Save')}
                 disabled={JSON.stringify(years) == JSON.stringify(this.initialState.years)}
                 onClick={() => this.onSaveValue('years')}
+                className="lingvo-button-violet"
               />
             }
           </Form.Group>
@@ -395,10 +395,10 @@ class EditCorpusMetadata extends React.Component {
             {mode != 'create' &&
               <Form.Button
                 floated="right"
-                positive
                 content={getTranslation('Save')}
                 disabled={titleOfTheWork == this.initialState.titleOfTheWork}
                 onClick={() => this.onSaveValue('titleOfTheWork')}
+                className="lingvo-button-violet"
               />
             }
           </Form.Group>
@@ -414,10 +414,10 @@ class EditCorpusMetadata extends React.Component {
             {mode != 'create' &&
               <Form.Button
                 floated="right"
-                positive
                 content={getTranslation('Save')}
                 disabled={genre == this.initialState.genre}
                 onClick={() => this.onSaveValue('genre')}
+                className="lingvo-button-violet"
               />
             }
           </Form.Group>
@@ -433,10 +433,10 @@ class EditCorpusMetadata extends React.Component {
             {mode != 'create' &&
               <Form.Button
                 floated="right"
-                positive
                 content={getTranslation('Save')}
                 disabled={timeOfWriting == this.initialState.timeOfWriting}
                 onClick={() => this.onSaveValue('timeOfWriting')}
+                className="lingvo-button-violet"
               />
             }
           </Form.Group>
@@ -452,10 +452,10 @@ class EditCorpusMetadata extends React.Component {
             {mode != 'create' &&
               <Form.Button
                 floated="right"
-                positive
                 content={getTranslation('Save')}
                 disabled={quantitativeCharacteristic == this.initialState.quantitativeCharacteristic}
                 onClick={() => this.onSaveValue('quantitativeCharacteristic')}
+                className="lingvo-button-violet"
               />
             }
           </Form.Group>
@@ -471,10 +471,10 @@ class EditCorpusMetadata extends React.Component {
             {mode != 'create' &&
               <Form.Button
                 floated="right"
-                positive
                 content={getTranslation('Save')}
                 disabled={bibliographicDataOfTheSource == this.initialState.bibliographicDataOfTheSource}
                 onClick={() => this.onSaveValue('bibliographicDataOfTheSource')}
+                className="lingvo-button-violet"
               />
             }
           </Form.Group>
@@ -490,10 +490,10 @@ class EditCorpusMetadata extends React.Component {
             {mode != 'create' &&
               <Form.Button
                 floated="right"
-                positive
                 content={getTranslation('Save')}
                 disabled={translator == this.initialState.translator}
                 onClick={() => this.onSaveValue('translator')}
+                className="lingvo-button-violet"
               />
             }
           </Form.Group>
@@ -509,10 +509,10 @@ class EditCorpusMetadata extends React.Component {
             {mode != 'create' &&
               <Form.Button
                 floated="right"
-                positive
                 content={getTranslation('Save')}
                 disabled={bibliographicDataOfTheTranslation == this.initialState.bibliographicDataOfTheTranslation}
                 onClick={() => this.onSaveValue('bibliographicDataOfTheTranslation')}
+                className="lingvo-button-violet"
               />
             }
           </Form.Group>

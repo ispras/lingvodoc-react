@@ -53,10 +53,11 @@ class EditLanguageMetadata extends React.Component {
             <Label size='large'>{getTranslation('Number of native speakers')}</Label>
             <Form.Dropdown fluid selection options={speakersAmountOptions} value={speakersAmount} onChange={this.onChangeValue} />
             {mode != 'create' &&
-              <Button positive
+              <Button 
                 content={getTranslation("Save")}
                 disabled={JSON.stringify(speakersAmount) == JSON.stringify(this.initialState.speakersAmount)}
                 onClick={this.onSaveValue}
+                className="lingvo-button-violet"
               />
             }
           </Form.Group>

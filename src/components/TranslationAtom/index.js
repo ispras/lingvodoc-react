@@ -108,7 +108,7 @@ export default class TranslationAtom extends React.Component {
           onChange={this.onChangeLocale}
         />
         {editable && isAtomNew &&
-          <Button onClick={() => this.createAtom(locale.id)}>{getTranslation('Save')}</Button>
+          <Button onClick={() => this.createAtom(locale.id)} className="lingvo-button-violet lingvo-button-violet_bradius-right">{getTranslation('Save')}</Button>
         }
         {editable && !isAtomNew &&
           <Button disabled ={content == this.state.content} onClick={() => this.updateAtom(locale.id)}>{getTranslation('Update')}</Button>

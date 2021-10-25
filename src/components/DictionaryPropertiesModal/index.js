@@ -304,10 +304,10 @@ class Properties extends React.Component {
                   value={this.state.files}
                 />
                 <Button
-                  positive
                   content={getTranslation("Save")}
                   disabled={JSON.stringify(this.state.files) == JSON.stringify(this.initialState.files)}
                   onClick={this.onSaveFiles}
+                  className="lingvo-button-violet"
                 />
               </Form.Group>
             </Segment>
@@ -320,11 +320,11 @@ class Properties extends React.Component {
                   disabled
                   onChange={() => {}}
                 />
-                <Button positive content={getTranslation("Save")} disabled={this.state.location == this.initialState.location} onClick={this.onSaveLocation} />
+                <Button content={getTranslation("Save")} disabled={this.state.location == this.initialState.location} onClick={this.onSaveLocation} className="lingvo-button-violet" />
                 </Form.Group>
             </Segment>
           </MarginForm>
-          <Grid>
+          <Grid stackable>
             <Grid.Column width={8}>
               <div style={{ height: '400px' }}>
                 <Form>
@@ -348,7 +348,7 @@ class Properties extends React.Component {
           </Grid>
         </Modal.Content>
         <Modal.Actions>
-          <Button icon="minus" content={getTranslation("Close")} onClick={actions.closeDictionaryPropertiesModal} />
+          <Button content={getTranslation("Close")} onClick={actions.closeDictionaryPropertiesModal} className="lingvo-button-basic-black" />
         </Modal.Actions>
       </Modal>
     );
