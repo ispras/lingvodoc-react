@@ -93,8 +93,8 @@ class CreateOrganizationModal extends React.Component {
         </Modal.Content>
 
         <Modal.Actions>
-          <Button icon="plus" content={getTranslation("Save")} onClick={this.saveOrganization} disabled={this.isSaveDisabled()} />
-          <Button icon="minus" content={getTranslation("Cancel")} onClick={closeCreateOrganizationModal} />
+          <Button content={getTranslation("Save")} onClick={this.saveOrganization} disabled={this.isSaveDisabled()} className="lingvo-button-violet" />
+          <Button content={getTranslation("Cancel")} onClick={closeCreateOrganizationModal} className="lingvo-button-basic-black" />
         </Modal.Actions>
 
       </Modal>

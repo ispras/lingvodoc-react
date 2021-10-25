@@ -18,8 +18,8 @@ const classNames = {
   header: 'additional-filter__info-header',
   data: 'additional-filter__info-data',
   toggleButton: 'additional-filter__info-button',
-  toggleButtonShow: 'additional-filter__info-button_show',
-  toggleButtonClose: 'additional-filter__info-button_close',
+  toggleButtonShow: 'additional-filter__info-button_show lingvo-button-violet',
+  toggleButtonClose: 'additional-filter__info-button_close lingvo-button-basic-black',
 };
 
 const capitalizeFirstLetter = string => string.charAt(0).toUpperCase() + string.slice(1);
@@ -62,7 +62,7 @@ class AdditionalFilterInfo extends PureComponent {
     return (
       <div className={classNames.container}>
         <span>{isDataDefault ? defaultSelectedText : selectedText}</span>
-        <Button primary basic onClick={this.onShowToggle} className={buttonClassName}>
+        <Button onClick={this.onShowToggle} className={buttonClassName}>
           {buttonText}
         </Button>
         {showInfo ?

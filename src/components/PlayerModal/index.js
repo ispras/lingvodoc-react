@@ -20,7 +20,7 @@ const PlayerModal = ({ visible, actions, play: { content } }) => (
       <Player file={content} />
     </Modal.Content>
     <Modal.Actions>
-      <Button icon="minus" content={getTranslation("Close")} onClick={actions.closePlayer} />
+      <Button content={getTranslation("Close")} onClick={actions.closePlayer} className="lingvo-button-basic-black" />
     </Modal.Actions>
 
   </Modal>

@@ -123,9 +123,9 @@ class Properties extends React.Component {
         </Modal.Content>
 
         <Modal.Actions>
-          <Button icon="save" content={getTranslation("Save all")} value="all" onClick={this.onSaveData} />
-          <Button icon="save" content={getTranslation("Save only published")} value="published" onClick={this.onSaveData} />
-          <Button icon="minus" content={getTranslation("Close")} onClick={actions.closeSaveDictionaryModal} />
+          <Button content={getTranslation("Save all")} value="all" onClick={this.onSaveData} className="lingvo-button-violet" />
+          <Button content={getTranslation("Save only published")} value="published" onClick={this.onSaveData} className="lingvo-button-violet" />
+          <Button content={getTranslation("Close")} onClick={actions.closeSaveDictionaryModal} className="lingvo-button-basic-black" />
         </Modal.Actions>
 
       </Modal>

@@ -104,19 +104,16 @@ class BanModal extends React.Component
 
           <Modal.Actions>
             <Button
-              icon="checkmark"
-              basic
               disabled={this.state.selected_user === null}
-              color="purple"
               content={
                 this.state.selected_user === null ? getTranslation("Activate / Deactivate") :
                 this.state.selected_user.is_active ? getTranslation("Deactivate") : getTranslation("Activate")}
-              onClick={this.handleActivateDeactivate} />
+              onClick={this.handleActivateDeactivate} 
+              className="lingvo-button-violet" />
             <Button
-              icon="remove"
-              basic
               content={getTranslation("Cancel")}
-              onClick={this.props.closeModal} />
+              onClick={this.props.closeModal} 
+              className="lingvo-button-basic-black" />
           </Modal.Actions>
 
         </Modal>

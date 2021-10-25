@@ -278,10 +278,10 @@ class EditDictionaryMetadata extends React.Component {
             {mode !== 'create' &&
               <Form.Button
                 floated="right"
-                positive
                 content={getTranslation('Save')}
                 disabled={kind === this.initialState.kind}
                 onClick={() => this.onSaveValue('kind')}
+                className="lingvo-button-violet"
               />
             }
           </Form.Group>
@@ -302,10 +302,10 @@ class EditDictionaryMetadata extends React.Component {
             />
             {mode !== 'create' &&
               <Button
-                positive
                 content={getTranslation('Save')}
                 disabled={JSON.stringify(authors) === JSON.stringify(this.initialState.authors)}
                 onClick={() => this.onSaveValue('authors')}
+                className="lingvo-button-violet"
               />
             }
             <Form.Dropdown
@@ -323,10 +323,10 @@ class EditDictionaryMetadata extends React.Component {
             {mode !== 'create' &&
               <Form.Button
                 floated="right"
-                positive
                 content={getTranslation('Save')}
                 disabled={interrogator === this.initialState.interrogator}
                 onClick={() => this.onSaveValue('interrogator')}
+                className="lingvo-button-violet"
               />
             }
             <Form.Input
@@ -338,10 +338,10 @@ class EditDictionaryMetadata extends React.Component {
             {mode !== 'create' &&
               <Form.Button
                 floated="right"
-                positive
                 content={getTranslation('Save')}
                 disabled={informant === this.initialState.informant}
                 onClick={() => this.onSaveValue('informant')}
+                className="lingvo-button-violet"
               />
             }
           </Form.Group>
@@ -379,10 +379,10 @@ class EditDictionaryMetadata extends React.Component {
             />
             {mode !== 'create' &&
               <Button
-                positive
                 content={getTranslation('Save')}
                 disabled={JSON.stringify(humanSettlement) === JSON.stringify(this.initialState.humanSettlement)}
                 onClick={() => this.onSaveValue('settlements')}
+                className="lingvo-button-violet"
               />
             }
           </Form.Group>
@@ -403,10 +403,10 @@ class EditDictionaryMetadata extends React.Component {
             />
             {mode !== 'create' &&
               <Button
-                positive
                 content={getTranslation('Save')}
                 disabled={JSON.stringify(years) === JSON.stringify(this.initialState.years)}
                 onClick={() => this.onSaveValue('years')}
+                className="lingvo-button-violet"
               />
             }
           </Form.Group>
@@ -428,10 +428,10 @@ class EditDictionaryMetadata extends React.Component {
             {mode !== 'create' &&
               <Form.Button
                 floated="right"
-                positive
                 content={getTranslation('Save')}
                 disabled={processing === this.initialState.processing}
                 onClick={() => this.onSaveValue('processing')}
+                className="lingvo-button-violet"
               />
             }
           </Form.Group>
@@ -447,10 +447,10 @@ class EditDictionaryMetadata extends React.Component {
             {mode !== 'create' &&
               <Form.Button
                 floated="right"
-                positive
                 content={getTranslation('Save')}
                 disabled={typeOfDiscourse === this.initialState.typeOfDiscourse}
                 onClick={() => this.onSaveValue('typeOfDiscourse')}
+                className="lingvo-button-violet"
               />
             }
             <Form.Input
@@ -462,10 +462,10 @@ class EditDictionaryMetadata extends React.Component {
             {mode !== 'create' &&
               <Form.Button
                 floated="right"
-                positive
                 content={getTranslation('Save')}
                 disabled={typeOfSpeech === this.initialState.typeOfSpeech}
                 onClick={() => this.onSaveValue('typeOfSpeech')}
+                className="lingvo-button-violet"
               />
             }
             <Form.Input
@@ -477,10 +477,10 @@ class EditDictionaryMetadata extends React.Component {
             {mode !== 'create' &&
               <Form.Button
                 floated="right"
-                positive
                 content={getTranslation('Save')}
                 disabled={speechGenre === this.initialState.speechGenre}
                 onClick={() => this.onSaveValue('speechGenre')}
+                className="lingvo-button-violet"
               />
             }
           </Form.Group>
@@ -496,10 +496,10 @@ class EditDictionaryMetadata extends React.Component {
             {mode !== 'create' &&
               <Form.Button
                 floated="right"
-                positive
                 content={getTranslation('Save')}
                 disabled={theThemeOfTheText === this.initialState.theThemeOfTheText}
                 onClick={() => this.onSaveValue('theThemeOfTheText')}
+                className="lingvo-button-violet"
               />
             }
           </Form.Group>

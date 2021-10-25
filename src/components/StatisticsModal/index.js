@@ -369,7 +369,7 @@ class StatisticsModal extends React.Component {
           </Container>
         </Modal.Content>
         <Modal.Actions>
-          <Button icon="minus" content={getTranslation("Close")} onClick={this.props.closeStatistics} />
+          <Button content={getTranslation("Close")} onClick={this.props.closeStatistics} className="lingvo-button-basic-black" />
         </Modal.Actions>
 
       </Modal>
