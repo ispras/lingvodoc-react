@@ -283,10 +283,11 @@ class PhonemicAnalysisModal extends React.Component
 
           <Modal.Actions>
             <Button
-              positive content="Compute" onClick={this.handleCreate}
+              content="Compute" onClick={this.handleCreate}
               disabled={this.textFields.length <= 0}
+              className="lingvo-button-violet"
             />
-            <Button negative content="Close" onClick={this.props.closeModal} />
+            <Button content="Close" onClick={this.props.closeModal} className="lingvo-button-basic-black" />
           </Modal.Actions>
 
         </Modal>

@@ -71,7 +71,7 @@ const BlobsModal = ({ visible, actions, blobs, dictionary }) => {
         </List>
       </Modal.Content>
       <Modal.Actions>
-        <Button icon="minus" content="Close" onClick={actions.closeBlobsModal} />
+        <Button content="Close" onClick={actions.closeBlobsModal} className="lingvo-button-basic-black" />
       </Modal.Actions>
 
     </Modal>);

@@ -2046,7 +2046,6 @@ class CognateAnalysisModal extends React.Component
 
           <Modal.Actions>
             <Button
-              positive
               content={this.state.computing ?
                 <span>Computing... <Icon name="spinner" loading /></span> :
                 "Compute"}
@@ -2059,8 +2058,9 @@ class CognateAnalysisModal extends React.Component
                   this.state.language_list.length <= 0 ||
                   mode == 'multi_reconstruction' && this.state.language_list.length <= 1)) ||
                 this.state.computing}
+              className="lingvo-button-violet"
             />
-            <Button negative content="Close" onClick={this.props.closeModal} />
+            <Button content="Close" onClick={this.props.closeModal} className="lingvo-button-basic-black" />
           </Modal.Actions>
 
           {this.state.library_present && this.state.result !== null && (
