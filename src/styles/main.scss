@@ -755,6 +755,33 @@ body {
   
 }
 
+/* confirm */
+
+.lingvo-confirm {
+  border-radius: 12px !important;
+
+  & > :first-child:not(.icon),
+  & > .icon:first-child + * {
+      border-top-left-radius: 12px !important;
+      border-top-right-radius: 12px !important;
+  }
+
+  & > :last-child {
+      border-bottom-left-radius: 12px !important;
+      border-bottom-right-radius: 12px !important;
+  }
+
+  & .button:not(.primary) {
+    @extend .lingvo-button-basic-black;
+  }
+
+  & .primary.button {
+    @extend .lingvo-button-violet;
+  }
+}
+
+/* /confirm */
+
 .lingvo-button-lite-violet {
   border-radius: 10px !important;
   font-family: Rubik, Arial, sans-serif !important;

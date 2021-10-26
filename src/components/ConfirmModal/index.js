@@ -28,6 +28,7 @@ class ConfirmModal extends React.Component
         onCancel={this.props.closeModal}
         onConfirm={this.handleConfirm}
         open={true}
+        className="lingvo-confirm"
       />
     );
   }
