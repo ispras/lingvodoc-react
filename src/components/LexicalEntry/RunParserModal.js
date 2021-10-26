@@ -85,14 +85,9 @@ class RunParserModal extends React.Component {
         </Modal.Content>
         <Modal.Actions>
           { !success &&
-            <Button positive icon="play" disabled={!parserId} content={getTranslation('Execute')} onClick={this.executeParser}/>
+            <Button disabled={!parserId} content={getTranslation('Execute')} onClick={this.executeParser} className="lingvo-button-violet" />
           }
-          <Button
-            positive={success}
-            negative={!success}
-            icon="cancel"
-            content={getTranslation(success ? 'Close' : 'Cancel')} onClick={onClose}
-          />
+          <Button content={getTranslation(success ? 'Close' : 'Cancel')} onClick={onClose} className="lingvo-button-basic-black" />
         </Modal.Actions>
       </Modal>
     );

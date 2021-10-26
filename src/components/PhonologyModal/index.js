@@ -982,8 +982,8 @@ class PhonologyModal extends React.Component
           </Modal.Content>
 
           <Modal.Actions>
-            <Button icon="plus" positive content="Create" onClick={this.handleCreate} />
-            <Button icon="minus" negative content="Cancel" onClick={this.props.closeModal} />
+            <Button content="Create" onClick={this.handleCreate} className="lingvo-button-violet" />
+            <Button content="Cancel" onClick={this.props.closeModal} className="lingvo-button-basic-black" />
           </Modal.Actions>
 
         </Modal>
