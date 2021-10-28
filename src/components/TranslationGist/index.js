@@ -107,7 +107,7 @@ export default class TranslationGist extends React.Component {
             </List.Item>
           ))}
         </List>
-        <Button disabled={this.getAvailableLocales(locales, atoms).length == 0} onClick={this.addAtom}>Add</Button>
+        <Button disabled={this.getAvailableLocales(locales, atoms).length == 0} onClick={this.addAtom} className="lingvo-button-violet">Add</Button>
       </Container>
     );
   }
