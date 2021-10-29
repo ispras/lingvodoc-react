@@ -1,11 +1,5 @@
 import gql from 'graphql-tag';
 
-/*
- * Additional not really used fields in 'entities', such as additional_metadata and is_subject_for_parsing,
- * are needed to be present in the query because otherwise, it seems, results of this query invalidate data
- * of queryLexicalEntries from PerspectiveView/index.js while not forcing it to reload, breaking
- * perspective view.
- */
 export const connectedQuery = gql`
   query connectedWords($id: LingvodocID!, $fieldId: LingvodocID!, $entitiesMode: String!) {
     connected_words(id: $id, field_id: $fieldId, mode: $entitiesMode) {
