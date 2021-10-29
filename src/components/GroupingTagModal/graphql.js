@@ -12,22 +12,6 @@ export const connectedQuery = gql`
       lexical_entries {
         id
         parent_id
-        entities(mode: $entitiesMode) {
-          id
-          parent_id
-          field_id
-          link_id
-          self_id
-          created_at
-          locale_id
-          content
-          published
-          accepted
-          additional_metadata {
-            link_perspective_id
-          }
-          is_subject_for_parsing
-        }
       }
     }
   }
