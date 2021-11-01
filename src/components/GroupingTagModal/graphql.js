@@ -50,21 +50,6 @@ export const searchQuery = gql`
         id
         parent_id
       }
-      entities {
-        id
-        parent_id
-        field_id
-        link_id
-        self_id
-        created_at
-        locale_id
-        content
-        published
-        accepted
-        additional_metadata {
-          link_perspective_id
-        }
-      }
     }
   }
 `;
@@ -76,7 +61,6 @@ export const languageTreeSourceQuery = gql`
       parent_id
       translation
       created_at
-      translation_gist_id
     }
     dictionaries {
       id

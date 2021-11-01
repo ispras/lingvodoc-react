@@ -89,29 +89,10 @@ const searchQuery = gql`
         additional_metadata {
           location
         }
-        tree {
-          id
-          translation
-        }
       }
       lexical_entries {
         id
         parent_id
-        entities(mode: $mode) {
-          id
-          parent_id
-          field_id
-          link_id
-          self_id
-          created_at
-          locale_id
-          content
-          published
-          accepted
-        }
-      }
-      entities {
-        id
       }
       xlsx_url
     }
