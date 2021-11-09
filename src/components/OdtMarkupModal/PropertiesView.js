@@ -146,6 +146,7 @@ class PropertiesView extends React.Component {
           content={getTranslation('Are you sure you want to delete this variant?' )}
           onConfirm={this.deleteVariant}
           onCancel={() => this.setState({ elemToDelete: null })}
+          className="lingvo-confirm"
         />
       </div>
     );

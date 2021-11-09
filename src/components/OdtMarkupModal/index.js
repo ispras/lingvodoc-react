@@ -492,6 +492,7 @@ class OdtMarkupModal extends React.Component {
           content={confirmation ? confirmation.content : null}
           onConfirm={confirmation ? confirmation.func : null}
           onCancel={() => this.setState({ confirmation: null })}
+          className="lingvo-confirm"
         />
       </Modal>
     );

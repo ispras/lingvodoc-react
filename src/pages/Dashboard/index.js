@@ -6,7 +6,7 @@ import { compose, onlyUpdateForKeys, branch, renderNothing } from 'recompose';
 import { Link } from 'react-router-dom';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
-import { Container, Dimmer, Tab, Header, List, Dropdown, Icon, Menu } from 'semantic-ui-react';
+import { Dimmer, Tab, Header, List, Dropdown, Icon, Popup } from 'semantic-ui-react';
 import { isEqual } from 'lodash';
 import { compositeIdToString } from 'utils/compositeId';
 import { openRoles } from 'ducks/roles';
@@ -98,12 +98,11 @@ const Statuses = onlyUpdateForKeys(['translation'])(({
   };
 
   return (
-    <Dropdown item text={translation}>
+    <Dropdown item text={translation} className="lingvo-dashboard-elem lingvo-dashboard-elem_status" icon={<i className="lingvo-icon lingvo-icon_arrow" />}>
       <Dropdown.Menu>
         {statuses.map(status => (
           <Dropdown.Item
             key={compositeIdToString(status.id)}
-            icon="users"
             text={status.translation}
             active={isEqual(statusId, status.id)}
             onClick={() => updateHandler(parentId, status.id)}
@@ -150,57 +149,91 @@ class P extends React.Component {
     } = this.props;
     return (
       <List.Item>
-        <List.Icon verticalAlign="middle" name="book" />
         <List.Content>
-          <Menu>
-            <Dropdown text={translation} pointing className="link item">
-              <Dropdown.Menu>
-                <Dropdown.Item
-                  icon="users"
-                  text={`${getTranslation('Roles')}...`}
-                  onClick={() => actions.openRoles(id, 'perspective', getTranslation('Roles'))}
-                />
-                <Dropdown.Item
-                  icon="setting"
-                  text={`${getTranslation('Properties')}...`}
-                  onClick={() => actions.openPerspectivePropertiesModal(id, parent_id, getTranslation('Properties'))}
-                />
-                <Dropdown.Item
-                  icon="percent"
-                  text={`${getTranslation('Statistics')}...`}
-                  onClick={() => actions.openStatistics(id, 'perspective', getTranslation('Statistics'))}
-                />
-                <Dropdown.Divider />
-                <Dropdown.Item icon="remove" text={getTranslation("Remove perspective")} onClick={this.onRemovePerspective} />
-              </Dropdown.Menu>
-            </Dropdown>
+          
+          <div className="lingvo-dashboard-block">
+            <div className="lingvo-dashboard-block__small">
 
-            <Menu.Item as={Link} to={`/dictionary/${parent_id[0]}/${parent_id[1]}/perspective/${id[0]}/${id[1]}/view`}>
-              {getTranslation("View")}
-            </Menu.Item>
+              <div className="lingvo-dashboard-group-elems">
+                <Dropdown 
+                  trigger={
+                    <span><i className="lingvo-icon lingvo-icon_book" /> {translation}</span>
+                  }
+                  className="link item lingvo-dashboard-elem"
+                  icon={<i className="lingvo-icon lingvo-icon_arrow" />}>
+                  <Dropdown.Menu>
+                    <Dropdown.Item
+                      onClick={() => actions.openRoles(id, 'perspective', getTranslation('Roles'))}
+                    >
+                      <i className="lingvo-icon lingvo-icon_roles" /> {getTranslation('Roles')}
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                      onClick={() => actions.openPerspectivePropertiesModal(id, parent_id, getTranslation('Properties'))}
+                    >
+                      <i className="lingvo-icon lingvo-icon_properties" /> {getTranslation('Properties')}
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                      onClick={() => actions.openStatistics(id, 'perspective', getTranslation('Statistics'))}
+                    >
+                      <i className="lingvo-icon lingvo-icon_stats" /> {getTranslation('Statistics')}
+                    </Dropdown.Item>
+                    <Dropdown.Item 
+                      onClick={this.onRemovePerspective} 
+                    >
+                      <i className="lingvo-icon lingvo-icon_delete" /> {getTranslation("Remove perspective")}
+                    </Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
 
-            <Menu.Item as={Link} to={`/dictionary/${parent_id[0]}/${parent_id[1]}/perspective/${id[0]}/${id[1]}/edit`}>
-              {getTranslation("Edit")}
-            </Menu.Item>
+                <div className="lingvo-dashboard-group-elems__block">
+                  <Popup
+                    trigger={
+                      <a className="lingvo-dashboard-elem lingvo-dashboard-elem_button" 
+                        href={`/dictionary/${parent_id[0]}/${parent_id[1]}/perspective/${id[0]}/${id[1]}/view`}>
+                        <i className="lingvo-icon lingvo-icon_view" />
+                      </a>
+                    }
+                    content={getTranslation("View")}
+                    className="lingvo-popup-inverted"
+                  />
 
-            <Menu.Item
-              as={Link}
-              to={`/dictionary/${parent_id[0]}/${parent_id[1]}/perspective/${id[0]}/${id[1]}/publish`}
-            >
-              {getTranslation("Publish")}
-            </Menu.Item>
+                  <Popup
+                    trigger={
+                      <a className="lingvo-dashboard-elem lingvo-dashboard-elem_button" 
+                        href={`/dictionary/${parent_id[0]}/${parent_id[1]}/perspective/${id[0]}/${id[1]}/edit`}>
+                        <i className="lingvo-icon lingvo-icon_edit" />
+                      </a>
+                    }
+                    content={getTranslation("Edit")}
+                    className="lingvo-popup-inverted"
+                  />
 
-            <Menu.Item
-              as={Link}
-              to={`/dictionary/${parent_id[0]}/${parent_id[1]}/perspective/${id[0]}/${id[1]}/contributions`}
-            >
-              {getTranslation("Contributions")}
-            </Menu.Item>
+                  <Popup
+                    trigger={
+                      <a className="lingvo-dashboard-elem lingvo-dashboard-elem_button" 
+                        href={`/dictionary/${parent_id[0]}/${parent_id[1]}/perspective/${id[0]}/${id[1]}/publish`}>
+                          <i className="lingvo-icon lingvo-icon_publish" />
+                      </a>
+                    }
+                    content={getTranslation("Publish")}
+                    className="lingvo-popup-inverted"
+                  />
 
-            <Menu.Menu position="right">
+                  <a className="lingvo-dashboard-elem lingvo-dashboard-elem_button" 
+                    href={`/dictionary/${parent_id[0]}/${parent_id[1]}/perspective/${id[0]}/${id[1]}/contributions`}>
+                    {getTranslation("Contributions")}
+                  </a>
+
+                </div>
+              </div>
+
+            </div>
+
+            <div className="lingvo-dashboard-block__small">
               <PerspectiveStatuses translation={status} statusId={statusId} parentId={id} statuses={statuses} />
-            </Menu.Menu>
-          </Menu>
+            </div>
+          </div>
+
         </List.Content>
       </List.Item>
     );
@@ -274,45 +307,51 @@ class D extends React.Component {
     return (
       <List.Item>
         <List.Content>
-          <Menu>
-            <Dropdown text={translation} pointing className="link item">
-              <Dropdown.Menu>
-                <Dropdown.Item
-                  icon="users"
-                  text={`${getTranslation('Roles')}...`}
-                  onClick={() => actions.openRoles(id, 'dictionary', getTranslation('Roles'))}
-                />
-                <Dropdown.Item
-                  icon="setting"
-                  text={`${getTranslation('Properties')}...`}
-                  onClick={() => actions.openDictionaryPropertiesModal(id, getTranslation('Properties'))}
-                />
-                <Dropdown.Item
-                  icon="address book"
-                  text={`${getTranslation('Organizations')}...`}
-                  onClick={() => actions.openDictionaryOrganizationsModal(id)}
-                />
-                <Dropdown.Item
-                  icon="percent"
-                  text={`${getTranslation('Statistics')}...`}
-                  onClick={() => actions.openStatistics(id, 'dictionary', getTranslation('Statistics'))}
-                />
-                {/*<Dropdown.Item icon="circle" text={getTranslation("Create a new perspective...")} />*/}
-                <Dropdown.Item
-                  icon="save"
-                  text={`${getTranslation("Save dictionary")}...`}
-                  onClick={() => actions.openSaveDictionaryModal(id)}
-                />
-                <Dropdown.Divider />
-                <Dropdown.Item icon="remove" text={getTranslation("Remove dictionary")} onClick={this.onRemoveDictionary} />
-              </Dropdown.Menu>
-            </Dropdown>
+          <div className="lingvo-dashboard-block">
+            <div className="lingvo-dashboard-block__big">
+              <Dropdown text={translation} className="link item lingvo-dashboard-elem lingvo-dashboard-elem_main" icon={<i className="lingvo-icon lingvo-icon_arrow" />}>
+                <Dropdown.Menu>
+                  <Dropdown.Item
+                    onClick={() => actions.openRoles(id, 'dictionary', getTranslation('Roles'))}
+                  >
+                    <i className="lingvo-icon lingvo-icon_roles" /> {getTranslation('Roles')}
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                    onClick={() => actions.openDictionaryPropertiesModal(id, getTranslation('Properties'))}
+                  >
+                    <i className="lingvo-icon lingvo-icon_properties" /> {getTranslation('Properties')}
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                    onClick={() => actions.openDictionaryOrganizationsModal(id)}
+                  >
+                    <i className="lingvo-icon lingvo-icon_organizations" /> {getTranslation('Organizations')}
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                    onClick={() => actions.openStatistics(id, 'dictionary', getTranslation('Statistics'))}
+                  >
+                    <i className="lingvo-icon lingvo-icon_stats" /> {getTranslation('Statistics')}
+                  </Dropdown.Item>
+                  {/*<Dropdown.Item icon="circle" text={getTranslation("Create a new perspective...")} />*/}
+                  <Dropdown.Item
+                    onClick={() => actions.openSaveDictionaryModal(id)}
+                  >
+                    <i className="lingvo-icon lingvo-icon_save" /> {getTranslation("Save dictionary")}
+                  </Dropdown.Item>
+                  <Dropdown.Item 
+                    onClick={this.onRemoveDictionary} 
+                  >
+                    <i className="lingvo-icon lingvo-icon_delete" /> {getTranslation("Remove dictionary")}
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
+            </div>
 
-            <Menu.Menu position="right">
+            <div className="lingvo-dashboard-block__small">
               <DicionaryStatuses translation={status} statusId={statusId} parentId={id} statuses={statuses} />
-            </Menu.Menu>
-          </Menu>
-          <List relaxed>
+            </div>
+          </div>
+          
+          <List relaxed className="lingvo-dashboard-subblock">
             {perspectives.map(perspective => (
               <Perspective
                 key={compositeIdToString(perspective.id)}
@@ -366,11 +405,11 @@ const Dictionary = compose(
 const Dashboard = ({ data, mode, category }) => {
   const { loading, dictionaries, all_statuses: statuses } = data;
   return (
-    <Container>
+    <div className="lingvo-dashboard">
       <Dimmer.Dimmable dimmed={loading} style={dimmerStyle}>
-        <Dimmer active={loading} inverted>
+        <Dimmer active={loading} inverted className="lingvo-dimmer">
           <Header as="h2" icon>
-            <Icon name="spinner" loading />
+            <Icon name="spinner" loading className="lingvo-spinner" />
           </Header>
         </Dimmer>
 
@@ -387,7 +426,7 @@ const Dashboard = ({ data, mode, category }) => {
             ))}
         </List>
       </Dimmer.Dimmable>
-    </Container>
+    </div>
   );
 };
 
@@ -407,7 +446,7 @@ const DICTIONARIES_TABS = [
   {
     menuItem: getTranslation('My dictionaries'),
     render: () => (
-      <Tab.Pane>
+      <Tab.Pane className="lingvo-tab__pane">
         <Dictionaries category={0} mode={0} />
       </Tab.Pane>
     ),
@@ -415,7 +454,7 @@ const DICTIONARIES_TABS = [
   {
     menuItem: getTranslation('Available dictionaries'),
     render: () => (
-      <Tab.Pane>
+      <Tab.Pane className="lingvo-tab__pane">
         <Dictionaries category={0} mode={1} />
       </Tab.Pane>
     ),
@@ -426,7 +465,7 @@ const CORPORA_TABS = [
   {
     menuItem: getTranslation('My corpora'),
     render: () => (
-      <Tab.Pane>
+      <Tab.Pane className="lingvo-tab__pane">
         <Dictionaries category={1} mode={0} />
       </Tab.Pane>
     ),
@@ -434,7 +473,7 @@ const CORPORA_TABS = [
   {
     menuItem: getTranslation('Available corpora'),
     render: () => (
-      <Tab.Pane>
+      <Tab.Pane className="lingvo-tab__pane">
         <Dictionaries category={1} mode={1} />
       </Tab.Pane>
     ),
@@ -443,12 +482,12 @@ const CORPORA_TABS = [
 
 const DictionaryDashboard = () => (
   <div className="background-content">
-    <Tab className="inverted" panes={DICTIONARIES_TABS} renderActiveOnly />
+    <Tab className="inverted lingvo-tab" panes={DICTIONARIES_TABS} renderActiveOnly />
   </div>
 );
 const CorpusDashboard = () => (
   <div className="background-content">
-    <Tab className="inverted" panes={CORPORA_TABS} renderActiveOnly />
+    <Tab className="inverted lingvo-tab" panes={CORPORA_TABS} renderActiveOnly />
   </div>
 );
 

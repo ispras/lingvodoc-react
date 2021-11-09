@@ -280,6 +280,7 @@ class Organizations extends React.Component {
                 ' "' +
                 organization_to_delete.translation +
                 '"?'}
+              className="lingvo-confirm"
             />
           )}
         </div>
