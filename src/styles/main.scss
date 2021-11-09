@@ -1312,9 +1312,9 @@ body {
     border-radius: 0px 12px 12px 12px !important;
   }
 }
+/* /tabs */
 
-/* tabs */
-
+/* dashboard */
 .lingvo-dashboard {
   max-width: 1000px;
   margin: 0 auto 18px 18px;
@@ -1367,7 +1367,6 @@ body {
     padding-left: 15px !important;
   }
 }
-
 
 .lingvo-dashboard-elem {
   background: #fff !important;
@@ -1518,7 +1517,6 @@ body {
 
 }
 
-
 .lingvo-dashboard-group-elems {
   display: flex;
   flex-wrap: nowrap;
@@ -1590,8 +1588,9 @@ body {
   }
 
 }
+/* /dashboard */
 
-
+/* icon */
 .lingvo-icon {
   display: inline-block;
   width: 20px;
@@ -1667,6 +1666,7 @@ body {
   }
 
 }
+/* /icon */
 
 /* popups */
 .lingvo-popup-inverted {
@@ -1692,6 +1692,8 @@ body {
 }
 /* /popups */
 
+/* dimmer */
 .lingvo-dimmer {
   background: transparent !important;
 }
+/* /dimmer */
