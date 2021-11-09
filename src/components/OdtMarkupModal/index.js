@@ -59,6 +59,92 @@ class OdtMarkupModal extends React.Component {
     this.onClose = this.onClose.bind(this);
   }
 
+    onKeyDown = (event) => {
+
+    const { selection, saving } = this.state;
+
+    if (saving || !document.getSelection().isCollapsed) {
+      return;
+    }
+
+    let number = parseInt(event.key, 10) - 1;
+
+    const elem = document.getElementsByClassName("selected")[0];
+    const elems = Array.from(document.querySelectorAll(".verified, .unverified"));
+
+    if (!elem) {
+      if (event.key === "ArrowRight" && elems.length > 0) elems[0].click();
+      return;
+    }
+
+    const children = elem.childNodes;
+    let i = 0;
+    for (; i < elems.length; i++) {
+      if (elems[i].id === elem.id) {
+        break;
+      }
+    }
+
+    if (event.key === "Enter") {
+      event.preventDefault();
+      if (children.length === 2) number = 0;
+      else return;
+    }
+
+    if (number >= 0 && number < 10 && number < children.length) {
+      let iter = -1;
+      let success = false;
+      for (let child of children) {
+        if (child.classList !== undefined && child.classList.contains("result")) iter++;
+        if (iter === number) {
+          if (child.classList.contains("result")) {
+            child.classList.add("approved");
+            success = true;
+            break;
+          }
+        }
+      }
+      if (success) {
+        elem.classList.replace("unverified", "verified");
+        this.setState({ dirty: true });
+        if (i + 1 < elems.length) {
+          elems[i+1].click();
+        }
+      }
+      return;
+    }
+
+    if (event.key === "ArrowRight") {
+      if (i + 1 < elems.length) {
+        elems[i+1].click();
+      }
+      return;
+    }
+
+    if (event.key === "ArrowLeft") {
+      if (i - 1 >= 0) {
+        elems[i-1].click();
+      }
+      return;
+    }
+
+    if (event.key === "Delete" && elem.classList.contains("verified")) {
+      let success = false;
+      for (let child of children) {
+        if (child.classList !== undefined && child.classList.contains("approved")) {
+          child.classList.remove("approved");
+          success = true;
+        }
+      }
+      this.state.selection = null;
+      elem.classList.replace("verified", "unverified");
+      if (success) this.setState({ dirty: true });
+      elem.click();
+      return;
+    }
+
+  };
+
   componentDidUpdate() {
     if (this.initialized) {
       return;
@@ -84,11 +170,15 @@ class OdtMarkupModal extends React.Component {
     }
 
     this.initialized = true;
-    document.addEventListener('keydown', (event) => {this.onKeyDown(event);});
+  }
+
+  componentDidMount() {
+    document.addEventListener('keydown', this.onKeyDown);
   }
 
   componentWillUnmount() {
     document.removeEventListener('selectionchange', this.onBrowserSelection);
+    document.removeEventListener('keydown', this.onKeyDown);
   }
 
   addClickHandlers(elems) {
@@ -111,112 +201,6 @@ class OdtMarkupModal extends React.Component {
         }
       }
     });
-  }
-
-  onKeyDown(event) {
-
-    const { selection } = this.state;
-    if (!selection) return;
-    const elem = document.getElementById(selection);
-    const children = elem.childNodes;
-    const elems = Array.from(document.querySelectorAll(".verified, .unverified"));
-    let i = 0;
-    for (; i < elems.length; i++) {
-      if (elems[i].id == elem.id) break;
-    }
-    const number = parseInt(event.key, 10) - 1;
-
-    if (event.key == "Enter") {
-      let unapproved_cnt = 0;
-      let unapproved_child = null;
-      if (elem.className == "verified") {
-        if (i + 1 < elems.length) {
-          elems[i+1].click();
-          return;
-        }
-      }
-      for (let child of children) {
-        if (child.className == "result" || child.className == "result user") {
-          unapproved_cnt++;
-          if (unapproved_cnt > 1) {
-            return;
-          }
-          unapproved_child = child;
-        }
-      }
-      if (unapproved_cnt == 1) {
-        if (unapproved_child.className == "result user") {
-          unapproved_child.className = "result user approved";
-        }
-        else if (unapproved_child.className == "result") {
-          unapproved_child.className = "result approved";
-        }
-        elem.className = "verified";
-        if (i + 1 < elems.length) {
-          elems[i+1].click();
-        }
-      }
-      return;
-    }
-
-    if (event.key == "Delete") {
-      for (let child of children) {
-        if (child.className == "result user approved") {
-          child.className = "result user";
-        }
-        else if (child.className == "result approved") {
-          child.className = "result";
-        }
-      }
-      elem.className = "unverified";
-      this.setState({ selection: null });
-      elem.click();
-      return;
-    }
-
-    if (number >= 0 && number < 10 && number < children.length) {
-      let iter = -1;
-      let success = false;
-      for (let child of children) {
-        if (child.className == "result user" || child.className == "result" ||
-           child.className == "result user approved" || child.className == "result approved") {
-          iter++;
-        }
-        if (iter == number) {
-          if (child.className == "result user") {
-            child.className = "result user approved";
-            success = true;
-            break;
-          }
-          else if (child.className == "result") {
-            child.className = "result approved";
-            success = true;
-            break;
-          }
-        }
-      }
-      if (success) {
-        elem.className = "verified";
-        if (i + 1 < elems.length) {
-          elems[i+1].click();
-        }
-      }
-      return;
-    }
-
-    if (event.key == "ArrowRight") {
-      if (i + 1 < elems.length) {
-        elems[i+1].click();
-        return;
-      }
-    }
-
-    if (event.key == "ArrowLeft") {
-      if (i - 1 > 0) {
-        elems[i-1].click();
-        return;
-      }
-    }
   }
 
   onBrowserSelection() {
