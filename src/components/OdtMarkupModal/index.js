@@ -67,6 +67,8 @@ class OdtMarkupModal extends React.Component {
       return;
     }
 
+    const edit = this.props.mode === 'edit';
+
     let number = parseInt(event.key, 10) - 1;
 
     const elem = document.getElementsByClassName("selected")[0];
@@ -87,11 +89,11 @@ class OdtMarkupModal extends React.Component {
 
     if (event.key === "Enter") {
       event.preventDefault();
-      if (children.length === 2) number = 0;
+      if (edit && children.length === 2) number = 0;
       else return;
     }
 
-    if (number >= 0 && number < 10 && number < children.length) {
+    if (edit && number >= 0 && number < 10 && number < children.length) {
       let iter = -1;
       let success = false;
       for (let child of children) {
@@ -128,7 +130,7 @@ class OdtMarkupModal extends React.Component {
       return;
     }
 
-    if (event.key === "Delete" && elem.classList.contains("verified")) {
+    if (edit && event.key === "Delete" && elem.classList.contains("verified")) {
       let success = false;
       for (let child of children) {
         if (child.classList !== undefined && child.classList.contains("approved")) {
