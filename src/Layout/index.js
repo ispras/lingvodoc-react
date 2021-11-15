@@ -32,6 +32,8 @@ import TasksSidebar from './TasksSidebar';
 import Snackbar from './Snackbar';
 import Routes from './Routes';
 
+import smoothScroll from 'utils/smoothscroll';
+
 const Content = styled.div`
   padding: 0;
   margin-top: 60px;
@@ -46,6 +48,9 @@ class Layout extends React.Component {
 
   render() {
     const { selected, loading } = this.props;
+
+    const scrollContainer = document.querySelector(`.pusher`);
+    smoothScroll(0, 0, null, scrollContainer);
 
     return (
       <div key={`${selected.id}${loading}`}>
