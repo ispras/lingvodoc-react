@@ -49,7 +49,7 @@ class Layout extends React.Component {
   render() {
     const { selected, loading } = this.props;
 
-    const scrollContainer = document.querySelector(`.pusher`);
+    const scrollContainer = document.querySelector('.pusher');
     smoothScroll(0, 0, null, scrollContainer);
 
     return (
