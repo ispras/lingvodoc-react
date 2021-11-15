@@ -245,10 +245,6 @@ class topSectionSelector extends React.Component {
                             Возможности
                         </h2>
                         <div className="lingvo-main-block__opportunities-info">
-                            {/*<h2 className="lingvo-main-block__title">
-                                Возможности
-                            </h2>*/}
-
                             <div className="lingvo-main-block__opportunities-details">
                                 Подробнее о применении этих опций в <a href="https://github.com/ispras/lingvodoc-react/wiki" target="_blank">https://github.com/ispras/lingvodoc-react/wiki</a>.
                             </div>
