@@ -433,6 +433,7 @@ const P = ({
       {mode === 'contributions' && isAuthenticated &&
         <Button positive content={getTranslation('Accept Contributions')} disabled={approveDisableCondition(entries)} onClick={onApprove} />
       }
+      {/*<div className="scrolling-table">*/}
       <Table celled padded className={className}>
         <TableHeader
           columns={fields}
@@ -452,6 +453,7 @@ const P = ({
           onEntrySelect={onEntrySelect}
         />
       </Table>
+      {/*</div>*/}
       <Pagination current={page} total={Math.floor(entries.length / ROWS_PER_PAGE) + 1} to={mode} />
     </div>
   );
