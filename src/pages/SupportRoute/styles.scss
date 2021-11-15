@@ -18,6 +18,14 @@
 
   .card__label_telegram {
     font-size: 15px;
+
+    @media only screen and (max-device-width: 500px), only screen and (max-width: 500px) {
+      font-size: 14px;
+    }
+
+    @media only screen and (max-device-width: 365px), only screen and (max-width: 365px) {
+      font-size: 12px;
+    }
   }
 
   .version-block {
