@@ -65,11 +65,11 @@ const Info = () => {
     <Container>
       <Container className="container-gray">
         <h3 className="creator-title">Институт языкознания РАН, Институт системного программирования им. В.П.Иванникова РАН</h3>
-        <Card.Group items={linguistsContributorsRAN} itemsPerRow={1} />
+        <Card.Group items={linguistsContributorsRAN} itemsPerRow={1} className="lingvo-cards-with-links" />
       </Container>
       <Container className="container-gray">
         <h3 className="creator-title">Институт языкознания РАН, Томский государственный университет</h3>
-        <Card.Group items={linguistsContributors} itemsPerRow={1} />
+        <Card.Group items={linguistsContributors} itemsPerRow={1} className="lingvo-cards-with-links" />
       </Container>
       {/*<Container className="container-gray">
         <h3 className="creator-title">Томский государственный университет</h3>
@@ -77,11 +77,11 @@ const Info = () => {
       </Container>*/}
       <Container className="container-gray">
         <h3 className="creator-title">Институт системного программирования им. В. П. Иванникова РАН</h3>
-        <Card.Group items={developersContributors} itemsPerRow={3} stackable />
+        <Card.Group items={developersContributors} itemsPerRow={3} stackable className="lingvo-cards-without-links" />
       </Container>
       <Container className="container-gray">
         <h3 className="creator-title">ООО Элекард-Мед</h3>
-        <Card.Group items={developersElecardMedContributors} itemsPerRow={2} stackable />
+        <Card.Group items={developersElecardMedContributors} itemsPerRow={2} stackable className="lingvo-cards-without-links" />
       </Container>
 
       <Container className="container-gray">
