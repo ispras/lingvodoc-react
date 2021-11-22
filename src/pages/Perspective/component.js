@@ -349,8 +349,8 @@ const Perspective = ({
   });
 
   return (
-    <div className="background-content">
-      <Container fluid className="perspective inverted">
+    <div className="background-content lingvo-scrolling-content">
+      <Container fluid className="perspective inverted lingvo-scrolling-content__container">
         <PerspectivePath id={id} dictionary_id={parent_id} mode={mode} />
         <ModeSelector
           mode={mode}
