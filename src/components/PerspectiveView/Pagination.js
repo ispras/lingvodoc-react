@@ -6,6 +6,8 @@ import { Link } from 'react-router-dom';
 import { Menu } from 'semantic-ui-react';
 import styled from 'styled-components';
 
+import smoothScroll from 'utils/smoothscroll';
+
 const Item = ({
   num,
   disabled,
@@ -21,11 +23,17 @@ const Item = ({
     extraProps.name = text || num.toString();
   }
 
+  const handleItemClick = () => {
+    const scrollContainer = document.querySelector('.lingvo-scrolling-tab__table');
+    smoothScroll(0, 0, null, scrollContainer);
+  };
+
   return (
     <Menu.Item
       as={Link}
       active={active}
       disabled={disabled}
+      onClick={handleItemClick}
       to={{
         pathname: to,
         search: `?page=${num}`,
