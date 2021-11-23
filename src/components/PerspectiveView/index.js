@@ -405,9 +405,9 @@ const P = ({
   }
   /* eslint-enable no-shadow */
   const isAuthenticated = user && user.user.id;
-
+  
   return (
-    <div style={{ overflowY: 'auto' }}>
+    <div style={{ overflowY: 'auto' }} className="lingvo-scrolling-tab">
       {mode === 'edit' && <Button positive icon="plus" content={getTranslation('Add lexical entry')} onClick={addEntry} />}
       {mode === 'edit' && (
         <Button
@@ -433,27 +433,28 @@ const P = ({
       {mode === 'contributions' && isAuthenticated &&
         <Button positive content={getTranslation('Accept Contributions')} disabled={approveDisableCondition(entries)} onClick={onApprove} />
       }
-      {/*<div className="scrolling-table">*/}
-      <Table celled padded className={className}>
-        <TableHeader
-          columns={fields}
-          sortByField={sortByField}
-          onSortModeChange={(fieldId, order) => setSort(fieldId, order)}
-          onSortModeReset={() => resetSort()}
-          selectEntries={mode === 'edit'}
-        />
-        <TableBody
-          perspectiveId={id}
-          entitiesMode={entitiesMode}
-          entries={e}
-          columns={fields}
-          mode={mode}
-          selectEntries={mode === 'edit'}
-          selectedEntries={selectedEntries}
-          onEntrySelect={onEntrySelect}
-        />
-      </Table>
-      {/*</div>*/}
+
+      <div className="lingvo-scrolling-tab__table">
+        <Table celled padded className={className}>
+          <TableHeader
+            columns={fields}
+            sortByField={sortByField}
+            onSortModeChange={(fieldId, order) => setSort(fieldId, order)}
+            onSortModeReset={() => resetSort()}
+            selectEntries={mode === 'edit'}
+          />
+          <TableBody
+            perspectiveId={id}
+            entitiesMode={entitiesMode}
+            entries={e}
+            columns={fields}
+            mode={mode}
+            selectEntries={mode === 'edit'}
+            selectedEntries={selectedEntries}
+            onEntrySelect={onEntrySelect}
+          />
+        </Table>
+      </div>
       <Pagination current={page} total={Math.floor(entries.length / ROWS_PER_PAGE) + 1} to={mode} />
     </div>
   );

@@ -25,3 +25,49 @@
   }
 
 }
+
+.lingvo-cards-with-links {
+
+  & > .card {
+    border-radius: 8px !important;
+
+    & > .content > .header {
+      font-family: Rubik, Arial, sans-serif !important;
+      font-weight: 500 !important;
+    }
+  }
+
+  & > .card:hover {
+    background: #5D54CD !important;
+    box-shadow: 0px 0px 0px 1px #5D54CD !important;
+    transition: 0.3s;
+
+    & > .content > .header {
+      color: #fff !important;
+      transition: 0.3s;
+    }
+
+    & > .content > .description {
+      color: #fff !important;
+      transition: 0.3s;
+    }
+  }
+}
+
+.lingvo-cards-without-links {
+  & > .card {
+    background: none !important;
+    box-shadow: none !important;
+
+    & > .content {
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+      padding-bottom: 0 !important;
+    }
+
+    & > .content > .header {
+      font-family: Rubik, Arial, sans-serif !important;
+      font-weight: 500 !important;
+    }
+  }
+}
