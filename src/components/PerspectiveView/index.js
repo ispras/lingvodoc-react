@@ -405,9 +405,7 @@ const P = ({
   }
   /* eslint-enable no-shadow */
   const isAuthenticated = user && user.user.id;
-
-  const isButtonsTop = (mode === 'edit') || (mode === 'publish' && isAuthenticated) || (mode === 'contributions' && isAuthenticated);
-
+  
   return (
     <div style={{ overflowY: 'auto' }} className="lingvo-scrolling-tab">
       {mode === 'edit' && <Button positive icon="plus" content={getTranslation('Add lexical entry')} onClick={addEntry} />}
