@@ -16,10 +16,12 @@
       color: #fff;
     }
 
+    @media only screen and (max-device-width: 1255px), only screen and (max-width: 1255px) {
+      max-width: 850px;
+    }
+
     @media only screen and (max-device-width: 1000px), only screen and (max-width: 1000px) {
-      & {
-        max-width: 550px;
-      }
+      max-width: 550px;
     }
    
   }

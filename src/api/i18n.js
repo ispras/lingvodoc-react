@@ -108,6 +108,7 @@ export const stringsToTranslate = [
    "Display mode",
    "Distance map",
    "Edit",
+   "Edit interface translations",
    "Edit profile",
    "Email",
    "Email is required",
