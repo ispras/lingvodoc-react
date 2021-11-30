@@ -27,6 +27,14 @@ const updateParserResultMutation = gql`
   }
 `;
 
+const updateParserResultForElementMutation = gql`
+  mutation updateParserResultForElementMutation($id: LingvodocID!, $content: String!, $element_id: String!) {
+    update_parser_result(id: $id, content: $content, element_id: $element_id) {
+      triumph
+    }
+  }
+`;
+
 /** Modal dialog for corpus markup */
 class OdtMarkupModal extends React.Component {
 
@@ -45,7 +53,8 @@ class OdtMarkupModal extends React.Component {
       saving: false,
       confirmation: null,
       movingElem: false,
-      copiedElem: null
+      copiedElem: null,
+      updating: false
     };
 
     this.addClickHandlers = this.addClickHandlers.bind(this);
@@ -55,6 +64,7 @@ class OdtMarkupModal extends React.Component {
     this.removeFromMarkup = this.removeFromMarkup.bind(this);
     this.addCopiedMarkup = this.addCopiedMarkup.bind(this);
     this.moveMarkup = this.moveMarkup.bind(this);
+    this.parseElement = this.parseElement.bind(this);
     this.save = this.save.bind(this);
     this.onClose = this.onClose.bind(this);
   }
@@ -367,6 +377,34 @@ class OdtMarkupModal extends React.Component {
     });
   }
 
+  parseElement() {
+    const { resultId, updateParserResultForElement } = this.props;
+    const { selection, dirty } = this.state;
+    let content = "";
+    document.getElementById(selection).classList.remove('selected');
+    if (dirty) {
+      this.docToSave.getElementsByTagName('body')[0].innerHTML = document.getElementById("markup-content").innerHTML;
+      content = new XMLSerializer().serializeToString(this.docToSave);
+    }
+    this.setState({ updating: true, selection: null });
+    updateParserResultForElement({ variables: { id: resultId, content: content, element_id: selection } }).then(() => {
+      this.content = null;
+      this.initialized = false;
+      this.setState({ updating: false, dirty: false });
+      if (document.getElementById(selection)) {
+        this.setState({ selection: selection });
+        document.getElementById(selection).classList.add('selected');
+      }
+    }).catch(() => {
+      this.initialized = false;
+      this.setState({ updating: false });
+      if (document.getElementById(selection)) {
+        this.setState({ selection: selection });
+        document.getElementById(selection).classList.add('selected');
+      }
+    });
+  }
+
   onClose() {
     if (this.state.dirty) {
       this.setState({
@@ -384,10 +422,11 @@ class OdtMarkupModal extends React.Component {
   render() {
     const { data, mode } = this.props;
     const { loading, error } = this.props.data;
+    const { updating } = this.state;
     if (error) {
       return null;
     }
-    if (loading) {
+    if (loading || updating) {
       return (
         <Dimmer active style={{ minHeight: '600px', background: 'none' }}>
           <Header as="h2" icon>
@@ -438,8 +477,14 @@ class OdtMarkupModal extends React.Component {
               <Button
                 color="blue"
                 icon="minus"
-                content={`${getTranslation('Move markup elem')} '${selectedElem.innerText}'`}
+                content={`${getTranslation('Move markup element')} '${selectedElem.innerText}'`}
                 onClick={this.moveMarkup}
+              />
+              <Button
+                color="green"
+                icon="plus"
+                content={`${getTranslation('Parse element')} '${selectedElem.innerText}'`}
+                onClick={this.parseElement}
               />
             </div>
           }
@@ -494,5 +539,16 @@ OdtMarkupModal.propTypes = {
 
 export default compose(
   graphql(getParserResultContentQuery, { options: props => ({ variables: { id: props.resultId }, fetchPolicy: "network-only" }) }),
-  graphql(updateParserResultMutation, { name: "updateParserResult" })
-)(OdtMarkupModal);
+  graphql(updateParserResultMutation, { name: "updateParserResult" }),
+  graphql(updateParserResultForElementMutation, {
+    options: (props) => ({
+      refetchQueries: [
+        {
+          query: getParserResultContentQuery,
+          variables: ({ id: props.resultId })
+        }
+      ],
+      awaitRefetchQueries: true
+    }),
+    name: "updateParserResultForElement" })
+  )(OdtMarkupModal);
