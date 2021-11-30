@@ -36,8 +36,16 @@ const deleteParserResultMutation = gql`
   }
 `;
 
+const reexecuteParserResultMutation = gql`
+  mutation reexecuteParserResult($id: LingvodocID!) {
+    update_parser_result(id: $id, reexecute: true) {
+      triumph
+    }
+  }
+`;
+
 class ParserResults extends React.Component {
-  
+
   constructor(props) {
     super(props);
 
@@ -58,6 +66,11 @@ class ParserResults extends React.Component {
     });
   }
 
+  reexecute(result) {
+    const { reexecuteParserResult } = this.props;
+    reexecuteParserResult({ variables: { id: result.id } });
+  }
+
   render() {
     const { data, entityId, mode, openModal, openConfirmModal } = this.props;
     if (data.loading || data.error) {
@@ -73,6 +86,8 @@ class ParserResults extends React.Component {
             <Button.Group basic icon size="mini">
               <Button content={parsers.find(parser => parser.id.toString() === res.parser_id.toString()).name} />
               <Button icon="table" onClick={() => openModal(OdtMarkupModal, { entityId, resultId: res.id, mode })} />
+              {mode === 'edit' && <Button icon="sync alternate" onClick={() =>
+                openConfirmModal(getTranslation('Redo parser execution?'), () => this.reexecute(res))} />}
               {mode === 'edit' && <Button icon="remove" onClick={() =>
                 openConfirmModal(getTranslation('Delete parser results?'), () => this.remove(res))} />}
             </Button.Group>
@@ -91,5 +106,6 @@ ParserResults.propTypes = {
 export default compose(
   connect(null, dispatch => bindActionCreators({ openModal, openConfirmModal }, dispatch)),
   graphql(getParserResultsQuery, { options: props => ({ variables: { entity_id: props.entityId } })}),
-  graphql(deleteParserResultMutation, { name: "deleteParserResult" })
+  graphql(deleteParserResultMutation, { name: "deleteParserResult" }),
+  graphql(reexecuteParserResultMutation, { name: "reexecuteParserResult" })
 )(ParserResults);
