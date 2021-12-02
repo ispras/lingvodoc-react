@@ -777,9 +777,9 @@ body {
     &.disabled,
     &:disabled {
       background: #fff !important;
-      box-shadow: 0px 0px 0px 1px #333 inset !important;
-      color: #333 !important;
-      opacity: 0.45 !important;
+      box-shadow: 0px 0px 0px 1px #999CA0 inset !important;
+      color: #999CA0 !important;
+      opacity: 1 !important;
     }
 
   }
@@ -790,11 +790,21 @@ body {
   }
 
   &.field.disabled {
-    opacity: 0.45 !important;
+    opacity: 1 !important;
 
     & .button.disabled,
     & .button:disabled {
       opacity: 1 !important;
+    }
+  }
+
+  &_small {
+    &.button,
+    & .button {
+      font-size: 14px !important;
+      line-height: 24px !important;
+      padding: 4px 16px !important;
+      min-height: 32px !important;
     }
   }
 
@@ -818,11 +828,45 @@ body {
   &.button.disabled,
   &.button:disabled {
     background: #fff !important;
-    box-shadow: 0px 0px 0px 1px #333 inset !important;
-    color: #333 !important;
-    opacity: 0.45 !important;
+    box-shadow: 0px 0px 0px 1px #999CA0 inset !important;
+    color: #999CA0 !important;
+    opacity: 1 !important;
+  }
+
+  &_small {
+    font-size: 14px !important;
+    line-height: 24px !important;
+    padding: 4px 16px !important;
+    min-height: 32px !important;
   }
   
+}
+
+.lingvo-button-violet-dashed {
+  border-radius: 8px !important;
+  font-family: Rubik, Arial, sans-serif !important;
+  font-weight: 500 !important;
+  background: #fff !important;
+  color: #5D54CD !important;
+  min-height: 40px !important;
+  width: 100%;
+  border: 2px dashed #eeedf8 !important;
+  transition: all 0.1s !important;
+
+  &:hover {
+    background: #5D54CD !important;
+    color: #fff !important;
+    border: 2px solid #5D54CD !important;
+  }
+
+  &.button.disabled,
+  &.button:disabled {
+    background: #fff !important;
+    border: 2px dashed #eeedf8 !important;
+    color: #999CA0 !important;
+    opacity: 1 !important;
+  }
+
 }
 
 /* confirm */
