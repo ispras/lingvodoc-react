@@ -1,0 +1,328 @@
+.lingvo-translations-head {
+  text-align: center;
+  padding: 14px 20px !important;
+}
+
+/* menu */
+.lingvo-translations-menu {
+  display: inline-block;
+  background: #fff;
+  padding: 12px;
+  border-radius: 8px;
+
+  & .menu {
+    font-family: Mulish, Arial, sans-serif !important;
+    font-size: 16px !important;
+    line-height: 20px !important;
+    min-height: auto !important;
+
+    & .item {
+      border-radius: 4px !important;
+      color: #5D54CD !important;
+      padding: 8px 14px 8px 16px !important;
+      line-height: 20px !important;
+      margin: 0 10px !important;
+
+      &:hover {
+        background: #F5F5F5 !important;
+      }
+
+      &.active {
+        color: #fff !important;
+        background: #5D54CD !important;
+      }
+    }
+
+    @media only screen and (max-device-width: 810px), only screen and (max-width: 810px) {
+      & .item {
+        margin: 0 8px !important;
+      }
+    }
+
+    @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+      flex-wrap: wrap;
+
+      & .item {
+        margin: 0 6px 6px 6px !important;
+      }
+    }
+
+  }
+}
+/* /menu */
+
+.lingvo-header-translations {
+  text-align: center;
+  font-family: Rubik, Arial, sans-serif;
+  font-size: 20px;
+  line-height: 20px;
+  font-weight: 700;
+  margin-bottom: 26px;
+}
+
+.lingvo-button-atom-delete {
+  background: transparent !important;
+  padding: 11px 2px 11px 9px !important;
+  min-height: 42px !important;
+  max-height: 42px !important;
+  margin: 0 !important;
+
+  &:hover {
+    & .lingvo-icon_trash {
+      background-color: #db4e4e;
+    }
+  }
+}
+
+/* popups */
+.lingvo-popup-inverted {
+  &_gistatom {
+    min-width: 45px !important;
+    min-height: 38px !important;
+  }
+}
+/* /popups */
+
+/* translation gist */
+
+@keyframes backgroundchange {
+  from {
+    background-color: #EDECF6;
+  }
+
+  to {
+    background-color: #FAFAFA;
+  }
+}
+
+.lingvo-gist {
+  background-color: #FAFAFA;
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 20px;
+
+  &:last-child {
+    margin-bottom: 20px;
+  }
+
+  .button + & {
+    animation-duration: 3s;
+    animation-name: backgroundchange;
+    margin-top: 26px;
+  }
+
+  &__header {
+    color: #5D54CD;
+    font-size: 16px;
+    line-height: 20px;
+    font-weight: bold;
+    font-family: Mulish;
+    margin-bottom: 18px;
+  }
+
+  &__buttons {
+    text-align: right;
+    margin-top: 24px;
+    margin-bottom: 4px;
+
+    & .button {
+      margin: 0 0 0 20px !important;
+
+      &:first-child {
+        margin-left: 0 !important;
+      }
+    }
+  }
+
+  @media only screen and (max-device-width: 350px), only screen and (max-width: 350px) {
+    padding: 24px 10px;
+  }
+}
+
+/* /translation gist */
+
+/* gist element */
+.lingvo-gist-elem {
+  background: #fff !important;
+  border-radius: 10px !important;
+  padding: 11px 20px !important;
+  font-size: 16px !important;
+  line-height: 18px !important;
+
+  &.input {
+    padding: 0 !important;
+
+    & > input {
+      border-radius: 10px !important;
+      padding: 11px 20px !important;
+      font-size: 16px !important;
+      line-height: 18px !important;
+      font-family: Rubik, Arial, sans-serif !important;
+      min-height: 42px !important;
+
+      &:focus {
+        border: 1px solid #5D54CD !important;
+      }
+    }
+
+  }
+
+  &.dropdown {
+    min-height: 42px !important;
+    padding-right: 40px !important;
+    position: relative !important;
+
+    &:hover {
+      border: 1px solid #DCDCDC !important;
+    }
+
+    &:focus {
+      border: 1px solid #5D54CD !important;
+      transition: border 0.2s;
+    }
+
+    & .lingvo-icon {
+      vertical-align: middle;
+  
+      &_arrow {
+        position: absolute;
+        right: 17px;
+        top: calc(50% - 4px);
+      }
+    }
+
+    & > .text {
+      display: inline !important;
+      vertical-align: middle !important;
+    }
+
+    &.active {
+      background: #5D54CD !important;
+      color: #fff !important;
+      transition: all 0.2s;
+
+      &.selection {
+        border-radius: 10px !important;
+
+        &:hover {
+          border-color: #5D54CD !important;
+        }
+      }
+
+      & > .text {
+        color: #fff !important;
+        transition: color 0.2s;
+      }
+  
+      & .lingvo-icon {
+        &_arrow {
+          transition: background-color 0.2s;
+          background-color: #fff;
+          transform: rotate(180deg);
+        }
+      }
+    }
+
+    &.active .menu {
+      box-shadow: 0px 8px 24px -6px rgba(0, 0, 0, 0.16), 0px 0px 1px rgba(0, 0, 0, 0.4) !important;
+      border-radius: 12px !important;
+      border: none !important;
+      padding: 4px !important;
+      margin: 4px 0 0 0 !important;
+
+      & > .item {
+        border-radius: 8px !important;
+        border-top: none !important;
+        font-size: 14px !important;
+        line-height: 20px !important;
+        padding: 9px 8px !important;
+
+        &.active {
+          font-weight: 500 !important;
+        }
+
+        &.selected {
+          background: transparent !important;
+        }
+
+        & + .item {
+          margin-top: 3px !important;
+        }
+
+        &:hover {
+          background: #EDECF6 !important;
+          color: #372F9D !important;
+        }
+
+      }
+    }
+
+    &.upward > .menu {
+      margin: 0 0 4px 0 !important;
+    }
+
+  }
+
+  &_language.dropdown {
+    min-width: 202px !important;
+  }
+
+}
+/* /gist element */
+
+/* atom grid */
+.lingvo-atom-grid {
+  display: flex;
+  flex-wrap: nowrap;
+  margin-top: 14px;
+
+  &:first-child {
+    margin-top: 0;
+  }
+  
+  &__text {
+    flex: 1 1 auto;
+  }
+
+  &__lang {
+    flex: 0 1 auto;
+    padding-left: 20px;
+
+    &:first-child {
+      padding-left: 0;
+    }
+  }
+
+  &__delete {
+    flex: 0 1 auto;
+    padding-left: 10px;
+  }
+
+  @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+    & {
+      flex-wrap: wrap;
+
+      &__text {
+        width: 100%;
+      }
+
+      &__lang {
+        padding-top: 10px;
+        padding-left: 0;
+      }
+
+      &__delete {
+        padding-top: 10px;
+      }
+      
+    }
+  }
+
+  @media only screen and (max-device-width: 350px), only screen and (max-width: 350px) {
+    &__delete {
+      padding-left: 0;
+    }
+  }
+
+}
+/* /atom grid */
