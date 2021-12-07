@@ -1,3 +1,56 @@
+.lingvo-translations-head {
+  text-align: center;
+  padding: 14px 20px !important;
+}
+
+/* menu */
+.lingvo-translations-menu {
+  display: inline-block;
+  background: #fff;
+  padding: 12px;
+  border-radius: 8px;
+
+  & .menu {
+    font-family: Mulish, Arial, sans-serif !important;
+    font-size: 16px !important;
+    line-height: 20px !important;
+    min-height: auto !important;
+
+    & .item {
+      border-radius: 4px !important;
+      color: #5D54CD !important;
+      padding: 8px 14px 8px 16px !important;
+      line-height: 20px !important;
+      margin: 0 10px !important;
+
+      &:hover {
+        background: #F5F5F5 !important;
+      }
+
+      &.active {
+        color: #fff !important;
+        background: #5D54CD !important;
+      }
+    }
+
+    @media only screen and (max-device-width: 810px), only screen and (max-width: 810px) {
+      & .item {
+        margin: 0 8px !important;
+      }
+    }
+
+    @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+      flex-wrap: wrap;
+
+      & .item {
+        margin: 0 6px 6px 6px !important;
+      }
+    }
+
+  }
+}
+/* /menu */
+
 .lingvo-header-translations {
   text-align: center;
   font-family: Rubik, Arial, sans-serif;
@@ -7,6 +60,28 @@
   margin-bottom: 26px;
 }
 
+.lingvo-button-atom-delete {
+  background: transparent !important;
+  padding: 11px 2px 11px 9px !important;
+  min-height: 42px !important;
+  max-height: 42px !important;
+  margin: 0 !important;
+
+  &:hover {
+    & .lingvo-icon_trash {
+      background-color: #db4e4e;
+    }
+  }
+}
+
+/* popups */
+.lingvo-popup-inverted {
+  &_gistatom {
+    min-width: 45px !important;
+    min-height: 38px !important;
+  }
+}
+/* /popups */
 
 /* translation gist */
 
@@ -25,6 +100,10 @@
   border-radius: 8px;
   padding: 20px;
   margin-top: 20px;
+
+  &:last-child {
+    margin-bottom: 20px;
+  }
 
   .button + & {
     animation-duration: 3s;
@@ -55,7 +134,7 @@
     }
   }
 
-  @media only screen and (max-device-width: 500px), only screen and (max-width: 500px) {
+  @media only screen and (max-device-width: 350px), only screen and (max-width: 350px) {
     padding: 24px 10px;
   }
 }
@@ -191,8 +270,8 @@
 }
 /* /gist element */
 
-
-.lingvo-gist-grid {
+/* atom grid */
+.lingvo-atom-grid {
   display: flex;
   flex-wrap: nowrap;
   margin-top: 14px;
@@ -201,43 +280,49 @@
     margin-top: 0;
   }
   
-  &__big {
+  &__text {
     flex: 1 1 auto;
   }
 
-  &__small {
+  &__lang {
     flex: 0 1 auto;
-    padding-left: 10px;
+    padding-left: 20px;
 
     &:first-child {
       padding-left: 0;
     }
   }
 
-  /*&__delete {
-    
-  }*/
+  &__delete {
+    flex: 0 1 auto;
+    padding-left: 10px;
+  }
 
   @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
     & {
       flex-wrap: wrap;
 
-      &__big {
+      &__text {
         width: 100%;
       }
 
-      &__small {
+      &__lang {
         padding-top: 10px;
         padding-left: 0;
       }
 
       &__delete {
         padding-top: 10px;
-        padding-left: 19px;
       }
       
     }
   }
 
-}
+  @media only screen and (max-device-width: 350px), only screen and (max-width: 350px) {
+    &__delete {
+      padding-left: 0;
+    }
+  }
 
+}
+/* /atom grid */
