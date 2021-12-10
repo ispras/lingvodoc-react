@@ -162,6 +162,448 @@ const SUGGESTIONS_PER_PAGE = 50;
 function equalIds(id_a, id_b) {
   return id_a[0] == id_b[0] && id_a[1] == id_b[1]; }
 
+class SLPerspectiveSelection extends React.Component
+{
+  constructor(props)
+  {
+    super(props);
+
+    this.state =
+    {
+      perspectiveSelectionList: props.perspectiveSelectionList,
+      transcriptionFieldIdStrList: props.transcriptionFieldIdStrList,
+      translationFieldIdStrList: props.translationFieldIdStrList,
+    };
+  }
+
+  render()
+  {
+    const {
+      treePathList,
+      perspective,
+      textFieldsOptions,
+      index,
+      perspectiveSelectionList,
+      transcriptionFieldIdStrList,
+      translationFieldIdStrList } =
+
+      this.props;
+
+    return (
+      <List key={'perspective' + index}>
+        <List.Item key='check'>
+        <Breadcrumb
+          style={perspectiveSelectionList[index] ? {} : {opacity: 0.5}}
+          icon="right angle"
+          sections={treePathList.map(e => ({
+            key: e.id,
+            content: e.hasOwnProperty('status') ?
+              e.translation + ' (' + e.status + ')' :
+              e.translation,
+            link: false }))}
+        />
+        <Checkbox
+          style={{marginLeft: '0.5em', verticalAlign: 'middle'}}
+          checked={perspectiveSelectionList[index]}
+          onChange={(e, { checked }) => {
+            perspectiveSelectionList[index] = checked;
+            this.setState({ perspectiveSelectionList });}}
+        />
+        </List.Item>
+        {perspectiveSelectionList[index] && (
+          <List.Item key='selection'>
+          <List>
+          <List.Item key='selection_xcript'>
+            <span style={{marginLeft: '1em', marginRight: '0.5em'}}>
+              Source transcription field:
+            </span>
+            <Select
+              disabled={!perspectiveSelectionList[index]}
+              defaultValue={transcriptionFieldIdStrList[index]}
+              placeholder="Source transcription field selection"
+              options={textFieldsOptions}
+              onChange={(e, { value }) => {
+                transcriptionFieldIdStrList[index] = value;
+                this.setState({ transcriptionFieldIdStrList });}}
+            />
+          </List.Item>
+          <List.Item key='selection_xlat'>
+            <span style={{marginLeft: '1em', marginRight: '0.5em'}}>
+              Source translation field:
+            </span>
+            <Select
+              disabled={!perspectiveSelectionList[index]}
+              defaultValue={translationFieldIdStrList[index]}
+              placeholder="Source translation field selection"
+              options={textFieldsOptions}
+              onChange={(e, { value }) => {
+                translationFieldIdStrList[index] = value;
+                this.setState({ translationFieldIdStrList });}}
+            />
+          </List.Item>
+          </List>
+          </List.Item>
+        )}
+      </List>
+    );
+  }
+}
+
+class MLPerspectiveSelection extends React.Component
+{
+  constructor(props)
+  {
+    super(props);
+
+    this.state =
+    {
+      perspectiveSelectionMap: props.perspectiveSelectionMap,
+      transcriptionFieldIdStrMap: props.transcriptionFieldIdStrMap,
+      translationFieldIdStrMap: props.translationFieldIdStrMap,
+    };
+  }
+
+  render()
+  {
+    const { treePathList, perspective, textFieldsOptions, p_key } = this.props;
+
+    return (
+      <List key={'perspective' + p_key}>
+        <List.Item>
+        <Breadcrumb
+          style={this.state.perspectiveSelectionMap[p_key] ? {} : {opacity: 0.5}}
+          icon="right angle"
+          sections={treePathList.map(e => ({
+            key: e.id,
+            content: e.hasOwnProperty('status') ?
+              e.translation + ' (' + e.status + ')' :
+              e.translation,
+            link: false }))}
+        />
+        <Checkbox
+          style={{marginLeft: '0.5em', verticalAlign: 'middle'}}
+          checked={this.state.perspectiveSelectionMap[p_key]}
+          onChange={(e, { checked }) => {
+            const perspectiveSelectionMap = this.state.perspectiveSelectionMap;
+            perspectiveSelectionMap[p_key] = checked;
+            this.setState({ perspectiveSelectionMap });}}
+        />
+        </List.Item>
+        {this.state.perspectiveSelectionMap[p_key] && (
+          <List.Item>
+          <List>
+          <List.Item>
+            <span style={{marginLeft: '1em', marginRight: '0.5em'}}>
+              Source transcription field:
+            </span>
+            <Select
+              disabled={!this.state.perspectiveSelectionMap[p_key]}
+              defaultValue={this.state.transcriptionFieldIdStrMap[p_key]}
+              placeholder="Source transcription field selection"
+              options={textFieldsOptions}
+              onChange={(e, { value }) => {
+                const transcriptionFieldIdStrMap = this.state.transcriptionFieldIdStrMap;
+                transcriptionFieldIdStrMap[p_key] = value;
+                this.setState({ transcriptionFieldIdStrMap });}}
+            />
+          </List.Item>
+          <List.Item>
+            <span style={{marginLeft: '1em', marginRight: '0.5em'}}>
+              Source translation field:
+            </span>
+            <Select
+              disabled={!this.state.perspectiveSelectionMap[p_key]}
+              defaultValue={this.state.translationFieldIdStrMap[p_key]}
+              placeholder="Source translation field selection"
+              options={textFieldsOptions}
+              onChange={(e, { value }) => {
+                const translationFieldIdStrMap = this.state.translationFieldIdStrMap;
+                translationFieldIdStrMap[p_key] = value;
+                this.setState({ translationFieldIdStrMap });}}
+            />
+          </List.Item>
+          </List>
+          </List.Item>
+        )}
+      </List>
+    );
+  }
+}
+
+class SuggestionSelection extends React.Component
+{
+  constructor(props)
+  {
+    super(props);
+
+    this.state =
+    {
+      perspective_name_list: props.perspective_name_list,
+      sg_select_list: props.sg_select_list,
+      sg_state_list: props.sg_state_list,
+    };
+  }
+
+  render()
+  {
+    const {
+      perspective_index,
+      word,
+      word_entry_id,
+      word_group,
+      single_list,
+      group_list,
+      index,
+      sg_select_list,
+      sg_state_list,
+      sg_connect } =
+
+      this.props;
+
+    const connected_flag =
+      sg_state_list[index] == 'connected';
+
+    const error_flag =
+      sg_state_list[index] == 'error';
+
+    const invalidated_flag =
+      sg_state_list[index] == 'invalidated';
+
+    const disabled_flag =
+      connected_flag || error_flag || invalidated_flag;
+
+    const opacity_style =
+      disabled_flag ? {opacity: 0.5} : {};
+
+    return (
+      <Segment
+        key={'suggestion' + index}>
+
+        <List>
+
+          <List.Item>
+            <span style={opacity_style}>
+              {getTranslation('Source perspective word:')}
+            </span>
+
+            {/* List and List.Item for uniform appearance. */}
+
+            <List>
+              <List.Item>
+                <Checkbox
+
+                  label={
+
+                    word_group
+                    
+                    ?
+
+                    (<label>
+                      <div>
+                        {word} ({this.state.perspective_name_list[perspective_index]})
+                      </div>
+
+                      <div style={{marginTop: '0.5em', marginBottom: '0.5em'}}>
+                        {getTranslation('Belongs to a group:')}
+                      </div>
+
+                      <div>
+
+                        {map(word_group[0],
+
+                          ([perspective_index, [transcription_str, translation_str]],
+                            word_index) => (
+
+                          <div
+                            key={'sg' + index + 'gr_self_word' + word_index}>
+                            {`${transcription_str} ${translation_str}
+                              (${this.state.perspective_name_list[perspective_index]})`}
+                          </div>
+
+                        ))}
+                      </div>
+                      </label>)
+                    
+                    :
+
+                    (`${word} (${this.state.perspective_name_list[perspective_index]})`)}
+
+                  checked={
+                    sg_select_list[index].hasOwnProperty(id2str(word_entry_id))}
+
+                  disabled={disabled_flag}
+
+                  onChange={(e, { checked }) => {
+
+                    if (checked)
+                      sg_select_list[index][id2str(word_entry_id)] = null;
+                    else
+                      delete sg_select_list[index][id2str(word_entry_id)];
+
+                    this.setState({ sg_select_list });}}
+                />
+              </List.Item>
+            </List>
+          </List.Item>
+
+        {single_list.length > 0 && (
+          <List.Item>
+            <span style={opacity_style}>
+              {getTranslation('Suggested cognates:')}
+            </span>
+
+            <List>
+              {map(
+                single_list,
+                
+                ([perspective_index, [transcription_str, translation_str], entry_id],
+                  single_index) => (
+
+                <List.Item key={'sg' + index + 'single' + single_index}>
+                  <Checkbox
+
+                    label={
+                      `${transcription_str} ${translation_str}
+                        (${this.state.perspective_name_list[perspective_index]})`}
+
+                    checked={
+                      sg_select_list[index].hasOwnProperty(id2str(entry_id))}
+
+                    disabled={disabled_flag}
+
+                    onChange={(e, { checked }) => {
+
+                      if (checked)
+                        sg_select_list[index][id2str(entry_id)] = null;
+                      else
+                        delete sg_select_list[index][id2str(entry_id)];
+
+                      this.setState({ sg_select_list });}}
+                  />
+                </List.Item>
+
+              ))}
+            </List>
+          </List.Item>
+        )}
+
+        {group_list.length > 0 && (
+          <List.Item>
+            <span style={opacity_style}>
+              {getTranslation('Suggested cognate groups:')}
+            </span>
+
+            <List>
+              {map(
+                group_list,
+                
+                ([word_list, entry_id],
+                  group_index) => (
+
+                <List.Item
+                  key={'sg' + index + 'group' + group_index}>
+
+                  <Checkbox
+
+                    checked={
+                      sg_select_list[index].hasOwnProperty(id2str(entry_id))}
+
+                    disabled={disabled_flag}
+
+                    onChange={(e, { checked }) => {
+
+                      if (checked)
+                        sg_select_list[index][id2str(entry_id)] = null;
+                      else
+                        delete sg_select_list[index][id2str(entry_id)];
+
+                      this.setState({ sg_select_list });}}
+
+                    label={
+                      <label>
+                      <div>
+
+                        {map(word_list,
+
+                          ([perspective_index, [transcription_str, translation_str]],
+                            word_index) => (
+
+                          <div
+                            key={'sg' + index + 'gr' + group_index + 'word' + word_index}>
+                            {`${transcription_str} ${translation_str}
+                              (${this.state.perspective_name_list[perspective_index]})`}
+                          </div>
+
+                        ))}
+                      </div>
+                      </label>}
+                  />
+
+                </List.Item>
+
+              ))}
+            </List>
+          </List.Item>
+        )}
+
+        </List>
+
+        {
+          connected_flag ?
+
+          <Message positive>
+            <Message.Header>
+              {getTranslation('Connected')}
+            </Message.Header>
+          </Message> :
+
+          error_flag ?
+
+          <Message negative>
+            <Message.Header>
+              {getTranslation('Query error')}
+            </Message.Header>
+            <p>
+              {getTranslation('Failed to connect selected lexical entries, please contact developers.')}
+            </p>
+          </Message> :
+
+          invalidated_flag ?
+
+          <Message>
+            <Message.Header>
+              {getTranslation('Invalidated')}
+            </Message.Header>
+            <p>
+              {getTranslation(
+                'Another suggestion was accepted, source perspective word and/or one of suggested ' +
+                'cognate words or cognate groups have been connected.')}
+            </p>
+          </Message> :
+
+          <Button
+            basic
+            positive
+
+            content={
+              sg_state_list[index] == 'connecting' ?
+              getTranslation('Connecting...') :
+              getTranslation('Connect')}
+
+            disabled={
+              Object.keys(sg_select_list[index]).length <= 1 ||
+              sg_state_list[index] == 'connecting'}
+
+            size='mini'
+            onClick={() => sg_connect(index)}
+          />
+        }
+
+      </Segment>
+    );
+  }
+}
+
 class CognateAnalysisModal extends React.Component
 {
   constructor(props)
@@ -452,7 +894,6 @@ class CognateAnalysisModal extends React.Component
     base_language.available_list = this.available_list;
     base_language.perspective_list = this.perspective_list;
 
-
     /* Preparing info of perspective and transcription/translation field selections. */
 
     for (const [index, {perspective}] of this.perspective_list.entries())
@@ -581,6 +1022,7 @@ class CognateAnalysisModal extends React.Component
           value: id2str(f.id),
           text: f.translation,
         }));
+
       this.perspective_list.push({
         treePathList,
         perspective,
@@ -919,7 +1361,6 @@ class CognateAnalysisModal extends React.Component
 
   handleCreate()
   {
- 
     const {
       perspectiveId,
       computeCognateAnalysis } = this.props;
@@ -1236,67 +1677,26 @@ class CognateAnalysisModal extends React.Component
         {this.grouping_field_render()}
 
         <div style={{marginTop: '1.5em'}}>
+
         {this.perspective_list.length > 1 && map(this.perspective_list,
           ({treePathList, perspective, textFieldsOptions}, index) => (
-            <List key={'perspective' + index}>
-              <List.Item>
-              <Breadcrumb
-                style={this.state.perspectiveSelectionList[index] ? {} : {opacity: 0.5}}
-                icon="right angle"
-                sections={treePathList.map(e => ({
-                  key: e.id,
-                  content: e.hasOwnProperty('status') ?
-                    e.translation + ' (' + e.status + ')' :
-                    e.translation,
-                  link: false }))}
-              />
-              <Checkbox
-                style={{marginLeft: '0.5em', verticalAlign: 'middle'}}
-                checked={this.state.perspectiveSelectionList[index]}
-                onChange={(e, { checked }) => {
-                  const perspectiveSelectionList = this.state.perspectiveSelectionList;
-                  perspectiveSelectionList[index] = checked;
-                  this.setState({ perspectiveSelectionList });}}
-              />
-              </List.Item>
-              {this.state.perspectiveSelectionList[index] && (
-                <List.Item>
-                <List>
-                <List.Item>
-                  <span style={{marginLeft: '1em', marginRight: '0.5em'}}>
-                    Source transcription field:
-                  </span>
-                  <Select
-                    disabled={!this.state.perspectiveSelectionList[index]}
-                    defaultValue={this.state.transcriptionFieldIdStrList[index]}
-                    placeholder="Source transcription field selection"
-                    options={textFieldsOptions}
-                    onChange={(e, { value }) => {
-                      const transcriptionFieldIdStrList = this.state.transcriptionFieldIdStrList;
-                      transcriptionFieldIdStrList[index] = value;
-                      this.setState({ transcriptionFieldIdStrList });}}
-                  />
-                </List.Item>
-                <List.Item>
-                  <span style={{marginLeft: '1em', marginRight: '0.5em'}}>
-                    Source translation field:
-                  </span>
-                  <Select
-                    disabled={!this.state.perspectiveSelectionList[index]}
-                    defaultValue={this.state.translationFieldIdStrList[index]}
-                    placeholder="Source translation field selection"
-                    options={textFieldsOptions}
-                    onChange={(e, { value }) => {
-                      const translationFieldIdStrList = this.state.translationFieldIdStrList;
-                      translationFieldIdStrList[index] = value;
-                      this.setState({ translationFieldIdStrList });}}
-                  />
-                </List.Item>
-                </List>
-                </List.Item>
-              )}
-            </List>
+
+            // Not so good hack in the name of performance,
+            // we just give our state to be modified in the child compoment.
+
+            <SLPerspectiveSelection
+              key={'perspective' + index}
+              treePathList={treePathList}
+              perspective={perspective}
+              textFieldsOptions={textFieldsOptions}
+              index={index}
+              perspectiveSelectionList={this.state.perspectiveSelectionList}
+              transcriptionFieldIdStrList={this.state.transcriptionFieldIdStrList}
+              translationFieldIdStrList={this.state.translationFieldIdStrList}
+            />
+
         ))}
+
         {this.perspective_list.length <= 1 && (
           <span>
             {getTranslation(
@@ -1304,6 +1704,7 @@ class CognateAnalysisModal extends React.Component
               'cognate grouping field present, cognate analysis is impossible.')}
           </span>
         )}
+
         </div>
 
         {!this.state.library_present && (
@@ -1378,67 +1779,23 @@ class CognateAnalysisModal extends React.Component
                   ({treePathList, perspective, textFieldsOptions}, p_index) => {
 
                     const p_key = id2str(perspective.id);
-                    
+
+                    // Not so good hack in the name of performance,
+                    // we just give our state to be modified in the child compoment.
+
                     return (
-                      <List key={'perspective' + p_key}>
-                        <List.Item>
-                        <Breadcrumb
-                          style={this.state.perspectiveSelectionMap[p_key] ? {} : {opacity: 0.5}}
-                          icon="right angle"
-                          sections={treePathList.map(e => ({
-                            key: e.id,
-                            content: e.hasOwnProperty('status') ?
-                              e.translation + ' (' + e.status + ')' :
-                              e.translation,
-                            link: false }))}
-                        />
-                        <Checkbox
-                          style={{marginLeft: '0.5em', verticalAlign: 'middle'}}
-                          checked={this.state.perspectiveSelectionMap[p_key]}
-                          onChange={(e, { checked }) => {
-                            const perspectiveSelectionMap = this.state.perspectiveSelectionMap;
-                            perspectiveSelectionMap[p_key] = checked;
-                            this.setState({ perspectiveSelectionMap });}}
-                        />
-                        </List.Item>
-                        {this.state.perspectiveSelectionMap[p_key] && (
-                          <List.Item>
-                          <List>
-                          <List.Item>
-                            <span style={{marginLeft: '1em', marginRight: '0.5em'}}>
-                              Source transcription field:
-                            </span>
-                            <Select
-                              disabled={!this.state.perspectiveSelectionMap[p_key]}
-                              defaultValue={this.state.transcriptionFieldIdStrMap[p_key]}
-                              placeholder="Source transcription field selection"
-                              options={textFieldsOptions}
-                              onChange={(e, { value }) => {
-                                const transcriptionFieldIdStrMap = this.state.transcriptionFieldIdStrMap;
-                                transcriptionFieldIdStrMap[p_key] = value;
-                                this.setState({ transcriptionFieldIdStrMap });}}
-                            />
-                          </List.Item>
-                          <List.Item>
-                            <span style={{marginLeft: '1em', marginRight: '0.5em'}}>
-                              Source translation field:
-                            </span>
-                            <Select
-                              disabled={!this.state.perspectiveSelectionMap[p_key]}
-                              defaultValue={this.state.translationFieldIdStrMap[p_key]}
-                              placeholder="Source translation field selection"
-                              options={textFieldsOptions}
-                              onChange={(e, { value }) => {
-                                const translationFieldIdStrMap = this.state.translationFieldIdStrMap;
-                                translationFieldIdStrMap[p_key] = value;
-                                this.setState({ translationFieldIdStrMap });}}
-                            />
-                          </List.Item>
-                          </List>
-                          </List.Item>
-                        )}
-                      </List>
-                    )
+                      <MLPerspectiveSelection
+                        key={'perspective' + p_key}
+                        treePathList={treePathList}
+                        perspective={perspective}
+                        textFieldsOptions={textFieldsOptions}
+                        p_index={p_index}
+                        p_key={p_key}
+                        perspectiveSelectionMap={this.state.perspectiveSelectionMap}
+                        transcriptionFieldIdStrMap={this.state.transcriptionFieldIdStrMap}
+                        translationFieldIdStrMap={this.state.translationFieldIdStrMap}
+                      />
+                    );
                   })
               }
             </List.Item>
@@ -1686,252 +2043,27 @@ class CognateAnalysisModal extends React.Component
           single_list,
           group_list],
           
-          in_page_index) => {
-
-        const index = start_index + in_page_index;
-
-        const connected_flag =
-          sg_state_list[index] == 'connected';
-
-        const error_flag =
-          sg_state_list[index] == 'error';
-
-        const invalidated_flag =
-          sg_state_list[index] == 'invalidated';
-
-        const disabled_flag =
-          connected_flag || error_flag || invalidated_flag;
-
-        const opacity_style =
-          disabled_flag ? {opacity: 0.5} : {};
-
-        return (
-          <Segment
-            key={'suggestion' + index}>
-
-            <List>
-
-              <List.Item>
-                <span style={opacity_style}>
-                  {getTranslation('Source perspective word:')}
-                </span>
-
-                {/* List and List.Item for uniform appearance. */}
-
-                <List>
-                  <List.Item>
-                    <Checkbox
-
-                      label={
-
-                        word_group
-                        
-                        ?
-
-                        (<label>
-                          <div>
-                            {word} ({this.state.perspective_name_list[perspective_index]})
-                          </div>
-
-                          <div style={{marginTop: '0.5em', marginBottom: '0.5em'}}>
-                            {getTranslation('Belongs to a group:')}
-                          </div>
-
-                          <div>
-
-                            {map(word_group[0],
-
-                              ([perspective_index, [transcription_str, translation_str]],
-                                word_index) => (
-
-                              <div
-                                key={'sg' + index + 'gr_self_word' + word_index}>
-                                {`${transcription_str} ${translation_str}
-                                  (${this.state.perspective_name_list[perspective_index]})`}
-                              </div>
-
-                            ))}
-                          </div>
-                          </label>)
-                        
-                        :
-
-                        (`${word} (${this.state.perspective_name_list[perspective_index]})`)}
-
-                      checked={
-                        sg_select_list[index].hasOwnProperty(id2str(word_entry_id))}
-
-                      disabled={disabled_flag}
-
-                      onChange={(e, { checked }) => {
-
-                        if (checked)
-                          sg_select_list[index][id2str(word_entry_id)] = null;
-                        else
-                          delete sg_select_list[index][id2str(word_entry_id)];
-
-                        this.setState({ sg_select_list });}}
-                    />
-                  </List.Item>
-                </List>
-              </List.Item>
-
-            {single_list.length > 0 && (
-              <List.Item>
-                <span style={opacity_style}>
-                  {getTranslation('Suggested cognates:')}
-                </span>
-
-                <List>
-                  {map(
-                    single_list,
-                    
-                    ([perspective_index, [transcription_str, translation_str], entry_id],
-                      single_index) => (
-
-                    <List.Item key={'sg' + index + 'single' + single_index}>
-                      <Checkbox
-
-                        label={
-                          `${transcription_str} ${translation_str}
-                            (${this.state.perspective_name_list[perspective_index]})`}
-
-                        checked={
-                          sg_select_list[index].hasOwnProperty(id2str(entry_id))}
-
-                        disabled={disabled_flag}
-
-                        onChange={(e, { checked }) => {
-
-                          if (checked)
-                            sg_select_list[index][id2str(entry_id)] = null;
-                          else
-                            delete sg_select_list[index][id2str(entry_id)];
-
-                          this.setState({ sg_select_list });}}
-                      />
-                    </List.Item>
-
-                  ))}
-                </List>
-              </List.Item>
-            )}
-
-            {group_list.length > 0 && (
-              <List.Item>
-                <span style={opacity_style}>
-                  {getTranslation('Suggested cognate groups:')}
-                </span>
-
-                <List>
-                  {map(
-                    group_list,
-                    
-                    ([word_list, entry_id],
-                      group_index) => (
-
-                    <List.Item
-                      key={'sg' + index + 'group' + group_index}>
-
-                      <Checkbox
-
-                        checked={
-                          sg_select_list[index].hasOwnProperty(id2str(entry_id))}
-
-                        disabled={disabled_flag}
-
-                        onChange={(e, { checked }) => {
-
-                          if (checked)
-                            sg_select_list[index][id2str(entry_id)] = null;
-                          else
-                            delete sg_select_list[index][id2str(entry_id)];
-
-                          this.setState({ sg_select_list });}}
-
-                        label={
-                          <label>
-                          <div>
-
-                            {map(word_list,
-
-                              ([perspective_index, [transcription_str, translation_str]],
-                                word_index) => (
-
-                              <div
-                                key={'sg' + index + 'gr' + group_index + 'word' + word_index}>
-                                {`${transcription_str} ${translation_str}
-                                  (${this.state.perspective_name_list[perspective_index]})`}
-                              </div>
-
-                            ))}
-                          </div>
-                          </label>}
-                      />
-
-                    </List.Item>
-
-                  ))}
-                </List>
-              </List.Item>
-            )}
-
-            </List>
-
-            {
-              connected_flag ?
-
-              <Message positive>
-                <Message.Header>
-                  {getTranslation('Connected')}
-                </Message.Header>
-              </Message> :
-
-              error_flag ?
-
-              <Message negative>
-                <Message.Header>
-                  {getTranslation('Query error')}
-                </Message.Header>
-                <p>
-                  {getTranslation('Failed to connect selected lexical entries, please contact developers.')}
-                </p>
-              </Message> :
-
-              invalidated_flag ?
-
-              <Message>
-                <Message.Header>
-                  {getTranslation('Invalidated')}
-                </Message.Header>
-                <p>
-                  {getTranslation(
-                    'Another suggestion was accepted, source perspective word and/or one of suggested ' +
-                    'cognate words or cognate groups have been connected.')}
-                </p>
-              </Message> :
-
-              <Button
-                basic
-                positive
-
-                content={
-                  sg_state_list[index] == 'connecting' ?
-                  getTranslation('Connecting...') :
-                  getTranslation('Connect')}
-
-                disabled={
-                  Object.keys(sg_select_list[index]).length <= 1 ||
-                  sg_state_list[index] == 'connecting'}
-
-                size='mini'
-                onClick={() => this.sg_connect(index)}
-              />
-            }
-
-          </Segment>
-        );}
-      )}
+          in_page_index) => (
+
+          // Not so good hack in the name of performance,
+          // we just give our state to be modified in the child compoment.
+
+          <SuggestionSelection
+            key={'suggestion' + (start_index + in_page_index)}
+            perspective_index={perspective_index}
+            word={word}
+            word_entry_id={word_entry_id}
+            word_group={word_group}
+            single_list={single_list}
+            group_list={group_list}
+            index={start_index + in_page_index}
+            perspective_name_list={this.state.perspective_name_list}
+            sg_select_list={this.state.sg_select_list}
+            sg_state_list={this.state.sg_state_list}
+            sg_connect={this.sg_connect}
+          />
+
+        ))}
 
       <Pagination
         activePage={sg_current_page}
@@ -1995,7 +2127,7 @@ class CognateAnalysisModal extends React.Component
       </div>
 
       </div>
-    )
+    );
   }
 
   render()
