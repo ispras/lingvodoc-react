@@ -33,7 +33,8 @@ import SupportRoute from 'pages/SupportRoute';
 import WithoutGrants from 'pages/WithoutGrants';
 import CorporaAll from 'pages/CorporaAll';
 import AuthorsRoute from 'pages/AuthorsRoute';
-import VersionRoute from 'pages/VersionRoute'
+import VersionRoute from 'pages/VersionRoute';
+import Docx2Eaf from 'pages/Docx2Eaf'
 
 import config from 'config';
 
@@ -73,6 +74,7 @@ const Routes = () => (
     <Route path="/corpora_all" component={CorporaAll} />
     <Route path="/authors_route" component={AuthorsRoute} />
     <Route path="/version_route" component={VersionRoute} />
+    <Route path="/docx2eaf" component={Docx2Eaf} />
     <Route component={NotFound} />
   </Switch>
 );

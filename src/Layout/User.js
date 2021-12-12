@@ -19,6 +19,12 @@ import imageUser from '../images/user.svg';
 const Anonymous = ({
   modal, launchSignInForm, launchSignUpForm, closeForm, loading
 }) =>
+loading
+?
+<Menu.Item className="top_menu">
+  <span><Icon loading name="spinner"/></span>
+</Menu.Item>
+:
 <React.Fragment>
   <Menu.Item className="top_menu top_menu__item_signin">
     <div className="sign_in" onClick={launchSignInForm}>{getTranslation('Sign In')}</div>
