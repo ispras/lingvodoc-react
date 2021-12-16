@@ -181,10 +181,12 @@ class SLPerspectiveSelection extends React.Component
   onChangeSelect(checked)
   {
     const {
+      perspective_list,
       index,
       perspectiveSelectionList,
       perspectiveSelectionCountMap,
-      onChangeSelectAll } =
+      onChangeSelectAll,
+      onModalStateChange } =
 
       this.props;
 
@@ -201,6 +203,23 @@ class SLPerspectiveSelection extends React.Component
     else if (!current && checked)
       p_select_count_new++;
 
+    perspectiveSelectionList[index] = checked;
+    perspectiveSelectionCountMap[''] = p_select_count_new;
+
+    const no_compute_before =
+      perspective_list.length <= 1 ||
+      p_select_count <= 0;
+
+    const no_compute_after =
+      perspective_list.length <= 1 ||
+      p_select_count_new <= 0;
+
+    if (no_compute_before != no_compute_after)
+    {
+      onModalStateChange();
+      return;
+    }
+
     const all_before =
       p_select_count <= 0 ? 0 :
       p_select_count >= p_max_count ? 1 :
@@ -211,13 +230,13 @@ class SLPerspectiveSelection extends React.Component
       p_select_count_new >= p_max_count ? 1 :
       2;
 
-    perspectiveSelectionList[index] = checked;
-    perspectiveSelectionCountMap[''] = p_select_count_new;
-
     if (all_before != all_after)
+    {
       onChangeSelectAll();
+      return;
+    }
 
-    else if (current != checked)
+    if (current != checked)
       this.setState({ perspectiveSelectionList });
   }
 
@@ -258,12 +277,12 @@ class SLPerspectiveSelection extends React.Component
           <List>
           <List.Item key='selection_xcript'>
             <span style={{marginLeft: '1em', marginRight: '0.5em'}}>
-              Source transcription field:
+              {getTranslation('Source transcription field:')}
             </span>
             <Select
               disabled={!perspectiveSelectionList[index]}
               defaultValue={transcriptionFieldIdStrList[index]}
-              placeholder="Source transcription field selection"
+              placeholder={getTranslation('Source transcription field selection')}
               options={textFieldsOptions}
               onChange={(e, { value }) => {
                 transcriptionFieldIdStrList[index] = value;
@@ -272,12 +291,12 @@ class SLPerspectiveSelection extends React.Component
           </List.Item>
           <List.Item key='selection_xlat'>
             <span style={{marginLeft: '1em', marginRight: '0.5em'}}>
-              Source translation field:
+              {getTranslation('Source translation field:')}
             </span>
             <Select
               disabled={!perspectiveSelectionList[index]}
               defaultValue={translationFieldIdStrList[index]}
-              placeholder="Source translation field selection"
+              placeholder={getTranslation('Source translation field selection')}
               options={textFieldsOptions}
               onChange={(e, { value }) => {
                 translationFieldIdStrList[index] = value;
@@ -311,7 +330,8 @@ class SLSelection extends React.Component
       perspectiveSelectionList,
       transcriptionFieldIdStrList,
       translationFieldIdStrList,
-      perspectiveSelectionCountMap } =
+      perspectiveSelectionCountMap,
+      onModalStateChange } =
 
       this.props;
 
@@ -332,15 +352,33 @@ class SLSelection extends React.Component
             disabled={p_max_count <= 0}
             onChange={(e, { checked }) =>
             {
+              let p_select_count_new = p_select_count;
+
               if (p_select_count < p_max_count)
               {
                 perspectiveSelectionList.fill(true);
-                perspectiveSelectionCountMap[''] = p_max_count;
+                p_select_count_new = p_max_count;
               }
               else
               {
                 perspectiveSelectionList.fill(false);
-                perspectiveSelectionCountMap[''] = 0;
+                p_select_count_new = 0;
+              }
+
+              perspectiveSelectionCountMap[''] = p_select_count_new;
+
+              const no_compute_before =
+                perspective_list.length <= 1 ||
+                p_select_count <= 0;
+
+              const no_compute_after =
+                perspective_list.length <= 1 ||
+                p_select_count_new <= 0;
+
+              if (no_compute_before != no_compute_after)
+              {
+                onModalStateChange();
+                return;
               }
 
               this.setState({ perspectiveSelectionCountMap });
@@ -361,11 +399,13 @@ class SLSelection extends React.Component
               perspective={perspective}
               textFieldsOptions={textFieldsOptions}
               index={index}
+              perspective_list={perspective_list}
               perspectiveSelectionList={perspectiveSelectionList}
               transcriptionFieldIdStrList={transcriptionFieldIdStrList}
               translationFieldIdStrList={translationFieldIdStrList}
               perspectiveSelectionCountMap={perspectiveSelectionCountMap}
               onChangeSelectAll={() => this.setState({ perspectiveSelectionCountMap })}
+              onModalStateChange={onModalStateChange}
             />
         ))}
       </div>
@@ -392,11 +432,14 @@ class MLPerspectiveSelection extends React.Component
   onChangeSelect(checked)
   {
     const {
+      mode,
+      language_list,
       p_key,
       perspectiveSelectionMap,
       perspectiveSelectionCountMap,
       language_id_str,
-      onChangeSelectAll } = this.props;
+      onChangeSelectAll,
+      onModalStateChange } = this.props;
 
     const p_select_count = perspectiveSelectionCountMap[''];
     const p_max_count = perspectiveSelectionCountMap['_max'];
@@ -421,6 +464,27 @@ class MLPerspectiveSelection extends React.Component
       p_language_select_count_new++;
     }
 
+    perspectiveSelectionMap[p_key] = checked;
+
+    perspectiveSelectionCountMap[''] = p_select_count_new;
+    perspectiveSelectionCountMap[language_id_str] = p_language_select_count_new;
+
+    const no_compute_before =
+      language_list.length <= 0 ||
+      mode == 'multi_reconstruction' && language_list.length <= 1 ||
+      p_select_count <= 0;
+
+    const no_compute_after =
+      language_list.length <= 0 ||
+      mode == 'multi_reconstruction' && language_list.length <= 1 ||
+      p_select_count_new <= 0;
+
+    if (no_compute_before != no_compute_after)
+    {
+      onModalStateChange();
+      return;
+    }
+
     const all_before =
       p_select_count <= 0 ? 0 :
       p_select_count >= p_max_count ? 1 :
@@ -441,18 +505,15 @@ class MLPerspectiveSelection extends React.Component
       p_language_select_count_new >= p_language_max_count ? 1 :
       2;
 
-    perspectiveSelectionMap[p_key] = checked;
-
-    perspectiveSelectionCountMap[''] = p_select_count_new;
-    perspectiveSelectionCountMap[language_id_str] = p_language_select_count_new;
-
     if (
       all_before != all_after ||
       language_all_before != language_all_after)
-
+    {
       onChangeSelectAll();
+      return;
+    }
 
-    else if (current != checked)
+    if (current != checked)
       this.setState({ perspectiveSelectionMap });
   }
 
@@ -539,11 +600,199 @@ class MLSelection extends React.Component
       language_list: props.language_list,
       language_id_set: props.language_id_set,
     };
+
+    this.onDeleteLanguage = this.onDeleteLanguage.bind(this);
+
+    this.onChangeSelectAll = this.onChangeSelectAll.bind(this);
+    this.onChangeSelectLanguageAll = this.onChangeSelectLanguageAll.bind(this);
+  }
+
+  onDeleteLanguage(language_info, l_index)
+  {
+    const {
+      mode,
+      language_list,
+      perspectiveSelectionMap,
+      perspectiveSelectionCountMap,
+      language_id_set,
+      onModalStateChange } =
+
+      this.props;
+
+    const p_select_count = perspectiveSelectionCountMap[''];
+    const p_max_count = perspectiveSelectionCountMap['_max'];
+
+    const no_compute_before =
+      language_list.length <= 0 ||
+      mode == 'multi_reconstruction' && language_list.length <= 1 ||
+      p_select_count <= 0;
+
+    const language_id_str = id2str(language_info.id);
+
+    language_list.splice(l_index, 1);
+    language_id_set.delete(language_id_str);
+
+    let p_select_count_new = p_select_count;
+
+    for (const { perspective } of language_info.perspective_list)
+    {
+      if (perspectiveSelectionMap[id2str(perspective.id)])
+        p_select_count_new--;
+    }
+
+    perspectiveSelectionCountMap[''] = p_select_count_new;
+    perspectiveSelectionCountMap['_max'] = p_max_count - language_info.perspective_list.length;
+
+    const no_compute_after =
+      language_list.length <= 0 ||
+      mode == 'multi_reconstruction' && language_list.length <= 1 ||
+      p_select_count_new <= 0;
+
+    if (no_compute_before != no_compute_after)
+    {
+      onModalStateChange();
+      return;
+    }
+
+    this.setState({ perspectiveSelectionCountMap });
+  }
+
+  onChangeSelectAll()
+  {
+    const {
+      mode,
+      language_list,
+      perspectiveSelectionMap,
+      perspectiveSelectionCountMap,
+      onModalStateChange } =
+
+      this.props;
+
+    const p_select_count = perspectiveSelectionCountMap[''];
+    const p_max_count = perspectiveSelectionCountMap['_max'];
+
+    let p_select_count_new = p_select_count;
+
+    if (p_select_count < p_max_count)
+    {
+      for (const language of language_list)
+      {
+        for (const { perspective } of language.perspective_list)
+          perspectiveSelectionMap[id2str(perspective.id)] = true;
+
+        perspectiveSelectionCountMap[id2str(language.id)] = language.perspective_list.length;
+      }
+
+      p_select_count_new = p_max_count;
+    }
+    else
+    {
+      for (const language of language_list)
+      {
+        for (const { perspective } of language.perspective_list)
+          perspectiveSelectionMap[id2str(perspective.id)] = false;
+
+        perspectiveSelectionCountMap[id2str(language.id)] = 0;
+      }
+
+      p_select_count_new = 0;
+    }
+
+    perspectiveSelectionCountMap[''] = p_select_count_new;
+
+    const no_compute_before =
+      language_list.length <= 0 ||
+      mode == 'multi_reconstruction' && language_list.length <= 1 ||
+      p_select_count <= 0;
+
+    const no_compute_after =
+      language_list.length <= 0 ||
+      mode == 'multi_reconstruction' && language_list.length <= 1 ||
+      p_select_count_new <= 0;
+
+    if (no_compute_before != no_compute_after)
+    {
+      onModalStateChange();
+      return;
+    }
+
+    this.setState({ perspectiveSelectionCountMap });
+  }
+
+  onChangeSelectLanguageAll(language_info, checked)
+  {
+    const {
+      mode,
+      language_list,
+      perspectiveSelectionMap,
+      perspectiveSelectionCountMap,
+      onModalStateChange } =
+
+      this.props;
+
+    const p_select_count = perspectiveSelectionCountMap[''];
+
+    const language_id_str = id2str(language_info.id);
+
+    const p_language_select_count = perspectiveSelectionCountMap[language_id_str];
+    const p_language_max_count = perspectiveSelectionCountMap[language_id_str + '_max'];
+
+    let p_select_count_new = p_select_count;
+
+    if (p_language_select_count < p_language_max_count)
+    {
+      for (const { perspective } of language_info.perspective_list)
+      {
+        const perspective_id_str = id2str(perspective.id);
+
+        if (!perspectiveSelectionMap[perspective_id_str])
+          p_select_count_new++;
+
+        perspectiveSelectionMap[perspective_id_str] = true;
+      }
+
+      perspectiveSelectionCountMap[language_id_str] = p_language_max_count;
+    }
+    else
+    {
+      for (const { perspective } of language_info.perspective_list)
+      {
+        const perspective_id_str = id2str(perspective.id);
+
+        if (perspectiveSelectionMap[perspective_id_str])
+          p_select_count_new--;
+
+        perspectiveSelectionMap[perspective_id_str] = false;
+      }
+
+      perspectiveSelectionCountMap[language_id_str] = 0;
+    }
+
+    perspectiveSelectionCountMap[''] = p_select_count_new;
+
+    const no_compute_before =
+      language_list.length <= 0 ||
+      mode == 'multi_reconstruction' && language_list.length <= 1 ||
+      p_select_count <= 0;
+
+    const no_compute_after =
+      language_list.length <= 0 ||
+      mode == 'multi_reconstruction' && language_list.length <= 1 ||
+      p_select_count_new <= 0;
+
+    if (no_compute_before != no_compute_after)
+    {
+      onModalStateChange();
+      return;
+    }
+
+    this.setState({ perspectiveSelectionCountMap });
   }
 
   render()
   {
     const {
+      mode,
       language_list,
       perspectiveSelectionMap,
       transcriptionFieldIdStrMap,
@@ -551,7 +800,8 @@ class MLSelection extends React.Component
       perspectiveSelectionCountMap,
       language_id_set,
       available_language_list,
-      onAddLanguage } =
+      onAddLanguage,
+      onModalStateChange } =
 
       this.props;
 
@@ -570,35 +820,7 @@ class MLSelection extends React.Component
             checked={p_select_count >= p_max_count}
             indeterminate={p_select_count > 0 && p_select_count < p_max_count || p_max_count <= 0}
             disabled={p_max_count <= 0}
-            onChange={(e, { checked }) =>
-            {
-              if (p_select_count < p_max_count)
-              {
-                for (const language of language_list)
-                {
-                  for (const { perspective } of language.perspective_list)
-                    perspectiveSelectionMap[id2str(perspective.id)] = true;
-
-                  perspectiveSelectionCountMap[id2str(language.id)] = language.perspective_list.length;
-                }
-
-                perspectiveSelectionCountMap[''] = p_max_count;
-              }
-              else
-              {
-                for (const language of language_list)
-                {
-                  for (const { perspective } of language.perspective_list)
-                    perspectiveSelectionMap[id2str(perspective.id)] = false;
-
-                  perspectiveSelectionCountMap[id2str(language.id)] = 0;
-                }
-
-                perspectiveSelectionCountMap[''] = 0;
-              }
-
-              this.setState({ perspectiveSelectionCountMap });
-            }}
+            onChange={(e, { checked }) => this.onChangeSelectAll(checked)}
           />
         </List.Item>
 
@@ -621,28 +843,7 @@ class MLSelection extends React.Component
                   <Icon
                     name='delete'
                     style={{paddingLeft: '0.5em', paddingRight: '0.5em'}}
-                    onClick={() =>
-                    {
-                      language_list.splice(l_index, 1);
-                      language_id_set.delete(language_id_str);
-
-                      let p_select_count_new = p_select_count;
-
-                      for (const { perspective } of language_info.perspective_list)
-                      {
-                        if (perspectiveSelectionMap[id2str(perspective.id)])
-                          p_select_count_new--;
-                      }
-
-                      perspectiveSelectionCountMap[''] = p_select_count_new;
-                      perspectiveSelectionCountMap['_max'] = p_max_count - language_info.perspective_list.length;
-
-                      this.setState({
-                        language_list,
-                        language_id_set,
-                        perspectiveSelectionCountMap
-                      });
-                    }}
+                    onClick={() => this.onDeleteLanguage(language_info, l_index)}
                   />
                 </span>
               </Header>
@@ -666,42 +867,7 @@ class MLSelection extends React.Component
                         p_language_select_count >= p_language_max_count}
                       indeterminate={
                         p_language_select_count > 0 && p_language_select_count < p_language_max_count}
-                      onChange={(e, { checked }) =>
-                      {
-                        let p_select_count_new = p_select_count;
-
-                        if (p_language_select_count < p_language_max_count)
-                        {
-                          for (const { perspective } of language_info.perspective_list)
-                          {
-                            const perspective_id_str = id2str(perspective.id);
-
-                            if (!perspectiveSelectionMap[perspective_id_str])
-                              p_select_count_new++;
-
-                            perspectiveSelectionMap[id2str(perspective.id)] = true;
-                          }
-
-                          perspectiveSelectionCountMap[language_id_str] = p_language_max_count;
-                        }
-                        else
-                        {
-                          for (const { perspective } of language_info.perspective_list)
-                          {
-                            const perspective_id_str = id2str(perspective.id);
-
-                            if (perspectiveSelectionMap[perspective_id_str])
-                              p_select_count_new--;
-
-                            perspectiveSelectionMap[id2str(perspective.id)] = false;
-                          }
-
-                          perspectiveSelectionCountMap[language_id_str] = 0;
-                        }
-
-                        perspectiveSelectionCountMap[''] = p_select_count_new;
-                        this.setState({ perspectiveSelectionCountMap });
-                      }}
+                      onChange={(e, { checked }) => this.onChangeSelectLanguageAll(language_info, checked)}
                     />
                   </List.Item>
                   </List>
@@ -716,6 +882,8 @@ class MLSelection extends React.Component
 
                       return (
                         <MLPerspectiveSelection
+                          mode={mode}
+                          language_list={language_list}
                           key={'perspective' + p_key}
                           treePathList={treePathList}
                           perspective={perspective}
@@ -728,6 +896,7 @@ class MLSelection extends React.Component
                           perspectiveSelectionCountMap={perspectiveSelectionCountMap}
                           language_id_str={language_id_str}
                           onChangeSelectAll={() => this.setState({ perspectiveSelectionCountMap })}
+                          onModalStateChange={onModalStateChange}
                         />
                       );
                   })}
@@ -2198,6 +2367,7 @@ class CognateAnalysisModal extends React.Component
             transcriptionFieldIdStrList={this.state.transcriptionFieldIdStrList}
             translationFieldIdStrList={this.state.translationFieldIdStrList}
             perspectiveSelectionCountMap={this.state.perspectiveSelectionCountMap}
+            onModalStateChange={() => this.setState({})}
           />
         )}
 
@@ -2245,6 +2415,7 @@ class CognateAnalysisModal extends React.Component
         {this.grouping_field_render()}
 
         <MLSelection
+          mode={this.props.mode}
           language_list={this.state.language_list}
           perspectiveSelectionMap={this.state.perspectiveSelectionMap}
           transcriptionFieldIdStrMap={this.state.transcriptionFieldIdStrMap}
@@ -2276,6 +2447,7 @@ class CognateAnalysisModal extends React.Component
               language_id_set,
             });
           }}
+          onModalStateChange={() => this.setState({})}
         />
 
         {!this.state.library_present && (
@@ -2623,7 +2795,8 @@ class CognateAnalysisModal extends React.Component
                   !this.state.perspectiveSelectionList.some(enabled => enabled))) ||
                 (multi && (
                   this.state.language_list.length <= 0 ||
-                  mode == 'multi_reconstruction' && this.state.language_list.length <= 1)) ||
+                  mode == 'multi_reconstruction' && this.state.language_list.length <= 1 ||
+                  this.state.perspectiveSelectionCountMap[''] <= 0)) ||
                 this.state.computing}
               className="lingvo-button-violet"
             />
