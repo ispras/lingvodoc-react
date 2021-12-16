@@ -1,9 +1,21 @@
 import React from 'react';
-import { Segment, Header, Grid, Input, Button, Dropdown } from 'semantic-ui-react';
+import { Input, Button, Dropdown, Popup } from 'semantic-ui-react';
 import { withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
 import locale from 'api/locale';
 import { getTranslation } from 'api/i18n';
+
+const createTranslationsMutation = gql`
+  mutation ($type: String!) {
+    create_translationgist(type: $type) {
+      translationgist {
+        id
+        type
+      }
+      triumph
+    }
+  }
+`;
 
 const createAtomMutation = gql`
   mutation ($parent_id: LingvodocID!, $locale_id: Int!, $content: String!) {
@@ -11,6 +23,7 @@ const createAtomMutation = gql`
       translationatom {
         id
         locale_id
+        content
       }
       triumph
     }
@@ -20,6 +33,11 @@ const createAtomMutation = gql`
 const updateAtomMutation = gql`
   mutation updateAtom($id: LingvodocID!, $locale_id: Int!, $content: String!) {
     update_translationatom(id: $id, locale_id: $locale_id, content: $content) {
+      translationatom {
+        id
+        locale_id
+        content
+      }
       triumph
     }
   }
@@ -39,12 +57,15 @@ class EditAtoms extends React.Component {
     super(props);
 
     this.state = {
-      atoms: props.atoms
+      atoms: props.atoms,
+      newGist: props.newGist,
+      gistId: props.gistId
     };
 
     this.initialState = {
       atoms: props.atoms
     };
+
     this.languageOptions = props.locales.map(locale => {
       return { key: locale.id, value: locale.id, text: locale.intl_name};
     });
@@ -54,6 +75,22 @@ class EditAtoms extends React.Component {
     this.onDeleteAtom = this.onDeleteAtom.bind(this);
     this.onAddTranslation = this.onAddTranslation.bind(this);
     this.onSave = this.onSave.bind(this);
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    if ((this.state === nextState)) {
+      return false;
+    }
+    return true;
+  }
+
+  createTranslationGist() {
+    return {
+      mutation: createTranslationsMutation,
+      variables: {
+        type: this.props.gistsType
+      }
+    };
   }
 
   getAvailableLanguagesOptions(atom) {
@@ -96,6 +133,7 @@ class EditAtoms extends React.Component {
   }
 
   onContentChange(event, { value, defaultValue, atomid }) {
+
     if (value == defaultValue) {
       return;
     }
@@ -155,7 +193,7 @@ class EditAtoms extends React.Component {
     return {
       mutation: createAtomMutation,
       variables: {
-        parent_id: this.props.gistId,
+        parent_id: this.state.gistId,
         locale_id: atom.locale_id,
         content: atom.content
       }
@@ -186,7 +224,6 @@ class EditAtoms extends React.Component {
             atom.id = createResult.translationatom.id;
             return true;
           }
-
           return false;
         });
       }
@@ -194,10 +231,12 @@ class EditAtoms extends React.Component {
     });
   }
 
-  onSave() {
+  atomActions() {
     const { atoms } = this.initialState;
     let { atoms: newAtoms } = this.state;
+
     const total = Math.max(atoms.length, newAtoms.length);
+
     let mutations = [];
     for (let i = 0; i < total; i++) {
       if (i >= atoms.length) {
@@ -210,7 +249,13 @@ class EditAtoms extends React.Component {
         let atom = atoms[i];
         let newAtom = newAtoms[i];
         if (atom.locale_id != newAtom.locale_id || atom.content != newAtom.content) {
-          mutations.push(this.updateAtom(atom.id, newAtom));
+          
+          if (atom.content !== '') {
+            mutations.push(this.updateAtom(atom.id, newAtom));
+          } else {
+            mutations.push(this.createAtom(newAtom));
+          }
+          /*mutations.push(this.updateAtom(atom.id, newAtom));*/
         }
       }
     }
@@ -219,8 +264,32 @@ class EditAtoms extends React.Component {
     }
   }
 
+  onSave() {
+
+    if (this.state.newGist) {
+
+      let mutationsGist = [];
+      mutationsGist.push(this.createTranslationGist());
+      if (mutationsGist.length != 0) {
+
+        let that = this;
+        this.props.client.mutate(mutationsGist.shift()).then(result => {
+          let idGist = result.data.create_translationgist.translationgist.id;
+
+          /* idGist for method "createAtom" */
+          that.setState({ newGist: false, gistId: idGist });
+
+          that.atomActions();
+        });
+      }
+
+    } else {
+      this.atomActions();
+    }
+  }
+
   render() {
-    const { atoms } = this.state;
+    const { atoms, newGist } = this.state;
     const currentLocaleId = locale.get();
 
     let header = '';
@@ -229,35 +298,40 @@ class EditAtoms extends React.Component {
         header = atom.content;
         return true;
       }
-
       return false;
     });
 
     return (
-      <Segment>
-        <Header as='h4' textAlign='center' block>{header}</Header>
-          <Grid columns={2} celled>
-            {atoms.map(atom => (
-              <Grid.Row key={atom.id}>
-                <Grid.Column width={12}>
-                  <Input value={atom.content} onChange={this.onContentChange} atomid={atom.id} fluid/>
-                </Grid.Column>
-                <Grid.Column width={3}>
-                  <Dropdown key={atom.locale_id} options={this.getAvailableLanguagesOptions(atom)} value={atom.locale_id} onChange={this.onLanguageChange} atomid={atom.id} selection/>
-                </Grid.Column>
-                <Grid.Column width={1}>
-                  <Button icon='delete' color='red' disabled={atoms.length == 1} onClick={this.onDeleteAtom} atomid={atom.id}/>
-                </Grid.Column>
-              </Grid.Row>
-            ))}
-          </Grid>
-          <Grid columns={1} centered>
-            <Grid.Column textAlign='center'>
-              <Button disabled={this.getFreeLocale() == null} onClick={this.onAddTranslation} className="lingvo-button-basic-black">{getTranslation('Add Translation')}</Button>
-              <Button disabled={JSON.stringify(this.state) === JSON.stringify(this.initialState)} onClick={this.onSave} className="lingvo-button-violet">{getTranslation('Save')}</Button>
-            </Grid.Column>
-          </Grid>
-      </Segment>
+      <div className="lingvo-gist">
+        <h4 className="lingvo-gist__header">{header}</h4>
+
+        <div className="lingvo-atoms-grid">
+          {atoms.map(atom => (
+            <div className="lingvo-atom-grid" key={atom.id}>
+              <div className="lingvo-atom-grid__text">
+                <Popup disabled={ !!newGist }
+                  trigger={
+                    <Input value={atom.content} onChange={this.onContentChange} atomid={atom.id} fluid className="lingvo-gist-elem" />
+                  }
+                  content={atom.content}
+                  className="lingvo-popup-inverted lingvo-popup-inverted_gistatom"
+                />
+              </div>
+              <div className="lingvo-atom-grid__lang">
+                <Dropdown className="lingvo-gist-elem lingvo-gist-elem_language" key={atom.locale_id} options={this.getAvailableLanguagesOptions(atom)} value={atom.locale_id} onChange={this.onLanguageChange} atomid={atom.id} selection icon={<i className="lingvo-icon lingvo-icon_arrow" />} />
+              </div>
+              <div className="lingvo-atom-grid__delete">
+                <Button icon={<i className="lingvo-icon lingvo-icon_trash" />} disabled={atoms.length == 1} onClick={this.onDeleteAtom} atomid={atom.id} className="lingvo-button-atom-delete" />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="lingvo-gist__buttons">
+            <Button disabled={this.getFreeLocale() == null} onClick={this.onAddTranslation} className="lingvo-button-basic-black lingvo-button-basic-black_small">{getTranslation('Add Translation')}</Button>
+            <Button disabled={JSON.stringify(this.state.atoms) === JSON.stringify(this.initialState.atoms)} onClick={this.onSave} className="lingvo-button-violet lingvo-button-violet_small">{getTranslation('Save')}</Button>
+        </div>
+      </div>
     );
   }
 
