@@ -21,7 +21,7 @@ class EditTranslations extends React.Component {
     super(props);
 
     this.state = {
-      selectedCategory: -1
+      selectedCategory: 0
     };
   }
 
