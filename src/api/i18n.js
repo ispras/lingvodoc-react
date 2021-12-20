@@ -53,6 +53,7 @@ export const stringsToTranslate = [
    "Choose groups for areas",
    "Clear",
    "Clear all",
+   "Clear completed",
    "Client type",
    "Close",
    "Cognate acoustic analysis",
