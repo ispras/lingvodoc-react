@@ -101,16 +101,15 @@ class topSectionSelector extends React.Component {
                                 </div>
 
                                 <div className="lingvo-main-block__platform-list-item">
-                                    <strong className="lingvo-main-block__platform-strong">{getTranslation('It stores')}{/*Представлены*/} <span className="lingvo-main-block__platform-text_violet">{getTranslation('unique data')}{/*уникальные данные*/}</span> {getTranslation('on the endangered languages of Russia')}{/*по исчезающим языкам России*/}.</strong>
+                                    <strong className="lingvo-main-block__platform-strong">{getTranslation('It stores')} <span className="lingvo-main-block__platform-text_violet">{getTranslation('unique data')}</span> {getTranslation('on the endangered languages of Russia')}.</strong>
                                     <div className="lingvo-main-block__platform-desc">
                                         {getTranslation('Many dialects have already disappeared, and the LingvoDoc platform holds data from archives, which are presently stacked and inaccessible.')}
-                                        {/*Многие диалекты уже исчезли, и на ЛингвоДоке представлены архивные материалы, которые в настоящее время заштабелированы и недоступны.*/}
                                     </div>
                                 </div>
 
                                 <div className="lingvo-main-block__platform-list-item">
                                     <strong className="lingvo-main-block__platform-strong">
-                                        {getTranslation('It keeps records on some')}{/*Записаны*/} <span className="lingvo-main-block__platform-text_violet">{/*исчезнувшие языки.*/}{getTranslation('extinct languages')}</span>
+                                        {getTranslation('It keeps records on some')} <span className="lingvo-main-block__platform-text_violet">{getTranslation('extinct languages')}</span>
                                     </strong>
                                     <div className="lingvo-main-block__platform-desc">
                                         {getTranslation('(for example, Eastern Mansi) as well as those that are in danger of extinction (that is, languages that have no more than 10 speakers over 60 years old left).')}
