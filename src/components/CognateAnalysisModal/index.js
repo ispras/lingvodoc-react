@@ -444,6 +444,14 @@ class MLPerspectiveSelection extends React.Component
     const p_select_count = perspectiveSelectionCountMap[''];
     const p_max_count = perspectiveSelectionCountMap['_max'];
 
+    const no_compute_before =
+      language_list.length <= 0 ||
+      mode == 'multi_reconstruction' &&
+        language_list
+          .filter(language => perspectiveSelectionCountMap[id2str(language.id)] > 0)
+          .length <= 1 ||
+      p_select_count <= 0;
+
     let p_select_count_new = p_select_count;
 
     const p_language_select_count = perspectiveSelectionCountMap[language_id_str];
@@ -469,14 +477,12 @@ class MLPerspectiveSelection extends React.Component
     perspectiveSelectionCountMap[''] = p_select_count_new;
     perspectiveSelectionCountMap[language_id_str] = p_language_select_count_new;
 
-    const no_compute_before =
-      language_list.length <= 0 ||
-      mode == 'multi_reconstruction' && language_list.length <= 1 ||
-      p_select_count <= 0;
-
     const no_compute_after =
       language_list.length <= 0 ||
-      mode == 'multi_reconstruction' && language_list.length <= 1 ||
+      mode == 'multi_reconstruction' &&
+        language_list
+          .filter(language => perspectiveSelectionCountMap[id2str(language.id)] > 0)
+          .length <= 1 ||
       p_select_count_new <= 0;
 
     if (no_compute_before != no_compute_after)
@@ -624,7 +630,10 @@ class MLSelection extends React.Component
 
     const no_compute_before =
       language_list.length <= 0 ||
-      mode == 'multi_reconstruction' && language_list.length <= 1 ||
+      mode == 'multi_reconstruction' &&
+        language_list
+          .filter(language => perspectiveSelectionCountMap[id2str(language.id)] > 0)
+          .length <= 1 ||
       p_select_count <= 0;
 
     const language_id_str = id2str(language_info.id);
@@ -645,7 +654,10 @@ class MLSelection extends React.Component
 
     const no_compute_after =
       language_list.length <= 0 ||
-      mode == 'multi_reconstruction' && language_list.length <= 1 ||
+      mode == 'multi_reconstruction' &&
+        language_list
+          .filter(language => perspectiveSelectionCountMap[id2str(language.id)] > 0)
+          .length <= 1 ||
       p_select_count_new <= 0;
 
     if (no_compute_before != no_compute_after)
@@ -670,6 +682,14 @@ class MLSelection extends React.Component
 
     const p_select_count = perspectiveSelectionCountMap[''];
     const p_max_count = perspectiveSelectionCountMap['_max'];
+
+    const no_compute_before =
+      language_list.length <= 0 ||
+      mode == 'multi_reconstruction' &&
+        language_list
+          .filter(language => perspectiveSelectionCountMap[id2str(language.id)] > 0)
+          .length <= 1 ||
+      p_select_count <= 0;
 
     let p_select_count_new = p_select_count;
 
@@ -700,14 +720,12 @@ class MLSelection extends React.Component
 
     perspectiveSelectionCountMap[''] = p_select_count_new;
 
-    const no_compute_before =
-      language_list.length <= 0 ||
-      mode == 'multi_reconstruction' && language_list.length <= 1 ||
-      p_select_count <= 0;
-
     const no_compute_after =
       language_list.length <= 0 ||
-      mode == 'multi_reconstruction' && language_list.length <= 1 ||
+      mode == 'multi_reconstruction' &&
+        language_list
+          .filter(language => perspectiveSelectionCountMap[id2str(language.id)] > 0)
+          .length <= 1 ||
       p_select_count_new <= 0;
 
     if (no_compute_before != no_compute_after)
@@ -731,6 +749,14 @@ class MLSelection extends React.Component
       this.props;
 
     const p_select_count = perspectiveSelectionCountMap[''];
+
+    const no_compute_before =
+      language_list.length <= 0 ||
+      mode == 'multi_reconstruction' &&
+        language_list
+          .filter(language => perspectiveSelectionCountMap[id2str(language.id)] > 0)
+          .length <= 1 ||
+      p_select_count <= 0;
 
     const language_id_str = id2str(language_info.id);
 
@@ -770,14 +796,12 @@ class MLSelection extends React.Component
 
     perspectiveSelectionCountMap[''] = p_select_count_new;
 
-    const no_compute_before =
-      language_list.length <= 0 ||
-      mode == 'multi_reconstruction' && language_list.length <= 1 ||
-      p_select_count <= 0;
-
     const no_compute_after =
       language_list.length <= 0 ||
-      mode == 'multi_reconstruction' && language_list.length <= 1 ||
+      mode == 'multi_reconstruction' &&
+        language_list
+          .filter(language => perspectiveSelectionCountMap[id2str(language.id)] > 0)
+          .length <= 1 ||
       p_select_count_new <= 0;
 
     if (no_compute_before != no_compute_after)
@@ -2755,6 +2779,10 @@ class CognateAnalysisModal extends React.Component
       mode == 'multi_reconstruction' ||
       mode == 'multi_suggestions';
 
+    const {
+      language_list,
+      perspectiveSelectionCountMap } = this.state;
+
     return (
       <div>
         <Modal
@@ -2794,9 +2822,12 @@ class CognateAnalysisModal extends React.Component
                   this.perspective_list.length <= 1 ||
                   !this.state.perspectiveSelectionList.some(enabled => enabled))) ||
                 (multi && (
-                  this.state.language_list.length <= 0 ||
-                  mode == 'multi_reconstruction' && this.state.language_list.length <= 1 ||
-                  this.state.perspectiveSelectionCountMap[''] <= 0)) ||
+                  language_list.length <= 0 ||
+                  mode == 'multi_reconstruction' &&
+                    language_list
+                      .filter(language => perspectiveSelectionCountMap[id2str(language.id)] > 0)
+                      .length <= 1 ||
+                  perspectiveSelectionCountMap[''] <= 0)) ||
                 this.state.computing}
               className="lingvo-button-violet"
             />
