@@ -2,7 +2,7 @@ import React from 'react';
 import { compose } from 'recompose';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
-import { Button, Checkbox, Dimmer, Input, List, Loader, Message, Segment } from 'semantic-ui-react';
+import { Button, Checkbox, Dimmer, Icon, Input, Label, List, Loader, Message, Segment } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 
 import { getTranslation } from 'api/i18n';
@@ -37,19 +37,20 @@ class Docx2Eaf extends React.Component
     this.state = {
       separate_flag: false,
       all_tables_flag: false,
+      file: null,
       converting_flag: false,
       error_message: null, 
       result: null
     };
 
-    this.onFileChange = this.onFileChange.bind(this);
+    this.onConvert = this.onConvert.bind(this);
   }
 
-  onFileChange(e)
+  onConvert()
   {
     this.props.docx2eaf({
       variables: {
-        docxFile: e.target.files[0],
+        docxFile: this.state.file,
         separateFlag: this.state.separate_flag,
         allTablesFlag: this.state.all_tables_flag },
     })
@@ -119,8 +120,11 @@ class Docx2Eaf extends React.Component
           <Checkbox
             label={getTranslation('All tables')}
             checked={this.state.all_tables_flag}
-            onChange={(e, { checked }) => {
-              this.setState({ all_tables_flag: checked });}}
+            onChange={(e, { checked }) =>
+              this.setState({
+                all_tables_flag: checked,
+                error_message: null,
+                result: null})}
           />
           </List.Item>
 
@@ -128,18 +132,54 @@ class Docx2Eaf extends React.Component
           <Checkbox
             label={getTranslation('Separate by paragraphs')}
             checked={this.state.separate_flag}
-            onChange={(e, { checked }) => {
-              this.setState({ separate_flag: checked });}}
+            onChange={(e, { checked }) =>
+              this.setState({
+                separate_flag: checked,
+                error_message: null,
+                result: null })}
           />
           </List.Item>
 
           <List.Item>
-          <span>{getTranslation('.docx file for convertion:')}</span>
-          <Button onClick={() => document.getElementById('file-select').click()} style={{ marginLeft: '1rem' }}>
-            {`${getTranslation('Browse')}...`}
-          </Button>
-          <Input id="file-select" type="file" onChange={this.onFileChange} style={{ display: 'none' }}/>
+            <span>
+              {getTranslation(
+                this.state.file ?
+                  '.docx file for convertion:' :
+                  'Please select .docx file for convertion.')}
+            </span>
+
+            {this.state.file && (
+              <Label style={{ marginLeft: '0.5em' }}>
+                <Icon name='file outline'/>
+                {this.state.file.name}
+              </Label>)}
+
+            <Button
+              style={{ marginLeft: '1em' }}
+              onClick={() => document.getElementById('file-select').click()}>
+              {`${getTranslation('Browse')}...`}
+            </Button>
+
+            <Input
+              id="file-select"
+              type="file"
+              style={{ display: 'none' }}
+              onChange={e => this.setState({
+                file: e.target.files[0],
+                error_message: null,
+                result: null })}
+            />
           </List.Item>
+
+          <List.Item>
+            <Button
+              color="green"
+              content={getTranslation('Convert')}
+              disabled={!this.state.file}
+              onClick={this.onConvert}
+            />
+          </List.Item>
+
           </List>
 
           {this.state.error_message && (
