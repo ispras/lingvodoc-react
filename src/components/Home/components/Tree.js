@@ -17,11 +17,6 @@ import config from 'config';
 import '../published.scss';
 
 let selectorStatus = false;
-const arrLang = [];
-
-const languagesGroup = (e) => {
-  arrLang.push(e);
-};
 
 function toId(arr, prefix = null) {
   const joiner = prefix ? arr[prefix] : arr;
@@ -123,24 +118,10 @@ const Language = ({ language, canSelectDictionaries }) => {
     langClass = 'confirmed-lang-name';
   }
 
-  const children_toJS = children && children.toJS();
-
-  if (
-    selectorStatus &&
-    children_toJS &&
-    children_toJS.length > 0 &&
-    children_toJS[0] &&
-    children_toJS[0].children &&
-    children_toJS[0].children.length > 0 &&
-    children_toJS[0].children[0] &&
-    !children_toJS[0].children[0].children) {
-    languagesGroup(language.toJS());
-  }
-
   return (
     <li className="lang" id={`lang_${id}`}>
       <span className={langClass}>{translation}</span>
-      <ul>{children.map(n => <Node key={n.get('id')} node={n} canSelectDictionaries={canSelectDictionaries} languagesGroup={languagesGroup} />)}</ul>
+      <ul>{children.map(n => <Node key={n.get('id')} node={n} canSelectDictionaries={canSelectDictionaries} />)}</ul>
     </li>
   );
 };
@@ -157,7 +138,6 @@ Language.defaultProps = {
 const Node = ({
   node,
   canSelectDictionaries,
-
 }) => {
   switch (node.get('type')) {
     case 'language':
