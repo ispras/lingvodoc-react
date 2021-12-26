@@ -126,7 +126,7 @@ const Language = ({ language, canSelectDictionaries }) => {
   const children_toJS = children && children.toJS();
 
   if (
-    selectorStatus
+    selectorStatus &&
     children_toJS &&
     children_toJS.length > 0 &&
     children_toJS[0].children &&
