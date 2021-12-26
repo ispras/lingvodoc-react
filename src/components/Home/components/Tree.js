@@ -123,7 +123,17 @@ const Language = ({ language, canSelectDictionaries }) => {
     langClass = 'confirmed-lang-name';
   }
 
-  if (!children.toJS()[0].children[0].children && selectorStatus) {
+  const children_toJS = children && children.toJS();
+
+  if (
+    selectorStatus &&
+    children_toJS &&
+    children_toJS.length > 0 &&
+    children_toJS[0] &&
+    children_toJS[0].children &&
+    children_toJS[0].children.length > 0 &&
+    children_toJS[0].children[0] &&
+    !children_toJS[0].children[0].children) {
     languagesGroup(language.toJS());
   }
 
