@@ -27,11 +27,27 @@ export const perspectiveIsHiddenQuery = gql`
 export const launchSoundAndMarkupMutation = gql`
   mutation launchSoundAndMarkup(
     $perspectiveId: LingvodocID!,
-    $publishedMode: String!) {
-      sound_and_markup(
-        perspective_id: $perspectiveId,
-        published_mode: $publishedMode)
-      { triumph } }
+    $publishedMode: String!)
+  {
+    sound_and_markup(
+      perspective_id: $perspectiveId,
+      published_mode: $publishedMode)
+    {
+      triumph
+    }
+  }
+`;
+
+export const launchValencyMutation = gql`
+  mutation launchValency(
+    $perspectiveId: LingvodocID!)
+  {
+    valency(
+      perspective_id: $perspectiveId)
+    {
+      triumph
+    }
+  }
 `;
 
 const queryCounter = gql`
@@ -70,6 +86,7 @@ const Tools = graphql(toolsQuery)(({
   openPhonemicAnalysisModal,
   openPhonologyModal,
   launchSoundAndMarkup,
+  launchValency,
   id, /* perspective_id */
   user_id,
   mode
@@ -168,6 +185,14 @@ const Tools = graphql(toolsQuery)(({
           {getTranslation('Sound and markup')}
         </Dropdown.Item>
 
+        {user_id != null && (
+          <Dropdown.Item
+            onClick={() => valency(id, launchValency)}
+          >
+            {getTranslation('Valency')}
+          </Dropdown.Item>
+        )}
+
       </Dropdown.Menu>
     </Dropdown>
   );
@@ -211,6 +236,7 @@ const ModeSelector = compose(
   openPhonemicAnalysisModal,
   openPhonologyModal,
   launchSoundAndMarkup,
+  launchValency,
   id,
   user
 }) => {
@@ -262,6 +288,7 @@ const ModeSelector = compose(
         openPhonemicAnalysisModal={openPhonemicAnalysisModal}
         openPhonologyModal={openPhonologyModal}
         launchSoundAndMarkup={launchSoundAndMarkup}
+        launchValency={launchValency}
       />
       <Menu.Menu position="right">
         <Filter filter={filter} submitFilter={submitFilter} />
@@ -286,6 +313,21 @@ const soundAndMarkup = (perspectiveId, mode, launchSoundAndMarkup) => {
   );
 };
 
+const valency = (perspectiveId, launchValency) => {
+  launchValency({
+    variables: {
+      perspectiveId,
+    },
+  }).then(
+    () => {
+      window.logger.suc(getTranslation('Valency data is being compiled. Check out tasks for details.'));
+    },
+    () => {
+      window.logger.err(getTranslation('Failed to launch valency data compilation!'));
+    }
+  );
+};
+
 const Perspective = ({
   data,
   perspective,
@@ -294,6 +336,7 @@ const Perspective = ({
   openPhonemicAnalysisModal,
   openPhonologyModal,
   launchSoundAndMarkup,
+  launchValency,
   user
 }) => {
   const {
@@ -362,6 +405,7 @@ const Perspective = ({
           openPhonemicAnalysisModal={openPhonemicAnalysisModal}
           openPhonologyModal={openPhonologyModal}
           launchSoundAndMarkup={launchSoundAndMarkup}
+          launchValency={launchValency}
         />
         <Switch>
           <Redirect exact from={baseUrl} to={`${baseUrl}/view`} />
@@ -395,6 +439,7 @@ Perspective.propTypes = {
   openPhonemicAnalysisModal: PropTypes.func.isRequired,
   openPhonologyModal: PropTypes.func.isRequired,
   launchSoundAndMarkup: PropTypes.func.isRequired,
+  launchValency: PropTypes.func.isRequired,
   user: PropTypes.object.isRequired
 };
 
@@ -406,5 +451,6 @@ export default compose(
       variables: {id: perspective.params.id}
     })
   }),
-  graphql(launchSoundAndMarkupMutation, { name: 'launchSoundAndMarkup' })
+  graphql(launchSoundAndMarkupMutation, { name: 'launchSoundAndMarkup' }),
+  graphql(launchValencyMutation, { name: 'launchValency' })
 )(Perspective);
