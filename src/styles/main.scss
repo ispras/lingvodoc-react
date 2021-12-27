@@ -1328,8 +1328,23 @@ body {
       height: 20px;
       -webkit-mask-image: url("../images/close_sm.svg");
       mask-image: url("../images/close_sm.svg");
-      background-color: #999CA0;
+      background-color: #5d54cd;
     }
+
+    &:hover .lingvo-icon-close {
+      background-color: #372f9d;
+    }
+
+    &.disabled.button,
+    &:disabled.button,
+    &.disabled.button:hover {
+      opacity: 1 !important;
+
+      & .lingvo-icon-close {
+        background-color: #999ca0;
+      }
+    }
+
   }
 
   &__details {

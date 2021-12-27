@@ -8,13 +8,23 @@ import TaskList from 'components/TaskList';
 import { toggleTasks } from 'ducks/task';
 import { getTranslation } from 'api/i18n';
 
+import { removeTask } from 'ducks/task';
+
 const Wrapper = styled.div`
   padding: 16px;
   padding-top: 106px;
   min-height: 100vh;
 `;
 
-const TasksSidebar = ({ visible, tasks, toggle }) =>
+const onClearTasks = (tasks, remove) => {
+  tasks.forEach(item => {
+    if (item.status === "Finished") {
+      remove(item.id);
+    }
+  });
+};
+
+const TasksSidebar = ({ visible, tasks, toggle, remove }) =>
   <Sidebar
     animation="overlay"
     direction="right"
@@ -31,6 +41,11 @@ const TasksSidebar = ({ visible, tasks, toggle }) =>
       >
         <i className="lingvo-icon-close" />
       </Button>
+      
+      {tasks && tasks.length && (
+        <Button onClick={() => onClearTasks(tasks, remove)} disabled={tasks.some((item) => item.status === "Finished") ? false : true} className="lingvo-button-violet-dashed">{getTranslation('Clear completed')}</Button>
+        ) || null
+      }
       
       <TaskList tasks={tasks} />
     </div>
@@ -55,4 +70,4 @@ function mapStateToProps(state) {
   return state.task;
 }
 
-export default connect(mapStateToProps, { toggle: toggleTasks } )(TasksSidebar);
+export default connect(mapStateToProps, { toggle: toggleTasks, remove: removeTask })(TasksSidebar);

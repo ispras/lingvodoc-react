@@ -46,7 +46,7 @@ function Task(props) {
     <List.Content>
       <div className="lingvo-task">
         <div className="lingvo-task__title">{task_family}</div>
-        <Button className="lingvo-task__delete" onClick={() => remove(id)}>
+        <Button className="lingvo-task__delete" disabled={progress && (progress === 100) ? false : true} onClick={() => remove(id)}>
           <i className="lingvo-icon-close" />
         </Button>
         <div className="lingvo-task__content">
