@@ -5,10 +5,8 @@ import styled from 'styled-components';
 import { Button, Sidebar } from 'semantic-ui-react';
 
 import TaskList from 'components/TaskList';
-import { toggleTasks } from 'ducks/task';
+import { toggleTasks, removeTask } from 'ducks/task';
 import { getTranslation } from 'api/i18n';
-
-import { removeTask } from 'ducks/task';
 
 const Wrapper = styled.div`
   padding: 16px;
