@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { Button, Sidebar } from 'semantic-ui-react';
 
 import TaskList from 'components/TaskList';
-import { toggleTasks } from 'ducks/task';
+import { toggleTasks, removeTask } from 'ducks/task';
 import { getTranslation } from 'api/i18n';
 
 const Wrapper = styled.div`
@@ -14,7 +14,15 @@ const Wrapper = styled.div`
   min-height: 100vh;
 `;
 
-const TasksSidebar = ({ visible, tasks, toggle }) =>
+const onClearTasks = (tasks, remove) => {
+  tasks.forEach(item => {
+    if (item.status === "Finished") {
+      remove(item.id);
+    }
+  });
+};
+
+const TasksSidebar = ({ visible, tasks, toggle, remove }) =>
   <Sidebar
     animation="overlay"
     direction="right"
@@ -31,6 +39,11 @@ const TasksSidebar = ({ visible, tasks, toggle }) =>
       >
         <i className="lingvo-icon-close" />
       </Button>
+      
+      {tasks && tasks.length && (
+        <Button onClick={() => onClearTasks(tasks, remove)} disabled={tasks.some((item) => item.status === "Finished") ? false : true} className="lingvo-button-violet-dashed">{getTranslation('Clear completed')}</Button>
+        ) || null
+      }
       
       <TaskList tasks={tasks} />
     </div>
@@ -55,4 +68,4 @@ function mapStateToProps(state) {
   return state.task;
 }
 
-export default connect(mapStateToProps, { toggle: toggleTasks } )(TasksSidebar);
+export default connect(mapStateToProps, { toggle: toggleTasks, remove: removeTask })(TasksSidebar);
