@@ -82,15 +82,27 @@
       &:not(:first-child) {
         top: 36px;
       }
-    
+
+      & thead th {
+        position: static;
+        position: sticky;
+        top: 0;
+        z-index: 1;
+      }
+
       @media only screen and (max-device-width: 1000px), only screen and (max-width: 1000px) {
         position: static;
         top: auto;
         bottom: auto;
         left: auto;
+
+        & thead th {
+          position: static;
+          top: auto;
+        }
+
       }
     }
-
   }
 
   & .pagination {

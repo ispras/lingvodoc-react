@@ -442,6 +442,7 @@ const P = ({
             onSortModeChange={(fieldId, order) => setSort(fieldId, order)}
             onSortModeReset={() => resetSort()}
             selectEntries={mode === 'edit'}
+            className="!!!!!!!!!!"
           />
           <TableBody
             perspectiveId={id}
