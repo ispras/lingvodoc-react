@@ -105,10 +105,7 @@ class Roles extends React.Component {
 
   constructor(props) {
     super(props);
-
-    console.log('props====');
-    console.log(props);
-
+    
     this.state = {
       selectedUser: undefined
     };
@@ -155,7 +152,7 @@ class Roles extends React.Component {
   }
 
   render() {
-    const { mode, data } = this.props;
+    const { mode, data, user } = this.props;
 
     if (data.error) {
       return null;
@@ -163,11 +160,9 @@ class Roles extends React.Component {
 
     const { selectedUser } = this.state;
 
-    console.log(selectedUser);
+    const currentUser = user;
 
     const baseGroups = data.all_basegroups ? data.all_basegroups : [];
-
-    console.log(baseGroups);
 
     const allUsers = data.users ? data.users : [];
     const rolesUsers = data[mode] ? data[mode].roles.roles_users : [];
@@ -191,9 +186,6 @@ class Roles extends React.Component {
         .map(role => find(allUsers, u => u.id === role.user_id)),
     }));
 
-    console.log('permissions===');
-    console.log(permissions);
-
     const users = uniq(union(...permissions.map(p => p.users)));
     const userOptions = without(allUsers, ...users)
       .map(user => ({
@@ -202,10 +194,6 @@ class Roles extends React.Component {
         text: user.name,
       }))
       .filter(u => u.value !== 1);
-
-      console.log(users);
-
-      console.log(userOptions);
 
     return (
       <Container>
@@ -238,6 +226,7 @@ class Roles extends React.Component {
                     title={getTranslation('Remove user')} 
                     onClick={() => this.onDeleteUser(user.id, permissions)} 
                     className="lingvo-button-roles-delete" 
+                    disabled={user.id === currentUser.id}
                   />
                 </Table.HeaderCell>
               ))}
@@ -278,6 +267,7 @@ Roles.propTypes = {
     all_basegroups: PropTypes.array,
     users: PropTypes.array,
   }).isRequired,
+  user: PropTypes.object.isRequired,
   close: PropTypes.func.isRequired
 };
 

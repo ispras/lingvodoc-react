@@ -20,9 +20,10 @@ function getComponent(id, mode) {
 }
 
 const RolesModal = ({
-  visible, id, mode, title, actions,
+  visible, id, mode, title, actions, user
 }) => {
   const Component = getComponent(id, mode);
+
   return (
     <Modal
       closeIcon
@@ -36,7 +37,7 @@ const RolesModal = ({
         {title}
       </Modal.Header>
       <Modal.Content>
-        <Component id={id} mode={mode} close={actions.close} />
+        <Component id={id} mode={mode} close={actions.close} user={user} />
       </Modal.Content>
       <Modal.Actions>
         <Button content={getTranslation('Close')} onClick={actions.close} className="lingvo-button-basic-black" />
@@ -53,6 +54,7 @@ RolesModal.propTypes = {
   actions: PropTypes.shape({
     close: PropTypes.func.isRequired,
   }).isRequired,
+  user: PropTypes.object.isRequired,
 };
 
 RolesModal.defaultProps = {
@@ -60,7 +62,9 @@ RolesModal.defaultProps = {
   title: ' '
 };
 
-const mapStateToProps = state => state.roles;
+const mapStateToProps = state => ({
+  ...state.user, ...state.roles
+});
 
 const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators({ close }, dispatch),
