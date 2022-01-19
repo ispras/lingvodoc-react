@@ -177,6 +177,26 @@
     }
   }
 
+  &.ui.modal > .header {
+    font-family: Mulish, Arial, sans-serif !important;
+    border-bottom: 1px solid #ebebeb !important;
+  }
+  
+  &.ui.modal > .header:not(.ui) {
+    font-size: 16px !important;
+    font-weight: bold !important;
+    line-height: 24px !important;
+  }
+
+  &.ui.large.modal > .header {
+    font-size: 18px !important;
+  }
+
+  &.ui.modal > .actions {
+    border-top: 1px solid #ebebeb !important;
+    background: #fff !important;
+  }
+
 }
 /* /modal2 */
 

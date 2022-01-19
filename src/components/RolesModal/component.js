@@ -106,6 +106,9 @@ class Roles extends React.Component {
   constructor(props) {
     super(props);
 
+    console.log('props====');
+    console.log(props);
+
     this.state = {
       selectedUser: undefined
     };
@@ -159,7 +162,13 @@ class Roles extends React.Component {
     }
 
     const { selectedUser } = this.state;
+
+    console.log(selectedUser);
+
     const baseGroups = data.all_basegroups ? data.all_basegroups : [];
+
+    console.log(baseGroups);
+
     const allUsers = data.users ? data.users : [];
     const rolesUsers = data[mode] ? data[mode].roles.roles_users : [];
 
@@ -182,23 +191,56 @@ class Roles extends React.Component {
         .map(role => find(allUsers, u => u.id === role.user_id)),
     }));
 
+    console.log('permissions===');
+    console.log(permissions);
+
     const users = uniq(union(...permissions.map(p => p.users)));
     const userOptions = without(allUsers, ...users)
       .map(user => ({
         key: user.id,
         value: user.id,
         text: user.name,
-        icon: 'user',
       }))
       .filter(u => u.value !== 1);
 
+      console.log(users);
+
+      console.log(userOptions);
+
     return (
       <Container>
-        <Table celled>
+
+        <Dropdown
+          key={selectedUser}
+          placeholder={getTranslation('Select user')}
+          search
+          selection
+          options={userOptions}
+          selectOnBlur={false}
+          value={selectedUser}
+          onChange={(e, d) => this.setState({ selectedUser: d.value })}
+          className="lingvo-roles-dropdown lingvo-roles-dropdown_search"
+          icon={<i className="lingvo-icon lingvo-icon_arrow" />}
+        />
+        <Button className="lingvo-button-violet" disabled={selectedUser === undefined} onClick={() => this.onAddUser(permissions)}>
+          {getTranslation('Save')}
+        </Button>
+
+        <Table celled className="lingvo-roles-table">
           <Table.Header>
             <Table.Row>
               <Table.HeaderCell>{getTranslation('Role')}</Table.HeaderCell>
-              {users.map(user => <Table.HeaderCell key={user.id}>{user.name}</Table.HeaderCell>)}
+              {users.map(user => (
+                <Table.HeaderCell key={user.id}>
+                  {user.name} 
+                  <Button 
+                    icon={<i className="lingvo-icon lingvo-icon_trash" />} 
+                    title={getTranslation('Remove user')} 
+                    onClick={() => this.onDeleteUser(user.id, permissions)} 
+                    className="lingvo-button-roles-delete" 
+                  />
+                </Table.HeaderCell>
+              ))}
             </Table.Row>
           </Table.Header>
 
@@ -212,41 +254,15 @@ class Roles extends React.Component {
                       toggle
                       onChange={() => this.onToggleRole(user, role, permissions)}
                       checked={Roles.hasRole(user, role)}
+                      className="lingvo-radio-toggle"
                     />
                   </Table.Cell>
                 ))}
               </Table.Row>
             ))}
-            <Table.Row>
-              <Table.Cell />
-              {users.map(user => (
-                <Table.Cell key={user.id}>
-                  <Button
-                    circular
-                    icon="delete"
-                    color="red"
-                    title={getTranslation('Remove user')}
-                    onClick={() => this.onDeleteUser(user.id, permissions)}
-                  />
-                </Table.Cell>
-              ))}
-            </Table.Row>
           </Table.Body>
         </Table>
 
-        <Dropdown
-          key={selectedUser}
-          placeholder={getTranslation('Select user')}
-          search
-          selection
-          options={userOptions}
-          selectOnBlur={false}
-          value={selectedUser}
-          onChange={(e, d) => this.setState({ selectedUser: d.value })}
-        />
-        <Button color="green" disabled={selectedUser === undefined} onClick={() => this.onAddUser(permissions)} style={{ marginLeft: '1rem' }}>
-          {getTranslation('Add')}
-        </Button>
       </Container>
     );
   }
