@@ -571,7 +571,7 @@ body {
       width: 188px;
       height: 136px;
     }
-
+    
     @media only screen and (max-device-width: 1000px), only screen and (max-width: 1000px) {
       & {
         padding-bottom: 150px;
@@ -801,7 +801,7 @@ body {
 
 .lingvo-button-violet {
 
-  &.button,
+  &.ui.button,
   & .button {
     border-radius: 12px !important;
     font-family: Rubik, Arial, sans-serif !important;
@@ -809,6 +809,7 @@ body {
     background: #5D54CD !important;
     color: #fff !important;
     min-height: 40px !important;
+    padding: 11px 16px !important;
 
     &:hover {
       background: #333 !important;
@@ -839,7 +840,7 @@ body {
   }
 
   &_small {
-    &.button,
+    &.ui.button,
     & .button {
       font-size: 14px !important;
       line-height: 24px !important;
@@ -858,6 +859,7 @@ body {
   box-shadow: 0px 0px 0px 1px #333 inset !important;
   color: #333 !important;
   min-height: 40px !important;
+  padding: 11px 16px !important;
 
   &:hover {
     background: #333 !important;
@@ -1874,3 +1876,364 @@ body {
   background: transparent !important;
 }
 /* /dimmer */
+
+
+/* roles modal */
+
+/* roles table */
+.lingvo-roles-table {
+  border: none !important;
+  margin-top: 24px !important;
+
+  & thead th {
+    border: none !important;
+    background: #FAFAFA !important;
+    font-family: Mulish, Arial, sans-serif !important;
+    font-weight: bold !important;
+    padding: 13px 16px !important;
+
+    &:not(:first-child) {
+      position: relative !important;
+
+      &::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 50%;
+        margin-top: -12px;
+        height: 24px;
+        box-shadow: 1px 0px 0px rgba(0, 0, 0, 0.08);
+        width: 1px;
+      }
+    }
+
+    &:first-child {
+      border-radius: 8px 0 0 8px !important;
+    }
+
+    &:last-child {
+      border-radius: 0 8px 8px 0 !important;
+    }
+
+    @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+      &:first-child {
+        border-radius: 8px 8px 0 0 !important;
+      }
+  
+      &:last-child {
+        border-radius: 0 0 8px 8px !important;
+      }
+
+      &:not(:first-child) {
+        position: static !important;
+
+        &::after {
+          content: none;
+        }
+      }
+    }
+  }
+
+  & tr:nth-child(2n) {
+    & td {
+      background: #FAFAFA !important;
+    }
+
+    & td:first-child {
+      border-radius: 8px 0 0 8px !important;
+    }
+
+    & td:last-child {
+      border-radius: 0 8px 8px 0 !important;
+    }
+
+    @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+      & td:first-child {
+        border-radius: 8px 8px 0 0 !important;
+      }
+  
+      & td:last-child {
+        border-radius: 0 0 8px 8px !important;
+      }
+    }
+  }
+
+  & tr td {
+    border: none !important;
+    padding: 16px !important;
+
+    &:not(:first-child) {
+      position: relative !important;
+
+      &::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 50%;
+        margin-top: -12px;
+        height: 24px;
+        box-shadow: 1px 0px 0px rgba(0, 0, 0, 0.08);
+        width: 1px;
+      }
+
+      @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {        
+        position: static !important;
+
+        &::after {
+          content: none;
+        }
+      }
+    }
+  }
+
+  @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+    margin-top: 14px !important;
+
+    &.ui.table tr {
+      box-shadow: none !important;
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+
+      & td:first-child {
+        padding-top: 18px !important;
+      }
+  
+      & td:last-child {
+        padding-bottom: 18px !important;
+      }
+    }
+
+    &.ui.table thead tr {
+      & th:first-child {
+        padding-top: 18px !important;
+      }
+  
+      & th:last-child {
+        padding-bottom: 18px !important;
+      }
+    }
+  }
+  
+}
+/* /roles table */
+
+/* roles radio toggle */
+.lingvo-radio-toggle {
+
+  &.ui.fitted.toggle.checkbox, 
+  &.ui.fitted.toggle.checkbox {
+    width: 40px !important;
+    vertical-align: middle !important;
+  }
+
+  &.ui.toggle.checkbox {
+    min-height: 24px !important;
+  }
+
+  &.ui.toggle.checkbox input {
+    width: 40px !important;
+    height: 24px !important;
+  }
+
+  &.ui.toggle.checkbox .box, 
+  &.ui.toggle.checkbox label {
+    min-height: 24px !important;
+  }
+
+  &.ui.toggle.checkbox input:checked ~ .box:before, 
+  &.ui.toggle.checkbox input:checked ~ label:before {
+    background-color: #4E46B4 !important;
+  }
+
+  &.ui.toggle.checkbox .box:before, 
+  &.ui.toggle.checkbox label:before {
+    width: 40px !important;
+    height: 24px !important;
+    border-radius: 100px !important;
+  }
+
+  &.ui.toggle.checkbox input:checked ~ .box:after, 
+  &.ui.toggle.checkbox input:checked ~ label:after {
+    left: 20px !important;
+  }
+
+  &.ui.toggle.checkbox input ~ .box:after,
+  &.ui.toggle.checkbox input ~ label:after {
+    left: 4px !important;
+  }
+
+  &.ui.toggle.checkbox .box:after, 
+  &.ui.toggle.checkbox label:after {
+    width: 16px !important;
+    height: 16px !important;
+    border-radius: 100px !important;
+    top: 4px !important;
+    box-shadow: 0px 6px 6px rgba(0, 0, 0, 0.16), 0px 0px 1px rgba(0, 0, 0, 0.4) !important;
+    background: #fff !important;
+  }
+}
+/* /roles radio toggle */
+
+/* roles button */
+.lingvo-button-roles-delete {
+  background: transparent !important;
+  padding: 4px 5px 6px 16px !important;
+  min-height: 30px !important;
+  max-height: 30px !important;
+  margin: 0 !important;
+  vertical-align: middle !important;
+
+  &:hover {
+    & .lingvo-icon_trash {
+      background-color: #db4e4e;
+    }
+  }
+}
+/* /roles button */
+
+/* roles dropdown */
+.lingvo-roles-dropdown {
+  background: #fff !important;
+  border-radius: 10px !important;
+  padding: 10px 40px 10px 20px !important;
+  font-size: 14px !important;
+  line-height: 20px !important;
+  position: relative !important;
+
+  &.ui.search.selection.dropdown > input.search {
+    padding: 10px 40px 10px 20px !important;
+    line-height: 20px !important;
+  }
+
+  & .lingvo-icon {
+    vertical-align: middle;
+
+    &_arrow {
+      position: absolute;
+      right: 16px;
+      top: calc(50% - 4px);
+    }
+  }
+
+  &:hover {
+    border-color: #DCDCDC !important;
+  }
+
+  &.ui.active.selection.dropdown {
+    border-radius: 10px !important;
+    border-color: #DCDCDC !important;
+   
+    & .lingvo-icon {
+      &_arrow {
+        transform: rotate(180deg);
+      }
+    }
+  }
+
+  &.ui.selection.dropdown > .menu {
+    box-shadow: 0px 8px 24px -6px rgba(0, 0, 0, 0.16), 0px 0px 1px rgba(0, 0, 0, 0.4) !important;
+    border-radius: 12px !important;
+    border: none !important;
+    padding: 4px !important;
+    margin: 4px 0 0 0 !important;
+
+    @media only screen and (max-device-width: 350px), only screen and (max-width: 350px) {
+      min-width: 100%;
+    }
+
+    & > .item {
+      border-radius: 8px !important;
+      font-size: 14px !important;
+      line-height: 20px !important;
+      padding: 9px 9px !important;
+      border-top: none !important;
+
+      &.active {
+        font-weight: 500 !important;
+      }
+
+      &.selected {
+        background: transparent !important;
+      }
+
+      & + .item {
+        margin-top: 3px !important;
+      }
+
+      &:hover {
+        background: #EDECF6 !important;
+        color: #372F9D !important;
+      }
+
+    }
+  }
+
+  &.dropdown.upward > .menu {
+    margin: 0 0 4px 0 !important;
+  }
+
+  &_search {
+    min-width: 263px !important;
+
+    &.ui.selection.dropdown > .menu {
+      min-width: 263px !important;
+    }
+
+    & + .lingvo-button-violet {
+      margin-left: 20px !important;
+    }
+
+    @media only screen and (max-device-width: 500px), only screen and (max-width: 500px) {
+      min-width: 100% !important;
+
+      & + .lingvo-button-violet {
+        width: 100% !important;
+        margin-top: 10px !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+      }
+
+      &.ui.selection.dropdown > .menu {
+        min-width: 100% !important;
+      }
+    }
+
+  }
+
+}
+/* /roles dropdown */
+
+/* /roles modal */
+
+
+/* checkbox */
+.lingvo-checkbox {
+  vertical-align: top !important;
+
+  &.ui.checkbox .box:before, 
+  &.ui.checkbox label:before {
+    border: 1px solid #4E46B4 !important;
+  }
+
+  &.ui.checkbox input:checked ~ .box:before, 
+  &.ui.checkbox input:checked ~ label:before {
+    background: #4E46B4 !important;
+    border: 1px solid #4E46B4 !important;
+  }
+
+  &.ui.checkbox input:checked ~ .box:after, 
+  &.ui.checkbox input:checked ~ label:after {
+    color: #fff !important;
+    font-size: 10px !important;
+  }
+}
+/* /checkbox */
+
+/* segment */
+.lingvo-segment-modal {
+  background: #EDECF6;
+  padding: 11px 16px;
+  border-radius: 8px;
+  margin: 0 0 14px 0;
+}
+/* /segment */

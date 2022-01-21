@@ -5,7 +5,7 @@ import { branch, compose, onlyUpdateForKeys, renderNothing } from 'recompose';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import { connect } from 'react-redux';
-import { Button, Checkbox, Modal, Segment, Header } from 'semantic-ui-react';
+import { Button, Checkbox, Modal } from 'semantic-ui-react';
 import { closeSaveDictionaryModal } from 'ducks/saveDictionary';
 import { getTranslation } from 'api/i18n';
 
@@ -102,24 +102,29 @@ class Properties extends React.Component {
         dimmer
         className="lingvo-modal2">
 
+        <Modal.Header>{`${getTranslation('Save')} '${translation}'?`}</Modal.Header>
         <Modal.Content>
-          <Header size="large">{`${getTranslation('Save')} '${translation}'?`}</Header>
-          <Segment>
+          <div className="lingvo-segment-modal">
             {getTranslation('URL with results of saving data should appear soon after clicking save button in the tasks.')}
-          </Segment>
-          <Checkbox
-            label={getTranslation('Save sound recordings')}
-            checked={this.state.save_sound}
-            onChange={(e, { checked }) =>
-              this.setState({ save_sound: checked })}
-          />
-          <Checkbox
-            style={{marginLeft: '1em'}}
-            label={getTranslation('Save markup')}
-            checked={this.state.save_markup}
-            onChange={(e, { checked }) =>
-              this.setState({ save_markup: checked })}
-          />
+          </div>
+          <div style={{marginBottom: '25px'}}>
+            <Checkbox
+              style={{margin: '0 50px 10px 4px'}}
+              label={getTranslation('Save sound recordings')}
+              checked={this.state.save_sound}
+              onChange={(e, { checked }) =>
+                this.setState({ save_sound: checked })}
+              className="lingvo-checkbox"
+            />
+            <Checkbox
+              style={{margin: '0 0 10px 4px'}}
+              label={getTranslation('Save markup')}
+              checked={this.state.save_markup}
+              onChange={(e, { checked }) =>
+                this.setState({ save_markup: checked })}
+              className="lingvo-checkbox"
+            />
+          </div>
         </Modal.Content>
 
         <Modal.Actions>

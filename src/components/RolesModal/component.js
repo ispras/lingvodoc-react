@@ -105,7 +105,7 @@ class Roles extends React.Component {
 
   constructor(props) {
     super(props);
-
+    
     this.state = {
       selectedUser: undefined
     };
@@ -152,14 +152,18 @@ class Roles extends React.Component {
   }
 
   render() {
-    const { mode, data } = this.props;
+    const { mode, data, user } = this.props;
 
     if (data.error) {
       return null;
     }
 
     const { selectedUser } = this.state;
+
+    const currentUser = user;
+
     const baseGroups = data.all_basegroups ? data.all_basegroups : [];
+
     const allUsers = data.users ? data.users : [];
     const rolesUsers = data[mode] ? data[mode].roles.roles_users : [];
 
@@ -188,17 +192,44 @@ class Roles extends React.Component {
         key: user.id,
         value: user.id,
         text: user.name,
-        icon: 'user',
       }))
       .filter(u => u.value !== 1);
 
     return (
       <Container>
-        <Table celled>
+
+        <Dropdown
+          key={selectedUser}
+          placeholder={getTranslation('Select user')}
+          search
+          selection
+          options={userOptions}
+          selectOnBlur={false}
+          value={selectedUser}
+          onChange={(e, d) => this.setState({ selectedUser: d.value })}
+          className="lingvo-roles-dropdown lingvo-roles-dropdown_search"
+          icon={<i className="lingvo-icon lingvo-icon_arrow" />}
+        />
+        <Button className="lingvo-button-violet" disabled={selectedUser === undefined} onClick={() => this.onAddUser(permissions)}>
+          {getTranslation('Add')}
+        </Button>
+
+        <Table celled className="lingvo-roles-table">
           <Table.Header>
             <Table.Row>
               <Table.HeaderCell>{getTranslation('Role')}</Table.HeaderCell>
-              {users.map(user => <Table.HeaderCell key={user.id}>{user.name}</Table.HeaderCell>)}
+              {users.map(user => (
+                <Table.HeaderCell key={user.id}>
+                  {user.name} 
+                  <Button 
+                    icon={<i className="lingvo-icon lingvo-icon_trash" />} 
+                    title={getTranslation('Remove user')} 
+                    onClick={() => this.onDeleteUser(user.id, permissions)} 
+                    className="lingvo-button-roles-delete" 
+                    disabled={user.id === currentUser.id}
+                  />
+                </Table.HeaderCell>
+              ))}
             </Table.Row>
           </Table.Header>
 
@@ -212,41 +243,15 @@ class Roles extends React.Component {
                       toggle
                       onChange={() => this.onToggleRole(user, role, permissions)}
                       checked={Roles.hasRole(user, role)}
+                      className="lingvo-radio-toggle"
                     />
                   </Table.Cell>
                 ))}
               </Table.Row>
             ))}
-            <Table.Row>
-              <Table.Cell />
-              {users.map(user => (
-                <Table.Cell key={user.id}>
-                  <Button
-                    circular
-                    icon="delete"
-                    color="red"
-                    title={getTranslation('Remove user')}
-                    onClick={() => this.onDeleteUser(user.id, permissions)}
-                  />
-                </Table.Cell>
-              ))}
-            </Table.Row>
           </Table.Body>
         </Table>
 
-        <Dropdown
-          key={selectedUser}
-          placeholder={getTranslation('Select user')}
-          search
-          selection
-          options={userOptions}
-          selectOnBlur={false}
-          value={selectedUser}
-          onChange={(e, d) => this.setState({ selectedUser: d.value })}
-        />
-        <Button color="green" disabled={selectedUser === undefined} onClick={() => this.onAddUser(permissions)} style={{ marginLeft: '1rem' }}>
-          {getTranslation('Add')}
-        </Button>
       </Container>
     );
   }
@@ -262,6 +267,7 @@ Roles.propTypes = {
     all_basegroups: PropTypes.array,
     users: PropTypes.array,
   }).isRequired,
+  user: PropTypes.object.isRequired,
   close: PropTypes.func.isRequired
 };
 
