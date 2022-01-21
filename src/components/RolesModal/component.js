@@ -211,7 +211,7 @@ class Roles extends React.Component {
           icon={<i className="lingvo-icon lingvo-icon_arrow" />}
         />
         <Button className="lingvo-button-violet" disabled={selectedUser === undefined} onClick={() => this.onAddUser(permissions)}>
-          {getTranslation('Save')}
+          {getTranslation('Add')}
         </Button>
 
         <Table celled className="lingvo-roles-table">

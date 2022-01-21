@@ -809,6 +809,7 @@ body {
     background: #5D54CD !important;
     color: #fff !important;
     min-height: 40px !important;
+    padding: 11px 16px !important;
 
     &:hover {
       background: #333 !important;
@@ -839,7 +840,7 @@ body {
   }
 
   &_small {
-    &.button,
+    &.ui.button,
     & .button {
       font-size: 14px !important;
       line-height: 24px !important;
@@ -858,6 +859,7 @@ body {
   box-shadow: 0px 0px 0px 1px #333 inset !important;
   color: #333 !important;
   min-height: 40px !important;
+  padding: 11px 16px !important;
 
   &:hover {
     background: #333 !important;
@@ -2128,10 +2130,6 @@ body {
     }
   }
 
-  &.dropdown > .text {
-    display: inline !important;
-  }
-
   &.ui.selection.dropdown > .menu {
     box-shadow: 0px 8px 24px -6px rgba(0, 0, 0, 0.16), 0px 0px 1px rgba(0, 0, 0, 0.4) !important;
     border-radius: 12px !important;
@@ -2206,3 +2204,36 @@ body {
 /* /roles dropdown */
 
 /* /roles modal */
+
+
+/* checkbox */
+.lingvo-checkbox {
+  vertical-align: top !important;
+
+  &.ui.checkbox .box:before, 
+  &.ui.checkbox label:before {
+    border: 1px solid #4E46B4 !important;
+  }
+
+  &.ui.checkbox input:checked ~ .box:before, 
+  &.ui.checkbox input:checked ~ label:before {
+    background: #4E46B4 !important;
+    border: 1px solid #4E46B4 !important;
+  }
+
+  &.ui.checkbox input:checked ~ .box:after, 
+  &.ui.checkbox input:checked ~ label:after {
+    color: #fff !important;
+    font-size: 10px !important;
+  }
+}
+/* /checkbox */
+
+/* segment */
+.lingvo-segment-modal {
+  background: #EDECF6;
+  padding: 11px 16px;
+  border-radius: 8px;
+  margin: 0 0 14px 0;
+}
+/* /segment */

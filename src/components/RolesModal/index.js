@@ -29,7 +29,7 @@ const RolesModal = ({
       closeIcon
       onClose={actions.close}
       open={visible}
-      dimmer="blurring"
+      dimmer
       size="large"
       className="lingvo-modal2"
     >
