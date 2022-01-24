@@ -105,7 +105,7 @@ class Properties extends React.Component {
         <Modal.Header>{`${getTranslation('Save')} '${translation}'?`}</Modal.Header>
         <Modal.Content>
           <div className="lingvo-segment-modal">
-            {getTranslation('URL with results of saving data should appear soon after clicking save button in the tasks.')}
+            {getTranslation('URL with results of saving data should appear soon after clicking save button in the tasks')}.
           </div>
           <div style={{marginBottom: '25px'}}>
             <Checkbox
