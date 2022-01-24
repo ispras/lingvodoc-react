@@ -45,6 +45,18 @@
     background: #FAFAFA !important;
   }
 
+  &.ui.modal > .close {
+    top: 13px;
+    right: 23px;
+    padding: 10px 0 0 0;
+    margin: 0 !important;
+
+    @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+      top: 0.5rem !important;
+      right: 0.75rem !important;
+    }
+  }
+
   & i.icon.close:before {
     content: "";
     display: block;
@@ -53,15 +65,9 @@
     right: 8px;
     width: 16px;
     height: 16px;
-    background-color: #fff !important;
+    background-color: #372F9D !important;
     -webkit-mask-image: url("../images/close.svg");
     mask-image: url("../images/close.svg");
-   
-    @media only screen and (max-width: 991px) { 
-      & {
-        background-color: #372F9D !important;
-      }
-    }
   }
 
   & .ui.header {
@@ -157,6 +163,18 @@
       border-bottom-left-radius: 16px !important;
       border-bottom-right-radius: 16px !important;
   }
+
+  &.ui.modal > .close {
+    top: 13px;
+    right: 23px;
+    padding: 10px 0 0 0;
+    margin: 0 !important;
+
+    @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+      top: 0.5rem !important;
+      right: 0.75rem !important;
+    }
+  }
   
   & i.icon.close:before {
     content: "";
@@ -166,28 +184,23 @@
     right: 8px;
     width: 16px;
     height: 16px;
-    background-color: #fff !important;
+    background-color: #372F9D !important;
     -webkit-mask-image: url("../images/close.svg");
     mask-image: url("../images/close.svg");
-   
-    @media only screen and (max-width: 991px) { 
-      & {
-        background-color: #372F9D !important;
-      }
-    }
   }
 
   &.ui.fullscreen.modal {
     left: auto !important;
-
-    & i.icon.close:before {
-      background-color: #372F9D !important;
-    }
   }
 
   &.ui.modal > .header {
     font-family: Mulish, Arial, sans-serif !important;
     border-bottom: 1px solid #ebebeb !important;
+    padding-right: 55px !important;
+
+    @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+      padding-right: 45px !important;
+    }
   }
   
   &.ui.modal > .header:not(.ui) {
