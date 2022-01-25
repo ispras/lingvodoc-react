@@ -91,7 +91,7 @@ class Organizations extends React.Component {
       ],
     }).then(() => {
       window.logger.suc(getTranslation(
-        'Request has been sent to the organization\'s administrator.'));
+        "Request has been sent to the organization's administrator."));
     });
   }
 
@@ -107,7 +107,7 @@ class Organizations extends React.Component {
       ],
     }).then(() => {
       window.logger.suc(getTranslation(
-        'Request has been sent to the organization\'s administrator.'));
+        "Request has been sent to the organization's administrator."));
     });
   }
 
