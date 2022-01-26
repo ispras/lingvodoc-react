@@ -21,30 +21,30 @@ function toolsRoute(props) {
 
         <div className="cards-list">
           <Link className="card-item" to="/map">
-            <label className="card-item__label">{getTranslation('Maps')}</label>
+            <label className="card-item__label">{getTranslation('Map of the languages and dialects')}</label>
             <img className="card-item__img card-item__img_map" src={imageMap} />
           </Link>
           <Link className="card-item" to="/map_search">
-            <label className="card-item__label">{getTranslation('Search')}</label>
+            <label className="card-item__label">{getTranslation("Search and map’s creating")}</label>
             <img className="card-item__img card-item__img_search" src={imageSearch} />
           </Link>
           <a className="card-item" target="_blank" href="https://github.com/ispras/lingvodoc-react/wiki/%D0%A5%D1%80%D0%B0%D0%BD%D0%B8%D0%BB%D0%B8%D1%89%D0%B5-%D0%BA%D0%B0%D1%80%D1%82">
-            <label className="card-item__label">{getTranslation('Storage')}</label>
+            <label className="card-item__label">{getTranslation('Library of linguistic maps')}</label>
             <img className="card-item__img" src={imageStorage} />
           </a>
           {props.user && props.user.id == 1 && (
             <Link className="card-item" to="/distance_map">
-              <label className="card-item__label">{getTranslation('Distance map')}</label>
+              <label className="card-item__label">{getTranslation('Language genetic proximity map')}</label>
               <img className="card-item__img card-item__img_distance-map" src={imageDistanceMap} />
             </Link>
           )}
           <Link className="card-item" to="/languages">
-            <label className="card-item__label">{getTranslation('Languages')}</label>
+            <label className="card-item__label">{getTranslation('Edit of the dialects classification')}</label>
             <img className="card-item__img" src={imageLanguages} />
           </Link>
           {props.user && props.user.id == 1 && (
             <Link className="card-item" to="/edit_translations">
-              <label className="card-item__label">{getTranslation('Edit interface translations')}</label>
+              <label className="card-item__label">{getTranslation('Edit translations')}</label>
               <img className="card-item__img" src={imageTranslations} />
             </Link>
           )}
