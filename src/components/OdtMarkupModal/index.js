@@ -73,7 +73,7 @@ class OdtMarkupModal extends React.Component {
 
     const { selection, saving } = this.state;
 
-    for (header of window.document.getElementsByClassName("header")) {
+    for (let header of window.document.getElementsByClassName("header")) {
         if (header.innerText == "User defined variant") return;}
 
     if (saving || !document.getSelection().isCollapsed) {
