@@ -236,7 +236,7 @@ class Roles extends React.Component {
           <Table.Body>
             {permissions.map(role => (
               <Table.Row key={role.group.id}>
-                <Table.Cell>{role.group.name}</Table.Cell>
+                <Table.Cell>{getTranslation(role.group.name)}</Table.Cell>
                 {users.map(user => (
                   <Table.Cell key={user.id}>
                     <Radio
