@@ -442,52 +442,57 @@ const Dictionaries = compose(
   branch(({ data }) => !!data.error, renderNothing)
 )(Dashboard);
 
-const DICTIONARIES_TABS = [
-  {
-    menuItem: getTranslation('My dictionaries'),
-    render: () => (
-      <Tab.Pane className="lingvo-tab__pane">
-        <Dictionaries category={0} mode={0} />
-      </Tab.Pane>
-    ),
-  },
-  {
-    menuItem: getTranslation('Available dictionaries'),
-    render: () => (
-      <Tab.Pane className="lingvo-tab__pane">
-        <Dictionaries category={0} mode={1} />
-      </Tab.Pane>
-    ),
-  },
-];
 
-const CORPORA_TABS = [
-  {
-    menuItem: getTranslation('My corpora'),
-    render: () => (
-      <Tab.Pane className="lingvo-tab__pane">
-        <Dictionaries category={1} mode={0} />
-      </Tab.Pane>
-    ),
-  },
-  {
-    menuItem: getTranslation('Available corpora'),
-    render: () => (
-      <Tab.Pane className="lingvo-tab__pane">
-        <Dictionaries category={1} mode={1} />
-      </Tab.Pane>
-    ),
-  },
-];
+const DICTIONARIES_TABS = () => {
+  return [
+    {
+      menuItem: getTranslation('My dictionaries'),
+      render: () => (
+        <Tab.Pane className="lingvo-tab__pane">
+          <Dictionaries category={0} mode={0} />
+        </Tab.Pane>
+      ),
+    },
+    {
+      menuItem: getTranslation('Available dictionaries'),
+      render: () => (
+        <Tab.Pane className="lingvo-tab__pane">
+          <Dictionaries category={0} mode={1} />
+        </Tab.Pane>
+      ),
+    },
+  ];
+};
+
+const CORPORA_TABS = () => {
+  return [
+    {
+      menuItem: getTranslation('My corpora'),
+      render: () => (
+        <Tab.Pane className="lingvo-tab__pane">
+          <Dictionaries category={1} mode={0} />
+        </Tab.Pane>
+      ),
+    },
+    {
+      menuItem: getTranslation('Available corpora'),
+      render: () => (
+        <Tab.Pane className="lingvo-tab__pane">
+          <Dictionaries category={1} mode={1} />
+        </Tab.Pane>
+      ),
+    },
+  ];
+};
 
 const DictionaryDashboard = () => (
   <div className="background-content">
-    <Tab className="inverted lingvo-tab" panes={DICTIONARIES_TABS} renderActiveOnly />
+    <Tab className="inverted lingvo-tab" panes={DICTIONARIES_TABS()} renderActiveOnly />
   </div>
 );
 const CorpusDashboard = () => (
   <div className="background-content">
-    <Tab className="inverted lingvo-tab" panes={CORPORA_TABS} renderActiveOnly />
+    <Tab className="inverted lingvo-tab" panes={CORPORA_TABS()} renderActiveOnly />
   </div>
 );
 
