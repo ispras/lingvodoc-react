@@ -81,45 +81,21 @@ body {
     width: 100%;
     
     height: 200px;
-    /*background: url("../images/rectangle1.svg") 0 -110px no-repeat, url("../images/rectangle2.svg") 100% 60px no-repeat;*/
-    background: url("../images/snow.svg") 50% 50% repeat, url("../images/ny_toys.png") 60px 0 no-repeat, url("../images/ny_toys.png") calc(100% - 60px) 0 no-repeat, url("../images/rectangle1.svg") 0 -110px no-repeat, url("../images/rectangle2.svg") 100% 60px no-repeat;
+    background: url("../images/rectangle1.svg") 0 -110px no-repeat, url("../images/rectangle2.svg") 100% 60px no-repeat;
     background-color: #372F9D;
-
-    /* for newyear style */
-    @media only screen and (max-device-width: 1150px), only screen and (max-width: 1150px) {
-      background: url("../images/snow.svg") 50% 50% repeat, url("../images/ny_toys.png") 10px 0 no-repeat, url("../images/ny_toys.png") calc(100% - 5px) 0 no-repeat, url("../images/rectangle1.svg") 0 -110px no-repeat, url("../images/rectangle2.svg") 100% 60px no-repeat;
-      background-color: #372F9D;
-    }
-    /* /for newyear style */
-
-    /* for newyear style */
-    @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
-      background: url("../images/ny_toys_small.png") 21px -9px no-repeat, url("../images/ny_toys_small.png") calc(100% - 21px) -9px no-repeat, url("../images/snow_small.svg") 50% 50% repeat, url("../images/rectangle1.svg") 0 -110px no-repeat, url("../images/rectangle2.svg") 100% 60px no-repeat;
-      background-color: #372F9D;
-    }
-    /* /for newyear style */
   }
 }
 
 .background-header {
-  /*background: url("../images/rectangle1.svg") 0 -185px no-repeat, url("../images/rectangle2.svg") 100% 35px no-repeat;*/
-  background: url("../images/snow.svg") 50% 50% repeat, url("../images/rectangle1.svg") 0 -185px no-repeat, url("../images/rectangle2.svg") 100% 35px no-repeat;
+  background: url("../images/rectangle1.svg") 0 -185px no-repeat, url("../images/rectangle2.svg") 100% 35px no-repeat;
   background-color: #372F9D;
 
   padding: 26px 0;
   margin: 0 0 26px 0;
-
-  /* for newyear style */
-  @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
-    background: url("../images/snow_small.svg") 50% 50% repeat, url("../images/rectangle1.svg") 0 -185px no-repeat, url("../images/rectangle2.svg") 100% 35px no-repeat;
-    background-color: #372F9D;
-  }
-  /* /for newyear style */
 }
 
 .background-main-page {
-  /*background: url("../images/rectangle1.svg") 0 -110px no-repeat, url("../images/rectangle2.svg") calc(100% + 30px) calc(100% + 75px) no-repeat;*/
-  background: url("../images/snowtree.svg") calc(100% - 70px) 100% no-repeat, url("../images/snow.svg") 50% 50% repeat, url("../images/ny_toys.png") 60px 0 no-repeat, url("../images/ny_toys.png") calc(100% - 60px) 0 no-repeat, url("../images/rectangle1.svg") 0 -110px no-repeat, url("../images/rectangle2.svg") calc(100% + 30px) calc(100% + 75px) no-repeat;
+  background: url("../images/rectangle1.svg") 0 -110px no-repeat, url("../images/rectangle2.svg") calc(100% + 30px) calc(100% + 75px) no-repeat;
   background-color: #372F9D;
 
   padding: 0 0 24px 0;
@@ -134,17 +110,9 @@ body {
     }
   }
 
-  /* for newyear style */
-  @media only screen and (max-device-width: 1150px), only screen and (max-width: 1150px) {
-    background: url("../images/snowtree.svg") calc(100% - 20px) 100% no-repeat, url("../images/snow.svg") 50% 50% repeat, url("../images/ny_toys.png") 10px 0 no-repeat, url("../images/ny_toys.png") calc(100% - 5px) 0 no-repeat, url("../images/rectangle1.svg") 0 -110px no-repeat, url("../images/rectangle2.svg") calc(100% + 30px) calc(100% + 75px) no-repeat;
-    background-color: #372F9D;
-  }
-  /* /for newyear style */
-
   @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
     padding-bottom: 20px;
-    /*background: url("../images/rectangle1.svg") -70px -170px no-repeat, url("../images/rectangle2.svg") calc(100% + 30px) calc(100% + 275px) no-repeat;*/
-    background: url("../images/snowtree_small.svg") calc(100% - 18px) 100% no-repeat, url("../images/ny_toys_small.png") 21px -9px no-repeat, url("../images/ny_toys_small.png") calc(100% - 21px) -9px no-repeat, url("../images/snow_small.svg") 50% 50% repeat, url("../images/rectangle1.svg") -70px -170px no-repeat, url("../images/rectangle2.svg") calc(100% + 30px) calc(100% + 275px) no-repeat;
+    background: url("../images/rectangle1.svg") -70px -170px no-repeat, url("../images/rectangle2.svg") calc(100% + 30px) calc(100% + 275px) no-repeat;
     background-color: #372F9D;
   }
 }
@@ -160,8 +128,7 @@ body {
 }
 
 .background-content {
-  /*background: url("../images/rectangle1.svg") 0 -80px no-repeat, url("../images/rectangle2.svg") 100% 110px no-repeat;*/
-  background: url("../images/snow.svg") 50% 50% repeat, url("../images/rectangle1.svg") 0 -80px no-repeat, url("../images/rectangle2.svg") 100% 110px no-repeat;
+  background: url("../images/rectangle1.svg") 0 -80px no-repeat, url("../images/rectangle2.svg") 100% 110px no-repeat;
   background-color: #372F9D;
 
   padding: 26px 20px 70px 20px;
@@ -172,12 +139,6 @@ body {
     height: 100%;
   }
 
-  /* for newyear style */
-  @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
-    background: url("../images/snow_small.svg") 50% 50% repeat, url("../images/rectangle1.svg") 0 -80px no-repeat, url("../images/rectangle2.svg") 100% 110px no-repeat;
-    background-color: #372F9D;
-  }
-  /* /for newyear style */
 }
 
 .gentium {
@@ -911,6 +872,35 @@ body {
     opacity: 1 !important;
   }
 
+}
+
+.lingvo-button-green-small {
+  border-radius: 4px !important;
+  font-family: Rubik, Arial, sans-serif !important;
+  font-weight: normal !important;
+  font-size: 14px !important;
+  line-height: 10px !important;
+  min-height: 24px !important;
+  padding: 6px 8px !important;
+  color: #57B894 !important;
+  background: #fff !important;
+  border: 1px solid #57B894 !important;
+  box-shadow: none !important;
+  white-space: nowrap !important;
+
+  &:hover {
+    background: #57B894 !important;
+    color: #fff !important;
+    border: 1px solid #57B894 !important;
+  }
+
+  &.button.disabled,
+  &.button:disabled {
+    background: #fff !important;
+    border: 1px solid #999CA0 !important;
+    color: #999CA0 !important;
+    opacity: 1 !important;
+  }
 }
 
 /* confirm */
@@ -2239,3 +2229,81 @@ body {
   margin: 0 0 14px 0;
 }
 /* /segment */
+
+
+/* organizations modal */
+
+.lingvo-organizations-head-table {
+  padding: 8px 16px;
+  font-family: Mulish, Arial, sans-serif;
+  font-weight: bold;
+
+  @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+    padding: 8px 10px;
+  }
+}
+
+.lingvo-organizations-none {
+  padding: 8px 16px;
+
+  @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+    padding: 8px 10px;
+  }
+}
+
+/* organizations table */
+.lingvo-organizations-table {
+  border: none !important;
+  margin: 0 !important;
+
+  & tr:nth-child(2n) {
+    & td {
+      background: #FAFAFA !important;
+    }
+
+    & td:first-child {
+      border-radius: 8px 0 0 8px !important;
+    }
+
+    & td:last-child {
+      border-radius: 0 8px 8px 0 !important;
+    }
+
+    @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+      & td:first-child {
+        border-radius: 8px 8px 0 0 !important;
+      }
+  
+      & td:last-child {
+        border-radius: 0 0 8px 8px !important;
+      }
+    }
+  }
+
+  & tr td {
+    border: none !important;
+    padding: 8px 16px !important;
+  }
+
+  @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+    
+    &.ui.table tr {
+      box-shadow: none !important;
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+
+      & td:first-child {
+        padding-top: 18px !important;
+      }
+  
+      & td:last-child {
+        padding-bottom: 18px !important;
+      }
+    }
+
+  }
+  
+}
+/* /organizations table */
+
+/* /organizations modal */
