@@ -86,7 +86,7 @@ class DictionaryOrganizationsModal extends React.Component
               </Table>
             ) || (
               <div className="lingvo-organizations-none">
-                {getTranslation('none.')}
+                &mdash;
               </div>
             )}
           </div>
@@ -160,7 +160,7 @@ class DictionaryOrganizationsModal extends React.Component
               </Table>
             ) || (
               <div className="lingvo-organizations-none">
-                {getTranslation('none.')}
+                &mdash;
               </div>
             )}
 

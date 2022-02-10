@@ -260,7 +260,6 @@ export const stringsToTranslate = [
    "No suggestions",
    "No years found",
    "None",
-   "none.",
    "Not chosen",
    "Not supported",
    "Nothing here, sorry",
