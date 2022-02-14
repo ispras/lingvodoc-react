@@ -451,20 +451,20 @@ class QueryBuilder extends React.Component {
     return (
       <div>
         <Segment.Group className="search-group">
-          <Segment>Search in</Segment>
+          <Segment>{getTranslation('Search in')}</Segment>
           <Segment.Group>
             <Segment>
               <Grid columns="equal" stackable>
                 <Grid.Column>
                   <Checkbox
-                    label="Dictionaries"
+                    label={getTranslation('Dictionaries')}
                     checked={this.state.source.dictionaries}
                     onChange={() => this.changeSource('dictionaries')}
                   />
                 </Grid.Column>
                 <Grid.Column>
                   <Checkbox
-                    label="Corpora"
+                    label={getTranslation('Corpora')}
                     checked={this.state.source.corpora}
                     onChange={() => this.changeSource('corpora')}
                   />
@@ -489,27 +489,27 @@ class QueryBuilder extends React.Component {
         />
 
         <Segment.Group className="search-group">
-          <Segment>Search options</Segment>
+          <Segment>{getTranslation('Search options')}</Segment>
           <Segment.Group>
             <Segment>
               <Grid columns="equal" divided stackable>
                 <Grid.Column>
                   <Radio
-                    label="Ignore adoptions"
+                    label={getTranslation('Ignore adoptions')}
                     name="adoptedMode"
                     value="ignore"
                     checked={this.state.mode.adopted === 'ignore'}
                     onChange={(e, { value }) => this.changeMode('adopted', value)}
                   />
                   <Radio
-                    label="Search for adoptions"
+                    label={getTranslation('Search for adoptions')}
                     name="adoptedMode"
                     value="include"
                     checked={this.state.mode.adopted === 'include'}
                     onChange={(e, { value }) => this.changeMode('adopted', value)}
                   />
                   <Radio
-                    label="Exclude adoptions"
+                    label={getTranslation('Exclude adoptions')}
                     name="adoptedMode"
                     value="exclude"
                     checked={this.state.mode.adopted === 'exclude'}
@@ -518,21 +518,21 @@ class QueryBuilder extends React.Component {
                 </Grid.Column>
                 <Grid.Column>
                   <Radio
-                    label="Ignore etymology"
+                    label={getTranslation('Ignore etymology')}
                     name="etymologyMode"
                     value="ignore"
                     checked={this.state.mode.etymology === 'ignore'}
                     onChange={(e, { value }) => this.changeMode('etymology', value)}
                   />
                   <Radio
-                    label="Has etymology"
+                    label={getTranslation('Has etymology')}
                     name="etymologyMode"
                     value="include"
                     checked={this.state.mode.etymology === 'include'}
                     onChange={(e, { value }) => this.changeMode('etymology', value)}
                   />
                   <Radio
-                    label="Doesn't have etymology"
+                    label={getTranslation("Doesn't have etymology")}
                     name="etymologyMode"
                     value="exclude"
                     checked={this.state.mode.etymology === 'exclude'}
@@ -557,14 +557,14 @@ class QueryBuilder extends React.Component {
             <Segment.Group>
               <Segment>
                 <Radio
-                  label="AND"
+                  label={getTranslation('AND')}
                   name="blocksMode"
                   value="and"
                   checked={this.state.mode.blocks === 'and'}
                   onChange={(e, { value }) => this.changeMode('blocks', value)}
                 />
                 <Radio
-                  label="OR"
+                  label={getTranslation('OR')}
                   name="blocksMode"
                   value="or"
                   checked={this.state.mode.blocks === 'or'}

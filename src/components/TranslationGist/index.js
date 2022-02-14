@@ -6,6 +6,7 @@ import gql from 'graphql-tag';
 import { Container, Button, List } from 'semantic-ui-react';
 import TranslationAtom from '../TranslationAtom';
 import { compositeIdToString } from '../../utils/compositeId';
+import { getTranslation } from 'api/i18n';
 
 export const translationGistQuery = gql`
   query($id: LingvodocID!) {
@@ -107,7 +108,7 @@ export default class TranslationGist extends React.Component {
             </List.Item>
           ))}
         </List>
-        <Button disabled={this.getAvailableLocales(locales, atoms).length == 0} onClick={this.addAtom} className="lingvo-button-violet">Add</Button>
+        <Button disabled={this.getAvailableLocales(locales, atoms).length == 0} onClick={this.addAtom} className="lingvo-button-violet">{getTranslation('Add')}</Button>
       </Container>
     );
   }
