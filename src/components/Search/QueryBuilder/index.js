@@ -100,12 +100,6 @@ const QueryInput = styled(Input)`
   }
 `;
 
-const matchingOptions = [
-  { key: 'fullstring', text: 'Full string', value: 'full_string' },
-  { key: 'substring', text: 'Sub string', value: 'substring' },
-  { key: 'regexp', text: 'Regexp', value: 'regexp' },
-];
-
 const newBlock = {
   search_string: '',
   matching_type: 'full_string',
@@ -145,8 +139,14 @@ function Query({
     onFieldChange('field_id')(event, { value: fromJS(field.id) });
   };
 
+  const matchingOptions = [
+    { key: 'fullstring', text: getTranslation('Full string'), value: 'full_string' },
+    { key: 'substring', text: getTranslation('Sub string'), value: 'substring' },
+    { key: 'regexp', text: getTranslation('Regexp'), value: 'regexp' },
+  ];
+
   return (
-    <QueryInput action type="text" placeholder="Search String" value={str} onChange={onFieldChange('search_string')} className="group-fields-adaptive">
+    <QueryInput action type="text" placeholder={getTranslation('Search String')} value={str} onChange={onFieldChange('search_string')} className="group-fields-adaptive">
       <Select
         placeholder="Field"
         options={fieldOptions}
@@ -174,14 +174,14 @@ function SearchBlock({
   const subBlocksModeText = subBlocksMode.toUpperCase();
   return (
     <OrWrapper>
-      <div>{subBlocksModeText} block</div>
+      <div>{getTranslation(`${subBlocksModeText} block`)}</div>
       <InnerSearchBlocks>
         {data.map((block, id) => (
           <QueryWithData key={id} query={block} onFieldChange={onFieldChange(id)} onDelete={onDeleteInnerSearchBlock(id)} />
         ))}
         <div>
           <Button primary basic onClick={onAddInnerSearchBlock}>
-            Add {subBlocksModeText} condition
+            {getTranslation(`Add ${subBlocksModeText} condition`)}
           </Button>
         </div>
       </InnerSearchBlocks>
@@ -587,11 +587,11 @@ class QueryBuilder extends React.Component {
               onDeleteSearchBlock={this.onDeleteSearchBlock(id)}
             />,
             <Divider key={`d_${id}`} horizontal>
-              { blocksText }
+              {getTranslation(blocksText)}
             </Divider>
           ))}
           <Button primary basic fluid onClick={this.onAddSearchBlock}>
-            Add { blocksText } block
+            {getTranslation(`Add ${blocksText} block`)}
           </Button>
 
           <Divider />

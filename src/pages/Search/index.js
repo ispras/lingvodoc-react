@@ -212,7 +212,7 @@ class Wrapper extends React.Component {
     if (this.props.preloadFlag)
       return (
         <Dimmer active={true} inverted>
-          <Loader>Loading</Loader>
+          <Loader>{getTranslation('Loading')}</Loader>
         </Dimmer>
       );
 
@@ -224,7 +224,7 @@ class Wrapper extends React.Component {
     if (data.loading) {
       return (
         <Dimmer active={data.loading} inverted>
-          <Loader>Loading</Loader>
+          <Loader>{getTranslation('Loading')}</Loader>
         </Dimmer>
       );
     }
@@ -244,10 +244,10 @@ class Wrapper extends React.Component {
     return <div>
       <Message positive>
         <div>
-          Found {resultsCount.size} results on <a href="" onClick={(e) => {
+          {getTranslation('Found')} {resultsCount.size} {getTranslation('results on')} <a href="" onClick={(e) => {
             e.preventDefault();
             document.getElementById('mapResults').scrollIntoView();
-          }}>map</a>
+          }}>{getTranslation('map')}</a>
         </div>
         {advancedSearch.xlsx_url ?
           <div>
@@ -572,7 +572,7 @@ class SearchTabs extends React.Component {
   getUniqueSearchGroups = memoize(mapSearches => mapSearches
     .map(search => Immutable.fromJS({
       id: search.get('id'),
-      text: `Search ${search.get('id')}`,
+      text: `${getTranslation('Search')} ${search.get('id')}`,
       color: mdColors.get(search.get('id') - 1),
       isActive: search.get('isActive'),
     })));
@@ -915,7 +915,7 @@ class SearchTabs extends React.Component {
 
         return (
           <Dimmer active={data.loading} inverted>
-            <Loader>Loading</Loader>
+            <Loader>{getTranslation('Loading')}</Loader>
           </Dimmer>);
     }
 
@@ -934,7 +934,7 @@ class SearchTabs extends React.Component {
     const searchPanes = searches.map(search => ({
       menuItem: (
         <Menu.Item key={search.id}>
-          Search {search.id}
+          {getTranslation('Search')} {search.id}
           <Button
             compact
             basic
@@ -950,7 +950,7 @@ class SearchTabs extends React.Component {
         return (
           <Tab.Pane attached={false} key={search.id}>
             <Container className="lingvo-container_margin-auto">
-              <h3>Search</h3>
+              <h3>{getTranslation('Search')}</h3>
               <QueryBuilder
                 searchId={search.id}
                 data={fromJS(search.query)}
