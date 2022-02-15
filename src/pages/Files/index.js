@@ -81,29 +81,6 @@ const SortableColumnHeader = ({ children, onSortModeChange }) => (
 
 const BlobWithData = compose(graphql(deleteBlobMutation, { name: 'deleteBlob' }), pure)(Blob);
 
-const fileTypes = [
-  {
-    text: getTranslation('PDF file'),
-    value: 'pdf',
-    icon: 'file pdf outline',
-  },
-  {
-    text: getTranslation('Dialeqt file'),
-    value: 'dialeqt_dictionary',
-    icon: 'conversation',
-  },
-  {
-    text: 'Starling',
-    value: 'starling/csv',
-    icon: 'conversation',
-  },
-  {
-    text: getTranslation('Image'),
-    value: 'image',
-    icon: 'file outline',
-  }
-];
-
 function sortFiles(files, sortByField) {
   const { prop, order } = sortByField;
   const sortedFiles = sortBy(files, file => file[prop]);
@@ -115,7 +92,7 @@ class Files extends React.Component {
     super(props);
 
     this.state = {
-      fileType: fileTypes[0].value,
+      fileType: 'pdf',
       file: undefined,
       trigger: true,
       filter: ''
@@ -164,6 +141,29 @@ class Files extends React.Component {
     if (sortByField) {
       blobs = sortFiles(blobs, sortByField);
     }
+
+    const fileTypes = [
+      {
+        text: getTranslation('PDF file'),
+        value: 'pdf',
+        icon: 'file pdf outline',
+      },
+      {
+        text: getTranslation('Dialeqt file'),
+        value: 'dialeqt_dictionary',
+        icon: 'conversation',
+      },
+      {
+        text: getTranslation('Starling'),
+        value: 'starling/csv',
+        icon: 'conversation',
+      },
+      {
+        text: getTranslation('Image'),
+        value: 'image',
+        icon: 'file outline',
+      }
+    ];
 
     return (
       <div className="background-content">
