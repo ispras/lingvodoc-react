@@ -17,11 +17,6 @@ import config from 'config';
 import '../published.scss';
 
 let selectorStatus = false;
-const arrLang = [];
-
-const languagesGroup = (e) => {
-  arrLang.push(e);
-};
 
 function toId(arr, prefix = null) {
   const joiner = prefix ? arr[prefix] : arr;
@@ -73,7 +68,7 @@ const Dict = ({
       {authors && authors.size != 0 && <span className="dict-authors">({authors.toArray().join(', ')})</span>}
       {perspectives && !selectorStatus &&
         perspectives.valueSeq && (
-          <Dropdown inline text={`View (${perspectives.size})`}>
+          <Dropdown inline text={`${getTranslation('View')} (${perspectives.size})`}>
             <Dropdown.Menu>
               {perspectives.valueSeq().map(pers => <Perspective key={pers.get('id')} perspective={pers} />)}
             </Dropdown.Menu>
@@ -123,14 +118,10 @@ const Language = ({ language, canSelectDictionaries }) => {
     langClass = 'confirmed-lang-name';
   }
 
-  if (!children.toJS()[0].children[0].children && selectorStatus) {
-    languagesGroup(language.toJS());
-  }
-
   return (
     <li className="lang" id={`lang_${id}`}>
       <span className={langClass}>{translation}</span>
-      <ul>{children.map(n => <Node key={n.get('id')} node={n} canSelectDictionaries={canSelectDictionaries} languagesGroup={languagesGroup} />)}</ul>
+      <ul>{children.map(n => <Node key={n.get('id')} node={n} canSelectDictionaries={canSelectDictionaries} />)}</ul>
     </li>
   );
 };
@@ -147,7 +138,6 @@ Language.defaultProps = {
 const Node = ({
   node,
   canSelectDictionaries,
-
 }) => {
   switch (node.get('type')) {
     case 'language':
