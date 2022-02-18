@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { pure } from 'recompose';
 import styled from 'styled-components';
+import { getTranslation } from 'api/i18n';
 
 const Range = styled.div`
   display: flex;
@@ -27,7 +28,7 @@ const IntersectionControl = ({
       onChange={onChange}
     />
     <span>{max}</span>
-    <span className="intersection-control__text">Более {value} пересечений</span>
+    <span className="intersection-control__text">{getTranslation('More than')} {value} {getTranslation('intersections')}</span>
   </Range>;
 
 IntersectionControl.propTypes = {

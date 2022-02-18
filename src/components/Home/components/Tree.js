@@ -68,7 +68,7 @@ const Dict = ({
       {authors && authors.size != 0 && <span className="dict-authors">({authors.toArray().join(', ')})</span>}
       {perspectives && !selectorStatus &&
         perspectives.valueSeq && (
-          <Dropdown inline text={`View (${perspectives.size})`}>
+          <Dropdown inline text={`${getTranslation('View')} (${perspectives.size})`}>
             <Dropdown.Menu>
               {perspectives.valueSeq().map(pers => <Perspective key={pers.get('id')} perspective={pers} />)}
             </Dropdown.Menu>
