@@ -14,6 +14,7 @@ import { openModalEdit, openModalCreate } from 'ducks/language';
 import { languagesQuery, moveLanguageMutation, deleteLanguageMutation } from 'graphql/language';
 import { buildLanguageTree } from 'pages/Search/treeBuilder';
 import LanguagesTree from './LanguagesTree';
+import { getTranslation } from 'api/i18n';
 
 const dictionariesQuery = gql`
   query getAllDictionaries {
@@ -37,7 +38,7 @@ const Languages = (props) => {
         'backgroundColor': 'white',
         'borderRadius': '0.25em',
         'padding': '0.5em'}}>
-        Loading language data... <Icon loading name="spinner" />
+        {getTranslation('Loading language data')}... <Icon loading name="spinner" />
       </span>
     )
   }

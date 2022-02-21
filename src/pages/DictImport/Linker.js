@@ -42,7 +42,7 @@ function Column({
             color={value === 'keep' ? 'green' : null}
             onClick={() => onChange(name, value === 'keep' ? null : 'keep', value)}
           >
-            Keep
+            {getTranslation("Keep")}
           </Button>
         </Grid.Column>
         <Grid.Column textAlign="center">
