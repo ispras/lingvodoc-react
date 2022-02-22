@@ -1,7 +1,7 @@
 import { call, put, select, takeLatest } from 'redux-saga/effects';
 import { push } from 'react-router-redux';
 import { getId, getUser, signIn, signUp, signOut, editProfile } from 'api/user';
-import { setUser, requestUser, SIGN_OUT, signInForm, signUpForm, editForm } from 'ducks/user';
+import { setUser, requestUser, SIGN_OUT, signInForm, signUpForm, editForm, setError } from 'ducks/user';
 import { startTrackUser, stopTrackUser } from './matomo';
 import { err } from 'ducks/snackbar';
 
@@ -19,6 +19,7 @@ export function* requestRoutine() {
     if (response.data) {
       yield put(setUser(response.data));
     } else {
+      yield put(setError());
       yield put(err('Could not get user info'));
     }
   }

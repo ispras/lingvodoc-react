@@ -17,9 +17,9 @@ import { getTranslation } from 'api/i18n';
 import imageUser from '../images/user.svg';
 
 const Anonymous = ({
-  modal, launchSignInForm, launchSignUpForm, closeForm, loading
+  modal, launchSignInForm, launchSignUpForm, closeForm, loading, error
 }) =>
-loading
+(loading && !error)
 ?
 <Menu.Item className="top_menu">
   <span><Icon loading name="spinner"/></span>

@@ -60,6 +60,18 @@ const developersElecardMedContributors = [
     description: 'фронтенд'
   }
 ];
+
+const developersAdditionalContributors = [
+  {
+    header: 'Михаил Ослон',
+    description: 'анализ когнатов, фонем и аллофонов'
+  },
+  {
+    header: 'Павел Гращенков',
+    description: 'анализ валентностей'
+  }
+];
+
 const Info = () => { 
   return (
     <Container>
@@ -83,6 +95,10 @@ const Info = () => {
         <h3 className="creator-title">ООО Элекард-Мед</h3>
         <Card.Group items={developersElecardMedContributors} itemsPerRow={2} stackable className="lingvo-cards-without-links" />
       </Container>
+      <Container className="container-gray">
+        <h3 className="creator-title">Дополнительный код</h3>
+        <Card.Group items={developersAdditionalContributors} itemsPerRow={2} stackable className="lingvo-cards-without-links" />
+      </Container>
 
       <Container className="container-gray">
         <h2 className="black">Контакты</h2>
@@ -90,8 +106,6 @@ const Info = () => {
       </Container>
     </Container>
   )
-}
-
-  ;
+};
 
 export default (Info);
