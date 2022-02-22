@@ -63,7 +63,7 @@ const Signed = ({
       <img src={imageUser} alt={user.name} className="top_menu__signed-icon icon-user" />
       <span className="top_menu__signed-user">{user.name}</span>
     </span>}
-    className="top_menu top_menu__item_user">
+    className={user.id === 1 ? "top_menu top_menu__item_user top_menu__item_admin" : "top_menu top_menu__item_user"}>
     <Dropdown.Menu>
       <EditUserModal
         trigger={<Dropdown.Item as="a" onClick={launchEditForm}>{getTranslation('Edit profile')}</Dropdown.Item>}

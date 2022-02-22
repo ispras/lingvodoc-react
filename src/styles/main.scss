@@ -249,6 +249,16 @@ body {
     }
   }
 
+  &__item_admin {
+    & .menu {
+      width: 280px !important;
+
+      & .item {
+        white-space: normal !important;
+      }
+    }
+  }
+
   &__dropdown-user {
     display: none !important;
   }
