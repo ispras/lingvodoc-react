@@ -2052,8 +2052,26 @@ class CognateAnalysisModal extends React.Component
 
   handleError(error_data)
   {
-    window.logger.err('Failed to compute cognate analysis!');
-    console.log(error_data);
+    if (error_data.networkError)
+    {
+      if (
+        error_data.message ===
+          'Network error: JSON.parse: unexpected character at line 1 column 1 of the JSON data' &&
+        (error_data.networkError.statusCode == 502 || error_data.networkError.statusCode == 504))
+
+        window.logger.err('Failed to compute cognate analysis! Analysis library or server connection error.');
+
+      else
+
+        window.logger.err('Failed to compute cognate analysis! Server connection error.');
+    } 
+
+    else
+      window.logger.err('Failed to compute cognate analysis!');
+
+    console.log(error_data.message);
+    console.log(error_data)
+    console.log(Object.keys(error_data));
 
     if (error_data.message ===
       'GraphQL error: Analysis library is absent, please contact system administrator.')
