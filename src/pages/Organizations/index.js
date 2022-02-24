@@ -289,7 +289,7 @@ class Organizations extends React.Component {
           <Button
             style={{marginTop: '1em'}}
             onClick={() => this.createOrganization()}>
-            {getTranslation('Create organization...')}
+            {getTranslation('Create organization')}...
           </Button>
         )}
 
