@@ -162,6 +162,1076 @@ const SUGGESTIONS_PER_PAGE = 50;
 function equalIds(id_a, id_b) {
   return id_a[0] == id_b[0] && id_a[1] == id_b[1]; }
 
+class SLPerspectiveSelection extends React.Component
+{
+  constructor(props)
+  {
+    super(props);
+
+    this.state =
+    {
+      perspectiveSelectionList: props.perspectiveSelectionList,
+      transcriptionFieldIdStrList: props.transcriptionFieldIdStrList,
+      translationFieldIdStrList: props.translationFieldIdStrList,
+    };
+
+    this.onChangeSelect = this.onChangeSelect.bind(this);
+  }
+
+  onChangeSelect(checked)
+  {
+    const {
+      perspective_list,
+      index,
+      perspectiveSelectionList,
+      perspectiveSelectionCountMap,
+      onChangeSelectAll,
+      onModalStateChange } =
+
+      this.props;
+
+    const p_select_count = perspectiveSelectionCountMap[''];
+    const p_max_count = perspectiveSelectionCountMap['_max'];
+
+    let p_select_count_new = p_select_count;
+
+    const current = perspectiveSelectionList[index];
+
+    if (current && !checked)
+      p_select_count_new--;
+
+    else if (!current && checked)
+      p_select_count_new++;
+
+    perspectiveSelectionList[index] = checked;
+    perspectiveSelectionCountMap[''] = p_select_count_new;
+
+    const no_compute_before =
+      perspective_list.length <= 1 ||
+      p_select_count <= 0;
+
+    const no_compute_after =
+      perspective_list.length <= 1 ||
+      p_select_count_new <= 0;
+
+    if (no_compute_before != no_compute_after)
+    {
+      onModalStateChange();
+      return;
+    }
+
+    const all_before =
+      p_select_count <= 0 ? 0 :
+      p_select_count >= p_max_count ? 1 :
+      2;
+
+    const all_after =
+      p_select_count_new <= 0 ? 0 :
+      p_select_count_new >= p_max_count ? 1 :
+      2;
+
+    if (all_before != all_after)
+    {
+      onChangeSelectAll();
+      return;
+    }
+
+    if (current != checked)
+      this.setState({ perspectiveSelectionList });
+  }
+
+  render()
+  {
+    const {
+      treePathList,
+      perspective,
+      textFieldsOptions,
+      index,
+      perspectiveSelectionList,
+      transcriptionFieldIdStrList,
+      translationFieldIdStrList } =
+
+      this.props;
+
+    return (
+      <List key={'perspective' + index}>
+        <List.Item key='check'>
+        <Breadcrumb
+          style={perspectiveSelectionList[index] ? {} : {opacity: 0.5}}
+          icon="right angle"
+          sections={treePathList.map(e => ({
+            key: e.id,
+            content: e.hasOwnProperty('status') ?
+              e.translation + ' (' + e.status + ')' :
+              e.translation,
+            link: false }))}
+        />
+        <Checkbox
+          style={{marginLeft: '0.5em', verticalAlign: 'middle'}}
+          checked={perspectiveSelectionList[index]}
+          onChange={(e, { checked }) => this.onChangeSelect(checked)}
+        />
+        </List.Item>
+        {perspectiveSelectionList[index] && (
+          <List.Item key='selection'>
+          <List>
+          <List.Item key='selection_xcript'>
+            <span style={{marginLeft: '1em', marginRight: '0.5em'}}>
+              {getTranslation('Source transcription field:')}
+            </span>
+            <Select
+              disabled={!perspectiveSelectionList[index]}
+              defaultValue={transcriptionFieldIdStrList[index]}
+              placeholder={getTranslation('Source transcription field selection')}
+              options={textFieldsOptions}
+              onChange={(e, { value }) => {
+                transcriptionFieldIdStrList[index] = value;
+                this.setState({ transcriptionFieldIdStrList });}}
+            />
+          </List.Item>
+          <List.Item key='selection_xlat'>
+            <span style={{marginLeft: '1em', marginRight: '0.5em'}}>
+              {getTranslation('Source translation field:')}
+            </span>
+            <Select
+              disabled={!perspectiveSelectionList[index]}
+              defaultValue={translationFieldIdStrList[index]}
+              placeholder={getTranslation('Source translation field selection')}
+              options={textFieldsOptions}
+              onChange={(e, { value }) => {
+                translationFieldIdStrList[index] = value;
+                this.setState({ translationFieldIdStrList });}}
+            />
+          </List.Item>
+          </List>
+          </List.Item>
+        )}
+      </List>
+    );
+  }
+}
+
+class SLSelection extends React.Component
+{
+  constructor(props)
+  {
+    super(props);
+
+    this.state =
+    {
+      perspectiveSelectionCountMap: props.perspectiveSelectionCountMap,
+    };
+  }
+
+  render()
+  {
+    const {
+      perspective_list,
+      perspectiveSelectionList,
+      transcriptionFieldIdStrList,
+      translationFieldIdStrList,
+      perspectiveSelectionCountMap,
+      onModalStateChange } =
+
+      this.props;
+
+    const p_select_count = perspectiveSelectionCountMap[''];
+    const p_max_count = perspectiveSelectionCountMap['_max'];
+
+    return (
+      <div>
+        <List>
+        <List.Item>
+          <span style={p_max_count <= 0 ? {opacity: 0.5} : {}}>
+            {getTranslation('Select/deselect all dictionaries')}
+          </span>
+          <Checkbox
+            style={{marginLeft: '0.5em', verticalAlign: 'middle'}}
+            checked={p_select_count >= p_max_count}
+            indeterminate={p_select_count > 0 && p_select_count < p_max_count || p_max_count <= 0}
+            disabled={p_max_count <= 0}
+            onChange={(e, { checked }) =>
+            {
+              let p_select_count_new = p_select_count;
+
+              if (p_select_count < p_max_count)
+              {
+                perspectiveSelectionList.fill(true);
+                p_select_count_new = p_max_count;
+              }
+              else
+              {
+                perspectiveSelectionList.fill(false);
+                p_select_count_new = 0;
+              }
+
+              perspectiveSelectionCountMap[''] = p_select_count_new;
+
+              const no_compute_before =
+                perspective_list.length <= 1 ||
+                p_select_count <= 0;
+
+              const no_compute_after =
+                perspective_list.length <= 1 ||
+                p_select_count_new <= 0;
+
+              if (no_compute_before != no_compute_after)
+              {
+                onModalStateChange();
+                return;
+              }
+
+              this.setState({ perspectiveSelectionCountMap });
+            }}
+          />
+        </List.Item>
+        </List>
+
+        {map(perspective_list,
+          ({treePathList, perspective, textFieldsOptions}, index) => (
+
+            // Not so good hack in the name of performance,
+            // we just give our state to be modified in the child compoment.
+
+            <SLPerspectiveSelection
+              key={'perspective' + index}
+              treePathList={treePathList}
+              perspective={perspective}
+              textFieldsOptions={textFieldsOptions}
+              index={index}
+              perspective_list={perspective_list}
+              perspectiveSelectionList={perspectiveSelectionList}
+              transcriptionFieldIdStrList={transcriptionFieldIdStrList}
+              translationFieldIdStrList={translationFieldIdStrList}
+              perspectiveSelectionCountMap={perspectiveSelectionCountMap}
+              onChangeSelectAll={() => this.setState({ perspectiveSelectionCountMap })}
+              onModalStateChange={onModalStateChange}
+            />
+        ))}
+      </div>
+    );
+  }
+}
+
+class MLPerspectiveSelection extends React.Component
+{
+  constructor(props)
+  {
+    super(props);
+
+    this.state =
+    {
+      perspectiveSelectionMap: props.perspectiveSelectionMap,
+      transcriptionFieldIdStrMap: props.transcriptionFieldIdStrMap,
+      translationFieldIdStrMap: props.translationFieldIdStrMap,
+    };
+
+    this.onChangeSelect = this.onChangeSelect.bind(this);
+  }
+
+  onChangeSelect(checked)
+  {
+    const {
+      mode,
+      language_list,
+      p_key,
+      perspectiveSelectionMap,
+      perspectiveSelectionCountMap,
+      language_id_str,
+      onChangeSelectAll,
+      onModalStateChange } = this.props;
+
+    const p_select_count = perspectiveSelectionCountMap[''];
+    const p_max_count = perspectiveSelectionCountMap['_max'];
+
+    const no_compute_before =
+      language_list.length <= 0 ||
+      mode == 'multi_reconstruction' &&
+        language_list
+          .filter(language => perspectiveSelectionCountMap[id2str(language.id)] > 0)
+          .length <= 1 ||
+      p_select_count <= 0;
+
+    let p_select_count_new = p_select_count;
+
+    const p_language_select_count = perspectiveSelectionCountMap[language_id_str];
+    const p_language_max_count = perspectiveSelectionCountMap[language_id_str + '_max'];
+
+    let p_language_select_count_new = p_language_select_count;
+
+    const current = perspectiveSelectionMap[p_key];
+
+    if (current && !checked)
+    {
+      p_select_count_new--;
+      p_language_select_count_new--;
+    }
+    else if (!current && checked)
+    {
+      p_select_count_new++;
+      p_language_select_count_new++;
+    }
+
+    perspectiveSelectionMap[p_key] = checked;
+
+    perspectiveSelectionCountMap[''] = p_select_count_new;
+    perspectiveSelectionCountMap[language_id_str] = p_language_select_count_new;
+
+    const no_compute_after =
+      language_list.length <= 0 ||
+      mode == 'multi_reconstruction' &&
+        language_list
+          .filter(language => perspectiveSelectionCountMap[id2str(language.id)] > 0)
+          .length <= 1 ||
+      p_select_count_new <= 0;
+
+    if (no_compute_before != no_compute_after)
+    {
+      onModalStateChange();
+      return;
+    }
+
+    const all_before =
+      p_select_count <= 0 ? 0 :
+      p_select_count >= p_max_count ? 1 :
+      2;
+
+    const all_after =
+      p_select_count_new <= 0 ? 0 :
+      p_select_count_new >= p_max_count ? 1 :
+      2;
+
+    const language_all_before =
+      p_language_select_count <= 0 ? 0 :
+      p_language_select_count >= p_language_max_count ? 1 :
+      2;
+
+    const language_all_after =
+      p_language_select_count_new <= 0 ? 0 :
+      p_language_select_count_new >= p_language_max_count ? 1 :
+      2;
+
+    if (
+      all_before != all_after ||
+      language_all_before != language_all_after)
+    {
+      onChangeSelectAll();
+      return;
+    }
+
+    if (current != checked)
+      this.setState({ perspectiveSelectionMap });
+  }
+
+  render()
+  {
+    const {
+      treePathList,
+      perspective,
+      textFieldsOptions,
+      p_key,
+      perspectiveSelectionMap,
+      transcriptionFieldIdStrMap,
+      translationFieldIdStrMap,
+      language_id_str,
+      onChangeSelectAll } = this.props;
+
+    return (
+      <List key={'perspective' + p_key}>
+        <List.Item>
+        <Breadcrumb
+          style={perspectiveSelectionMap[p_key] ? {} : {opacity: 0.5}}
+          icon="right angle"
+          sections={treePathList.map(e => ({
+            key: e.id,
+            content: e.hasOwnProperty('status') ?
+              e.translation + ' (' + e.status + ')' :
+              e.translation,
+            link: false }))}
+        />
+        <Checkbox
+          style={{marginLeft: '0.5em', verticalAlign: 'middle'}}
+          checked={perspectiveSelectionMap[p_key]}
+          onChange={(e, { checked }) => this.onChangeSelect(checked)}
+        />
+        </List.Item>
+        {perspectiveSelectionMap[p_key] && (
+          <List.Item>
+          <List>
+          <List.Item>
+            <span style={{marginLeft: '1em', marginRight: '0.5em'}}>
+              Source transcription field:
+            </span>
+            <Select
+              disabled={!perspectiveSelectionMap[p_key]}
+              defaultValue={transcriptionFieldIdStrMap[p_key]}
+              placeholder="Source transcription field selection"
+              options={textFieldsOptions}
+              onChange={(e, { value }) => {
+                transcriptionFieldIdStrMap[p_key] = value;
+                this.setState({ transcriptionFieldIdStrMap });}}
+            />
+          </List.Item>
+          <List.Item>
+            <span style={{marginLeft: '1em', marginRight: '0.5em'}}>
+              Source translation field:
+            </span>
+            <Select
+              disabled={!perspectiveSelectionMap[p_key]}
+              defaultValue={translationFieldIdStrMap[p_key]}
+              placeholder="Source translation field selection"
+              options={textFieldsOptions}
+              onChange={(e, { value }) => {
+                translationFieldIdStrMap[p_key] = value;
+                this.setState({ translationFieldIdStrMap });}}
+            />
+          </List.Item>
+          </List>
+          </List.Item>
+        )}
+      </List>
+    );
+  }
+}
+
+class MLSelection extends React.Component
+{
+  constructor(props)
+  {
+    super(props);
+
+    this.state =
+    {
+      perspectiveSelectionCountMap: props.perspectiveSelectionCountMap,
+      language_list: props.language_list,
+      language_id_set: props.language_id_set,
+    };
+
+    this.onDeleteLanguage = this.onDeleteLanguage.bind(this);
+
+    this.onChangeSelectAll = this.onChangeSelectAll.bind(this);
+    this.onChangeSelectLanguageAll = this.onChangeSelectLanguageAll.bind(this);
+  }
+
+  onDeleteLanguage(language_info, l_index)
+  {
+    const {
+      mode,
+      language_list,
+      perspectiveSelectionMap,
+      perspectiveSelectionCountMap,
+      language_id_set,
+      onModalStateChange } =
+
+      this.props;
+
+    const p_select_count = perspectiveSelectionCountMap[''];
+    const p_max_count = perspectiveSelectionCountMap['_max'];
+
+    const no_compute_before =
+      language_list.length <= 0 ||
+      mode == 'multi_reconstruction' &&
+        language_list
+          .filter(language => perspectiveSelectionCountMap[id2str(language.id)] > 0)
+          .length <= 1 ||
+      p_select_count <= 0;
+
+    const language_id_str = id2str(language_info.id);
+
+    language_list.splice(l_index, 1);
+    language_id_set.delete(language_id_str);
+
+    let p_select_count_new = p_select_count;
+
+    for (const { perspective } of language_info.perspective_list)
+    {
+      if (perspectiveSelectionMap[id2str(perspective.id)])
+        p_select_count_new--;
+    }
+
+    perspectiveSelectionCountMap[''] = p_select_count_new;
+    perspectiveSelectionCountMap['_max'] = p_max_count - language_info.perspective_list.length;
+
+    const no_compute_after =
+      language_list.length <= 0 ||
+      mode == 'multi_reconstruction' &&
+        language_list
+          .filter(language => perspectiveSelectionCountMap[id2str(language.id)] > 0)
+          .length <= 1 ||
+      p_select_count_new <= 0;
+
+    if (no_compute_before != no_compute_after)
+    {
+      onModalStateChange();
+      return;
+    }
+
+    this.setState({ perspectiveSelectionCountMap });
+  }
+
+  onChangeSelectAll()
+  {
+    const {
+      mode,
+      language_list,
+      perspectiveSelectionMap,
+      perspectiveSelectionCountMap,
+      onModalStateChange } =
+
+      this.props;
+
+    const p_select_count = perspectiveSelectionCountMap[''];
+    const p_max_count = perspectiveSelectionCountMap['_max'];
+
+    const no_compute_before =
+      language_list.length <= 0 ||
+      mode == 'multi_reconstruction' &&
+        language_list
+          .filter(language => perspectiveSelectionCountMap[id2str(language.id)] > 0)
+          .length <= 1 ||
+      p_select_count <= 0;
+
+    let p_select_count_new = p_select_count;
+
+    if (p_select_count < p_max_count)
+    {
+      for (const language of language_list)
+      {
+        for (const { perspective } of language.perspective_list)
+          perspectiveSelectionMap[id2str(perspective.id)] = true;
+
+        perspectiveSelectionCountMap[id2str(language.id)] = language.perspective_list.length;
+      }
+
+      p_select_count_new = p_max_count;
+    }
+    else
+    {
+      for (const language of language_list)
+      {
+        for (const { perspective } of language.perspective_list)
+          perspectiveSelectionMap[id2str(perspective.id)] = false;
+
+        perspectiveSelectionCountMap[id2str(language.id)] = 0;
+      }
+
+      p_select_count_new = 0;
+    }
+
+    perspectiveSelectionCountMap[''] = p_select_count_new;
+
+    const no_compute_after =
+      language_list.length <= 0 ||
+      mode == 'multi_reconstruction' &&
+        language_list
+          .filter(language => perspectiveSelectionCountMap[id2str(language.id)] > 0)
+          .length <= 1 ||
+      p_select_count_new <= 0;
+
+    if (no_compute_before != no_compute_after)
+    {
+      onModalStateChange();
+      return;
+    }
+
+    this.setState({ perspectiveSelectionCountMap });
+  }
+
+  onChangeSelectLanguageAll(language_info, checked)
+  {
+    const {
+      mode,
+      language_list,
+      perspectiveSelectionMap,
+      perspectiveSelectionCountMap,
+      onModalStateChange } =
+
+      this.props;
+
+    const p_select_count = perspectiveSelectionCountMap[''];
+
+    const no_compute_before =
+      language_list.length <= 0 ||
+      mode == 'multi_reconstruction' &&
+        language_list
+          .filter(language => perspectiveSelectionCountMap[id2str(language.id)] > 0)
+          .length <= 1 ||
+      p_select_count <= 0;
+
+    const language_id_str = id2str(language_info.id);
+
+    const p_language_select_count = perspectiveSelectionCountMap[language_id_str];
+    const p_language_max_count = perspectiveSelectionCountMap[language_id_str + '_max'];
+
+    let p_select_count_new = p_select_count;
+
+    if (p_language_select_count < p_language_max_count)
+    {
+      for (const { perspective } of language_info.perspective_list)
+      {
+        const perspective_id_str = id2str(perspective.id);
+
+        if (!perspectiveSelectionMap[perspective_id_str])
+          p_select_count_new++;
+
+        perspectiveSelectionMap[perspective_id_str] = true;
+      }
+
+      perspectiveSelectionCountMap[language_id_str] = p_language_max_count;
+    }
+    else
+    {
+      for (const { perspective } of language_info.perspective_list)
+      {
+        const perspective_id_str = id2str(perspective.id);
+
+        if (perspectiveSelectionMap[perspective_id_str])
+          p_select_count_new--;
+
+        perspectiveSelectionMap[perspective_id_str] = false;
+      }
+
+      perspectiveSelectionCountMap[language_id_str] = 0;
+    }
+
+    perspectiveSelectionCountMap[''] = p_select_count_new;
+
+    const no_compute_after =
+      language_list.length <= 0 ||
+      mode == 'multi_reconstruction' &&
+        language_list
+          .filter(language => perspectiveSelectionCountMap[id2str(language.id)] > 0)
+          .length <= 1 ||
+      p_select_count_new <= 0;
+
+    if (no_compute_before != no_compute_after)
+    {
+      onModalStateChange();
+      return;
+    }
+
+    this.setState({ perspectiveSelectionCountMap });
+  }
+
+  render()
+  {
+    const {
+      mode,
+      language_list,
+      perspectiveSelectionMap,
+      transcriptionFieldIdStrMap,
+      translationFieldIdStrMap,
+      perspectiveSelectionCountMap,
+      language_id_set,
+      available_language_list,
+      onAddLanguage,
+      onModalStateChange } =
+
+      this.props;
+
+    const p_select_count = perspectiveSelectionCountMap[''];
+    const p_max_count = perspectiveSelectionCountMap['_max'];
+
+    return (
+      <List>
+
+        <List.Item>
+          <span style={p_max_count <= 0 ? {opacity: 0.5} : {}}>
+            {getTranslation('Select/deselect all dictionaries')}
+          </span>
+          <Checkbox
+            style={{marginLeft: '0.5em', verticalAlign: 'middle'}}
+            checked={p_select_count >= p_max_count}
+            indeterminate={p_select_count > 0 && p_select_count < p_max_count || p_max_count <= 0}
+            disabled={p_max_count <= 0}
+            onChange={(e, { checked }) => this.onChangeSelectAll(checked)}
+          />
+        </List.Item>
+
+        {map(language_list, (language_info, l_index) => {
+
+          const language_id_str = id2str(language_info.id);
+
+          const p_language_select_count = perspectiveSelectionCountMap[language_id_str];
+          const p_language_max_count = perspectiveSelectionCountMap[language_id_str + '_max'];
+
+          return (
+            <List.Item key={'language' + l_index}>
+              <Header as="h3">
+                <Breadcrumb
+                  icon="right angle"
+                  sections={language_info.treePath.map(e => ({
+                    key: e.id, content: e.translation, link: false }))}
+                />
+                <span>
+                  <Icon
+                    name='delete'
+                    style={{paddingLeft: '0.5em', paddingRight: '0.5em'}}
+                    onClick={() => this.onDeleteLanguage(language_info, l_index)}
+                  />
+                </span>
+              </Header>
+
+              {language_info.loading ?
+
+                <List>
+                <List.Item>
+                <span>{getTranslation('Loading perspective data...')} <Icon name="spinner" loading /></span>
+                </List.Item>
+                </List> :
+
+                <div>
+                  <List>
+                  <List.Item>
+                    <span>{getTranslation('Select/deselect all language\'s dictionaries')}</span>
+                    <Checkbox
+                      style={
+                        {marginLeft: '0.5em', verticalAlign: 'middle'}}
+                      checked={
+                        p_language_select_count >= p_language_max_count}
+                      indeterminate={
+                        p_language_select_count > 0 && p_language_select_count < p_language_max_count}
+                      onChange={(e, { checked }) => this.onChangeSelectLanguageAll(language_info, checked)}
+                    />
+                  </List.Item>
+                  </List>
+
+                  {map(language_info.perspective_list,
+                    ({treePathList, perspective, textFieldsOptions}, p_index) => {
+
+                      const p_key = id2str(perspective.id);
+
+                      // Not so good hack in the name of performance,
+                      // we just give our state to be modified in the child compoment.
+
+                      return (
+                        <MLPerspectiveSelection
+                          mode={mode}
+                          language_list={language_list}
+                          key={'perspective' + p_key}
+                          treePathList={treePathList}
+                          perspective={perspective}
+                          textFieldsOptions={textFieldsOptions}
+                          p_index={p_index}
+                          p_key={p_key}
+                          perspectiveSelectionMap={perspectiveSelectionMap}
+                          transcriptionFieldIdStrMap={transcriptionFieldIdStrMap}
+                          translationFieldIdStrMap={translationFieldIdStrMap}
+                          perspectiveSelectionCountMap={perspectiveSelectionCountMap}
+                          language_id_str={language_id_str}
+                          onChangeSelectAll={() => this.setState({ perspectiveSelectionCountMap })}
+                          onModalStateChange={onModalStateChange}
+                        />
+                      );
+                  })}
+                </div>
+              }
+            </List.Item>
+          );
+        })}
+
+        <List.Item>
+          <Dropdown
+            fluid
+            placeholder='Add language'
+            search
+            selection
+            options={
+
+              available_language_list
+
+                .filter(language =>
+                  !language_id_set.has(id2str(language.id)))
+
+                .map(language => ({
+                  key: language.id,
+                  value: id2str(language.id),
+                  text: language.translation}))
+
+            }
+            value={''}
+            onChange={onAddLanguage}
+          />
+        </List.Item>
+      </List>
+    );
+  }
+}
+
+class SuggestionSelection extends React.Component
+{
+  constructor(props)
+  {
+    super(props);
+
+    this.state =
+    {
+      perspective_name_list: props.perspective_name_list,
+      sg_select_list: props.sg_select_list,
+      sg_state_list: props.sg_state_list,
+    };
+  }
+
+  render()
+  {
+    const {
+      perspective_index,
+      word,
+      word_entry_id,
+      word_group,
+      single_list,
+      group_list,
+      index,
+      sg_select_list,
+      sg_state_list,
+      sg_connect } =
+
+      this.props;
+
+    const connected_flag =
+      sg_state_list[index] == 'connected';
+
+    const error_flag =
+      sg_state_list[index] == 'error';
+
+    const invalidated_flag =
+      sg_state_list[index] == 'invalidated';
+
+    const disabled_flag =
+      connected_flag || error_flag || invalidated_flag;
+
+    const opacity_style =
+      disabled_flag ? {opacity: 0.5} : {};
+
+    return (
+      <Segment
+        key={'suggestion' + index}>
+
+        <List>
+
+          <List.Item>
+            <span style={opacity_style}>
+              {getTranslation('Source perspective word:')}
+            </span>
+
+            {/* List and List.Item for uniform appearance. */}
+
+            <List>
+              <List.Item>
+                <Checkbox
+
+                  label={
+
+                    word_group
+                    
+                    ?
+
+                    (<label>
+                      <div>
+                        {word} ({this.state.perspective_name_list[perspective_index]})
+                      </div>
+
+                      <div style={{marginTop: '0.5em', marginBottom: '0.5em'}}>
+                        {getTranslation('Belongs to a group:')}
+                      </div>
+
+                      <div>
+
+                        {map(word_group[0],
+
+                          ([perspective_index, [transcription_str, translation_str]],
+                            word_index) => (
+
+                          <div
+                            key={'sg' + index + 'gr_self_word' + word_index}>
+                            {`${transcription_str} ${translation_str}
+                              (${this.state.perspective_name_list[perspective_index]})`}
+                          </div>
+
+                        ))}
+                      </div>
+                      </label>)
+                    
+                    :
+
+                    (`${word} (${this.state.perspective_name_list[perspective_index]})`)}
+
+                  checked={
+                    sg_select_list[index].hasOwnProperty(id2str(word_entry_id))}
+
+                  disabled={disabled_flag}
+
+                  onChange={(e, { checked }) => {
+
+                    if (checked)
+                      sg_select_list[index][id2str(word_entry_id)] = null;
+                    else
+                      delete sg_select_list[index][id2str(word_entry_id)];
+
+                    this.setState({ sg_select_list });}}
+                />
+              </List.Item>
+            </List>
+          </List.Item>
+
+        {single_list.length > 0 && (
+          <List.Item>
+            <span style={opacity_style}>
+              {getTranslation('Suggested cognates:')}
+            </span>
+
+            <List>
+              {map(
+                single_list,
+                
+                ([perspective_index, [transcription_str, translation_str], entry_id],
+                  single_index) => (
+
+                <List.Item key={'sg' + index + 'single' + single_index}>
+                  <Checkbox
+
+                    label={
+                      `${transcription_str} ${translation_str}
+                        (${this.state.perspective_name_list[perspective_index]})`}
+
+                    checked={
+                      sg_select_list[index].hasOwnProperty(id2str(entry_id))}
+
+                    disabled={disabled_flag}
+
+                    onChange={(e, { checked }) => {
+
+                      if (checked)
+                        sg_select_list[index][id2str(entry_id)] = null;
+                      else
+                        delete sg_select_list[index][id2str(entry_id)];
+
+                      this.setState({ sg_select_list });}}
+                  />
+                </List.Item>
+
+              ))}
+            </List>
+          </List.Item>
+        )}
+
+        {group_list.length > 0 && (
+          <List.Item>
+            <span style={opacity_style}>
+              {getTranslation('Suggested cognate groups:')}
+            </span>
+
+            <List>
+              {map(
+                group_list,
+                
+                ([word_list, entry_id],
+                  group_index) => (
+
+                <List.Item
+                  key={'sg' + index + 'group' + group_index}>
+
+                  <Checkbox
+
+                    checked={
+                      sg_select_list[index].hasOwnProperty(id2str(entry_id))}
+
+                    disabled={disabled_flag}
+
+                    onChange={(e, { checked }) => {
+
+                      if (checked)
+                        sg_select_list[index][id2str(entry_id)] = null;
+                      else
+                        delete sg_select_list[index][id2str(entry_id)];
+
+                      this.setState({ sg_select_list });}}
+
+                    label={
+                      <label>
+                      <div>
+
+                        {map(word_list,
+
+                          ([perspective_index, [transcription_str, translation_str]],
+                            word_index) => (
+
+                          <div
+                            key={'sg' + index + 'gr' + group_index + 'word' + word_index}>
+                            {`${transcription_str} ${translation_str}
+                              (${this.state.perspective_name_list[perspective_index]})`}
+                          </div>
+
+                        ))}
+                      </div>
+                      </label>}
+                  />
+
+                </List.Item>
+
+              ))}
+            </List>
+          </List.Item>
+        )}
+
+        </List>
+
+        {
+          connected_flag ?
+
+          <Message positive>
+            <Message.Header>
+              {getTranslation('Connected')}
+            </Message.Header>
+          </Message> :
+
+          error_flag ?
+
+          <Message negative>
+            <Message.Header>
+              {getTranslation('Query error')}
+            </Message.Header>
+            <p>
+              {getTranslation('Failed to connect selected lexical entries, please contact developers.')}
+            </p>
+          </Message> :
+
+          invalidated_flag ?
+
+          <Message>
+            <Message.Header>
+              {getTranslation('Invalidated')}
+            </Message.Header>
+            <p>
+              {getTranslation(
+                'Another suggestion was accepted, source perspective word and/or one of suggested ' +
+                'cognate words or cognate groups have been connected.')}
+            </p>
+          </Message> :
+
+          <Button
+            basic
+            positive
+
+            content={
+              sg_state_list[index] == 'connecting' ?
+              getTranslation('Connecting...') :
+              getTranslation('Connect')}
+
+            disabled={
+              Object.keys(sg_select_list[index]).length <= 1 ||
+              sg_state_list[index] == 'connecting'}
+
+            size='mini'
+            onClick={() => sg_connect(index)}
+          />
+        }
+
+      </Segment>
+    );
+  }
+}
+
 class CognateAnalysisModal extends React.Component
 {
   constructor(props)
@@ -229,6 +1299,8 @@ class CognateAnalysisModal extends React.Component
       transcriptionFieldIdStrMap: {},
       translationFieldIdStrMap: {},
       perspectiveSelectionMap: {},
+
+      perspectiveSelectionCountMap: new Map(),
 
       sg_select_list: null,
       sg_state_list: null,
@@ -381,6 +1453,16 @@ class CognateAnalysisModal extends React.Component
     await this.initPerspectiveData(this.baseLanguageId, []);
 
     this.initialize_state();
+
+    let p_select_count = 0;
+
+    for (const value of this.state.perspectiveSelectionList)
+      if (value)
+        p_select_count++;
+
+    this.state.perspectiveSelectionCountMap[''] = p_select_count;
+    this.state.perspectiveSelectionCountMap['_max'] = this.perspective_list.length;
+
     this.setState({ initialized: true });
   }
 
@@ -452,8 +1534,9 @@ class CognateAnalysisModal extends React.Component
     base_language.available_list = this.available_list;
     base_language.perspective_list = this.perspective_list;
 
-
     /* Preparing info of perspective and transcription/translation field selections. */
+
+    let p_select_count = 0;
 
     for (const [index, {perspective}] of this.perspective_list.entries())
     {
@@ -462,9 +1545,20 @@ class CognateAnalysisModal extends React.Component
       this.state.transcriptionFieldIdStrMap[p_key] = this.state.transcriptionFieldIdStrList[index];
       this.state.translationFieldIdStrMap[p_key] = this.state.translationFieldIdStrList[index];
       this.state.perspectiveSelectionMap[p_key] = this.state.perspectiveSelectionList[index];
+
+      if (this.state.perspectiveSelectionList[index])
+        p_select_count++;
     }
 
-    this.state.language_id_set.add(id2str(this.baseLanguageId));
+    const language_id_str = id2str(this.baseLanguageId);
+
+    this.state.language_id_set.add(language_id_str);
+
+    this.state.perspectiveSelectionCountMap[''] = p_select_count;
+    this.state.perspectiveSelectionCountMap['_max'] = this.perspective_list.length;
+
+    this.state.perspectiveSelectionCountMap[language_id_str] = p_select_count;
+    this.state.perspectiveSelectionCountMap[language_id_str + '_max'] = this.perspective_list.length;
 
     this.setState({
       initialized: true,
@@ -486,19 +1580,44 @@ class CognateAnalysisModal extends React.Component
 
     /* Preparing info of perspective and transcription/translation field selections. */
 
+    const {
+      perspectiveSelectionList,
+      transcriptionFieldIdStrList,
+      translationFieldIdStrList,
+      perspectiveSelectionMap,
+      transcriptionFieldIdStrMap,
+      translationFieldIdStrMap,
+      perspectiveSelectionCountMap } = this.state;
+
+    const p_select_count = perspectiveSelectionCountMap[''];
+    const p_max_count = perspectiveSelectionCountMap['_max'];
+
+    let p_language_select_count = 0;
+
     for (const [index, {perspective}] of this.perspective_list.entries())
     {
       const p_key = id2str(perspective.id);
 
-      if (!this.state.transcriptionFieldIdStrMap.hasOwnProperty(p_key))
-        this.state.transcriptionFieldIdStrMap[p_key] = this.state.transcriptionFieldIdStrList[index];
+      if (!transcriptionFieldIdStrMap.hasOwnProperty(p_key))
+        transcriptionFieldIdStrMap[p_key] = transcriptionFieldIdStrList[index];
 
-      if (!this.state.translationFieldIdStrMap.hasOwnProperty(p_key))
-        this.state.translationFieldIdStrMap[p_key] = this.state.translationFieldIdStrList[index];
+      if (!translationFieldIdStrMap.hasOwnProperty(p_key))
+        translationFieldIdStrMap[p_key] = translationFieldIdStrList[index];
 
-      if (!this.state.perspectiveSelectionMap.hasOwnProperty(p_key))
-        this.state.perspectiveSelectionMap[p_key] = this.state.perspectiveSelectionList[index];
+      if (!perspectiveSelectionMap.hasOwnProperty(p_key))
+        perspectiveSelectionMap[p_key] = perspectiveSelectionList[index];
+
+      if (perspectiveSelectionMap[p_key])
+        p_language_select_count++;
     }
+
+    const language_id_str = id2str(language.id);
+
+    perspectiveSelectionCountMap[language_id_str] = p_language_select_count;
+    perspectiveSelectionCountMap[language_id_str + '_max'] = language.perspective_list.length;
+
+    perspectiveSelectionCountMap[''] = p_select_count + p_language_select_count;
+    perspectiveSelectionCountMap['_max'] = p_max_count + language.perspective_list.length;
 
     language.loading = false;
 
@@ -581,6 +1700,7 @@ class CognateAnalysisModal extends React.Component
           value: id2str(f.id),
           text: f.translation,
         }));
+
       this.perspective_list.push({
         treePathList,
         perspective,
@@ -650,13 +1770,41 @@ class CognateAnalysisModal extends React.Component
     {
       this.state.groupFieldIdStr = value;
 
+      const {
+        perspectiveSelectionMap,
+        perspectiveSelectionCountMap } = this.state;
+
+      let p_select_count = 0;
+      let p_max_count = 0;
+
       for (const language of this.state.language_list)
       {
         this.available_list = language.available_list;
         this.initialize_state();
 
         language.perspective_list = this.perspective_list;
+
+        /* Re-initializing selection counts for partial selection. */
+
+        let p_language_select_count = 0;
+
+        for (const { perspective } of language.perspective_list)
+        {
+          if (perspectiveSelectionMap[id2str(perspective.id)])
+            p_language_select_count++;        
+        }
+
+        p_select_count += p_language_select_count;
+        p_max_count += language.perspective_list.length;
+
+        const language_id_str = id2str(language.id);
+
+        perspectiveSelectionCountMap[language_id_str] = p_language_select_count;
+        perspectiveSelectionCountMap[language_id_str + '_max'] = language.perspective_list.length;
       }
+
+      perspectiveSelectionCountMap[''] = p_select_count;
+      perspectiveSelectionCountMap['_max'] = p_max_count;
 
       this.setState({
         groupFieldIdStr: value });
@@ -904,8 +2052,26 @@ class CognateAnalysisModal extends React.Component
 
   handleError(error_data)
   {
-    window.logger.err('Failed to compute cognate analysis!');
-    console.log(error_data);
+    if (error_data.networkError)
+    {
+      if (
+        error_data.message ===
+          'Network error: JSON.parse: unexpected character at line 1 column 1 of the JSON data' &&
+        (error_data.networkError.statusCode == 502 || error_data.networkError.statusCode == 504))
+
+        window.logger.err('Failed to compute cognate analysis! Analysis library or server connection error.');
+
+      else
+
+        window.logger.err('Failed to compute cognate analysis! Server connection error.');
+    } 
+
+    else
+      window.logger.err('Failed to compute cognate analysis!');
+
+    console.log(error_data.message);
+    console.log(error_data)
+    console.log(Object.keys(error_data));
 
     if (error_data.message ===
       'GraphQL error: Analysis library is absent, please contact system administrator.')
@@ -919,7 +2085,6 @@ class CognateAnalysisModal extends React.Component
 
   handleCreate()
   {
- 
     const {
       perspectiveId,
       computeCognateAnalysis } = this.props;
@@ -1236,67 +2401,18 @@ class CognateAnalysisModal extends React.Component
         {this.grouping_field_render()}
 
         <div style={{marginTop: '1.5em'}}>
-        {this.perspective_list.length > 1 && map(this.perspective_list,
-          ({treePathList, perspective, textFieldsOptions}, index) => (
-            <List key={'perspective' + index}>
-              <List.Item>
-              <Breadcrumb
-                style={this.state.perspectiveSelectionList[index] ? {} : {opacity: 0.5}}
-                icon="right angle"
-                sections={treePathList.map(e => ({
-                  key: e.id,
-                  content: e.hasOwnProperty('status') ?
-                    e.translation + ' (' + e.status + ')' :
-                    e.translation,
-                  link: false }))}
-              />
-              <Checkbox
-                style={{marginLeft: '0.5em', verticalAlign: 'middle'}}
-                checked={this.state.perspectiveSelectionList[index]}
-                onChange={(e, { checked }) => {
-                  const perspectiveSelectionList = this.state.perspectiveSelectionList;
-                  perspectiveSelectionList[index] = checked;
-                  this.setState({ perspectiveSelectionList });}}
-              />
-              </List.Item>
-              {this.state.perspectiveSelectionList[index] && (
-                <List.Item>
-                <List>
-                <List.Item>
-                  <span style={{marginLeft: '1em', marginRight: '0.5em'}}>
-                    Source transcription field:
-                  </span>
-                  <Select
-                    disabled={!this.state.perspectiveSelectionList[index]}
-                    defaultValue={this.state.transcriptionFieldIdStrList[index]}
-                    placeholder="Source transcription field selection"
-                    options={textFieldsOptions}
-                    onChange={(e, { value }) => {
-                      const transcriptionFieldIdStrList = this.state.transcriptionFieldIdStrList;
-                      transcriptionFieldIdStrList[index] = value;
-                      this.setState({ transcriptionFieldIdStrList });}}
-                  />
-                </List.Item>
-                <List.Item>
-                  <span style={{marginLeft: '1em', marginRight: '0.5em'}}>
-                    Source translation field:
-                  </span>
-                  <Select
-                    disabled={!this.state.perspectiveSelectionList[index]}
-                    defaultValue={this.state.translationFieldIdStrList[index]}
-                    placeholder="Source translation field selection"
-                    options={textFieldsOptions}
-                    onChange={(e, { value }) => {
-                      const translationFieldIdStrList = this.state.translationFieldIdStrList;
-                      translationFieldIdStrList[index] = value;
-                      this.setState({ translationFieldIdStrList });}}
-                  />
-                </List.Item>
-                </List>
-                </List.Item>
-              )}
-            </List>
-        ))}
+
+        {this.perspective_list.length > 1 && (
+          <SLSelection
+            perspective_list={this.perspective_list}
+            perspectiveSelectionList={this.state.perspectiveSelectionList}
+            transcriptionFieldIdStrList={this.state.transcriptionFieldIdStrList}
+            translationFieldIdStrList={this.state.translationFieldIdStrList}
+            perspectiveSelectionCountMap={this.state.perspectiveSelectionCountMap}
+            onModalStateChange={() => this.setState({})}
+          />
+        )}
+
         {this.perspective_list.length <= 1 && (
           <span>
             {getTranslation(
@@ -1304,6 +2420,7 @@ class CognateAnalysisModal extends React.Component
               'cognate grouping field present, cognate analysis is impossible.')}
           </span>
         )}
+
         </div>
 
         {!this.state.library_present && (
@@ -1339,152 +2456,41 @@ class CognateAnalysisModal extends React.Component
 
         {this.grouping_field_render()}
 
-        <List>
-          {map(this.state.language_list, (language_info, l_index) => (
-            <List.Item key={'language' + l_index}>
-              <Header as="h3">
-                <Breadcrumb
-                  icon="right angle"
-                  sections={language_info.treePath.map(e => ({
-                    key: e.id, content: e.translation, link: false }))}
-                />
-                <span>
-                  <Icon
-                    name='delete'
-                    style={{paddingLeft: '0.5em', paddingRight: '0.5em'}}
-                    onClick={() =>
-                    {
-                      this.state.language_list.splice(l_index, 1);
-                      this.state.language_id_set.delete(id2str(language_info.id));
+        <MLSelection
+          mode={this.props.mode}
+          language_list={this.state.language_list}
+          perspectiveSelectionMap={this.state.perspectiveSelectionMap}
+          transcriptionFieldIdStrMap={this.state.transcriptionFieldIdStrMap}
+          translationFieldIdStrMap={this.state.translationFieldIdStrMap}
+          perspectiveSelectionCountMap={this.state.perspectiveSelectionCountMap}
+          language_id_set={this.state.language_id_set}
+          available_language_list={this.language_list}
+          onAddLanguage={(event, data) =>
+          {
+            const language = this.language_dict[data.value];
 
-                      this.setState({
-                        language_list: this.state.language_list,
-                        language_id_set: this.state.language_id_set
-                      });
-                    }}
-                  />
-                </span>
-              </Header>
+            language.treePath = language.tree.slice().reverse();
+            language.perspective_list = [];
 
-              {language_info.loading ?
+            language.loading = true;
+            this.initialize_language(language);
 
-                <List>
-                <List.Item>
-                <span>Loading perspective data... <Icon name="spinner" loading /></span>
-                </List.Item>
-                </List> :
+            const {
+              language_list,
+              language_id_set,
+              perspectiveSelectionMap,
+              perspectiveSelectionCountMap } = this.state;
 
-                map(language_info.perspective_list,
-                  ({treePathList, perspective, textFieldsOptions}, p_index) => {
+            language_list.push(language);
+            language_id_set.add(data.value);
 
-                    const p_key = id2str(perspective.id);
-                    
-                    return (
-                      <List key={'perspective' + p_key}>
-                        <List.Item>
-                        <Breadcrumb
-                          style={this.state.perspectiveSelectionMap[p_key] ? {} : {opacity: 0.5}}
-                          icon="right angle"
-                          sections={treePathList.map(e => ({
-                            key: e.id,
-                            content: e.hasOwnProperty('status') ?
-                              e.translation + ' (' + e.status + ')' :
-                              e.translation,
-                            link: false }))}
-                        />
-                        <Checkbox
-                          style={{marginLeft: '0.5em', verticalAlign: 'middle'}}
-                          checked={this.state.perspectiveSelectionMap[p_key]}
-                          onChange={(e, { checked }) => {
-                            const perspectiveSelectionMap = this.state.perspectiveSelectionMap;
-                            perspectiveSelectionMap[p_key] = checked;
-                            this.setState({ perspectiveSelectionMap });}}
-                        />
-                        </List.Item>
-                        {this.state.perspectiveSelectionMap[p_key] && (
-                          <List.Item>
-                          <List>
-                          <List.Item>
-                            <span style={{marginLeft: '1em', marginRight: '0.5em'}}>
-                              Source transcription field:
-                            </span>
-                            <Select
-                              disabled={!this.state.perspectiveSelectionMap[p_key]}
-                              defaultValue={this.state.transcriptionFieldIdStrMap[p_key]}
-                              placeholder="Source transcription field selection"
-                              options={textFieldsOptions}
-                              onChange={(e, { value }) => {
-                                const transcriptionFieldIdStrMap = this.state.transcriptionFieldIdStrMap;
-                                transcriptionFieldIdStrMap[p_key] = value;
-                                this.setState({ transcriptionFieldIdStrMap });}}
-                            />
-                          </List.Item>
-                          <List.Item>
-                            <span style={{marginLeft: '1em', marginRight: '0.5em'}}>
-                              Source translation field:
-                            </span>
-                            <Select
-                              disabled={!this.state.perspectiveSelectionMap[p_key]}
-                              defaultValue={this.state.translationFieldIdStrMap[p_key]}
-                              placeholder="Source translation field selection"
-                              options={textFieldsOptions}
-                              onChange={(e, { value }) => {
-                                const translationFieldIdStrMap = this.state.translationFieldIdStrMap;
-                                translationFieldIdStrMap[p_key] = value;
-                                this.setState({ translationFieldIdStrMap });}}
-                            />
-                          </List.Item>
-                          </List>
-                          </List.Item>
-                        )}
-                      </List>
-                    )
-                  })
-              }
-            </List.Item>
-          ))}
-
-          <List.Item>
-            <Dropdown
-              fluid
-              placeholder='Add language'
-              search
-              selection
-              options={
-
-                this.language_list
-
-                  .filter(language =>
-                    !this.state.language_id_set.has(id2str(language.id)))
-
-                  .map(language => ({
-                    key: language.id,
-                    value: id2str(language.id),
-                    text: language.translation}))
-
-              }
-              value={''}
-              onChange={(event, data) =>
-              {
-                const language = this.language_dict[data.value];
-
-                language.treePath = language.tree.slice().reverse();
-                language.perspective_list = [];
-
-                language.loading = true;
-                this.initialize_language(language);
-
-                this.state.language_list.push(language);
-                this.state.language_id_set.add(data.value);
-
-                this.setState({
-                  language_list: this.state.language_list,
-                  language_id_set: this.state.language_id_set,
-                });
-              }}
-            />
-          </List.Item>
-        </List>
+            this.setState({
+              language_list,
+              language_id_set,
+            });
+          }}
+          onModalStateChange={() => this.setState({})}
+        />
 
         {!this.state.library_present && (
           <List>
@@ -1686,252 +2692,27 @@ class CognateAnalysisModal extends React.Component
           single_list,
           group_list],
           
-          in_page_index) => {
-
-        const index = start_index + in_page_index;
-
-        const connected_flag =
-          sg_state_list[index] == 'connected';
-
-        const error_flag =
-          sg_state_list[index] == 'error';
-
-        const invalidated_flag =
-          sg_state_list[index] == 'invalidated';
-
-        const disabled_flag =
-          connected_flag || error_flag || invalidated_flag;
-
-        const opacity_style =
-          disabled_flag ? {opacity: 0.5} : {};
-
-        return (
-          <Segment
-            key={'suggestion' + index}>
-
-            <List>
-
-              <List.Item>
-                <span style={opacity_style}>
-                  {getTranslation('Source perspective word:')}
-                </span>
-
-                {/* List and List.Item for uniform appearance. */}
-
-                <List>
-                  <List.Item>
-                    <Checkbox
-
-                      label={
-
-                        word_group
-                        
-                        ?
-
-                        (<label>
-                          <div>
-                            {word} ({this.state.perspective_name_list[perspective_index]})
-                          </div>
-
-                          <div style={{marginTop: '0.5em', marginBottom: '0.5em'}}>
-                            {getTranslation('Belongs to a group:')}
-                          </div>
-
-                          <div>
-
-                            {map(word_group[0],
-
-                              ([perspective_index, [transcription_str, translation_str]],
-                                word_index) => (
-
-                              <div
-                                key={'sg' + index + 'gr_self_word' + word_index}>
-                                {`${transcription_str} ${translation_str}
-                                  (${this.state.perspective_name_list[perspective_index]})`}
-                              </div>
-
-                            ))}
-                          </div>
-                          </label>)
-                        
-                        :
-
-                        (`${word} (${this.state.perspective_name_list[perspective_index]})`)}
-
-                      checked={
-                        sg_select_list[index].hasOwnProperty(id2str(word_entry_id))}
-
-                      disabled={disabled_flag}
-
-                      onChange={(e, { checked }) => {
-
-                        if (checked)
-                          sg_select_list[index][id2str(word_entry_id)] = null;
-                        else
-                          delete sg_select_list[index][id2str(word_entry_id)];
-
-                        this.setState({ sg_select_list });}}
-                    />
-                  </List.Item>
-                </List>
-              </List.Item>
-
-            {single_list.length > 0 && (
-              <List.Item>
-                <span style={opacity_style}>
-                  {getTranslation('Suggested cognates:')}
-                </span>
-
-                <List>
-                  {map(
-                    single_list,
-                    
-                    ([perspective_index, [transcription_str, translation_str], entry_id],
-                      single_index) => (
-
-                    <List.Item key={'sg' + index + 'single' + single_index}>
-                      <Checkbox
-
-                        label={
-                          `${transcription_str} ${translation_str}
-                            (${this.state.perspective_name_list[perspective_index]})`}
-
-                        checked={
-                          sg_select_list[index].hasOwnProperty(id2str(entry_id))}
-
-                        disabled={disabled_flag}
-
-                        onChange={(e, { checked }) => {
-
-                          if (checked)
-                            sg_select_list[index][id2str(entry_id)] = null;
-                          else
-                            delete sg_select_list[index][id2str(entry_id)];
-
-                          this.setState({ sg_select_list });}}
-                      />
-                    </List.Item>
-
-                  ))}
-                </List>
-              </List.Item>
-            )}
-
-            {group_list.length > 0 && (
-              <List.Item>
-                <span style={opacity_style}>
-                  {getTranslation('Suggested cognate groups:')}
-                </span>
-
-                <List>
-                  {map(
-                    group_list,
-                    
-                    ([word_list, entry_id],
-                      group_index) => (
-
-                    <List.Item
-                      key={'sg' + index + 'group' + group_index}>
-
-                      <Checkbox
-
-                        checked={
-                          sg_select_list[index].hasOwnProperty(id2str(entry_id))}
-
-                        disabled={disabled_flag}
-
-                        onChange={(e, { checked }) => {
-
-                          if (checked)
-                            sg_select_list[index][id2str(entry_id)] = null;
-                          else
-                            delete sg_select_list[index][id2str(entry_id)];
-
-                          this.setState({ sg_select_list });}}
-
-                        label={
-                          <label>
-                          <div>
-
-                            {map(word_list,
-
-                              ([perspective_index, [transcription_str, translation_str]],
-                                word_index) => (
-
-                              <div
-                                key={'sg' + index + 'gr' + group_index + 'word' + word_index}>
-                                {`${transcription_str} ${translation_str}
-                                  (${this.state.perspective_name_list[perspective_index]})`}
-                              </div>
-
-                            ))}
-                          </div>
-                          </label>}
-                      />
-
-                    </List.Item>
-
-                  ))}
-                </List>
-              </List.Item>
-            )}
-
-            </List>
-
-            {
-              connected_flag ?
-
-              <Message positive>
-                <Message.Header>
-                  {getTranslation('Connected')}
-                </Message.Header>
-              </Message> :
-
-              error_flag ?
-
-              <Message negative>
-                <Message.Header>
-                  {getTranslation('Query error')}
-                </Message.Header>
-                <p>
-                  {getTranslation('Failed to connect selected lexical entries, please contact developers.')}
-                </p>
-              </Message> :
-
-              invalidated_flag ?
-
-              <Message>
-                <Message.Header>
-                  {getTranslation('Invalidated')}
-                </Message.Header>
-                <p>
-                  {getTranslation(
-                    'Another suggestion was accepted, source perspective word and/or one of suggested ' +
-                    'cognate words or cognate groups have been connected.')}
-                </p>
-              </Message> :
-
-              <Button
-                basic
-                positive
-
-                content={
-                  sg_state_list[index] == 'connecting' ?
-                  getTranslation('Connecting...') :
-                  getTranslation('Connect')}
-
-                disabled={
-                  Object.keys(sg_select_list[index]).length <= 1 ||
-                  sg_state_list[index] == 'connecting'}
-
-                size='mini'
-                onClick={() => this.sg_connect(index)}
-              />
-            }
-
-          </Segment>
-        );}
-      )}
+          in_page_index) => (
+
+          // Not so good hack in the name of performance,
+          // we just give our state to be modified in the child compoment.
+
+          <SuggestionSelection
+            key={'suggestion' + (start_index + in_page_index)}
+            perspective_index={perspective_index}
+            word={word}
+            word_entry_id={word_entry_id}
+            word_group={word_group}
+            single_list={single_list}
+            group_list={group_list}
+            index={start_index + in_page_index}
+            perspective_name_list={this.state.perspective_name_list}
+            sg_select_list={this.state.sg_select_list}
+            sg_state_list={this.state.sg_state_list}
+            sg_connect={this.sg_connect}
+          />
+
+        ))}
 
       <Pagination
         activePage={sg_current_page}
@@ -1995,7 +2776,7 @@ class CognateAnalysisModal extends React.Component
       </div>
 
       </div>
-    )
+    );
   }
 
   render()
@@ -2004,7 +2785,7 @@ class CognateAnalysisModal extends React.Component
     {
       return (
         <Dimmer active={true} inverted>
-          <Loader>Loading</Loader>
+          <Loader>{getTranslation('Loading...')}</Loader>
         </Dimmer>
       );
     }
@@ -2015,6 +2796,10 @@ class CognateAnalysisModal extends React.Component
       mode == 'multi_analysis' ||
       mode == 'multi_reconstruction' ||
       mode == 'multi_suggestions';
+
+    const {
+      language_list,
+      perspectiveSelectionCountMap } = this.state;
 
     return (
       <div>
@@ -2055,8 +2840,12 @@ class CognateAnalysisModal extends React.Component
                   this.perspective_list.length <= 1 ||
                   !this.state.perspectiveSelectionList.some(enabled => enabled))) ||
                 (multi && (
-                  this.state.language_list.length <= 0 ||
-                  mode == 'multi_reconstruction' && this.state.language_list.length <= 1)) ||
+                  language_list.length <= 0 ||
+                  mode == 'multi_reconstruction' &&
+                    language_list
+                      .filter(language => perspectiveSelectionCountMap[id2str(language.id)] > 0)
+                      .length <= 1 ||
+                  perspectiveSelectionCountMap[''] <= 0)) ||
                 this.state.computing}
               className="lingvo-button-violet"
             />

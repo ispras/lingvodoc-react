@@ -3,6 +3,7 @@ import { createFormAction } from 'redux-form-saga';
 // Actions
 export const REQUEST = '@user/REQUEST';
 export const SET = '@user/SET';
+export const ERROR = '@user/ERROR';
 
 export const LAUNCH_SIGN_IN_FORM = '@user/LAUNCH_SIGN_IN_FORM';
 export const signInForm = createFormAction('@user/signin');
@@ -35,6 +36,15 @@ function loading(state = false, action = {}) {
       return true;
     case SET:
       return false;
+    default:
+      return state;
+  }
+}
+
+function error(state = false, action = {}) {
+  switch (action.type) {
+    case ERROR:
+      return true;
     default:
       return state;
   }
@@ -77,6 +87,7 @@ function signin_info(state = null, action = {})
 export default combineReducers({
   user,
   loading,
+  error,
   modal,
   signin_info,
 });
@@ -112,4 +123,8 @@ export function signOut() {
 
 export function setUser(payload) {
   return { type: SET, payload };
+}
+
+export function setError() {
+  return { type: ERROR };
 }

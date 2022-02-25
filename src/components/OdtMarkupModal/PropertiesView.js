@@ -96,7 +96,7 @@ class PropertiesView extends React.Component {
                       <span>
                         {variant.lex}
                       </span>
-                      { isEdit && variant.result.classList.contains('user') &&
+                      { isEdit &&
                         <div style={{ marginLeft: 'auto' }}>
                           <Button
                             icon="edit"
