@@ -1,108 +1,100 @@
 import React from 'react';
-import { Container, Segment, Header, Card } from 'semantic-ui-react';
+import { Container, Card } from 'semantic-ui-react';
+import { getTranslation } from 'api/i18n';
 
-const linguistsContributorsRAN = [
-  {
-    header: 'Норманская Юлия Викторовна',
-    description: 'главный редактор сайта, ответственный редактор Уральских словарей',
-    href: 'http://iling-ran.ru/main/scholars/normanskaya',
-  }
-];
+const Info = () => {
 
-const linguistsContributors = [
-  {
-    header: 'Дыбо Анна Владимировна',
-    description: 'ответственный редактор Алтайских словарей',
-    href: 'http://iling-ran.ru/main/scholars/dybo',
-  }
-];
-/*const linguistsContributorsTSU = [
-  {
-    header: 'Резанова Зоя Ивановна ',
-    description: 'ответственный редактор корпусов русской речи тюркско-русских билингвов',
-    href: 'https://persona.tsu.ru/Home/UserProfile/1040',
-  },
-];*/
-const developersContributors = [
-  {
-    header: 'Борисенко Олег Дмитриевич',
-    description: 'разработка архитектуры и ядра системы'
-  },
-  {
-    header: 'Тапехин Андрей Николаевич',
-    description: 'разработка ядра системы'
-  },
-  {
-    header: 'Богомолов Игорь Владимирович',
-    description: 'разработка ядра системы'
-  },
-  {
-    header: 'Белобородов Иван Борисович',
-    description: 'вычислительные модули системы'
-  },
-  {
-    header: 'Ипатов Степан Анатольевич',
-    description: 'фронтенд'
-  },
-  {
-    header: 'Жаров Андрей Анатольевич',
-    description: 'фронтенд'
-  }
-];
+  const linguistsContributorsRAN = [
+    {
+      header: getTranslation('Normanskaya Julia Viktorovna'),
+      description: `${getTranslation('editor-in-chief of the website')}, ${getTranslation('responsible editor of Ural dictionaries')}`,
+      href: 'http://iling-ran.ru/main/scholars/normanskaya',
+    }
+  ];
 
-const developersElecardMedContributors = [
-  {
-    header: 'Рожков Артём Владимирович',
-    description: 'фронтенд'
-  },
-  {
-    header: 'Наумова Александра Владимировна',
-    description: 'фронтенд'
-  }
-];
+  const linguistsContributors = [
+    {
+      header: getTranslation('Dybo Anna Vladimirovna'),
+      description: getTranslation('responsible editor of Altai dictionaries'),
+      href: 'http://iling-ran.ru/main/scholars/dybo',
+    }
+  ];
 
-const developersAdditionalContributors = [
-  {
-    header: 'Михаил Ослон',
-    description: 'анализ когнатов, фонем и аллофонов'
-  },
-  {
-    header: 'Павел Гращенков',
-    description: 'анализ валентностей'
-  }
-];
+  const developersContributors = [
+    {
+      header: getTranslation('Borisenko Oleg Dmitrievich'),
+      description: getTranslation('development of the architecture and core of the system')
+    },
+    {
+      header: getTranslation('Tapekhin Andrey Nikolaevich'),
+      description: getTranslation('development of the system core')
+    },
+    {
+      header: getTranslation('Bogomolov Igor Vladimirovich'),
+      description: getTranslation('development of the system core')
+    },
+    {
+      header: getTranslation('Beloborodov Ivan Borisovich'),
+      description: getTranslation('computing modules of the system')
+    },
+    {
+      header: getTranslation('Ipatov Stepan Anatolievich'),
+      description: getTranslation('frontend')
+    },
+    {
+      header: getTranslation('Zharov Andrey Anatolievich'),
+      description: getTranslation('frontend')
+    }
+  ];
 
-const Info = () => { 
+  const developersElecardMedContributors = [
+    {
+      header: getTranslation('Rozhkov Artyom Vladimirovich'),
+      description: getTranslation('frontend')
+    },
+    {
+      header: getTranslation('Naumova Alexandra Vladimirovna'),
+      description: getTranslation('frontend')
+    }
+  ];
+
+  const developersAdditionalContributors = [
+    {
+      header: getTranslation('Mikhail Oslon'),
+      description: getTranslation('analysis of cognates, phonemes and allophones')
+    },
+    {
+      header: getTranslation('Pavel Grashchenkov'),
+      description: getTranslation('valence analysis')
+    }
+  ];
+
   return (
     <Container>
       <Container className="container-gray">
-        <h3 className="creator-title">Институт языкознания РАН, Институт системного программирования им. В.П.Иванникова РАН</h3>
+        <h3 className="creator-title">{getTranslation('Institute of Linguistics Russian Academy of Sciences')}, {getTranslation('Ivannikov Institute for System Programming of the Russian Academy of Sciences')}</h3>
         <Card.Group items={linguistsContributorsRAN} itemsPerRow={1} className="lingvo-cards-with-links" />
       </Container>
       <Container className="container-gray">
-        <h3 className="creator-title">Институт языкознания РАН, Томский государственный университет</h3>
+        <h3 className="creator-title">{getTranslation('Institute of Linguistics Russian Academy of Sciences')}, {getTranslation('Tomsk State University')}</h3>
         <Card.Group items={linguistsContributors} itemsPerRow={1} className="lingvo-cards-with-links" />
       </Container>
-      {/*<Container className="container-gray">
-        <h3 className="creator-title">Томский государственный университет</h3>
-        <Card.Group items={linguistsContributorsTSU} itemsPerRow={1} />
-      </Container>*/}
       <Container className="container-gray">
-        <h3 className="creator-title">Институт системного программирования им. В. П. Иванникова РАН</h3>
+        <h3 className="creator-title">{getTranslation('Ivannikov Institute for System Programming of the Russian Academy of Sciences')}</h3>
         <Card.Group items={developersContributors} itemsPerRow={3} stackable className="lingvo-cards-without-links" />
       </Container>
       <Container className="container-gray">
-        <h3 className="creator-title">ООО Элекард-Мед</h3>
+        <h3 className="creator-title">{getTranslation('Elecard-Med LLC')}</h3>
         <Card.Group items={developersElecardMedContributors} itemsPerRow={2} stackable className="lingvo-cards-without-links" />
       </Container>
       <Container className="container-gray">
-        <h3 className="creator-title">Дополнительный код</h3>
+        <h3 className="creator-title">{getTranslation('Additional code')}</h3>
         <Card.Group items={developersAdditionalContributors} itemsPerRow={2} stackable className="lingvo-cards-without-links" />
       </Container>
 
       <Container className="container-gray">
-        <h2 className="black">Контакты</h2>
-        <p>Вопросы по поводу работы программы LingvoDoc задавайте по адресу <a href="mailto:al@somestuff.ru">al@somestuff.ru</a></p>
+        <h2 className="black">{getTranslation('Contacts')}</h2>
+        <p>{getTranslation('Ask questions about the LingvoDoc program at')} <a href="mailto:al@somestuff.ru">al@somestuff.ru</a></p>
       </Container>
     </Container>
   )
