@@ -11,12 +11,16 @@ const docx2eafMutation = gql`
   mutation docx2eaf(
     $docxFile: Upload,
     $separateFlag: Boolean,
-    $allTablesFlag: Boolean)
+    $allTablesFlag: Boolean,
+    $noHeaderFlag: Boolean,
+    $noParsingFlag: Boolean)
   {
     docx2eaf(
       docx_file: $docxFile,
       separate_flag: $separateFlag,
-      all_tables_flag: $allTablesFlag)
+      all_tables_flag: $allTablesFlag,
+      no_header_flag: $noHeaderFlag,
+      no_parsing_flag: $noParsingFlag)
     {
       triumph
       eaf_url
@@ -37,6 +41,8 @@ class Docx2Eaf extends React.Component
     this.state = {
       separate_flag: false,
       all_tables_flag: false,
+      no_header_flag: false,
+      no_parsing_flag: false,
       file: null,
       converting_flag: false,
       error_message: null, 
@@ -52,7 +58,9 @@ class Docx2Eaf extends React.Component
       variables: {
         docxFile: this.state.file,
         separateFlag: this.state.separate_flag,
-        allTablesFlag: this.state.all_tables_flag },
+        allTablesFlag: this.state.all_tables_flag,
+        noHeaderFlag: this.state.no_header_flag,
+        noParsingFlag: this.state.no_parsing_flag },
     })
 
     .then(
@@ -137,6 +145,30 @@ class Docx2Eaf extends React.Component
                 separate_flag: checked,
                 error_message: null,
                 result: null })}
+          />
+          </List.Item>
+
+          <List.Item>
+          <Checkbox
+            label={getTranslation('No header')}
+            checked={this.state.no_header_flag}
+            onChange={(e, { checked }) =>
+              this.setState({
+                no_header_flag: checked,
+                error_message: null,
+                result: null})}
+          />
+          </List.Item>
+
+          <List.Item>
+          <Checkbox
+            label={getTranslation('No parsing')}
+            checked={this.state.no_parsing_flag}
+            onChange={(e, { checked }) =>
+              this.setState({
+                no_parsing_flag: checked,
+                error_message: null,
+                result: null})}
           />
           </List.Item>
 
