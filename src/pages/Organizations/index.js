@@ -102,23 +102,7 @@ class Organizations extends React.Component {
 
       process_member_id_set.add(organization.id);
       this.setState({ process_member_id_set });
-      
-    }/*,
-    () =>
-    {
-      
-      window.logger.suc(`${getTranslation(
-          'Successfully deleted organization')} "${organization.translation}".`);
-
-      window.logger.err(`${getTranslation(
-          'Failed to delete organization')} "${organization.translation}"!`);
-  
-      console.log('!!!!!');
-      const { process_member_id_set } = this.state;
-
-      process_member_id_set.add(organization.id);
-      this.setState({ process_member_id_set });
-    }*/);
+    });
   }
 
   adminOrganization(organization)
