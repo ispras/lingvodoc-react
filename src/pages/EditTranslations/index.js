@@ -11,6 +11,7 @@ const categories = [
   "Service",
   "Language",
   "Field",
+  "Organization",
   "Grant",
   "All"
 ];
@@ -53,7 +54,7 @@ class EditTranslations extends React.Component {
               </Menu>
             </div>
           </div>
-          {selectedCategory == -1 ? null : <TranslationsBlock gists_type={selectedCategory == 6 ? "" : categories[selectedCategory]}></TranslationsBlock>}
+          {selectedCategory == -1 ? null : <TranslationsBlock gists_type={selectedCategory == 7 ? "" : categories[selectedCategory]}></TranslationsBlock>}
       </div>
     );
   }

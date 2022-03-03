@@ -1,0 +1,211 @@
+/* organizations container */
+.lingvo-container_organizations {
+  &.ui.container {
+    padding-top: 14px;
+
+    @media only screen and (min-width: 768px) and (max-width: 1199px) {
+      width: auto !important;
+      margin-left: 20px !important;
+      margin-right: 20px !important;
+    }
+
+    @media only screen and (min-width: 1200px) {
+      width: 1150px;
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
+  }
+}
+/* /organizations container */
+
+/* organizations table */
+.lingvo-org-table {
+  border: none !important;
+  margin-top: 20px !important;
+  margin-bottom: 50px !important;
+  font-size: 16px !important;
+  line-height: 22px !important;
+
+  & thead th {
+    border: none !important;
+    background: #F5F5F5 !important;
+    font-family: Mulish, Arial, sans-serif !important;
+    font-weight: bold !important;
+    padding: 13px 0 13px 16px !important;
+
+    &.lingvo-org-table__cell_buttons {
+      padding: 7px 11px 7px 9px !important;
+    }
+
+    &.lingvo-org-table__cell_delete {
+      padding-right: 5px !important;
+      padding-left: 0 !important;
+    }
+
+    &:first-child {
+      border-radius: 8px 0 0 8px !important;
+    }
+
+    &:last-child {
+      border-radius: 0 8px 8px 0 !important;
+    }
+
+    @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+      &:first-child {
+        border-radius: 8px 8px 0 0 !important;
+      }
+  
+      &:last-child {
+        border-radius: 0 0 8px 8px !important;
+      }
+    }
+  }
+
+  & tr:nth-child(2n) {
+    & td {
+      background: #FAFAFA !important;
+    }
+
+    & td:first-child {
+      border-radius: 8px 0 0 8px !important;
+    }
+
+    & td:last-child {
+      border-radius: 0 8px 8px 0 !important;
+    }
+
+    @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+      & td:first-child {
+        border-radius: 8px 8px 0 0 !important;
+      }
+  
+      & td:last-child {
+        border-radius: 0 0 8px 8px !important;
+      }
+    }
+  }
+
+  & tr td {
+    border: none !important;
+    padding: 16px 0 16px 16px !important;
+
+    &.lingvo-org-table__cell_buttons {
+      padding: 7px 11px 7px 9px !important;
+    }
+
+    &.lingvo-org-table__cell_delete {
+      padding-right: 5px !important;
+      padding-left: 0 !important;
+    }
+  }
+
+  &__content {
+    position: relative;
+    padding-right: 16px;
+    min-height: 22px;
+
+    &::after {
+      content: "";
+      position: absolute;
+      right: 0;
+      top: 0;
+      height: 100%;
+      box-shadow: 1px 0px 0px rgba(0, 0, 0, 0.08);
+      width: 1px;
+    }
+
+    @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {        
+      position: static;
+      padding-right: 0;
+      min-height: auto;
+
+      &::after {
+        content: none;
+      }
+    }
+  }
+
+  &__list-item {
+    & + & {
+      margin-top: 4px;
+    }
+  }
+
+  &__role {
+    font-size: 14px;
+    font-weight: 500;
+    padding: 3px 0;
+    margin: 0;
+  }
+
+  @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+    margin-top: 14px !important;
+
+    &.ui.table tr {
+      box-shadow: none !important;
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+
+      & td:first-child {
+        padding-top: 18px !important;
+      }
+  
+      & td:last-child {
+        padding-bottom: 18px !important;
+      }
+    }
+
+    &.ui.table thead tr {
+      & th:first-child {
+        padding-top: 18px !important;
+      }
+  
+      & th:last-child {
+        padding-bottom: 18px !important;
+      }
+    }
+  }
+  
+}
+/* /organizations table */
+
+/* organizations delete button */
+.lingvo-button-org-delete {
+  background: transparent !important;
+  padding: 4px 5px 6px 5px !important;
+  min-height: 30px !important;
+  max-height: 30px !important;
+  margin: 0 !important;
+  vertical-align: middle !important;
+
+  &:hover {
+    & .lingvo-icon_trash {
+      background-color: #db4e4e;
+    }
+  }
+}
+/* /organizations delete button */
+
+
+.lingvo-button-link {
+  font-family: Rubik, Arial, sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  background: transparent !important;
+  color: #5D54CD !important;
+  text-align: left !important;
+  padding: 3px 0 !important;
+  margin: 0 !important;
+  white-space: nowrap !important;
+  box-shadow: none !important;
+
+  &:hover {
+    color: #372F9D !important;
+  }
+
+  &.ui.disabled.button, 
+  &.ui.button:disabled {
+    opacity: 1 !important;
+    color: #999CA0 !important;
+  }
+}

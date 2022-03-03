@@ -2,16 +2,19 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { compose, branch, renderComponent, renderNothing, withProps, pure } from 'recompose';
+import { compose, branch, renderComponent, renderNothing } from 'recompose';
 import { graphql } from 'react-apollo';
-import Immutable, { fromJS } from 'immutable';
-import { Divider, Message, Button, Step, Header, Table, List, Confirm, Icon } from 'semantic-ui-react';
+/*import Immutable, { fromJS } from 'immutable';*/
+import { Button, Table, List, Confirm, Container, Icon } from 'semantic-ui-react';
 import gql from 'graphql-tag';
 
 import Placeholder from 'components/Placeholder';
 import { getTranslation } from 'api/i18n';
 import { openModal as openCreateOrganizationModal } from 'ducks/createOrganization';
 import { getUserRequestsQuery } from 'components/Grants/graphql';
+import Footer from 'components/Footer';
+
+import './style.scss';
 
 export const organizationsQuery = gql`
   query organizations {
@@ -76,6 +79,8 @@ class Organizations extends React.Component {
     this.state = {
       organization_to_delete: null,
       being_deleted_id_set: new Set(),
+      process_member_id_set: new Set(),
+      process_admin_id_set: new Set(),
     };
   }
 
@@ -92,6 +97,11 @@ class Organizations extends React.Component {
     }).then(() => {
       window.logger.suc(getTranslation(
         "Request has been sent to the organization's administrator."));
+      
+      const { process_member_id_set } = this.state;
+
+      process_member_id_set.add(organization.id);
+      this.setState({ process_member_id_set });
     });
   }
 
@@ -108,6 +118,11 @@ class Organizations extends React.Component {
     }).then(() => {
       window.logger.suc(getTranslation(
         "Request has been sent to the organization's administrator."));
+      
+      const { process_admin_id_set } = this.state;
+
+      process_admin_id_set.add(organization.id);
+      this.setState({ process_admin_id_set });
     });
   }
 
@@ -149,8 +164,8 @@ class Organizations extends React.Component {
     }).then(
       () =>
       {
-        window.logger.suc(getTranslation(
-          `Succesfully deleted organization "${organization_str}".`));
+        window.logger.suc(`${getTranslation(
+          'Successfully deleted organization')} "${organization_str}".`);
 
         const { being_deleted_id_set } = this.state;
 
@@ -159,8 +174,8 @@ class Organizations extends React.Component {
       },
       () =>
       {
-        window.logger.err(getTranslation(
-          `Failed to delete organization "${organization_str}"!`));
+        window.logger.err(`${getTranslation(
+          'Failed to delete organization')} "${organization_str}"!`);
 
         const { being_deleted_id_set } = this.state;
 
@@ -188,111 +203,162 @@ class Organizations extends React.Component {
     const { organizations } = data;
 
     return (
-      <div className="background-content">
+      <div className="lingvodoc-page">
+        <div className="lingvodoc-page__content">
 
-        <div style={{ overflowY: 'auto' }}>
-          <Table celled padded>
-            <Table.Header>
-              <Table.Row>
-                <Table.HeaderCell>{getTranslation('Organization name')}</Table.HeaderCell>
-                <Table.HeaderCell>{getTranslation('About')}</Table.HeaderCell>
-                <Table.HeaderCell>{getTranslation('Members')}</Table.HeaderCell>
-                <Table.HeaderCell>{getTranslation('Administrators')}</Table.HeaderCell>
-                {user.id && <Table.HeaderCell />}
-              </Table.Row>
-            </Table.Header>
-            <Table.Body>
-              {organizations.map(organization => {
+          <div className="background-header">
+            <h2 className="page-title">{getTranslation('Organizations')}</h2>
+          </div>
 
-                const is_member = this.isMember(organization);
-                const is_admin = this.isAdmin(organization);
+          <Container className="lingvo-container_organizations">
 
-                const is_being_deleted = this.state.being_deleted_id_set.has(organization.id);
-                
-                return (
-                  <Table.Row key={organization.id}>
-                    <Table.Cell>{organization.translation}</Table.Cell>
-                    <Table.Cell>{organization.about}</Table.Cell>
-                    <Table.Cell>{organization.members.map(member =>
-                      <div key={member.id}>{member.name}</div>)}</Table.Cell>
-                    <Table.Cell>{organization.admins.map(admin =>
-                      <div key={admin.id}>{admin.name}</div>)}</Table.Cell>
-                    {user.id && (
-                      <Table.Cell style={{textAlign: 'center'}}>
-                        <List>
-                          {is_member && (
-                            <List.Item>You are a member</List.Item>)}
-                          {is_admin && (
-                            <List.Item>You are an administrator</List.Item>)}
-                          {(!is_member || !is_admin || user.id == 1) && (
-                            <List.Item>
-                              <Button.Group>
-                                {!is_member && (
-                                  <Button
-                                    basic
-                                    color='green'
-                                    disabled={is_being_deleted}
-                                    onClick={() => this.joinOrganization(organization)}>
-                                    {getTranslation('Join')}
-                                  </Button>
-                                )}
-                                {!is_admin && (
-                                  <Button
-                                    basic
-                                    color='green'
-                                    disabled={is_being_deleted}
-                                    onClick={() => this.adminOrganization(organization)}>
-                                    {getTranslation('Administrate')}
-                                  </Button>
-                                )}
-                              </Button.Group>
-                              {user.id == 1 && (
-                                <Button
-                                  style={{marginTop: '0.5em'}}
-                                  basic
-                                  negative
-                                  disabled={is_being_deleted}
-                                  onClick={() => this.setState({ organization_to_delete: organization })}>
-                                  {is_being_deleted ?
-                                    <span>Deleting... <Icon name="spinner" loading /></span> :
-                                    <span>{getTranslation('Delete')}</span>}
-                                </Button>
-                              )}
-                            </List.Item>
-                          )}
-                        </List>
-                      </Table.Cell>
-                    )}
+            {user.id == 1 && (
+              <Button onClick={() => this.createOrganization()} className="lingvo-button-violet-dashed">
+                {getTranslation('Add organization')}
+              </Button>
+            )}
+          
+            <div style={{ overflowY: 'auto' }}>
+              <Table celled padded className="lingvo-org-table">
+                <Table.Header>
+                  <Table.Row>
+                    <Table.HeaderCell>
+                      <div className="lingvo-org-table__content">
+                        {getTranslation('Organization name')}
+                      </div>
+                    </Table.HeaderCell>
+                    <Table.HeaderCell>
+                      <div className="lingvo-org-table__content">
+                        {getTranslation('About the organization')}
+                      </div>
+                    </Table.HeaderCell>
+                    <Table.HeaderCell>
+                      <div className="lingvo-org-table__content">
+                        {getTranslation('Members')}
+                      </div>
+                    </Table.HeaderCell>
+                    <Table.HeaderCell>
+                      <div className="lingvo-org-table__content">
+                        {getTranslation('Administrators')}
+                      </div>
+                    </Table.HeaderCell>
+                    {user.id && <Table.HeaderCell className="lingvo-org-table__cell_buttons" />}
+                    {user.id && (user.id == 1) && <Table.HeaderCell className="lingvo-org-table__cell_delete" />}
                   </Table.Row>
-                );
-              })}
-            </Table.Body>
-          </Table>
-          {organization_to_delete && (
-            <Confirm
-              open={!!organization_to_delete}
-              cancelButton={getTranslation('No')}
-              confirmButton={getTranslation('Yes')}
-              onCancel={() => this.setState({ organization_to_delete: null })}
-              onConfirm={this.deleteOrganization}
-              content={
-                getTranslation('Delete organization') +
-                ' "' +
-                organization_to_delete.translation +
-                '"?'}
-              className="lingvo-confirm"
-            />
-          )}
+                </Table.Header>
+                <Table.Body>
+                  {organizations.map(organization => {
+
+                    const is_member = this.isMember(organization);
+                    const is_admin = this.isAdmin(organization);
+
+                    const is_being_deleted = this.state.being_deleted_id_set.has(organization.id);
+
+                    const is_process_member = this.state.process_member_id_set.has(organization.id);
+                    const is_process_admin = this.state.process_admin_id_set.has(organization.id);
+                    
+                    return (
+                      <Table.Row key={organization.id}>
+                        <Table.Cell>
+                          <div className="lingvo-org-table__content">{organization.translation}</div>
+                        </Table.Cell>
+                        <Table.Cell>
+                          <div className="lingvo-org-table__content">{organization.about}</div>
+                        </Table.Cell>
+                        <Table.Cell>
+                          <div className="lingvo-org-table__content">
+                            {organization.members.map(member =>
+                            <div key={member.id} className="lingvo-org-table__list-item">{member.name}</div>)}
+                          </div>
+                        </Table.Cell>
+                        <Table.Cell>
+                          <div className="lingvo-org-table__content">
+                            {organization.admins.map(admin =>
+                            <div key={admin.id} className="lingvo-org-table__list-item">{admin.name}</div>)}
+                          </div>
+                        </Table.Cell>
+                        {user.id && (
+                          <Table.Cell className="lingvo-org-table__cell_buttons">
+                            <List>
+                              {!is_member && (
+                                <List.Item>
+                                  <Button
+                                    className="lingvo-button-link"
+                                    disabled={is_being_deleted || is_process_member}
+                                    onClick={() => this.joinOrganization(organization)}>
+                                      {!is_process_member ? 
+                                        getTranslation('Become a member') : 
+                                        getTranslation('In processing')
+                                      }
+                                  </Button>
+                                </List.Item>
+                              ) || (
+                                <List.Item>
+                                  <span className="lingvo-org-table__role">{getTranslation('You are a member')}</span>
+                                </List.Item>
+                              )}
+
+                              {!is_admin && (
+                                <List.Item>
+                                  <Button
+                                    className="lingvo-button-link"
+                                    disabled={is_being_deleted || is_process_admin}
+                                    onClick={() => this.adminOrganization(organization)}>
+                                      {!is_process_admin ? 
+                                        getTranslation('Become an administrator') : 
+                                        getTranslation('In processing')
+                                      }
+                                  </Button>
+                                </List.Item>
+                              ) || (
+                                <List.Item>
+                                  <span className="lingvo-org-table__role">{getTranslation('You are an administrator')}</span>
+                                </List.Item>
+                              )}
+                            </List>
+                          </Table.Cell>
+                        )}
+                        {user.id && (user.id == 1) && (
+                          <Table.Cell className="lingvo-org-table__cell_delete">
+                            {!is_being_deleted ? 
+                              <Button 
+                                icon={<i className="lingvo-icon lingvo-icon_trash" />}
+                                title={getTranslation('Delete')} 
+                                className="lingvo-button-org-delete" 
+                                disabled={is_being_deleted}
+                                onClick={() => this.setState({ organization_to_delete: organization })}
+                              /> : 
+                              <Icon name="spinner" loading title={`${getTranslation('Deleting')}...`} />
+                            }
+                          </Table.Cell>
+                        )}
+                      </Table.Row>
+                    );
+                  })}
+                </Table.Body>
+              </Table>
+
+              {organization_to_delete && (
+                <Confirm
+                  open={!!organization_to_delete}
+                  cancelButton={getTranslation('No')}
+                  confirmButton={getTranslation('Yes')}
+                  onCancel={() => this.setState({ organization_to_delete: null })}
+                  onConfirm={this.deleteOrganization}
+                  content={
+                    getTranslation('Delete organization') +
+                    ' "' +
+                    organization_to_delete.translation +
+                    '"?'}
+                  className="lingvo-confirm"
+                />
+              )}
+            </div>
+
+          </Container>
+
         </div>
-
-        {user.id == 1 && (
-          <Button
-            style={{marginTop: '1em'}}
-            onClick={() => this.createOrganization()}>
-            {getTranslation('Create organization')}...
-          </Button>
-        )}
-
+        <Footer />
       </div>
     );
   }

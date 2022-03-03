@@ -42,6 +42,7 @@ class GrantsList extends React.Component {
   render() {
     const { data } = this.props;
     const { grants } = data;
+
     return (
       <div style={{ overflowY: 'auto' }}>
         <Table celled padded>
