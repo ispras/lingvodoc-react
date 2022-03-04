@@ -7,8 +7,20 @@ import { graphql } from 'react-apollo';
 
 import { getTranslation } from 'api/i18n';
 import PropertiesView from './PropertiesView';
+import scrollParent from 'utils/scrollParent';
 
 import './style.scss';
+
+const scrollIntoViewIfNeeded = elem => {
+  const rectElem = elem.getBoundingClientRect(), rectContainer = scrollParent(elem).getBoundingClientRect();
+  const container = scrollParent(elem);
+  if (rectElem.bottom > rectContainer.bottom) {
+    elem.scrollIntoView(false);
+  }
+  if (rectElem.top < rectContainer.top) {
+    elem.scrollIntoView();
+  }
+}
 
 const getParserResultContentQuery = gql`
   query getParserResultContentQuery($id: LingvodocID!) {
@@ -123,6 +135,7 @@ class OdtMarkupModal extends React.Component {
         elem.classList.replace("unverified", "verified");
         this.setState({ dirty: true });
         if (i + 1 < elems.length) {
+          scrollIntoViewIfNeeded(elems[i+1]);
           elems[i+1].click();
         }
       }
@@ -131,6 +144,7 @@ class OdtMarkupModal extends React.Component {
 
     if (event.key === "ArrowRight") {
       if (i + 1 < elems.length) {
+        scrollIntoViewIfNeeded(elems[i+1]);
         elems[i+1].click();
       }
       return;
@@ -138,6 +152,7 @@ class OdtMarkupModal extends React.Component {
 
     if (event.key === "ArrowLeft") {
       if (i - 1 >= 0) {
+        scrollIntoViewIfNeeded(elems[i-1]);
         elems[i-1].click();
       }
       return;
