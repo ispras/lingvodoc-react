@@ -72,7 +72,7 @@ class TranslationsBlock extends React.Component {
     const typeGistsMap = new Map();
     let types = [];
     let currentType = null;
-    
+
     translationgists.forEach(item => {
       if (item.translationatoms.length == 0)
         return;
@@ -81,12 +81,12 @@ class TranslationsBlock extends React.Component {
         currentType = item.type;
         types.push(currentType);
         typeGistsMap[currentType] = [];
-      }
-      else if (currentType == item.type) {
+        typeGistsMap[currentType].push(item);
+      } else if (currentType == item.type) {
         typeGistsMap[currentType].push(item);
       }
     });
-    
+
     return (
       <Container>
         {types.map((type, index) => (
