@@ -1,4 +1,4 @@
-import 'semantic-ui-css/semantic.css';
+import 'semantic-ui-css/semantic.min.css';
 import 'styles/main.scss';
 
 import React from 'react';
