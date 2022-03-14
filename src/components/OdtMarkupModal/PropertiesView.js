@@ -74,14 +74,14 @@ class PropertiesView extends React.Component {
     const variants = results.map(result => Object.assign( { result }, JSON.parse(result.innerText)));
 
     return (
-      <div style={{ flex: '0 0 20%', padding: '10px', borderRight: '1px solid rgba(34, 36, 38, 0.15)' }}>
+      <div id="variants_section">
         <Header size="small">
           {selection !== null ? getTranslation('Proposed variants') : getTranslation('Please select an element')}
         </Header>
         { selection !== null &&
           <div>
             <Divider/>
-            <List divided relaxed>
+            <List divided relaxed style={{ maxHeight: "calc(100vh - 269px)", overflowX: "hidden", overflowY: "auto" }}>
               { variants.map((variant, index) =>
                 <List.Item key={index}>
                   <List.Content>
@@ -110,15 +110,15 @@ class PropertiesView extends React.Component {
                     </List.Header>
                     <List.Description style={{ display: 'flex', flexDirection: 'column', marginTop: 5, color: 'black' }}>
                       <span style={{ fontStyle: 'italic' }}>{variant.parts}</span>
-                      <div style={{ margin: '5px 0' }}>
+                      <div style={{ margin: '5px 0', wordWrap: "break-word" }}>
                         <span style={{ fontWeight: 'bold' }}>gloss: </span>
                         {variant.gloss}
                       </div>
-                      <div>
+                      <div style={{ wordWrap: "break-word" }}>
                         <span style={{ fontWeight: 'bold' }}>gr: </span>
                         {variant.gr}
                       </div>
-                      <div style={{ marginTop: 5 }}>
+                      <div style={{ marginTop: 5, wordWrap: "break-word" }}>
                         <span style={{ fontWeight: 'bold' }}>trans_ru: </span>
                         {variant.trans_ru}
                       </div>

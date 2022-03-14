@@ -1,4 +1,23 @@
+#variants_section {
+  max-height: calc(100vh - 200px);
+  padding: 10px;
+  border-right: 1px solid rgba(34, 36, 38, 0.15);
+}
+
+@media (max-width: 500px) {
+  #variants_section {
+    min-width: 150px;
+  }
+}
+
+@media (min-width: 500px) {
+  #variants_section {
+    min-width: 300px;
+  }
+}
+
 #markup-content {
+  max-height: calc(100vh - 200px);
   line-height: 2;
 
   p {
