@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { compose, pure, withReducer } from 'recompose';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import { sortBy, reverse } from 'lodash';
-import { Table, Button, Dropdown, Icon, Input } from 'semantic-ui-react';
+import { Table, Button, Confirm, Dropdown, Icon, Input } from 'semantic-ui-react';
 import { compositeIdToString } from 'utils/compositeId';
 import { getTranslation } from 'api/i18n';
 import { fieldsQuery } from 'pages/DictImport';
@@ -39,7 +39,10 @@ const deleteBlobMutation = gql`
 `;
 
 const Blob = ({ blob, deleteBlob }) => {
+  const [confirmation, setConfirmation] = useState(false);
+
   const remove = () => {
+    setConfirmation(false);
     deleteBlob({
       variables: { id: blob.id },
       refetchQueries: [
@@ -58,8 +61,16 @@ const Blob = ({ blob, deleteBlob }) => {
       <Table.Cell>{blob.data_type}</Table.Cell>
       <Table.Cell>{new Date(blob.created_at * 1e3).toLocaleString()}</Table.Cell>
       <Table.Cell>
-        <Button basic content={getTranslation('Remove')} onClick={remove} />
+        <Button basic content={getTranslation('Remove')} onClick={() => setConfirmation(true)} />
       </Table.Cell>
+      <Confirm
+          open={confirmation}
+          header={getTranslation('Confirmation')}
+          content={`${getTranslation("Are you sure you want to delete file '")}${blob.name}'?`}
+          onConfirm={remove}
+          onCancel={() => setConfirmation(false)}
+          className="lingvo-confirm"
+        />
     </Table.Row>
   );
 };

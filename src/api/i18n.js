@@ -44,6 +44,7 @@ export const stringsToTranslate = [
    "AND block",
    "and",
    "Archive",
+   "Are you sure you want to delete file",
    "Are you sure you want to remove selected element from markup?",
    "Areas mode",
    "Ask questions about the LingvoDoc program at",
