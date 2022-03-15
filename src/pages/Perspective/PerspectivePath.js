@@ -105,6 +105,7 @@ class PerspectivePath extends React.Component {
       <Header as="h2" className={className}>
         <Breadcrumb
           icon="right angle"
+          className="lingvo-breadcrumbs"
           sections={tree.slice().reverse().map((e, index) => ({
               key: e.id,
               content:
@@ -114,7 +115,6 @@ class PerspectivePath extends React.Component {
 
                   <Dropdown inline text={e.translation}>
                     <Dropdown.Menu>
-
                       {perspectives.length > 1 && [
 
                         (perspectives.filter(pers => pers.id !== tree[0].id).map(pers => (
@@ -164,7 +164,6 @@ class PerspectivePath extends React.Component {
 
                   <Dropdown inline text={e.translation}>
                     <Dropdown.Menu>
-
                       {user.id !== undefined && [
 
                         <Dropdown.Item

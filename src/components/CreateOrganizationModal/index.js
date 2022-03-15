@@ -3,15 +3,17 @@ import PropTypes from 'prop-types';
 import { compose } from 'recompose';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
-import { Button, Modal, Select, Grid, Header } from 'semantic-ui-react';
+import { Button, Modal } from 'semantic-ui-react';
 import { closeModal as closeCreateOrganizationModal } from 'ducks/createOrganization';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { every } from 'lodash';
 import { compositeIdToString } from 'utils/compositeId';
-import Translations from 'components/Translation';
+
+import Translations from 'components/Translation2';
 import { organizationsQuery } from 'pages/Organizations';
 import { getTranslation } from 'api/i18n';
+import './style.scss';
 
 class CreateOrganizationModal extends React.Component {
   constructor(props) {
@@ -77,15 +79,15 @@ class CreateOrganizationModal extends React.Component {
         open 
         className="lingvo-modal2">
 
-        <Modal.Header>{getTranslation('Create organization')}</Modal.Header>
+        <Modal.Header>{getTranslation('New organization')}</Modal.Header>
 
         <Modal.Content>
 
-          <Header>{getTranslation('Organization name')}</Header>
+          <h4 className="lingvo-org-translation__header">{getTranslation('Organization name')}</h4>
           <Translations
             onChange={translations => this.setState({ translations })} />
 
-          <Header>{getTranslation('About')}</Header>
+          <h4 className="lingvo-org-translation__header">{getTranslation('About the organization')}</h4>
           <Translations
             onChange={translations_about => this.setState({ translations_about })}
             textArea={true}/>
