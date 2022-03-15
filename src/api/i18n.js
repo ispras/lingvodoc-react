@@ -17,6 +17,7 @@ export const stringsToTranslate = [
    "Add OR block",
    "Add OR condition",
    "Add organization",
+   "Add translation",
    "Add Translation",
    "Add all markers of the groups to which this marker belongs to the group",
    "Add connection",

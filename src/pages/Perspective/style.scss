@@ -116,3 +116,11 @@
 }
 
 /* /Scrolling */
+
+.lingvo-breadcrumbs {
+  .white &.ui.breadcrumb .divider.text {
+    color: #fff;
+    font-size: 1em;
+  }
+}
+
