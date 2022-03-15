@@ -35,6 +35,13 @@ const query = gql`
         location
         blobs
         tag_list
+        interrogator
+        informant
+        processing
+        typeOfDiscourse
+        typeOfSpeech
+        speechGenre
+        theThemeOfTheText
       }
       last_modified_at
     }

@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { compose, withProps } from 'recompose';
 import { graphql } from 'react-apollo';
 import Immutable from 'immutable';
+import { Link } from 'react-router-dom';
 import { Divider, Message, Button, Step, Header, Segment } from 'semantic-ui-react';
 import {
   nextStep,
@@ -179,9 +180,9 @@ class CreateDictionaryWizard extends React.Component {
               <Message.Header>{getTranslation(mode.replace(/^\w/, c => c.toUpperCase()) + ' created')}</Message.Header>
               <Message.Content>
                 {getTranslation('Your ' + mode + ' is created, click') + ' '}
-                <a href={window.location.protocol + '//' + window.location.host + `/dictionary/${this.createdDictionary.id.join('/')}/perspective/${this.createdDictionary.perspective_id.join('/')}/edit`}>
+                <Link to={`/dictionary/${this.createdDictionary.id.join('/')}/perspective/${this.createdDictionary.perspective_id.join('/')}/edit`}>
                   {getTranslation('here')}
-                </a>
+                </Link>
                 {' ' + getTranslation('to view.')}
               </Message.Content>
             </Message>
