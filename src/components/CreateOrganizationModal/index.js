@@ -128,7 +128,6 @@ export default compose(
         }
       }
     `,
-    { name: 'createOrganization'/*, options: { fetchPolicy: "network-only" }*/
-  }
+    { name: 'createOrganization' }
   )
 )(CreateOrganizationModal);
