@@ -374,7 +374,11 @@ export default compose(
   connect(null, dispatch =>
     bindActionCreators({ openCreateOrganizationModal }, dispatch)),
   connect(state => state.user),
-  graphql(organizationsQuery),
+  graphql(organizationsQuery, {
+    options: {
+      fetchPolicy: 'network-only'
+    }
+  }),
   graphql(participateOrgMutation, { name: 'participateOrg' }),
   graphql(administrateOrgMutation, { name: 'administrateOrg' }),
   graphql(deleteOrgMutation, { name: 'deleteOrg' }),

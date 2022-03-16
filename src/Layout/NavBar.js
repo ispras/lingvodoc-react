@@ -32,7 +32,11 @@ const Sync = compose(
   graphql(gql`
       query isAuthenticatedProxy {
         is_authenticated
-  }`),
+  }`, {
+    options: {
+      fetchPolicy: 'network-only'
+    }
+  }/*, { options: { fetchPolicy: "network-only" }}*/),
   graphql(
     gql`
       mutation {
@@ -71,7 +75,11 @@ export default compose(
       query isAuthenticated {
         is_authenticated
       }
-    `),
+    `, {
+      options: {
+        fetchPolicy: 'network-only'
+      }
+    }/*, { options: { fetchPolicy: "network-only" }}*/),
   connect(
     (state, { data }) => ({ ...state.auth }),
     (dispatch, { data }) => {

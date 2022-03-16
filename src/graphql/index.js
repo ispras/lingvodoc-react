@@ -24,6 +24,16 @@ const errorLink = onError(({ networkError = {}, graphQLErrors }) => {
 const httpLink = createUploadLink({
   uri: `${config.apiUrl}/graphql`,
   credentials: 'same-origin',
+  /*options: {
+    query: {
+      fetchPolicy: 'network-only',
+    }
+  },*/
+  /*defaultOptions: {
+    query: {
+      fetchPolicy: 'network-only',
+    },
+  },*/
 });
 
 // register global GraphQL error handler
