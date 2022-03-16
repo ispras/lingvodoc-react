@@ -7,11 +7,6 @@ import { err } from 'ducks/snackbar';
 
 import { SubmissionError } from 'redux-form';
 
-export function* resetApollo() {
-  const client = yield select(state => state.apolloClient);
-  yield call([client, client.resetStore]);
-}
-
 export function* requestRoutine() {
   if (yield call(getId)) {
     yield put(requestUser());
@@ -34,7 +29,6 @@ export function* signOutRoutine() {
     const client = yield select(state => state.apolloClient);
     yield call([client, client.clearStore]);
     yield call(window.dispatch, push('/'));
-    yield call([client, client.reFetchObservableQueries]);
   } else {
     yield put(err('Could not sign out'));
   }
@@ -50,7 +44,6 @@ export function* signInRoutine({ payload }) {
   if (response.data) {
     success = true;
     yield put(signInForm.success());
-    yield call(resetApollo);
   } else {
     yield put(signInForm.failure(new SubmissionError({
       _error: response.err.statusText,
@@ -58,6 +51,8 @@ export function* signInRoutine({ payload }) {
   }
   yield* requestRoutine();
   if (success) {
+    const client = yield select(state => state.apolloClient);
+    yield call([client, client.resetStore]);
     yield* startTrackUser();
   }
 }
