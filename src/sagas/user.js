@@ -25,10 +25,10 @@ export function* signOutRoutine() {
   const response = yield call(signOut);
   if (response.data) {
     success = true;
+    yield call(window.dispatch, push('/'));
     yield put(setUser({}));
     const client = yield select(state => state.apolloClient);
     yield call([client.cache, client.cache.reset]);
-    yield call(window.dispatch, push('/'));
   } else {
     yield put(err('Could not sign out'));
   }
