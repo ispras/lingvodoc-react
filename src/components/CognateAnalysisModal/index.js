@@ -933,7 +933,7 @@ class MLSelection extends React.Component
         <List.Item>
           <Dropdown
             fluid
-            placeholder='Add language'
+            placeholder={getTranslation('Add language')}
             search
             selection
             options={

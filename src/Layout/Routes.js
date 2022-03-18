@@ -34,7 +34,8 @@ import WithoutGrants from 'pages/WithoutGrants';
 import CorporaAll from 'pages/CorporaAll';
 import AuthorsRoute from 'pages/AuthorsRoute';
 import VersionRoute from 'pages/VersionRoute';
-import Docx2Eaf from 'pages/Docx2Eaf'
+import Docx2Eaf from 'pages/Docx2Eaf';
+import Valency from 'pages/Valency';
 
 import config from 'config';
 
@@ -75,6 +76,7 @@ const Routes = () => (
     <Route path="/authors_route" component={AuthorsRoute} />
     <Route path="/version_route" component={VersionRoute} />
     <Route path="/docx2eaf" component={Docx2Eaf} />
+    <Route path="/valency" component={Valency} />
     <Route component={NotFound} />
   </Switch>
 );
