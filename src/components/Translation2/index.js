@@ -227,4 +227,4 @@ Translations.defaultProps = {
   translations: [],
 };
 
-export default compose(graphql(localesQuery))(Translations);
+export default compose(graphql(localesQuery, { options: { fetchPolicy: "cache-and-network" }}))(Translations);
