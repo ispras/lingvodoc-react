@@ -64,13 +64,13 @@ const Blob = ({ blob, deleteBlob }) => {
         <Button basic content={getTranslation('Remove')} onClick={() => setConfirmation(true)} />
       </Table.Cell>
       <Confirm
-          open={confirmation}
-          header={getTranslation('Confirmation')}
-          content={`${getTranslation("Are you sure you want to delete file '")}${blob.name}'?`}
-          onConfirm={remove}
-          onCancel={() => setConfirmation(false)}
-          className="lingvo-confirm"
-        />
+        open={confirmation}
+        header={getTranslation('Confirmation')}
+        content={`${getTranslation("Are you sure you want to delete file")} '${blob.name}'?`}
+        onConfirm={remove}
+        onCancel={() => setConfirmation(false)}
+        className="lingvo-confirm"
+      />
     </Table.Row>
   );
 };

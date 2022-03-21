@@ -326,8 +326,8 @@ const P = ({
 
   /* Basic case-insensitive, case-sensitive compare. */
   const ci_cs_compare = (str_a, str_b) => {
-    const result = str_a.toLowerCase().localeCompare(str_b.toLowerCase());
-    return result ? result : str_a.localeCompare(str_b);
+    const result = str_a.toLowerCase().localeCompare(str_b.toLowerCase(), undefined, { numeric: true });
+    return result ? result : str_a.localeCompare(str_b, undefined, { numeric: true });
   };
 
   const processEntries = flow([
@@ -361,7 +361,7 @@ const P = ({
             ea.id[1] - eb.id[1]);
 
         entry.entity_sort_key =
-          (entities.length > 0 && entities[0].content) ? entities[0].content : '';
+          (entities.length > 0 && entities[0].content) ? entities[0].content : `${entities.length}`;
       }
 
       es.sort(

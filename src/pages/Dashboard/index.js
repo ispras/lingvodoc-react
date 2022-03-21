@@ -3,10 +3,9 @@ import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { compose, onlyUpdateForKeys, branch, renderNothing } from 'recompose';
-import { Link } from 'react-router-dom';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
-import { Dimmer, Tab, Header, List, Dropdown, Icon, Popup } from 'semantic-ui-react';
+import { Confirm, Dimmer, Tab, Header, List, Dropdown, Icon, Popup } from 'semantic-ui-react';
 import { isEqual } from 'lodash';
 import { compositeIdToString } from 'utils/compositeId';
 import { openRoles } from 'ducks/roles';
@@ -120,6 +119,9 @@ const PerspectiveStatuses = graphql(updatePerspectiveStatusMutation, { name: 'up
 class P extends React.Component {
   constructor(props) {
     super(props);
+
+    this.state = { confirmation: false };
+
     this.onRemovePerspective = this.onRemovePerspective.bind(this);
   }
 
@@ -127,6 +129,8 @@ class P extends React.Component {
     const {
       id, mode, category, removePerspective,
     } = this.props;
+
+    this.setState({ confirmation: false });
     removePerspective({
       variables: {
         id,
@@ -147,6 +151,9 @@ class P extends React.Component {
     const {
       id, parent_id, translation, status, state_translation_gist_id: statusId, statuses, actions,
     } = this.props;
+
+    const { confirmation } = this.state;
+
     return (
       <List.Item>
         <List.Content>
@@ -177,9 +184,7 @@ class P extends React.Component {
                     >
                       <i className="lingvo-icon lingvo-icon_stats" /> {getTranslation('Statistics')}
                     </Dropdown.Item>
-                    <Dropdown.Item 
-                      onClick={this.onRemovePerspective} 
-                    >
+                    <Dropdown.Item onClick={() => this.setState({ confirmation: true })}>
                       <i className="lingvo-icon lingvo-icon_delete" /> {getTranslation("Remove perspective")}
                     </Dropdown.Item>
                   </Dropdown.Menu>
@@ -235,6 +240,14 @@ class P extends React.Component {
           </div>
 
         </List.Content>
+        <Confirm
+          open={confirmation}
+          header={getTranslation('Confirmation')}
+          content={`${getTranslation("Are you sure you want to delete perspective")} '${translation}'?`}
+          onConfirm={this.onRemovePerspective}
+          onCancel={() => this.setState({ confirmation: false })}
+          className="lingvo-confirm"
+        />
       </List.Item>
     );
   }
@@ -267,6 +280,9 @@ const Perspective = compose(
 class D extends React.Component {
   constructor(props) {
     super(props);
+
+    this.state = { confirmation: false };
+
     this.onRemoveDictionary = this.onRemoveDictionary.bind(this);
   }
 
@@ -274,6 +290,8 @@ class D extends React.Component {
     const {
       id, mode, category, removeDictionary,
     } = this.props;
+
+    this.setState({ confirmation: false });
     removeDictionary({
       variables: {
         id,
@@ -304,6 +322,8 @@ class D extends React.Component {
       category,
     } = this.props;
 
+    const { confirmation } = this.state;
+    
     return (
       <List.Item>
         <List.Content>
@@ -337,9 +357,7 @@ class D extends React.Component {
                   >
                     <i className="lingvo-icon lingvo-icon_save" /> {getTranslation("Save dictionary")}
                   </Dropdown.Item>
-                  <Dropdown.Item 
-                    onClick={this.onRemoveDictionary} 
-                  >
+                  <Dropdown.Item onClick={() => this.setState({ confirmation: true })}>
                     <i className="lingvo-icon lingvo-icon_delete" /> {getTranslation("Remove dictionary")}
                   </Dropdown.Item>
                 </Dropdown.Menu>
@@ -364,6 +382,14 @@ class D extends React.Component {
             ))}
           </List>
         </List.Content>
+        <Confirm
+          open={confirmation}
+          header={getTranslation('Confirmation')}
+          content={`${getTranslation("Are you sure you want to delete dictionary")} '${translation}'?`}
+          onConfirm={this.onRemoveDictionary}
+          onCancel={() => this.setState({ confirmation: false })}
+          className="lingvo-confirm"
+        />
       </List.Item>
     );
   }

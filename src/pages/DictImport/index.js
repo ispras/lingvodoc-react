@@ -314,6 +314,6 @@ const mapDispatchToProps = {
 
 export default compose(
   connect(mapStateToProps, mapDispatchToProps),
-  graphql(fieldsQuery),
+  graphql(fieldsQuery, { options: { fetchPolicy: "network-only" }}),
   graphql(convertMutation, { name: 'convert' })
 )(Info);
