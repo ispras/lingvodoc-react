@@ -1360,7 +1360,8 @@ body {
   &__progress {
     background: #FCF3D7 !important;
     border-radius: 10px !important;
-    margin: 6px 0 33px 0 !important;
+    /*margin: 6px 0 33px 0 !important;*/
+    margin: 6px 0 0 0 !important;
 
     &:first-child {
       margin-top: 0 !important;
@@ -1390,7 +1391,6 @@ body {
       font-size: 12px !important;
       line-height: 16px !important;
       font-weight: 500 !important;
-      /*word-break: break-all;*/
     }
 
     &_success {
@@ -1407,12 +1407,29 @@ body {
     }
   }
 
+  &__label {
+    margin: 6px 0 12px 0 !important;
+    color: #F3AA18 !important;
+    font-size: 12px !important;
+    line-height: 16px !important;
+    font-weight: 500 !important;
+    transition: color .4s ease;
+    text-shadow: none;
+    text-align: center;
+    overflow-wrap: break-word;
+
+    &_success {
+      color: #57B894 !important;
+    }
+  }
+
   &__link {
     border: 2px dashed #eeedf8;
     border-radius: 4px;
     padding: 10px;
     color: #4E46B4 !important;
-    word-break: break-all;
+    overflow-wrap: break-word;
+    margin-top: 6px;
 
     & a {
       color: #4E46B4 !important;
@@ -1421,6 +1438,10 @@ body {
         text-decoration: underline;
       }
     }
+  }
+
+  &__label + &__link {
+    margin-top: 0;
   }
 
   @media only screen and (max-device-width: 350px), only screen and (max-width: 350px) {
@@ -1443,6 +1464,11 @@ body {
           line-height: 14px !important;
         }
       }
+
+      &__label {
+        line-height: 14px !important;
+      }
+
     }
   }
 
@@ -2318,3 +2344,17 @@ body {
 /* /organizations table */
 
 /* /organizations modal */
+
+
+/* parser buttons group */
+.lingvo-parser-buttons-group {
+  .ui.buttons &__parser.button {
+    flex: 0 1 auto;
+    white-space: nowrap;
+
+    @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+      white-space: normal;
+    }
+  }
+}
+/* /parser buttons group */

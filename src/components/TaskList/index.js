@@ -51,8 +51,11 @@ function Task(props) {
         </Button>
         <div className="lingvo-task__content">
           <div className="lingvo-task__details">{task_details}</div>
-          <Progress label={`(${current_stage}/${total_stages}) ${status}`} percent={progress} progress="percent" size="small" 
+          <Progress percent={progress} progress="percent" size="small" 
             className={progress && (progress === 100) ? "lingvo-task__progress lingvo-task__progress_success" : "lingvo-task__progress" } />
+          <div className={progress && (progress === 100) ? "lingvo-task__label lingvo-task__label_success" : "lingvo-task__label" }>
+            {`(${current_stage}/${total_stages}) ${status}`}
+          </div>
           {links}
         </div>
       </div>
