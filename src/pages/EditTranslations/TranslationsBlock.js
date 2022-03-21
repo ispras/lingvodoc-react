@@ -10,7 +10,7 @@ const getTranslationsQuery = gql`
     translationgists(gists_type: $gists_type) {
       id
       type
-      translationatoms {
+      translationatoms(deleted: false) {
         id
         content
         locale_id
