@@ -233,41 +233,32 @@ class EditAtoms extends React.Component {
 
   atomActions() {
     const { atoms } = this.initialState;
-    let { atoms: newAtoms } = this.state;
+    const { atoms: newAtoms } = this.state;
 
-    const total = Math.max(atoms.length, newAtoms.length);
-
-    let mutations = [];
-    for (let i = 0; i < total; i++) {
-      if (i >= atoms.length) {
-        mutations.push(this.createAtom(newAtoms[i]));
-      }
-      else if (i >= newAtoms.length) {
-        mutations.push(this.deleteAtom(atoms[i]));
-      }
-      else {
-        let atom = atoms[i];
-        let newAtom = newAtoms[i];
-        if (atom.locale_id != newAtom.locale_id || atom.content != newAtom.content) {
-          
-          if (atom.content !== '') {
-            mutations.push(this.updateAtom(atom.id, newAtom));
-          } else {
-            mutations.push(this.createAtom(newAtom));
-          }
-          /*mutations.push(this.updateAtom(atom.id, newAtom));*/
+    const mutations = [];
+    newAtoms.forEach(newAtom => {
+      const oldItem = atoms.find(a => a.id.toString() === newAtom.id.toString());
+      if (oldItem) {
+        if (oldItem.locale_id != newAtom.locale_id || oldItem.content != newAtom.content) {
+          mutations.push(this.updateAtom(oldItem.id, newAtom));
         }
+      } else {
+        mutations.push(this.createAtom(newAtom));
       }
-    }
+    });
+    atoms.forEach(oldItem => {
+      const newItem = newAtoms.find(a => a.id.toString() === oldItem.id.toString());
+      if (!newItem) {
+        mutations.push(this.deleteAtom(oldItem));
+      }
+    });
     if (mutations.length != 0) {
       this.executeSequence(mutations, JSON.parse(JSON.stringify(newAtoms)));
     }
   }
 
   onSave() {
-
     if (this.state.newGist) {
-
       let mutationsGist = [];
       mutationsGist.push(this.createTranslationGist());
       if (mutationsGist.length != 0) {
@@ -282,7 +273,6 @@ class EditAtoms extends React.Component {
           that.atomActions();
         });
       }
-
     } else {
       this.atomActions();
     }
@@ -334,7 +324,6 @@ class EditAtoms extends React.Component {
       </div>
     );
   }
-
 }
 
 export default withApollo(EditAtoms);
