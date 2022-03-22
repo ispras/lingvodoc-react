@@ -6,6 +6,7 @@ import imageStorage from '../../images/collecting.svg';
 import imageDistanceMap from '../../images/distance_map.svg';
 import imageLanguages from '../../images/around_world.svg';
 import imageTranslations from '../../images/text_field.svg';
+import imageValency from '../../images/verb_valency.svg';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
@@ -48,6 +49,10 @@ function toolsRoute(props) {
               <img className="card-item__img" src={imageTranslations} />
             </Link>
           )}
+          <Link className="card-item" to="/valency">
+            <label className="card-item__label">{getTranslation('Verb valency')}</label>
+            <img className="card-item__img card-item__img_verb-valency" src={imageValency} />
+          </Link>
         </div>
       </div>
     </div>
