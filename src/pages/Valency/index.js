@@ -29,6 +29,7 @@ export const valencyDataQuery = gql`
   query valencyData(
     $perspectiveId: LingvodocID!,
     $offset: Int,
+    $limit: Int,
     $verbFlag: Boolean,
     $verbPrefix: String,
     $caseFlag: Boolean)
@@ -36,6 +37,7 @@ export const valencyDataQuery = gql`
     valency_data(
       perspective_id: $perspectiveId,
       offset: $offset,
+      limit: $limit,
       verb_flag: $verbFlag,
       verb_prefix: $verbPrefix,
       case_flag: $caseFlag)
@@ -88,6 +90,8 @@ class Valency extends React.Component
 
       instance_count: null,
       current_page: 1,
+      input_go_to_page: 1,
+      items_per_page: 25,
       total_pages: null,
 
       instance_list: null,
@@ -116,14 +120,17 @@ class Valency extends React.Component
 
     this.setPerspective = this.setPerspective.bind(this);
     this.setPage = this.setPage.bind(this);
+    this.setItemsPerPage = this.setItemsPerPage.bind(this);
     this.setPrefix = this.setPrefix.bind(this);
 
     this.render_instance = this.render_instance.bind(this);
   }
 
-  queryValencyData(perspective, current_page, sort_verb, sort_case)
+  queryValencyData(perspective, current_page, items_per_page, sort_verb, sort_case)
   {
     const { client } = this.props;
+
+    items_per_page = items_per_page || this.state.items_per_page;
 
     sort_verb = sort_verb || this.state.sort_verb;
     sort_case = sort_case || this.state.sort_case;
@@ -132,7 +139,8 @@ class Valency extends React.Component
       query: valencyDataQuery,
       variables: {
         perspectiveId: perspective.id,
-        offset: (current_page - 1) * 25,
+        offset: (current_page - 1) * items_per_page,
+        limit: items_per_page,
         verbFlag: sort_verb,
         verbPrefix: sort_verb ? this.state.prefix_filter : null,
         caseFlag: sort_case},
@@ -164,7 +172,7 @@ class Valency extends React.Component
         const state_obj = {
           valency_data: data.valency_data,
           instance_count,
-          total_pages: Math.floor((instance_count + 25 - 1) / 25),
+          total_pages: Math.floor((instance_count + items_per_page - 1) / items_per_page),
           instance_list,
           sentence_map,
           annotation_map,
@@ -303,6 +311,7 @@ class Valency extends React.Component
 
         this.setState({
           current_page: 1,
+          input_go_to_page: 1,
           creating_valency_data: false,
           loading_valency_data: true,
           loading_valency_error: false,
@@ -385,14 +394,35 @@ class Valency extends React.Component
 
   setPage(active_page)
   {
+    active_page =
+      Math.max(1, Math.min(active_page, this.state.total_pages));
+
     this.setState({
       current_page: active_page,
+      input_go_to_page: active_page,
       loading_valency_data: true,
       loading_valency_error: false,
       valency_data: null,
     });
 
     this.queryValencyData(this.state.perspective, active_page);
+  }
+
+  setItemsPerPage(items_per_page)
+  {
+    const current_page =
+      Math.floor((this.state.current_page - 1) * this.state.items_per_page / items_per_page) + 1;
+
+    this.setState({
+      current_page,
+      input_go_to_page: current_page,
+      items_per_page,
+      loading_valency_data: true,
+      loading_valency_error: false,
+      valency_data: null,
+    });
+
+    this.queryValencyData(this.state.perspective, current_page, items_per_page);
   }
 
   setPrefix(prefix_str)
@@ -673,6 +703,8 @@ class Valency extends React.Component
     }
 
     const {
+      current_page,
+      items_per_page,
       data_verb_list,
       show_data_verb_list,
       show_prefix_verb_list,
@@ -780,6 +812,7 @@ class Valency extends React.Component
                   getTranslation('Selected by default') + ': ' +
                     (this.state.selection_default ? getTranslation('on') : getTranslation('off'))}
                 checked={this.state.selection_default}
+                disabled={this.state.loading_valency_data}
                 onChange={(e, data) => this.setState({ selection_default: data.checked })}
               />
             </div>
@@ -796,6 +829,7 @@ class Valency extends React.Component
                   this.setState({
                     sort_verb: checked,
                     current_page: 1,
+                    input_go_to_page: 1,
                     loading_valency_data: true,
                     loading_valency_error: false,
                     valency_data: null,
@@ -807,7 +841,8 @@ class Valency extends React.Component
                     show_prefix_str_list: [],
                   });
 
-                  this.queryValencyData(this.state.perspective, 1, checked);
+                  this.queryValencyData(
+                    this.state.perspective, 1, null, checked);
 
                 }}
               />
@@ -916,12 +951,14 @@ class Valency extends React.Component
                   this.setState({
                     sort_case: checked,
                     current_page: 1,
+                    input_go_to_page: 1,
                     loading_valency_data: true,
                     loading_valency_error: false,
                     valency_data: null,
                   });
 
-                  this.queryValencyData(this.state.perspective, 1, null, checked);
+                  this.queryValencyData(
+                    this.state.perspective, 1, null, null, checked);
 
                 }}
               />
@@ -938,12 +975,51 @@ class Valency extends React.Component
 
             <div style={{'marginTop': '1em'}}>
 
-              <p>{getTranslation('Instances')} ({this.state.current_page * 25 - 24}-{this.state.current_page * 25}/{this.state.instance_count}):</p>
+              <p>
+                {getTranslation('Instances') + ' '}
+                ({(current_page - 1) * items_per_page + 1}-{current_page * items_per_page}/{this.state.instance_count}):</p>
 
               <Pagination
                 activePage={this.state.current_page}
                 totalPages={this.state.total_pages}
+                siblingRange={2}
                 onPageChange={(e, { activePage }) => this.setPage(activePage)}
+              />
+
+              <span style={{'marginLeft': '1em'}}>
+                {getTranslation('Go to page') + ':'}
+              </span>
+
+              <Input
+                style={{'marginLeft': '0.5em', 'maxWidth': '7.5em'}}
+                min={1}
+                max={this.state.total_pages}
+                type='number'
+                defaultValue={this.state.input_go_to_page}
+                onChange={(e, { value }) => {this.state.input_go_to_page = value;}}
+              />
+
+              <Button
+                style={{'paddingLeft': '0.75em', 'paddingRight': '0.75em'}}
+                basic
+                content={getTranslation('Go')}
+                onClick={() => this.setPage(this.state.input_go_to_page)}
+                attached='right'
+              />
+
+              <span style={{'marginLeft': '1em'}}>
+                {getTranslation('Items per page') + ':'}
+              </span>
+
+              <Select
+                style={{'marginLeft': '0.5em', 'minWidth': '7.5em'}}
+                value={items_per_page.toString()}
+                options={[
+                  { value: '25', text: '25' },
+                  { value: '50', text: '50' },
+                  { value: '100', text: '100' },
+                ]}
+                onChange={(e, { value }) => this.setItemsPerPage(parseInt(value))}
               />
 
               {render_instance_list}
@@ -962,7 +1038,29 @@ class Valency extends React.Component
               <Pagination
                 activePage={this.state.current_page}
                 totalPages={this.state.total_pages}
+                siblingRange={2}
                 onPageChange={(e, { activePage }) => this.setPage(activePage)}
+              />
+
+              <span style={{'marginLeft': '1em'}}>
+                {getTranslation('Go to page') + ':'}
+              </span>
+
+              <Input
+                style={{'marginLeft': '0.5em', 'maxWidth': '7.5em'}}
+                min={1}
+                max={this.state.total_pages}
+                type='number'
+                defaultValue={this.state.input_go_to_page}
+                onChange={(e, { value }) => {this.state.input_go_to_page = value;}}
+              />
+
+              <Button
+                style={{'paddingLeft': '0.75em', 'paddingRight': '0.75em'}}
+                basic
+                content={getTranslation('Go')}
+                onClick={() => this.setPage(this.state.input_go_to_page)}
+                attached='right'
               />
 
             </div>
