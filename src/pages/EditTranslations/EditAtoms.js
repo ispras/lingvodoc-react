@@ -63,7 +63,7 @@ class EditAtoms extends React.Component {
     };
 
     this.initialState = {
-      atoms: props.atoms
+      atoms: props.newGist ? [] : props.atoms,
     };
 
     this.languageOptions = props.locales.map(locale => {
@@ -174,7 +174,9 @@ class EditAtoms extends React.Component {
 
   onAddTranslation() {
     let newAtoms = JSON.parse(JSON.stringify(this.state.atoms));
-    newAtoms.push({ id: new Date().getUTCMilliseconds(), locale_id: this.getFreeLocale(), content: ''});
+    const date = new Date();
+    const date_str = date.toISOString() + date.getUTCMilliseconds().toString();
+    newAtoms.push({ id: date_str, locale_id: this.getFreeLocale(), content: ''});
     this.setState( { atoms: newAtoms} );
   }
 

@@ -36,8 +36,10 @@ class TranslationsBlock extends React.Component {
 
   addTranslationGist() {
     let newGists = this.state.newgists;
+    const date = new Date();
+    const date_str = date.toISOString() + date.getUTCMilliseconds().toString();
     newGists.push({type: this.state.gistsType, atoms: [
-      { id: new Date().getUTCMilliseconds(), locale_id: 2, content: ''}
+      { id: date_str, locale_id: 2, content: ''}
     ]});
     this.setState({newgists: newGists});
   }
