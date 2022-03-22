@@ -103,6 +103,7 @@ class Valency extends React.Component
       show_prefix_verb_list: [],
       show_prefix_str_list: [],
 
+      selection_default: false,
       selection_dict: {},
 
     };
@@ -476,15 +477,21 @@ class Valency extends React.Component
       user_annotation_map.has(user_id) &&
       user_annotation_map.get(user_id);
 
-    const selection_dict =
-      this.state.selection_dict;
+    const {
+      selection_default,
+      selection_dict } =
+
+      this.state;
 
     return (
       <Segment key={instance.id}>
 
         <Checkbox
           style={{marginRight: '0.5em', verticalAlign: 'middle'}}
-          checked={!selection_dict.hasOwnProperty(instance.id) || selection_dict[instance.id]}
+          checked={
+            selection_dict.hasOwnProperty(instance.id) ?
+              selection_dict[instance.id] :
+              selection_default}
           onChange={(e, { checked }) => {
             selection_dict[instance.id] = checked;
             this.setState({ selection_dict });
@@ -573,10 +580,12 @@ class Valency extends React.Component
         {user_annotation_map && user_annotation_map.size > 0 && (
           <div style={{'marginTop': '0.5em'}}>
             {Array.from(user_annotation_map.entries())
-              .filter(([user_id, annotation_value]) => annotation_value)
-              .map(([user_id, annotation_value]) => this.state.user_map.get(user_id))
+              .filter(([annotation_user_id, annotation_value]) => annotation_value)
+              .map(
+                ([annotation_user_id, annotation_value]) =>
+                  [this.state.user_map.get(annotation_user_id), annotation_user_id])
               .sort()
-              .map(user_name => (
+              .map(([user_name, user_id]) => (
                 <div
                   key={user_id}
                   style={{'marginTop': '0.25em'}}>
@@ -762,6 +771,19 @@ class Valency extends React.Component
               disabled={!this.state.perspective || this.state.creating_valency_data}
               onClick={() => this.createValencyData()}
             />)}
+
+          {(this.state.valency_data || this.state.loading_valency_data) && (
+            <div style={{'marginTop': '0.5em'}}>
+              <Checkbox
+                toggle
+                label={
+                  getTranslation('Selected by default') + ': ' +
+                    (this.state.selection_default ? getTranslation('on') : getTranslation('off'))}
+                checked={this.state.selection_default}
+                onChange={(e, data) => this.setState({ selection_default: data.checked })}
+              />
+            </div>
+          )}
 
           {(this.state.valency_data || this.state.loading_valency_data) && (
             <div style={{'marginTop': '0.5em'}}>
