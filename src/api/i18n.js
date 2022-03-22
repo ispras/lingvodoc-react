@@ -528,6 +528,7 @@ export const stringsToTranslate = [
    "Valency",
    "Valency data is being compiled. Check out tasks for details.",
    "valence analysis",
+   "Verb valency",
    "Version",
    "View",
    "View contributions",
