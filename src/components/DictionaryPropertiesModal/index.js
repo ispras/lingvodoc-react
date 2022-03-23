@@ -44,6 +44,13 @@ const query = gql`
         typeOfSpeech
         speechGenre
         theThemeOfTheText
+        titleOfTheWork
+        genre
+        timeOfWriting
+        quantitativeCharacteristic
+        bibliographicDataOfTheSource
+        translator
+        bibliographicDataOfTheTranslation
       }
       last_modified_at
     }
