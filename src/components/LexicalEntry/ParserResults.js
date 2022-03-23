@@ -83,8 +83,8 @@ class ParserResults extends React.Component {
       <ul>
         {parser_results.map((res, index) =>
           <li key={compositeIdToString(res.id)} className={index === parser_results.length - 1 ? "last" : ""}>
-            <Button.Group basic icon size="mini">
-              <Button content={parsers.find(parser => parser.id.toString() === res.parser_id.toString()).name} />
+            <Button.Group basic icon size="mini" className="lingvo-parser-buttons-group">
+              <Button className="lingvo-parser-buttons-group__parser" content={parsers.find(parser => parser.id.toString() === res.parser_id.toString()).name} />
               <Button icon="table" onClick={() => openModal(OdtMarkupModal, { entityId, resultId: res.id, mode })} />
               {mode === 'edit' && <Button icon="sync alternate" onClick={() =>
                 openConfirmModal(getTranslation('Redo parser execution?'), () => this.reexecute(res))} />}
