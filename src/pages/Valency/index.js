@@ -19,6 +19,7 @@ const sourcePerspectiveQuery = gql`
       tree {
         id
         translation
+        marked_for_deletion
       }
       has_valency_data
     }
@@ -683,6 +684,9 @@ class Valency extends React.Component
 
     for (let i = 0; i < perspectives.length; i++)
     {
+      if (perspectives[i].tree.some(value => value.marked_for_deletion))
+        continue;
+
       const id_str =
         id2str(perspectives[i].id);
 
