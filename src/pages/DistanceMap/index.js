@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
-import gql from 'graphql-tag';
 import SelectorDictionary from './selectorDictionary';
 import { compose } from 'recompose';
 import Placeholder from 'components/Placeholder';
@@ -25,14 +24,15 @@ function distanceMap(props) {
     user
   } = props;
 
-  if (!user || user.id != 1)
-
+  if (!user || user.id != 1) {
     return (
       <div style={{'marginTop': '1em'}}>
         <Label>
           {getTranslation('For the time being Distance Map functionality is available only for the administrator.')}
         </Label>
-      </div>);
+      </div>
+    );
+  }
 
   const {
     language_tree: languageTree,
@@ -40,13 +40,11 @@ function distanceMap(props) {
     loading,
     perspectives,
     is_authenticated: isAuthenticated
-  } = props.dictionaryWithPerspectives;
-
+  } = dictionaryWithPerspectives;
 
   if (loading && !dataForTree.dictionaries) {
     return <Placeholder />;
   }
-
 
   useEffect(() => {
     if (!dataForTree.dictionaries) {
@@ -57,7 +55,6 @@ function distanceMap(props) {
       });
     }
   }, []);
-
 
   if (selected.id !== dataForTree.idLocale) {
     if (!dictionaries) {
@@ -70,14 +67,12 @@ function distanceMap(props) {
     }
   }
 
-
   useEffect(() => {
     if (mainGroupDictionaresAndLanguages.length !== 0) {
       actions.setMainGroupLanguages({});
       actions.setCheckStateTreeFlat({});
     }
   }, []);
-
 
   const newDictionaries = checkCoordAndLexicalEntries(dictionaries || dataForTree.dictionaries);
   const newLanguagesTree = languageTree || dataForTree.languageTree;
@@ -111,6 +106,7 @@ distanceMap.propTypes = {
   selected: PropTypes.object.isRequired,
   mainGroupDictionaresAndLanguages: PropTypes.object.isRequired
 };
+
 export default compose(
   connect(state => state.distanceMap, dispatch => ({
     actions: bindActionCreators({
@@ -122,6 +118,6 @@ export default compose(
   })),
   connect(state => state.locale),
   connect(state => state.user),
-  graphql(dictionaryWithPerspectivesQuery, { name: 'dictionaryWithPerspectives' }), graphql(allFieldQuery, { name: 'allField' }),
+  graphql(dictionaryWithPerspectivesQuery, { name: 'dictionaryWithPerspectives', skip: props => props.user.id != 1 }),
+  graphql(allFieldQuery, { name: 'allField', skip: props => props.user.id != 1 }),
 )(distanceMap);
-

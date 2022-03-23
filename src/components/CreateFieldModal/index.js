@@ -71,9 +71,12 @@ class CreateFieldModal extends React.Component {
   }
 
   render() {
-    const { data: { error, loading, all_data_types: dataTypes }, visible, actions } = this.props;
+    if (!this.props.visible) {
+      return null;
+    }
 
-    if (error || loading || !visible) {
+    const { data: { error, loading, all_data_types: dataTypes }, actions } = this.props;
+    if (error || loading ) {
       return null;
     }
 
@@ -139,17 +142,16 @@ export default compose(
         translation
         marked_for_deletion
       }
-    }
-  `),
-  graphql(
-    gql`
-      mutation createField($data_type_id: LingvodocID!, $translationAtoms: [ObjectVal]!) {
-        create_field(data_type_translation_gist_id: $data_type_id, translation_atoms: $translationAtoms) {
-          field { id }
-          triumph
-        }
+    }`,
+    { skip: props => !props.visible }
+  ),
+  graphql(gql`
+    mutation createField($data_type_id: LingvodocID!, $translationAtoms: [ObjectVal]!) {
+      create_field(data_type_translation_gist_id: $data_type_id, translation_atoms: $translationAtoms) {
+        field { id }
+        triumph
       }
-    `,
-    { name: 'createField' }
+    }`,
+    { name: 'createField', skip: props => !props.visible }
   )
 )(CreateFieldModal);
