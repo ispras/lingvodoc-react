@@ -116,7 +116,7 @@ class Valency extends React.Component
 
     this.createValencyData = this.createValencyData.bind(this);
     this.setValencyAnnotation = this.setValencyAnnotation.bind(this);
-    this.acceptAllSelected = this.acceptAllSelected.bind(this);
+    this.acceptRejectAllSelected = this.acceptRejectAllSelected.bind(this);
 
     this.queryValencyData = this.queryValencyData.bind(this);
 
@@ -368,10 +368,11 @@ class Valency extends React.Component
     );
   }
 
-  acceptAllSelected()
+  acceptRejectAllSelected(accept_value)
   {
     const {
       annotation_map,
+      selection_default,
       selection_dict } = this.state;
 
     const user_id = this.props.user.id;
@@ -380,22 +381,28 @@ class Valency extends React.Component
     for (const instance of this.state.instance_list)
     {
       const selected =
-        !selection_dict.hasOwnProperty(instance.id) || 
-        selection_dict[instance.id];
+
+        selection_dict.hasOwnProperty(instance.id) ?
+          selection_dict[instance.id] :
+          selection_default;
 
       if (!selected)
         continue;
 
       const user_annotation_map =
-        annotation_map.has(instance.id) ? annotation_map.get(instance.id) : null;
+
+        annotation_map.has(instance.id) ?
+          annotation_map.get(instance.id) :
+          null;
 
       let annotation_value =
+
         user_annotation_map &&
         user_annotation_map.has(user_id) &&
         user_annotation_map.get(user_id);
 
-      if (!annotation_value)
-        annotation_list.push([instance.id, true]);
+      if (annotation_value != accept_value)
+        annotation_list.push([instance.id, accept_value]);
     }
 
     if (annotation_list.length > 0)
@@ -723,9 +730,21 @@ class Valency extends React.Component
       data_verb_list,
       show_data_verb_list,
       show_prefix_verb_list,
-      show_prefix_str_list } = this.state;
+      show_prefix_str_list,
+
+      annotation_map,
+      selection_default,
+      selection_dict } =
+
+      this.state;
+
+    const user_id =
+      this.props.user.id;
 
     const render_instance_list = [];
+
+    let has_selected_to_accept = false;
+    let has_selected_to_reject = false;
 
     if (
       !this.state.loading_valency_data &&
@@ -792,6 +811,37 @@ class Valency extends React.Component
 
         render_instance_list.push(
           this.render_instance(instance));
+
+        /* Checking if we have selected instances we can accept/reject. */
+
+        if (has_selected_to_accept && has_selected_to_reject)  
+          continue;
+
+        const selected =
+
+          selection_dict.hasOwnProperty(instance.id) ?
+            selection_dict[instance.id] :
+            selection_default;
+
+        if (!selected)
+          continue;
+
+        const user_annotation_map =
+
+          annotation_map.has(instance.id) ?
+            annotation_map.get(instance.id) :
+            null;
+
+        let annotation_value =
+
+          user_annotation_map &&
+          user_annotation_map.has(user_id) &&
+          user_annotation_map.get(user_id);
+
+        if (annotation_value)
+          has_selected_to_reject = true;
+        else
+          has_selected_to_accept = true;
       }
     }
 
@@ -1079,14 +1129,26 @@ class Valency extends React.Component
               {this.state.instance_list.length > 0 && (
 
                 <div>
-                  <Button
-                    style={{'marginBottom': '1em'}}
-                    basic
-                    compact
-                    positive
-                    content={getTranslation('Accept all selected')}
-                    onClick={() => this.acceptAllSelected()}
-                  />
+                  <Button.Group>
+                    <Button
+                      style={{'marginBottom': '1em'}}
+                      basic
+                      compact
+                      positive
+                      disabled={!has_selected_to_accept}
+                      content={getTranslation('Accept all selected')}
+                      onClick={() => this.acceptRejectAllSelected(true)}
+                    />
+                    <Button
+                      style={{'marginBottom': '1em'}}
+                      basic
+                      compact
+                      color='blue'
+                      disabled={!has_selected_to_reject}
+                      content={getTranslation('Reject all selected')}
+                      onClick={() => this.acceptRejectAllSelected(false)}
+                    />
+                  </Button.Group>
 
                   <br/>
 
