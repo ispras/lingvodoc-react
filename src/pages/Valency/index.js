@@ -103,6 +103,7 @@ class Valency extends React.Component
       prefix_filter: '',
       all_verb_list: [],
       data_verb_list: [],
+      data_verb_prefix: '',
       prefix_verb_list: [],
       show_data_verb_list: [],
       show_prefix_verb_list: [],
@@ -131,10 +132,17 @@ class Valency extends React.Component
   {
     const { client } = this.props;
 
-    items_per_page = items_per_page || this.state.items_per_page;
+    items_per_page =
+      items_per_page || this.state.items_per_page;
 
-    sort_verb = sort_verb || this.state.sort_verb;
-    sort_case = sort_case || this.state.sort_case;
+    sort_verb =
+      sort_verb || this.state.sort_verb;
+
+    sort_case =
+      sort_case || this.state.sort_case;
+
+    const verb_prefix =
+      sort_verb ? this.state.prefix_filter : null;
 
     client.query({
       query: valencyDataQuery,
@@ -143,7 +151,7 @@ class Valency extends React.Component
         offset: (current_page - 1) * items_per_page,
         limit: items_per_page,
         verbFlag: sort_verb,
-        verbPrefix: sort_verb ? this.state.prefix_filter : null,
+        verbPrefix: verb_prefix,
         caseFlag: sort_case},
       fetchPolicy: 'no-cache',
     }).then(
@@ -178,9 +186,10 @@ class Valency extends React.Component
           sentence_map,
           annotation_map,
           user_map,
+          data_verb_prefix: verb_prefix,
           loading_valency_data: false };
 
-        if (this.state.sort_verb)
+        if (sort_verb)
         {
           const verb_list =
             data.valency_data.verb_list;
@@ -716,7 +725,10 @@ class Valency extends React.Component
 
     const render_instance_list = [];
 
-    if (!this.state.loading_valency_data && this.state.valency_data)
+    if (
+      !this.state.loading_valency_data &&
+      this.state.valency_data &&
+      this.state.instance_list.length > 0)
     {
       let prev_verb = null;
       let prev_case = null;
@@ -853,15 +865,22 @@ class Valency extends React.Component
             </div>
           )}
 
-          {this.state.sort_verb && (
+          {(this.state.valency_data || this.state.loading_valency_data) &&
+            this.state.sort_verb && (
 
             <Segment
               style={{'marginTop': '0.5em', 'marginBottom': '0.5em', 'padding': '0.5em'}}>
 
               <div>
+
                 {show_data_verb_list.length > 0 ?
-                  getTranslation('Verbs') + ': ' :
-                  getTranslation('No filtered verbs.')}
+                  (this.state.data_verb_prefix ? 
+                    `${getTranslation('Verbs')} (${getTranslation('prefix')} "${this.state.data_verb_prefix}"): ` :
+                    `${getTranslation('Verbs')}: `) :
+                  (this.state.data_verb_prefix ? 
+                    `${getTranslation('No verbs')} (${getTranslation('prefix')} "${this.state.data_verb_prefix}").` :
+                    `${getTranslation('No verbs')}.`)}
+
                 {show_data_verb_list.map((verb, index) => (
 
                   show_data_verb_list.length > 15 && verb == '...' ?
@@ -876,8 +895,10 @@ class Valency extends React.Component
                     </span>
 
                 ))}
+
                 {show_data_verb_list.length > 0 &&
                   ` (${this.state.data_verb_list.length} ${getTranslation('verbs')})`}
+
               </div>
 
               <Input
@@ -910,35 +931,44 @@ class Valency extends React.Component
 
               <div
                 style={{'marginTop': '0.5em'}}>
+
                 {show_prefix_verb_list.length > 0 ?
-                  getTranslation('Filtered verbs') + ': ' :
-                  getTranslation('No filtered verbs.')}
+                  (this.state.prefix_filter ? 
+                    `${getTranslation('Filtered verbs')} (${getTranslation('prefix')} "${this.state.prefix_filter}"): ` :
+                    `${getTranslation('Filtered verbs')}: `) :
+                  (this.state.prefix_filter ? 
+                    `${getTranslation('No filtered verbs')} (${getTranslation('prefix')} "${this.state.prefix_filter}").` :
+                    `${getTranslation('No filtered verbs')}.`)}
 
-                  {show_prefix_verb_list.map((verb, index) => (
+                {show_prefix_verb_list.map((verb, index) => (
 
-                    show_prefix_verb_list.length > 15 && verb == '...' ?
+                  show_prefix_verb_list.length > 15 && verb == '...' ?
 
-                      '..., ' :
+                    '..., ' :
 
-                      <span
-                        key={index}
-                        className='clickable'
-                        onClick={() => this.setPrefix(verb)}>
-                        {verb}{index < show_prefix_verb_list.length - 1 ? ', ' : ''}
-                      </span>
+                    <span
+                      key={index}
+                      className='clickable'
+                      onClick={() => this.setPrefix(verb)}>
+                      {verb}{index < show_prefix_verb_list.length - 1 ? ', ' : ''}
+                    </span>
 
-                  ))}
+                ))}
 
-                  {show_prefix_verb_list.length > 0 &&
-                    ` (${this.state.prefix_verb_list.length} ${getTranslation('verbs')})`}
+                {show_prefix_verb_list.length > 0 &&
+                  ` (${this.state.prefix_verb_list.length} ${getTranslation('verbs')})`}
+
               </div>
 
               <Button
                 style={{'marginTop': '0.5em'}}
                 basic
                 compact
+                disabled={this.state.prefix_filter == this.state.data_verb_prefix}
                 onClick={() => this.setPage(1)}>
-                {getTranslation('Apply filter')}
+                {this.state.prefix_filter ?
+                  `${getTranslation('Apply filter')} (${getTranslation('prefix')} "${this.state.prefix_filter}")` :
+                  `${getTranslation('Apply filter')} (${getTranslation('no prefix')})`}
               </Button>
 
             </Segment>
@@ -979,93 +1009,105 @@ class Valency extends React.Component
 
             <div style={{'marginTop': '1em'}}>
 
-              <p>
-                {getTranslation('Instances') + ' '}
-                ({(current_page - 1) * items_per_page + 1}-{current_page * items_per_page}/{this.state.instance_count}):</p>
+              {this.state.instance_list.length <= 0 ?
 
-              <Pagination
-                activePage={this.state.current_page}
-                totalPages={this.state.total_pages}
-                siblingRange={2}
-                onPageChange={(e, { activePage }) => this.setPage(activePage)}
-              />
+                <p>{getTranslation('No instances') + '.'}</p> :
 
-              <span style={{'marginLeft': '1em'}}>
-                {getTranslation('Go to page') + ':'}
-              </span>
+                <div>
+                  <p>
+                      {getTranslation('Instances') + ' '}
+                      ({(current_page - 1) * items_per_page + 1}-{current_page * items_per_page}/{this.state.instance_count}):
+                  </p>
 
-              <Input
-                style={{'marginLeft': '0.5em', 'maxWidth': '7.5em'}}
-                min={1}
-                max={this.state.total_pages}
-                type='number'
-                defaultValue={this.state.input_go_to_page}
-                onChange={(e, { value }) => {this.state.input_go_to_page = value;}}
-              />
+                  <Pagination
+                    activePage={this.state.current_page}
+                    totalPages={this.state.total_pages}
+                    siblingRange={2}
+                    onPageChange={(e, { activePage }) => this.setPage(activePage)}
+                  />
 
-              <Button
-                style={{'paddingLeft': '0.75em', 'paddingRight': '0.75em'}}
-                basic
-                content={getTranslation('Go')}
-                onClick={() => this.setPage(this.state.input_go_to_page)}
-                attached='right'
-              />
+                  <span style={{'marginLeft': '1em'}}>
+                    {getTranslation('Go to page') + ':'}
+                  </span>
 
-              <span style={{'marginLeft': '1em'}}>
-                {getTranslation('Items per page') + ':'}
-              </span>
+                  <Input
+                    style={{'marginLeft': '0.5em', 'maxWidth': '7.5em'}}
+                    min={1}
+                    max={this.state.total_pages}
+                    type='number'
+                    defaultValue={this.state.input_go_to_page}
+                    onChange={(e, { value }) => {this.state.input_go_to_page = value;}}
+                  />
 
-              <Select
-                style={{'marginLeft': '0.5em', 'minWidth': '7.5em'}}
-                value={items_per_page.toString()}
-                options={[
-                  { value: '25', text: '25' },
-                  { value: '50', text: '50' },
-                  { value: '100', text: '100' },
-                ]}
-                onChange={(e, { value }) => this.setItemsPerPage(parseInt(value))}
-              />
+                  <Button
+                    style={{'paddingLeft': '0.75em', 'paddingRight': '0.75em'}}
+                    basic
+                    content={getTranslation('Go')}
+                    onClick={() => this.setPage(this.state.input_go_to_page)}
+                    attached='right'
+                  />
+
+                  <span style={{'marginLeft': '1em'}}>
+                    {getTranslation('Items per page') + ':'}
+                  </span>
+
+                  <Select
+                    style={{'marginLeft': '0.5em', 'minWidth': '7.5em'}}
+                    value={items_per_page.toString()}
+                    options={[
+                      { value: '25', text: '25' },
+                      { value: '50', text: '50' },
+                      { value: '100', text: '100' },
+                    ]}
+                    onChange={(e, { value }) => this.setItemsPerPage(parseInt(value))}
+                  />
+                </div>}
 
               {render_instance_list}
 
-              <Button
-                style={{'marginBottom': '1em'}}
-                basic
-                compact
-                positive
-                content={getTranslation('Accept all selected')}
-                onClick={() => this.acceptAllSelected()}
-              />
+              {this.state.instance_list.length > 0 && (
 
-              <br/>
+                <div>
+                  <Button
+                    style={{'marginBottom': '1em'}}
+                    basic
+                    compact
+                    positive
+                    content={getTranslation('Accept all selected')}
+                    onClick={() => this.acceptAllSelected()}
+                  />
 
-              <Pagination
-                activePage={this.state.current_page}
-                totalPages={this.state.total_pages}
-                siblingRange={2}
-                onPageChange={(e, { activePage }) => this.setPage(activePage)}
-              />
+                  <br/>
 
-              <span style={{'marginLeft': '1em'}}>
-                {getTranslation('Go to page') + ':'}
-              </span>
+                  <Pagination
+                    activePage={this.state.current_page}
+                    totalPages={this.state.total_pages}
+                    siblingRange={2}
+                    onPageChange={(e, { activePage }) => this.setPage(activePage)}
+                  />
 
-              <Input
-                style={{'marginLeft': '0.5em', 'maxWidth': '7.5em'}}
-                min={1}
-                max={this.state.total_pages}
-                type='number'
-                defaultValue={this.state.input_go_to_page}
-                onChange={(e, { value }) => {this.state.input_go_to_page = value;}}
-              />
+                  <span style={{'marginLeft': '1em'}}>
+                    {getTranslation('Go to page') + ':'}
+                  </span>
 
-              <Button
-                style={{'paddingLeft': '0.75em', 'paddingRight': '0.75em'}}
-                basic
-                content={getTranslation('Go')}
-                onClick={() => this.setPage(this.state.input_go_to_page)}
-                attached='right'
-              />
+                  <Input
+                    style={{'marginLeft': '0.5em', 'maxWidth': '7.5em'}}
+                    min={1}
+                    max={this.state.total_pages}
+                    type='number'
+                    defaultValue={this.state.input_go_to_page}
+                    onChange={(e, { value }) => {this.state.input_go_to_page = value;}}
+                  />
+
+                  <Button
+                    style={{'paddingLeft': '0.75em', 'paddingRight': '0.75em'}}
+                    basic
+                    content={getTranslation('Go')}
+                    onClick={() => this.setPage(this.state.input_go_to_page)}
+                    attached='right'
+                  />
+                </div>
+              )}
 
             </div>
 
