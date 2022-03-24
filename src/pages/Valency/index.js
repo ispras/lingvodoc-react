@@ -135,11 +135,11 @@ class Valency extends React.Component
     items_per_page =
       items_per_page || this.state.items_per_page;
 
-    sort_verb =
-      sort_verb || this.state.sort_verb;
+    if (sort_verb == null)
+      sort_verb = this.state.sort_verb;
 
-    sort_case =
-      sort_case || this.state.sort_case;
+    if (sort_case == null)
+      sort_case = this.state.sort_case;
 
     const verb_prefix =
       sort_verb ? this.state.prefix_filter : null;
@@ -481,7 +481,9 @@ class Valency extends React.Component
       const new_prefix_str =
         verb.slice(0, prefix_length + 1);
 
-      if (!show_prefix_str_set.has(new_prefix_str))
+      if (
+        new_prefix_str.length > prefix_length &&
+        !show_prefix_str_set.has(new_prefix_str))
       {
         show_prefix_str_set.add(new_prefix_str);
         show_prefix_str_list.push(new_prefix_str);
@@ -916,18 +918,23 @@ class Valency extends React.Component
                     <Icon name='delete' disabled/>}
               />
 
-              <div
-                style={{'marginTop': '0.5em'}}>
-                {show_prefix_str_list.map((prefix, index) => (
-                  <span
-                    key={index}
-                    className='clickable'
-                    onClick={() => this.setPrefix(prefix)}>
-                    {prefix.charAt(0).toUpperCase() + prefix.substring(1)}
-                    {index < show_prefix_str_list.length - 1 ? ' ' : ''}
-                  </span>
-                ))}
-              </div>
+              {show_prefix_str_list.length > 0 && (
+
+                <div
+                  style={{'marginTop': '0.5em'}}>
+
+                  {show_prefix_str_list.map((prefix, index) => (
+                    <span
+                      key={index}
+                      className='clickable'
+                      onClick={() => this.setPrefix(prefix)}>
+                      {prefix.charAt(0).toUpperCase() + prefix.substring(1)}
+                      {index < show_prefix_str_list.length - 1 ? ' ' : ''}
+                    </span>
+                  ))}
+
+                </div>
+              )}
 
               <div
                 style={{'marginTop': '0.5em'}}>
@@ -1015,8 +1022,10 @@ class Valency extends React.Component
 
                 <div>
                   <p>
-                      {getTranslation('Instances') + ' '}
-                      ({(current_page - 1) * items_per_page + 1}-{current_page * items_per_page}/{this.state.instance_count}):
+                    {getTranslation('Instances') + ' '}
+                    ({(current_page - 1) * items_per_page + 1}-{
+                      Math.min(current_page * items_per_page, this.state.instance_count)}/{
+                      this.state.instance_count}):
                   </p>
 
                   <Pagination
