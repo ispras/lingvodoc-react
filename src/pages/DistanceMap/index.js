@@ -11,19 +11,17 @@ import { getTranslation } from 'api/i18n';
 import { setDataForTree, setDefaultGroup, setMainGroupLanguages, setCheckStateTreeFlat } from 'ducks/distanceMap';
 import checkCoordAndLexicalEntries from './checkCoordinatesAndLexicalEntries';
 import { dictionaryWithPerspectivesQuery, allFieldQuery } from './graphql';
+
 import './styles.scss';
 
-function distanceMap(props) {
-  const {
-    dataForTree,
-    dictionaryWithPerspectives,
-    allField,
-    actions,
-    selected,
-    mainGroupDictionaresAndLanguages,
-    user
-  } = props;
-
+const DistanceMap = ({ dataForTree,
+  dictionaryWithPerspectives,
+  allField,
+  actions,
+  selected,
+  mainGroupDictionaresAndLanguages,
+  user
+}) => {
   if (!user || user.id != 1) {
     return (
       <div style={{'marginTop': '1em'}}>
@@ -94,13 +92,13 @@ function distanceMap(props) {
   );
 }
 
-distanceMap.propTypes = {
+DistanceMap.propTypes = {
   dictionaryWithPerspectives: PropTypes.shape({
     language_tree: PropTypes.array,
     dictionaries: PropTypes.array,
     loading: PropTypes.bool
-  }).isRequired,
-  allField: PropTypes.object.isRequired,
+  }),
+  allField: PropTypes.object,
   actions: PropTypes.object.isRequired,
   dataForTree: PropTypes.object.isRequired,
   selected: PropTypes.object.isRequired,
@@ -120,4 +118,4 @@ export default compose(
   connect(state => state.user),
   graphql(dictionaryWithPerspectivesQuery, { name: 'dictionaryWithPerspectives', skip: props => props.user.id != 1 }),
   graphql(allFieldQuery, { name: 'allField', skip: props => props.user.id != 1 }),
-)(distanceMap);
+)(DistanceMap);

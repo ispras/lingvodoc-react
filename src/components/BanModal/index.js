@@ -122,7 +122,7 @@ BanModal.propTypes = {
   data: PropTypes.shape({
     loading: PropTypes.bool.isRequired,
     users: PropTypes.array,
-  }).isRequired,
+  }),
   closeModal: PropTypes.func.isRequired,
   activateDeactivateUser: PropTypes.func.isRequired,
 };

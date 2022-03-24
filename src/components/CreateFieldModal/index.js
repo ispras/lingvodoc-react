@@ -124,7 +124,7 @@ CreateFieldModal.propTypes = {
   data: PropTypes.shape({
     loading: PropTypes.bool.isRequired,
     all_data_types: PropTypes.array,
-  }).isRequired,
+  }),
   visible: PropTypes.bool.isRequired,
   createField: PropTypes.func.isRequired,
 };
@@ -152,6 +152,6 @@ export default compose(
         triumph
       }
     }`,
-    { name: 'createField', skip: props => !props.visible }
+    { name: 'createField' }
   )
 )(CreateFieldModal);
