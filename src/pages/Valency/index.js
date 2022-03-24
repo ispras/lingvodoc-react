@@ -907,6 +907,7 @@ class Valency extends React.Component
                 style={{'marginTop': '0.5em'}}
                 placeholder={`${getTranslation('Verb prefix filter')}...`}
                 value={this.state.prefix_filter}
+                onKeyPress={e => { if (e.key === 'Enter') this.setPage(1); }}
                 onChange={e => this.setPrefix(e.target.value)}
                 icon={
                   this.state.prefix_filter ?
@@ -1046,6 +1047,7 @@ class Valency extends React.Component
                     type='number'
                     defaultValue={this.state.input_go_to_page}
                     onChange={(e, { value }) => {this.state.input_go_to_page = value;}}
+                    onKeyPress={e => { if (e.key === 'Enter') this.setPage(this.state.input_go_to_page); }}
                   />
 
                   <Button
@@ -1106,6 +1108,7 @@ class Valency extends React.Component
                     type='number'
                     defaultValue={this.state.input_go_to_page}
                     onChange={(e, { value }) => {this.state.input_go_to_page = value;}}
+                    onKeyPress={e => { if (e.key === 'Enter') this.setPage(this.state.input_go_to_page); }}
                   />
 
                   <Button
