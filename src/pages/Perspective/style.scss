@@ -90,6 +90,50 @@
         z-index: 1;
       }
 
+      /* new */
+      /*
+      & td.lingvo-sticky-column {
+        position: static;
+        position: sticky;
+        left: 0;
+        z-index: 1;
+        background-color: #fff;
+
+        & + td {
+          position: static;
+          position: sticky;
+          left: 45px;
+          z-index: 1;
+          background-color: #fff;
+          border-right: 1px solid rgba(34,36,38,0.1);
+
+          & + td {
+            border-left: none !important;
+          }
+        }
+      }
+
+      & thead th.lingvo-sticky-column {
+        position: static;
+        position: sticky;
+        left: 0;
+        z-index: 2;
+
+        & + th {
+          position: static;
+          position: sticky;
+          left: 45px;
+          z-index: 2;
+          border-right: 1px solid rgba(34,36,38,0.1);
+
+          & + th {
+            border-left: none !important;
+          }
+        }
+      }
+      */
+      /* /new */
+
       @media only screen and (max-device-width: 1000px), only screen and (max-width: 1000px) {
         position: static;
         top: auto;
@@ -102,11 +146,39 @@
         }
 
       }
+
+      /* new */
+      /*
+      @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+
+        & td.lingvo-sticky-column {
+          position: static;
+          left: auto;
+
+          & + td {
+            position: static;
+            left: auto;
+          }
+        }
+
+        & thead th.lingvo-sticky-column {
+          position: static;
+          left: auto;
+
+          & + th {
+            position: static;
+            left: auto;
+          }
+        }
+
+      }*/
+      /* /new */
     }
   }
 
   & .pagination {
     left: 20px;
+    z-index: 100;
 
     @media only screen and (max-device-width: 1000px), only screen and (max-width: 1000px) {
       left: 34px;
@@ -123,4 +195,20 @@
     font-size: 1em;
   }
 }
+
+/* link "Number of the languages" */
+.lingvo-languages-link {
+  color: #5D54CD;
+
+  &:hover {
+    color: #5D54CD;
+    text-decoration: underline;
+  }
+
+  &:active {
+    color: #372F9D;
+    text-decoration: underline;
+  }
+}
+/* /link "Number of the languages" */
 

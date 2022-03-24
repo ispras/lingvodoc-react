@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { onlyUpdateForKeys } from 'recompose';
 import { find, isEqual } from 'lodash';
 import { Button, Input, Checkbox } from 'semantic-ui-react';
+import { Link } from 'react-router-dom';
 
 import Entities from './index';
 
@@ -32,9 +33,9 @@ class TextEntityContent extends React.Component {
 
   render() {
     const {
-      entity, mode, publish, accept, remove, is_being_removed, is_being_updated
+      entity, mode, publish, column, accept, remove, is_being_removed, is_being_updated
     } = this.props;
-
+    
     switch (mode) {
       case 'edit':
         return (
@@ -64,7 +65,12 @@ class TextEntityContent extends React.Component {
       case 'publish':
         return (
           <div>
-            {entity.content}
+            {column.translation && column.translation === 'Number of the languages' && entity.id && entity.parent_id ? (
+              <Link to={`/dictionary/${entity.parent_id[0]}/${entity.parent_id[1]}/perspective/${entity.id[0]}/${entity.id[1]}/edit`} className="lingvo-languages-link">
+                {entity.content}
+              </Link>
+              ) : entity.content
+            }
             <Checkbox
               size="tiny"
               checked={entity.published}
@@ -118,6 +124,7 @@ const Text = onlyUpdateForKeys([
         entity={entity}
         mode={mode}
         publish={publish}
+        column={column}
         accept={accept}
         remove={remove}
         update={update}
