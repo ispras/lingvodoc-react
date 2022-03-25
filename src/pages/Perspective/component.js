@@ -11,6 +11,8 @@ import PerspectiveView from 'components/PerspectiveView';
 import Merge from 'components/Merge';
 import NotFound from 'pages/NotFound';
 import { getTranslation } from 'api/i18n';
+
+import { queryCounter } from 'backend';
 import PerspectivePath from './PerspectivePath';
 
 import './style.scss';
@@ -51,15 +53,6 @@ export const launchValencyMutation = gql`
       perspective_id: $perspectiveId)
     {
       triumph
-    }
-  }
-`;
-
-const queryCounter = gql`
-  query qcounter($id: LingvodocID! $mode: String!) {
-    perspective(id: $id) {
-      id
-      counter(mode: $mode)
     }
   }
 `;

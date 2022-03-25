@@ -9,6 +9,9 @@ import moment from 'moment';
 import { clone } from 'lodash';
 import { getTranslation } from 'api/i18n';
 
+import { queryCounter } from 'backend';
+import { queryLexicalEntries } from 'components/PerspectiveView';
+
 import 'react-datepicker/dist/react-datepicker.css';
 
 const perspectiveStatisticsQuery = gql`
@@ -66,46 +69,57 @@ class ApproveModal extends React.Component {
 
   onApprove(keys) {
     const { user_id, approveMap } = this.state;
-    const { mode, approve, data } = this.props;
+    const { perspectiveId, mode, approve, data } = this.props;
 
     let variables = {
       perspective_id: data.perspective.id,
       user_id: user_id,
       field_ids: keys.map(key => key.id)
     };
+    const refetchQueries = [
+      {
+        query: queryLexicalEntries,
+        variables: { id: perspectiveId, entitiesMode: mode === 'publish' ? 'all' : 'not_accepted' }
+      },
+      {
+        query: queryCounter,
+        variables: {
+          id: perspectiveId,
+          mode: mode == 'publish' ? 'published' : 'not_accepted'
+        }
+      }
+    ];
     if (mode == 'publish') {
       variables.published = true;
+      refetchQueries.push({ query: queryLexicalEntries, variables: { id: perspectiveId, entitiesMode: 'published' }});
     }
     else {
       variables.accepted = true;
     }
-    approve({ variables: variables }).then(
-      ({ data: { approve_all_for_user: { update_count }}}) =>
-      {
-        let updatedApproveMap = clone(approveMap);
-        let approvedKeys = updatedApproveMap[user_id];
-        if (!approvedKeys) {
-          approvedKeys = [];
-          updatedApproveMap[user_id] = approvedKeys;
-        }
-        keys.forEach(key => approvedKeys.push(key.name));
-        this.setState({ approveMap: updatedApproveMap });
-
-        window.logger.suc(
-          `Updated ${update_count} entit${update_count == 1 ? 'y' : 'ies'}.`);
+    approve({ variables, refetchQueries}).then(({ data: { approve_all_for_user: { update_count }}}) => {
+      let updatedApproveMap = clone(approveMap);
+      let approvedKeys = updatedApproveMap[user_id];
+      if (!approvedKeys) {
+        approvedKeys = [];
+        updatedApproveMap[user_id] = approvedKeys;
       }
-    );
+      keys.forEach(key => approvedKeys.push(key.name));
+      this.setState({ approveMap: updatedApproveMap });
+
+      window.logger.suc(
+        `Updated ${update_count} entit${update_count == 1 ? 'y' : 'ies'}.`);
+    });
   }
 
   render() {
     const { loading, error, perspective } = this.props.data;
-    if (error || loading) {
+    if (error) {
       return null;
     }
 
     const { mode, onClose } = this.props;
     const { startDate, endDate, user_id, approveMap } = this.state;
-    const { statistic: statistics } = perspective;
+    const { statistic: statistics } = perspective || { statistic: [] };
     const publishOrAccept = mode == 'publish' ? getTranslation('Publish') : getTranslation('Accept');
 
     let toApprove = null;
@@ -149,7 +163,7 @@ class ApproveModal extends React.Component {
             />
           </div>
           <Container textAlign="center">
-            <Button color='blue' content={getTranslation('Refresh')} onClick={this.getStatistics} />
+            <Button color='blue' loading={loading} content={getTranslation('Refresh')} onClick={this.getStatistics} />
           </Container>
           <Divider/>
           <Grid columns={2} divided centered>
@@ -181,6 +195,7 @@ class ApproveModal extends React.Component {
                         <Table.Cell>
                           <Button
                             color='green'
+                            loading={loading}
                             content={publishOrAccept}
                             disabled={approveMap[user_id] && approveMap[user_id].indexOf(key.name) != -1}
                             onClick={() => this.onApprove([ key ])}
