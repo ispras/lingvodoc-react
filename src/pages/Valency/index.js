@@ -656,7 +656,7 @@ class Valency extends React.Component
               {getTranslation('Please sign in')}
             </Message.Header>
             <p>
-              {getTranslation('Only registered users can convert work with valency data.')}
+              {getTranslation('Only registered users can work with valency data.')}
             </p>
           </Message>
         </div>);
@@ -679,7 +679,7 @@ class Valency extends React.Component
           <Message
             compact
             negative>
-            {getTranslation('User sign-in error.')}
+            {getTranslation('User sign-in error, please sign in; if not successful, please contact administrators.')}
           </Message>
         </div>);
 

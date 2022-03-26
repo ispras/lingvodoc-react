@@ -49,10 +49,12 @@ function toolsRoute(props) {
               <img className="card-item__img" src={imageTranslations} />
             </Link>
           )}
-          <Link className="card-item" to="/valency">
-            <label className="card-item__label">{getTranslation('Verb valency')}</label>
-            <img className="card-item__img card-item__img_verb-valency" src={imageValency} />
-          </Link>
+          {props.user.id !== undefined && (
+            <Link className="card-item" to="/valency">
+              <label className="card-item__label">{getTranslation('Verb valency')}</label>
+              <img className="card-item__img card-item__img_verb-valency" src={imageValency} />
+            </Link>
+          )}
         </div>
       </div>
     </div>
