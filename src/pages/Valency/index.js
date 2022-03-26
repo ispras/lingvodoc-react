@@ -126,6 +126,8 @@ class Valency extends React.Component
     this.setPrefix = this.setPrefix.bind(this);
 
     this.render_instance = this.render_instance.bind(this);
+
+    this.valency_data_query_count = 0;
   }
 
   queryValencyData(perspective, current_page, items_per_page, sort_verb, sort_case)
@@ -144,6 +146,9 @@ class Valency extends React.Component
     const verb_prefix =
       sort_verb ? this.state.prefix_filter : null;
 
+    const query_index =
+      ++this.valency_data_query_count;
+
     client.query({
       query: valencyDataQuery,
       variables: {
@@ -158,6 +163,9 @@ class Valency extends React.Component
 
       ({ data }) =>
       {
+        if (query_index < this.valency_data_query_count)
+          return;
+
         const {
           instance_count,
           instance_list,
@@ -880,7 +888,6 @@ class Valency extends React.Component
                   getTranslation('Selected by default') + ': ' +
                     (this.state.selection_default ? getTranslation('on') : getTranslation('off'))}
                 checked={this.state.selection_default}
-                disabled={this.state.loading_valency_data}
                 onChange={(e, data) => this.setState({ selection_default: data.checked })}
               />
             </div>
@@ -891,7 +898,6 @@ class Valency extends React.Component
               <Checkbox
                 label={getTranslation('Sort by verbs')}
                 checked={this.state.sort_verb}
-                disabled={this.state.loading_valency_data}
                 onChange={(e, { checked }) => {
 
                   this.setState({
@@ -1037,7 +1043,6 @@ class Valency extends React.Component
               <Checkbox
                 label={getTranslation('Sort by cases')}
                 checked={this.state.sort_case}
-                disabled={this.state.loading_valency_data}
                 onChange={(e, { checked }) => {
 
                   this.setState({
