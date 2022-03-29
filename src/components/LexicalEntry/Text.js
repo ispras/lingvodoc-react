@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { onlyUpdateForKeys } from 'recompose';
 import { find, isEqual } from 'lodash';
 import { Button, Input, Checkbox } from 'semantic-ui-react';
-import { Link } from 'react-router-dom';
 
 import Entities from './index';
 
@@ -65,10 +64,10 @@ class TextEntityContent extends React.Component {
       case 'publish':
         return (
           <div>
-            {column.translation && column.translation === 'Number of the languages' && entity.id && entity.parent_id ? (
-              <Link to={`/dictionary/${entity.parent_id[0]}/${entity.parent_id[1]}/perspective/${entity.id[0]}/${entity.id[1]}/edit`} className="lingvo-languages-link">
+            {column.english_translation && column.english_translation === 'Number of the languages' && entity.id && entity.parent_id ? (
+              <a href={`/dictionary/${entity.parent_id[0]}/${entity.parent_id[1]}/perspective/${entity.id[0]}/${entity.id[1]}/edit`} className="lingvo-languages-link">
                 {entity.content}
-              </Link>
+              </a>
               ) : entity.content
             }
             <Checkbox
