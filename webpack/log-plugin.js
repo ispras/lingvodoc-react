@@ -7,7 +7,7 @@ module.exports = class LogPlugin {
   }
 
   apply(compiler) {
-    compiler.plugin('done', () => {
+    compiler.hooks.done.tap('LogPlugin', () => {
       console.log(`> App is running at ${chalk.yellow(`http://localhost:${this.port}`)}\n`);
     });
   }

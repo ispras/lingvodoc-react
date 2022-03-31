@@ -4,7 +4,7 @@ process.env.REACT_WEBPACK_ENV = 'dev';
 const path = require('path');
 const webpack = require('webpack');
 const base = require('./webpack.base');
-const FriendlyErrors = require('friendly-errors-webpack-plugin');
+const FriendlyErrors = require('@soda/friendly-errors-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const _ = require('./utils');
 
@@ -13,25 +13,42 @@ if (_.versionString)
 
 _.versionString += 'development';
 
+base.mode = 'development';
 base.devtool = 'eval-source-map';
-base.module.loaders.push(
+base.module.rules.push(
   {
     test: /\.css$/,
-    loaders: ['style-loader', 'css-loader', 'resolve-url-loader'],
+    use: [
+      'style-loader',
+      {
+        loader: 'css-loader',
+        options: { url: { filter: url => !url.startsWith('data:') } }
+      }
+    ],
   },
   {
     test: /\.scss$/,
-    loaders: ['style-loader', 'css-loader', 'resolve-url-loader', 'sass-loader'],
+    use: [
+      'style-loader',
+      {
+        loader: 'css-loader',
+        options: { url: { filter: url => !url.startsWith('data:') } }
+      },
+      'resolve-url-loader',
+      {
+        loader: 'sass-loader',
+        options: { sourceMap: true }
+      }
+    ],
   }
 );
 
-base.plugins.push(new HtmlWebpackPlugin({
-  template: path.resolve(__dirname, '../src/index.dev.html'),
-  favicon: path.resolve(__dirname, '../src/favicon.ico'),
-  filename: _.outputIndexPath,
-}));
-
 base.plugins.push(
+  new HtmlWebpackPlugin({
+    template: path.resolve(__dirname, '../src/index.dev.html'),
+    favicon: path.resolve(__dirname, '../src/favicon.ico'),
+    filename: _.outputIndexPath,
+  }),
   new webpack.DefinePlugin({
     'process.env.NODE_ENV': JSON.stringify('development'),
     __DEVELOPMENT__: true,
@@ -39,7 +56,6 @@ base.plugins.push(
     __VERSION__: JSON.stringify(_.versionString),
   }),
   new webpack.HotModuleReplacementPlugin(),
-  new webpack.NoEmitOnErrorsPlugin(),
   new FriendlyErrors()
 );
 

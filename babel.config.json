@@ -1,0 +1,17 @@
+{
+  "plugins": [
+    "@babel/plugin-transform-runtime",
+    [ "@babel/plugin-proposal-decorators", { "version": "legacy" } ],
+    "react-hot-loader/babel"
+  ],
+  "presets": [
+    [
+      "@babel/env",
+      {
+        "useBuiltIns": "entry",
+        "corejs": 3
+      }
+    ],
+    "@babel/preset-react"
+  ]
+}
