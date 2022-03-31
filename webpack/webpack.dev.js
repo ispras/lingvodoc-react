@@ -15,6 +15,7 @@ _.versionString += 'development';
 
 base.mode = 'development';
 base.devtool = 'eval-source-map';
+delete base.entry.vendor;
 base.module.rules.push(
   {
     test: /\.css$/,
