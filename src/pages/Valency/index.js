@@ -130,7 +130,13 @@ class Valency extends React.Component
     this.valency_data_query_count = 0;
   }
 
-  queryValencyData(perspective, current_page, items_per_page, sort_verb, sort_case)
+  queryValencyData(
+    perspective,
+    current_page,
+    items_per_page,
+    sort_verb,
+    sort_case,
+    verb_prefix)
   {
     const { client } = this.props;
 
@@ -143,8 +149,8 @@ class Valency extends React.Component
     if (sort_case == null)
       sort_case = this.state.sort_case;
 
-    const verb_prefix =
-      sort_verb ? this.state.prefix_filter : null;
+    if (verb_prefix == null)
+      verb_prefix = (sort_verb ? this.state.prefix_filter : null);
 
     const query_index =
       ++this.valency_data_query_count;
@@ -256,8 +262,7 @@ class Valency extends React.Component
           const show_prefix_str_set = new Set();
           const show_prefix_str_list = [];
 
-          const prefix_length =
-            this.state.prefix_filter.length;
+          const prefix_length = verb_prefix.length;
 
           for (const verb of prefix_verb_list)
           {
@@ -267,7 +272,9 @@ class Valency extends React.Component
             const prefix_str =
               verb.slice(0, prefix_length + 1);
 
-            if (!show_prefix_str_set.has(prefix_str))
+            if (
+              prefix_str.length > prefix_length &&
+              !show_prefix_str_set.has(prefix_str))
             {
               show_prefix_str_set.add(prefix_str);
               show_prefix_str_list.push(prefix_str);
@@ -296,6 +303,8 @@ class Valency extends React.Component
       this.setState({
         perspective,
         valency_data: null,
+        prefix_filter: '',
+        selection_dict: {},
       });
 
       return;
@@ -304,12 +313,13 @@ class Valency extends React.Component
     this.setState({
       perspective,
       valency_data: null,
+      prefix_filter: '',
       selection_dict: {},
       loading_valency_data: true,
       loading_valency_error: false,
     });
 
-    this.queryValencyData(perspective, 1);
+    this.queryValencyData(perspective, 1, null, null, null, '');
   }
 
   createValencyData()
@@ -907,6 +917,7 @@ class Valency extends React.Component
                     loading_valency_data: true,
                     loading_valency_error: false,
                     valency_data: null,
+                    prefix_filter: '',
                     all_verb_list: [],
                     data_verb_list: [],
                     prefix_verb_list: [],
@@ -916,7 +927,7 @@ class Valency extends React.Component
                   });
 
                   this.queryValencyData(
-                    this.state.perspective, 1, null, checked);
+                    this.state.perspective, 1, null, checked, null, '');
 
                 }}
               />
@@ -927,6 +938,7 @@ class Valency extends React.Component
             this.state.sort_verb && (
 
             <Segment
+              disabled={this.state.loading_valency_data}
               style={{'marginTop': '0.5em', 'marginBottom': '0.5em', 'padding': '0.5em'}}>
 
               <div>
