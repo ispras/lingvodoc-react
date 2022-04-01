@@ -1,8 +1,7 @@
 {
   "plugins": [
     "@babel/plugin-transform-runtime",
-    [ "@babel/plugin-proposal-decorators", { "version": "legacy" } ],
-    "react-hot-loader/babel"
+    [ "@babel/plugin-proposal-decorators", { "version": "legacy" } ]
   ],
   "presets": [
     [

@@ -6,6 +6,7 @@ const webpack = require('webpack');
 const base = require('./webpack.base');
 const FriendlyErrors = require('@soda/friendly-errors-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const _ = require('./utils');
 
 if (_.versionString)
@@ -57,6 +58,7 @@ base.plugins.push(
     __VERSION__: JSON.stringify(_.versionString),
   }),
   new webpack.HotModuleReplacementPlugin(),
+  new ReactRefreshWebpackPlugin(),
   new FriendlyErrors()
 );
 

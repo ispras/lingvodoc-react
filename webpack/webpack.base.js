@@ -25,7 +25,6 @@ module.exports = {
     alias: {
       config: `${config.srcPath}/config/${process.env.REACT_WEBPACK_ENV}`,
       buildType: buildTypePath,
-      'react-dom': '@hot-loader/react-dom',
       wavesurfer: require.resolve('wavesurfer.js'),
       chroma: require.resolve('chroma-js')
     },
@@ -35,7 +34,12 @@ module.exports = {
     rules: [
       {
         test: /\.jsx?$/,
-        use: 'babel-loader',
+        use: {
+          loader: 'babel-loader',
+          options: {
+            plugins: [process.env.NODE_ENV === 'development' && require.resolve('react-refresh/babel')].filter(Boolean)
+          }
+        },
         exclude: [/node_modules/]
       },
       {
