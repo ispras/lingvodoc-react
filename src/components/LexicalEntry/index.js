@@ -382,13 +382,14 @@ class Entities extends React.Component {
     });
   }
 
-
   render() {
     const {
-      perspectiveId, entry, column, columns, mode, entitiesMode, parentEntity, disabled,
+      perspectiveId, entry, column, columns, mode, entitiesMode, parentEntity, disabled, 
+      checkEntries, checkedRow, resetCheckedRow, checkedColumn, resetCheckedColumn, checkedAll, resetCheckedAll,
     } = this.props;
 
     const Component = getComponent(column.data_type);
+
     if (column.data_type === 'Link' || column.data_type === 'Grouping Tag' || column.data_type === 'Directed Link') {
       return <Component {...this.props} />;
     }
@@ -408,6 +409,13 @@ class Entities extends React.Component {
             as="li"
             column={column}
             columns={columns}
+            checkEntries={checkEntries}
+            checkedRow={checkedRow}
+            resetCheckedRow={resetCheckedRow}
+            checkedColumn={checkedColumn}
+            resetCheckedColumn={resetCheckedColumn}
+            checkedAll={checkedAll}
+            resetCheckedAll={resetCheckedAll}
             entry={entry}
             entity={entity}
             mode={mode}
@@ -448,6 +456,10 @@ Entities.propTypes = {
   entry: PropTypes.object.isRequired,
   column: PropTypes.object.isRequired,
   columns: PropTypes.array.isRequired,
+  checkEntries: PropTypes.bool,
+  checkedRow: PropTypes.object,
+  checkedColumn: PropTypes.object,
+  checkedAll: PropTypes.object,
   mode: PropTypes.string.isRequired,
   parentEntity: PropTypes.object,
   entitiesMode: PropTypes.string.isRequired,
@@ -456,6 +468,9 @@ Entities.propTypes = {
   acceptEntity: PropTypes.func.isRequired,
   removeEntity: PropTypes.func.isRequired,
   updateEntity: PropTypes.func.isRequired,
+  resetCheckedRow: PropTypes.func,
+  resetCheckedColumn: PropTypes.func,
+  resetCheckedAll: PropTypes.func,
 };
 
 Entities.defaultProps = {

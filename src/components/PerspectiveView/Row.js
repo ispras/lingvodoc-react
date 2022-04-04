@@ -15,8 +15,17 @@ const Row = ({
   entitiesMode,
   actions,
   selectEntries,
+  checkEntries,
   selectedEntries,
+  selectedRows,
+  checkedRow,
+  checkedColumn,
+  checkedAll,
   onEntrySelect,
+  onCheckRow,
+  resetCheckedRow,
+  resetCheckedColumn,
+  resetCheckedAll,
   /* eslint-disable react/prop-types */
   showEntryId,
   selectDisabled,
@@ -26,7 +35,7 @@ const Row = ({
   /* eslint-enable react/prop-types */
 }) => {
   const entry_id_str = id2str(entry.id);
-
+  
   const disabled_flag =
 
     disabledEntrySet &&
@@ -55,6 +64,19 @@ const Row = ({
         </Table.Cell>
       )}
 
+      {checkEntries && (
+        <Table.Cell className="lingvo-sticky-checkbox-column">
+          <Checkbox
+            className="lingvo-checkbox" 
+            checked={!!selectedRows.find(e => isEqual(e, entry.id))}
+            onChange={(_e, { checked }) => {
+                onCheckRow(entry, checked);
+              }
+            }
+          />
+        </Table.Cell>
+      )}
+
       {showEntryId && (
         <Table.Cell>
           {entry_id_str}
@@ -68,6 +90,13 @@ const Row = ({
           column={column}
           columns={columns}
           entry={entry}
+          checkEntries={checkEntries}
+          checkedRow={checkedRow}
+          checkedColumn={checkedColumn}
+          checkedAll={checkedAll}
+          resetCheckedRow={resetCheckedRow}
+          resetCheckedColumn={resetCheckedColumn}
+          resetCheckedAll={resetCheckedAll}
           mode={mode}
           entitiesMode={entitiesMode}
           disabled={disabled_flag}
@@ -100,15 +129,33 @@ Row.propTypes = {
   entitiesMode: PropTypes.string.isRequired,
   actions: PropTypes.array,
   selectEntries: PropTypes.bool,
+  checkEntries: PropTypes.bool,
   selectedEntries: PropTypes.array,
+  selectedRows: PropTypes.array,
+  checkedRow: PropTypes.object,
+  checkedColumn: PropTypes.object,
+  checkedAll: PropTypes.object,
   onEntrySelect: PropTypes.func,
+  onCheckRow: PropTypes.func,
+  resetCheckedRow: PropTypes.func,
+  resetCheckedColumn: PropTypes.func,
+  resetCheckedAll: PropTypes.func,
 };
 
 Row.defaultProps = {
   actions: [],
   selectEntries: false,
+  checkEntries: false,
   selectedEntries: [],
+  selectedRows: [],
+  checkedRow: null,
+  checkedColumn: null,
+  checkedAll: null,
   onEntrySelect: () => {},
+  onCheckRow: () => {},
+  resetCheckedRow: () => {},
+  resetCheckedColumn: () => {},
+  resetCheckedAll: () => {},
 };
 
-export default onlyUpdateForKeys(['perspectiveId', 'entry', 'mode', 'selectedEntries', 'columns'])(Row);
+export default onlyUpdateForKeys(['perspectiveId', 'entry', 'mode', 'selectedEntries', 'selectedRows', 'checkedRow', 'checkedColumn', 'checkedAll', 'columns'])(Row);

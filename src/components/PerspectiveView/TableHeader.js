@@ -12,11 +12,17 @@ const TableHeader = ({
   columns,
   actions,
   selectEntries,
+  entries,
+  checkEntries,
   /* eslint-disable react/prop-types */
   selectAllEntries,
   selectAllIndeterminate,
   selectAllChecked,
   onAllEntriesSelect,
+  selectedRows,
+  selectedColumns,
+  onCheckColumn,
+  onCheckAll,
   showEntryId,
   selectDisabled,
   selectDisabledIndeterminate,
@@ -45,6 +51,21 @@ const TableHeader = ({
           )}
         </Table.HeaderCell>
       )}
+
+      {checkEntries && (
+        <Table.HeaderCell className="entityHeader lingvo-sticky-checkbox-column">
+          <Checkbox
+            className="lingvo-checkbox" 
+            checked={entries.length === selectedRows.length}
+            onChange={
+              (e, { checked }) => {
+                onCheckAll(checked);
+              }
+            }
+          />
+        </Table.HeaderCell>
+      )}
+
       {showEntryId && (
         <Table.HeaderCell className="entityHeader">
           {getTranslation('id')}
@@ -55,6 +76,9 @@ const TableHeader = ({
           key={compositeIdToString(column.column_id)}
           field={column}
           fields={columns}
+          checkEntries={checkEntries}
+          selectedColumns={selectedColumns}
+          onCheckColumn={onCheckColumn}
           sortByField={sortByField}
           onSortModeChange={onSortModeChange}
           onSortModeReset={onSortModeReset}
@@ -71,12 +95,24 @@ TableHeader.propTypes = {
   actions: PropTypes.array,
   onSortModeChange: PropTypes.func,
   selectEntries: PropTypes.bool,
+  entries: PropTypes.array,
+  checkEntries: PropTypes.bool,
+  selectedRows: PropTypes.array,
+  selectedColumns: PropTypes.array,
+  onCheckColumn: PropTypes.func,
+  onCheckAll: PropTypes.func,
 };
 
 TableHeader.defaultProps = {
   actions: [],
   onSortModeChange: null,
   selectEntries: false,
+  entries: [],
+  checkEntries: false,
+  selectedRows: [],
+  selectedColumns: [],
+  onCheckColumn: () => {},
+  onCheckAll: () => {},
 };
 
-export default onlyUpdateForKeys(['columns'])(TableHeader);
+export default onlyUpdateForKeys(['columns', 'entries', 'selectedRows', 'selectedColumns'])(TableHeader);

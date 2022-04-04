@@ -2363,3 +2363,39 @@ body {
   }
 }
 /* /parser buttons group */
+
+/* lingvo entries headercell */
+.lingvo-entries-headercell {
+  position: relative;
+  
+  &__checkbox {
+    position: absolute !important;
+    right: -5px;
+    top: 50%;
+    margin-top: -9px;
+
+    @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+      right: 0;
+    }
+
+  }
+}
+/* /lingvo entries headercell */
+
+/* lingvo entry text */
+.lingvo-entry-text {
+  position: relative;
+  
+  &__checkbox {
+    position: absolute !important;
+    right: -20px;
+    top: 50%;
+    margin-top: -9px;
+
+    @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+      right: -15px;
+    }
+
+  }
+}
+/* /lingvo entry text */

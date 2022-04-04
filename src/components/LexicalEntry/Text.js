@@ -32,9 +32,54 @@ class TextEntityContent extends React.Component {
 
   render() {
     const {
-      entity, mode, publish, column, accept, remove, is_being_removed, is_being_updated
+      entity, mode, publish, column, accept, remove, is_being_removed, is_being_updated, 
+      checkEntries, checkedRow, resetCheckedRow, checkedColumn, resetCheckedColumn, checkedAll, resetCheckedAll,
     } = this.props;
-    
+
+    if (checkEntries) {
+
+      if (checkedAll) {
+        if (checkedAll.checkedAll) {
+          if (!entity.published) {
+            publish(entity, true);
+          }
+        } else {
+          if (entity.published) {
+            publish(entity, false);
+          }
+        }
+      }
+
+      if (checkedRow) {
+        if (JSON.stringify(checkedRow.id) === JSON.stringify(entity.parent_id)) {
+          if (checkedRow.checkedRow) {
+            if (!entity.published) {
+              publish(entity, true);
+            }
+          } else {
+            if (entity.published) {
+              publish(entity, false);
+            }
+          }
+        }
+      }
+
+      if (checkedColumn) {
+        if (JSON.stringify(checkedColumn.id) === JSON.stringify(entity.field_id)) {
+          if (checkedColumn.checkedColumn) {
+            if (!entity.published) {
+              publish(entity, true);
+            }
+          } else {
+            if (entity.published) {
+              publish(entity, false);
+            }
+          }
+        }
+      }
+
+    }
+
     switch (mode) {
       case 'edit':
         return (
@@ -63,17 +108,31 @@ class TextEntityContent extends React.Component {
         );
       case 'publish':
         return (
-          <div>
+          <div className={checkEntries ? "lingvo-entry-text" : ""}>
             {column.english_translation && column.english_translation === 'Number of the languages' && entity.id && entity.parent_id ? (
-              <a href={`/dictionary/${entity.parent_id[0]}/${entity.parent_id[1]}/perspective/${entity.id[0]}/${entity.id[1]}/edit`} className="lingvo-languages-link">
-                {entity.content}
-              </a>
-              ) : entity.content
+            <a href={`/dictionary/${entity.parent_id[0]}/${entity.parent_id[1]}/perspective/${entity.id[0]}/${entity.id[1]}/edit`} className="lingvo-languages-link">
+              {entity.content}
+            </a>
+            ) : entity.content
             }
             <Checkbox
-              size="tiny"
+              className={checkEntries ? "lingvo-checkbox lingvo-entry-text__checkbox" : ""} 
               checked={entity.published}
-              onChange={(e, { checked }) => publish(entity, checked)}
+              onChange={(e, { checked }) => {
+                publish(entity, checked);
+
+                if (checkEntries) {
+                  if (checkedRow) {
+                    resetCheckedRow();
+                  }
+                  if (checkedColumn) {
+                    resetCheckedColumn();
+                  }
+                  if (checkedAll) {
+                    resetCheckedAll();
+                  }
+                }
+              }}
             />
           </div>
         );
@@ -95,12 +154,23 @@ class TextEntityContent extends React.Component {
 }
 
 const Text = onlyUpdateForKeys([
-  'entry', 'entity', 'mode', 'is_being_removed', 'is_being_updated'])((props) =>
+  'entry', 'entity', 'mode', 'is_being_removed', 'is_being_updated', 
+  'checkedRow',
+  'checkedColumn',
+  'checkedAll', 
+])((props) =>
 {
   const {
     perspectiveId,
     column,
     columns,
+    checkEntries,
+    checkedRow,
+    resetCheckedRow,
+    checkedColumn,
+    resetCheckedColumn,
+    checkedAll,
+    resetCheckedAll,
     entry,
     entity,
     mode,
@@ -121,6 +191,13 @@ const Text = onlyUpdateForKeys([
     <Component className={className}>
       <TextEntityContent
         entity={entity}
+        checkEntries={checkEntries}
+        checkedRow={checkedRow}
+        resetCheckedRow={resetCheckedRow}
+        checkedColumn={checkedColumn}
+        resetCheckedColumn={resetCheckedColumn}
+        checkedAll={checkedAll}
+        resetCheckedAll={resetCheckedAll}
         mode={mode}
         publish={publish}
         column={column}
@@ -152,6 +229,10 @@ Text.propTypes = {
   perspectiveId: PropTypes.array.isRequired,
   column: PropTypes.object.isRequired,
   columns: PropTypes.array.isRequired,
+  checkEntries: PropTypes.bool,
+  checkedRow: PropTypes.object,
+  checkedColumn: PropTypes.object,
+  checkedAll: PropTypes.object,
   entry: PropTypes.object.isRequired,
   entity: PropTypes.object.isRequired,
   mode: PropTypes.string.isRequired,
@@ -162,6 +243,9 @@ Text.propTypes = {
   accept: PropTypes.func,
   remove: PropTypes.func,
   update: PropTypes.func,
+  resetCheckedRow: PropTypes.func,
+  resetCheckedColumn: PropTypes.func,
+  resetCheckedAll: PropTypes.func,
 };
 
 Text.defaultProps = {

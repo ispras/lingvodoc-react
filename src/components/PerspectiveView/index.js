@@ -217,247 +217,439 @@ TableComponent.defaultProps = {
   onEntrySelect: () => {},
 };
 
-const P = ({
-  id,
-  className,
-  mode,
-  entitiesMode,
-  page,
-  data,
-  filter,
-  sortByField,
-  allFields,
-  columns,
-  setSortByField: setSort,
-  resetSortByField: resetSort,
-  createLexicalEntry,
-  mergeLexicalEntries,
-  removeLexicalEntries,
-  addLexicalEntry: addCreatedEntry,
-  selectLexicalEntry: onEntrySelect,
-  resetEntriesSelection: resetSelection,
-  openModal: openNewModal,
-  createdEntries,
-  selectedEntries,
-  user
-}) => {
-  const { loading, error } = data;
+class P extends React.Component {
+  constructor(props) {
+    super(props);
+    
+    this.state = {
+      checkedRow: null,
+      checkedColumn: null,
+      checkedAll: null
+    };
 
-  if (loading || (!loading && !error && !data.perspective)) {
-    return (
-      <Dimmer active style={{ minHeight: '600px', background: 'none' }}>
-        <Header as="h2" icon>
-          <Icon name="spinner" loading className="lingvo-spinner" />
-        </Header>
-      </Dimmer>
-    );
+    this.onCheckRow = this.onCheckRow.bind(this);
+    this.resetCheckedRow = this.resetCheckedRow.bind(this);
+    this.onCheckColumn = this.onCheckColumn.bind(this);
+    this.resetCheckedColumn = this.resetCheckedColumn.bind(this);
+    this.onCheckAll = this.onCheckAll.bind(this);
+    this.resetCheckedAll = this.resetCheckedAll.bind(this);
   }
 
-
-  const lexicalEntries = !error ? data.perspective.lexical_entries : [];
-
-  const addEntry = () => {
-    createLexicalEntry({
-      variables: {
-        id,
-        entitiesMode,
-      },
-      refetchQueries: [
-        {
-          query: queryLexicalEntries,
-          variables: {
-            id,
-            entitiesMode,
-          },
-        },
-      ],
-    }).then(({ data: d }) => {
-      if (!d.loading || !d.error) {
-        const {
-          create_lexicalentry: { lexicalentry },
-        } = d;
-        addCreatedEntry(lexicalentry);
-      }
+  resetCheckedRow() {
+    this.setState({
+      checkedRow: null
     });
-  };
+  }
 
-  const mergeEntries = () => {
-    const groupList = [selectedEntries];
-    mergeLexicalEntries({
-      variables: {
-        groupList,
-      },
-      refetchQueries: [
-        {
-          query: queryLexicalEntries,
-          variables: {
-            id,
-            entitiesMode,
-          },
-        },
-      ],
-    }).then(() => {
-      resetSelection();
+  resetCheckedColumn() {
+    this.setState({
+      checkedColumn: null
     });
-  };
+  }
 
-  const removeEntries = () => {
-    removeLexicalEntries({
-      variables: {
-        ids: selectedEntries,
-      },
-      refetchQueries: [
-        {
-          query: queryLexicalEntries,
-          variables: {
-            id,
-            entitiesMode,
-          },
-        },
-      ],
-    }).then(() => {
-      resetSelection();
+  resetCheckedAll() {
+    this.setState({
+      checkedAll: null
     });
-  };
+  }
 
-  const onApprove = () => {
-    openNewModal(ApproveModal, { perspectiveId: id, mode });
-  };
+  onCheckRow(entry, checked) {
+    if (entry) {
+      entry.checkedRow = checked;
+    }
 
-  /* Basic case-insensitive, case-sensitive compare. */
-  const ci_cs_compare = (str_a, str_b) => {
-    const result = str_a.toLowerCase().localeCompare(str_b.toLowerCase(), undefined, { numeric: true });
-    return result ? result : str_a.localeCompare(str_b, undefined, { numeric: true });
-  };
+    this.setState({
+      checkedRow: entry,
+      checkedColumn: null,
+      checkedAll: null
+    });
+  }
 
-  const processEntries = flow([
-    // remove empty lexical entries, if not in edit mode
-    es => (mode !== 'edit' ? es.filter(e => e.entities.length > 0) : es),
-    // apply filtering
-    es =>
-      (!!filter && filter.length > 0
-        ? es.filter(entry =>
-          !!entry.entities.find(entity => typeof entity.content === 'string' && entity.content.indexOf(filter) >= 0))
-        : es),
-    // apply sorting
-    (es) => {
-      // no sorting required
-      if (!sortByField) {
-        return es;
-      }
-      const { field, order } = sortByField;
+  onCheckColumn(column, checked) {
+    if (column) {
+      column.checkedColumn = checked;
+    }
 
-      /* Getting a sort key for each entry. */
+    this.setState({
+      checkedColumn: column,
+      checkedRow: null,
+      checkedAll: null
+    });
+  }
 
-      for (const entry of es)
-      {
-        const entities =
-          entry.entities.filter(entity => isEqual(entity.field_id, field));
+  onCheckAll(checked) {
+    this.setState({
+      checkedAll: {checkedAll: checked},
+      checkedRow: null,
+      checkedColumn: null
+    });
+  }
 
-        entities.sort(
+  render() {
+    const {
+      id,
+      className,
+      mode,
+      entitiesMode,
+      page,
+      data,
+      filter,
+      sortByField,
+      allFields,
+      columns,
+      setSortByField: setSort,
+      resetSortByField: resetSort,
+      createLexicalEntry,
+      mergeLexicalEntries,
+      removeLexicalEntries,
+      addLexicalEntry: addCreatedEntry,
+      selectLexicalEntry: onEntrySelect,
+      resetEntriesSelection: resetSelection,
+      openModal: openNewModal,
+      createdEntries,
+      selectedEntries,
+      user
+    } = this.props;
+    
+    const { loading, error } = data;
+
+    if (loading || (!loading && !error && !data.perspective)) {
+      return (
+        <Dimmer active style={{ minHeight: '600px', background: 'none' }}>
+          <Header as="h2" icon>
+            <Icon name="spinner" loading className="lingvo-spinner" />
+          </Header>
+        </Dimmer>
+      );
+    }
+
+    const lexicalEntries = !error ? data.perspective.lexical_entries : [];
+
+    const addEntry = () => {
+      createLexicalEntry({
+        variables: {
+          id,
+          entitiesMode,
+        },
+        refetchQueries: [
+          {
+            query: queryLexicalEntries,
+            variables: {
+              id,
+              entitiesMode,
+            },
+          },
+        ],
+      }).then(({ data: d }) => {
+        if (!d.loading || !d.error) {
+          const {
+            create_lexicalentry: { lexicalentry },
+          } = d;
+          addCreatedEntry(lexicalentry);
+        }
+      });
+    };
+
+    const mergeEntries = () => {
+      const groupList = [selectedEntries];
+      mergeLexicalEntries({
+        variables: {
+          groupList,
+        },
+        refetchQueries: [
+          {
+            query: queryLexicalEntries,
+            variables: {
+              id,
+              entitiesMode,
+            },
+          },
+        ],
+      }).then(() => {
+        resetSelection();
+      });
+    };
+
+    const removeEntries = () => {
+      removeLexicalEntries({
+        variables: {
+          ids: selectedEntries,
+        },
+        refetchQueries: [
+          {
+            query: queryLexicalEntries,
+            variables: {
+              id,
+              entitiesMode,
+            },
+          },
+        ],
+      }).then(() => {
+        resetSelection();
+      });
+    };
+
+    const onApprove = () => {
+      openNewModal(ApproveModal, { perspectiveId: id, mode });
+    };
+
+    /* Basic case-insensitive, case-sensitive compare. */
+    const ci_cs_compare = (str_a, str_b) => {
+      const result = str_a.toLowerCase().localeCompare(str_b.toLowerCase(), undefined, { numeric: true });
+      return result ? result : str_a.localeCompare(str_b, undefined, { numeric: true });
+    };
+
+    const processEntries = flow([
+      // remove empty lexical entries, if not in edit mode
+      es => (mode !== 'edit' ? es.filter(e => e.entities.length > 0) : es),
+      // apply filtering
+      es =>
+        (!!filter && filter.length > 0
+          ? es.filter(entry =>
+            !!entry.entities.find(entity => typeof entity.content === 'string' && entity.content.indexOf(filter) >= 0))
+          : es),
+      // apply sorting
+      (es) => {
+        // no sorting required
+        if (!sortByField) {
+          return es;
+        }
+        const { field, order } = sortByField;
+
+        /* Getting a sort key for each entry. */
+
+        for (const entry of es)
+        {
+          const entities =
+            entry.entities.filter(entity => isEqual(entity.field_id, field));
+
+          entities.sort(
+            (ea, eb) =>
+              ci_cs_compare(ea.content || '', eb.content || '') ||
+              ea.id[0] - eb.id[0] ||
+              ea.id[1] - eb.id[1]);
+
+          entry.entity_sort_key =
+            (entities.length > 0 && entities[0].content) ? entities[0].content : `${entities.length}`;
+        }
+
+        es.sort(
           (ea, eb) =>
-            ci_cs_compare(ea.content || '', eb.content || '') ||
+            ci_cs_compare(ea.entity_sort_key, eb.entity_sort_key) ||
             ea.id[0] - eb.id[0] ||
             ea.id[1] - eb.id[1]);
 
-        entry.entity_sort_key =
-          (entities.length > 0 && entities[0].content) ? entities[0].content : `${entities.length}`;
-      }
+        return order === 'a' ? es : reverse(es);
+      },
+    ]);
 
-      es.sort(
-        (ea, eb) =>
-          ci_cs_compare(ea.entity_sort_key, eb.entity_sort_key) ||
-          ea.id[0] - eb.id[0] ||
-          ea.id[1] - eb.id[1]);
+    const newEntries = processEntries(lexicalEntries.filter(e => !!createdEntries.find(c => isEqual(e.id, c.id))));
+    const entries = processEntries(lexicalEntries);
 
-      return order === 'a' ? es : reverse(es);
-    },
-  ]);
+    const pageEntries =
+      entries.length > ROWS_PER_PAGE ? take(drop(entries, ROWS_PER_PAGE * (page - 1)), ROWS_PER_PAGE) : entries;
 
-  const newEntries = processEntries(lexicalEntries.filter(e => !!createdEntries.find(c => isEqual(e.id, c.id))));
-  const entries = processEntries(lexicalEntries);
+    // Put newly created entries at the top of page.
+    const e = [...newEntries, ...pageEntries.filter(pageEntry => !createdEntries.find(c => isEqual(c.id, pageEntry.id)))];
 
-  const pageEntries =
-    entries.length > ROWS_PER_PAGE ? take(drop(entries, ROWS_PER_PAGE * (page - 1)), ROWS_PER_PAGE) : entries;
+    // join fields and columns
+    // {
+    //   column_id = column.id
+    //   position = column.position
+    //   self_id = column.self_id
+    //   ...field
+    // }
+    const fields = columns.map((column) => {
+      const field = find(allFields, f => isEqual(column.field_id, f.id));
+      return {
+        ...field,
+        self_id: column.self_id,
+        column_id: column.id,
+        position: column.position,
+      };
+    });
+    /* eslint-disable no-shadow */
+    function approveDisableCondition(entries) {
+      return entries.length === 0 || entries.every(entry => entry.entities.every(entity => (mode === 'publish' ? entity.published === true : entity.accepted === true)));
+    }
+    /* eslint-enable no-shadow */
+    const isAuthenticated = user && user.user.id;
 
-  // Put newly created entries at the top of page.
-  const e = [...newEntries, ...pageEntries.filter(pageEntry => !createdEntries.find(c => isEqual(c.id, pageEntry.id)))];
+    /*const isTableLanguages = JSON.stringify(id) === JSON.stringify([3148, 13330]);*/
+    const isTableLanguages = JSON.stringify(id) === JSON.stringify([4839, 2]);
 
-  // join fields and columns
-  // {
-  //   column_id = column.id
-  //   position = column.position
-  //   self_id = column.self_id
-  //   ...field
-  // }
-  const fields = columns.map((column) => {
-    const field = find(allFields, f => isEqual(column.field_id, f.id));
-    return {
-      ...field,
-      self_id: column.self_id,
-      column_id: column.id,
-      position: column.position,
-    };
-  });
-  /* eslint-disable no-shadow */
-  function approveDisableCondition(entries) {
-    return entries.length === 0 || entries.every(entry => entry.entities.every(entity => (mode === 'publish' ? entity.published === true : entity.accepted === true)));
-  }
-  /* eslint-enable no-shadow */
-  const isAuthenticated = user && user.user.id;
+    const isTableLanguagesPublish = (mode === 'publish') && isTableLanguages;
+
+    const selectedRows = [];
+    const selectedColumns = [];
+
+    const items = e;
+
+    const checkedRow = this.state.checkedRow;
+    const checkedColumn = this.state.checkedColumn;
+    const checkedAll = this.state.checkedAll;
+
+    /* isTableLanguagesPublish */
+    if (isTableLanguagesPublish) {
+
+      const selectedRowsSet = new Set();
+      const selectedColumnsSet = new Set();
+
+      if (checkedAll) {
+
+        if (checkedAll.checkedAll) {
+          items.forEach(item => {
+            selectedRowsSet.add(item.id);
+          });
+        } else {
+          items.forEach(item => {
+            selectedRowsSet.delete(item.id);
+          });
+        }
+
+      } else {
+
+        items.forEach(item => {
+          const allRowsSelected = item.entities.every(i => {
+            return i.published
+          });
   
-  return (
-    <div style={{ overflowY: 'auto' }} className="lingvo-scrolling-tab">
-      {mode === 'edit' && <Button positive icon="plus" content={getTranslation('Add lexical entry')} onClick={addEntry} />}
-      {mode === 'edit' && (
-        <Button
-          negative
-          icon="minus"
-          content={getTranslation('Remove lexical entries')}
-          onClick={removeEntries}
-          disabled={selectedEntries.length < 1}
-        />
-      )}
-      {mode === 'edit' && (
-        <Button
-          positive
-          icon="plus"
-          content={getTranslation('Merge lexical entries')}
-          onClick={mergeEntries}
-          disabled={selectedEntries.length < 2}
-        />
-      )}
-      {mode === 'publish' && isAuthenticated &&
-        <Button positive content={getTranslation('Publish Entities')} disabled={approveDisableCondition(entries)} onClick={onApprove} />
-      }
-      {mode === 'contributions' && isAuthenticated &&
-        <Button positive content={getTranslation('Accept Contributions')} disabled={approveDisableCondition(entries)} onClick={onApprove} />
+          if (allRowsSelected) {
+            selectedRowsSet.add(item.id);
+          } else {
+            selectedRowsSet.delete(item.id);
+          }
+        });
+  
+        if (checkedRow) {
+          if (checkedRow.checkedRow) {
+            selectedRowsSet.add(checkedRow.id);
+          } else {
+            selectedRowsSet.delete(checkedRow.id);
+          }
+        }
+
       }
 
-      <div className="lingvo-scrolling-tab__table">
-        <Table celled padded className={className}>
-          <TableHeader
-            columns={fields}
-            sortByField={sortByField}
-            onSortModeChange={(fieldId, order) => setSort(fieldId, order)}
-            onSortModeReset={() => resetSort()}
-            selectEntries={mode === 'edit'}
+      selectedRowsSet.forEach(value => {
+        selectedRows.push(value);
+      });
+
+
+      fields.forEach(column => {
+
+        let elems = [];
+
+        items.forEach(item => {
+          const columnEntities = item.entities.filter(i => {
+            return (JSON.stringify(i.field_id) === JSON.stringify(column.id))
+          });
+
+          if (columnEntities.length) {
+            elems.push(columnEntities);
+          }
+        });
+
+        const allColumnsSelected = elems.every(elem => {
+          return elem.length && elem[0].published
+        });
+
+        if (allColumnsSelected) {
+          selectedColumnsSet.add(column.id);
+        } else {
+          selectedColumnsSet.delete(column.id);
+        }
+
+      });
+
+      if (checkedColumn) {
+        if (checkedColumn.checkedColumn) {
+          selectedColumnsSet.add(checkedColumn.id);
+        } else {
+          selectedColumnsSet.delete(checkedColumn.id);
+        }
+      }
+
+      selectedColumnsSet.forEach(value => {
+        selectedColumns.push(value);
+      });
+
+    }
+    /* /isTableLanguagesPublish */
+  
+    return (
+      <div style={{ overflowY: 'auto' }} className="lingvo-scrolling-tab">
+        {mode === 'edit' && <Button positive icon="plus" content={getTranslation('Add lexical entry')} onClick={addEntry} />}
+        {mode === 'edit' && (
+          <Button
+            negative
+            icon="minus"
+            content={getTranslation('Remove lexical entries')}
+            onClick={removeEntries}
+            disabled={selectedEntries.length < 1}
           />
-          <TableBody
-            perspectiveId={id}
-            entitiesMode={entitiesMode}
-            entries={e}
-            columns={fields}
-            mode={mode}
-            selectEntries={mode === 'edit'}
-            selectedEntries={selectedEntries}
-            onEntrySelect={onEntrySelect}
+        )}
+        {mode === 'edit' && (
+          <Button
+            positive
+            icon="plus"
+            content={getTranslation('Merge lexical entries')}
+            onClick={mergeEntries}
+            disabled={selectedEntries.length < 2}
           />
-        </Table>
+        )}
+        {mode === 'publish' && isAuthenticated &&
+          <Button positive content={getTranslation('Publish Entities')} disabled={approveDisableCondition(entries)} onClick={onApprove} />
+        }
+        {mode === 'contributions' && isAuthenticated &&
+          <Button positive content={getTranslation('Accept Contributions')} disabled={approveDisableCondition(entries)} onClick={onApprove} />
+        }
+
+        <div className="lingvo-scrolling-tab__table">
+          <Table celled padded className={className}>
+            <TableHeader
+              columns={fields}
+              sortByField={sortByField}
+              onSortModeChange={(fieldId, order) => setSort(fieldId, order)}
+              onSortModeReset={() => resetSort()}
+              selectEntries={mode === 'edit'}
+              entries={items}
+              checkEntries={isTableLanguagesPublish}
+              selectedRows={selectedRows}
+              selectedColumns={selectedColumns}
+              onCheckColumn={this.onCheckColumn}
+              onCheckAll={this.onCheckAll}
+            />
+            <TableBody
+              perspectiveId={id}
+              entitiesMode={entitiesMode}
+              entries={items}
+              columns={fields}
+              mode={mode}
+              selectEntries={mode === 'edit'}
+              checkEntries={isTableLanguagesPublish}
+              selectedEntries={selectedEntries}
+              selectedRows={selectedRows}
+              checkedRow={checkedRow}
+              checkedColumn={checkedColumn}
+              checkedAll={checkedAll}
+              onCheckRow={this.onCheckRow}
+              resetCheckedRow={this.resetCheckedRow}
+              resetCheckedColumn={this.resetCheckedColumn}
+              resetCheckedAll={this.resetCheckedAll}
+              onEntrySelect={onEntrySelect}
+            />
+          </Table>
+        </div>
+        <Pagination current={page} total={Math.floor(entries.length / ROWS_PER_PAGE) + 1} to={mode} 
+          checkEntries={isTableLanguagesPublish}
+          resetCheckedColumn={this.resetCheckedColumn}
+          resetCheckedAll={this.resetCheckedAll}
+        />
       </div>
-      <Pagination current={page} total={Math.floor(entries.length / ROWS_PER_PAGE) + 1} to={mode} />
-    </div>
-  );
+    );
+
+  }
 };
 
 P.propTypes = {
