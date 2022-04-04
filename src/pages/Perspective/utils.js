@@ -21,7 +21,9 @@ function getMode(path) {
 
 export default function getParams(location) {
   const ids = getIds(location.pathname);
-  if (!ids) {return null;}
+  if (!ids) {
+    return null;
+  }
 
   const result = {
     id: [ids.cid, ids.oid].map(k => parseInt(k, 10)),

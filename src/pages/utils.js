@@ -26,10 +26,14 @@ const mapActionsToProps =
       ...bindActionCreators(actions, dispatch),
       onMount(props) {
         dispatch(run({ saga, sagaId }));
-        if (init) {dispatch(init(props));}
+        if (init) {
+          dispatch(init(props));
+        }
       },
       onUnmount(props) {
-        if (teardown) {dispatch(teardown(props));}
+        if (teardown) {
+          dispatch(teardown(props));
+        }
         dispatch(stop(sagaId));
       }
     };

@@ -61,7 +61,9 @@ class CreateFieldModal extends React.Component {
           }
         ]
       }).then(({ data }) => {
-        if (callback != null) {callback(data.create_field.field.id);}
+        if (callback != null) {
+          callback(data.create_field.field.id);
+        }
 
         actions.closeCreateFieldModal();
       });

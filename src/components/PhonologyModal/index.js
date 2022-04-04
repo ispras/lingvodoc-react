@@ -22,7 +22,8 @@ import {
   phonologyLinkPerspectiveQuery,
   phonologyPerspectiveInfoQuery,
   phonologySkipListQuery,
-  phonologyTierListQuery} from "./graphql";
+  phonologyTierListQuery
+} from "./graphql";
 
 const DEFAULT_CHART_THRESHOLD = 8;
 const DEFAULT_STAT_THRESHOLD = 1;
@@ -105,7 +106,9 @@ class PhonologyModal extends React.Component {
 
     this.fieldDict = {};
 
-    for (const field of allFields) {this.fieldDict[id2str(field.id)] = field;}
+    for (const field of allFields) {
+      this.fieldDict[id2str(field.id)] = field;
+    }
 
     /* Additional info of fields of our perspective. */
 
@@ -132,9 +135,7 @@ class PhonologyModal extends React.Component {
       this.state.perspective_list.push([
         perspective,
         tree
-          .map(value =>
-            value.hasOwnProperty("status") ? `${value.translation } (${ value.status })` : value.translation
-          )
+          .map(value => (value.hasOwnProperty("status") ? `${value.translation} (${value.status})` : value.translation))
           .reverse()
           .join(" \u203a ")
       ]);
@@ -182,7 +183,7 @@ class PhonologyModal extends React.Component {
 
     function f(object) {
       const object_str = object.hasOwnProperty("status")
-        ? `${object.translation } (${ object.status })`
+        ? `${object.translation} (${object.status})`
         : object.translation;
 
       tree_path.push(object_str);
@@ -197,12 +198,16 @@ class PhonologyModal extends React.Component {
         return;
       }
 
-      for (const child of object.children) {f(child);}
+      for (const child of object.children) {
+        f(child);
+      }
 
       tree_path.pop();
     }
 
-    for (const value of tree) {f(value);}
+    for (const value of tree) {
+      f(value);
+    }
 
     this.perspective_info_list = perspective_info_list;
     this.perspective_info_dict = perspective_info_dict;
@@ -239,11 +244,19 @@ class PhonologyModal extends React.Component {
       const tierList = map(tier_count, (count, tier) => [tier, count, count / total_count]);
 
       tierList.sort((a, b) => {
-        if (a[0].toLowerCase() < b[0].toLowerCase()) {return -1;}
-        if (a[0].toLowerCase() > b[0].toLowerCase()) {return 1;}
+        if (a[0].toLowerCase() < b[0].toLowerCase()) {
+          return -1;
+        }
+        if (a[0].toLowerCase() > b[0].toLowerCase()) {
+          return 1;
+        }
 
-        if (a[0] < b[0]) {return -1;}
-        if (a[0] > b[0]) {return 1;}
+        if (a[0] < b[0]) {
+          return -1;
+        }
+        if (a[0] > b[0]) {
+          return 1;
+        }
 
         return 0;
       });
@@ -258,14 +271,19 @@ class PhonologyModal extends React.Component {
   handleTiersChange(enabled) {
     this.setState({ enabledTiers: enabled });
 
-    if (!this.state.loadedTiers) {this.getTierList();}
+    if (!this.state.loadedTiers) {
+      this.getTierList();
+    }
   }
 
   handleEnableTier(tier, enable) {
     const tierSet = this.state.tierSet;
 
-    if (enable) {tierSet.add(tier);}
-    else {tierSet.delete(tier);}
+    if (enable) {
+      tierSet.add(tier);
+    } else {
+      tierSet.delete(tier);
+    }
 
     this.setState({ tierSet });
   }
@@ -295,21 +313,28 @@ class PhonologyModal extends React.Component {
   handleKeepChange(enabled) {
     this.setState({ enabledKeep: enabled });
 
-    if (!this.state.loadedKeepJoin) {this.getKeepJoinList();}
+    if (!this.state.loadedKeepJoin) {
+      this.getKeepJoinList();
+    }
   }
 
   handleJoinChange(enabled) {
     this.setState({ enabledJoin: enabled });
 
-    if (!this.state.loadedKeepJoin) {this.getKeepJoinList();}
+    if (!this.state.loadedKeepJoin) {
+      this.getKeepJoinList();
+    }
   }
 
   /* Processes selection/deselection of one of the skipped characters for keeping. */
   handleSelectKeep(ord, enable) {
     const selectedKeepSet = this.state.selectedKeepSet;
 
-    if (enable) {selectedKeepSet.add(ord);}
-    else {selectedKeepSet.delete(ord);}
+    if (enable) {
+      selectedKeepSet.add(ord);
+    } else {
+      selectedKeepSet.delete(ord);
+    }
 
     this.setState({ selectedKeepSet });
   }
@@ -318,8 +343,11 @@ class PhonologyModal extends React.Component {
   handleSelectJoin(ord, enable) {
     const selectedJoinSet = this.state.selectedJoinSet;
 
-    if (enable) {selectedJoinSet.add(ord);}
-    else {selectedJoinSet.delete(ord);}
+    if (enable) {
+      selectedJoinSet.add(ord);
+    } else {
+      selectedJoinSet.delete(ord);
+    }
 
     this.setState({ selectedJoinSet });
   }
@@ -327,7 +355,9 @@ class PhonologyModal extends React.Component {
   handleLinkChange(enabled) {
     this.setState({ useLinkedData: enabled });
 
-    if (!this.state.loadedLinkData) {this.getLinkData();}
+    if (!this.state.loadedLinkData) {
+      this.getLinkData();
+    }
   }
 
   /* Loads data of perspectives containing info linked from this perspective. */
@@ -348,7 +378,9 @@ class PhonologyModal extends React.Component {
       }
     });
 
-    if (!link_data) {return;}
+    if (!link_data) {
+      return;
+    }
 
     /* Getting info of linked perspectives. */
 
@@ -377,7 +409,9 @@ class PhonologyModal extends React.Component {
         variables: { perspectiveId: perspective_id_list[i] }
       });
 
-      if (!perspective_data) {continue;}
+      if (!perspective_data) {
+        continue;
+      }
 
       const perspectiveData = { ...perspective_data };
 
@@ -423,11 +457,15 @@ class PhonologyModal extends React.Component {
     if (enable) {
       selectedLinkFieldSet.add(key);
 
-      for (const perspectiveIdKey of this.state.linkFieldDataDict[key]) {linkPerspectiveDict[perspectiveIdKey] += 1;}
+      for (const perspectiveIdKey of this.state.linkFieldDataDict[key]) {
+        linkPerspectiveDict[perspectiveIdKey] += 1;
+      }
     } else {
       selectedLinkFieldSet.delete(key);
 
-      for (const perspectiveIdKey of this.state.linkFieldDataDict[key]) {linkPerspectiveDict[perspectiveIdKey] -= 1;}
+      for (const perspectiveIdKey of this.state.linkFieldDataDict[key]) {
+        linkPerspectiveDict[perspectiveIdKey] -= 1;
+      }
     }
 
     this.setState({
@@ -864,7 +902,7 @@ class PhonologyModal extends React.Component {
               <div style={{ marginTop: "1.5em" }}>
                 <span>Perspectives selected for comparison:</span>
                 {map(this.state.perspective_list, ([perspective, perspective_str], index) => (
-                  <List style={{ marginLeft: "1em" }} key={`perspective${ index}`}>
+                  <List style={{ marginLeft: "1em" }} key={`perspective${index}`}>
                     <List.Item>
                       <span>
                         {perspective_str}

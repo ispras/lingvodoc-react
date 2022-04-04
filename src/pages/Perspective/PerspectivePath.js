@@ -247,7 +247,7 @@ class PerspectivePath extends React.Component {
           }}
         >
           <span>
-            {`${getTranslation("license") }: `}
+            {`${getTranslation("license")}: `}
             {license_url ? (
               <a className="license" href={license_url}>
                 {license_str}

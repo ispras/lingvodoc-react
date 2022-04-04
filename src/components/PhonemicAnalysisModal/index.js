@@ -90,7 +90,9 @@ class PhonemicAnalysisModal extends React.Component {
 
     this.fieldDict = {};
 
-    for (const field of allFields) {this.fieldDict[id2str(field.id)] = field;}
+    for (const field of allFields) {
+      this.fieldDict[id2str(field.id)] = field;
+    }
 
     /* Additional info of fields of our perspective. */
 
@@ -103,19 +105,25 @@ class PhonemicAnalysisModal extends React.Component {
     for (const field of this.textFields) {
       const check_str = field.english_translation.toLowerCase();
 
-      if (!this.state.transcriptionFieldIdStr && check_str.includes("transcription"))
-        {this.state.transcriptionFieldIdStr = id2str(field.id);}
+      if (!this.state.transcriptionFieldIdStr && check_str.includes("transcription")) {
+        this.state.transcriptionFieldIdStr = id2str(field.id);
+      }
 
-      if (!this.state.translationFieldIdStr && (check_str.includes("translation") || check_str.includes("meaning")))
-        {this.state.translationFieldIdStr = id2str(field.id);}
+      if (!this.state.translationFieldIdStr && (check_str.includes("translation") || check_str.includes("meaning"))) {
+        this.state.translationFieldIdStr = id2str(field.id);
+      }
     }
 
     /* If we haven't found thus named fields, we try to select the first one. */
 
     if (this.textFields.length > 0) {
-      if (!this.state.transcriptionFieldIdStr) {this.state.transcriptionFieldIdStr = id2str(this.textFields[0].id);}
+      if (!this.state.transcriptionFieldIdStr) {
+        this.state.transcriptionFieldIdStr = id2str(this.textFields[0].id);
+      }
 
-      if (!this.state.translationFieldIdStr) {this.state.translationFieldIdStr = id2str(this.textFields[0].id);}
+      if (!this.state.translationFieldIdStr) {
+        this.state.translationFieldIdStr = id2str(this.textFields[0].id);
+      }
     }
   }
 
@@ -150,10 +158,11 @@ class PhonemicAnalysisModal extends React.Component {
       error_data => {
         window.logger.err("Failed to compute phonemic analysis!");
 
-        if (error_data.message === "GraphQL error: Analysis library is absent, please contact system administrator.")
-          {this.setState({
+        if (error_data.message === "GraphQL error: Analysis library is absent, please contact system administrator.") {
+          this.setState({
             library_present: false
-          });}
+          });
+        }
       }
     );
   }

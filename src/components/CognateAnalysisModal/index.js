@@ -208,8 +208,11 @@ class SLPerspectiveSelection extends React.Component {
 
     const current = perspectiveSelectionList[index];
 
-    if (current && !checked) {p_select_count_new--;}
-    else if (!current && checked) {p_select_count_new++;}
+    if (current && !checked) {
+      p_select_count_new--;
+    } else if (!current && checked) {
+      p_select_count_new++;
+    }
 
     perspectiveSelectionList[index] = checked;
     perspectiveSelectionCountMap[""] = p_select_count_new;
@@ -232,7 +235,9 @@ class SLPerspectiveSelection extends React.Component {
       return;
     }
 
-    if (current != checked) {this.setState({ perspectiveSelectionList });}
+    if (current != checked) {
+      this.setState({ perspectiveSelectionList });
+    }
   }
 
   render() {
@@ -247,14 +252,14 @@ class SLPerspectiveSelection extends React.Component {
     } = this.props;
 
     return (
-      <List key={`perspective${ index}`}>
+      <List key={`perspective${index}`}>
         <List.Item key="check">
           <Breadcrumb
             style={perspectiveSelectionList[index] ? {} : { opacity: 0.5 }}
             icon="right angle"
             sections={treePathList.map(e => ({
               key: e.id,
-              content: e.hasOwnProperty("status") ? `${e.translation } (${ e.status })` : e.translation,
+              content: e.hasOwnProperty("status") ? `${e.translation} (${e.status})` : e.translation,
               link: false
             }))}
           />
@@ -372,7 +377,7 @@ class SLSelection extends React.Component {
           // we just give our state to be modified in the child compoment.
 
           <SLPerspectiveSelection
-            key={`perspective${ index}`}
+            key={`perspective${index}`}
             treePathList={treePathList}
             perspective={perspective}
             textFieldsOptions={textFieldsOptions}
@@ -428,7 +433,7 @@ class MLPerspectiveSelection extends React.Component {
     let p_select_count_new = p_select_count;
 
     const p_language_select_count = perspectiveSelectionCountMap[language_id_str];
-    const p_language_max_count = perspectiveSelectionCountMap[`${language_id_str }_max`];
+    const p_language_max_count = perspectiveSelectionCountMap[`${language_id_str}_max`];
 
     let p_language_select_count_new = p_language_select_count;
 
@@ -473,7 +478,9 @@ class MLPerspectiveSelection extends React.Component {
       return;
     }
 
-    if (current != checked) {this.setState({ perspectiveSelectionMap });}
+    if (current != checked) {
+      this.setState({ perspectiveSelectionMap });
+    }
   }
 
   render() {
@@ -490,14 +497,14 @@ class MLPerspectiveSelection extends React.Component {
     } = this.props;
 
     return (
-      <List key={`perspective${ p_key}`}>
+      <List key={`perspective${p_key}`}>
         <List.Item>
           <Breadcrumb
             style={perspectiveSelectionMap[p_key] ? {} : { opacity: 0.5 }}
             icon="right angle"
             sections={treePathList.map(e => ({
               key: e.id,
-              content: e.hasOwnProperty("status") ? `${e.translation } (${ e.status })` : e.translation,
+              content: e.hasOwnProperty("status") ? `${e.translation} (${e.status})` : e.translation,
               link: false
             }))}
           />
@@ -587,7 +594,9 @@ class MLSelection extends React.Component {
     let p_select_count_new = p_select_count;
 
     for (const { perspective } of language_info.perspective_list) {
-      if (perspectiveSelectionMap[id2str(perspective.id)]) {p_select_count_new--;}
+      if (perspectiveSelectionMap[id2str(perspective.id)]) {
+        p_select_count_new--;
+      }
     }
 
     perspectiveSelectionCountMap[""] = p_select_count_new;
@@ -624,7 +633,9 @@ class MLSelection extends React.Component {
 
     if (p_select_count < p_max_count) {
       for (const language of language_list) {
-        for (const { perspective } of language.perspective_list) {perspectiveSelectionMap[id2str(perspective.id)] = true;}
+        for (const { perspective } of language.perspective_list) {
+          perspectiveSelectionMap[id2str(perspective.id)] = true;
+        }
 
         perspectiveSelectionCountMap[id2str(language.id)] = language.perspective_list.length;
       }
@@ -632,8 +643,9 @@ class MLSelection extends React.Component {
       p_select_count_new = p_max_count;
     } else {
       for (const language of language_list) {
-        for (const { perspective } of language.perspective_list)
-          {perspectiveSelectionMap[id2str(perspective.id)] = false;}
+        for (const { perspective } of language.perspective_list) {
+          perspectiveSelectionMap[id2str(perspective.id)] = false;
+        }
 
         perspectiveSelectionCountMap[id2str(language.id)] = 0;
       }
@@ -672,7 +684,7 @@ class MLSelection extends React.Component {
     const language_id_str = id2str(language_info.id);
 
     const p_language_select_count = perspectiveSelectionCountMap[language_id_str];
-    const p_language_max_count = perspectiveSelectionCountMap[`${language_id_str }_max`];
+    const p_language_max_count = perspectiveSelectionCountMap[`${language_id_str}_max`];
 
     let p_select_count_new = p_select_count;
 
@@ -680,7 +692,9 @@ class MLSelection extends React.Component {
       for (const { perspective } of language_info.perspective_list) {
         const perspective_id_str = id2str(perspective.id);
 
-        if (!perspectiveSelectionMap[perspective_id_str]) {p_select_count_new++;}
+        if (!perspectiveSelectionMap[perspective_id_str]) {
+          p_select_count_new++;
+        }
 
         perspectiveSelectionMap[perspective_id_str] = true;
       }
@@ -690,7 +704,9 @@ class MLSelection extends React.Component {
       for (const { perspective } of language_info.perspective_list) {
         const perspective_id_str = id2str(perspective.id);
 
-        if (perspectiveSelectionMap[perspective_id_str]) {p_select_count_new--;}
+        if (perspectiveSelectionMap[perspective_id_str]) {
+          p_select_count_new--;
+        }
 
         perspectiveSelectionMap[perspective_id_str] = false;
       }
@@ -750,10 +766,10 @@ class MLSelection extends React.Component {
           const language_id_str = id2str(language_info.id);
 
           const p_language_select_count = perspectiveSelectionCountMap[language_id_str];
-          const p_language_max_count = perspectiveSelectionCountMap[`${language_id_str }_max`];
+          const p_language_max_count = perspectiveSelectionCountMap[`${language_id_str}_max`];
 
           return (
-            <List.Item key={`language${ l_index}`}>
+            <List.Item key={`language${l_index}`}>
               <Header as="h3">
                 <Breadcrumb
                   icon="right angle"
@@ -804,7 +820,7 @@ class MLSelection extends React.Component {
                       <MLPerspectiveSelection
                         mode={mode}
                         language_list={language_list}
-                        key={`perspective${ p_key}`}
+                        key={`perspective${p_key}`}
                         treePathList={treePathList}
                         perspective={perspective}
                         textFieldsOptions={textFieldsOptions}
@@ -886,7 +902,7 @@ class SuggestionSelection extends React.Component {
     const opacity_style = disabled_flag ? { opacity: 0.5 } : {};
 
     return (
-      <Segment key={`suggestion${ index}`}>
+      <Segment key={`suggestion${index}`}>
         <List>
           <List.Item>
             <span style={opacity_style}>{getTranslation("Source perspective word:")}</span>
@@ -912,7 +928,7 @@ class SuggestionSelection extends React.Component {
                             word_group[0],
 
                             ([perspective_index, [transcription_str, translation_str]], word_index) => (
-                              <div key={`sg${ index }gr_self_word${ word_index}`}>
+                              <div key={`sg${index}gr_self_word${word_index}`}>
                                 {`${transcription_str} ${translation_str}
                               (${this.state.perspective_name_list[perspective_index]})`}
                               </div>
@@ -927,8 +943,11 @@ class SuggestionSelection extends React.Component {
                   checked={sg_select_list[index].hasOwnProperty(id2str(word_entry_id))}
                   disabled={disabled_flag}
                   onChange={(e, { checked }) => {
-                    if (checked) {sg_select_list[index][id2str(word_entry_id)] = null;}
-                    else {delete sg_select_list[index][id2str(word_entry_id)];}
+                    if (checked) {
+                      sg_select_list[index][id2str(word_entry_id)] = null;
+                    } else {
+                      delete sg_select_list[index][id2str(word_entry_id)];
+                    }
 
                     this.setState({ sg_select_list });
                   }}
@@ -946,15 +965,18 @@ class SuggestionSelection extends React.Component {
                   single_list,
 
                   ([perspective_index, [transcription_str, translation_str], entry_id], single_index) => (
-                    <List.Item key={`sg${ index }single${ single_index}`}>
+                    <List.Item key={`sg${index}single${single_index}`}>
                       <Checkbox
                         label={`${transcription_str} ${translation_str}
                         (${this.state.perspective_name_list[perspective_index]})`}
                         checked={sg_select_list[index].hasOwnProperty(id2str(entry_id))}
                         disabled={disabled_flag}
                         onChange={(e, { checked }) => {
-                          if (checked) {sg_select_list[index][id2str(entry_id)] = null;}
-                          else {delete sg_select_list[index][id2str(entry_id)];}
+                          if (checked) {
+                            sg_select_list[index][id2str(entry_id)] = null;
+                          } else {
+                            delete sg_select_list[index][id2str(entry_id)];
+                          }
 
                           this.setState({ sg_select_list });
                         }}
@@ -975,13 +997,16 @@ class SuggestionSelection extends React.Component {
                   group_list,
 
                   ([word_list, entry_id], group_index) => (
-                    <List.Item key={`sg${ index }group${ group_index}`}>
+                    <List.Item key={`sg${index}group${group_index}`}>
                       <Checkbox
                         checked={sg_select_list[index].hasOwnProperty(id2str(entry_id))}
                         disabled={disabled_flag}
                         onChange={(e, { checked }) => {
-                          if (checked) {sg_select_list[index][id2str(entry_id)] = null;}
-                          else {delete sg_select_list[index][id2str(entry_id)];}
+                          if (checked) {
+                            sg_select_list[index][id2str(entry_id)] = null;
+                          } else {
+                            delete sg_select_list[index][id2str(entry_id)];
+                          }
 
                           this.setState({ sg_select_list });
                         }}
@@ -992,7 +1017,7 @@ class SuggestionSelection extends React.Component {
                                 word_list,
 
                                 ([perspective_index, [transcription_str, translation_str]], word_index) => (
-                                  <div key={`sg${ index }gr${ group_index }word${ word_index}`}>
+                                  <div key={`sg${index}gr${group_index}word${word_index}`}>
                                     {`${transcription_str} ${translation_str}
                               (${this.state.perspective_name_list[perspective_index]})`}
                                   </div>
@@ -1153,7 +1178,9 @@ class CognateAnalysisModal extends React.Component {
 
     this.fieldDict = {};
 
-    for (const field of allFields) {this.fieldDict[id2str(field.id)] = field;}
+    for (const field of allFields) {
+      this.fieldDict[id2str(field.id)] = field;
+    }
 
     /* Grouping fields of our perspective. */
 
@@ -1172,7 +1199,9 @@ class CognateAnalysisModal extends React.Component {
       }
     }
 
-    if (!groupFieldIdStr && this.groupFields.length > 0) {groupFieldIdStr = id2str(this.groupFields[0].id);}
+    if (!groupFieldIdStr && this.groupFields.length > 0) {
+      groupFieldIdStr = id2str(this.groupFields[0].id);
+    }
 
     this.state.groupFieldIdStr = groupFieldIdStr;
 
@@ -1240,7 +1269,11 @@ class CognateAnalysisModal extends React.Component {
 
     let p_select_count = 0;
 
-    for (const value of this.state.perspectiveSelectionList) {if (value) {p_select_count++;}}
+    for (const value of this.state.perspectiveSelectionList) {
+      if (value) {
+        p_select_count++;
+      }
+    }
 
     this.state.perspectiveSelectionCountMap[""] = p_select_count;
     this.state.perspectiveSelectionCountMap["_max"] = this.perspective_list.length;
@@ -1264,7 +1297,9 @@ class CognateAnalysisModal extends React.Component {
 
     const language_id_list = languageIdList.slice();
 
-    if (!checkLanguageId(tree[tree.length - 1].id)) {language_id_list.push(tree[tree.length - 1].id);}
+    if (!checkLanguageId(tree[tree.length - 1].id)) {
+      language_id_list.push(tree[tree.length - 1].id);
+    }
 
     const {
       data: { languages }
@@ -1292,7 +1327,9 @@ class CognateAnalysisModal extends React.Component {
 
     this.language_dict = {};
 
-    for (const language of languages) {this.language_dict[id2str(language.id)] = language;}
+    for (const language of languages) {
+      this.language_dict[id2str(language.id)] = language;
+    }
 
     this.language_list = languages;
 
@@ -1320,7 +1357,9 @@ class CognateAnalysisModal extends React.Component {
       this.state.translationFieldIdStrMap[p_key] = this.state.translationFieldIdStrList[index];
       this.state.perspectiveSelectionMap[p_key] = this.state.perspectiveSelectionList[index];
 
-      if (this.state.perspectiveSelectionList[index]) {p_select_count++;}
+      if (this.state.perspectiveSelectionList[index]) {
+        p_select_count++;
+      }
     }
 
     const language_id_str = id2str(this.baseLanguageId);
@@ -1331,7 +1370,7 @@ class CognateAnalysisModal extends React.Component {
     this.state.perspectiveSelectionCountMap["_max"] = this.perspective_list.length;
 
     this.state.perspectiveSelectionCountMap[language_id_str] = p_select_count;
-    this.state.perspectiveSelectionCountMap[`${language_id_str }_max`] = this.perspective_list.length;
+    this.state.perspectiveSelectionCountMap[`${language_id_str}_max`] = this.perspective_list.length;
 
     this.setState({
       initialized: true,
@@ -1371,22 +1410,27 @@ class CognateAnalysisModal extends React.Component {
     for (const [index, { perspective }] of this.perspective_list.entries()) {
       const p_key = id2str(perspective.id);
 
-      if (!transcriptionFieldIdStrMap.hasOwnProperty(p_key))
-        {transcriptionFieldIdStrMap[p_key] = transcriptionFieldIdStrList[index];}
+      if (!transcriptionFieldIdStrMap.hasOwnProperty(p_key)) {
+        transcriptionFieldIdStrMap[p_key] = transcriptionFieldIdStrList[index];
+      }
 
-      if (!translationFieldIdStrMap.hasOwnProperty(p_key))
-        {translationFieldIdStrMap[p_key] = translationFieldIdStrList[index];}
+      if (!translationFieldIdStrMap.hasOwnProperty(p_key)) {
+        translationFieldIdStrMap[p_key] = translationFieldIdStrList[index];
+      }
 
-      if (!perspectiveSelectionMap.hasOwnProperty(p_key))
-        {perspectiveSelectionMap[p_key] = perspectiveSelectionList[index];}
+      if (!perspectiveSelectionMap.hasOwnProperty(p_key)) {
+        perspectiveSelectionMap[p_key] = perspectiveSelectionList[index];
+      }
 
-      if (perspectiveSelectionMap[p_key]) {p_language_select_count++;}
+      if (perspectiveSelectionMap[p_key]) {
+        p_language_select_count++;
+      }
     }
 
     const language_id_str = id2str(language.id);
 
     perspectiveSelectionCountMap[language_id_str] = p_language_select_count;
-    perspectiveSelectionCountMap[`${language_id_str }_max`] = language.perspective_list.length;
+    perspectiveSelectionCountMap[`${language_id_str}_max`] = language.perspective_list.length;
 
     perspectiveSelectionCountMap[""] = p_select_count + p_language_select_count;
     perspectiveSelectionCountMap["_max"] = p_max_count + language.perspective_list.length;
@@ -1413,26 +1457,34 @@ class CognateAnalysisModal extends React.Component {
 
     /* First we look through sublanguages, just as on the main page. */
 
-    for (const language of languages) {await this.initPerspectiveData(language.id, treePathList.concat([language]));}
+    for (const language of languages) {
+      await this.initPerspectiveData(language.id, treePathList.concat([language]));
+    }
 
     /* We need perspectives containing at least one grouping and one text field. */
 
-    for (const dictionary of dictionaries)
-      {for (const perspective of dictionary.perspectives) {
+    for (const dictionary of dictionaries) {
+      for (const perspective of dictionary.perspectives) {
         let group_flag = false;
         let text_flag = false;
 
         for (const column of perspective.columns) {
           const field = this.fieldDict[id2str(column.field_id)];
 
-          if (field.data_type === "Grouping Tag") {group_flag = true;}
+          if (field.data_type === "Grouping Tag") {
+            group_flag = true;
+          }
 
-          if (field.data_type === "Text") {text_flag = true;}
+          if (field.data_type === "Text") {
+            text_flag = true;
+          }
         }
 
-        if (group_flag && text_flag)
-          {this.available_list.push([treePathList.concat([dictionary, perspective]), perspective]);}
-      }}
+        if (group_flag && text_flag) {
+          this.available_list.push([treePathList.concat([dictionary, perspective]), perspective]);
+        }
+      }
+    }
   }
 
   /* Initializes list of perspectives available for analysis depending on currently selected
@@ -1472,18 +1524,25 @@ class CognateAnalysisModal extends React.Component {
       for (const field of textFields) {
         const check_str = field.english_translation.toLowerCase();
 
-        if (!transcriptionFieldIdStr && check_str.includes("transcription")) {transcriptionFieldIdStr = id2str(field.id);}
+        if (!transcriptionFieldIdStr && check_str.includes("transcription")) {
+          transcriptionFieldIdStr = id2str(field.id);
+        }
 
-        if (!translationFieldIdStr && (check_str.includes("translation") || check_str.includes("meaning")))
-          {translationFieldIdStr = id2str(field.id);}
+        if (!translationFieldIdStr && (check_str.includes("translation") || check_str.includes("meaning"))) {
+          translationFieldIdStr = id2str(field.id);
+        }
       }
 
       /* If we haven't found thus named fields, we try to select the first one. */
 
       if (textFields.length > 0) {
-        if (!transcriptionFieldIdStr) {transcriptionFieldIdStr = id2str(textFields[0].id);}
+        if (!transcriptionFieldIdStr) {
+          transcriptionFieldIdStr = id2str(textFields[0].id);
+        }
 
-        if (!translationFieldIdStr) {translationFieldIdStr = id2str(textFields[0].id);}
+        if (!translationFieldIdStr) {
+          translationFieldIdStr = id2str(textFields[0].id);
+        }
       }
 
       transcriptionFieldIdStrList.push(transcriptionFieldIdStr);
@@ -1507,7 +1566,9 @@ class CognateAnalysisModal extends React.Component {
   }
 
   select_group_field(value) {
-    if (value == this.state.groupFieldIdStr) {return;}
+    if (value == this.state.groupFieldIdStr) {
+      return;
+    }
 
     /* Selecting grouping field for many languages. */
 
@@ -1534,7 +1595,9 @@ class CognateAnalysisModal extends React.Component {
         let p_language_select_count = 0;
 
         for (const { perspective } of language.perspective_list) {
-          if (perspectiveSelectionMap[id2str(perspective.id)]) {p_language_select_count++;}
+          if (perspectiveSelectionMap[id2str(perspective.id)]) {
+            p_language_select_count++;
+          }
         }
 
         p_select_count += p_language_select_count;
@@ -1543,7 +1606,7 @@ class CognateAnalysisModal extends React.Component {
         const language_id_str = id2str(language.id);
 
         perspectiveSelectionCountMap[language_id_str] = p_language_select_count;
-        perspectiveSelectionCountMap[`${language_id_str }_max`] = language.perspective_list.length;
+        perspectiveSelectionCountMap[`${language_id_str}_max`] = language.perspective_list.length;
       }
 
       perspectiveSelectionCountMap[""] = p_select_count;
@@ -1582,8 +1645,9 @@ class CognateAnalysisModal extends React.Component {
       }
     }
   }) {
-    if (result.length > 1048576 && (this.props.mode == "suggestions" || this.props.mode == "multi_suggestions"))
-      {result = getTranslation("Skipping text output, too long.");}
+    if (result.length > 1048576 && (this.props.mode == "suggestions" || this.props.mode == "multi_suggestions")) {
+      result = getTranslation("Skipping text output, too long.");
+    }
 
     /* Data of the 2d cognate distance plots. */
 
@@ -1591,37 +1655,41 @@ class CognateAnalysisModal extends React.Component {
     const plotly_legend_data = [];
 
     if (result.length > 0 && minimum_spanning_tree) {
-      for (const arc of minimum_spanning_tree)
-        {plotly_data.push({
+      for (const arc of minimum_spanning_tree) {
+        plotly_data.push({
           x: [embedding_2d[arc[0]][0], embedding_2d[arc[1]][0]],
           y: [embedding_2d[arc[0]][1], embedding_2d[arc[1]][1]],
           mode: "lines",
           showlegend: false,
           line: { color: "#666", width: 1 }
-        });}
+        });
+      }
 
-      for (var i = 0; i < embedding_2d.length; i++)
-        {plotly_data.push({
+      for (var i = 0; i < embedding_2d.length; i++) {
+        plotly_data.push({
           x: [embedding_2d[i][0]],
           y: [embedding_2d[i][1]],
           type: "scatter",
           mode: "markers+text",
-          name: `${i + 1 }) ${ perspective_name_list[i]}`,
+          name: `${i + 1}) ${perspective_name_list[i]}`,
           text: [(i + 1).toString()],
           textfont: { size: 14 },
           textposition: "center right",
           marker: { size: 8 }
-        });}
+        });
+      }
 
-      if (embedding_2d.length > 25)
-        {for (var i = 0; i < embedding_2d.length; i++)
-          {plotly_legend_data.push({
+      if (embedding_2d.length > 25) {
+        for (var i = 0; i < embedding_2d.length; i++) {
+          plotly_legend_data.push({
             x: [0.0],
             y: [0.0],
             type: "scatter",
             mode: "none",
-            name: `${i + 1 }) ${ perspective_name_list[i]}`
-          });}}
+            name: `${i + 1}) ${perspective_name_list[i]}`
+          });
+        }
+      }
     }
 
     /* Data of the 3d cognate distance plots. */
@@ -1637,8 +1705,8 @@ class CognateAnalysisModal extends React.Component {
     let z_range = null;
 
     if (result.length > 0 && minimum_spanning_tree) {
-      for (const arc of minimum_spanning_tree)
-        {plotly_3d_data.push({
+      for (const arc of minimum_spanning_tree) {
+        plotly_3d_data.push({
           x: [embedding_3d[arc[0]][0], embedding_3d[arc[1]][0]],
           y: [embedding_3d[arc[0]][1], embedding_3d[arc[1]][1]],
           z: [embedding_3d[arc[0]][2], embedding_3d[arc[1]][2]],
@@ -1646,21 +1714,23 @@ class CognateAnalysisModal extends React.Component {
           mode: "lines",
           showlegend: false,
           line: { color: "#666", width: 1 }
-        });}
+        });
+      }
 
-      for (var i = 0; i < embedding_3d.length; i++)
-        {plotly_3d_data.push({
+      for (var i = 0; i < embedding_3d.length; i++) {
+        plotly_3d_data.push({
           x: [embedding_3d[i][0]],
           y: [embedding_3d[i][1]],
           z: [embedding_3d[i][2]],
           type: "scatter3d",
           mode: "markers+text",
-          name: `${i + 1 }) ${ perspective_name_list[i]}`,
+          name: `${i + 1}) ${perspective_name_list[i]}`,
           text: [(i + 1).toString()],
           textfont: { size: 14 },
           textposition: "center right",
           marker: { size: 3 }
-        });}
+        });
+      }
 
       /* Computing 3d axes ranges. */
 
@@ -1711,16 +1781,22 @@ class CognateAnalysisModal extends React.Component {
 
           sg_select_item[id_str] = null;
 
-          if (!sg_entry_map.hasOwnProperty(id_str)) {sg_entry_map[id_str] = {};}
+          if (!sg_entry_map.hasOwnProperty(id_str)) {
+            sg_entry_map[id_str] = {};
+          }
 
           sg_entry_map[id_str][i] = null;
         }
 
         f(word_entry_id);
 
-        for (const [perspective_index, [translation_str, transcription_str], entry_id] of single_list) {f(entry_id);}
+        for (const [perspective_index, [translation_str, transcription_str], entry_id] of single_list) {
+          f(entry_id);
+        }
 
-        for (const [word_list, entry_id] of group_list) {f(entry_id);}
+        for (const [word_list, entry_id] of group_list) {
+          f(entry_id);
+        }
 
         sg_select_list.push(sg_select_item);
         sg_state_list.push("left");
@@ -1770,19 +1846,24 @@ class CognateAnalysisModal extends React.Component {
       if (
         error_data.message === "Network error: JSON.parse: unexpected character at line 1 column 1 of the JSON data" &&
         (error_data.networkError.statusCode == 502 || error_data.networkError.statusCode == 504)
-      )
-        {window.logger.err("Failed to compute cognate analysis! Analysis library or server connection error.");}
-      else {window.logger.err("Failed to compute cognate analysis! Server connection error.");}
-    } else {window.logger.err("Failed to compute cognate analysis!");}
+      ) {
+        window.logger.err("Failed to compute cognate analysis! Analysis library or server connection error.");
+      } else {
+        window.logger.err("Failed to compute cognate analysis! Server connection error.");
+      }
+    } else {
+      window.logger.err("Failed to compute cognate analysis!");
+    }
 
     console.log(error_data.message);
     console.log(error_data);
     console.log(Object.keys(error_data));
 
-    if (error_data.message === "GraphQL error: Analysis library is absent, please contact system administrator.")
-      {this.setState({
+    if (error_data.message === "GraphQL error: Analysis library is absent, please contact system administrator.") {
+      this.setState({
         library_present: false
-      });}
+      });
+    }
 
     this.setState({
       computing: false
@@ -1845,8 +1926,8 @@ class CognateAnalysisModal extends React.Component {
 
     /* If we are to perform acoustic analysis, we will try to launch it in the background. */
 
-    if (this.props.mode == "acoustic")
-      {computeCognateAnalysis({
+    if (this.props.mode == "acoustic") {
+      computeCognateAnalysis({
         variables: {
           sourcePerspectiveId: perspectiveId,
           baseLanguageId: this.baseLanguageId,
@@ -1870,8 +1951,9 @@ class CognateAnalysisModal extends React.Component {
         () => {
           window.logger.err(getTranslation("Failed to launch cognate acoustic analysis!"));
         }
-      );}
-    /* Otherwise we will launch it as usual and then will wait for results to display them. */ else {
+      );
+    } else {
+      /* Otherwise we will launch it as usual and then will wait for results to display them. */
       this.setState({
         computing: true
       });
@@ -1915,8 +1997,8 @@ class CognateAnalysisModal extends React.Component {
       text: f.translation
     }));
 
-    if (this.groupFields.length > 0)
-      {return (
+    if (this.groupFields.length > 0) {
+      return (
         <List>
           <List.Item>
             <span style={{ marginRight: "0.5em" }}>Grouping field:</span>
@@ -1928,8 +2010,10 @@ class CognateAnalysisModal extends React.Component {
             />
           </List.Item>
         </List>
-      );}
-    else {return <span>Perspective does not have any grouping fields, cognate analysis is impossible.</span>;}
+      );
+    } else {
+      return <span>Perspective does not have any grouping fields, cognate analysis is impossible.</span>;
+    }
   }
 
   /*
@@ -2036,8 +2120,12 @@ class CognateAnalysisModal extends React.Component {
   language_render(multi_flag) {
     /* If we are selecting perspectives for cognate suggestions, we check the source perspective state. */
 
-    if (this.props.mode == "suggestions" && this.englishStatus != "Published" && this.englishStatus != "Limited access")
-      {return (
+    if (
+      this.props.mode == "suggestions" &&
+      this.englishStatus != "Published" &&
+      this.englishStatus != "Limited access"
+    ) {
+      return (
         <Modal.Content>
           <Message negative>
             <Message.Header>{getTranslation("Perspective is not published")}</Message.Header>
@@ -2048,7 +2136,8 @@ class CognateAnalysisModal extends React.Component {
             </p>
           </Message>
         </Modal.Content>
-      );}
+      );
+    }
 
     return multi_flag ? this.multi_language_render() : this.single_language_render();
   }
@@ -2205,7 +2294,9 @@ class CognateAnalysisModal extends React.Component {
       })
       .then(
         () => {
-          if (window_log_flag) {window.logger.suc(`${getTranslation("Connected")}.`);}
+          if (window_log_flag) {
+            window.logger.suc(`${getTranslation("Connected")}.`);
+          }
 
           sg_state_list[index] = "connected";
 
@@ -2316,7 +2407,7 @@ class CognateAnalysisModal extends React.Component {
             // we just give our state to be modified in the child compoment.
 
             <SuggestionSelection
-              key={`suggestion${ start_index + in_page_index}`}
+              key={`suggestion${start_index + in_page_index}`}
               perspective_index={perspective_index}
               word={word}
               word_entry_id={word_entry_id}
@@ -2354,11 +2445,15 @@ class CognateAnalysisModal extends React.Component {
               const invalid_set = {};
 
               for (let i = 0; i < suggestion_list.length; i++) {
-                if (sg_state_list[i] != "left" || invalid_set.hasOwnProperty(i)) {continue;}
+                if (sg_state_list[i] != "left" || invalid_set.hasOwnProperty(i)) {
+                  continue;
+                }
 
                 const entry_id_str_list = Object.keys(sg_select_list[i]);
 
-                if (entry_id_str_list.length <= 1) {continue;}
+                if (entry_id_str_list.length <= 1) {
+                  continue;
+                }
 
                 for (const entry_id_str of entry_id_str_list) {
                   Object.assign(invalid_set, sg_entry_map[entry_id_str]);

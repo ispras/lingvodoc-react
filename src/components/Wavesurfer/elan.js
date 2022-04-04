@@ -12,7 +12,9 @@ class ELAN extends React.Component {
   }
 
   componentDidMount() {
-    if (this.props.isReady) {this.init();}
+    if (this.props.isReady) {
+      this.init();
+    }
 
     this.elan = Object.create(WaveSurfer.ELAN);
     if (this.props.wavesurfer) {

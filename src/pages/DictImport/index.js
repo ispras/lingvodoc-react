@@ -20,7 +20,8 @@ import {
   setLicense,
   setTranslation,
   toggleAddColumn,
-  updateColumn} from "ducks/dictImport";
+  updateColumn
+} from "ducks/dictImport";
 
 import { buildExport } from "./api";
 import ColumnMapper from "./ColumnMapper";

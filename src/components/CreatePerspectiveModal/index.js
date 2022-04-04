@@ -86,7 +86,9 @@ class CreatePerspectiveModal extends React.Component {
   render() {
     const { closeCreatePerspectiveModal, visible, data } = this.props;
 
-    if (!visible || data.loading || data.error) {return null;}
+    if (!visible || data.loading || data.error) {
+      return null;
+    }
 
     const { category, perspectives } = data.dictionary;
 

@@ -7,8 +7,8 @@
     "build": "webpack --config webpack/webpack.prod.js",
     "start": "node webpack/server.js",
     "postinstall": "npm rebuild node-sass",
-    "eslint": "eslint \"**/*\"",
-    "prettier": "prettier --check \"**/*\""
+    "eslint": "eslint --fix \"**/*\"",
+    "prettier": "prettier --write \"**/*\""
   },
   "devDependencies": {
     "@babel/core": "^7.17.8",

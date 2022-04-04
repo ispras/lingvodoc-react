@@ -116,8 +116,7 @@ class Map extends React.Component {
         let popUpText = '<ul id="map-popup">';
         const markers = [];
         sortBy(event.layer.getAllChildMarkers(), marker => marker.options.title).forEach(marker => {
-          popUpText +=
-            `<li><u id=${ marker._leaflet_id } style="cursor: pointer">${ marker.options.title }</u></li>`;
+          popUpText += `<li><u id=${marker._leaflet_id} style="cursor: pointer">${marker.options.title}</u></li>`;
           markers.push(marker);
         });
         popUpText += "</ul>";

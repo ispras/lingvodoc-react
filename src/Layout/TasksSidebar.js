@@ -16,7 +16,9 @@ const Wrapper = styled.div`
 
 const onClearTasks = (tasks, remove) => {
   tasks.forEach(task => {
-    if (task.current_stage == task.total_stages && task.progress === 100) {remove(task.id);}
+    if (task.current_stage == task.total_stages && task.progress === 100) {
+      remove(task.id);
+    }
   });
 };
 

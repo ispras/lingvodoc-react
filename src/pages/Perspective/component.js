@@ -313,7 +313,9 @@ const Perspective = ({
     return null;
   }
 
-  if (data.loading || data.error) {return null;}
+  if (data.loading || data.error) {
+    return null;
+  }
 
   const { perspective: p } = data;
   if (p.is_hidden_for_client) {

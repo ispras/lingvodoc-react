@@ -18,7 +18,12 @@ const supportRoute = props => {
           <h2 className="support-header">{getTranslation("Support")}</h2>
 
           <div className="cards-list">
-            <a className="card-item" href="https://github.com/ispras/lingvodoc-react/wiki" target="_blank" rel="noreferrer">
+            <a
+              className="card-item"
+              href="https://github.com/ispras/lingvodoc-react/wiki"
+              target="_blank"
+              rel="noreferrer"
+            >
               <label className="card-item__label">{getTranslation("Help")}</label>
               <img className="card-item__img card-item__img_help" src={imageHelp} />
             </a>

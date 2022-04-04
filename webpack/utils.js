@@ -28,19 +28,25 @@ try {
 } catch (error) {}
 
 if ("TRAVIS_BUILD_NUMBER" in process.env) {
-  if (versionString) {versionString += "-";}
+  if (versionString) {
+    versionString += "-";
+  }
 
   versionString += process.env.TRAVIS_BUILD_NUMBER;
 }
 
 if ("TRAVIS_BRANCH" in process.env) {
-  if (versionString) {versionString += "-";}
+  if (versionString) {
+    versionString += "-";
+  }
 
   versionString += process.env.TRAVIS_BRANCH;
 }
 
 if ("LINGVODOC_BUILD_TYPE" in process.env) {
-  if (versionString) {versionString += "-";}
+  if (versionString) {
+    versionString += "-";
+  }
 
   versionString += process.env.LINGVODOC_BUILD_TYPE;
 }

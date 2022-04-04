@@ -20,7 +20,8 @@ import {
   setMetadata,
   setParentLanguage,
   setPerspectives,
-  setTranslations} from "ducks/createDictionary";
+  setTranslations
+} from "ducks/createDictionary";
 import { query as dashboardQuery } from "pages/Dashboard";
 
 import { createDictionaryMutation } from "./graphql";
@@ -72,7 +73,9 @@ class CreateDictionaryWizard extends React.Component {
       dictionaryTranslations,
       perspectives
     };
-    if (metadata) {variables.metadata = metadata.toJS();}
+    if (metadata) {
+      variables.metadata = metadata.toJS();
+    }
     createDictionary({
       variables,
       refetchQueries: [
@@ -111,9 +114,9 @@ class CreateDictionaryWizard extends React.Component {
           <Step link active={step === "TRANSLATIONS"} onClick={this.onStepClick("TRANSLATIONS")}>
             <Step.Content>
               <Step.Title>
-                {getTranslation(`${mode.replace(/^\w/, c => c.toUpperCase()) } names and metadata`)}
+                {getTranslation(`${mode.replace(/^\w/, c => c.toUpperCase())} names and metadata`)}
               </Step.Title>
-              <Step.Description>{getTranslation(`Set ${ mode } name, translations and metadata`)}</Step.Description>
+              <Step.Description>{getTranslation(`Set ${mode} name, translations and metadata`)}</Step.Description>
             </Step.Content>
           </Step>
 
@@ -183,9 +186,9 @@ class CreateDictionaryWizard extends React.Component {
 
           {step === "FINISH" && (
             <Message>
-              <Message.Header>{getTranslation(`${mode.replace(/^\w/, c => c.toUpperCase()) } created`)}</Message.Header>
+              <Message.Header>{getTranslation(`${mode.replace(/^\w/, c => c.toUpperCase())} created`)}</Message.Header>
               <Message.Content>
-                {`${getTranslation(`Your ${ mode } is created, click`) } `}
+                {`${getTranslation(`Your ${mode} is created, click`)} `}
                 <Link
                   to={`/dictionary/${this.createdDictionary.id.join(
                     "/"
@@ -193,7 +196,7 @@ class CreateDictionaryWizard extends React.Component {
                 >
                   {getTranslation("here")}
                 </Link>
-                {` ${ getTranslation("to view.")}`}
+                {` ${getTranslation("to view.")}`}
               </Message.Content>
             </Message>
           )}

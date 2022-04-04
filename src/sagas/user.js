@@ -68,9 +68,13 @@ export function* signUpRoutine({ payload }) {
   if (response.data) {
     yield put(signUpForm.success());
 
-    if (response.data.result == "Signup success.") {yield call(signIn, payload);}
-    else if (response.data.result == "Signup approval pending.") {window.logger.suc(response.data.result);}
-    else {window.logger.log(response.data.result);}
+    if (response.data.result == "Signup success.") {
+      yield call(signIn, payload);
+    } else if (response.data.result == "Signup approval pending.") {
+      window.logger.suc(response.data.result);
+    } else {
+      window.logger.log(response.data.result);
+    }
   }
 
   if (response.err) {

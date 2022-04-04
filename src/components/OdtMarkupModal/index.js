@@ -86,7 +86,9 @@ class OdtMarkupModal extends React.Component {
     const { selection, saving } = this.state;
 
     for (const header of window.document.getElementsByClassName("header")) {
-      if (header.innerText == "User defined variant") {return;}
+      if (header.innerText == "User defined variant") {
+        return;
+      }
     }
 
     if (saving || !document.getSelection().isCollapsed) {
@@ -101,7 +103,9 @@ class OdtMarkupModal extends React.Component {
     const elems = Array.from(document.querySelectorAll(".verified, .unverified"));
 
     if (!elem) {
-      if (event.key === "ArrowRight" && elems.length > 0) {elems[0].click();}
+      if (event.key === "ArrowRight" && elems.length > 0) {
+        elems[0].click();
+      }
       return;
     }
 
@@ -115,15 +119,20 @@ class OdtMarkupModal extends React.Component {
 
     if (event.key === "Enter") {
       event.preventDefault();
-      if (edit && children.length === 2) {number = 0;}
-      else {return;}
+      if (edit && children.length === 2) {
+        number = 0;
+      } else {
+        return;
+      }
     }
 
     if (edit && number >= 0 && number < 10 && number < children.length) {
       let iter = -1;
       let success = false;
       for (const child of children) {
-        if (child.classList !== undefined && child.classList.contains("result")) {iter++;}
+        if (child.classList !== undefined && child.classList.contains("result")) {
+          iter++;
+        }
         if (iter === number) {
           if (child.classList.contains("result")) {
             child.classList.add("approved");
@@ -169,7 +178,9 @@ class OdtMarkupModal extends React.Component {
       }
       this.state.selection = null;
       elem.classList.replace("verified", "unverified");
-      if (success) {this.setState({ dirty: true });}
+      if (success) {
+        this.setState({ dirty: true });
+      }
       elem.click();
       return;
     }
