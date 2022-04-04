@@ -1,38 +1,42 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { graphql } from 'react-apollo';
-import gql from 'graphql-tag';
-import { compose, branch, renderNothing } from 'recompose';
-import { Link, withRouter } from 'react-router-dom';
-import { Menu, Button } from 'semantic-ui-react';
-import config from 'config';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import { setIsAuthenticated } from 'ducks/auth';
+import React from "react";
+import { graphql } from "react-apollo";
+import { connect } from "react-redux";
+import { Link, withRouter } from "react-router-dom";
+import { Button, Menu } from "semantic-ui-react";
+import { getTranslation } from "api/i18n";
+import gql from "graphql-tag";
+import PropTypes from "prop-types";
+import { branch, compose, renderNothing } from "recompose";
+import { bindActionCreators } from "redux";
 
-import { getTranslation } from 'api/i18n';
-import User from './User';
-import Tasks from './Tasks';
-import Locale from './Locale';
+import config from "config";
+import { setIsAuthenticated } from "ducks/auth";
 
-import './style.scss';
+import Locale from "./Locale";
+import Tasks from "./Tasks";
+import User from "./User";
+
+import "./style.scss";
 
 const SyncButton = ({ synchronize }) => (
   <Menu.Item>
-    <Button color="purple" onClick={synchronize}>{getTranslation('Sync')}</Button>
+    <Button color="purple" onClick={synchronize}>
+      {getTranslation("Sync")}
+    </Button>
   </Menu.Item>
 );
 
 SyncButton.propTypes = {
-  synchronize: PropTypes.func.isRequired,
+  synchronize: PropTypes.func.isRequired
 };
 
 const Sync = compose(
-  branch(() => config.buildType === 'server', renderNothing),
+  branch(() => config.buildType === "server", renderNothing),
   graphql(gql`
-      query isAuthenticatedProxy {
-        is_authenticated
-  }`),
+    query isAuthenticatedProxy {
+      is_authenticated
+    }
+  `),
   graphql(
     gql`
       mutation {
@@ -41,47 +45,43 @@ const Sync = compose(
         }
       }
     `,
-    { name: 'synchronize' }
+    { name: "synchronize" }
   ),
-  branch(({ data }) => data.loading || !data.is_authenticated, renderNothing),
+  branch(({ data }) => data.loading || !data.is_authenticated, renderNothing)
 )(SyncButton);
 
+const NavBar = () => (
+  <Menu fixed="top" className="top_menu" borderless>
+    <div className="top-wrapper">
+      <Menu.Item as={Link} to={config.homePath} className="top_menu top_menu__logo">
+        <span className="lingvodoc-logo">Lingvodoc 3.0</span>
+      </Menu.Item>
 
-const NavBar =
-  () => (
-    <Menu fixed="top" className="top_menu" borderless>
-      <div className="top-wrapper">
-        <Menu.Item as={Link} to={config.homePath} className="top_menu top_menu__logo">
-          <span className="lingvodoc-logo">Lingvodoc 3.0</span>
-        </Menu.Item>
-
-        <Menu.Menu position="right">
-          <Sync />
-          <User />
-          <Tasks />
-          <Locale />
-        </Menu.Menu>
-      </div>
-    </Menu>
-  );
-
+      <Menu.Menu position="right">
+        <Sync />
+        <User />
+        <Tasks />
+        <Locale />
+      </Menu.Menu>
+    </div>
+  </Menu>
+);
 
 export default compose(
   graphql(gql`
-      query isAuthenticated {
-        is_authenticated
-      }
-    `),
+    query isAuthenticated {
+      is_authenticated
+    }
+  `),
   connect(
     (state, { data }) => ({ ...state.auth }),
     (dispatch, { data }) => {
-        if ( typeof data.is_authenticated !== 'undefined') {
-            dispatch(setIsAuthenticated({ isAuthenticated: data.is_authenticated }));
-        }
-
+      if (typeof data.is_authenticated !== "undefined") {
+        dispatch(setIsAuthenticated({ isAuthenticated: data.is_authenticated }));
+      }
 
       return { actions: bindActionCreators({ setIsAuthenticated }, dispatch) };
     }
   ),
-  withRouter,
+  withRouter
 )(NavBar);

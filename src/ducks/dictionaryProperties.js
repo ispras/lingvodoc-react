@@ -1,8 +1,8 @@
-import { combineReducers } from 'redux';
+import { combineReducers } from "redux";
 
 // Actions
-const OPEN_MODAL = '@dictionary/properties/OPEN_MODAL';
-const CLOSE_MODAL = '@dictionary/properties/CLOSE_MODAL';
+const OPEN_MODAL = "@dictionary/properties/OPEN_MODAL";
+const CLOSE_MODAL = "@dictionary/properties/CLOSE_MODAL";
 
 export const openDictionaryPropertiesModal = (id, title) => ({
   type: OPEN_MODAL,
@@ -37,4 +37,3 @@ export default combineReducers({
   id,
   title
 });
-

@@ -1,34 +1,32 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { compose, branch, renderComponent } from 'recompose';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { graphql } from 'react-apollo';
-import gql from 'graphql-tag';
-import { isEqual, find, take, drop, flow, sortBy, reverse } from 'lodash';
-import { Table, Dimmer, Header, Icon, Button } from 'semantic-ui-react';
-import styled from 'styled-components';
+import React from "react";
+import { graphql } from "react-apollo";
+import { connect } from "react-redux";
+import { Button, Dimmer, Header, Icon, Table } from "semantic-ui-react";
+import { getTranslation } from "api/i18n";
+import gql from "graphql-tag";
+import { drop, find, flow, isEqual, reverse, sortBy, take } from "lodash";
+import PropTypes from "prop-types";
+import { branch, compose, renderComponent } from "recompose";
+import { bindActionCreators } from "redux";
+import styled from "styled-components";
 
+import ApproveModal from "components/ApproveModal";
+import Placeholder from "components/Placeholder";
+import { openModal } from "ducks/modals";
 import {
   addLexicalEntry,
-  selectLexicalEntry,
-  setSortByField,
   resetEntriesSelection,
-  resetSortByField }
-  from 'ducks/perspective';
+  resetSortByField,
+  selectLexicalEntry,
+  setSortByField} from "ducks/perspective";
 
-import { openModal } from 'ducks/modals';
-import Placeholder from 'components/Placeholder';
-import ApproveModal from 'components/ApproveModal';
-import { getTranslation } from 'api/i18n';
-
-import TableHeader from './TableHeader';
-import TableBody from './TableBody';
-import Pagination from './Pagination';
+import Pagination from "./Pagination";
+import TableBody from "./TableBody";
+import TableHeader from "./TableHeader";
 
 const ROWS_PER_PAGE = 20;
 
-const ModalContentWrapper = styled('div')`
+const ModalContentWrapper = styled("div")`
   min-height: 15vh;
 `;
 
@@ -158,9 +156,9 @@ const TableComponent = ({
   disabledHeader,
   removeSelectionEntrySet,
   /*  eslint-enable react/prop-types */
-  actions,
+  actions
 }) => (
-  <div style={{ overflowY: 'auto' }}>
+  <div style={{ overflowY: "auto" }}>
     <Table celled padded>
       <TableHeader
         columns={columns}
@@ -207,20 +205,20 @@ TableComponent.propTypes = {
   selectEntries: PropTypes.bool,
   selectedEntries: PropTypes.array,
   onEntrySelect: PropTypes.func,
-  actions: PropTypes.array,
+  actions: PropTypes.array
 };
 
 TableComponent.defaultProps = {
   actions: [],
   selectEntries: false,
   selectedEntries: [],
-  onEntrySelect: () => {},
+  onEntrySelect: () => {}
 };
 
 class P extends React.Component {
   constructor(props) {
     super(props);
-    
+
     this.state = {
       checkedRow: null,
       checkedColumn: null,
@@ -279,7 +277,7 @@ class P extends React.Component {
 
   onCheckAll(checked) {
     this.setState({
-      checkedAll: {checkedAll: checked},
+      checkedAll: { checkedAll: checked },
       checkedRow: null,
       checkedColumn: null
     });
@@ -310,12 +308,12 @@ class P extends React.Component {
       selectedEntries,
       user
     } = this.props;
-    
+
     const { loading, error } = data;
 
     if (loading || (!loading && !error && !data.perspective)) {
       return (
-        <Dimmer active style={{ minHeight: '600px', background: 'none' }}>
+        <Dimmer active style={{ minHeight: "600px", background: "none" }}>
           <Header as="h2" icon>
             <Icon name="spinner" loading className="lingvo-spinner" />
           </Header>
@@ -329,21 +327,21 @@ class P extends React.Component {
       createLexicalEntry({
         variables: {
           id,
-          entitiesMode,
+          entitiesMode
         },
         refetchQueries: [
           {
             query: queryLexicalEntries,
             variables: {
               id,
-              entitiesMode,
-            },
-          },
-        ],
+              entitiesMode
+            }
+          }
+        ]
       }).then(({ data: d }) => {
         if (!d.loading || !d.error) {
           const {
-            create_lexicalentry: { lexicalentry },
+            create_lexicalentry: { lexicalentry }
           } = d;
           addCreatedEntry(lexicalentry);
         }
@@ -354,17 +352,17 @@ class P extends React.Component {
       const groupList = [selectedEntries];
       mergeLexicalEntries({
         variables: {
-          groupList,
+          groupList
         },
         refetchQueries: [
           {
             query: queryLexicalEntries,
             variables: {
               id,
-              entitiesMode,
-            },
-          },
-        ],
+              entitiesMode
+            }
+          }
+        ]
       }).then(() => {
         resetSelection();
       });
@@ -373,17 +371,17 @@ class P extends React.Component {
     const removeEntries = () => {
       removeLexicalEntries({
         variables: {
-          ids: selectedEntries,
+          ids: selectedEntries
         },
         refetchQueries: [
           {
             query: queryLexicalEntries,
             variables: {
               id,
-              entitiesMode,
-            },
-          },
-        ],
+              entitiesMode
+            }
+          }
+        ]
       }).then(() => {
         resetSelection();
       });
@@ -401,15 +399,19 @@ class P extends React.Component {
 
     const processEntries = flow([
       // remove empty lexical entries, if not in edit mode
-      es => (mode !== 'edit' ? es.filter(e => e.entities.length > 0) : es),
+      es => (mode !== "edit" ? es.filter(e => e.entities.length > 0) : es),
       // apply filtering
       es =>
-        (!!filter && filter.length > 0
-          ? es.filter(entry =>
-            !!entry.entities.find(entity => typeof entity.content === 'string' && entity.content.indexOf(filter) >= 0))
-          : es),
+        !!filter && filter.length > 0
+          ? es.filter(
+              entry =>
+                !!entry.entities.find(
+                  entity => typeof entity.content === "string" && entity.content.indexOf(filter) >= 0
+                )
+            )
+          : es,
       // apply sorting
-      (es) => {
+      es => {
         // no sorting required
         if (!sortByField) {
           return es;
@@ -418,29 +420,24 @@ class P extends React.Component {
 
         /* Getting a sort key for each entry. */
 
-        for (const entry of es)
-        {
-          const entities =
-            entry.entities.filter(entity => isEqual(entity.field_id, field));
+        for (const entry of es) {
+          const entities = entry.entities.filter(entity => isEqual(entity.field_id, field));
 
           entities.sort(
-            (ea, eb) =>
-              ci_cs_compare(ea.content || '', eb.content || '') ||
-              ea.id[0] - eb.id[0] ||
-              ea.id[1] - eb.id[1]);
+            (ea, eb) => ci_cs_compare(ea.content || "", eb.content || "") || ea.id[0] - eb.id[0] || ea.id[1] - eb.id[1]
+          );
 
           entry.entity_sort_key =
-            (entities.length > 0 && entities[0].content) ? entities[0].content : `${entities.length}`;
+            entities.length > 0 && entities[0].content ? entities[0].content : `${entities.length}`;
         }
 
         es.sort(
           (ea, eb) =>
-            ci_cs_compare(ea.entity_sort_key, eb.entity_sort_key) ||
-            ea.id[0] - eb.id[0] ||
-            ea.id[1] - eb.id[1]);
+            ci_cs_compare(ea.entity_sort_key, eb.entity_sort_key) || ea.id[0] - eb.id[0] || ea.id[1] - eb.id[1]
+        );
 
-        return order === 'a' ? es : reverse(es);
-      },
+        return order === "a" ? es : reverse(es);
+      }
     ]);
 
     const newEntries = processEntries(lexicalEntries.filter(e => !!createdEntries.find(c => isEqual(e.id, c.id))));
@@ -450,7 +447,10 @@ class P extends React.Component {
       entries.length > ROWS_PER_PAGE ? take(drop(entries, ROWS_PER_PAGE * (page - 1)), ROWS_PER_PAGE) : entries;
 
     // Put newly created entries at the top of page.
-    const e = [...newEntries, ...pageEntries.filter(pageEntry => !createdEntries.find(c => isEqual(c.id, pageEntry.id)))];
+    const e = [
+      ...newEntries,
+      ...pageEntries.filter(pageEntry => !createdEntries.find(c => isEqual(c.id, pageEntry.id)))
+    ];
 
     // join fields and columns
     // {
@@ -459,18 +459,23 @@ class P extends React.Component {
     //   self_id = column.self_id
     //   ...field
     // }
-    const fields = columns.map((column) => {
+    const fields = columns.map(column => {
       const field = find(allFields, f => isEqual(column.field_id, f.id));
       return {
         ...field,
         self_id: column.self_id,
         column_id: column.id,
-        position: column.position,
+        position: column.position
       };
     });
     /* eslint-disable no-shadow */
     function approveDisableCondition(entries) {
-      return entries.length === 0 || entries.every(entry => entry.entities.every(entity => (mode === 'publish' ? entity.published === true : entity.accepted === true)));
+      return (
+        entries.length === 0 ||
+        entries.every(entry =>
+          entry.entities.every(entity => (mode === "publish" ? entity.published === true : entity.accepted === true))
+        )
+      );
     }
     /* eslint-enable no-shadow */
     const isAuthenticated = user && user.user.id;
@@ -478,7 +483,7 @@ class P extends React.Component {
     /*const isTableLanguages = JSON.stringify(id) === JSON.stringify([3148, 13330]);*/
     const isTableLanguages = JSON.stringify(id) === JSON.stringify([4839, 2]);
 
-    const isTableLanguagesPublish = (mode === 'publish') && isTableLanguages;
+    const isTableLanguagesPublish = mode === "publish" && isTableLanguages;
 
     const selectedRows = [];
     const selectedColumns = [];
@@ -491,12 +496,10 @@ class P extends React.Component {
 
     /* isTableLanguagesPublish */
     if (isTableLanguagesPublish) {
-
       const selectedRowsSet = new Set();
       const selectedColumnsSet = new Set();
 
       if (checkedAll) {
-
         if (checkedAll.checkedAll) {
           items.forEach(item => {
             selectedRowsSet.add(item.id);
@@ -506,21 +509,19 @@ class P extends React.Component {
             selectedRowsSet.delete(item.id);
           });
         }
-
       } else {
-
         items.forEach(item => {
           const allRowsSelected = item.entities.every(i => {
-            return i.published
+            return i.published;
           });
-  
+
           if (allRowsSelected) {
             selectedRowsSet.add(item.id);
           } else {
             selectedRowsSet.delete(item.id);
           }
         });
-  
+
         if (checkedRow) {
           if (checkedRow.checkedRow) {
             selectedRowsSet.add(checkedRow.id);
@@ -528,21 +529,18 @@ class P extends React.Component {
             selectedRowsSet.delete(checkedRow.id);
           }
         }
-
       }
 
       selectedRowsSet.forEach(value => {
         selectedRows.push(value);
       });
 
-
       fields.forEach(column => {
-
-        let elems = [];
+        const elems = [];
 
         items.forEach(item => {
           const columnEntities = item.entities.filter(i => {
-            return (JSON.stringify(i.field_id) === JSON.stringify(column.id))
+            return JSON.stringify(i.field_id) === JSON.stringify(column.id);
           });
 
           if (columnEntities.length) {
@@ -551,7 +549,7 @@ class P extends React.Component {
         });
 
         const allColumnsSelected = elems.every(elem => {
-          return elem.length && elem[0].published
+          return elem.length && elem[0].published;
         });
 
         if (allColumnsSelected) {
@@ -559,7 +557,6 @@ class P extends React.Component {
         } else {
           selectedColumnsSet.delete(column.id);
         }
-
       });
 
       if (checkedColumn) {
@@ -573,37 +570,48 @@ class P extends React.Component {
       selectedColumnsSet.forEach(value => {
         selectedColumns.push(value);
       });
-
     }
     /* /isTableLanguagesPublish */
-  
+
     return (
-      <div style={{ overflowY: 'auto' }} className="lingvo-scrolling-tab">
-        {mode === 'edit' && <Button positive icon="plus" content={getTranslation('Add lexical entry')} onClick={addEntry} />}
-        {mode === 'edit' && (
+      <div style={{ overflowY: "auto" }} className="lingvo-scrolling-tab">
+        {mode === "edit" && (
+          <Button positive icon="plus" content={getTranslation("Add lexical entry")} onClick={addEntry} />
+        )}
+        {mode === "edit" && (
           <Button
             negative
             icon="minus"
-            content={getTranslation('Remove lexical entries')}
+            content={getTranslation("Remove lexical entries")}
             onClick={removeEntries}
             disabled={selectedEntries.length < 1}
           />
         )}
-        {mode === 'edit' && (
+        {mode === "edit" && (
           <Button
             positive
             icon="plus"
-            content={getTranslation('Merge lexical entries')}
+            content={getTranslation("Merge lexical entries")}
             onClick={mergeEntries}
             disabled={selectedEntries.length < 2}
           />
         )}
-        {mode === 'publish' && isAuthenticated &&
-          <Button positive content={getTranslation('Publish Entities')} disabled={approveDisableCondition(entries)} onClick={onApprove} />
-        }
-        {mode === 'contributions' && isAuthenticated &&
-          <Button positive content={getTranslation('Accept Contributions')} disabled={approveDisableCondition(entries)} onClick={onApprove} />
-        }
+        {mode === "publish" && isAuthenticated && (
+          <Button
+            positive
+            content={getTranslation("Publish Entities")}
+            disabled={approveDisableCondition(entries)}
+            onClick={onApprove}
+          />
+        )}
+        {mode === "contributions" && isAuthenticated && (
+          <Button
+            positive
+            content={getTranslation("Accept Contributions")}
+            disabled={approveDisableCondition(entries)}
+            onClick={onApprove}
+          />
+        )}
 
         <div className="lingvo-scrolling-tab__table">
           <Table celled padded className={className}>
@@ -612,7 +620,7 @@ class P extends React.Component {
               sortByField={sortByField}
               onSortModeChange={(fieldId, order) => setSort(fieldId, order)}
               onSortModeReset={() => resetSort()}
-              selectEntries={mode === 'edit'}
+              selectEntries={mode === "edit"}
               entries={items}
               checkEntries={isTableLanguagesPublish}
               selectedRows={selectedRows}
@@ -626,7 +634,7 @@ class P extends React.Component {
               entries={items}
               columns={fields}
               mode={mode}
-              selectEntries={mode === 'edit'}
+              selectEntries={mode === "edit"}
               checkEntries={isTableLanguagesPublish}
               selectedEntries={selectedEntries}
               selectedRows={selectedRows}
@@ -641,16 +649,18 @@ class P extends React.Component {
             />
           </Table>
         </div>
-        <Pagination current={page} total={Math.floor(entries.length / ROWS_PER_PAGE) + 1} to={mode} 
+        <Pagination
+          current={page}
+          total={Math.floor(entries.length / ROWS_PER_PAGE) + 1}
+          to={mode}
           checkEntries={isTableLanguagesPublish}
           resetCheckedColumn={this.resetCheckedColumn}
           resetCheckedAll={this.resetCheckedAll}
         />
       </div>
     );
-
   }
-};
+}
 
 P.propTypes = {
   id: PropTypes.array.isRequired,
@@ -674,12 +684,12 @@ P.propTypes = {
   openModal: PropTypes.func.isRequired,
   createdEntries: PropTypes.array.isRequired,
   selectedEntries: PropTypes.array.isRequired,
-  user: PropTypes.object.isRequired,
+  user: PropTypes.object.isRequired
 };
 
 P.defaultProps = {
-  filter: '',
-  sortByField: null,
+  filter: "",
+  sortByField: null
 };
 
 const PerspectiveView = compose(
@@ -688,7 +698,7 @@ const PerspectiveView = compose(
       user,
       sortByField,
       createdEntries,
-      selectedEntries,
+      selectedEntries
     }),
     dispatch =>
       bindActionCreators(
@@ -698,16 +708,16 @@ const PerspectiveView = compose(
           resetSortByField,
           selectLexicalEntry,
           resetEntriesSelection,
-          openModal,
+          openModal
         },
         dispatch
       )
   ),
-  graphql(createLexicalEntryMutation, { name: 'createLexicalEntry' }),
-  graphql(mergeLexicalEntriesMutation, { name: 'mergeLexicalEntries' }),
-  graphql(removeLexicalEntriesMutation, { name: 'removeLexicalEntries' }),
+  graphql(createLexicalEntryMutation, { name: "createLexicalEntry" }),
+  graphql(mergeLexicalEntriesMutation, { name: "mergeLexicalEntries" }),
+  graphql(removeLexicalEntriesMutation, { name: "removeLexicalEntries" }),
   graphql(queryLexicalEntries, {
-    options: { notifyOnNetworkStatusChange: true },
+    options: { notifyOnNetworkStatusChange: true }
   })
 )(P);
 
@@ -754,32 +764,32 @@ const LexicalEntryViewBase = ({
   disabledHeader,
   removeSelectionEntrySet,
   /*  eslint-enable react/prop-types */
-  actions,
+  actions
 }) => {
   const { loading, error } = data;
 
   if (loading || (!loading && !error && !data.perspective)) {
     return (
-      <Dimmer active style={{ minHeight: '15vh', background: 'none' }}>
+      <Dimmer active style={{ minHeight: "15vh", background: "none" }}>
         <Header as="h2" icon>
           <Icon name="spinner" loading />
         </Header>
       </Dimmer>
-    ); 
+    );
   }
 
   const {
     all_fields,
-    perspective: { columns },
+    perspective: { columns }
   } = data;
 
-  const fields = columns.map((column) => {
+  const fields = columns.map(column => {
     const field = find(all_fields, f => isEqual(column.field_id, f.id));
     return {
       ...field,
       self_id: column.self_id,
       column_id: column.id,
-      position: column.position,
+      position: column.position
     };
   });
 
@@ -816,19 +826,19 @@ LexicalEntryViewBase.propTypes = {
   data: PropTypes.shape({
     loading: PropTypes.bool.isRequired,
     all_fields: PropTypes.array,
-    perspective: PropTypes.object,
+    perspective: PropTypes.object
   }).isRequired,
   selectEntries: PropTypes.bool,
   selectedEntries: PropTypes.array,
   onEntrySelect: PropTypes.func,
-  actions: PropTypes.array,
+  actions: PropTypes.array
 };
 
 LexicalEntryViewBase.defaultProps = {
   actions: [],
   selectEntries: false,
   selectedEntries: [],
-  onEntrySelect: () => {},
+  onEntrySelect: () => {}
 };
 
 export const queryLexicalEntriesByIds = gql`
@@ -873,35 +883,33 @@ export const queryLexicalEntriesByIds = gql`
   }
 `;
 
-const LexicalEntryViewBaseByIds = ({
-  perspectiveId, mode, entitiesMode, data, actions,
-}) => {
+const LexicalEntryViewBaseByIds = ({ perspectiveId, mode, entitiesMode, data, actions }) => {
   const { loading, error } = data;
 
   if (loading || (!loading && !error && !data.perspective)) {
     return (
       <ModalContentWrapper>
-        <Dimmer active style={{ minHeight: '15vh', background: 'none' }}>
+        <Dimmer active style={{ minHeight: "15vh", background: "none" }}>
           <Header as="h2" icon>
             <Icon name="spinner" loading />
           </Header>
         </Dimmer>
       </ModalContentWrapper>
-    ); 
+    );
   }
 
   const {
     all_fields,
-    perspective: { columns, lexical_entries: entries },
+    perspective: { columns, lexical_entries: entries }
   } = data;
 
-  const fields = columns.map((column) => {
+  const fields = columns.map(column => {
     const field = find(all_fields, f => isEqual(column.field_id, f.id));
     return {
       ...field,
       self_id: column.self_id,
       column_id: column.id,
-      position: column.position,
+      position: column.position
     };
   });
 
@@ -925,28 +933,26 @@ LexicalEntryViewBaseByIds.propTypes = {
   data: PropTypes.shape({
     loading: PropTypes.bool.isRequired,
     all_fields: PropTypes.array,
-    perspective: PropTypes.object,
+    perspective: PropTypes.object
   }).isRequired,
-  actions: PropTypes.array,
+  actions: PropTypes.array
 };
 
 LexicalEntryViewBaseByIds.defaultProps = {
-  actions: [],
+  actions: []
 };
 
 export const LexicalEntryView = graphql(queryLexicalEntry, {
-  options: { notifyOnNetworkStatusChange: true },
+  options: { notifyOnNetworkStatusChange: true }
 })(LexicalEntryViewBase);
 
 export const LexicalEntryByIds = compose(
   graphql(queryLexicalEntriesByIds, {
-    options: { notifyOnNetworkStatusChange: true },
-  }),
+    options: { notifyOnNetworkStatusChange: true }
+  })
 )(LexicalEntryViewBaseByIds);
 
-const PerspectiveViewWrapper = ({
-  id, className, mode, entitiesMode, page, data, filter, sortByField
-}) => {
+const PerspectiveViewWrapper = ({ id, className, mode, entitiesMode, page, data, filter, sortByField }) => {
   if (data.error) {
     return null;
   }
@@ -967,7 +973,7 @@ const PerspectiveViewWrapper = ({
 
   const {
     all_fields: allFields,
-    perspective: { columns },
+    perspective: { columns }
   } = data;
 
   return (
@@ -993,17 +999,17 @@ PerspectiveViewWrapper.propTypes = {
   entitiesMode: PropTypes.string.isRequired,
   filter: PropTypes.string,
   data: PropTypes.object.isRequired,
-  sortByField: PropTypes.object,
+  sortByField: PropTypes.object
 };
 
 PerspectiveViewWrapper.defaultProps = {
-  filter: '',
-  sortByField: null,
+  filter: "",
+  sortByField: null
 };
 
 export default compose(
   graphql(queryPerspective, {
-    options: { notifyOnNetworkStatusChange: true },
+    options: { notifyOnNetworkStatusChange: true }
   }),
   branch(({ data: { loading } }) => loading, renderComponent(Placeholder))
 )(PerspectiveViewWrapper);

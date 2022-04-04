@@ -1,9 +1,9 @@
-import { getTranslation } from 'api/i18n';
+import { getTranslation } from "api/i18n";
 
-const dictionariesInfo = (dictionaries) => {
-  const result = `${dictionaries.length} ${getTranslation('selected')}`;
+const dictionariesInfo = dictionaries => {
+  const result = `${dictionaries.length} ${getTranslation("selected")}`;
 
-  return `${getTranslation('Dictionaries')}: ${result}`;
+  return `${getTranslation("Dictionaries")}: ${result}`;
 };
 
 export default dictionariesInfo;

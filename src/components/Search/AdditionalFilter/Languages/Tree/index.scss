@@ -56,11 +56,15 @@
   }
 
   &__button_expand {
-    background: #fff url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxOCIgaGVpZ2h0PSIxOCI+PGNpcmNsZSBjeD0iOSIgY3k9IjkiIHI9IjgiIGZpbGw9IiNGRkYiLz48ZyBzdHJva2U9IiM5ODk4OTgiIHN0cm9rZS13aWR0aD0iMS45IiA+PHBhdGggZD0iTTQuNSA5aDkiLz48L2c+Cjwvc3ZnPg==) no-repeat center;
+    background: #fff
+      url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxOCIgaGVpZ2h0PSIxOCI+PGNpcmNsZSBjeD0iOSIgY3k9IjkiIHI9IjgiIGZpbGw9IiNGRkYiLz48ZyBzdHJva2U9IiM5ODk4OTgiIHN0cm9rZS13aWR0aD0iMS45IiA+PHBhdGggZD0iTTQuNSA5aDkiLz48L2c+Cjwvc3ZnPg==)
+      no-repeat center;
   }
 
   &__button_collapse {
-    background: #fff url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxOCIgaGVpZ2h0PSIxOCI+PGNpcmNsZSBjeD0iOSIgY3k9IjkiIHI9IjgiIGZpbGw9IiNGRkYiLz48ZyBzdHJva2U9IiM5ODk4OTgiIHN0cm9rZS13aWR0aD0iMS45IiA+PHBhdGggZD0iTTQuNSA5aDkiLz48cGF0aCBkPSJNOSA0LjV2OSIvPjwvZz4KPC9zdmc+) no-repeat center;
+    background: #fff
+      url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxOCIgaGVpZ2h0PSIxOCI+PGNpcmNsZSBjeD0iOSIgY3k9IjkiIHI9IjgiIGZpbGw9IiNGRkYiLz48ZyBzdHJva2U9IiM5ODk4OTgiIHN0cm9rZS13aWR0aD0iMS45IiA+PHBhdGggZD0iTTQuNSA5aDkiLz48cGF0aCBkPSJNOSA0LjV2OSIvPjwvZz4KPC9zdmc+)
+      no-repeat center;
   }
 
   &__group {
@@ -69,7 +73,7 @@
 
   &__leaf,
   &__group {
-    border-left: 1px solid rgb(100,100,100);
+    border-left: 1px solid rgb(100, 100, 100);
   }
 
   &__group .search-language-tree__title {
@@ -78,20 +82,20 @@
   }
 
   &__group > .search-language-tree__title:before {
-    content: '';
+    content: "";
     position: absolute;
     height: 1px;
     width: 30px;
-    background-color: rgb(100,100,100);
+    background-color: rgb(100, 100, 100);
     left: 0;
     top: 50%;
   }
 
   &__node > .search-language-tree__title:before {
-    content: '';
+    content: "";
     position: absolute;
     height: 1px;
-    background-color: rgb(100,100,100);
+    background-color: rgb(100, 100, 100);
     left: 0;
     top: 50%;
   }
@@ -132,12 +136,12 @@
   }
 
   &__node:last-child:before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     width: 1px;
-    background-color: rgb(100,100,100);
+    background-color: rgb(100, 100, 100);
   }
 
   &__node:last-child.search-language-tree__group:before {

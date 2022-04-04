@@ -1,9 +1,9 @@
-import smoothScroll from 'utils/smoothscroll';
+import smoothScroll from "utils/smoothscroll";
 
 const classNames = {
-  langHighlighted: 'highlighted',
-  scrollContainer: 'pusher',
-  mainHeader: 'menu',
+  langHighlighted: "highlighted",
+  scrollContainer: "pusher",
+  mainHeader: "menu"
 };
 
 const sortLangsAlphabetically = (first, second) => {
@@ -25,7 +25,7 @@ const getScrollContainer = () => document.querySelector(`.${classNames.scrollCon
 
 const getMainHeaderHeight = () => document.querySelector(`.${classNames.mainHeader}`).clientHeight;
 
-const goToLanguage = (id) => {
+const goToLanguage = id => {
   const el = document.getElementById(getLangElementId(id));
   const container = getScrollContainer(classNames.scrollContainer);
   const offsetTop = 160;
@@ -39,10 +39,4 @@ const goToLanguage = (id) => {
   }, 2000);
 };
 
-export {
-  sortLangsAlphabetically,
-  getLangElementId,
-  getScrollContainer,
-  goToLanguage,
-  getMainHeaderHeight,
-};
+export { sortLangsAlphabetically, getLangElementId, getScrollContainer, goToLanguage, getMainHeaderHeight };

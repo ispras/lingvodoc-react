@@ -1,11 +1,11 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { compose } from 'recompose';
-import { graphql } from 'react-apollo';
-import gql from 'graphql-tag';
-import { Button, Form, Input, List, Select, TextArea } from 'semantic-ui-react';
-import { head, nth, difference, isEmpty } from 'lodash';
-import { getTranslation } from 'api/i18n';
+import React from "react";
+import { graphql } from "react-apollo";
+import { Button, Form, Input, List, Select, TextArea } from "semantic-ui-react";
+import { getTranslation } from "api/i18n";
+import gql from "graphql-tag";
+import { difference, head, isEmpty, nth } from "lodash";
+import PropTypes from "prop-types";
+import { compose } from "recompose";
 
 const localesQuery = gql`
   query Locales {
@@ -20,7 +20,7 @@ export class Translation extends React.Component {
     this.state = {
       id: translation.id,
       localeId: translation.localeId,
-      content: translation.content,
+      content: translation.content
     };
     this.onChangeContent = this.onChangeContent.bind(this);
     this.onChangeLocale = this.onChangeLocale.bind(this);
@@ -50,21 +50,23 @@ export class Translation extends React.Component {
     const selectedLocale = locales.find(locale => locale.id === this.state.localeId);
 
     return textArea ? (
-
       <div>
-      <Form>
-        <Form.Select value={selectedLocale.shortcut} options={options} onChange={this.onChangeLocale} />
-        <Form.TextArea placeholder="" value={this.state.content} onChange={this.onChangeContent} />
-      </Form>
+        <Form>
+          <Form.Select value={selectedLocale.shortcut} options={options} onChange={this.onChangeLocale} />
+          <Form.TextArea placeholder="" value={this.state.content} onChange={this.onChangeContent} />
+        </Form>
       </div>
-    
-      ) : (
-
-      <Input placeholder="" value={this.state.content} onChange={this.onChangeContent} action className="label-input-adaptive">
+    ) : (
+      <Input
+        placeholder=""
+        value={this.state.content}
+        onChange={this.onChangeContent}
+        action
+        className="label-input-adaptive"
+      >
         <input />
         <Select value={selectedLocale.shortcut} options={options} onChange={this.onChangeLocale} />
       </Input>
-      
     );
   }
 }
@@ -73,15 +75,14 @@ Translation.propTypes = {
   locales: PropTypes.array.isRequired,
   usedLocaleIds: PropTypes.array.isRequired,
   onChange: PropTypes.func.isRequired,
-  translation: PropTypes.object.isRequired,
+  translation: PropTypes.object.isRequired
 };
-
 
 class Translations extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      translations: [],
+      translations: []
     };
     this.addTranslation = this.addTranslation.bind(this);
     this.onChange = this.onChange.bind(this);
@@ -90,18 +91,18 @@ class Translations extends React.Component {
   componentWillMount() {
     if (this.props.translations.length > 0) {
       this.setState({
-        translations: this.props.translations,
+        translations: this.props.translations
       });
     }
   }
-  
+
   onChange(translation) {
-    const updateState = this.state.translations.map((t) => {
+    const updateState = this.state.translations.map(t => {
       if (t.id === translation.id) {
         return {
           ...t,
           localeId: translation.localeId,
-          content: translation.content,
+          content: translation.content
         };
       }
       return t;
@@ -109,16 +110,22 @@ class Translations extends React.Component {
 
     this.setState(
       {
-        translations: updateState,
+        translations: updateState
       },
       () => this.props.onChange(this.state.translations)
     );
   }
 
   addTranslation() {
-    const { data: { error, loading, all_locales: locales } } = this.props;
+    const {
+      data: { error, loading, all_locales: locales }
+    } = this.props;
     if (!loading && !error) {
-      const lastId = nth(this.state.translations.map(t => t.id), -1) + 1 || 1;
+      const lastId =
+        nth(
+          this.state.translations.map(t => t.id),
+          -1
+        ) + 1 || 1;
       // pick next free locale id
       const ids = locales.map(locale => locale.id);
       const usedIds = this.state.translations.map(t => t.localeId);
@@ -126,12 +133,12 @@ class Translations extends React.Component {
       if (!isEmpty(freeLocales)) {
         this.setState(
           {
-            translations: [...this.state.translations, { id: lastId, localeId: head(freeLocales), content: '' }],
+            translations: [...this.state.translations, { id: lastId, localeId: head(freeLocales), content: "" }]
           },
           () => this.props.onChange(this.state.translations)
         );
       } else {
-        window.logger.err(getTranslation('No more locales!'));
+        window.logger.err(getTranslation("No more locales!"));
       }
     }
   }
@@ -139,7 +146,8 @@ class Translations extends React.Component {
   render() {
     const {
       data: { error, loading, all_locales: locales },
-      textArea } = this.props;
+      textArea
+    } = this.props;
     if (loading || error) {
       return null;
     }
@@ -149,9 +157,7 @@ class Translations extends React.Component {
       <div>
         <List>
           {translations.map(translation => (
-            <List.Item
-              key={translation.id}
-              style={{marginBottom: '1em', paddingTop: '0em', paddingBottom: '0em'}}>
+            <List.Item key={translation.id} style={{ marginBottom: "1em", paddingTop: "0em", paddingBottom: "0em" }}>
               <Translation
                 locales={locales}
                 translation={translation}
@@ -171,14 +177,14 @@ class Translations extends React.Component {
 Translations.propTypes = {
   data: PropTypes.shape({
     loading: PropTypes.bool.isRequired,
-    all_locales: PropTypes.array,
+    all_locales: PropTypes.array
   }).isRequired,
   onChange: PropTypes.func.isRequired,
-  translations: PropTypes.array,
+  translations: PropTypes.array
 };
 
 Translations.defaultProps = {
-  translations: [],
+  translations: []
 };
 
 export default compose(graphql(localesQuery))(Translations);

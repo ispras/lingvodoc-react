@@ -25,9 +25,9 @@ of the license along with this Font Software. If this is not the case, go to
 /* set body to use Gentium Plus in .ttf format */
 body {
   font-family: GentiumPlusW, sans-serif;
-    /* fall back to sans serif so that it's really obvious if the fonts don't load */
+  /* fall back to sans serif so that it's really obvious if the fonts don't load */
 }
 /* remove bold styling from heading */
 h1 {
-  font-weight: normal;	
+  font-weight: normal;
 }

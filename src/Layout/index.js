@@ -1,38 +1,37 @@
-import 'semantic-ui-css/semantic.min.css';
-import 'styles/main.scss';
+import React from "react";
+import { connect } from "react-redux";
+import { withRouter } from "react-router-dom";
+import { Sidebar } from "semantic-ui-react";
+import PropTypes from "prop-types";
+import styled from "styled-components";
 
-import React from 'react';
-import styled from 'styled-components';
-import { connect } from 'react-redux';
-import { Sidebar } from 'semantic-ui-react';
-import { withRouter } from 'react-router-dom';
-import PropTypes from 'prop-types';
+import BanModal from "components/BanModal";
+import CognateAnalysisModal from "components/CognateAnalysisModal";
+import ConfirmModal from "components/ConfirmModal";
+import ConverEafModal from "components/ConverEafModal";
+import CreateFieldModal from "components/CreateFieldModal";
+import CreateOrganizationModal from "components/CreateOrganizationModal";
+import CreatePerspectiveModal from "components/CreatePerspectiveModal";
+import DictionaryOrganizationsModal from "components/DictionaryOrganizationsModal";
+import DictionaryProperties from "components/DictionaryPropertiesModal";
+import MarkupModal from "components/MarkupModal";
+import Modals from "components/Modals";
+import PerspectiveProperties from "components/PerspectivePropertiesModal";
+import PhonemicAnalysisModal from "components/PhonemicAnalysisModal";
+import PhonologyModal from "components/PhonologyModal";
+import PlayerModal from "components/PlayerModal";
+import RolesModal from "components/RolesModal";
+import SaveDictionary from "components/SaveDictionaryModal";
+import StatisticsModal from "components/StatisticsModal";
+import smoothScroll from "utils/smoothscroll";
 
-import Modals from 'components/Modals';
-import PlayerModal from 'components/PlayerModal';
-import MarkupModal from 'components/MarkupModal';
-import DictionaryProperties from 'components/DictionaryPropertiesModal';
-import SaveDictionary from 'components/SaveDictionaryModal';
-import PerspectiveProperties from 'components/PerspectivePropertiesModal';
-import PhonemicAnalysisModal from 'components/PhonemicAnalysisModal';
-import CognateAnalysisModal from 'components/CognateAnalysisModal';
-import PhonologyModal from 'components/PhonologyModal';
-import ConverEafModal from 'components/ConverEafModal';
-import StatisticsModal from 'components/StatisticsModal';
-import BanModal from 'components/BanModal';
-import CreateFieldModal from 'components/CreateFieldModal';
-import RolesModal from 'components/RolesModal';
-import CreateOrganizationModal from 'components/CreateOrganizationModal';
-import DictionaryOrganizationsModal from 'components/DictionaryOrganizationsModal';
-import CreatePerspectiveModal from 'components/CreatePerspectiveModal';
-import ConfirmModal from 'components/ConfirmModal';
+import NavBar from "./NavBar";
+import Routes from "./Routes";
+import Snackbar from "./Snackbar";
+import TasksSidebar from "./TasksSidebar";
 
-import NavBar from './NavBar';
-import TasksSidebar from './TasksSidebar';
-import Snackbar from './Snackbar';
-import Routes from './Routes';
-
-import smoothScroll from 'utils/smoothscroll';
+import "semantic-ui-css/semantic.min.css";
+import "styles/main.scss";
 
 const Content = styled.div`
   padding: 0;
@@ -49,7 +48,7 @@ class Layout extends React.Component {
   render() {
     const { selected, loading } = this.props;
 
-    const scrollContainer = document.querySelector('.pusher');
+    const scrollContainer = document.querySelector(".pusher");
     smoothScroll(0, 0, null, scrollContainer);
 
     return (
@@ -63,7 +62,7 @@ class Layout extends React.Component {
               <Routes />
             </Sidebar.Pusher>
           </Sidebar.Pushable>
-        }  
+        }
         <Modals />
         <PlayerModal />
         <MarkupModal />
@@ -88,7 +87,7 @@ class Layout extends React.Component {
 }
 Layout.propTypes = {
   selected: PropTypes.object.isRequired,
-  loading: PropTypes.bool.isRequired,
+  loading: PropTypes.bool.isRequired
 };
 /*
  * Without withRouter() using connect() breaks routing, see

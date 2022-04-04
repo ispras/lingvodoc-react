@@ -1,9 +1,9 @@
-const getParams = (props) => {
+const getParams = props => {
   const { perspectiveId, perspectiveParentId } = props;
 
   const result = {
     id: perspectiveId.map(k => parseInt(k, 10)),
-    parent_id: perspectiveParentId.map(k => parseInt(k, 10)),
+    parent_id: perspectiveParentId.map(k => parseInt(k, 10))
   };
   return result;
 };
@@ -13,8 +13,9 @@ const isIdsEquals = (firstId, secondId) => {
     return false;
   }
 
-  return parseInt(firstId[0], 10) === parseInt(secondId[0], 10) &&
-    parseInt(firstId[1], 10) === parseInt(secondId[1], 10);
+  return (
+    parseInt(firstId[0], 10) === parseInt(secondId[0], 10) && parseInt(firstId[1], 10) === parseInt(secondId[1], 10)
+  );
 };
 
 const isOnlyViewModeAllowed = (permissionLists, perspectiveId) => {

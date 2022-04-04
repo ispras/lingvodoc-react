@@ -1,4 +1,4 @@
-import gql from 'graphql-tag';
+import gql from "graphql-tag";
 
 export const createDictionaryMutation = gql`
   mutation CreateDictionaryMutation(
@@ -8,8 +8,13 @@ export const createDictionaryMutation = gql`
     $perspectives: [ObjectVal]!
     $metadata: ObjectVal
   ) {
-    create_dictionary(category: $category, parent_id: $parentId, translation_atoms: $dictionaryTranslations,
-      perspectives: $perspectives, additional_metadata: $metadata) {
+    create_dictionary(
+      category: $category
+      parent_id: $parentId
+      translation_atoms: $dictionaryTranslations
+      perspectives: $perspectives
+      additional_metadata: $metadata
+    ) {
       triumph
       dictionary {
         id

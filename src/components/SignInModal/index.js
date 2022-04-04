@@ -1,21 +1,22 @@
-import React from 'react';
-import { signInForm } from 'ducks/user';
-import FormModal from 'components/FormModal';
-import { connect } from 'react-redux';
-import { getTranslation } from 'api/i18n';
+import React from "react";
+import { connect } from "react-redux";
+import { getTranslation } from "api/i18n";
+
+import FormModal from "components/FormModal";
+import { signInForm } from "ducks/user";
 
 const SignInModal = props => {
   const signInFields = [
     {
-      name: 'login',
-      type: 'text',
-      label: getTranslation('Login'),
+      name: "login",
+      type: "text",
+      label: getTranslation("Login")
     },
     {
-      name: 'password',
-      type: 'password',
-      label: getTranslation('Password'),
-    },
+      name: "password",
+      type: "password",
+      label: getTranslation("Password")
+    }
   ];
 
   return (

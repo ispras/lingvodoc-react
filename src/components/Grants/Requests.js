@@ -1,17 +1,17 @@
-import React from 'react';
-import { compose, branch, renderComponent, renderNothing } from 'recompose';
-import { graphql } from 'react-apollo';
-import { Table, Button, Tab, Card } from 'semantic-ui-react';
-import { groupBy, isEqual } from 'lodash';
-import moment from 'moment';
+import React from "react";
+import { graphql } from "react-apollo";
+import { Button, Card, Tab, Table } from "semantic-ui-react";
+import { getTranslation } from "api/i18n";
+import { groupBy, isEqual } from "lodash";
+import moment from "moment";
+import { branch, compose, renderComponent, renderNothing } from "recompose";
 
-import Placeholder from 'components/Placeholder';
-import { getTranslation } from 'api/i18n';
+import Placeholder from "components/Placeholder";
+import { organizationsQuery } from "pages/Organizations";
 
-import { organizationsQuery } from 'pages/Organizations';
-import { getUserRequestsQuery, acceptMutation } from './graphql';
+import { acceptMutation, getUserRequestsQuery } from "./graphql";
 
-const timestampToDate = ts => moment(ts * 1000).format('LLLL');
+const timestampToDate = ts => moment(ts * 1000).format("LLLL");
 const objectById = (id, objs) => objs.find(o => o.id === id);
 const objectByCompositeId = (id, objs) => objs.find(o => isEqual(o.id, id));
 /* eslint-disable react/prop-types */
@@ -19,27 +19,19 @@ function acceptRequest(mutation, id, accept) {
   mutation({
     variables: {
       id,
-      accept,
+      accept
     },
-    refetchQueries: [
-      { query: getUserRequestsQuery, },
-      { query: organizationsQuery, },
-    ],
+    refetchQueries: [{ query: getUserRequestsQuery }, { query: organizationsQuery }]
   }).then(() => {
-    window.logger.suc(getTranslation(accept ?
-      'Request accepted successfully.' :
-      'Request rejected successfully.'));
+    window.logger.suc(getTranslation(accept ? "Request accepted successfully." : "Request rejected successfully."));
   });
 }
 
-const Subject = ({
-  request, grants, dictionaries, organizations,
-}) => {
+const Subject = ({ request, grants, dictionaries, organizations }) => {
   const { subject } = request;
 
   switch (request.type) {
-    case 'add_dict_to_grant':
-    {
+    case "add_dict_to_grant": {
       const dictionary = objectByCompositeId(subject.dictionary_id, dictionaries);
       const grant = objectById(subject.grant_id, grants);
 
@@ -49,13 +41,13 @@ const Subject = ({
           <Card
             header={grant.translation}
             meta={grant.grant_number}
-            description={dictionary ? dictionary.translation : getTranslation('Unknown dictionary')}
+            description={dictionary ? dictionary.translation : getTranslation("Unknown dictionary")}
           />
-        </div>);
+        </div>
+      );
     }
 
-    case 'add_dict_to_org':
-    {
+    case "add_dict_to_org": {
       const dictionary = objectByCompositeId(subject.dictionary_id, dictionaries);
       const organization = objectById(subject.org_id, organizations);
 
@@ -65,45 +57,46 @@ const Subject = ({
           <Card
             header={organization.translation}
             meta={organization.about}
-            description={dictionary ? dictionary.translation : getTranslation('Unknown dictionary')}
+            description={dictionary ? dictionary.translation : getTranslation("Unknown dictionary")}
           />
-        </div>);
+        </div>
+      );
     }
 
-    case 'participate_org':
-    case 'administrate_org': {
+    case "participate_org":
+    case "administrate_org": {
       const organization = objectById(subject.org_id, organizations);
 
-      return <Card
-        header={organization ? organization.translation : ''}
-        description={organization ? organization.about : ''}
-      />;
+      return (
+        <Card
+          header={organization ? organization.translation : ""}
+          description={organization ? organization.about : ""}
+        />
+      );
     }
-    case 'grant_permission':
+    case "grant_permission":
     default:
-      return <div>{getTranslation('Unknow request type!')}</div>;
+      return <div>{getTranslation("Unknow request type!")}</div>;
   }
 };
 
-const RequestsPane = ({
-  requests, grants, users, dictionaries, organizations, accept,
-}) => (
+const RequestsPane = ({ requests, grants, users, dictionaries, organizations, accept }) => (
   <Tab.Pane>
     <Table celled padded>
       <Table.Header>
         <Table.Row>
-          <Table.HeaderCell>{getTranslation('User')}</Table.HeaderCell>
-          <Table.HeaderCell>{getTranslation('Subject')}</Table.HeaderCell>
-          <Table.HeaderCell>{getTranslation('Date')}</Table.HeaderCell>
-          <Table.HeaderCell>{getTranslation('Message')}</Table.HeaderCell>
-          <Table.HeaderCell>{getTranslation('Action')}</Table.HeaderCell>
+          <Table.HeaderCell>{getTranslation("User")}</Table.HeaderCell>
+          <Table.HeaderCell>{getTranslation("Subject")}</Table.HeaderCell>
+          <Table.HeaderCell>{getTranslation("Date")}</Table.HeaderCell>
+          <Table.HeaderCell>{getTranslation("Message")}</Table.HeaderCell>
+          <Table.HeaderCell>{getTranslation("Action")}</Table.HeaderCell>
         </Table.Row>
       </Table.Header>
 
       <Table.Body>
         {requests.length === 0 && (
           <Table.Row>
-            <Table.Cell>{getTranslation('No entries')}</Table.Cell>
+            <Table.Cell>{getTranslation("No entries")}</Table.Cell>
           </Table.Row>
         )}
         {requests.map(r => (
@@ -123,10 +116,10 @@ const RequestsPane = ({
             <Table.Cell>{r.message}</Table.Cell>
             <Table.Cell>
               <Button positive size="mini" onClick={() => acceptRequest(accept, r.id, true)}>
-                {getTranslation('Accept')}
+                {getTranslation("Accept")}
               </Button>
               <Button negative size="mini" onClick={() => acceptRequest(accept, r.id, false)}>
-                {getTranslation('Reject')}
+                {getTranslation("Reject")}
               </Button>
             </Table.Cell>
           </Table.Row>
@@ -137,29 +130,25 @@ const RequestsPane = ({
 );
 
 const Requests = ({ data, accept }) => {
-  const {
-    userrequests, grants, users, dictionaries, organizations,
-  } = data;
+  const { userrequests, grants, users, dictionaries, organizations } = data;
   const requestsByType = groupBy(userrequests, u => u.type);
 
   const panes = [
     {
-      menuItem: getTranslation('Dictionaries'),
+      menuItem: getTranslation("Dictionaries"),
       render: () => (
         <RequestsPane
-          requests={[
-            ...requestsByType.add_dict_to_grant || [],
-            ...requestsByType.add_dict_to_org || []]}
+          requests={[...(requestsByType.add_dict_to_grant || []), ...(requestsByType.add_dict_to_org || [])]}
           grants={grants}
           users={users}
           dictionaries={dictionaries}
           organizations={organizations}
           accept={accept}
         />
-      ),
+      )
     },
     {
-      menuItem: getTranslation('Grants'),
+      menuItem: getTranslation("Grants"),
       render: () => (
         <RequestsPane
           requests={requestsByType.grant_permission || []}
@@ -169,10 +158,10 @@ const Requests = ({ data, accept }) => {
           organizations={organizations}
           accept={accept}
         />
-      ),
+      )
     },
     {
-      menuItem: getTranslation('Organization users'),
+      menuItem: getTranslation("Organization users"),
       render: () => (
         <RequestsPane
           requests={requestsByType.participate_org || []}
@@ -182,10 +171,10 @@ const Requests = ({ data, accept }) => {
           organizations={organizations}
           accept={accept}
         />
-      ),
+      )
     },
     {
-      menuItem: getTranslation('Organization admins'),
+      menuItem: getTranslation("Organization admins"),
       render: () => (
         <RequestsPane
           requests={requestsByType.administrate_org || []}
@@ -195,20 +184,20 @@ const Requests = ({ data, accept }) => {
           organizations={organizations}
           accept={accept}
         />
-      ),
-    },
+      )
+    }
   ];
 
   return (
     <div className="background-content">
-      <Tab className="inverted" menu={{ fluid: true, vertical: true, tabular: 'right' }} panes={panes} />
+      <Tab className="inverted" menu={{ fluid: true, vertical: true, tabular: "right" }} panes={panes} />
     </div>
   );
 };
 /* eslint-enable react/prop-types */
 export default compose(
   graphql(getUserRequestsQuery),
-  graphql(acceptMutation, { name: 'accept' }),
+  graphql(acceptMutation, { name: "accept" }),
   branch(({ data: { loading } }) => loading, renderComponent(Placeholder)),
   branch(({ data: { error } }) => !!error, renderNothing)
 )(Requests);

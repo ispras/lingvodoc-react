@@ -1,10 +1,10 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { compose } from 'recompose';
-import { Modal, Form, Button } from 'semantic-ui-react';
-import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
-import { getTranslation } from 'api/i18n';
+import React from "react";
+import { graphql } from "react-apollo";
+import { Button, Form, Modal } from "semantic-ui-react";
+import { getTranslation } from "api/i18n";
+import gql from "graphql-tag";
+import PropTypes from "prop-types";
+import { compose } from "recompose";
 
 const parsersQuery = gql`
   query getParsers {
@@ -30,7 +30,6 @@ const executeParserMutation = gql`
 
 /** Modal dialog for execution of a parser for some corpus */
 class RunParserModal extends React.Component {
-
   constructor(props) {
     super(props);
 
@@ -51,7 +50,7 @@ class RunParserModal extends React.Component {
     const { executeParser, entityId, onClose } = this.props;
     const { parserId } = this.state;
 
-    executeParser({ variables: { entity_id: entityId, parser_id: parserId } }).then((response) => {
+    executeParser({ variables: { entity_id: entityId, parser_id: parserId } }).then(response => {
       if (response.data.execute_parser.triumph) {
         this.setState({ success: true });
       }
@@ -68,26 +67,35 @@ class RunParserModal extends React.Component {
 
     return (
       <Modal open dimmer size="small" closeIcon onClose={onClose} className="lingvo-modal2">
-        <Modal.Header>{getTranslation('Parser execution')}</Modal.Header>
+        <Modal.Header>{getTranslation("Parser execution")}</Modal.Header>
         <Modal.Content>
-          { success && getTranslation('Parser task has been started') }
-          { !success &&
+          {success && getTranslation("Parser task has been started")}
+          {!success && (
             <Form loading={loading}>
               <Form.Select
                 name="parserId"
                 fluid
-                placeholder={getTranslation('Select parser')}
-                options={parsers ? parsers.map(parser => ({ text: parser.name, value: parser.id })): []}
+                placeholder={getTranslation("Select parser")}
+                options={parsers ? parsers.map(parser => ({ text: parser.name, value: parser.id })) : []}
                 onChange={this.handleChange}
               />
             </Form>
-          }
+          )}
         </Modal.Content>
         <Modal.Actions>
-          { !success &&
-            <Button disabled={!parserId} content={getTranslation('Execute')} onClick={this.executeParser} className="lingvo-button-violet" />
-          }
-          <Button content={getTranslation(success ? 'Close' : 'Cancel')} onClick={onClose} className="lingvo-button-basic-black" />
+          {!success && (
+            <Button
+              disabled={!parserId}
+              content={getTranslation("Execute")}
+              onClick={this.executeParser}
+              className="lingvo-button-violet"
+            />
+          )}
+          <Button
+            content={getTranslation(success ? "Close" : "Cancel")}
+            onClick={onClose}
+            className="lingvo-button-basic-black"
+          />
         </Modal.Actions>
       </Modal>
     );

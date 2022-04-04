@@ -1,9 +1,9 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { onlyUpdateForKeys } from 'recompose';
-import { Table } from 'semantic-ui-react';
+import React from "react";
+import { Table } from "semantic-ui-react";
+import PropTypes from "prop-types";
+import { onlyUpdateForKeys } from "recompose";
 
-import Row from './Row';
+import Row from "./Row";
 
 const TableBody = ({
   perspectiveId,
@@ -29,7 +29,7 @@ const TableBody = ({
   selectDisabled,
   selectDisabledIndeterminate,
   disabledEntrySet,
-  removeSelectionEntrySet,
+  removeSelectionEntrySet
   /* eslint-enable react/prop-types */
 }) => (
   <Table.Body>
@@ -82,7 +82,7 @@ TableBody.propTypes = {
   onCheckRow: PropTypes.func,
   resetCheckedRow: PropTypes.func,
   resetCheckedColumn: PropTypes.func,
-  resetCheckedAll: PropTypes.func,
+  resetCheckedAll: PropTypes.func
 };
 
 TableBody.defaultProps = {
@@ -98,7 +98,16 @@ TableBody.defaultProps = {
   onCheckRow: () => {},
   resetCheckedRow: () => {},
   resetCheckedColumn: () => {},
-  resetCheckedAll: () => {},
+  resetCheckedAll: () => {}
 };
 
-export default onlyUpdateForKeys(['perspectiveId', 'entries', 'mode', 'selectedEntries', 'selectedRows', 'checkedRow', 'checkedColumn', 'checkedAll'])(TableBody);
+export default onlyUpdateForKeys([
+  "perspectiveId",
+  "entries",
+  "mode",
+  "selectedEntries",
+  "selectedRows",
+  "checkedRow",
+  "checkedColumn",
+  "checkedAll"
+])(TableBody);

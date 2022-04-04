@@ -1,4 +1,4 @@
-import gql from 'graphql-tag';
+import gql from "graphql-tag";
 
 export const connectedQuery = gql`
   query connectedWords($id: LingvodocID!, $fieldId: LingvodocID!, $entitiesMode: String!) {
@@ -45,7 +45,12 @@ export const acceptMutation = gql`
 
 export const searchQuery = gql`
   query SearchEtmologyCandidates($searchString: String!, $perspectiveId: LingvodocID) {
-    basic_search(searchstring: $searchString, perspective_id: $perspectiveId, search_in_published: false, can_add_tags: true) {
+    basic_search(
+      searchstring: $searchString
+      perspective_id: $perspectiveId
+      search_in_published: false
+      can_add_tags: true
+    ) {
       lexical_entries {
         id
         parent_id

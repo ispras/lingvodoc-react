@@ -1,19 +1,18 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { pure } from 'recompose';
-import { connect } from 'react-redux';
-import TransitionGroup from 'react-transition-group/TransitionGroup';
-import CSSTransition from 'react-transition-group/CSSTransition';
-import styled from 'styled-components';
+import React from "react";
+import { connect } from "react-redux";
+import CSSTransition from "react-transition-group/CSSTransition";
+import TransitionGroup from "react-transition-group/TransitionGroup";
+import { Icon, Message as SUMessage } from "semantic-ui-react";
+import PropTypes from "prop-types";
+import { pure } from "recompose";
+import styled from "styled-components";
 
-import { Message as SUMessage, Icon } from 'semantic-ui-react';
-
-import { remove } from 'ducks/snackbar';
+import { remove } from "ducks/snackbar";
 
 const TRANSITION = {
-  classNames: 'snackbar',
+  classNames: "snackbar",
   enter: 500,
-  exit: 1000,
+  exit: 1000
 };
 
 const Wrapper = styled(TransitionGroup)`
@@ -25,7 +24,7 @@ const Wrapper = styled(TransitionGroup)`
 
   display: flex;
   flex-direction: column-reverse;
-  align-items: flex-start
+  align-items: flex-start;
 `;
 
 const Message = styled(SUMessage)`
@@ -60,45 +59,38 @@ const Message = styled(SUMessage)`
   }
 `;
 
-const Snack = ({ text, color, dismissable, onDismiss }) =>
+const Snack = ({ text, color, dismissable, onDismiss }) => (
   <Message color={color}>
-    {text} { dismissable && <Icon name="remove" onClick={onDismiss} /> }
-  </Message>;
+    {text} {dismissable && <Icon name="remove" onClick={onDismiss} />}
+  </Message>
+);
 
 Snack.propTypes = {
   text: PropTypes.string.isRequired,
   color: PropTypes.string.isRequired,
   dismissable: PropTypes.bool.isRequired,
-  onDismiss: PropTypes.func.isRequired,
+  onDismiss: PropTypes.func.isRequired
 };
 
-const Snackbar = pure(({ messages, dismiss }) =>
+const Snackbar = pure(({ messages, dismiss }) => (
   <Wrapper>
-    {
-      messages.map(message =>
-        <CSSTransition
-          key={message.timestamp}
-          classNames={TRANSITION.classNames}
-          timeout={TRANSITION}
-        >
-          <Snack {...message} onDismiss={() => dismiss(message)} />
-        </CSSTransition>)
-    }
+    {messages.map(message => (
+      <CSSTransition key={message.timestamp} classNames={TRANSITION.classNames} timeout={TRANSITION}>
+        <Snack {...message} onDismiss={() => dismiss(message)} />
+      </CSSTransition>
+    ))}
   </Wrapper>
-);
+));
 
 Snackbar.propTypes = {
   messages: PropTypes.array.isRequired,
-  dismiss: PropTypes.func.isRequired,
+  dismiss: PropTypes.func.isRequired
 };
 
 function mapStateToProps(state) {
   return {
-    messages: state.snackbar.messages.toArray(),
+    messages: state.snackbar.messages.toArray()
   };
 }
 
-export default connect(
-  mapStateToProps,
-  { dismiss: remove },
-)(Snackbar);
+export default connect(mapStateToProps, { dismiss: remove })(Snackbar);

@@ -1,14 +1,8 @@
+import { compositeIdToString as id2str } from "utils/compositeId";
 
-import { compositeIdToString as id2str } from 'utils/compositeId';
-import checkLexicalEntries from './checkLexicalEntries';
+import checkLexicalEntries from "./checkLexicalEntries";
 
-const getDistance = async (
-  dictionaries,
-  allField,
-  mainDictionary,
-  computeDistancePerspectives,
-  rootLanguage,
-) => {
+const getDistance = async (dictionaries, allField, mainDictionary, computeDistancePerspectives, rootLanguage) => {
   const baseLanguageId = rootLanguage.parent_id;
   const fieldDict = {};
   const availableList = [];
@@ -17,45 +11,49 @@ const getDistance = async (
   const translationFieldIdStrList = [];
   const perspectiveSelectionList = [];
   let textFields = [];
-  let groupFieldIdStr = '';
+  let groupFieldIdStr = "";
   let groupFields = null;
   let sourcePerspectiveId = {};
 
-  allField.forEach((field) => {
+  allField.forEach(field => {
     fieldDict[id2str(field.id)] = field;
   });
 
-  mainDictionary.perspectives.forEach((el) => {
+  mainDictionary.perspectives.forEach(el => {
     if (checkLexicalEntries(el.translation)) {
       sourcePerspectiveId = el.id;
       groupFields = el.columns
         .map(column => fieldDict[id2str(column.field_id)])
-        .filter(field => field.data_type === 'Grouping Tag');
+        .filter(field => field.data_type === "Grouping Tag");
     }
   });
 
-  groupFields.forEach((field) => {
-    if (field.english_translation.toLowerCase().includes('cognate')) {
+  groupFields.forEach(field => {
+    if (field.english_translation.toLowerCase().includes("cognate")) {
       groupFieldIdStr = id2str(field.id);
     }
   });
 
-
-  if (!groupFieldIdStr && groupFields.length > 0) { groupFieldIdStr = id2str(groupFields[0].id); }
+  if (!groupFieldIdStr && groupFields.length > 0) {
+    groupFieldIdStr = id2str(groupFields[0].id);
+  }
 
   const groupField = fieldDict[groupFieldIdStr];
 
-
-  dictionaries.forEach((dictionary) => {
-    dictionary.perspectives.forEach((perspective) => {
+  dictionaries.forEach(dictionary => {
+    dictionary.perspectives.forEach(perspective => {
       let pgroupFlag = false;
       let textFlag = false;
-      perspective.columns.forEach((column) => {
+      perspective.columns.forEach(column => {
         const field = fieldDict[id2str(column.field_id)];
 
-        if (field.data_type === 'Grouping Tag') { pgroupFlag = true; }
+        if (field.data_type === "Grouping Tag") {
+          pgroupFlag = true;
+        }
 
-        if (field.data_type === 'Text') { textFlag = true; }
+        if (field.data_type === "Text") {
+          textFlag = true;
+        }
       });
       if (pgroupFlag && textFlag) {
         availableList.push([perspective]);
@@ -68,24 +66,30 @@ const getDistance = async (
 
     textFields = perspective.columns
       .map(column => fieldDict[id2str(column.field_id)])
-      .filter(field => field.data_type === 'Text');
+      .filter(field => field.data_type === "Text");
 
-    let transcriptionFieldIdStr = '';
-    let translationFieldIdStr = '';
-    textFields.forEach((field) => {
+    let transcriptionFieldIdStr = "";
+    let translationFieldIdStr = "";
+    textFields.forEach(field => {
       const checkStr = field.english_translation.toLowerCase();
 
-      if (!transcriptionFieldIdStr &&
-        checkStr.includes('transcription')) { transcriptionFieldIdStr = id2str(field.id); }
+      if (!transcriptionFieldIdStr && checkStr.includes("transcription")) {
+        transcriptionFieldIdStr = id2str(field.id);
+      }
 
-      if (!translationFieldIdStr &&
-        (checkStr.includes('translation') || checkStr.includes('meaning'))) { translationFieldIdStr = id2str(field.id); }
+      if (!translationFieldIdStr && (checkStr.includes("translation") || checkStr.includes("meaning"))) {
+        translationFieldIdStr = id2str(field.id);
+      }
     });
 
     if (textFields.length > 0) {
-      if (!transcriptionFieldIdStr) { transcriptionFieldIdStr = id2str(textFields[0].id); }
+      if (!transcriptionFieldIdStr) {
+        transcriptionFieldIdStr = id2str(textFields[0].id);
+      }
 
-      if (!translationFieldIdStr) { translationFieldIdStr = id2str(textFields[0].id); }
+      if (!translationFieldIdStr) {
+        translationFieldIdStr = id2str(textFields[0].id);
+      }
     }
 
     transcriptionFieldIdStrList.push(transcriptionFieldIdStr);
@@ -93,13 +97,13 @@ const getDistance = async (
     perspectiveSelectionList.push(true);
   });
 
-
   const perspectiveInfoList = perspectiveList
-    .map(({ perspective }, index) => [perspective.id,
+    .map(({ perspective }, index) => [
+      perspective.id,
       fieldDict[transcriptionFieldIdStrList[index]].id,
-      fieldDict[translationFieldIdStrList[index]].id])
-    .filter((_perspectiveInfo, index) =>
-      (perspectiveSelectionList[index]));
+      fieldDict[translationFieldIdStrList[index]].id
+    ])
+    .filter((_perspectiveInfo, index) => perspectiveSelectionList[index]);
   let responseMutanion = null;
   try {
     responseMutanion = await computeDistancePerspectives({
@@ -109,7 +113,7 @@ const getDistance = async (
         groupFieldId: groupField.id,
         perspectiveInfoList,
         multiList: [],
-        mode: '',
+        mode: "",
         matchTranslationsValue: 1,
         onlyOrphansFlag: true,
         figureFlag: true,
@@ -117,12 +121,11 @@ const getDistance = async (
         intermediateFlag: false,
         distanceFlag: true,
         referencePerspectiveId: sourcePerspectiveId
-      },
+      }
     });
   } catch (error) {
     return [];
   }
-
 
   const distanceList = responseMutanion.data.cognate_analysis.distance_list;
   const dictionariesWithDistance = [];
@@ -131,9 +134,9 @@ const getDistance = async (
     return [];
   }
 
-  distanceList.forEach((distance) => {
-    dictionaries.forEach((dict) => {
-      dict.perspectives.forEach((persp) => {
+  distanceList.forEach(distance => {
+    dictionaries.forEach(dict => {
+      dict.perspectives.forEach(persp => {
         if (persp.id[0] === distance[0][0] && persp.id[1] === distance[0][1]) {
           const distanceDict = distance[1];
 

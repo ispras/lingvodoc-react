@@ -1,11 +1,11 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { compose } from 'recompose';
-import { graphql } from 'react-apollo';
-import gql from 'graphql-tag';
-import { Button, Input, List, TextArea, Dropdown } from 'semantic-ui-react';
-import { head, nth, difference, isEmpty } from 'lodash';
-import { getTranslation } from 'api/i18n';
+import React from "react";
+import { graphql } from "react-apollo";
+import { Button, Dropdown, Input, List, TextArea } from "semantic-ui-react";
+import { getTranslation } from "api/i18n";
+import gql from "graphql-tag";
+import { difference, head, isEmpty, nth } from "lodash";
+import PropTypes from "prop-types";
+import { compose } from "recompose";
 
 const localesQuery = gql`
   query Locales {
@@ -18,7 +18,7 @@ export class Translation extends React.Component {
     super(props);
 
     const { translation } = props;
-    
+
     this.state = {
       id: translation.id,
       localeId: translation.localeId,
@@ -45,7 +45,7 @@ export class Translation extends React.Component {
   }
 
   onDeleteTranslation(event, { translationid }) {
-    let newTranslations = [];
+    const newTranslations = [];
     this.props.translations.forEach(translation => {
       if (translation.id != translationid) {
         newTranslations.push(translation);
@@ -69,25 +69,57 @@ export class Translation extends React.Component {
     return textArea ? (
       <div className="lingvo-atom-grid" key={id}>
         <div className="lingvo-atom-grid__text">
-          <TextArea rows={2} placeholder="" value={this.state.content} onChange={this.onChangeContent} className="lingvo-gist-elem lingvo-gist-elem_textarea" />
+          <TextArea
+            rows={2}
+            placeholder=""
+            value={this.state.content}
+            onChange={this.onChangeContent}
+            className="lingvo-gist-elem lingvo-gist-elem_textarea"
+          />
         </div>
         <div className="lingvo-atom-grid__lang">
-          <Dropdown className="lingvo-gist-elem lingvo-gist-elem_language" options={options} value={selectedLocale.shortcut} onChange={this.onChangeLocale} selection icon={<i className="lingvo-icon lingvo-icon_arrow" />} />
+          <Dropdown
+            className="lingvo-gist-elem lingvo-gist-elem_language"
+            options={options}
+            value={selectedLocale.shortcut}
+            onChange={this.onChangeLocale}
+            selection
+            icon={<i className="lingvo-icon lingvo-icon_arrow" />}
+          />
         </div>
         <div className="lingvo-atom-grid__delete">
-          <Button icon={<i className="lingvo-icon lingvo-icon_trash" />} disabled={translations.length == 1} onClick={this.onDeleteTranslation} translationid={id} className="lingvo-button-atom-delete lingvo-button-atom-delete_disab-hidden" />
+          <Button
+            icon={<i className="lingvo-icon lingvo-icon_trash" />}
+            disabled={translations.length == 1}
+            onClick={this.onDeleteTranslation}
+            translationid={id}
+            className="lingvo-button-atom-delete lingvo-button-atom-delete_disab-hidden"
+          />
         </div>
       </div>
-      ) : (
+    ) : (
       <div className="lingvo-atom-grid" key={id}>
         <div className="lingvo-atom-grid__text">
           <Input value={this.state.content} onChange={this.onChangeContent} fluid className="lingvo-gist-elem" />
         </div>
         <div className="lingvo-atom-grid__lang">
-          <Dropdown className="lingvo-gist-elem lingvo-gist-elem_language" options={options} value={selectedLocale.shortcut} onChange={this.onChangeLocale} selection icon={<i className="lingvo-icon lingvo-icon_arrow" />} />
+          <Dropdown
+            className="lingvo-gist-elem lingvo-gist-elem_language"
+            options={options}
+            value={selectedLocale.shortcut}
+            onChange={this.onChangeLocale}
+            selection
+            icon={<i className="lingvo-icon lingvo-icon_arrow" />}
+          />
         </div>
         <div className="lingvo-atom-grid__delete">
-          <Button icon={<i className="lingvo-icon lingvo-icon_trash" />} disabled={translations.length == 1} onClick={this.onDeleteTranslation} translationid={id} className="lingvo-button-atom-delete lingvo-button-atom-delete_disab-hidden" />
+          <Button
+            icon={<i className="lingvo-icon lingvo-icon_trash" />}
+            disabled={translations.length == 1}
+            onClick={this.onDeleteTranslation}
+            translationid={id}
+            className="lingvo-button-atom-delete lingvo-button-atom-delete_disab-hidden"
+          />
         </div>
       </div>
     );
@@ -100,16 +132,15 @@ Translation.propTypes = {
   onChange: PropTypes.func.isRequired,
   translation: PropTypes.object.isRequired,
   onChangeTranslations: PropTypes.func.isRequired,
-  translations: PropTypes.array,
+  translations: PropTypes.array
 };
-
 
 class Translations extends React.Component {
   constructor(props) {
     super(props);
-    
+
     this.state = {
-      translations: props.translations.length && props.translations || [],
+      translations: (props.translations.length && props.translations) || []
     };
 
     this.addTranslation = this.addTranslation.bind(this);
@@ -119,20 +150,19 @@ class Translations extends React.Component {
     if (!this.state.translations.length) {
       const lastId = 1;
       this.state = {
-          translations: [...this.state.translations, { id: lastId, localeId: lastId, content: '' }],
+        translations: [...this.state.translations, { id: lastId, localeId: lastId, content: "" }]
       };
       props.onChange(this.state.translations);
     }
-
   }
-  
+
   onChange2(translation) {
-    const updateState = this.state.translations.map((t) => {
+    const updateState = this.state.translations.map(t => {
       if (t.id === translation.id) {
         return {
           ...t,
           localeId: translation.localeId,
-          content: translation.content,
+          content: translation.content
         };
       }
       return t;
@@ -140,16 +170,22 @@ class Translations extends React.Component {
 
     this.setState(
       {
-        translations: updateState,
+        translations: updateState
       },
       () => this.props.onChange(this.state.translations)
     );
   }
 
   addTranslation() {
-    const { data: { error, loading, all_locales: locales } } = this.props;
+    const {
+      data: { error, loading, all_locales: locales }
+    } = this.props;
     if (!loading && !error) {
-      const lastId = nth(this.state.translations.map(t => t.id), -1) + 1 || 1;
+      const lastId =
+        nth(
+          this.state.translations.map(t => t.id),
+          -1
+        ) + 1 || 1;
 
       // pick next free locale id
       const ids = locales.map(locale => locale.id);
@@ -161,12 +197,12 @@ class Translations extends React.Component {
       if (!isEmpty(freeLocales)) {
         this.setState(
           {
-            translations: [...this.state.translations, { id: lastId, localeId: head(freeLocales), content: '' }],
+            translations: [...this.state.translations, { id: lastId, localeId: head(freeLocales), content: "" }]
           },
           () => this.props.onChange(this.state.translations)
         );
       } else {
-        window.logger.err(getTranslation('No more locales!'));
+        window.logger.err(getTranslation("No more locales!"));
       }
     }
   }
@@ -180,27 +216,28 @@ class Translations extends React.Component {
   render() {
     const {
       data: { error, loading, all_locales: locales },
-      textArea } = this.props;
+      textArea
+    } = this.props;
 
     if (loading || error) {
       return null;
     }
 
     const { translations } = this.state;
-    
+
     const usedLocaleIds = translations.map(t => t.localeId);
     return (
       <div className="lingvo-translation__content">
-        <List style={{marginBottom: '20px'}}>
+        <List style={{ marginBottom: "20px" }}>
           {translations.map(translation => (
-            <List.Item
-              key={translation.id}
-              style={{marginBottom: '16px', paddingTop: '0', paddingBottom: '0'}}>
+            <List.Item key={translation.id} style={{ marginBottom: "16px", paddingTop: "0", paddingBottom: "0" }}>
               <Translation
                 locales={locales}
                 translation={translation}
                 translations={translations}
-                onChangeTranslations={translations => this.setState({ translations }, () => this.props.onChange(translations))}
+                onChangeTranslations={translations =>
+                  this.setState({ translations }, () => this.props.onChange(translations))
+                }
                 usedLocaleIds={usedLocaleIds}
                 onChange={this.onChange2}
                 textArea={textArea}
@@ -208,7 +245,12 @@ class Translations extends React.Component {
             </List.Item>
           ))}
         </List>
-        <Button onClick={this.addTranslation} content={getTranslation("Add translation")} disabled={this.isAddTranslationDisabled()} className="lingvo-button-violet" />
+        <Button
+          onClick={this.addTranslation}
+          content={getTranslation("Add translation")}
+          disabled={this.isAddTranslationDisabled()}
+          className="lingvo-button-violet"
+        />
       </div>
     );
   }
@@ -217,14 +259,14 @@ class Translations extends React.Component {
 Translations.propTypes = {
   data: PropTypes.shape({
     loading: PropTypes.bool.isRequired,
-    all_locales: PropTypes.array,
+    all_locales: PropTypes.array
   }).isRequired,
   onChange: PropTypes.func.isRequired,
-  translations: PropTypes.array,
+  translations: PropTypes.array
 };
 
 Translations.defaultProps = {
-  translations: [],
+  translations: []
 };
 
-export default compose(graphql(localesQuery, { options: { fetchPolicy: "cache-and-network" }}))(Translations);
+export default compose(graphql(localesQuery, { options: { fetchPolicy: "cache-and-network" } }))(Translations);

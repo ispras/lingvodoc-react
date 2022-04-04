@@ -1,0 +1,12 @@
+*.*
+
+!*.css
+!*.scss
+!*.js
+!*.jsx
+!*.json
+LICENSE
+
+/dist
+/node_modules
+/vendor

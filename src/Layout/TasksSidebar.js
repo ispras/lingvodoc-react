@@ -1,12 +1,12 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import styled from 'styled-components';
-import { Button, Sidebar } from 'semantic-ui-react';
+import React from "react";
+import { connect } from "react-redux";
+import { Button, Sidebar } from "semantic-ui-react";
+import { getTranslation } from "api/i18n";
+import PropTypes from "prop-types";
+import styled from "styled-components";
 
-import TaskList from 'components/TaskList';
-import { toggleTasks, removeTask } from 'ducks/task';
-import { getTranslation } from 'api/i18n';
+import TaskList from "components/TaskList";
+import { removeTask, toggleTasks } from "ducks/task";
 
 const Wrapper = styled.div`
   padding: 16px;
@@ -16,62 +16,42 @@ const Wrapper = styled.div`
 
 const onClearTasks = (tasks, remove) => {
   tasks.forEach(task => {
-    if (
-      task.current_stage == task.total_stages &&
-      task.progress === 100)
-      remove(task.id);
+    if (task.current_stage == task.total_stages && task.progress === 100) {remove(task.id);}
   });
 };
 
-const TasksSidebar = ({ visible, tasks, toggle, remove }) =>
-  <Sidebar
-    animation="overlay"
-    direction="right"
-    width="wide"
-    visible={visible}
-    as={Wrapper}
-    className="lingvo-sidebar"
-  >
+const TasksSidebar = ({ visible, tasks, toggle, remove }) => (
+  <Sidebar animation="overlay" direction="right" width="wide" visible={visible} as={Wrapper} className="lingvo-sidebar">
     <div className="lingvo-sidebar__content">
-      <Button
-        className="lingvo-button-close lingvo-sidebar__close"
-        onClick={toggle}
-        icon
-      >
+      <Button className="lingvo-button-close lingvo-sidebar__close" onClick={toggle} icon>
         <i className="lingvo-icon-close" />
       </Button>
-      
-      {tasks && tasks.length && (
+
+      {(tasks && tasks.length && (
         <Button
           onClick={() => onClearTasks(tasks, remove)}
-          disabled={
-            !tasks.some(
-              task =>
-                task.current_stage == task.total_stages &&
-                task.progress === 100)}
-          className="lingvo-button-violet-dashed">
-          {getTranslation('Clear completed')}
+          disabled={!tasks.some(task => task.current_stage == task.total_stages && task.progress === 100)}
+          className="lingvo-button-violet-dashed"
+        >
+          {getTranslation("Clear completed")}
         </Button>
-        ) || null
-      }
-      
+      )) ||
+        null}
+
       <TaskList tasks={tasks} />
     </div>
 
     <div className="lingvo-sidebar__footer">
-      <Button
-        className="lingvo-button-basic-black lingvo-sidebar__bottom-close"
-        onClick={toggle}
-      >
-        {getTranslation('Close')}
+      <Button className="lingvo-button-basic-black lingvo-sidebar__bottom-close" onClick={toggle}>
+        {getTranslation("Close")}
       </Button>
     </div>
-
-  </Sidebar>;
+  </Sidebar>
+);
 
 TasksSidebar.propTypes = {
   visible: PropTypes.bool.isRequired,
-  tasks: PropTypes.array.isRequired,
+  tasks: PropTypes.array.isRequired
 };
 
 function mapStateToProps(state) {

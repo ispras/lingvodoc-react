@@ -1,6 +1,6 @@
-import React from 'react';
-import { Dropdown, Button } from 'semantic-ui-react';
-import PropTypes from 'prop-types';
+import React from "react";
+import { Button, Dropdown } from "semantic-ui-react";
+import PropTypes from "prop-types";
 
 const FieldSelect = props => (
   <div>
@@ -34,7 +34,7 @@ FieldSelect.propTypes = {
   placeholder: PropTypes.string,
   selectAllText: PropTypes.string.isRequired,
   clearAllText: PropTypes.string.isRequired,
-  noResultsMessage: PropTypes.string,
+  noResultsMessage: PropTypes.string
 };
 
 FieldSelect.defaultProps = {
@@ -42,8 +42,8 @@ FieldSelect.defaultProps = {
   onChange: () => {},
   onSelectAllButtonClick: () => {},
   onClearAllButtonClick: () => {},
-  placeholder: 'Select option',
-  noResultsMessage: 'No results found.',
+  placeholder: "Select option",
+  noResultsMessage: "No results found."
 };
 
 export default FieldSelect;

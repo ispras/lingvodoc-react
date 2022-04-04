@@ -36,7 +36,7 @@
   }
 }
 
-.area-groups-select {  
+.area-groups-select {
   &.ui.accordion .title {
     opacity: 0.6;
     cursor: default;
@@ -78,7 +78,7 @@
   &__toggle-mode {
     padding: 0.5em 0em;
   }
-  
+
   & .ui.toggle.checkbox .box:after,
   & .ui.toggle.checkbox label:after {
     z-index: 5;

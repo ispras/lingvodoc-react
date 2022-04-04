@@ -1,17 +1,17 @@
-import { delay } from 'redux-saga';
-import { call, put, spawn } from 'redux-saga/effects';
-import { getTasks } from 'api';
-import { setTasks, requestTasks } from 'ducks/task';
-import { err } from 'ducks/snackbar';
+import { getTasks } from "api";
+import { delay } from "redux-saga";
+import { call, put, spawn } from "redux-saga/effects";
 
-import config from 'config';
+import config from "config";
+import { err } from "ducks/snackbar";
+import { requestTasks, setTasks } from "ducks/task";
 
 export function* requestFlow() {
   const response = yield call(getTasks);
   if (response.data) {
     yield put(setTasks(response.data));
   } else {
-    yield put(err('Could not get tasks'));
+    yield put(err("Could not get tasks"));
   }
 }
 

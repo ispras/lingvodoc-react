@@ -1,24 +1,24 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { compose, onlyUpdateForKeys, branch, renderNothing } from 'recompose';
-import { graphql } from 'react-apollo';
-import gql from 'graphql-tag';
-import { Confirm, Dimmer, Tab, Header, List, Dropdown, Icon, Popup } from 'semantic-ui-react';
-import { isEqual } from 'lodash';
-import { compositeIdToString } from 'utils/compositeId';
-import { openRoles } from 'ducks/roles';
-import { openSaveDictionaryModal } from 'ducks/saveDictionary';
-import { openModal as openDictionaryOrganizationsModal } from 'ducks/dictionaryOrganizations';
-import { openDictionaryPropertiesModal } from 'ducks/dictionaryProperties';
-import { openPerspectivePropertiesModal } from 'ducks/perspectiveProperties';
-import { openStatistics } from 'ducks/statistics';
-import { getTranslation } from 'api/i18n';
+import React from "react";
+import { graphql } from "react-apollo";
+import { connect } from "react-redux";
+import { Confirm, Dimmer, Dropdown, Header, Icon, List, Popup, Tab } from "semantic-ui-react";
+import { getTranslation } from "api/i18n";
+import gql from "graphql-tag";
+import { isEqual } from "lodash";
+import PropTypes from "prop-types";
+import { branch, compose, onlyUpdateForKeys, renderNothing } from "recompose";
+import { bindActionCreators } from "redux";
 
-import { dictionaryQuery } from 'pages/DialeqtImport';
+import { openModal as openDictionaryOrganizationsModal } from "ducks/dictionaryOrganizations";
+import { openDictionaryPropertiesModal } from "ducks/dictionaryProperties";
+import { openPerspectivePropertiesModal } from "ducks/perspectiveProperties";
+import { openRoles } from "ducks/roles";
+import { openSaveDictionaryModal } from "ducks/saveDictionary";
+import { openStatistics } from "ducks/statistics";
+import { dictionaryQuery } from "pages/DialeqtImport";
+import { compositeIdToString } from "utils/compositeId";
 
-const dimmerStyle = { minHeight: '600px' };
+const dimmerStyle = { minHeight: "600px" };
 
 export const query = gql`
   query dashboardQuery($mode: Int!, $category: Int!) {
@@ -78,9 +78,7 @@ const removeDictionaryMutation = gql`
   }
 `;
 
-const Statuses = onlyUpdateForKeys(['translation'])(({
-  translation, statusId, parentId, statuses, updateStatus,
-}) => {
+const Statuses = onlyUpdateForKeys(["translation"])(({ translation, statusId, parentId, statuses, updateStatus }) => {
   const updateHandler = (id, sid) => {
     updateStatus({
       variables: { id, status_id: sid },
@@ -89,15 +87,20 @@ const Statuses = onlyUpdateForKeys(['translation'])(({
           query,
           variables: {
             mode: 1,
-            category: 0,
-          },
-        },
-      ],
+            category: 0
+          }
+        }
+      ]
     });
   };
 
   return (
-    <Dropdown item text={translation} className="lingvo-dashboard-elem lingvo-dashboard-elem_status" icon={<i className="lingvo-icon lingvo-icon_arrow" />}>
+    <Dropdown
+      item
+      text={translation}
+      className="lingvo-dashboard-elem lingvo-dashboard-elem_status"
+      icon={<i className="lingvo-icon lingvo-icon_arrow" />}
+    >
       <Dropdown.Menu>
         {statuses.map(status => (
           <Dropdown.Item
@@ -113,8 +116,8 @@ const Statuses = onlyUpdateForKeys(['translation'])(({
 });
 
 // Dictionary and Perspective share the set of statuses but use different mutations to change current status.
-const DicionaryStatuses = graphql(updateDictionaryStatusMutation, { name: 'updateStatus' })(Statuses);
-const PerspectiveStatuses = graphql(updatePerspectiveStatusMutation, { name: 'updateStatus' })(Statuses);
+const DicionaryStatuses = graphql(updateDictionaryStatusMutation, { name: "updateStatus" })(Statuses);
+const PerspectiveStatuses = graphql(updatePerspectiveStatusMutation, { name: "updateStatus" })(Statuses);
 
 class P extends React.Component {
   constructor(props) {
@@ -126,63 +129,60 @@ class P extends React.Component {
   }
 
   onRemovePerspective() {
-    const {
-      id, mode, category, removePerspective,
-    } = this.props;
+    const { id, mode, category, removePerspective } = this.props;
 
     this.setState({ confirmation: false });
     removePerspective({
       variables: {
-        id,
+        id
       },
       refetchQueries: [
         {
           query,
           variables: {
             mode,
-            category,
-          },
-        },
-      ],
+            category
+          }
+        }
+      ]
     });
   }
 
   render() {
-    const {
-      id, parent_id, translation, status, state_translation_gist_id: statusId, statuses, actions,
-    } = this.props;
+    const { id, parent_id, translation, status, state_translation_gist_id: statusId, statuses, actions } = this.props;
 
     const { confirmation } = this.state;
 
     return (
       <List.Item>
         <List.Content>
-          
           <div className="lingvo-dashboard-block">
             <div className="lingvo-dashboard-block__small">
-
               <div className="lingvo-dashboard-group-elems">
-                <Dropdown 
+                <Dropdown
                   trigger={
-                    <span><i className="lingvo-icon lingvo-icon_book" /> {translation}</span>
+                    <span>
+                      <i className="lingvo-icon lingvo-icon_book" /> {translation}
+                    </span>
                   }
                   className="link item lingvo-dashboard-elem"
-                  icon={<i className="lingvo-icon lingvo-icon_arrow" />}>
+                  icon={<i className="lingvo-icon lingvo-icon_arrow" />}
+                >
                   <Dropdown.Menu>
-                    <Dropdown.Item
-                      onClick={() => actions.openRoles(id, 'perspective', getTranslation('Roles'))}
-                    >
-                      <i className="lingvo-icon lingvo-icon_roles" /> {getTranslation('Roles')}
+                    <Dropdown.Item onClick={() => actions.openRoles(id, "perspective", getTranslation("Roles"))}>
+                      <i className="lingvo-icon lingvo-icon_roles" /> {getTranslation("Roles")}
                     </Dropdown.Item>
                     <Dropdown.Item
-                      onClick={() => actions.openPerspectivePropertiesModal(id, parent_id, getTranslation('Properties'))}
+                      onClick={() =>
+                        actions.openPerspectivePropertiesModal(id, parent_id, getTranslation("Properties"))
+                      }
                     >
-                      <i className="lingvo-icon lingvo-icon_properties" /> {getTranslation('Properties')}
+                      <i className="lingvo-icon lingvo-icon_properties" /> {getTranslation("Properties")}
                     </Dropdown.Item>
                     <Dropdown.Item
-                      onClick={() => actions.openStatistics(id, 'perspective', getTranslation('Statistics'))}
+                      onClick={() => actions.openStatistics(id, "perspective", getTranslation("Statistics"))}
                     >
-                      <i className="lingvo-icon lingvo-icon_stats" /> {getTranslation('Statistics')}
+                      <i className="lingvo-icon lingvo-icon_stats" /> {getTranslation("Statistics")}
                     </Dropdown.Item>
                     <Dropdown.Item onClick={() => this.setState({ confirmation: true })}>
                       <i className="lingvo-icon lingvo-icon_delete" /> {getTranslation("Remove perspective")}
@@ -193,8 +193,10 @@ class P extends React.Component {
                 <div className="lingvo-dashboard-group-elems__block">
                   <Popup
                     trigger={
-                      <a className="lingvo-dashboard-elem lingvo-dashboard-elem_button" 
-                        href={`/dictionary/${parent_id[0]}/${parent_id[1]}/perspective/${id[0]}/${id[1]}/view`}>
+                      <a
+                        className="lingvo-dashboard-elem lingvo-dashboard-elem_button"
+                        href={`/dictionary/${parent_id[0]}/${parent_id[1]}/perspective/${id[0]}/${id[1]}/view`}
+                      >
                         <i className="lingvo-icon lingvo-icon_view" />
                       </a>
                     }
@@ -204,8 +206,10 @@ class P extends React.Component {
 
                   <Popup
                     trigger={
-                      <a className="lingvo-dashboard-elem lingvo-dashboard-elem_button" 
-                        href={`/dictionary/${parent_id[0]}/${parent_id[1]}/perspective/${id[0]}/${id[1]}/edit`}>
+                      <a
+                        className="lingvo-dashboard-elem lingvo-dashboard-elem_button"
+                        href={`/dictionary/${parent_id[0]}/${parent_id[1]}/perspective/${id[0]}/${id[1]}/edit`}
+                      >
                         <i className="lingvo-icon lingvo-icon_edit" />
                       </a>
                     }
@@ -215,34 +219,35 @@ class P extends React.Component {
 
                   <Popup
                     trigger={
-                      <a className="lingvo-dashboard-elem lingvo-dashboard-elem_button" 
-                        href={`/dictionary/${parent_id[0]}/${parent_id[1]}/perspective/${id[0]}/${id[1]}/publish`}>
-                          <i className="lingvo-icon lingvo-icon_publish" />
+                      <a
+                        className="lingvo-dashboard-elem lingvo-dashboard-elem_button"
+                        href={`/dictionary/${parent_id[0]}/${parent_id[1]}/perspective/${id[0]}/${id[1]}/publish`}
+                      >
+                        <i className="lingvo-icon lingvo-icon_publish" />
                       </a>
                     }
                     content={getTranslation("Publish")}
                     className="lingvo-popup-inverted"
                   />
 
-                  <a className="lingvo-dashboard-elem lingvo-dashboard-elem_button" 
-                    href={`/dictionary/${parent_id[0]}/${parent_id[1]}/perspective/${id[0]}/${id[1]}/contributions`}>
+                  <a
+                    className="lingvo-dashboard-elem lingvo-dashboard-elem_button"
+                    href={`/dictionary/${parent_id[0]}/${parent_id[1]}/perspective/${id[0]}/${id[1]}/contributions`}
+                  >
                     {getTranslation("Contributions")}
                   </a>
-
                 </div>
               </div>
-
             </div>
 
             <div className="lingvo-dashboard-block__small">
               <PerspectiveStatuses translation={status} statusId={statusId} parentId={id} statuses={statuses} />
             </div>
           </div>
-
         </List.Content>
         <Confirm
           open={confirmation}
-          header={getTranslation('Confirmation')}
+          header={getTranslation("Confirmation")}
           content={`${getTranslation("Are you sure you want to delete perspective")} '${translation}'?`}
           onConfirm={this.onRemovePerspective}
           onCancel={() => this.setState({ confirmation: false })}
@@ -263,18 +268,15 @@ P.propTypes = {
   state_translation_gist_id: PropTypes.array.isRequired,
   statuses: PropTypes.array.isRequired,
   actions: PropTypes.object.isRequired,
-  removePerspective: PropTypes.func.isRequired,
+  removePerspective: PropTypes.func.isRequired
 };
 
 const Perspective = compose(
-  connect(
-    null,
-    dispatch => ({
-      actions: bindActionCreators({ openRoles, openPerspectivePropertiesModal, openStatistics }, dispatch),
-    })
-  ),
-  graphql(removePerspectiveMutation, { name: 'removePerspective' }),
-  onlyUpdateForKeys(['translation', 'status'])
+  connect(null, dispatch => ({
+    actions: bindActionCreators({ openRoles, openPerspectivePropertiesModal, openStatistics }, dispatch)
+  })),
+  graphql(removePerspectiveMutation, { name: "removePerspective" }),
+  onlyUpdateForKeys(["translation", "status"])
 )(P);
 
 class D extends React.Component {
@@ -287,25 +289,23 @@ class D extends React.Component {
   }
 
   onRemoveDictionary() {
-    const {
-      id, mode, category, removeDictionary,
-    } = this.props;
+    const { id, mode, category, removeDictionary } = this.props;
 
     this.setState({ confirmation: false });
     removeDictionary({
       variables: {
-        id,
+        id
       },
       refetchQueries: [
         {
           query,
           variables: {
             mode,
-            category,
-          },
+            category
+          }
         },
-        { query: dictionaryQuery },
-      ],
+        { query: dictionaryQuery }
+      ]
     });
   }
 
@@ -319,42 +319,38 @@ class D extends React.Component {
       statuses,
       actions,
       mode,
-      category,
+      category
     } = this.props;
 
     const { confirmation } = this.state;
-    
+
     return (
       <List.Item>
         <List.Content>
           <div className="lingvo-dashboard-block">
             <div className="lingvo-dashboard-block__big">
-              <Dropdown text={translation} className="link item lingvo-dashboard-elem lingvo-dashboard-elem_main" icon={<i className="lingvo-icon lingvo-icon_arrow" />}>
+              <Dropdown
+                text={translation}
+                className="link item lingvo-dashboard-elem lingvo-dashboard-elem_main"
+                icon={<i className="lingvo-icon lingvo-icon_arrow" />}
+              >
                 <Dropdown.Menu>
-                  <Dropdown.Item
-                    onClick={() => actions.openRoles(id, 'dictionary', getTranslation('Roles'))}
-                  >
-                    <i className="lingvo-icon lingvo-icon_roles" /> {getTranslation('Roles')}
+                  <Dropdown.Item onClick={() => actions.openRoles(id, "dictionary", getTranslation("Roles"))}>
+                    <i className="lingvo-icon lingvo-icon_roles" /> {getTranslation("Roles")}
                   </Dropdown.Item>
                   <Dropdown.Item
-                    onClick={() => actions.openDictionaryPropertiesModal(id, getTranslation('Properties'))}
+                    onClick={() => actions.openDictionaryPropertiesModal(id, getTranslation("Properties"))}
                   >
-                    <i className="lingvo-icon lingvo-icon_properties" /> {getTranslation('Properties')}
+                    <i className="lingvo-icon lingvo-icon_properties" /> {getTranslation("Properties")}
                   </Dropdown.Item>
-                  <Dropdown.Item
-                    onClick={() => actions.openDictionaryOrganizationsModal(id)}
-                  >
-                    <i className="lingvo-icon lingvo-icon_organizations" /> {getTranslation('Organizations')}
+                  <Dropdown.Item onClick={() => actions.openDictionaryOrganizationsModal(id)}>
+                    <i className="lingvo-icon lingvo-icon_organizations" /> {getTranslation("Organizations")}
                   </Dropdown.Item>
-                  <Dropdown.Item
-                    onClick={() => actions.openStatistics(id, 'dictionary', getTranslation('Statistics'))}
-                  >
-                    <i className="lingvo-icon lingvo-icon_stats" /> {getTranslation('Statistics')}
+                  <Dropdown.Item onClick={() => actions.openStatistics(id, "dictionary", getTranslation("Statistics"))}>
+                    <i className="lingvo-icon lingvo-icon_stats" /> {getTranslation("Statistics")}
                   </Dropdown.Item>
                   {/*<Dropdown.Item icon="circle" text={getTranslation("Create a new perspective...")} />*/}
-                  <Dropdown.Item
-                    onClick={() => actions.openSaveDictionaryModal(id)}
-                  >
+                  <Dropdown.Item onClick={() => actions.openSaveDictionaryModal(id)}>
                     <i className="lingvo-icon lingvo-icon_save" /> {getTranslation("Save dictionary")}
                   </Dropdown.Item>
                   <Dropdown.Item onClick={() => this.setState({ confirmation: true })}>
@@ -368,7 +364,7 @@ class D extends React.Component {
               <DicionaryStatuses translation={status} statusId={statusId} parentId={id} statuses={statuses} />
             </div>
           </div>
-          
+
           <List relaxed className="lingvo-dashboard-subblock">
             {perspectives.map(perspective => (
               <Perspective
@@ -384,7 +380,7 @@ class D extends React.Component {
         </List.Content>
         <Confirm
           open={confirmation}
-          header={getTranslation('Confirmation')}
+          header={getTranslation("Confirmation")}
           content={`${getTranslation("Are you sure you want to delete dictionary")} '${translation}'?`}
           onConfirm={this.onRemoveDictionary}
           onCancel={() => this.setState({ confirmation: false })}
@@ -405,27 +401,24 @@ D.propTypes = {
   state_translation_gist_id: PropTypes.array.isRequired,
   statuses: PropTypes.array.isRequired,
   actions: PropTypes.object.isRequired,
-  removeDictionary: PropTypes.func.isRequired,
+  removeDictionary: PropTypes.func.isRequired
 };
 
 const Dictionary = compose(
-  connect(
-    null,
-    dispatch => ({
-      actions: bindActionCreators(
-        {
-          openRoles,
-          openDictionaryPropertiesModal,
-          openStatistics,
-          openSaveDictionaryModal,
-          openDictionaryOrganizationsModal,
-        },
-        dispatch
-      ),
-    })
-  ),
-  graphql(removeDictionaryMutation, { name: 'removeDictionary' }),
-  onlyUpdateForKeys(['translation', 'status', 'perspectives'])
+  connect(null, dispatch => ({
+    actions: bindActionCreators(
+      {
+        openRoles,
+        openDictionaryPropertiesModal,
+        openStatistics,
+        openSaveDictionaryModal,
+        openDictionaryOrganizationsModal
+      },
+      dispatch
+    )
+  })),
+  graphql(removeDictionaryMutation, { name: "removeDictionary" }),
+  onlyUpdateForKeys(["translation", "status", "perspectives"])
 )(D);
 
 const Dashboard = ({ data, mode, category }) => {
@@ -459,55 +452,54 @@ const Dashboard = ({ data, mode, category }) => {
 Dashboard.propTypes = {
   data: PropTypes.object.isRequired,
   mode: PropTypes.number.isRequired,
-  category: PropTypes.number.isRequired,
+  category: PropTypes.number.isRequired
 };
 
 const Dictionaries = compose(
   graphql(query),
-  onlyUpdateForKeys(['data']),
+  onlyUpdateForKeys(["data"]),
   branch(({ data }) => !!data.error, renderNothing)
 )(Dashboard);
-
 
 const DICTIONARIES_TABS = () => {
   return [
     {
-      menuItem: getTranslation('My dictionaries'),
+      menuItem: getTranslation("My dictionaries"),
       render: () => (
         <Tab.Pane className="lingvo-tab__pane">
           <Dictionaries category={0} mode={0} />
         </Tab.Pane>
-      ),
+      )
     },
     {
-      menuItem: getTranslation('Available dictionaries'),
+      menuItem: getTranslation("Available dictionaries"),
       render: () => (
         <Tab.Pane className="lingvo-tab__pane">
           <Dictionaries category={0} mode={1} />
         </Tab.Pane>
-      ),
-    },
+      )
+    }
   ];
 };
 
 const CORPORA_TABS = () => {
   return [
     {
-      menuItem: getTranslation('My corpora'),
+      menuItem: getTranslation("My corpora"),
       render: () => (
         <Tab.Pane className="lingvo-tab__pane">
           <Dictionaries category={1} mode={0} />
         </Tab.Pane>
-      ),
+      )
     },
     {
-      menuItem: getTranslation('Available corpora'),
+      menuItem: getTranslation("Available corpora"),
       render: () => (
         <Tab.Pane className="lingvo-tab__pane">
           <Dictionaries category={1} mode={1} />
         </Tab.Pane>
-      ),
-    },
+      )
+    }
   ];
 };
 

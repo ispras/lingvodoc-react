@@ -1,9 +1,9 @@
-import React, { PureComponent } from 'react';
-import PropTypes from 'prop-types';
-import { Checkbox } from 'semantic-ui-react';
+import React, { PureComponent } from "react";
+import { Checkbox } from "semantic-ui-react";
+import PropTypes from "prop-types";
 
 const classNames = {
-  container: 'grammar-filter__item',
+  container: "grammar-filter__item"
 };
 
 class GrammarItem extends PureComponent {
@@ -11,10 +11,10 @@ class GrammarItem extends PureComponent {
     data: PropTypes.shape({
       name: PropTypes.string.isRequired,
       value: PropTypes.string.isRequired,
-      isChecked: PropTypes.bool.isRequired,
+      isChecked: PropTypes.bool.isRequired
     }).isRequired,
-    onChange: PropTypes.func.isRequired,
-  }
+    onChange: PropTypes.func.isRequired
+  };
 
   constructor() {
     super();
@@ -25,7 +25,7 @@ class GrammarItem extends PureComponent {
   onChange(ev, { checked }) {
     this.sendDataToTop({
       ...this.props.data,
-      isChecked: checked,
+      isChecked: checked
     });
   }
 
@@ -37,11 +37,7 @@ class GrammarItem extends PureComponent {
     const { name, isChecked } = this.props.data;
     return (
       <div className={classNames.container}>
-        <Checkbox
-          label={name}
-          checked={isChecked}
-          onChange={this.onChange}
-        />
+        <Checkbox label={name} checked={isChecked} onChange={this.onChange} />
       </div>
     );
   }

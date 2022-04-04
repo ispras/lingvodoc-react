@@ -1,16 +1,15 @@
-import { combineReducers } from 'redux';
-import { isEqual } from 'lodash';
+import { isEqual } from "lodash";
+import { combineReducers } from "redux";
 
 // Actions
-export const REQUEST = '@data/perspective/REQUEST';
-export const SET = '@data/perspective/SET';
-export const SET_FILTER = '@data/perspective/SET_FILTER';
-export const SET_SORT_MODE = '@data/perspective/SET_SORT_MODE';
-export const RESET_SORT_MODE = '@data/perspective/RESET_SORT_MODE';
-export const ADD_LEXICAL_ENTRY = '@data/perspective/ADD_LEXICAL_ENTRY';
-export const SELECT_LEXICAL_ENTRY = '@data/perspective/SELECT_LEXICAL_ENTRY';
-export const RESET_ENTRIES_SELECTION = '@data/perspective/RESET_ENTRIES_SELECTION';
-
+export const REQUEST = "@data/perspective/REQUEST";
+export const SET = "@data/perspective/SET";
+export const SET_FILTER = "@data/perspective/SET_FILTER";
+export const SET_SORT_MODE = "@data/perspective/SET_SORT_MODE";
+export const RESET_SORT_MODE = "@data/perspective/RESET_SORT_MODE";
+export const ADD_LEXICAL_ENTRY = "@data/perspective/ADD_LEXICAL_ENTRY";
+export const SELECT_LEXICAL_ENTRY = "@data/perspective/SELECT_LEXICAL_ENTRY";
+export const RESET_ENTRIES_SELECTION = "@data/perspective/RESET_ENTRIES_SELECTION";
 
 // Reducers
 function params(state = {}, action = {}) {
@@ -22,7 +21,7 @@ function params(state = {}, action = {}) {
   }
 }
 
-function filter(state = '', action = {}) {
+function filter(state = "", action = {}) {
   switch (action.type) {
     case SET_FILTER:
       return action.payload;
@@ -31,7 +30,7 @@ function filter(state = '', action = {}) {
   }
 }
 
-function sortByField(state = {field: [66, 10], order: 'a'}, { type, payload }) {
+function sortByField(state = { field: [66, 10], order: "a" }, { type, payload }) {
   switch (type) {
     case SET_SORT_MODE:
       return payload;
@@ -67,14 +66,14 @@ export default combineReducers({
   filter,
   sortByField,
   createdEntries,
-  selectedEntries,
+  selectedEntries
 });
 
 // Selectors
 const getPerspective = state => state.perspective;
 
 export const selectors = {
-  getPerspective,
+  getPerspective
 };
 
 // Action Creators

@@ -1,7 +1,7 @@
 .authorsRoute {
   position: relative;
   padding-bottom: 70px;
-  
+
   .authors {
     width: 1127px;
     margin-left: auto;
@@ -11,7 +11,7 @@
   }
 
   .creator-title {
-    color: #5D54CD;
+    color: #5d54cd;
     font-family: Mulish, Arial, sans-serif;
     font-weight: bold;
   }
@@ -23,11 +23,9 @@
       }
     }
   }
-
 }
 
 .lingvo-cards-with-links {
-
   & > .card {
     border-radius: 8px !important;
 
@@ -38,8 +36,8 @@
   }
 
   & > .card:hover {
-    background: #5D54CD !important;
-    box-shadow: 0px 0px 0px 1px #5D54CD !important;
+    background: #5d54cd !important;
+    box-shadow: 0px 0px 0px 1px #5d54cd !important;
     transition: 0.3s;
 
     & > .content > .header {

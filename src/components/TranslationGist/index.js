@@ -1,15 +1,15 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { graphql } from 'react-apollo';
-import gql from 'graphql-tag';
+import React from "react";
+import PropTypes from "prop-types";
+import { graphql } from "react-apollo";
+import gql from "graphql-tag";
 
-import { Container, Button, List } from 'semantic-ui-react';
-import TranslationAtom from '../TranslationAtom';
-import { compositeIdToString } from '../../utils/compositeId';
-import { getTranslation } from 'api/i18n';
+import { Container, Button, List } from "semantic-ui-react";
+import TranslationAtom from "../TranslationAtom";
+import { compositeIdToString } from "../../utils/compositeId";
+import { getTranslation } from "api/i18n";
 
 export const translationGistQuery = gql`
-  query($id: LingvodocID!) {
+  query ($id: LingvodocID!) {
     translationgist(id: $id) {
       id
       translationatoms {
@@ -30,7 +30,7 @@ export default class TranslationGist extends React.Component {
     super(props);
 
     this.state = {
-      createdAtoms: [],
+      createdAtoms: []
     };
 
     this.addAtom = this.addAtom.bind(this);
@@ -40,7 +40,7 @@ export default class TranslationGist extends React.Component {
   onAtomCreated(id) {
     const { createdAtoms } = this.state;
     this.setState({
-      createdAtoms: createdAtoms.filter(e => id !== e),
+      createdAtoms: createdAtoms.filter(e => id !== e)
     });
   }
 
@@ -49,7 +49,7 @@ export default class TranslationGist extends React.Component {
     const { all_locales, translationgist } = this.props.data;
     const nextId = this.getAvailableLocales(all_locales, translationgist.translationatoms)[0].id;
     this.setState({
-      createdAtoms: [nextId, ...createdAtoms],
+      createdAtoms: [nextId, ...createdAtoms]
     });
   };
 
@@ -58,8 +58,14 @@ export default class TranslationGist extends React.Component {
     locales.forEach(locale => {
       if (locale.id == currentAtomLocale) {
         result.unshift(locale);
-      }
-      else if (atoms.every(atom => { return atom.locale_id != locale.id; }) && this.state.createdAtoms.every(id => { return id != locale.id; })) {
+      } else if (
+        atoms.every(atom => {
+          return atom.locale_id != locale.id;
+        }) &&
+        this.state.createdAtoms.every(id => {
+          return id != locale.id;
+        })
+      ) {
         result.push(locale);
       }
     });
@@ -108,7 +114,13 @@ export default class TranslationGist extends React.Component {
             </List.Item>
           ))}
         </List>
-        <Button disabled={this.getAvailableLocales(locales, atoms).length == 0} onClick={this.addAtom} className="lingvo-button-violet">{getTranslation('Add')}</Button>
+        <Button
+          disabled={this.getAvailableLocales(locales, atoms).length == 0}
+          onClick={this.addAtom}
+          className="lingvo-button-violet"
+        >
+          {getTranslation("Add")}
+        </Button>
       </Container>
     );
   }
@@ -124,5 +136,5 @@ TranslationGist.propTypes = {
 
 TranslationGist.defaultProps = {
   id: [null, null],
-  data: {},
+  data: {}
 };

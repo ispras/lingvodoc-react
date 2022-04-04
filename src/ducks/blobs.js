@@ -1,14 +1,14 @@
-import { combineReducers } from 'redux';
+import { combineReducers } from "redux";
 
 // Actions
-export const OPEN_BLOBS = '@blobs/OPEN_BLOBS';
-export const CLOSE_BLOBS = '@blobs/CLOSE_BLOBS';
+export const OPEN_BLOBS = "@blobs/OPEN_BLOBS";
+export const CLOSE_BLOBS = "@blobs/CLOSE_BLOBS";
 
 export const openBlobsModal = (dictionary, blobs) => ({
   type: OPEN_BLOBS,
   payload: {
     dictionary,
-    blobs,
+    blobs
   }
 });
 
@@ -46,5 +46,5 @@ const dictionary = (state = null, action) => {
 export default combineReducers({
   dictionary,
   blobs,
-  visible,
+  visible
 });

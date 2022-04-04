@@ -1,13 +1,13 @@
-import React, { PureComponent } from 'react';
-import PropTypes from 'prop-types';
+import React, { PureComponent } from "react";
+import PropTypes from "prop-types";
 
 class GridGenerator extends PureComponent {
   static propTypes = {
     data: PropTypes.array.isRequired,
     GridComponent: PropTypes.func.isRequired,
     RowComponent: PropTypes.func.isRequired,
-    ColumnComponent: PropTypes.func.isRequired,
-  }
+    ColumnComponent: PropTypes.func.isRequired
+  };
 
   constructor(props) {
     super();
@@ -21,8 +21,8 @@ class GridGenerator extends PureComponent {
     let resultNumberOfColumns = 0;
     const { data } = this.props;
 
-    data.forEach((row) => {
-      row.columns.forEach((column) => {
+    data.forEach(row => {
+      row.columns.forEach(column => {
         const columnNumberOfBlocksToRender = column.blocksToRender.length;
         if (columnNumberOfBlocksToRender > resultNumberOfColumns) {
           resultNumberOfColumns = columnNumberOfBlocksToRender;
@@ -66,21 +66,13 @@ class GridGenerator extends PureComponent {
       return null;
     }
 
-    return (
-      <Column key={id}>
-        {blocksToRender}
-      </Column>
-    );
+    return <Column key={id}>{blocksToRender}</Column>;
   }
 
   render() {
     const { Grid } = this;
     const numberOfColumns = this.getNumberOfColumns();
-    return (
-      <Grid columns={numberOfColumns}>
-        {this.renderRowGroup()}
-      </Grid>
-    );
+    return <Grid columns={numberOfColumns}>{this.renderRowGroup()}</Grid>;
   }
 }
 

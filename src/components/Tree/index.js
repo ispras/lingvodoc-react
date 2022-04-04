@@ -1,5 +1,5 @@
-import React from 'react';
-import SortableTree, { map } from 'react-sortable-tree';
+import React from "react";
+import SortableTree, { map } from "react-sortable-tree";
 
 function stateFromProps({ data, expanded }) {
   return {
@@ -7,8 +7,8 @@ function stateFromProps({ data, expanded }) {
       treeData: data.toJS(),
       callback: ({ node }) => ({ ...node, expanded: !!expanded }),
       getNodeKey: ({ treeIndex }) => treeIndex,
-      ignoreCollapsed: false,
-    }),
+      ignoreCollapsed: false
+    })
   };
 }
 

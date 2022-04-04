@@ -1,13 +1,14 @@
-import React, { PureComponent } from 'react';
-import { Segment } from 'semantic-ui-react';
-import PropTypes from 'prop-types';
-import Tree from './Tree';
+import React, { PureComponent } from "react";
+import { Segment } from "semantic-ui-react";
+import PropTypes from "prop-types";
+
+import Tree from "./Tree";
 
 /* ----------- PROPS ----------- */
 
 const classNames = {
-  hide: 'hide',
-}
+  hide: "hide"
+};
 
 /* ----------- COMPONENT ----------- */
 /**
@@ -22,13 +23,13 @@ class Languages extends PureComponent {
     checkAllButtonText: PropTypes.string.isRequired,
     uncheckAllButtonText: PropTypes.string.isRequired,
     showTree: PropTypes.bool,
-    filterMode: PropTypes.bool,
-  }
+    filterMode: PropTypes.bool
+  };
 
   static defaultProps = {
     showTree: false,
-    filterMode: false,
-  }
+    filterMode: false
+  };
 
   /**
    * Creates a list of ids from the internal format to the external format.
@@ -36,9 +37,7 @@ class Languages extends PureComponent {
    * @returns {Array} - output list in external format "[[1,2], [3,4]]" (array of arrays of integers)
    */
   static getListInExternalFormat(list) {
-    return list
-      .map(item => item.split(','))
-      .map(item => item.map(idPart => parseInt(idPart, 10)));
+    return list.map(item => item.split(",")).map(item => item.map(idPart => parseInt(idPart, 10)));
   }
 
   /**
@@ -47,8 +46,7 @@ class Languages extends PureComponent {
    * @returns {Array} - output list in internal format ["1,2", "3,4" ...] (array of strings)
    */
   static getListInInternalFormat(list) {
-    return list
-      .map(item => item.join(','));
+    return list.map(item => item.join(","));
   }
 
   constructor() {
@@ -74,13 +72,13 @@ class Languages extends PureComponent {
   getDataInInternalFormat(languagesChecked, dictionariesChecked) {
     return [
       {
-        type: 'language',
-        checked: this.constructor.getListInInternalFormat(languagesChecked),
+        type: "language",
+        checked: this.constructor.getListInInternalFormat(languagesChecked)
       },
       {
-        type: 'dictionary',
-        checked: this.constructor.getListInInternalFormat(dictionariesChecked),
-      },
+        type: "dictionary",
+        checked: this.constructor.getListInInternalFormat(dictionariesChecked)
+      }
     ];
   }
 
@@ -90,15 +88,15 @@ class Languages extends PureComponent {
    */
   getDataInExternalFormat(data) {
     let result = null;
-    if (data[0] === 'all') {
+    if (data[0] === "all") {
       result = {
         languages: [],
-        dictionaries: [],
+        dictionaries: []
       };
     } else {
       result = {
         languages: this.constructor.getListInExternalFormat(data[0].checked),
-        dictionaries: this.constructor.getListInExternalFormat(data[1].checked),
+        dictionaries: this.constructor.getListInExternalFormat(data[1].checked)
       };
     }
 
@@ -106,13 +104,13 @@ class Languages extends PureComponent {
   }
 
   render() {
-    const { languagesTree, langsChecked, dictsChecked, showTree,selectedLanguages } = this.props;
+    const { languagesTree, langsChecked, dictsChecked, showTree, selectedLanguages } = this.props;
     // TODO: translations
     const { checkAllButtonText, uncheckAllButtonText } = this.props;
     const checkedData = this.getDataInInternalFormat(langsChecked, dictsChecked);
 
     return (
-      <Segment.Group className={!showTree ? classNames.hide : ''}>
+      <Segment.Group className={!showTree ? classNames.hide : ""}>
         <Tree
           checked={checkedData}
           selectedLanguages={selectedLanguages}

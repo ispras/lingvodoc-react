@@ -1,19 +1,18 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { onlyUpdateForKeys } from 'recompose';
-import { find, isEqual } from 'lodash';
-import { Button, Input, Checkbox } from 'semantic-ui-react';
+import React from "react";
+import { Button, Checkbox, Input } from "semantic-ui-react";
+import { find, isEqual } from "lodash";
+import PropTypes from "prop-types";
+import { onlyUpdateForKeys } from "recompose";
 
-import Entities from './index';
+import Entities from "./index";
 
 class TextEntityContent extends React.Component {
-  
   constructor(props) {
     super(props);
 
     this.state = {
       edit: false,
-      content: props.entity.content,
+      content: props.entity.content
     };
 
     this.onEdit = this.onEdit.bind(this);
@@ -32,12 +31,24 @@ class TextEntityContent extends React.Component {
 
   render() {
     const {
-      entity, mode, publish, column, accept, remove, is_being_removed, is_being_updated, 
-      checkEntries, checkedRow, resetCheckedRow, checkedColumn, resetCheckedColumn, checkedAll, resetCheckedAll,
+      entity,
+      mode,
+      publish,
+      column,
+      accept,
+      remove,
+      is_being_removed,
+      is_being_updated,
+      checkEntries,
+      checkedRow,
+      resetCheckedRow,
+      checkedColumn,
+      resetCheckedColumn,
+      checkedAll,
+      resetCheckedAll
     } = this.props;
 
     if (checkEntries) {
-
       if (checkedAll) {
         if (checkedAll.checkedAll) {
           if (!entity.published) {
@@ -77,11 +88,10 @@ class TextEntityContent extends React.Component {
           }
         }
       }
-
     }
 
     switch (mode) {
-      case 'edit':
+      case "edit":
         return (
           <div>
             {!(is_being_updated || this.state.edit) && this.state.content}
@@ -94,29 +104,36 @@ class TextEntityContent extends React.Component {
             )}
             <Button.Group basic icon size="mini">
               <Button
-                icon={
-                  is_being_updated ? "spinner" :
-                  this.state.edit ? "save" : "edit"}
+                icon={is_being_updated ? "spinner" : this.state.edit ? "save" : "edit"}
                 onClick={this.onEdit}
                 disabled={is_being_updated}
               />
-              {is_being_removed ?
-                <Button icon="spinner" disabled /> :
-                <Button icon="remove" onClick={() => remove(entity)} />}
+              {is_being_removed ? (
+                <Button icon="spinner" disabled />
+              ) : (
+                <Button icon="remove" onClick={() => remove(entity)} />
+              )}
             </Button.Group>
           </div>
         );
-      case 'publish':
+      case "publish":
         return (
           <div className={checkEntries ? "lingvo-entry-text" : ""}>
-            {column.english_translation && column.english_translation === 'Number of the languages' && entity.id && entity.parent_id ? (
-            <a href={`/dictionary/${entity.parent_id[0]}/${entity.parent_id[1]}/perspective/${entity.id[0]}/${entity.id[1]}/edit`} className="lingvo-languages-link">
-              {entity.content}
-            </a>
-            ) : entity.content
-            }
+            {column.english_translation &&
+            column.english_translation === "Number of the languages" &&
+            entity.id &&
+            entity.parent_id ? (
+              <a
+                href={`/dictionary/${entity.parent_id[0]}/${entity.parent_id[1]}/perspective/${entity.id[0]}/${entity.id[1]}/edit`}
+                className="lingvo-languages-link"
+              >
+                {entity.content}
+              </a>
+            ) : (
+              entity.content
+            )}
             <Checkbox
-              className={checkEntries ? "lingvo-checkbox lingvo-entry-text__checkbox" : ""} 
+              className={checkEntries ? "lingvo-checkbox lingvo-entry-text__checkbox" : ""}
               checked={entity.published}
               onChange={(e, { checked }) => {
                 publish(entity, checked);
@@ -137,14 +154,15 @@ class TextEntityContent extends React.Component {
           </div>
         );
 
-      case 'view':
+      case "view":
         return entity.content;
-      case 'contributions':
-        return (
-          entity.accepted ? entity.content :
+      case "contributions":
+        return entity.accepted ? (
+          entity.content
+        ) : (
           <Button.Group icon size="small">
-            <Button basic color='black' content={entity.content} />
-            <Button basic color='black' icon="check" onClick={() => accept(entity, true)} />
+            <Button basic color="black" content={entity.content} />
+            <Button basic color="black" icon="check" onClick={() => accept(entity, true)} />
           </Button.Group>
         );
       default:
@@ -154,12 +172,15 @@ class TextEntityContent extends React.Component {
 }
 
 const Text = onlyUpdateForKeys([
-  'entry', 'entity', 'mode', 'is_being_removed', 'is_being_updated', 
-  'checkedRow',
-  'checkedColumn',
-  'checkedAll', 
-])((props) =>
-{
+  "entry",
+  "entity",
+  "mode",
+  "is_being_removed",
+  "is_being_updated",
+  "checkedRow",
+  "checkedColumn",
+  "checkedAll"
+])(props => {
   const {
     perspectiveId,
     column,
@@ -182,7 +203,7 @@ const Text = onlyUpdateForKeys([
     remove,
     update,
     is_being_removed,
-    is_being_updated,
+    is_being_updated
   } = props;
 
   const subColumn = find(columns, c => isEqual(c.self_id, column.column_id));
@@ -245,19 +266,19 @@ Text.propTypes = {
   update: PropTypes.func,
   resetCheckedRow: PropTypes.func,
   resetCheckedColumn: PropTypes.func,
-  resetCheckedAll: PropTypes.func,
+  resetCheckedAll: PropTypes.func
 };
 
 Text.defaultProps = {
-  as: 'li',
-  className: '',
+  as: "li",
+  className: ""
 };
 
 class Edit extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      content: '',
+      content: ""
     };
     this.onChange = this.onChange.bind(this);
     this.onKeyPress = this.onKeyPress.bind(this);
@@ -270,7 +291,7 @@ class Edit extends React.Component {
 
   onKeyPress(e) {
     const { onSave } = this.props;
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       onSave(this.state.content);
     }
   }
@@ -293,10 +314,7 @@ class Edit extends React.Component {
         onBlur={() => onSave(this.state.content)}
         action={
           <Button.Group basic size="mini">
-            <Button
-              icon={is_being_created ? "spinner" : "save"}
-              disabled={is_being_created}
-            />
+            <Button icon={is_being_created ? "spinner" : "save"} disabled={is_being_created} />
             <Button icon="remove" onClick={onCancel} />
           </Button.Group>
         }
@@ -307,12 +325,12 @@ class Edit extends React.Component {
 
 Edit.propTypes = {
   onSave: PropTypes.func,
-  onCancel: PropTypes.func,
+  onCancel: PropTypes.func
 };
 
 Edit.defaultProps = {
   onSave: () => {},
-  onCancel: () => {},
+  onCancel: () => {}
 };
 
 Text.Edit = Edit;

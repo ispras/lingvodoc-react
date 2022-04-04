@@ -1,4 +1,4 @@
-import gql from 'graphql-tag';
+import gql from "graphql-tag";
 
 export const grantsQuery = gql`
   query publicGrants {
@@ -23,7 +23,6 @@ export const grantsQuery = gql`
     user {
       id
     }
-   
   }
 `;
 

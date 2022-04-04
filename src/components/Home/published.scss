@@ -42,7 +42,7 @@ ul.tree {
   margin-bottom: 2em;
 
   .grant-title {
-    padding: .5em;
+    padding: 0.5em;
     padding-bottom: 1em;
     font-weight: bold;
     font-size: 1.4em;
@@ -72,7 +72,7 @@ ul.tree {
   }
 
   &.highlighted {
-    background-color: #EDECF6;
+    background-color: #edecf6;
     border-radius: 0 12px 12px 0;
   }
 }

@@ -1,10 +1,10 @@
-import { combineReducers } from 'redux';
+import { combineReducers } from "redux";
 
 // Actions
-export const REQUEST = '@task/REQUEST';
-export const TOGGLE = '@task/TOGGLE';
-export const SET = '@task/SET';
-export const REMOVE = '@task/REMOVE';
+export const REQUEST = "@task/REQUEST";
+export const TOGGLE = "@task/TOGGLE";
+export const SET = "@task/SET";
+export const REMOVE = "@task/REMOVE";
 
 // Reducers
 function tasks(state = [], action = {}) {
@@ -41,7 +41,7 @@ function loading(state = false, action = {}) {
 export default combineReducers({
   tasks,
   visible,
-  loading,
+  loading
 });
 
 // Action Creators
@@ -60,6 +60,6 @@ export function setTasks(payload) {
 export function removeTask(payload) {
   return {
     type: REMOVE,
-    payload,
+    payload
   };
 }

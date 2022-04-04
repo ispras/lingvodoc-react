@@ -1,22 +1,22 @@
-import { combineReducers } from 'redux';
+import { combineReducers } from "redux";
 
 // Actions
-export const OPEN_MODAL_CREATE = '@language/OPEN_MODAL_CREATE';
-export const OPEN_MODAL_EDIT = '@language/OPEN_MODAL_EDIT';
-export const CLOSE_MODAL = '@language/CLOSE_MODAL';
+export const OPEN_MODAL_CREATE = "@language/OPEN_MODAL_CREATE";
+export const OPEN_MODAL_EDIT = "@language/OPEN_MODAL_EDIT";
+export const CLOSE_MODAL = "@language/CLOSE_MODAL";
 
 export const openModalCreate = parent => ({
   type: OPEN_MODAL_CREATE,
-  payload: parent,
+  payload: parent
 });
 
 export const openModalEdit = language => ({
   type: OPEN_MODAL_EDIT,
-  payload: language,
+  payload: language
 });
 
 export const closeModal = () => ({
-  type: CLOSE_MODAL,
+  type: CLOSE_MODAL
 });
 
 const createVisible = (state = false, action) => {
@@ -63,5 +63,5 @@ export default combineReducers({
   createVisible,
   editVisible,
   language,
-  parent,
+  parent
 });

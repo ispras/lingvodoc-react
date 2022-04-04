@@ -1,17 +1,17 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { compose, onlyUpdateForKeys } from 'recompose';
-import { isEqual, findIndex } from 'lodash';
-import { graphql } from 'react-apollo';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import gql from 'graphql-tag';
-import { Button, List, Dropdown, Grid, Checkbox, Icon } from 'semantic-ui-react';
+import React from "react";
+import { graphql } from "react-apollo";
+import { connect } from "react-redux";
+import { Button, Checkbox, Dropdown, Grid, Icon, List } from "semantic-ui-react";
+import { getTranslation } from "api/i18n";
+import gql from "graphql-tag";
+import { findIndex, isEqual } from "lodash";
+import PropTypes from "prop-types";
+import { compose, onlyUpdateForKeys } from "recompose";
+import { bindActionCreators } from "redux";
 
-import { compositeIdToString } from 'utils/compositeId';
-import { getTranslation } from 'api/i18n';
-import { openCreateFieldModal } from 'ducks/fields';
-import { queryPerspective } from 'components/PerspectiveView';
+import { queryPerspective } from "components/PerspectiveView";
+import { openCreateFieldModal } from "ducks/fields";
+import { compositeIdToString } from "utils/compositeId";
 
 const columnsQuery = gql`
   query ColumnsQuery($perspectiveId: LingvodocID!) {
@@ -91,11 +91,7 @@ const updatePositionMutation = gql`
 `;
 
 const setNestedMutation = gql`
-  mutation UpdateColumnMutation(
-    $id1: LingvodocID!
-    $perspectiveId: LingvodocID
-    $selfId1: LingvodocID!
-  ) {
+  mutation UpdateColumnMutation($id1: LingvodocID!, $perspectiveId: LingvodocID, $selfId1: LingvodocID!) {
     update_column(id: $id1, parent_id: $perspectiveId, self_id: $selfId1) {
       triumph
     }
@@ -119,28 +115,28 @@ const updateNestedMutation = gql`
   }
 `;
 
-const NestedColumn = ({
-  column, columns, fields, onChange,
-}) => {
+const NestedColumn = ({ column, columns, fields, onChange }) => {
   const nested = columns.find(({ self_id: s }) => isEqual(column.id, s));
-  const selectedValue = nested ? compositeIdToString(nested.id) : '';
-  const options = columns.filter(c => !isEqual(c.id, column.id)).map((c) => {
-    const field = fields.find(f => isEqual(f.id, c.field_id));
-    return { text: field.translation, value: compositeIdToString(c.id) };
-  });
+  const selectedValue = nested ? compositeIdToString(nested.id) : "";
+  const options = columns
+    .filter(c => !isEqual(c.id, column.id))
+    .map(c => {
+      const field = fields.find(f => isEqual(f.id, c.field_id));
+      return { text: field.translation, value: compositeIdToString(c.id) };
+    });
 
   // XXX: Temporary workaround
-  const getChangedField = (value) => {
+  const getChangedField = value => {
     const newColumn = columns.find(c => isEqual(compositeIdToString(c.id), value));
     return [
       {
         ...newColumn,
-        self_id: column.id,
+        self_id: column.id
       },
       {
         ...nested,
-        self_id: null,
-      },
+        self_id: null
+      }
     ];
   };
 
@@ -158,7 +154,7 @@ NestedColumn.propTypes = {
   column: PropTypes.object.isRequired,
   columns: PropTypes.array.isRequired,
   fields: PropTypes.array.isRequired,
-  onChange: PropTypes.func.isRequired,
+  onChange: PropTypes.func.isRequired
 };
 
 class C extends React.Component {
@@ -167,7 +163,7 @@ class C extends React.Component {
     const { column, columns } = props;
     this.state = {
       ...column,
-      hasNestedField: !!columns.find(({ self_id: s }) => isEqual(column.id, s)),
+      hasNestedField: !!columns.find(({ self_id: s }) => isEqual(column.id, s))
     };
     this.onFieldChange = this.onFieldChange.bind(this);
     this.onLinkChange = this.onLinkChange.bind(this);
@@ -178,14 +174,12 @@ class C extends React.Component {
   onFieldChange(value) {
     const { actions, column, fields } = this.props;
 
-    if (value === 'new_field')
-    {
-      actions.openCreateFieldModal(
-        (field_id) => {
-          this.setState({ field_id }, () => {
-            this.update(column, field_id, column.link_id);
-          });
+    if (value === "new_field") {
+      actions.openCreateFieldModal(field_id => {
+        this.setState({ field_id }, () => {
+          this.update(column, field_id, column.link_id);
         });
+      });
 
       return;
     }
@@ -206,41 +200,37 @@ class C extends React.Component {
     });
   }
 
-  onNestedCheckboxChange(checked)
-  {
+  onNestedCheckboxChange(checked) {
     this.setState({ hasNestedField: checked });
 
     // If we disable selected nested column, we should unlink it.
 
-    if (!checked)
-    {
+    if (!checked) {
       const { column, columns, setNested } = this.props;
 
-      const nested =
-        columns.find(({ self_id: s }) => isEqual(column.id, s));
+      const nested = columns.find(({ self_id: s }) => isEqual(column.id, s));
 
-      if (nested)
-      {
+      if (nested) {
         setNested({
           variables: {
             id1: nested.id,
             selfId1: [-1, -1],
-            perspectiveId: column.parent_id,
+            perspectiveId: column.parent_id
           },
           refetchQueries: [
             {
               query: columnsQuery,
               variables: {
-                perspectiveId: column.parent_id,
-              },
+                perspectiveId: column.parent_id
+              }
             },
             {
               query: queryPerspective,
               variables: {
-                id: column.parent_id,
-              },
-            },
-          ],
+                id: column.parent_id
+              }
+            }
+          ]
         });
       }
     }
@@ -254,22 +244,22 @@ class C extends React.Component {
         id2: nested[1].id,
         selfId1: nested[0].self_id,
         selfId2: nested[1].self_id,
-        parentId: column.parent_id,
+        parentId: column.parent_id
       },
       refetchQueries: [
         {
           query: columnsQuery,
           variables: {
-            perspectiveId: column.parent_id,
-          },
+            perspectiveId: column.parent_id
+          }
         },
         {
           query: queryPerspective,
           variables: {
-            id: column.parent_id,
-          },
-        },
-      ],
+            id: column.parent_id
+          }
+        }
+      ]
     });
   }
 
@@ -280,36 +270,35 @@ class C extends React.Component {
         parentId: column.parent_id,
         fieldId,
         pos: column.position,
-        linkId,
+        linkId
       },
       refetchQueries: [
         {
           query: columnsQuery,
           variables: {
-            perspectiveId: column.parent_id,
-          },
+            perspectiveId: column.parent_id
+          }
         },
         {
           query: queryPerspective,
           variables: {
-            id: column.parent_id,
-          },
-        },
-      ],
+            id: column.parent_id
+          }
+        }
+      ]
     });
   };
 
   render() {
-    const {
-      column, columns, fields, perspectives,
-    } = this.props;
+    const { column, columns, fields, perspectives } = this.props;
 
     const field = fields.find(f => isEqual(f.id, this.state.field_id));
     const options = fields.map(f => ({ text: f.translation, value: compositeIdToString(f.id) }));
 
     options.push({
-      text: getTranslation('Add new field...'),
-      value: 'new_field'})
+      text: getTranslation("Add new field..."),
+      value: "new_field"
+    });
 
     const availablePerspectives = perspectives.map(p => ({ text: p.translation, value: compositeIdToString(p.id) }));
     const currentField = compositeIdToString(this.state.field_id);
@@ -324,19 +313,18 @@ class C extends React.Component {
           disabled={!field}
           loading={!field}
         />
+        {field && field.data_type === "Link" && (
+          <Dropdown
+            selection
+            defaultValue={this.state.link_id ? compositeIdToString(this.state.link_id) : null}
+            options={availablePerspectives}
+            onChange={(a, { value }) => this.onLinkChange(value)}
+          />
+        )}
         {field &&
-          field.data_type === 'Link' && (
-            <Dropdown
-              selection
-              defaultValue={this.state.link_id ? compositeIdToString(this.state.link_id) : null}
-              options={availablePerspectives}
-              onChange={(a, { value }) => this.onLinkChange(value)}
-            />
-          )}
-        {field &&
-          field.data_type !== 'Link' &&
-          field.data_type !== 'Directed Link' &&
-          field.data_type !== 'Grouping Tag' && (
+          field.data_type !== "Link" &&
+          field.data_type !== "Directed Link" &&
+          field.data_type !== "Grouping Tag" && (
             <Checkbox
               defaultChecked={this.state.hasNestedField}
               onChange={(e, { checked }) => this.onNestedCheckboxChange(checked)}
@@ -358,15 +346,16 @@ C.propTypes = {
   fields: PropTypes.array.isRequired,
   updateColumn: PropTypes.func.isRequired,
   setNested: PropTypes.func.isRequired,
-  updateNested: PropTypes.func.isRequired,
+  updateNested: PropTypes.func.isRequired
 };
 
 const Column = compose(
   connect(null, dispatch => ({
-    actions: bindActionCreators({ openCreateFieldModal }, dispatch)})),
-  graphql(updateColumnMutation, { name: 'updateColumn' }),
-  graphql(setNestedMutation, { name: 'setNested' }),
-  graphql(updateNestedMutation, { name: 'updateNested' })
+    actions: bindActionCreators({ openCreateFieldModal }, dispatch)
+  })),
+  graphql(updateColumnMutation, { name: "updateColumn" }),
+  graphql(setNestedMutation, { name: "setNested" }),
+  graphql(updateNestedMutation, { name: "updateNested" })
 )(C);
 
 class Columns extends React.Component {
@@ -381,7 +370,7 @@ class Columns extends React.Component {
     const { perspectiveId, updatePosition } = this.props;
 
     const columnIndex = findIndex(columns, c => isEqual(c.id, column.id));
-    const swapColumnIndex = direction === 'up' ? columnIndex - 1 : columnIndex + 1;
+    const swapColumnIndex = direction === "up" ? columnIndex - 1 : columnIndex + 1;
 
     if (swapColumnIndex >= 0 && swapColumnIndex < columns.length) {
       const swapColumn = columns[swapColumnIndex];
@@ -391,16 +380,16 @@ class Columns extends React.Component {
           id2: swapColumn.id,
           pos1: swapColumn.position,
           pos2: column.position,
-          perspectiveId,
+          perspectiveId
         },
         refetchQueries: [
           {
             query: columnsQuery,
             variables: {
-              perspectiveId,
-            },
-          },
-        ],
+              perspectiveId
+            }
+          }
+        ]
       });
     }
   }
@@ -425,22 +414,22 @@ class Columns extends React.Component {
         fieldId: field.id,
         pos,
         linkId: null,
-        selfId: null,
+        selfId: null
       },
       refetchQueries: [
         {
           query: columnsQuery,
           variables: {
-            perspectiveId: perspective.id,
-          },
+            perspectiveId: perspective.id
+          }
         },
         {
           query: queryPerspective,
           variables: {
-            id: perspective.id,
-          },
-        },
-      ],
+            id: perspective.id
+          }
+        }
+      ]
     });
   }
 
@@ -448,22 +437,22 @@ class Columns extends React.Component {
     const { perspectiveId, removeColumn } = this.props;
     removeColumn({
       variables: {
-        id: column.id,
+        id: column.id
       },
       refetchQueries: [
         {
           query: columnsQuery,
           variables: {
-            perspectiveId,
-          },
+            perspectiveId
+          }
         },
         {
           query: queryPerspective,
           variables: {
-            id: perspectiveId,
-          },
-        },
-      ],
+            id: perspectiveId
+          }
+        }
+      ]
     });
   }
 
@@ -473,43 +462,49 @@ class Columns extends React.Component {
 
     if (error) {
       return null;
-    }
-    else if (loading)
-    {
+    } else if (loading) {
       return (
-        <div style={{'textAlign': 'center'}}>
-          <div><Icon name='spinner' size='big' loading/></div>
-          <div style={{'marginTop': '0.5em'}}>Loading</div>
-        </div>);
+        <div style={{ textAlign: "center" }}>
+          <div>
+            <Icon name="spinner" size="big" loading />
+          </div>
+          <div style={{ marginTop: "0.5em" }}>Loading</div>
+        </div>
+      );
     }
 
-    const { perspective: { columns }, all_fields: allFields } = data;
+    const {
+      perspective: { columns },
+      all_fields: allFields
+    } = data;
 
     return (
       <div>
         <List divided relaxed>
-          {columns.filter(column => !column.self_id).map(column => (
-            <List.Item key={column.id}>
-              <Grid centered columns={2}>
-                <Grid.Column width={11}>
-                  <Column column={column} columns={columns} fields={allFields} perspectives={perspectives} />
-                </Grid.Column>
-                <Grid.Column width={1}>
-                  <Button.Group icon>
-                    <Button basic icon="caret up" onClick={() => this.onChangePos(column, columns, 'up')} />
-                    <Button basic icon="caret down" onClick={() => this.onChangePos(column, columns, 'down')} />
-                    <Button negative icon="cancel" onClick={() => this.onRemove(column)} />
-                  </Button.Group>
-                </Grid.Column>
-              </Grid>
-            </List.Item>
-          ))}
+          {columns
+            .filter(column => !column.self_id)
+            .map(column => (
+              <List.Item key={column.id}>
+                <Grid centered columns={2}>
+                  <Grid.Column width={11}>
+                    <Column column={column} columns={columns} fields={allFields} perspectives={perspectives} />
+                  </Grid.Column>
+                  <Grid.Column width={1}>
+                    <Button.Group icon>
+                      <Button basic icon="caret up" onClick={() => this.onChangePos(column, columns, "up")} />
+                      <Button basic icon="caret down" onClick={() => this.onChangePos(column, columns, "down")} />
+                      <Button negative icon="cancel" onClick={() => this.onRemove(column)} />
+                    </Button.Group>
+                  </Grid.Column>
+                </Grid>
+              </List.Item>
+            ))}
         </List>
 
         <Button
           basic
           content={getTranslation("Add new column")}
-          onClick={() => this.onCreate(allFields.find(f => f.data_type === 'Text'))}
+          onClick={() => this.onCreate(allFields.find(f => f.data_type === "Text"))}
         />
       </div>
     );
@@ -520,17 +515,17 @@ Columns.propTypes = {
   perspectiveId: PropTypes.array.isRequired,
   perspectives: PropTypes.array.isRequired,
   data: PropTypes.shape({
-    loading: PropTypes.bool.isRequired,
+    loading: PropTypes.bool.isRequired
   }).isRequired,
   createColumn: PropTypes.func.isRequired,
   removeColumn: PropTypes.func.isRequired,
-  updatePosition: PropTypes.func.isRequired,
+  updatePosition: PropTypes.func.isRequired
 };
 
 export default compose(
-  onlyUpdateForKeys(['data']),
+  onlyUpdateForKeys(["data"]),
   graphql(columnsQuery),
-  graphql(createColumnMutation, { name: 'createColumn' }),
-  graphql(removeColumnMutation, { name: 'removeColumn' }),
-  graphql(updatePositionMutation, { name: 'updatePosition' })
+  graphql(createColumnMutation, { name: "createColumn" }),
+  graphql(removeColumnMutation, { name: "removeColumn" }),
+  graphql(updatePositionMutation, { name: "updatePosition" })
 )(Columns);

@@ -1,11 +1,12 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { compose, mapProps } from 'recompose';
-import { Container } from 'semantic-ui-react';
+import React from "react";
+import { Container } from "semantic-ui-react";
+import PropTypes from "prop-types";
+import { compose, mapProps } from "recompose";
 
-import LangsNavAutocomplete from 'components/Home/components/LangsNav/LangsNavAutocomplete/index';
-import LangsNavList from 'components/Home/components/LangsNav/LangsNavList/index';
-import { sortLangsAlphabetically } from '../../common';
+import LangsNavAutocomplete from "components/Home/components/LangsNav/LangsNavAutocomplete/index";
+import LangsNavList from "components/Home/components/LangsNav/LangsNavList/index";
+
+import { sortLangsAlphabetically } from "../../common";
 
 /*
  * Used for filtering languages based on a list provided by Julia Normanskaya.
@@ -217,12 +218,12 @@ export const languageIdList = [
   [1372, 11240], // Volga Tatar
   [2108, 13], // Votic
   [1574, 274494], // Xibe
-  [678, 9], // Yakut
+  [678, 9] // Yakut
 ];
 
 const languageSet = languageIdList.reduce((object, id) => {
   const objectId = object;
-  objectId[`${id}`] = '';
+  objectId[`${id}`] = "";
   return objectId;
 }, {});
 
@@ -234,19 +235,19 @@ export const checkLanguageId = id => languageSet.hasOwnProperty(`${id}`);
 const prepareData = (resultData, language) => {
   const resultDictsCount = {
     dicts: 0,
-    corps: 0,
+    corps: 0
   };
 
   // counting all dictionaries
   if (language.children.length > 0) {
-    language.children.forEach((item) => {
-      if (item.type === 'dictionary') {
+    language.children.forEach(item => {
+      if (item.type === "dictionary") {
         if (item.category === 0) {
           resultDictsCount.dicts += 1;
         } else if (item.category === 1) {
           resultDictsCount.corps += 1;
         }
-      } else if (item.type === 'language') {
+      } else if (item.type === "language") {
         const itemDictsCount = prepareData(resultData, item);
 
         resultDictsCount.dicts += itemDictsCount.dicts;
@@ -258,24 +259,25 @@ const prepareData = (resultData, language) => {
   // eslint-disable-next-line no-param-reassign
   language.dictsCount = resultDictsCount;
 
-  if (language.type === 'language') {
+  if (language.type === "language") {
     resultData.push(language);
   }
 
   return resultDictsCount;
 };
 
-const makeLetterMap = data => data.reduce((acc, cur) => {
-  const letter = cur.translation[0].toLocaleUpperCase();
+const makeLetterMap = data =>
+  data.reduce((acc, cur) => {
+    const letter = cur.translation[0].toLocaleUpperCase();
 
-  if (acc[letter]) {
-    acc[letter].push(cur);
-  } else {
-    acc[letter] = [cur];
-  }
+    if (acc[letter]) {
+      acc[letter].push(cur);
+    } else {
+      acc[letter] = [cur];
+    }
 
-  return acc;
-}, {});
+    return acc;
+  }, {});
 
 /* ----------- ENHANCERS ----------- */
 const propsHandler = mapProps(({ data, ...rest }) => {
@@ -290,7 +292,7 @@ const propsHandler = mapProps(({ data, ...rest }) => {
   return {
     ...rest,
     autocompleteData: preparedData,
-    listData,
+    listData
   };
 });
 
@@ -298,18 +300,18 @@ const enhance = compose(propsHandler);
 
 /* ----------- COMPONENT ----------- */
 const LangsNav = ({ autocompleteData, listData }) => (
-  <React.Fragment>
+  <>
     <Container>
       <LangsNavAutocomplete data={autocompleteData} />
     </Container>
     <LangsNavList data={listData} />
-  </React.Fragment>
+  </>
 );
 
 /* ----------- PROPS VALIDATION ----------- */
 LangsNav.propTypes = {
   autocompleteData: PropTypes.array.isRequired,
-  listData: PropTypes.array.isRequired,
+  listData: PropTypes.array.isRequired
 };
 
 export default enhance(LangsNav);

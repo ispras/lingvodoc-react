@@ -1,8 +1,8 @@
-import { combineReducers } from 'redux';
+import { combineReducers } from "redux";
 
 // Actions
-const OPEN_MODAL = '@perspective/properties/OPEN_MODAL';
-const CLOSE_MODAL = '@perspective/properties/CLOSE_MODAL';
+const OPEN_MODAL = "@perspective/properties/OPEN_MODAL";
+const CLOSE_MODAL = "@perspective/properties/CLOSE_MODAL";
 
 export const openPerspectivePropertiesModal = (id, parentId, title) => ({
   type: OPEN_MODAL,

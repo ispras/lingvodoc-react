@@ -1,28 +1,26 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { branch, compose, renderNothing } from 'recompose';
-import { graphql } from 'react-apollo';
-import gql from 'graphql-tag';
-import { Button, Modal, Select, Grid, Header, Table } from 'semantic-ui-react';
-import { closeModal as closeDictionaryOrganizationsModal } from 'ducks/dictionaryOrganizations';
-import { bindActionCreators } from 'redux';
-import { map } from 'lodash';
-import { connect } from 'react-redux';
+import React from "react";
+import { graphql } from "react-apollo";
+import { connect } from "react-redux";
+import { Button, Grid, Header, Modal, Select, Table } from "semantic-ui-react";
+import { getTranslation } from "api/i18n";
+import gql from "graphql-tag";
+import { map } from "lodash";
+import PropTypes from "prop-types";
+import { branch, compose, renderNothing } from "recompose";
+import { bindActionCreators } from "redux";
 
-import { compositeIdToString as id2str } from 'utils/compositeId';
-import Translations from 'components/Translation';
-import { getTranslation } from 'api/i18n';
-import { getUserRequestsQuery } from 'components/Grants/graphql';
-import { organizationsQuery } from 'pages/Organizations';
+import { getUserRequestsQuery } from "components/Grants/graphql";
+import Translations from "components/Translation";
+import { closeModal as closeDictionaryOrganizationsModal } from "ducks/dictionaryOrganizations";
+import { organizationsQuery } from "pages/Organizations";
+import { compositeIdToString as id2str } from "utils/compositeId";
 
-class DictionaryOrganizationsModal extends React.Component
-{
-  constructor(props)
-  {
+class DictionaryOrganizationsModal extends React.Component {
+  constructor(props) {
     super(props);
 
     this.state = {
-      requested_id_set: {},
+      requested_id_set: {}
     };
 
     this.linked_list = [];
@@ -30,148 +28,111 @@ class DictionaryOrganizationsModal extends React.Component
 
     const {
       data: { organizations },
-      dictionaryId } = this.props;
+      dictionaryId
+    } = this.props;
 
     const dictionaryIdStr = id2str(dictionaryId);
 
-    for (const organization of organizations)
-    {
-      (organization.additional_metadata.participant.some(
-        id => id2str(id) == dictionaryIdStr) ?
-
-        this.linked_list :
-        this.link_to_list)
-
-        .push(organization);
+    for (const organization of organizations) {
+      (organization.additional_metadata.participant.some(id => id2str(id) == dictionaryIdStr)
+        ? this.linked_list
+        : this.link_to_list
+      ).push(organization);
     }
   }
 
-  render()
-  {
-    const {
-      addDictionaryToOrganization,
-      closeDictionaryOrganizationsModal,
-      data,
-      dictionaryId } = this.props;
+  render() {
+    const { addDictionaryToOrganization, closeDictionaryOrganizationsModal, data, dictionaryId } = this.props;
 
     return (
-      <Modal
-        closeIcon
-        onClose={closeDictionaryOrganizationsModal}
-        dimmer
-        open
-        className="lingvo-modal2">
-
-        <Modal.Header>{getTranslation('Organizations')}</Modal.Header>
+      <Modal closeIcon onClose={closeDictionaryOrganizationsModal} dimmer open className="lingvo-modal2">
+        <Modal.Header>{getTranslation("Organizations")}</Modal.Header>
 
         <Modal.Content>
-
           <div>
-           
-            <div className="lingvo-organizations-head-table">
-                {getTranslation('Linked organizations:')}
-            </div>
+            <div className="lingvo-organizations-head-table">{getTranslation("Linked organizations:")}</div>
 
-            {this.linked_list.length > 0 && (
+            {(this.linked_list.length > 0 && (
               <Table celled className="lingvo-organizations-table">
                 <Table.Body>
                   {map(this.linked_list, organization => (
                     <Table.Row key={organization.id}>
-                      <Table.Cell>
-                        {organization.translation}
-                      </Table.Cell>
+                      <Table.Cell>{organization.translation}</Table.Cell>
                     </Table.Row>
                   ))}
                 </Table.Body>
               </Table>
-            ) || (
-              <div className="lingvo-organizations-none">
-                &mdash;
-              </div>
-            )}
+            )) || <div className="lingvo-organizations-none">&mdash;</div>}
           </div>
-          
-          <div style={{marginTop: '1.75em'}}>
-            
+
+          <div style={{ marginTop: "1.75em" }}>
             <div className="lingvo-organizations-head-table">
-              {getTranslation('Organizations available to link to:')}
+              {getTranslation("Organizations available to link to:")}
             </div>
 
-            {this.link_to_list.length > 0 && (
+            {(this.link_to_list.length > 0 && (
               <Table celled className="lingvo-organizations-table">
-              <Table.Body>
-                {map(this.link_to_list, organization => {
+                <Table.Body>
+                  {map(this.link_to_list, organization => {
+                    const id_str = `${organization.id}`;
 
-                  const id_str = `${organization.id}`;
+                    const already = this.state.requested_id_set.hasOwnProperty(id_str);
 
-                  const already = this.state.requested_id_set.hasOwnProperty(id_str);
+                    return (
+                      <Table.Row key={organization.id}>
+                        <Table.Cell>{organization.translation}</Table.Cell>
 
-                  return (
-                    <Table.Row key={organization.id}>
-                      <Table.Cell>
-                        {organization.translation}
-                      </Table.Cell>
-
-                      <Table.Cell>
-                        <Button
-                          content={already ?
-                            getTranslation('Link requested') :
-                            getTranslation('Request link')}
-                          disabled={already}
-                          className="lingvo-button-green-small"
-                          onClick={() =>
-                          {
-                            addDictionaryToOrganization({
-                              variables: {
-                                dictionaryId,
-                                organizationId: organization.id },
-                              refetchQueries: [
-                                {
-                                  query: getUserRequestsQuery,
+                        <Table.Cell>
+                          <Button
+                            content={already ? getTranslation("Link requested") : getTranslation("Request link")}
+                            disabled={already}
+                            className="lingvo-button-green-small"
+                            onClick={() => {
+                              addDictionaryToOrganization({
+                                variables: {
+                                  dictionaryId,
+                                  organizationId: organization.id
                                 },
-                              ],
-                            })
-                            .then(
-                              () =>
-                              {
-                                window.logger.suc(getTranslation(
-                                  "Request has been sent to the organization's administrator."));
+                                refetchQueries: [
+                                  {
+                                    query: getUserRequestsQuery
+                                  }
+                                ]
+                              }).then(
+                                () => {
+                                  window.logger.suc(
+                                    getTranslation("Request has been sent to the organization's administrator.")
+                                  );
 
-                                this.state.requested_id_set[id_str] = null;
-                                this.setState({ requested_id_set: this.state.requested_id_set });
-                              },
-                              error =>
-                              {
-                                if (error.message == 'GraphQL error: Request already exists.')
-                                {
                                   this.state.requested_id_set[id_str] = null;
                                   this.setState({ requested_id_set: this.state.requested_id_set });
+                                },
+                                error => {
+                                  if (error.message == "GraphQL error: Request already exists.") {
+                                    this.state.requested_id_set[id_str] = null;
+                                    this.setState({ requested_id_set: this.state.requested_id_set });
+                                  }
                                 }
-                              }
-                            );
-                          }}
-                        />
-                      </Table.Cell>
-
-                    </Table.Row>
-                  );
-                })}
-              </Table.Body>
+                              );
+                            }}
+                          />
+                        </Table.Cell>
+                      </Table.Row>
+                    );
+                  })}
+                </Table.Body>
               </Table>
-            ) || (
-              <div className="lingvo-organizations-none">
-                &mdash;
-              </div>
-            )}
-
+            )) || <div className="lingvo-organizations-none">&mdash;</div>}
           </div>
-
         </Modal.Content>
 
         <Modal.Actions>
-          <Button content={getTranslation("Close")} onClick={closeDictionaryOrganizationsModal} className="lingvo-button-basic-black" />
+          <Button
+            content={getTranslation("Close")}
+            onClick={closeDictionaryOrganizationsModal}
+            className="lingvo-button-basic-black"
+          />
         </Modal.Actions>
-
       </Modal>
     );
   }
@@ -179,30 +140,25 @@ class DictionaryOrganizationsModal extends React.Component
 
 DictionaryOrganizationsModal.propTypes = {
   closeDictionaryOrganizationsModal: PropTypes.func.isRequired,
-  visible: PropTypes.bool.isRequired,
+  visible: PropTypes.bool.isRequired
 };
 
 export default compose(
   connect(
     state => state.dictionaryOrganizations,
-    dispatch => bindActionCreators({ closeDictionaryOrganizationsModal }, dispatch)),
+    dispatch => bindActionCreators({ closeDictionaryOrganizationsModal }, dispatch)
+  ),
   branch(({ visible }) => !visible, renderNothing),
   graphql(organizationsQuery),
   graphql(
     gql`
-      mutation addDictionaryToOrganization(
-        $dictionaryId: LingvodocID!,
-        $organizationId: Int!)
-      {
-        add_dictionary_to_organization(
-          dictionary_id: $dictionaryId,
-          organization_id: $organizationId)
-        {
+      mutation addDictionaryToOrganization($dictionaryId: LingvodocID!, $organizationId: Int!) {
+        add_dictionary_to_organization(dictionary_id: $dictionaryId, organization_id: $organizationId) {
           triumph
         }
       }
     `,
-    { name: 'addDictionaryToOrganization' }
+    { name: "addDictionaryToOrganization" }
   ),
-  branch(({ data }) => data.loading, renderNothing),
+  branch(({ data }) => data.loading, renderNothing)
 )(DictionaryOrganizationsModal);

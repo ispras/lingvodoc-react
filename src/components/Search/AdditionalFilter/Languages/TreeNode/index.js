@@ -1,19 +1,19 @@
-import React, { PureComponent } from 'react';
-import PropTypes from 'prop-types';
-import { Checkbox } from 'semantic-ui-react';
+import React, { PureComponent } from "react";
+import { Checkbox } from "semantic-ui-react";
+import PropTypes from "prop-types";
 
 /* ----------- PROPS ----------- */
 const classNames = {
-  leaf: 'search-language-tree__leaf',
-  group: 'search-language-tree__group',
-  node: 'search-language-tree__node',
-  translationWrap: 'search-language-tree__translation-wrap',
-  translation: 'search-language-tree__translation',
-  checkbox: 'search-language-tree__checkbox',
-  expandButton: 'search-language-tree__button search-language-tree__button_expand',
-  collapseButton: 'search-language-tree__button search-language-tree__button_collapse',
-  title: 'search-language-tree__title',
-  items: 'search-language-tree__items',
+  leaf: "search-language-tree__leaf",
+  group: "search-language-tree__group",
+  node: "search-language-tree__node",
+  translationWrap: "search-language-tree__translation-wrap",
+  translation: "search-language-tree__translation",
+  checkbox: "search-language-tree__checkbox",
+  expandButton: "search-language-tree__button search-language-tree__button_expand",
+  collapseButton: "search-language-tree__button search-language-tree__button_collapse",
+  title: "search-language-tree__title",
+  items: "search-language-tree__items"
 };
 
 /**
@@ -31,15 +31,15 @@ class TreeNode extends PureComponent {
     onCheck: PropTypes.func,
     children: PropTypes.node,
     optimisticToggle: PropTypes.bool,
-    type: PropTypes.string.isRequired,
-  }
+    type: PropTypes.string.isRequired
+  };
 
   static defaultProps = {
     onExpand: () => {},
     onCheck: () => {},
     children: null,
-    optimisticToggle: true,
-  }
+    optimisticToggle: true
+  };
 
   constructor() {
     super();
@@ -67,7 +67,7 @@ class TreeNode extends PureComponent {
 
     this.props.onCheck({
       value: this.props.value,
-      checked: isChecked,
+      checked: isChecked
     });
   }
 
@@ -75,9 +75,7 @@ class TreeNode extends PureComponent {
    * On expand tree node event handler.
    */
   onExpand() {
-    const {
-      expanded, value, onExpand, isLeaf,
-    } = this.props;
+    const { expanded, value, onExpand, isLeaf } = this.props;
     if (isLeaf) {
       return;
     }
@@ -90,7 +88,7 @@ class TreeNode extends PureComponent {
    */
   onKeyPress(ev) {
     const { isLeaf } = this.props;
-    if (ev.key === 'Enter') {
+    if (ev.key === "Enter") {
       if (isLeaf) {
         this.onCheck();
       } else {
@@ -117,7 +115,7 @@ class TreeNode extends PureComponent {
    * @param {Object} ev - keyboard event object
    */
   onCheckboxKeyPress(ev) {
-    if (ev.key === 'Enter') {
+    if (ev.key === "Enter") {
       this.onCheck();
     }
   }
@@ -130,11 +128,7 @@ class TreeNode extends PureComponent {
       return null;
     }
 
-    return (
-      <div className={classNames.items}>
-        {this.props.children}
-      </div>
-    );
+    return <div className={classNames.items}>{this.props.children}</div>;
   }
 
   /**
@@ -151,7 +145,7 @@ class TreeNode extends PureComponent {
       <button
         className={expanded ? classNames.expandButton : classNames.collapseButton}
         onClick={this.onExpand}
-        aria-label={expanded ? 'Collapse' : 'Expand'}
+        aria-label={expanded ? "Collapse" : "Expand"}
       />
     );
   }
@@ -170,10 +164,13 @@ class TreeNode extends PureComponent {
         tabIndex="0"
         aria-label={label}
       >
-        {type === 'dictionary' ?
-          <strong><em>{label}</em></strong> :
+        {type === "dictionary" ? (
+          <strong>
+            <em>{label}</em>
+          </strong>
+        ) : (
           label
-        }
+        )}
       </div>
     );
   }
@@ -202,7 +199,7 @@ class TreeNode extends PureComponent {
         checked={checked === 1}
         onChange={this.onCheck}
         onKeyPress={this.onCheckboxKeyPress}
-        aria-label={checked === 1 ? 'Uncheck' : 'Check'}
+        aria-label={checked === 1 ? "Uncheck" : "Check"}
       />
     );
   }
@@ -224,9 +221,9 @@ class TreeNode extends PureComponent {
 
   render() {
     const { isLeaf, isParent } = this.props;
-    const containerClassName = isLeaf ?
-      `${classNames.node} ${classNames.leaf}` :
-      `${classNames.node} ${classNames.group}`;
+    const containerClassName = isLeaf
+      ? `${classNames.node} ${classNames.leaf}`
+      : `${classNames.node} ${classNames.group}`;
     const title = this.renderTitle();
     const children = isParent ? this.renderChildren() : null;
 

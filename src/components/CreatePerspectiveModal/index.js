@@ -1,19 +1,19 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { compose } from 'recompose';
-import { graphql } from 'react-apollo';
-import gql from 'graphql-tag';
-import { Button, Modal, Select, Grid, Header } from 'semantic-ui-react';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { every } from 'lodash';
-import { Map, List, fromJS } from 'immutable';
+import React from "react";
+import { graphql } from "react-apollo";
+import { connect } from "react-redux";
+import { Button, Grid, Header, Modal, Select } from "semantic-ui-react";
+import { getTranslation } from "api/i18n";
+import gql from "graphql-tag";
+import { fromJS, List, Map } from "immutable";
+import { every } from "lodash";
+import PropTypes from "prop-types";
+import { compose } from "recompose";
+import { bindActionCreators } from "redux";
 
-import { closeModal as closeCreatePerspectiveModal } from 'ducks/createPerspective';
-import Translations from 'components/Translation';
-import { getTranslation } from 'api/i18n';
-import Fields from 'pages/CreateDictionary/Fields';
-import { queryAvailablePerspectives as queryPerspectivePathAvailable } from 'pages/Perspective/PerspectivePath';
+import Translations from "components/Translation";
+import { closeModal as closeCreatePerspectiveModal } from "ducks/createPerspective";
+import Fields from "pages/CreateDictionary/Fields";
+import { queryAvailablePerspectives as queryPerspectivePathAvailable } from "pages/Perspective/PerspectivePath";
 
 const queryAvailablePerspectives = gql`
   query availablePerspectives($dictionary_id: LingvodocID!) {
@@ -28,15 +28,14 @@ const queryAvailablePerspectives = gql`
   }
 `;
 
-class CreatePerspectiveModal extends React.Component
-{
-  constructor(props)
-  {
+class CreatePerspectiveModal extends React.Component {
+  constructor(props) {
     super(props);
 
     this.state = {
       translations: [],
-      fields: []};
+      fields: []
+    };
 
     this.savePerspective = this.savePerspective.bind(this);
     this.isSaveDisabled = this.isSaveDisabled.bind(this);
@@ -49,108 +48,88 @@ class CreatePerspectiveModal extends React.Component
     );
   }
 
-  savePerspective()
-  {
+  savePerspective() {
     const {
       createPerspective,
       closeCreatePerspectiveModal,
       dictionaryId,
       data: {
-        dictionary: {
-          perspectives } } } = this.props;
+        dictionary: { perspectives }
+      }
+    } = this.props;
 
-    const translationAtoms = this.state.translations.map(
-      t => ({ locale_id: t.localeId, content: t.content }));
+    const translationAtoms = this.state.translations.map(t => ({ locale_id: t.localeId, content: t.content }));
 
-    const fields =
-      this.state.fields.map(
-        field_info =>
-          field_info.link_id != null ?
-            { ...field_info, link_id: perspectives[field_info.link_id].id } :
-            field_info);
+    const fields = this.state.fields.map(field_info =>
+      field_info.link_id != null ? { ...field_info, link_id: perspectives[field_info.link_id].id } : field_info
+    );
 
     createPerspective({
       variables: {
         parentId: dictionaryId,
         translationAtoms,
-        fields, },
+        fields
+      },
       refetchQueries: [
         {
           query: queryPerspectivePathAvailable,
-          variables: { dictionary_id: dictionaryId },
-        },
-      ],
-    })
-      
-    .then(
-      ({ data }) => {
+          variables: { dictionary_id: dictionaryId }
+        }
+      ]
+    }).then(({ data }) => {
+      closeCreatePerspectiveModal();
 
-        closeCreatePerspectiveModal();
-
-        window.logger.suc(getTranslation(
-          'Successfully created perspective.'));
-
-      });
+      window.logger.suc(getTranslation("Successfully created perspective."));
+    });
   }
 
-  render()
-  {
-    const {
-      closeCreatePerspectiveModal,
-      visible,
-      data,
-    } = this.props;
+  render() {
+    const { closeCreatePerspectiveModal, visible, data } = this.props;
 
-    if (!visible || data.loading || data.error)
-      return null;
+    if (!visible || data.loading || data.error) {return null;}
 
-    const {
-      category,
-      perspectives } =
+    const { category, perspectives } = data.dictionary;
 
-      data.dictionary;
-
-    const perspective_info_list =
-
-        perspectives.map(
-          (perspective, index) => ({
-            index,
-            id: perspective.id,
-            name: perspective.translation}));
+    const perspective_info_list = perspectives.map((perspective, index) => ({
+      index,
+      id: perspective.id,
+      name: perspective.translation
+    }));
 
     return (
-      <Modal
-        closeIcon
-        onClose={closeCreatePerspectiveModal}
-        dimmer
-        open
-        className="lingvo-modal2">
-
-        <Modal.Header>{getTranslation('Create perspective')}</Modal.Header>
+      <Modal closeIcon onClose={closeCreatePerspectiveModal} dimmer open className="lingvo-modal2">
+        <Modal.Header>{getTranslation("Create perspective")}</Modal.Header>
 
         <Modal.Content>
+          <Header>{getTranslation("Perspective names")}</Header>
+          <Translations onChange={translations => this.setState({ translations })} />
 
-          <Header>{getTranslation('Perspective names')}</Header>
-          <Translations
-            onChange={translations => this.setState({ translations })} />
-
-          <Header>{getTranslation('Perspective fields')}</Header>
+          <Header>{getTranslation("Perspective fields")}</Header>
           <Fields
-            mode={category == 0 ? 'dictionary' : 'corpus'}
+            mode={category == 0 ? "dictionary" : "corpus"}
             perspectives={perspective_info_list}
             onChange={f =>
               this.setState({
                 ...this.state,
-                fields: f })}
+                fields: f
+              })
+            }
           />
-
         </Modal.Content>
 
         <Modal.Actions>
-          <Button content={getTranslation("Save")} onClick={this.savePerspective} disabled={this.isSaveDisabled()} className="lingvo-button-violet" />
-          <Button content={getTranslation("Cancel")} onClick={closeCreatePerspectiveModal} className="lingvo-button-basic-black" />
+          <Button
+            content={getTranslation("Save")}
+            onClick={this.savePerspective}
+            disabled={this.isSaveDisabled()}
+            className="lingvo-button-violet"
+          />
+          <Button
+            content={getTranslation("Cancel")}
+            onClick={closeCreatePerspectiveModal}
+            className="lingvo-button-basic-black"
+          />
         </Modal.Actions>
-
       </Modal>
     );
   }
@@ -158,39 +137,29 @@ class CreatePerspectiveModal extends React.Component
 
 CreatePerspectiveModal.propTypes = {
   closeCreatePerspectiveModal: PropTypes.func.isRequired,
-  visible: PropTypes.bool.isRequired,
+  visible: PropTypes.bool.isRequired
 };
 
 export default compose(
-
   connect(
     state => state.createPerspective,
-    dispatch => bindActionCreators({ closeCreatePerspectiveModal }, dispatch)),
+    dispatch => bindActionCreators({ closeCreatePerspectiveModal }, dispatch)
+  ),
 
-  graphql(
-    queryAvailablePerspectives, {
-      name: 'data',
-      options: props => ({ variables: { dictionary_id: props.dictionaryId } }),
-      skip: ({ dictionaryId }) => !dictionaryId,
-    }),
+  graphql(queryAvailablePerspectives, {
+    name: "data",
+    options: props => ({ variables: { dictionary_id: props.dictionaryId } }),
+    skip: ({ dictionaryId }) => !dictionaryId
+  }),
 
   graphql(
     gql`
-      mutation createPerspective(
-        $parentId: LingvodocID!,
-        $translationAtoms: [ObjectVal]!,
-        $fields: [ObjectVal])
-      {
-        create_perspective(
-          parent_id: $parentId,
-          translation_atoms: $translationAtoms,
-          fields: $fields)
-        {
+      mutation createPerspective($parentId: LingvodocID!, $translationAtoms: [ObjectVal]!, $fields: [ObjectVal]) {
+        create_perspective(parent_id: $parentId, translation_atoms: $translationAtoms, fields: $fields) {
           triumph
         }
       }
     `,
-    { name: 'createPerspective' }
+    { name: "createPerspective" }
   )
-
 )(CreatePerspectiveModal);

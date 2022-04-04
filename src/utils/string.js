@@ -5,9 +5,9 @@ export function hashCode(str) {
 
 export function intToRGB(i) {
   // eslint-disable-next-line no-bitwise
-  const c = (i & 0x00FFFFFF).toString(16).toUpperCase();
+  const c = (i & 0x00ffffff).toString(16).toUpperCase();
 
-  return '00000'.substring(0, 6 - c.length) + c;
+  return "00000".substring(0, 6 - c.length) + c;
 }
 
 export function colorFor(str) {

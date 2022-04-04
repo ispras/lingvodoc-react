@@ -1,5 +1,5 @@
 // Actions
-export const SET_IS_AUTHENTICATED = '@home/SET_IS_AUTHENTICATED';
+export const SET_IS_AUTHENTICATED = "@home/SET_IS_AUTHENTICATED";
 
 // Action Creators
 export function setIsAuthenticated(payload) {

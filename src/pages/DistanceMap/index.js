@@ -1,20 +1,23 @@
-import React, { useEffect } from 'react';
-import PropTypes from 'prop-types';
-import { graphql } from 'react-apollo';
-import SelectorDictionary from './selectorDictionary';
-import { compose } from 'recompose';
-import Placeholder from 'components/Placeholder';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { Label } from 'semantic-ui-react';
-import { getTranslation } from 'api/i18n';
-import { setDataForTree, setDefaultGroup, setMainGroupLanguages, setCheckStateTreeFlat } from 'ducks/distanceMap';
-import checkCoordAndLexicalEntries from './checkCoordinatesAndLexicalEntries';
-import { dictionaryWithPerspectivesQuery, allFieldQuery } from './graphql';
+import React, { useEffect } from "react";
+import { graphql } from "react-apollo";
+import { connect } from "react-redux";
+import { Label } from "semantic-ui-react";
+import { getTranslation } from "api/i18n";
+import PropTypes from "prop-types";
+import { compose } from "recompose";
+import { bindActionCreators } from "redux";
 
-import './styles.scss';
+import Placeholder from "components/Placeholder";
+import { setCheckStateTreeFlat, setDataForTree, setDefaultGroup, setMainGroupLanguages } from "ducks/distanceMap";
 
-const DistanceMap = ({ dataForTree,
+import checkCoordAndLexicalEntries from "./checkCoordinatesAndLexicalEntries";
+import { allFieldQuery, dictionaryWithPerspectivesQuery } from "./graphql";
+import SelectorDictionary from "./selectorDictionary";
+
+import "./styles.scss";
+
+const DistanceMap = ({
+  dataForTree,
   dictionaryWithPerspectives,
   allField,
   actions,
@@ -24,9 +27,9 @@ const DistanceMap = ({ dataForTree,
 }) => {
   if (!user || user.id != 1) {
     return (
-      <div style={{'marginTop': '1em'}}>
+      <div style={{ marginTop: "1em" }}>
         <Label>
-          {getTranslation('For the time being Distance Map functionality is available only for the administrator.')}
+          {getTranslation("For the time being Distance Map functionality is available only for the administrator.")}
         </Label>
       </div>
     );
@@ -74,7 +77,7 @@ const DistanceMap = ({ dataForTree,
 
   const newDictionaries = checkCoordAndLexicalEntries(dictionaries || dataForTree.dictionaries);
   const newLanguagesTree = languageTree || dataForTree.languageTree;
-  const fileredLanguageTree = newLanguagesTree.map((lang) => {
+  const fileredLanguageTree = newLanguagesTree.map(lang => {
     lang.dictionaries = checkCoordAndLexicalEntries(lang.dictionaries);
     return lang;
   });
@@ -90,7 +93,7 @@ const DistanceMap = ({ dataForTree,
       />
     </div>
   );
-}
+};
 
 DistanceMap.propTypes = {
   dictionaryWithPerspectives: PropTypes.shape({
@@ -106,16 +109,22 @@ DistanceMap.propTypes = {
 };
 
 export default compose(
-  connect(state => state.distanceMap, dispatch => ({
-    actions: bindActionCreators({
-      setDataForTree,
-      setDefaultGroup,
-      setMainGroupLanguages,
-      setCheckStateTreeFlat
-    }, dispatch)
-  })),
+  connect(
+    state => state.distanceMap,
+    dispatch => ({
+      actions: bindActionCreators(
+        {
+          setDataForTree,
+          setDefaultGroup,
+          setMainGroupLanguages,
+          setCheckStateTreeFlat
+        },
+        dispatch
+      )
+    })
+  ),
   connect(state => state.locale),
   connect(state => state.user),
-  graphql(dictionaryWithPerspectivesQuery, { name: 'dictionaryWithPerspectives', skip: props => props.user.id != 1 }),
-  graphql(allFieldQuery, { name: 'allField', skip: props => props.user.id != 1 }),
+  graphql(dictionaryWithPerspectivesQuery, { name: "dictionaryWithPerspectives", skip: props => props.user.id != 1 }),
+  graphql(allFieldQuery, { name: "allField", skip: props => props.user.id != 1 })
 )(DistanceMap);

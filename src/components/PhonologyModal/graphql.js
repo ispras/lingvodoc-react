@@ -1,4 +1,4 @@
-import gql from 'graphql-tag';
+import gql from "graphql-tag";
 
 export const perspectiveColumnsFieldsQuery = gql`
   query perspectiveColumnsFields($perspectiveId: LingvodocID!) {
@@ -71,13 +71,8 @@ export const phonologySkipListQuery = gql`
 `;
 
 export const phonologyLinkPerspectiveQuery = gql`
-  query linkPerspectiveData(
-    $perspectiveId: LingvodocID!,
-    $fieldIdList: [LingvodocID]!) {
-    phonology_link_perspective_data(
-      perspective_id: $perspectiveId,
-      field_id_list: $fieldIdList)
-    {
+  query linkPerspectiveData($perspectiveId: LingvodocID!, $fieldIdList: [LingvodocID]!) {
+    phonology_link_perspective_data(perspective_id: $perspectiveId, field_id_list: $fieldIdList) {
       field_data_list
       perspective_id_list
     }
@@ -112,48 +107,47 @@ export const phonologyPerspectiveInfoQuery = gql`
 
 export const createPhonologyMutation = gql`
   mutation createPhonology(
-    $perspectiveId: LingvodocID!,
-    $groupByDescription: Boolean!,
-    $translationFieldId: LingvodocID,
-    $firstTranslation: Boolean!,
-    $vowelSelection: Boolean!,
-    $tiers: [String],
-    $chartThreshold: Int!,
-    $keepList: [Int]!,
-    $joinList: [Int]!,
-    $generateCsv: Boolean!,
-    $linkFieldList: [LingvodocID],
-    $linkPerspectiveList: [[LingvodocID]],
-    $useFastTrack: Boolean!) {
-      phonology(
-        perspective_id: $perspectiveId,
-        vowel_selection: $vowelSelection,
-        group_by_description: $groupByDescription,
-        only_first_translation: $firstTranslation,
-        maybe_translation_field: $translationFieldId,
-        maybe_tier_list: $tiers,
-        chart_threshold: $chartThreshold,
-        keep_list: $keepList,
-        join_list: $joinList,
-        generate_csv: $generateCsv,
-        link_field_list: $linkFieldList,
-        link_perspective_list: $linkPerspectiveList,
-        use_fast_track: $useFastTrack) {
-        triumph
-      }
+    $perspectiveId: LingvodocID!
+    $groupByDescription: Boolean!
+    $translationFieldId: LingvodocID
+    $firstTranslation: Boolean!
+    $vowelSelection: Boolean!
+    $tiers: [String]
+    $chartThreshold: Int!
+    $keepList: [Int]!
+    $joinList: [Int]!
+    $generateCsv: Boolean!
+    $linkFieldList: [LingvodocID]
+    $linkPerspectiveList: [[LingvodocID]]
+    $useFastTrack: Boolean!
+  ) {
+    phonology(
+      perspective_id: $perspectiveId
+      vowel_selection: $vowelSelection
+      group_by_description: $groupByDescription
+      only_first_translation: $firstTranslation
+      maybe_translation_field: $translationFieldId
+      maybe_tier_list: $tiers
+      chart_threshold: $chartThreshold
+      keep_list: $keepList
+      join_list: $joinList
+      generate_csv: $generateCsv
+      link_field_list: $linkFieldList
+      link_perspective_list: $linkPerspectiveList
+      use_fast_track: $useFastTrack
+    ) {
+      triumph
+    }
   }
 `;
 
 export const computePSDMutation = gql`
-  mutation computePSD(
-    $idList: [LingvodocID]!,
-    $vowelSelection: Boolean!,
-    $chartThreshold: Int!)
-  {
+  mutation computePSD($idList: [LingvodocID]!, $vowelSelection: Boolean!, $chartThreshold: Int!) {
     phonological_statistical_distance(
-      id_list: $idList,
-      vowel_selection: $vowelSelection,
-      chart_threshold: $chartThreshold) {
+      id_list: $idList
+      vowel_selection: $vowelSelection
+      chart_threshold: $chartThreshold
+    ) {
       triumph
     }
   }

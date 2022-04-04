@@ -1,7 +1,7 @@
-import React from 'react';
-import { pure } from 'recompose';
-import { Link } from 'react-router-dom';
-import { Container, Header, List, Segment } from 'semantic-ui-react';
+import React from "react";
+import { Link } from "react-router-dom";
+import { Container, Header, List, Segment } from "semantic-ui-react";
+import { pure } from "recompose";
 
 const Info = pure(() => (
   <Container>
@@ -36,7 +36,7 @@ const Info = pure(() => (
           <List.Item>текстовые данные,</List.Item>
           <List.Item>звуковые файлы,</List.Item>
           <List.Item>
-            разметки TextGrid <a href="https://en.wikipedia.org/wiki/Praat">[Praat]</a> и Eaf{' '}
+            разметки TextGrid <a href="https://en.wikipedia.org/wiki/Praat">[Praat]</a> и Eaf{" "}
             <a href="https://tla.mpi.nl/tools/tla-tools/elan/">[Elan]</a>
           </List.Item>
           <List.Item>графические файлы</List.Item>
@@ -56,8 +56,8 @@ const Info = pure(() => (
           SQLAlchemy и других), Scala (фреймворк scala-js) и Javascript.
         </div>
         Дистрибутив программы представляет собой установочный файл для ОС Windows, начиная с Windows 7 и до Windows 10.
-        Для установки необходимо установить системное обновление, доступное по{' '}
-        <a href="https://github.com/ispras/lingvodoc/releases/download/v2.1/vcredist_x86.exe">этой ссылке</a>{' '}
+        Для установки необходимо установить системное обновление, доступное по{" "}
+        <a href="https://github.com/ispras/lingvodoc/releases/download/v2.1/vcredist_x86.exe">этой ссылке</a>{" "}
         (необходима версия строго vcredist_x86.exe, даже если система x64_86).
         <div>
           Разработка Института Системного Программирования РАН (<a href="http://ispras.ru/">http://ispras.ru/</a>)
@@ -71,9 +71,9 @@ const Info = pure(() => (
           </a>
         </div>
         <div>
-          В случае если у вас уже установлена более ранняя версия программы, скачайте, пожалуйста файлы (<a href="https://github.com/ispras/lingvodoc/releases/download/v2.1/update.bat">
-            update.bat
-          </a>, <a href="https://github.com/ispras/lingvodoc/releases/download/v2.1/pre_update.pyw">pre_update.pyw</a>),
+          В случае если у вас уже установлена более ранняя версия программы, скачайте, пожалуйста файлы (
+          <a href="https://github.com/ispras/lingvodoc/releases/download/v2.1/update.bat">update.bat</a>,{" "}
+          <a href="https://github.com/ispras/lingvodoc/releases/download/v2.1/pre_update.pyw">pre_update.pyw</a>),
           сохраните в папку с программой и запустите update.bat
         </div>
       </Segment>

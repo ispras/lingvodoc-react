@@ -1,6 +1,6 @@
-import React, { PureComponent } from 'react';
-import PropTypes from 'prop-types';
-import { Dropdown, Button } from 'semantic-ui-react';
+import React, { PureComponent } from "react";
+import { Button, Dropdown } from "semantic-ui-react";
+import PropTypes from "prop-types";
 
 /* ----------- COMPONENT ----------- */
 /**
@@ -9,12 +9,10 @@ import { Dropdown, Button } from 'semantic-ui-react';
 class AudioField extends PureComponent {
   static propTypes = {
     classNames: PropTypes.object.isRequired,
-    value: PropTypes.oneOf([
-      true, false, null,
-    ]),
+    value: PropTypes.oneOf([true, false, null]),
     onChange: PropTypes.func.isRequired,
-    getTranslation: PropTypes.func.isRequired,
-  }
+    getTranslation: PropTypes.func.isRequired
+  };
 
   /**
    * Get hasAudio value with dropdown format.
@@ -50,8 +48,8 @@ class AudioField extends PureComponent {
     const { getTranslation } = props;
 
     this.optionsText = {
-      haveAudio: getTranslation('Has audio'),
-      noAudio: getTranslation('No audio'),
+      haveAudio: getTranslation("Has audio"),
+      noAudio: getTranslation("No audio")
     };
 
     this.onDropdownValueChange = this.onDropdownValueChange.bind(this);
@@ -77,21 +75,19 @@ class AudioField extends PureComponent {
   }
 
   getDropdownOptions() {
-    const {
-      haveAudio: haveAudioText, noAudio: noAudioText,
-    } = this.optionsText;
+    const { haveAudio: haveAudioText, noAudio: noAudioText } = this.optionsText;
 
     return [
       {
         key: 1,
         text: haveAudioText,
-        value: 1,
+        value: 1
       },
       {
         key: 0,
         text: noAudioText,
-        value: 0,
-      },
+        value: 0
+      }
     ];
   }
 
@@ -99,9 +95,9 @@ class AudioField extends PureComponent {
     const { value, classNames, getTranslation } = this.props;
     const { getDropdownInnerValue } = this.constructor;
 
-    const label = getTranslation('Audio');
-    const clearText = getTranslation('Clear');
-    const placeholder = getTranslation('Select audio');
+    const label = getTranslation("Audio");
+    const clearText = getTranslation("Clear");
+    const placeholder = getTranslation("Select audio");
 
     return (
       <div className={classNames.field}>

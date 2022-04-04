@@ -1,11 +1,11 @@
-import base from './base';
+import base from "./base";
 
 const dev = {
-  apiUrl: '/api',
-  pollingInterval: 20000,
+  apiUrl: "/api",
+  pollingInterval: 20000
 };
 
 export default {
   ...base,
-  ...dev,
+  ...dev
 };

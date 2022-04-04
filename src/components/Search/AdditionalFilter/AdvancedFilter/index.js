@@ -1,25 +1,27 @@
-import React, { PureComponent } from 'react';
-import { Segment } from 'semantic-ui-react';
-import { graphql } from 'react-apollo';
-import { compose } from 'recompose';
-import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
-import { getTranslation } from 'api/i18n';
-import AudioField from './AudioField';
-import KindField from './KindField';
-import HumanSettlementField from './HumanSettlementField';
-import YearsField from './YearsField';
-import Authors from './AuthorsField';
-import LanguageVulnerabilityField from './LanguageVulnerabilityField';
-import './index.scss';
+import React, { PureComponent } from "react";
+import { graphql } from "react-apollo";
+import { Segment } from "semantic-ui-react";
+import { getTranslation } from "api/i18n";
+import gql from "graphql-tag";
+import PropTypes from "prop-types";
+import { compose } from "recompose";
+
+import AudioField from "./AudioField";
+import Authors from "./AuthorsField";
+import HumanSettlementField from "./HumanSettlementField";
+import KindField from "./KindField";
+import LanguageVulnerabilityField from "./LanguageVulnerabilityField";
+import YearsField from "./YearsField";
+
+import "./index.scss";
 
 /* ----------- PROPS ----------- */
 const classNames = {
-  container: 'search-advanced-filter',
-  field: 'search-advanced-filter__field',
-  header: 'search-advanced-filter__header',
-  warning: 'search-advanced-filter__warning',
-  hide: 'hide',
+  container: "search-advanced-filter",
+  field: "search-advanced-filter__field",
+  header: "search-advanced-filter__header",
+  warning: "search-advanced-filter__warning",
+  hide: "hide"
 };
 
 /* ----------- COMPONENT ----------- */
@@ -29,9 +31,7 @@ const classNames = {
 class AdvancedFilter extends PureComponent {
   static propTypes = {
     show: PropTypes.bool,
-    hasAudio: PropTypes.oneOf([
-      true, false, null,
-    ]),
+    hasAudio: PropTypes.oneOf([true, false, null]),
     kind: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]).isRequired,
     years: PropTypes.array.isRequired,
     humanSettlement: PropTypes.array.isRequired,
@@ -39,12 +39,12 @@ class AdvancedFilter extends PureComponent {
     languageVulnerability: PropTypes.array.isRequired,
     showVulnerabilityWarning: PropTypes.bool.isRequired,
     onChange: PropTypes.func.isRequired,
-    metadata: PropTypes.object.isRequired,
-  }
+    metadata: PropTypes.object.isRequired
+  };
 
   static defaultProps = {
-    show: true,
-  }
+    show: true
+  };
 
   constructor() {
     super();
@@ -59,7 +59,7 @@ class AdvancedFilter extends PureComponent {
    * @param {boolean|null} value - hasAudio field value
    */
   onHasAudioChange(value) {
-    this.props.onChange(value, 'hasAudio');
+    this.props.onChange(value, "hasAudio");
   }
 
   /**
@@ -67,7 +67,7 @@ class AdvancedFilter extends PureComponent {
    * @param {boolean|null} value - hasAudio field value
    */
   onKindChange(value) {
-    this.props.onChange(value, 'kind');
+    this.props.onChange(value, "kind");
   }
 
   /**
@@ -82,13 +82,15 @@ class AdvancedFilter extends PureComponent {
   render() {
     const { show } = this.props;
     const {
-      years: yearOptions, humanSettlement: humanSettlementOptions,
-      authors: authorsOptions, nativeSpeakersCount: languageVulnerabilityOptions,
+      years: yearOptions,
+      humanSettlement: humanSettlementOptions,
+      authors: authorsOptions,
+      nativeSpeakersCount: languageVulnerabilityOptions
     } = this.props.metadata;
 
     return (
-      <Segment.Group className={`${classNames.container} ${!show ? classNames.hide : ''}`}>
-        {show ?
+      <Segment.Group className={`${classNames.container} ${!show ? classNames.hide : ""}`}>
+        {show ? (
           <Segment.Group>
             <Segment>
               <AudioField
@@ -143,9 +145,8 @@ class AdvancedFilter extends PureComponent {
                 getTranslation={getTranslation}
               />
             </Segment>
-          </Segment.Group> :
-          null
-        }
+          </Segment.Group>
+        ) : null}
       </Segment.Group>
     );
   }
@@ -156,7 +157,7 @@ class AdvancedFilter extends PureComponent {
  * @param {Object} props - component properties
  * @returns {AdditionalFields} - component with added properties (data from API)
  */
-const AdvancedFilterWrap = (props) => {
+const AdvancedFilterWrap = props => {
   const { metadataQuery } = props;
   const { error: metadataQueryError, loading: metadataQueryLoading } = metadataQuery;
 
@@ -166,14 +167,14 @@ const AdvancedFilterWrap = (props) => {
 
   const newProps = {
     ...props,
-    metadata: metadataQuery.select_tags_metadata,
+    metadata: metadataQuery.select_tags_metadata
   };
 
   return <AdvancedFilter {...newProps} />;
 };
 
 AdvancedFilterWrap.propTypes = {
-  metadataQuery: PropTypes.object.isRequired,
+  metadataQuery: PropTypes.object.isRequired
 };
 
 /* ----------- QUERIES ----------- */
@@ -183,6 +184,8 @@ const metadataQuery = gql`
   }
 `;
 
-export default compose(graphql(metadataQuery, {
-  name: 'metadataQuery',
-}))(AdvancedFilterWrap);
+export default compose(
+  graphql(metadataQuery, {
+    name: "metadataQuery"
+  })
+)(AdvancedFilterWrap);

@@ -1,6 +1,7 @@
-import React, { PureComponent } from 'react';
-import PropTypes from 'prop-types';
-import FieldSelect from '../FieldSelect';
+import React, { PureComponent } from "react";
+import PropTypes from "prop-types";
+
+import FieldSelect from "../FieldSelect";
 
 /* ----------- COMPONENT ----------- */
 /**
@@ -17,14 +18,14 @@ class Field extends PureComponent {
     selectAllText: PropTypes.string.isRequired,
     clearAllText: PropTypes.string.isRequired,
     selectText: PropTypes.string.isRequired,
-    noFoundText: PropTypes.string.isRequired,
-  }
+    noFoundText: PropTypes.string.isRequired
+  };
 
   static getDropdownOptionsFromStrings(values) {
     return values.map(value => ({
       value,
       key: value,
-      text: value,
+      text: value
     }));
   }
 
@@ -33,7 +34,7 @@ class Field extends PureComponent {
    * @param {string[]} value - array of options for selecting
    */
   static isValueEmpty(value) {
-    return (value.length === 0);
+    return value.length === 0;
   }
 
   constructor() {
@@ -71,8 +72,14 @@ class Field extends PureComponent {
 
   render() {
     const {
-      value, classNames, options: valueStrings, selectAllText, clearAllText,
-      label, selectText, noFoundText,
+      value,
+      classNames,
+      options: valueStrings,
+      selectAllText,
+      clearAllText,
+      label,
+      selectText,
+      noFoundText
     } = this.props;
     const { getDropdownOptionsFromStrings } = this.constructor;
 

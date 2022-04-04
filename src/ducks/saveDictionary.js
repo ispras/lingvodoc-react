@@ -1,12 +1,12 @@
-import { combineReducers } from 'redux';
+import { combineReducers } from "redux";
 
 // Actions
-const OPEN_MODAL = '@dictionary/save/OPEN_MODAL';
-const CLOSE_MODAL = '@dictionary/save/CLOSE_MODAL';
+const OPEN_MODAL = "@dictionary/save/OPEN_MODAL";
+const CLOSE_MODAL = "@dictionary/save/CLOSE_MODAL";
 
 export const openSaveDictionaryModal = id => ({
   type: OPEN_MODAL,
-  payload: id,
+  payload: id
 });
 
 export const closeSaveDictionaryModal = () => ({ type: CLOSE_MODAL });
@@ -23,6 +23,5 @@ const id = (state = null, { type, payload }) => {
 };
 
 export default combineReducers({
-  id,
+  id
 });
-

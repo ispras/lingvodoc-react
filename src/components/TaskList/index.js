@@ -1,20 +1,21 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { branch, renderComponent, lifecycle, compose } from 'recompose';
-import { List, Progress, Button } from 'semantic-ui-react';
+import React from "react";
+import { connect } from "react-redux";
+import { Button, List, Progress } from "semantic-ui-react";
+import { getTranslation } from "api/i18n";
+import PropTypes from "prop-types";
+import { branch, compose, lifecycle, renderComponent } from "recompose";
+import { bindActionCreators } from "redux";
 
-import { removeTask } from 'ducks/task';
-import { run, stop } from 'ducks/saga';
-import saga from './saga';
-import { getTranslation } from 'api/i18n';
+import { run, stop } from "ducks/saga";
+import { removeTask } from "ducks/task";
 
-import imageEmpty from '../../images/no_data.svg';
+import imageEmpty from "../../images/no_data.svg";
+
+import saga from "./saga";
 
 const Empty = () => (
   <div className="lingvo-sidebar__empty">
-    <h3>{getTranslation('No background tasks')}</h3>
+    <h3>{getTranslation("No background tasks")}</h3>
     <img src={imageEmpty} className="lingvo-sidebar__empty-img" />
   </div>
 );
@@ -31,7 +32,7 @@ function Task(props) {
     current_stage,
     total_stages,
     result_link_list,
-    removeTask: remove,
+    removeTask: remove
   } = props;
 
   const links = result_link_list.map(link => (
@@ -51,9 +52,21 @@ function Task(props) {
         </Button>
         <div className="lingvo-task__content">
           <div className="lingvo-task__details">{task_details}</div>
-          <Progress percent={progress} progress="percent" size="small" 
-            className={progress && (progress === 100) ? "lingvo-task__progress lingvo-task__progress_success" : "lingvo-task__progress" } />
-          <div className={progress && (progress === 100) ? "lingvo-task__label lingvo-task__label_success" : "lingvo-task__label" }>
+          <Progress
+            percent={progress}
+            progress="percent"
+            size="small"
+            className={
+              progress && progress === 100
+                ? "lingvo-task__progress lingvo-task__progress_success"
+                : "lingvo-task__progress"
+            }
+          />
+          <div
+            className={
+              progress && progress === 100 ? "lingvo-task__label lingvo-task__label_success" : "lingvo-task__label"
+            }
+          >
             {`(${current_stage}/${total_stages}) ${status}`}
           </div>
           {links}
@@ -78,16 +91,14 @@ const TaskList = enhance(({ tasks }) => (
 ));
 
 TaskList.propTypes = {
-  tasks: PropTypes.array.isRequired,
+  tasks: PropTypes.array.isRequired
 };
 
 function generateId() {
-  return Math.random()
-    .toString(36)
-    .substr(2, 12);
+  return Math.random().toString(36).substr(2, 12);
 }
 
-const mapActionsToProps = () => (dispatch) => {
+const mapActionsToProps = () => dispatch => {
   const sagaId = generateId();
   return {
     onMount() {
@@ -95,7 +106,7 @@ const mapActionsToProps = () => (dispatch) => {
     },
     onUnmount() {
       dispatch(stop(sagaId));
-    },
+    }
   };
 };
 
@@ -108,6 +119,6 @@ export default compose(
 
     componentWillUnmount() {
       this.props.onUnmount();
-    },
+    }
   })
 )(TaskList);

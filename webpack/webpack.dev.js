@@ -1,61 +1,60 @@
-process.env.NODE_ENV = 'development';
-process.env.REACT_WEBPACK_ENV = 'dev';
+process.env.NODE_ENV = "development";
+process.env.REACT_WEBPACK_ENV = "dev";
 
-const path = require('path');
-const webpack = require('webpack');
-const base = require('./webpack.base');
-const FriendlyErrors = require('@soda/friendly-errors-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
-const _ = require('./utils');
+const path = require("path");
+const webpack = require("webpack");
+const base = require("./webpack.base");
+const FriendlyErrors = require("@soda/friendly-errors-webpack-plugin");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
+const _ = require("./utils");
 
-if (_.versionString)
-  _.versionString += '-';
+if (_.versionString) {_.versionString += "-";}
 
-_.versionString += 'development';
+_.versionString += "development";
 
-base.mode = 'development';
-base.devtool = 'eval-source-map';
+base.mode = "development";
+base.devtool = "eval-source-map";
 delete base.entry.vendor;
 base.module.rules.push(
   {
     test: /\.css$/,
     use: [
-      'style-loader',
+      "style-loader",
       {
-        loader: 'css-loader',
-        options: { url: { filter: url => !url.startsWith('data:') } }
+        loader: "css-loader",
+        options: { url: { filter: url => !url.startsWith("data:") } }
       }
-    ],
+    ]
   },
   {
     test: /\.scss$/,
     use: [
-      'style-loader',
+      "style-loader",
       {
-        loader: 'css-loader',
-        options: { url: { filter: url => !url.startsWith('data:') } }
+        loader: "css-loader",
+        options: { url: { filter: url => !url.startsWith("data:") } }
       },
-      'resolve-url-loader',
+      "resolve-url-loader",
       {
-        loader: 'sass-loader',
+        loader: "sass-loader",
         options: { sourceMap: true }
       }
-    ],
+    ]
   }
 );
 
 base.plugins.push(
   new HtmlWebpackPlugin({
-    template: path.resolve(__dirname, '../src/index.dev.html'),
-    favicon: path.resolve(__dirname, '../src/favicon.ico'),
-    filename: _.outputIndexPath,
+    template: path.resolve(__dirname, "../src/index.dev.html"),
+    favicon: path.resolve(__dirname, "../src/favicon.ico"),
+    filename: _.outputIndexPath
   }),
   new webpack.DefinePlugin({
-    'process.env.NODE_ENV': JSON.stringify('development'),
+    "process.env.NODE_ENV": JSON.stringify("development"),
     __DEVELOPMENT__: true,
     __DEVTOOLS__: true,
-    __VERSION__: JSON.stringify(_.versionString),
+    __VERSION__: JSON.stringify(_.versionString)
   }),
   new webpack.HotModuleReplacementPlugin(),
   new ReactRefreshWebpackPlugin(),

@@ -1,21 +1,23 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { compose, branch, renderComponent } from 'recompose';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { graphql } from 'react-apollo';
-import gql from 'graphql-tag';
-import { isEqual, find, take, drop, flow, sortBy, reverse } from 'lodash';
-import { Table, Dimmer, Header, Icon, Button } from 'semantic-ui-react';
-import { setSortByField, addLexicalEntry, selectLexicalEntry, resetEntriesSelection } from 'ducks/perspective';
-import { openModal } from 'ducks/modals';
-import Placeholder from 'components/Placeholder';
-import ApproveModal from 'components/ApproveModal';
-import { getTranslation } from 'api/i18n';
+import React from "react";
+import { graphql } from "react-apollo";
+import { connect } from "react-redux";
+import { Button, Dimmer, Header, Icon, Table } from "semantic-ui-react";
+import { getTranslation } from "api/i18n";
+import gql from "graphql-tag";
+import { drop, find, flow, isEqual, reverse, sortBy, take } from "lodash";
+import PropTypes from "prop-types";
+import { branch, compose, renderComponent } from "recompose";
+import { bindActionCreators } from "redux";
 
-import TableHeader from '../../PerspectiveView/TableHeader';
-import TableBody from '../../PerspectiveView/TableBody';
-import Pagination from './Pagination';
+import ApproveModal from "components/ApproveModal";
+import Placeholder from "components/Placeholder";
+import { openModal } from "ducks/modals";
+import { addLexicalEntry, resetEntriesSelection, selectLexicalEntry, setSortByField } from "ducks/perspective";
+
+import TableBody from "../../PerspectiveView/TableBody";
+import TableHeader from "../../PerspectiveView/TableHeader";
+
+import Pagination from "./Pagination";
 
 const ROWS_PER_PAGE = 20;
 
@@ -133,9 +135,9 @@ const TableComponent = ({
   selectEntries,
   selectedEntries,
   onEntrySelect,
-  actions,
+  actions
 }) => (
-  <div style={{ overflowY: 'auto' }}>
+  <div style={{ overflowY: "auto" }}>
     <Table celled padded>
       <TableHeader columns={columns} selectEntries={selectEntries} actions={actions} />
       <TableBody
@@ -162,14 +164,14 @@ TableComponent.propTypes = {
   selectEntries: PropTypes.bool,
   selectedEntries: PropTypes.array,
   onEntrySelect: PropTypes.func,
-  actions: PropTypes.array,
+  actions: PropTypes.array
 };
 
 TableComponent.defaultProps = {
   actions: [],
   selectEntries: false,
   selectedEntries: [],
-  onEntrySelect: () => {},
+  onEntrySelect: () => {}
 };
 
 const P = ({
@@ -201,7 +203,7 @@ const P = ({
 
   if (loading || (!loading && !error && !data.perspective)) {
     return (
-      <Dimmer active style={{ minHeight: '600px', background: 'none' }}>
+      <Dimmer active style={{ minHeight: "600px", background: "none" }}>
         <Header as="h2" icon>
           <Icon name="spinner" loading className="lingvo-spinner" />
         </Header>
@@ -215,28 +217,28 @@ const P = ({
     createLexicalEntry({
       variables: {
         id,
-        entitiesMode,
+        entitiesMode
       },
       refetchQueries: [
         {
           query: queryLexicalEntries,
           variables: {
             id,
-            entitiesMode: 'published',
-          },
+            entitiesMode: "published"
+          }
         },
         {
           query: queryLexicalEntries,
           variables: {
             id,
-            entitiesMode: 'all',
-          },
-        },
-      ],
+            entitiesMode: "all"
+          }
+        }
+      ]
     }).then(({ data: d }) => {
       if (!d.loading || !d.error) {
         const {
-          create_lexicalentry: { lexicalentry },
+          create_lexicalentry: { lexicalentry }
         } = d;
         addCreatedEntry(lexicalentry);
       }
@@ -266,24 +268,24 @@ const P = ({
   const removeEntries = () => {
     removeLexicalEntries({
       variables: {
-        ids: selectedEntries,
+        ids: selectedEntries
       },
       refetchQueries: [
         {
           query: queryLexicalEntries,
           variables: {
             id,
-            entitiesMode: 'published',
-          },
+            entitiesMode: "published"
+          }
         },
         {
           query: queryLexicalEntries,
           variables: {
             id,
-            entitiesMode: 'all',
-          },
-        },
-      ],
+            entitiesMode: "all"
+          }
+        }
+      ]
     }).then(() => {
       resetSelection();
     });
@@ -295,30 +297,32 @@ const P = ({
 
   const processEntries = flow([
     // remove empty lexical entries, if not in edit mode
-    es => (mode !== 'edit' ? es.filter(e => e.entities.length > 0) : es),
+    es => (mode !== "edit" ? es.filter(e => e.entities.length > 0) : es),
     // apply filtering
     es =>
-      (!!filter && filter.length > 0
-        ? es.filter(entry =>
-          !!entry.entities.find(entity => typeof entity.content === 'string' && entity.content.indexOf(filter) >= 0))
-        : es),
+      !!filter && filter.length > 0
+        ? es.filter(
+            entry =>
+              !!entry.entities.find(entity => typeof entity.content === "string" && entity.content.indexOf(filter) >= 0)
+          )
+        : es,
     // apply sorting
-    (es) => {
+    es => {
       // no sorting required
       if (!sortByField) {
         return es;
       }
       const { field, order } = sortByField;
       // XXX: sorts by first entity only
-      const sortedEntries = sortBy(es, (e) => {
+      const sortedEntries = sortBy(es, e => {
         const entities = e.entities.filter(entity => isEqual(entity.field_id, field));
         if (entities.length > 0) {
           return entities[0].content;
         }
-        return '';
+        return "";
       });
-      return order === 'a' ? sortedEntries : reverse(sortedEntries);
-    },
+      return order === "a" ? sortedEntries : reverse(sortedEntries);
+    }
   ]);
 
   const newEntries = processEntries(lexicalEntries.filter(e => !!createdEntries.find(c => isEqual(e.id, c.id))));
@@ -337,37 +341,40 @@ const P = ({
   //   self_id = column.self_id
   //   ...field
   // }
-  const fields = columns.map((column) => {
+  const fields = columns.map(column => {
     const field = find(allFields, f => isEqual(column.field_id, f.id));
     return {
       ...field,
       self_id: column.self_id,
       column_id: column.id,
-      position: column.position,
+      position: column.position
     };
   });
 
   function approveDisableCondition(entries) {
-    return entries.length == 0 || entries.every((entry) => {
-      return entry.entities.every((entity) => {
-        return mode == 'publish' ? entity.published == true : entity.accepted == true;
-      });
-    });
+    return (
+      entries.length == 0 ||
+      entries.every(entry => {
+        return entry.entities.every(entity => {
+          return mode == "publish" ? entity.published == true : entity.accepted == true;
+        });
+      })
+    );
   }
 
   const isAuthenticated = user && user.user.id;
 
   return (
-    <div style={{ overflowY: 'auto' }}>
-      <div className={mode === 'edit' ? 'lexical-entries-actions' : ''}>
-        {mode === 'edit' &&
-          <Button positive icon="plus" content={getTranslation('Add lexical entry')} onClick={addEntry} />
-        }
-        {mode === 'edit' && (
+    <div style={{ overflowY: "auto" }}>
+      <div className={mode === "edit" ? "lexical-entries-actions" : ""}>
+        {mode === "edit" && (
+          <Button positive icon="plus" content={getTranslation("Add lexical entry")} onClick={addEntry} />
+        )}
+        {mode === "edit" && (
           <Button
             negative
             icon="minus"
-            content={getTranslation('Remove lexical entries')}
+            content={getTranslation("Remove lexical entries")}
             onClick={removeEntries}
             disabled={selectedEntries.length < 1}
           />
@@ -389,20 +396,20 @@ const P = ({
             onClick={onApprove}
           />
         } */}
-        {mode === 'contributions' && isAuthenticated &&
+        {mode === "contributions" && isAuthenticated && (
           <Button
             positive
-            content={getTranslation('Accept Contributions')}
+            content={getTranslation("Accept Contributions")}
             disabled={approveDisableCondition(entries)}
             onClick={onApprove}
           />
-        }
+        )}
       </div>
       <Table celled padded className={className}>
         <TableHeader
           columns={fields}
           onSortModeChange={(fieldId, order) => setSort(fieldId, order)}
-          selectEntries={mode === 'edit'}
+          selectEntries={mode === "edit"}
         />
         <TableBody
           perspectiveId={id}
@@ -410,7 +417,7 @@ const P = ({
           entries={e}
           columns={fields}
           mode={mode}
-          selectEntries={mode === 'edit'}
+          selectEntries={mode === "edit"}
           selectedEntries={selectedEntries}
           onEntrySelect={onEntrySelect}
         />
@@ -443,8 +450,8 @@ P.propTypes = {
 };
 
 P.defaultProps = {
-  filter: '',
-  sortByField: null,
+  filter: "",
+  sortByField: null
 };
 
 const PerspectiveView = compose(
@@ -453,7 +460,7 @@ const PerspectiveView = compose(
       user,
       sortByField,
       createdEntries,
-      selectedEntries,
+      selectedEntries
     }),
     dispatch =>
       bindActionCreators(
@@ -462,19 +469,19 @@ const PerspectiveView = compose(
           setSortByField,
           selectLexicalEntry,
           resetEntriesSelection,
-          openModal,
+          openModal
         },
         dispatch
       )
   ),
-  graphql(createLexicalEntryMutation, { name: 'createLexicalEntry' }),
-  graphql(mergeLexicalEntriesMutation, { name: 'mergeLexicalEntries' }),
-  graphql(removeLexicalEntriesMutation, { name: 'removeLexicalEntries' }),
+  graphql(createLexicalEntryMutation, { name: "createLexicalEntry" }),
+  graphql(mergeLexicalEntriesMutation, { name: "mergeLexicalEntries" }),
+  graphql(removeLexicalEntriesMutation, { name: "removeLexicalEntries" }),
   graphql(queryLexicalEntries, {
     options: {
-      notifyOnNetworkStatusChange: true,
+      notifyOnNetworkStatusChange: true
       // fetchPolicy: 'network-only',
-    },
+    }
   })
 )(P);
 
@@ -501,14 +508,22 @@ export const queryLexicalEntry = gql`
 `;
 
 const PerspectiveViewWrapper = ({
-  id, className, mode, entitiesMode, page, data, filter, sortByField, changePage, entriesIds,
+  id,
+  className,
+  mode,
+  entitiesMode,
+  page,
+  data,
+  filter,
+  sortByField,
+  changePage,
+  entriesIds
 }) => {
   if (data.error) {
     return null;
   }
 
-  if (data.perspective === undefined)
-  {
+  if (data.perspective === undefined) {
     /* If we refetch data of this perspective with a different set of column fields during initialization
      * of CognateAnalysisModal, data.perspective becomes undefined and errors and query refetching ensue.
      *
@@ -524,7 +539,7 @@ const PerspectiveViewWrapper = ({
 
   const {
     all_fields: allFields,
-    perspective: { columns },
+    perspective: { columns }
   } = data;
 
   return (
@@ -553,17 +568,17 @@ PerspectiveViewWrapper.propTypes = {
   filter: PropTypes.string,
   data: PropTypes.object.isRequired,
   sortByField: PropTypes.object,
-  changePage: PropTypes.func.isRequired,
+  changePage: PropTypes.func.isRequired
 };
 
 PerspectiveViewWrapper.defaultProps = {
-  filter: '',
-  sortByField: null,
+  filter: "",
+  sortByField: null
 };
 
 export default compose(
   graphql(queryPerspective, {
-    options: { notifyOnNetworkStatusChange: true },
+    options: { notifyOnNetworkStatusChange: true }
   }),
   branch(({ data: { loading } }) => loading, renderComponent(Placeholder))
 )(PerspectiveViewWrapper);

@@ -1,23 +1,22 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { pure } from 'recompose';
-import SortableTree, { map } from 'react-sortable-tree';
-import { LexicalEntryLink } from 'components/Search/LanguageTree';
-import { getTranslation } from 'api/i18n';
+import React from "react";
+import SortableTree, { map } from "react-sortable-tree";
+import { getTranslation } from "api/i18n";
+import PropTypes from "prop-types";
+import { pure } from "recompose";
+
+import { LexicalEntryLink } from "components/Search/LanguageTree";
 
 class Tree extends React.Component {
-  
   constructor(props) {
     super(props);
-
 
     this.state = {
       treeData: map({
         treeData: props.resultsTree.toJS(),
         callback: ({ node }) => ({ ...node, expanded: true }),
         getNodeKey: ({ treeIndex }) => treeIndex,
-        ignoreCollapsed: false,
-      }),
+        ignoreCollapsed: false
+      })
     };
 
     this.generateNodeProps = this.generateNodeProps.bind(this);
@@ -25,10 +24,10 @@ class Tree extends React.Component {
 
   generateNodeProps({ node }) {
     const { actions, entitiesMode, mode } = this.props;
-    const defaultTitle = node.translation || getTranslation('None');
+    const defaultTitle = node.translation || getTranslation("None");
     const onlyViewMode = true;
     const title =
-      node.type === 'perspective' ? (
+      node.type === "perspective" ? (
         <LexicalEntryLink
           node={node}
           actions={actions}
@@ -67,8 +66,8 @@ Tree.propTypes = {
 
 Tree.defaultProps = {
   actions: [],
-  entitiesMode: 'all',
-  mode: 'view'
+  entitiesMode: "all",
+  mode: "view"
 };
 
 export default pure(Tree);

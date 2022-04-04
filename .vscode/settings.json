@@ -1,0 +1,17 @@
+{
+  "editor.formatOnSave": true,
+  "eslint.validate": [
+    "graphql",
+    "javascript",
+    "javascriptreact",
+  ],
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/node_modules/*/**": true,
+    "**/vendor/**": true
+  }
+}

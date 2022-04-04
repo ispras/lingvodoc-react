@@ -1,12 +1,12 @@
-import { combineReducers } from 'redux';
+import { combineReducers } from "redux";
 
 // Actions
-export const OPEN_PLAYER = '@player/OPEN_PLAYER';
-export const CLOSE_PLAYER = '@player/CLOSE_PLAYER';
+export const OPEN_PLAYER = "@player/OPEN_PLAYER";
+export const CLOSE_PLAYER = "@player/CLOSE_PLAYER";
 
 export const openPlayer = file => ({
   type: OPEN_PLAYER,
-  payload: file,
+  payload: file
 });
 
 export const closePlayer = () => ({ type: CLOSE_PLAYER });
@@ -22,7 +22,7 @@ const visible = (state = false, action) => {
   }
 };
 
-const play = (state = { content: '' }, action) => {
+const play = (state = { content: "" }, action) => {
   switch (action.type) {
     case OPEN_PLAYER:
       return action.payload;
@@ -33,5 +33,5 @@ const play = (state = { content: '' }, action) => {
 
 export default combineReducers({
   play,
-  visible,
+  visible
 });

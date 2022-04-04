@@ -1,11 +1,10 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from "react";
+import { Button, Input, Select } from "semantic-ui-react";
+import { getTranslation } from "api/i18n";
+import PropTypes from "prop-types";
 
-import { Button, Input, Select } from 'semantic-ui-react';
-
-import { translationGistQuery } from '../TranslationGist';
-import { languagesQuery } from '../../graphql/language';
-import { getTranslation } from 'api/i18n';
+import { languagesQuery } from "../../graphql/language";
+import { translationGistQuery } from "../TranslationGist";
 
 export default class TranslationAtom extends React.Component {
   constructor(props) {
@@ -13,7 +12,7 @@ export default class TranslationAtom extends React.Component {
 
     this.state = {
       localeId: props.localeId,
-      content: props.content,
+      content: props.content
     };
 
     this.onChangeContent = this.onChangeContent.bind(this);
@@ -42,15 +41,17 @@ export default class TranslationAtom extends React.Component {
         locale_id,
         content: this.state.content
       },
-      refetchQueries: [{
-        query: translationGistQuery,
-        variables: {
-          id: parentId,
+      refetchQueries: [
+        {
+          query: translationGistQuery,
+          variables: {
+            id: parentId
+          }
+        },
+        {
+          query: languagesQuery
         }
-      },
-      {
-        query: languagesQuery
-      }],
+      ]
     }).then(() => {
       onAtomCreated();
     });
@@ -65,15 +66,17 @@ export default class TranslationAtom extends React.Component {
         locale_id,
         content: this.state.content
       },
-      refetchQueries: [{
-        query: translationGistQuery,
-        variables: {
-          id: parentId,
+      refetchQueries: [
+        {
+          query: translationGistQuery,
+          variables: {
+            id: parentId
+          }
+        },
+        {
+          query: languagesQuery
         }
-      },
-      {
-        query: languagesQuery
-      }],
+      ]
     });
   }
 
@@ -83,11 +86,7 @@ export default class TranslationAtom extends React.Component {
     // true if atom is to be created
     const isAtomNew = id == null;
 
-    const options = locales.map(
-      locale => (
-        { key: locale.shortcut, text: locale.intl_name, value: locale.shortcut }
-      )
-    );
+    const options = locales.map(locale => ({ key: locale.shortcut, text: locale.intl_name, value: locale.shortcut }));
 
     const locale = locales.find(lc => lc.id === this.state.localeId);
 
@@ -107,12 +106,23 @@ export default class TranslationAtom extends React.Component {
           disabled={!editable || !isAtomNew}
           onChange={this.onChangeLocale}
         />
-        {editable && isAtomNew &&
-          <Button onClick={() => this.createAtom(locale.id)} className="lingvo-button-violet lingvo-button-violet_bradius-right">{getTranslation('Save')}</Button>
-        }
-        {editable && !isAtomNew &&
-          <Button disabled ={content == this.state.content} onClick={() => this.updateAtom(locale.id)} className="lingvo-button-basic-black lingvo-button-violet_bradius-right">{getTranslation('Update')}</Button>
-        }
+        {editable && isAtomNew && (
+          <Button
+            onClick={() => this.createAtom(locale.id)}
+            className="lingvo-button-violet lingvo-button-violet_bradius-right"
+          >
+            {getTranslation("Save")}
+          </Button>
+        )}
+        {editable && !isAtomNew && (
+          <Button
+            disabled={content == this.state.content}
+            onClick={() => this.updateAtom(locale.id)}
+            className="lingvo-button-basic-black lingvo-button-violet_bradius-right"
+          >
+            {getTranslation("Update")}
+          </Button>
+        )}
       </Input>
     );
   }
@@ -128,13 +138,13 @@ TranslationAtom.propTypes = {
   editable: PropTypes.bool,
   createAtomMutation: PropTypes.func,
   updateAtomMutation: PropTypes.func,
-  onAtomCreated: PropTypes.func,
+  onAtomCreated: PropTypes.func
 };
 
 TranslationAtom.defaultProps = {
   id: null,
   localeId: 1,
-  content: '',
+  content: "",
   editable: true,
   onAtomCreated: () => {}
 };

@@ -1,11 +1,12 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { Button, Modal, Image as Img } from 'semantic-ui-react';
-import { find, isEqual } from 'lodash';
-import Entities from './index';
-import { getTranslation } from 'api/i18n';
+import React from "react";
+import { Button, Image as Img, Modal } from "semantic-ui-react";
+import { getTranslation } from "api/i18n";
+import { find, isEqual } from "lodash";
+import PropTypes from "prop-types";
 
-const Image = (props) => {
+import Entities from "./index";
+
+const Image = props => {
   const {
     perspectiveId,
     column,
@@ -14,8 +15,8 @@ const Image = (props) => {
     entry,
     mode,
     entitiesMode,
-    as: Component = 'li',
-    className = '',
+    as: Component = "li",
+    className = ""
   } = props;
   const subColumn = find(columns, c => isEqual(c.self_id, column.column_id));
   const { content } = entity;
@@ -23,7 +24,7 @@ const Image = (props) => {
   return (
     <Component className={className}>
       <Button.Group basic icon size="mini">
-        <Button as="a" href={content} icon="download" download/>
+        <Button as="a" href={content} icon="download" download />
         <Modal basic trigger={<Button>{getTranslation("View")}</Button>}>
           <Modal.Content>
             <Img src={content} />
@@ -55,24 +56,24 @@ Image.propTypes = {
   mode: PropTypes.string.isRequired,
   entitiesMode: PropTypes.string.isRequired,
   as: PropTypes.string,
-  className: PropTypes.string,
+  className: PropTypes.string
 };
 
 Image.defaultProps = {
-  as: 'li',
-  className: '',
+  as: "li",
+  className: ""
 };
 
 Image.Edit = ({ onSave }) => <input type="file" onChange={e => onSave(e.target.files[0])} />;
 
 Image.Edit.propTypes = {
   onSave: PropTypes.func,
-  onCancel: PropTypes.func,
+  onCancel: PropTypes.func
 };
 
 Image.Edit.defaultProps = {
   onSave: () => {},
-  onCancel: () => {},
+  onCancel: () => {}
 };
 
 export default Image;

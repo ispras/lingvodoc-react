@@ -1,30 +1,32 @@
-import React from 'react';
-import { compose, withHandlers, pure } from 'recompose';
-import PropTypes from 'prop-types';
-import { Container } from 'semantic-ui-react';
+import React from "react";
+import { Container } from "semantic-ui-react";
+import PropTypes from "prop-types";
+import { compose, pure, withHandlers } from "recompose";
 
-import { goToLanguage } from '../../../common/';
-import ListItem from './ListItem';
-import './styles.scss';
+import { goToLanguage } from "../../../common/";
+
+import ListItem from "./ListItem";
+
+import "./styles.scss";
 
 /* ----------- PROPS ----------- */
 const classNames = {
-  wrap: 'container-gray container-gray_education langs-nav-list__wrap',
-  main: 'langs-nav-list',
-  short: 'langs-nav-list_short',
-  mainHeader: 'menu',
-  list: 'langs-nav-list__list',
+  wrap: "container-gray container-gray_education langs-nav-list__wrap",
+  main: "langs-nav-list",
+  short: "langs-nav-list_short",
+  mainHeader: "menu",
+  list: "langs-nav-list__list"
 };
 
 /* ----------- ENHANCERS ----------- */
 const addHandlers = withHandlers({
-  onLangSelect: () => (ev) => {
+  onLangSelect: () => ev => {
     ev.preventDefault();
 
-    const id = ev.target.getAttribute('data-id');
+    const id = ev.target.getAttribute("data-id");
 
     goToLanguage(id);
-  },
+  }
 });
 
 const enhance = compose(addHandlers, pure);
@@ -35,9 +37,7 @@ const LangsNavList = ({ data, onLangSelect }) => {
 
   return (
     <Container className={classNames.wrap}>
-      <div className={classNames.main}>
-        {list}
-      </div>
+      <div className={classNames.main}>{list}</div>
     </Container>
   );
 };
@@ -45,7 +45,7 @@ const LangsNavList = ({ data, onLangSelect }) => {
 /* ----------- PROPS VALIDATION ----------- */
 LangsNavList.propTypes = {
   data: PropTypes.array.isRequired,
-  onLangSelect: PropTypes.func.isRequired,
+  onLangSelect: PropTypes.func.isRequired
 };
 
 export default enhance(LangsNavList);

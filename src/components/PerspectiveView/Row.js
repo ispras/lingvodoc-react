@@ -1,11 +1,12 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { onlyUpdateForKeys } from 'recompose';
-import { Table, Button, Checkbox } from 'semantic-ui-react';
-import { sortBy, isEmpty, isEqual } from 'lodash';
-import { compositeIdToString as id2str } from 'utils/compositeId';
+import React from "react";
+import { Button, Checkbox, Table } from "semantic-ui-react";
+import { isEmpty, isEqual, sortBy } from "lodash";
+import PropTypes from "prop-types";
+import { onlyUpdateForKeys } from "recompose";
 
-import Cell from './Cell';
+import { compositeIdToString as id2str } from "utils/compositeId";
+
+import Cell from "./Cell";
 
 const Row = ({
   perspectiveId,
@@ -31,26 +32,17 @@ const Row = ({
   selectDisabled,
   selectDisabledIndeterminate,
   disabledEntrySet,
-  removeSelectionEntrySet,
+  removeSelectionEntrySet
   /* eslint-enable react/prop-types */
 }) => {
   const entry_id_str = id2str(entry.id);
-  
-  const disabled_flag =
 
-    disabledEntrySet &&
-    disabledEntrySet.hasOwnProperty(entry_id_str);
+  const disabled_flag = disabledEntrySet && disabledEntrySet.hasOwnProperty(entry_id_str);
 
-  const remove_selection_flag =
-
-    removeSelectionEntrySet &&
-    removeSelectionEntrySet.hasOwnProperty(entry_id_str);
+  const remove_selection_flag = removeSelectionEntrySet && removeSelectionEntrySet.hasOwnProperty(entry_id_str);
 
   return (
-    <Table.Row
-      style={disabled_flag ? { opacity: '0.5' } : {}}
-    >
-
+    <Table.Row style={disabled_flag ? { opacity: "0.5" } : {}}>
       {selectEntries && (
         <Table.Cell>
           {!remove_selection_flag && (
@@ -67,23 +59,21 @@ const Row = ({
       {checkEntries && (
         <Table.Cell className="lingvo-sticky-checkbox-column">
           <Checkbox
-            className="lingvo-checkbox" 
+            className="lingvo-checkbox"
             checked={!!selectedRows.find(e => isEqual(e, entry.id))}
             onChange={(_e, { checked }) => {
-                onCheckRow(entry, checked);
-              }
-            }
+              onCheckRow(entry, checked);
+            }}
           />
         </Table.Cell>
       )}
 
-      {showEntryId && (
-        <Table.Cell>
-          {entry_id_str}
-        </Table.Cell>
-      )}
+      {showEntryId && <Table.Cell>{entry_id_str}</Table.Cell>}
 
-      {sortBy(columns.filter(column => column.self_id == null), column => column.position).map(column => (
+      {sortBy(
+        columns.filter(column => column.self_id == null),
+        column => column.position
+      ).map(column => (
         <Cell
           key={id2str(column.column_id)}
           perspectiveId={perspectiveId}
@@ -116,7 +106,6 @@ const Row = ({
           ))}
         </Table.Cell>
       )}
-
     </Table.Row>
   );
 };
@@ -139,7 +128,7 @@ Row.propTypes = {
   onCheckRow: PropTypes.func,
   resetCheckedRow: PropTypes.func,
   resetCheckedColumn: PropTypes.func,
-  resetCheckedAll: PropTypes.func,
+  resetCheckedAll: PropTypes.func
 };
 
 Row.defaultProps = {
@@ -155,7 +144,17 @@ Row.defaultProps = {
   onCheckRow: () => {},
   resetCheckedRow: () => {},
   resetCheckedColumn: () => {},
-  resetCheckedAll: () => {},
+  resetCheckedAll: () => {}
 };
 
-export default onlyUpdateForKeys(['perspectiveId', 'entry', 'mode', 'selectedEntries', 'selectedRows', 'checkedRow', 'checkedColumn', 'checkedAll', 'columns'])(Row);
+export default onlyUpdateForKeys([
+  "perspectiveId",
+  "entry",
+  "mode",
+  "selectedEntries",
+  "selectedRows",
+  "checkedRow",
+  "checkedColumn",
+  "checkedAll",
+  "columns"
+])(Row);

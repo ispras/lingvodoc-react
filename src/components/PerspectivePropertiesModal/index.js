@@ -1,17 +1,18 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { bindActionCreators } from 'redux';
-import { branch, compose, onlyUpdateForKeys, renderNothing, withProps } from 'recompose';
-import { graphql } from 'react-apollo';
-import gql from 'graphql-tag';
-import { isEqual } from 'lodash';
-import { connect } from 'react-redux';
-import { Button, Modal, Divider, Header } from 'semantic-ui-react';
-import TranslationGist from 'components/TranslationGist';
-import { closePerspectivePropertiesModal } from 'ducks/perspectiveProperties';
-import Columns from 'components/Columns';
-import { getTranslation } from 'api/i18n';
-import EditPerspectiveMetadata from 'components/EditPerspectiveMetadata';
+import React from "react";
+import { graphql } from "react-apollo";
+import { connect } from "react-redux";
+import { Button, Divider, Header, Modal } from "semantic-ui-react";
+import { getTranslation } from "api/i18n";
+import gql from "graphql-tag";
+import { isEqual } from "lodash";
+import PropTypes from "prop-types";
+import { branch, compose, onlyUpdateForKeys, renderNothing, withProps } from "recompose";
+import { bindActionCreators } from "redux";
+
+import Columns from "components/Columns";
+import EditPerspectiveMetadata from "components/EditPerspectiveMetadata";
+import TranslationGist from "components/TranslationGist";
+import { closePerspectivePropertiesModal } from "ducks/perspectiveProperties";
 
 const query = gql`
   query PerspectivePropsQuery($id: LingvodocID!, $parentId: LingvodocID!) {
@@ -27,7 +28,8 @@ const query = gql`
       id
       created_by {
         id
-        name }
+        name
+      }
       parent_id
       translation
       translation_gist_id
@@ -56,11 +58,9 @@ const updateMetadataMutation = gql`
   }
 `;
 
-const Properties = (props) => {
+const Properties = props => {
   const { id, parentId, title, data, actions, updateAtomMutation, updateMetadataMutation } = props;
-  const {
-    loading, error, dictionary, perspective,
-  } = data;
+  const { loading, error, dictionary, perspective } = data;
 
   if (loading || error) {
     return null;
@@ -78,16 +78,23 @@ const Properties = (props) => {
       size="fullscreen"
       className="lingvo-modal2"
     >
-      <Modal.Header>
-        {title}
-      </Modal.Header>
+      <Modal.Header>{title}</Modal.Header>
       <Modal.Content>
-        <p>{getTranslation('Created by')}{': '}
-          {perspective.created_by.name}</p>
-        <p>{getTranslation('Created at')}{': '}
-          {new Date(perspective.created_at * 1e3).toLocaleString()}</p>
-        <p>{getTranslation('Last modified at')}{': '}
-          {new Date(perspective.last_modified_at * 1e3).toLocaleString()}</p>
+        <p>
+          {getTranslation("Created by")}
+          {": "}
+          {perspective.created_by.name}
+        </p>
+        <p>
+          {getTranslation("Created at")}
+          {": "}
+          {new Date(perspective.created_at * 1e3).toLocaleString()}
+        </p>
+        <p>
+          {getTranslation("Last modified at")}
+          {": "}
+          {new Date(perspective.last_modified_at * 1e3).toLocaleString()}
+        </p>
         <Divider />
         <Header>{getTranslation("Translations")}</Header>
         <TranslationGist objectId={perspective.id} id={gistId} editable updateAtomMutation={updateAtomMutation} />
@@ -97,27 +104,31 @@ const Properties = (props) => {
         <Divider />
         <EditPerspectiveMetadata
           metadata={perspective.additional_metadata}
-          onSave={(meta) => {
+          onSave={meta => {
             updateMetadataMutation({
               variables: {
                 id,
-                meta,
+                meta
               },
               refetchQueries: [
                 {
                   query,
                   variables: {
                     id,
-                    parentId,
-                  },
-                },
-              ],
+                    parentId
+                  }
+                }
+              ]
             });
           }}
         />
       </Modal.Content>
       <Modal.Actions>
-        <Button content={getTranslation("Close")} onClick={actions.closePerspectivePropertiesModal} className="lingvo-button-basic-black" />
+        <Button
+          content={getTranslation("Close")}
+          onClick={actions.closePerspectivePropertiesModal}
+          className="lingvo-button-basic-black"
+        />
       </Modal.Actions>
     </Modal>
   );
@@ -128,11 +139,11 @@ Properties.propTypes = {
   parentId: PropTypes.array.isRequired,
   title: PropTypes.string.isRequired,
   data: PropTypes.shape({
-    loading: PropTypes.bool.isRequired,
+    loading: PropTypes.bool.isRequired
   }).isRequired,
   actions: PropTypes.shape({
-    closePerspectivePropertiesModal: PropTypes.func.isRequired,
-  }).isRequired,
+    closePerspectivePropertiesModal: PropTypes.func.isRequired
+  }).isRequired
 };
 
 export default compose(
@@ -142,10 +153,9 @@ export default compose(
   ),
   branch(({ perspective }) => !perspective, renderNothing),
   withProps(({ perspective: { id, parentId, title } }) => ({ id, parentId, title })),
-  graphql(updateAtomMutation, { name: 'updateAtomMutation' }),
-  graphql(updateMetadataMutation, { name: 'updateMetadataMutation' }),
+  graphql(updateAtomMutation, { name: "updateAtomMutation" }),
+  graphql(updateMetadataMutation, { name: "updateMetadataMutation" }),
   graphql(query),
   // graphql(updateMetadataMutation, { name: 'update' }),
-  onlyUpdateForKeys(['perspective', 'data'])
+  onlyUpdateForKeys(["perspective", "data"])
 )(Properties);
-

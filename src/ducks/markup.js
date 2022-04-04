@@ -1,21 +1,21 @@
-import { combineReducers } from 'redux';
+import { combineReducers } from "redux";
 
 // Actions
-export const OPEN_VIEWER = '@markup/OPEN_VIEWER';
-export const CLOSE_VIEWER = '@markup/CLOSE_VIEWER';
-export const OPEN_CONVERT = '@markup/OPEN_CONVERT';
-export const CLOSE_CONVERT = '@markup/CLOSE_CONVERT';
+export const OPEN_VIEWER = "@markup/OPEN_VIEWER";
+export const CLOSE_VIEWER = "@markup/CLOSE_VIEWER";
+export const OPEN_CONVERT = "@markup/OPEN_CONVERT";
+export const CLOSE_CONVERT = "@markup/CLOSE_CONVERT";
 
 export const openViewer = (audio, markup) => ({
   type: OPEN_VIEWER,
-  payload: { audio, markup },
+  payload: { audio, markup }
 });
 
 export const closeViewer = () => ({ type: CLOSE_VIEWER });
 
 export const openConvert = (audio, markup) => ({
   type: OPEN_CONVERT,
-  payload: { audio, markup },
+  payload: { audio, markup }
 });
 
 export const closeConvert = () => ({ type: CLOSE_CONVERT });
@@ -55,5 +55,5 @@ const convertVisible = (state = false, action) => {
 export default combineReducers({
   data,
   visible,
-  convertVisible,
+  convertVisible
 });

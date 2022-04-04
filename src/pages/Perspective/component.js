@@ -1,21 +1,22 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { graphql } from 'react-apollo';
-import gql from 'graphql-tag';
-import { map } from 'lodash';
-import { onlyUpdateForKeys, withHandlers, withState, compose, branch, renderNothing } from 'recompose';
-import { Switch, Route, Redirect, Link } from 'react-router-dom';
-import { Container, Menu, Dropdown, Label } from 'semantic-ui-react';
-import PerspectiveView from 'components/PerspectiveView';
-import Merge from 'components/Merge';
-import NotFound from 'pages/NotFound';
-import { getTranslation } from 'api/i18n';
+import React from "react";
+import { graphql } from "react-apollo";
+import { connect } from "react-redux";
+import { Link, Redirect, Route, Switch } from "react-router-dom";
+import { Container, Dropdown, Label, Menu } from "semantic-ui-react";
+import { getTranslation } from "api/i18n";
+import gql from "graphql-tag";
+import { map } from "lodash";
+import PropTypes from "prop-types";
+import { branch, compose, onlyUpdateForKeys, renderNothing, withHandlers, withState } from "recompose";
 
-import { queryCounter } from 'backend';
-import PerspectivePath from './PerspectivePath';
+import { queryCounter } from "backend";
+import Merge from "components/Merge";
+import PerspectiveView from "components/PerspectiveView";
+import NotFound from "pages/NotFound";
 
-import './style.scss';
+import PerspectivePath from "./PerspectivePath";
+
+import "./style.scss";
 
 export const perspectiveIsHiddenOrDeletedQuery = gql`
   query perspectiveIsHiddenOrDeleted($id: LingvodocID!) {
@@ -32,26 +33,16 @@ export const perspectiveIsHiddenOrDeletedQuery = gql`
 `;
 
 export const launchSoundAndMarkupMutation = gql`
-  mutation launchSoundAndMarkup(
-    $perspectiveId: LingvodocID!,
-    $publishedMode: String!)
-  {
-    sound_and_markup(
-      perspective_id: $perspectiveId,
-      published_mode: $publishedMode)
-    {
+  mutation launchSoundAndMarkup($perspectiveId: LingvodocID!, $publishedMode: String!) {
+    sound_and_markup(perspective_id: $perspectiveId, published_mode: $publishedMode) {
       triumph
     }
   }
 `;
 
 export const launchValencyMutation = gql`
-  mutation launchValency(
-    $perspectiveId: LingvodocID!)
-  {
-    valency(
-      perspective_id: $perspectiveId)
-    {
+  mutation launchValency($perspectiveId: LingvodocID!) {
+    valency(perspective_id: $perspectiveId) {
       triumph
     }
   }
@@ -61,7 +52,9 @@ const Counter = graphql(queryCounter)(({ data }) => {
   if (data.loading || data.error) {
     return null;
   }
-  const { perspective: { counter } } = data;
+  const {
+    perspective: { counter }
+  } = data;
   return ` (${counter})`;
 });
 
@@ -78,143 +71,118 @@ const toolsQuery = gql`
   }
 `;
 
-const Tools = graphql(toolsQuery)(({
-  data,
-  openCognateAnalysisModal,
-  openPhonemicAnalysisModal,
-  openPhonologyModal,
-  launchSoundAndMarkup,
-  launchValency,
-  id, /* perspective_id */
-  user_id,
-  mode
-}) => {
-  if (data.loading || data.error) {
-    return null;
-  }
+const Tools = graphql(toolsQuery)(
+  ({
+    data,
+    openCognateAnalysisModal,
+    openPhonemicAnalysisModal,
+    openPhonologyModal,
+    launchSoundAndMarkup,
+    launchValency,
+    id /* perspective_id */,
+    user_id,
+    mode
+  }) => {
+    if (data.loading || data.error) {
+      return null;
+    }
 
-  const {
-    perspective: {
-      english_status,
-      created_by: {
-        id: author_id },
-      edit_check }} = data;
+    const {
+      perspective: {
+        english_status,
+        created_by: { id: author_id },
+        edit_check
+      }
+    } = data;
 
-  const published =
-    english_status === 'Published' ||
-    english_status === 'Limited access';
+    const published = english_status === "Published" || english_status === "Limited access";
 
-  return (
-    <Dropdown item text={getTranslation('Tools')}>
-      <Dropdown.Menu>
+    return (
+      <Dropdown item text={getTranslation("Tools")}>
+        <Dropdown.Menu>
+          {(user_id == 1 || user_id == author_id || edit_check) && (
+            <>
+              <Dropdown.Item onClick={() => openCognateAnalysisModal(id, "acoustic")}>
+                {getTranslation("Cognate acoustic analysis")}
+              </Dropdown.Item>
 
-        {(user_id == 1 || user_id == author_id || edit_check) && (
-          <React.Fragment>
-            <Dropdown.Item
-              onClick={() => openCognateAnalysisModal(id, 'acoustic')}
-            >
-              {getTranslation('Cognate acoustic analysis')}
-            </Dropdown.Item>
+              <Dropdown.Item onClick={() => openCognateAnalysisModal(id)}>
+                {getTranslation("Cognate analysis")}
+              </Dropdown.Item>
 
-            <Dropdown.Item
-              onClick={() => openCognateAnalysisModal(id)}
-            >
-              {getTranslation('Cognate analysis')}
-            </Dropdown.Item>
+              <Dropdown.Item onClick={() => openCognateAnalysisModal(id, "multi_analysis")}>
+                {getTranslation("Cognate multi-language analysis")}
+              </Dropdown.Item>
 
-            <Dropdown.Item
-              onClick={() => openCognateAnalysisModal(id, 'multi_analysis')}>
-              {getTranslation("Cognate multi-language analysis")}
-            </Dropdown.Item>
+              <Dropdown.Item onClick={() => openCognateAnalysisModal(id, "multi_reconstruction")}>
+                {getTranslation("Cognate multi-language reconstruction")}
+              </Dropdown.Item>
 
-            <Dropdown.Item
-              onClick={() => openCognateAnalysisModal(id, 'multi_reconstruction')}>
-              {getTranslation("Cognate multi-language reconstruction")}
-            </Dropdown.Item>
+              <Dropdown.Item onClick={() => openCognateAnalysisModal(id, "multi_suggestions")} disabled={!published}>
+                {getTranslation(
+                  published
+                    ? "Cognate multi-language suggestions"
+                    : "Cognate multi-language suggestions (disabled, perspective is not published)"
+                )}
+              </Dropdown.Item>
 
-            <Dropdown.Item
-              onClick={() => openCognateAnalysisModal(id, 'multi_suggestions')}
-              disabled={!published}
-            >
-              {getTranslation(published ?
-                'Cognate multi-language suggestions' :
-                'Cognate multi-language suggestions (disabled, perspective is not published)')}
-            </Dropdown.Item>
+              <Dropdown.Item onClick={() => openCognateAnalysisModal(id, "reconstruction")}>
+                {getTranslation("Cognate reconstruction")}
+              </Dropdown.Item>
 
-            <Dropdown.Item
-              onClick={() => openCognateAnalysisModal(id, 'reconstruction')}
-            >
-              {getTranslation('Cognate reconstruction')}
-            </Dropdown.Item>
+              <Dropdown.Item onClick={() => openCognateAnalysisModal(id, "suggestions")} disabled={!published}>
+                {getTranslation(
+                  published ? "Cognate suggestions" : "Cognate suggestions (disabled, perspective is not published)"
+                )}
+              </Dropdown.Item>
+            </>
+          )}
 
-            <Dropdown.Item
-              onClick={() => openCognateAnalysisModal(id, 'suggestions')}
-              disabled={!published}
-            >
-              {getTranslation(published ?
-                'Cognate suggestions' :
-                'Cognate suggestions (disabled, perspective is not published)')}
-            </Dropdown.Item>
-          </React.Fragment>
-        )}
-
-        <Dropdown.Item
-          onClick={() => openPhonemicAnalysisModal(id)}
-        >
-          {getTranslation('Phonemic analysis')}
-        </Dropdown.Item>
-
-        <Dropdown.Item
-          onClick={() => openPhonologyModal(id)}
-        >
-          {getTranslation('Phonology')}
-        </Dropdown.Item>
-
-        <Dropdown.Item
-          onClick={() => openPhonologyModal(id, 'statistical_distance')}
-        >
-          {getTranslation('Phonological statistical distance')}
-        </Dropdown.Item>
-
-        <Dropdown.Item
-          // eslint-disable-next-line no-use-before-define
-          onClick={() => soundAndMarkup(id, mode, launchSoundAndMarkup)}
-        >
-          {getTranslation('Sound and markup')}
-        </Dropdown.Item>
-
-        {user_id != null && (
-          <Dropdown.Item
-            onClick={() => valency(id, launchValency)}
-          >
-            {getTranslation('Valency')}
+          <Dropdown.Item onClick={() => openPhonemicAnalysisModal(id)}>
+            {getTranslation("Phonemic analysis")}
           </Dropdown.Item>
-        )}
 
-      </Dropdown.Menu>
-    </Dropdown>
-  );
-});
+          <Dropdown.Item onClick={() => openPhonologyModal(id)}>{getTranslation("Phonology")}</Dropdown.Item>
+
+          <Dropdown.Item onClick={() => openPhonologyModal(id, "statistical_distance")}>
+            {getTranslation("Phonological statistical distance")}
+          </Dropdown.Item>
+
+          <Dropdown.Item
+            // eslint-disable-next-line no-use-before-define
+            onClick={() => soundAndMarkup(id, mode, launchSoundAndMarkup)}
+          >
+            {getTranslation("Sound and markup")}
+          </Dropdown.Item>
+
+          {user_id != null && (
+            <Dropdown.Item onClick={() => valency(id, launchValency)}>{getTranslation("Valency")}</Dropdown.Item>
+          )}
+        </Dropdown.Menu>
+      </Dropdown>
+    );
+  }
+);
 
 const handlers = compose(
-  withState('value', 'updateValue', props => props.filter),
+  withState("value", "updateValue", props => props.filter),
   withHandlers({
     onChange(props) {
       return event => props.updateValue(event.target.value);
     },
     onSubmit(props) {
-      return (event) => {
+      return event => {
         event.preventDefault();
         props.submitFilter(props.value);
       };
-    },
+    }
   })
 );
 
 const Filter = handlers(({ value, onChange, onSubmit }) => (
   <div className="ui right aligned category search item">
     <form className="ui transparent icon input" onSubmit={onSubmit}>
-      <input className="white" type="text" placeholder={getTranslation('Search')} value={value} onChange={onChange} />
+      <input className="white" type="text" placeholder={getTranslation("Search")} value={value} onChange={onChange} />
       <button type="submit" className="white">
         <i className="search link icon" />
       </button>
@@ -224,89 +192,92 @@ const Filter = handlers(({ value, onChange, onSubmit }) => (
 
 const ModeSelector = compose(
   connect(state => state.user),
-  onlyUpdateForKeys(['mode', 'baseUrl', 'filter', 'user'])
-)(({
-  mode,
-  baseUrl,
-  filter,
-  submitFilter,
-  openCognateAnalysisModal,
-  openPhonemicAnalysisModal,
-  openPhonologyModal,
-  launchSoundAndMarkup,
-  launchValency,
-  id,
-  user
-}) => {
-  const modes = {};
-  if (user.id !== undefined) {
+  onlyUpdateForKeys(["mode", "baseUrl", "filter", "user"])
+)(
+  ({
+    mode,
+    baseUrl,
+    filter,
+    submitFilter,
+    openCognateAnalysisModal,
+    openPhonemicAnalysisModal,
+    openPhonologyModal,
+    launchSoundAndMarkup,
+    launchValency,
+    id,
+    user
+  }) => {
+    const modes = {};
+    if (user.id !== undefined) {
+      Object.assign(modes, {
+        edit: {
+          entitiesMode: "all",
+          text: getTranslation("Edit"),
+          component: PerspectiveView
+        },
+        publish: {
+          entitiesMode: "all",
+          text: getTranslation("Publish"),
+          component: PerspectiveView
+        }
+      });
+    }
     Object.assign(modes, {
-      edit: {
-        entitiesMode: 'all',
-        text: getTranslation('Edit'),
-        component: PerspectiveView,
+      view: {
+        entitiesMode: "published",
+        text: getTranslation("View published"),
+        component: PerspectiveView
       },
-      publish: {
-        entitiesMode: 'all',
-        text: getTranslation('Publish'),
-        component: PerspectiveView,
+      contributions: {
+        entitiesMode: "not_accepted",
+        text: getTranslation("View contributions"),
+        component: PerspectiveView
+      },
+      merge: {
+        entitiesMode: "all",
+        text: getTranslation("Merge suggestions"),
+        component: Merge
       }
     });
-  }
-  Object.assign(modes, {
-    view: {
-      entitiesMode: 'published',
-      text: getTranslation('View published'),
-      component: PerspectiveView,
-    },
-    contributions: {
-      entitiesMode: 'not_accepted',
-      text: getTranslation('View contributions'),
-      component: PerspectiveView,
-    },
-    merge: {
-      entitiesMode: 'all',
-      text: getTranslation('Merge suggestions'),
-      component: Merge,
-    }
-  });
 
-  return (
-    <Menu tabular className="perspective-menu-adaptive">
-      { map(modes, (info, stub) =>
-        <Menu.Item key={stub} as={Link} to={`${baseUrl}/${stub}`} active={mode === stub}>
-          {info.text}
-          {info.component === PerspectiveView ? <Counter id={id} mode={info.entitiesMode} /> : null}
-        </Menu.Item>)}
-      <Tools
-        id={id}
-        user_id={user.id}
-        mode={mode}
-        openCognateAnalysisModal={openCognateAnalysisModal}
-        openPhonemicAnalysisModal={openPhonemicAnalysisModal}
-        openPhonologyModal={openPhonologyModal}
-        launchSoundAndMarkup={launchSoundAndMarkup}
-        launchValency={launchValency}
-      />
-      <Menu.Menu position="right">
-        <Filter filter={filter} submitFilter={submitFilter} />
-      </Menu.Menu>
-    </Menu>
-  );
-});
+    return (
+      <Menu tabular className="perspective-menu-adaptive">
+        {map(modes, (info, stub) => (
+          <Menu.Item key={stub} as={Link} to={`${baseUrl}/${stub}`} active={mode === stub}>
+            {info.text}
+            {info.component === PerspectiveView ? <Counter id={id} mode={info.entitiesMode} /> : null}
+          </Menu.Item>
+        ))}
+        <Tools
+          id={id}
+          user_id={user.id}
+          mode={mode}
+          openCognateAnalysisModal={openCognateAnalysisModal}
+          openPhonemicAnalysisModal={openPhonemicAnalysisModal}
+          openPhonologyModal={openPhonologyModal}
+          launchSoundAndMarkup={launchSoundAndMarkup}
+          launchValency={launchValency}
+        />
+        <Menu.Menu position="right">
+          <Filter filter={filter} submitFilter={submitFilter} />
+        </Menu.Menu>
+      </Menu>
+    );
+  }
+);
 
 const soundAndMarkup = (perspectiveId, mode, launchSoundAndMarkup) => {
   launchSoundAndMarkup({
     variables: {
       perspectiveId,
-      publishedMode: mode === 'edit' ? 'all' : 'published',
-    },
+      publishedMode: mode === "edit" ? "all" : "published"
+    }
   }).then(
     () => {
-      window.logger.suc(getTranslation('Sound and markup compilation is being created. Check out tasks for details.'));
+      window.logger.suc(getTranslation("Sound and markup compilation is being created. Check out tasks for details."));
     },
     () => {
-      window.logger.err(getTranslation('Failed to launch sound and markup compilation!'));
+      window.logger.err(getTranslation("Failed to launch sound and markup compilation!"));
     }
   );
 };
@@ -314,14 +285,14 @@ const soundAndMarkup = (perspectiveId, mode, launchSoundAndMarkup) => {
 const valency = (perspectiveId, launchValency) => {
   launchValency({
     variables: {
-      perspectiveId,
-    },
+      perspectiveId
+    }
   }).then(
     () => {
-      window.logger.suc(getTranslation('Valency data is being compiled. Check out tasks for details.'));
+      window.logger.suc(getTranslation("Valency data is being compiled. Check out tasks for details."));
     },
     () => {
-      window.logger.err(getTranslation('Failed to launch valency data compilation!'));
+      window.logger.err(getTranslation("Failed to launch valency data compilation!"));
     }
   );
 };
@@ -337,23 +308,18 @@ const Perspective = ({
   launchValency,
   user
 }) => {
-  const {
-    id, parent_id, mode, page, baseUrl
-  } = perspective.params;
+  const { id, parent_id, mode, page, baseUrl } = perspective.params;
   if (!baseUrl) {
     return null;
   }
 
-  if (data.loading || data.error)
-    return null;
+  if (data.loading || data.error) {return null;}
 
   const { perspective: p } = data;
   if (p.is_hidden_for_client) {
     return (
-      <div style={{'marginTop': '1em'}}>
-        <Label>
-          {getTranslation('Perspective is hidden and you don\'t have permissions to access it.')}
-        </Label>
+      <div style={{ marginTop: "1em" }}>
+        <Label>{getTranslation("Perspective is hidden and you don't have permissions to access it.")}</Label>
       </div>
     );
   }
@@ -363,45 +329,54 @@ const Perspective = ({
   if (user.id !== undefined) {
     Object.assign(modes, {
       edit: {
-        entitiesMode: 'all',
-        text: getTranslation('Edit'),
-        component: PerspectiveView,
+        entitiesMode: "all",
+        text: getTranslation("Edit"),
+        component: PerspectiveView
       },
       publish: {
-        entitiesMode: 'all',
-        text: getTranslation('Publish'),
-        component: PerspectiveView,
+        entitiesMode: "all",
+        text: getTranslation("Publish"),
+        component: PerspectiveView
       }
     });
   }
   Object.assign(modes, {
     view: {
-      entitiesMode: 'published',
-      text: getTranslation('View published'),
-      component: PerspectiveView,
+      entitiesMode: "published",
+      text: getTranslation("View published"),
+      component: PerspectiveView
     },
     contributions: {
-      entitiesMode: 'not_accepted',
-      text: getTranslation('View contributions'),
-      component: PerspectiveView,
+      entitiesMode: "not_accepted",
+      text: getTranslation("View contributions"),
+      component: PerspectiveView
     },
     merge: {
-      entitiesMode: 'all',
-      text: getTranslation('Merge suggestions'),
-      component: Merge,
+      entitiesMode: "all",
+      text: getTranslation("Merge suggestions"),
+      component: Merge
     }
   });
 
   return (
     <div className="background-content lingvo-scrolling-content">
       <Container fluid className="perspective inverted lingvo-scrolling-content__container">
-        {isDeleted &&
-          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%", fontSize: "20px", color: "white" }}>
-            {getTranslation('This entity was deleted')}
+        {isDeleted && (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "100%",
+              fontSize: "20px",
+              color: "white"
+            }}
+          >
+            {getTranslation("This entity was deleted")}
           </div>
-        }
+        )}
         {!isDeleted && <PerspectivePath id={id} dictionary_id={parent_id} mode={mode} />}
-        {!isDeleted &&
+        {!isDeleted && (
           <ModeSelector
             mode={mode}
             id={id}
@@ -414,11 +389,11 @@ const Perspective = ({
             launchSoundAndMarkup={launchSoundAndMarkup}
             launchValency={launchValency}
           />
-        }
-        {!isDeleted &&
+        )}
+        {!isDeleted && (
           <Switch>
             <Redirect exact from={baseUrl} to={`${baseUrl}/view`} />
-            { map(modes, (info, stub) => (
+            {map(modes, (info, stub) => (
               <Route
                 key={stub}
                 path={`${baseUrl}/${stub}`}
@@ -436,7 +411,7 @@ const Perspective = ({
             ))}
             <Route component={NotFound} />
           </Switch>
-        }
+        )}
       </Container>
     </div>
   );
@@ -458,9 +433,9 @@ export default compose(
   branch(({ perspective }) => !perspective.params.id, renderNothing),
   graphql(perspectiveIsHiddenOrDeletedQuery, {
     options: ({ perspective }) => ({
-      variables: {id: perspective.params.id}
+      variables: { id: perspective.params.id }
     })
   }),
-  graphql(launchSoundAndMarkupMutation, { name: 'launchSoundAndMarkup' }),
-  graphql(launchValencyMutation, { name: 'launchValency' })
+  graphql(launchSoundAndMarkupMutation, { name: "launchSoundAndMarkup" }),
+  graphql(launchValencyMutation, { name: "launchValency" })
 )(Perspective);

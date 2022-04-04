@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import { compose, pure, withReducer } from 'recompose';
-import { graphql } from 'react-apollo';
-import gql from 'graphql-tag';
-import { sortBy, reverse } from 'lodash';
-import { Table, Button, Confirm, Dropdown, Icon, Input } from 'semantic-ui-react';
-import { compositeIdToString } from 'utils/compositeId';
-import { getTranslation } from 'api/i18n';
-import { fieldsQuery } from 'pages/DictImport';
+import React, { useState } from "react";
+import { graphql } from "react-apollo";
+import { Button, Confirm, Dropdown, Icon, Input, Table } from "semantic-ui-react";
+import { getTranslation } from "api/i18n";
+import gql from "graphql-tag";
+import { reverse, sortBy } from "lodash";
+import PropTypes from "prop-types";
+import { compose, pure, withReducer } from "recompose";
+
+import { fieldsQuery } from "pages/DictImport";
+import { compositeIdToString } from "utils/compositeId";
 
 const userBlobsQuery = gql`
   query userBlobs {
@@ -47,9 +48,9 @@ const Blob = ({ blob, deleteBlob }) => {
       variables: { id: blob.id },
       refetchQueries: [
         {
-          query: userBlobsQuery,
-        },
-      ],
+          query: userBlobsQuery
+        }
+      ]
     });
   };
 
@@ -61,11 +62,11 @@ const Blob = ({ blob, deleteBlob }) => {
       <Table.Cell>{blob.data_type}</Table.Cell>
       <Table.Cell>{new Date(blob.created_at * 1e3).toLocaleString()}</Table.Cell>
       <Table.Cell>
-        <Button basic content={getTranslation('Remove')} onClick={() => setConfirmation(true)} />
+        <Button basic content={getTranslation("Remove")} onClick={() => setConfirmation(true)} />
       </Table.Cell>
       <Confirm
         open={confirmation}
-        header={getTranslation('Confirmation')}
+        header={getTranslation("Confirmation")}
         content={`${getTranslation("Are you sure you want to delete file")} '${blob.name}'?`}
         onConfirm={remove}
         onCancel={() => setConfirmation(false)}
@@ -77,25 +78,25 @@ const Blob = ({ blob, deleteBlob }) => {
 
 Blob.propTypes = {
   blob: PropTypes.object.isRequired,
-  deleteBlob: PropTypes.func.isRequired,
+  deleteBlob: PropTypes.func.isRequired
 };
 
 const SortableColumnHeader = ({ children, onSortModeChange }) => (
   <Table.HeaderCell>
     {children}
     <span>
-      <Icon fitted size="large" name="caret up" onClick={() => onSortModeChange('a')} />
-      <Icon fitted size="large" name="caret down" onClick={() => onSortModeChange('d')} />
+      <Icon fitted size="large" name="caret up" onClick={() => onSortModeChange("a")} />
+      <Icon fitted size="large" name="caret down" onClick={() => onSortModeChange("d")} />
     </span>
   </Table.HeaderCell>
 );
 
-const BlobWithData = compose(graphql(deleteBlobMutation, { name: 'deleteBlob' }), pure)(Blob);
+const BlobWithData = compose(graphql(deleteBlobMutation, { name: "deleteBlob" }), pure)(Blob);
 
 function sortFiles(files, sortByField) {
   const { prop, order } = sortByField;
   const sortedFiles = sortBy(files, file => file[prop]);
-  return order === 'a' ? sortedFiles : reverse(sortedFiles);
+  return order === "a" ? sortedFiles : reverse(sortedFiles);
 }
 
 class Files extends React.Component {
@@ -103,10 +104,10 @@ class Files extends React.Component {
     super(props);
 
     this.state = {
-      fileType: 'pdf',
+      fileType: "pdf",
       file: undefined,
       trigger: true,
-      filter: ''
+      filter: ""
     };
     this.uploadBlob = this.uploadBlob.bind(this);
     this.onFileTypeChange = this.onFileTypeChange.bind(this);
@@ -125,13 +126,10 @@ class Files extends React.Component {
     const { createBlob } = this.props;
     createBlob({
       variables: { data_type: this.state.fileType, content: this.state.file },
-      refetchQueries: [
-        { query: userBlobsQuery },
-        { query: fieldsQuery }
-      ],
+      refetchQueries: [{ query: userBlobsQuery }, { query: fieldsQuery }]
     }).then(() => {
       const { trigger } = this.state;
-      window.logger.suc(getTranslation('Upload successful'));
+      window.logger.suc(getTranslation("Upload successful"));
       this.setState({ file: undefined, trigger: !trigger });
     });
   }
@@ -146,7 +144,7 @@ class Files extends React.Component {
     const { user_blobs: userBlobs } = data;
     const { file, trigger, filter } = this.state;
     let blobs = userBlobs.filter(b => !b.marked_for_deletion);
-    if (filter !== '') {
+    if (filter !== "") {
       blobs = blobs.filter(b => b.name.includes(filter));
     }
     if (sortByField) {
@@ -155,24 +153,24 @@ class Files extends React.Component {
 
     const fileTypes = [
       {
-        text: getTranslation('PDF file'),
-        value: 'pdf',
-        icon: 'file pdf outline',
+        text: getTranslation("PDF file"),
+        value: "pdf",
+        icon: "file pdf outline"
       },
       {
-        text: getTranslation('Dialeqt file'),
-        value: 'dialeqt_dictionary',
-        icon: 'conversation',
+        text: getTranslation("Dialeqt file"),
+        value: "dialeqt_dictionary",
+        icon: "conversation"
       },
       {
-        text: getTranslation('Starling'),
-        value: 'starling/csv',
-        icon: 'conversation',
+        text: getTranslation("Starling"),
+        value: "starling/csv",
+        icon: "conversation"
       },
       {
-        text: getTranslation('Image'),
-        value: 'image',
-        icon: 'file outline',
+        text: getTranslation("Image"),
+        value: "image",
+        icon: "file outline"
       }
     ];
 
@@ -182,52 +180,65 @@ class Files extends React.Component {
           <Table.Header fullWidth>
             <Table.Row>
               <Table.HeaderCell colSpan="5">
-                <Button onClick={() => document.getElementById('file-select').click()} style={{ marginRight: '1rem' }}>
-                  {`${getTranslation('Browse')}...`}
+                <Button onClick={() => document.getElementById("file-select").click()} style={{ marginRight: "1rem" }}>
+                  {`${getTranslation("Browse")}...`}
                 </Button>
-                { file === undefined ? getTranslation('No file selected') : file.name }
-                <Input id="file-select" key={trigger} type="file" onChange={this.onFileChange} style={{ display: 'none' }} />
+                {file === undefined ? getTranslation("No file selected") : file.name}
+                <Input
+                  id="file-select"
+                  key={trigger}
+                  type="file"
+                  onChange={this.onFileChange}
+                  style={{ display: "none" }}
+                />
                 <Dropdown
                   button
                   basic
                   options={fileTypes}
                   value={this.state.fileType}
                   onChange={this.onFileTypeChange}
-                  style={{ margin: '0 1rem 0 1rem' }}
+                  style={{ margin: "0 1rem 0 1rem" }}
                 />
-                <Button color="green" content={getTranslation('Upload')} disabled={file === undefined} onClick={this.uploadBlob} />
+                <Button
+                  color="green"
+                  content={getTranslation("Upload")}
+                  disabled={file === undefined}
+                  onClick={this.uploadBlob}
+                />
                 <Input
-                  icon={{ name: 'search' }}
-                  placeholder={getTranslation('Search')}
+                  icon={{ name: "search" }}
+                  placeholder={getTranslation("Search")}
                   onChange={event => this.setState({ filter: event.target.value })}
-                  style={{ float: 'right', width: '300px' }}
+                  style={{ float: "right", width: "300px" }}
                 />
               </Table.HeaderCell>
             </Table.Row>
             <Table.Row>
               <SortableColumnHeader
-                onSortModeChange={order => dispatch({ type: 'SET_SORT_MODE', payload: { prop: 'name', order } })}
+                onSortModeChange={order => dispatch({ type: "SET_SORT_MODE", payload: { prop: "name", order } })}
               >
-                {getTranslation('Name')}
+                {getTranslation("Name")}
               </SortableColumnHeader>
               <SortableColumnHeader
-                onSortModeChange={order => dispatch({ type: 'SET_SORT_MODE', payload: { prop: 'data_type', order } })}
+                onSortModeChange={order => dispatch({ type: "SET_SORT_MODE", payload: { prop: "data_type", order } })}
               >
-                {getTranslation('Type')}
+                {getTranslation("Type")}
               </SortableColumnHeader>
               <SortableColumnHeader
-                onSortModeChange={order => dispatch({ type: 'SET_SORT_MODE', payload: { prop: 'created_at', order } })}
+                onSortModeChange={order => dispatch({ type: "SET_SORT_MODE", payload: { prop: "created_at", order } })}
               >
-                {getTranslation('Created')}
+                {getTranslation("Created")}
               </SortableColumnHeader>
-              <Table.HeaderCell>{getTranslation('Actions')}</Table.HeaderCell>
+              <Table.HeaderCell>{getTranslation("Actions")}</Table.HeaderCell>
             </Table.Row>
           </Table.Header>
 
           <Table.Body>
             {blobs
               .filter(b => !b.marked_for_deletion)
-              .map(blob => <BlobWithData key={compositeIdToString(blob.id)} blob={blob} />)}
+              .map(blob => (
+                <BlobWithData key={compositeIdToString(blob.id)} blob={blob} />
+              ))}
           </Table.Body>
         </Table>
       </div>
@@ -239,22 +250,22 @@ Files.propTypes = {
   data: PropTypes.shape({
     loading: PropTypes.bool,
     error: PropTypes.object,
-    user_blobs: PropTypes.array,
+    user_blobs: PropTypes.array
   }).isRequired,
   createBlob: PropTypes.func.isRequired,
   sortByField: PropTypes.object,
-  dispatch: PropTypes.func.isRequired,
+  dispatch: PropTypes.func.isRequired
 };
 
 Files.defaultProps = {
-  sortByField: null,
+  sortByField: null
 };
 
 function sortByFieldReducer(state, { type, payload }) {
   switch (type) {
-    case 'SET_SORT_MODE':
+    case "SET_SORT_MODE":
       return payload;
-    case 'RESET_SORT_MODE':
+    case "RESET_SORT_MODE":
       return null;
     default:
       return state;
@@ -263,6 +274,6 @@ function sortByFieldReducer(state, { type, payload }) {
 
 export default compose(
   graphql(userBlobsQuery),
-  graphql(createBlobMutation, { name: 'createBlob' }),
-  withReducer('sortByField', 'dispatch', sortByFieldReducer, null)
+  graphql(createBlobMutation, { name: "createBlob" }),
+  withReducer("sortByField", "dispatch", sortByFieldReducer, null)
 )(Files);

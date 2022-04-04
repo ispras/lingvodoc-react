@@ -1,7 +1,7 @@
-import React from 'react';
-import { Button, Form, Segment, Label } from 'semantic-ui-react';
-import PropTypes from 'prop-types';
-import { getTranslation } from 'api/i18n';
+import React from "react";
+import { Button, Form, Label, Segment } from "semantic-ui-react";
+import { getTranslation } from "api/i18n";
+import PropTypes from "prop-types";
 
 const speakersAmountOptions = [
   { text: getTranslation("Vulnerable"), value: "Vulnerable" },
@@ -13,11 +13,10 @@ const speakersAmountOptions = [
 ];
 
 class EditLanguageMetadata extends React.Component {
-
   constructor(props) {
     super(props);
 
-    this.state = props.metadata || { speakersAmount: '' };
+    this.state = props.metadata || { speakersAmount: "" };
 
     this.initialState = { speakersAmount: this.state.speakersAmount };
 
@@ -47,25 +46,30 @@ class EditLanguageMetadata extends React.Component {
 
     return (
       <Form>
-        <h4>{getTranslation('Metadata')}</h4>
+        <h4>{getTranslation("Metadata")}</h4>
         <Segment>
-          <Form.Group widths='equal'>
-            <Label size='large'>{getTranslation('Number of native speakers')}</Label>
-            <Form.Dropdown fluid selection options={speakersAmountOptions} value={speakersAmount} onChange={this.onChangeValue} />
-            {mode != 'create' &&
-              <Button 
+          <Form.Group widths="equal">
+            <Label size="large">{getTranslation("Number of native speakers")}</Label>
+            <Form.Dropdown
+              fluid
+              selection
+              options={speakersAmountOptions}
+              value={speakersAmount}
+              onChange={this.onChangeValue}
+            />
+            {mode != "create" && (
+              <Button
                 content={getTranslation("Save")}
                 disabled={JSON.stringify(speakersAmount) == JSON.stringify(this.initialState.speakersAmount)}
                 onClick={this.onSaveValue}
                 className="lingvo-button-violet"
               />
-            }
+            )}
           </Form.Group>
         </Segment>
       </Form>
     );
   }
-
 }
 
 EditLanguageMetadata.propTypes = {

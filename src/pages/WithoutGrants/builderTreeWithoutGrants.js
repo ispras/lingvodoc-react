@@ -1,41 +1,41 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import Immutable, { fromJS } from 'immutable';
-import { assignDictsToTree, buildDictTrees } from 'pages/Search/treeBuilder';
-import LangsNav from 'components/Home/components/LangsNav';
-import { compositeIdToString as id2str } from 'utils/compositeId';
-import Tree from 'components/Home/components/Tree';
-import { Container } from 'semantic-ui-react';
+import React from "react";
+import { Container } from "semantic-ui-react";
+import Immutable, { fromJS } from "immutable";
+import PropTypes from "prop-types";
+
+import LangsNav from "components/Home/components/LangsNav";
+import Tree from "components/Home/components/Tree";
+import { assignDictsToTree, buildDictTrees } from "pages/Search/treeBuilder";
+import { compositeIdToString as id2str } from "utils/compositeId";
 
 function TreeWithoutGrants(props) {
-  const {
-    languagesTree, dictionaries, perspectives, grants, isAuthenticated,
-  } = props;
+  const { languagesTree, dictionaries, perspectives, grants, isAuthenticated } = props;
 
   const arrayIdsGrants = [];
-  grants.forEach((grant) => {
-    grant.getIn(['additional_metadata', 'participant']).toJS().forEach((id) => {
-      arrayIdsGrants.push(id2str(id));
-    });
+  grants.forEach(grant => {
+    grant
+      .getIn(["additional_metadata", "participant"])
+      .toJS()
+      .forEach(id => {
+        arrayIdsGrants.push(id2str(id));
+      });
   });
 
-
-  const dictionariesWithoutGrants = dictionaries.filter((dict) => {
-    const dictId = dict.getIn(['id']) || new Immutable.List();
-    return !arrayIdsGrants.some(el =>
-      el === id2str(dictId.toJS()));
+  const dictionariesWithoutGrants = dictionaries.filter(dict => {
+    const dictId = dict.getIn(["id"]) || new Immutable.List();
+    return !arrayIdsGrants.some(el => el === id2str(dictId.toJS()));
   });
-
 
   const treeNoGrants = assignDictsToTree(
-    buildDictTrees(fromJS({
-      lexical_entries: [],
-      perspectives,
-      dictionaries: dictionariesWithoutGrants.toList(),
-    })),
+    buildDictTrees(
+      fromJS({
+        lexical_entries: [],
+        perspectives,
+        dictionaries: dictionariesWithoutGrants.toList()
+      })
+    ),
     languagesTree
   );
-
 
   return (
     <div>
@@ -52,11 +52,11 @@ TreeWithoutGrants.propTypes = {
   dictionaries: PropTypes.instanceOf(Immutable.Map).isRequired,
   perspectives: PropTypes.instanceOf(Immutable.List).isRequired,
   grants: PropTypes.instanceOf(Immutable.List).isRequired,
-  isAuthenticated: PropTypes.bool,
+  isAuthenticated: PropTypes.bool
 };
 
 TreeWithoutGrants.defaultProps = {
-  isAuthenticated: false,
+  isAuthenticated: false
 };
 
 export default TreeWithoutGrants;

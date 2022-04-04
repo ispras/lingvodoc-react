@@ -1,13 +1,14 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { compose, pure } from 'recompose';
-import { graphql } from 'react-apollo';
-import gql from 'graphql-tag';
-import { Modal, List, Button, Embed, Message } from 'semantic-ui-react';
-import { closeBlobsModal } from 'ducks/blobs';
-import { compositeIdToString } from 'utils/compositeId';
+import React from "react";
+import { graphql } from "react-apollo";
+import { connect } from "react-redux";
+import { Button, Embed, List, Message, Modal } from "semantic-ui-react";
+import gql from "graphql-tag";
+import PropTypes from "prop-types";
+import { compose, pure } from "recompose";
+import { bindActionCreators } from "redux";
+
+import { closeBlobsModal } from "ducks/blobs";
+import { compositeIdToString } from "utils/compositeId";
 
 const blobQuery = gql`
   query Blob($id: LingvodocID!) {
@@ -24,15 +25,11 @@ const Blob = ({ data: { loading, error, userblob: blob } }) => {
     return null;
   }
   return (
-    <Modal
-      closeIcon
-      trigger={<Button basic>{blob.name}</Button>}>
-
+    <Modal closeIcon trigger={<Button basic>{blob.name}</Button>}>
       <Modal.Header>{blob.name}</Modal.Header>
       <Modal.Content>
         <Embed icon="right circle arrow" active url={blob.content} />
       </Modal.Content>
-
     </Modal>
   );
 };
@@ -40,8 +37,8 @@ const Blob = ({ data: { loading, error, userblob: blob } }) => {
 Blob.propTypes = {
   data: PropTypes.shape({
     loading: PropTypes.bool.isRequired,
-    userblob: PropTypes.object,
-  }).isRequired,
+    userblob: PropTypes.object
+  }).isRequired
 };
 
 const BlobWithData = compose(graphql(blobQuery), pure)(Blob);
@@ -51,14 +48,7 @@ const BlobsModal = ({ visible, actions, blobs, dictionary }) => {
     return null;
   }
   return (
-    <Modal
-      closeIcon
-      onClose={actions.closeBlobsModal}
-      open={visible}
-      dimmer
-      size="small"
-      className="lingvo-modal2">
-
+    <Modal closeIcon onClose={actions.closeBlobsModal} open={visible} dimmer size="small" className="lingvo-modal2">
       <Modal.Header>{dictionary.translation}</Modal.Header>
       <Modal.Content>
         <List>
@@ -73,15 +63,15 @@ const BlobsModal = ({ visible, actions, blobs, dictionary }) => {
       <Modal.Actions>
         <Button content="Close" onClick={actions.closeBlobsModal} className="lingvo-button-basic-black" />
       </Modal.Actions>
-
-    </Modal>);
+    </Modal>
+  );
 };
 
 export default compose(
   connect(
     state => state.blobs,
     dispatch => ({
-      actions: bindActionCreators({ closeBlobsModal }, dispatch),
+      actions: bindActionCreators({ closeBlobsModal }, dispatch)
     })
   ),
   pure

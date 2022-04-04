@@ -1,7 +1,7 @@
-import { combineReducers } from 'redux';
+import { combineReducers } from "redux";
 
-export const OPEN_MODAL = '@ban/OPEN_MODAL';
-export const CLOSE_MODAL = '@ban/CLOSE_MODAL';
+export const OPEN_MODAL = "@ban/OPEN_MODAL";
+export const CLOSE_MODAL = "@ban/CLOSE_MODAL";
 
 export const openModal = () => ({ type: OPEN_MODAL });
 export const closeModal = () => ({ type: CLOSE_MODAL });
@@ -18,5 +18,5 @@ const visible = (state = false, action) => {
 };
 
 export default combineReducers({
-  visible,
+  visible
 });

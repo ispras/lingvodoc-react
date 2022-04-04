@@ -1,10 +1,11 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { onlyUpdateForKeys } from 'recompose';
-import { Container, Button, Icon } from 'semantic-ui-react';
-import Wavesurfer from 'react-wavesurfer';
-import Timeline from 'components/Wavesurfer/timeline';
-import Spectrogram from 'components/Wavesurfer/spectrogram';
+import React from "react";
+import Wavesurfer from "react-wavesurfer";
+import { Button, Container, Icon } from "semantic-ui-react";
+import PropTypes from "prop-types";
+import { onlyUpdateForKeys } from "recompose";
+
+import Spectrogram from "components/Wavesurfer/spectrogram";
+import Timeline from "components/Wavesurfer/timeline";
 
 class Player extends React.Component {
   constructor(props) {
@@ -12,7 +13,7 @@ class Player extends React.Component {
     this.state = {
       playing: true,
       pos: 0,
-      zoom: 0,
+      zoom: 0
     };
     this.handlePlay = this.handlePlay.bind(this);
     this.handlePause = this.handlePause.bind(this);
@@ -22,25 +23,25 @@ class Player extends React.Component {
 
   handlePlay() {
     this.setState({
-      playing: true,
+      playing: true
     });
   }
 
   handlePause() {
     this.setState({
-      playing: false,
+      playing: false
     });
   }
 
   handlePosChange(e) {
     this.setState({
-      pos: e.originalArgs[0],
+      pos: e.originalArgs[0]
     });
   }
 
   handleZoom(e) {
     this.setState({
-      zoom: Number(e.target.value),
+      zoom: Number(e.target.value)
     });
   }
 
@@ -48,31 +49,24 @@ class Player extends React.Component {
     const { file } = this.props;
     const { playing, pos } = this.state;
     const options = {
-      waveColor: '#999',
-      progressColor: '#555',
+      waveColor: "#999",
+      progressColor: "#555",
       cursorWidth: 1,
-      cursorColor: '#333',
+      cursorColor: "#333",
       scrollParent: false,
       minPxPerSec: 50,
       fillParent: true,
       height: 128,
-      barWidth: 1,
+      barWidth: 1
     };
     const spectrogramOptions = {
-      fftSamples: 128,
+      fftSamples: 128
     };
     const timelineOptions = {};
 
     return (
       <div>
-        <input
-          id="zoom-slider"
-          type="range"
-          min="0"
-          max="200"
-          value={this.state.zoom}
-          onChange={this.handleZoom}
-        />
+        <input id="zoom-slider" type="range" min="0" max="200" value={this.state.zoom} onChange={this.handleZoom} />
         <span>{this.state.zoom}%</span>
 
         <Wavesurfer
@@ -104,11 +98,11 @@ class Player extends React.Component {
 }
 
 Player.propTypes = {
-  file: PropTypes.string,
+  file: PropTypes.string
 };
 
 Player.defaultProps = {
-  file: '',
+  file: ""
 };
 
-export default onlyUpdateForKeys(['file'])(Player);
+export default onlyUpdateForKeys(["file"])(Player);

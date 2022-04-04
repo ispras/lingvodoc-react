@@ -1,5 +1,5 @@
 const getTop = (element, start) => {
-  if (element.nodeName === 'HTML') {
+  if (element.nodeName === "HTML") {
     return -start;
   }
 
@@ -8,15 +8,15 @@ const getTop = (element, start) => {
 
 // ease in out function thanks to:
 // http://blog.greweb.fr/2012/02/bezier-curve-based-easing-functions-from-concept-to-implementation/
-const easeInOutCubic = (t) => (t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1);
+const easeInOutCubic = t => (t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1);
 
 const position = (start, end, elapsed, duration) => {
-  if (elapsed > duration) return end;
+  if (elapsed > duration) {return end;}
   return start + (end - start) * easeInOutCubic(elapsed / duration); // easing
   // return start + (end - start) * (elapsed / duration); // linear
 };
 
-const defaultAnimationFrame = (fn) => {
+const defaultAnimationFrame = fn => {
   window.setTimeout(fn, 15);
 };
 
@@ -26,15 +26,17 @@ const smoothScroll = (el, _duration, callback, _context) => {
   const start = context.scrollTop || window.pageYOffset;
   let end;
 
-  if (typeof el === 'number') {
+  if (typeof el === "number") {
     end = parseInt(el, 10);
   } else {
     end = getTop(el, start);
   }
 
   const clock = Date.now();
-  const requestAnimationFrame = window.requestAnimationFrame ||
-    window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame ||
+  const requestAnimationFrame =
+    window.requestAnimationFrame ||
+    window.mozRequestAnimationFrame ||
+    window.webkitRequestAnimationFrame ||
     defaultAnimationFrame;
 
   const step = () => {
@@ -46,7 +48,7 @@ const smoothScroll = (el, _duration, callback, _context) => {
     }
 
     if (elapsed > duration) {
-      if (typeof callback === 'function') {
+      if (typeof callback === "function") {
         callback(el);
       }
     } else {

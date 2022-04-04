@@ -1,24 +1,24 @@
-import { combineReducers } from 'redux';
-import { createFormAction } from 'redux-form-saga';
+import { combineReducers } from "redux";
+import { createFormAction } from "redux-form-saga";
 // Actions
-export const REQUEST = '@user/REQUEST';
-export const SET = '@user/SET';
-export const ERROR = '@user/ERROR';
+export const REQUEST = "@user/REQUEST";
+export const SET = "@user/SET";
+export const ERROR = "@user/ERROR";
 
-export const LAUNCH_SIGN_IN_FORM = '@user/LAUNCH_SIGN_IN_FORM';
-export const signInForm = createFormAction('@user/signin');
+export const LAUNCH_SIGN_IN_FORM = "@user/LAUNCH_SIGN_IN_FORM";
+export const signInForm = createFormAction("@user/signin");
 
-export const LAUNCH_SIGN_UP_FORM = '@user/LAUNCH_SIGN_UP_FORM';
-export const signUpForm = createFormAction('@user/signup');
+export const LAUNCH_SIGN_UP_FORM = "@user/LAUNCH_SIGN_UP_FORM";
+export const signUpForm = createFormAction("@user/signup");
 
-export const LAUNCH_EDIT_FORM = '@user/LAUNCH_EDIT_FORM';
-export const editForm = createFormAction('@user/edit');
+export const LAUNCH_EDIT_FORM = "@user/LAUNCH_EDIT_FORM";
+export const editForm = createFormAction("@user/edit");
 
-export const LAUNCH_BAN_FORM = '@user/LAUNCH_BAN_FORM';
-export const banForm = createFormAction('@user/ban');
+export const LAUNCH_BAN_FORM = "@user/LAUNCH_BAN_FORM";
+export const banForm = createFormAction("@user/ban");
 
-export const SIGN_OUT = '@user/SIGN_OUT';
-export const CLOSE_FORM = '@user/CLOSE_FORM';
+export const SIGN_OUT = "@user/SIGN_OUT";
+export const CLOSE_FORM = "@user/CLOSE_FORM";
 
 // Reducers
 function user(state = {}, action = {}) {
@@ -53,46 +53,45 @@ function error(state = false, action = {}) {
   }
 }
 
-function modal(state = '', action = {}) {
+function modal(state = "", action = {}) {
   switch (action.type) {
     case LAUNCH_SIGN_IN_FORM:
-      return 'signin';
+      return "signin";
     case LAUNCH_SIGN_UP_FORM:
-      return 'signup';
+      return "signup";
     case LAUNCH_EDIT_FORM:
-      return 'edit';
+      return "edit";
     case LAUNCH_BAN_FORM:
-      return 'ban';
+      return "ban";
     case signInForm.SUCCESS:
     case signUpForm.SUCCESS:
     case editForm.SUCCESS:
     case CLOSE_FORM:
-      return '';
+      return "";
     default:
       return state;
   }
 }
 
-function signin_info(state = null, action = {})
-{
+function signin_info(state = null, action = {}) {
   switch (action.type) {
     case signInForm.REQUEST:
       return null;
     case signInForm.SUCCESS:
       return null;
     case signInForm.FAILURE:
-      return 'Signin failure. Either no such login/password combination exists, or this user account has been deactivated.';
+      return "Signin failure. Either no such login/password combination exists, or this user account has been deactivated.";
     default:
       return state;
   }
-};
+}
 
 export default combineReducers({
   user,
   loading,
   error,
   modal,
-  signin_info,
+  signin_info
 });
 
 // Action Creators

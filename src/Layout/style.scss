@@ -31,18 +31,18 @@
 
   & > :first-child:not(.icon),
   & > .icon:first-child + * {
-      border-top-left-radius: 32px !important;
-      border-top-right-radius: 32px !important;
+    border-top-left-radius: 32px !important;
+    border-top-right-radius: 32px !important;
   }
 
   & > :last-child {
-      border-bottom-left-radius: 32px !important;
-      border-bottom-right-radius: 32px !important;
+    border-bottom-left-radius: 32px !important;
+    border-bottom-right-radius: 32px !important;
   }
-  
+
   & > .content.lingvo-modal-content {
     padding: 55px 40px !important;
-    background: #FAFAFA !important;
+    background: #fafafa !important;
   }
 
   &.ui.modal > .close {
@@ -65,7 +65,7 @@
     right: 8px;
     width: 16px;
     height: 16px;
-    background-color: #372F9D !important;
+    background-color: #372f9d !important;
     -webkit-mask-image: url("../images/close.svg");
     mask-image: url("../images/close.svg");
   }
@@ -104,7 +104,7 @@
     padding: 17px 22px;
 
     &:focus {
-      border-color: #5D54CD;
+      border-color: #5d54cd;
     }
   }
 
@@ -121,7 +121,7 @@
   }
 
   & .ui.violet.button {
-    background: #5D54CD !important;
+    background: #5d54cd !important;
 
     &:hover {
       background: #333 !important;
@@ -145,7 +145,6 @@
       width: 95% !important;
     }
   }
-
 }
 /* /modal */
 
@@ -155,13 +154,13 @@
 
   & > :first-child:not(.icon),
   & > .icon:first-child + * {
-      border-top-left-radius: 16px !important;
-      border-top-right-radius: 16px !important;
+    border-top-left-radius: 16px !important;
+    border-top-right-radius: 16px !important;
   }
 
   & > :last-child {
-      border-bottom-left-radius: 16px !important;
-      border-bottom-right-radius: 16px !important;
+    border-bottom-left-radius: 16px !important;
+    border-bottom-right-radius: 16px !important;
   }
 
   &.ui.modal > .close {
@@ -175,7 +174,7 @@
       right: 0.75rem !important;
     }
   }
-  
+
   & i.icon.close:before {
     content: "";
     display: block;
@@ -184,7 +183,7 @@
     right: 8px;
     width: 16px;
     height: 16px;
-    background-color: #372F9D !important;
+    background-color: #372f9d !important;
     -webkit-mask-image: url("../images/close.svg");
     mask-image: url("../images/close.svg");
   }
@@ -202,7 +201,7 @@
       padding-right: 45px !important;
     }
   }
-  
+
   &.ui.modal > .header:not(.ui) {
     font-size: 18px !important;
     font-weight: bold !important;
@@ -218,6 +217,5 @@
     background: #fff !important;
     padding: 24px 20px;
   }
-
 }
 /* /modal2 */

@@ -1,11 +1,10 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import Wavesurfer from 'react-wavesurfer';
+import React from "react";
+import Wavesurfer from "react-wavesurfer";
+import PropTypes from "prop-types";
 
 // FIXME:
 // Find a better way to import wavesurfer plugins and dependencies
-require('wavesurfer.spectrogram.js');
-
+require("wavesurfer.spectrogram.js");
 
 class Spectrogram extends React.Component {
   constructor(props) {
@@ -14,8 +13,8 @@ class Spectrogram extends React.Component {
   }
 
   componentDidMount() {
-    if (this.props.isReady) this.init();
-    this.props.wavesurfer.on('ready', this._init.bind(this));
+    if (this.props.isReady) {this.init();}
+    this.props.wavesurfer.on("ready", this._init.bind(this));
   }
 
   _init() {
@@ -24,14 +23,14 @@ class Spectrogram extends React.Component {
     this.spectrogram.init({
       ...this.props.options,
       container: this.spectrogramElement,
-      wavesurfer: this.props.wavesurfer,
+      wavesurfer: this.props.wavesurfer
     });
   }
 
   render() {
     return (
       <div
-        ref={(c) => {
+        ref={c => {
           this.spectrogramElement = c;
         }}
       />
@@ -42,7 +41,7 @@ class Spectrogram extends React.Component {
 Spectrogram.propTypes = {
   isReady: PropTypes.bool,
   options: PropTypes.object,
-  wavesurfer: PropTypes.object,
+  wavesurfer: PropTypes.object
 };
 
 Spectrogram.defaultProps = {};

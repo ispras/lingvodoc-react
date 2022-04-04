@@ -1,17 +1,20 @@
-import Immutable, { fromJS } from 'immutable';
-import { uniq, isEmpty } from 'lodash';
-import { compositeIdToString } from 'utils/compositeId';
-import { buildLanguageTree, buildSearchResultsTree } from 'pages/Search/treeBuilder';
+import Immutable, { fromJS } from "immutable";
+import { isEmpty, uniq } from "lodash";
 
-function buildPartialLanguageTree({
-  lexicalEntries, allPerspectives, allDictionaries, allLanguages,
-}) {
+import { buildLanguageTree, buildSearchResultsTree } from "pages/Search/treeBuilder";
+import { compositeIdToString } from "utils/compositeId";
+
+function buildPartialLanguageTree({ lexicalEntries, allPerspectives, allDictionaries, allLanguages }) {
   const perspectiveCompositeIds = uniq(lexicalEntries.map(entry => entry.parent_id)).map(compositeIdToString);
   const perspectives = allPerspectives.filter(p => perspectiveCompositeIds.indexOf(compositeIdToString(p.id)) >= 0);
   const perspectiveParentCompositeIds = perspectives.map(p => compositeIdToString(p.parent_id));
-  const dictionaries = allDictionaries.filter(d => perspectiveParentCompositeIds.indexOf(compositeIdToString(d.id)) >= 0);
+  const dictionaries = allDictionaries.filter(
+    d => perspectiveParentCompositeIds.indexOf(compositeIdToString(d.id)) >= 0
+  );
   const dictionaryParentCompositeIds = dictionaries.map(d => compositeIdToString(d.parent_id));
-  const seedLanguages = allLanguages.filter(lang => dictionaryParentCompositeIds.indexOf(compositeIdToString(lang.id)) >= 0);
+  const seedLanguages = allLanguages.filter(
+    lang => dictionaryParentCompositeIds.indexOf(compositeIdToString(lang.id)) >= 0
+  );
 
   const reducer = (acc, lang) => {
     const id = compositeIdToString(lang.id);
