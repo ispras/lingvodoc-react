@@ -11,18 +11,32 @@ const Cell = ({
   entry,
   column,
   columns,
+  checkEntries,
+  checkedRow,
+  checkedColumn,
+  checkedAll,
+  resetCheckedRow,
+  resetCheckedColumn,
+  resetCheckedAll,
   mode,
   entitiesMode,
   disabled,
   // eslint-disable-next-line arrow-body-style
 }) => {
-
+  
   return (
     <Table.Cell className="entity gentium">
       <Entities
         perspectiveId={perspectiveId}
         column={column}
         columns={columns}
+        checkEntries={checkEntries}
+        checkedRow={checkedRow}
+        checkedColumn={checkedColumn}
+        checkedAll={checkedAll}
+        resetCheckedRow={resetCheckedRow}
+        resetCheckedColumn={resetCheckedColumn}
+        resetCheckedAll={resetCheckedAll}
         entry={entry}
         mode={mode}
         entitiesMode={entitiesMode}
@@ -37,12 +51,20 @@ Cell.propTypes = {
   entry: PropTypes.object.isRequired,
   column: PropTypes.object.isRequired,
   columns: PropTypes.array.isRequired,
+  checkEntries: PropTypes.bool,
+  checkedRow: PropTypes.object,
+  checkedColumn: PropTypes.object,
+  checkedAll: PropTypes.object,
   mode: PropTypes.string.isRequired,
   entitiesMode: PropTypes.string.isRequired,
   disabled: PropTypes.bool,
+  resetCheckedRow: PropTypes.func,
+  resetCheckedColumn: PropTypes.func,
+  resetCheckedAll: PropTypes.func,
 };
 
 Cell.defaultProps = {
   disabled: undefined
 };
-export default onlyUpdateForKeys(['perspectiveId', 'entry', 'mode', 'disabled', 'column'])(Cell);
+
+export default onlyUpdateForKeys(['perspectiveId', 'entry', 'mode', 'disabled', 'column', 'checkedRow', 'checkedColumn', 'checkedAll'])(Cell);

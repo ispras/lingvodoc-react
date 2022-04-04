@@ -89,10 +89,8 @@
         top: 0;
         z-index: 1;
       }
-
-      /* new */
-      /*
-      & td.lingvo-sticky-column {
+      
+      & td.lingvo-sticky-checkbox-column {
         position: static;
         position: sticky;
         left: 0;
@@ -113,7 +111,7 @@
         }
       }
 
-      & thead th.lingvo-sticky-column {
+      & thead th.lingvo-sticky-checkbox-column {
         position: static;
         position: sticky;
         left: 0;
@@ -131,8 +129,6 @@
           }
         }
       }
-      */
-      /* /new */
 
       @media only screen and (max-device-width: 1000px), only screen and (max-width: 1000px) {
         position: static;
@@ -147,11 +143,9 @@
 
       }
 
-      /* new */
-      /*
       @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
 
-        & td.lingvo-sticky-column {
+        & td.lingvo-sticky-checkbox-column {
           position: static;
           left: auto;
 
@@ -161,7 +155,7 @@
           }
         }
 
-        & thead th.lingvo-sticky-column {
+        & thead th.lingvo-sticky-checkbox-column {
           position: static;
           left: auto;
 
@@ -171,8 +165,8 @@
           }
         }
 
-      }*/
-      /* /new */
+      }
+      
     }
   }
 
