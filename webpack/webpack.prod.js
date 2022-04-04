@@ -6,27 +6,51 @@ process.env.NODE_ENV = 'production';
 process.env.REACT_WEBPACK_ENV = 'dist';
 
 const webpack = require('webpack');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const ProgressPlugin = require('webpack/lib/ProgressPlugin');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
-// const OfflinePlugin = require('offline-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const base = require('./webpack.base');
 
+base.mode = 'production';
 base.devtool = 'source-map';
-base.module.loaders.push(
+base.module.rules.push(
   {
     test: /\.css$/,
-    use: ExtractTextPlugin.extract({ fallback: 'style-loader', use: 'css-loader' }),
+    use: [
+      MiniCssExtractPlugin.loader,
+      {
+        loader: 'css-loader',
+        options: {
+          url: { filter: url => !url.startsWith('data:') },
+          sourceMap: true
+        }
+      }
+    ]
   },
   {
     test: /\.scss$/,
-    use: ExtractTextPlugin.extract({ fallback: 'style-loader', use: ['css-loader', 'sass-loader'] }),
+    use: [
+      MiniCssExtractPlugin.loader,
+      {
+        loader: 'css-loader',
+        options: {
+          url: { filter: url => !url.startsWith('data:') },
+          sourceMap: true
+        }
+      },
+      { loader: 'sass-loader', options: { sourceMap: true } }
+    ]
   }
 );
+
+// CSS minification
+base.optimization = {
+  minimizer: [ '...', new CssMinimizerPlugin() ]
+};
+
 // use hash filename to support long-term caching
 base.output.filename = '[name].[chunkhash:8].js';
-// add webpack plugins
 
+// add webpack plugins
 base.plugins.push(new HtmlWebpackPlugin({
   template: path.resolve(__dirname, '../src/index.prod.html'),
   favicon: path.resolve(__dirname, '../src/favicon.ico'),
@@ -34,49 +58,14 @@ base.plugins.push(new HtmlWebpackPlugin({
 }));
 
 base.plugins.push(
-  new CleanWebpackPlugin(['dist']),
-  new ProgressPlugin(),
-  new ExtractTextPlugin('[name].[contenthash:8].css'),
+  new webpack.ProgressPlugin(),
+  new MiniCssExtractPlugin({ filename: '[name].[contenthash:8].css', chunkFilename: '[id].[contenthash:8].css' }),
   new webpack.DefinePlugin({
     'process.env.NODE_ENV': JSON.stringify('production'),
     __DEVELOPMENT__: false,
     __DEVTOOLS__: false,
     __VERSION__: JSON.stringify(_.versionString),
-  }),
-  new webpack.optimize.UglifyJsPlugin({
-    sourceMap: true,
-    compress: {
-      warnings: false,
-      screw_ie8: true,
-      conditionals: true,
-      unused: true,
-      comparisons: true,
-      sequences: true,
-      dead_code: true,
-      evaluate: true,
-      if_return: true,
-      join_vars: true,
-    },
-    output: {
-      comments: false,
-    },
-  }),
-  // extract vendor chunks
-  new webpack.optimize.CommonsChunkPlugin({
-    name: 'vendor',
-    minChunks(module) {
-      return module.context && module.context.indexOf('node_modules') !== -1;
-    },
-  }),
-  new webpack.optimize.CommonsChunkPlugin({ name: 'manifest' })
-  // For progressive web apps
-  // new OfflinePlugin({
-  //   relativePaths: false,
-  //   AppCache: false,
-  //   ServiceWorker: {
-  //     events: true
-  //   }
-  // })
+  })
 );
 
 // minimize webpack output

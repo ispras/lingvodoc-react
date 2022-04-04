@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-apollo';
-import gql from 'graphql-tag';
 import SelectorDictionary from './selectorDictionary';
 import { compose } from 'recompose';
 import Placeholder from 'components/Placeholder';
@@ -12,27 +11,26 @@ import { getTranslation } from 'api/i18n';
 import { setDataForTree, setDefaultGroup, setMainGroupLanguages, setCheckStateTreeFlat } from 'ducks/distanceMap';
 import checkCoordAndLexicalEntries from './checkCoordinatesAndLexicalEntries';
 import { dictionaryWithPerspectivesQuery, allFieldQuery } from './graphql';
+
 import './styles.scss';
 
-function distanceMap(props) {
-  const {
-    dataForTree,
-    dictionaryWithPerspectives,
-    allField,
-    actions,
-    selected,
-    mainGroupDictionaresAndLanguages,
-    user
-  } = props;
-
-  if (!user || user.id != 1)
-
+const DistanceMap = ({ dataForTree,
+  dictionaryWithPerspectives,
+  allField,
+  actions,
+  selected,
+  mainGroupDictionaresAndLanguages,
+  user
+}) => {
+  if (!user || user.id != 1) {
     return (
       <div style={{'marginTop': '1em'}}>
         <Label>
           {getTranslation('For the time being Distance Map functionality is available only for the administrator.')}
         </Label>
-      </div>);
+      </div>
+    );
+  }
 
   const {
     language_tree: languageTree,
@@ -40,13 +38,11 @@ function distanceMap(props) {
     loading,
     perspectives,
     is_authenticated: isAuthenticated
-  } = props.dictionaryWithPerspectives;
-
+  } = dictionaryWithPerspectives;
 
   if (loading && !dataForTree.dictionaries) {
     return <Placeholder />;
   }
-
 
   useEffect(() => {
     if (!dataForTree.dictionaries) {
@@ -57,7 +53,6 @@ function distanceMap(props) {
       });
     }
   }, []);
-
 
   if (selected.id !== dataForTree.idLocale) {
     if (!dictionaries) {
@@ -70,14 +65,12 @@ function distanceMap(props) {
     }
   }
 
-
   useEffect(() => {
     if (mainGroupDictionaresAndLanguages.length !== 0) {
       actions.setMainGroupLanguages({});
       actions.setCheckStateTreeFlat({});
     }
   }, []);
-
 
   const newDictionaries = checkCoordAndLexicalEntries(dictionaries || dataForTree.dictionaries);
   const newLanguagesTree = languageTree || dataForTree.languageTree;
@@ -99,18 +92,19 @@ function distanceMap(props) {
   );
 }
 
-distanceMap.propTypes = {
+DistanceMap.propTypes = {
   dictionaryWithPerspectives: PropTypes.shape({
     language_tree: PropTypes.array,
     dictionaries: PropTypes.array,
     loading: PropTypes.bool
-  }).isRequired,
-  allField: PropTypes.object.isRequired,
+  }),
+  allField: PropTypes.object,
   actions: PropTypes.object.isRequired,
   dataForTree: PropTypes.object.isRequired,
   selected: PropTypes.object.isRequired,
   mainGroupDictionaresAndLanguages: PropTypes.object.isRequired
 };
+
 export default compose(
   connect(state => state.distanceMap, dispatch => ({
     actions: bindActionCreators({
@@ -122,6 +116,6 @@ export default compose(
   })),
   connect(state => state.locale),
   connect(state => state.user),
-  graphql(dictionaryWithPerspectivesQuery, { name: 'dictionaryWithPerspectives' }), graphql(allFieldQuery, { name: 'allField' }),
-)(distanceMap);
-
+  graphql(dictionaryWithPerspectivesQuery, { name: 'dictionaryWithPerspectives', skip: props => props.user.id != 1 }),
+  graphql(allFieldQuery, { name: 'allField', skip: props => props.user.id != 1 }),
+)(DistanceMap);

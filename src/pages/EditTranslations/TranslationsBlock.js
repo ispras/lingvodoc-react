@@ -10,7 +10,7 @@ const getTranslationsQuery = gql`
     translationgists(gists_type: $gists_type) {
       id
       type
-      translationatoms {
+      translationatoms(deleted: false) {
         id
         content
         locale_id
@@ -36,8 +36,10 @@ class TranslationsBlock extends React.Component {
 
   addTranslationGist() {
     let newGists = this.state.newgists;
+    const date = new Date();
+    const date_str = date.toISOString() + date.getUTCMilliseconds().toString();
     newGists.push({type: this.state.gistsType, atoms: [
-      { id: new Date().getUTCMilliseconds(), locale_id: 2, content: ''}
+      { id: date_str, locale_id: 2, content: ''}
     ]});
     this.setState({newgists: newGists});
   }

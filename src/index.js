@@ -1,7 +1,5 @@
-import 'babel-polyfill';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { AppContainer } from 'react-hot-loader';
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware, compose, bindActionCreators } from 'redux';
 import createHistory from 'history/createBrowserHistory';
@@ -60,26 +58,13 @@ WebFont.load({
   }
 });
 
-const dest = document.getElementById('root');
-
-function render() {
-  ReactDOM.render(
-    <AppContainer>
-      <Provider store={store}>
-        <ApolloProvider client={apollo}>
-          <ConnectedRouter history={history}>
-            <Layout />
-          </ConnectedRouter>
-        </ApolloProvider>
-      </Provider>
-    </AppContainer>,
-    dest
-  );
-}
-
-render(Layout);
-
-if (__DEVELOPMENT__ && module.hot) {
-  module.hot.accept('./Layout', render);
-  module.hot.accept('./reducer', () => store.replaceReducer(combinedReducer));
-}
+ReactDOM.render(
+  <Provider store={store}>
+    <ApolloProvider client={apollo}>
+      <ConnectedRouter history={history}>
+        <Layout />
+      </ConnectedRouter>
+    </ApolloProvider>
+  </Provider>,
+  document.getElementById('root')
+);

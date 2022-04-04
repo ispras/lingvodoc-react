@@ -6,6 +6,7 @@ import { graphql, withApollo } from 'react-apollo';
 import TranslationGist from 'components/TranslationGist';
 import Languages from 'components/Languages';
 import EditDictionaryMetadata from 'components/EditDictionaryMetadata';
+import EditCorpusMetadata from 'components/EditCorpusMetadata';
 import gql from 'graphql-tag';
 import { connect } from 'react-redux';
 import { Button, Modal, Segment, Grid, Label, Form, Header } from 'semantic-ui-react';
@@ -19,8 +20,9 @@ import { getTranslation } from 'api/i18n';
 const query = gql`
   query dictionaryProps($id: LingvodocID!) {
     dictionary(id: $id) {
-      created_at
       id
+      category
+      created_at
       created_by {
         id
         name }
@@ -42,6 +44,13 @@ const query = gql`
         typeOfSpeech
         speechGenre
         theThemeOfTheText
+        titleOfTheWork
+        genre
+        timeOfWriting
+        quantitativeCharacteristic
+        bibliographicDataOfTheSource
+        translator
+        bibliographicDataOfTheTranslation
       }
       last_modified_at
     }
@@ -256,7 +265,7 @@ class Properties extends React.Component {
     }
     
     const { title, data: { dictionary, user_blobs: files }, actions, updateAtomMutation } = this.props;
-    const { translation_gist_id: gistId } = dictionary;
+    const { category, translation_gist_id: gistId } = dictionary;
     const options = sortBy(files.map(file => ({ key: file.id, text: file.name, value: compositeIdToString(file.id) })), file => file.text);
     const parentName = this.state.parent == null ? null : this.state.parent.translation;
     const selectedParentName = this.state.selectedParent == null ? null : this.state.selectedParent.translation;
@@ -285,17 +294,10 @@ class Properties extends React.Component {
             <Header as='h3'>{getTranslation("Translations")}</Header>
             <TranslationGist id={gistId} objectId={dictionary.id} editable updateAtomMutation={updateAtomMutation}/>
           </Segment>
-          <EditDictionaryMetadata mode='edit' metadata={dictionary.additional_metadata} onSave={this.saveMeta} />
-          {/*<Segment>
-            <Grid>
-              <Grid.Column width={12}>
-                <Input fluid label="Tags" value={this.state.tags} onChange={this.onChangeTags} />
-              </Grid.Column>
-              <Grid.Column width={4}>
-                <Button positive content="Save" onClick={this.onSaveTags} />
-              </Grid.Column>
-            </Grid>
-          </Segment>*/}
+          {category === 0 ?
+            <EditDictionaryMetadata mode='edit' metadata={dictionary.additional_metadata} onSave={this.saveMeta} /> :
+            <EditCorpusMetadata mode='edit' metadata={dictionary.additional_metadata} onSave={this.saveMeta} />
+          }
           <MarginForm>
             <Segment>
               <Form.Group widths='equal'>

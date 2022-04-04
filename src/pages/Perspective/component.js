@@ -11,15 +11,22 @@ import PerspectiveView from 'components/PerspectiveView';
 import Merge from 'components/Merge';
 import NotFound from 'pages/NotFound';
 import { getTranslation } from 'api/i18n';
+
+import { queryCounter } from 'backend';
 import PerspectivePath from './PerspectivePath';
 
 import './style.scss';
 
-export const perspectiveIsHiddenQuery = gql`
-  query perspectiveIsHidden($id: LingvodocID!) {
+export const perspectiveIsHiddenOrDeletedQuery = gql`
+  query perspectiveIsHiddenOrDeleted($id: LingvodocID!) {
     perspective(id: $id) {
       id
       is_hidden_for_client
+      marked_for_deletion
+      tree {
+        id
+        marked_for_deletion
+      }
     }
   }
 `;
@@ -46,15 +53,6 @@ export const launchValencyMutation = gql`
       perspective_id: $perspectiveId)
     {
       triumph
-    }
-  }
-`;
-
-const queryCounter = gql`
-  query qcounter($id: LingvodocID! $mode: String!) {
-    perspective(id: $id) {
-      id
-      counter(mode: $mode)
     }
   }
 `;
@@ -349,14 +347,17 @@ const Perspective = ({
   if (data.loading || data.error)
     return null;
 
-  if (data.perspective.is_hidden_for_client)
-
+  const { perspective: p } = data;
+  if (p.is_hidden_for_client) {
     return (
       <div style={{'marginTop': '1em'}}>
         <Label>
           {getTranslation('Perspective is hidden and you don\'t have permissions to access it.')}
         </Label>
-      </div>);
+      </div>
+    );
+  }
+  const isDeleted = p.marked_for_deletion || p.tree.some(entity => entity.marked_for_deletion);
 
   const modes = {};
   if (user.id !== undefined) {
@@ -394,39 +395,48 @@ const Perspective = ({
   return (
     <div className="background-content lingvo-scrolling-content">
       <Container fluid className="perspective inverted lingvo-scrolling-content__container">
-        <PerspectivePath id={id} dictionary_id={parent_id} mode={mode} />
-        <ModeSelector
-          mode={mode}
-          id={id}
-          baseUrl={baseUrl}
-          filter={perspective.filter}
-          submitFilter={submitFilter}
-          openCognateAnalysisModal={openCognateAnalysisModal}
-          openPhonemicAnalysisModal={openPhonemicAnalysisModal}
-          openPhonologyModal={openPhonologyModal}
-          launchSoundAndMarkup={launchSoundAndMarkup}
-          launchValency={launchValency}
-        />
-        <Switch>
-          <Redirect exact from={baseUrl} to={`${baseUrl}/view`} />
-          { map(modes, (info, stub) => (
-            <Route
-              key={stub}
-              path={`${baseUrl}/${stub}`}
-              render={() => (
-                <info.component
-                  id={id}
-                  mode={mode}
-                  entitiesMode={info.entitiesMode}
-                  page={page}
-                  filter={perspective.filter}
-                  className="content"
-                />
-              )}
-            />
-          ))}
-          <Route component={NotFound} />
-        </Switch>
+        {isDeleted &&
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%", fontSize: "20px", color: "white" }}>
+            {getTranslation('This entity was deleted')}
+          </div>
+        }
+        {!isDeleted && <PerspectivePath id={id} dictionary_id={parent_id} mode={mode} />}
+        {!isDeleted &&
+          <ModeSelector
+            mode={mode}
+            id={id}
+            baseUrl={baseUrl}
+            filter={perspective.filter}
+            submitFilter={submitFilter}
+            openCognateAnalysisModal={openCognateAnalysisModal}
+            openPhonemicAnalysisModal={openPhonemicAnalysisModal}
+            openPhonologyModal={openPhonologyModal}
+            launchSoundAndMarkup={launchSoundAndMarkup}
+            launchValency={launchValency}
+          />
+        }
+        {!isDeleted &&
+          <Switch>
+            <Redirect exact from={baseUrl} to={`${baseUrl}/view`} />
+            { map(modes, (info, stub) => (
+              <Route
+                key={stub}
+                path={`${baseUrl}/${stub}`}
+                render={() => (
+                  <info.component
+                    id={id}
+                    mode={mode}
+                    entitiesMode={info.entitiesMode}
+                    page={page}
+                    filter={perspective.filter}
+                    className="content"
+                  />
+                )}
+              />
+            ))}
+            <Route component={NotFound} />
+          </Switch>
+        }
       </Container>
     </div>
   );
@@ -446,7 +456,7 @@ Perspective.propTypes = {
 export default compose(
   connect(state => state.user),
   branch(({ perspective }) => !perspective.params.id, renderNothing),
-  graphql(perspectiveIsHiddenQuery, {
+  graphql(perspectiveIsHiddenOrDeletedQuery, {
     options: ({ perspective }) => ({
       variables: {id: perspective.params.id}
     })

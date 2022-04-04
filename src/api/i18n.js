@@ -492,6 +492,7 @@ export const stringsToTranslate = [
    "The work is supported by the following grants",
    "There are unsaved changes present. Are you sure you want to discard it?",
    "There is no languages and dictionaries with chosen language degree of endangerment. The search will be performed with all languages and dictionaries.",
+   "This entity was deleted",
    "This page is available for administrator only",
    "Time of writing",
    "Title of the work",

@@ -3,10 +3,11 @@ import PropTypes from 'prop-types';
 import { compose, pure } from 'recompose';
 import { graphql, withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
-import { isEqual, filter, flow } from 'lodash';
+import { isEqual, flow } from 'lodash';
 import { Button } from 'semantic-ui-react';
 import { compositeIdToString } from 'utils/compositeId';
 
+import { queryCounter } from 'backend';
 import Text from './Text';
 import Sound from './Sound';
 import Markup from './Markup';
@@ -249,7 +250,7 @@ class Entities extends React.Component {
   }
 
   publish(entity, published) {
-    const { entry, publishEntity } = this.props;
+    const { perspectiveId, entry, publishEntity } = this.props;
 
     publishEntity({
       variables: { id: entity.id, published },
@@ -268,6 +269,13 @@ class Entities extends React.Component {
             entitiesMode: 'published',
           },
         },
+        {
+          query: queryCounter,
+          variables: {
+            id: perspectiveId,
+            mode: 'published',
+          }
+        }
       ],
       awaitRefetchQueries: true,
     }).then(

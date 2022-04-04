@@ -9,12 +9,9 @@ const app = express();
 
 const port = config.port;
 webpackConfig.entry.client = [
-  'react-hot-loader/patch',
   'webpack-hot-middleware/client?reload=true',
-  'webpack/hot/only-dev-server',
   ...webpackConfig.entry.client,
 ];
-
 webpackConfig.plugins.push(new LogPlugin(port));
 
 let compiler;
@@ -28,8 +25,6 @@ try {
 
 const devServerConf = {
   publicPath: webpackConfig.output.publicPath,
-  quiet: false,
-  inline: true,
   headers: {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': '*',
@@ -55,7 +50,7 @@ app.use(require('webpack-hot-middleware')(compiler, {
   log: console.log,
 }));
 
-const mfs = devMiddleWare.fileSystem;
+const mfs = devMiddleWare.context.outputFileSystem;
 const file = _.outputIndexPath;
 
 devMiddleWare.waitUntilValid();

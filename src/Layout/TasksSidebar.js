@@ -15,10 +15,11 @@ const Wrapper = styled.div`
 `;
 
 const onClearTasks = (tasks, remove) => {
-  tasks.forEach(item => {
-    if (item.status === "Finished") {
-      remove(item.id);
-    }
+  tasks.forEach(task => {
+    if (
+      task.current_stage == task.total_stages &&
+      task.progress === 100)
+      remove(task.id);
   });
 };
 
@@ -41,7 +42,16 @@ const TasksSidebar = ({ visible, tasks, toggle, remove }) =>
       </Button>
       
       {tasks && tasks.length && (
-        <Button onClick={() => onClearTasks(tasks, remove)} disabled={tasks.some((item) => item.status === "Finished") ? false : true} className="lingvo-button-violet-dashed">{getTranslation('Clear completed')}</Button>
+        <Button
+          onClick={() => onClearTasks(tasks, remove)}
+          disabled={
+            !tasks.some(
+              task =>
+                task.current_stage == task.total_stages &&
+                task.progress === 100)}
+          className="lingvo-button-violet-dashed">
+          {getTranslation('Clear completed')}
+        </Button>
         ) || null
       }
       
