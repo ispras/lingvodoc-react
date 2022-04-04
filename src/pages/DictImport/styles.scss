@@ -1,4 +1,6 @@
-.linker, .column-mapper, .language-selection {
+.linker,
+.column-mapper,
+.language-selection {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -9,7 +11,7 @@
 
   .blob {
     display: grid;
-    padding: .5em 0;
+    padding: 0.5em 0;
     width: 100%;
     grid-template-columns: 200px 1fr 20px;
     grid-template-rows: auto;
@@ -17,7 +19,7 @@
     grid-template-areas: "name columns checkbox";
 
     border-bottom: 1px solid gray;
-    margin-bottom: .5em;
+    margin-bottom: 0.5em;
 
     .blob-name {
       width: 200px;
@@ -33,7 +35,7 @@
       .column-field-type {
         display: flex;
         flex-direction: column;
-        margin: 0 .2em;
+        margin: 0 0.2em;
       }
     }
 
@@ -51,6 +53,6 @@
   overflow: auto;
 
   & > button {
-    margin: .2em !important;
+    margin: 0.2em !important;
   }
 }

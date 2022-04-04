@@ -1,35 +1,33 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { compose } from 'recompose';
-import { graphql } from 'react-apollo';
-import gql from 'graphql-tag';
-import { Map, fromJS } from 'immutable';
-import { Message, Button, Step } from 'semantic-ui-react';
-import { getTranslation } from 'api/i18n';
+import React from "react";
+import { graphql } from "react-apollo";
+import { connect } from "react-redux";
+import { Button, Message, Step } from "semantic-ui-react";
+import { getTranslation } from "api/i18n";
+import gql from "graphql-tag";
+import { fromJS, Map } from "immutable";
+import PropTypes from "prop-types";
+import { compose } from "recompose";
 
 import {
-  setBlobs,
-  nextStep,
   goToStep,
   linkingAdd,
   linkingDelete,
-  updateColumn,
-  toggleAddColumn,
+  nextStep,
+  selectors,
+  setBlobs,
   setColumnType,
   setLanguage,
-  setTranslation,
   setLicense,
-  selectors,
-} from 'ducks/dictImport';
+  setTranslation,
+  toggleAddColumn,
+  updateColumn} from "ducks/dictImport";
 
-import Linker from './Linker';
-import ColumnMapper from './ColumnMapper';
-import LanguageSelection from './LanguageSelection';
+import { buildExport } from "./api";
+import ColumnMapper from "./ColumnMapper";
+import LanguageSelection from "./LanguageSelection";
+import Linker from "./Linker";
 
-import './styles.scss';
-
-import { buildExport } from './api';
+import "./styles.scss";
 
 export const fieldsQuery = gql`
   query field {
@@ -79,7 +77,7 @@ class Info extends React.Component {
     toggleAddColumn: PropTypes.func.isRequired,
     setColumnType: PropTypes.func.isRequired,
     setLanguage: PropTypes.func.isRequired,
-    setTranslation: PropTypes.func.isRequired,
+    setTranslation: PropTypes.func.isRequired
   };
 
   constructor(props) {
@@ -99,9 +97,11 @@ class Info extends React.Component {
   }
 
   componentWillReceiveProps(props) {
-    const { data: { loading, error, user_blobs: blobs } } = props;
+    const {
+      data: { loading, error, user_blobs: blobs }
+    } = props;
     if (!loading && !error) {
-      const newBlobs = fromJS(blobs.filter(b => b.data_type === 'starling/csv')).map(v => v.set('values', new Map()));
+      const newBlobs = fromJS(blobs.filter(b => b.data_type === "starling/csv")).map(v => v.set("values", new Map()));
       // XXX: Ugly workaround
       if (JSON.stringify(this.props.blobs) !== JSON.stringify(newBlobs)) {
         this.props.setBlobs(newBlobs);
@@ -153,55 +153,53 @@ class Info extends React.Component {
     const { convert } = this.props;
     const params = buildExport(this.props);
     convert({
-      variables: { starling_dictionaries: params },
-    }).then(() => this.props.goToStep('FINISH'));
+      variables: { starling_dictionaries: params }
+    }).then(() => this.props.goToStep("FINISH"));
   }
 
   render() {
-    const {
-      step, isNextStep, blobs, linking, spreads, columnTypes, languages, licenses, locales, data,
-    } = this.props;
+    const { step, isNextStep, blobs, linking, spreads, columnTypes, languages, licenses, locales, data } = this.props;
 
     if (data.loading || data.error) {
       return null;
     }
 
     const { all_fields: fields } = data;
-    const fieldTypes = fromJS(fields).filter(field => field.get('data_type') === 'Text');
+    const fieldTypes = fromJS(fields).filter(field => field.get("data_type") === "Text");
 
     return (
       <div className="background-content">
         <Step.Group widths={4}>
-          <Step link active={step === 'LINKING'} onClick={this.onStepClick('LINKING')}>
+          <Step link active={step === "LINKING"} onClick={this.onStepClick("LINKING")}>
             <Step.Content>
-              <Step.Title>{getTranslation('Linking')}</Step.Title>
-              <Step.Description>{getTranslation('Link columns from files with each other')}</Step.Description>
+              <Step.Title>{getTranslation("Linking")}</Step.Title>
+              <Step.Description>{getTranslation("Link columns from files with each other")}</Step.Description>
             </Step.Content>
           </Step>
 
-          <Step link active={step === 'COLUMNS'} onClick={this.onStepClick('COLUMNS')}>
+          <Step link active={step === "COLUMNS"} onClick={this.onStepClick("COLUMNS")}>
             <Step.Content>
-              <Step.Title>{getTranslation('Columns Mapping')}</Step.Title>
-              <Step.Description>{getTranslation('Map linked columns to LingvoDoc types')}</Step.Description>
+              <Step.Title>{getTranslation("Columns Mapping")}</Step.Title>
+              <Step.Description>{getTranslation("Map linked columns to LingvoDoc types")}</Step.Description>
             </Step.Content>
           </Step>
 
-          <Step link active={step === 'LANGUAGES'} onClick={this.onStepClick('LANGUAGES')}>
+          <Step link active={step === "LANGUAGES"} onClick={this.onStepClick("LANGUAGES")}>
             <Step.Content>
-              <Step.Title>{getTranslation('Language Selection')}</Step.Title>
-              <Step.Description>{getTranslation('Map dictionaries to LingvoDoc languages')}</Step.Description>
+              <Step.Title>{getTranslation("Language Selection")}</Step.Title>
+              <Step.Description>{getTranslation("Map dictionaries to LingvoDoc languages")}</Step.Description>
             </Step.Content>
           </Step>
 
-          <Step link active={step === 'FINISH'}>
+          <Step link active={step === "FINISH"}>
             <Step.Content>
-              <Step.Title>{getTranslation('Finish')}</Step.Title>
+              <Step.Title>{getTranslation("Finish")}</Step.Title>
             </Step.Content>
           </Step>
         </Step.Group>
 
-        <div style={{ minHeight: '400px', background: 'white' }}>
-          {step === 'LINKING' && (
+        <div style={{ minHeight: "400px", background: "white" }}>
+          {step === "LINKING" && (
             <Linker
               blobs={blobs}
               state={linking}
@@ -212,7 +210,7 @@ class Info extends React.Component {
               onToggleColumn={this.onToggleColumn}
             />
           )}
-          {step === 'COLUMNS' && (
+          {step === "COLUMNS" && (
             <ColumnMapper
               state={linking}
               spreads={spreads}
@@ -221,7 +219,7 @@ class Info extends React.Component {
               onSetColumnType={this.onSetColumnType}
             />
           )}
-          {step === 'LANGUAGES' && (
+          {step === "LANGUAGES" && (
             <LanguageSelection
               state={linking}
               languages={languages}
@@ -232,53 +230,50 @@ class Info extends React.Component {
               onSetLicense={this.onSetLicense}
             />
           )}
-          {step === 'FINISH' && (
+          {step === "FINISH" && (
             <Message>
-              <Message.Header>{getTranslation('Conversion is in progress...')}</Message.Header>
+              <Message.Header>{getTranslation("Conversion is in progress...")}</Message.Header>
               <Message.Content>
-                {getTranslation('Your dictionaries are scheduled for conversion. Please, check tasks tab for conversion status.')}
+                {getTranslation(
+                  "Your dictionaries are scheduled for conversion. Please, check tasks tab for conversion status."
+                )}
               </Message.Content>
             </Message>
           )}
         </div>
-        {step === 'LANGUAGES' ?
-
-          (isNextStep ? (
-
-            <Button fluid className="lingvo-button-lite-violet lingvo-button-lite-violet_bradius-bottom" onClick={this.onSubmit}>
-              {getTranslation('Submit')}
-            </Button>) : (
-
-            <Message style={{'margin': 0, 'textAlign': 'center'}}>
-              <Message.Content>
-                {getTranslation('Please select parent language for each Starling dictionary.')}
-              </Message.Content>
-            </Message>)) :
-
+        {step === "LANGUAGES" ? (
           isNextStep ? (
-
-            <Button fluid className="lingvo-button-lite-violet lingvo-button-lite-violet_bradius-bottom" onClick={this.onNextClick}>
-              {getTranslation('Next Step')}
-            </Button>) :
-
-          step === 'LINKING' ? (
-
-            <Message style={{'margin': 0, 'textAlign': 'center'}}>
+            <Button
+              fluid
+              className="lingvo-button-lite-violet lingvo-button-lite-violet_bradius-bottom"
+              onClick={this.onSubmit}
+            >
+              {getTranslation("Submit")}
+            </Button>
+          ) : (
+            <Message style={{ margin: 0, textAlign: "center" }}>
               <Message.Content>
-                {getTranslation('Please use at least one Starling column.')}
+                {getTranslation("Please select parent language for each Starling dictionary.")}
               </Message.Content>
-            </Message>) :
-
-          step === 'COLUMNS' ? (
-
-            <Message style={{'margin': 0, 'textAlign': 'center'}}>
-              <Message.Content>
-                {getTranslation('Please map all Starling columns to Lingvodoc types.')}
-              </Message.Content>
-            </Message>) :
-
-            null
-        }
+            </Message>
+          )
+        ) : isNextStep ? (
+          <Button
+            fluid
+            className="lingvo-button-lite-violet lingvo-button-lite-violet_bradius-bottom"
+            onClick={this.onNextClick}
+          >
+            {getTranslation("Next Step")}
+          </Button>
+        ) : step === "LINKING" ? (
+          <Message style={{ margin: 0, textAlign: "center" }}>
+            <Message.Content>{getTranslation("Please use at least one Starling column.")}</Message.Content>
+          </Message>
+        ) : step === "COLUMNS" ? (
+          <Message style={{ margin: 0, textAlign: "center" }}>
+            <Message.Content>{getTranslation("Please map all Starling columns to Lingvodoc types.")}</Message.Content>
+          </Message>
+        ) : null}
       </div>
     );
   }
@@ -294,7 +289,7 @@ function mapStateToProps(state) {
     columnTypes: selectors.getColumnTypes(state),
     languages: selectors.getLanguages(state),
     licenses: selectors.getLicenses(state),
-    locales: state.locale.locales,
+    locales: state.locale.locales
   };
 }
 
@@ -309,11 +304,11 @@ const mapDispatchToProps = {
   setColumnType,
   setLanguage,
   setTranslation,
-  setLicense,
+  setLicense
 };
 
 export default compose(
   connect(mapStateToProps, mapDispatchToProps),
-  graphql(fieldsQuery, { options: { fetchPolicy: "network-only" }}),
-  graphql(convertMutation, { name: 'convert' })
+  graphql(fieldsQuery, { options: { fetchPolicy: "network-only" } }),
+  graphql(convertMutation, { name: "convert" })
 )(Info);

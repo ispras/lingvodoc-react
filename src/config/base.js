@@ -1,8 +1,8 @@
-import build from 'buildType';
+import build from "buildType";
 
 export default {
-  apiUrl: '',
-  homePath: '/',
+  apiUrl: "",
+  homePath: "/",
   pollingInterval: 2000,
-  buildType: build.type,
+  buildType: build.type
 };

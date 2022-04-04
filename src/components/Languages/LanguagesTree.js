@@ -1,15 +1,15 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import SortableTree, { map, getFlatDataFromTree } from 'react-sortable-tree';
-import Immutable from 'immutable';
-import { connect } from 'react-redux';
-import { isEqual, findIndex } from 'lodash';
-import { Button } from 'semantic-ui-react';
-import { languagesQuery } from 'graphql/language';
-import { getTranslation } from 'api/i18n';
+import React from "react";
+import { connect } from "react-redux";
+import SortableTree, { getFlatDataFromTree, map } from "react-sortable-tree";
+import { Button } from "semantic-ui-react";
+import { getTranslation } from "api/i18n";
+import Immutable from "immutable";
+import { findIndex, isEqual } from "lodash";
+import PropTypes from "prop-types";
+
+import { languagesQuery } from "graphql/language";
 
 class LanguagesTree extends React.Component {
-
   constructor(props) {
     super(props);
 
@@ -19,7 +19,7 @@ class LanguagesTree extends React.Component {
     };
 
     this.langContent = new Map();
-    props.dictionaries.forEach( dictionary => {
+    props.dictionaries.forEach(dictionary => {
       const key = dictionary.parent_id.toString();
       const isDictionary = dictionary.category != 1;
       let content = this.langContent[key];
@@ -29,8 +29,7 @@ class LanguagesTree extends React.Component {
       }
       if (isDictionary) {
         content.dictionariesCount++;
-      }
-      else {
+      } else {
         content.corporaCount++;
       }
     });
@@ -48,7 +47,7 @@ class LanguagesTree extends React.Component {
       treeData: languagesTree.toJS(),
       callback: ({ node }) => ({ ...node, expanded: expanded == undefined ? true : expanded }),
       getNodeKey: ({ treeIndex }) => treeIndex,
-      ignoreCollapsed: false,
+      ignoreCollapsed: false
     });
   }
 
@@ -67,12 +66,12 @@ class LanguagesTree extends React.Component {
       treeData,
       getNodeKey: ({ node: n }) => n.id,
       callback: ({ node: n }) => ({ ...n, expanded: false }),
-      ignoreCollapsed: false,
+      ignoreCollapsed: false
     }).map(({ node: n, path, treeIndex }) => ({
       id: n.id,
       translation: n.translation,
       parent: path.length > 1 ? path[path.length - 2] : null,
-      treeIndex,
+      treeIndex
     }));
 
     // calculate new parent id
@@ -85,50 +84,61 @@ class LanguagesTree extends React.Component {
 
     moveLanguage({
       variables: { id: updNode.id, parent_id: newParentId, previous_sibling_id: prevLanguageId },
-      refetchQueries: [{ query: languagesQuery }],
+      refetchQueries: [{ query: languagesQuery }]
     });
   }
 
   generateNodeProps({ node }) {
-    const {
-      user, edit, editLanguage, createLanguage, onSelect
-    } = this.props;
-    const selectActions = onSelect ? [<Button color="blue" content={getTranslation("Select")} onClick={() => this.onLanguageSelected(node)} />] : [];
+    const { user, edit, editLanguage, createLanguage, onSelect } = this.props;
+    const selectActions = onSelect
+      ? [<Button color="blue" content={getTranslation("Select")} onClick={() => this.onLanguageSelected(node)} />]
+      : [];
     if (edit) {
       const content = this.langContent[node.id.toString()];
-      let nodeProps = {
+      const nodeProps = {
         buttons: [
           ...selectActions,
           <Button color="orange" content={getTranslation("Edit")} onClick={() => editLanguage(node)} />,
-          <Button color="green" content={getTranslation("Create")} onClick={() => createLanguage(node)} />,
-        ],
+          <Button color="green" content={getTranslation("Create")} onClick={() => createLanguage(node)} />
+        ]
       };
       const { selected } = this.state;
       if (!onSelect && user.id == 1) {
         const dictionariesCount = content ? content.dictionariesCount : 0;
         const corporaCount = content ? content.corporaCount : 0;
         nodeProps.title = (
-          <div title={getTranslation('Dictionaries') + ': ' + dictionariesCount + ', ' + getTranslation('Corpora') + ': ' + corporaCount}>
+          <div
+            title={
+              `${getTranslation("Dictionaries") 
+              }: ${ 
+              dictionariesCount 
+              }, ${ 
+              getTranslation("Corpora") 
+              }: ${ 
+              corporaCount}`
+            }
+          >
             {node.translation}
           </div>
         );
         if (!content) {
-          nodeProps.buttons.push(<Button color="red" content={getTranslation("Delete")} onClick={() => this.onDeleteLanguage(node)} />);
+          nodeProps.buttons.push(
+            <Button color="red" content={getTranslation("Delete")} onClick={() => this.onDeleteLanguage(node)} />
+          );
         }
-      }
-      else {
+      } else {
         nodeProps.title = node.translation;
       }
       if (selected && node.id.toString() == selected.id.toString()) {
         nodeProps.style = {
           boxShadow: `0 0 0 4px blue`
-        }
+        };
       }
       return nodeProps;
     }
 
     return {
-      title: node.translation,
+      title: node.translation
     };
   }
 
@@ -136,7 +146,7 @@ class LanguagesTree extends React.Component {
     if (node == this.state.selected) {
       return;
     }
-    
+
     this.setState({ selected: node });
     this.props.onSelect(node);
   }
@@ -151,7 +161,7 @@ class LanguagesTree extends React.Component {
   render() {
     const { edit } = this.props;
     return (
-      <div style={{ height: '100%' }}>
+      <div style={{ height: "100%" }}>
         <SortableTree
           treeData={this.state.treeData}
           onChange={treeData => this.setState({ treeData })}
@@ -178,7 +188,7 @@ LanguagesTree.propTypes = {
 };
 
 LanguagesTree.defaultProps = {
-  edit: false,
+  edit: false
 };
 
 export default connect(state => state.user)(LanguagesTree);

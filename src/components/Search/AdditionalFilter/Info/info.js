@@ -1,19 +1,19 @@
-import { getTranslation } from 'api/i18n';
+import { getTranslation } from "api/i18n";
 
-const isValueString = (value) => {
-  return Object.prototype.toString.call(value) === '[object String]';
+const isValueString = value => {
+  return Object.prototype.toString.call(value) === "[object String]";
 };
 
-const isValueArray = (value) => {
-  return Object.prototype.toString.call(value) === '[object Array]';
+const isValueArray = value => {
+  return Object.prototype.toString.call(value) === "[object Array]";
 };
 
-const isValueBoolean = (value) => {
-  return Object.prototype.toString.call(value) === '[object Boolean]';
+const isValueBoolean = value => {
+  return Object.prototype.toString.call(value) === "[object Boolean]";
 };
 
-const info = (value) => {
-  let result = '';
+const info = value => {
+  let result = "";
 
   if (isValueString(value)) {
     result = value;
@@ -21,10 +21,10 @@ const info = (value) => {
 
   if (isValueArray(value)) {
     if (value.length > 5) {
-      result = `${value.length} ${getTranslation('selected')}`;
+      result = `${value.length} ${getTranslation("selected")}`;
     } else {
       result = value.reduce((accumulator, currentValue, currentIndex, array) => {
-        if (accumulator === '' && currentIndex + 1 !== array.length) {
+        if (accumulator === "" && currentIndex + 1 !== array.length) {
           return `${currentValue}, `;
         }
 
@@ -33,12 +33,12 @@ const info = (value) => {
         }
 
         return `${accumulator}${currentValue}, `;
-      }, '');
+      }, "");
     }
   }
 
   if (isValueBoolean(value)) {
-    result = value ? `${getTranslation('yes')}` : `${getTranslation('no')}`;
+    result = value ? `${getTranslation("yes")}` : `${getTranslation("no")}`;
   }
 
   return result;

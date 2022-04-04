@@ -1,6 +1,6 @@
-import React, { PureComponent } from 'react';
-import PropTypes from 'prop-types';
-import { Dropdown, Button } from 'semantic-ui-react';
+import React, { PureComponent } from "react";
+import { Button, Dropdown } from "semantic-ui-react";
+import PropTypes from "prop-types";
 
 /* ----------- COMPONENT ----------- */
 /**
@@ -11,8 +11,8 @@ class KindField extends PureComponent {
     classNames: PropTypes.object.isRequired,
     value: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]).isRequired,
     onChange: PropTypes.func.isRequired,
-    getTranslation: PropTypes.func.isRequired,
-  }
+    getTranslation: PropTypes.func.isRequired
+  };
 
   static getDropdownInnerValue(value) {
     if (value === false) {
@@ -36,8 +36,8 @@ class KindField extends PureComponent {
     const { getTranslation } = props;
 
     this.options = {
-      archive: getTranslation('Archive'),
-      expedition: getTranslation('Expedition'),
+      archive: getTranslation("Archive"),
+      expedition: getTranslation("Expedition")
     };
 
     this.onChange = this.onChange.bind(this);
@@ -70,13 +70,13 @@ class KindField extends PureComponent {
       {
         key: 1,
         text: expedition,
-        value: expedition,
+        value: expedition
       },
       {
         key: 2,
         text: archive,
-        value: archive,
-      },
+        value: archive
+      }
     ];
   }
 
@@ -84,9 +84,9 @@ class KindField extends PureComponent {
     const { value, classNames, getTranslation } = this.props;
     const { getDropdownInnerValue } = this.constructor;
 
-    const label = getTranslation('Data source');
-    const clearText = getTranslation('Clear');
-    const placeholder = getTranslation('Select data source');
+    const label = getTranslation("Data source");
+    const clearText = getTranslation("Clear");
+    const placeholder = getTranslation("Select data source");
 
     return (
       <div className={classNames.field}>

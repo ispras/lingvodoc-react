@@ -1,5 +1,5 @@
-import React from 'react';
-import SortableTree, { map } from 'react-sortable-tree';
+import React from "react";
+import SortableTree, { map } from "react-sortable-tree";
 
 class LanguageTree extends React.Component {
   constructor(props) {
@@ -10,8 +10,8 @@ class LanguageTree extends React.Component {
         treeData: props.data.toJS(),
         callback: ({ node }) => ({ ...node, expanded: !!props.expanded }),
         getNodeKey: ({ treeIndex }) => treeIndex,
-        ignoreCollapsed: false,
-      }),
+        ignoreCollapsed: false
+      })
     };
   }
 

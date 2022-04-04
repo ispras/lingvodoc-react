@@ -1,9 +1,10 @@
-import { takeLatest, put, select, all } from 'redux-saga/effects';
-import { LOCATION_CHANGE } from 'react-router-redux';
-import { SET_FILTER, request, selectors } from 'ducks/perspective';
-import { SELECT } from 'ducks/locale';
+import { LOCATION_CHANGE } from "react-router-redux";
+import { all, put, select, takeLatest } from "redux-saga/effects";
 
-import getParams from './utils';
+import { SELECT } from "ducks/locale";
+import { request, selectors, SET_FILTER } from "ducks/perspective";
+
+import getParams from "./utils";
 
 export function* updateForFilter({ payload: filter }) {
   const { params } = yield select(selectors.getPerspective);

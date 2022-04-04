@@ -1,27 +1,23 @@
-import React from 'react';
-import { compose, branch, renderNothing } from 'recompose';
-import { Confirm } from 'semantic-ui-react';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import React from "react";
+import { connect } from "react-redux";
+import { Confirm } from "semantic-ui-react";
+import { branch, compose, renderNothing } from "recompose";
+import { bindActionCreators } from "redux";
 
-import { closeModal } from 'ducks/confirm';
+import { closeModal } from "ducks/confirm";
 
-class ConfirmModal extends React.Component
-{
-  constructor(props)
-  {
+class ConfirmModal extends React.Component {
+  constructor(props) {
     super(props);
     this.handleConfirm = this.handleConfirm.bind(this);
   }
 
-  handleConfirm()
-  {
+  handleConfirm() {
     this.props.callback();
     this.props.closeModal();
   }
 
-  render()
-  {
+  render() {
     return (
       <Confirm
         content={this.props.content}
@@ -35,6 +31,9 @@ class ConfirmModal extends React.Component
 }
 
 export default compose(
-  connect(state => state.confirm, dispatch => bindActionCreators({ closeModal }, dispatch)),
-  branch(({ visible }) => !visible, renderNothing),
+  connect(
+    state => state.confirm,
+    dispatch => bindActionCreators({ closeModal }, dispatch)
+  ),
+  branch(({ visible }) => !visible, renderNothing)
 )(ConfirmModal);

@@ -1,11 +1,12 @@
-import { call, put, select, takeLatest } from 'redux-saga/effects';
-import { push } from 'react-router-redux';
-import { getId, getUser, signIn, signUp, signOut, editProfile } from 'api/user';
-import { setUser, requestUser, SIGN_OUT, signInForm, signUpForm, editForm, setError } from 'ducks/user';
-import { startTrackUser, stopTrackUser } from './matomo';
-import { err } from 'ducks/snackbar';
+import { push } from "react-router-redux";
+import { editProfile, getId, getUser, signIn, signOut, signUp } from "api/user";
+import { SubmissionError } from "redux-form";
+import { call, put, select, takeLatest } from "redux-saga/effects";
 
-import { SubmissionError } from 'redux-form';
+import { err } from "ducks/snackbar";
+import { editForm, requestUser, setError, setUser, SIGN_OUT, signInForm, signUpForm } from "ducks/user";
+
+import { startTrackUser, stopTrackUser } from "./matomo";
 
 export function* requestRoutine() {
   if (yield call(getId)) {
@@ -15,7 +16,7 @@ export function* requestRoutine() {
       yield put(setUser(response.data));
     } else {
       yield put(setError());
-      yield put(err('Could not get user info'));
+      yield put(err("Could not get user info"));
     }
   }
 }
@@ -25,12 +26,12 @@ export function* signOutRoutine() {
   const response = yield call(signOut);
   if (response.data) {
     success = true;
-    yield call(window.dispatch, push('/'));
+    yield call(window.dispatch, push("/"));
     yield put(setUser({}));
     const client = yield select(state => state.apolloClient);
     yield call([client.cache, client.cache.reset]);
   } else {
-    yield put(err('Could not sign out'));
+    yield put(err("Could not sign out"));
   }
   yield* requestRoutine();
   if (success) {
@@ -45,9 +46,13 @@ export function* signInRoutine({ payload }) {
     success = true;
     yield put(signInForm.success());
   } else {
-    yield put(signInForm.failure(new SubmissionError({
-      _error: response.err.statusText,
-    })));
+    yield put(
+      signInForm.failure(
+        new SubmissionError({
+          _error: response.err.statusText
+        })
+      )
+    );
   }
   yield* requestRoutine();
   if (success) {
@@ -63,18 +68,19 @@ export function* signUpRoutine({ payload }) {
   if (response.data) {
     yield put(signUpForm.success());
 
-    if (response.data.result == 'Signup success.')
-      yield call(signIn, payload);
-    else if (response.data.result == 'Signup approval pending.')
-      window.logger.suc(response.data.result);
-    else
-      window.logger.log(response.data.result);
+    if (response.data.result == "Signup success.") {yield call(signIn, payload);}
+    else if (response.data.result == "Signup approval pending.") {window.logger.suc(response.data.result);}
+    else {window.logger.log(response.data.result);}
   }
 
   if (response.err) {
-    yield put(signUpForm.failure(new SubmissionError({
-      _error: response.err.error,
-    })));
+    yield put(
+      signUpForm.failure(
+        new SubmissionError({
+          _error: response.err.error
+        })
+      )
+    );
   }
   yield* requestRoutine();
 }
@@ -85,9 +91,13 @@ export function* editRoutine({ payload }) {
     yield put(editForm.success());
   }
   if (response.err) {
-    yield put(editForm.failure(new SubmissionError({
-      _error: response.err.error,
-    })));
+    yield put(
+      editForm.failure(
+        new SubmissionError({
+          _error: response.err.error
+        })
+      )
+    );
   }
   yield* requestRoutine();
 }

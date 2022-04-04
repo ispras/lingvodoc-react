@@ -1,18 +1,20 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { compose } from 'recompose';
-import { Modal, Dimmer, Header, Icon, Button, Confirm } from 'semantic-ui-react';
-import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import React from "react";
+import { graphql } from "react-apollo";
+import { Button, Confirm, Dimmer, Header, Icon, Modal } from "semantic-ui-react";
+import { getTranslation } from "api/i18n";
+import gql from "graphql-tag";
+import PropTypes from "prop-types";
+import { compose } from "recompose";
 
-import { getTranslation } from 'api/i18n';
-import PropertiesView from './PropertiesView';
-import scrollParent from 'utils/scrollParent';
+import scrollParent from "utils/scrollParent";
 
-import './style.scss';
+import PropertiesView from "./PropertiesView";
+
+import "./style.scss";
 
 const scrollIntoViewIfNeeded = elem => {
-  const rectElem = elem.getBoundingClientRect(), rectContainer = scrollParent(elem).getBoundingClientRect();
+  const rectElem = elem.getBoundingClientRect(),
+    rectContainer = scrollParent(elem).getBoundingClientRect();
   const container = scrollParent(elem);
   if (rectElem.bottom > rectContainer.bottom) {
     elem.scrollIntoView(false);
@@ -20,7 +22,7 @@ const scrollIntoViewIfNeeded = elem => {
   if (rectElem.top < rectContainer.top) {
     elem.scrollIntoView();
   }
-}
+};
 
 const getParserResultContentQuery = gql`
   query getParserResultContentQuery($id: LingvodocID!) {
@@ -49,7 +51,6 @@ const updateParserResultForElementMutation = gql`
 
 /** Modal dialog for corpus markup */
 class OdtMarkupModal extends React.Component {
-
   constructor(props) {
     super(props);
 
@@ -81,18 +82,18 @@ class OdtMarkupModal extends React.Component {
     this.onClose = this.onClose.bind(this);
   }
 
-    onKeyDown = (event) => {
-
+  onKeyDown = event => {
     const { selection, saving } = this.state;
 
-    for (let header of window.document.getElementsByClassName("header")) {
-        if (header.innerText == "User defined variant") return;}
+    for (const header of window.document.getElementsByClassName("header")) {
+      if (header.innerText == "User defined variant") {return;}
+    }
 
     if (saving || !document.getSelection().isCollapsed) {
       return;
     }
 
-    const edit = this.props.mode === 'edit';
+    const edit = this.props.mode === "edit";
 
     let number = parseInt(event.key, 10) - 1;
 
@@ -100,7 +101,7 @@ class OdtMarkupModal extends React.Component {
     const elems = Array.from(document.querySelectorAll(".verified, .unverified"));
 
     if (!elem) {
-      if (event.key === "ArrowRight" && elems.length > 0) elems[0].click();
+      if (event.key === "ArrowRight" && elems.length > 0) {elems[0].click();}
       return;
     }
 
@@ -114,15 +115,15 @@ class OdtMarkupModal extends React.Component {
 
     if (event.key === "Enter") {
       event.preventDefault();
-      if (edit && children.length === 2) number = 0;
-      else return;
+      if (edit && children.length === 2) {number = 0;}
+      else {return;}
     }
 
     if (edit && number >= 0 && number < 10 && number < children.length) {
       let iter = -1;
       let success = false;
-      for (let child of children) {
-        if (child.classList !== undefined && child.classList.contains("result")) iter++;
+      for (const child of children) {
+        if (child.classList !== undefined && child.classList.contains("result")) {iter++;}
         if (iter === number) {
           if (child.classList.contains("result")) {
             child.classList.add("approved");
@@ -135,8 +136,8 @@ class OdtMarkupModal extends React.Component {
         elem.classList.replace("unverified", "verified");
         this.setState({ dirty: true });
         if (i + 1 < elems.length) {
-          scrollIntoViewIfNeeded(elems[i+1]);
-          elems[i+1].click();
+          scrollIntoViewIfNeeded(elems[i + 1]);
+          elems[i + 1].click();
         }
       }
       return;
@@ -144,23 +145,23 @@ class OdtMarkupModal extends React.Component {
 
     if (event.key === "ArrowRight") {
       if (i + 1 < elems.length) {
-        scrollIntoViewIfNeeded(elems[i+1]);
-        elems[i+1].click();
+        scrollIntoViewIfNeeded(elems[i + 1]);
+        elems[i + 1].click();
       }
       return;
     }
 
     if (event.key === "ArrowLeft") {
       if (i - 1 >= 0) {
-        scrollIntoViewIfNeeded(elems[i-1]);
-        elems[i-1].click();
+        scrollIntoViewIfNeeded(elems[i - 1]);
+        elems[i - 1].click();
       }
       return;
     }
 
     if (edit && event.key === "Delete" && elem.classList.contains("verified")) {
       let success = false;
-      for (let child of children) {
+      for (const child of children) {
         if (child.classList !== undefined && child.classList.contains("approved")) {
           child.classList.remove("approved");
           success = true;
@@ -168,11 +169,10 @@ class OdtMarkupModal extends React.Component {
       }
       this.state.selection = null;
       elem.classList.replace("verified", "unverified");
-      if (success) this.setState({ dirty: true });
+      if (success) {this.setState({ dirty: true });}
       elem.click();
       return;
     }
-
   };
 
   componentDidUpdate() {
@@ -185,7 +185,7 @@ class OdtMarkupModal extends React.Component {
       return;
     }
 
-    Array.from(root.getElementsByTagName('span')).forEach(elem => {
+    Array.from(root.getElementsByTagName("span")).forEach(elem => {
       if (elem.id !== undefined) {
         const numId = Number.parseInt(elem.id);
         if (numId !== NaN && this.availableId <= numId) {
@@ -193,22 +193,22 @@ class OdtMarkupModal extends React.Component {
         }
       }
     });
-    this.addClickHandlers(root.getElementsByClassName('unverified'));
-    this.addClickHandlers(root.getElementsByClassName('verified'));
-    if (this.props.mode === 'edit') {
-      document.addEventListener('selectionchange', this.onBrowserSelection);
+    this.addClickHandlers(root.getElementsByClassName("unverified"));
+    this.addClickHandlers(root.getElementsByClassName("verified"));
+    if (this.props.mode === "edit") {
+      document.addEventListener("selectionchange", this.onBrowserSelection);
     }
 
     this.initialized = true;
   }
 
   componentDidMount() {
-    document.addEventListener('keydown', this.onKeyDown);
+    document.addEventListener("keydown", this.onKeyDown);
   }
 
   componentWillUnmount() {
-    document.removeEventListener('selectionchange', this.onBrowserSelection);
-    document.removeEventListener('keydown', this.onKeyDown);
+    document.removeEventListener("selectionchange", this.onBrowserSelection);
+    document.removeEventListener("keydown", this.onKeyDown);
   }
 
   addClickHandlers(elems) {
@@ -220,16 +220,15 @@ class OdtMarkupModal extends React.Component {
         }
 
         if (selection !== null) {
-          document.getElementById(selection).classList.remove('selected');
+          document.getElementById(selection).classList.remove("selected");
         }
         if (this.state.selection === elem.id) {
           this.setState({ selection: null });
-        }
-        else {
-          elem.classList.add('selected');
+        } else {
+          elem.classList.add("selected");
           this.setState({ selection: elem.id });
         }
-      }
+      };
     });
   }
 
@@ -242,22 +241,24 @@ class OdtMarkupModal extends React.Component {
 
     const range = sel.getRangeAt(0);
     const text = range.toString().trim();
-    if (text.length === 0 || text.indexOf(' ') !== -1 || text !== range.toString()) {
+    if (text.length === 0 || text.indexOf(" ") !== -1 || text !== range.toString()) {
       this.setState({ browserSelection: null });
       return;
     }
 
     const elem = sel.anchorNode.parentElement;
-    if (!document.getElementById("markup-content").contains(elem) ||
-      elem.classList.contains('verified') ||
-      elem.classList.contains('unverified')) {
+    if (
+      !document.getElementById("markup-content").contains(elem) ||
+      elem.classList.contains("verified") ||
+      elem.classList.contains("unverified")
+    ) {
       this.setState({ browserSelection: null });
       return;
     }
 
     const { selection } = this.state;
     if (selection !== null) {
-      document.getElementById(selection).classList.remove('selected');
+      document.getElementById(selection).classList.remove("selected");
     }
     this.setState({ selection: null, browserSelection: range });
   }
@@ -269,17 +270,17 @@ class OdtMarkupModal extends React.Component {
     const text = textNode.textContent;
 
     let str = text.substring(0, browserSelection.startOffset);
-    if (str !== '') {
+    if (str !== "") {
       parentNode.insertBefore(document.createTextNode(str), textNode);
     }
-    const span = document.createElement('span');
+    const span = document.createElement("span");
     span.id = this.availableId;
-    span.classList.add('unverified', 'user');
+    span.classList.add("unverified", "user");
     span.innerText = browserSelection.toString();
     this.addClickHandlers([span]);
     parentNode.insertBefore(span, textNode);
     str = text.substring(browserSelection.endOffset);
-    if (str !== '') {
+    if (str !== "") {
       parentNode.insertBefore(document.createTextNode(str), textNode);
     }
     parentNode.removeChild(textNode);
@@ -296,10 +297,10 @@ class OdtMarkupModal extends React.Component {
 
     this.setState({
       confirmation: {
-        content: getTranslation('Are you sure you want to remove selected element from markup?'),
+        content: getTranslation("Are you sure you want to remove selected element from markup?"),
         func: () => {
           const prev = elem.previousSibling;
-          let content = '';
+          let content = "";
           if (prev && prev.nodeType === Node.TEXT_NODE) {
             content += prev.textContent;
             prev.remove();
@@ -322,11 +323,11 @@ class OdtMarkupModal extends React.Component {
 
     this.setState({
       confirmation: {
-        content: getTranslation('Are you sure you want to move selected element?'),
+        content: getTranslation("Are you sure you want to move selected element?"),
         func: () => {
           const prev = elem.previousSibling;
-          let copiedElem = elem;
-          let content = '';
+          const copiedElem = elem;
+          let content = "";
           if (prev && prev.nodeType === Node.TEXT_NODE) {
             content += prev.textContent;
             prev.remove();
@@ -351,15 +352,15 @@ class OdtMarkupModal extends React.Component {
     const text = textNode.textContent;
 
     let str = text.substring(0, browserSelection.startOffset);
-    if (str !== '') {
+    if (str !== "") {
       parentNode.insertBefore(document.createTextNode(str), textNode);
     }
-    let copiedElem = this.state.copiedElem;
+    const copiedElem = this.state.copiedElem;
     copiedElem.lastChild.nodeValue = browserSelection.toString();
     this.addClickHandlers([copiedElem]);
     parentNode.insertBefore(copiedElem, textNode);
     str = text.substring(browserSelection.endOffset);
-    if (str !== '') {
+    if (str !== "") {
       parentNode.insertBefore(document.createTextNode(str), textNode);
     }
     parentNode.removeChild(textNode);
@@ -378,61 +379,64 @@ class OdtMarkupModal extends React.Component {
     const { selection } = this.state;
 
     if (selection) {
-      document.getElementById(selection).classList.remove('selected');
+      document.getElementById(selection).classList.remove("selected");
     }
     this.setState({ saving: true });
-    this.docToSave.getElementsByTagName('body')[0].innerHTML = document.getElementById("markup-content").innerHTML;
-    updateParserResult({ variables: { id: resultId, content: new XMLSerializer().serializeToString(this.docToSave) } }).then(() => {
-      if (selection) {
-        document.getElementById(selection).classList.add('selected');
-      }
-      this.setState({ dirty: false, saving: false });
-    }).catch(() => {
-      if (selection) {
-        document.getElementById(selection).classList.add('selected');
-      }
-      this.setState({ saving: false });
-    });
+    this.docToSave.getElementsByTagName("body")[0].innerHTML = document.getElementById("markup-content").innerHTML;
+    updateParserResult({ variables: { id: resultId, content: new XMLSerializer().serializeToString(this.docToSave) } })
+      .then(() => {
+        if (selection) {
+          document.getElementById(selection).classList.add("selected");
+        }
+        this.setState({ dirty: false, saving: false });
+      })
+      .catch(() => {
+        if (selection) {
+          document.getElementById(selection).classList.add("selected");
+        }
+        this.setState({ saving: false });
+      });
   }
 
   parseElement() {
     const { resultId, updateParserResultForElement } = this.props;
     const { selection, dirty } = this.state;
     let content = "";
-    document.getElementById(selection).classList.remove('selected');
+    document.getElementById(selection).classList.remove("selected");
     if (dirty) {
-      this.docToSave.getElementsByTagName('body')[0].innerHTML = document.getElementById("markup-content").innerHTML;
+      this.docToSave.getElementsByTagName("body")[0].innerHTML = document.getElementById("markup-content").innerHTML;
       content = new XMLSerializer().serializeToString(this.docToSave);
     }
     this.setState({ updating: true, selection: null });
-    updateParserResultForElement({ variables: { id: resultId, content: content, element_id: selection } }).then(() => {
-      this.content = null;
-      this.initialized = false;
-      this.setState({ updating: false, dirty: false });
-      if (document.getElementById(selection)) {
-        this.setState({ selection: selection });
-        document.getElementById(selection).classList.add('selected');
-      }
-    }).catch(() => {
-      this.initialized = false;
-      this.setState({ updating: false });
-      if (document.getElementById(selection)) {
-        this.setState({ selection: selection });
-        document.getElementById(selection).classList.add('selected');
-      }
-    });
+    updateParserResultForElement({ variables: { id: resultId, content: content, element_id: selection } })
+      .then(() => {
+        this.content = null;
+        this.initialized = false;
+        this.setState({ updating: false, dirty: false });
+        if (document.getElementById(selection)) {
+          this.setState({ selection: selection });
+          document.getElementById(selection).classList.add("selected");
+        }
+      })
+      .catch(() => {
+        this.initialized = false;
+        this.setState({ updating: false });
+        if (document.getElementById(selection)) {
+          this.setState({ selection: selection });
+          document.getElementById(selection).classList.add("selected");
+        }
+      });
   }
 
   onClose() {
     if (this.state.dirty) {
       this.setState({
         confirmation: {
-          content: getTranslation('There are unsaved changes present. Are you sure you want to discard it?'),
+          content: getTranslation("There are unsaved changes present. Are you sure you want to discard it?"),
           func: this.props.onClose
         }
       });
-    }
-    else {
+    } else {
       this.props.onClose();
     }
   }
@@ -446,7 +450,7 @@ class OdtMarkupModal extends React.Component {
     }
     if (loading || updating) {
       return (
-        <Dimmer active style={{ minHeight: '600px', background: 'none' }}>
+        <Dimmer active style={{ minHeight: "600px", background: "none" }}>
           <Header as="h2" icon>
             <Icon name="spinner" loading className="lingvo-spinner" />
           </Header>
@@ -456,7 +460,7 @@ class OdtMarkupModal extends React.Component {
 
     if (!this.content) {
       const doc = new DOMParser().parseFromString(data.parser_result.content, "text/html");
-      const bodies = doc.getElementsByTagName('body');
+      const bodies = doc.getElementsByTagName("body");
       if (!bodies.length) {
         return null;
       }
@@ -468,76 +472,89 @@ class OdtMarkupModal extends React.Component {
     const selectedElem = selection === null ? null : document.getElementById(selection);
 
     return (
-      <Modal open dimmer size="fullscreen" closeIcon onClose={this.onClose} closeOnDimmerClick={false} className="lingvo-modal2">
-        <Modal.Header>{getTranslation('Text markup')}</Modal.Header>
-        <div style={{ display: 'flex', flexDirection: 'row' }}>
-          <PropertiesView selection={selection} mode={saving ? 'view' : mode} setDirty={() => this.setState({ dirty: true })} />
-          <Modal.Content id="markup-content" scrolling dangerouslySetInnerHTML={{ __html: this.content }} style={{ padding: '10px' }} />
+      <Modal
+        open
+        dimmer
+        size="fullscreen"
+        closeIcon
+        onClose={this.onClose}
+        closeOnDimmerClick={false}
+        className="lingvo-modal2"
+      >
+        <Modal.Header>{getTranslation("Text markup")}</Modal.Header>
+        <div style={{ display: "flex", flexDirection: "row" }}>
+          <PropertiesView
+            selection={selection}
+            mode={saving ? "view" : mode}
+            setDirty={() => this.setState({ dirty: true })}
+          />
+          <Modal.Content
+            id="markup-content"
+            scrolling
+            dangerouslySetInnerHTML={{ __html: this.content }}
+            style={{ padding: "10px" }}
+          />
         </div>
         <Modal.Actions>
-          { !saving && !movingElem && browserSelection !== null &&
+          {!saving && !movingElem && browserSelection !== null && (
             <Button
               color="violet"
               icon="plus"
-              content={`${getTranslation('Add to markup')} '${browserSelection.toString()}'`}
+              content={`${getTranslation("Add to markup")} '${browserSelection.toString()}'`}
               onClick={this.addToMarkup}
-              style={{ float: 'left' }}
+              style={{ float: "left" }}
             />
-          }
-          { !saving && !movingElem && selectedElem && mode === 'edit' &&
-            <div style={{ display: 'flex', flexDirection: 'row' , float: 'left'}}>
+          )}
+          {!saving && !movingElem && selectedElem && mode === "edit" && (
+            <div style={{ display: "flex", flexDirection: "row", float: "left" }}>
               <Button
                 color="orange"
                 icon="minus"
-                content={`${getTranslation('Remove from markup')} '${selectedElem.innerText}'`}
+                content={`${getTranslation("Remove from markup")} '${selectedElem.innerText}'`}
                 onClick={this.removeFromMarkup}
               />
               <Button
                 color="blue"
                 icon="minus"
-                content={`${getTranslation('Move markup element')} '${selectedElem.innerText}'`}
+                content={`${getTranslation("Move markup element")} '${selectedElem.innerText}'`}
                 onClick={this.moveMarkup}
               />
               <Button
                 color="green"
                 icon="plus"
-                content={`${getTranslation('Parse element')} '${selectedElem.innerText}'`}
+                content={`${getTranslation("Parse element")} '${selectedElem.innerText}'`}
                 onClick={this.parseElement}
               />
             </div>
-          }
-          { !saving && movingElem && copiedElem !== null && browserSelection !== null &&
+          )}
+          {!saving && movingElem && copiedElem !== null && browserSelection !== null && (
             <Button
               color="violet"
               icon="plus"
-              content={`${getTranslation('Move copied markup element')} '${copiedElem.lastChild.nodeValue}'`}
+              content={`${getTranslation("Move copied markup element")} '${copiedElem.lastChild.nodeValue}'`}
               onClick={this.addCopiedMarkup}
-              style={{ float: 'left' }}
+              style={{ float: "left" }}
             />
-          }
-          { movingElem && browserSelection == null &&
-            <div style={{ float: 'left'}}>
-              {getTranslation('Select a new position for a markup element')} {copiedElem.lastChild.nodeValue}
+          )}
+          {movingElem && browserSelection == null && (
+            <div style={{ float: "left" }}>
+              {getTranslation("Select a new position for a markup element")} {copiedElem.lastChild.nodeValue}
             </div>
-          }
-          { mode === 'edit' &&
+          )}
+          {mode === "edit" && (
             <Button
               disabled={saving || !dirty}
               loading={saving}
-              content={getTranslation('Save')}
+              content={getTranslation("Save")}
               onClick={this.save}
               className="lingvo-button-violet"
             />
-          }
-          <Button
-            content={getTranslation('Close')}
-            onClick={this.onClose}
-            className="lingvo-button-basic-black"
-          />
+          )}
+          <Button content={getTranslation("Close")} onClick={this.onClose} className="lingvo-button-basic-black" />
         </Modal.Actions>
         <Confirm
           open={confirmation !== null}
-          header={getTranslation('Confirmation')}
+          header={getTranslation("Confirmation")}
           content={confirmation ? confirmation.content : null}
           onConfirm={confirmation ? confirmation.func : null}
           onCancel={() => this.setState({ confirmation: null })}
@@ -556,17 +573,20 @@ OdtMarkupModal.propTypes = {
 };
 
 export default compose(
-  graphql(getParserResultContentQuery, { options: props => ({ variables: { id: props.resultId }, fetchPolicy: "network-only" }) }),
+  graphql(getParserResultContentQuery, {
+    options: props => ({ variables: { id: props.resultId }, fetchPolicy: "network-only" })
+  }),
   graphql(updateParserResultMutation, { name: "updateParserResult" }),
   graphql(updateParserResultForElementMutation, {
-    options: (props) => ({
+    options: props => ({
       refetchQueries: [
         {
           query: getParserResultContentQuery,
-          variables: ({ id: props.resultId })
+          variables: { id: props.resultId }
         }
       ],
       awaitRefetchQueries: true
     }),
-    name: "updateParserResultForElement" })
-  )(OdtMarkupModal);
+    name: "updateParserResultForElement"
+  })
+)(OdtMarkupModal);

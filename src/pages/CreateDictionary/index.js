@@ -1,29 +1,30 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { compose, withProps } from 'recompose';
-import { graphql } from 'react-apollo';
-import Immutable from 'immutable';
-import { Link } from 'react-router-dom';
-import { Divider, Message, Button, Step, Header, Segment } from 'semantic-ui-react';
+import React from "react";
+import { graphql } from "react-apollo";
+import { connect } from "react-redux";
+import { Link } from "react-router-dom";
+import { Button, Divider, Header, Message, Segment, Step } from "semantic-ui-react";
+import { getTranslation } from "api/i18n";
+import Immutable from "immutable";
+import PropTypes from "prop-types";
+import { compose, withProps } from "recompose";
+
+import EditCorpusMetadata from "components/EditCorpusMetadata";
+import EditDictionaryMetadata from "components/EditDictionaryMetadata";
+import Languages from "components/Languages";
+import Translations from "components/Translation";
 import {
-  nextStep,
-  goToStep,
-  setParentLanguage,
-  setTranslations,
-  setMetadata,
   createPerspective,
-  setPerspectives,
+  goToStep,
+  nextStep,
   selectors,
-} from 'ducks/createDictionary';
-import Languages from 'components/Languages';
-import Translations from 'components/Translation';
-import EditDictionaryMetadata from 'components/EditDictionaryMetadata';
-import EditCorpusMetadata from 'components/EditCorpusMetadata';
-import Perspectives from './Perspectives';
-import { createDictionaryMutation } from './graphql';
-import { query as dashboardQuery } from 'pages/Dashboard';
-import { getTranslation } from 'api/i18n';
+  setMetadata,
+  setParentLanguage,
+  setPerspectives,
+  setTranslations} from "ducks/createDictionary";
+import { query as dashboardQuery } from "pages/Dashboard";
+
+import { createDictionaryMutation } from "./graphql";
+import Perspectives from "./Perspectives";
 
 class CreateDictionaryWizard extends React.Component {
   constructor(props) {
@@ -45,53 +46,48 @@ class CreateDictionaryWizard extends React.Component {
   }
 
   onCreateDictionary() {
-    const {
-      mode, parentLanguage, translations, perspectives: p, createDictionary, metadata
-    } = this.props;
+    const { mode, parentLanguage, translations, perspectives: p, createDictionary, metadata } = this.props;
     const parentId = parentLanguage.id;
     const dictionaryTranslations = translations
-      .map(t => ({ locale_id: t.get('localeId'), content: t.get('content') }))
+      .map(t => ({ locale_id: t.get("localeId"), content: t.get("content") }))
       .toJS();
     const perspectives = p
       .map(ps => ({
-        fake_id: ps.get('index'),
+        fake_id: ps.get("index"),
         translation_atoms: ps
-          .get('translations')
-          .map(t => ({ locale_id: t.get('localeId'), content: t.get('content') })),
-        fields: ps
-          .get('fields')
-          .map(f => ({
-            fake_id: f.get('id'),
-            self_id: f.get('self_id'),
-            link_id: f.get('link_id'),
-            field_id: f.get('field_id'),
-          })),
+          .get("translations")
+          .map(t => ({ locale_id: t.get("localeId"), content: t.get("content") })),
+        fields: ps.get("fields").map(f => ({
+          fake_id: f.get("id"),
+          self_id: f.get("self_id"),
+          link_id: f.get("link_id"),
+          field_id: f.get("field_id")
+        }))
       }))
       .toJS();
 
     const variables = {
-      category: mode == 'dictionary' ? 0 : 1,
+      category: mode == "dictionary" ? 0 : 1,
       parentId,
       dictionaryTranslations,
       perspectives
     };
-    if (metadata)
-      variables.metadata = metadata.toJS();
+    if (metadata) {variables.metadata = metadata.toJS();}
     createDictionary({
       variables,
       refetchQueries: [
         {
           query: dashboardQuery,
           variables: {
-            mode: mode == 'dictionary' ? 0 : 1,
-            category: 0,
-          },
-        },
-      ],
-    }).then((result) => {
+            mode: mode == "dictionary" ? 0 : 1,
+            category: 0
+          }
+        }
+      ]
+    }).then(result => {
       const dictionary = result.data.create_dictionary.dictionary;
       this.createdDictionary = { id: dictionary.id, perspective_id: dictionary.perspectives[0].id };
-      this.props.goToStep('FINISH');
+      this.props.goToStep("FINISH");
     });
   }
 
@@ -100,107 +96,119 @@ class CreateDictionaryWizard extends React.Component {
   }
 
   render() {
-    const {
-      step, isNextStep, parentLanguage, translations, metadata, perspectives, mode,
-    } = this.props;
+    const { step, isNextStep, parentLanguage, translations, metadata, perspectives, mode } = this.props;
 
     return (
       <div className="background-content">
         <Step.Group widths={4}>
-          <Step link active={step === 'PARENT_LANGUAGE'} onClick={this.onStepClick('PARENT_LANGUAGE')}>
+          <Step link active={step === "PARENT_LANGUAGE"} onClick={this.onStepClick("PARENT_LANGUAGE")}>
             <Step.Content>
-              <Step.Title>{getTranslation('Parent language')}</Step.Title>
-              <Step.Description>{getTranslation('Select language')}</Step.Description>
+              <Step.Title>{getTranslation("Parent language")}</Step.Title>
+              <Step.Description>{getTranslation("Select language")}</Step.Description>
             </Step.Content>
           </Step>
 
-          <Step link active={step === 'TRANSLATIONS'} onClick={this.onStepClick('TRANSLATIONS')}>
+          <Step link active={step === "TRANSLATIONS"} onClick={this.onStepClick("TRANSLATIONS")}>
             <Step.Content>
-              <Step.Title>{getTranslation(mode.replace(/^\w/, c => c.toUpperCase()) + ' names and metadata')}</Step.Title>
-              <Step.Description>{getTranslation('Set ' + mode + ' name, translations and metadata')}</Step.Description>
+              <Step.Title>
+                {getTranslation(`${mode.replace(/^\w/, c => c.toUpperCase()) } names and metadata`)}
+              </Step.Title>
+              <Step.Description>{getTranslation(`Set ${ mode } name, translations and metadata`)}</Step.Description>
             </Step.Content>
           </Step>
 
-          <Step link active={step === 'PERSPECTIVES'} onClick={this.onStepClick('PERSPECTIVES')}>
+          <Step link active={step === "PERSPECTIVES"} onClick={this.onStepClick("PERSPECTIVES")}>
             <Step.Content>
-              <Step.Title>{getTranslation('Perspectives')}</Step.Title>
-              <Step.Description>{getTranslation('Create one or more perspectives')}</Step.Description>
+              <Step.Title>{getTranslation("Perspectives")}</Step.Title>
+              <Step.Description>{getTranslation("Create one or more perspectives")}</Step.Description>
             </Step.Content>
           </Step>
 
-          <Step link active={step === 'FINISH'}>
+          <Step link active={step === "FINISH"}>
             <Step.Content>
-              <Step.Title>{getTranslation('Finish')}</Step.Title>
+              <Step.Title>{getTranslation("Finish")}</Step.Title>
             </Step.Content>
           </Step>
         </Step.Group>
 
-        <div style={{ minHeight: '500px' }}>
-          {step === 'PARENT_LANGUAGE' && (
-            <div className="inverted" style={{ height: '600px' }}>
-              {!parentLanguage && <Header className="inverted">{getTranslation('Please, select the parent language')}</Header>}
+        <div style={{ minHeight: "500px" }}>
+          {step === "PARENT_LANGUAGE" && (
+            <div className="inverted" style={{ height: "600px" }}>
+              {!parentLanguage && (
+                <Header className="inverted">{getTranslation("Please, select the parent language")}</Header>
+              )}
               {parentLanguage && (
                 <Header className="inverted">
-                  {getTranslation('You have selected:')} <b>{parentLanguage.translation}</b>
+                  {getTranslation("You have selected:")} <b>{parentLanguage.translation}</b>
                 </Header>
               )}
               <Languages expanded={false} selected={parentLanguage} onSelect={this.selectParent} />
             </div>
           )}
-          {step === 'TRANSLATIONS' && (
+          {step === "TRANSLATIONS" && (
             <div>
-              <Header inverted>{getTranslation('Add one or more translations')}</Header>
+              <Header inverted>{getTranslation("Add one or more translations")}</Header>
               <Segment>
                 <Translations translations={translations.toJS()} onChange={t => this.props.setTranslations(t)} />
               </Segment>
-              <Divider/>
-              <Header inverted>{getTranslation('Fill metadata information')}</Header>
-              {mode === 'dictionary' && (
-                <EditDictionaryMetadata mode='create' metadata={metadata ? metadata.toJS() : metadata} onChange={metadata => this.props.setMetadata(metadata)} />
+              <Divider />
+              <Header inverted>{getTranslation("Fill metadata information")}</Header>
+              {mode === "dictionary" && (
+                <EditDictionaryMetadata
+                  mode="create"
+                  metadata={metadata ? metadata.toJS() : metadata}
+                  onChange={metadata => this.props.setMetadata(metadata)}
+                />
               )}
-              {mode === 'corpus' && (
-                <EditCorpusMetadata mode='create' metadata={metadata ? metadata.toJS() : metadata} onChange={metadata => this.props.setMetadata(metadata)} />
+              {mode === "corpus" && (
+                <EditCorpusMetadata
+                  mode="create"
+                  metadata={metadata ? metadata.toJS() : metadata}
+                  onChange={metadata => this.props.setMetadata(metadata)}
+                />
               )}
               {}
             </div>
           )}
 
-          {step === 'PERSPECTIVES' && (
+          {step === "PERSPECTIVES" && (
             <div>
-              <Header className="inverted">{getTranslation('Add one or more perspectives')}</Header>
+              <Header className="inverted">{getTranslation("Add one or more perspectives")}</Header>
               <Perspectives perspectives={perspectives} onChange={p => this.props.setPerspectives(p)} mode={mode} />
               <Button fluid positive onClick={this.props.createPerspective}>
-                {getTranslation('Add perspective')}
+                {getTranslation("Add perspective")}
               </Button>
             </div>
           )}
 
-          {step === 'FINISH' && (
+          {step === "FINISH" && (
             <Message>
-              <Message.Header>{getTranslation(mode.replace(/^\w/, c => c.toUpperCase()) + ' created')}</Message.Header>
+              <Message.Header>{getTranslation(`${mode.replace(/^\w/, c => c.toUpperCase()) } created`)}</Message.Header>
               <Message.Content>
-                {getTranslation('Your ' + mode + ' is created, click') + ' '}
-                <Link to={`/dictionary/${this.createdDictionary.id.join('/')}/perspective/${this.createdDictionary.perspective_id.join('/')}/edit`}>
-                  {getTranslation('here')}
+                {`${getTranslation(`Your ${ mode } is created, click`) } `}
+                <Link
+                  to={`/dictionary/${this.createdDictionary.id.join(
+                    "/"
+                  )}/perspective/${this.createdDictionary.perspective_id.join("/")}/edit`}
+                >
+                  {getTranslation("here")}
                 </Link>
-                {' ' + getTranslation('to view.')}
+                {` ${ getTranslation("to view.")}`}
               </Message.Content>
             </Message>
           )}
         </div>
         <Divider />
-        {isNextStep &&
-          step === 'PERSPECTIVES' && (
-            <Button fluid className="lingvo-button-lite-violet" onClick={this.onCreateDictionary}>
-              {getTranslation('Create')}
-            </Button>
-          )}
-        {isNextStep &&
-          (step !== 'PERSPECTIVES' && step !== 'FINISH') && (
-            <Button fluid className="lingvo-button-lite-violet" onClick={this.onNextClick}>
-              {getTranslation('Next Step')}
-            </Button>
-          )}
+        {isNextStep && step === "PERSPECTIVES" && (
+          <Button fluid className="lingvo-button-lite-violet" onClick={this.onCreateDictionary}>
+            {getTranslation("Create")}
+          </Button>
+        )}
+        {isNextStep && step !== "PERSPECTIVES" && step !== "FINISH" && (
+          <Button fluid className="lingvo-button-lite-violet" onClick={this.onNextClick}>
+            {getTranslation("Next Step")}
+          </Button>
+        )}
       </div>
     );
   }
@@ -219,7 +227,7 @@ CreateDictionaryWizard.propTypes = {
   createPerspective: PropTypes.func.isRequired,
   setPerspectives: PropTypes.func.isRequired,
   createDictionary: PropTypes.func.isRequired,
-  mode: PropTypes.string.isRequired,
+  mode: PropTypes.string.isRequired
 };
 
 function mapStateToProps(state) {
@@ -229,7 +237,7 @@ function mapStateToProps(state) {
     parentLanguage: selectors.getParentLanguage(state),
     translations: selectors.getTranslations(state),
     metadata: selectors.getMetadata(state),
-    perspectives: selectors.getPerspectives(state),
+    perspectives: selectors.getPerspectives(state)
   };
 }
 
@@ -240,18 +248,17 @@ const mapDispatchToProps = {
   setTranslations,
   setMetadata,
   createPerspective,
-  setPerspectives,
+  setPerspectives
 };
 
 export const CreateDictionary = compose(
   connect(mapStateToProps, mapDispatchToProps),
-  graphql(createDictionaryMutation, { name: 'createDictionary' }),
-  withProps(() => ({ mode: 'dictionary' })),
+  graphql(createDictionaryMutation, { name: "createDictionary" }),
+  withProps(() => ({ mode: "dictionary" }))
 )(CreateDictionaryWizard);
-
 
 export const CreateCorpus = compose(
   connect(mapStateToProps, mapDispatchToProps),
-  graphql(createDictionaryMutation, { name: 'createDictionary' }),
-  withProps(() => ({ mode: 'corpus' })),
+  graphql(createDictionaryMutation, { name: "createDictionary" }),
+  withProps(() => ({ mode: "corpus" }))
 )(CreateDictionaryWizard);

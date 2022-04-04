@@ -1,10 +1,10 @@
-import { combineReducers } from 'redux';
+import { combineReducers } from "redux";
 
 // Actions
-export const OPEN_MODAL = '@create_perspective/OPEN_MODAL';
-export const CLOSE_MODAL = '@create_perspective/CLOSE_MODAL';
+export const OPEN_MODAL = "@create_perspective/OPEN_MODAL";
+export const CLOSE_MODAL = "@create_perspective/CLOSE_MODAL";
 
-export const openModal = (dictionaryId) => ({ type: OPEN_MODAL, payload: dictionaryId });
+export const openModal = dictionaryId => ({ type: OPEN_MODAL, payload: dictionaryId });
 export const closeModal = () => ({ type: CLOSE_MODAL });
 
 const visible = (state = false, action) => {
@@ -31,5 +31,5 @@ const dictionaryId = (state = null, { type, payload }) => {
 
 export default combineReducers({
   dictionaryId,
-  visible,
+  visible
 });

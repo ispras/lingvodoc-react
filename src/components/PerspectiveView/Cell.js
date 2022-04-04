@@ -1,10 +1,12 @@
 /* eslint-disable padded-blocks */
-import React from 'react';
-import PropTypes from 'prop-types';
-import { pure, onlyUpdateForKeys } from 'recompose';
-import { Table } from 'semantic-ui-react';
-import Entities from 'components/LexicalEntry';
-import 'styles/main.scss';
+import React from "react";
+import { Table } from "semantic-ui-react";
+import PropTypes from "prop-types";
+import { onlyUpdateForKeys, pure } from "recompose";
+
+import Entities from "components/LexicalEntry";
+
+import "styles/main.scss";
 
 const Cell = ({
   perspectiveId,
@@ -20,10 +22,9 @@ const Cell = ({
   resetCheckedAll,
   mode,
   entitiesMode,
-  disabled,
+  disabled
   // eslint-disable-next-line arrow-body-style
 }) => {
-  
   return (
     <Table.Cell className="entity gentium">
       <Entities
@@ -60,11 +61,20 @@ Cell.propTypes = {
   disabled: PropTypes.bool,
   resetCheckedRow: PropTypes.func,
   resetCheckedColumn: PropTypes.func,
-  resetCheckedAll: PropTypes.func,
+  resetCheckedAll: PropTypes.func
 };
 
 Cell.defaultProps = {
   disabled: undefined
 };
 
-export default onlyUpdateForKeys(['perspectiveId', 'entry', 'mode', 'disabled', 'column', 'checkedRow', 'checkedColumn', 'checkedAll'])(Cell);
+export default onlyUpdateForKeys([
+  "perspectiveId",
+  "entry",
+  "mode",
+  "disabled",
+  "column",
+  "checkedRow",
+  "checkedColumn",
+  "checkedAll"
+])(Cell);

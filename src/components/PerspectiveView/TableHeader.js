@@ -1,12 +1,13 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { onlyUpdateForKeys } from 'recompose';
-import { Table, Checkbox } from 'semantic-ui-react';
-import { sortBy, isEmpty, isEqual } from 'lodash';
-import { compositeIdToString } from 'utils/compositeId';
+import React from "react";
+import { Checkbox, Table } from "semantic-ui-react";
+import { getTranslation } from "api/i18n";
+import { isEmpty, isEqual, sortBy } from "lodash";
+import PropTypes from "prop-types";
+import { onlyUpdateForKeys } from "recompose";
 
-import { getTranslation } from 'api/i18n';
-import Column from './Column';
+import { compositeIdToString } from "utils/compositeId";
+
+import Column from "./Column";
 
 const TableHeader = ({
   columns,
@@ -30,12 +31,9 @@ const TableHeader = ({
   sortByField,
   /* eslint-enable react/prop-types */
   onSortModeChange,
-  onSortModeReset,
+  onSortModeReset
 }) => (
-  <Table.Header
-    style={disabled ? { opacity: '0.5' } : {}}
-  >
-
+  <Table.Header style={disabled ? { opacity: "0.5" } : {}}>
     <Table.Row>
       {selectEntries && (
         <Table.HeaderCell className="entityHeader">
@@ -44,9 +42,7 @@ const TableHeader = ({
               disabled={selectDisabled}
               indeterminate={selectDisabledIndeterminate || selectAllIndeterminate}
               checked={selectAllChecked}
-              onChange={
-                (_, { checked }) =>
-                  onAllEntriesSelect(checked)}
+              onChange={(_, { checked }) => onAllEntriesSelect(checked)}
             />
           )}
         </Table.HeaderCell>
@@ -55,23 +51,20 @@ const TableHeader = ({
       {checkEntries && (
         <Table.HeaderCell className="entityHeader lingvo-sticky-checkbox-column">
           <Checkbox
-            className="lingvo-checkbox" 
+            className="lingvo-checkbox"
             checked={entries.length === selectedRows.length}
-            onChange={
-              (e, { checked }) => {
-                onCheckAll(checked);
-              }
-            }
+            onChange={(e, { checked }) => {
+              onCheckAll(checked);
+            }}
           />
         </Table.HeaderCell>
       )}
 
-      {showEntryId && (
-        <Table.HeaderCell className="entityHeader">
-          {getTranslation('id')}
-        </Table.HeaderCell>
-      )}
-      {sortBy(columns.filter(column => column.self_id == null), column => column.position).map(column => (
+      {showEntryId && <Table.HeaderCell className="entityHeader">{getTranslation("id")}</Table.HeaderCell>}
+      {sortBy(
+        columns.filter(column => column.self_id == null),
+        column => column.position
+      ).map(column => (
         <Column
           key={compositeIdToString(column.column_id)}
           field={column}
@@ -86,7 +79,6 @@ const TableHeader = ({
       ))}
       {!isEmpty(actions) && <Table.HeaderCell />}
     </Table.Row>
-
   </Table.Header>
 );
 
@@ -100,7 +92,7 @@ TableHeader.propTypes = {
   selectedRows: PropTypes.array,
   selectedColumns: PropTypes.array,
   onCheckColumn: PropTypes.func,
-  onCheckAll: PropTypes.func,
+  onCheckAll: PropTypes.func
 };
 
 TableHeader.defaultProps = {
@@ -112,7 +104,7 @@ TableHeader.defaultProps = {
   selectedRows: [],
   selectedColumns: [],
   onCheckColumn: () => {},
-  onCheckAll: () => {},
+  onCheckAll: () => {}
 };
 
-export default onlyUpdateForKeys(['columns', 'entries', 'selectedRows', 'selectedColumns'])(TableHeader);
+export default onlyUpdateForKeys(["columns", "entries", "selectedRows", "selectedColumns"])(TableHeader);

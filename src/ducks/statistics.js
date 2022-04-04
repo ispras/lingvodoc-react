@@ -1,8 +1,8 @@
-import { combineReducers } from 'redux';
+import { combineReducers } from "redux";
 
 // Actions
-export const OPEN_STATISTICS = '@statistics/OPEN';
-export const CLOSE_STATISTICS = '@statistics/CLOSE';
+export const OPEN_STATISTICS = "@statistics/OPEN";
+export const CLOSE_STATISTICS = "@statistics/CLOSE";
 
 export const openStatistics = (id, mode, title) => ({
   type: OPEN_STATISTICS,
@@ -31,7 +31,7 @@ const id = (state = [], action) => {
   }
 };
 
-const mode = (state = 'dictionary', action) => {
+const mode = (state = "dictionary", action) => {
   switch (action.type) {
     case OPEN_STATISTICS:
       return action.payload.mode;

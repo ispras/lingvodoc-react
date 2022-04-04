@@ -1,8 +1,8 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { pure } from 'recompose';
-import styled from 'styled-components';
-import { getTranslation } from 'api/i18n';
+import React from "react";
+import { getTranslation } from "api/i18n";
+import PropTypes from "prop-types";
+import { pure } from "recompose";
+import styled from "styled-components";
 
 const Range = styled.div`
   display: flex;
@@ -13,29 +13,22 @@ const Range = styled.div`
   }
 `;
 
-const IntersectionControl = ({
-  value, max, onChange, isActive,
-}) =>
-  <Range className={isActive ? 'intersection-control active' : 'intersection-control'}>
+const IntersectionControl = ({ value, max, onChange, isActive }) => (
+  <Range className={isActive ? "intersection-control active" : "intersection-control"}>
     <span>0</span>
-    <input
-      type="range"
-      min={0}
-      max={max}
-      step={1}
-      value={value}
-      disabled={!isActive}
-      onChange={onChange}
-    />
+    <input type="range" min={0} max={max} step={1} value={value} disabled={!isActive} onChange={onChange} />
     <span>{max}</span>
-    <span className="intersection-control__text">{getTranslation('More than')} {value} {getTranslation('intersections')}</span>
-  </Range>;
+    <span className="intersection-control__text">
+      {getTranslation("More than")} {value} {getTranslation("intersections")}
+    </span>
+  </Range>
+);
 
 IntersectionControl.propTypes = {
   value: PropTypes.number.isRequired,
   max: PropTypes.number.isRequired,
   isActive: PropTypes.bool.isRequired,
-  onChange: PropTypes.func.isRequired,
+  onChange: PropTypes.func.isRequired
 };
 
 export default pure(IntersectionControl);

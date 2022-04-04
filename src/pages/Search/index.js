@@ -1,78 +1,80 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { compose } from 'recompose';
-import { graphql, withApollo } from 'react-apollo';
-import gql from 'graphql-tag';
-import Immutable, { fromJS } from 'immutable';
-import { Container, Dimmer, Loader, Tab, Button, Divider, Menu, Message, Segment } from 'semantic-ui-react';
-import { isEqual, memoize } from 'lodash';
-import { withRouter } from 'react-router-dom'
+import React from "react";
+import { graphql, withApollo } from "react-apollo";
+import { connect } from "react-redux";
+import { withRouter } from "react-router-dom";
+import { Button, Container, Dimmer, Divider, Loader, Menu, Message, Segment, Tab } from "semantic-ui-react";
+import { getTranslation } from "api/i18n";
+import gql from "graphql-tag";
+import Immutable, { fromJS } from "immutable";
+import { isEqual, memoize } from "lodash";
+import PropTypes from "prop-types";
+import { compose } from "recompose";
+import { bindActionCreators } from "redux";
 
-import Labels from 'components/Search/Labels';
-import ResultsMap from 'components/Search/ResultsMap';
-import IntersectionControl from 'components/Search/IntersectionControl';
-import AreasMode from 'components/Search/AreasMode';
-import QueryBuilder from 'components/Search/QueryBuilder';
-import LanguageTree from 'components/Search/LanguageTree';
-import BlobsModal from 'components/Search/blobsModal';
-import { buildLanguageTree, buildSearchResultsTree } from 'pages/Search/treeBuilder';
-import { setDefaultGroup, setMainGroupLanguages, setCheckStateTreeFlat, setDefaultDataForTree } from 'ducks/distanceMap';
-import { getTranslation } from 'api/i18n';
+import AreasMode from "components/Search/AreasMode";
+import BlobsModal from "components/Search/blobsModal";
+import IntersectionControl from "components/Search/IntersectionControl";
+import Labels from "components/Search/Labels";
+import LanguageTree from "components/Search/LanguageTree";
+import QueryBuilder from "components/Search/QueryBuilder";
+import ResultsMap from "components/Search/ResultsMap";
+import {
+  setCheckStateTreeFlat,
+  setDefaultDataForTree,
+  setDefaultGroup,
+  setMainGroupLanguages} from "ducks/distanceMap";
+import { deleteSearch, newSearch, newSearchWithAdditionalFields, setSearches, storeSearchResult } from "ducks/search";
+import { buildLanguageTree, buildSearchResultsTree } from "pages/Search/treeBuilder";
 
-import './style.scss';
-
-import { newSearch, deleteSearch, storeSearchResult, newSearchWithAdditionalFields, setSearches } from 'ducks/search';
-
+import "./style.scss";
 
 const mdColors = new Immutable.List([
-  '#00897B',
-  '#E53935',
-  '#3949AB',
-  '#FDD835',
-  '#43A047',
-  '#D81B60',
-  '#1E88E5',
-  '#FFB300',
-  '#7CB342',
-  '#8E24AA',
-  '#039BE5',
-  '#FB8C00',
-  '#C0CA33',
-  '#5E35B1',
-  '#00ACC1',
-  '#F4511E',
-  '#6D4C41',
+  "#00897B",
+  "#E53935",
+  "#3949AB",
+  "#FDD835",
+  "#43A047",
+  "#D81B60",
+  "#1E88E5",
+  "#FFB300",
+  "#7CB342",
+  "#8E24AA",
+  "#039BE5",
+  "#FB8C00",
+  "#C0CA33",
+  "#5E35B1",
+  "#00ACC1",
+  "#F4511E",
+  "#6D4C41"
 ]);
 
 const searchQuery = gql`
   query Search(
-    $query: [[ObjectVal]]!,
-    $category: Int,
-    $adopted: Boolean,
-    $etymology: Boolean,
-    $diacritics: String,
-    $mode: String,
-    $langs: [LingvodocID],
-    $dicts: [LingvodocID],
-    $searchMetadata: ObjectVal,
-    $blocks: Boolean,
-    $xlsxExport: Boolean)
-  {
+    $query: [[ObjectVal]]!
+    $category: Int
+    $adopted: Boolean
+    $etymology: Boolean
+    $diacritics: String
+    $mode: String
+    $langs: [LingvodocID]
+    $dicts: [LingvodocID]
+    $searchMetadata: ObjectVal
+    $blocks: Boolean
+    $xlsxExport: Boolean
+  ) {
     advanced_search(
-      search_strings: $query,
-      category: $category,
-      adopted: $adopted,
-      etymology: $etymology,
-      diacritics: $diacritics,
-      mode: $mode,
-      languages: $langs,
-      dicts_to_filter: $dicts,
-      search_metadata: $searchMetadata,
-      simple: $blocks,
-      xlsx_export: $xlsxExport)
-    {
+      search_strings: $query
+      category: $category
+      adopted: $adopted
+      etymology: $etymology
+      diacritics: $diacritics
+      mode: $mode
+      languages: $langs
+      dicts_to_filter: $dicts
+      search_metadata: $searchMetadata
+      simple: $blocks
+      xlsx_export: $xlsxExport
+    ) {
       dictionaries {
         id
         parent_id
@@ -106,9 +108,7 @@ const searchQuery = gql`
 `;
 
 const unstructuredDataQuery = gql`
-  query unstructuredData(
-    $id: String!)
-  {
+  query unstructuredData($id: String!) {
     unstructured_data(id: $id) {
       id
       data
@@ -118,17 +118,12 @@ const unstructuredDataQuery = gql`
 `;
 
 const newUnstructuredDataMutation = gql`
-  mutation newUnstructuredData(
-    $data: ObjectVal!,
-    $metadata: ObjectVal) {
-      new_unstructured_data(
-        data: $data,
-        metadata: $metadata)
-      {
-        triumph
-        id
-      }
+  mutation newUnstructuredData($data: ObjectVal!, $metadata: ObjectVal) {
+    new_unstructured_data(data: $data, metadata: $metadata) {
+      triumph
+      id
     }
+  }
 `;
 
 const isAdditionalParamsSet = (langs, dicts, searchMetadata) => {
@@ -136,12 +131,14 @@ const isAdditionalParamsSet = (langs, dicts, searchMetadata) => {
     return true;
   }
 
-  if (searchMetadata &&
+  if (
+    searchMetadata &&
     searchMetadata.hasAudio !== null &&
     searchMetadata.kind !== null &&
     searchMetadata.years.length > 0 &&
     searchMetadata.humanSettlement.length > 0 &&
-    searchMetadata.authors.length > 0) {
+    searchMetadata.authors.length > 0
+  ) {
     return true;
   }
 
@@ -152,30 +149,25 @@ const isAdditionalParamsSet = (langs, dicts, searchMetadata) => {
 //   return queryGroup.every(query => query.matching_type === 'regexp');
 // };
 
-const isQueryWithoutEmptyString = (query) => {
+const isQueryWithoutEmptyString = query => {
   return query.search_string.length > 0 && query.matching_type.length > 0;
 };
 
-const getCleanQueries = (query) => {
-  return query
-    .map(q => q.filter(p => isQueryWithoutEmptyString(p)))
-    .filter(q => q.length > 0);
+const getCleanQueries = query => {
+  return query.map(q => q.filter(p => isQueryWithoutEmptyString(p))).filter(q => q.length > 0);
 };
 
-const isQueriesClean = (query) => {
+const isQueriesClean = query => {
   return getCleanQueries(query).length > 0;
 };
 
-const isNeedToRenderLanguageTree = (query) => {
+const isNeedToRenderLanguageTree = query => {
   return isQueriesClean(query);
 };
 
 class Wrapper extends React.Component {
-
-  componentWillReceiveProps(props)
-  {
-    if (props.preloadFlag)
-      return;
+  componentWillReceiveProps(props) {
+    if (props.preloadFlag) {return;}
 
     // store search results aquired with graphql into Redux state
     const { data, searchId, actions } = props;
@@ -188,14 +180,13 @@ class Wrapper extends React.Component {
     }
   }
 
-  render()
-  {
+  render() {
     if (this.props.preloadFlag)
-      return (
+      {return (
         <Dimmer active={true} inverted>
-          <Loader>{getTranslation('Loading')}</Loader>
+          <Loader>{getTranslation("Loading")}</Loader>
         </Dimmer>
-      );
+      );}
 
     const { data } = this.props;
     if (data.error) {
@@ -205,7 +196,7 @@ class Wrapper extends React.Component {
     if (data.loading) {
       return (
         <Dimmer active={data.loading} inverted>
-          <Loader>{getTranslation('Loading')}</Loader>
+          <Loader>{getTranslation("Loading")}</Loader>
         </Dimmer>
       );
     }
@@ -214,7 +205,9 @@ class Wrapper extends React.Component {
     const { query } = variables;
     const needToRenderLanguageTree = isNeedToRenderLanguageTree(query);
     const searchResults = Immutable.fromJS(advancedSearch);
-    const resultsCount = searchResults.get('dictionaries').filter(d => (d.getIn(['additional_metadata', 'location']) !== null));
+    const resultsCount = searchResults
+      .get("dictionaries")
+      .filter(d => d.getIn(["additional_metadata", "location"]) !== null);
     let searchResultsTree = null;
     if (needToRenderLanguageTree) {
       const languages = Immutable.fromJS(allLanguages);
@@ -222,50 +215,60 @@ class Wrapper extends React.Component {
       searchResultsTree = buildSearchResultsTree(searchResults, languagesTree);
     }
 
-    return <div>
-      <Message positive>
-        <div>
-          {getTranslation('Found')} {resultsCount.size} {getTranslation('results on')} <a href="" onClick={(e) => {
-            e.preventDefault();
-            document.getElementById('mapResults').scrollIntoView();
-          }}>{getTranslation('map')}</a>
-        </div>
-        {advancedSearch.xlsx_url ?
+    return (
+      <div>
+        <Message positive>
           <div>
-            <a href={advancedSearch.xlsx_url}>XLSX-exported search results</a>
-          </div> :
-          null
-        }
-      </Message>
-      {needToRenderLanguageTree ?
-        <LanguageTree searchResultsTree={searchResultsTree} /> :
-        null
-      }
-    </div>;
+            {getTranslation("Found")} {resultsCount.size} {getTranslation("results on")}{" "}
+            <a
+              href=""
+              onClick={e => {
+                e.preventDefault();
+                document.getElementById("mapResults").scrollIntoView();
+              }}
+            >
+              {getTranslation("map")}
+            </a>
+          </div>
+          {advancedSearch.xlsx_url ? (
+            <div>
+              <a href={advancedSearch.xlsx_url}>XLSX-exported search results</a>
+            </div>
+          ) : null}
+        </Message>
+        {needToRenderLanguageTree ? <LanguageTree searchResultsTree={searchResultsTree} /> : null}
+      </div>
+    );
   }
 }
-
 
 const WrapperWithData = compose(
   connect(
     state => state.search,
 
     dispatch => ({
-      actions: bindActionCreators({ storeSearchResult }, dispatch),
+      actions: bindActionCreators({ storeSearchResult }, dispatch)
     })
   ),
-  graphql(
-    searchQuery,
-    { skip: ({ preloadFlag }) => preloadFlag })
+  graphql(searchQuery, { skip: ({ preloadFlag }) => preloadFlag })
 )(Wrapper);
 
 const Info = ({
-  query, searchId, adopted, etymology, diacritics, category,
-  langs, dicts, searchMetadata, blocks, xlsxExport, subQuery,
+  query,
+  searchId,
+  adopted,
+  etymology,
+  diacritics,
+  category,
+  langs,
+  dicts,
+  searchMetadata,
+  blocks,
+  xlsxExport,
+  subQuery,
   preloadFlag,
   props
 }) => {
-
   if (subQuery) {
     return null;
   }
@@ -312,11 +315,12 @@ Info.propTypes = {
   searchMetadata: PropTypes.object,
   blocks: PropTypes.bool,
   xlsxExport: PropTypes.bool,
-  subQuery: PropTypes.bool.isRequired,
+  subQuery: PropTypes.bool.isRequired
 };
 
-const searchesFromProps = memoize(searches => Immutable.fromJS(searches)
-  .reduce((result, search) => result.set(search.get('id'), search), new Immutable.Map()));
+const searchesFromProps = memoize(searches =>
+  Immutable.fromJS(searches).reduce((result, search) => result.set(search.get("id"), search), new Immutable.Map())
+);
 
 class SearchTabs extends React.Component {
   static groupHasDicts(groupId, dictsResults) {
@@ -331,13 +335,9 @@ class SearchTabs extends React.Component {
 
     this.is_mounted = false;
 
-    const sourceSearches =
-      searchesFromProps(props.searches);
+    const sourceSearches = searchesFromProps(props.searches);
 
-    const source_searches_info = 
-
-      sourceSearches.map(
-        search => search.delete('results'));
+    const source_searches_info = sourceSearches.map(search => search.delete("results"));
 
     this.state = {
       mapSearches: this.addDefaultActiveStateToMapSearches(sourceSearches),
@@ -351,7 +351,7 @@ class SearchTabs extends React.Component {
       search_link_loading: false,
       search_link_error: false,
       error_flag: false,
-      preload_count: 0,
+      preload_count: 0
     };
 
     this.dictsHandlers = {
@@ -359,7 +359,7 @@ class SearchTabs extends React.Component {
       deleteAllDictsOfGroups: this.deleteAllDictsOfGroups.bind(this),
       addDictToGroup: this.addDictToGroup.bind(this),
       addAllDictsToGroup: this.addAllDictsToGroup.bind(this),
-      moveDictToGroup: this.moveDictToGroup.bind(this),
+      moveDictToGroup: this.moveDictToGroup.bind(this)
     };
 
     this.tabsRef = null;
@@ -370,21 +370,19 @@ class SearchTabs extends React.Component {
     this.onSelectedAreaGroupsChange = this.onSelectedAreaGroupsChange.bind(this);
     this.getSearchURL = this.getSearchURL.bind(this);
 
-    const { actions } = props
+    const { actions } = props;
 
-    actions.setDefaultDataForTree({})
-    actions.setDefaultGroup({})
-    actions.setMainGroupLanguages({})
-    actions.setCheckStateTreeFlat({})
+    actions.setDefaultDataForTree({});
+    actions.setDefaultGroup({});
+    actions.setMainGroupLanguages({});
+    actions.setCheckStateTreeFlat({});
   }
 
-  componentDidMount()
-  {
+  componentDidMount() {
     this.is_mounted = true;
   }
 
-  componentWillUnmount()
-  {
+  componentWillUnmount() {
     /* Preventing 'setState on umounted component' warning, copied from
      * https://stackoverflow.com/questions/53949393/cant-perform-a-react-state-update-on-an-unmounted-component. */
 
@@ -392,61 +390,48 @@ class SearchTabs extends React.Component {
     this.setState = (state, callback) => null;
   }
 
-  componentWillReceiveProps(nextProps)
-  {
+  componentWillReceiveProps(nextProps) {
     const {
       actions,
       match: {
-        params: {
-          searchId: search_id }},
+        params: { searchId: search_id }
+      },
       data,
-      client } =
-      
-      nextProps;
+      client
+    } = nextProps;
 
     /* We have new search data loaded by a search data id. */
 
-    if (
-      search_id &&
-      !this.state.search_id_set.has(search_id))
-    {
-      if (!data.loading && !data.error)
-      {
+    if (search_id && !this.state.search_id_set.has(search_id)) {
+      if (!data.loading && !data.error) {
         const {
-          unstructured_data: {
-            data: search_data }} =
-          
-          data;
+          unstructured_data: { data: search_data }
+        } = data;
 
-        const source_searches_info =
-          fromJS(search_data);
+        const source_searches_info = fromJS(search_data);
 
-        const entry_list =
-          Object.entries(search_data).sort((a, b) => a[0] - b[0]);
+        const entry_list = Object.entries(search_data).sort((a, b) => a[0] - b[0]);
 
         const searches = [];
 
-        for (const [key, value] of entry_list)
-          searches.push(value);
+        for (const [key, value] of entry_list) {searches.push(value);}
 
         actions.setSearches(searches);
 
         this.state.preload_count = entry_list.length;
 
-        for (const [key, value] of entry_list)
-        {
-          if (value.subQuery)
-          {
+        for (const [key, value] of entry_list) {
+          if (value.subQuery) {
             this.state.preload_count--;
             continue;
           }
 
           client
-            
+
             .query({
               query: searchQuery,
               variables: {
-                mode: 'published',
+                mode: "published",
                 query: isQueriesClean(value.query) ? value.query : [],
                 category: value.category,
                 adopted: value.adopted,
@@ -456,23 +441,19 @@ class SearchTabs extends React.Component {
                 dicts: value.dicts,
                 searchMetadata: value.searchMetadata,
                 blocks: value.blocks,
-                xlsxExport: value.xlsxExport,
-              },
+                xlsxExport: value.xlsxExport
+              }
             })
 
             .then(
-
-              ({ data: { advanced_search } }) =>
-              {
+              ({ data: { advanced_search } }) => {
                 this.setState({ preload_count: this.state.preload_count - 1 });
 
-                if (this.is_mounted)
-                  actions.storeSearchResult(value.id, advanced_search);
+                if (this.is_mounted) {actions.storeSearchResult(value.id, advanced_search);}
               },
 
-              error_data =>
-              {
-                window.logger.err('Failed search query!');
+              error_data => {
+                window.logger.err("Failed search query!");
                 console.log(error_data);
 
                 this.setState({ preload_count: this.state.preload_count - 1 });
@@ -480,47 +461,31 @@ class SearchTabs extends React.Component {
             );
         }
 
-        const search_id_map =
+        const search_id_map = this.state.search_id_map.set(source_searches_info, search_id);
 
-          this.state.search_id_map.set(
-            source_searches_info,
-            search_id);
-
-        const search_id_set =
-
-          this.state.search_id_set.add(
-            search_id);
+        const search_id_set = this.state.search_id_set.add(search_id);
 
         this.setState({
           error_flag: false,
           search_id_map,
-          search_id_set,
+          search_id_set
         });
-      }
-
-      else if (data.error)
-        this.setState({ error_flag: true });
+      } else if (data.error) {this.setState({ error_flag: true });}
 
       return;
     }
 
-    const [mapSearches, sourceSearches] = 
-      this.updateMapSearchesActiveState(searchesFromProps(nextProps.searches));
+    const [mapSearches, sourceSearches] = this.updateMapSearchesActiveState(searchesFromProps(nextProps.searches));
 
     /* toJS() / fromJS() for canonical representation. */
 
-    const source_searches_info = 
-
-      fromJS(
-        sourceSearches
-          .map(search => search.delete('results'))
-          .toJS());
+    const source_searches_info = fromJS(sourceSearches.map(search => search.delete("results")).toJS());
 
     this.setState({
       mapSearches,
       sourceSearches,
       source_searches_info,
-      intersec: 0,
+      intersec: 0
     });
   }
 
@@ -529,7 +494,7 @@ class SearchTabs extends React.Component {
     const lastSearch = this.props.searches[currentSearchesCount - 1];
 
     if (this.props.searches.length > prevProps.searches.length && lastSearch.subQuery) {
-      const tabsItems = this.tabsRef.querySelectorAll('.ui.menu .item');
+      const tabsItems = this.tabsRef.querySelectorAll(".ui.menu .item");
       const newSearchItem = tabsItems[currentSearchesCount - 1];
 
       if (newSearchItem) {
@@ -540,124 +505,111 @@ class SearchTabs extends React.Component {
 
   onAreasModeChange(ev, { checked }) {
     this.setState({
-      areasMode: checked,
+      areasMode: checked
     });
   }
 
   onSelectedAreaGroupsChange(data) {
     this.setState({
-      selectedAreaGroups: data,
+      selectedAreaGroups: data
     });
   }
 
-  getUniqueSearchGroups = memoize(mapSearches => mapSearches
-    .map(search => Immutable.fromJS({
-      id: search.get('id'),
-      text: `${getTranslation('Search')} ${search.get('id')}`,
-      color: mdColors.get(search.get('id') - 1),
-      isActive: search.get('isActive'),
-    })));
+  getUniqueSearchGroups = memoize(mapSearches =>
+    mapSearches.map(search =>
+      Immutable.fromJS({
+        id: search.get("id"),
+        text: `${getTranslation("Search")} ${search.get("id")}`,
+        color: mdColors.get(search.get("id") - 1),
+        isActive: search.get("isActive")
+      })
+    )
+  );
 
   getSearchGroups = memoize(mapSearches => this.getUniqueSearchGroups(mapSearches));
 
-  getActiveSearchGroups = memoize(
-    (mapSearches) => {
-      const activeSearchGroups = this.getSearchGroups(mapSearches)
-        .filter(f => f.get('isActive'));
+  getActiveSearchGroups = memoize(mapSearches => {
+    const activeSearchGroups = this.getSearchGroups(mapSearches).filter(f => f.get("isActive"));
 
-      return activeSearchGroups
-        .filter((groupMeta) => {
-          const group = mapSearches.get(groupMeta.get('id'));
-          const results = group.get('results');
-          if (!results || !results.get('dictionaries') || results.get('dictionaries').size === 0) {
-            return false;
-          }
+    return activeSearchGroups.filter(groupMeta => {
+      const group = mapSearches.get(groupMeta.get("id"));
+      const results = group.get("results");
+      if (!results || !results.get("dictionaries") || results.get("dictionaries").size === 0) {
+        return false;
+      }
 
-          return true;
-        });
+      return true;
     });
+  });
 
-  getDictsResults = memoize((mapSearches) => {
+  getDictsResults = memoize(mapSearches => {
     const activeSearchGroups = this.getActiveSearchGroups(mapSearches);
 
-    return new Immutable.Map().withMutations((map) => {
-      mapSearches.forEach((search) => {
-        const searchInActive = activeSearchGroups.get(search.get('id'));
-        if (!searchInActive || !search.get('results') || !search.get('results').get('dictionaries')) {
+    return new Immutable.Map().withMutations(map => {
+      mapSearches.forEach(search => {
+        const searchInActive = activeSearchGroups.get(search.get("id"));
+        if (!searchInActive || !search.get("results") || !search.get("results").get("dictionaries")) {
           return;
         }
 
-        const filteredDicts = search.get('results').get('dictionaries')
-          .filter(dict => dict.getIn(['additional_metadata', 'location']));
+        const filteredDicts = search
+          .get("results")
+          .get("dictionaries")
+          .filter(dict => dict.getIn(["additional_metadata", "location"]));
 
-        filteredDicts.forEach(dict => map.update(dict, new Immutable.Set(), v => v.add(search.get('id'))));
+        filteredDicts.forEach(dict => map.update(dict, new Immutable.Set(), v => v.add(search.get("id"))));
       });
     });
   });
 
-  addDefaultActiveStateToMapSearches = memoize(
-    mapSearches => mapSearches.map(search => search.set('isActive', true)));
+  addDefaultActiveStateToMapSearches = memoize(mapSearches => mapSearches.map(search => search.set("isActive", true)));
 
-  updateMapSearchesActiveState =
-    (sourceSearches) =>
-    {
-      const {
-        mapSearches: oldMapSearches,
-        sourceSearches: oldSourceSearches } = this.state;
+  updateMapSearchesActiveState = sourceSearches => {
+    const { mapSearches: oldMapSearches, sourceSearches: oldSourceSearches } = this.state;
 
-      const mapSearches =
+    const mapSearches = sourceSearches.map(sourceSearch => {
+      const search_id = sourceSearch.get("id");
 
-        sourceSearches.map(
-          (sourceSearch) =>
-          {
-            const search_id = sourceSearch.get('id');
+      const mapSearchOld = oldMapSearches.get(search_id);
+      const sourceSearchOld = oldSourceSearches.get(search_id);
 
-            const mapSearchOld = oldMapSearches.get(search_id);
-            const sourceSearchOld = oldSourceSearches.get(search_id);
+      let isActive = false;
 
-            let isActive = false;
+      /*
+       * Updating map search state only if the initial source search data changed, otherwise map
+       * search state, e.g. disabling / enabling of markers, will be reset, and we don't want that.
+       */
 
-            /* 
-             * Updating map search state only if the initial source search data changed, otherwise map
-             * search state, e.g. disabling / enabling of markers, will be reset, and we don't want that.
-             */
+      const no_update_flag = mapSearchOld && sourceSearch.equals(sourceSearchOld);
 
-            const no_update_flag = 
+      let updatedSearch = no_update_flag ? mapSearchOld : sourceSearch;
 
-              mapSearchOld &&
-                sourceSearch.equals(sourceSearchOld);
-            
-            let updatedSearch =
-              no_update_flag ? mapSearchOld : sourceSearch;
+      if (mapSearchOld) {
+        isActive = mapSearchOld.get("isActive");
+      } else {
+        isActive = true;
+      }
 
-            if (mapSearchOld) {
-              isActive = mapSearchOld.get('isActive');
-            } else {
-              isActive = true;
-            }
+      if (typeof isActive !== "boolean") {
+        isActive = true;
+      }
 
-            if (typeof isActive !== 'boolean') {
-              isActive = true;
-            }
+      updatedSearch = updatedSearch.update("isActive", () => isActive);
 
-            updatedSearch =
-              updatedSearch.update(
-                'isActive', () => isActive);
+      return updatedSearch;
+    });
 
-            return updatedSearch;
-          });
-
-      return [mapSearches, sourceSearches];
-    };
+    return [mapSearches, sourceSearches];
+  };
 
   labels() {
     return this.getSearchGroups(this.state.mapSearches).valueSeq().toJS();
   }
 
   toggleSearchGroup(id) {
-    const newMapSearch = this.state.mapSearches.updateIn([id, 'isActive'], v => !v);
+    const newMapSearch = this.state.mapSearches.updateIn([id, "isActive"], v => !v);
     this.setState({
-      mapSearches: newMapSearch,
+      mapSearches: newMapSearch
     });
   }
 
@@ -665,43 +617,40 @@ class SearchTabs extends React.Component {
     this.toggleSearchGroup(id);
   }
 
-  getSearchURL()
-  {
+  getSearchURL() {
     const { newUnstructuredData } = this.props;
     const { source_searches_info } = this.state;
 
     this.setState({
-      search_link_loading: true });
+      search_link_loading: true
+    });
 
     newUnstructuredData({
       variables: {
         data: source_searches_info.toJS(),
-        metadata: {tag: 'search'}
-      },
+        metadata: { tag: "search" }
+      }
     }).then(
-
-      ({ data: { new_unstructured_data: { id } } }) => {
-
+      ({
+        data: {
+          new_unstructured_data: { id }
+        }
+      }) => {
         this.setState({
+          search_id_map: this.state.search_id_map.set(source_searches_info, id),
 
-          search_id_map:
-            this.state.search_id_map.set(
-              source_searches_info, id),
-
-          search_link_loading:
-            false,
+          search_link_loading: false
         });
-
       },
 
-      (error_data) => {
-
-        window.logger.err('Failed to save search data!');
+      error_data => {
+        window.logger.err("Failed to save search data!");
         console.log(error_data);
-        
+
         this.setState({
           search_link_loading: false,
-          search_link_error: true });
+          search_link_error: true
+        });
       }
     );
   }
@@ -710,12 +659,12 @@ class SearchTabs extends React.Component {
     const { mapSearches } = this.state;
     let newMapSearches = mapSearches;
 
-    groupsIds.forEach((id) => {
-      if (!newMapSearches.hasIn([id, 'results', 'dictionaries'])) {
+    groupsIds.forEach(id => {
+      if (!newMapSearches.hasIn([id, "results", "dictionaries"])) {
         return;
       }
 
-      newMapSearches = newMapSearches.updateIn([id, 'results', 'dictionaries'], (dictionaries) => {
+      newMapSearches = newMapSearches.updateIn([id, "results", "dictionaries"], dictionaries => {
         const indexOfDictionary = dictionaries.indexOf(dictionary);
 
         if (indexOfDictionary === -1) {
@@ -727,7 +676,7 @@ class SearchTabs extends React.Component {
     });
 
     this.setState({
-      mapSearches: newMapSearches,
+      mapSearches: newMapSearches
     });
   }
 
@@ -735,16 +684,16 @@ class SearchTabs extends React.Component {
     const { mapSearches } = this.state;
     let newMapSearches = mapSearches;
 
-    groupsIds.forEach((id) => {
-      if (!newMapSearches.hasIn([id, 'results', 'dictionaries'])) {
+    groupsIds.forEach(id => {
+      if (!newMapSearches.hasIn([id, "results", "dictionaries"])) {
         return;
       }
 
-      newMapSearches = newMapSearches.updateIn([id, 'results', 'dictionaries'], dictionaries => dictionaries.clear());
+      newMapSearches = newMapSearches.updateIn([id, "results", "dictionaries"], dictionaries => dictionaries.clear());
     });
 
     this.setState({
-      mapSearches: newMapSearches,
+      mapSearches: newMapSearches
     });
   }
 
@@ -752,15 +701,16 @@ class SearchTabs extends React.Component {
     const { mapSearches } = this.state;
     let newMapSearches = null;
 
-    if (!mapSearches.hasIn([groupId, 'results', 'dictionaries'])) {
+    if (!mapSearches.hasIn([groupId, "results", "dictionaries"])) {
       return;
     }
 
-    newMapSearches = mapSearches
-      .updateIn([groupId, 'results', 'dictionaries'], dictionaries => dictionaries.push(dictionary));
+    newMapSearches = mapSearches.updateIn([groupId, "results", "dictionaries"], dictionaries =>
+      dictionaries.push(dictionary)
+    );
 
     this.setState({
-      mapSearches: newMapSearches || mapSearches,
+      mapSearches: newMapSearches || mapSearches
     });
   }
 
@@ -768,12 +718,12 @@ class SearchTabs extends React.Component {
     const { mapSearches } = this.state;
     let newMapSearches = mapSearches;
 
-    sourceGroupsIds.forEach((id) => {
-      if (!newMapSearches.hasIn([id, 'results', 'dictionaries'])) {
+    sourceGroupsIds.forEach(id => {
+      if (!newMapSearches.hasIn([id, "results", "dictionaries"])) {
         return;
       }
 
-      newMapSearches = newMapSearches.updateIn([id, 'results', 'dictionaries'], (dictionaries) => {
+      newMapSearches = newMapSearches.updateIn([id, "results", "dictionaries"], dictionaries => {
         const indexOfDictionary = dictionaries.indexOf(dictionary);
 
         if (indexOfDictionary === -1) {
@@ -784,11 +734,12 @@ class SearchTabs extends React.Component {
       });
     });
 
-    newMapSearches = newMapSearches
-      .updateIn([destionationGroupId, 'results', 'dictionaries'], dictionaries => dictionaries.push(dictionary));
+    newMapSearches = newMapSearches.updateIn([destionationGroupId, "results", "dictionaries"], dictionaries =>
+      dictionaries.push(dictionary)
+    );
 
     this.setState({
-      mapSearches: newMapSearches || mapSearches,
+      mapSearches: newMapSearches || mapSearches
     });
   }
 
@@ -797,34 +748,38 @@ class SearchTabs extends React.Component {
     let newMapSearches = mapSearches;
     let dictionaries = new Immutable.Set();
 
-    currentGroupsIds.forEach((id) => {
+    currentGroupsIds.forEach(id => {
       const search = mapSearches.get(id);
-      if (!search || !search.get('results') || !search.get('results').get('dictionaries')) {
+      if (!search || !search.get("results") || !search.get("results").get("dictionaries")) {
         return;
       }
 
-      search.get('results').get('dictionaries').forEach((dict) => {
-        dictionaries = dictionaries.add(dict);
-      });
+      search
+        .get("results")
+        .get("dictionaries")
+        .forEach(dict => {
+          dictionaries = dictionaries.add(dict);
+        });
     });
 
-    dictionaries.forEach((dict) => {
+    dictionaries.forEach(dict => {
       const indexOfDictInDestination = newMapSearches
         .get(destinationGroupId)
-        .get('results')
-        .get('dictionaries')
+        .get("results")
+        .get("dictionaries")
         .indexOf(dict);
 
       if (indexOfDictInDestination !== -1) {
         return;
       }
 
-      newMapSearches = newMapSearches
-        .updateIn([destinationGroupId, 'results', 'dictionaries'], dicts => dicts.push(dict));
+      newMapSearches = newMapSearches.updateIn([destinationGroupId, "results", "dictionaries"], dicts =>
+        dicts.push(dict)
+      );
     });
 
     this.setState({
-      mapSearches: newMapSearches,
+      mapSearches: newMapSearches
     });
   }
 
@@ -839,8 +794,7 @@ class SearchTabs extends React.Component {
 
     const dictionariesCount = search.results.dictionaries
       .filter(dict => dict.additional_metadata && dict.additional_metadata.location)
-      .map(dict => dict.id)
-      .length;
+      .map(dict => dict.id).length;
 
     if (dictionariesCount === 0) {
       return false;
@@ -868,45 +822,37 @@ class SearchTabs extends React.Component {
     const additionalFields = {
       dicts,
       searchMetadata: {
-        ...search.searchMetadata,
+        ...search.searchMetadata
       },
       grammaticalSigns: search.grammaticalSigns,
-      languageVulnerability: search.languageVulnerability,
+      languageVulnerability: search.languageVulnerability
     };
 
     this.props.actions.newSearchWithAdditionalFields(additionalFields);
-  }
+  };
 
   render() {
     const { searches, actions, match, data } = this.props;
 
-    if (match.params.searchId)
-    {
+    if (match.params.searchId) {
       if (this.state.error_flag || data.error)
-
-        return (
-          <Message compact negative style={{marginTop: '1em'}}>
-            {getTranslation('Can\'t get data of the') +
-              ` '${match.params.searchId}' ` +
-              getTranslation('search') +
-              '.'}
-          </Message>);
-
+        {return (
+          <Message compact negative style={{ marginTop: "1em" }}>
+            {`${getTranslation("Can't get data of the") } '${match.params.searchId}' ${ getTranslation("search") }.`}
+          </Message>
+        );}
       else if (data.loading)
-
-        return (
+        {return (
           <Dimmer active={data.loading} inverted>
-            <Loader>{getTranslation('Loading')}</Loader>
-          </Dimmer>);
+            <Loader>{getTranslation("Loading")}</Loader>
+          </Dimmer>
+        );}
     }
 
-    const search_url_id =
-
-      this.state.search_id_map.get(
-        this.state.source_searches_info);
+    const search_url_id = this.state.search_id_map.get(this.state.source_searches_info);
 
     function onSearchClose(id) {
-      return (event) => {
+      return event => {
         event.stopPropagation();
         actions.deleteSearch(id);
       };
@@ -915,14 +861,8 @@ class SearchTabs extends React.Component {
     const searchPanes = searches.map(search => ({
       menuItem: (
         <Menu.Item key={search.id}>
-          {getTranslation('Search')} {search.id}
-          <Button
-            compact
-            basic
-            icon="delete"
-            style={{ marginLeft: '1em' }}
-            onClick={onSearchClose(search.id)}
-          />
+          {getTranslation("Search")} {search.id}
+          <Button compact basic icon="delete" style={{ marginLeft: "1em" }} onClick={onSearchClose(search.id)} />
         </Menu.Item>
       ),
       render: () => {
@@ -931,7 +871,7 @@ class SearchTabs extends React.Component {
         return (
           <Tab.Pane attached={false} key={search.id}>
             <Container className="lingvo-container_margin-auto">
-              <h3>{getTranslation('Search')}</h3>
+              <h3>{getTranslation("Search")}</h3>
               <QueryBuilder
                 searchId={search.id}
                 data={fromJS(search.query)}
@@ -967,7 +907,7 @@ class SearchTabs extends React.Component {
             </Container>
           </Tab.Pane>
         );
-      },
+      }
     }));
 
     // create tabs
@@ -975,13 +915,11 @@ class SearchTabs extends React.Component {
       ...searchPanes,
       {
         menuItem: <Button key="@search_tab_add_button" basic onClick={actions.newSearch} content="+" />,
-        render: () => null,
-      },
+        render: () => null
+      }
     ];
 
-    const {
-      areasMode, intersec, selectedAreaGroups, mapSearches,
-    } = this.state;
+    const { areasMode, intersec, selectedAreaGroups, mapSearches } = this.state;
 
     const activeSearchGroups = this.getActiveSearchGroups(mapSearches);
     const labels = this.labels();
@@ -992,21 +930,14 @@ class SearchTabs extends React.Component {
       <div className="page-content">
         <Container>
           <div
-            ref={(ref) => {
+            ref={ref => {
               this.tabsRef = ref;
             }}
           >
-            <Tab
-              menu={{ pointing: true, stackable: true }}
-              panes={panes}
-            />
+            <Tab menu={{ pointing: true, stackable: true }} panes={panes} />
           </div>
           <Divider id="mapResults" section />
-          <Labels
-            data={labels}
-            isActive={!areasMode}
-            onClick={this.clickLabel}
-          />
+          <Labels data={labels} isActive={!areasMode} onClick={this.clickLabel} />
           <Segment>
             <AreasMode
               isAreasModeOn={areasMode}
@@ -1043,34 +974,36 @@ SearchTabs.propTypes = {
   actions: PropTypes.shape({
     newSearch: PropTypes.func.isRequired,
     deleteSearch: PropTypes.func.isRequired,
-    newSearchWithAdditionalFields: PropTypes.func.isRequired,
-  }).isRequired,
+    newSearchWithAdditionalFields: PropTypes.func.isRequired
+  }).isRequired
 };
 
-export default compose(connect(
-  state => state.distanceMap
-), connect(
-  state => (state.search),
-  dispatch => ({
-    actions: bindActionCreators({
-      newSearch, deleteSearch, newSearchWithAdditionalFields, setSearches,
-      setDefaultGroup, setCheckStateTreeFlat, setDefaultDataForTree, setMainGroupLanguages,
-      storeSearchResult
-    }, dispatch),
-  })),
-  graphql(
-    unstructuredDataQuery,
-    {
-      skip:
-        ({ match: { params } }) =>
-          !params.searchId,
-      options:
-        ({ match: { params } }) =>
-          ({ variables: { id: params.searchId }}),
-    }),
-  graphql(
-    newUnstructuredDataMutation,
-    { name: 'newUnstructuredData' }),
+export default compose(
+  connect(state => state.distanceMap),
+  connect(
+    state => state.search,
+    dispatch => ({
+      actions: bindActionCreators(
+        {
+          newSearch,
+          deleteSearch,
+          newSearchWithAdditionalFields,
+          setSearches,
+          setDefaultGroup,
+          setCheckStateTreeFlat,
+          setDefaultDataForTree,
+          setMainGroupLanguages,
+          storeSearchResult
+        },
+        dispatch
+      )
+    })
+  ),
+  graphql(unstructuredDataQuery, {
+    skip: ({ match: { params } }) => !params.searchId,
+    options: ({ match: { params } }) => ({ variables: { id: params.searchId } })
+  }),
+  graphql(newUnstructuredDataMutation, { name: "newUnstructuredData" }),
   withRouter,
-  withApollo,
+  withApollo
 )(SearchTabs);

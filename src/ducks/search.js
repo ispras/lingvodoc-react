@@ -1,15 +1,14 @@
-import { combineReducers } from 'redux';
+import { combineReducers } from "redux";
 
 // Actions
-export const SET_QUERY = '@search/SET_QUERY';
-export const STORE_SEARCH_RESULT = '@search/STORE_SEARCH_RESULT';
-export const NEW_SEARCH = '@search/NEW_SEARCH';
-export const NEW_SEARCH_WITH_ADDITIONAL_FIELDS = '@search/NEW_SEARCH_WITH_ADDITIONAL_FIELDS';
-export const DELETE_SEARCH = '@search/DELETE_SEARCH';
-export const SET_SEARCHES = '@search/SET_SEARCHES';
+export const SET_QUERY = "@search/SET_QUERY";
+export const STORE_SEARCH_RESULT = "@search/STORE_SEARCH_RESULT";
+export const NEW_SEARCH = "@search/NEW_SEARCH";
+export const NEW_SEARCH_WITH_ADDITIONAL_FIELDS = "@search/NEW_SEARCH_WITH_ADDITIONAL_FIELDS";
+export const DELETE_SEARCH = "@search/DELETE_SEARCH";
+export const SET_SEARCHES = "@search/SET_SEARCHES";
 
-export const setQuery =
-(
+export const setQuery = (
   searchId,
   query,
   category,
@@ -23,8 +22,7 @@ export const setQuery =
   languageVulnerability,
   blocks,
   xlsxExport
-) =>
-({
+) => ({
   type: SET_QUERY,
   payload: {
     searchId,
@@ -39,40 +37,40 @@ export const setQuery =
     grammaticalSigns,
     languageVulnerability,
     blocks,
-    xlsxExport,
-  },
+    xlsxExport
+  }
 });
 
 export const storeSearchResult = (searchId, results) => ({
   type: STORE_SEARCH_RESULT,
-  
-  payload: { searchId, results, },
+
+  payload: { searchId, results }
 });
 
 export const newSearch = () => ({
-  type: NEW_SEARCH,
+  type: NEW_SEARCH
 });
 
 export const newSearchWithAdditionalFields = additionalFields => ({
   type: NEW_SEARCH_WITH_ADDITIONAL_FIELDS,
   payload: {
-    ...additionalFields,
+    ...additionalFields
   }
 });
 
 export const deleteSearch = searchId => ({
   type: DELETE_SEARCH,
-  payload: searchId,
+  payload: searchId
 });
 
 export const setSearches = searches => ({
   type: SET_SEARCHES,
-  payload: searches,
+  payload: searches
 });
 
 const newBlock = {
-  search_string: '',
-  matching_type: 'full_string',
+  search_string: "",
+  matching_type: "full_string"
 };
 
 const emptyQuery = [[newBlock]];
@@ -95,7 +93,7 @@ function buildNewQuery() {
     languageVulnerability: null,
     blocks: false,
     results: null,
-    subQuery: false,
+    subQuery: false
   };
 }
 
@@ -113,12 +111,10 @@ const initialState = {
   languageVulnerability: null,
   blocks: false,
   results: null,
-  subQuery: false,
+  subQuery: false
 };
 
-
 const searches = (state = [initialState], action) => {
-
   switch (action.type) {
     case NEW_SEARCH:
       return [...state, buildNewQuery()];
@@ -128,34 +124,36 @@ const searches = (state = [initialState], action) => {
         {
           ...buildNewQuery(),
           ...action.payload,
-          subQuery: true,
-        },
+          subQuery: true
+        }
       ];
     case DELETE_SEARCH:
       return state.length > 1 ? state.filter(search => search.id !== action.payload) : state;
     case SET_QUERY:
-   
       return state.map(search =>
-        (search.id === action.payload.searchId
+        search.id === action.payload.searchId
           ? {
-            ...search,
-            query: action.payload.query,
-            category: action.payload.category,
-            adopted: action.payload.adopted,
-            etymology: action.payload.etymology,
-            diacritics: action.payload.diacritics,
-            langs: action.payload.langs,
-            dicts: action.payload.dicts,
-            searchMetadata: action.payload.searchMetadata,
-            grammaticalSigns: action.payload.grammaticalSigns,
-            languageVulnerability: action.payload.languageVulnerability,
-            blocks: action.payload.blocks,
-            xlsxExport: action.payload.xlsxExport,
-            subQuery: false,
-          }
-          : search));
+              ...search,
+              query: action.payload.query,
+              category: action.payload.category,
+              adopted: action.payload.adopted,
+              etymology: action.payload.etymology,
+              diacritics: action.payload.diacritics,
+              langs: action.payload.langs,
+              dicts: action.payload.dicts,
+              searchMetadata: action.payload.searchMetadata,
+              grammaticalSigns: action.payload.grammaticalSigns,
+              languageVulnerability: action.payload.languageVulnerability,
+              blocks: action.payload.blocks,
+              xlsxExport: action.payload.xlsxExport,
+              subQuery: false
+            }
+          : search
+      );
     case STORE_SEARCH_RESULT:
-      return state.map(search => (search.id === action.payload.searchId ? { ...search, results: action.payload.results } : search));
+      return state.map(search =>
+        search.id === action.payload.searchId ? { ...search, results: action.payload.results } : search
+      );
     case SET_SEARCHES:
       return action.payload;
     default:
@@ -164,5 +162,5 @@ const searches = (state = [initialState], action) => {
 };
 
 export default combineReducers({
-  searches,
+  searches
 });

@@ -1,10 +1,10 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { Range } from 'immutable';
-import { onlyUpdateForPropTypes, branch, renderNothing, compose } from 'recompose';
-import { Menu } from 'semantic-ui-react';
-import styled from 'styled-components';
-import { getTranslation } from 'api/i18n';
+import React from "react";
+import { Menu } from "semantic-ui-react";
+import { getTranslation } from "api/i18n";
+import { Range } from "immutable";
+import PropTypes from "prop-types";
+import { branch, compose, onlyUpdateForPropTypes, renderNothing } from "recompose";
+import styled from "styled-components";
 
 const Pager = styled(Menu)`
   position: fixed;
@@ -31,7 +31,10 @@ const Pagination = ({ current, total, changePage }) => (
 Pagination.propTypes = {
   current: PropTypes.number.isRequired,
   total: PropTypes.number.isRequired,
-  changePage: PropTypes.func.isRequired,
+  changePage: PropTypes.func.isRequired
 };
 
-export default compose(branch(({ total }) => total < 2, renderNothing), onlyUpdateForPropTypes)(Pagination);
+export default compose(
+  branch(({ total }) => total < 2, renderNothing),
+  onlyUpdateForPropTypes
+)(Pagination);

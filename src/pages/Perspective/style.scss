@@ -1,5 +1,5 @@
 .perspective {
-  button[type=submit] {
+  button[type="submit"] {
     background: none;
     border: none;
     transition: all 0.2s ease-in;
@@ -22,7 +22,7 @@
       & {
         display: flex !important;
         flex-direction: column !important;
-        border-left: 1px solid #D4D4D5 !important;
+        border-left: 1px solid #d4d4d5 !important;
         border-bottom: 0 !important;
         margin-top: 35px !important;
 
@@ -40,7 +40,6 @@
       }
     }
   }
-
 }
 
 /* Scrolling */
@@ -89,7 +88,7 @@
         top: 0;
         z-index: 1;
       }
-      
+
       & td.lingvo-sticky-checkbox-column {
         position: static;
         position: sticky;
@@ -103,7 +102,7 @@
           left: 45px;
           z-index: 1;
           background-color: #fff;
-          border-right: 1px solid rgba(34,36,38,0.1);
+          border-right: 1px solid rgba(34, 36, 38, 0.1);
 
           & + td {
             border-left: none !important;
@@ -122,7 +121,7 @@
           position: sticky;
           left: 45px;
           z-index: 2;
-          border-right: 1px solid rgba(34,36,38,0.1);
+          border-right: 1px solid rgba(34, 36, 38, 0.1);
 
           & + th {
             border-left: none !important;
@@ -140,11 +139,9 @@
           position: static;
           top: auto;
         }
-
       }
 
       @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
-
         & td.lingvo-sticky-checkbox-column {
           position: static;
           left: auto;
@@ -164,9 +161,7 @@
             left: auto;
           }
         }
-
       }
-      
     }
   }
 
@@ -178,7 +173,6 @@
       left: 34px;
     }
   }
-
 }
 
 /* /Scrolling */
@@ -192,17 +186,16 @@
 
 /* link "Number of the languages" */
 .lingvo-languages-link {
-  color: #5D54CD;
+  color: #5d54cd;
 
   &:hover {
-    color: #5D54CD;
+    color: #5d54cd;
     text-decoration: underline;
   }
 
   &:active {
-    color: #372F9D;
+    color: #372f9d;
     text-decoration: underline;
   }
 }
 /* /link "Number of the languages" */
-

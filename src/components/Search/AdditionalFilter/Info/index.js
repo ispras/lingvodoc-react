@@ -1,25 +1,26 @@
-import React, { PureComponent } from 'react';
-import PropTypes from 'prop-types';
-import { Button } from 'semantic-ui-react';
-import languagesInfo from './languages';
-import dictionariesInfo from './dictionaries';
-import hasAudioInfo from './hasAudio';
-import kindInfo from './kind';
-import yearsInfo from './years';
-import humanSettlementInfo from './humanSettlement';
-import authorsInfo from './authors';
-import languageVulnerabilityInfo from './languageVulnerability';
-import grammarInfo from './grammar';
-import { getTranslation } from 'api/i18n';
+import React, { PureComponent } from "react";
+import { Button } from "semantic-ui-react";
+import { getTranslation } from "api/i18n";
+import PropTypes from "prop-types";
+
+import authorsInfo from "./authors";
+import dictionariesInfo from "./dictionaries";
+import grammarInfo from "./grammar";
+import hasAudioInfo from "./hasAudio";
+import humanSettlementInfo from "./humanSettlement";
+import kindInfo from "./kind";
+import languagesInfo from "./languages";
+import languageVulnerabilityInfo from "./languageVulnerability";
+import yearsInfo from "./years";
 
 const classNames = {
-  container: 'additional-filter__info',
-  field: 'additional-filter__info-field',
-  header: 'additional-filter__info-header',
-  data: 'additional-filter__info-data',
-  toggleButton: 'additional-filter__info-button',
-  toggleButtonShow: 'additional-filter__info-button_show lingvo-button-violet',
-  toggleButtonClose: 'additional-filter__info-button_close lingvo-button-basic-black',
+  container: "additional-filter__info",
+  field: "additional-filter__info-field",
+  header: "additional-filter__info-header",
+  data: "additional-filter__info-data",
+  toggleButton: "additional-filter__info-button",
+  toggleButtonShow: "additional-filter__info-button_show lingvo-button-violet",
+  toggleButtonClose: "additional-filter__info-button_close lingvo-button-basic-black"
 };
 
 const capitalizeFirstLetter = string => string.charAt(0).toUpperCase() + string.slice(1);
@@ -29,7 +30,7 @@ class AdditionalFilterInfo extends PureComponent {
     super();
 
     this.state = {
-      showInfo: false,
+      showInfo: false
     };
 
     this.onShowToggle = this.onShowToggle.bind(this);
@@ -37,26 +38,35 @@ class AdditionalFilterInfo extends PureComponent {
 
   onShowToggle() {
     this.setState({
-      showInfo: !this.state.showInfo,
+      showInfo: !this.state.showInfo
     });
   }
 
   render() {
     const {
-      languages, dictionaries, hasAudio, kind, years,
-      humanSettlement, authors, languageVulnerability,
-      grammaticalSigns, onClickCallbacks, isDataDefault,
+      languages,
+      dictionaries,
+      hasAudio,
+      kind,
+      years,
+      humanSettlement,
+      authors,
+      languageVulnerability,
+      grammaticalSigns,
+      onClickCallbacks,
+      isDataDefault
     } = this.props;
     const { showInfo } = this.state;
 
-    const selectedText = `${capitalizeFirstLetter(getTranslation('selected'))}:`;
-    const defaultSelectedText = `${capitalizeFirstLetter(getTranslation('selected by default'))}:`;
-    const showText = getTranslation('Show');
-    const closeText = getTranslation('Close');
+    const selectedText = `${capitalizeFirstLetter(getTranslation("selected"))}:`;
+    const defaultSelectedText = `${capitalizeFirstLetter(getTranslation("selected by default"))}:`;
+    const showText = getTranslation("Show");
+    const closeText = getTranslation("Close");
     const buttonText = showInfo ? closeText : showText;
-    const buttonClassName = showInfo ? `${classNames.toggleButton} ${classNames.toggleButtonClose}` :
-      `${classNames.toggleButton} ${classNames.toggleButtonShow}`;
-    
+    const buttonClassName = showInfo
+      ? `${classNames.toggleButton} ${classNames.toggleButtonClose}`
+      : `${classNames.toggleButton} ${classNames.toggleButtonShow}`;
+
     const grammarClickCallback = onClickCallbacks.grammar || null;
 
     return (
@@ -65,7 +75,7 @@ class AdditionalFilterInfo extends PureComponent {
         <Button onClick={this.onShowToggle} className={buttonClassName}>
           {buttonText}
         </Button>
-        {showInfo ?
+        {showInfo ? (
           <div className={classNames.data}>
             <div className={classNames.field}>{languagesInfo(languages)}</div>
             <div className={classNames.field}>{dictionariesInfo(dictionaries)}</div>
@@ -76,9 +86,8 @@ class AdditionalFilterInfo extends PureComponent {
             <div className={classNames.field}>{authorsInfo(authors)}</div>
             <div className={classNames.field}>{languageVulnerabilityInfo(languageVulnerability)}</div>
             <div className={classNames.field}>{grammarInfo(grammaticalSigns, grammarClickCallback)}</div>
-          </div> :
-          null
-        }
+          </div>
+        ) : null}
       </div>
     );
   }
@@ -95,7 +104,7 @@ AdditionalFilterInfo.propTypes = {
   languageVulnerability: PropTypes.array.isRequired,
   grammaticalSigns: PropTypes.object.isRequired,
   isDataDefault: PropTypes.bool.isRequired,
-  onClickCallbacks: PropTypes.object.isRequired,
+  onClickCallbacks: PropTypes.object.isRequired
 };
 
 export default AdditionalFilterInfo;

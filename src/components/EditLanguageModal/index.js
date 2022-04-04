@@ -1,15 +1,17 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { compose } from 'recompose';
-import { Button, Modal, Divider } from 'semantic-ui-react';
-import { closeModal } from 'ducks/language';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import gql from 'graphql-tag';
-import { graphql, withApollo } from 'react-apollo';
-import TranslationGist from '../TranslationGist';
-import EditLanguageMetadata from 'components/EditLanguageMetadata';
-import { getTranslation } from 'api/i18n';
+import React from "react";
+import { graphql, withApollo } from "react-apollo";
+import { connect } from "react-redux";
+import { Button, Divider, Modal } from "semantic-ui-react";
+import { getTranslation } from "api/i18n";
+import gql from "graphql-tag";
+import PropTypes from "prop-types";
+import { compose } from "recompose";
+import { bindActionCreators } from "redux";
+
+import EditLanguageMetadata from "components/EditLanguageMetadata";
+import { closeModal } from "ducks/language";
+
+import TranslationGist from "../TranslationGist";
 
 const getMetadataQuery = gql`
   query GetMetadata($id: LingvodocID!) {
@@ -38,7 +40,6 @@ const updateAtomMutation = gql`
 `;
 
 class EditModal extends React.Component {
-
   constructor(props) {
     super(props);
 
@@ -52,30 +53,36 @@ class EditModal extends React.Component {
   }
 
   onUpdateMetadata(metadata) {
-    this.props.updateMetadata({
-      variables: {
-        id: this.props.language.id,
-        metadata: metadata
-      }
-    }).then(() => {
-      this.setState({ metadata });
-    });
+    this.props
+      .updateMetadata({
+        variables: {
+          id: this.props.language.id,
+          metadata: metadata
+        }
+      })
+      .then(() => {
+        this.setState({ metadata });
+      });
   }
 
   componentWillReceiveProps(props) {
     if (props.language && props.language.id != this.state.languageId) {
       this.fetching = true;
-      this.props.client.query({
-        query: getMetadataQuery,
-        variables: { id: props.language.id },
-        fetchPolicy: 'no-cache'
-      }).then(result => {
-        this.fetching = false;
-        this.setState({ metadata: result.data.language.additional_metadata });
-      },
-      () => {
-        this.fetching = false;
-      });
+      this.props.client
+        .query({
+          query: getMetadataQuery,
+          variables: { id: props.language.id },
+          fetchPolicy: "no-cache"
+        })
+        .then(
+          result => {
+            this.fetching = false;
+            this.setState({ metadata: result.data.language.additional_metadata });
+          },
+          () => {
+            this.fetching = false;
+          }
+        );
     }
   }
 
@@ -90,16 +97,37 @@ class EditModal extends React.Component {
     }
 
     return (
-      <Modal dimmer open size="small" closeIcon closeOnDimmerClick={false} onClose={actions.closeModal} className="lingvo-modal2">
-        <Modal.Header>{getTranslation('Language edit')}</Modal.Header>
+      <Modal
+        dimmer
+        open
+        size="small"
+        closeIcon
+        closeOnDimmerClick={false}
+        onClose={actions.closeModal}
+        className="lingvo-modal2"
+      >
+        <Modal.Header>{getTranslation("Language edit")}</Modal.Header>
         <Modal.Content>
-          <h4>{getTranslation('Translations')}</h4>
-          <TranslationGist objectId={language.id} id={language.translation_gist_id} editable updateAtomMutation={updateAtomMutation} />
-          <Divider/>
-          <EditLanguageMetadata mode='edit' metadata={this.state.metadata} onSave={metadata => this.onUpdateMetadata(metadata)} />
+          <h4>{getTranslation("Translations")}</h4>
+          <TranslationGist
+            objectId={language.id}
+            id={language.translation_gist_id}
+            editable
+            updateAtomMutation={updateAtomMutation}
+          />
+          <Divider />
+          <EditLanguageMetadata
+            mode="edit"
+            metadata={this.state.metadata}
+            onSave={metadata => this.onUpdateMetadata(metadata)}
+          />
         </Modal.Content>
         <Modal.Actions>
-          <Button content={getTranslation("Close")} onClick={actions.closeModal} className="lingvo-button-basic-black" />
+          <Button
+            content={getTranslation("Close")}
+            onClick={actions.closeModal}
+            className="lingvo-button-basic-black"
+          />
         </Modal.Actions>
       </Modal>
     );
@@ -108,21 +136,21 @@ class EditModal extends React.Component {
 
 EditModal.propTypes = {
   actions: PropTypes.shape({
-    closeModal: PropTypes.func,
+    closeModal: PropTypes.func
   }).isRequired,
   visible: PropTypes.bool.isRequired,
-  language: PropTypes.object,
+  language: PropTypes.object
 };
 
 const mapStateToProps = state => ({ language: state.language.language, visible: state.language.editVisible });
 
 const mapDispatchToProps = dispatch => ({
-  actions: bindActionCreators({ closeModal }, dispatch),
+  actions: bindActionCreators({ closeModal }, dispatch)
 });
 
 export default compose(
   withApollo,
-  graphql(updateMetadataMutation, { name: 'updateMetadata' } ),
-  graphql(updateAtomMutation, { name: 'updateAtomMutation' }),
-  connect(mapStateToProps, mapDispatchToProps),
+  graphql(updateMetadataMutation, { name: "updateMetadata" }),
+  graphql(updateAtomMutation, { name: "updateAtomMutation" }),
+  connect(mapStateToProps, mapDispatchToProps)
 )(EditModal);

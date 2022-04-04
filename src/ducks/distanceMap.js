@@ -1,11 +1,11 @@
-import { combineReducers } from 'redux';
+import { combineReducers } from "redux";
 // Actions
-export const SET_DICTIONARIES_GROUP = '@distance/SET_DICTIONARIES_GROUP';
-export const SET_DEFAULT_GROUP = '@distance/SET_DEFAULT_GROUP';
-export const SET_DATA_FOR_TREE = '@distance/SET_DATA_FOR_TREE';
-export const SET_MAIN_GROUP_LANGUAGES = '@distance/SET_MAIN_GROUP_LANGUAGES';
-export const SET_CHECK_STATE_TREE_FLAT = '@distance/SET_CHECK_STATE_TREE_FLAT';
-export const SET_DEFAULT_DATA_FOR_TREE = '@distance/SET_DEFAULT_DATA_FOR_TREE';
+export const SET_DICTIONARIES_GROUP = "@distance/SET_DICTIONARIES_GROUP";
+export const SET_DEFAULT_GROUP = "@distance/SET_DEFAULT_GROUP";
+export const SET_DATA_FOR_TREE = "@distance/SET_DATA_FOR_TREE";
+export const SET_MAIN_GROUP_LANGUAGES = "@distance/SET_MAIN_GROUP_LANGUAGES";
+export const SET_CHECK_STATE_TREE_FLAT = "@distance/SET_CHECK_STATE_TREE_FLAT";
+export const SET_DEFAULT_DATA_FOR_TREE = "@distance/SET_DEFAULT_DATA_FOR_TREE";
 // Action Creators
 
 export function setDictionariesGroup(payload) {
@@ -80,4 +80,3 @@ export default combineReducers({
   checkStateTreeFlat,
   setDefaultDataForTree
 });
-

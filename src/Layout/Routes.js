@@ -1,43 +1,39 @@
-import React from 'react';
-import { Switch, Route } from 'react-router-dom';
+import React from "react";
+import { Route, Switch } from "react-router-dom";
 
-import Info from 'pages/Info';
-import Search from 'pages/Search';
-import DialeqtImport from 'pages/DialeqtImport';
-import DictImport from 'pages/DictImport';
-import Perspective from 'pages/Perspective';
-import Languages from 'pages/Languages';
-import Files from 'pages/Files';
-import Map from 'pages/Map';
-
-import DistanceMap from 'pages/DistanceMap';
-import SelectedLanguages from 'pages/DistanceMap/selectorLangGroup';
-import MapSelectedLanguages from 'pages/DistanceMap/map';
-
-import Desktop from 'pages/Desktop';
-import NotFound from 'pages/NotFound';
-import { DictionaryDashboard, CorpusDashboard } from 'pages/Dashboard';
-import { CreateDictionary, CreateCorpus } from 'pages/CreateDictionary';
-import Grants from 'pages/Grants';
-import Requests from 'pages/Requests';
-import EditTranslations from 'pages/EditTranslations';
-import Organizations from 'pages/Organizations';
-
-import TopSectionSelector from 'pages/TopSectionSelector';
-import DictionariesAll from 'pages/DictionariesAll';
-import LanguagesDatabasesRoute from 'pages/LanguagesDatabasesRoute';
-import ToolsRoute from 'pages/ToolsRoute';
-import DashboardRoute from 'pages/DashboardRoute';
-import GrantsRoute from 'pages/GrantsRoute';
-import SupportRoute from 'pages/SupportRoute';
-import WithoutGrants from 'pages/WithoutGrants';
-import CorporaAll from 'pages/CorporaAll';
-import AuthorsRoute from 'pages/AuthorsRoute';
-import VersionRoute from 'pages/VersionRoute';
-import Docx2Eaf from 'pages/Docx2Eaf';
-import Valency from 'pages/Valency';
-
-import config from 'config';
+import config from "config";
+import AuthorsRoute from "pages/AuthorsRoute";
+import CorporaAll from "pages/CorporaAll";
+import { CreateCorpus, CreateDictionary } from "pages/CreateDictionary";
+import { CorpusDashboard, DictionaryDashboard } from "pages/Dashboard";
+import DashboardRoute from "pages/DashboardRoute";
+import Desktop from "pages/Desktop";
+import DialeqtImport from "pages/DialeqtImport";
+import DictImport from "pages/DictImport";
+import DictionariesAll from "pages/DictionariesAll";
+import DistanceMap from "pages/DistanceMap";
+import MapSelectedLanguages from "pages/DistanceMap/map";
+import SelectedLanguages from "pages/DistanceMap/selectorLangGroup";
+import Docx2Eaf from "pages/Docx2Eaf";
+import EditTranslations from "pages/EditTranslations";
+import Files from "pages/Files";
+import Grants from "pages/Grants";
+import GrantsRoute from "pages/GrantsRoute";
+import Info from "pages/Info";
+import Languages from "pages/Languages";
+import LanguagesDatabasesRoute from "pages/LanguagesDatabasesRoute";
+import Map from "pages/Map";
+import NotFound from "pages/NotFound";
+import Organizations from "pages/Organizations";
+import Perspective from "pages/Perspective";
+import Requests from "pages/Requests";
+import Search from "pages/Search";
+import SupportRoute from "pages/SupportRoute";
+import ToolsRoute from "pages/ToolsRoute";
+import TopSectionSelector from "pages/TopSectionSelector";
+import Valency from "pages/Valency";
+import VersionRoute from "pages/VersionRoute";
+import WithoutGrants from "pages/WithoutGrants";
 
 const Routes = () => (
   <Switch>

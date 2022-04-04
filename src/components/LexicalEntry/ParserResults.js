@@ -1,18 +1,18 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { compose } from 'recompose';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { Button } from 'semantic-ui-react';
-import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import React from "react";
+import { graphql } from "react-apollo";
+import { connect } from "react-redux";
+import { Button } from "semantic-ui-react";
+import { getTranslation } from "api/i18n";
+import gql from "graphql-tag";
+import PropTypes from "prop-types";
+import { compose } from "recompose";
+import { bindActionCreators } from "redux";
 
-import { compositeIdToString } from 'utils/compositeId';
-import { openModal } from 'ducks/modals';
-import { openModal as openConfirmModal } from 'ducks/confirm';
-import { getTranslation } from 'api/i18n';
+import { openModal as openConfirmModal } from "ducks/confirm";
+import { openModal } from "ducks/modals";
+import { compositeIdToString } from "utils/compositeId";
 
-import OdtMarkupModal from '../OdtMarkupModal';
+import OdtMarkupModal from "../OdtMarkupModal";
 
 const getParserResultsQuery = gql`
   query getParserResultsAndInfo($entity_id: LingvodocID!) {
@@ -45,7 +45,6 @@ const reexecuteParserResultMutation = gql`
 `;
 
 class ParserResults extends React.Component {
-
   constructor(props) {
     super(props);
 
@@ -62,7 +61,7 @@ class ParserResults extends React.Component {
           query: getParserResultsQuery,
           variables: { entity_id: entityId }
         }
-      ],
+      ]
     });
   }
 
@@ -81,18 +80,29 @@ class ParserResults extends React.Component {
 
     return (
       <ul>
-        {parser_results.map((res, index) =>
+        {parser_results.map((res, index) => (
           <li key={compositeIdToString(res.id)} className={index === parser_results.length - 1 ? "last" : ""}>
             <Button.Group basic icon size="mini" className="lingvo-parser-buttons-group">
-              <Button className="lingvo-parser-buttons-group__parser" content={parsers.find(parser => parser.id.toString() === res.parser_id.toString()).name} />
+              <Button
+                className="lingvo-parser-buttons-group__parser"
+                content={parsers.find(parser => parser.id.toString() === res.parser_id.toString()).name}
+              />
               <Button icon="table" onClick={() => openModal(OdtMarkupModal, { entityId, resultId: res.id, mode })} />
-              {mode === 'edit' && <Button icon="sync alternate" onClick={() =>
-                openConfirmModal(getTranslation('Redo parser execution?'), () => this.reexecute(res))} />}
-              {mode === 'edit' && <Button icon="remove" onClick={() =>
-                openConfirmModal(getTranslation('Delete parser results?'), () => this.remove(res))} />}
+              {mode === "edit" && (
+                <Button
+                  icon="sync alternate"
+                  onClick={() => openConfirmModal(getTranslation("Redo parser execution?"), () => this.reexecute(res))}
+                />
+              )}
+              {mode === "edit" && (
+                <Button
+                  icon="remove"
+                  onClick={() => openConfirmModal(getTranslation("Delete parser results?"), () => this.remove(res))}
+                />
+              )}
             </Button.Group>
           </li>
-        )}
+        ))}
       </ul>
     );
   }
@@ -105,7 +115,7 @@ ParserResults.propTypes = {
 
 export default compose(
   connect(null, dispatch => bindActionCreators({ openModal, openConfirmModal }, dispatch)),
-  graphql(getParserResultsQuery, { options: props => ({ variables: { entity_id: props.entityId } })}),
+  graphql(getParserResultsQuery, { options: props => ({ variables: { entity_id: props.entityId } }) }),
   graphql(deleteParserResultMutation, { name: "deleteParserResult" }),
   graphql(reexecuteParserResultMutation, { name: "reexecuteParserResult" })
 )(ParserResults);

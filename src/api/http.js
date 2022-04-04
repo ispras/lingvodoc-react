@@ -1,4 +1,4 @@
-import config from 'config';
+import config from "config";
 
 async function wrap(url, params) {
   try {
@@ -9,35 +9,35 @@ async function wrap(url, params) {
     }
     return { err: data };
   } catch (e) {
-    return { err: 'Network problem' };
+    return { err: "Network problem" };
   }
 }
 
 export function httpGet(url) {
   return wrap(config.apiUrl + url, {
-    credentials: 'include',
+    credentials: "include"
   });
 }
 
 export function httpPost(url, form) {
   return wrap(config.apiUrl + url, {
-    credentials: 'include',
-    method: 'post',
-    body: JSON.stringify(form),
+    credentials: "include",
+    method: "post",
+    body: JSON.stringify(form)
   });
 }
 
 export function httpPut(url, form) {
   return wrap(config.apiUrl + url, {
-    credentials: 'include',
-    method: 'put',
-    body: JSON.stringify(form),
+    credentials: "include",
+    method: "put",
+    body: JSON.stringify(form)
   });
 }
 
 export function httpDelete(url) {
   return wrap(config.apiUrl + url, {
-    credentials: 'include',
-    method: 'delete',
+    credentials: "include",
+    method: "delete"
   });
 }

@@ -1,26 +1,28 @@
-import React, { PureComponent } from 'react';
-import PropTypes from 'prop-types';
-import { Grid, Button } from 'semantic-ui-react';
-import grammaticalSignsRaw from './grammaticalSigns.json';
-import GrammarGroup from './Group';
-import GridGenerator from './GridGenerator';
-import signGroupDivision from './signGroupDivision';
-import { getTranslation } from 'api/i18n';
-import './index.scss';
+import React, { PureComponent } from "react";
+import { Button, Grid } from "semantic-ui-react";
+import { getTranslation } from "api/i18n";
+import PropTypes from "prop-types";
+
+import grammaticalSignsRaw from "./grammaticalSigns.json";
+import GridGenerator from "./GridGenerator";
+import GrammarGroup from "./Group";
+import signGroupDivision from "./signGroupDivision";
+
+import "./index.scss";
 
 const classNames = {
-  container: 'grammar-filter',
-  buttons: 'grammar-filter__buttons',
+  container: "grammar-filter",
+  buttons: "grammar-filter__buttons"
 };
 
 class GrammarFilter extends PureComponent {
   static propTypes = {
     checked: PropTypes.object.isRequired,
-    onChange: PropTypes.func.isRequired,
-  }
+    onChange: PropTypes.func.isRequired
+  };
 
   static isGroupEmpty(group) {
-    if (group === null) return true;
+    if (group === null) {return true;}
 
     if (group.length > 0) {
       return false;
@@ -42,19 +44,19 @@ class GrammarFilter extends PureComponent {
   }
 
   static updateSignsWithChecked(signs, checked) {
-    const data = signs.map((group) => {
+    const data = signs.map(group => {
       const groupName = group.name;
       const newGroup = {
-        name: groupName,
+        name: groupName
       };
 
-      newGroup.children = group.children.map((item) => {
+      newGroup.children = group.children.map(item => {
         const isChecked = this.isItemInChecked(item, checked, groupName);
 
         return {
           name: item.name,
           value: item.value,
-          isChecked,
+          isChecked
         };
       });
 
@@ -65,15 +67,15 @@ class GrammarFilter extends PureComponent {
   }
 
   static getGrammaticalSigns() {
-    const grammaticalSigns = grammaticalSignsRaw.map((grammaticalGroup) => {
+    const grammaticalSigns = grammaticalSignsRaw.map(grammaticalGroup => {
       return {
         name: getTranslation(grammaticalGroup.name),
-        children: grammaticalGroup.children.map((grammaticalSign) => {
+        children: grammaticalGroup.children.map(grammaticalSign => {
           return {
             name: getTranslation(grammaticalSign.name),
-            value: grammaticalSign.value,
+            value: grammaticalSign.value
           };
-        }),
+        })
       };
     });
 
@@ -95,11 +97,9 @@ class GrammarFilter extends PureComponent {
    */
   onCheckedChange(item) {
     const { checked } = this.props;
-    const {
-      name, value, isChecked, groupName,
-    } = item;
+    const { name, value, isChecked, groupName } = item;
     const newChecked = {
-      ...checked,
+      ...checked
     };
 
     if (!isChecked) {
@@ -123,26 +123,28 @@ class GrammarFilter extends PureComponent {
     const { grammaticalSigns } = this;
     const grammaticalSignsData = this.constructor.updateSignsWithChecked(grammaticalSigns, checked);
 
-    return rowsData.map((row) => {
+    return rowsData.map(row => {
       const resultRow = {};
 
       resultRow.id = row.id;
-      resultRow.columns = row.columns.map((column) => {
+      resultRow.columns = row.columns.map(column => {
         const resultColumn = {};
 
         resultColumn.id = column.id;
-        resultColumn.blocksToRender = column.indexesOfSignGroup.map((index) => {
+        resultColumn.blocksToRender = column.indexesOfSignGroup.map(index => {
           const grammaticalSignsGroup = grammaticalSignsData[index];
 
           if (!grammaticalSignsGroup) {
             return null;
           }
 
-          return <GrammarGroup
-            key={grammaticalSignsGroup.name}
-            data={grammaticalSignsGroup}
-            onChange={this.onCheckedChange}
-          />;
+          return (
+            <GrammarGroup
+              key={grammaticalSignsGroup.name}
+              data={grammaticalSignsGroup}
+              onChange={this.onCheckedChange}
+            />
+          );
         });
 
         return resultColumn;
@@ -155,11 +157,11 @@ class GrammarFilter extends PureComponent {
   checkAll() {
     const newChecked = {};
 
-    grammaticalSignsRaw.forEach((grammaticalGroup) => {
+    grammaticalSignsRaw.forEach(grammaticalGroup => {
       const groupName = grammaticalGroup.name;
       newChecked[groupName] = newChecked[groupName] || {};
 
-      grammaticalGroup.children.forEach((grammaticalSign) => {
+      grammaticalGroup.children.forEach(grammaticalSign => {
         const { name, value } = grammaticalSign;
         newChecked[groupName][name] = value;
       });
@@ -181,20 +183,13 @@ class GrammarFilter extends PureComponent {
   renderSigns() {
     const gridData = this.getGridData(signGroupDivision);
 
-    return (
-      <GridGenerator
-        data={gridData}
-        GridComponent={Grid}
-        RowComponent={Grid.Row}
-        ColumnComponent={Grid.Column}
-      />
-    );
+    return <GridGenerator data={gridData} GridComponent={Grid} RowComponent={Grid.Row} ColumnComponent={Grid.Column} />;
   }
 
   render() {
     const grammarBlock = this.renderSigns();
-    const uncheckAllButtonText = getTranslation('Uncheck all');
-    const checkAllButtonText = getTranslation('Check all');
+    const uncheckAllButtonText = getTranslation("Uncheck all");
+    const checkAllButtonText = getTranslation("Check all");
 
     return (
       <div className={classNames.container}>

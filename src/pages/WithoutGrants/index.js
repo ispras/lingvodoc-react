@@ -1,23 +1,23 @@
-import React from 'react';
-import './styles.scss';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { compose, branch, renderNothing } from 'recompose';
-import { Redirect, matchPath } from 'react-router-dom';
-import { graphql } from 'react-apollo';
-import gql from 'graphql-tag';
-import Immutable, { fromJS, Map } from 'immutable';
-import { Container } from 'semantic-ui-react';
+import React from "react";
+import { graphql } from "react-apollo";
+import { connect } from "react-redux";
+import { matchPath, Redirect } from "react-router-dom";
+import { Container } from "semantic-ui-react";
+import { getTranslation } from "api/i18n";
+import gql from "graphql-tag";
+import Immutable, { fromJS, Map } from "immutable";
+import PropTypes from "prop-types";
+import { branch, compose, renderNothing } from "recompose";
 
-import { buildLanguageTree } from 'pages/Search/treeBuilder';
+import BackTopButton from "components/BackTopButton";
+import { getScrollContainer } from "components/Home/common";
+import Placeholder from "components/Placeholder";
+import config from "config";
+import { buildLanguageTree } from "pages/Search/treeBuilder";
 
-import config from 'config';
+import TreeWithoutGrants from "./builderTreeWithoutGrants";
 
-import BackTopButton from 'components/BackTopButton';
-import TreeWithoutGrants from './builderTreeWithoutGrants';
-import Placeholder from 'components/Placeholder';
-import { getScrollContainer } from 'components/Home/common';
-import { getTranslation } from 'api/i18n';
+import "./styles.scss";
 
 const authenticatedCorporaQuery = gql`
   query AuthCorpora {
@@ -101,17 +101,15 @@ const guestCorporaQuery = gql`
   }
 `;
 
-const CorporaAll = (props) => {
+const CorporaAll = props => {
   const {
     dictionaries: localDictionaries,
     perspectives,
     languages,
     isAuthenticated,
     grants,
-    data: {
-      loading, error, dictionaries, permission_lists: permissionLists
-    },
-    location: { hash },
+    data: { loading, error, dictionaries, permission_lists: permissionLists },
+    location: { hash }
   } = props;
 
   if (error) {
@@ -119,58 +117,53 @@ const CorporaAll = (props) => {
   }
 
   if (loading) {
-    return (
-      <Placeholder />
-    );
+    return <Placeholder />;
   }
 
   const grantsList = fromJS(grants);
   if (hash) {
     const match = matchPath(hash, {
-      path: '#/dictionary/:pcid/:poid/perspective/:cid/:oid/:mode',
+      path: "#/dictionary/:pcid/:poid/perspective/:cid/:oid/:mode"
     });
     if (match) {
-      const {
-        pcid, poid, cid, oid, mode,
-      } = match.params;
+      const { pcid, poid, cid, oid, mode } = match.params;
       return <Redirect to={`/dictionary/${pcid}/${poid}/perspective/${cid}/${oid}/${mode}`} />;
     }
   }
 
-
   const languagesTree = buildLanguageTree(fromJS(languages));
 
   const permissions =
-    config.buildType === 'server'
+    config.buildType === "server"
       ? null
       : fromJS({
-        view: permissionLists.view,
-        edit: permissionLists.edit,
-        publish: permissionLists.publish,
-        limited: permissionLists.limited,
-      }).map(ps => new Immutable.Set(ps.map(p => p.get('id'))));
+          view: permissionLists.view,
+          edit: permissionLists.edit,
+          publish: permissionLists.publish,
+          limited: permissionLists.limited
+        }).map(ps => new Immutable.Set(ps.map(p => p.get("id"))));
 
   const dictsSource = fromJS(dictionaries);
 
   const localDicts = fromJS(localDictionaries);
-  const isDownloaded = dict => !!localDicts.find(d => d.get('id').equals(dict.get('id')));
+  const isDownloaded = dict => !!localDicts.find(d => d.get("id").equals(dict.get("id")));
   const hasPermission = (p, permission) =>
-    (config.buildType === 'server' ? false : permissions.get(permission).has(p.get('id')));
+    config.buildType === "server" ? false : permissions.get(permission).has(p.get("id"));
 
   const dicts = dictsSource.reduce(
-    (acc, dict) => acc.set(dict.get('id'), dict.set('isDownloaded', isDownloaded(dict))),
+    (acc, dict) => acc.set(dict.get("id"), dict.set("isDownloaded", isDownloaded(dict))),
     new Map()
   );
 
   const perspectivesList = fromJS(perspectives).map(perspective =>
     fromJS({
       ...perspective.toJS(),
-      view: hasPermission(perspective, 'view'),
-      edit: hasPermission(perspective, 'edit'),
-      publish: hasPermission(perspective, 'publish'),
-      limited: hasPermission(perspective, 'limited'),
-    }));
-
+      view: hasPermission(perspective, "view"),
+      edit: hasPermission(perspective, "edit"),
+      publish: hasPermission(perspective, "publish"),
+      limited: hasPermission(perspective, "limited")
+    })
+  );
 
   const scrollContainer = getScrollContainer();
 
@@ -178,10 +171,10 @@ const CorporaAll = (props) => {
     <div className="withoutGrants">
       <div className="background-header">
         <Container className="published">
-          <h2 className="page-title">{getTranslation('Dictionaries created out of grant')}</h2>
+          <h2 className="page-title">{getTranslation("Dictionaries created out of grant")}</h2>
         </Container>
       </div>
-      <Container className="published"> 
+      <Container className="published">
         <TreeWithoutGrants
           languagesTree={languagesTree}
           dictionaries={dicts}
@@ -189,7 +182,7 @@ const CorporaAll = (props) => {
           grants={grantsList}
           isAuthenticated={isAuthenticated}
         />
-        
+
         <BackTopButton scrollContainer={scrollContainer} />
       </Container>
     </div>
@@ -198,18 +191,18 @@ const CorporaAll = (props) => {
 
 CorporaAll.propTypes = {
   data: PropTypes.shape({
-    loading: PropTypes.bool.isRequired,
+    loading: PropTypes.bool.isRequired
   }).isRequired,
   grants: PropTypes.array.isRequired,
   dictionaries: PropTypes.array,
   perspectives: PropTypes.array.isRequired,
   languages: PropTypes.array.isRequired,
   isAuthenticated: PropTypes.bool.isRequired,
-  location: PropTypes.object.isRequired,
+  location: PropTypes.object.isRequired
 };
 
 CorporaAll.defaultProps = {
-  dictionaries: [],
+  dictionaries: []
 };
 
 const dictionaryWithPerspectivesQuery = gql`
@@ -277,20 +270,18 @@ const dictionaryWithPerspectivesProxyQuery = gql`
 `;
 
 const AuthWrapper = ({
-  data: {
-    perspectives, grants, language_tree: languages, is_authenticated: isAuthenticated, dictionaries,
-  },
+  data: { perspectives, grants, language_tree: languages, is_authenticated: isAuthenticated, dictionaries }
 }) => {
   const Component = compose(
     connect(state => ({ ...state.router })),
     graphql(isAuthenticated ? authenticatedCorporaQuery : guestCorporaQuery, {
       options: {
-        fetchPolicy: 'network-only'
+        fetchPolicy: "network-only"
       }
     })
   )(CorporaAll);
 
-  if (config.buildType === 'server') {
+  if (config.buildType === "server") {
     return (
       <Component perspectives={perspectives} grants={grants} languages={languages} isAuthenticated={isAuthenticated} />
     );
@@ -313,12 +304,11 @@ AuthWrapper.propTypes = {
     perspectives: PropTypes.array,
     grants: PropTypes.array,
     language_tree: PropTypes.array,
-    is_authenticated: PropTypes.bool,
-  }).isRequired,
+    is_authenticated: PropTypes.bool
+  }).isRequired
 };
 
-
 export default compose(
-  graphql(config.buildType === 'server' ? dictionaryWithPerspectivesQuery : dictionaryWithPerspectivesProxyQuery),
+  graphql(config.buildType === "server" ? dictionaryWithPerspectivesQuery : dictionaryWithPerspectivesProxyQuery),
   branch(({ data }) => data.loading || data.error, renderNothing)
 )(AuthWrapper);

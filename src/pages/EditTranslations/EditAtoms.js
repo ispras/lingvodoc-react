@@ -1,9 +1,9 @@
-import React from 'react';
-import { Input, Button, Dropdown, Popup } from 'semantic-ui-react';
-import { withApollo } from 'react-apollo';
-import gql from 'graphql-tag';
-import locale from 'api/locale';
-import { getTranslation } from 'api/i18n';
+import React from "react";
+import { withApollo } from "react-apollo";
+import { Button, Dropdown, Input, Popup } from "semantic-ui-react";
+import { getTranslation } from "api/i18n";
+import locale from "api/locale";
+import gql from "graphql-tag";
 
 const createTranslationsMutation = gql`
   mutation ($type: String!) {
@@ -19,7 +19,7 @@ const createTranslationsMutation = gql`
 
 const createAtomMutation = gql`
   mutation ($parent_id: LingvodocID!, $locale_id: Int!, $content: String!) {
-    create_translationatom( parent_id: $parent_id, locale_id: $locale_id, content: $content) {
+    create_translationatom(parent_id: $parent_id, locale_id: $locale_id, content: $content) {
       translationatom {
         id
         locale_id
@@ -52,7 +52,6 @@ const deleteAtomMutation = gql`
 `;
 
 class EditAtoms extends React.Component {
-
   constructor(props) {
     super(props);
 
@@ -63,11 +62,11 @@ class EditAtoms extends React.Component {
     };
 
     this.initialState = {
-      atoms: props.newGist ? [] : props.atoms,
+      atoms: props.newGist ? [] : props.atoms
     };
 
     this.languageOptions = props.locales.map(locale => {
-      return { key: locale.id, value: locale.id, text: locale.intl_name};
+      return { key: locale.id, value: locale.id, text: locale.intl_name };
     });
 
     this.onContentChange = this.onContentChange.bind(this);
@@ -78,7 +77,7 @@ class EditAtoms extends React.Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    if ((this.state === nextState)) {
+    if (this.state === nextState) {
       return false;
     }
     return true;
@@ -94,10 +93,14 @@ class EditAtoms extends React.Component {
   }
 
   getAvailableLanguagesOptions(atom) {
-    let langOptions = [ this.getSelectedLanguageOption(atom) ];
+    const langOptions = [this.getSelectedLanguageOption(atom)];
 
     this.languageOptions.every(langOption => {
-      if (this.state.atoms.every(atom => { return atom.locale_id != langOption.value; })) {
+      if (
+        this.state.atoms.every(atom => {
+          return atom.locale_id != langOption.value;
+        })
+      ) {
         langOptions.push(langOption);
       }
       return true;
@@ -123,7 +126,11 @@ class EditAtoms extends React.Component {
   getFreeLocale() {
     let result = null;
     this.props.locales.some(locale => {
-      if (this.state.atoms.every(atom => { return atom.locale_id != locale.id; })) {
+      if (
+        this.state.atoms.every(atom => {
+          return atom.locale_id != locale.id;
+        })
+      ) {
         result = locale.id;
         return true;
       }
@@ -133,12 +140,11 @@ class EditAtoms extends React.Component {
   }
 
   onContentChange(event, { value, defaultValue, atomid }) {
-
     if (value == defaultValue) {
       return;
     }
 
-    let newAtoms = JSON.parse(JSON.stringify(this.state.atoms));
+    const newAtoms = JSON.parse(JSON.stringify(this.state.atoms));
     newAtoms.some(atom => {
       if (atom.id.toString() == atomid.toString()) {
         atom.content = value;
@@ -147,7 +153,7 @@ class EditAtoms extends React.Component {
 
       return false;
     });
-    this.setState( { atoms: newAtoms} );
+    this.setState({ atoms: newAtoms });
   }
 
   onLanguageChange(event, { value, defaultValue, atomid }) {
@@ -155,7 +161,7 @@ class EditAtoms extends React.Component {
       return;
     }
 
-    let newAtoms = JSON.parse(JSON.stringify(this.state.atoms));
+    const newAtoms = JSON.parse(JSON.stringify(this.state.atoms));
     newAtoms.some(atom => {
       if (atom.id.toString() == atomid.toString()) {
         atom.locale_id = value;
@@ -164,20 +170,20 @@ class EditAtoms extends React.Component {
 
       return false;
     });
-    this.setState( { atoms: newAtoms} );
+    this.setState({ atoms: newAtoms });
   }
 
   onDeleteAtom(event, { atomid }) {
-    let newAtoms = JSON.parse(JSON.stringify(this.state.atoms));
+    const newAtoms = JSON.parse(JSON.stringify(this.state.atoms));
     this.setState({ atoms: newAtoms.filter(atom => atom.id.toString() != atomid.toString()) });
   }
 
   onAddTranslation() {
-    let newAtoms = JSON.parse(JSON.stringify(this.state.atoms));
+    const newAtoms = JSON.parse(JSON.stringify(this.state.atoms));
     const date = new Date();
     const date_str = date.toISOString() + date.getUTCMilliseconds().toString();
-    newAtoms.push({ id: date_str, locale_id: this.getFreeLocale(), content: ''});
-    this.setState( { atoms: newAtoms} );
+    newAtoms.push({ id: date_str, locale_id: this.getFreeLocale(), content: "" });
+    this.setState({ atoms: newAtoms });
   }
 
   updateAtom(id, atom) {
@@ -219,7 +225,7 @@ class EditAtoms extends React.Component {
     }
 
     this.props.client.mutate(mutations.shift()).then(result => {
-      let createResult = result.data.create_translationatom;
+      const createResult = result.data.create_translationatom;
       if (createResult && createResult.triumph) {
         newAtoms.some(atom => {
           if (atom.locale_id == createResult.translationatom.locale_id) {
@@ -261,13 +267,12 @@ class EditAtoms extends React.Component {
 
   onSave() {
     if (this.state.newGist) {
-      let mutationsGist = [];
+      const mutationsGist = [];
       mutationsGist.push(this.createTranslationGist());
       if (mutationsGist.length != 0) {
-
-        let that = this;
+        const that = this;
         this.props.client.mutate(mutationsGist.shift()).then(result => {
-          let idGist = result.data.create_translationgist.translationgist.id;
+          const idGist = result.data.create_translationgist.translationgist.id;
 
           /* idGist for method "createAtom" */
           that.setState({ newGist: false, gistId: idGist });
@@ -284,7 +289,7 @@ class EditAtoms extends React.Component {
     const { atoms, newGist } = this.state;
     const currentLocaleId = locale.get();
 
-    let header = '';
+    let header = "";
     atoms.some(atom => {
       if (atom.locale_id == currentLocaleId) {
         header = atom.content;
@@ -301,27 +306,61 @@ class EditAtoms extends React.Component {
           {atoms.map(atom => (
             <div className="lingvo-atom-grid" key={atom.id}>
               <div className="lingvo-atom-grid__text">
-                <Popup disabled={ !!newGist }
+                <Popup
+                  disabled={!!newGist}
                   trigger={
-                    <Input value={atom.content} onChange={this.onContentChange} atomid={atom.id} fluid className="lingvo-gist-elem" />
+                    <Input
+                      value={atom.content}
+                      onChange={this.onContentChange}
+                      atomid={atom.id}
+                      fluid
+                      className="lingvo-gist-elem"
+                    />
                   }
                   content={atom.content}
                   className="lingvo-popup-inverted lingvo-popup-inverted_gistatom"
                 />
               </div>
               <div className="lingvo-atom-grid__lang">
-                <Dropdown className="lingvo-gist-elem lingvo-gist-elem_language" key={atom.locale_id} options={this.getAvailableLanguagesOptions(atom)} value={atom.locale_id} onChange={this.onLanguageChange} atomid={atom.id} selection icon={<i className="lingvo-icon lingvo-icon_arrow" />} />
+                <Dropdown
+                  className="lingvo-gist-elem lingvo-gist-elem_language"
+                  key={atom.locale_id}
+                  options={this.getAvailableLanguagesOptions(atom)}
+                  value={atom.locale_id}
+                  onChange={this.onLanguageChange}
+                  atomid={atom.id}
+                  selection
+                  icon={<i className="lingvo-icon lingvo-icon_arrow" />}
+                />
               </div>
               <div className="lingvo-atom-grid__delete">
-                <Button icon={<i className="lingvo-icon lingvo-icon_trash" />} disabled={atoms.length == 1} onClick={this.onDeleteAtom} atomid={atom.id} className="lingvo-button-atom-delete" />
+                <Button
+                  icon={<i className="lingvo-icon lingvo-icon_trash" />}
+                  disabled={atoms.length == 1}
+                  onClick={this.onDeleteAtom}
+                  atomid={atom.id}
+                  className="lingvo-button-atom-delete"
+                />
               </div>
             </div>
           ))}
         </div>
 
         <div className="lingvo-gist__buttons">
-            <Button disabled={this.getFreeLocale() == null} onClick={this.onAddTranslation} className="lingvo-button-basic-black lingvo-button-basic-black_small">{getTranslation('Add Translation')}</Button>
-            <Button disabled={JSON.stringify(this.state.atoms) === JSON.stringify(this.initialState.atoms)} onClick={this.onSave} className="lingvo-button-violet lingvo-button-violet_small">{getTranslation('Save')}</Button>
+          <Button
+            disabled={this.getFreeLocale() == null}
+            onClick={this.onAddTranslation}
+            className="lingvo-button-basic-black lingvo-button-basic-black_small"
+          >
+            {getTranslation("Add Translation")}
+          </Button>
+          <Button
+            disabled={JSON.stringify(this.state.atoms) === JSON.stringify(this.initialState.atoms)}
+            onClick={this.onSave}
+            className="lingvo-button-violet lingvo-button-violet_small"
+          >
+            {getTranslation("Save")}
+          </Button>
         </div>
       </div>
     );

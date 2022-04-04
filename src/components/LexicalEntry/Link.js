@@ -1,17 +1,16 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { compose, branch, renderNothing } from 'recompose';
-import { isEqual, isEmpty } from 'lodash';
-import { Button } from 'semantic-ui-react';
-import { openModal } from 'ducks/modals';
-import LinkModal from 'components/LinkModal';
+import React from "react";
+import { connect } from "react-redux";
+import { Button } from "semantic-ui-react";
+import { isEmpty, isEqual } from "lodash";
+import PropTypes from "prop-types";
+import { branch, compose, renderNothing } from "recompose";
+import { bindActionCreators } from "redux";
 
-const DirectedLink = (props) => {
-  const {
-    entry, column, mode, entitiesMode, as: Component = 'div', openModal, disabled,
-  } = props;
+import LinkModal from "components/LinkModal";
+import { openModal } from "ducks/modals";
+
+const DirectedLink = props => {
+  const { entry, column, mode, entitiesMode, as: Component = "div", openModal, disabled } = props;
 
   const count = entry.entities.filter(e => isEqual(e.field_id, column.id)).length;
   const content = `${column.translation} (${count})`;
@@ -25,7 +24,15 @@ const DirectedLink = (props) => {
         content={content}
         icon="code"
         labelPosition="left"
-        onClick={() => openModal(LinkModal, { perspectiveId: entry.parent_id, lexicalEntry: entry, fieldId: column.id, mode, entitiesMode })}
+        onClick={() =>
+          openModal(LinkModal, {
+            perspectiveId: entry.parent_id,
+            lexicalEntry: entry,
+            fieldId: column.id,
+            mode,
+            entitiesMode
+          })
+        }
       />
     </Component>
   );
@@ -41,13 +48,13 @@ DirectedLink.propTypes = {
 };
 
 DirectedLink.defaultProps = {
-  as: 'div',
+  as: "div"
 };
 
 export default compose(
   branch(
     ({ entry, column, mode }) =>
-      isEmpty(entry.entities.filter(entity => isEqual(entity.field_id, column.id))) && mode !== 'edit',
+      isEmpty(entry.entities.filter(entity => isEqual(entity.field_id, column.id))) && mode !== "edit",
     renderNothing
   ),
   connect(null, dispatch => bindActionCreators({ openModal }, dispatch))

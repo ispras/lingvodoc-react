@@ -1,40 +1,40 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { graphql } from 'react-apollo';
-import gql from 'graphql-tag';
-import { compose, pure } from 'recompose';
-import { List, fromJS } from 'immutable';
-import styled from 'styled-components';
-import { Checkbox, Grid, Radio, Segment, Button, Divider, Select, Input, Icon, Message } from 'semantic-ui-react';
-import { Link } from 'react-router-dom';
+import React from "react";
+import { graphql } from "react-apollo";
+import { connect } from "react-redux";
+import { Link } from "react-router-dom";
+import { Button, Checkbox, Divider, Grid, Icon, Input, Message, Radio, Segment, Select } from "semantic-ui-react";
+import { getTranslation } from "api/i18n";
+import gql from "graphql-tag";
+import { fromJS, List } from "immutable";
+import PropTypes from "prop-types";
+import { compose, pure } from "recompose";
+import { bindActionCreators } from "redux";
+import styled from "styled-components";
 
-import { setQuery } from 'ducks/search';
-import AdditionalFilter from 'components/Search/AdditionalFilter';
-import { getTranslation } from 'api/i18n';
-import { compositeIdToString } from 'utils/compositeId';
+import AdditionalFilter from "components/Search/AdditionalFilter";
+import { setQuery } from "ducks/search";
+import { compositeIdToString } from "utils/compositeId";
 
-import './index.scss';
+import "./index.scss";
 
-const mode2bool = (value) => {
+const mode2bool = value => {
   switch (value) {
-    case 'ignore':
+    case "ignore":
       return null;
-    case 'include':
+    case "include":
       return true;
-    case 'exclude':
+    case "exclude":
       return false;
     default:
       return null;
   }
 };
 
-const modeBlocksBool = (value) => {
+const modeBlocksBool = value => {
   switch (value) {
-    case 'and':
+    case "and":
       return true;
-    case 'or':
+    case "or":
       return false;
     default:
       return false;
@@ -60,7 +60,7 @@ const Wrapper = styled.div`
   position: relative;
 
   &:after {
-    content: '';
+    content: "";
     display: block;
     clear: both;
   }
@@ -101,25 +101,23 @@ const QueryInput = styled(Input)`
 `;
 
 const newBlock = {
-  search_string: '',
-  matching_type: 'full_string',
+  search_string: "",
+  matching_type: "full_string"
 };
 
 const fieldsQuery = gql`
   query searchBootstrapQuery {
-    all_fields(common:true) {
+    all_fields(common: true) {
       id
       translation
     }
   }
 `;
 
-function Query({
-  data, query, onFieldChange, onDelete,
-}) {
-  const fieldId = query.get('field_id', fromJS([]));
-  const str = query.get('search_string', '');
-  const type = query.get('matching_type', '');
+function Query({ data, query, onFieldChange, onDelete }) {
+  const fieldId = query.get("field_id", fromJS([]));
+  const str = query.get("search_string", "");
+  const type = query.get("matching_type", "");
 
   if (data.loading) {
     return null;
@@ -129,24 +127,31 @@ function Query({
   const fieldOptions = fields.map(field => ({
     key: compositeIdToString(field.id),
     text: field.translation,
-    value: compositeIdToString(field.id),
+    value: compositeIdToString(field.id)
   }));
 
   // wrapper functions to map str field ids to array ids.
   const fieldById = compositeId => fields.find(f => compositeId === compositeIdToString(f.id));
   const onChange = (event, { value }) => {
     const field = fieldById(value);
-    onFieldChange('field_id')(event, { value: fromJS(field.id) });
+    onFieldChange("field_id")(event, { value: fromJS(field.id) });
   };
 
   const matchingOptions = [
-    { key: 'fullstring', text: getTranslation('Full string'), value: 'full_string' },
-    { key: 'substring', text: getTranslation('Sub string'), value: 'substring' },
-    { key: 'regexp', text: getTranslation('Regexp'), value: 'regexp' },
+    { key: "fullstring", text: getTranslation("Full string"), value: "full_string" },
+    { key: "substring", text: getTranslation("Sub string"), value: "substring" },
+    { key: "regexp", text: getTranslation("Regexp"), value: "regexp" }
   ];
 
   return (
-    <QueryInput action type="text" placeholder={getTranslation('Search String')} value={str} onChange={onFieldChange('search_string')} className="group-fields-adaptive">
+    <QueryInput
+      action
+      type="text"
+      placeholder={getTranslation("Search String")}
+      value={str}
+      onChange={onFieldChange("search_string")}
+      className="group-fields-adaptive"
+    >
       <Select
         placeholder="Field"
         options={fieldOptions}
@@ -159,7 +164,7 @@ function Query({
         placeholder="Match"
         options={matchingOptions}
         value={type}
-        onChange={onFieldChange('matching_type')}
+        onChange={onFieldChange("matching_type")}
       />
       <Button compact basic color="red" icon="delete" onClick={onDelete} />
     </QueryInput>
@@ -169,7 +174,12 @@ function Query({
 const QueryWithData = graphql(fieldsQuery)(Query);
 
 function SearchBlock({
-  data, subBlocksMode, onFieldChange, onAddInnerSearchBlock, onDeleteInnerSearchBlock, onDeleteSearchBlock,
+  data,
+  subBlocksMode,
+  onFieldChange,
+  onAddInnerSearchBlock,
+  onDeleteInnerSearchBlock,
+  onDeleteSearchBlock
 }) {
   const subBlocksModeText = subBlocksMode.toUpperCase();
   return (
@@ -177,7 +187,12 @@ function SearchBlock({
       <div>{getTranslation(`${subBlocksModeText} block`)}</div>
       <InnerSearchBlocks>
         {data.map((block, id) => (
-          <QueryWithData key={id} query={block} onFieldChange={onFieldChange(id)} onDelete={onDeleteInnerSearchBlock(id)} />
+          <QueryWithData
+            key={id}
+            query={block}
+            onFieldChange={onFieldChange(id)}
+            onDelete={onDeleteInnerSearchBlock(id)}
+          />
         ))}
         <div>
           <Button primary basic onClick={onAddInnerSearchBlock}>
@@ -207,7 +222,11 @@ class QueryBuilder extends React.Component {
 
     this.newBlock = fromJS(newBlock);
     const {
-      langs, dicts, searchMetadata, grammaticalSigns: gramSigns, languageVulnerability: langVulnerability,
+      langs,
+      dicts,
+      searchMetadata,
+      grammaticalSigns: gramSigns,
+      languageVulnerability: langVulnerability
     } = this.props;
     const languages = langs || [];
     const dictionaries = dicts || [];
@@ -220,11 +239,11 @@ class QueryBuilder extends React.Component {
     let authors = [];
 
     if (searchMetadata) {
-      if (typeof searchMetadata.hasAudio === 'boolean') {
+      if (typeof searchMetadata.hasAudio === "boolean") {
         hasAudio = searchMetadata.hasAudio;
       }
 
-      if (typeof searchMetadata.kind === 'boolean') {
+      if (typeof searchMetadata.kind === "boolean") {
         kind = searchMetadata.kind;
       } else {
         kind = searchMetadata.kind || kind;
@@ -244,23 +263,23 @@ class QueryBuilder extends React.Component {
       humanSettlement,
       authors,
       languageVulnerability,
-      grammaticalSigns,
+      grammaticalSigns
     };
 
     this.state = {
       data: fromJS(props.data),
       source: {
         dictionaries: true,
-        corpora: true,
+        corpora: true
       },
       mode: {
-        adopted: 'ignore',
-        etymology: 'ignore',
-        diacritics: '',
-        blocks: 'or',
+        adopted: "ignore",
+        etymology: "ignore",
+        diacritics: "",
+        blocks: "or"
       },
       allLangsDictsChecked: !this.props.langs && !this.props.dicts,
-      xlsxExport: false,
+      xlsxExport: false
     };
   }
 
@@ -291,25 +310,33 @@ class QueryBuilder extends React.Component {
   }
 
   onFieldChange(id) {
-    return subid => field => (event, { value }) => {
-      const { data } = this.state;
-      this.setState({ data: data.setIn([id, subid, field], value) });
-    };
+    return subid =>
+      field =>
+      (event, { value }) => {
+        const { data } = this.state;
+        this.setState({ data: data.setIn([id, subid, field], value) });
+      };
   }
 
   onAdditionalFieldsChange(data) {
     this.additionalFields = {
       ...this.additionalFields,
-      ...data,
+      ...data
     };
   }
 
   onSearchButtonClick() {
     const { searchId, actions } = this.props;
     const {
-      languages: langsToFilter, dictionaries: dictsToFilter,
-      hasAudio, kind, years, humanSettlement, authors,
-      grammaticalSigns, languageVulnerability,
+      languages: langsToFilter,
+      dictionaries: dictsToFilter,
+      hasAudio,
+      kind,
+      years,
+      humanSettlement,
+      authors,
+      grammaticalSigns,
+      languageVulnerability
     } = this.additionalFields;
 
     const adopted = mode2bool(this.state.mode.adopted);
@@ -322,7 +349,7 @@ class QueryBuilder extends React.Component {
       kind: kind || null,
       years,
       humanSettlement,
-      authors,
+      authors
     };
     const query = this.addGrammaticalSigns(this.state.data.toJS());
 
@@ -339,7 +366,8 @@ class QueryBuilder extends React.Component {
       grammaticalSigns,
       languageVulnerability,
       blocks,
-      this.state.xlsxExport);
+      this.state.xlsxExport
+    );
   }
 
   getBlocksText() {
@@ -351,13 +379,13 @@ class QueryBuilder extends React.Component {
   getSubBlocksMode() {
     const { blocks } = this.state.mode;
 
-    if (blocks === 'or') {
-      return 'and';
-    } else if (blocks === 'and') {
-      return 'or';
+    if (blocks === "or") {
+      return "and";
+    } else if (blocks === "and") {
+      return "or";
     }
 
-    return '';
+    return "";
   }
 
   addGrammaticalSigns(query) {
@@ -370,13 +398,13 @@ class QueryBuilder extends React.Component {
 
     const addGrammaticalSigns = [];
 
-    grammaticalGroupNames.forEach((name) => {
+    grammaticalGroupNames.forEach(name => {
       const values = Object.values(grammaticalSigns[name]);
 
-      values.forEach((value) => {
+      values.forEach(value => {
         addGrammaticalSigns.push({
           search_string: `.*[.-]${value}`,
-          matching_type: 'regexp',
+          matching_type: "regexp"
         });
       });
     });
@@ -387,9 +415,9 @@ class QueryBuilder extends React.Component {
 
     const resultQuery = [];
 
-    query.forEach((q) => {
+    query.forEach(q => {
       const innerQuery = [...q];
-      if (innerQuery[0].search_string === '') {
+      if (innerQuery[0].search_string === "") {
         innerQuery.shift();
       }
 
@@ -409,30 +437,29 @@ class QueryBuilder extends React.Component {
 
   changeSource(searchSourceType) {
     const newSource = {
-      ...this.state.source,
+      ...this.state.source
     };
 
     newSource[searchSourceType] = !newSource[searchSourceType];
 
     this.setState({
-      source: newSource,
+      source: newSource
     });
   }
 
   changeMode(modeType, value) {
     const newMode = {
-      ...this.state.mode,
+      ...this.state.mode
     };
 
     newMode[modeType] = value;
 
     this.setState({
-      mode: newMode,
+      mode: newMode
     });
   }
 
-  render()
-  {
+  render() {
     const blocks = this.state.data;
 
     const {
@@ -442,7 +469,8 @@ class QueryBuilder extends React.Component {
       getSearchURL,
       searchLinkLoading,
       searchLinkError,
-      user } = this.props;
+      user
+    } = this.props;
 
     const { allLangsDictsChecked } = this.state;
     const blocksText = this.getBlocksText();
@@ -451,32 +479,31 @@ class QueryBuilder extends React.Component {
     return (
       <div>
         <Segment.Group className="search-group">
-          <Segment>{getTranslation('Search in')}</Segment>
+          <Segment>{getTranslation("Search in")}</Segment>
           <Segment.Group>
             <Segment>
               <Grid columns="equal" stackable>
                 <Grid.Column>
                   <Checkbox
-                    label={getTranslation('Dictionaries')}
+                    label={getTranslation("Dictionaries")}
                     checked={this.state.source.dictionaries}
-                    onChange={() => this.changeSource('dictionaries')}
+                    onChange={() => this.changeSource("dictionaries")}
                   />
                 </Grid.Column>
                 <Grid.Column>
                   <Checkbox
-                    label={getTranslation('Corpora')}
+                    label={getTranslation("Corpora")}
                     checked={this.state.source.corpora}
-                    onChange={() => this.changeSource('corpora')}
+                    onChange={() => this.changeSource("corpora")}
                   />
                 </Grid.Column>
-                {showCreateSearchButton ?
+                {showCreateSearchButton ? (
                   <Grid.Column>
                     <Button primary basic onClick={this.props.createSearchWithAdditionalFields}>
-                      {getTranslation('Search in found')}
+                      {getTranslation("Search in found")}
                     </Button>
-                  </Grid.Column> :
-                  null
-                }
+                  </Grid.Column>
+                ) : null}
               </Grid>
             </Segment>
           </Segment.Group>
@@ -489,86 +516,85 @@ class QueryBuilder extends React.Component {
         />
 
         <Segment.Group className="search-group">
-          <Segment>{getTranslation('Search options')}</Segment>
+          <Segment>{getTranslation("Search options")}</Segment>
           <Segment.Group>
             <Segment>
               <Grid columns="equal" divided stackable>
                 <Grid.Column>
                   <Radio
-                    label={getTranslation('Ignore adoptions')}
+                    label={getTranslation("Ignore adoptions")}
                     name="adoptedMode"
                     value="ignore"
-                    checked={this.state.mode.adopted === 'ignore'}
-                    onChange={(e, { value }) => this.changeMode('adopted', value)}
+                    checked={this.state.mode.adopted === "ignore"}
+                    onChange={(e, { value }) => this.changeMode("adopted", value)}
                   />
                   <Radio
-                    label={getTranslation('Search for adoptions')}
+                    label={getTranslation("Search for adoptions")}
                     name="adoptedMode"
                     value="include"
-                    checked={this.state.mode.adopted === 'include'}
-                    onChange={(e, { value }) => this.changeMode('adopted', value)}
+                    checked={this.state.mode.adopted === "include"}
+                    onChange={(e, { value }) => this.changeMode("adopted", value)}
                   />
                   <Radio
-                    label={getTranslation('Exclude adoptions')}
+                    label={getTranslation("Exclude adoptions")}
                     name="adoptedMode"
                     value="exclude"
-                    checked={this.state.mode.adopted === 'exclude'}
-                    onChange={(e, { value }) => this.changeMode('adopted', value)}
+                    checked={this.state.mode.adopted === "exclude"}
+                    onChange={(e, { value }) => this.changeMode("adopted", value)}
                   />
                 </Grid.Column>
                 <Grid.Column>
                   <Radio
-                    label={getTranslation('Ignore etymology')}
+                    label={getTranslation("Ignore etymology")}
                     name="etymologyMode"
                     value="ignore"
-                    checked={this.state.mode.etymology === 'ignore'}
-                    onChange={(e, { value }) => this.changeMode('etymology', value)}
+                    checked={this.state.mode.etymology === "ignore"}
+                    onChange={(e, { value }) => this.changeMode("etymology", value)}
                   />
                   <Radio
-                    label={getTranslation('Has etymology')}
+                    label={getTranslation("Has etymology")}
                     name="etymologyMode"
                     value="include"
-                    checked={this.state.mode.etymology === 'include'}
-                    onChange={(e, { value }) => this.changeMode('etymology', value)}
+                    checked={this.state.mode.etymology === "include"}
+                    onChange={(e, { value }) => this.changeMode("etymology", value)}
                   />
                   <Radio
                     label={getTranslation("Doesn't have etymology")}
                     name="etymologyMode"
                     value="exclude"
-                    checked={this.state.mode.etymology === 'exclude'}
-                    onChange={(e, { value }) => this.changeMode('etymology', value)}
+                    checked={this.state.mode.etymology === "exclude"}
+                    onChange={(e, { value }) => this.changeMode("etymology", value)}
                   />
                 </Grid.Column>
               </Grid>
             </Segment>
-          <Segment>
-            <Checkbox
-              label={getTranslation('Ignore diacritics')}
-              checked={this.state.mode.diacritics === 'ignore'}
-              onChange={() =>
-                this.changeMode('diacritics', this.state.mode.diacritics === 'ignore' ? '' : 'ignore')}
-            />
-          </Segment>
+            <Segment>
+              <Checkbox
+                label={getTranslation("Ignore diacritics")}
+                checked={this.state.mode.diacritics === "ignore"}
+                onChange={() => this.changeMode("diacritics", this.state.mode.diacritics === "ignore" ? "" : "ignore")}
+              />
+            </Segment>
           </Segment.Group>
         </Segment.Group>
         <Segment.Group className="search-group">
           <Segment>
-            <div>{getTranslation('OR/AND mode')}</div>
+            <div>{getTranslation("OR/AND mode")}</div>
             <Segment.Group>
               <Segment>
                 <Radio
-                  label={getTranslation('AND')}
+                  label={getTranslation("AND")}
                   name="blocksMode"
                   value="and"
-                  checked={this.state.mode.blocks === 'and'}
-                  onChange={(e, { value }) => this.changeMode('blocks', value)}
+                  checked={this.state.mode.blocks === "and"}
+                  onChange={(e, { value }) => this.changeMode("blocks", value)}
                 />
                 <Radio
-                  label={getTranslation('OR')}
+                  label={getTranslation("OR")}
                   name="blocksMode"
                   value="or"
-                  checked={this.state.mode.blocks === 'or'}
-                  onChange={(e, { value }) => this.changeMode('blocks', value)}
+                  checked={this.state.mode.blocks === "or"}
+                  onChange={(e, { value }) => this.changeMode("blocks", value)}
                 />
               </Segment>
             </Segment.Group>
@@ -576,90 +602,80 @@ class QueryBuilder extends React.Component {
         </Segment.Group>
         <Wrapper>
           {blocks.flatMap((subBlocks, id) =>
-          List.of(
-            <SearchBlock
-              key={`s_${id}`}
-              data={subBlocks}
-              subBlocksMode={subBlocksMode}
-              onFieldChange={this.onFieldChange(id)}
-              onAddInnerSearchBlock={this.onAddInnerSearchBlock(id)}
-              onDeleteInnerSearchBlock={this.onDeleteInnerSearchBlock(id)}
-              onDeleteSearchBlock={this.onDeleteSearchBlock(id)}
-            />,
-            <Divider key={`d_${id}`} horizontal>
-              {getTranslation(blocksText)}
-            </Divider>
-          ))}
+            List.of(
+              <SearchBlock
+                key={`s_${id}`}
+                data={subBlocks}
+                subBlocksMode={subBlocksMode}
+                onFieldChange={this.onFieldChange(id)}
+                onAddInnerSearchBlock={this.onAddInnerSearchBlock(id)}
+                onDeleteInnerSearchBlock={this.onDeleteInnerSearchBlock(id)}
+                onDeleteSearchBlock={this.onDeleteSearchBlock(id)}
+              />,
+              <Divider key={`d_${id}`} horizontal>
+                {getTranslation(blocksText)}
+              </Divider>
+            )
+          )}
           <Button primary basic fluid onClick={this.onAddSearchBlock}>
             {getTranslation(`Add ${blocksText} block`)}
           </Button>
 
           <Divider />
           <Button primary basic onClick={this.onSearchButtonClick}>
-            {getTranslation('Search')}
+            {getTranslation("Search")}
           </Button>
           <Checkbox
-            style={{margin: '10px'}}
-            label={getTranslation('Export to XLSX')}
+            style={{ margin: "10px" }}
+            label={getTranslation("Export to XLSX")}
             checked={this.state.xlsxExport}
-            onChange={() =>
-              this.setState({ xlsxExport: !this.state.xlsxExport })}
+            onChange={() => this.setState({ xlsxExport: !this.state.xlsxExport })}
           />
-          {
-            searchURLId
-              ?
-              <div style={{
-                padding: '0.78571429em 0.25em 0.78571429em',
-                float: 'right'}}>
-                {getTranslation('Link to search results:')}
-                {' '}
-                <Link to={`/map_search/${searchURLId}`}>
-                  {`${window.location.protocol}\/\/${window.location.host}/map_search/${searchURLId}`}
-                </Link>
-              </div>
-            :
-            searchLinkError
-              ?
-              <div style={{
-                float: 'right'}}>
-                <Message
-                  compact
-                  negative
-                  style={{
-                    padding: '0.78571429em 1.5em'}}>
-                  {getTranslation('Failed to get search link, please contact administrators.')}
-                </Message>
-              </div>
-            :
-            !user.id
-              ?
-              <Button
-                basic
-                floated='right'
-                disabled>
-                {getTranslation('Only registered users can create new search links')}
-              </Button>
-            :
-            searchLinkLoading ?
-              <Button
-                basic
-                positive
-                floated='right'
-                disabled>
-                <span>
-                  {getTranslation('Getting link to search results')}{'... '}
-                  <Icon name="spinner" loading />
-                </span>
-              </Button>
-            :
-              <Button
-                basic
-                positive
-                floated='right'
-                onClick={getSearchURL}>
-                {getTranslation('Get link to search results')}
-              </Button>
-          }
+          {searchURLId ? (
+            <div
+              style={{
+                padding: "0.78571429em 0.25em 0.78571429em",
+                float: "right"
+              }}
+            >
+              {getTranslation("Link to search results:")}{" "}
+              <Link to={`/map_search/${searchURLId}`}>
+                {`${window.location.protocol}\/\/${window.location.host}/map_search/${searchURLId}`}
+              </Link>
+            </div>
+          ) : searchLinkError ? (
+            <div
+              style={{
+                float: "right"
+              }}
+            >
+              <Message
+                compact
+                negative
+                style={{
+                  padding: "0.78571429em 1.5em"
+                }}
+              >
+                {getTranslation("Failed to get search link, please contact administrators.")}
+              </Message>
+            </div>
+          ) : !user.id ? (
+            <Button basic floated="right" disabled>
+              {getTranslation("Only registered users can create new search links")}
+            </Button>
+          ) : searchLinkLoading ? (
+            <Button basic positive floated="right" disabled>
+              <span>
+                {getTranslation("Getting link to search results")}
+                {"... "}
+                <Icon name="spinner" loading />
+              </span>
+            </Button>
+          ) : (
+            <Button basic positive floated="right" onClick={getSearchURL}>
+              {getTranslation("Get link to search results")}
+            </Button>
+          )}
         </Wrapper>
       </div>
     );
@@ -677,21 +693,21 @@ QueryBuilder.propTypes = {
   showCreateSearchButton: PropTypes.bool,
   createSearchWithAdditionalFields: PropTypes.func.isRequired,
   actions: PropTypes.shape({
-    setQuery: PropTypes.func.isRequired,
-  }).isRequired,
+    setQuery: PropTypes.func.isRequired
+  }).isRequired
   // langsQueryRes: PropTypes.object.isRequired,
 };
 
 QueryBuilder.defaultProps = {
   data: [[newBlock]],
-  showCreateSearchButton: false,
+  showCreateSearchButton: false
 };
 
 export default compose(
   connect(
     state => state.search,
     dispatch => ({
-      actions: bindActionCreators({ setQuery }, dispatch),
+      actions: bindActionCreators({ setQuery }, dispatch)
     })
   ),
   connect(state => state.user),

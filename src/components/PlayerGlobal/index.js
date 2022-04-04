@@ -1,9 +1,9 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { onlyUpdateForPropTypes, branch, renderNothing, compose } from 'recompose';
-import styled from 'styled-components';
+import React from "react";
+import PropTypes from "prop-types";
+import { branch, compose, onlyUpdateForPropTypes, renderNothing } from "recompose";
+import styled from "styled-components";
 
-const Container = styled('div')`
+const Container = styled("div")`
   position: fixed;
   bottom: 10px;
   opacity: 0.2;
@@ -14,13 +14,16 @@ const Container = styled('div')`
   }
 `;
 
-const Player = (props) => {
+const Player = props => {
   const { text } = props;
   return <Container>{text}</Container>;
 };
 
 Player.propTypes = {
-  visible: PropTypes.bool.isRequired,
+  visible: PropTypes.bool.isRequired
 };
 
-export default compose(branch(({ visible }) => !visible, renderNothing), onlyUpdateForPropTypes)(Player);
+export default compose(
+  branch(({ visible }) => !visible, renderNothing),
+  onlyUpdateForPropTypes
+)(Player);

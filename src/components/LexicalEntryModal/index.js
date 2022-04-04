@@ -1,9 +1,10 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { Modal, Button } from 'semantic-ui-react';
-import styled from 'styled-components';
-import { getTranslation } from 'api/i18n';
-import LexicalEntryByIds from 'components/LexicalEntryByIds';
+import React from "react";
+import { Button, Modal } from "semantic-ui-react";
+import { getTranslation } from "api/i18n";
+import PropTypes from "prop-types";
+import styled from "styled-components";
+
+import LexicalEntryByIds from "components/LexicalEntryByIds";
 
 export const LexicalEntryLink = styled.span`
   cursor: pointer;
@@ -15,15 +16,19 @@ export const LexicalEntryLink = styled.span`
   }
 `;
 
-function LexicalEntryModal({
-  node, actions, entitiesMode, defaultMode, onClose, onlyViewMode,
-}) {
-  const {
-    id, translation, lexicalEntries, parent_id: perspectiveParentId,
-  } = node;
+function LexicalEntryModal({ node, actions, entitiesMode, defaultMode, onClose, onlyViewMode }) {
+  const { id, translation, lexicalEntries, parent_id: perspectiveParentId } = node;
 
   return (
-    <Modal dimmer open size="fullscreen" closeOnDimmerClick={false} closeIcon onClose={onClose} className="lingvo-modal2">
+    <Modal
+      dimmer
+      open
+      size="fullscreen"
+      closeOnDimmerClick={false}
+      closeIcon
+      onClose={onClose}
+      className="lingvo-modal2"
+    >
       <Modal.Header>{translation}</Modal.Header>
       <Modal.Content scrolling>
         <LexicalEntryByIds
@@ -38,7 +43,7 @@ function LexicalEntryModal({
         />
       </Modal.Content>
       <Modal.Actions>
-        <Button content={getTranslation('Cancel')} onClick={onClose} className="lingvo-button-basic-black" />
+        <Button content={getTranslation("Cancel")} onClick={onClose} className="lingvo-button-basic-black" />
       </Modal.Actions>
     </Modal>
   );
@@ -48,19 +53,18 @@ LexicalEntryModal.propTypes = {
   node: PropTypes.shape({
     id: PropTypes.array.isRequired,
     translation: PropTypes.string.isRequired,
-    lexicalEntries: PropTypes.array.isRequired,
+    lexicalEntries: PropTypes.array.isRequired
   }).isRequired,
   actions: PropTypes.array,
   entitiesMode: PropTypes.string,
   defaultMode: PropTypes.string.isRequired,
   onlyViewMode: PropTypes.bool.isRequired,
-  onClose: PropTypes.func.isRequired,
+  onClose: PropTypes.func.isRequired
 };
 
 LexicalEntryModal.defaultProps = {
   actions: [],
-  entitiesMode: 'published',
+  entitiesMode: "published"
 };
-
 
 export default LexicalEntryModal;

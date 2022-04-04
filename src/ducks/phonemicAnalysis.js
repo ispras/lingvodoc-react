@@ -1,8 +1,8 @@
-import { combineReducers } from 'redux';
+import { combineReducers } from "redux";
 
 // Actions
-export const OPEN_MODAL = '@phonemicAnalysis/OPEN_MODAL';
-export const CLOSE_MODAL = '@phonemicAnalysis/CLOSE_MODAL';
+export const OPEN_MODAL = "@phonemicAnalysis/OPEN_MODAL";
+export const CLOSE_MODAL = "@phonemicAnalysis/CLOSE_MODAL";
 
 export const openModal = perspectiveId => ({ type: OPEN_MODAL, payload: perspectiveId });
 export const closeModal = () => ({ type: CLOSE_MODAL });
@@ -31,5 +31,5 @@ const perspectiveId = (state = null, { type, payload }) => {
 
 export default combineReducers({
   perspectiveId,
-  visible,
+  visible
 });

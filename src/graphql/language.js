@@ -1,4 +1,4 @@
-import gql from 'graphql-tag';
+import gql from "graphql-tag";
 
 export const languagesQuery = gql`
   query Languages {
@@ -14,7 +14,7 @@ export const languagesQuery = gql`
 `;
 
 export const createLanguageMutation = gql`
-  mutation($parent_id: LingvodocID!, $translation_atoms: [ObjectVal]!) {
+  mutation ($parent_id: LingvodocID!, $translation_atoms: [ObjectVal]!) {
     create_language(parent_id: $parent_id, translation_atoms: $translation_atoms) {
       language {
         id

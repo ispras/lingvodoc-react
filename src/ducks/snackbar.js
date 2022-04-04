@@ -1,9 +1,9 @@
-import { combineReducers } from 'redux';
-import { OrderedSet } from 'immutable';
+import { OrderedSet } from "immutable";
+import { combineReducers } from "redux";
 // Actions
-export const ADD = '@snackbar/ADD';
-export const REMOVE = '@snackbar/REMOVE';
-export const CLEAR = '@snackbar/CLEAR';
+export const ADD = "@snackbar/ADD";
+export const REMOVE = "@snackbar/REMOVE";
+export const CLEAR = "@snackbar/CLEAR";
 
 // Reducers
 const messagesInit = OrderedSet.of();
@@ -21,11 +21,11 @@ function messages(state = messagesInit, action = {}) {
 }
 
 export default combineReducers({
-  messages,
+  messages
 });
 
 // Action Creators
-export function add({ text, ttl = 8000, dismissable = false, color = 'blue' }) {
+export function add({ text, ttl = 8000, dismissable = false, color = "blue" }) {
   return {
     type: ADD,
     payload: {
@@ -33,25 +33,25 @@ export function add({ text, ttl = 8000, dismissable = false, color = 'blue' }) {
       ttl,
       dismissable,
       color,
-      timestamp: +new Date(),
-    },
+      timestamp: +new Date()
+    }
   };
 }
 
 export function suc(text, options = {}) {
-  return add({ ...options, text, color: 'green' });
+  return add({ ...options, text, color: "green" });
 }
 
 export function log(text, options = {}) {
-  return add({ ...options, text, color: 'blue' });
+  return add({ ...options, text, color: "blue" });
 }
 
 export function warn(text, options = {}) {
-  return add({ ...options, text, color: 'yellow' });
+  return add({ ...options, text, color: "yellow" });
 }
 
 export function err(text, options = {}) {
-  return add({ ...options, text, color: 'red' });
+  return add({ ...options, text, color: "red" });
 }
 
 export function remove(payload) {

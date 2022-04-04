@@ -1,18 +1,20 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { compose } from 'recompose';
-import { graphql } from 'react-apollo';
-import { Segment, Checkbox, Button, Modal, Tab, Dimmer, Header, Icon } from 'semantic-ui-react';
-import { isEqual } from 'lodash';
-import styled from 'styled-components';
-import { queryPerspective, LexicalEntryByIds } from 'components/PerspectiveView';
-import buildPartialLanguageTree from 'components/GroupingTagModal/partialTree';
-import Tree from 'components/GroupingTagModal/Tree';
-import SearchLexicalEntries from 'components/GroupingTagModal/search';
-import { languageTreeSourceQuery, createMutation, publishMutation, acceptMutation, removeMutation } from './graphql';
-import { getTranslation } from 'api/i18n';
+import React from "react";
+import { graphql } from "react-apollo";
+import { Button, Checkbox, Dimmer, Header, Icon, Modal, Segment, Tab } from "semantic-ui-react";
+import { getTranslation } from "api/i18n";
+import { isEqual } from "lodash";
+import PropTypes from "prop-types";
+import { compose } from "recompose";
+import styled from "styled-components";
 
-const ModalContentWrapper = styled('div')`
+import buildPartialLanguageTree from "components/GroupingTagModal/partialTree";
+import SearchLexicalEntries from "components/GroupingTagModal/search";
+import Tree from "components/GroupingTagModal/Tree";
+import { LexicalEntryByIds, queryPerspective } from "components/PerspectiveView";
+
+import { acceptMutation, createMutation, languageTreeSourceQuery, publishMutation, removeMutation } from "./graphql";
+
+const ModalContentWrapper = styled("div")`
   min-height: 60vh;
 `;
 
@@ -29,28 +31,26 @@ function buildTree(lexicalEntry, column, allLanguages, allDictionaries, allPersp
     lexicalEntries,
     allLanguages,
     allDictionaries,
-    allPerspectives,
+    allPerspectives
   });
 }
 
-const ViewLink = (props) => {
-  const {
-    lexicalEntry, column, allLanguages, allDictionaries, allPerspectives,
-  } = props;
+const ViewLink = props => {
+  const { lexicalEntry, column, allLanguages, allDictionaries, allPerspectives } = props;
 
   const tree = buildTree(lexicalEntry, column, allLanguages, allDictionaries, allPerspectives);
 
   const panes = [
     {
-      menuItem: getTranslation('View'),
+      menuItem: getTranslation("View"),
       render: () => (
         <div>
           <Segment padded="very" textAlign="center">
-            <Tree resultsTree={tree} mode='view' />
+            <Tree resultsTree={tree} mode="view" />
           </Segment>
         </div>
-      ),
-    },
+      )
+    }
   ];
   return <Tab panes={panes} />;
 };
@@ -60,41 +60,41 @@ ViewLink.propTypes = {
   column: PropTypes.object.isRequired,
   allLanguages: PropTypes.array.isRequired,
   allDictionaries: PropTypes.array.isRequired,
-  allPerspectives: PropTypes.array.isRequired,
+  allPerspectives: PropTypes.array.isRequired
 };
 
-const EditLink = (props) => {
-  const {
-    lexicalEntry, column, allLanguages, allDictionaries, allPerspectives, create, remove,
-  } = props;
+const EditLink = props => {
+  const { lexicalEntry, column, allLanguages, allDictionaries, allPerspectives, create, remove } = props;
 
   const tree = buildTree(lexicalEntry, column, allLanguages, allDictionaries, allPerspectives);
 
   const actions = [
     {
-      title: getTranslation('Remove'),
-      action: (entry) => {
-        const entity = lexicalEntry.entities.find(e => isEqual(e.link_id, entry.id) && isEqual(e.field_id, column.field_id));
+      title: getTranslation("Remove"),
+      action: entry => {
+        const entity = lexicalEntry.entities.find(
+          e => isEqual(e.link_id, entry.id) && isEqual(e.field_id, column.field_id)
+        );
         if (entity) {
           remove(entity);
         }
-      },
-    },
+      }
+    }
   ];
 
   const panes = [
     {
-      menuItem: getTranslation('View'),
+      menuItem: getTranslation("View"),
       render: () => (
         <div>
           <Segment padded="very" textAlign="center">
-            <Tree resultsTree={tree} TableComponent={LexicalEntryByIds} actions={actions} mode='edit' />
+            <Tree resultsTree={tree} TableComponent={LexicalEntryByIds} actions={actions} mode="edit" />
           </Segment>
         </div>
-      ),
+      )
     },
     {
-      menuItem: getTranslation('Add link'),
+      menuItem: getTranslation("Add link"),
       render: () => (
         <SearchLexicalEntries
           lexicalEntry={lexicalEntry}
@@ -105,8 +105,8 @@ const EditLink = (props) => {
           allPerspectives={allPerspectives}
           joinGroup={create}
         />
-      ),
-    },
+      )
+    }
   ];
   return <Tab panes={panes} />;
 };
@@ -118,23 +118,21 @@ EditLink.propTypes = {
   allDictionaries: PropTypes.array.isRequired,
   allPerspectives: PropTypes.array.isRequired,
   create: PropTypes.func.isRequired,
-  remove: PropTypes.func.isRequired,
+  remove: PropTypes.func.isRequired
 };
 
-const PublishLink = (props) => {
-  const {
-    lexicalEntry, column, allLanguages, allDictionaries, allPerspectives, publish,
-  } = props;
+const PublishLink = props => {
+  const { lexicalEntry, column, allLanguages, allDictionaries, allPerspectives, publish } = props;
 
   const tree = buildTree(lexicalEntry, column, allLanguages, allDictionaries, allPerspectives);
   const entity = lexicalEntry.entities.find(e => isEqual(e.field_id, column.field_id));
   const label = entity.published
-    ? getTranslation('The entity is currently published. Click to unpublish.')
-    : getTranslation('The entity is NOT currently published. Click to publish.');
+    ? getTranslation("The entity is currently published. Click to unpublish.")
+    : getTranslation("The entity is NOT currently published. Click to publish.");
 
   const panes = [
     {
-      menuItem: getTranslation('Publish'),
+      menuItem: getTranslation("Publish"),
       render: () => (
         <div>
           {entity && (
@@ -148,11 +146,11 @@ const PublishLink = (props) => {
             </Segment>
           )}
           <Segment padded="very" textAlign="center">
-            <Tree resultsTree={tree} TableComponent={LexicalEntryByIds} mode='publish' />
+            <Tree resultsTree={tree} TableComponent={LexicalEntryByIds} mode="publish" />
           </Segment>
         </div>
-      ),
-    },
+      )
+    }
   ];
   return <Tab panes={panes} />;
 };
@@ -163,33 +161,36 @@ PublishLink.propTypes = {
   allLanguages: PropTypes.array.isRequired,
   allDictionaries: PropTypes.array.isRequired,
   allPerspectives: PropTypes.array.isRequired,
-  publish: PropTypes.func.isRequired,
+  publish: PropTypes.func.isRequired
 };
 
-const ContributionsLink = (props) => {
-  const {
-    lexicalEntry, column, allLanguages, allDictionaries, allPerspectives, accept,
-  } = props;
+const ContributionsLink = props => {
+  const { lexicalEntry, column, allLanguages, allDictionaries, allPerspectives, accept } = props;
 
   const tree = buildTree(lexicalEntry, column, allLanguages, allDictionaries, allPerspectives);
   const entity = lexicalEntry.entities.find(e => isEqual(e.field_id, column.field_id));
 
   const panes = [
     {
-      menuItem: getTranslation('Contributions'),
+      menuItem: getTranslation("Contributions"),
       render: () => (
         <div>
           {entity && (
             <Segment>
-              <Button positive content={getTranslation("Accept")} disabled={entity.accepted} onClick={() => accept(entity, true)} />
+              <Button
+                positive
+                content={getTranslation("Accept")}
+                disabled={entity.accepted}
+                onClick={() => accept(entity, true)}
+              />
             </Segment>
           )}
           <Segment padded="very" textAlign="center">
-            <Tree resultsTree={tree} TableComponent={LexicalEntryByIds} mode='contributions' />
+            <Tree resultsTree={tree} TableComponent={LexicalEntryByIds} mode="contributions" />
           </Segment>
         </div>
-      ),
-    },
+      )
+    }
   ];
   return <Tab panes={panes} />;
 };
@@ -200,18 +201,18 @@ ContributionsLink.propTypes = {
   allLanguages: PropTypes.array.isRequired,
   allDictionaries: PropTypes.array.isRequired,
   allPerspectives: PropTypes.array.isRequired,
-  accept: PropTypes.func.isRequired,
+  accept: PropTypes.func.isRequired
 };
 
-const getComponent = (mode) => {
+const getComponent = mode => {
   switch (mode) {
-    case 'edit':
+    case "edit":
       return EditLink;
-    case 'view':
+    case "view":
       return ViewLink;
-    case 'publish':
+    case "publish":
       return PublishLink;
-    case 'contributions':
+    case "contributions":
       return ContributionsLink;
     default:
       return <Segment negative>Mode {mode} not supported</Segment>;
@@ -229,16 +230,14 @@ class LinkModalContent extends React.PureComponent {
   }
 
   createEntity(targetLexicalEntry) {
-    const {
-      create, lexicalEntry, entitiesMode, fieldId,
-    } = this.props;
+    const { create, lexicalEntry, entitiesMode, fieldId } = this.props;
 
     create({
       variables: {
         parent_id: lexicalEntry.id,
         field_id: fieldId,
         linkId: targetLexicalEntry.id,
-        linkPerspectiveId: targetLexicalEntry.parent_id,
+        linkPerspectiveId: targetLexicalEntry.parent_id
       },
       refetchQueries: [
         {
@@ -246,10 +245,10 @@ class LinkModalContent extends React.PureComponent {
           query: queryPerspective,
           variables: {
             id: lexicalEntry.parent_id,
-            entitiesMode,
-          },
-        },
-      ],
+            entitiesMode
+          }
+        }
+      ]
     });
   }
 
@@ -264,10 +263,10 @@ class LinkModalContent extends React.PureComponent {
           query: queryPerspective,
           variables: {
             id: lexicalEntry.parent_id,
-            entitiesMode,
-          },
-        },
-      ],
+            entitiesMode
+          }
+        }
+      ]
     });
   }
 
@@ -282,10 +281,10 @@ class LinkModalContent extends React.PureComponent {
           query: queryPerspective,
           variables: {
             id: lexicalEntry.parent_id,
-            entitiesMode,
-          },
-        },
-      ],
+            entitiesMode
+          }
+        }
+      ]
     });
   }
 
@@ -299,17 +298,15 @@ class LinkModalContent extends React.PureComponent {
           query: queryPerspective,
           variables: {
             id: lexicalEntry.parent_id,
-            entitiesMode,
-          },
-        },
-      ],
+            entitiesMode
+          }
+        }
+      ]
     });
   }
 
   render() {
-    const {
-      data, lexicalEntry, fieldId, entitiesMode, mode,
-    } = this.props;
+    const { data, lexicalEntry, fieldId, entitiesMode, mode } = this.props;
 
     const {
       loading,
@@ -317,7 +314,7 @@ class LinkModalContent extends React.PureComponent {
       language_tree: allLanguages,
       dictionaries: allDictionaries,
       perspectives: allPerspectives,
-      perspective,
+      perspective
     } = data;
 
     if (error) {
@@ -327,18 +324,16 @@ class LinkModalContent extends React.PureComponent {
     if (loading) {
       return (
         <ModalContentWrapper>
-          <Dimmer active style={{ minHeight: '60vh', background: 'none' }}>
+          <Dimmer active style={{ minHeight: "60vh", background: "none" }}>
             <Header as="h2" icon>
               <Icon name="spinner" loading />
             </Header>
           </Dimmer>
         </ModalContentWrapper>
-      ); 
+      );
     }
 
-    const column =
-      perspective.columns.find(c =>
-        isEqual(c.field_id, fieldId) && !!c.link_id);
+    const column = perspective.columns.find(c => isEqual(c.field_id, fieldId) && !!c.link_id);
 
     const Component = getComponent(mode);
 
@@ -366,7 +361,7 @@ LinkModalContent.propTypes = {
   data: PropTypes.shape({
     language_tree: PropTypes.array,
     dictionaries: PropTypes.array,
-    perspectives: PropTypes.array,
+    perspectives: PropTypes.array
   }).isRequired,
   perspectiveId: PropTypes.array.isRequired,
   lexicalEntry: PropTypes.object.isRequired,
@@ -376,20 +371,28 @@ LinkModalContent.propTypes = {
   create: PropTypes.func.isRequired,
   publish: PropTypes.func.isRequired,
   accept: PropTypes.func.isRequired,
-  remove: PropTypes.func.isRequired,
+  remove: PropTypes.func.isRequired
 };
 
 const Content = compose(
   graphql(languageTreeSourceQuery),
-  graphql(createMutation, { name: 'create' }),
-  graphql(publishMutation, { name: 'publish' }),
-  graphql(acceptMutation, { name: 'accept' }),
-  graphql(removeMutation, { name: 'remove' })
+  graphql(createMutation, { name: "create" }),
+  graphql(publishMutation, { name: "publish" }),
+  graphql(acceptMutation, { name: "accept" }),
+  graphql(removeMutation, { name: "remove" })
 )(LinkModalContent);
 
-const LinkModal = (props) => {
+const LinkModal = props => {
   return (
-    <Modal dimmer open size="fullscreen" closeOnDimmerClick={false} closeIcon onClose={props.onClose} className="lingvo-modal2">
+    <Modal
+      dimmer
+      open
+      size="fullscreen"
+      closeOnDimmerClick={false}
+      closeIcon
+      onClose={props.onClose}
+      className="lingvo-modal2"
+    >
       <Modal.Content>
         <Content {...props} />
       </Modal.Content>
@@ -406,13 +409,13 @@ LinkModal.propTypes = {
   fieldId: PropTypes.array,
   mode: PropTypes.string.isRequired,
   entitiesMode: PropTypes.string.isRequired,
-  onClose: PropTypes.func.isRequired,
+  onClose: PropTypes.func.isRequired
 };
 
 LinkModal.defaultProps = {
   perspectiveId: null,
   lexicalEntry: null,
-  fieldId: null,
+  fieldId: null
 };
 
 export default LinkModal;

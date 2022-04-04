@@ -1,43 +1,41 @@
-import { compose } from 'redux';
-import { OrderedMap, Map, Set, List, fromJS, is } from 'immutable';
+import { fromJS, is, List, Map, OrderedMap, Set } from "immutable";
+import { compose } from "redux";
 
 // Actions
-const INITIALIZE = '@import_dialeqt/INITIALIZE';
-const NEXT_STEP = '@import_dialeqt/NEXT_STEP';
-const GOTO_STEP = '@import_dialeqt/GOTO_STEP';
-const SET_DIALEQT_BLOB_ID = '@import_dialeqt/SET_DIALEQT_BLOB_ID';
-const SET_DIALEQT_ACTION = '@import_dialeqt/SET_DIALEQT_ACTION';
-const SET_PARENT_LANGUAGE = '@create/SET_PARENT_LANGUAGE';
-const SET_DICTIONARY_TRANSLATIONS = '@create/SET_DICTIONARY_TRANSLATIONS';
-const SET_UPDATE_DICTIONARY_ID = '@create/SET_UPDATE_DICTIONARY_ID';
-const SET_LICENSE = '@create/SET_LICENSE';
+const INITIALIZE = "@import_dialeqt/INITIALIZE";
+const NEXT_STEP = "@import_dialeqt/NEXT_STEP";
+const GOTO_STEP = "@import_dialeqt/GOTO_STEP";
+const SET_DIALEQT_BLOB_ID = "@import_dialeqt/SET_DIALEQT_BLOB_ID";
+const SET_DIALEQT_ACTION = "@import_dialeqt/SET_DIALEQT_ACTION";
+const SET_PARENT_LANGUAGE = "@create/SET_PARENT_LANGUAGE";
+const SET_DICTIONARY_TRANSLATIONS = "@create/SET_DICTIONARY_TRANSLATIONS";
+const SET_UPDATE_DICTIONARY_ID = "@create/SET_UPDATE_DICTIONARY_ID";
+const SET_LICENSE = "@create/SET_LICENSE";
 
 // Reducers
 function meta(blob) {
-  return blob
-    .set('translation', new Map());
+  return blob.set("translation", new Map());
 }
 
 function updateNextStep(state, step) {
-  return ({
-    CHOICE:
-      state.get('dialeqt_action') == 'create' ?
-        'PARENT_LANGUAGE' :
-        'UPDATE_DICTIONARY',
-    PARENT_LANGUAGE: 'TRANSLATIONS',
-    TRANSLATIONS: 'FINISH',
-    UPDATE_DICTIONARY: 'FINISH',
-  })[step] || null;
+  return (
+    {
+      CHOICE: state.get("dialeqt_action") == "create" ? "PARENT_LANGUAGE" : "UPDATE_DICTIONARY",
+      PARENT_LANGUAGE: "TRANSLATIONS",
+      TRANSLATIONS: "FINISH",
+      UPDATE_DICTIONARY: "FINISH"
+    }[step] || null
+  );
 }
 
 const initial = new Map({
-  step: 'CHOICE',
+  step: "CHOICE",
   dialeqt_blob_id: null,
-  dialeqt_action: 'create',
+  dialeqt_action: "create",
   parentLanguage: null,
   translations: new List(),
   update_dictionary_id: null,
-  license: 'proprietary',
+  license: "proprietary"
 });
 
 export default function (state = initial, { type, payload }) {
@@ -47,28 +45,28 @@ export default function (state = initial, { type, payload }) {
       newState = new Map(initial);
       break;
     case NEXT_STEP:
-      newState = state.update('step', (step) => updateNextStep(state, step));
+      newState = state.update("step", step => updateNextStep(state, step));
       break;
     case GOTO_STEP:
-      newState = state.set('step', payload);
+      newState = state.set("step", payload);
       break;
     case SET_DIALEQT_BLOB_ID:
-      newState = state.set('dialeqt_blob_id', payload);
+      newState = state.set("dialeqt_blob_id", payload);
       break;
     case SET_DIALEQT_ACTION:
-      newState = state.set('dialeqt_action', payload);
+      newState = state.set("dialeqt_action", payload);
       break;
     case SET_PARENT_LANGUAGE:
-      newState = state.set('parentLanguage', payload);
+      newState = state.set("parentLanguage", payload);
       break;
     case SET_DICTIONARY_TRANSLATIONS:
-      newState = state.set('translations', payload);
+      newState = state.set("translations", payload);
       break;
     case SET_UPDATE_DICTIONARY_ID:
-      newState = state.set('update_dictionary_id', payload);
+      newState = state.set("update_dictionary_id", payload);
       break;
     case SET_LICENSE:
-      newState = state.set('license', payload);
+      newState = state.set("license", payload);
       break;
     default:
       return state;
@@ -79,59 +77,55 @@ export default function (state = initial, { type, payload }) {
 
 // Selectors
 export const selectors = {
-
   getStep(state) {
-    return state.dialeqtImport.get('step');
+    return state.dialeqtImport.get("step");
   },
 
   getNextStep(state) {
+    switch (state.dialeqtImport.get("step")) {
+      case "CHOICE":
+        return !!state.dialeqtImport.get("dialeqt_blob_id");
 
-    switch (state.dialeqtImport.get('step')) {
+      case "PARENT_LANGUAGE":
+        return !!state.dialeqtImport.get("parentLanguage");
 
-      case 'CHOICE':
-        return !!state.dialeqtImport.get('dialeqt_blob_id');
-
-      case 'PARENT_LANGUAGE':
-        return !!state.dialeqtImport.get('parentLanguage');
-
-      case 'TRANSLATIONS':
-
+      case "TRANSLATIONS":
         return (
-          state.dialeqtImport.get('translations').size > 0 &&
-          state.dialeqtImport.get('translations').every(
-            translation => translation.get('content').length > 0));
+          state.dialeqtImport.get("translations").size > 0 &&
+          state.dialeqtImport.get("translations").every(translation => translation.get("content").length > 0)
+        );
 
-      case 'UPDATE_DICTIONARY':
-        return !!state.dialeqtImport.get('update_dictionary_id');
+      case "UPDATE_DICTIONARY":
+        return !!state.dialeqtImport.get("update_dictionary_id");
 
       default:
         return false;
-    }  
+    }
   },
 
   getDialeqtBlobId(state) {
-    return state.dialeqtImport.get('dialeqt_blob_id');
+    return state.dialeqtImport.get("dialeqt_blob_id");
   },
 
   getDialeqtAction(state) {
-    return state.dialeqtImport.get('dialeqt_action');
+    return state.dialeqtImport.get("dialeqt_action");
   },
 
   getParentLanguage(state) {
-    return state.dialeqtImport.get('parentLanguage');
+    return state.dialeqtImport.get("parentLanguage");
   },
 
   getTranslations(state) {
-    return state.dialeqtImport.get('translations');
+    return state.dialeqtImport.get("translations");
   },
 
   getUpdateDictionaryId(state) {
-    return state.dialeqtImport.get('update_dictionary_id');
+    return state.dialeqtImport.get("update_dictionary_id");
   },
 
   getLicense(state) {
-    return state.dialeqtImport.get('license');
-  },
+    return state.dialeqtImport.get("license");
+  }
 };
 
 // Action Creators
@@ -158,14 +152,14 @@ export function setDialeqtAction(payload) {
 export function setParentLanguage(parentLanguage) {
   return {
     type: SET_PARENT_LANGUAGE,
-    payload: parentLanguage,
+    payload: parentLanguage
   };
 }
 
 export function setTranslations(translations) {
   return {
     type: SET_DICTIONARY_TRANSLATIONS,
-    payload: fromJS(translations),
+    payload: fromJS(translations)
   };
 }
 
@@ -176,4 +170,3 @@ export function setUpdateDictionaryId(payload) {
 export function setLicense(payload) {
   return { type: SET_LICENSE, payload };
 }
-

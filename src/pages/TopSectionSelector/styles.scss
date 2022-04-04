@@ -17,7 +17,7 @@
   padding-top: 114px;
 
   flex-wrap: wrap;
-  
+
   .hidden {
     width: 70%;
     top: -150px;
@@ -37,7 +37,6 @@
   @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
     padding-top: 50px;
   }
-
 }
 
 /* main block */
@@ -61,7 +60,7 @@
       color: #372f9d;
     }
   }
-  
+
   &__content {
     margin: 0 auto;
     max-width: 1000px;
@@ -97,7 +96,7 @@
   }
 
   &_advantages {
-    background: #F4F6F8;
+    background: #f4f6f8;
     padding-top: 100px;
     padding-bottom: 100px;
     overflow: hidden;
@@ -277,7 +276,6 @@
         width: 100%;
         max-width: 100%;
       }
-
     }
 
     @media only screen and (max-device-width: 500px), only screen and (max-width: 500px) {
@@ -296,7 +294,6 @@
         margin-bottom: 10px;
       }
     }
-
   }
 
   &__opportunities {
@@ -344,7 +341,7 @@
         }
 
         & .lingvo-icon-plus {
-          content: '';
+          content: "";
           display: block;
           position: absolute;
           top: calc(50% - 16px);
@@ -369,7 +366,7 @@
             top: calc(50% - 9px);
           }
         }
-        
+
         & .icon {
           display: none !important;
         }
@@ -378,7 +375,6 @@
       &-content {
         padding: 0 37px 30px 0 !important;
       }
-      
     }
 
     &-full {
@@ -412,7 +408,6 @@
         order: 1;
         padding-top: 50px;
       }
-
     }
 
     @media only screen and (max-device-width: 500px), only screen and (max-width: 500px) {
@@ -432,7 +427,6 @@
         line-height: 22px;
       }
     }
-
   }
 }
 /* /main block */

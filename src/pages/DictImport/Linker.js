@@ -1,27 +1,25 @@
-import React from 'react';
-import { pure } from 'recompose';
-import { Dropdown, Button, Checkbox, Popup, Grid, Icon } from 'semantic-ui-react';
-import { getTranslation } from 'api/i18n';
+import React from "react";
+import { Button, Checkbox, Dropdown, Grid, Icon, Popup } from "semantic-ui-react";
+import { getTranslation } from "api/i18n";
+import { pure } from "recompose";
 
 function valueColor(value) {
-  if (value === 'keep') {
-    return 'green';
+  if (value === "keep") {
+    return "green";
   }
 
-  if (value === 'spread') {
-    return 'red';
+  if (value === "spread") {
+    return "red";
   }
 
-  if (value && value.includes('/')) {
-    return 'purple';
+  if (value && value.includes("/")) {
+    return "purple";
   }
 
   return null;
 }
 
-function Column({
-  spread, name, linkOptions, value, onChange,
-}) {
+function Column({ spread, name, linkOptions, value, onChange }) {
   const trigger = (
     <Button size="tiny" className="column-button" color={valueColor(value)}>
       {name}
@@ -29,18 +27,18 @@ function Column({
   );
 
   if (spread) {
-    return React.cloneElement(trigger, { inverted: true, color: 'red', disabled: true });
+    return React.cloneElement(trigger, { inverted: true, color: "red", disabled: true });
   }
 
-  const selectValue = value && value.includes('/') ? value : null;
+  const selectValue = value && value.includes("/") ? value : null;
 
   return (
     <Popup className="column-popup" trigger={trigger} position="bottom center" on="click" style={{}} flowing hoverable>
       <Grid centered divided columns={3}>
         <Grid.Column textAlign="center">
           <Button
-            color={value === 'keep' ? 'green' : null}
-            onClick={() => onChange(name, value === 'keep' ? null : 'keep', value)}
+            color={value === "keep" ? "green" : null}
+            onClick={() => onChange(name, value === "keep" ? null : "keep", value)}
           >
             {getTranslation("Keep")}
           </Button>
@@ -57,8 +55,8 @@ function Column({
         </Grid.Column>
         <Grid.Column textAlign="center">
           <Button
-            color={value === 'spread' ? 'red' : null}
-            onClick={() => onChange(name, value === 'spread' ? null : 'spread', value)}
+            color={value === "spread" ? "red" : null}
+            onClick={() => onChange(name, value === "spread" ? null : "spread", value)}
           >
             {getTranslation("Spread")}
           </Button>
@@ -68,56 +66,52 @@ function Column({
   );
 }
 
-function Columns({
-  blob, spreads, linkOptions, onUpdateColumn, onToggleColumn, onDelete,
-}) {
-  const columns = blob.getIn(['additional_metadata', 'starling_fields']);
-  const values = blob.get('values');
+function Columns({ blob, spreads, linkOptions, onUpdateColumn, onToggleColumn, onDelete }) {
+  const columns = blob.getIn(["additional_metadata", "starling_fields"]);
+  const values = blob.get("values");
 
   return (
     <div className="blob">
-      <Button negative icon="trash" size="tiny" onClick={() => onDelete(blob.get('id'))} />
-      <b className="blob-name">{blob.get('name')}</b>
+      <Button negative icon="trash" size="tiny" onClick={() => onDelete(blob.get("id"))} />
+      <b className="blob-name">{blob.get("name")}</b>
       <div className="blob-columns">
         {columns.map(column => (
           <Column
             key={column}
             name={column}
-            linkOptions={linkOptions.filter(x => x.key !== blob.get('id').join('/'))}
+            linkOptions={linkOptions.filter(x => x.key !== blob.get("id").join("/"))}
             onChange={onUpdateColumn}
             value={values.get(column)}
           />
         ))}
         {spreads.map(spread => (
-          <Column spread key={spread.get('from').join(spread.get('column'))} name={spread.get('column')} />
+          <Column spread key={spread.get("from").join(spread.get("column"))} name={spread.get("column")} />
         ))}
       </div>
-      <Checkbox className="blob-checkbox" onClick={onToggleColumn} checked={blob.get('add')} />
+      <Checkbox className="blob-checkbox" onClick={onToggleColumn} checked={blob.get("add")} />
     </div>
   );
 }
 
-function Linker({
-  blobs, state, spreads, onSelect, onDelete, onUpdateColumn, onToggleColumn,
-}) {
+function Linker({ blobs, state, spreads, onSelect, onDelete, onUpdateColumn, onToggleColumn }) {
   const stateOptions = blobs.reduce(
     (acc, blob) => [
       ...acc,
       {
-        key: blob.get('id').join('/'),
-        value: blob.get('id').join('/'),
-        text: blob.get('name'),
-      },
+        key: blob.get("id").join("/"),
+        value: blob.get("id").join("/"),
+        text: blob.get("name")
+      }
     ],
     []
   );
 
   const first = state.first();
 
-  const selected = first ? first.get('id').join('/') : null;
+  const selected = first ? first.get("id").join("/") : null;
 
   function onChange(event, data) {
-    onSelect(data.value.split('/').map(x => parseInt(x, 10)));
+    onSelect(data.value.split("/").map(x => parseInt(x, 10)));
   }
 
   return (
@@ -134,7 +128,7 @@ function Linker({
       {state
         .map((v, id) => (
           <Columns
-            key={id.join('/')}
+            key={id.join("/")}
             blob={v}
             linkOptions={stateOptions}
             spreads={spreads.get(id, [])}

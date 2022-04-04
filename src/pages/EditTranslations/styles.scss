@@ -18,18 +18,18 @@
 
     & .item {
       border-radius: 4px !important;
-      color: #5D54CD !important;
+      color: #5d54cd !important;
       padding: 8px 14px 8px 16px !important;
       line-height: 20px !important;
       margin: 0 10px !important;
 
       &:hover {
-        background: #F5F5F5 !important;
+        background: #f5f5f5 !important;
       }
 
       &.active {
         color: #fff !important;
-        background: #5D54CD !important;
+        background: #5d54cd !important;
       }
     }
 
@@ -46,7 +46,6 @@
         margin: 0 6px 6px 6px !important;
       }
     }
-
   }
 }
 /* /menu */
@@ -74,13 +73,12 @@
   }
 
   &_disab-hidden {
-    &.ui.disabled.button, 
+    &.ui.disabled.button,
     &.ui.button:disabled {
       opacity: 0 !important;
       visibility: hidden !important;
     }
   }
-
 }
 
 /* popups */
@@ -96,16 +94,16 @@
 
 @keyframes backgroundchange {
   from {
-    background-color: #EDECF6;
+    background-color: #edecf6;
   }
 
   to {
-    background-color: #FAFAFA;
+    background-color: #fafafa;
   }
 }
 
 .lingvo-gist {
-  background-color: #FAFAFA;
+  background-color: #fafafa;
   border-radius: 8px;
   padding: 20px;
   margin-top: 20px;
@@ -121,7 +119,7 @@
   }
 
   &__header {
-    color: #5D54CD;
+    color: #5d54cd;
     font-size: 16px;
     line-height: 20px;
     font-weight: bold;
@@ -170,10 +168,9 @@
       min-height: 42px !important;
 
       &:focus {
-        border: 1px solid #5D54CD !important;
+        border: 1px solid #5d54cd !important;
       }
     }
-
   }
 
   &.dropdown {
@@ -182,17 +179,17 @@
     position: relative !important;
 
     &:hover {
-      border: 1px solid #DCDCDC !important;
+      border: 1px solid #dcdcdc !important;
     }
 
     &:focus {
-      border: 1px solid #5D54CD !important;
+      border: 1px solid #5d54cd !important;
       transition: border 0.2s;
     }
 
     & .lingvo-icon {
       vertical-align: middle;
-  
+
       &_arrow {
         position: absolute;
         right: 17px;
@@ -206,7 +203,7 @@
     }
 
     &.active {
-      background: #5D54CD !important;
+      background: #5d54cd !important;
       color: #fff !important;
       transition: all 0.2s;
 
@@ -214,7 +211,7 @@
         border-radius: 10px !important;
 
         &:hover {
-          border-color: #5D54CD !important;
+          border-color: #5d54cd !important;
         }
       }
 
@@ -222,7 +219,7 @@
         color: #fff !important;
         transition: color 0.2s;
       }
-  
+
       & .lingvo-icon {
         &_arrow {
           transition: background-color 0.2s;
@@ -259,17 +256,15 @@
         }
 
         &:hover {
-          background: #EDECF6 !important;
-          color: #372F9D !important;
+          background: #edecf6 !important;
+          color: #372f9d !important;
         }
-
       }
     }
 
     &.upward > .menu {
       margin: 0 0 4px 0 !important;
     }
-
   }
 
   &_language.dropdown {
@@ -288,11 +283,10 @@
     box-shadow: none !important;
 
     &:focus {
-      border: 1px solid #5D54CD !important;
+      border: 1px solid #5d54cd !important;
       outline: none !important;
     }
   }
-
 }
 /* /gist element */
 
@@ -305,7 +299,7 @@
   &:first-child {
     margin-top: 0;
   }
-  
+
   &__text {
     flex: 1 1 auto;
   }
@@ -340,7 +334,6 @@
       &__delete {
         padding-top: 10px;
       }
-      
     }
   }
 
@@ -349,6 +342,5 @@
       padding-left: 0;
     }
   }
-
 }
 /* /atom grid */

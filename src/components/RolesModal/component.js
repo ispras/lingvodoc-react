@@ -1,11 +1,11 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { compose, onlyUpdateForKeys } from 'recompose';
-import { graphql } from 'react-apollo';
-import gql from 'graphql-tag';
-import { Container, Dropdown, Table, Radio, Button } from 'semantic-ui-react';
-import { some, find, filter, union, uniq, without } from 'lodash';
-import { getTranslation } from 'api/i18n';
+import React from "react";
+import { graphql } from "react-apollo";
+import { Button, Container, Dropdown, Radio, Table } from "semantic-ui-react";
+import { getTranslation } from "api/i18n";
+import gql from "graphql-tag";
+import { filter, find, some, union, uniq, without } from "lodash";
+import PropTypes from "prop-types";
+import { compose, onlyUpdateForKeys } from "recompose";
 
 const queryDictionary = gql`
   query DictionaryRoles($id: LingvodocID!) {
@@ -98,14 +98,13 @@ const deletePerspectiveRoleMutation = gql`
 `;
 
 class Roles extends React.Component {
-
   static hasRole(user, role) {
     return some(role.users, u => u.id === user.id);
   }
 
   constructor(props) {
     super(props);
-    
+
     this.state = {
       selectedUser: undefined
     };
@@ -125,27 +124,38 @@ class Roles extends React.Component {
 
   onToggleRole(user, role) {
     const {
-      id, addRole, deleteRole, data: { refetch },
+      id,
+      addRole,
+      deleteRole,
+      data: { refetch }
     } = this.props;
     const mutation = Roles.hasRole(user, role) ? deleteRole : addRole;
     mutation({
-      variables: { id, userId: user.id, rolesIds: [role.group.id] },
+      variables: { id, userId: user.id, rolesIds: [role.group.id] }
     }).then(refetch);
   }
 
   onAddUser(permissions) {
-    const { id, addRole, data: { refetch } } = this.props;
+    const {
+      id,
+      addRole,
+      data: { refetch }
+    } = this.props;
     const { selectedUser } = this.state;
 
     addRole({
-      variables: { id, userId: selectedUser, rolesIds: permissions.map(p => p.group.id) },
+      variables: { id, userId: selectedUser, rolesIds: permissions.map(p => p.group.id) }
     }).then(() => {
       refetch().then(() => this.setState({ selectedUser: undefined }));
     });
   }
 
   onDeleteUser(user, permissions) {
-    const { id, deleteRole, data: { refetch } } = this.props;
+    const {
+      id,
+      deleteRole,
+      data: { refetch }
+    } = this.props;
     deleteRole({
       variables: { id, userId: user, rolesIds: permissions.map(p => p.group.id) }
     }).then(refetch);
@@ -168,11 +178,11 @@ class Roles extends React.Component {
     const rolesUsers = data[mode] ? data[mode].roles.roles_users : [];
 
     // list of all base groups that can be applied to target
-    const groups = filter(baseGroups, (g) => {
+    const groups = filter(baseGroups, g => {
       switch (mode) {
-        case 'dictionary':
+        case "dictionary":
           return g.dictionary_default;
-        case 'perspective':
+        case "perspective":
           return g.perspective_default;
         default:
           return false;
@@ -183,7 +193,7 @@ class Roles extends React.Component {
       group,
       users: rolesUsers
         .filter(role => role.roles_ids.indexOf(group.id) >= 0)
-        .map(role => find(allUsers, u => u.id === role.user_id)),
+        .map(role => find(allUsers, u => u.id === role.user_id))
     }));
 
     const users = uniq(union(...permissions.map(p => p.users)));
@@ -191,16 +201,15 @@ class Roles extends React.Component {
       .map(user => ({
         key: user.id,
         value: user.id,
-        text: user.name,
+        text: user.name
       }))
       .filter(u => u.value !== 1);
 
     return (
       <Container>
-
         <Dropdown
           key={selectedUser}
-          placeholder={getTranslation('Select user')}
+          placeholder={getTranslation("Select user")}
           search
           selection
           options={userOptions}
@@ -210,22 +219,26 @@ class Roles extends React.Component {
           className="lingvo-roles-dropdown lingvo-roles-dropdown_search"
           icon={<i className="lingvo-icon lingvo-icon_arrow" />}
         />
-        <Button className="lingvo-button-violet" disabled={selectedUser === undefined} onClick={() => this.onAddUser(permissions)}>
-          {getTranslation('Add')}
+        <Button
+          className="lingvo-button-violet"
+          disabled={selectedUser === undefined}
+          onClick={() => this.onAddUser(permissions)}
+        >
+          {getTranslation("Add")}
         </Button>
 
         <Table celled className="lingvo-roles-table">
           <Table.Header>
             <Table.Row>
-              <Table.HeaderCell>{getTranslation('Role')}</Table.HeaderCell>
+              <Table.HeaderCell>{getTranslation("Role")}</Table.HeaderCell>
               {users.map(user => (
                 <Table.HeaderCell key={user.id}>
-                  {user.name} 
-                  <Button 
-                    icon={<i className="lingvo-icon lingvo-icon_trash" />} 
-                    title={getTranslation('Remove user')} 
-                    onClick={() => this.onDeleteUser(user.id, permissions)} 
-                    className="lingvo-button-roles-delete" 
+                  {user.name}
+                  <Button
+                    icon={<i className="lingvo-icon lingvo-icon_trash" />}
+                    title={getTranslation("Remove user")}
+                    onClick={() => this.onDeleteUser(user.id, permissions)}
+                    className="lingvo-button-roles-delete"
                     disabled={user.id === currentUser.id}
                   />
                 </Table.HeaderCell>
@@ -251,7 +264,6 @@ class Roles extends React.Component {
             ))}
           </Table.Body>
         </Table>
-
       </Container>
     );
   }
@@ -265,22 +277,22 @@ Roles.propTypes = {
   data: PropTypes.shape({
     loading: PropTypes.bool.isRequired,
     all_basegroups: PropTypes.array,
-    users: PropTypes.array,
+    users: PropTypes.array
   }).isRequired,
   user: PropTypes.object.isRequired,
   close: PropTypes.func.isRequired
 };
 
 export const DictionaryRoles = compose(
-  onlyUpdateForKeys(['permissions']),
+  onlyUpdateForKeys(["permissions"]),
   graphql(queryDictionary),
-  graphql(addDictionaryRoleMutation, { name: 'addRole' }),
-  graphql(deleteDictionaryRoleMutation, { name: 'deleteRole' })
+  graphql(addDictionaryRoleMutation, { name: "addRole" }),
+  graphql(deleteDictionaryRoleMutation, { name: "deleteRole" })
 )(Roles);
 
 export const PerspectiveRoles = compose(
-  onlyUpdateForKeys(['permissions']),
+  onlyUpdateForKeys(["permissions"]),
   graphql(queryPerspective),
-  graphql(addPerspectiveRoleMutation, { name: 'addRole' }),
-  graphql(deletePerspectiveRoleMutation, { name: 'deleteRole' })
+  graphql(addPerspectiveRoleMutation, { name: "addRole" }),
+  graphql(deletePerspectiveRoleMutation, { name: "deleteRole" })
 )(Roles);

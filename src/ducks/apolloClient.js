@@ -1,5 +1,5 @@
 // Actions
-export const SET_CLIENT = '@apollo/SET_CLIENT';
+export const SET_CLIENT = "@apollo/SET_CLIENT";
 
 // Reducers
 export default function (state = null, action = {}) {
@@ -17,5 +17,5 @@ export function setApolloClient(payload) {
 }
 
 export const selectors = {
-  client: state => state.apolloClient,
+  client: state => state.apolloClient
 };

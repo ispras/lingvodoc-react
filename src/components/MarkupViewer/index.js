@@ -1,13 +1,14 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { Container, Button, Icon } from 'semantic-ui-react';
-import styled from 'styled-components';
-import Wavesurfer from 'react-wavesurfer';
-import Timeline from 'components/Wavesurfer/timeline';
-import Spectrogram from 'components/Wavesurfer/spectrogram';
-import ELAN from 'components/Wavesurfer/elan';
+import React from "react";
+import Wavesurfer from "react-wavesurfer";
+import { Button, Container, Icon } from "semantic-ui-react";
+import PropTypes from "prop-types";
+import styled from "styled-components";
 
-const Wrapper = styled('div')`
+import ELAN from "components/Wavesurfer/elan";
+import Spectrogram from "components/Wavesurfer/spectrogram";
+import Timeline from "components/Wavesurfer/timeline";
+
+const Wrapper = styled("div")`
   padding-left: 120px;
 `;
 
@@ -17,7 +18,7 @@ class MarkupViewer extends React.Component {
     this.state = {
       playing: true,
       pos: 0,
-      zoom: 1,
+      zoom: 1
     };
     this.handlePlay = this.handlePlay.bind(this);
     this.handlePause = this.handlePause.bind(this);
@@ -27,25 +28,25 @@ class MarkupViewer extends React.Component {
 
   handlePlay() {
     this.setState({
-      playing: true,
+      playing: true
     });
   }
 
   handlePause() {
     this.setState({
-      playing: false,
+      playing: false
     });
   }
 
   handlePosChange(e) {
     this.setState({
-      pos: e.originalArgs[0],
+      pos: e.originalArgs[0]
     });
   }
 
   handleZoom(e) {
     this.setState({
-      zoom: Number(e.target.value),
+      zoom: Number(e.target.value)
     });
   }
 
@@ -53,35 +54,26 @@ class MarkupViewer extends React.Component {
     const { file, markup } = this.props;
     const { playing, pos } = this.state;
     const options = {
-      waveColor: '#999',
-      progressColor: '#555',
+      waveColor: "#999",
+      progressColor: "#555",
       cursorWidth: 1,
-      cursorColor: '#333',
+      cursorColor: "#333",
       scrollParent: false,
       minPxPerSec: 50,
       fillParent: true,
       height: 128,
-      barWidth: 1,
+      barWidth: 1
     };
     const spectrogramOptions = {
-      fftSamples: 128,
+      fftSamples: 128
     };
 
     const elanOptions = {};
     const timelineOptions = {};
 
     return (
-
       <Wrapper>
-
-        <input
-          id="zoom-slider"
-          type="range"
-          min="1"
-          max="200"
-          value={this.state.zoom}
-          onChange={this.handleZoom}
-        />
+        <input id="zoom-slider" type="range" min="1" max="200" value={this.state.zoom} onChange={this.handleZoom} />
         <span>{this.state.zoom}%</span>
 
         {file && (
@@ -121,12 +113,12 @@ class MarkupViewer extends React.Component {
 
 MarkupViewer.propTypes = {
   file: PropTypes.string,
-  markup: PropTypes.string,
+  markup: PropTypes.string
 };
 
 MarkupViewer.defaultProps = {
-  file: '',
-  markup: '',
+  file: "",
+  markup: ""
 };
 
 export default MarkupViewer;

@@ -1,6 +1,7 @@
-import { call, takeLatest } from 'redux-saga/effects';
-import { REMOVE } from 'ducks/task';
-import { removeTask } from 'api';
+import { removeTask } from "api";
+import { call, takeLatest } from "redux-saga/effects";
+
+import { REMOVE } from "ducks/task";
 
 function* remove({ payload }) {
   yield call(removeTask, payload);

@@ -1,24 +1,14 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { Range } from 'immutable';
-import { pure, branch, renderNothing, compose } from 'recompose';
-import { Link } from 'react-router-dom';
-import { Menu } from 'semantic-ui-react';
-import styled from 'styled-components';
+import React from "react";
+import { Link } from "react-router-dom";
+import { Menu } from "semantic-ui-react";
+import { Range } from "immutable";
+import PropTypes from "prop-types";
+import { branch, compose, pure, renderNothing } from "recompose";
+import styled from "styled-components";
 
-import smoothScroll from 'utils/smoothscroll';
+import smoothScroll from "utils/smoothscroll";
 
-const Item = ({
-  num,
-  disabled,
-  active,
-  text,
-  icon,
-  to,
-  checkEntries,
-  resetCheckedColumn,
-  resetCheckedAll,
-}) => {
+const Item = ({ num, disabled, active, text, icon, to, checkEntries, resetCheckedColumn, resetCheckedAll }) => {
   const extraProps = {};
   if (icon) {
     extraProps.icon = icon;
@@ -27,14 +17,13 @@ const Item = ({
   }
 
   const handleItemClick = () => {
-    const scrollContainer = document.querySelector('.lingvo-scrolling-tab__table');
+    const scrollContainer = document.querySelector(".lingvo-scrolling-tab__table");
     smoothScroll(0, 0, null, scrollContainer);
 
     if (checkEntries) {
       resetCheckedColumn();
       resetCheckedAll();
     }
-
   };
 
   return (
@@ -45,7 +34,7 @@ const Item = ({
       onClick={handleItemClick}
       to={{
         pathname: to,
-        search: `?page=${num}`,
+        search: `?page=${num}`
       }}
       {...extraProps}
     />
@@ -61,7 +50,7 @@ Item.propTypes = {
   to: PropTypes.string.isRequired,
   checkEntries: PropTypes.bool,
   resetCheckedColumn: PropTypes.func,
-  resetCheckedAll: PropTypes.func,
+  resetCheckedAll: PropTypes.func
 };
 
 Item.defaultProps = {
@@ -71,7 +60,7 @@ Item.defaultProps = {
   icon: null,
   checkEntries: false,
   resetCheckedColumn: () => {},
-  resetCheckedAll: () => {},
+  resetCheckedAll: () => {}
 };
 
 const Pager = styled(Menu)`
@@ -85,24 +74,25 @@ const Pager = styled(Menu)`
 
 const WINDOW = 5;
 
-const Pagination = ({
-  current, 
-  total, 
-  to,
-  checkEntries,
-  resetCheckedColumn,
-  resetCheckedAll,
-}) =>
+const Pagination = ({ current, total, to, checkEntries, resetCheckedColumn, resetCheckedAll }) => (
   <Pager size="tiny" pagination>
-    <Item num={1} text="1↢" active={current === 1} to={to} 
-      checkEntries={checkEntries} 
-      resetCheckedColumn={resetCheckedColumn} 
-      resetCheckedAll={resetCheckedAll} 
+    <Item
+      num={1}
+      text="1↢"
+      active={current === 1}
+      to={to}
+      checkEntries={checkEntries}
+      resetCheckedColumn={resetCheckedColumn}
+      resetCheckedAll={resetCheckedAll}
     />
-    <Item num={current - 1} icon="chevron left" disabled={current <= 1} to={to} 
-      checkEntries={checkEntries} 
-      resetCheckedColumn={resetCheckedColumn} 
-      resetCheckedAll={resetCheckedAll} 
+    <Item
+      num={current - 1}
+      icon="chevron left"
+      disabled={current <= 1}
+      to={to}
+      checkEntries={checkEntries}
+      resetCheckedColumn={resetCheckedColumn}
+      resetCheckedAll={resetCheckedAll}
     />
     {Range(Math.max(1, current - WINDOW), Math.min(current + WINDOW + 1, total)).map(page => (
       <Item
@@ -110,22 +100,31 @@ const Pagination = ({
         num={page}
         active={page === current}
         to={to}
-        checkEntries={checkEntries} 
-        resetCheckedColumn={resetCheckedColumn} 
-        resetCheckedAll={resetCheckedAll} 
+        checkEntries={checkEntries}
+        resetCheckedColumn={resetCheckedColumn}
+        resetCheckedAll={resetCheckedAll}
       />
     ))}
-    <Item num={current + 1} icon="chevron right" disabled={current >= total} to={to} 
-      checkEntries={checkEntries} 
-      resetCheckedColumn={resetCheckedColumn} 
-      resetCheckedAll={resetCheckedAll} 
+    <Item
+      num={current + 1}
+      icon="chevron right"
+      disabled={current >= total}
+      to={to}
+      checkEntries={checkEntries}
+      resetCheckedColumn={resetCheckedColumn}
+      resetCheckedAll={resetCheckedAll}
     />
-    <Item num={total} text={`↣${total}`} active={current === total} to={to} 
-      checkEntries={checkEntries} 
-      resetCheckedColumn={resetCheckedColumn} 
-      resetCheckedAll={resetCheckedAll} 
+    <Item
+      num={total}
+      text={`↣${total}`}
+      active={current === total}
+      to={to}
+      checkEntries={checkEntries}
+      resetCheckedColumn={resetCheckedColumn}
+      resetCheckedAll={resetCheckedAll}
     />
-  </Pager>;
+  </Pager>
+);
 
 Pagination.propTypes = {
   current: PropTypes.number.isRequired,
@@ -133,7 +132,7 @@ Pagination.propTypes = {
   to: PropTypes.string.isRequired,
   checkEntries: PropTypes.bool,
   resetCheckedColumn: PropTypes.func,
-  resetCheckedAll: PropTypes.func,
+  resetCheckedAll: PropTypes.func
 };
 
 export default compose(

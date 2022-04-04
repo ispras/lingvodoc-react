@@ -1,12 +1,12 @@
-import base from './base';
+import base from "./base";
 
 const dist = {
-  apiUrl: '/api',
-  env: 'dist',
-  homePath: '/',
+  apiUrl: "/api",
+  env: "dist",
+  homePath: "/"
 };
 
 export default {
   ...base,
-  ...dist,
+  ...dist
 };

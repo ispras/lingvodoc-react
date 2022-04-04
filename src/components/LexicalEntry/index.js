@@ -1,26 +1,38 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { compose, pure } from 'recompose';
-import { graphql, withApollo } from 'react-apollo';
-import gql from 'graphql-tag';
-import { isEqual, flow } from 'lodash';
-import { Button } from 'semantic-ui-react';
-import { compositeIdToString } from 'utils/compositeId';
+import React from "react";
+import { graphql, withApollo } from "react-apollo";
+import { Button } from "semantic-ui-react";
+import gql from "graphql-tag";
+import { flow, isEqual } from "lodash";
+import PropTypes from "prop-types";
+import { compose, pure } from "recompose";
 
-import { queryCounter } from 'backend';
-import Text from './Text';
-import Sound from './Sound';
-import Markup from './Markup';
-import Link from './Link';
-import Image from './Image';
-import GroupingTag from './GroupingTag';
-import Unknown from './Unknown';
-import { queryLexicalEntries } from 'components/PerspectiveView';
-import { compositeIdToString as id2str } from 'utils/compositeId';
+import { queryCounter } from "backend";
+import { queryLexicalEntries } from "components/PerspectiveView";
+import { compositeIdToString, compositeIdToString as id2str } from "utils/compositeId";
+
+import GroupingTag from "./GroupingTag";
+import Image from "./Image";
+import Link from "./Link";
+import Markup from "./Markup";
+import Sound from "./Sound";
+import Text from "./Text";
+import Unknown from "./Unknown";
 
 const createEntityMutation = gql`
-  mutation createEntity($parent_id: LingvodocID!, $field_id: LingvodocID!, $self_id : LingvodocID, $content: String, $file_content: Upload) {
-    create_entity(parent_id: $parent_id, field_id: $field_id, self_id: $self_id, content: $content, file_content: $file_content) {
+  mutation createEntity(
+    $parent_id: LingvodocID!
+    $field_id: LingvodocID!
+    $self_id: LingvodocID
+    $content: String
+    $file_content: Upload
+  ) {
+    create_entity(
+      parent_id: $parent_id
+      field_id: $field_id
+      self_id: $self_id
+      content: $content
+      file_content: $file_content
+    ) {
       triumph
     }
   }
@@ -58,7 +70,6 @@ const updateEntityMutation = gql`
   }
 `;
 
-
 const lexicalEntryQuery = gql`
   query LexicalEntryQuery($id: LingvodocID!, $entitiesMode: String!) {
     lexicalentry(id: $id) {
@@ -93,8 +104,8 @@ const getComponent = dataType =>
     Markup,
     Link,
     Image,
-    'Grouping Tag': GroupingTag,
-    'Directed Link': Link,
+    "Grouping Tag": GroupingTag,
+    "Directed Link": Link
   }[dataType] || Unknown);
 
 class Entities extends React.Component {
@@ -104,7 +115,7 @@ class Entities extends React.Component {
       edit: false,
       is_being_created: false,
       remove_set: {},
-      update_set: {},
+      update_set: {}
     };
     this.create = this.create.bind(this);
     this.publish = this.publish.bind(this);
@@ -114,87 +125,65 @@ class Entities extends React.Component {
     this.update_check = this.update_check.bind(this);
   }
 
-  update_check()
-  {
+  update_check() {
     /* Checking if we need to manually update perspective data. */
 
-    const {
-      entry,
-      client,
-      perspectiveId,
-      entitiesMode } =
-      
-      this.props;
+    const { entry, client, perspectiveId, entitiesMode } = this.props;
 
-    const data_entities = 
+    const data_entities = client.readQuery({
+      query: lexicalEntryQuery,
+      variables: {
+        id: entry.id,
+        entitiesMode
+      }
+    });
 
-      client.readQuery({
-        query: lexicalEntryQuery,
-        variables: {
-          id: entry.id,
-          entitiesMode,
-        },
-      });
-
-    const data_perspective =
-
-      client.readQuery({
-        query: queryLexicalEntries,
-        variables: {
-          id: perspectiveId,
-          entitiesMode,
-        },
-      });
+    const data_perspective = client.readQuery({
+      query: queryLexicalEntries,
+      variables: {
+        id: perspectiveId,
+        entitiesMode
+      }
+    });
 
     const {
-      perspective: {
-        lexical_entries } } =
-      
-      data_perspective;
+      perspective: { lexical_entries }
+    } = data_perspective;
 
     const entry_id_str = id2str(entry.id);
 
-    for (const lexical_entry of lexical_entries)
-    {
-      if (id2str(lexical_entry.id) == entry_id_str)
-      {
+    for (const lexical_entry of lexical_entries) {
+      if (id2str(lexical_entry.id) == entry_id_str) {
         const before_id_set = new Set();
         const after_id_set = new Set();
-        
-        for (const entity of lexical_entry.entities)
-          before_id_set.add(id2str(entity.id));
-        
-        for (const entity of data_entities.lexicalentry.entities)
-          after_id_set.add(id2str(entity.id));
 
-        let change_flag =
-          before_id_set.size != after_id_set.size;
+        for (const entity of lexical_entry.entities) {before_id_set.add(id2str(entity.id));}
 
-        if (!change_flag)
-        {
+        for (const entity of data_entities.lexicalentry.entities) {after_id_set.add(id2str(entity.id));}
+
+        let change_flag = before_id_set.size != after_id_set.size;
+
+        if (!change_flag) {
           for (const id_str of after_id_set)
-            if (!before_id_set.has(id_str))
-            {
+            {if (!before_id_set.has(id_str)) {
               change_flag = true;
               break;
-            }
+            }}
         }
 
         /* If for some reason queryLexicalEntries failed to update (e.g. when there are several thousand
          * entries and Apollo GraphQL cache glitches), we update it manually. */
 
-        if (change_flag)
-        {
-          lexical_entry.entities =
-            data_entities.lexicalentry.entities;
+        if (change_flag) {
+          lexical_entry.entities = data_entities.lexicalentry.entities;
 
           client.writeQuery({
             query: queryLexicalEntries,
             variables: {
               id: perspectiveId,
-              entitiesMode,
+              entitiesMode
             },
-            data: data_perspective,
+            data: data_perspective
           });
         }
 
@@ -206,14 +195,11 @@ class Entities extends React.Component {
   }
 
   create(content, self_id) {
-
     this.setState({ is_being_created: true });
 
-    const {
-      entry, column, createEntity,
-    } = this.props;
+    const { entry, column, createEntity } = this.props;
 
-    const variables = { parent_id: entry.id, field_id: column.id }
+    const variables = { parent_id: entry.id, field_id: column.id };
     if (content instanceof File) {
       variables.content = null;
       variables.file_content = content;
@@ -232,21 +218,19 @@ class Entities extends React.Component {
           query: lexicalEntryQuery,
           variables: {
             id: entry.id,
-            entitiesMode: 'all',
-          },
+            entitiesMode: "all"
+          }
         },
         {
           query: lexicalEntryQuery,
           variables: {
             id: entry.id,
-            entitiesMode: 'published',
-          },
-        },
+            entitiesMode: "published"
+          }
+        }
       ],
-      awaitRefetchQueries: true,
-    }).then(
-      () => this.update_check()
-    );
+      awaitRefetchQueries: true
+    }).then(() => this.update_check());
   }
 
   publish(entity, published) {
@@ -259,28 +243,26 @@ class Entities extends React.Component {
           query: lexicalEntryQuery,
           variables: {
             id: entry.id,
-            entitiesMode: 'all',
-          },
+            entitiesMode: "all"
+          }
         },
         {
           query: lexicalEntryQuery,
           variables: {
             id: entry.id,
-            entitiesMode: 'published',
-          },
+            entitiesMode: "published"
+          }
         },
         {
           query: queryCounter,
           variables: {
             id: perspectiveId,
-            mode: 'published',
+            mode: "published"
           }
         }
       ],
-      awaitRefetchQueries: true,
-    }).then(
-      () => this.update_check()
-    );
+      awaitRefetchQueries: true
+    }).then(() => this.update_check());
   }
 
   accept(entity, accepted) {
@@ -293,25 +275,22 @@ class Entities extends React.Component {
           query: lexicalEntryQuery,
           variables: {
             id: entry.id,
-            entitiesMode: 'all',
-          },
+            entitiesMode: "all"
+          }
         },
         {
           query: lexicalEntryQuery,
           variables: {
             id: entry.id,
-            entitiesMode: 'published',
-          },
-        },
+            entitiesMode: "published"
+          }
+        }
       ],
-      awaitRefetchQueries: true,
-    }).then(
-      () => this.update_check()
-    );
+      awaitRefetchQueries: true
+    }).then(() => this.update_check());
   }
 
   remove(entity) {
-
     const entity_id_str = id2str(entity.id);
 
     const remove_set = this.state.remove_set;
@@ -326,32 +305,29 @@ class Entities extends React.Component {
           query: lexicalEntryQuery,
           variables: {
             id: entry.id,
-            entitiesMode: 'all',
-          },
+            entitiesMode: "all"
+          }
         },
         {
           query: lexicalEntryQuery,
           variables: {
             id: entry.id,
-            entitiesMode: 'published',
-          },
-        },
+            entitiesMode: "published"
+          }
+        }
       ],
-      awaitRefetchQueries: true,
+      awaitRefetchQueries: true
     }).then(() => {
-      
       const remove_set = this.state.remove_set;
 
       delete remove_set[entity_id_str];
       this.setState({ remove_set });
 
       this.update_check();
-
     });
   }
 
   update(entity, content) {
-
     const entity_id_str = id2str(entity.id);
 
     const update_set = this.state.update_set;
@@ -366,45 +342,56 @@ class Entities extends React.Component {
           query: lexicalEntryQuery,
           variables: {
             id: entry.id,
-            entitiesMode: 'all',
-          },
+            entitiesMode: "all"
+          }
         },
         {
           query: lexicalEntryQuery,
           variables: {
             id: entry.id,
-            entitiesMode: 'published',
-          },
-        },
+            entitiesMode: "published"
+          }
+        }
       ],
-      awaitRefetchQueries: true,
+      awaitRefetchQueries: true
     }).then(() => {
-      
       const update_set = this.state.update_set;
 
       delete update_set[entity_id_str];
       this.setState({ update_set });
 
       this.update_check();
-
     });
   }
 
   render() {
     const {
-      perspectiveId, entry, column, columns, mode, entitiesMode, parentEntity, disabled, 
-      checkEntries, checkedRow, resetCheckedRow, checkedColumn, resetCheckedColumn, checkedAll, resetCheckedAll,
+      perspectiveId,
+      entry,
+      column,
+      columns,
+      mode,
+      entitiesMode,
+      parentEntity,
+      disabled,
+      checkEntries,
+      checkedRow,
+      resetCheckedRow,
+      checkedColumn,
+      resetCheckedColumn,
+      checkedAll,
+      resetCheckedAll
     } = this.props;
 
     const Component = getComponent(column.data_type);
 
-    if (column.data_type === 'Link' || column.data_type === 'Grouping Tag' || column.data_type === 'Directed Link') {
+    if (column.data_type === "Link" || column.data_type === "Grouping Tag" || column.data_type === "Directed Link") {
       return <Component {...this.props} />;
     }
 
     const filters = [
       ens => ens.filter(entity => isEqual(entity.field_id, column.id)),
-      ens => (!parentEntity ? ens : ens.filter(e => isEqual(e.self_id, parentEntity.id))),
+      ens => (!parentEntity ? ens : ens.filter(e => isEqual(e.self_id, parentEntity.id)))
     ];
     const entities = flow(filters)(entry.entities);
 
@@ -433,13 +420,13 @@ class Entities extends React.Component {
             remove={this.remove}
             accept={this.accept}
             update={this.update}
-            className={(mode != 'edit' && entities.indexOf(entity) == entities.length - 1) ? 'last' : ''}
+            className={mode != "edit" && entities.indexOf(entity) == entities.length - 1 ? "last" : ""}
             disabled={disabled}
             is_being_removed={this.state.remove_set.hasOwnProperty(id2str(entity.id))}
             is_being_updated={this.state.update_set.hasOwnProperty(id2str(entity.id))}
           />
         ))}
-        {mode == 'edit' && (
+        {mode == "edit" && (
           <li className="last">
             {!this.state.edit && (
               <Button.Group basic size="mini">
@@ -447,11 +434,13 @@ class Entities extends React.Component {
               </Button.Group>
             )}
 
-            {this.state.edit &&
+            {this.state.edit && (
               <Component.Edit
                 is_being_created={this.state.is_being_created}
                 onSave={content => this.create(content, parentEntity == null ? null : parentEntity.id)}
-                onCancel={() => this.setState({ edit: false })} />}
+                onCancel={() => this.setState({ edit: false })}
+              />
+            )}
           </li>
         )}
       </ul>
@@ -478,19 +467,19 @@ Entities.propTypes = {
   updateEntity: PropTypes.func.isRequired,
   resetCheckedRow: PropTypes.func,
   resetCheckedColumn: PropTypes.func,
-  resetCheckedAll: PropTypes.func,
+  resetCheckedAll: PropTypes.func
 };
 
 Entities.defaultProps = {
-  parentEntity: null,
+  parentEntity: null
 };
 
 export default compose(
-  graphql(publishEntityMutation, { name: 'publishEntity' }),
-  graphql(acceptEntityMutation, { name: 'acceptEntity' }),
-  graphql(createEntityMutation, { name: 'createEntity' }),
-  graphql(removeEntityMutation, { name: 'removeEntity' }),
-  graphql(updateEntityMutation, { name: 'updateEntity' }),
+  graphql(publishEntityMutation, { name: "publishEntity" }),
+  graphql(acceptEntityMutation, { name: "acceptEntity" }),
+  graphql(createEntityMutation, { name: "createEntity" }),
+  graphql(removeEntityMutation, { name: "removeEntity" }),
+  graphql(updateEntityMutation, { name: "updateEntity" }),
   withApollo,
   pure
 )(Entities);

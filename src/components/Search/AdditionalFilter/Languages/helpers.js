@@ -1,6 +1,6 @@
 const propsNames = {
-  languages: 'children',
-  dictionaries: 'dictionaries',
+  languages: "children",
+  dictionaries: "dictionaries"
 };
 
 /**
@@ -8,7 +8,7 @@ const propsNames = {
  * @param {Object} node - node of the tree
  * @returns {boolean} - result of the checking
  */
-const nodeHasLanguagesChildren = (node) => {
+const nodeHasLanguagesChildren = node => {
   return Array.isArray(node[propsNames.languages]) && node[propsNames.languages].length > 0;
 };
 
@@ -17,7 +17,7 @@ const nodeHasLanguagesChildren = (node) => {
  * @param {Object} node - tree node
  * @returns {boolean} - result of checking
  */
-const nodeHasDictionariesChildren = (node) => {
+const nodeHasDictionariesChildren = node => {
   return Array.isArray(node[propsNames.dictionaries]) && node[propsNames.dictionaries].length > 0;
 };
 
@@ -38,12 +38,12 @@ const getNodeValue = node => getNodeValueById(node.id);
  * @param {Object} parent - tree node-parent
  * @param {string} type - type of the tree node: language or dictionary, language by default
  */
-const flattenNodes = (nodes, flatNodes, parent = {}, type = 'language') => {
+const flattenNodes = (nodes, flatNodes, parent = {}, type = "language") => {
   if (!Array.isArray(nodes) || nodes.length === 0) {
     return;
   }
 
-  nodes.forEach((node) => {
+  nodes.forEach(node => {
     const isParentWithLanguages = nodeHasLanguagesChildren(node);
     const isParentWithDictionaries = nodeHasDictionariesChildren(node);
     const nodeValue = getNodeValue(node);
@@ -57,10 +57,10 @@ const flattenNodes = (nodes, flatNodes, parent = {}, type = 'language') => {
       isParent: isParentWithDictionaries || isParentWithLanguages,
       isLeaf: !isParentWithLanguages && !isParentWithDictionaries,
       type,
-      expanded: false,
+      expanded: false
     };
-    flattenNodes(node.children, flatNodes, node, 'language', flatNodes);
-    flattenNodes(node.dictionaries, flatNodes, node, 'dictionary', flatNodes);
+    flattenNodes(node.children, flatNodes, node, "language", flatNodes);
+    flattenNodes(node.dictionaries, flatNodes, node, "dictionary", flatNodes);
   });
 };
 
@@ -70,5 +70,5 @@ export {
   getNodeValue,
   getNodeValueById,
   flattenNodes,
-  propsNames,
+  propsNames
 };

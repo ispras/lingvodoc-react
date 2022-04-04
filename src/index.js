@@ -1,22 +1,24 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { Provider } from 'react-redux';
-import { createStore, applyMiddleware, compose, bindActionCreators } from 'redux';
-import createHistory from 'history/createBrowserHistory';
-import { ConnectedRouter, routerMiddleware } from 'react-router-redux';
-import createSagaMiddleware from 'redux-saga';
-import formActionSaga from 'redux-form-saga';
-import { ApolloProvider } from 'react-apollo';
-import { setRunner } from 'ducks/saga';
-import { setApolloClient } from 'ducks/apolloClient';
-import { log, suc, warn, err } from 'ducks/snackbar';
-import combinedReducer from './reducer';
-import mainFlow from './sagas';
-import Layout from './Layout';
-import apollo from './graphql';
-import WebFont from 'webfontloader';
-import config from 'config';
-import matomo from './sagas/matomo';
+import React from "react";
+import { ApolloProvider } from "react-apollo";
+import { Provider } from "react-redux";
+import { ConnectedRouter, routerMiddleware } from "react-router-redux";
+import ReactDOM from "react-dom";
+import createHistory from "history/createBrowserHistory";
+import { applyMiddleware, bindActionCreators, compose, createStore } from "redux";
+import formActionSaga from "redux-form-saga";
+import createSagaMiddleware from "redux-saga";
+import WebFont from "webfontloader";
+
+import config from "config";
+import { setApolloClient } from "ducks/apolloClient";
+import { setRunner } from "ducks/saga";
+import { err, log, suc, warn } from "ducks/snackbar";
+
+import matomo from "./sagas/matomo";
+import apollo from "./graphql";
+import Layout from "./Layout";
+import combinedReducer from "./reducer";
+import mainFlow from "./sagas";
 
 const sagaMiddleware = createSagaMiddleware();
 const history = createHistory();
@@ -35,7 +37,7 @@ store.dispatch(setApolloClient(apollo));
 
 sagaMiddleware.run(mainFlow);
 sagaMiddleware.run(formActionSaga);
-if (!__DEVELOPMENT__ && config.buildType !== 'desktop') {
+if (!__DEVELOPMENT__ && config.buildType !== "desktop") {
   sagaMiddleware.run(matomo);
 }
 store.dispatch(setRunner(sagaMiddleware.run));
@@ -45,7 +47,7 @@ window.logger = bindActionCreators(
     log,
     suc,
     warn,
-    err,
+    err
   },
   store.dispatch
 );
@@ -54,7 +56,7 @@ window.dispatch = store.dispatch;
 
 WebFont.load({
   google: {
-    families: ['Noto Sans']
+    families: ["Noto Sans"]
   }
 });
 
@@ -66,5 +68,5 @@ ReactDOM.render(
       </ConnectedRouter>
     </ApolloProvider>
   </Provider>,
-  document.getElementById('root')
+  document.getElementById("root")
 );

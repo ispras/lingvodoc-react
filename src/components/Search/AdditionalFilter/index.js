@@ -1,28 +1,28 @@
 /* eslint-disable */
-import React, { PureComponent } from 'react';
-import { Segment, Button, Modal, Loader } from 'semantic-ui-react';
-import { graphql } from 'react-apollo';
-import { compose } from 'recompose';
-import PropTypes from 'prop-types';
-import { fromJS } from 'immutable';
-import gql from 'graphql-tag';
-import { buildLanguageTree } from 'pages/Search/treeBuilder';
-import { getTranslation } from 'api/i18n';
-import Languages from './Languages';
-import AdvancedFilter from './AdvancedFilter';
-import GrammarFilter from './GrammarFilter';
-import { getNodeValue, getNodeValueById } from './Languages/helpers';
+import React, { PureComponent } from "react";
+import { Segment, Button, Modal, Loader } from "semantic-ui-react";
+import { graphql } from "react-apollo";
+import { compose } from "recompose";
+import PropTypes from "prop-types";
+import { fromJS } from "immutable";
+import gql from "graphql-tag";
+import { buildLanguageTree } from "pages/Search/treeBuilder";
+import { getTranslation } from "api/i18n";
+import Languages from "./Languages";
+import AdvancedFilter from "./AdvancedFilter";
+import GrammarFilter from "./GrammarFilter";
+import { getNodeValue, getNodeValueById } from "./Languages/helpers";
 
-import AdditionalFilterInfo from './Info';
+import AdditionalFilterInfo from "./Info";
 
-import './index.scss';
+import "./index.scss";
 
 /* ----------- PROPS ----------- */
 
 const classNames = {
-  container: 'additional-filter',
-  buttonGroup: 'additional-filter__button-group',
-  modal: 'additional-filter__modal lingvo-modal2',
+  container: "additional-filter",
+  buttonGroup: "additional-filter__button-group",
+  modal: "additional-filter__modal lingvo-modal2"
 };
 
 /* ----------- COMPONENT ----------- */
@@ -39,12 +39,12 @@ class AdditionalFilter extends PureComponent {
     checkAllButtonText: PropTypes.string.isRequired,
     uncheckAllButtonText: PropTypes.string.isRequired,
     showAdvancedFilterText: PropTypes.string.isRequired,
-    showGrammarFilterText: PropTypes.string.isRequired,
-  }
+    showGrammarFilterText: PropTypes.string.isRequired
+  };
 
   static defaultProps = {
-    allLangsDictsChecked: false,
-  }
+    allLangsDictsChecked: false
+  };
 
   /**
    * Get all nodes values for allLangsDictsChecked option
@@ -54,12 +54,12 @@ class AdditionalFilter extends PureComponent {
     if (!result) {
       result = {
         languages: [],
-        dictionaries: [],
+        dictionaries: []
       };
     }
-    languagesTree.forEach((item) => {
+    languagesTree.forEach(item => {
       const isLanguage = !!item.dictionaries;
-      const type = isLanguage ? 'languages' : 'dictionaries';
+      const type = isLanguage ? "languages" : "dictionaries";
 
       result[type].push([item.id[0], item.id[1]]);
 
@@ -104,7 +104,7 @@ class AdditionalFilter extends PureComponent {
 
     if (hasDictsDeep) {
       const addingItem = {
-        ...item,
+        ...item
       };
       fillContainer.push(addingItem);
 
@@ -122,7 +122,7 @@ class AdditionalFilter extends PureComponent {
   static getUpdatedLanguagesTree(rawLanguagesTree) {
     const newLanguagesTree = [];
 
-    rawLanguagesTree.forEach((language) => {
+    rawLanguagesTree.forEach(language => {
       this.fillWithLangsWithDicts(language, newLanguagesTree);
     });
 
@@ -130,7 +130,7 @@ class AdditionalFilter extends PureComponent {
   }
 
   static isFieldLanguageVulnerability(name) {
-    return name === 'languageVulnerability';
+    return name === "languageVulnerability";
   }
 
   static isLanguageVulnerabilitySet(language) {
@@ -146,9 +146,7 @@ class AdditionalFilter extends PureComponent {
 
     const rawLanguagesTree = buildLanguageTree(fromJS(props.languagesQuery.language_tree)).toJS();
 
-    const {
-      hasAudio, kind, years, humanSettlement, authors, languageVulnerability, grammaticalSigns,
-    } = props.data;
+    const { hasAudio, kind, years, humanSettlement, authors, languageVulnerability, grammaticalSigns } = props.data;
 
     this.state = {
       // calculating final lists of languages and dictionaries
@@ -164,7 +162,7 @@ class AdditionalFilter extends PureComponent {
       authors,
       languageVulnerability,
       grammaticalSigns,
-      isDataDefault: true,
+      isDataDefault: true
     };
 
     this.flatLanguages = {};
@@ -173,20 +171,26 @@ class AdditionalFilter extends PureComponent {
     const { allLangsDictsChecked } = props;
 
     // set checked list depends on "allLangsDictsChecked" prop
-    this.state.checked = !allLangsDictsChecked ?
-      {
-        languages: props.data.languages,
-        dictionaries: props.data.dictionaries,
-      } :
-      this.constructor.getAllNodesValues(this.state.languagesTree);
+    this.state.checked = !allLangsDictsChecked
+      ? {
+          languages: props.data.languages,
+          dictionaries: props.data.dictionaries
+        }
+      : this.constructor.getAllNodesValues(this.state.languagesTree);
     this.saveChecked();
 
     const { languages: checkedLanguages, dictionaries: checkedDictionaries } = this.state.checked;
-    const isNeedToUpdateCheckedLanguages = this.constructor.needToUpdateCheckedLanguages(allLangsDictsChecked, checkedLanguages, checkedDictionaries);
+    const isNeedToUpdateCheckedLanguages = this.constructor.needToUpdateCheckedLanguages(
+      allLangsDictsChecked,
+      checkedLanguages,
+      checkedDictionaries
+    );
 
     if (isNeedToUpdateCheckedLanguages) {
-      this.state.checked.languages = this.getCheckedLanguagesByDictionaries(this.state.languagesTree, checkedDictionaries)
-        .map(language => language.id);
+      this.state.checked.languages = this.getCheckedLanguagesByDictionaries(
+        this.state.languagesTree,
+        checkedDictionaries
+      ).map(language => language.id);
     }
 
     // notify parent component with checked list if allLangsDictsChecked is true
@@ -196,7 +200,7 @@ class AdditionalFilter extends PureComponent {
       props.onChange({
         ...props.data,
         languages: this.state.checked.languages,
-        dictionaries: this.state.checked.dictionaries,
+        dictionaries: this.state.checked.dictionaries
       });
     }
 
@@ -208,7 +212,7 @@ class AdditionalFilter extends PureComponent {
     this.onShowGrammarFilterButtonClick = this.onShowGrammarFilterButtonClick.bind(this);
 
     this.infoOnClickCallbacks = {
-      grammar: this.onShowGrammarFilterButtonClick,
+      grammar: this.onShowGrammarFilterButtonClick
     };
   }
 
@@ -232,7 +236,9 @@ class AdditionalFilter extends PureComponent {
     const nodeHasDicts = language.dictionaries && language.dictionaries.length > 0;
 
     if (nodeHasDicts) {
-      const allDictsChecked = language.dictionaries.every(dictionary => this.isDictionaryInChecked(dictionary, checkedDictionaries));
+      const allDictsChecked = language.dictionaries.every(dictionary =>
+        this.isDictionaryInChecked(dictionary, checkedDictionaries)
+      );
 
       if (!allDictsChecked) {
         return false;
@@ -249,7 +255,7 @@ class AdditionalFilter extends PureComponent {
   isDictionaryInChecked(dictionary, checked) {
     let result = false;
 
-    checked.forEach((checkedDictionaryId) => {
+    checked.forEach(checkedDictionaryId => {
       if (checkedDictionaryId[0] === dictionary.id[0] && checkedDictionaryId[1] === dictionary.id[1]) {
         result = true;
       }
@@ -264,7 +270,7 @@ class AdditionalFilter extends PureComponent {
    */
   onShowLangsButtonClick() {
     this.setState({
-      showSearchSelectLanguages: !this.state.showSearchSelectLanguages,
+      showSearchSelectLanguages: !this.state.showSearchSelectLanguages
     });
   }
 
@@ -274,7 +280,7 @@ class AdditionalFilter extends PureComponent {
    */
   onShowAdvancedFilterButtonClick() {
     this.setState({
-      showAdvancedFilter: !this.state.showAdvancedFilter,
+      showAdvancedFilter: !this.state.showAdvancedFilter
     });
   }
 
@@ -284,7 +290,7 @@ class AdditionalFilter extends PureComponent {
    */
   onShowGrammarFilterButtonClick() {
     this.setState({
-      showGrammarFilter: !this.state.showGrammarFilter,
+      showGrammarFilter: !this.state.showGrammarFilter
     });
   }
 
@@ -298,12 +304,12 @@ class AdditionalFilter extends PureComponent {
       checked: list,
       filterMode: false,
       languageVulnerability: languageVulnerability.length !== 0 ? [] : languageVulnerability,
-      isDataDefault: false,
+      isDataDefault: false
     });
 
     const result = {
       ...this.props.data,
-      ...list,
+      ...list
     };
 
     this.props.onChange(result);
@@ -318,7 +324,7 @@ class AdditionalFilter extends PureComponent {
     let state = {
       [name]: value,
       filterMode: false,
-      isDataDefault: false,
+      isDataDefault: false
     };
 
     const currentState = {
@@ -327,12 +333,12 @@ class AdditionalFilter extends PureComponent {
       years: this.state.years,
       humanSettlement: this.state.humanSettlement,
       authors: this.state.authors,
-      languageVulnerability: this.state.languageVulnerability,
+      languageVulnerability: this.state.languageVulnerability
     };
 
     let dataToSendToTop = {
       ...currentState,
-      [name]: value,
+      [name]: value
     };
 
     if (this.constructor.isFieldLanguageVulnerability(name)) {
@@ -340,12 +346,12 @@ class AdditionalFilter extends PureComponent {
 
       state = {
         ...state,
-        ...handlingResult,
+        ...handlingResult
       };
 
       dataToSendToTop = {
         ...dataToSendToTop,
-        ...handlingResult.checked,
+        ...handlingResult.checked
       };
     }
 
@@ -360,7 +366,7 @@ class AdditionalFilter extends PureComponent {
   onGrammarFilterChange(data) {
     const state = {
       grammaticalSigns: data,
-      isDataDefault: false,
+      isDataDefault: false
     };
 
     this.setState(state);
@@ -381,25 +387,22 @@ class AdditionalFilter extends PureComponent {
     const { languages } = this.savedChecked;
     let filtered = [];
 
-    languages.forEach((languageId) => {
+    languages.forEach(languageId => {
       const language = this.getFlatLanguagesById(languageId);
-      const languageVulnerability = !this.constructor.isLanguageVulnerabilitySet(language) ?
-        language.vulnerability :
-        language.vulnerability.toLowerCase();
+      const languageVulnerability = !this.constructor.isLanguageVulnerabilitySet(language)
+        ? language.vulnerability
+        : language.vulnerability.toLowerCase();
 
       if (formattedLanguageVulnerability.indexOf(languageVulnerability) !== -1 && filtered.indexOf(languageId) < 0) {
         filtered.push(languageId);
-        filtered = [
-          ...filtered,
-          ...this.getAllChildrenId(language)
-        ];
+        filtered = [...filtered, ...this.getAllChildrenId(language)];
       }
     });
 
     const filteredLanguages = [];
     const filteredDicts = [];
 
-    filtered.forEach((itemId) => {
+    filtered.forEach(itemId => {
       const item = this.getFlatLanguagesById(itemId);
 
       if (!item) {
@@ -411,7 +414,7 @@ class AdditionalFilter extends PureComponent {
 
     return {
       languages: filteredLanguages,
-      dictionaries: filteredDicts,
+      dictionaries: filteredDicts
     };
   }
 
@@ -421,12 +424,12 @@ class AdditionalFilter extends PureComponent {
    * @param {Array} container - array of ids
    */
   getAllChildrenId(language, container = []) {
-    language.children.forEach((item) => {
+    language.children.forEach(item => {
       container.push(item.id);
       this.getAllChildrenId(item, container);
     });
 
-    language.dictionaries.forEach((item) => {
+    language.dictionaries.forEach(item => {
       container.push(item.id);
     });
 
@@ -468,15 +471,15 @@ class AdditionalFilter extends PureComponent {
       return;
     }
 
-    languages.forEach((languageItem) => {
+    languages.forEach(languageItem => {
       flatLanguages[getNodeValue(languageItem)] = {
         vulnerability: languageItem.additional_metadata.speakersAmount,
         children: languageItem.children,
-        dictionaries: languageItem.dictionaries,
+        dictionaries: languageItem.dictionaries
       };
       this.flattenLanguages(languageItem.children, flatLanguages);
     });
-  }
+  };
 
   /**
    * Saves checked state for reconstruction after exit from filterMode (with languageVulnerability filter)
@@ -501,13 +504,13 @@ class AdditionalFilter extends PureComponent {
     if (filteredChecked === this.savedChecked) {
       return {
         checked: filteredChecked,
-        filterMode: false,
+        filterMode: false
       };
     }
 
     return {
       checked: filteredChecked,
-      filterMode: true,
+      filterMode: true
     };
   }
 
@@ -516,14 +519,15 @@ class AdditionalFilter extends PureComponent {
     const { languages, dictionaries } = checked;
     const { languagesTree } = this.state;
     const {
-      checkAllButtonText, uncheckAllButtonText, showLanguagesTreeText,
-      showAdvancedFilterText, showGrammarFilterText,
+      checkAllButtonText,
+      uncheckAllButtonText,
+      showLanguagesTreeText,
+      showAdvancedFilterText,
+      showGrammarFilterText
     } = this.props;
-    const {
-      hasAudio, kind, years, humanSettlement, authors,
-      languageVulnerability, isDataDefault, grammaticalSigns,
-    } = this.state;
-    const closeText = getTranslation('Close');
+    const { hasAudio, kind, years, humanSettlement, authors, languageVulnerability, isDataDefault, grammaticalSigns } =
+      this.state;
+    const closeText = getTranslation("Close");
 
     return (
       <div className={classNames.container}>
@@ -589,10 +593,7 @@ class AdditionalFilter extends PureComponent {
           >
             <Modal.Header>{showGrammarFilterText}</Modal.Header>
             <Modal.Content scrolling>
-              <GrammarFilter
-                checked={grammaticalSigns}
-                onChange={this.onGrammarFilterChange}
-              />
+              <GrammarFilter checked={grammaticalSigns} onChange={this.onGrammarFilterChange} />
             </Modal.Content>
             <Modal.Actions>
               <Button onClick={this.onShowGrammarFilterButtonClick} className="lingvo-button-basic-black">
@@ -638,19 +639,17 @@ class AdditionalFilter extends PureComponent {
  * @param {Object} props - component properties
  * @returns {AdditionalFields} - component with added properties (data from API)
  */
-const AdditionalFilterWrap = (props) => {
+const AdditionalFilterWrap = props => {
   const { languagesQuery } = props;
   const { error: languagesQueryError, loading: languagesQueryLoading } = languagesQuery;
 
   if (languagesQueryError) {
     return null;
-  }
-
-  else if (languagesQueryLoading) {
+  } else if (languagesQueryLoading) {
     return (
       <Segment>
-        <Loader active={languagesQueryLoading} inline='centered'>
-          {getTranslation('Loading additional filter data...')}
+        <Loader active={languagesQueryLoading} inline="centered">
+          {getTranslation("Loading additional filter data...")}
         </Loader>
       </Segment>
     );
@@ -658,18 +657,18 @@ const AdditionalFilterWrap = (props) => {
 
   const newProps = {
     ...props,
-    showLanguagesTreeText: getTranslation('Select languages'),
-    checkAllButtonText: getTranslation('Check all'),
-    uncheckAllButtonText: getTranslation('Uncheck all'),
-    showAdvancedFilterText: getTranslation('Select tags'),
-    showGrammarFilterText: getTranslation('Grammar'),
+    showLanguagesTreeText: getTranslation("Select languages"),
+    checkAllButtonText: getTranslation("Check all"),
+    uncheckAllButtonText: getTranslation("Uncheck all"),
+    showAdvancedFilterText: getTranslation("Select tags"),
+    showGrammarFilterText: getTranslation("Grammar")
   };
 
   return <AdditionalFilter {...newProps} />;
 };
 
 AdditionalFilterWrap.propTypes = {
-  languagesQuery: PropTypes.object.isRequired,
+  languagesQuery: PropTypes.object.isRequired
 };
 
 /* ----------- QUERIES ----------- */
@@ -692,6 +691,8 @@ const languagesWithDictionariesQuery = gql`
   }
 `;
 
-export default compose(graphql(languagesWithDictionariesQuery, {
-  name: 'languagesQuery',
-}))(AdditionalFilterWrap);
+export default compose(
+  graphql(languagesWithDictionariesQuery, {
+    name: "languagesQuery"
+  })
+)(AdditionalFilterWrap);

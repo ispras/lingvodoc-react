@@ -1,15 +1,12 @@
-import { combineReducers } from 'redux';
+import { combineReducers } from "redux";
 
 // Actions
-export const OPEN_MODAL = '@confirm/OPEN_MODAL';
-export const CLOSE_MODAL = '@confirm/CLOSE_MODAL';
+export const OPEN_MODAL = "@confirm/OPEN_MODAL";
+export const CLOSE_MODAL = "@confirm/CLOSE_MODAL";
 
-export const openModal =
-  (text = 'Are you sure?', callback = null) =>
-    ({ type: OPEN_MODAL, payload: [text, callback] });
+export const openModal = (text = "Are you sure?", callback = null) => ({ type: OPEN_MODAL, payload: [text, callback] });
 
-export const closeModal =
-  () => ({ type: CLOSE_MODAL });
+export const closeModal = () => ({ type: CLOSE_MODAL });
 
 const callback = (state = null, { type, payload }) => {
   switch (type) {
@@ -47,5 +44,5 @@ const visible = (state = false, action) => {
 export default combineReducers({
   callback,
   content,
-  visible,
+  visible
 });

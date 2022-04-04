@@ -1,17 +1,17 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { compose } from 'recompose';
+import React from "react";
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
+import { compose } from "recompose";
+import { bindActionCreators } from "redux";
 
-import MapAreas from 'components/MapAreas/index';
-import { openBlobsModal } from 'ducks/blobs';
+import MapAreas from "components/MapAreas/index";
+import { openBlobsModal } from "ducks/blobs";
 
 function pointIcon({ colors }) {
-  const html = colors.map(c => `<span style="background-color: ${c};"></span>`).join('');
+  const html = colors.map(c => `<span style="background-color: ${c};"></span>`).join("");
   return {
-    className: 'point',
-    html,
+    className: "point",
+    html
   };
 }
 
@@ -23,13 +23,13 @@ class ResultsMap extends React.PureComponent {
 
   onPointClick({ dictionary }) {
     const { actions } = this.props;
-    const blobs = dictionary.getIn(['additional_metadata', 'blobs']);
+    const blobs = dictionary.getIn(["additional_metadata", "blobs"]);
     actions.openBlobsModal(dictionary.toJS(), blobs ? blobs.toJS() : []);
   }
 
   getExtractedPoints = (data, meta, intersect) => {
     const labels = meta
-      .filter(v => v.get('isActive'))
+      .filter(v => v.get("isActive"))
       .keySeq()
       .toSet();
 
@@ -37,15 +37,15 @@ class ResultsMap extends React.PureComponent {
       .map(searches => searches.intersect(labels))
       .filter(searches => searches.size > intersect)
       .map((searches, dictionary) => {
-        const location = dictionary.getIn(['additional_metadata', 'location']);
+        const location = dictionary.getIn(["additional_metadata", "location"]);
         return {
-          coords: [parseFloat(location.get('lat')), parseFloat(location.get('lng'))],
+          coords: [parseFloat(location.get("lat")), parseFloat(location.get("lng"))],
           colors: searches
-            .map(id => meta.getIn([id, 'color']))
+            .map(id => meta.getIn([id, "color"]))
             .sort()
             .toJS(),
           values: searches.toJS(),
-          dictionary,
+          dictionary
         };
       })
       .valueSeq()
@@ -53,9 +53,7 @@ class ResultsMap extends React.PureComponent {
   };
 
   render() {
-    const {
-      data, meta, intersect, areaGroups, areasMode, markersHandlers,
-    } = this.props;
+    const { data, meta, intersect, areaGroups, areasMode, markersHandlers } = this.props;
 
     const points = this.getExtractedPoints(data, meta, intersect);
     const markersGroups = meta;
@@ -85,9 +83,11 @@ ResultsMap.propTypes = {
   areasMode: PropTypes.bool.isRequired,
   areaGroups: PropTypes.array.isRequired,
   markersHandlers: PropTypes.object.isRequired,
-  actions: PropTypes.object.isRequired,
+  actions: PropTypes.object.isRequired
 };
 
-export default compose(connect(null, dispatch => ({
-  actions: bindActionCreators({ openBlobsModal }, dispatch),
-})))(ResultsMap);
+export default compose(
+  connect(null, dispatch => ({
+    actions: bindActionCreators({ openBlobsModal }, dispatch)
+  }))
+)(ResultsMap);

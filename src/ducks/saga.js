@@ -1,36 +1,36 @@
-import { fromJS } from 'immutable';
+import { fromJS } from "immutable";
 // Actions
-export const SET_RUNNER = '@saga/SET_RUNNER';
-export const RUN = '@saga/RUN';
-export const STOP = '@saga/STOP';
+export const SET_RUNNER = "@saga/SET_RUNNER";
+export const RUN = "@saga/RUN";
+export const STOP = "@saga/STOP";
 
 // Reducers
 function runAndUpdate(state, { saga, sagaId }) {
-  const runner = state.get('run');
+  const runner = state.get("run");
   if (runner) {
     const task = runner(saga);
-    return state.setIn(['sagas', sagaId], task);
+    return state.setIn(["sagas", sagaId], task);
   }
   return state;
 }
 
 function stopAndUpdate(state, sagaId) {
-  const task = state.getIn(['sagas', sagaId]);
+  const task = state.getIn(["sagas", sagaId]);
   if (task && task.isRunning()) {
     task.cancel();
   }
-  return state.deleteIn(['sagas', sagaId]);
+  return state.deleteIn(["sagas", sagaId]);
 }
 
 const sagaInit = fromJS({
   run: null,
-  sagas: {},
+  sagas: {}
 });
 
 function sagaReducer(state = sagaInit, action = {}) {
   switch (action.type) {
     case SET_RUNNER:
-      return state.set('run', action.payload);
+      return state.set("run", action.payload);
     case RUN:
       return runAndUpdate(state, action.payload);
     case STOP:

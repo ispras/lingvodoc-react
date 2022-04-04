@@ -1,28 +1,29 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { compose, pure } from 'recompose';
-import { graphql } from 'react-apollo';
-import { Segment, Checkbox, Button, Modal, Tab, Dimmer, Header, Icon } from 'semantic-ui-react';
-import { isEqual } from 'lodash';
-import styled from 'styled-components';
-import { queryPerspective, queryLexicalEntries } from 'components/PerspectiveView';
+import React from "react";
+import { graphql } from "react-apollo";
+import { Button, Checkbox, Dimmer, Header, Icon, Modal, Segment, Tab } from "semantic-ui-react";
+import { getTranslation } from "api/i18n";
+import { isEqual } from "lodash";
+import PropTypes from "prop-types";
+import { compose, pure } from "recompose";
+import styled from "styled-components";
+
+import { queryLexicalEntries, queryPerspective } from "components/PerspectiveView";
+
+import ConnectedEntries from "./ConnectedEntries";
 import {
+  acceptMutation,
   connectedQuery,
   connectMutation,
   disconnectMutation,
   languageTreeSourceQuery,
-  publishMutation,
-  acceptMutation,
-} from './graphql';
-import ConnectedEntries from './ConnectedEntries';
-import Search from './search';
-import { getTranslation } from 'api/i18n';
+  publishMutation} from "./graphql";
+import Search from "./search";
 
-const ModalContentWrapper = styled('div')`
+const ModalContentWrapper = styled("div")`
   min-height: 60vh;
 `;
 
-const EditGroupingTag = (props) => {
+const EditGroupingTag = props => {
   const {
     lexicalEntry,
     fieldId,
@@ -32,12 +33,12 @@ const EditGroupingTag = (props) => {
     allPerspectives,
     connectedWords,
     joinGroup,
-    leaveGroup,
+    leaveGroup
   } = props;
 
   const panes = [
     {
-      menuItem: getTranslation('View'),
+      menuItem: getTranslation("View"),
       render: () => (
         <div>
           <Segment textAlign="center">
@@ -48,7 +49,7 @@ const EditGroupingTag = (props) => {
               id={lexicalEntry.id}
               fieldId={fieldId}
               entitiesMode={entitiesMode}
-              mode='edit'
+              mode="edit"
               allLanguages={allLanguages}
               allDictionaries={allDictionaries}
               allPerspectives={allPerspectives}
@@ -56,10 +57,10 @@ const EditGroupingTag = (props) => {
             />
           </Segment>
         </div>
-      ),
+      )
     },
     {
-      menuItem: getTranslation('Add connection'),
+      menuItem: getTranslation("Add connection"),
       render: () => (
         <Search
           lexicalEntry={lexicalEntry}
@@ -71,8 +72,8 @@ const EditGroupingTag = (props) => {
           joinGroup={joinGroup}
           entitiesMode={entitiesMode}
         />
-      ),
-    },
+      )
+    }
   ];
   return <Tab panes={panes} />;
 };
@@ -86,17 +87,15 @@ EditGroupingTag.propTypes = {
   allPerspectives: PropTypes.array.isRequired,
   connectedWords: PropTypes.object,
   joinGroup: PropTypes.func.isRequired,
-  leaveGroup: PropTypes.func.isRequired,
+  leaveGroup: PropTypes.func.isRequired
 };
 
-const ViewGroupingTag = (props) => {
-  const {
-    lexicalEntry, fieldId, entitiesMode, allLanguages, allDictionaries, allPerspectives, connectedWords
-  } = props;
+const ViewGroupingTag = props => {
+  const { lexicalEntry, fieldId, entitiesMode, allLanguages, allDictionaries, allPerspectives, connectedWords } = props;
 
   const panes = [
     {
-      menuItem: getTranslation('View'),
+      menuItem: getTranslation("View"),
       render: () => (
         <div>
           <Segment padded="very" textAlign="center" className="lingvo-grouping-tag">
@@ -104,7 +103,7 @@ const ViewGroupingTag = (props) => {
               id={lexicalEntry.id}
               fieldId={fieldId}
               entitiesMode={entitiesMode}
-              mode='view'
+              mode="view"
               allLanguages={allLanguages}
               allDictionaries={allDictionaries}
               allPerspectives={allPerspectives}
@@ -112,8 +111,8 @@ const ViewGroupingTag = (props) => {
             />
           </Segment>
         </div>
-      ),
-    },
+      )
+    }
   ];
   return <Tab panes={panes} />;
 };
@@ -128,27 +127,34 @@ ViewGroupingTag.propTypes = {
   connectedWords: PropTypes.object
 };
 
-const PublishGroupingTag = (props) => {
+const PublishGroupingTag = props => {
   const {
-    lexicalEntry, fieldId, entitiesMode, allLanguages, allDictionaries, allPerspectives, connectedWords, publish
+    lexicalEntry,
+    fieldId,
+    entitiesMode,
+    allLanguages,
+    allDictionaries,
+    allPerspectives,
+    connectedWords,
+    publish
   } = props;
 
   const entity = lexicalEntry.entities.find(e => isEqual(e.field_id, fieldId));
 
   const panes = [
     {
-      menuItem: getTranslation('Publish'),
+      menuItem: getTranslation("Publish"),
       render: () => (
         <div>
           {entity && (
             <Segment>
-              <Checkbox
-                toggle
-                checked={entity.published}
-                onChange={(e, { checked }) => publish(entity, checked)}
-              />
-              {entity.published && <span>{getTranslation('The entity is currently published. Click to unpublish.')}</span>}
-              {!entity.published && <span>{getTranslation('The entity is NOT currently published. Click to publish.')}</span>}
+              <Checkbox toggle checked={entity.published} onChange={(e, { checked }) => publish(entity, checked)} />
+              {entity.published && (
+                <span>{getTranslation("The entity is currently published. Click to unpublish.")}</span>
+              )}
+              {!entity.published && (
+                <span>{getTranslation("The entity is NOT currently published. Click to publish.")}</span>
+              )}
             </Segment>
           )}
           <Segment padded="very" textAlign="center" className="lingvo-grouping-tag">
@@ -156,7 +162,7 @@ const PublishGroupingTag = (props) => {
               id={lexicalEntry.id}
               fieldId={fieldId}
               entitiesMode={entitiesMode}
-              mode='publish'
+              mode="publish"
               allLanguages={allLanguages}
               allDictionaries={allDictionaries}
               allPerspectives={allPerspectives}
@@ -164,8 +170,8 @@ const PublishGroupingTag = (props) => {
             />
           </Segment>
         </div>
-      ),
-    },
+      )
+    }
   ];
   return <Tab panes={panes} />;
 };
@@ -178,24 +184,36 @@ PublishGroupingTag.propTypes = {
   allDictionaries: PropTypes.array.isRequired,
   allPerspectives: PropTypes.array.isRequired,
   connectedWords: PropTypes.object,
-  publish: PropTypes.func.isRequired,
+  publish: PropTypes.func.isRequired
 };
 
-const ContributionsGroupingTag = (props) => {
+const ContributionsGroupingTag = props => {
   const {
-    lexicalEntry, fieldId, entitiesMode, allLanguages, allDictionaries, allPerspectives, connectedWords, accept,
+    lexicalEntry,
+    fieldId,
+    entitiesMode,
+    allLanguages,
+    allDictionaries,
+    allPerspectives,
+    connectedWords,
+    accept
   } = props;
 
   const entity = lexicalEntry.entities.find(e => isEqual(e.field_id, fieldId));
 
   const panes = [
     {
-      menuItem: getTranslation('Contibutions'),
+      menuItem: getTranslation("Contibutions"),
       render: () => (
         <div>
           {entity && (
             <Segment>
-              <Button positive content={getTranslation("Accept")} disabled={entity.accepted} onClick={() => accept(entity, true)} />
+              <Button
+                positive
+                content={getTranslation("Accept")}
+                disabled={entity.accepted}
+                onClick={() => accept(entity, true)}
+              />
             </Segment>
           )}
           <Segment padded="very" textAlign="center" className="lingvo-grouping-tag">
@@ -203,7 +221,7 @@ const ContributionsGroupingTag = (props) => {
               id={lexicalEntry.id}
               fieldId={fieldId}
               entitiesMode={entitiesMode}
-              mode='contributions'
+              mode="contributions"
               allLanguages={allLanguages}
               allDictionaries={allDictionaries}
               allPerspectives={allPerspectives}
@@ -211,8 +229,8 @@ const ContributionsGroupingTag = (props) => {
             />
           </Segment>
         </div>
-      ),
-    },
+      )
+    }
   ];
   return <Tab panes={panes} />;
 };
@@ -225,18 +243,18 @@ ContributionsGroupingTag.propTypes = {
   allDictionaries: PropTypes.array.isRequired,
   allPerspectives: PropTypes.array.isRequired,
   connectedWords: PropTypes.object,
-  accept: PropTypes.func.isRequired,
+  accept: PropTypes.func.isRequired
 };
 
-const getComponent = (mode) => {
+const getComponent = mode => {
   switch (mode) {
-    case 'edit':
+    case "edit":
       return EditGroupingTag;
-    case 'view':
+    case "view":
       return ViewGroupingTag;
-    case 'publish':
+    case "publish":
       return PublishGroupingTag;
-    case 'contributions':
+    case "contributions":
       return ContributionsGroupingTag;
     default:
       return <Segment negative>Mode {mode} not supported</Segment>;
@@ -256,9 +274,7 @@ class GroupingTagModal extends React.Component {
 
   joinGroup(targetEntry) {
     // connect to lexical group
-    const {
-      connect: mutate, lexicalEntry, fieldId, entitiesMode,
-    } = this.props;
+    const { connect: mutate, lexicalEntry, fieldId, entitiesMode } = this.props;
 
     mutate({
       variables: { fieldId, connections: [lexicalEntry.id, targetEntry.id] },
@@ -270,21 +286,19 @@ class GroupingTagModal extends React.Component {
           variables: {
             id: lexicalEntry.id,
             fieldId,
-            entitiesMode,
+            entitiesMode
           },
-          fetchPolicy: 'network-only',
-        },
-      ],
+          fetchPolicy: "network-only"
+        }
+      ]
     }).then(() => {
-      window.logger.suc(getTranslation('Connected'));
+      window.logger.suc(getTranslation("Connected"));
     });
   }
 
   leaveGroup() {
     // disconnect lexical entry from group
-    const {
-      disconnect, lexicalEntry, fieldId, entitiesMode,
-    } = this.props;
+    const { disconnect, lexicalEntry, fieldId, entitiesMode } = this.props;
     disconnect({
       variables: { lexicalEntryId: lexicalEntry.id, fieldId },
       refetchQueries: [
@@ -293,12 +307,12 @@ class GroupingTagModal extends React.Component {
           variables: {
             id: lexicalEntry.id,
             fieldId,
-            entitiesMode,
-          },
-        },
-      ],
+            entitiesMode
+          }
+        }
+      ]
     }).then(() => {
-      window.logger.suc(getTranslation('Disconnected'));
+      window.logger.suc(getTranslation("Disconnected"));
     });
   }
 
@@ -313,17 +327,15 @@ class GroupingTagModal extends React.Component {
           query: queryPerspective,
           variables: {
             id: lexicalEntry.parent_id,
-            entitiesMode,
-          },
-        },
-      ],
+            entitiesMode
+          }
+        }
+      ]
     });
   }
 
   changeAccepted(entity, accepted) {
-    const {
-      accept, lexicalEntry, entitiesMode,
-    } = this.props;
+    const { accept, lexicalEntry, entitiesMode } = this.props;
 
     accept({
       variables: { id: entity.id, accepted },
@@ -333,24 +345,22 @@ class GroupingTagModal extends React.Component {
           query: queryLexicalEntries,
           variables: {
             id: lexicalEntry.parent_id,
-            entitiesMode,
-          },
-        },
-      ],
+            entitiesMode
+          }
+        }
+      ]
     });
   }
 
   render() {
-    const {
-      data, connectedQueryData, lexicalEntry, fieldId, entitiesMode, mode, onClose
-    } = this.props;
+    const { data, connectedQueryData, lexicalEntry, fieldId, entitiesMode, mode, onClose } = this.props;
 
     const {
       loading,
       error,
       language_tree: allLanguages,
       dictionaries: allDictionaries,
-      perspectives: allPerspectives,
+      perspectives: allPerspectives
     } = data;
 
     if (error || connectedQueryData.error) {
@@ -359,10 +369,18 @@ class GroupingTagModal extends React.Component {
 
     if (loading || connectedQueryData.loading) {
       return (
-        <Modal dimmer open size="fullscreen" closeOnDimmerClick={false} closeIcon onClose={onClose} className="lingvo-modal2">
+        <Modal
+          dimmer
+          open
+          size="fullscreen"
+          closeOnDimmerClick={false}
+          closeIcon
+          onClose={onClose}
+          className="lingvo-modal2"
+        >
           <Modal.Content>
             <ModalContentWrapper>
-              <Dimmer active style={{ minHeight: '60vh', background: 'none' }}>
+              <Dimmer active style={{ minHeight: "60vh", background: "none" }}>
                 <Header as="h2" icon>
                   <Icon name="spinner" loading />
                 </Header>
@@ -370,15 +388,23 @@ class GroupingTagModal extends React.Component {
             </ModalContentWrapper>
           </Modal.Content>
         </Modal>
-      ); 
+      );
     }
 
     const Component = getComponent(mode);
 
     return (
       <div>
-        <Modal dimmer open size="fullscreen" closeOnDimmerClick={false} closeIcon onClose={onClose} className="lingvo-modal2">
-          <Modal.Header>{getTranslation('Grouping tag')}</Modal.Header>
+        <Modal
+          dimmer
+          open
+          size="fullscreen"
+          closeOnDimmerClick={false}
+          closeIcon
+          onClose={onClose}
+          className="lingvo-modal2"
+        >
+          <Modal.Header>{getTranslation("Grouping tag")}</Modal.Header>
           <Modal.Content scrolling>
             <ModalContentWrapper>
               <Component
@@ -409,7 +435,7 @@ GroupingTagModal.propTypes = {
   data: PropTypes.shape({
     language_tree: PropTypes.array,
     dictionaries: PropTypes.array,
-    perspectives: PropTypes.array,
+    perspectives: PropTypes.array
   }).isRequired,
   lexicalEntry: PropTypes.object,
   fieldId: PropTypes.array,
@@ -419,30 +445,30 @@ GroupingTagModal.propTypes = {
   connect: PropTypes.func.isRequired,
   disconnect: PropTypes.func.isRequired,
   publish: PropTypes.func.isRequired,
-  accept: PropTypes.func.isRequired,
+  accept: PropTypes.func.isRequired
 };
 
 GroupingTagModal.defaultProps = {
   lexicalEntry: null,
-  fieldId: null,
+  fieldId: null
 };
 
 export default compose(
   pure,
   graphql(languageTreeSourceQuery),
   graphql(connectedQuery, {
-    name: 'connectedQueryData',
-    options: (props) => ({
+    name: "connectedQueryData",
+    options: props => ({
       variables: {
         id: props.lexicalEntry.id,
         fieldId: props.fieldId,
         entitiesMode: props.entitiesMode
       },
-      fetchPolicy: 'network-only',
+      fetchPolicy: "network-only"
     })
   }),
-  graphql(disconnectMutation, { name: 'disconnect' }),
-  graphql(connectMutation, { name: 'connect' }),
-  graphql(publishMutation, { name: 'publish' }),
-  graphql(acceptMutation, { name: 'accept' })
+  graphql(disconnectMutation, { name: "disconnect" }),
+  graphql(connectMutation, { name: "connect" }),
+  graphql(publishMutation, { name: "publish" }),
+  graphql(acceptMutation, { name: "accept" })
 )(GroupingTagModal);

@@ -1,13 +1,13 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import styled from 'styled-components';
-import L from 'leaflet';
-import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
-import { getTranslation } from 'api/i18n';
+import React from "react";
+import { getTranslation } from "api/i18n";
+import L from "leaflet";
+import { GeoSearchControl, OpenStreetMapProvider } from "leaflet-geosearch";
+import PropTypes from "prop-types";
+import styled from "styled-components";
 
-import 'leaflet/dist/leaflet.css';
-import 'leaflet-geosearch/assets/css/leaflet.css';
-import './style.scss';
+import "leaflet/dist/leaflet.css";
+import "leaflet-geosearch/assets/css/leaflet.css";
+import "./style.scss";
 
 const Wrapper = styled.div`
   width: 100%;
@@ -39,13 +39,12 @@ const Wrapper = styled.div`
 `;
 
 const icon = L.divIcon({
-  className: 'map-marker marker-color-gray a-class',
+  className: "map-marker marker-color-gray a-class",
   iconSize: [28, 28],
-  html: '<i class="fa fa-fw fa-2x fa-question"></i>',
+  html: '<i class="fa fa-fw fa-2x fa-question"></i>'
 });
 
 class Map extends React.Component {
-
   constructor(props) {
     super(props);
 
@@ -57,20 +56,19 @@ class Map extends React.Component {
     let { location } = this.props;
     if (location) {
       location = [location.lat, location.lng];
-    }
-    else {
+    } else {
       location = [61.32, 60.82];
     }
     this.leaflet = L.map(this.map, {}).setView(location, 4);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(this.leaflet);
 
-    this.leaflet.on('click', (event) => {
+    this.leaflet.on("click", event => {
       let node = event.originalEvent.target.parentNode;
       while (node) {
-        if (node.classList && node.classList.contains('leaflet-control-geosearch')) {
+        if (node.classList && node.classList.contains("leaflet-control-geosearch")) {
           return;
         }
         node = node.parentNode;
@@ -80,15 +78,15 @@ class Map extends React.Component {
 
     new GeoSearchControl({
       provider: new OpenStreetMapProvider(),
-      style: 'bar',
-      searchLabel: getTranslation('Type to search'),
+      style: "bar",
+      searchLabel: getTranslation("Type to search"),
       autoClose: true,
       marker: {
         icon: icon,
-        draggable: false,
-      },
+        draggable: false
+      }
     }).addTo(this.leaflet);
-    this.leaflet.on('geosearch/showlocation', ({ location }) => {
+    this.leaflet.on("geosearch/showlocation", ({ location }) => {
       this.onChangeLocation({ lat: location.y, lng: location.x });
     });
     this.componentWillUpdate(this.props);
@@ -118,7 +116,7 @@ class Map extends React.Component {
     return (
       <Wrapper>
         <div
-          ref={(ref) => {
+          ref={ref => {
             this.map = ref;
           }}
           className="leaflet"
@@ -130,11 +128,11 @@ class Map extends React.Component {
 
 Map.propTypes = {
   onChange: PropTypes.func.isRequired,
-  location: PropTypes.object,
+  location: PropTypes.object
 };
 
 Map.defaultProps = {
-  location: null,
+  location: null
 };
 
 export default Map;

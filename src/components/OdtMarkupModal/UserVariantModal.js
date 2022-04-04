@@ -1,12 +1,10 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { Modal, Form, Input, Button } from 'semantic-ui-react';
-
-import { getTranslation } from 'api/i18n';
+import React from "react";
+import { Button, Form, Input, Modal } from "semantic-ui-react";
+import { getTranslation } from "api/i18n";
+import PropTypes from "prop-types";
 
 /** Modal dialog for creating/editing of user defined variant */
 class UserVariantModal extends React.Component {
-
   constructor(props) {
     super(props);
 
@@ -26,11 +24,10 @@ class UserVariantModal extends React.Component {
     const { parent, variant, onSubmit, onClose } = this.props;
     if (variant) {
       variant.result.innerHTML = JSON.stringify(this.state);
-    }
-    else {
+    } else {
       const elem = document.createElement("span");
-      elem.classList.add('result');
-      elem.classList.add('user');
+      elem.classList.add("result");
+      elem.classList.add("user");
       elem.innerHTML = JSON.stringify(this.state);
       parent.append(elem);
       elem.id = `${elem.previousElementSibling ? elem.previousElementSibling.id : parent.id}!`;
@@ -42,43 +39,48 @@ class UserVariantModal extends React.Component {
   render() {
     const { variant, onClose } = this.props;
     const { lex, parts, gloss, gr, trans_ru } = this.state;
-    const isValid = lex.trim() !== "" && parts.trim() !== "" && gloss.trim() !== "" && gr.trim() !== "" && trans_ru.trim() !== "";
+    const isValid =
+      lex.trim() !== "" && parts.trim() !== "" && gloss.trim() !== "" && gr.trim() !== "" && trans_ru.trim() !== "";
 
     return (
       <Modal open dimmer size="small" closeIcon onClose={onClose} closeOnDimmerClick={false} className="lingvo-modal2">
-        <Modal.Header>{getTranslation('User defined variant')}</Modal.Header>
+        <Modal.Header>{getTranslation("User defined variant")}</Modal.Header>
         <Modal.Content>
           <Form>
             <Form.Field required>
               <label>Lex</label>
-              <Input value={lex} onChange={(_e, data) => this.setState({ lex: data.value })}/>
+              <Input value={lex} onChange={(_e, data) => this.setState({ lex: data.value })} />
             </Form.Field>
             <Form.Field required>
               <label>Parts</label>
-              <Input value={parts} onChange={(_e, data) => this.setState({ parts: data.value })}/>
+              <Input value={parts} onChange={(_e, data) => this.setState({ parts: data.value })} />
             </Form.Field>
             <Form.Field required>
               <label>Gloss</label>
-              <Input value={gloss} onChange={(_e, data) => this.setState({ gloss: data.value })}/>
+              <Input value={gloss} onChange={(_e, data) => this.setState({ gloss: data.value })} />
             </Form.Field>
             <Form.Field required>
               <label>Gr</label>
-              <Input value={gr} onChange={(_e, data) => this.setState({ gr: data.value })}/>
+              <Input value={gr} onChange={(_e, data) => this.setState({ gr: data.value })} />
             </Form.Field>
             <Form.Field required>
               <label>Trans_ru</label>
-              <Input value={trans_ru} onChange={(_e, data) => this.setState({ trans_ru: data.value })}/>
+              <Input value={trans_ru} onChange={(_e, data) => this.setState({ trans_ru: data.value })} />
             </Form.Field>
           </Form>
         </Modal.Content>
         <Modal.Actions>
-          <Button disabled={!isValid} content={getTranslation(variant ? 'Save' : 'Create')} onClick={this.save} className="lingvo-button-violet" />
-          <Button content={getTranslation('Cancel')} onClick={onClose} className="lingvo-button-basic-black" />
+          <Button
+            disabled={!isValid}
+            content={getTranslation(variant ? "Save" : "Create")}
+            onClick={this.save}
+            className="lingvo-button-violet"
+          />
+          <Button content={getTranslation("Cancel")} onClick={onClose} className="lingvo-button-basic-black" />
         </Modal.Actions>
       </Modal>
     );
   }
-
 }
 
 UserVariantModal.propTypes = {

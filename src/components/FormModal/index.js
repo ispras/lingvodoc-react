@@ -1,12 +1,12 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { Form, Modal, Button, Icon, Message, Header } from 'semantic-ui-react';
-import { Field, reduxForm } from 'redux-form';
-import { getTranslation } from 'api/i18n';
+import React from "react";
+import { Button, Form, Header, Icon, Message, Modal } from "semantic-ui-react";
+import { getTranslation } from "api/i18n";
+import PropTypes from "prop-types";
+import { Field, reduxForm } from "redux-form";
 
 function handleKeyDown(cb) {
-  return (event) => {
-    if (event.key === 'Enter' && event.shiftKey === false) {
+  return event => {
+    if (event.key === "Enter" && event.shiftKey === false) {
       event.preventDefault();
       cb();
     }
@@ -27,8 +27,8 @@ Rf.propTypes = {
   type: PropTypes.string.isRequired,
   meta: PropTypes.shape({
     touched: PropTypes.bool,
-    error: PropTypes.string,
-  }).isRequired,
+    error: PropTypes.string
+  }).isRequired
 };
 
 function FormModal(props) {
@@ -45,7 +45,7 @@ function FormModal(props) {
     error,
     reset,
     handleClose,
-    message,
+    message
   } = props;
 
   const close = () => reset() && handleClose();
@@ -63,24 +63,22 @@ function FormModal(props) {
       onFocus={e => e.stopPropagation()}
     >
       <Modal.Content className="lingvo-modal-content">
-        <Header textAlign="center" as="h1">{header}
-          {subheader && <Header.Subheader>
-            {subheader}
-          </Header.Subheader>}
+        <Header textAlign="center" as="h1">
+          {header}
+          {subheader && <Header.Subheader>{subheader}</Header.Subheader>}
           {submitting && <Icon loading name="spinner" />}
         </Header>
         <Form size="big" onSubmit={handleSubmit(actions)} onKeyDown={handleKeyDown(handleSubmit(actions))}>
-          {
-            fields.map(field =>
-              <Field key={field.name} component={field.component || Rf} {...field} />)
-          }
+          {fields.map(field => (
+            <Field key={field.name} component={field.component || Rf} {...field} />
+          ))}
           <Message visible={!!error} error>
             <Icon name="remove" /> {error}
           </Message>
           <Message visible={!!message} error>
             {message}
           </Message>
-          
+
           <Button color="violet" fluid size="huge" type="submit" disabled={pristine || submitting}>
             {getTranslation("Submit")}
           </Button>
@@ -100,11 +98,11 @@ FormModal.propTypes = {
   pristine: PropTypes.bool.isRequired,
   error: PropTypes.any.isRequired,
   fields: PropTypes.any.isRequired,
-  actions: PropTypes.any.isRequired,
+  actions: PropTypes.any.isRequired
 };
 
 FormModal.defaultProps = {
-  error: '',
+  error: ""
 };
 
 export default reduxForm()(FormModal);

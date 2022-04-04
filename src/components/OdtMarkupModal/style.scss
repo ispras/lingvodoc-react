@@ -23,22 +23,22 @@
   p {
     line-height: 2;
   }
-  
+
   span .result {
     display: none;
   }
 
   .unverified {
-    background-color: #FFDCE5;
+    background-color: #ffdce5;
     cursor: pointer;
   }
 
   .verified {
-    background-color: #D1F7C4;
+    background-color: #d1f7c4;
     cursor: pointer;
   }
 
   .selected {
-    border: 2px solid #7C39ED;
+    border: 2px solid #7c39ed;
   }
 }

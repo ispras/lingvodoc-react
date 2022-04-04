@@ -1,16 +1,17 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { compose } from 'recompose';
-import { graphql } from 'react-apollo';
-import gql from 'graphql-tag';
-import { Button, Modal, Divider } from 'semantic-ui-react';
-import { closeModal } from 'ducks/language';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { languagesQuery } from 'graphql/language';
-import Translations from 'components/Translation';
-import EditLanguageMetadata from 'components/EditLanguageMetadata';
-import { getTranslation } from 'api/i18n';
+import React from "react";
+import { graphql } from "react-apollo";
+import { connect } from "react-redux";
+import { Button, Divider, Modal } from "semantic-ui-react";
+import { getTranslation } from "api/i18n";
+import gql from "graphql-tag";
+import PropTypes from "prop-types";
+import { compose } from "recompose";
+import { bindActionCreators } from "redux";
+
+import EditLanguageMetadata from "components/EditLanguageMetadata";
+import Translations from "components/Translation";
+import { closeModal } from "ducks/language";
+import { languagesQuery } from "graphql/language";
 
 class CreateLanguageModal extends React.Component {
   constructor(props) {
@@ -32,9 +33,9 @@ class CreateLanguageModal extends React.Component {
       variables: { parent_id: parent.id, translationAtoms, metadata: this.state.metadata },
       refetchQueries: [
         {
-          query: languagesQuery,
-        },
-      ],
+          query: languagesQuery
+        }
+      ]
     }).then(() => {
       actions.closeModal();
     });
@@ -48,17 +49,29 @@ class CreateLanguageModal extends React.Component {
     }
 
     return (
-      <Modal dimmer open size="small" closeIcon closeOnDimmerClick={false} onClose={actions.closeModal} className="lingvo-modal2">
-        <Modal.Header>{getTranslation('Create language')}</Modal.Header>
+      <Modal
+        dimmer
+        open
+        size="small"
+        closeIcon
+        closeOnDimmerClick={false}
+        onClose={actions.closeModal}
+        className="lingvo-modal2"
+      >
+        <Modal.Header>{getTranslation("Create language")}</Modal.Header>
         <Modal.Content>
-          <h4>{getTranslation('Translations')}</h4>
+          <h4>{getTranslation("Translations")}</h4>
           <Translations onChange={translations => this.setState({ translations })} />
-          <Divider/>
-          <EditLanguageMetadata mode='create' onChange={metadata => this.setState({ metadata })} />
+          <Divider />
+          <EditLanguageMetadata mode="create" onChange={metadata => this.setState({ metadata })} />
         </Modal.Content>
         <Modal.Actions>
           <Button content={getTranslation("Save")} onClick={this.saveLanguage} className="lingvo-button-violet" />
-          <Button content={getTranslation("Cancel")} onClick={actions.closeModal} className="lingvo-button-basic-black" />
+          <Button
+            content={getTranslation("Cancel")}
+            onClick={actions.closeModal}
+            className="lingvo-button-basic-black"
+          />
         </Modal.Actions>
       </Modal>
     );
@@ -67,17 +80,17 @@ class CreateLanguageModal extends React.Component {
 
 CreateLanguageModal.propTypes = {
   actions: PropTypes.shape({
-    closeModal: PropTypes.func,
+    closeModal: PropTypes.func
   }).isRequired,
   visible: PropTypes.bool.isRequired,
   parent: PropTypes.object,
-  createLanguage: PropTypes.func.isRequired,
+  createLanguage: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({ parent: state.language.parent, visible: state.language.createVisible });
 
 const mapDispatchToProps = dispatch => ({
-  actions: bindActionCreators({ closeModal }, dispatch),
+  actions: bindActionCreators({ closeModal }, dispatch)
 });
 
 export default compose(
@@ -90,6 +103,6 @@ export default compose(
         }
       }
     `,
-    { name: 'createLanguage' }
+    { name: "createLanguage" }
   )
 )(CreateLanguageModal);

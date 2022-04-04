@@ -1,56 +1,53 @@
-import React from 'react';
-import { is } from 'immutable';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { compose } from 'recompose';
-import { Popup, Button } from 'semantic-ui-react';
-import { openCreateFieldModal } from 'ducks/fields';
-import { getTranslation } from 'api/i18n';
+import React from "react";
+import { connect } from "react-redux";
+import { Button, Popup } from "semantic-ui-react";
+import { getTranslation } from "api/i18n";
+import { is } from "immutable";
+import { compose } from "recompose";
+import { bindActionCreators } from "redux";
+
+import { openCreateFieldModal } from "ducks/fields";
 
 function valueColor(value) {
-  if (value === 'keep') {
-    return 'green';
+  if (value === "keep") {
+    return "green";
   }
 
-  if (value === 'spread') {
-    return 'red';
+  if (value === "spread") {
+    return "red";
   }
 
-  if (value && value.includes('/')) {
-    return 'purple';
+  if (value && value.includes("/")) {
+    return "purple";
   }
 
   return null;
 }
 
-function FieldButton({
-  text, onClick, isSelected,
-}) {
-  const color = isSelected ? { color: 'blue' } : {};
+function FieldButton({ text, onClick, isSelected }) {
+  const color = isSelected ? { color: "blue" } : {};
 
   return <Button onClick={onClick} content={text} {...color} />;
 }
 
-function Column({
-  spread, name, value, fieldOptions, type, onSetColumnType, actions,
-}) {
-  const isLink = value && value.includes('/');
+function Column({ spread, name, value, fieldOptions, type, onSetColumnType, actions }) {
+  const isLink = value && value.includes("/");
 
   let columnButton = <Button className="column-button" color={valueColor(value)} content={name} />;
 
   if (spread) {
-    columnButton = React.cloneElement(columnButton, { inverted: true, color: 'red', disabled: true });
+    columnButton = React.cloneElement(columnButton, { inverted: true, color: "red", disabled: true });
   }
 
   const selectedField = fieldOptions.find(x => is(x.value, type));
-  const triggerColor = selectedField ? { color: 'blue' } : {};
+  const triggerColor = selectedField ? { color: "blue" } : {};
 
-  /* 
+  /*
    * Without something in the text button can sometimes be not full height, so we in such cases we place
    * zero-width space there.
    */
 
-  const triggerText = selectedField ? (selectedField.text || '\u200b') : getTranslation('Field Type');
+  const triggerText = selectedField ? selectedField.text || "\u200b" : getTranslation("Field Type");
 
   let inner;
 
@@ -94,19 +91,19 @@ function Column({
   );
 }
 
-const ColumnWithData = compose(connect(null, dispatch => ({
-  actions: bindActionCreators({ openCreateFieldModal }, dispatch),
-})))(Column);
+const ColumnWithData = compose(
+  connect(null, dispatch => ({
+    actions: bindActionCreators({ openCreateFieldModal }, dispatch)
+  }))
+)(Column);
 
-function Columns({
-  blob, spreads, fieldOptions, columnTypes, onSetColumnType,
-}) {
-  const blobId = blob.get('id');
-  const values = blob.get('values');
+function Columns({ blob, spreads, fieldOptions, columnTypes, onSetColumnType }) {
+  const blobId = blob.get("id");
+  const values = blob.get("values");
 
   return (
     <div className="blob">
-      <b className="blob-name">{blob.get('name')}</b>
+      <b className="blob-name">{blob.get("name")}</b>
       <div className="blob-columns">
         {values
           .filter(value => value !== null)
@@ -124,9 +121,9 @@ function Columns({
         {spreads.map(spread => (
           <ColumnWithData
             spread
-            key={spread.get('from').join(spread.get('column'))}
-            name={spread.get('column')}
-            type={columnTypes.getIn([spread.get('from'), spread.get('column')])}
+            key={spread.get("from").join(spread.get("column"))}
+            name={spread.get("column")}
+            type={columnTypes.getIn([spread.get("from"), spread.get("column")])}
             fieldOptions={fieldOptions}
           />
         ))}
@@ -135,27 +132,27 @@ function Columns({
   );
 }
 
-function ColumnMapper({
-  state, spreads, types, columnTypes, onSetColumnType,
-}) {
-  const fieldOptions = types.sortBy(type => type.get('translation')).reduce(
-    (acc, type) => [
-      ...acc,
-      {
-        key: type.get('id').join('/'),
-        value: type.get('id'),
-        text: type.get('translation'),
-      },
-    ],
-    []
-  );
+function ColumnMapper({ state, spreads, types, columnTypes, onSetColumnType }) {
+  const fieldOptions = types
+    .sortBy(type => type.get("translation"))
+    .reduce(
+      (acc, type) => [
+        ...acc,
+        {
+          key: type.get("id").join("/"),
+          value: type.get("id"),
+          text: type.get("translation")
+        }
+      ],
+      []
+    );
 
   return (
     <div className="column-mapper">
       {state
         .map((v, id) => (
           <Columns
-            key={id.join('/')}
+            key={id.join("/")}
             blob={v}
             fieldOptions={fieldOptions}
             spreads={spreads.get(id, [])}

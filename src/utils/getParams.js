@@ -3,7 +3,7 @@ export function getParams(location) {
 }
 
 export function getPage(location) {
-  return parseInt(getParams(location).get('page'), 10) || 1;
+  return parseInt(getParams(location).get("page"), 10) || 1;
 }
 
 export default getParams;

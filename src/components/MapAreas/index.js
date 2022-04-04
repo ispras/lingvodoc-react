@@ -1,26 +1,28 @@
-import { isEqual } from 'lodash';
-import Immutable, { fromJS } from 'immutable';
-import React, { PureComponent } from 'react';
-import PropTypes from 'prop-types';
-import { Segment } from 'semantic-ui-react';
-import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
-import initializeContextMenu from './leaflet.contextmenu';
-import './leaflet.contextmenu.scss';
-import getAreaOutline from './areas';
-import { getTranslation } from 'api/i18n';
-import './index.scss';
+import React, { PureComponent } from "react";
+import { Segment } from "semantic-ui-react";
+import { getTranslation } from "api/i18n";
+import Immutable, { fromJS } from "immutable";
+import L from "leaflet";
+import { isEqual } from "lodash";
+import PropTypes from "prop-types";
+
+import getAreaOutline from "./areas";
+import initializeContextMenu from "./leaflet.contextmenu";
+
+import "leaflet/dist/leaflet.css";
+import "./leaflet.contextmenu.scss";
+import "./index.scss";
 
 function initMap(mountPoint) {
   const map = L.map(mountPoint, {
     contextmenu: true,
     contextmenuWidth: 270,
     zoomSnap: 0.5,
-    zoomDelta: 0.5,
+    zoomDelta: 0.5
   }).setView([62.8818649, 117.4730521], 4);
 
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
   }).addTo(map);
 
   return map;
@@ -58,30 +60,26 @@ class MapAreas extends PureComponent {
   componentDidMount() {
     this.map = initMap(this.mapContainer);
 
-    const {
-      points, areas, areasMode, markersGroups,
-    } = this.props;
+    const { points, areas, areasMode, markersGroups } = this.props;
     this.updateMap(points, areas, areasMode, markersGroups);
   }
 
   componentDidUpdate() {
-    const {
-      points, areas, areasMode, markersGroups,
-    } = this.props;
+    const { points, areas, areasMode, markersGroups } = this.props;
 
     this.updateMap(points, areas, areasMode, markersGroups);
   }
 
   setAreasEventHandlers() {
-    this.map.on('zoomstart', this.onZoomStartEventHandler);
-    this.map.on('zoomend', this.onZoomEndEventHandler);
+    this.map.on("zoomstart", this.onZoomStartEventHandler);
+    this.map.on("zoomend", this.onZoomEndEventHandler);
   }
 
   setMarkerEventHandlers(markerData) {
     const marker = this.markersLeafletElements.get(markerData);
 
     if (marker) {
-      marker.on('click', () => this.props.onPointClick(markerData));
+      marker.on("click", () => this.props.onPointClick(markerData));
     }
   }
 
@@ -92,7 +90,7 @@ class MapAreas extends PureComponent {
   }
 
   renderAreas() {
-    this.areas.forEach((areaItem) => {
+    this.areas.forEach(areaItem => {
       const areaPoints = this.getAreaPoints(areaItem);
       const { id: areaId, color } = areaItem;
 
@@ -105,12 +103,13 @@ class MapAreas extends PureComponent {
   }
 
   getGroupItemsAddMarkerToGroup(markerGroups, dictionary) {
-    const groups = Object.values(this.markersGroups)
-      .filter(group => markerGroups.indexOf(group.id) === -1);
+    const groups = Object.values(this.markersGroups).filter(group => markerGroups.indexOf(group.id) === -1);
 
     return groups.map(group => ({
       text: group.text,
-      callback: () => { this.props.markersHandlers.addDictToGroup(dictionary, group.id); },
+      callback: () => {
+        this.props.markersHandlers.addDictToGroup(dictionary, group.id);
+      }
     }));
   }
 
@@ -119,7 +118,9 @@ class MapAreas extends PureComponent {
 
     return groups.map(group => ({
       text: group.text,
-      callback: () => { this.props.markersHandlers.addAllDictsToGroup(markerGroups, group.id); },
+      callback: () => {
+        this.props.markersHandlers.addAllDictsToGroup(markerGroups, group.id);
+      }
     }));
   }
 
@@ -127,15 +128,16 @@ class MapAreas extends PureComponent {
     let groups = [];
 
     if (markerGroups.length === 1) {
-      groups = Object.values(this.markersGroups)
-        .filter(group => markerGroups.indexOf(group.id) === -1);
+      groups = Object.values(this.markersGroups).filter(group => markerGroups.indexOf(group.id) === -1);
     } else {
       groups = Object.values(this.markersGroups);
     }
 
     return groups.map(group => ({
       text: group.text,
-      callback: () => { this.props.markersHandlers.moveDictToGroup(dictionary, markerGroups, group.id); },
+      callback: () => {
+        this.props.markersHandlers.moveDictToGroup(dictionary, markerGroups, group.id);
+      }
     }));
   }
 
@@ -162,36 +164,44 @@ class MapAreas extends PureComponent {
     const { coords, values: markerGroups, dictionary } = markerData;
     let markerLeafletElement = null;
     if (this.areasMode) {
-      markerLeafletElement = L.marker(coords, { icon: this.iconFunc(markerData) })
-        .addTo(this.map);
+      markerLeafletElement = L.marker(coords, { icon: this.iconFunc(markerData) }).addTo(this.map);
     } else {
       markerLeafletElement = L.marker(coords, {
         icon: this.iconFunc(markerData),
         contextmenu: true,
-        contextmenuItems: [{
-          text: getTranslation('Disable marker'),
-          callback: () => { this.props.markersHandlers.deleteDictFromSearches(dictionary, markerGroups); },
-        },
-        {
-          text: getTranslation('Disable all markers of the groups this marker belongs to.'),
-          callback: () => { this.props.markersHandlers.deleteAllDictsOfGroups(markerGroups); },
-        }, {
-          separator: true,
-        }, {
-          text: getTranslation('Add marker to group'),
-          contextmenuItems: this.getGroupItemsAddMarkerToGroup(markerGroups, dictionary),
-        },
-        {
-          text: getTranslation('Add all markers of the groups to which this marker belongs to the group'),
-          contextmenuItems: this.getGroupItemsAddAllMarkersToGroup(markerGroups),
-        }, {
-          separator: true,
-        }, {
-          text: getTranslation('Move marker to group'),
-          contextmenuItems: this.getGroupItemsMoveMarkerToGroup(markerGroups, dictionary),
-        }],
-      })
-        .addTo(this.map);
+        contextmenuItems: [
+          {
+            text: getTranslation("Disable marker"),
+            callback: () => {
+              this.props.markersHandlers.deleteDictFromSearches(dictionary, markerGroups);
+            }
+          },
+          {
+            text: getTranslation("Disable all markers of the groups this marker belongs to."),
+            callback: () => {
+              this.props.markersHandlers.deleteAllDictsOfGroups(markerGroups);
+            }
+          },
+          {
+            separator: true
+          },
+          {
+            text: getTranslation("Add marker to group"),
+            contextmenuItems: this.getGroupItemsAddMarkerToGroup(markerGroups, dictionary)
+          },
+          {
+            text: getTranslation("Add all markers of the groups to which this marker belongs to the group"),
+            contextmenuItems: this.getGroupItemsAddAllMarkersToGroup(markerGroups)
+          },
+          {
+            separator: true
+          },
+          {
+            text: getTranslation("Move marker to group"),
+            contextmenuItems: this.getGroupItemsMoveMarkerToGroup(markerGroups, dictionary)
+          }
+        ]
+      }).addTo(this.map);
     }
 
     this.addMarkerLeafletElement(markerData, markerLeafletElement);
@@ -238,51 +248,43 @@ class MapAreas extends PureComponent {
     points.sort((a, b) => {
       const [ax, ay] = a.coords;
       const [bx, by] = b.coords;
-      return (ax - bx || ay - by); });
+      return ax - bx || ay - by;
+    });
 
-    if (!isEqual(points, this.points))
-    {
+    if (!isEqual(points, this.points)) {
       this.resetMarkers();
       this.resetAreas();
 
       this.updatePoints(points);
       this.updateAreas(areas);
 
-      /* 
+      /*
        * If we are adding never before seen markers to the map,
        * we refit the map to include all of them.
        */
 
       let new_point_flag = false;
 
-      for (const point of points)
-      {
-        const point_signature =
-          fromJS({...point, dictionary: point.dictionary.get('id').toJS()});
+      for (const point of points) {
+        const point_signature = fromJS({ ...point, dictionary: point.dictionary.get("id").toJS() });
 
-        if (!this.pointsSet.has(point_signature))
-        {
+        if (!this.pointsSet.has(point_signature)) {
           this.pointsSet = this.pointsSet.add(point_signature);
           new_point_flag = true;
         }
       }
 
-      if (new_point_flag)
-      {
-        const coord_list =
-          points.map(point => point.coords);
+      if (new_point_flag) {
+        const coord_list = points.map(point => point.coords);
 
-        this.map.fitBounds(
-          this.map.getBounds().extend(
-            L.latLngBounds(coord_list).pad(0.05)),
-          { maxZoom: this.map.getZoom() });
+        this.map.fitBounds(this.map.getBounds().extend(L.latLngBounds(coord_list).pad(0.05)), {
+          maxZoom: this.map.getZoom()
+        });
       }
 
       this.renderMarkers();
       this.showAreas();
-    }
-    else if (areas !== this.areas)
-    {
+    } else if (areas !== this.areas) {
       this.resetAreas();
 
       this.updateAreas(areas);
@@ -291,7 +293,7 @@ class MapAreas extends PureComponent {
   }
 
   createAreaPath(areaId) {
-    const areaPath = L.SVG.create('path');
+    const areaPath = L.SVG.create("path");
     this.areasPathsLeafletElements[areaId] = areaPath;
 
     this.areasLayer._container.appendChild(areaPath);
@@ -314,10 +316,10 @@ class MapAreas extends PureComponent {
   updateAreaPath(areaId, outline, color) {
     const path = this.getAreaPath(areaId);
 
-    path.setAttribute('fill', color);
-    path.setAttribute('opacity', 0.5);
-    path.setAttribute('stroke', 'black');
-    path.setAttribute('d', outline);
+    path.setAttribute("fill", color);
+    path.setAttribute("opacity", 0.5);
+    path.setAttribute("stroke", "black");
+    path.setAttribute("d", outline);
   }
 
   reset() {
@@ -328,7 +330,7 @@ class MapAreas extends PureComponent {
   resetMarkers() {
     this.removeMarkersEventHandlers();
 
-    for (let marker of this.markersLeafletElements.values()) {
+    for (const marker of this.markersLeafletElements.values()) {
       this.map.removeLayer(marker);
     }
 
@@ -345,22 +347,21 @@ class MapAreas extends PureComponent {
   }
 
   removeAreasFromMap() {
-    Object.values(this.areasPathsLeafletElements)
-      .forEach((path) => {
-        path.parentNode.removeChild(path);
-      });
+    Object.values(this.areasPathsLeafletElements).forEach(path => {
+      path.parentNode.removeChild(path);
+    });
 
     this.areasPathsLeafletElements = {};
   }
 
   removeAreasEventHandlers() {
-    this.map.on('zoomstart', () => {});
-    this.map.on('zoomend', () => {});
+    this.map.on("zoomstart", () => {});
+    this.map.on("zoomend", () => {});
   }
 
   removeMarkersEventHandlers() {
-    for (let marker of this.markersLeafletElements.values()) {
-      marker.on('click', () => {});
+    for (const marker of this.markersLeafletElements.values()) {
+      marker.on("click", () => {});
     }
   }
 
@@ -394,7 +395,7 @@ class MapAreas extends PureComponent {
       <Segment>
         <div className="leaflet">
           <div
-            ref={(ref) => {
+            ref={ref => {
               this.mapContainer = ref;
             }}
             className="leaflet__map"
@@ -412,7 +413,7 @@ MapAreas.propTypes = {
   areas: PropTypes.array.isRequired,
   areasMode: PropTypes.bool.isRequired,
   markersGroups: PropTypes.object.isRequired,
-  markersHandlers: PropTypes.object.isRequired,
+  markersHandlers: PropTypes.object.isRequired
 };
 
 export default MapAreas;

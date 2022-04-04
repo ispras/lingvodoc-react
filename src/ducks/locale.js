@@ -1,11 +1,11 @@
-import { combineReducers } from 'redux';
-import locale from 'api/locale';
+import locale from "api/locale";
+import { combineReducers } from "redux";
 
 // Actions
-export const REQUEST = '@locale/REQUEST';
-export const SELECT = '@locale/SELECT';
-export const SET = '@locale/SET';
-export const CHANGE = '@locale/CHANGE';
+export const REQUEST = "@locale/REQUEST";
+export const SELECT = "@locale/SELECT";
+export const SET = "@locale/SET";
+export const CHANGE = "@locale/CHANGE";
 
 // Reducers
 function locales(state = [], action = {}) {
@@ -18,7 +18,7 @@ function locales(state = [], action = {}) {
 }
 
 const selectedInitial = {
-  id: locale.get(),
+  id: locale.get()
 };
 
 function selected(state = selectedInitial, action = {}) {
@@ -48,7 +48,7 @@ function loading(state = false, action = {}) {
 export default combineReducers({
   locales,
   selected,
-  loading,
+  loading
 });
 
 // Action Creators

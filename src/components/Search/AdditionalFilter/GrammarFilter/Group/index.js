@@ -1,21 +1,22 @@
-import React, { PureComponent } from 'react';
-import PropTypes from 'prop-types';
-import GrammarItem from '../Item';
+import React, { PureComponent } from "react";
+import PropTypes from "prop-types";
+
+import GrammarItem from "../Item";
 
 const classNames = {
-  container: 'grammar-filter__group-wrap',
-  group: 'grammar-filter__group',
-  header: 'grammar-filter__group-header',
+  container: "grammar-filter__group-wrap",
+  group: "grammar-filter__group",
+  header: "grammar-filter__group-header"
 };
 
 class GrammarGroup extends PureComponent {
   static propTypes = {
     data: PropTypes.shape({
       name: PropTypes.string.isRequired,
-      children: PropTypes.array.isRequired,
+      children: PropTypes.array.isRequired
     }).isRequired,
-    onChange: PropTypes.func.isRequired,
-  }
+    onChange: PropTypes.func.isRequired
+  };
 
   constructor() {
     super();
@@ -27,16 +28,12 @@ class GrammarGroup extends PureComponent {
     const { name: groupName } = this.props.data;
     this.sendDataToTop({
       ...item,
-      groupName,
+      groupName
     });
   }
 
   getRenderItems(items) {
-    return items.map(item => <GrammarItem
-      key={item.value}
-      data={item}
-      onChange={this.onItemChange}
-    />);
+    return items.map(item => <GrammarItem key={item.value} data={item} onChange={this.onItemChange} />);
   }
 
   sendDataToTop(data) {
