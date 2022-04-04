@@ -45,6 +45,9 @@ function error(state = false, action = {}) {
   switch (action.type) {
     case ERROR:
       return true;
+    case SET:
+    case REQUEST:
+      return false;
     default:
       return state;
   }
