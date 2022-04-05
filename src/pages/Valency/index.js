@@ -646,7 +646,7 @@ class Valency extends React.Component {
         <div className="background-content">
           <Segment>
             <Loader active inline="centered" indeterminate>
-              {getTranslation("Loading...")}
+              {`${getTranslation("Loading")}...`}
             </Loader>
           </Segment>
         </div>
