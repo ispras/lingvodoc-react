@@ -1,5 +1,4 @@
-import { delay } from "redux-saga";
-import { put, takeEvery } from "redux-saga/effects";
+import { delay, put, takeEvery } from "redux-saga/effects";
 
 import { ADD, remove } from "ducks/snackbar";
 
