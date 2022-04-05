@@ -45,17 +45,17 @@ export const valencyDataQuery = gql`
     $perspectiveId: LingvodocID!
     $offset: Int
     $limit: Int
-    $verbFlag: Boolean
     $verbPrefix: String
     $caseFlag: Boolean
+    $acceptValue: Boolean
   ) {
     valency_data(
       perspective_id: $perspectiveId
       offset: $offset
       limit: $limit
-      verb_flag: $verbFlag
       verb_prefix: $verbPrefix
       case_flag: $caseFlag
+      accept_value: $acceptValue
     )
   }
 `;
@@ -85,6 +85,7 @@ class Valency extends React.Component {
 
       sort_verb: false,
       sort_case: false,
+      sort_accept: false,
 
       creating_valency_data: false,
       creating_valency_error: false,
@@ -113,6 +114,8 @@ class Valency extends React.Component {
       show_prefix_verb_list: [],
       show_prefix_str_list: [],
 
+      accept_value: true,
+
       selection_default: false,
       selection_dict: {}
     };
@@ -133,16 +136,45 @@ class Valency extends React.Component {
     this.valency_data_query_count = 0;
   }
 
-  queryValencyData(perspective, current_page, items_per_page, sort_verb, sort_case, verb_prefix) {
+  queryValencyData({
+    perspective = null,
+    current_page = null,
+    items_per_page = null,
+    sort_verb = null,
+    sort_case = null,
+    sort_accept = null,
+    verb_prefix = null,
+    accept_value = null
+  } = {}) {
     const { client } = this.props;
+
+    perspective = perspective || this.state.perspective;
+
+    if (current_page == null) {
+      current_page = this.state.current_page;
+    }
 
     items_per_page = items_per_page || this.state.items_per_page;
 
-    if (sort_verb == null) {sort_verb = this.state.sort_verb;}
+    if (sort_verb == null) {
+      sort_verb = this.state.sort_verb;
+    }
 
-    if (sort_case == null) {sort_case = this.state.sort_case;}
+    if (sort_case == null) {
+      sort_case = this.state.sort_case;
+    }
 
-    if (verb_prefix == null) {verb_prefix = sort_verb ? this.state.prefix_filter : null;}
+    if (sort_accept == null) {
+      sort_accept = this.state.sort_accept;
+    }
+
+    if (verb_prefix == null && sort_verb) {
+      verb_prefix = this.state.prefix_filter;
+    }
+
+    if (accept_value == null && sort_accept) {
+      accept_value = this.state.accept_value;
+    }
 
     const query_index = ++this.valency_data_query_count;
 
@@ -153,15 +185,17 @@ class Valency extends React.Component {
           perspectiveId: perspective.id,
           offset: (current_page - 1) * items_per_page,
           limit: items_per_page,
-          verbFlag: sort_verb,
-          verbPrefix: verb_prefix,
-          caseFlag: sort_case
+          verbPrefix: sort_verb ? verb_prefix : null,
+          caseFlag: sort_case,
+          acceptValue: sort_accept ? accept_value : null
         },
         fetchPolicy: "no-cache"
       })
       .then(
         ({ data }) => {
-          if (query_index < this.valency_data_query_count) {return;}
+          if (query_index < this.valency_data_query_count) {
+            return;
+          }
 
           const { instance_count, instance_list, sentence_list, annotation_list, user_list } = data.valency_data;
 
@@ -209,20 +243,32 @@ class Valency extends React.Component {
             let show_prefix_verb_list = [];
 
             if (data_verb_list.length > 15) {
-              for (const verb of data_verb_list.slice(0, 10)) {show_data_verb_list.push(verb);}
+              for (const verb of data_verb_list.slice(0, 10)) {
+                show_data_verb_list.push(verb);
+              }
 
               show_data_verb_list.push("...");
 
-              for (const verb of data_verb_list.slice(-5)) {show_data_verb_list.push(verb);}
-            } else {show_data_verb_list = data_verb_list;}
+              for (const verb of data_verb_list.slice(-5)) {
+                show_data_verb_list.push(verb);
+              }
+            } else {
+              show_data_verb_list = data_verb_list;
+            }
 
             if (prefix_verb_list.length > 15) {
-              for (const verb of prefix_verb_list.slice(0, 10)) {show_prefix_verb_list.push(verb);}
+              for (const verb of prefix_verb_list.slice(0, 10)) {
+                show_prefix_verb_list.push(verb);
+              }
 
               show_prefix_verb_list.push("...");
 
-              for (const verb of prefix_verb_list.slice(-5)) {show_prefix_verb_list.push(verb);}
-            } else {show_prefix_verb_list = prefix_verb_list;}
+              for (const verb of prefix_verb_list.slice(-5)) {
+                show_prefix_verb_list.push(verb);
+              }
+            } else {
+              show_prefix_verb_list = prefix_verb_list;
+            }
 
             state_obj.show_data_verb_list = show_data_verb_list;
             state_obj.show_prefix_verb_list = show_prefix_verb_list;
@@ -233,7 +279,9 @@ class Valency extends React.Component {
             const prefix_length = verb_prefix.length;
 
             for (const verb of prefix_verb_list) {
-              if (verb.length < prefix_length) {continue;}
+              if (verb.length < prefix_length) {
+                continue;
+              }
 
               const prefix_str = verb.slice(0, prefix_length + 1);
 
@@ -262,6 +310,9 @@ class Valency extends React.Component {
     if (!perspective.has_valency_data) {
       this.setState({
         perspective,
+        sort_verb: false,
+        sort_case: false,
+        sort_accept: false,
         valency_data: null,
         prefix_filter: "",
         selection_dict: {}
@@ -272,6 +323,9 @@ class Valency extends React.Component {
 
     this.setState({
       perspective,
+      sort_verb: false,
+      sort_case: false,
+      sort_accept: false,
       valency_data: null,
       prefix_filter: "",
       selection_dict: {},
@@ -279,7 +333,15 @@ class Valency extends React.Component {
       loading_valency_error: false
     });
 
-    this.queryValencyData(perspective, 1, null, null, null, "");
+    this.queryValencyData({
+      perspective,
+      current_page: 1,
+      sort_verb: false,
+      verb_prefix: "",
+      sort_case: false,
+      sort_accept: false,
+      accept_value: null
+    });
   }
 
   createValencyData() {
@@ -306,7 +368,9 @@ class Valency extends React.Component {
             valency_data: null
           });
 
-          this.queryValencyData(this.state.perspective, 1);
+          this.queryValencyData({
+            current_page: 1
+          });
         },
         () => {
           this.setState({
@@ -329,12 +393,15 @@ class Valency extends React.Component {
           window.logger.suc(getTranslation("Set valency annotation."));
 
           for (const [instance_id, annotation_value] of annotation_list) {
-            if (!this.state.annotation_map.has(instance_id))
-              {this.state.annotation_map.set(instance_id, new Map([[this.props.user.id, annotation_value]]));}
-            else {this.state.annotation_map.get(instance_id).set(this.props.user.id, annotation_value);}
+            if (!this.state.annotation_map.has(instance_id)) {
+              this.state.annotation_map.set(instance_id, new Map([[this.props.user.id, annotation_value]]));
+            } else {
+              this.state.annotation_map.get(instance_id).set(this.props.user.id, annotation_value);
+            }
 
-            if (!this.state.user_map.has(this.props.user.id))
-              {this.state.user_map.set(this.props.user.id, this.props.user.name);}
+            if (!this.state.user_map.has(this.props.user.id)) {
+              this.state.user_map.set(this.props.user.id, this.props.user.name);
+            }
           }
 
           this.setState({ annotation_map: this.state.annotation_map });
@@ -352,17 +419,23 @@ class Valency extends React.Component {
     for (const instance of this.state.instance_list) {
       const selected = selection_dict.hasOwnProperty(instance.id) ? selection_dict[instance.id] : selection_default;
 
-      if (!selected) {continue;}
+      if (!selected) {
+        continue;
+      }
 
       const user_annotation_map = annotation_map.has(instance.id) ? annotation_map.get(instance.id) : null;
 
       const annotation_value =
         user_annotation_map && user_annotation_map.has(user_id) && user_annotation_map.get(user_id);
 
-      if (annotation_value != accept_value) {annotation_list.push([instance.id, accept_value]);}
+      if (annotation_value != accept_value) {
+        annotation_list.push([instance.id, accept_value]);
+      }
     }
 
-    if (annotation_list.length > 0) {this.setValencyAnnotation(annotation_list);}
+    if (annotation_list.length > 0) {
+      this.setValencyAnnotation(annotation_list);
+    }
   }
 
   setPage(active_page) {
@@ -376,7 +449,7 @@ class Valency extends React.Component {
       valency_data: null
     });
 
-    this.queryValencyData(this.state.perspective, active_page);
+    this.queryValencyData({ current_page: active_page });
   }
 
   setItemsPerPage(items_per_page) {
@@ -391,7 +464,7 @@ class Valency extends React.Component {
       valency_data: null
     });
 
-    this.queryValencyData(this.state.perspective, current_page, items_per_page);
+    this.queryValencyData({ current_page, items_per_page });
   }
 
   setPrefix(prefix_str) {
@@ -399,20 +472,28 @@ class Valency extends React.Component {
 
     /* Refinement. */
 
-    if (prefix_str.startsWith(this.state.prefix_filter))
-      {prefix_verb_list = this.state.prefix_verb_list.filter(verb => verb.startsWith(prefix_str));}
-    /* Not a refinement, have to start from the list of all verbs. */ else
-      {prefix_verb_list = this.state.all_verb_list.filter(verb => verb.startsWith(prefix_str));}
+    if (prefix_str.startsWith(this.state.prefix_filter)) {
+      prefix_verb_list = this.state.prefix_verb_list.filter(verb => verb.startsWith(prefix_str));
+    } else {
+      /* Not a refinement, have to start from the list of all verbs. */
+      prefix_verb_list = this.state.all_verb_list.filter(verb => verb.startsWith(prefix_str));
+    }
 
     let show_prefix_verb_list = [];
 
     if (prefix_verb_list.length > 15) {
-      for (const verb of prefix_verb_list.slice(0, 10)) {show_prefix_verb_list.push(verb);}
+      for (const verb of prefix_verb_list.slice(0, 10)) {
+        show_prefix_verb_list.push(verb);
+      }
 
       show_prefix_verb_list.push("...");
 
-      for (const verb of prefix_verb_list.slice(-5)) {show_prefix_verb_list.push(verb);}
-    } else {show_prefix_verb_list = prefix_verb_list;}
+      for (const verb of prefix_verb_list.slice(-5)) {
+        show_prefix_verb_list.push(verb);
+      }
+    } else {
+      show_prefix_verb_list = prefix_verb_list;
+    }
 
     const show_prefix_str_set = new Set();
     const show_prefix_str_list = [];
@@ -420,7 +501,9 @@ class Valency extends React.Component {
     const prefix_length = prefix_str.length;
 
     for (const verb of prefix_verb_list) {
-      if (verb.length < prefix_length) {continue;}
+      if (verb.length < prefix_length) {
+        continue;
+      }
 
       const new_prefix_str = verb.slice(0, prefix_length + 1);
 
@@ -451,7 +534,8 @@ class Valency extends React.Component {
 
     const user_annotation_map = annotation_map.has(instance.id) ? annotation_map.get(instance.id) : null;
 
-    const annotation_value = user_annotation_map && user_annotation_map.has(user_id) && user_annotation_map.get(user_id);
+    const annotation_value =
+      user_annotation_map && user_annotation_map.has(user_id) && user_annotation_map.get(user_id);
 
     const { selection_default, selection_dict } = this.state;
 
@@ -548,17 +632,17 @@ class Valency extends React.Component {
   }
 
   render() {
-    if (this.props.user.id === undefined && !this.props.loading)
-      {return (
+    if (this.props.user.id === undefined && !this.props.loading) {
+      return (
         <div className="background-content">
           <Message>
             <Message.Header>{getTranslation("Please sign in")}</Message.Header>
             <p>{getTranslation("Only registered users can work with valency data.")}</p>
           </Message>
         </div>
-      );}
-    else if ((this.props.loading && !this.props.error) || (this.props.data.loading && !this.props.data.error))
-      {return (
+      );
+    } else if ((this.props.loading && !this.props.error) || (this.props.data.loading && !this.props.data.error)) {
+      return (
         <div className="background-content">
           <Segment>
             <Loader active inline="centered" indeterminate>
@@ -566,23 +650,24 @@ class Valency extends React.Component {
             </Loader>
           </Segment>
         </div>
-      );}
-    else if (this.props.error)
-      {return (
+      );
+    } else if (this.props.error) {
+      return (
         <div className="background-content">
           <Message compact negative>
             {getTranslation("User sign-in error, please sign in; if not successful, please contact administrators.")}
           </Message>
         </div>
-      );}
-    else if (this.props.data.error)
-      {return (
+      );
+    } else if (this.props.data.error) {
+      return (
         <div className="background-content">
           <Message compact negative>
             {getTranslation("General error, please contact administrators.")}
           </Message>
         </div>
-      );}
+      );
+    }
 
     const { perspectives } = this.props.data;
 
@@ -590,7 +675,9 @@ class Valency extends React.Component {
     const perspective_id_map = new Map();
 
     for (let i = 0; i < perspectives.length; i++) {
-      if (perspectives[i].tree.some(value => value.marked_for_deletion)) {continue;}
+      if (perspectives[i].tree.some(value => value.marked_for_deletion)) {
+        continue;
+      }
 
       const id_str = id2str(perspectives[i].id);
 
@@ -613,7 +700,6 @@ class Valency extends React.Component {
     const {
       current_page,
       items_per_page,
-      data_verb_list,
       show_data_verb_list,
       show_prefix_verb_list,
       show_prefix_str_list,
@@ -678,19 +764,26 @@ class Valency extends React.Component {
 
         /* Checking if we have selected instances we can accept/reject. */
 
-        if (has_selected_to_accept && has_selected_to_reject) {continue;}
+        if (has_selected_to_accept && has_selected_to_reject) {
+          continue;
+        }
 
         const selected = selection_dict.hasOwnProperty(instance.id) ? selection_dict[instance.id] : selection_default;
 
-        if (!selected) {continue;}
+        if (!selected) {
+          continue;
+        }
 
         const user_annotation_map = annotation_map.has(instance.id) ? annotation_map.get(instance.id) : null;
 
         const annotation_value =
           user_annotation_map && user_annotation_map.has(user_id) && user_annotation_map.get(user_id);
 
-        if (annotation_value) {has_selected_to_reject = true;}
-        else {has_selected_to_accept = true;}
+        if (annotation_value) {
+          has_selected_to_reject = true;
+        } else {
+          has_selected_to_accept = true;
+        }
       }
     }
 
@@ -715,7 +808,7 @@ class Valency extends React.Component {
               content={
                 this.state.creating_valency_data ? (
                   <span>
-                    {`${getTranslation("Creating valency data...") } `}
+                    {`${getTranslation("Creating valency data...")} `}
                     <Icon name="spinner" loading />
                   </span>
                 ) : (
@@ -731,11 +824,9 @@ class Valency extends React.Component {
             <div style={{ marginTop: "0.5em" }}>
               <Checkbox
                 toggle
-                label={
-                  `${getTranslation("Selected by default") 
-                  }: ${ 
-                  this.state.selection_default ? getTranslation("on") : getTranslation("off")}`
-                }
+                label={`${getTranslation("Selected by default")}: ${
+                  this.state.selection_default ? getTranslation("on") : getTranslation("off")
+                }`}
                 checked={this.state.selection_default}
                 onChange={(e, data) => this.setState({ selection_default: data.checked })}
               />
@@ -764,7 +855,11 @@ class Valency extends React.Component {
                     show_prefix_str_list: []
                   });
 
-                  this.queryValencyData(this.state.perspective, 1, null, checked, null, "");
+                  this.queryValencyData({
+                    current_page: 1,
+                    sort_verb: checked,
+                    verb_prefix: ""
+                  });
                 }}
               />
             </div>
@@ -803,7 +898,9 @@ class Valency extends React.Component {
                 placeholder={`${getTranslation("Verb prefix filter")}...`}
                 value={this.state.prefix_filter}
                 onKeyPress={e => {
-                  if (e.key === "Enter") {this.setPage(1);}
+                  if (e.key === "Enter") {
+                    this.setPage(1);
+                  }
                 }}
                 onChange={e => this.setPrefix(e.target.value)}
                 icon={
@@ -883,16 +980,77 @@ class Valency extends React.Component {
                     valency_data: null
                   });
 
-                  this.queryValencyData(this.state.perspective, 1, null, null, checked);
+                  this.queryValencyData({
+                    currenet_page: 1,
+                    sort_case: checked
+                  });
                 }}
               />
+            </div>
+          )}
+
+          {(this.state.valency_data || this.state.loading_valency_data) && (
+            <div style={{ marginTop: "0.5em" }}>
+              <Checkbox
+                label={
+                  this.state.sort_accept ? (
+                    <label>
+                      {`${getTranslation("Sort by acceptance")} (${getTranslation(
+                        this.state.accept_value ? "accepted first" : "accepted last"
+                      )}) `}
+                    </label>
+                  ) : (
+                    getTranslation("Sort by acceptance")
+                  )
+                }
+                checked={this.state.sort_accept}
+                onChange={(e, { checked }) => {
+                  this.setState({
+                    sort_accept: checked,
+                    current_page: 1,
+                    input_go_to_page: 1,
+                    loading_valency_data: true,
+                    loading_valency_error: false,
+                    valency_data: null
+                  });
+
+                  this.queryValencyData({
+                    current_page: 1,
+                    sort_accept: checked
+                  });
+                }}
+              />
+              {this.state.sort_accept && <span> </span>}
+              {this.state.sort_accept && (
+                <Icon
+                  name="sync alternate"
+                  className="clickable"
+                  onClick={() => {
+                    const accept_value = !this.state.accept_value;
+
+                    this.setState({
+                      current_page: 1,
+                      input_go_to_page: 1,
+                      loading_valency_data: true,
+                      loading_valency_error: false,
+                      valency_data: null,
+                      accept_value
+                    });
+
+                    this.queryValencyData({
+                      current_page: 1,
+                      accept_value
+                    });
+                  }}
+                />
+              )}
             </div>
           )}
 
           {this.state.loading_valency_data && (
             <div style={{ marginTop: "1em" }}>
               <span>
-                {`${getTranslation("Loading valency data...") } `}
+                {`${getTranslation("Loading valency data...")} `}
                 <Icon name="spinner" loading />
               </span>
             </div>
@@ -901,11 +1059,11 @@ class Valency extends React.Component {
           {!this.state.loading_valency_data && this.state.valency_data && (
             <div style={{ marginTop: "1em" }}>
               {this.state.instance_list.length <= 0 ? (
-                <p>{`${getTranslation("No instances") }.`}</p>
+                <p>{`${getTranslation("No instances")}.`}</p>
               ) : (
                 <div>
                   <p>
-                    {`${getTranslation("Instances") } `}({(current_page - 1) * items_per_page + 1}-
+                    {`${getTranslation("Instances")} `}({(current_page - 1) * items_per_page + 1}-
                     {Math.min(current_page * items_per_page, this.state.instance_count)}/{this.state.instance_count}):
                   </p>
 
@@ -916,7 +1074,7 @@ class Valency extends React.Component {
                     onPageChange={(e, { activePage }) => this.setPage(activePage)}
                   />
 
-                  <span style={{ marginLeft: "1em" }}>{`${getTranslation("Go to page") }:`}</span>
+                  <span style={{ marginLeft: "1em" }}>{`${getTranslation("Go to page")}:`}</span>
 
                   <Input
                     style={{ marginLeft: "0.5em", maxWidth: "7.5em" }}
@@ -928,7 +1086,9 @@ class Valency extends React.Component {
                       this.state.input_go_to_page = value;
                     }}
                     onKeyPress={e => {
-                      if (e.key === "Enter") {this.setPage(this.state.input_go_to_page);}
+                      if (e.key === "Enter") {
+                        this.setPage(this.state.input_go_to_page);
+                      }
                     }}
                   />
 
@@ -940,7 +1100,7 @@ class Valency extends React.Component {
                     attached="right"
                   />
 
-                  <span style={{ marginLeft: "1em" }}>{`${getTranslation("Items per page") }:`}</span>
+                  <span style={{ marginLeft: "1em" }}>{`${getTranslation("Items per page")}:`}</span>
 
                   <Select
                     style={{ marginLeft: "0.5em", minWidth: "7.5em" }}
@@ -989,7 +1149,7 @@ class Valency extends React.Component {
                     onPageChange={(e, { activePage }) => this.setPage(activePage)}
                   />
 
-                  <span style={{ marginLeft: "1em" }}>{`${getTranslation("Go to page") }:`}</span>
+                  <span style={{ marginLeft: "1em" }}>{`${getTranslation("Go to page")}:`}</span>
 
                   <Input
                     style={{ marginLeft: "0.5em", maxWidth: "7.5em" }}
@@ -1001,7 +1161,9 @@ class Valency extends React.Component {
                       this.state.input_go_to_page = value;
                     }}
                     onKeyPress={e => {
-                      if (e.key === "Enter") {this.setPage(this.state.input_go_to_page);}
+                      if (e.key === "Enter") {
+                        this.setPage(this.state.input_go_to_page);
+                      }
                     }}
                   />
 

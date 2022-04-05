@@ -209,7 +209,7 @@ class ApproveModal extends React.Component {
               )}
               {user_id != null && keys.length == 0 && (
                 <Container textAlign="center">
-                  <Header>{`${getTranslation("Nothing to") } ${ publishOrAccept.toLowerCase()}`}</Header>
+                  <Header>{`${getTranslation("Nothing to")} ${publishOrAccept.toLowerCase()}`}</Header>
                 </Container>
               )}
               {toApprove && keys.length != 0 && (
@@ -237,7 +237,7 @@ class ApproveModal extends React.Component {
                 <Container textAlign="center">
                   <Button
                     color="green"
-                    content={`${publishOrAccept } ${ getTranslation("All")}`}
+                    content={`${publishOrAccept} ${getTranslation("All")}`}
                     disabled={approveMap[user_id] && keys.every(key => approveMap[user_id].indexOf(key.name) != -1)}
                     onClick={() => this.onApprove(keys)}
                   />

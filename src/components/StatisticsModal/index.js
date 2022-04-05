@@ -49,9 +49,13 @@ function sortTotalLast(keys) {
 
   const tail_list = [];
 
-  if (keys.indexOf("total") >= 0) {tail_list.push("total");}
+  if (keys.indexOf("total") >= 0) {
+    tail_list.push("total");
+  }
 
-  if (keys.indexOf("unaccepted") >= 0) {tail_list.push("unaccepted");}
+  if (keys.indexOf("unaccepted") >= 0) {
+    tail_list.push("unaccepted");
+  }
 
   const key_list = keys.filter(k => k !== "total" && k !== "unaccepted").sort();
 

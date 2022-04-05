@@ -40,7 +40,9 @@ class BanModal extends React.Component {
   }
 
   handleActivateDeactivate() {
-    if (this.state.selected_user === null) {return;}
+    if (this.state.selected_user === null) {
+      return;
+    }
 
     const { refetch } = this.props.data;
 
@@ -78,13 +80,9 @@ class BanModal extends React.Component {
       key: user.id,
       value: user.id,
       text:
-        `'${ 
-        user.login 
-        }'` +
-        ` (${user.name}${user.intl_name !== user.login ? `, ${ user.intl_name}` : ""})` +
-        ` ${ 
-        user.email 
-        } [${user.is_active ? "active" : "inactive"}]`,
+        `'${user.login}'` +
+        ` (${user.name}${user.intl_name !== user.login ? `, ${user.intl_name}` : ""})` +
+        ` ${user.email} [${user.is_active ? "active" : "inactive"}]`,
       icon: "user"
     }));
 

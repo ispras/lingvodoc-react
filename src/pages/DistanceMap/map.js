@@ -197,14 +197,15 @@ class MapAreas extends PureComponent {
       return null;
     }
 
-    if (!user || user.id != 1)
-      {return (
+    if (!user || user.id != 1) {
+      return (
         <div style={{ marginTop: "1em" }}>
           <Label>
             {getTranslation("For the time being Distance Map functionality is available only for the administrator.")}
           </Label>
         </div>
-      );}
+      );
+    }
 
     return (
       <div className="page-content">

@@ -9,7 +9,9 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 const _ = require("./utils");
 
-if (_.versionString) {_.versionString += "-";}
+if (_.versionString) {
+  _.versionString += "-";
+}
 
 _.versionString += "development";
 

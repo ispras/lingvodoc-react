@@ -108,15 +108,9 @@ class LanguagesTree extends React.Component {
         const corporaCount = content ? content.corporaCount : 0;
         nodeProps.title = (
           <div
-            title={
-              `${getTranslation("Dictionaries") 
-              }: ${ 
-              dictionariesCount 
-              }, ${ 
-              getTranslation("Corpora") 
-              }: ${ 
-              corporaCount}`
-            }
+            title={`${getTranslation("Dictionaries")}: ${dictionariesCount}, ${getTranslation(
+              "Corpora"
+            )}: ${corporaCount}`}
           >
             {node.translation}
           </div>

@@ -11,7 +11,8 @@ import {
   Input,
   List,
   Message,
-  Segment} from "semantic-ui-react";
+  Segment
+} from "semantic-ui-react";
 import { getTranslation } from "api/i18n";
 import gql from "graphql-tag";
 import Immutable, { fromJS } from "immutable";
@@ -147,7 +148,9 @@ class MergeSettings extends React.Component {
     if (data) {
       const entry_map = {};
 
-      for (const entry of entries) {entry_map[id2str(entry.id)] = entry;}
+      for (const entry of entries) {
+        entry_map[id2str(entry.id)] = entry;
+      }
 
       const {
         merge_suggestions: { match_result }
@@ -160,14 +163,17 @@ class MergeSettings extends React.Component {
 
       const entry_group_map = {};
 
-      for (const [i, group] of groups.entries())
-        {for (const entry of group.lexical_entries) {
+      for (const [i, group] of groups.entries()) {
+        for (const entry of group.lexical_entries) {
           const id_str = id2str(entry.id);
 
-          if (!entry_group_map.hasOwnProperty(id_str)) {entry_group_map[id_str] = new Set();}
+          if (!entry_group_map.hasOwnProperty(id_str)) {
+            entry_group_map[id_str] = new Set();
+          }
 
           entry_group_map[id_str].add(i);
-        }}
+        }
+      }
 
       this.setState(
         {
@@ -220,7 +226,9 @@ class MergeSettings extends React.Component {
         for (const entry of entry_list) {
           const entry_id_str = id2str(entry.id);
 
-          if (merged_set.hasOwnProperty(entry_id_str)) {unselectable_set[entry_id_str] = null;}
+          if (merged_set.hasOwnProperty(entry_id_str)) {
+            unselectable_set[entry_id_str] = null;
+          }
         }
 
         merged_select_map[group_str] = unselectable_set;
@@ -236,7 +244,9 @@ class MergeSettings extends React.Component {
           merged_set[entry_id_str] = null;
 
           for (const index of selected_in_map.get(entry_id_str)) {
-            if (!deselect_map.has(index)) {deselect_map.set(index, new Set());}
+            if (!deselect_map.has(index)) {
+              deselect_map.set(index, new Set());
+            }
 
             deselect_map.get(index).add(entry_id_str);
           }
@@ -246,8 +256,9 @@ class MergeSettings extends React.Component {
 
         deselect_map.delete(group);
 
-        for (const [index, entry_id_str_set] of deselect_map.entries())
-          {settings = this.selection_update(index, entry_id_str_set, false, settings);}
+        for (const [index, entry_id_str_set] of deselect_map.entries()) {
+          settings = this.selection_update(index, entry_id_str_set, false, settings);
+        }
 
         /* Removing attachments to the merged group. */
 
@@ -327,9 +338,13 @@ class MergeSettings extends React.Component {
 
       const result = this.state.result_map[index_str];
 
-      if (result) {continue;}
+      if (result) {
+        continue;
+      }
 
-      if (settings.getIn(["attached_to", index], Immutable.Set()).size > 0) {continue;}
+      if (settings.getIn(["attached_to", index], Immutable.Set()).size > 0) {
+        continue;
+      }
 
       /* Getting group's selected entries info. */
 
@@ -345,11 +360,17 @@ class MergeSettings extends React.Component {
       const selected_set = settings.getIn(["selected", index], Immutable.Set());
       const selected_id_list = [];
 
-      for (const entry of entry_ready_list) {if (selected_set.has(id2str(entry.id))) {selected_id_list.push(entry.id);}}
+      for (const entry of entry_ready_list) {
+        if (selected_set.has(id2str(entry.id))) {
+          selected_id_list.push(entry.id);
+        }
+      }
 
       /* Merging group if it has enough lexical entries selected. */
 
-      if (selected_id_list.length > 1) {settings = await this.mergeGroup(index, entry_list, selected_id_list, settings);}
+      if (selected_id_list.length > 1) {
+        settings = await this.mergeGroup(index, entry_list, selected_id_list, settings);
+      }
     }
 
     this.state.page_state_map[`${page_number}`] = "";
@@ -375,20 +396,21 @@ class MergeSettings extends React.Component {
     let selected_set = selected_set_before;
     let selected_in_map = settings.get("selected_in", Immutable.Map());
 
-    if (checked)
-      {for (const entry_id_str of entry_id_str_list) {
+    if (checked) {
+      for (const entry_id_str of entry_id_str_list) {
         selected_set = selected_set.add(entry_id_str);
 
         selected_in_map = selected_in_map.update(entry_id_str, Immutable.Set(), selected_in_set =>
           selected_in_set.add(index)
         );
-      }}
-    else
-      {for (const entry_id_str of entry_id_str_list) {
+      }
+    } else {
+      for (const entry_id_str of entry_id_str_list) {
         selected_set = selected_set.delete(entry_id_str);
 
         selected_in_map = selected_in_map.update(entry_id_str, selected_in_set => selected_in_set.delete(index));
-      }}
+      }
+    }
 
     /* Rebuilding list of entries available for selection. */
 
@@ -398,7 +420,9 @@ class MergeSettings extends React.Component {
     const attached_set = new Set();
 
     function f(index_a) {
-      if (attached_set.has(index_a)) {return;}
+      if (attached_set.has(index_a)) {
+        return;
+      }
 
       attached_set.add(index_a);
 
@@ -421,7 +445,11 @@ class MergeSettings extends React.Component {
       for (const entry_id_str of ready_list) {
         available_list.push(entry_id_str);
 
-        if (selected_set.has(entry_id_str)) {for (const index_b of entry_group_map[entry_id_str]) {f(index_b);}}
+        if (selected_set.has(entry_id_str)) {
+          for (const index_b of entry_group_map[entry_id_str]) {
+            f(index_b);
+          }
+        }
       }
     }
 
@@ -483,9 +511,13 @@ class MergeSettings extends React.Component {
 
       const result = this.state.result_map[index_str];
 
-      if (result) {continue;}
+      if (result) {
+        continue;
+      }
 
-      if (settings.getIn(["attached_to", index], Immutable.Set()).size > 0) {continue;}
+      if (settings.getIn(["attached_to", index], Immutable.Set()).size > 0) {
+        continue;
+      }
 
       /* Selecting all we can, first iteration. */
 
@@ -612,7 +644,7 @@ class MergeSettings extends React.Component {
                       <Input
                         label={getTranslation("Levenshtein distance limit for entity content matching")}
                         value={
-                          Math.round(e.levenshtein) == e.levenshtein ? `${e.levenshtein.toString() }.0` : e.levenshtein
+                          Math.round(e.levenshtein) == e.levenshtein ? `${e.levenshtein.toString()}.0` : e.levenshtein
                         }
                         onChange={(ev, { value }) =>
                           dispatch({ type: "SET_LEVENSHTEIN", payload: { index: i, levenshtein: value } })
@@ -650,7 +682,7 @@ class MergeSettings extends React.Component {
           {mode === "simple" && (
             <Input
               label={getTranslation("Entity matching threshold")}
-              value={Math.round(threshold) == threshold ? `${threshold.toString() }.0` : threshold}
+              value={Math.round(threshold) == threshold ? `${threshold.toString()}.0` : threshold}
               onChange={(e, { value }) => dispatch({ type: "SET_THRESHOLD", payload: value })}
               className="label-input-adaptive"
             />
@@ -759,8 +791,11 @@ class MergeSettings extends React.Component {
               const selected_set = settings.getIn(["selected", index], Immutable.Set());
               const selected_id_list = [];
 
-              for (const entry of entry_ready_list)
-                {if (selected_set.has(id2str(entry.id))) {selected_id_list.push(entry.id);}}
+              for (const entry of entry_ready_list) {
+                if (selected_set.has(id2str(entry.id))) {
+                  selected_id_list.push(entry.id);
+                }
+              }
 
               const selectAllIndeterminate =
                 selected_id_list.length > 0 && selected_id_list.length < entry_ready_list.length;

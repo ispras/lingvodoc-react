@@ -75,7 +75,9 @@ class TranslationsBlock extends React.Component {
     let currentType = null;
 
     translationgists.forEach(item => {
-      if (item.translationatoms.length == 0) {return;}
+      if (item.translationatoms.length == 0) {
+        return;
+      }
 
       if (currentType == null || currentType != item.type) {
         currentType = item.type;

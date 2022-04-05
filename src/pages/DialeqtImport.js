@@ -21,7 +21,8 @@ import {
   setLicense,
   setParentLanguage,
   setTranslations,
-  setUpdateDictionaryId} from "ducks/dialeqtImport";
+  setUpdateDictionaryId
+} from "ducks/dialeqtImport";
 import { buildExport } from "pages/DictImport/api";
 
 import "pages/DictImport/styles.scss";
@@ -172,17 +173,19 @@ class DialeqtImport extends React.Component {
         value: dictionary.id.join("/"),
 
         text: dictionary.tree
-          .map(value =>
-            value.hasOwnProperty("status") ? `${value.translation } (${ value.status })` : value.translation
-          )
+          .map(value => (value.hasOwnProperty("status") ? `${value.translation} (${value.status})` : value.translation))
           .reverse()
           .join(" \u203a ")
       }));
 
       dictionaryOptions.sort((a, b) => {
-        if (a.text < b.text) {return -1;}
-        else if (a.text > b.text) {return 1;}
-        else {return 0;}
+        if (a.text < b.text) {
+          return -1;
+        } else if (a.text > b.text) {
+          return 1;
+        } else {
+          return 0;
+        }
       });
     }
 

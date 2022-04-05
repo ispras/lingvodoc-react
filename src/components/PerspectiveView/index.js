@@ -18,7 +18,8 @@ import {
   resetEntriesSelection,
   resetSortByField,
   selectLexicalEntry,
-  setSortByField} from "ducks/perspective";
+  setSortByField
+} from "ducks/perspective";
 
 import Pagination from "./Pagination";
 import TableBody from "./TableBody";

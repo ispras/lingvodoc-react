@@ -18,7 +18,8 @@ import {
   setDataForTree,
   setDefaultGroup,
   setDictionariesGroup,
-  setMainGroupLanguages} from "ducks/distanceMap";
+  setMainGroupLanguages
+} from "ducks/distanceMap";
 import { buildLanguageTree } from "pages/Search/treeBuilder";
 import { compositeIdToString } from "utils/compositeId";
 
@@ -157,14 +158,15 @@ function SelectorLangGroup(props) {
       return null;
     }
 
-    if (!user || user.id != 1)
-      {return (
+    if (!user || user.id != 1) {
+      return (
         <div style={{ marginTop: "1em" }}>
           <Label>
             {getTranslation("For the time being Distance Map functionality is available only for the administrator.")}
           </Label>
         </div>
-      );}
+      );
+    }
 
     const { mainPerspectives } = location.state;
     let selectedLanguagesChecken = [];

@@ -1,0 +1,10 @@
+#!/bin/sh
+
+FILE_LIST=`git diff --cached --name-only --diff-filter=ACMR | grep -i '.*\.(css\|scss\|js\|jsx\|json)'`
+
+echo "$FILE_LIST"
+
+npx eslint --fix $FILE_LIST
+npx prettier --write $FILE_LIST
+
+git add -f $FILE_LIST

@@ -139,7 +139,9 @@ class Perspective extends PureComponent {
     const { perspective, entriesIds, submitFilter } = this.props;
     const { id, parent_id: parentId } = perspective.params;
 
-    if (!id || !parentId) {return null;}
+    if (!id || !parentId) {
+      return null;
+    }
 
     const { mode, page } = this.state;
     const { entitiesMode } = MODES[mode];

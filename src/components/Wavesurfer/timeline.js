@@ -12,7 +12,9 @@ class Timeline extends React.Component {
   }
 
   componentDidMount() {
-    if (this.props.isReady) {this.init();}
+    if (this.props.isReady) {
+      this.init();
+    }
     this.props.wavesurfer.on("ready", () => {
       this.timeline = Object.create(WaveSurfer.Timeline);
 

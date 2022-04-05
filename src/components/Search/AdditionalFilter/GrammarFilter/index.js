@@ -22,7 +22,9 @@ class GrammarFilter extends PureComponent {
   };
 
   static isGroupEmpty(group) {
-    if (group === null) {return true;}
+    if (group === null) {
+      return true;
+    }
 
     if (group.length > 0) {
       return false;

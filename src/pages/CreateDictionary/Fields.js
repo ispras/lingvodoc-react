@@ -122,7 +122,7 @@ class Column extends React.Component {
     const availablePerspectives = perspectives.map(p => ({
       text: p.hasOwnProperty("name")
         ? `${getTranslation("Perspective")} ${p.index + 1}: ${p.name}`
-        : `${getTranslation("Perspective") } ${ p.index + 1}`,
+        : `${getTranslation("Perspective")} ${p.index + 1}`,
 
       value: p.index
     }));

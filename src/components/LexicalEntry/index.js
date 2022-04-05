@@ -157,18 +157,23 @@ class Entities extends React.Component {
         const before_id_set = new Set();
         const after_id_set = new Set();
 
-        for (const entity of lexical_entry.entities) {before_id_set.add(id2str(entity.id));}
+        for (const entity of lexical_entry.entities) {
+          before_id_set.add(id2str(entity.id));
+        }
 
-        for (const entity of data_entities.lexicalentry.entities) {after_id_set.add(id2str(entity.id));}
+        for (const entity of data_entities.lexicalentry.entities) {
+          after_id_set.add(id2str(entity.id));
+        }
 
         let change_flag = before_id_set.size != after_id_set.size;
 
         if (!change_flag) {
-          for (const id_str of after_id_set)
-            {if (!before_id_set.has(id_str)) {
+          for (const id_str of after_id_set) {
+            if (!before_id_set.has(id_str)) {
               change_flag = true;
               break;
-            }}
+            }
+          }
         }
 
         /* If for some reason queryLexicalEntries failed to update (e.g. when there are several thousand

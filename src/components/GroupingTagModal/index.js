@@ -16,7 +16,8 @@ import {
   connectMutation,
   disconnectMutation,
   languageTreeSourceQuery,
-  publishMutation} from "./graphql";
+  publishMutation
+} from "./graphql";
 import Search from "./search";
 
 const ModalContentWrapper = styled("div")`

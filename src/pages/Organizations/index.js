@@ -328,7 +328,7 @@ class Organizations extends React.Component {
                   confirmButton={getTranslation("Yes")}
                   onCancel={() => this.setState({ organization_to_delete: null })}
                   onConfirm={this.deleteOrganization}
-                  content={`${getTranslation("Delete organization") } "${ organization_to_delete.translation }"?`}
+                  content={`${getTranslation("Delete organization")} "${organization_to_delete.translation}"?`}
                   className="lingvo-confirm"
                 />
               )}

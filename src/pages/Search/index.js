@@ -22,7 +22,8 @@ import {
   setCheckStateTreeFlat,
   setDefaultDataForTree,
   setDefaultGroup,
-  setMainGroupLanguages} from "ducks/distanceMap";
+  setMainGroupLanguages
+} from "ducks/distanceMap";
 import { deleteSearch, newSearch, newSearchWithAdditionalFields, setSearches, storeSearchResult } from "ducks/search";
 import { buildLanguageTree, buildSearchResultsTree } from "pages/Search/treeBuilder";
 
@@ -167,7 +168,9 @@ const isNeedToRenderLanguageTree = query => {
 
 class Wrapper extends React.Component {
   componentWillReceiveProps(props) {
-    if (props.preloadFlag) {return;}
+    if (props.preloadFlag) {
+      return;
+    }
 
     // store search results aquired with graphql into Redux state
     const { data, searchId, actions } = props;
@@ -181,12 +184,13 @@ class Wrapper extends React.Component {
   }
 
   render() {
-    if (this.props.preloadFlag)
-      {return (
+    if (this.props.preloadFlag) {
+      return (
         <Dimmer active={true} inverted>
           <Loader>{getTranslation("Loading")}</Loader>
         </Dimmer>
-      );}
+      );
+    }
 
     const { data } = this.props;
     if (data.error) {
@@ -414,7 +418,9 @@ class SearchTabs extends React.Component {
 
         const searches = [];
 
-        for (const [key, value] of entry_list) {searches.push(value);}
+        for (const [key, value] of entry_list) {
+          searches.push(value);
+        }
 
         actions.setSearches(searches);
 
@@ -449,7 +455,9 @@ class SearchTabs extends React.Component {
               ({ data: { advanced_search } }) => {
                 this.setState({ preload_count: this.state.preload_count - 1 });
 
-                if (this.is_mounted) {actions.storeSearchResult(value.id, advanced_search);}
+                if (this.is_mounted) {
+                  actions.storeSearchResult(value.id, advanced_search);
+                }
               },
 
               error_data => {
@@ -470,7 +478,9 @@ class SearchTabs extends React.Component {
           search_id_map,
           search_id_set
         });
-      } else if (data.error) {this.setState({ error_flag: true });}
+      } else if (data.error) {
+        this.setState({ error_flag: true });
+      }
 
       return;
     }
@@ -835,18 +845,19 @@ class SearchTabs extends React.Component {
     const { searches, actions, match, data } = this.props;
 
     if (match.params.searchId) {
-      if (this.state.error_flag || data.error)
-        {return (
+      if (this.state.error_flag || data.error) {
+        return (
           <Message compact negative style={{ marginTop: "1em" }}>
-            {`${getTranslation("Can't get data of the") } '${match.params.searchId}' ${ getTranslation("search") }.`}
+            {`${getTranslation("Can't get data of the")} '${match.params.searchId}' ${getTranslation("search")}.`}
           </Message>
-        );}
-      else if (data.loading)
-        {return (
+        );
+      } else if (data.loading) {
+        return (
           <Dimmer active={data.loading} inverted>
             <Loader>{getTranslation("Loading")}</Loader>
           </Dimmer>
-        );}
+        );
+      }
     }
 
     const search_url_id = this.state.search_id_map.get(this.state.source_searches_info);
