@@ -45,17 +45,17 @@ export const valencyDataQuery = gql`
     $perspectiveId: LingvodocID!
     $offset: Int
     $limit: Int
-    $verbFlag: Boolean
     $verbPrefix: String
     $caseFlag: Boolean
+    $acceptValue: Boolean
   ) {
     valency_data(
       perspective_id: $perspectiveId
       offset: $offset
       limit: $limit
-      verb_flag: $verbFlag
       verb_prefix: $verbPrefix
       case_flag: $caseFlag
+      accept_value: $acceptValue
     )
   }
 `;
@@ -85,6 +85,7 @@ class Valency extends React.Component {
 
       sort_verb: false,
       sort_case: false,
+      sort_accept: false,
 
       creating_valency_data: false,
       creating_valency_error: false,
@@ -113,6 +114,8 @@ class Valency extends React.Component {
       show_prefix_verb_list: [],
       show_prefix_str_list: [],
 
+      accept_value: true,
+
       selection_default: false,
       selection_dict: {}
     };
@@ -133,8 +136,23 @@ class Valency extends React.Component {
     this.valency_data_query_count = 0;
   }
 
-  queryValencyData(perspective, current_page, items_per_page, sort_verb, sort_case, verb_prefix) {
+  queryValencyData({
+    perspective = null,
+    current_page = null,
+    items_per_page = null,
+    sort_verb = null,
+    sort_case = null,
+    sort_accept = null,
+    verb_prefix = null,
+    accept_value = null
+  } = {}) {
     const { client } = this.props;
+
+    perspective = perspective || this.state.perspective;
+
+    if (current_page == null) {
+      current_page = this.state.current_page;
+    }
 
     items_per_page = items_per_page || this.state.items_per_page;
 
@@ -146,8 +164,16 @@ class Valency extends React.Component {
       sort_case = this.state.sort_case;
     }
 
-    if (verb_prefix == null) {
-      verb_prefix = sort_verb ? this.state.prefix_filter : null;
+    if (sort_accept == null) {
+      sort_accept = this.state.sort_accept;
+    }
+
+    if (verb_prefix == null && sort_verb) {
+      verb_prefix = this.state.prefix_filter;
+    }
+
+    if (accept_value == null && sort_accept) {
+      accept_value = this.state.accept_value;
     }
 
     const query_index = ++this.valency_data_query_count;
@@ -159,9 +185,9 @@ class Valency extends React.Component {
           perspectiveId: perspective.id,
           offset: (current_page - 1) * items_per_page,
           limit: items_per_page,
-          verbFlag: sort_verb,
-          verbPrefix: verb_prefix,
-          caseFlag: sort_case
+          verbPrefix: sort_verb ? verb_prefix : null,
+          caseFlag: sort_case,
+          acceptValue: sort_accept ? accept_value : null
         },
         fetchPolicy: "no-cache"
       })
@@ -284,6 +310,9 @@ class Valency extends React.Component {
     if (!perspective.has_valency_data) {
       this.setState({
         perspective,
+        sort_verb: false,
+        sort_case: false,
+        sort_accept: false,
         valency_data: null,
         prefix_filter: "",
         selection_dict: {}
@@ -294,6 +323,9 @@ class Valency extends React.Component {
 
     this.setState({
       perspective,
+      sort_verb: false,
+      sort_case: false,
+      sort_accept: false,
       valency_data: null,
       prefix_filter: "",
       selection_dict: {},
@@ -301,7 +333,15 @@ class Valency extends React.Component {
       loading_valency_error: false
     });
 
-    this.queryValencyData(perspective, 1, null, null, null, "");
+    this.queryValencyData({
+      perspective,
+      current_page: 1,
+      sort_verb: false,
+      verb_prefix: "",
+      sort_case: false,
+      sort_accept: false,
+      accept_value: null
+    });
   }
 
   createValencyData() {
@@ -328,7 +368,9 @@ class Valency extends React.Component {
             valency_data: null
           });
 
-          this.queryValencyData(this.state.perspective, 1);
+          this.queryValencyData({
+            current_page: 1
+          });
         },
         () => {
           this.setState({
@@ -407,7 +449,7 @@ class Valency extends React.Component {
       valency_data: null
     });
 
-    this.queryValencyData(this.state.perspective, active_page);
+    this.queryValencyData({ current_page: active_page });
   }
 
   setItemsPerPage(items_per_page) {
@@ -422,7 +464,7 @@ class Valency extends React.Component {
       valency_data: null
     });
 
-    this.queryValencyData(this.state.perspective, current_page, items_per_page);
+    this.queryValencyData({ current_page, items_per_page });
   }
 
   setPrefix(prefix_str) {
@@ -658,7 +700,6 @@ class Valency extends React.Component {
     const {
       current_page,
       items_per_page,
-      data_verb_list,
       show_data_verb_list,
       show_prefix_verb_list,
       show_prefix_str_list,
@@ -814,7 +855,11 @@ class Valency extends React.Component {
                     show_prefix_str_list: []
                   });
 
-                  this.queryValencyData(this.state.perspective, 1, null, checked, null, "");
+                  this.queryValencyData({
+                    current_page: 1,
+                    sort_verb: checked,
+                    verb_prefix: ""
+                  });
                 }}
               />
             </div>
@@ -935,9 +980,70 @@ class Valency extends React.Component {
                     valency_data: null
                   });
 
-                  this.queryValencyData(this.state.perspective, 1, null, null, checked);
+                  this.queryValencyData({
+                    currenet_page: 1,
+                    sort_case: checked
+                  });
                 }}
               />
+            </div>
+          )}
+
+          {(this.state.valency_data || this.state.loading_valency_data) && (
+            <div style={{ marginTop: "0.5em" }}>
+              <Checkbox
+                label={
+                  this.state.sort_accept ? (
+                    <label>
+                      {`${getTranslation("Sort by acceptance")} (${getTranslation(
+                        this.state.accept_value ? "accepted first" : "accepted last"
+                      )}) `}
+                    </label>
+                  ) : (
+                    getTranslation("Sort by acceptance")
+                  )
+                }
+                checked={this.state.sort_accept}
+                onChange={(e, { checked }) => {
+                  this.setState({
+                    sort_accept: checked,
+                    current_page: 1,
+                    input_go_to_page: 1,
+                    loading_valency_data: true,
+                    loading_valency_error: false,
+                    valency_data: null
+                  });
+
+                  this.queryValencyData({
+                    current_page: 1,
+                    sort_accept: checked
+                  });
+                }}
+              />
+              {this.state.sort_accept && <span> </span>}
+              {this.state.sort_accept && (
+                <Icon
+                  name="sync alternate"
+                  className="clickable"
+                  onClick={() => {
+                    const accept_value = !this.state.accept_value;
+
+                    this.setState({
+                      current_page: 1,
+                      input_go_to_page: 1,
+                      loading_valency_data: true,
+                      loading_valency_error: false,
+                      valency_data: null,
+                      accept_value
+                    });
+
+                    this.queryValencyData({
+                      current_page: 1,
+                      accept_value
+                    });
+                  }}
+                />
+              )}
             </div>
           )}
 

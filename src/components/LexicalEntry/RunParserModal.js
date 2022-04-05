@@ -6,6 +6,8 @@ import gql from "graphql-tag";
 import PropTypes from "prop-types";
 import { compose } from "recompose";
 
+import { compositeIdToString as id2str } from "utils/compositeId";
+
 const parsersQuery = gql`
   query getParsers {
     parsers {
@@ -42,12 +44,12 @@ class RunParserModal extends React.Component {
     this.executeParser = this.executeParser.bind(this);
   }
 
-  handleChange(_e, { name, value }) {
+  handleChange(name, value) {
     this.setState({ [name]: value });
   }
 
   executeParser() {
-    const { executeParser, entityId, onClose } = this.props;
+    const { executeParser, entityId } = this.props;
     const { parserId } = this.state;
 
     executeParser({ variables: { entity_id: entityId, parser_id: parserId } }).then(response => {
@@ -65,6 +67,18 @@ class RunParserModal extends React.Component {
     const { onClose } = this.props;
     const { parserId, success } = this.state;
 
+    const option_list = [];
+    const parser_id_map = {};
+
+    if (parsers) {
+      for (const parser of parsers) {
+        const id_str = id2str(parser.id);
+
+        option_list.push({ text: parser.name, value: id_str });
+        parser_id_map[id_str] = parser.id;
+      }
+    }
+
     return (
       <Modal open dimmer size="small" closeIcon onClose={onClose} className="lingvo-modal2">
         <Modal.Header>{getTranslation("Parser execution")}</Modal.Header>
@@ -76,8 +90,8 @@ class RunParserModal extends React.Component {
                 name="parserId"
                 fluid
                 placeholder={getTranslation("Select parser")}
-                options={parsers ? parsers.map(parser => ({ text: parser.name, value: parser.id })) : []}
-                onChange={this.handleChange}
+                options={option_list}
+                onChange={(_e, { name, value }) => this.handleChange(name, parser_id_map[value])}
               />
             </Form>
           )}
