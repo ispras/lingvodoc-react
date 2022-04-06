@@ -341,21 +341,21 @@ class StatisticsModal extends React.Component {
           <div>
             {getTranslation("From:")}
             <DatePicker
-              selected={startDate}
+              selected={startDate.toDate()}
               showTimeSelect
               timeFormat="HH:mm"
               timeIntervals={15}
-              onChange={d => this.handleChange(d, "startDate")}
-              dateFormat="YYYY.MM.DD HH:mm"
+              onChange={d => this.handleChange(moment(d), "startDate")}
+              dateFormat="yyyy.MM.dd HH:mm"
             />
             {getTranslation("To:")}
             <DatePicker
-              selected={endDate}
+              selected={endDate.toDate()}
               showTimeSelect
               timeFormat="HH:mm"
               timeIntervals={15}
-              onChange={d => this.handleChange(d, "endDate")}
-              dateFormat="YYYY.MM.DD HH:mm"
+              onChange={d => this.handleChange(moment(d), "endDate")}
+              dateFormat="yyyy.MM.dd HH:mm"
             />
           </div>
           <Container textAlign="center">
