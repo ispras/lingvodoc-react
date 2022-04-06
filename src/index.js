@@ -7,7 +7,6 @@ import createHistory from "history/createBrowserHistory";
 import { applyMiddleware, bindActionCreators, compose, createStore } from "redux";
 import formActionSaga from "redux-form-saga";
 import createSagaMiddleware from "redux-saga";
-import WebFont from "webfontloader";
 
 import config from "config";
 import { setApolloClient } from "ducks/apolloClient";
@@ -53,12 +52,6 @@ window.logger = bindActionCreators(
 );
 
 window.dispatch = store.dispatch;
-
-WebFont.load({
-  google: {
-    families: ["Noto Sans"]
-  }
-});
 
 ReactDOM.render(
   <Provider store={store}>
