@@ -1,6 +1,6 @@
 import React from "react";
 import { graphql } from "react-apollo";
-import { Button, Form, Label, Segment } from "semantic-ui-react";
+import { Button, Form, Segment } from "semantic-ui-react";
 import { getTranslation } from "api/i18n";
 import gql from "graphql-tag";
 import PropTypes from "prop-types";
@@ -282,16 +282,16 @@ class EditCorpusMetadata extends React.Component {
             <Form.Group>
               <Form.Radio
                 label={getTranslation("Expedition")}
-                checked={kind == "Expedition"}
+                checked={kind === "Expedition"}
                 onClick={(event, data) => this.onChangeValue("kind", data)}
               />
               <Form.Radio
                 label={getTranslation("Archive")}
-                checked={kind == "Archive"}
+                checked={kind === "Archive"}
                 onClick={(event, data) => this.onChangeValue("kind", data)}
               />
             </Form.Group>
-            {mode != "create" && (
+            {mode !== "create" && (
               <Form.Button
                 floated="right"
                 content={getTranslation("Save")}
@@ -327,7 +327,7 @@ class EditCorpusMetadata extends React.Component {
           </Form.Group>
         </Segment>
 
-        {mode == "create" && (
+        {mode === "create" && (
           <Segment>
             <Form.Group widths="equal">
               <Form.Dropdown
@@ -358,7 +358,7 @@ class EditCorpusMetadata extends React.Component {
               onAddItem={this.onAddNewAlternative}
               onChange={(event, data) => this.onChangeValue("settlements", data)}
             />
-            {mode != "create" && (
+            {mode !== "create" && (
               <Button
                 content={getTranslation("Save")}
                 disabled={JSON.stringify(humanSettlement) == JSON.stringify(this.initialState.humanSettlement)}
@@ -382,7 +382,7 @@ class EditCorpusMetadata extends React.Component {
               onAddItem={this.onAddNewAlternative}
               onChange={(event, data) => this.onChangeValue("years", data)}
             />
-            {mode != "create" && (
+            {mode !== "create" && (
               <Button
                 content={getTranslation("Save")}
                 disabled={JSON.stringify(years) == JSON.stringify(this.initialState.years)}
@@ -400,7 +400,7 @@ class EditCorpusMetadata extends React.Component {
               value={titleOfTheWork}
               onChange={(event, data) => this.onChangeValue("titleOfTheWork", data)}
             />
-            {mode != "create" && (
+            {mode !== "create" && (
               <Form.Button
                 floated="right"
                 content={getTranslation("Save")}
@@ -419,7 +419,7 @@ class EditCorpusMetadata extends React.Component {
               value={genre}
               onChange={(event, data) => this.onChangeValue("genre", data)}
             />
-            {mode != "create" && (
+            {mode !== "create" && (
               <Form.Button
                 floated="right"
                 content={getTranslation("Save")}
@@ -438,7 +438,7 @@ class EditCorpusMetadata extends React.Component {
               value={timeOfWriting}
               onChange={(event, data) => this.onChangeValue("timeOfWriting", data)}
             />
-            {mode != "create" && (
+            {mode !== "create" && (
               <Form.Button
                 floated="right"
                 content={getTranslation("Save")}
@@ -457,7 +457,7 @@ class EditCorpusMetadata extends React.Component {
               value={quantitativeCharacteristic}
               onChange={(event, data) => this.onChangeValue("quantitativeCharacteristic", data)}
             />
-            {mode != "create" && (
+            {mode !== "create" && (
               <Form.Button
                 floated="right"
                 content={getTranslation("Save")}
@@ -476,7 +476,7 @@ class EditCorpusMetadata extends React.Component {
               value={bibliographicDataOfTheSource}
               onChange={(event, data) => this.onChangeValue("bibliographicDataOfTheSource", data)}
             />
-            {mode != "create" && (
+            {mode !== "create" && (
               <Form.Button
                 floated="right"
                 content={getTranslation("Save")}
@@ -495,7 +495,7 @@ class EditCorpusMetadata extends React.Component {
               value={translator}
               onChange={(event, data) => this.onChangeValue("translator", data)}
             />
-            {mode != "create" && (
+            {mode !== "create" && (
               <Form.Button
                 floated="right"
                 content={getTranslation("Save")}
@@ -514,7 +514,7 @@ class EditCorpusMetadata extends React.Component {
               value={bibliographicDataOfTheTranslation}
               onChange={(event, data) => this.onChangeValue("bibliographicDataOfTheTranslation", data)}
             />
-            {mode != "create" && (
+            {mode !== "create" && (
               <Form.Button
                 floated="right"
                 content={getTranslation("Save")}
@@ -533,7 +533,7 @@ class EditCorpusMetadata extends React.Component {
 EditCorpusMetadata.propTypes = {
   mode: PropTypes.string.isRequired,
   metadata: PropTypes.object,
-  onChange: PropTypes.func.isRequired,
+  onChange: PropTypes.func,
   onSave: PropTypes.func
 };
 

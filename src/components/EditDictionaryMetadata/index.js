@@ -1,6 +1,6 @@
 import React from "react";
 import { graphql } from "react-apollo";
-import { Button, Form, Label, Segment } from "semantic-ui-react";
+import { Button, Form, Segment } from "semantic-ui-react";
 import { getTranslation } from "api/i18n";
 import gql from "graphql-tag";
 import PropTypes from "prop-types";
@@ -354,7 +354,7 @@ class EditDictionaryMetadata extends React.Component {
           </Form.Group>
         </Segment>
 
-        {mode == "create" && (
+        {mode === "create" && (
           <Segment>
             <Form.Group widths="equal">
               <Form.Dropdown
@@ -519,7 +519,7 @@ class EditDictionaryMetadata extends React.Component {
 EditDictionaryMetadata.propTypes = {
   mode: PropTypes.string.isRequired,
   metadata: PropTypes.object,
-  onChange: PropTypes.func.isRequired,
+  onChange: PropTypes.func,
   onSave: PropTypes.func,
   data: PropTypes.object.isRequired,
   loading: PropTypes.bool
