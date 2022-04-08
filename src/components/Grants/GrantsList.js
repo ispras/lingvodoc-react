@@ -1,6 +1,6 @@
 import React from "react";
-import { graphql } from "react-apollo";
 import { Button, Table } from "semantic-ui-react";
+import { graphql } from "@apollo/client/react/hoc";
 import { getTranslation } from "api/i18n";
 import PropTypes from "prop-types";
 import { branch, compose, renderComponent, renderNothing } from "recompose";

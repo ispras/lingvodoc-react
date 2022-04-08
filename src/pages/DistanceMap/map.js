@@ -1,9 +1,9 @@
 import React, { PureComponent } from "react";
-import { graphql, withApollo } from "react-apollo";
 import { connect } from "react-redux";
 import { Button, Label, Segment } from "semantic-ui-react";
+import { gql } from "@apollo/client";
+import { graphql, withApollo } from "@apollo/client/react/hoc";
 import { getTranslation } from "api/i18n";
-import gql from "graphql-tag";
 import L from "leaflet";
 import HeatMapOverlay from "leaflet-heatmap";
 import PropTypes from "prop-types";

@@ -6,6 +6,7 @@
 !*.jsx
 !*.json
 LICENSE
+pre-commit-eslint-prettier
 
 /dist
 /node_modules

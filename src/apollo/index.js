@@ -1,9 +1,9 @@
-import { InMemoryCache } from "apollo-cache-inmemory";
-import { ApolloClient } from "apollo-client";
-import { onError } from "apollo-link-error";
+import { ApolloClient, from, InMemoryCache } from "@apollo/client";
+import { onError } from "@apollo/client/link/error";
 import { createUploadLink } from "apollo-upload-client";
 import { each } from "lodash";
 
+// eslint-disable-next-line import/no-unresolved
 import config from "config";
 import { signOut } from "ducks/user";
 
@@ -20,18 +20,12 @@ const errorLink = onError(({ networkError = {}, graphQLErrors }) => {
   });
 });
 
-const httpLink = createUploadLink({
+const uploadLink = createUploadLink({
   uri: `${config.apiUrl}/graphql`,
   credentials: "same-origin"
 });
 
-// register global GraphQL error handler
-const link = errorLink.concat(httpLink);
-
-const cache = new InMemoryCache();
-
-// Create Apollo GraphQL client
 export default new ApolloClient({
-  link,
-  cache
+  link: from([errorLink, uploadLink]),
+  cache: new InMemoryCache()
 });

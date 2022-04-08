@@ -1,5 +1,4 @@
 import React from "react";
-import { graphql, withApollo } from "react-apollo";
 import {
   Button,
   Checkbox,
@@ -13,8 +12,9 @@ import {
   Message,
   Segment
 } from "semantic-ui-react";
+import { gql } from "@apollo/client";
+import { graphql, withApollo } from "@apollo/client/react/hoc";
 import { getTranslation } from "api/i18n";
-import gql from "graphql-tag";
 import Immutable, { fromJS } from "immutable";
 import { drop, isEqual, take } from "lodash";
 import PropTypes from "prop-types";

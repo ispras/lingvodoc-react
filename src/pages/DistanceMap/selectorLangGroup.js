@@ -1,11 +1,11 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState } from "react";
-import { withApollo } from "react-apollo";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import { Button, Label, Segment } from "semantic-ui-react";
+import { gql } from "@apollo/client";
+import { withApollo } from "@apollo/client/react/hoc";
 import { getTranslation } from "api/i18n";
-import gql from "graphql-tag";
 import { fromJS } from "immutable";
 import PropTypes from "prop-types";
 import { compose } from "recompose";

@@ -1,10 +1,10 @@
 import React from "react";
-import { graphql, withApollo } from "react-apollo";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import { Button, Container, Dimmer, Divider, Loader, Menu, Message, Segment, Tab } from "semantic-ui-react";
+import { gql } from "@apollo/client";
+import { graphql, withApollo } from "@apollo/client/react/hoc";
 import { getTranslation } from "api/i18n";
-import gql from "graphql-tag";
 import Immutable, { fromJS } from "immutable";
 import { isEqual, memoize } from "lodash";
 import PropTypes from "prop-types";

@@ -1,8 +1,8 @@
 import React from "react";
-import { graphql } from "react-apollo";
 import { Container } from "semantic-ui-react";
+import { gql } from "@apollo/client";
+import { graphql } from "@apollo/client/react/hoc";
 import { getTranslation } from "api/i18n";
-import gql from "graphql-tag";
 import { map } from "lodash";
 import { compose } from "recompose";
 
@@ -25,9 +25,7 @@ const versionRoute = props => {
   return (
     <div className="lingvodoc-page">
       <div className="lingvodoc-page__content">
-
         <div className="version-route">
-
           <div className="background-header">
             <h2 className="page-title">{getTranslation("Version")}</h2>
           </div>
@@ -67,7 +65,6 @@ const versionRoute = props => {
               </div>
             </Container>
           </Container>
-
         </div>
       </div>
       <Footer />

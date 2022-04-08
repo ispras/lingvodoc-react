@@ -1,10 +1,10 @@
 import React from "react";
-import { graphql } from "react-apollo";
 import { connect } from "react-redux";
 import { matchPath, Redirect } from "react-router-dom";
 import { Button, Container, Form, Label, Radio, Segment } from "semantic-ui-react";
+import { gql } from "@apollo/client";
+import { graphql } from "@apollo/client/react/hoc";
 import { getTranslation } from "api/i18n";
-import gql from "graphql-tag";
 import Immutable, { fromJS, Map, OrderedMap } from "immutable";
 import PropTypes from "prop-types";
 import { branch, compose, renderNothing } from "recompose";

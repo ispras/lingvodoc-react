@@ -1,9 +1,9 @@
 import React from "react";
-import { graphql } from "react-apollo";
 import { connect } from "react-redux";
 import { Button, Dimmer, Header, Icon, Table } from "semantic-ui-react";
+import { gql } from "@apollo/client";
+import { graphql } from "@apollo/client/react/hoc";
 import { getTranslation } from "api/i18n";
-import gql from "graphql-tag";
 import { drop, find, flow, isEqual, reverse, sortBy, take } from "lodash";
 import PropTypes from "prop-types";
 import { branch, compose, renderComponent } from "recompose";

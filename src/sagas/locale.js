@@ -1,6 +1,6 @@
+import { gql } from "@apollo/client";
 import { setTranslations, stringsToTranslate } from "api/i18n";
 import locale, { getLocales } from "api/locale";
-import gql from "graphql-tag";
 import { call, put, select, takeLatest } from "redux-saga/effects";
 
 import { CHANGE, requestLocales, selectLocale, setLocales } from "ducks/locale";

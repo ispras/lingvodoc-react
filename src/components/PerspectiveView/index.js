@@ -1,9 +1,9 @@
 import React from "react";
-import { graphql } from "react-apollo";
 import { connect } from "react-redux";
 import { Button, Dimmer, Header, Icon, Table } from "semantic-ui-react";
+import { gql } from "@apollo/client";
+import { graphql } from "@apollo/client/react/hoc";
 import { getTranslation } from "api/i18n";
-import gql from "graphql-tag";
 import { drop, find, flow, isEqual, reverse, take } from "lodash";
 import PropTypes from "prop-types";
 import { branch, compose, renderComponent } from "recompose";
@@ -398,6 +398,7 @@ class P extends React.Component {
       return result ? result : str_a.localeCompare(str_b, undefined, { numeric: true });
     };
 
+    const entitySortKeys = new Map();
     const processEntries = flow([
       // remove empty lexical entries, if not in edit mode
       es => (mode !== "edit" ? es.filter(e => e.entities.length > 0) : es),
@@ -428,13 +429,15 @@ class P extends React.Component {
             (ea, eb) => ci_cs_compare(ea.content || "", eb.content || "") || ea.id[0] - eb.id[0] || ea.id[1] - eb.id[1]
           );
 
-          entry.entity_sort_key =
-            entities.length > 0 && entities[0].content ? entities[0].content : `${entities.length}`;
+          entitySortKeys.set(
+            entry,
+            entities.length > 0 && entities[0].content ? entities[0].content : `${entities.length}`
+          );
         }
 
         es.sort(
           (ea, eb) =>
-            ci_cs_compare(ea.entity_sort_key, eb.entity_sort_key) || ea.id[0] - eb.id[0] || ea.id[1] - eb.id[1]
+            ci_cs_compare(entitySortKeys.get(ea), entitySortKeys.get(eb)) || ea.id[0] - eb.id[0] || ea.id[1] - eb.id[1]
         );
 
         return order === "a" ? es : reverse(es);
@@ -442,7 +445,7 @@ class P extends React.Component {
     ]);
 
     const newEntries = processEntries(lexicalEntries.filter(e => !!createdEntries.find(c => isEqual(e.id, c.id))));
-    const entries = processEntries(lexicalEntries);
+    const entries = processEntries(lexicalEntries.slice());
 
     const pageEntries =
       entries.length > ROWS_PER_PAGE ? take(drop(entries, ROWS_PER_PAGE * (page - 1)), ROWS_PER_PAGE) : entries;
@@ -548,10 +551,13 @@ class P extends React.Component {
             elems.push(columnEntities);
           }
         });
-        
-        const allColumnsSelected = elems.length && elems.every(elem => {
-          return elem.length && elem[0].published;
-        }) || false;
+
+        const allColumnsSelected =
+          (elems.length &&
+            elems.every(elem => {
+              return elem.length && elem[0].published;
+            })) ||
+          false;
 
         if (allColumnsSelected) {
           selectedColumnsSet.add(column.id);

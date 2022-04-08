@@ -1,8 +1,8 @@
 import React from "react";
-import { ApolloProvider } from "react-apollo";
 import { Provider } from "react-redux";
 import { ConnectedRouter, routerMiddleware } from "react-router-redux";
 import ReactDOM from "react-dom";
+import { ApolloProvider } from "@apollo/client";
 import createHistory from "history/createBrowserHistory";
 import { applyMiddleware, bindActionCreators, compose, createStore } from "redux";
 import formActionSaga from "redux-form-saga";
@@ -15,7 +15,7 @@ import { setRunner } from "ducks/saga";
 import { err, log, suc, warn } from "ducks/snackbar";
 
 import matomo from "./sagas/matomo";
-import apollo from "./graphql";
+import apollo from "./apollo";
 import Layout from "./Layout";
 import combinedReducer from "./reducer";
 import mainFlow from "./sagas";

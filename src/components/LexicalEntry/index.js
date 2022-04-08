@@ -1,7 +1,7 @@
 import React from "react";
-import { graphql, withApollo } from "react-apollo";
 import { Button } from "semantic-ui-react";
-import gql from "graphql-tag";
+import { gql } from "@apollo/client";
+import { graphql, withApollo } from "@apollo/client/react/hoc";
 import { flow, isEqual } from "lodash";
 import PropTypes from "prop-types";
 import { compose, pure } from "recompose";

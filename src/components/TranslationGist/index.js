@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { graphql } from "react-apollo";
-import gql from "graphql-tag";
+import { graphql } from "@apollo/client/react/hoc";
+import { gql } from "@apollo/client";
 
 import { Container, Button, List } from "semantic-ui-react";
 import TranslationAtom from "../TranslationAtom";

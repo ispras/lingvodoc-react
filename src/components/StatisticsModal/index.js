@@ -1,10 +1,10 @@
 import React from "react";
-import { withApollo } from "react-apollo";
 import DatePicker from "react-datepicker";
 import { connect } from "react-redux";
 import { Button, Container, Header, Modal, Table } from "semantic-ui-react";
+import { gql } from "@apollo/client";
+import { withApollo } from "@apollo/client/react/hoc";
 import { getTranslation } from "api/i18n";
-import gql from "graphql-tag";
 import moment from "moment";
 import PropTypes from "prop-types";
 import { branch, compose, renderNothing } from "recompose";

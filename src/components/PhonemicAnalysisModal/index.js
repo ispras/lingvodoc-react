@@ -1,8 +1,8 @@
 import React from "react";
-import { graphql, withApollo } from "react-apollo";
 import { connect } from "react-redux";
 import { Button, Checkbox, Divider, List, Modal, Select } from "semantic-ui-react";
-import gql from "graphql-tag";
+import { gql } from "@apollo/client";
+import { graphql, withApollo } from "@apollo/client/react/hoc";
 import { map } from "lodash";
 import PropTypes from "prop-types";
 import { branch, compose, renderNothing } from "recompose";

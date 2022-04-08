@@ -1,9 +1,9 @@
 import React from "react";
-import { withApollo } from "react-apollo";
 import { Button, Dropdown, Input, Popup } from "semantic-ui-react";
+import { gql } from "@apollo/client";
+import { withApollo } from "@apollo/client/react/hoc";
 import { getTranslation } from "api/i18n";
 import locale from "api/locale";
-import gql from "graphql-tag";
 
 const createTranslationsMutation = gql`
   mutation ($type: String!) {

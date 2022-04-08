@@ -1,9 +1,9 @@
 import React from "react";
-import { graphql } from "react-apollo";
 import { connect } from "react-redux";
 import { Button, Message, Step } from "semantic-ui-react";
+import { gql } from "@apollo/client";
+import { graphql } from "@apollo/client/react/hoc";
 import { getTranslation } from "api/i18n";
-import gql from "graphql-tag";
 import { fromJS, Map } from "immutable";
 import PropTypes from "prop-types";
 import { compose } from "recompose";

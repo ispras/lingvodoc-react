@@ -7,7 +7,7 @@ import Immutable from "immutable";
 import { findIndex, isEqual } from "lodash";
 import PropTypes from "prop-types";
 
-import { languagesQuery } from "graphql/language";
+import { languagesQuery } from "backend";
 
 class LanguagesTree extends React.Component {
   constructor(props) {
