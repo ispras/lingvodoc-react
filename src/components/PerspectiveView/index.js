@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { Button, Dimmer, Header, Icon, Table } from "semantic-ui-react";
 import { getTranslation } from "api/i18n";
 import gql from "graphql-tag";
-import { drop, find, flow, isEqual, reverse, sortBy, take } from "lodash";
+import { drop, find, flow, isEqual, reverse, take } from "lodash";
 import PropTypes from "prop-types";
 import { branch, compose, renderComponent } from "recompose";
 import { bindActionCreators } from "redux";
@@ -481,8 +481,8 @@ class P extends React.Component {
     /* eslint-enable no-shadow */
     const isAuthenticated = user && user.user.id;
 
-    /*const isTableLanguages = JSON.stringify(id) === JSON.stringify([3148, 13330]);*/
-    const isTableLanguages = JSON.stringify(id) === JSON.stringify([4839, 2]);
+    const isTableLanguages = JSON.stringify(id) === JSON.stringify([3148, 13330]);
+    /*const isTableLanguages = JSON.stringify(id) === JSON.stringify([4839, 2]);*/
 
     const isTableLanguagesPublish = mode === "publish" && isTableLanguages;
 
@@ -548,10 +548,10 @@ class P extends React.Component {
             elems.push(columnEntities);
           }
         });
-
-        const allColumnsSelected = elems.every(elem => {
+        
+        const allColumnsSelected = elems.length && elems.every(elem => {
           return elem.length && elem[0].published;
-        });
+        }) || false;
 
         if (allColumnsSelected) {
           selectedColumnsSet.add(column.id);
