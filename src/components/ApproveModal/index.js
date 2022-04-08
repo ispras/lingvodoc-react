@@ -66,7 +66,7 @@ class ApproveModal extends React.Component {
     const { startDate, endDate } = this.state;
     this.props.data.refetch({ id: perspectiveId, start: startDate.unix(), end: endDate.unix() }).then(
       result => {
-        if (!result.data.perspective.statistic.some(stat => stat.user_id == this.state.user_id)) {
+        if (!result.data.perspective.statistic.some(stat => stat.user_id === this.state.user_id)) {
           this.setState({ user_id: null });
         }
       },
@@ -98,11 +98,11 @@ class ApproveModal extends React.Component {
         query: queryCounter,
         variables: {
           id: perspectiveId,
-          mode: mode == "publish" ? "published" : "not_accepted"
+          mode: mode === "publish" ? "published" : "not_accepted"
         }
       }
     ];
-    if (mode == "publish") {
+    if (mode === "publish") {
       variables.published = true;
       refetchQueries.push({ query: queryLexicalEntries, variables: { id: perspectiveId, entitiesMode: "published" } });
     } else {
@@ -123,7 +123,7 @@ class ApproveModal extends React.Component {
         keys.forEach(key => approvedKeys.push(key.name));
         this.setState({ approveMap: updatedApproveMap });
 
-        window.logger.suc(`Updated ${update_count} entit${update_count == 1 ? "y" : "ies"}.`);
+        window.logger.suc(`Updated ${update_count} entit${update_count === 1 ? "y" : "ies"}.`);
       }
     );
   }
@@ -137,17 +137,17 @@ class ApproveModal extends React.Component {
     const { mode, onClose } = this.props;
     const { startDate, endDate, user_id, approveMap } = this.state;
     const { statistic: statistics } = perspective || { statistic: [] };
-    const publishOrAccept = mode == "publish" ? getTranslation("Publish") : getTranslation("Accept");
+    const publishOrAccept = mode === "publish" ? getTranslation("Publish") : getTranslation("Accept");
 
     let toApprove = null;
     let keys = [];
-    if (user_id != null) {
+    if (user_id !== null) {
       statistics.some(stat => {
-        if (user_id == stat.user_id) {
+        if (user_id === stat.user_id) {
           if (stat.entities) {
-            toApprove = mode == "publish" ? stat.entities.unpublished : stat.entities.unaccepted;
+            toApprove = mode === "publish" ? stat.entities.unpublished : stat.entities.unaccepted;
             keys = Object.keys(toApprove)
-              .filter(key => key != "total")
+              .filter(key => key !== "total")
               .map(key => {
                 return { id: toApprove[key].field_id, name: key };
               });
@@ -160,27 +160,27 @@ class ApproveModal extends React.Component {
     return (
       <Modal open closeIcon closeOnDimmerClick={false} onClose={onClose} className="lingvo-modal2">
         <Modal.Header>
-          {mode == "publish" ? getTranslation("Publish Entities") : getTranslation("Accept Contributions")}
+          {mode === "publish" ? getTranslation("Publish Entities") : getTranslation("Accept Contributions")}
         </Modal.Header>
         <Modal.Content scrolling>
           <div>
             {getTranslation("From:")}
             <DatePicker
-              selected={startDate}
+              selected={startDate.toDate()}
               showTimeSelect
               timeFormat="HH:mm"
               timeIntervals={15}
-              onChange={date => this.setState({ startDate: date })}
-              dateFormat="DD.MM.YYYY HH:mm"
+              onChange={date => this.setState({ startDate: moment(date) })}
+              dateFormat="dd.MM.yyyy HH:mm"
             />
             {getTranslation("To:")}
             <DatePicker
-              selected={endDate}
+              selected={endDate.toDate()}
               showTimeSelect
               timeFormat="HH:mm"
               timeIntervals={15}
-              onChange={date => this.setState({ endDate: date })}
-              dateFormat="DD.MM.YYYY HH:mm"
+              onChange={date => this.setState({ endDate: moment(date) })}
+              dateFormat="dd.MM.yyyy HH:mm"
             />
           </div>
           <Container textAlign="center">
@@ -195,24 +195,24 @@ class ApproveModal extends React.Component {
                     key={stat.user_id}
                     label={stat.name}
                     value={stat.user_id}
-                    checked={user_id == stat.user_id}
+                    checked={user_id === stat.user_id}
                     onChange={this.handleUserSelected}
                   />
                 ))}
               </Form>
             </Grid.Column>
             <Grid.Column>
-              {user_id == null && (
+              {user_id === null && (
                 <Container textAlign="center">
                   <Header>{getTranslation("Please select a user")}</Header>
                 </Container>
               )}
-              {user_id != null && keys.length == 0 && (
+              {user_id !== null && keys.length === 0 && (
                 <Container textAlign="center">
                   <Header>{`${getTranslation("Nothing to")} ${publishOrAccept.toLowerCase()}`}</Header>
                 </Container>
               )}
-              {toApprove && keys.length != 0 && (
+              {toApprove && keys.length !== 0 && (
                 <Table celled compact definition>
                   <Table.Body>
                     {keys.map(key => (
@@ -224,7 +224,7 @@ class ApproveModal extends React.Component {
                             color="green"
                             loading={loading}
                             content={publishOrAccept}
-                            disabled={approveMap[user_id] && approveMap[user_id].indexOf(key.name) != -1}
+                            disabled={approveMap[user_id] && approveMap[user_id].indexOf(key.name) !== -1}
                             onClick={() => this.onApprove([key])}
                           />
                         </Table.Cell>
@@ -238,7 +238,7 @@ class ApproveModal extends React.Component {
                   <Button
                     color="green"
                     content={`${publishOrAccept} ${getTranslation("All")}`}
-                    disabled={approveMap[user_id] && keys.every(key => approveMap[user_id].indexOf(key.name) != -1)}
+                    disabled={approveMap[user_id] && keys.every(key => approveMap[user_id].indexOf(key.name) !== -1)}
                     onClick={() => this.onApprove(keys)}
                   />
                 </Container>
@@ -254,7 +254,9 @@ class ApproveModal extends React.Component {
 ApproveModal.propTypes = {
   perspectiveId: PropTypes.arrayOf(PropTypes.number).isRequired,
   mode: PropTypes.string.isRequired,
-  onClose: PropTypes.func.isRequired
+  onClose: PropTypes.func.isRequired,
+  approve: PropTypes.func.isRequired,
+  data: PropTypes.object
 };
 
 export default compose(

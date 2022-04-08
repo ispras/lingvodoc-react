@@ -54,8 +54,6 @@ base.plugins.push(
   }),
   new webpack.DefinePlugin({
     "process.env.NODE_ENV": JSON.stringify("development"),
-    __DEVELOPMENT__: true,
-    __DEVTOOLS__: true,
     __VERSION__: JSON.stringify(_.versionString)
   }),
   new webpack.HotModuleReplacementPlugin(),

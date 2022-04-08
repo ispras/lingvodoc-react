@@ -7,8 +7,8 @@ import createHistory from "history/createBrowserHistory";
 import { applyMiddleware, bindActionCreators, compose, createStore } from "redux";
 import formActionSaga from "redux-form-saga";
 import createSagaMiddleware from "redux-saga";
-import WebFont from "webfontloader";
 
+// eslint-disable-next-line import/no-unresolved
 import config from "config";
 import { setApolloClient } from "ducks/apolloClient";
 import { setRunner } from "ducks/saga";
@@ -24,20 +24,13 @@ const sagaMiddleware = createSagaMiddleware();
 const history = createHistory();
 const middlewares = [routerMiddleware(history), sagaMiddleware];
 
-let composeEnhancers = compose;
-// eslint-disable-next-line no-underscore-dangle
-const devTools = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__;
-if (__DEVELOPMENT__ && __DEVTOOLS__ && devTools) {
-  composeEnhancers = devTools;
-}
-
-const store = createStore(combinedReducer, composeEnhancers(applyMiddleware(...middlewares)));
+const store = createStore(combinedReducer, compose(applyMiddleware(...middlewares)));
 
 store.dispatch(setApolloClient(apollo));
 
 sagaMiddleware.run(mainFlow);
 sagaMiddleware.run(formActionSaga);
-if (!__DEVELOPMENT__ && config.buildType !== "desktop") {
+if (process.env.NODE_ENV !== "development" && config.buildType !== "desktop") {
   sagaMiddleware.run(matomo);
 }
 store.dispatch(setRunner(sagaMiddleware.run));
@@ -53,12 +46,6 @@ window.logger = bindActionCreators(
 );
 
 window.dispatch = store.dispatch;
-
-WebFont.load({
-  google: {
-    families: ["Noto Sans"]
-  }
-});
 
 ReactDOM.render(
   <Provider store={store}>

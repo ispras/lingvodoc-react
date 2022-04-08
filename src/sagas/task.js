@@ -1,7 +1,7 @@
 import { getTasks } from "api";
-import { delay } from "redux-saga";
-import { call, put, spawn } from "redux-saga/effects";
+import { call, delay, put, spawn } from "redux-saga/effects";
 
+// eslint-disable-next-line import/no-unresolved
 import config from "config";
 import { err } from "ducks/snackbar";
 import { requestTasks, setTasks } from "ducks/task";
@@ -18,7 +18,7 @@ export function* requestFlow() {
 export function* polling() {
   while (true) {
     yield* requestFlow();
-    yield call(delay, config.pollingInterval);
+    yield delay(config.pollingInterval);
   }
 }
 
