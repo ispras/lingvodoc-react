@@ -251,6 +251,7 @@ export const stringsToTranslate = [
   "Import Starling dictionaries",
   "Import dialeqt",
   "In processing",
+  "Individual work",
   "Info",
   "Informant",
   "Instances",

@@ -95,7 +95,7 @@ function GrantedDicts(props) {
 
       <Container className="container-gray">
         <div className="grant">
-          <div className="grant-title">{getTranslation("Индивидуальная работа")}</div>
+          <div className="grant-title">{getTranslation("Individual work")}</div>
           <Tree tree={restTree} canSelectDictionaries={isAuthenticated} />
         </div>
       </Container>
