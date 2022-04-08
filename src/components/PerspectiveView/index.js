@@ -481,8 +481,8 @@ class P extends React.Component {
     /* eslint-enable no-shadow */
     const isAuthenticated = user && user.user.id;
 
-    const isTableLanguages = JSON.stringify(id) === JSON.stringify([3148, 13330]);
-    /*const isTableLanguages = JSON.stringify(id) === JSON.stringify([4839, 2]);*/
+    /*const isTableLanguages = JSON.stringify(id) === JSON.stringify([3148, 13330]);*/
+    const isTableLanguages = JSON.stringify(id) === JSON.stringify([4839, 2]);
 
     const isTableLanguagesPublish = mode === "publish" && isTableLanguages;
 
