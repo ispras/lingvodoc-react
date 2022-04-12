@@ -17,7 +17,6 @@ export const editForm = createFormAction("@user/edit");
 export const LAUNCH_BAN_FORM = "@user/LAUNCH_BAN_FORM";
 export const banForm = createFormAction("@user/ban");
 
-export const SIGN_OUT = "@user/SIGN_OUT";
 export const CLOSE_FORM = "@user/CLOSE_FORM";
 
 // Reducers
@@ -117,10 +116,6 @@ export function launchBanForm() {
 
 export function closeForm() {
   return { type: CLOSE_FORM };
-}
-
-export function signOut() {
-  return { type: SIGN_OUT };
 }
 
 export function setUser(payload) {
