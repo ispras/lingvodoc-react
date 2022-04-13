@@ -76,7 +76,7 @@ Anonymous.propTypes = {
   launchSignUpForm: PropTypes.func.isRequired,
   closeForm: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
-  error: PropTypes.object
+  error: PropTypes.bool
 };
 
 const Signed = ({ user, modal, launchEditForm, closeForm, setUser, openBanModal, history }) => {

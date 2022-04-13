@@ -1,9 +1,8 @@
 import React from "react";
 import { Provider } from "react-redux";
-import { ConnectedRouter, routerMiddleware } from "react-router-redux";
+import { BrowserRouter } from "react-router-dom";
 import ReactDOM from "react-dom";
 import { ApolloProvider } from "@apollo/client";
-import createHistory from "history/createBrowserHistory";
 import { applyMiddleware, bindActionCreators, compose, createStore } from "redux";
 import formActionSaga from "redux-form-saga";
 import createSagaMiddleware from "redux-saga";
@@ -21,10 +20,8 @@ import combinedReducer from "./reducer";
 import mainFlow from "./sagas";
 
 const sagaMiddleware = createSagaMiddleware();
-const history = createHistory();
-const middlewares = [routerMiddleware(history), sagaMiddleware];
 
-const store = createStore(combinedReducer, compose(applyMiddleware(...middlewares)));
+const store = createStore(combinedReducer, compose(applyMiddleware(sagaMiddleware)));
 
 store.dispatch(setApolloClient(apollo));
 
@@ -50,9 +47,9 @@ window.dispatch = store.dispatch;
 ReactDOM.render(
   <Provider store={store}>
     <ApolloProvider client={apollo}>
-      <ConnectedRouter history={history}>
+      <BrowserRouter>
         <Layout />
-      </ConnectedRouter>
+      </BrowserRouter>
     </ApolloProvider>
   </Provider>,
   document.getElementById("root")

@@ -25,7 +25,7 @@ const DistanceMap = ({
   mainGroupDictionaresAndLanguages,
   user
 }) => {
-  if (!user || user.id != 1) {
+  if (!user || user.id !== 1) {
     return (
       <div style={{ marginTop: "1em" }}>
         <Label>
@@ -77,10 +77,10 @@ const DistanceMap = ({
 
   const newDictionaries = checkCoordAndLexicalEntries(dictionaries || dataForTree.dictionaries);
   const newLanguagesTree = languageTree || dataForTree.languageTree;
-  const fileredLanguageTree = newLanguagesTree.map(lang => {
-    lang.dictionaries = checkCoordAndLexicalEntries(lang.dictionaries);
-    return lang;
-  });
+  const fileredLanguageTree = newLanguagesTree.map(lang => ({
+    ...lang,
+    dictionaries: checkCoordAndLexicalEntries(lang.dictionaries)
+  }));
 
   return (
     <div>
@@ -125,6 +125,6 @@ export default compose(
   ),
   connect(state => state.locale),
   connect(state => state.user),
-  graphql(dictionaryWithPerspectivesQuery, { name: "dictionaryWithPerspectives", skip: props => props.user.id != 1 }),
-  graphql(allFieldQuery, { name: "allField", skip: props => props.user.id != 1 })
+  graphql(dictionaryWithPerspectivesQuery, { name: "dictionaryWithPerspectives", skip: props => props.user.id !== 1 }),
+  graphql(allFieldQuery, { name: "allField", skip: props => props.user.id !== 1 })
 )(DistanceMap);

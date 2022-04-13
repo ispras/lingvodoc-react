@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import { Link, Redirect, Route, Switch } from "react-router-dom";
 import { Container, Dropdown, Label, Menu } from "semantic-ui-react";
@@ -300,14 +300,20 @@ const valency = (perspectiveId, launchValency) => {
 const Perspective = ({
   data,
   perspective,
+  init,
   submitFilter,
   openCognateAnalysisModal,
   openPhonemicAnalysisModal,
   openPhonologyModal,
   launchSoundAndMarkup,
   launchValency,
-  user
+  user,
+  location
 }) => {
+  useEffect(() => {
+    init({ location });
+  }, [init, location]);
+
   const { id, parent_id, mode, page, baseUrl } = perspective.params;
   if (!baseUrl) {
     return null;
@@ -421,13 +427,15 @@ const Perspective = ({
 
 Perspective.propTypes = {
   perspective: PropTypes.object.isRequired,
+  init: PropTypes.func.isRequired,
   submitFilter: PropTypes.func.isRequired,
   openCognateAnalysisModal: PropTypes.func.isRequired,
   openPhonemicAnalysisModal: PropTypes.func.isRequired,
   openPhonologyModal: PropTypes.func.isRequired,
   launchSoundAndMarkup: PropTypes.func.isRequired,
   launchValency: PropTypes.func.isRequired,
-  user: PropTypes.object.isRequired
+  user: PropTypes.object.isRequired,
+  location: PropTypes.object.isRequired
 };
 
 export default compose(

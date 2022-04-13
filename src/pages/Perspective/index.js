@@ -37,13 +37,14 @@ export default enhance({
     };
   },
   actions: {
+    init,
     submitFilter,
     openCognateAnalysisModal,
     openPhonemicAnalysisModal,
     openPhonologyModal
   },
-  updateWhen({ perspective: np }, { perspective: op }) {
-    return !shallowEqual(np, op);
+  updateWhen({ perspective: np, location: nl }, { perspective: op, location: ol }) {
+    return nl.pathname !== ol.pathname || nl.search !== ol.search || !shallowEqual(np, op);
   },
   init,
   saga
