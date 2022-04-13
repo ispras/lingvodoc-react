@@ -686,8 +686,6 @@ class Valency extends React.Component {
         .reverse()
         .join(" \u203a ");
 
-      perspectives[i].text_str = text_str;
-
       perspective_option_list.push({
         key: i,
         value: id_str,
