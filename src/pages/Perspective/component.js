@@ -315,7 +315,7 @@ const Perspective = ({
   }, [init, location]);
 
   const { id, parent_id, mode, page, baseUrl } = perspective.params;
-  if (!baseUrl) {
+  if (!baseUrl || location.pathname.indexOf(baseUrl) === -1) {
     return null;
   }
 
@@ -400,7 +400,7 @@ const Perspective = ({
         )}
         {!isDeleted && (
           <Routes>
-            <Route path="/" element={<Navigate to={`${baseUrl}/view`} />} />
+            <Route path="/" element={<Navigate to={`${baseUrl}/view`} replace={true} />} />
             {map(modes, (info, stub) => (
               <Route
                 key={stub}

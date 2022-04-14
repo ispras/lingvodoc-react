@@ -1,6 +1,5 @@
 import React from "react";
 import { connect } from "react-redux";
-import { matchPath, Navigate, useLocation } from "react-router-dom";
 import { Container } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
@@ -109,7 +108,6 @@ const CorporaAll = props => {
     isAuthenticated,
     data: { loading, error, dictionaries, permission_lists: permissionLists }
   } = props;
-  const location = useLocation();
 
   if (error) {
     return null;
@@ -117,19 +115,6 @@ const CorporaAll = props => {
 
   if (loading) {
     return <Placeholder />;
-  }
-
-  if (location.hash) {
-    const match = matchPath(
-      {
-        path: "#/dictionary/:pcid/:poid/perspective/:cid/:oid/:mode"
-      },
-      location.hash
-    );
-    if (match) {
-      const { pcid, poid, cid, oid, mode } = match.params;
-      return <Navigate to={`/dictionary/${pcid}/${poid}/perspective/${cid}/${oid}/${mode}`} />;
-    }
   }
 
   const languagesTree = buildLanguageTree(fromJS(languages));

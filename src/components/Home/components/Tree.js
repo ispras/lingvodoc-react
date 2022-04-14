@@ -77,14 +77,7 @@ const Dict = ({ dictionary, actions, selected, canSelectDictionaries }) => {
       )}
 
       {selectorStatus && (
-        <Link
-          to={{
-            pathname: "/distance_map/selected_languages",
-            state: {
-              mainPerspectives: perspectives.toJS()
-            }
-          }}
-        >
+        <Link to="/distance_map/selected_languages" state={{ mainPerspectives: perspectives.toJS() }}>
           {" "}
           <Button size="tiny" style={{ margin: "0 0 3px 0" }}>
             {" "}

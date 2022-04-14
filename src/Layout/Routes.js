@@ -57,7 +57,6 @@ const AppRoutes = () => (
     <Route path="/import" element={<DictImport />} />
     <Route path="/import_dialeqt" element={<DialeqtImport />} />
     <Route path="/dictionary/:pcid/:poid/perspective/:cid/:oid/*" element={<Perspective />} />
-    <Route path="/#/dictionary/:pcid/:poid/perspective/:cid/:oid/*" element={<Perspective />} />
     <Route path="/files" element={<Files />} />
     <Route path="/edit_translations" element={<EditTranslations />} />
     <Route path="/organizations" element={<Organizations />} />
