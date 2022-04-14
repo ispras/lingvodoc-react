@@ -1,6 +1,5 @@
 import React from "react";
 import { connect } from "react-redux";
-import { withRouter } from "react-router-dom";
 import { Sidebar } from "semantic-ui-react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
@@ -89,8 +88,5 @@ Layout.propTypes = {
   selected: PropTypes.object.isRequired,
   loading: PropTypes.bool.isRequired
 };
-/*
- * Without withRouter() using connect() breaks routing, see
- * https://reacttraining.com/react-router/core/guides/redux-integration, "Blocked Updates".
- */
-export default withRouter(connect(state => state.locale)(Layout));
+
+export default connect(state => state.locale)(Layout);

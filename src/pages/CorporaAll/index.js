@@ -1,11 +1,11 @@
 import React from "react";
 import { connect } from "react-redux";
-import { matchPath, Redirect } from "react-router-dom";
+import { matchPath, Navigate, useLocation } from "react-router-dom";
 import { Container } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
 import { getTranslation } from "api/i18n";
-import Immutable, { fromJS, Map, OrderedMap } from "immutable";
+import Immutable, { fromJS, OrderedMap } from "immutable";
 import PropTypes from "prop-types";
 import { branch, compose, renderNothing } from "recompose";
 
@@ -13,6 +13,7 @@ import BackTopButton from "components/BackTopButton";
 import { getScrollContainer } from "components/Home/common";
 import AllDicts from "components/Home/components/AllDicts";
 import Placeholder from "components/Placeholder";
+// eslint-disable-next-line import/no-unresolved
 import config from "config";
 import { buildLanguageTree } from "pages/Search/treeBuilder";
 
@@ -106,9 +107,9 @@ const CorporaAll = props => {
     perspectives,
     languages,
     isAuthenticated,
-    data: { loading, error, dictionaries, permission_lists: permissionLists },
-    location: { hash }
+    data: { loading, error, dictionaries, permission_lists: permissionLists }
   } = props;
+  const location = useLocation();
 
   if (error) {
     return null;
@@ -118,13 +119,16 @@ const CorporaAll = props => {
     return <Placeholder />;
   }
 
-  if (hash) {
-    const match = matchPath(hash, {
-      path: "#/dictionary/:pcid/:poid/perspective/:cid/:oid/:mode"
-    });
+  if (location.hash) {
+    const match = matchPath(
+      {
+        path: "#/dictionary/:pcid/:poid/perspective/:cid/:oid/:mode"
+      },
+      location.hash
+    );
     if (match) {
       const { pcid, poid, cid, oid, mode } = match.params;
-      return <Redirect to={`/dictionary/${pcid}/${poid}/perspective/${cid}/${oid}/${mode}`} />;
+      return <Navigate to={`/dictionary/${pcid}/${poid}/perspective/${cid}/${oid}/${mode}`} />;
     }
   }
 
@@ -176,7 +180,6 @@ const CorporaAll = props => {
 
       <Container className="published">
         <AllDicts
-          location={props.location}
           languagesTree={languagesTree}
           dictionaries={dicts}
           perspectives={perspectivesList}
@@ -196,8 +199,7 @@ CorporaAll.propTypes = {
   dictionaries: PropTypes.array,
   perspectives: PropTypes.array.isRequired,
   languages: PropTypes.array.isRequired,
-  isAuthenticated: PropTypes.bool.isRequired,
-  location: PropTypes.object.isRequired
+  isAuthenticated: PropTypes.bool.isRequired
 };
 
 CorporaAll.defaultProps = {

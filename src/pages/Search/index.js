@@ -1,6 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
-import { withRouter } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Button, Container, Dimmer, Divider, Loader, Menu, Message, Segment, Tab } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql, withApollo } from "@apollo/client/react/hoc";
@@ -989,7 +989,7 @@ SearchTabs.propTypes = {
   }).isRequired
 };
 
-export default compose(
+const EnhancedSearchTabs = compose(
   connect(state => state.distanceMap),
   connect(
     state => state.search,
@@ -1015,6 +1015,12 @@ export default compose(
     options: ({ match: { params } }) => ({ variables: { id: params.searchId } })
   }),
   graphql(newUnstructuredDataMutation, { name: "newUnstructuredData" }),
-  withRouter,
   withApollo
 )(SearchTabs);
+
+const SearchPageWrapper = props => {
+  const params = useParams();
+  return <EnhancedSearchTabs {...props} match={{ params }} />;
+};
+
+export default SearchPageWrapper;

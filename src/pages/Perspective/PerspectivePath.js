@@ -1,6 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
-import { Link, Redirect } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { Breadcrumb, Dropdown, Header } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
@@ -79,19 +79,17 @@ class PerspectivePath extends React.Component {
     const dictionary_id_tree = tree[1].id;
 
     const {
-      category,
       perspectives,
       additional_metadata: { license }
     } = queryAvailablePerspectives.dictionary;
 
     /* If the dictionary in the URL is not actually the perspective's dictionary,
      * we redirect to the proper URL with the perspective's dictionary. */
-
-    if (dictionary_id_tree[0] != dictionary_id[0] || dictionary_id_tree[1] != dictionary_id[1]) {
+    if (dictionary_id_tree[0] !== dictionary_id[0] || dictionary_id_tree[1] !== dictionary_id[1]) {
       const redirect_url =
         `/dictionary/${dictionary_id_tree[0]}/${dictionary_id_tree[1]}` + `/perspective/${id[0]}/${id[1]}/${mode}`;
 
-      return <Redirect to={redirect_url} />;
+      return <Navigate to={redirect_url} />;
     }
 
     const [license_str, license_url] = license_dict.hasOwnProperty(license)

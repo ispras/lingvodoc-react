@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { connect } from "react-redux";
-import { Link, withRouter } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Dropdown, Icon, Menu } from "semantic-ui-react";
 import { useApolloClient } from "@apollo/client";
 import { getTranslation } from "api/i18n";
@@ -79,7 +79,8 @@ Anonymous.propTypes = {
   error: PropTypes.bool
 };
 
-const Signed = ({ user, modal, launchEditForm, closeForm, setUser, openBanModal, history }) => {
+const Signed = ({ user, modal, launchEditForm, closeForm, setUser, openBanModal }) => {
+  const navigate = useNavigate();
   const client = useApolloClient();
 
   const [loggingOut, setLoggingOut] = useState(false);
@@ -90,14 +91,14 @@ const Signed = ({ user, modal, launchEditForm, closeForm, setUser, openBanModal,
     if (response.data) {
       setLoggingOut(false);
       stopTrackUser();
-      history.push("/");
+      navigate("/");
       setUser({});
       client.cache.reset();
     } else {
       setLoggingOut(false);
       window.logger.err(getTranslation("Could not sign out"));
     }
-  }, [client, history, setUser]);
+  }, [client, navigate, setUser]);
 
   return loggingOut ? (
     spinner
@@ -154,8 +155,7 @@ Signed.propTypes = {
   launchEditForm: PropTypes.func.isRequired,
   closeForm: PropTypes.func.isRequired,
   setUser: PropTypes.func.isRequired,
-  openBanModal: PropTypes.func.isRequired,
-  history: PropTypes.object.isRequired
+  openBanModal: PropTypes.func.isRequired
 };
 
 function UserDropdown({ user, ...rest }) {
@@ -174,6 +174,5 @@ export default compose(
     closeForm: userActions.closeForm,
     setUser: userActions.setUser,
     openBanModal: openModal
-  }),
-  withRouter
+  })
 )(UserDropdown);

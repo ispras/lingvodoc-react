@@ -1,6 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
-import { matchPath, Redirect } from "react-router-dom";
+import { matchPath, Navigate, useLocation } from "react-router-dom";
 import { Container } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
@@ -12,6 +12,7 @@ import { branch, compose, renderNothing } from "recompose";
 import BackTopButton from "components/BackTopButton";
 import { getScrollContainer } from "components/Home/common";
 import Placeholder from "components/Placeholder";
+// eslint-disable-next-line import/no-unresolved
 import config from "config";
 import { buildLanguageTree } from "pages/Search/treeBuilder";
 
@@ -108,9 +109,9 @@ const CorporaAll = props => {
     languages,
     isAuthenticated,
     grants,
-    data: { loading, error, dictionaries, permission_lists: permissionLists },
-    location: { hash }
+    data: { loading, error, dictionaries, permission_lists: permissionLists }
   } = props;
+  const location = useLocation();
 
   if (error) {
     return null;
@@ -121,13 +122,16 @@ const CorporaAll = props => {
   }
 
   const grantsList = fromJS(grants);
-  if (hash) {
-    const match = matchPath(hash, {
-      path: "#/dictionary/:pcid/:poid/perspective/:cid/:oid/:mode"
-    });
+  if (location.hash) {
+    const match = matchPath(
+      {
+        path: "#/dictionary/:pcid/:poid/perspective/:cid/:oid/:mode"
+      },
+      location.hash
+    );
     if (match) {
       const { pcid, poid, cid, oid, mode } = match.params;
-      return <Redirect to={`/dictionary/${pcid}/${poid}/perspective/${cid}/${oid}/${mode}`} />;
+      return <Navigate to={`/dictionary/${pcid}/${poid}/perspective/${cid}/${oid}/${mode}`} />;
     }
   }
 
@@ -197,8 +201,7 @@ CorporaAll.propTypes = {
   dictionaries: PropTypes.array,
   perspectives: PropTypes.array.isRequired,
   languages: PropTypes.array.isRequired,
-  isAuthenticated: PropTypes.bool.isRequired,
-  location: PropTypes.object.isRequired
+  isAuthenticated: PropTypes.bool.isRequired
 };
 
 CorporaAll.defaultProps = {

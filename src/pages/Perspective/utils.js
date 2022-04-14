@@ -3,16 +3,22 @@ import { matchPath } from "react-router-dom";
 import { getPage } from "utils/getParams";
 
 function getIds(path) {
-  const match = matchPath(path, {
-    path: "/dictionary/:pcid/:poid/perspective/:cid/:oid"
-  });
+  const match = matchPath(
+    {
+      path: "/dictionary/:pcid/:poid/perspective/:cid/:oid/*"
+    },
+    path
+  );
   return match && match.params;
 }
 
 function getMode(path) {
-  const match = matchPath(path, {
-    path: "/dictionary/:pcid/:poid/perspective/:cid/:oid/:mode"
-  });
+  const match = matchPath(
+    {
+      path: "/dictionary/:pcid/:poid/perspective/:cid/:oid/:mode"
+    },
+    path
+  );
   if (match && match.params && match.params.mode) {
     return match.params.mode;
   }

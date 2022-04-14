@@ -1,17 +1,18 @@
 import React from "react";
 import { connect } from "react-redux";
-import { matchPath, Redirect } from "react-router-dom";
-import { Button, Container, Form, Label, Radio, Segment } from "semantic-ui-react";
+import { matchPath, Navigate, useLocation } from "react-router-dom";
+import { Button, Container, Form, Radio, Segment } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
 import { getTranslation } from "api/i18n";
-import Immutable, { fromJS, Map, OrderedMap } from "immutable";
+import Immutable, { fromJS, OrderedMap } from "immutable";
 import PropTypes from "prop-types";
 import { branch, compose, renderNothing } from "recompose";
 import { bindActionCreators } from "redux";
 
 import BackTopButton from "components/BackTopButton";
 import Placeholder from "components/Placeholder";
+// eslint-disable-next-line import/no-unresolved
 import config from "config";
 import { resetDictionaries, setSortMode } from "ducks/home";
 import { buildLanguageTree } from "pages/Search/treeBuilder";
@@ -124,9 +125,9 @@ const Home = props => {
     organizations,
     languages,
     isAuthenticated,
-    data: { loading, error, dictionaries, permission_lists: permissionLists },
-    location: { hash }
+    data: { loading, error, dictionaries, permission_lists: permissionLists }
   } = props;
+  const location = useLocation();
 
   if (error) {
     return null;
@@ -139,13 +140,16 @@ const Home = props => {
   // handle legacy links from Lingvodoc 2.0
   // if link has hash like #/dictionary/1/2/perspective/3/4/edit redirect to this version's
   // PerspectiveView page
-  if (hash) {
-    const match = matchPath(hash, {
-      path: "#/dictionary/:pcid/:poid/perspective/:cid/:oid/:mode"
-    });
+  if (location.hash) {
+    const match = matchPath(
+      {
+        path: "#/dictionary/:pcid/:poid/perspective/:cid/:oid/:mode"
+      },
+      location.hash
+    );
     if (match) {
       const { pcid, poid, cid, oid, mode } = match.params;
-      return <Redirect to={`/dictionary/${pcid}/${poid}/perspective/${cid}/${oid}/${mode}`} />;
+      return <Navigate to={`/dictionary/${pcid}/${poid}/perspective/${cid}/${oid}/${mode}`} />;
     }
   }
 
@@ -248,7 +252,7 @@ const Home = props => {
       </div>
       <Container className="published">
         <div>
-          {sortMode == "grant" && (
+          {sortMode === "grant" && (
             <GrantedDicts
               mode="grant"
               languagesTree={languagesTree}
@@ -258,7 +262,7 @@ const Home = props => {
               isAuthenticated={isAuthenticated}
             />
           )}
-          {sortMode == "organization" && (
+          {sortMode === "organization" && (
             <GrantedDicts
               mode="organization"
               languagesTree={languagesTree}
@@ -270,7 +274,6 @@ const Home = props => {
           )}
           {!sortMode && (
             <AllDicts
-              location={props.location}
               languagesTree={languagesTree}
               dictionaries={dicts}
               perspectives={perspectivesList}
@@ -299,7 +302,6 @@ Home.propTypes = {
     setSortMode: PropTypes.func.isRequired,
     resetDictionaries: PropTypes.func.isRequired
   }).isRequired,
-  location: PropTypes.object.isRequired,
   downloadDictionaries: PropTypes.func.isRequired
 };
 

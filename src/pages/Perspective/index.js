@@ -1,3 +1,5 @@
+import React from "react";
+import { useLocation } from "react-router-dom";
 import { shallowEqual } from "recompose";
 
 import { openModal as cognateAnalysisOpenModal } from "ducks/cognateAnalysis";
@@ -30,7 +32,7 @@ function openPhonologyModal(perspectiveId, mode = "") {
   return phonologyOpenModal(perspectiveId, mode);
 }
 
-export default enhance({
+const EnhancedComponent = enhance({
   props(state) {
     return {
       perspective: selectors.getPerspective(state)
@@ -49,3 +51,10 @@ export default enhance({
   init,
   saga
 })(Component);
+
+const Wrapper = props => {
+  const location = useLocation();
+  return <EnhancedComponent {...props} location={location} />;
+};
+
+export default Wrapper;

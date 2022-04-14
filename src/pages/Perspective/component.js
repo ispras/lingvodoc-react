@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { connect } from "react-redux";
-import { Link, Redirect, Route, Switch } from "react-router-dom";
+import { Link, Navigate, Route, Routes } from "react-router-dom";
 import { Container, Dropdown, Label, Menu } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
@@ -399,13 +399,13 @@ const Perspective = ({
           />
         )}
         {!isDeleted && (
-          <Switch>
-            <Redirect exact from={baseUrl} to={`${baseUrl}/view`} />
+          <Routes>
+            <Route path="/" element={<Navigate to={`${baseUrl}/view`} />} />
             {map(modes, (info, stub) => (
               <Route
                 key={stub}
-                path={`${baseUrl}/${stub}`}
-                render={() => (
+                path={stub}
+                element={
                   <info.component
                     id={id}
                     mode={mode}
@@ -414,11 +414,11 @@ const Perspective = ({
                     filter={perspective.filter}
                     className="content"
                   />
-                )}
+                }
               />
             ))}
             <Route component={NotFound} />
-          </Switch>
+          </Routes>
         )}
       </Container>
     </div>
@@ -440,7 +440,7 @@ Perspective.propTypes = {
 
 export default compose(
   connect(state => state.user),
-  branch(({ perspective }) => !perspective.params.id, renderNothing),
+  branch(({ perspective }) => !perspective.params || !perspective.params.id, renderNothing),
   graphql(perspectiveIsHiddenOrDeletedQuery, {
     options: ({ perspective }) => ({
       variables: { id: perspective.params.id }
