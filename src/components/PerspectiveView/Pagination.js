@@ -8,7 +8,7 @@ import styled from "styled-components";
 
 import smoothScroll from "utils/smoothscroll";
 
-const Item = ({ num, disabled, active, text, icon, to, checkEntries, resetCheckedColumn, resetCheckedAll }) => {
+const Item = ({ num, disabled, active, text, icon, checkEntries, resetCheckedColumn, resetCheckedAll }) => {
   const extraProps = {};
   if (icon) {
     extraProps.icon = icon;
@@ -33,7 +33,7 @@ const Item = ({ num, disabled, active, text, icon, to, checkEntries, resetChecke
       disabled={disabled}
       onClick={handleItemClick}
       to={{
-        pathname: to,
+        pathname: window.location.pathname,
         search: `?page=${num}`
       }}
       {...extraProps}
@@ -47,7 +47,6 @@ Item.propTypes = {
   active: PropTypes.bool,
   text: PropTypes.string,
   icon: PropTypes.string,
-  to: PropTypes.string.isRequired,
   checkEntries: PropTypes.bool,
   resetCheckedColumn: PropTypes.func,
   resetCheckedAll: PropTypes.func
@@ -74,13 +73,12 @@ const Pager = styled(Menu)`
 
 const WINDOW = 5;
 
-const Pagination = ({ current, total, to, checkEntries, resetCheckedColumn, resetCheckedAll }) => (
+const Pagination = ({ current, total, checkEntries, resetCheckedColumn, resetCheckedAll }) => (
   <Pager size="tiny" pagination>
     <Item
       num={1}
       text="1↢"
       active={current === 1}
-      to={to}
       checkEntries={checkEntries}
       resetCheckedColumn={resetCheckedColumn}
       resetCheckedAll={resetCheckedAll}
@@ -89,7 +87,6 @@ const Pagination = ({ current, total, to, checkEntries, resetCheckedColumn, rese
       num={current - 1}
       icon="chevron left"
       disabled={current <= 1}
-      to={to}
       checkEntries={checkEntries}
       resetCheckedColumn={resetCheckedColumn}
       resetCheckedAll={resetCheckedAll}
@@ -99,7 +96,6 @@ const Pagination = ({ current, total, to, checkEntries, resetCheckedColumn, rese
         key={page}
         num={page}
         active={page === current}
-        to={to}
         checkEntries={checkEntries}
         resetCheckedColumn={resetCheckedColumn}
         resetCheckedAll={resetCheckedAll}
@@ -109,7 +105,6 @@ const Pagination = ({ current, total, to, checkEntries, resetCheckedColumn, rese
       num={current + 1}
       icon="chevron right"
       disabled={current >= total}
-      to={to}
       checkEntries={checkEntries}
       resetCheckedColumn={resetCheckedColumn}
       resetCheckedAll={resetCheckedAll}
@@ -118,7 +113,6 @@ const Pagination = ({ current, total, to, checkEntries, resetCheckedColumn, rese
       num={total}
       text={`↣${total}`}
       active={current === total}
-      to={to}
       checkEntries={checkEntries}
       resetCheckedColumn={resetCheckedColumn}
       resetCheckedAll={resetCheckedAll}
@@ -129,7 +123,6 @@ const Pagination = ({ current, total, to, checkEntries, resetCheckedColumn, rese
 Pagination.propTypes = {
   current: PropTypes.number.isRequired,
   total: PropTypes.number.isRequired,
-  to: PropTypes.string.isRequired,
   checkEntries: PropTypes.bool,
   resetCheckedColumn: PropTypes.func,
   resetCheckedAll: PropTypes.func

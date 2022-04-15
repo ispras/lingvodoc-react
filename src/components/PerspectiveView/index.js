@@ -659,7 +659,6 @@ class P extends React.Component {
         <Pagination
           current={page}
           total={Math.floor(entries.length / ROWS_PER_PAGE) + 1}
-          to={mode}
           checkEntries={isTableLanguagesPublish}
           resetCheckedColumn={this.resetCheckedColumn}
           resetCheckedAll={this.resetCheckedAll}
@@ -832,6 +831,7 @@ LexicalEntryViewBase.propTypes = {
   entitiesMode: PropTypes.string.isRequired,
   data: PropTypes.shape({
     loading: PropTypes.bool.isRequired,
+    error: PropTypes.object,
     all_fields: PropTypes.array,
     perspective: PropTypes.object
   }).isRequired,
@@ -939,6 +939,7 @@ LexicalEntryViewBaseByIds.propTypes = {
   entitiesMode: PropTypes.string.isRequired,
   data: PropTypes.shape({
     loading: PropTypes.bool.isRequired,
+    error: PropTypes.object,
     all_fields: PropTypes.array,
     perspective: PropTypes.object
   }).isRequired,

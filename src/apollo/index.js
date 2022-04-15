@@ -5,7 +5,7 @@ import { createUploadLink } from "apollo-upload-client";
 // eslint-disable-next-line import/no-unresolved
 import config from "config";
 
-const errorLink = onError(({ networkError = {}, graphQLErrors }) => {
+const errorLink = onError(({ networkError = {}, graphQLErrors = [] }) => {
   if (networkError.statusCode === 500) {
     window.logger.err("Internal server error");
   }
