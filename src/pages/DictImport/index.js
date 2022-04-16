@@ -127,10 +127,12 @@ class Info extends React.Component {
   }
 
   onUpdateColumn(id) {
+    console.log("id", id);
     return (column, value, oldValue) => this.props.updateColumn(id, column, value, oldValue);
   }
 
   onToggleColumn(id) {
+    console.log("id", id);
     return () => this.props.toggleAddColumn(id);
   }
 

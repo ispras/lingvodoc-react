@@ -75,9 +75,9 @@ function Columns({ blob, spreads, linkOptions, onUpdateColumn, onToggleColumn, o
       <Button negative icon="trash" size="tiny" onClick={() => onDelete(blob.get("id"))} />
       <b className="blob-name">{blob.get("name")}</b>
       <div className="blob-columns">
-        {columns.map(column => (
+        {columns.map((column, index) => (
           <Column
-            key={column}
+            key={index}
             name={column}
             linkOptions={linkOptions.filter(x => x.key !== blob.get("id").join("/"))}
             onChange={onUpdateColumn}
