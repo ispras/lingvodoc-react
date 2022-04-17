@@ -40,26 +40,33 @@ class BanModal extends React.Component {
   }
 
   handleActivateDeactivate() {
-    if (this.state.selected_user === null) {
+    const user = this.state.selected_user;
+    if (user === null) {
       return;
     }
+
+    const success_str = user.is_active ? "Successfully deactivated user" : "Successfully activated user";
+    const error_str = user.is_active ? "Failed to deactive user" : "Failed to activate user";
+
+    const user_str = `'${user.login}' (${user.name}${user.intl_name !== user.login ? `, ${user.intl_name}` : ""})`;
 
     const { refetch } = this.props.data;
 
     this.props
       .activateDeactivateUser({
         variables: {
-          userId: this.state.selected_user.id,
-          isActive: !this.state.selected_user.is_active
+          userId: user.id,
+          isActive: !user.is_active
         }
       })
       .then(
         () => {
+          window.logger.suc(`${getTranslation(success_str)} ${user_str}.`);
           this.props.closeModal();
           refetch();
         },
         () => {
-          window.logger.err(getTranslation("Failed to ban user!"));
+          window.logger.err(`${getTranslation(error_str)} ${user_str}!`);
         }
       );
   }
