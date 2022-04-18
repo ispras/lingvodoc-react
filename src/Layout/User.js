@@ -1,11 +1,10 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { Dropdown, Icon, Menu } from "semantic-ui-react";
 import { useApolloClient } from "@apollo/client";
 import { getTranslation } from "api/i18n";
-import { signOut } from "api/user";
-import { isEmpty } from "lodash";
+import { getId, getUser, signOut } from "api/user";
 import PropTypes from "prop-types";
 import { compose } from "recompose";
 
@@ -14,9 +13,12 @@ import SignInModal from "components/SignInModal";
 import SignUpModal from "components/SignUpModal";
 import { openModal } from "ducks/ban";
 import * as userActions from "ducks/user";
-import { stopTrackUser } from "sagas/matomo";
+import { startTrackUser, stopTrackUser } from "utils/matomo";
 
 import imageUser from "../images/user.svg";
+
+let requestUserForId = getId();
+let userRequested = false;
 
 const spinner = (
   <Menu.Item className="top_menu">
@@ -26,63 +28,54 @@ const spinner = (
   </Menu.Item>
 );
 
-const Anonymous = ({ modal, launchSignInForm, launchSignUpForm, closeForm, loading, error }) =>
-  loading && !error ? (
-    spinner
-  ) : (
+const Anonymous = ({ setUser }) => {
+  const [modal, setModal] = useState();
+
+  return (
     <>
       <Menu.Item className="top_menu top_menu__item_signin">
-        <div className="sign_in" onClick={launchSignInForm}>
+        <div className="sign_in" onClick={() => setModal("signin")}>
           {getTranslation("Sign In")}
         </div>
       </Menu.Item>
       <Menu.Item className="top_menu top_menu__item_signup">
-        <div className="sign_up" onClick={launchSignUpForm}>
+        <div className="sign_up" onClick={() => setModal("signup")}>
           {getTranslation("Sign Up")}
         </div>
       </Menu.Item>
       <Dropdown
         item
         trigger={
-          loading ? (
-            <span>
-              <img src={imageUser} alt={getTranslation("User")} className="icon-user" /> <Icon loading name="spinner" />
-            </span>
-          ) : (
-            <span>
-              <img src={imageUser} alt={getTranslation("User")} className="icon-user" />
-            </span>
-          )
+          <span>
+            <img src={imageUser} alt={getTranslation("User")} className="icon-user" />
+          </span>
         }
         className="top_menu top_menu__dropdown-user top_menu__item_user"
       >
         <Dropdown.Menu>
-          <Dropdown.Item as="a" onClick={launchSignInForm}>
+          <Dropdown.Item as="a" onClick={() => setModal("signin")}>
             {getTranslation("Sign In")}
           </Dropdown.Item>
-          <Dropdown.Item as="a" onClick={launchSignUpForm}>
+          <Dropdown.Item as="a" onClick={() => setModal("signup")}>
             {getTranslation("Sign Up")}
           </Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>
-      <SignInModal open={modal === "signin"} handleClose={closeForm} />
-      <SignUpModal open={modal === "signup"} handleClose={closeForm} />
+      {modal === "signin" && <SignInModal setUser={setUser} close={() => setModal(undefined)} />}
+      {modal === "signup" && <SignUpModal setUser={setUser} close={() => setModal(undefined)} />}
     </>
   );
-
-Anonymous.propTypes = {
-  modal: PropTypes.any.isRequired,
-  launchSignInForm: PropTypes.func.isRequired,
-  launchSignUpForm: PropTypes.func.isRequired,
-  closeForm: PropTypes.func.isRequired,
-  loading: PropTypes.bool.isRequired,
-  error: PropTypes.bool
 };
 
-const Signed = ({ user, modal, launchEditForm, closeForm, setUser, openBanModal }) => {
+Anonymous.propTypes = {
+  setUser: PropTypes.func.isRequired
+};
+
+const Signed = ({ user, setUser, openBanModal }) => {
   const navigate = useNavigate();
   const client = useApolloClient();
 
+  const [editModal, setEditModal] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
 
   const logoutUser = useCallback(async () => {
@@ -92,6 +85,8 @@ const Signed = ({ user, modal, launchEditForm, closeForm, setUser, openBanModal 
       setLoggingOut(false);
       stopTrackUser();
       navigate("/");
+      requestUserForId = undefined;
+      userRequested = false;
       setUser({});
       client.cache.reset();
     } else {
@@ -100,78 +95,100 @@ const Signed = ({ user, modal, launchEditForm, closeForm, setUser, openBanModal 
     }
   }, [client, navigate, setUser]);
 
-  return loggingOut ? (
-    spinner
-  ) : (
-    <Dropdown
-      item
-      trigger={
-        <span>
-          <img src={imageUser} alt={user.name} className="top_menu__signed-icon icon-user" />
-          <span className="top_menu__signed-user">{user.name}</span>
-        </span>
-      }
-      className={user.id === 1 ? "top_menu top_menu__item_user top_menu__item_admin" : "top_menu top_menu__item_user"}
-    >
-      <Dropdown.Menu>
-        <EditUserModal
-          trigger={
-            <Dropdown.Item as="a" onClick={launchEditForm}>
-              {getTranslation("Edit profile")}
+  if (loggingOut) {
+    return spinner;
+  }
+
+  return (
+    <>
+      <Dropdown
+        item
+        trigger={
+          <span>
+            <img src={imageUser} alt={user.name} className="top_menu__signed-icon icon-user" />
+            <span className="top_menu__signed-user">{user.name}</span>
+          </span>
+        }
+        className={user.id === 1 ? "top_menu top_menu__item_user top_menu__item_admin" : "top_menu top_menu__item_user"}
+      >
+        <Dropdown.Menu>
+          <Dropdown.Item as="a" onClick={() => setEditModal(true)}>
+            {getTranslation("Edit profile")}
+          </Dropdown.Item>
+          <Dropdown.Item as={Link} to="/files">
+            {getTranslation("My files")}
+          </Dropdown.Item>
+          <Dropdown.Item as={Link} to="/grants">
+            {getTranslation("Grants")}
+          </Dropdown.Item>
+          <Dropdown.Item as={Link} to="/organizations">
+            {getTranslation("Organizations")}
+          </Dropdown.Item>
+          <Dropdown.Item as={Link} to="/requests">
+            {getTranslation("Requests")}
+          </Dropdown.Item>
+          <Dropdown.Item as="a" onClick={async () => await logoutUser()}>
+            {getTranslation("Sign out")}
+          </Dropdown.Item>
+          {user.id === 1 && (
+            <Dropdown.Item onClick={openBanModal}>
+              {getTranslation("User account activation/deactivation")}
             </Dropdown.Item>
-          }
-          user={user}
-          open={modal === "edit"}
-          handleClose={closeForm}
-        />
-
-        <Dropdown.Item as={Link} to="/files">
-          {getTranslation("My files")}
-        </Dropdown.Item>
-        <Dropdown.Item as={Link} to="/grants">
-          {getTranslation("Grants")}
-        </Dropdown.Item>
-        <Dropdown.Item as={Link} to="/organizations">
-          {getTranslation("Organizations")}
-        </Dropdown.Item>
-        <Dropdown.Item as={Link} to="/requests">
-          {getTranslation("Requests")}
-        </Dropdown.Item>
-        <Dropdown.Item as="a" onClick={async () => await logoutUser()}>
-          {getTranslation("Sign out")}
-        </Dropdown.Item>
-
-        {user.id === 1 && (
-          <Dropdown.Item onClick={openBanModal}>{getTranslation("User account activation/deactivation")}</Dropdown.Item>
-        )}
-      </Dropdown.Menu>
-    </Dropdown>
+          )}
+        </Dropdown.Menu>
+      </Dropdown>
+      {editModal && <EditUserModal user={user} setUser={setUser} close={() => setEditModal(false)} />}
+    </>
   );
 };
 
 Signed.propTypes = {
-  modal: PropTypes.any.isRequired,
   user: PropTypes.object.isRequired,
-  launchEditForm: PropTypes.func.isRequired,
-  closeForm: PropTypes.func.isRequired,
   setUser: PropTypes.func.isRequired,
   openBanModal: PropTypes.func.isRequired
 };
 
-function UserDropdown({ user, ...rest }) {
-  return isEmpty(user) ? <Anonymous {...rest} /> : <Signed user={user} {...rest} />;
+function UserDropdown({ user, setUser, ...rest }) {
+  const [, setRequestingUser] = useState(false);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    const fetchUserInformation = async () => {
+      const response = await getUser();
+      if (response.data) {
+        startTrackUser(getId(), response.data.login);
+        setUser(response.data);
+      } else {
+        window.logger.err(getTranslation("Could not get user information"));
+        setError(true);
+      }
+    };
+    if (!userRequested && requestUserForId !== undefined) {
+      userRequested = true;
+      setRequestingUser(true);
+      fetchUserInformation();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  if (userRequested && user.id === undefined && !error) {
+    return spinner;
+  }
+
+  return user.id === undefined ? (
+    <Anonymous setUser={setUser} {...rest} />
+  ) : (
+    <Signed user={user} setUser={setUser} {...rest} />
+  );
 }
 
 UserDropdown.propTypes = {
-  user: PropTypes.object.isRequired
+  user: PropTypes.object.isRequired,
+  setUser: PropTypes.func.isRequired
 };
 
 export default compose(
   connect(state => state.user, {
-    launchSignInForm: userActions.launchSignInForm,
-    launchSignUpForm: userActions.launchSignUpForm,
-    launchEditForm: userActions.launchEditForm,
-    closeForm: userActions.closeForm,
     setUser: userActions.setUser,
     openBanModal: openModal
   })

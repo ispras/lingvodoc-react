@@ -1,5 +1,6 @@
 import Cookie from "js-cookie";
 
+// eslint-disable-next-line import/no-unresolved
 import config from "config";
 
 import { httpGet, httpPost, httpPut } from "./http";
@@ -18,7 +19,7 @@ export function getUser() {
   return httpGet("/user");
 }
 
-export function signIn({ login, password }) {
+export function signIn(login, password) {
   if (config.buildType === "proxy" || config.buildType === "desktop") {
     return httpPost("/signin/desktop", { login, password });
   }

@@ -2,7 +2,7 @@ const sortGroups = {
   groups: [
     ["^react", "^react-dom", "^semantic-ui-react", "^@?\\w"],
     // Internal packages
-    ["^(backend|components|config|ducks|graphql|images|Layout|pages|sagas|styles|utils)(/.*|$)"],
+    ["^(apollo|backend|components|config|ducks|graphql|images|Layout|pages|sagas|styles|utils)(/.*|$)"],
     // Side effect imports
     ["^\\u0000"],
     // Parent imports
