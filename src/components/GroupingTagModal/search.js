@@ -1,6 +1,6 @@
 import React from "react";
-import { withApollo } from "react-apollo";
 import { Dimmer, Header, Icon, Input } from "semantic-ui-react";
+import { withApollo } from "@apollo/client/react/hoc";
 import { getTranslation } from "api/i18n";
 import PropTypes from "prop-types";
 import { compose, pure } from "recompose";

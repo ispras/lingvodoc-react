@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { graphql } from "react-apollo";
-import { Button, Confirm, Dropdown, Icon, Input, Table } from "semantic-ui-react";
+import { connect } from "react-redux";
+import { Button, Confirm, Dropdown, Icon, Input, Loader, Message, Segment, Table } from "semantic-ui-react";
+import { gql } from "@apollo/client";
+import { graphql } from "@apollo/client/react/hoc";
 import { getTranslation } from "api/i18n";
-import gql from "graphql-tag";
 import { reverse, sortBy } from "lodash";
 import PropTypes from "prop-types";
 import { compose, pure, withReducer } from "recompose";
@@ -39,7 +40,7 @@ const deleteBlobMutation = gql`
   }
 `;
 
-const Blob = ({ blob, deleteBlob }) => {
+const Blob = ({ blob, user_is_active, deleteBlob }) => {
   const [confirmation, setConfirmation] = useState(false);
 
   const remove = () => {
@@ -51,7 +52,14 @@ const Blob = ({ blob, deleteBlob }) => {
           query: userBlobsQuery
         }
       ]
-    });
+    }).then(
+      () => {
+        window.logger.suc(getTranslation("Remove successful"));
+      },
+      () => {
+        window.logger.err(getTranslation("Remove failed"));
+      }
+    );
   };
 
   return (
@@ -62,7 +70,7 @@ const Blob = ({ blob, deleteBlob }) => {
       <Table.Cell>{blob.data_type}</Table.Cell>
       <Table.Cell>{new Date(blob.created_at * 1e3).toLocaleString()}</Table.Cell>
       <Table.Cell>
-        <Button basic content={getTranslation("Remove")} onClick={() => setConfirmation(true)} />
+        {user_is_active && <Button basic content={getTranslation("Remove")} onClick={() => setConfirmation(true)} />}
       </Table.Cell>
       <Confirm
         open={confirmation}
@@ -127,19 +135,56 @@ class Files extends React.Component {
     createBlob({
       variables: { data_type: this.state.fileType, content: this.state.file },
       refetchQueries: [{ query: userBlobsQuery }, { query: fieldsQuery }]
-    }).then(() => {
-      const { trigger } = this.state;
-      window.logger.suc(getTranslation("Upload successful"));
-      this.setState({ file: undefined, trigger: !trigger });
-    });
+    }).then(
+      () => {
+        const { trigger } = this.state;
+        window.logger.suc(getTranslation("Upload successful"));
+        this.setState({ file: undefined, trigger: !trigger });
+      },
+      () => {
+        window.logger.err(getTranslation("Upload failed"));
+      }
+    );
   }
 
   render() {
-    const { data, sortByField, dispatch } = this.props;
-    const { loading, error } = data;
-    if (loading || error) {
-      return null;
+    if (this.props.user.id === undefined && !this.props.loading) {
+      return (
+        <div className="background-content">
+          <Message>
+            <Message.Header>{getTranslation("Please sign in")}</Message.Header>
+            <p>{getTranslation("Only registered users can work with files.")}</p>
+          </Message>
+        </div>
+      );
+    } else if ((this.props.loading && !this.props.error) || (this.props.data.loading && !this.props.data.error)) {
+      return (
+        <div className="background-content">
+          <Segment>
+            <Loader active inline="centered" indeterminate>
+              {`${getTranslation("Loading")}...`}
+            </Loader>
+          </Segment>
+        </div>
+      );
+    } else if (this.props.error) {
+      return (
+        <div className="background-content">
+          <Message compact negative>
+            {getTranslation("User sign-in error, please sign in; if not successful, please contact administrators.")}
+          </Message>
+        </div>
+      );
+    } else if (this.props.data.error) {
+      return (
+        <div className="background-content">
+          <Message compact negative>
+            {getTranslation("General error, please contact administrators.")}
+          </Message>
+        </div>
+      );
     }
+    const { data, sortByField, dispatch } = this.props;
 
     const { user_blobs: userBlobs } = data;
     const { file, trigger, filter } = this.state;
@@ -174,37 +219,46 @@ class Files extends React.Component {
       }
     ];
 
+    const user_is_active = this.props.user.is_active;
+
     return (
       <div className="background-content">
         <Table celled compact definition>
           <Table.Header fullWidth>
             <Table.Row>
               <Table.HeaderCell colSpan="5">
-                <Button onClick={() => document.getElementById("file-select").click()} style={{ marginRight: "1rem" }}>
-                  {`${getTranslation("Browse")}...`}
-                </Button>
-                {file === undefined ? getTranslation("No file selected") : file.name}
-                <Input
-                  id="file-select"
-                  key={trigger}
-                  type="file"
-                  onChange={this.onFileChange}
-                  style={{ display: "none" }}
-                />
-                <Dropdown
-                  button
-                  basic
-                  options={fileTypes}
-                  value={this.state.fileType}
-                  onChange={this.onFileTypeChange}
-                  style={{ margin: "0 1rem 0 1rem" }}
-                />
-                <Button
-                  color="green"
-                  content={getTranslation("Upload")}
-                  disabled={file === undefined}
-                  onClick={this.uploadBlob}
-                />
+                {user_is_active && (
+                  <>
+                    <Button
+                      onClick={() => document.getElementById("file-select").click()}
+                      style={{ marginRight: "1rem" }}
+                    >
+                      {`${getTranslation("Browse")}...`}
+                    </Button>
+                    {file === undefined ? getTranslation("No file selected") : file.name}
+                    <Input
+                      id="file-select"
+                      key={trigger}
+                      type="file"
+                      onChange={this.onFileChange}
+                      style={{ display: "none" }}
+                    />
+                    <Dropdown
+                      button
+                      basic
+                      options={fileTypes}
+                      value={this.state.fileType}
+                      onChange={this.onFileTypeChange}
+                      style={{ margin: "0 1rem 0 1rem" }}
+                    />
+                    <Button
+                      color="green"
+                      content={getTranslation("Upload")}
+                      disabled={file === undefined}
+                      onClick={this.uploadBlob}
+                    />
+                  </>
+                )}
                 <Input
                   icon={{ name: "search" }}
                   placeholder={getTranslation("Search")}
@@ -237,7 +291,7 @@ class Files extends React.Component {
             {blobs
               .filter(b => !b.marked_for_deletion)
               .map(blob => (
-                <BlobWithData key={compositeIdToString(blob.id)} blob={blob} />
+                <BlobWithData key={compositeIdToString(blob.id)} blob={blob} user_is_active={user_is_active} />
               ))}
           </Table.Body>
         </Table>
@@ -273,6 +327,7 @@ function sortByFieldReducer(state, { type, payload }) {
 }
 
 export default compose(
+  connect(state => state.user),
   graphql(userBlobsQuery),
   graphql(createBlobMutation, { name: "createBlob" }),
   withReducer("sortByField", "dispatch", sortByFieldReducer, null)

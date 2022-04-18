@@ -1,9 +1,10 @@
 import React, { PureComponent } from "react";
-import { graphql, withApollo } from "react-apollo";
 import { connect } from "react-redux";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Button, Label, Segment } from "semantic-ui-react";
+import { gql } from "@apollo/client";
+import { graphql, withApollo } from "@apollo/client/react/hoc";
 import { getTranslation } from "api/i18n";
-import gql from "graphql-tag";
 import L from "leaflet";
 import HeatMapOverlay from "leaflet-heatmap";
 import PropTypes from "prop-types";
@@ -96,7 +97,7 @@ function initMap(mountPoint) {
 }
 
 class MapAreas extends PureComponent {
-  constructor(props) {
+  constructor() {
     super();
     this.state = {
       statusMap: false,
@@ -116,16 +117,13 @@ class MapAreas extends PureComponent {
     const {
       location,
       computeDistancePerspectives,
-      history,
       selected,
       dataForTree,
       dictionariesGroupState: { arrDictionariesGroup: dictionaries },
-      client,
-      actions
+      client
     } = this.props;
 
     if (!location.state) {
-      history.push("/distance_map");
       return null;
     }
 
@@ -178,26 +176,25 @@ class MapAreas extends PureComponent {
 
     return heatmapLayer.setData({ data, max: maxCount });
   }
-  back() {
-    const { history } = this.props;
 
-    history.goBack();
+  back() {
+    this.props.navigate(-1);
   }
+
   returnToTree() {
-    const { history, actions } = this.props;
+    const { navigate, actions } = this.props;
     actions.setDefaultGroup();
-    history.push("/distance_map");
+    navigate("/distance_map");
   }
 
   render() {
-    const { history, location, user } = this.props;
+    const { location, user } = this.props;
 
     if (!location.state) {
-      history.push("/distance_map");
       return null;
     }
 
-    if (!user || user.id != 1) {
+    if (!user || user.id !== 1) {
       return (
         <div style={{ marginTop: "1em" }}>
           <Label>
@@ -243,12 +240,13 @@ class MapAreas extends PureComponent {
 }
 
 MapAreas.propTypes = {
-  history: PropTypes.object.isRequired,
   actions: PropTypes.object.isRequired,
-  dataForTree: PropTypes.object.isRequired
+  dataForTree: PropTypes.object.isRequired,
+  location: PropTypes.object.isRequired,
+  navigate: PropTypes.func.isRequired
 };
 
-export default compose(
+const EnhancedMapAreas = compose(
   connect(
     state => ({ ...state.distanceMap }),
     dispatch => ({ actions: bindActionCreators({ setDefaultGroup, setDictionariesGroup }, dispatch) })
@@ -258,3 +256,12 @@ export default compose(
   graphql(mutationDistancePerspectives, { name: "computeDistancePerspectives" }),
   withApollo
 )(MapAreas);
+
+const Wrapper = props => {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  return <EnhancedMapAreas {...props} location={location} navigate={navigate} />;
+};
+
+export default Wrapper;

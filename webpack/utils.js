@@ -57,15 +57,14 @@ module.exports = {
   },
   outputPath: path.join(__dirname, `../dist/${buildType}`, config.publicPath),
   outputIndexPath: path.join(__dirname, `../dist/${buildType}/index.html`),
-  target: "web",
+  target: "browserslist",
   loadersOptions() {
     const isProd = process.env.NODE_ENV === "production";
 
     return {
       minimize: isProd,
       options: {
-        context: process.cwd(),
-        babel: config.babel
+        context: process.cwd()
       }
     };
   },

@@ -3,7 +3,8 @@ import { Button, Input, Select } from "semantic-ui-react";
 import { getTranslation } from "api/i18n";
 import PropTypes from "prop-types";
 
-import { languagesQuery } from "../../graphql/language";
+import { languagesQuery } from "backend";
+
 import { translationGistQuery } from "../TranslationGist";
 
 export default class TranslationAtom extends React.Component {

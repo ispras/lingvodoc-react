@@ -1,8 +1,8 @@
 import React from "react";
-import { graphql } from "react-apollo";
 import { connect } from "react-redux";
 import { Dimmer, Header, Icon } from "semantic-ui-react";
-import gql from "graphql-tag";
+import { gql } from "@apollo/client";
+import { graphql } from "@apollo/client/react/hoc";
 import PropTypes from "prop-types";
 import { branch, compose, pure, renderComponent } from "recompose";
 import styled from "styled-components";

@@ -1,11 +1,11 @@
 /* eslint-disable */
 import React, { PureComponent } from "react";
 import { Segment, Button, Modal, Loader } from "semantic-ui-react";
-import { graphql } from "react-apollo";
+import { graphql } from "@apollo/client/react/hoc";
 import { compose } from "recompose";
 import PropTypes from "prop-types";
 import { fromJS } from "immutable";
-import gql from "graphql-tag";
+import { gql } from "@apollo/client";
 import { buildLanguageTree } from "pages/Search/treeBuilder";
 import { getTranslation } from "api/i18n";
 import Languages from "./Languages";

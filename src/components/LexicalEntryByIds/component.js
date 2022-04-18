@@ -1,7 +1,7 @@
 import React, { PureComponent } from "react";
 import { Container, Menu } from "semantic-ui-react";
+import { gql } from "@apollo/client";
 import { getTranslation } from "api/i18n";
-import gql from "graphql-tag";
 import PropTypes from "prop-types";
 import { compose, onlyUpdateForKeys, withHandlers, withState } from "recompose";
 

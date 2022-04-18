@@ -1,8 +1,8 @@
 import React from "react";
-import { graphql } from "react-apollo";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import { Button, Divider, Header, Message, Segment, Step } from "semantic-ui-react";
+import { graphql } from "@apollo/client/react/hoc";
 import { getTranslation } from "api/i18n";
 import Immutable from "immutable";
 import PropTypes from "prop-types";

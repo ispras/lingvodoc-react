@@ -19,7 +19,7 @@ function valueColor(value) {
   return null;
 }
 
-function Column({ spread, name, linkOptions, value, onChange }) {
+function Column({ spread, idStr, name, linkOptions, value, onChange }) {
   const trigger = (
     <Button size="tiny" className="column-button" color={valueColor(value)}>
       {name}
@@ -38,7 +38,7 @@ function Column({ spread, name, linkOptions, value, onChange }) {
         <Grid.Column textAlign="center">
           <Button
             color={value === "keep" ? "green" : null}
-            onClick={() => onChange(name, value === "keep" ? null : "keep", value)}
+            onClick={() => onChange(idStr, value === "keep" ? null : "keep", value)}
           >
             {getTranslation("Keep")}
           </Button>
@@ -50,13 +50,13 @@ function Column({ spread, name, linkOptions, value, onChange }) {
             icon={false}
             options={linkOptions}
             value={selectValue}
-            onChange={(e, data) => onChange(name, data.value, value)}
+            onChange={(e, data) => onChange(idStr, data.value, value)}
           />
         </Grid.Column>
         <Grid.Column textAlign="center">
           <Button
             color={value === "spread" ? "red" : null}
-            onClick={() => onChange(name, value === "spread" ? null : "spread", value)}
+            onClick={() => onChange(idStr, value === "spread" ? null : "spread", value)}
           >
             {getTranslation("Spread")}
           </Button>
@@ -75,15 +75,19 @@ function Columns({ blob, spreads, linkOptions, onUpdateColumn, onToggleColumn, o
       <Button negative icon="trash" size="tiny" onClick={() => onDelete(blob.get("id"))} />
       <b className="blob-name">{blob.get("name")}</b>
       <div className="blob-columns">
-        {columns.map(column => (
-          <Column
-            key={column}
-            name={column}
-            linkOptions={linkOptions.filter(x => x.key !== blob.get("id").join("/"))}
-            onChange={onUpdateColumn}
-            value={values.get(column)}
-          />
-        ))}
+        {columns.map((column, index) => {
+          const idStr = `${index}:${column}`;
+          return (
+            <Column
+              key={idStr}
+              idStr={idStr}
+              name={column}
+              linkOptions={linkOptions.filter(x => x.key !== blob.get("id").join("/"))}
+              onChange={onUpdateColumn}
+              value={values.get(idStr)}
+            />
+          );
+        })}
         {spreads.map(spread => (
           <Column spread key={spread.get("from").join(spread.get("column"))} name={spread.get("column")} />
         ))}

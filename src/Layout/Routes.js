@@ -1,5 +1,5 @@
 import React from "react";
-import { Route, Switch } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 
 import config from "config";
 import AuthorsRoute from "pages/AuthorsRoute";
@@ -35,46 +35,44 @@ import Valency from "pages/Valency";
 import VersionRoute from "pages/VersionRoute";
 import WithoutGrants from "pages/WithoutGrants";
 
-const Routes = () => (
-  <Switch>
-    <Route exact path={config.homePath} component={TopSectionSelector} />
-    <Route path="/info" component={Info} />
-    <Route path="/desktop" component={Desktop} />
-    <Route path="/languages" component={Languages} />
-    <Route path="/dashboard/dictionaries" component={DictionaryDashboard} />
-    <Route path="/dashboard/corpora" component={CorpusDashboard} />
-    <Route path="/dashboard/create_dictionary" component={CreateDictionary} />
-    <Route path="/dashboard/create_corpus" component={CreateCorpus} />
-    <Route path="/dashboard/dictionaries_all" component={DictionariesAll} />
-    <Route path="/grants" component={Grants} />
-    <Route path="/requests" component={Requests} />
-    <Route path="/map" component={Map} />
-    <Route path="/map_search/:searchId" component={Search} />
-    <Route path="/map_search" component={Search} />
-    <Route path="/distance_map/selected_languages/map" component={MapSelectedLanguages} />
-    <Route path="/distance_map/selected_languages" component={SelectedLanguages} />
-    <Route path="/distance_map" component={DistanceMap} />
-    <Route path="/import" component={DictImport} />
-    <Route path="/import_dialeqt" component={DialeqtImport} />
-    <Route path="/dictionary/:pcid/:poid/perspective/:cid/:oid/:mode" component={Perspective} />
-    <Route path="/dictionary/:pcid/:poid/perspective/:cid/:oid" component={Perspective} />
-    <Route path="/#/dictionary/:pcid/:poid/perspective/:cid/:oid" component={Perspective} />
-    <Route path="/files" component={Files} />
-    <Route path="/edit_translations" component={EditTranslations} />
-    <Route path="/organizations" component={Organizations} />
-    <Route path="/LanguagesDatabasesRoute" component={LanguagesDatabasesRoute} />
-    <Route path="/toolsRoute" component={ToolsRoute} />
-    <Route path="/dashboardRoute" component={DashboardRoute} />
-    <Route path="/grantsRoute" component={GrantsRoute} />
-    <Route path="/supportRoute" component={SupportRoute} />
-    <Route path="/without_grants" component={WithoutGrants} />
-    <Route path="/corpora_all" component={CorporaAll} />
-    <Route path="/authors_route" component={AuthorsRoute} />
-    <Route path="/version_route" component={VersionRoute} />
-    <Route path="/docx2eaf" component={Docx2Eaf} />
-    <Route path="/valency" component={Valency} />
-    <Route component={NotFound} />
-  </Switch>
+const AppRoutes = () => (
+  <Routes>
+    <Route path={config.homePath} element={<TopSectionSelector />} />
+    <Route path="/info" element={<Info />} />
+    <Route path="/desktop" element={<Desktop />} />
+    <Route path="/languages" element={<Languages />} />
+    <Route path="/dashboard/dictionaries" element={<DictionaryDashboard />} />
+    <Route path="/dashboard/corpora" element={<CorpusDashboard />} />
+    <Route path="/dashboard/create_dictionary" element={<CreateDictionary />} />
+    <Route path="/dashboard/create_corpus" element={<CreateCorpus />} />
+    <Route path="/dashboard/dictionaries_all" element={<DictionariesAll />} />
+    <Route path="/grants" element={<Grants />} />
+    <Route path="/requests" element={<Requests />} />
+    <Route path="/map" element={<Map />} />
+    <Route path="/map_search/:searchId" element={<Search />} />
+    <Route path="/map_search" element={<Search />} />
+    <Route path="/distance_map/selected_languages/map" element={<MapSelectedLanguages />} />
+    <Route path="/distance_map/selected_languages" element={<SelectedLanguages />} />
+    <Route path="/distance_map" element={<DistanceMap />} />
+    <Route path="/import" element={<DictImport />} />
+    <Route path="/import_dialeqt" element={<DialeqtImport />} />
+    <Route path="/dictionary/:pcid/:poid/perspective/:cid/:oid/*" element={<Perspective />} />
+    <Route path="/files" element={<Files />} />
+    <Route path="/edit_translations" element={<EditTranslations />} />
+    <Route path="/organizations" element={<Organizations />} />
+    <Route path="/LanguagesDatabasesRoute" element={<LanguagesDatabasesRoute />} />
+    <Route path="/toolsRoute" element={<ToolsRoute />} />
+    <Route path="/dashboardRoute" element={<DashboardRoute />} />
+    <Route path="/grantsRoute" element={<GrantsRoute />} />
+    <Route path="/supportRoute" element={<SupportRoute />} />
+    <Route path="/without_grants" element={<WithoutGrants />} />
+    <Route path="/corpora_all" element={<CorporaAll />} />
+    <Route path="/authors_route" element={<AuthorsRoute />} />
+    <Route path="/version_route" element={<VersionRoute />} />
+    <Route path="/docx2eaf" element={<Docx2Eaf />} />
+    <Route path="/valency" element={<Valency />} />
+    <Route element={<NotFound />} />
+  </Routes>
 );
 
-export default Routes;
+export default AppRoutes;

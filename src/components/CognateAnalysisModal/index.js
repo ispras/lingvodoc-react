@@ -1,5 +1,4 @@
 import React from "react";
-import { graphql, withApollo } from "react-apollo";
 import Plot from "react-plotly.js";
 import { connect } from "react-redux";
 import {
@@ -20,8 +19,9 @@ import {
   Segment,
   Select
 } from "semantic-ui-react";
+import { gql } from "@apollo/client";
+import { graphql, withApollo } from "@apollo/client/react/hoc";
 import { getTranslation } from "api/i18n";
-import gql from "graphql-tag";
 import { isEqual, map } from "lodash";
 import PropTypes from "prop-types";
 import { branch, compose, renderNothing } from "recompose";

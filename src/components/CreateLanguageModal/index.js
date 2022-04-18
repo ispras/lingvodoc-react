@@ -1,17 +1,17 @@
 import React from "react";
-import { graphql } from "react-apollo";
 import { connect } from "react-redux";
 import { Button, Divider, Modal } from "semantic-ui-react";
+import { gql } from "@apollo/client";
+import { graphql } from "@apollo/client/react/hoc";
 import { getTranslation } from "api/i18n";
-import gql from "graphql-tag";
 import PropTypes from "prop-types";
 import { compose } from "recompose";
 import { bindActionCreators } from "redux";
 
+import { languagesQuery } from "backend";
 import EditLanguageMetadata from "components/EditLanguageMetadata";
 import Translations from "components/Translation";
 import { closeModal } from "ducks/language";
-import { languagesQuery } from "graphql/language";
 
 class CreateLanguageModal extends React.Component {
   constructor(props) {

@@ -48,18 +48,8 @@ module.exports = {
         exclude: [/node_modules/]
       },
       {
-        test: /\.(ico|jpg|png|gif|eot|otf|webp|ttf|woff|woff2)(\?.*)?$/,
+        test: /\.(ico|jpg|png|svg|gif|eot|otf|webp|ttf|woff|woff2)(\?.*)?$/,
         type: "asset/resource"
-      },
-      {
-        test: /\.svg$/,
-        type: "asset/resource"
-      },
-      {
-        test: /\.m?js/,
-        resolve: {
-          fullySpecified: false
-        }
       }
     ]
   },

@@ -1,10 +1,10 @@
-import React from "react";
-import { graphql } from "react-apollo";
+import React, { useEffect } from "react";
 import { connect } from "react-redux";
-import { Link, Redirect, Route, Switch } from "react-router-dom";
+import { Link, Navigate, Route, Routes } from "react-router-dom";
 import { Container, Dropdown, Label, Menu } from "semantic-ui-react";
+import { gql } from "@apollo/client";
+import { graphql } from "@apollo/client/react/hoc";
 import { getTranslation } from "api/i18n";
-import gql from "graphql-tag";
 import { map } from "lodash";
 import PropTypes from "prop-types";
 import { branch, compose, onlyUpdateForKeys, renderNothing, withHandlers, withState } from "recompose";
@@ -300,16 +300,22 @@ const valency = (perspectiveId, launchValency) => {
 const Perspective = ({
   data,
   perspective,
+  init,
   submitFilter,
   openCognateAnalysisModal,
   openPhonemicAnalysisModal,
   openPhonologyModal,
   launchSoundAndMarkup,
   launchValency,
-  user
+  user,
+  location
 }) => {
+  useEffect(() => {
+    init({ location });
+  }, [init, location]);
+
   const { id, parent_id, mode, page, baseUrl } = perspective.params;
-  if (!baseUrl) {
+  if (!baseUrl || location.pathname.indexOf(baseUrl) === -1) {
     return null;
   }
 
@@ -393,13 +399,13 @@ const Perspective = ({
           />
         )}
         {!isDeleted && (
-          <Switch>
-            <Redirect exact from={baseUrl} to={`${baseUrl}/view`} />
+          <Routes>
+            <Route path="/" element={<Navigate to={`${baseUrl}/view`} replace={true} />} />
             {map(modes, (info, stub) => (
               <Route
                 key={stub}
-                path={`${baseUrl}/${stub}`}
-                render={() => (
+                path={stub}
+                element={
                   <info.component
                     id={id}
                     mode={mode}
@@ -408,11 +414,11 @@ const Perspective = ({
                     filter={perspective.filter}
                     className="content"
                   />
-                )}
+                }
               />
             ))}
             <Route component={NotFound} />
-          </Switch>
+          </Routes>
         )}
       </Container>
     </div>
@@ -421,18 +427,20 @@ const Perspective = ({
 
 Perspective.propTypes = {
   perspective: PropTypes.object.isRequired,
+  init: PropTypes.func.isRequired,
   submitFilter: PropTypes.func.isRequired,
   openCognateAnalysisModal: PropTypes.func.isRequired,
   openPhonemicAnalysisModal: PropTypes.func.isRequired,
   openPhonologyModal: PropTypes.func.isRequired,
   launchSoundAndMarkup: PropTypes.func.isRequired,
   launchValency: PropTypes.func.isRequired,
-  user: PropTypes.object.isRequired
+  user: PropTypes.object.isRequired,
+  location: PropTypes.object.isRequired
 };
 
 export default compose(
   connect(state => state.user),
-  branch(({ perspective }) => !perspective.params.id, renderNothing),
+  branch(({ perspective }) => !perspective.params || !perspective.params.id, renderNothing),
   graphql(perspectiveIsHiddenOrDeletedQuery, {
     options: ({ perspective }) => ({
       variables: { id: perspective.params.id }

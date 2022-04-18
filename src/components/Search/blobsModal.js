@@ -1,8 +1,8 @@
 import React from "react";
-import { graphql } from "react-apollo";
 import { connect } from "react-redux";
 import { Button, Embed, List, Message, Modal } from "semantic-ui-react";
-import gql from "graphql-tag";
+import { gql } from "@apollo/client";
+import { graphql } from "@apollo/client/react/hoc";
 import PropTypes from "prop-types";
 import { compose, pure } from "recompose";
 import { bindActionCreators } from "redux";

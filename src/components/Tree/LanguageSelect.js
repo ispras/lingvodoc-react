@@ -1,7 +1,7 @@
 import React from "react";
-import { graphql } from "react-apollo";
 import SortableTree, { map } from "react-sortable-tree";
-import gql from "graphql-tag";
+import { gql } from "@apollo/client";
+import { graphql } from "@apollo/client/react/hoc";
 import Immutable from "immutable";
 import styled from "styled-components";
 

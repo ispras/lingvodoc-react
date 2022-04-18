@@ -1,18 +1,18 @@
 import React from "react";
-import { graphql } from "react-apollo";
 import { connect } from "react-redux";
 import { Icon } from "semantic-ui-react";
+import { gql } from "@apollo/client";
+import { graphql } from "@apollo/client/react/hoc";
 import { getTranslation } from "api/i18n";
-import gql from "graphql-tag";
 import Immutable from "immutable";
 import PropTypes from "prop-types";
 import { compose, shouldUpdate } from "recompose";
 import { bindActionCreators } from "redux";
 
+import { deleteLanguageMutation, languagesQuery, moveLanguageMutation } from "backend";
 import CreateModal from "components/CreateLanguageModal";
 import EditModal from "components/EditLanguageModal";
 import { openModalCreate, openModalEdit } from "ducks/language";
-import { deleteLanguageMutation, languagesQuery, moveLanguageMutation } from "graphql/language";
 import { buildLanguageTree } from "pages/Search/treeBuilder";
 
 import LanguagesTree from "./LanguagesTree";

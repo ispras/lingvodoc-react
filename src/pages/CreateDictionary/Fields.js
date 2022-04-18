@@ -1,7 +1,7 @@
 import React from "react";
-import { graphql, withApollo } from "react-apollo";
 import { connect } from "react-redux";
 import { Button, Checkbox, Dropdown, Grid, List } from "semantic-ui-react";
+import { graphql, withApollo } from "@apollo/client/react/hoc";
 import { getTranslation } from "api/i18n";
 import { isEqual } from "lodash";
 import PropTypes from "prop-types";

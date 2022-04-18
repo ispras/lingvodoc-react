@@ -1,7 +1,7 @@
 import React from "react";
-import { graphql } from "react-apollo";
 import { connect } from "react-redux";
-import gql from "graphql-tag";
+import { gql } from "@apollo/client";
+import { graphql } from "@apollo/client/react/hoc";
 import L from "leaflet";
 import { isEmpty, isEqual, sortBy } from "lodash";
 import PropTypes from "prop-types";

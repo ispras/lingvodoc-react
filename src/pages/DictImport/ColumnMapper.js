@@ -1,6 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
-import { Button, Popup } from "semantic-ui-react";
+import { Button, Dropdown, Popup } from "semantic-ui-react";
 import { getTranslation } from "api/i18n";
 import { is } from "immutable";
 import { compose } from "recompose";
@@ -39,7 +39,7 @@ function Column({ spread, name, value, fieldOptions, type, onSetColumnType, acti
     columnButton = React.cloneElement(columnButton, { inverted: true, color: "red", disabled: true });
   }
 
-  const selectedField = fieldOptions.find(x => is(x.value, type));
+  const selectedField = fieldOptions.find(x => is(x.id, type));
   const triggerColor = selectedField ? { color: "blue" } : {};
 
   /*
@@ -67,14 +67,19 @@ function Column({ spread, name, value, fieldOptions, type, onSetColumnType, acti
         <Popup.Header>
           <Button basic content={getTranslation("Create a new field")} onClick={actions.openCreateFieldModal} />
         </Popup.Header>
+        <Dropdown
+          style={{ marginTop: "0.5em", marginBottom: "0.25em" }}
+          className="main-select"
+          search
+          selection
+          placeholder={`${getTranslation("Field selection")}...`}
+          options={fieldOptions}
+          value={selectedField && selectedField.value}
+          onChange={(e, { value }) => onSetColumnType(fieldOptions[value])}
+        />
         <Popup.Content className="popup-field-type">
           {fieldOptions.map(f => (
-            <FieldButton
-              key={f.key}
-              onClick={() => onSetColumnType(f.value)}
-              text={f.text}
-              isSelected={is(type, f.value)}
-            />
+            <FieldButton key={f.key} onClick={() => onSetColumnType(f.id)} text={f.text} isSelected={is(type, f.id)} />
           ))}
         </Popup.Content>
       </Popup>
@@ -107,13 +112,13 @@ function Columns({ blob, spreads, fieldOptions, columnTypes, onSetColumnType }) 
       <div className="blob-columns">
         {values
           .filter(value => value !== null)
-          .map((value, column) => (
+          .map((value, columnIdStr) => (
             <ColumnWithData
-              key={column}
-              name={column}
+              key={columnIdStr}
+              name={columnIdStr.slice(columnIdStr.indexOf(":") + 1)}
               value={value}
-              type={columnTypes.getIn([blobId, column])}
-              onSetColumnType={onSetColumnType(column)}
+              type={columnTypes.getIn([blobId, columnIdStr])}
+              onSetColumnType={onSetColumnType(columnIdStr)}
               fieldOptions={fieldOptions}
             />
           ))
@@ -133,19 +138,25 @@ function Columns({ blob, spreads, fieldOptions, columnTypes, onSetColumnType }) 
 }
 
 function ColumnMapper({ state, spreads, types, columnTypes, onSetColumnType }) {
-  const fieldOptions = types
+  const typesSortedFiltered = types
     .sortBy(type => type.get("translation"))
-    .reduce(
-      (acc, type) => [
-        ...acc,
-        {
-          key: type.get("id").join("/"),
-          value: type.get("id"),
-          text: type.get("translation")
-        }
-      ],
-      []
-    );
+    .filter(type => type.get("translation").trim() != "");
+
+  const fieldOptions = [];
+
+  for (const type of typesSortedFiltered) {
+    const id = type.get("id");
+    const idStr = id.join("/");
+
+    fieldOptions.push({
+      key: idStr,
+      value: idStr,
+      id: id,
+      text: type.get("translation")
+    });
+
+    fieldOptions[idStr] = id;
+  }
 
   return (
     <div className="column-mapper">

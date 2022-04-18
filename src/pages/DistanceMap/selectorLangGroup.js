@@ -1,11 +1,9 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { useState } from "react";
-import { withApollo } from "react-apollo";
+import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button, Label, Segment } from "semantic-ui-react";
+import { withApollo } from "@apollo/client/react/hoc";
 import { getTranslation } from "api/i18n";
-import gql from "graphql-tag";
 import { fromJS } from "immutable";
 import PropTypes from "prop-types";
 import { compose } from "recompose";
@@ -150,15 +148,25 @@ FilterDictionaries.propTypes = {
 };
 
 function SelectorLangGroup(props) {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!location.state) {
+      navigate("/distance_map");
+      return null;
+    }
+  }, [location, navigate]);
+
   try {
-    const { location, actions, history, dataForTree, client, mainGroupDictionaresAndLanguages, selected, user } = props;
+    const { actions, dataForTree, client, mainGroupDictionaresAndLanguages, selected, user } = props;
 
     if (!location.state) {
-      history.push("/distance_map");
+      navigate("/distance_map");
       return null;
     }
 
-    if (!user || user.id != 1) {
+    if (!user || user.id !== 1) {
       return (
         <div style={{ marginTop: "1em" }}>
           <Label>
@@ -265,22 +273,14 @@ function SelectorLangGroup(props) {
           style={{ margin: "15px 15px 0 0" }}
           onClick={() => {
             actions.setDefaultGroup();
-            history.goBack();
+            navigate(-1);
           }}
         >
           {" "}
           {getTranslation("Back")}
         </Button>
 
-        <Link
-          to={{
-            pathname: "/distance_map/selected_languages/map",
-            state: {
-              mainDictionary,
-              rootLanguage
-            }
-          }}
-        >
+        <Link to="/distance_map/selected_languages/map" state={{ mainDictionary, rootLanguage }}>
           <Button style={{ margin: "15px 0" }} onClick={() => send()}>
             {" "}
             {getTranslation("Next")}{" "}
@@ -289,16 +289,14 @@ function SelectorLangGroup(props) {
       </div>
     );
   } catch (er) {
-    const { history } = props;
     console.error(er);
-    history.push("/distance_map");
+    navigate("/distance_map");
+    return null;
   }
 }
 
 SelectorLangGroup.propTypes = {
-  location: PropTypes.object.isRequired,
   actions: PropTypes.object.isRequired,
-  history: PropTypes.object.isRequired,
   dataForTree: PropTypes.object.isRequired,
   client: PropTypes.object.isRequired,
   selected: PropTypes.object.isRequired,

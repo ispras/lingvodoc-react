@@ -1,6 +1,6 @@
 import React from "react";
-import { graphql } from "react-apollo";
 import { Button, Card, Tab, Table } from "semantic-ui-react";
+import { graphql } from "@apollo/client/react/hoc";
 import { getTranslation } from "api/i18n";
 import { groupBy, isEqual } from "lodash";
 import moment from "moment";

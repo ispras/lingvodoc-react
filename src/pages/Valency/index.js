@@ -1,5 +1,4 @@
 import React from "react";
-import { graphql, withApollo } from "react-apollo";
 import { connect } from "react-redux";
 import {
   Button,
@@ -17,8 +16,9 @@ import {
   Segment,
   Select
 } from "semantic-ui-react";
+import { gql } from "@apollo/client";
+import { graphql, withApollo } from "@apollo/client/react/hoc";
 import { getTranslation } from "api/i18n";
-import gql from "graphql-tag";
 import { map } from "lodash";
 import { compose } from "recompose";
 
@@ -685,8 +685,6 @@ class Valency extends React.Component {
         .map(value => value.translation)
         .reverse()
         .join(" \u203a ");
-
-      perspectives[i].text_str = text_str;
 
       perspective_option_list.push({
         key: i,

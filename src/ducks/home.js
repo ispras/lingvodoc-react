@@ -1,10 +1,6 @@
-import { LOCATION_CHANGE } from "react-router-redux";
 import Immutable, { fromJS } from "immutable";
 import { combineReducers } from "redux";
 
-import config from "config";
-
-// Actions
 export const TOGGLE_DICT = "@home/TOGGLE_DICT";
 export const RESET_DICTS = "@home/RESET_DICTS";
 export const SET_SORT_MODE = "@home/SET_SORT_MODE";
@@ -34,13 +30,6 @@ function sortMode(state = false, { type, payload }) {
   switch (type) {
     case SET_SORT_MODE:
       return payload;
-    case LOCATION_CHANGE:
-      if (payload.pathname === config.homePath) {
-        const params = new URLSearchParams(payload.search);
-        const mode = params.get("mode");
-        return mode ? mode : state;
-      }
-      return state;
     default:
       return state;
   }
