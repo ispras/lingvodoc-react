@@ -1,3 +1,486 @@
 .react-datepicker__time-list {
   padding-left: 0px !important;
 }
+
+
+.lingvo-statistics {
+  display: block;
+  max-width: 240px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 0 0 8px 0;
+}
+
+.lingvo-statistics-block {
+  display: inline-block;
+  text-align: left;
+  margin: 0 0 24px 0;
+  font-weight: 500;
+}
+
+.react-datepicker-wrapper {
+  margin-top: 7px;
+}
+
+.react-datepicker__input-container {
+  position: relative;
+
+  & input {
+    padding: 13px 50px 13px 16px;
+    border: 1px solid #EBEBEB;
+    border-radius: 10px;
+    font-family: Rubik, Arial, sans-serif;
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: normal;
+    color: #333;
+
+    &:focus {
+      border: 1px solid #5D54CD;
+      box-shadow: 0px 0px 4px rgba(93, 84, 205, 0.5);
+      outline: none;
+    }
+
+  }
+  
+  &::after {
+    content: "";
+    display: inline-block;
+    position: absolute;
+    top: calc(50% - 8px);
+    right: 20px;
+    width: 16px;
+    height: 16px;
+    -webkit-mask-image: url("../../images/icon_clock.svg");
+    mask-image: url("../../images/icon_clock.svg");
+    background-color: #999ca0;
+
+    .react-datepicker-wrapper:not(:last-child) & {
+      background-color: #5d54cd;
+    }
+  }
+
+}
+
+.react-datepicker-popper {
+
+  @media only screen and (max-device-width: 500px), only screen and (max-width: 500px) {
+    left: -50px !important;
+  }
+
+  @media only screen and (max-device-width: 400px), only screen and (max-width: 400px) {
+    left: -40px !important;
+  }
+
+  @media only screen and (max-device-width: 365px), only screen and (max-width: 365px) {
+    left: -30px !important;
+  }
+
+  @media only screen and (max-device-width: 350px), only screen and (max-width: 350px) {
+    left: -10px !important;
+  }
+}
+
+.react-datepicker-popper[data-placement^="bottom"] {
+  padding-top: 3px !important;
+}
+
+.react-datepicker-popper[data-placement^="top"] {
+  padding-bottom: 0 !important;
+}
+
+.react-datepicker {
+  font-family: Rubik, Arial, sans-serif !important;
+  font-weight: normal !important;
+  border-radius: 12px !important;
+  box-shadow: 0px 32px 32px -8px rgba(0, 0, 0, 0.08), 0px 0px 32px -8px rgba(0, 0, 0, 0.12), 0px 0px 1px rgba(0, 0, 0, 0.2) !important;
+  border: none !important;
+
+  padding: 12px 12px 12px 2px !important;
+
+  @media only screen and (max-device-width: 365px), only screen and (max-width: 365px) {
+    padding: 5px 5px 5px 2px !important;
+  }
+
+  &__triangle {
+    display: none !important;
+  }
+
+  &__navigation {
+    border: none !important;
+    top: 24px !important;
+    width: 9px;
+    height: 16px;
+    -webkit-mask-image: url("../../images/arrow_datepicker.svg");
+    mask-image: url("../../images/arrow_datepicker.svg");
+    background-color: #000;
+
+    @media only screen and (max-device-width: 365px), only screen and (max-width: 365px) {
+      top: 16px !important;
+    }
+  }
+
+  &__navigation--previous {
+    left: 33px !important;
+
+    @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+      left: 14px !important;
+    }
+  }
+  
+  &__navigation--next {
+    transform: rotate(180deg);
+  }
+
+  &__navigation--next--with-time:not(&__navigation--next--with-today-button) {
+    right: 115px !important;
+
+    @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+      right: 95px !important;
+    }
+
+    @media only screen and (max-device-width: 400px), only screen and (max-width: 400px) {
+      right: 85px !important;
+    }
+
+    @media only screen and (max-device-width: 365px), only screen and (max-width: 365px) {
+      right: 75px !important;
+    }
+  }
+
+  &__navigation-icon::before {
+    display: none !important;
+  }
+  
+  &__header {
+    border-bottom: none !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+  }
+
+  &__month {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+  }
+
+  &__current-month {
+    font-weight: normal !important;
+    font-size: 14px !important;
+    line-height: 24px !important;
+    margin: 0 0 10px 0 !important;
+  }
+
+  &__header--time {
+    display: none !important;
+  }
+
+  &__day-name, 
+  &__day, 
+  &__time-name {
+    width: 32px !important;
+    line-height: 32px !important;
+    margin: 2px !important;
+    outline: none !important;
+
+    @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+      width: 28px !important;
+      line-height: 28px !important;
+    }
+
+    @media only screen and (max-device-width: 365px), only screen and (max-width: 365px) {
+      width: 26px !important;
+      line-height: 26px !important;
+    }
+  }
+
+  &__day-name {
+    color: rgba(0, 0, 0, 0.25) !important;
+  }
+
+  &__day:hover {
+    border-radius: 8px;
+    background: #EDECF6; 
+  }
+
+  &__day--selected, 
+  &__day--in-selecting-range, 
+  &__day--in-range {
+    border-radius: 8px !important;
+    background: #5D54CD !important;
+  }
+
+  &__day--keyboard-selected {
+    border-radius: 8px !important;
+    color: #000;
+    background: none;
+  }
+
+  &__month-container {
+    margin: 0 25px;
+
+    @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+      margin-right: 10px;
+      margin-left: 0;
+    }
+
+    @media only screen and (max-device-width: 400px), only screen and (max-width: 400px) {
+      margin-right: 10px;
+      margin-left: 0;
+    }
+  }
+
+  &__time-container {
+    border-left: none !important;
+    width: 70px !important;
+
+    @media only screen and (max-device-width: 400px), only screen and (max-width: 400px) {
+      width: 60px !important;
+    }
+  }
+
+  &__time-container &__time {
+    background: #F5F5F5 !important;
+    border-radius: 8px !important;
+  }
+
+  &__time-container &__time &__time-box {
+    width: 70px !important;
+
+    @media only screen and (max-device-width: 400px), only screen and (max-width: 400px) {
+      width: 60px !important;
+    }
+  }
+
+  &__time-container &__time &__time-box &__time-list {
+    /*height: 260px;*/
+    padding-top: 35px;
+  }
+
+  &__time-container &__time &__time-box &__time-list &__time-list-item {
+    padding-top: 4px !important;
+    padding-bottom: 2px !important;
+
+    @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+      padding-top: 3px !important;
+      padding-bottom: 0 !important;
+    }
+
+    @media only screen and (max-device-width: 365px), only screen and (max-width: 365px) {
+      padding-top: 2px !important;
+      padding-bottom: 0 !important;
+    }
+
+    &:hover {
+      background: transparent !important;
+      color: #5D54CD !important;
+    }
+  }
+
+  &__time-container &__time &__time-box &__time-list &__time-list-item--selected {
+    background: transparent !important;
+    color: #5D54CD !important;
+    font-weight: bold !important;
+  }
+
+}
+
+.lingvo-statistics-view {
+  max-width: 1280px;
+  margin: 0 auto;
+  margin-top: 24px;
+}
+
+.lingvo-stat-username {
+  color: #5D54CD;
+  font-family: Mulish;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 24px;
+  margin: 0 0 8px 0;
+}
+
+.lingvo-stat-title-table {
+  font-family: Mulish;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 24px;
+  margin: 0;
+}
+
+/* statistics empty */
+
+.lingvo-stat-empty {
+  background: #EDECF6 url("../../images/icon_exclamation.svg") 16px 10px no-repeat;
+  padding: 13px 46px;
+  border-radius: 8px;
+  font-family: Rubik, Arial, sans-serif;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 14px;
+}
+
+/* /statistics empty */
+
+/* statistics table */
+.lingvo-stat-table {
+  border: none !important;
+  margin-top: 10px !important;
+  margin-bottom: 24px !important;
+  font-size: 14px !important;
+  line-height: 24px !important;
+
+  & thead th {
+    border: none !important;
+    background: #F5F5F5 !important;
+    font-family: Mulish, Arial, sans-serif !important;
+    font-size: 16px !important;
+    line-height: 24px !important;
+    font-weight: bold !important;
+    padding: 16px !important;
+    border-radius: 0 !important;
+
+    &:not(:first-child) {
+      position: relative !important;
+
+      &::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 50%;
+        margin-top: -12px;
+        height: 24px;
+        box-shadow: 1px 0px 0px rgba(0, 0, 0, 0.08);
+        width: 1px;
+      }
+    }
+
+    &:first-child {
+      border-radius: 8px 0 0 8px !important;
+    }
+
+    &:last-child {
+      border-radius: 0 8px 8px 0 !important;
+    }
+
+    &:first-child:last-child {
+      border-radius: 8px !important;
+    }
+
+    @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+      &:first-child {
+        border-radius: 8px 8px 0 0 !important;
+      }
+  
+      &:last-child {
+        border-radius: 0 0 8px 8px !important;
+      }
+
+      &:first-child:last-child {
+        border-radius: 8px !important;
+      }
+
+      &:not(:first-child) {
+        position: static !important;
+
+        &::after {
+          content: none;
+        }
+      }
+    }
+  }
+
+  & tr:nth-child(2n) {
+    & td {
+      background: #FAFAFA !important;
+      border-radius: 0 !important;
+    }
+
+    & td:first-child {
+      border-radius: 8px 0 0 8px !important;
+    }
+
+    & td:last-child {
+      border-radius: 0 8px 8px 0 !important;
+    }
+
+    & td:first-child:last-child {
+      border-radius: 8px !important;
+    }
+
+    @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+      & td:first-child {
+        border-radius: 8px 8px 0 0 !important;
+      }
+  
+      & td:last-child {
+        border-radius: 0 0 8px 8px !important;
+      }
+
+      & td:first-child:last-child {
+        border-radius: 8px !important;
+      }
+    }
+  }
+
+  & tr td {
+    border: none !important;
+    padding: 16px !important;
+
+    &:not(:first-child) {
+      position: relative !important;
+
+      &::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 50%;
+        margin-top: -12px;
+        height: 24px;
+        box-shadow: 1px 0px 0px rgba(0, 0, 0, 0.08);
+        width: 1px;
+      }
+
+      @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {        
+        position: static !important;
+
+        &::after {
+          content: none;
+        }
+      }
+    }
+  }
+
+  @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+    margin-top: 14px !important;
+
+    &.ui.table tr {
+      box-shadow: none !important;
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+
+      & td:first-child {
+        padding-top: 18px !important;
+      }
+  
+      & td:last-child {
+        padding-bottom: 18px !important;
+      }
+    }
+
+    &.ui.table:not(.unstackable) tr {
+      box-shadow: none !important;
+    }
+
+    &.ui.table thead tr {
+      & th:first-child {
+        padding-top: 18px !important;
+      }
+  
+      & th:last-child {
+        padding-bottom: 18px !important;
+      }
+    }
+  }
+  
+}
+/* /statistics table */

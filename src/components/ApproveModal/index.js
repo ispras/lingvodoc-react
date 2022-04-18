@@ -163,25 +163,29 @@ class ApproveModal extends React.Component {
           {mode === "publish" ? getTranslation("Publish Entities") : getTranslation("Accept Contributions")}
         </Modal.Header>
         <Modal.Content scrolling>
-          <div>
-            {getTranslation("From:")}
-            <DatePicker
-              selected={startDate.toDate()}
-              showTimeSelect
-              timeFormat="HH:mm"
-              timeIntervals={15}
-              onChange={date => this.setState({ startDate: moment(date) })}
-              dateFormat="dd.MM.yyyy HH:mm"
-            />
-            {getTranslation("To:")}
-            <DatePicker
-              selected={endDate.toDate()}
-              showTimeSelect
-              timeFormat="HH:mm"
-              timeIntervals={15}
-              onChange={date => this.setState({ endDate: moment(date) })}
-              dateFormat="dd.MM.yyyy HH:mm"
-            />
+          <div className="lingvo-statistics">
+            <div className="lingvo-statistics-block">
+              {getTranslation("From")}
+              <DatePicker
+                selected={startDate.toDate()}
+                showTimeSelect
+                timeFormat="HH:mm"
+                timeIntervals={15}
+                onChange={date => this.setState({ startDate: moment(date) })}
+                dateFormat="dd.MM.yyyy HH:mm"
+              />
+            </div>
+            <div className="lingvo-statistics-block">
+              {getTranslation("To")}
+              <DatePicker
+                selected={endDate.toDate()}
+                showTimeSelect
+                timeFormat="HH:mm"
+                timeIntervals={15}
+                onChange={date => this.setState({ endDate: moment(date) })}
+                dateFormat="dd.MM.yyyy HH:mm"
+              />
+            </div>
           </div>
           <Container textAlign="center">
             <Button color="blue" loading={loading} content={getTranslation("Refresh")} onClick={this.getStatistics} />

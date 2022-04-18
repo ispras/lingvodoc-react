@@ -188,7 +188,8 @@
     mask-image: url("../images/close.svg");
   }
 
-  &.ui.fullscreen.modal {
+  &.ui.fullscreen.modal,
+  &.ui.fullscreen.scrolling.modal {
     left: auto !important;
   }
 
