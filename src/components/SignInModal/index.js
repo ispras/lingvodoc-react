@@ -1,14 +1,18 @@
 import React, { useCallback, useState } from "react";
+import { useDispatch } from "react-redux";
 import { Button, Form, Header, Input, Message, Modal } from "semantic-ui-react";
 import { useApolloClient } from "@apollo/client";
-import { getTranslation } from "api/i18n";
-import { getId, getUser, signIn } from "api/user";
 import PropTypes from "prop-types";
 
+import { getTranslation } from "api/i18n";
+import { getId, getUser, signIn } from "api/user";
+import { setIsAuthenticated } from "ducks/auth";
+import { setUser } from "ducks/user";
 import { startTrackUser } from "utils/matomo";
 
-const SignInModal = ({ setUser, close }) => {
+const SignInModal = ({ close }) => {
   const client = useApolloClient();
+  const dispatch = useDispatch();
 
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
@@ -32,12 +36,13 @@ const SignInModal = ({ setUser, close }) => {
     response = await getUser();
     if (response.data) {
       startTrackUser(getId(), response.data.login);
-      setUser(response.data);
+      dispatch(setUser(response.data));
+      dispatch(setIsAuthenticated({ isAuthenticated: true }));
       client.resetStore();
     } else {
       window.logger.err(getTranslation("Could not get user information"));
     }
-  }, [client, login, password, setUser]);
+  }, [client, dispatch, login, password]);
 
   const handleKeyDown = useCallback(event => {
     if (event.key === "Enter" && event.shiftKey === false) {
@@ -96,7 +101,6 @@ const SignInModal = ({ setUser, close }) => {
 };
 
 SignInModal.propTypes = {
-  setUser: PropTypes.func.isRequired,
   close: PropTypes.func.isRequired
 };
 

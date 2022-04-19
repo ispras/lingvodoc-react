@@ -1,5 +1,6 @@
 import { gql } from "@apollo/client";
 
+// Queries
 export const queryCounter = gql`
   query qcounter($id: LingvodocID!, $mode: String!) {
     perspective(id: $id) {
@@ -19,6 +20,15 @@ export const languagesQuery = gql`
       translation_gist_id
     }
     is_authenticated
+  }
+`;
+
+// Mutations
+export const synchronizeMutation = gql`
+  mutation {
+    synchronize {
+      triumph
+    }
   }
 `;
 

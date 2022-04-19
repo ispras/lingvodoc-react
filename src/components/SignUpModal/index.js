@@ -1,15 +1,19 @@
 import React, { useCallback, useState } from "react";
+import { useDispatch } from "react-redux";
 import { Button, Form, Header, Input, Message, Modal } from "semantic-ui-react";
 import { useApolloClient } from "@apollo/client";
-import { getTranslation } from "api/i18n";
-import { getId, getUser, signIn, signUp } from "api/user";
 import PropTypes from "prop-types";
 
+import { getTranslation } from "api/i18n";
+import { getId, getUser, signIn, signUp } from "api/user";
+import { setIsAuthenticated } from "ducks/auth";
+import { setUser } from "ducks/user";
 import { EMAIL_MATCHER } from "utils";
 import { startTrackUser } from "utils/matomo";
 
-const SignUpModal = ({ setUser, close }) => {
+const SignUpModal = ({ close }) => {
   const client = useApolloClient();
+  const dispatch = useDispatch();
 
   const [login, setLogin] = useState("");
   const [name, setName] = useState("");
@@ -49,7 +53,8 @@ const SignUpModal = ({ setUser, close }) => {
           response = await getUser();
           if (response.data) {
             startTrackUser(getId(), response.data.login);
-            setUser(response.data);
+            dispatch(setUser(response.data));
+            dispatch(setIsAuthenticated({ isAuthenticated: true }));
             client.resetStore();
           } else {
             window.logger.err(getTranslation("Could not get user information"));
@@ -65,7 +70,7 @@ const SignUpModal = ({ setUser, close }) => {
       setErrorMessage(getTranslation(typeof response.err === "string" ? response.err : response.err.error));
       setSigningUp(false);
     }
-  }, [checkPasswordsMatch, client, email, login, name, password, setUser]);
+  }, [checkPasswordsMatch, client, dispatch, email, login, name, password]);
 
   return (
     <Modal open className="lingvo-modal" closeIcon onClose={close} size="mini" dimmer="blurring">
@@ -164,7 +169,6 @@ const SignUpModal = ({ setUser, close }) => {
 };
 
 SignUpModal.propTypes = {
-  setUser: PropTypes.func.isRequired,
   close: PropTypes.func.isRequired
 };
 

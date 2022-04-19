@@ -1,18 +1,18 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { connect } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { Dropdown, Icon, Menu } from "semantic-ui-react";
 import { useApolloClient } from "@apollo/client";
+import PropTypes from "prop-types";
+
 import { getTranslation } from "api/i18n";
 import { getId, getUser, signOut } from "api/user";
-import PropTypes from "prop-types";
-import { compose } from "recompose";
-
 import EditUserModal from "components/EditUserModal";
 import SignInModal from "components/SignInModal";
 import SignUpModal from "components/SignUpModal";
-import { openModal } from "ducks/ban";
-import * as userActions from "ducks/user";
+import { setIsAuthenticated } from "ducks/auth";
+import { openModal as openBanModal } from "ducks/ban";
+import { setUser } from "ducks/user";
 import { startTrackUser, stopTrackUser } from "utils/matomo";
 
 import imageUser from "../images/user.svg";
@@ -28,7 +28,7 @@ const spinner = (
   </Menu.Item>
 );
 
-const Anonymous = ({ setUser }) => {
+const Anonymous = () => {
   const [modal, setModal] = useState();
 
   return (
@@ -61,19 +61,16 @@ const Anonymous = ({ setUser }) => {
           </Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>
-      {modal === "signin" && <SignInModal setUser={setUser} close={() => setModal(undefined)} />}
-      {modal === "signup" && <SignUpModal setUser={setUser} close={() => setModal(undefined)} />}
+      {modal === "signin" && <SignInModal close={() => setModal(undefined)} />}
+      {modal === "signup" && <SignUpModal close={() => setModal(undefined)} />}
     </>
   );
 };
 
-Anonymous.propTypes = {
-  setUser: PropTypes.func.isRequired
-};
-
-const Signed = ({ user, setUser, openBanModal }) => {
+const Signed = ({ user }) => {
   const navigate = useNavigate();
   const client = useApolloClient();
+  const dispatch = useDispatch();
 
   const [editModal, setEditModal] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
@@ -87,13 +84,14 @@ const Signed = ({ user, setUser, openBanModal }) => {
       navigate("/");
       requestUserForId = undefined;
       userRequested = false;
-      setUser({});
+      dispatch(setUser({}));
+      dispatch(setIsAuthenticated({ isAuthenticated: false }));
       client.cache.reset();
     } else {
       setLoggingOut(false);
       window.logger.err(getTranslation("Could not sign out"));
     }
-  }, [client, navigate, setUser]);
+  }, [client, dispatch, navigate]);
 
   if (loggingOut) {
     return spinner;
@@ -131,7 +129,7 @@ const Signed = ({ user, setUser, openBanModal }) => {
             {getTranslation("Sign out")}
           </Dropdown.Item>
           {user.id === 1 && (
-            <Dropdown.Item onClick={openBanModal}>
+            <Dropdown.Item onClick={() => () => dispatch(openBanModal())}>
               {getTranslation("User account activation/deactivation")}
             </Dropdown.Item>
           )}
@@ -143,12 +141,13 @@ const Signed = ({ user, setUser, openBanModal }) => {
 };
 
 Signed.propTypes = {
-  user: PropTypes.object.isRequired,
-  setUser: PropTypes.func.isRequired,
-  openBanModal: PropTypes.func.isRequired
+  user: PropTypes.object.isRequired
 };
 
-function UserDropdown({ user, setUser, ...rest }) {
+const UserDropdown = () => {
+  const user = useSelector(state => state.user.user);
+  const dispatch = useDispatch();
+
   const [, setRequestingUser] = useState(false);
   const [error, setError] = useState(false);
 
@@ -157,7 +156,8 @@ function UserDropdown({ user, setUser, ...rest }) {
       const response = await getUser();
       if (response.data) {
         startTrackUser(getId(), response.data.login);
-        setUser(response.data);
+        dispatch(setUser(response.data));
+        dispatch(setIsAuthenticated({ isAuthenticated: true }));
       } else {
         window.logger.err(getTranslation("Could not get user information"));
         setError(true);
@@ -175,21 +175,7 @@ function UserDropdown({ user, setUser, ...rest }) {
     return spinner;
   }
 
-  return user.id === undefined ? (
-    <Anonymous setUser={setUser} {...rest} />
-  ) : (
-    <Signed user={user} setUser={setUser} {...rest} />
-  );
-}
-
-UserDropdown.propTypes = {
-  user: PropTypes.object.isRequired,
-  setUser: PropTypes.func.isRequired
+  return user.id === undefined ? <Anonymous /> : <Signed user={user} />;
 };
 
-export default compose(
-  connect(state => state.user, {
-    setUser: userActions.setUser,
-    openBanModal: openModal
-  })
-)(UserDropdown);
+export default UserDropdown;
