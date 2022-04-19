@@ -16,6 +16,7 @@ let compiler;
 try {
   compiler = webpack(webpackConfig);
 } catch (err) {
+  // eslint-disable-next-line no-console
   console.log(err.message);
   process.exit(1);
 }
@@ -31,11 +32,11 @@ const devServerConf = {
 
 // Setup API proxy
 if (process.env.PROD) {
-  const proxy = require("http-proxy-middleware");
+  const { createProxyMiddleware } = require("http-proxy-middleware");
 
   app.use(
     "/api",
-    proxy({
+    createProxyMiddleware({
       target: process.env.PROD,
       pathRewrite: { "^/api": "" },
       changeOrigin: true
@@ -46,11 +47,8 @@ if (process.env.PROD) {
 const devMiddleWare = require("webpack-dev-middleware")(compiler, devServerConf);
 
 app.use(devMiddleWare);
-app.use(
-  require("webpack-hot-middleware")(compiler, {
-    log: console.log
-  })
-);
+// eslint-disable-next-line no-console
+app.use(require("webpack-hot-middleware")(compiler, { log: console.log }));
 
 const mfs = devMiddleWare.context.outputFileSystem;
 const file = _.outputIndexPath;
