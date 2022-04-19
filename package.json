@@ -6,7 +6,6 @@
   "scripts": {
     "build": "webpack --config webpack/webpack.prod.js",
     "start": "node webpack/server.js",
-    "postinstall": "npm rebuild node-sass",
     "eslint": "eslint --fix \"**/*\"",
     "prettier": "prettier --write \"**/*\""
   },
@@ -44,7 +43,6 @@
     "html-webpack-plugin": "^5.5.0",
     "http-proxy-middleware": "^2.0.4",
     "mini-css-extract-plugin": "^2.6.0",
-    "node-sass": "^4.14.1",
     "postcss": "^8.4.12",
     "prettier": "^2.6.2",
     "react-refresh": "^0.10.0",
