@@ -128,7 +128,7 @@ const SignUpModal = ({ close }) => {
             name="password2"
             type={hidePassword2 ? "password" : "text"}
             placeholder={getTranslation("Confirm Password")}
-            error={password2Incorrect ? { content: getTranslation("Passwords does not match") } : undefined}
+            error={password2Incorrect ? { content: getTranslation("Passwords do not match") } : undefined}
             icon={{
               name: hidePassword2 ? "eye slash" : "eye",
               link: true,
