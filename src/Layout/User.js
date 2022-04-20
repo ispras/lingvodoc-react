@@ -129,7 +129,7 @@ const Signed = ({ user }) => {
             {getTranslation("Sign out")}
           </Dropdown.Item>
           {user.id === 1 && (
-            <Dropdown.Item onClick={() => () => dispatch(openBanModal())}>
+            <Dropdown.Item onClick={() => dispatch(openBanModal())}>
               {getTranslation("User account activation/deactivation")}
             </Dropdown.Item>
           )}
