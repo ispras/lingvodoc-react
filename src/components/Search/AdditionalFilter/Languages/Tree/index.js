@@ -587,7 +587,7 @@ class Tree extends PureComponent {
     );
   }
 }
-Tree.PropTypes = {
+Tree.propTypes = {
   selectedLanguages: PropTypes.func
 };
 Tree.defaultProps = {

@@ -638,9 +638,9 @@ function setTranslation(string, translatedString) {
 
 export function setTranslations(translations) {
   for (let i = 0; i < stringsToTranslate.length; i++) {
-    const gist = translations[i];
-    if (gist != null) {
-      setTranslation(stringsToTranslate[i], gist.translation);
+    const translation = translations[i];
+    if (translation != null) {
+      setTranslation(stringsToTranslate[i], translation);
     }
   }
 }

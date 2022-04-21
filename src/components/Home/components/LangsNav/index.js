@@ -227,7 +227,9 @@ const languageSet = languageIdList.reduce((object, id) => {
   return objectId;
 }, {});
 
-export const checkLanguage = language => languageSet.hasOwnProperty(`${language.id}`);
+export const checkLanguage = language =>
+  languageSet.hasOwnProperty(`${language.id}`) ||
+  (language.additional_metadata && language.additional_metadata.toc_mark);
 
 export const checkLanguageId = id => languageSet.hasOwnProperty(`${id}`);
 

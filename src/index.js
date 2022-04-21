@@ -4,7 +4,6 @@ import { BrowserRouter } from "react-router-dom";
 import ReactDOM from "react-dom";
 import { ApolloProvider } from "@apollo/client";
 import { applyMiddleware, bindActionCreators, compose, createStore } from "redux";
-import formActionSaga from "redux-form-saga";
 import createSagaMiddleware from "redux-saga";
 
 // eslint-disable-next-line import/no-unresolved
@@ -12,8 +11,8 @@ import config from "config";
 import { setApolloClient } from "ducks/apolloClient";
 import { setRunner } from "ducks/saga";
 import { err, log, suc, warn } from "ducks/snackbar";
+import { initMatomo } from "utils/matomo";
 
-import matomo from "./sagas/matomo";
 import apollo from "./apollo";
 import Layout from "./Layout";
 import combinedReducer from "./reducer";
@@ -26,9 +25,8 @@ const store = createStore(combinedReducer, compose(applyMiddleware(sagaMiddlewar
 store.dispatch(setApolloClient(apollo));
 
 sagaMiddleware.run(mainFlow);
-sagaMiddleware.run(formActionSaga);
 if (process.env.NODE_ENV !== "development" && config.buildType !== "desktop") {
-  sagaMiddleware.run(matomo);
+  initMatomo();
 }
 store.dispatch(setRunner(sagaMiddleware.run));
 

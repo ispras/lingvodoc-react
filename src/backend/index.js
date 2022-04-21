@@ -1,5 +1,6 @@
 import { gql } from "@apollo/client";
 
+// Queries
 export const queryCounter = gql`
   query qcounter($id: LingvodocID!, $mode: String!) {
     perspective(id: $id) {
@@ -17,8 +18,20 @@ export const languagesQuery = gql`
       translation
       created_at
       translation_gist_id
+      additional_metadata {
+        toc_mark
+      }
     }
     is_authenticated
+  }
+`;
+
+// Mutations
+export const synchronizeMutation = gql`
+  mutation {
+    synchronize {
+      triumph
+    }
   }
 `;
 
@@ -44,6 +57,14 @@ export const moveLanguageMutation = gql`
 export const deleteLanguageMutation = gql`
   mutation DeleteLanguage($id: LingvodocID!) {
     delete_language(id: $id) {
+      triumph
+    }
+  }
+`;
+
+export const updateLanguageMetadataMutation = gql`
+  mutation UpdateLanguageMetadata($id: LingvodocID!, $metadata: ObjectVal!) {
+    update_language(id: $id, additional_metadata: $metadata) {
       triumph
     }
   }

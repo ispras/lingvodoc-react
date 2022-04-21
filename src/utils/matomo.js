@@ -1,9 +1,6 @@
-import { getId, getUser } from "api/user";
-import { call, put } from "redux-saga/effects";
+import { getId } from "api/user";
 
-import { requestUser } from "ducks/user";
-
-function* init() {
+export function initMatomo() {
   const url = "https://matomo.at.ispras.ru/";
   window._paq = window._paq || [];
   window._paq.push(["setTrackerUrl", `${url}matomo.php`]);
@@ -11,11 +8,6 @@ function* init() {
   const clientId = getId();
   if (clientId) {
     window._paq.push(["setCustomVariable", 1, "clientId", clientId]);
-    yield put(requestUser());
-    const response = yield call(getUser);
-    if (response.data) {
-      window._paq.push(["setUserId", response.data]);
-    }
   }
 
   const script = document.createElement("script");
@@ -29,16 +21,11 @@ function* init() {
   window._paq.push(["enableLinkTracking"]);
 }
 
-export function* startTrackUser() {
+export function startTrackUser(clientId, login) {
   if (window._paq) {
-    const clientId = getId();
-    window._paq.push(["setCustomVariable", "1", "clientId", clientId]);
-    yield put(requestUser());
-    const response = yield call(getUser);
-    if (response.data) {
-      window._paq.push(["setUserId", response.data.login]);
-      window._paq.push(["trackPageView"]);
-    }
+    window._paq.push(["setCustomVariable", 1, "clientId", clientId]);
+    window._paq.push(["setUserId", login]);
+    window._paq.push(["trackPageView"]);
   }
 }
 
@@ -48,8 +35,4 @@ export function stopTrackUser() {
     window._paq.push(["deleteCustomVariable", 1, "visit"]);
     window._paq.push(["trackPageView"]);
   }
-}
-
-export default function* main() {
-  yield* init();
 }

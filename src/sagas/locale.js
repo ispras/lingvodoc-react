@@ -1,16 +1,14 @@
 import { gql } from "@apollo/client";
-import { setTranslations, stringsToTranslate } from "api/i18n";
-import locale, { getLocales } from "api/locale";
 import { call, put, select, takeLatest } from "redux-saga/effects";
 
+import { setTranslations, stringsToTranslate } from "api/i18n";
+import locale, { getLocales } from "api/locale";
 import { CHANGE, requestLocales, selectLocale, setLocales } from "ducks/locale";
 import { err } from "ducks/snackbar";
 
 const getTranslationsQuery = gql`
   query getTranslations($searchstrings: [String]!) {
-    advanced_translation_search(searchstrings: $searchstrings) {
-      translation
-    }
+    optimized_translation_search(searchstrings: $searchstrings)
   }
 `;
 
@@ -25,7 +23,7 @@ function* reloadTranslations(action) {
     variables: { searchstrings: stringsToTranslate }
   });
   if (response.data) {
-    setTranslations(response.data.advanced_translation_search);
+    setTranslations(response.data.optimized_translation_search);
   } else {
     yield put(err("Could not load translations"));
   }
