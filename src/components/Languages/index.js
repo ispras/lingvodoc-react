@@ -3,13 +3,13 @@ import { connect } from "react-redux";
 import { Icon } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 import Immutable from "immutable";
 import PropTypes from "prop-types";
 import { compose, shouldUpdate } from "recompose";
 import { bindActionCreators } from "redux";
 
-import { deleteLanguageMutation, languagesQuery, moveLanguageMutation } from "backend";
+import { getTranslation } from "api/i18n";
+import { deleteLanguageMutation, languagesQuery, moveLanguageMutation, updateLanguageMetadataMutation } from "backend";
 import CreateModal from "components/CreateLanguageModal";
 import EditModal from "components/EditLanguageModal";
 import { openModalCreate, openModalEdit } from "ducks/language";
@@ -32,6 +32,7 @@ const Languages = props => {
     languagesData,
     deleteLanguage,
     moveLanguage,
+    updateLanguageMetadata,
     actions,
     height,
     selected,
@@ -72,6 +73,7 @@ const Languages = props => {
         createLanguage={actions.openModalCreate}
         moveLanguage={moveLanguage}
         deleteLanguage={deleteLanguage}
+        updateLanguageMetadata={updateLanguageMetadata}
         selected={selected}
         onSelect={onSelect}
         expanded={expanded}
@@ -97,6 +99,7 @@ Languages.propTypes = {
   }).isRequired,
   moveLanguage: PropTypes.func.isRequired,
   deleteLanguage: PropTypes.func.isRequired,
+  updateLanguageMetadata: PropTypes.func.isRequired,
   height: PropTypes.string,
   selected: PropTypes.object,
   onSelect: PropTypes.func,
@@ -109,6 +112,7 @@ export default compose(
   graphql(languagesQuery, { name: "languagesData" }),
   graphql(deleteLanguageMutation, { name: "deleteLanguage" }),
   graphql(moveLanguageMutation, { name: "moveLanguage" }),
+  graphql(updateLanguageMetadataMutation, { name: "updateLanguageMetadata" }),
   connect(
     state => state.language,
     dispatch => ({

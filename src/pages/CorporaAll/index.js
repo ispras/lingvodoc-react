@@ -3,11 +3,11 @@ import { connect } from "react-redux";
 import { Container } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 import Immutable, { fromJS, OrderedMap } from "immutable";
 import PropTypes from "prop-types";
 import { branch, compose, renderNothing } from "recompose";
 
+import { getTranslation } from "api/i18n";
 import BackTopButton from "components/BackTopButton";
 import { getScrollContainer } from "components/Home/common";
 import AllDicts from "components/Home/components/AllDicts";
@@ -212,6 +212,9 @@ const dictionaryWithPerspectivesQuery = gql`
       parent_id
       translation
       created_at
+      additional_metadata {
+        toc_mark
+      }
     }
     is_authenticated
   }
@@ -250,6 +253,9 @@ const dictionaryWithPerspectivesProxyQuery = gql`
       parent_id
       translation
       created_at
+      additional_metadata {
+        toc_mark
+      }
     }
     is_authenticated
   }
@@ -294,7 +300,10 @@ AuthWrapper.propTypes = {
   }).isRequired
 };
 
+export const corpusDataQuery =
+  config.buildType === "server" ? dictionaryWithPerspectivesQuery : dictionaryWithPerspectivesProxyQuery;
+
 export default compose(
-  graphql(config.buildType === "server" ? dictionaryWithPerspectivesQuery : dictionaryWithPerspectivesProxyQuery),
+  graphql(corpusDataQuery),
   branch(({ data }) => data.loading || data.error, renderNothing)
 )(AuthWrapper);

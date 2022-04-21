@@ -2,12 +2,16 @@ import React from "react";
 import { connect } from "react-redux";
 import SortableTree, { getFlatDataFromTree, map } from "react-sortable-tree";
 import { Button } from "semantic-ui-react";
-import { getTranslation } from "api/i18n";
 import Immutable from "immutable";
 import { findIndex, isEqual } from "lodash";
 import PropTypes from "prop-types";
 
+import { getTranslation } from "api/i18n";
 import { languagesQuery } from "backend";
+import { dictionaryDataQuery } from "components/Home";
+import { checkLanguageId } from "components/Home/components/LangsNav";
+import { corpusDataQuery } from "pages/CorporaAll";
+import { compositeIdToString as id2str } from "utils/compositeId";
 
 class LanguagesTree extends React.Component {
   constructor(props) {
@@ -15,7 +19,8 @@ class LanguagesTree extends React.Component {
 
     this.state = {
       treeData: this.buildTree(props.languagesTree),
-      selected: props.selected
+      selected: props.selected,
+      toc_change_set: {}
     };
 
     this.langContent = new Map();
@@ -38,6 +43,7 @@ class LanguagesTree extends React.Component {
     this.onMoveNode = this.onMoveNode.bind(this);
     this.onLanguageSelected = this.onLanguageSelected.bind(this);
     this.onDeleteLanguage = this.onDeleteLanguage.bind(this);
+    this.onToggleTOC = this.onToggleTOC.bind(this);
   }
 
   buildTree(languagesTree) {
@@ -102,6 +108,7 @@ class LanguagesTree extends React.Component {
           <Button color="green" content={getTranslation("Create")} onClick={() => createLanguage(node)} />
         ]
       };
+
       const { selected } = this.state;
       if (!onSelect && user.id == 1) {
         const dictionariesCount = content ? content.dictionariesCount : 0;
@@ -128,6 +135,27 @@ class LanguagesTree extends React.Component {
           boxShadow: `0 0 0 4px blue`
         };
       }
+
+      if (user.id === 1) {
+        const toc_change = this.state.toc_change_set.hasOwnProperty(id2str(node.id));
+
+        const static_check = checkLanguageId(node.id);
+
+        const toc_mark = static_check || (node.additional_metadata && node.additional_metadata.toc_mark);
+
+        nodeProps.buttons.push(
+          <Button
+            content={
+              toc_change
+                ? `${getTranslation(toc_mark ? "Removing" : "Adding")}...`
+                : getTranslation(toc_mark ? "Remove from TOC" : "Add to TOC")
+            }
+            disabled={static_check || toc_change}
+            onClick={() => this.onToggleTOC(node)}
+          />
+        );
+      }
+
       return nodeProps;
     }
 
@@ -150,6 +178,39 @@ class LanguagesTree extends React.Component {
       variables: { id: node.id },
       refetchQueries: [{ query: languagesQuery }]
     });
+  }
+
+  onToggleTOC(node) {
+    const id_str = id2str(node.id);
+
+    this.state.toc_change_set[id_str] = "";
+    this.setState({ toc_change_set: this.state.toc_change_set });
+
+    const toc_mark = node.additional_metadata.toc_mark;
+
+    this.props
+      .updateLanguageMetadata({
+        variables: {
+          id: node.id,
+          metadata: { toc_mark: !toc_mark }
+        },
+        refetchQueries: [{ query: dictionaryDataQuery }, { query: corpusDataQuery }]
+      })
+      .then(
+        () => {
+          node.additional_metadata.toc_mark = !toc_mark;
+          const success_str = getTranslation(toc_mark ? "Succesfully removed" : "Successfully added");
+          window.logger.suc(
+            `${success_str} '${node.translation}' ${getTranslation(toc_mark ? "from TOC" : "to TOC")}.`
+          );
+          delete this.state.toc_change_set[id_str];
+          this.setState({ toc_change_set: this.state.toc_change_set });
+        },
+        () => {
+          const fail_str = getTranslation(toc_mark ? "Failed to remove" : "Failed to add");
+          window.logger.err(`${fail_str} '${node.translation}' ${getTranslation(toc_mark ? "from TOC!" : "to TOC!")}`);
+        }
+      );
   }
 
   render() {

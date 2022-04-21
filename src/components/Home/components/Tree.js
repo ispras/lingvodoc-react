@@ -2,16 +2,16 @@ import React from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import { Button, Checkbox, Dropdown, Icon, Label } from "semantic-ui-react";
-import { getTranslation } from "api/i18n";
 import Immutable from "immutable";
 import PropTypes from "prop-types";
 import { compose, onlyUpdateForKeys } from "recompose";
 import { bindActionCreators } from "redux";
 
+import { getTranslation } from "api/i18n";
 import config from "config";
 import { toggleDictionary } from "ducks/home";
 
-import { checkLanguageId } from "./LangsNav";
+import { checkLanguage } from "./LangsNav";
 
 import "../published.scss";
 
@@ -111,10 +111,16 @@ const Language = ({ language, canSelectDictionaries }) => {
   const children = language.get("children");
   const id = language.get("id").toJS().toString();
   const parent_id = language.get("parent_id");
+  const metadata = language.get("additional_metadata");
   let langClass = "lang-name";
   if (parent_id == null) {
     langClass = "root-lang-name";
-  } else if (checkLanguageId(id)) {
+  } else if (
+    checkLanguage({
+      id,
+      additional_metadata: metadata && metadata.toJS()
+    })
+  ) {
     langClass = "confirmed-lang-name";
   }
 

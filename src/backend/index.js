@@ -18,6 +18,9 @@ export const languagesQuery = gql`
       translation
       created_at
       translation_gist_id
+      additional_metadata {
+        toc_mark
+      }
     }
     is_authenticated
   }
@@ -54,6 +57,14 @@ export const moveLanguageMutation = gql`
 export const deleteLanguageMutation = gql`
   mutation DeleteLanguage($id: LingvodocID!) {
     delete_language(id: $id) {
+      triumph
+    }
+  }
+`;
+
+export const updateLanguageMetadataMutation = gql`
+  mutation UpdateLanguageMetadata($id: LingvodocID!, $metadata: ObjectVal!) {
+    update_language(id: $id, additional_metadata: $metadata) {
       triumph
     }
   }

@@ -21,14 +21,14 @@ import {
 } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql, withApollo } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 import { isEqual, map } from "lodash";
 import PropTypes from "prop-types";
 import { branch, compose, renderNothing } from "recompose";
 import { bindActionCreators } from "redux";
 
+import { getTranslation } from "api/i18n";
 import { connectMutation } from "components/GroupingTagModal/graphql";
-import { checkLanguageId, languageIdList } from "components/Home/components/LangsNav";
+import { checkLanguage, languageIdList } from "components/Home/components/LangsNav";
 import { closeModal } from "ducks/cognateAnalysis";
 import { compositeIdToString as id2str } from "utils/compositeId";
 
@@ -45,6 +45,9 @@ const cognateAnalysisDataQuery = gql`
       tree {
         id
         translation
+        additional_metadata {
+          toc_mark
+        }
       }
     }
     all_fields {
@@ -1211,7 +1214,7 @@ class CognateAnalysisModal extends React.Component {
     this.baseLanguageId = tree[tree.length - 1].id;
 
     for (let i = 0; i < tree.length; i++) {
-      if (checkLanguageId(tree[i].id)) {
+      if (checkLanguage(tree[i])) {
         this.treePath = tree.slice(i, tree.length).reverse();
         this.baseLanguageId = tree[i].id;
         break;
@@ -1297,7 +1300,7 @@ class CognateAnalysisModal extends React.Component {
 
     const language_id_list = languageIdList.slice();
 
-    if (!checkLanguageId(tree[tree.length - 1].id)) {
+    if (!checkLanguage(tree[tree.length - 1])) {
       language_id_list.push(tree[tree.length - 1].id);
     }
 

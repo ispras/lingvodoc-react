@@ -3,12 +3,12 @@ import { connect } from "react-redux";
 import { Button, Container, Form, Radio, Segment } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 import Immutable, { fromJS, OrderedMap } from "immutable";
 import PropTypes from "prop-types";
 import { branch, compose, renderNothing } from "recompose";
 import { bindActionCreators } from "redux";
 
+import { getTranslation } from "api/i18n";
 import BackTopButton from "components/BackTopButton";
 import Placeholder from "components/Placeholder";
 // eslint-disable-next-line import/no-unresolved
@@ -319,6 +319,9 @@ const dictionaryWithPerspectivesQuery = gql`
       parent_id
       translation
       created_at
+      additional_metadata {
+        toc_mark
+      }
     }
     is_authenticated
   }
@@ -364,6 +367,9 @@ const dictionaryWithPerspectivesProxyQuery = gql`
       parent_id
       translation
       created_at
+      additional_metadata {
+        toc_mark
+      }
     }
     is_authenticated
   }
@@ -426,7 +432,10 @@ AuthWrapper.propTypes = {
   }).isRequired
 };
 
+export const dictionaryDataQuery =
+  config.buildType === "server" ? dictionaryWithPerspectivesQuery : dictionaryWithPerspectivesProxyQuery;
+
 export default compose(
-  graphql(config.buildType === "server" ? dictionaryWithPerspectivesQuery : dictionaryWithPerspectivesProxyQuery),
+  graphql(dictionaryDataQuery),
   branch(({ data }) => data.loading || data.error, renderNothing)
 )(AuthWrapper);
