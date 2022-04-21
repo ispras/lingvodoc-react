@@ -5,7 +5,7 @@ import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
 import Immutable, { fromJS, OrderedMap } from "immutable";
 import PropTypes from "prop-types";
-import { branch, compose, renderNothing } from "recompose";
+import { compose } from "recompose";
 import { bindActionCreators } from "redux";
 
 import { getTranslation } from "api/i18n";
@@ -271,14 +271,14 @@ const Home = props => {
 };
 
 Home.propTypes = {
-  data: PropTypes.shape({
-    loading: PropTypes.bool.isRequired
-  }).isRequired,
+  sortMode: PropTypes.any,
+  data: PropTypes.object,
   dictionaries: PropTypes.array,
-  perspectives: PropTypes.array.isRequired,
-  grants: PropTypes.array.isRequired,
-  languages: PropTypes.array.isRequired,
-  isAuthenticated: PropTypes.bool.isRequired,
+  perspectives: PropTypes.array,
+  grants: PropTypes.array,
+  organizations: PropTypes.array,
+  languages: PropTypes.array,
+  isAuthenticated: PropTypes.bool,
   selected: PropTypes.instanceOf(Immutable.Set).isRequired,
   actions: PropTypes.shape({
     setSortMode: PropTypes.func.isRequired,
@@ -427,15 +427,14 @@ AuthWrapper.propTypes = {
     loading: PropTypes.bool.isRequired,
     perspectives: PropTypes.array,
     grants: PropTypes.array,
+    organizations: PropTypes.array,
     language_tree: PropTypes.array,
-    is_authenticated: PropTypes.bool
+    is_authenticated: PropTypes.bool,
+    dictionaries: PropTypes.array
   }).isRequired
 };
 
 export const dictionaryDataQuery =
   config.buildType === "server" ? dictionaryWithPerspectivesQuery : dictionaryWithPerspectivesProxyQuery;
 
-export default compose(
-  graphql(dictionaryDataQuery),
-  branch(({ data }) => data.loading || data.error, renderNothing)
-)(AuthWrapper);
+export default graphql(dictionaryDataQuery)(AuthWrapper);
