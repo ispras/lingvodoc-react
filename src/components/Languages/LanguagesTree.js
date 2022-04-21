@@ -199,7 +199,7 @@ class LanguagesTree extends React.Component {
       .then(
         () => {
           node.additional_metadata.toc_mark = !toc_mark;
-          const success_str = getTranslation(toc_mark ? "Succesfully removed" : "Successfully added");
+          const success_str = getTranslation(toc_mark ? "Successfully removed" : "Successfully added");
           window.logger.suc(
             `${success_str} '${node.translation}' ${getTranslation(toc_mark ? "from TOC" : "to TOC")}.`
           );
@@ -208,7 +208,7 @@ class LanguagesTree extends React.Component {
         },
         () => {
           const fail_str = getTranslation(toc_mark ? "Failed to remove" : "Failed to add");
-          window.logger.err(`${fail_str} '${node.translation}' ${getTranslation(toc_mark ? "from TOC!" : "to TOC!")}`);
+          window.logger.err(`${fail_str} '${node.translation}' ${getTranslation(toc_mark ? "from TOC" : "to TOC")}!`);
         }
       );
   }
