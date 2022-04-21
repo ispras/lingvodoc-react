@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { connect } from "react-redux";
-import { Menu } from "semantic-ui-react";
+import { Icon, Input, Menu } from "semantic-ui-react";
+
 import { getTranslation } from "api/i18n";
 
 import TranslationsBlock from "./TranslationsBlock";
@@ -9,12 +10,39 @@ import "./styles.scss";
 
 const categories = ["Perspective", "Dictionary", "Service", "Language", "Field", "Organization", "Grant", "All"];
 
+const Filter = ({ filterStr: initialFilterStr, onChange }) => {
+  const [filterStr, setFilterStr] = useState(initialFilterStr);
+
+  return (
+    <div>
+      <Input
+        placeholder={`${getTranslation("Filter")}...`}
+        value={filterStr}
+        onKeyPress={e => {
+          if (e.key === "Enter" && filterStr != initialFilterStr) {
+            onChange(filterStr);
+          }
+        }}
+        onChange={e => setFilterStr(e.target.value)}
+        icon={
+          filterStr != initialFilterStr ? (
+            <Icon name="search" link onClick={() => onChange(filterStr)} />
+          ) : (
+            <Icon name="search" disabled />
+          )
+        }
+      />
+    </div>
+  );
+};
+
 class EditTranslations extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      selectedCategory: 0
+      selectedCategory: 0,
+      filterStr: ""
     };
   }
 
@@ -24,6 +52,7 @@ class EditTranslations extends React.Component {
 
   render() {
     const { user } = this.props;
+
     if (user.id === undefined || user.id != 1) {
       return (
         <div className="page-content">
@@ -49,10 +78,14 @@ class EditTranslations extends React.Component {
                 />
               ))}
             </Menu>
+            <Filter filterStr={this.state.filterStr} onChange={filterStr => this.setState({ filterStr })} />
           </div>
         </div>
         {selectedCategory == -1 ? null : (
-          <TranslationsBlock gists_type={selectedCategory == 7 ? "" : categories[selectedCategory]}></TranslationsBlock>
+          <TranslationsBlock
+            gists_type={selectedCategory == 7 ? "" : categories[selectedCategory]}
+            searchstring={this.state.filterStr}
+          />
         )}
       </div>
     );
