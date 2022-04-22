@@ -116,8 +116,9 @@
 
   & .ui.huge.button {
     font-size: 22px;
-    line-height: 28.6px;
-    margin-top: 26px;
+    line-height: 29px;
+    margin: 26px 0 0 0;
+    padding: 15px 33px;
   }
 
   & .ui.violet.button {
@@ -138,6 +139,12 @@
 
   & .ui.message {
     border-radius: 10px !important;
+  }
+
+  & .ui.error.message {
+    padding: 18px 27px;
+    margin: 18px 0 0 0;
+    line-height: 25px;
   }
 
   @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
