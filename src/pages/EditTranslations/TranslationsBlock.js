@@ -8,9 +8,10 @@ import { getTranslation } from "api/i18n";
 import EditAtoms from "./EditAtoms";
 
 const getTranslationsQuery = gql`
-  query getTranslations($searchstring: String!, $gists_type: String!) {
+  query getTranslations($searchstring: String!, $search_case_insensitive: Boolean, $gists_type: String!) {
     translation_search(
       searchstring: $searchstring
+      search_case_insensitive: $search_case_insensitive
       translation_type: $gists_type
       deleted: false
       order_by_type: true

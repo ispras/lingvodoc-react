@@ -1,5 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
+import { SortableContainer, SortableElement } from "react-sortable-hoc";
 import {
   Button,
   Checkbox,
@@ -18,10 +19,10 @@ import {
 } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql, withApollo } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
-import { map } from "lodash";
+import { isEqual, map } from "lodash";
 import { compose } from "recompose";
 
+import { getTranslation } from "api/i18n";
 import { compositeIdToString as id2str } from "utils/compositeId";
 
 import "./style.scss";
@@ -48,6 +49,7 @@ export const valencyDataQuery = gql`
     $verbPrefix: String
     $caseFlag: Boolean
     $acceptValue: Boolean
+    $sortOrderList: [String]
   ) {
     valency_data(
       perspective_id: $perspectiveId
@@ -56,6 +58,7 @@ export const valencyDataQuery = gql`
       verb_prefix: $verbPrefix
       case_flag: $caseFlag
       accept_value: $acceptValue
+      sort_order_list: $sortOrderList
     )
   }
 `;
@@ -76,12 +79,257 @@ const setValencyAnnotationMutation = gql`
   }
 `;
 
+const SortVerb = ({ valency, setState }) => {
+  const { prefix_filter, data_verb_prefix, show_data_verb_list, show_prefix_verb_list, show_prefix_str_list } =
+    valency.state;
+
+  return (
+    <div className="sorting_item">
+      <Checkbox
+        label={getTranslation("Sort by verbs")}
+        checked={valency.state.sort_verb}
+        onChange={(e, { checked }) => {
+          setState({
+            sort_verb: checked,
+            current_page: 1,
+            input_go_to_page: 1,
+            loading_valency_data: true,
+            loading_valency_error: false,
+            valency_data: null,
+            prefix_filter: "",
+            all_verb_list: [],
+            data_verb_list: [],
+            prefix_verb_list: [],
+            show_data_verb_list: [],
+            show_prefix_verb_list: [],
+            show_prefix_str_list: []
+          });
+
+          valency.queryValencyData({
+            current_page: 1,
+            sort_verb: checked,
+            verb_prefix: ""
+          });
+        }}
+      />
+
+      {valency.state.sort_verb && (
+        <Segment disabled={valency.state.loading_valency_data} className="sort_verb_selection">
+          <div>
+            {show_data_verb_list.length > 0
+              ? data_verb_prefix
+                ? `${getTranslation("Verbs")} (${getTranslation("prefix")} "${data_verb_prefix}"): `
+                : `${getTranslation("Verbs")}: `
+              : data_verb_prefix
+              ? `${getTranslation("No verbs")} (${getTranslation("prefix")} "${data_verb_prefix}").`
+              : `${getTranslation("No verbs")}.`}
+
+            {show_data_verb_list.map((verb, index) =>
+              show_data_verb_list.length > 15 && verb == "..." ? (
+                "..., "
+              ) : (
+                <span key={index} className="clickable" onClick={() => valency.setPrefix(verb)}>
+                  {verb}
+                  {index < show_data_verb_list.length - 1 ? ", " : ""}
+                </span>
+              )
+            )}
+
+            {show_data_verb_list.length > 0 && ` (${valency.state.data_verb_list.length} ${getTranslation("verbs")})`}
+          </div>
+
+          <Input
+            style={{ marginTop: "0.5em" }}
+            placeholder={`${getTranslation("Verb prefix filter")}...`}
+            value={prefix_filter}
+            onKeyPress={e => {
+              if (e.key === "Enter") {
+                valency.setPage(1);
+              }
+            }}
+            onChange={e => valency.setPrefix(e.target.value)}
+            icon={
+              prefix_filter ? (
+                <Icon name="delete" link onClick={() => valency.setPrefix("")} />
+              ) : (
+                <Icon name="delete" disabled />
+              )
+            }
+          />
+
+          {show_prefix_str_list.length > 0 && (
+            <div style={{ marginTop: "0.5em" }}>
+              {show_prefix_str_list.map((prefix, index) => (
+                <span key={index} className="clickable" onClick={() => valency.setPrefix(prefix)}>
+                  {prefix.charAt(0).toUpperCase() + prefix.substring(1)}
+                  {index < show_prefix_str_list.length - 1 ? " " : ""}
+                </span>
+              ))}
+            </div>
+          )}
+
+          <div style={{ marginTop: "0.5em" }}>
+            {show_prefix_verb_list.length > 0
+              ? prefix_filter
+                ? `${getTranslation("Filtered verbs")} (${getTranslation("prefix")} "${prefix_filter}"): `
+                : `${getTranslation("Filtered verbs")}: `
+              : prefix_filter
+              ? `${getTranslation("No filtered verbs")} (${getTranslation("prefix")} "${prefix_filter}").`
+              : `${getTranslation("No filtered verbs")}.`}
+
+            {show_prefix_verb_list.map((verb, index) =>
+              show_prefix_verb_list.length > 15 && verb == "..." ? (
+                "..., "
+              ) : (
+                <span key={index} className="clickable" onClick={() => valency.setPrefix(verb)}>
+                  {verb}
+                  {index < show_prefix_verb_list.length - 1 ? ", " : ""}
+                </span>
+              )
+            )}
+
+            {show_prefix_verb_list.length > 0 &&
+              ` (${valency.state.prefix_verb_list.length} ${getTranslation("verbs")})`}
+          </div>
+
+          <Button
+            style={{ marginTop: "0.5em" }}
+            basic
+            compact
+            disabled={prefix_filter == data_verb_prefix}
+            onClick={() => valency.setPage(1)}
+          >
+            {prefix_filter
+              ? `${getTranslation("Apply filter")} (${getTranslation("prefix")} "${prefix_filter}")`
+              : `${getTranslation("Apply filter")} (${getTranslation("no prefix")})`}
+          </Button>
+        </Segment>
+      )}
+    </div>
+  );
+};
+
+const SortCase = ({ valency, setState }) => {
+  return (
+    <div className="sorting_item">
+      <Checkbox
+        label={getTranslation("Sort by cases")}
+        checked={valency.state.sort_case}
+        onChange={(e, { checked }) => {
+          setState({
+            sort_case: checked,
+            current_page: 1,
+            input_go_to_page: 1,
+            loading_valency_data: true,
+            loading_valency_error: false,
+            valency_data: null
+          });
+
+          valency.queryValencyData({
+            currenet_page: 1,
+            sort_case: checked
+          });
+        }}
+      />
+    </div>
+  );
+};
+
+const SortAccept = ({ valency, setState }) => {
+  const { sort_accept, accept_value } = valency.state;
+
+  return (
+    <div className="sorting_item">
+      <Checkbox
+        label={getTranslation("Sort by acceptance")}
+        label={
+          sort_accept ? (
+            <label>
+              {`${getTranslation("Sort by acceptance")} (${getTranslation(
+                accept_value ? "accepted first" : "accepted last"
+              )}) `}
+            </label>
+          ) : (
+            getTranslation("Sort by acceptance")
+          )
+        }
+        checked={sort_accept}
+        onChange={(e, { checked }) => {
+          setState({
+            sort_accept: checked,
+            current_page: 1,
+            input_go_to_page: 1,
+            loading_valency_data: true,
+            loading_valency_error: false,
+            valency_data: null
+          });
+
+          valency.queryValencyData({
+            current_page: 1,
+            sort_accept: checked
+          });
+        }}
+      />
+      {sort_accept && <span> </span>}
+      {sort_accept && (
+        <Icon
+          name="sync alternate"
+          className="clickable"
+          onClick={() => {
+            const new_accept_value = !accept_value;
+
+            setState({
+              current_page: 1,
+              input_go_to_page: 1,
+              loading_valency_data: true,
+              loading_valency_error: false,
+              valency_data: null,
+              accept_value: new_accept_value
+            });
+
+            valency.queryValencyData({
+              current_page: 1,
+              accept_value: new_accept_value
+            });
+          }}
+        />
+      )}
+    </div>
+  );
+};
+
+const SortingItem = SortableElement(({ sort_type, ...props }) => {
+  switch (sort_type) {
+    case "verb":
+      return <SortVerb {...props} />;
+    case "case":
+      return <SortCase {...props} />;
+    case "accept":
+      return <SortAccept {...props} />;
+    default:
+      throw `unknown sorting type '${sort_type}'`;
+  }
+});
+
+const Sorting = SortableContainer(({ sort_order_list, ...props }) => {
+  /* wrapping <div> is required, otherwise we'll get errors */
+  return (
+    <div>
+      {sort_order_list.map((sort_type, index) => (
+        <SortingItem key={`${index}-${sort_type}`} index={index} sort_type={sort_type} {...props} />
+      ))}
+    </div>
+  );
+});
+
 class Valency extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
       perspective: null,
+
+      sort_order_list: ["verb", "case", "accept"],
 
       sort_verb: false,
       sort_case: false,
@@ -131,6 +379,9 @@ class Valency extends React.Component {
     this.setItemsPerPage = this.setItemsPerPage.bind(this);
     this.setPrefix = this.setPrefix.bind(this);
 
+    this.getEnabledSortOrder = this.getEnabledSortOrder.bind(this);
+    this.setSortOrder = this.setSortOrder.bind(this);
+
     this.render_instance = this.render_instance.bind(this);
 
     this.valency_data_query_count = 0;
@@ -144,7 +395,8 @@ class Valency extends React.Component {
     sort_case = null,
     sort_accept = null,
     verb_prefix = null,
-    accept_value = null
+    accept_value = null,
+    sort_order_list = null
   } = {}) {
     const { client } = this.props;
 
@@ -176,6 +428,10 @@ class Valency extends React.Component {
       accept_value = this.state.accept_value;
     }
 
+    if (sort_order_list == null) {
+      sort_order_list = this.state.sort_order_list;
+    }
+
     const query_index = ++this.valency_data_query_count;
 
     client
@@ -187,7 +443,8 @@ class Valency extends React.Component {
           limit: items_per_page,
           verbPrefix: sort_verb ? verb_prefix : null,
           caseFlag: sort_case,
-          acceptValue: sort_accept ? accept_value : null
+          acceptValue: sort_accept ? accept_value : null,
+          sortOrderList: sort_order_list
         },
         fetchPolicy: "no-cache"
       })
@@ -521,6 +778,45 @@ class Valency extends React.Component {
     });
   }
 
+  getEnabledSortOrder(sort_order_list = null) {
+    if (sort_order_list == null) {
+      sort_order_list = this.state.sort_order_list;
+    }
+
+    const condition_dict = {
+      verb: this.state.sort_verb,
+      case: this.state.sort_case,
+      accept: this.state.sort_accept
+    };
+
+    return sort_order_list.filter(sort_type => condition_dict[sort_type]);
+  }
+
+  setSortOrder({ oldIndex, newIndex }) {
+    if (oldIndex == newIndex) {
+      return;
+    }
+
+    const { sort_order_list } = this.state;
+
+    const enabled_before_list = this.getEnabledSortOrder(sort_order_list);
+
+    sort_order_list.splice(newIndex, 0, sort_order_list.splice(oldIndex, 1)[0]);
+
+    const enabled_after_list = this.getEnabledSortOrder(sort_order_list);
+
+    this.setState({ sort_order_list });
+
+    /* Reloading data only if the order of _enabled_ sorting options is changed. */
+
+    if (!isEqual(enabled_before_list, enabled_after_list)) {
+      this.queryValencyData({
+        current_page: 1,
+        sort_order_list
+      });
+    }
+  }
+
   render_instance(instance) {
     const sentence = this.state.sentence_map.get(instance.sentence_id);
 
@@ -715,47 +1011,152 @@ class Valency extends React.Component {
     let has_selected_to_reject = false;
 
     if (!this.state.loading_valency_data && this.state.valency_data && this.state.instance_list.length > 0) {
-      let prev_verb = null;
-      let prev_case = null;
+      const prev_dict = {
+        verb: null,
+        case: null,
+        accept: null
+      };
 
-      if (this.state.sort_verb) {
-        const verb_lex = this.state.instance_list[0].verb_lex;
+      /* Showing accepted / not accepted headers only if some other sorting option is enabled and goes after
+       * 'sort by acceptance' in the sorting option order. */
 
-        render_instance_list.push(<Header key={`${render_instance_list.length}${verb_lex}`}>{verb_lex}</Header>);
+      let enabled_list = this.getEnabledSortOrder();
+      let accept_header_flag = false;
 
-        prev_verb = verb_lex;
+      if (this.state.sort_accept) {
+        let seen_accept = false;
+
+        for (const sort_type of enabled_list) {
+          if (sort_type == "accept") {
+            seen_accept = true;
+          } else if (seen_accept) {
+            accept_header_flag = true;
+            break;
+          }
+        }
       }
 
-      if (this.state.sort_case) {
-        const case_str = this.state.instance_list[0].case_str;
+      if (!accept_header_flag) {
+        enabled_list = enabled_list.filter(sort_type => sort_type != "accept");
+      }
 
-        render_instance_list.push(
-          <Header key={`${render_instance_list.length}${case_str}`}>{case_str.toUpperCase()}</Header>
-        );
+      /* Checks if instance is accepted by at least 1 user. */
 
-        prev_case = case_str;
+      function is_instance_accepted(instance) {
+        const instance_id = instance.id;
+
+        if (annotation_map.has(instance_id)) {
+          for (const value of annotation_map.get(instance_id).values()) {
+            if (value) {
+              return true;
+            }
+          }
+        }
+      }
+
+      for (const sort_type of enabled_list) {
+        switch (sort_type) {
+          case "verb":
+            const { verb_lex } = this.state.instance_list[0];
+
+            render_instance_list.push(<Header key={`${render_instance_list.length}${verb_lex}`}>{verb_lex}</Header>);
+
+            prev_dict[sort_type] = verb_lex;
+
+            break;
+
+          case "case":
+            const { case_str } = this.state.instance_list[0];
+
+            render_instance_list.push(
+              <Header key={`${render_instance_list.length}${case_str}`}>{case_str.toUpperCase()}</Header>
+            );
+
+            prev_dict[sort_type] = case_str;
+
+            break;
+
+          case "accept":
+            const accept_str = is_instance_accepted(this.state.instance_list[0])
+              ? getTranslation("Accepted")
+              : getTranslation("Not accepted");
+
+            render_instance_list.push(
+              <Header key={`${render_instance_list.length}${accept_str}`}>{accept_str}</Header>
+            );
+
+            prev_dict[sort_type] = accept_str;
+
+            break;
+
+          default:
+            throw `unknown sorting type '${sort_type}'`;
+        }
       }
 
       for (let i = 0; i < this.state.instance_list.length; i++) {
         const instance = this.state.instance_list[i];
 
-        if (this.state.sort_verb && instance.verb_lex != prev_verb) {
-          render_instance_list.push(
-            <Header key={`${render_instance_list.length}${instance.verb_lex}`}>{instance.verb_lex}</Header>
-          );
+        for (let j = 0; j < enabled_list.length; j++) {
+          const sort_type = enabled_list[j];
 
-          prev_verb = instance.verb_lex;
-          prev_case = null;
-        }
+          switch (sort_type) {
+            case "verb":
+              const { verb_lex } = instance;
 
-        if (this.state.sort_case && instance.case_str != prev_case) {
-          render_instance_list.push(
-            <Header key={`${render_instance_list.length}${instance.case_str}`}>
-              {instance.case_str.toUpperCase()}
-            </Header>
-          );
+              if (verb_lex != prev_dict[sort_type]) {
+                render_instance_list.push(
+                  <Header key={`${render_instance_list.length}${verb_lex}`}>{verb_lex}</Header>
+                );
 
-          prev_case = instance.case_str;
+                prev_dict[sort_type] = verb_lex;
+
+                for (let k = j + 1; k < enabled_list.length; k++) {
+                  prev_dict[enabled_list[k]] = null;
+                }
+              }
+
+              break;
+
+            case "case":
+              const { case_str } = instance;
+
+              if (case_str != prev_dict[sort_type]) {
+                render_instance_list.push(
+                  <Header key={`${render_instance_list.length}${case_str}`}>{case_str.toUpperCase()}</Header>
+                );
+
+                prev_dict[sort_type] = case_str;
+
+                for (let k = j + 1; k < enabled_list.length; k++) {
+                  prev_dict[enabled_list[k]] = null;
+                }
+              }
+
+              break;
+
+            case "accept":
+              const accept_str = is_instance_accepted(instance)
+                ? getTranslation("Accepted")
+                : getTranslation("Not accepted");
+
+              if (accept_str != prev_dict[sort_type]) {
+                render_instance_list.push(
+                  <Header key={`${render_instance_list.length}${accept_str}`}>{accept_str}</Header>
+                );
+
+                prev_dict[sort_type] = accept_str;
+
+                for (let k = j + 1; k < enabled_list.length; k++) {
+                  prev_dict[enabled_list[k]] = null;
+                }
+              }
+
+              break;
+
+            default:
+              throw `unknown sorting type '${sort_type}'`;
+          }
         }
 
         render_instance_list.push(this.render_instance(instance));
@@ -832,217 +1233,15 @@ class Valency extends React.Component {
           )}
 
           {(this.state.valency_data || this.state.loading_valency_data) && (
-            <div style={{ marginTop: "0.5em" }}>
-              <Checkbox
-                label={getTranslation("Sort by verbs")}
-                checked={this.state.sort_verb}
-                onChange={(e, { checked }) => {
-                  this.setState({
-                    sort_verb: checked,
-                    current_page: 1,
-                    input_go_to_page: 1,
-                    loading_valency_data: true,
-                    loading_valency_error: false,
-                    valency_data: null,
-                    prefix_filter: "",
-                    all_verb_list: [],
-                    data_verb_list: [],
-                    prefix_verb_list: [],
-                    show_data_verb_list: [],
-                    show_prefix_verb_list: [],
-                    show_prefix_str_list: []
-                  });
-
-                  this.queryValencyData({
-                    current_page: 1,
-                    sort_verb: checked,
-                    verb_prefix: ""
-                  });
-                }}
-              />
-            </div>
-          )}
-
-          {(this.state.valency_data || this.state.loading_valency_data) && this.state.sort_verb && (
-            <Segment
-              disabled={this.state.loading_valency_data}
-              style={{ marginTop: "0.5em", marginBottom: "0.5em", padding: "0.5em" }}
-            >
-              <div>
-                {show_data_verb_list.length > 0
-                  ? this.state.data_verb_prefix
-                    ? `${getTranslation("Verbs")} (${getTranslation("prefix")} "${this.state.data_verb_prefix}"): `
-                    : `${getTranslation("Verbs")}: `
-                  : this.state.data_verb_prefix
-                  ? `${getTranslation("No verbs")} (${getTranslation("prefix")} "${this.state.data_verb_prefix}").`
-                  : `${getTranslation("No verbs")}.`}
-
-                {show_data_verb_list.map((verb, index) =>
-                  show_data_verb_list.length > 15 && verb == "..." ? (
-                    "..., "
-                  ) : (
-                    <span key={index} className="clickable" onClick={() => this.setPrefix(verb)}>
-                      {verb}
-                      {index < show_data_verb_list.length - 1 ? ", " : ""}
-                    </span>
-                  )
-                )}
-
-                {show_data_verb_list.length > 0 && ` (${this.state.data_verb_list.length} ${getTranslation("verbs")})`}
-              </div>
-
-              <Input
-                style={{ marginTop: "0.5em" }}
-                placeholder={`${getTranslation("Verb prefix filter")}...`}
-                value={this.state.prefix_filter}
-                onKeyPress={e => {
-                  if (e.key === "Enter") {
-                    this.setPage(1);
-                  }
-                }}
-                onChange={e => this.setPrefix(e.target.value)}
-                icon={
-                  this.state.prefix_filter ? (
-                    <Icon name="delete" link onClick={() => this.setPrefix("")} />
-                  ) : (
-                    <Icon name="delete" disabled />
-                  )
-                }
-              />
-
-              {show_prefix_str_list.length > 0 && (
-                <div style={{ marginTop: "0.5em" }}>
-                  {show_prefix_str_list.map((prefix, index) => (
-                    <span key={index} className="clickable" onClick={() => this.setPrefix(prefix)}>
-                      {prefix.charAt(0).toUpperCase() + prefix.substring(1)}
-                      {index < show_prefix_str_list.length - 1 ? " " : ""}
-                    </span>
-                  ))}
-                </div>
-              )}
-
-              <div style={{ marginTop: "0.5em" }}>
-                {show_prefix_verb_list.length > 0
-                  ? this.state.prefix_filter
-                    ? `${getTranslation("Filtered verbs")} (${getTranslation("prefix")} "${
-                        this.state.prefix_filter
-                      }"): `
-                    : `${getTranslation("Filtered verbs")}: `
-                  : this.state.prefix_filter
-                  ? `${getTranslation("No filtered verbs")} (${getTranslation("prefix")} "${
-                      this.state.prefix_filter
-                    }").`
-                  : `${getTranslation("No filtered verbs")}.`}
-
-                {show_prefix_verb_list.map((verb, index) =>
-                  show_prefix_verb_list.length > 15 && verb == "..." ? (
-                    "..., "
-                  ) : (
-                    <span key={index} className="clickable" onClick={() => this.setPrefix(verb)}>
-                      {verb}
-                      {index < show_prefix_verb_list.length - 1 ? ", " : ""}
-                    </span>
-                  )
-                )}
-
-                {show_prefix_verb_list.length > 0 &&
-                  ` (${this.state.prefix_verb_list.length} ${getTranslation("verbs")})`}
-              </div>
-
-              <Button
-                style={{ marginTop: "0.5em" }}
-                basic
-                compact
-                disabled={this.state.prefix_filter == this.state.data_verb_prefix}
-                onClick={() => this.setPage(1)}
-              >
-                {this.state.prefix_filter
-                  ? `${getTranslation("Apply filter")} (${getTranslation("prefix")} "${this.state.prefix_filter}")`
-                  : `${getTranslation("Apply filter")} (${getTranslation("no prefix")})`}
-              </Button>
-            </Segment>
-          )}
-
-          {(this.state.valency_data || this.state.loading_valency_data) && (
-            <div style={{ marginTop: "0.5em" }}>
-              <Checkbox
-                label={getTranslation("Sort by cases")}
-                checked={this.state.sort_case}
-                onChange={(e, { checked }) => {
-                  this.setState({
-                    sort_case: checked,
-                    current_page: 1,
-                    input_go_to_page: 1,
-                    loading_valency_data: true,
-                    loading_valency_error: false,
-                    valency_data: null
-                  });
-
-                  this.queryValencyData({
-                    currenet_page: 1,
-                    sort_case: checked
-                  });
-                }}
-              />
-            </div>
-          )}
-
-          {(this.state.valency_data || this.state.loading_valency_data) && (
-            <div style={{ marginTop: "0.5em" }}>
-              <Checkbox
-                label={
-                  this.state.sort_accept ? (
-                    <label>
-                      {`${getTranslation("Sort by acceptance")} (${getTranslation(
-                        this.state.accept_value ? "accepted first" : "accepted last"
-                      )}) `}
-                    </label>
-                  ) : (
-                    getTranslation("Sort by acceptance")
-                  )
-                }
-                checked={this.state.sort_accept}
-                onChange={(e, { checked }) => {
-                  this.setState({
-                    sort_accept: checked,
-                    current_page: 1,
-                    input_go_to_page: 1,
-                    loading_valency_data: true,
-                    loading_valency_error: false,
-                    valency_data: null
-                  });
-
-                  this.queryValencyData({
-                    current_page: 1,
-                    sort_accept: checked
-                  });
-                }}
-              />
-              {this.state.sort_accept && <span> </span>}
-              {this.state.sort_accept && (
-                <Icon
-                  name="sync alternate"
-                  className="clickable"
-                  onClick={() => {
-                    const accept_value = !this.state.accept_value;
-
-                    this.setState({
-                      current_page: 1,
-                      input_go_to_page: 1,
-                      loading_valency_data: true,
-                      loading_valency_error: false,
-                      valency_data: null,
-                      accept_value
-                    });
-
-                    this.queryValencyData({
-                      current_page: 1,
-                      accept_value
-                    });
-                  }}
-                />
-              )}
-            </div>
+            <Sorting
+              sort_order_list={this.state.sort_order_list}
+              onSortEnd={this.setSortOrder}
+              lockAxis="y"
+              transitionDuration={0}
+              distance={5}
+              valency={this}
+              setState={state => this.setState(state)}
+            />
           )}
 
           {this.state.loading_valency_data && (

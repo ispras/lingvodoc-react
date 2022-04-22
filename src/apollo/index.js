@@ -22,5 +22,9 @@ const uploadLink = createUploadLink({
 
 export default new ApolloClient({
   link: from([errorLink, uploadLink]),
-  cache: new InMemoryCache()
+  cache: new InMemoryCache({
+    typePolicies: {
+      Metadata: { merge: true }
+    }
+  })
 });
