@@ -1,9 +1,10 @@
 import React from "react";
-import { getTranslation } from "api/i18n";
 import L from "leaflet";
 import { GeoSearchControl, OpenStreetMapProvider } from "leaflet-geosearch";
 import PropTypes from "prop-types";
 import styled from "styled-components";
+
+import { getTranslation } from "api/i18n";
 
 import "leaflet/dist/leaflet.css";
 import "leaflet-geosearch/assets/css/leaflet.css";
@@ -53,13 +54,8 @@ class Map extends React.Component {
   }
 
   componentDidMount() {
-    let { location } = this.props;
-    if (location) {
-      location = [location.lat, location.lng];
-    } else {
-      location = [61.32, 60.82];
-    }
-    this.leaflet = L.map(this.map, {}).setView(location, 4);
+    const { location } = this.props;
+    this.leaflet = L.map(this.map, {}).setView(location ? [location.lat, location.lng] : [61.32, 60.82], 4);
 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -86,16 +82,11 @@ class Map extends React.Component {
         draggable: false
       }
     }).addTo(this.leaflet);
-    this.leaflet.on("geosearch/showlocation", ({ location }) => {
-      this.onChangeLocation({ lat: location.y, lng: location.x });
+    this.leaflet.on("geosearch/showlocation", ({ location: loc }) => {
+      this.onChangeLocation({ lat: loc.y, lng: loc.x });
     });
-    this.componentWillUpdate(this.props);
-  }
-
-  componentWillUpdate(props) {
-    if (props.location && this.marker == null) {
-      const { lat, lng } = props.location;
-      this.marker = L.marker([lat, lng], { icon }).addTo(this.leaflet);
+    if (location) {
+      this.marker = L.marker([location.lat, location.lng], { icon }).addTo(this.leaflet);
     }
   }
 
@@ -129,10 +120,6 @@ class Map extends React.Component {
 Map.propTypes = {
   onChange: PropTypes.func.isRequired,
   location: PropTypes.object
-};
-
-Map.defaultProps = {
-  location: null
 };
 
 export default Map;

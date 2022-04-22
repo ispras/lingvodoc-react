@@ -1,11 +1,12 @@
 import React from "react";
-import { Button, Form, Input, List, Select, TextArea } from "semantic-ui-react";
+import { Button, Form, Input, List, Select } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 import { difference, head, isEmpty, nth } from "lodash";
 import PropTypes from "prop-types";
 import { compose } from "recompose";
+
+import { getTranslation } from "api/i18n";
 
 const localesQuery = gql`
   query Locales {
@@ -26,12 +27,12 @@ export class Translation extends React.Component {
     this.onChangeLocale = this.onChangeLocale.bind(this);
   }
 
-  onChangeContent(event, data) {
+  onChangeContent(_event, data) {
     const { onChange } = this.props;
     this.setState({ content: data.value }, () => onChange(this.state));
   }
 
-  onChangeLocale(event, data) {
+  onChangeLocale(_event, data) {
     const { locales } = this.props;
     const { onChange } = this.props;
     const locale = locales.find(l => l.shortcut === data.value);
@@ -75,7 +76,8 @@ Translation.propTypes = {
   locales: PropTypes.array.isRequired,
   usedLocaleIds: PropTypes.array.isRequired,
   onChange: PropTypes.func.isRequired,
-  translation: PropTypes.object.isRequired
+  translation: PropTypes.object.isRequired,
+  textArea: PropTypes.bool
 };
 
 class Translations extends React.Component {
@@ -86,14 +88,6 @@ class Translations extends React.Component {
     };
     this.addTranslation = this.addTranslation.bind(this);
     this.onChange = this.onChange.bind(this);
-  }
-
-  componentWillMount() {
-    if (this.props.translations.length > 0) {
-      this.setState({
-        translations: this.props.translations
-      });
-    }
   }
 
   onChange(translation) {
@@ -177,10 +171,12 @@ class Translations extends React.Component {
 Translations.propTypes = {
   data: PropTypes.shape({
     loading: PropTypes.bool.isRequired,
+    error: PropTypes.object,
     all_locales: PropTypes.array
   }).isRequired,
   onChange: PropTypes.func.isRequired,
-  translations: PropTypes.array
+  translations: PropTypes.array,
+  textArea: PropTypes.bool
 };
 
 Translations.defaultProps = {

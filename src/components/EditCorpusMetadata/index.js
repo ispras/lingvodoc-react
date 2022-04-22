@@ -2,8 +2,9 @@ import React from "react";
 import { Button, Form, Segment } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 import PropTypes from "prop-types";
+
+import { getTranslation } from "api/i18n";
 
 import { license_options } from "../EditDictionaryMetadata";
 import SelectSettlementMap from "../SelectSettlement/SelectSettlementMap";
@@ -107,7 +108,7 @@ class EditCorpusMetadata extends React.Component {
   }
 
   onAddNewAlternative(event, data) {
-    if (data.options.every(option => option.value != data.value)) {
+    if (data.options.every(option => option.value !== data.value)) {
       data.options.push({ text: data.value, value: data.value });
     }
   }
@@ -238,20 +239,9 @@ class EditCorpusMetadata extends React.Component {
     }
   }
 
-  componentWillMount() {
-    if (!this.props.loading) {
-      this.refetching = true;
-      this.props.data.refetch().then(() => {
-        this.refetching = false;
-        this.initDropdownOptions();
-        this.forceUpdate();
-      });
-    }
-  }
-
   render() {
     const { loading, error } = this.props.data;
-    if (loading || error || this.refetching) {
+    if (loading || error) {
       return null;
     }
 
@@ -295,7 +285,7 @@ class EditCorpusMetadata extends React.Component {
               <Form.Button
                 floated="right"
                 content={getTranslation("Save")}
-                disabled={kind == this.initialState.kind}
+                disabled={kind === this.initialState.kind}
                 onClick={() => this.onSaveValue("kind")}
                 className="lingvo-button-violet"
               />
@@ -316,10 +306,10 @@ class EditCorpusMetadata extends React.Component {
               onAddItem={this.onAddNewAlternative}
               onChange={(event, data) => this.onChangeValue("authors", data)}
             />
-            {mode != "create" && (
+            {mode !== "create" && (
               <Button
                 content={getTranslation("Save")}
-                disabled={JSON.stringify(authors) == JSON.stringify(this.initialState.authors)}
+                disabled={JSON.stringify(authors) === JSON.stringify(this.initialState.authors)}
                 onClick={() => this.onSaveValue("authors")}
                 className="lingvo-button-violet"
               />
@@ -361,7 +351,7 @@ class EditCorpusMetadata extends React.Component {
             {mode !== "create" && (
               <Button
                 content={getTranslation("Save")}
-                disabled={JSON.stringify(humanSettlement) == JSON.stringify(this.initialState.humanSettlement)}
+                disabled={JSON.stringify(humanSettlement) === JSON.stringify(this.initialState.humanSettlement)}
                 onClick={() => this.onSaveValue("settlements")}
                 className="lingvo-button-violet"
               />
@@ -385,7 +375,7 @@ class EditCorpusMetadata extends React.Component {
             {mode !== "create" && (
               <Button
                 content={getTranslation("Save")}
-                disabled={JSON.stringify(years) == JSON.stringify(this.initialState.years)}
+                disabled={JSON.stringify(years) === JSON.stringify(this.initialState.years)}
                 onClick={() => this.onSaveValue("years")}
                 className="lingvo-button-violet"
               />
@@ -404,7 +394,7 @@ class EditCorpusMetadata extends React.Component {
               <Form.Button
                 floated="right"
                 content={getTranslation("Save")}
-                disabled={titleOfTheWork == this.initialState.titleOfTheWork}
+                disabled={titleOfTheWork === this.initialState.titleOfTheWork}
                 onClick={() => this.onSaveValue("titleOfTheWork")}
                 className="lingvo-button-violet"
               />
@@ -423,7 +413,7 @@ class EditCorpusMetadata extends React.Component {
               <Form.Button
                 floated="right"
                 content={getTranslation("Save")}
-                disabled={genre == this.initialState.genre}
+                disabled={genre === this.initialState.genre}
                 onClick={() => this.onSaveValue("genre")}
                 className="lingvo-button-violet"
               />
@@ -442,7 +432,7 @@ class EditCorpusMetadata extends React.Component {
               <Form.Button
                 floated="right"
                 content={getTranslation("Save")}
-                disabled={timeOfWriting == this.initialState.timeOfWriting}
+                disabled={timeOfWriting === this.initialState.timeOfWriting}
                 onClick={() => this.onSaveValue("timeOfWriting")}
                 className="lingvo-button-violet"
               />
@@ -461,7 +451,7 @@ class EditCorpusMetadata extends React.Component {
               <Form.Button
                 floated="right"
                 content={getTranslation("Save")}
-                disabled={quantitativeCharacteristic == this.initialState.quantitativeCharacteristic}
+                disabled={quantitativeCharacteristic === this.initialState.quantitativeCharacteristic}
                 onClick={() => this.onSaveValue("quantitativeCharacteristic")}
                 className="lingvo-button-violet"
               />
@@ -480,7 +470,7 @@ class EditCorpusMetadata extends React.Component {
               <Form.Button
                 floated="right"
                 content={getTranslation("Save")}
-                disabled={bibliographicDataOfTheSource == this.initialState.bibliographicDataOfTheSource}
+                disabled={bibliographicDataOfTheSource === this.initialState.bibliographicDataOfTheSource}
                 onClick={() => this.onSaveValue("bibliographicDataOfTheSource")}
                 className="lingvo-button-violet"
               />
@@ -499,7 +489,7 @@ class EditCorpusMetadata extends React.Component {
               <Form.Button
                 floated="right"
                 content={getTranslation("Save")}
-                disabled={translator == this.initialState.translator}
+                disabled={translator === this.initialState.translator}
                 onClick={() => this.onSaveValue("translator")}
                 className="lingvo-button-violet"
               />
@@ -518,7 +508,7 @@ class EditCorpusMetadata extends React.Component {
               <Form.Button
                 floated="right"
                 content={getTranslation("Save")}
-                disabled={bibliographicDataOfTheTranslation == this.initialState.bibliographicDataOfTheTranslation}
+                disabled={bibliographicDataOfTheTranslation === this.initialState.bibliographicDataOfTheTranslation}
                 onClick={() => this.onSaveValue("bibliographicDataOfTheTranslation")}
                 className="lingvo-button-violet"
               />
@@ -532,6 +522,7 @@ class EditCorpusMetadata extends React.Component {
 
 EditCorpusMetadata.propTypes = {
   mode: PropTypes.string.isRequired,
+  data: PropTypes.object,
   metadata: PropTypes.object,
   onChange: PropTypes.func,
   onSave: PropTypes.func
@@ -541,4 +532,6 @@ EditCorpusMetadata.defaultProps = {
   onSave: undefined,
   metadata: {}
 };
-export default graphql(getMetadataAlternativesQuery)(EditCorpusMetadata);
+export default graphql(getMetadataAlternativesQuery, { options: { fetchPolicy: "cache-and-network" } })(
+  EditCorpusMetadata
+);

@@ -2,8 +2,9 @@ import React from "react";
 import { Button, Form, Segment } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 import PropTypes from "prop-types";
+
+import { getTranslation } from "api/i18n";
 
 const getMetadataAlternativesQuery = gql`
   query getMetadataAlternatives {
@@ -229,20 +230,9 @@ class EditDictionaryMetadata extends React.Component {
     }
   }
 
-  componentWillMount() {
-    if (!this.props.loading) {
-      this.refetching = true;
-      this.props.data.refetch().then(() => {
-        this.refetching = false;
-        this.initDropdownOptions();
-        this.forceUpdate();
-      });
-    }
-  }
-
   render() {
     const { loading, error } = this.props.data;
-    if (loading || error || this.refetching) {
+    if (loading || error) {
       return null;
     }
 
@@ -531,4 +521,6 @@ EditDictionaryMetadata.defaultProps = {
   loading: false
 };
 
-export default graphql(getMetadataAlternativesQuery)(EditDictionaryMetadata);
+export default graphql(getMetadataAlternativesQuery, { options: { fetchPolicy: "cache-and-network" } })(
+  EditDictionaryMetadata
+);
