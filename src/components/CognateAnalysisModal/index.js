@@ -21,7 +21,7 @@ import {
 } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql, withApollo } from "@apollo/client/react/hoc";
-import { isEqual, map } from "lodash";
+import { cloneDeep, isEqual, map } from "lodash";
 import PropTypes from "prop-types";
 import { branch, compose, renderNothing } from "recompose";
 import { bindActionCreators } from "redux";
@@ -1241,15 +1241,17 @@ class CognateAnalysisModal extends React.Component {
   }
 
   async initialize_single() {
+    const { client, perspectiveId, mode } = this.props;
+
     const {
-      client,
-      perspectiveId,
-      mode,
       data: {
         all_fields: allFields,
         perspective: { columns, tree, english_status }
       }
-    } = this.props;
+    } = await client.query({
+      query: cognateAnalysisDataQuery,
+      variables: { perspectiveId }
+    });
 
     this.initialize_common(allFields, columns, tree, english_status);
 
@@ -1288,15 +1290,17 @@ class CognateAnalysisModal extends React.Component {
    * Initializes data for multi-language cognate analysis.
    */
   async initialize_multi() {
+    const { client, perspectiveId, mode } = this.props;
+
     const {
-      client,
-      perspectiveId,
-      mode,
       data: {
         all_fields: allFields,
         perspective: { columns, tree, english_status }
       }
-    } = this.props;
+    } = await client.query({
+      query: cognateAnalysisDataQuery,
+      variables: { perspectiveId }
+    });
 
     const language_id_list = languageIdList.slice();
 
@@ -1331,7 +1335,7 @@ class CognateAnalysisModal extends React.Component {
     this.language_dict = {};
 
     for (const language of languages) {
-      this.language_dict[id2str(language.id)] = language;
+      this.language_dict[id2str(language.id)] = cloneDeep(language);
     }
 
     this.language_list = languages;
@@ -2512,10 +2516,10 @@ class CognateAnalysisModal extends React.Component {
               content={
                 this.state.computing ? (
                   <span>
-                    Computing... <Icon name="spinner" loading />
+                    {getTranslation("Computing")}... <Icon name="spinner" loading />
                   </span>
                 ) : (
-                  "Compute"
+                  getTranslation("Compute")
                 )
               }
               onClick={this.handleCreate}
@@ -2809,7 +2813,6 @@ export default compose(
   ),
   connect(state => state.user),
   branch(({ visible }) => !visible, renderNothing),
-  graphql(cognateAnalysisDataQuery),
   graphql(computeCognateAnalysisMutation, { name: "computeCognateAnalysis" }),
   graphql(connectMutation, { name: "connectGroup" }),
   withApollo
