@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { connect } from "react-redux";
-import { Icon, Input, Menu } from "semantic-ui-react";
+import { Checkbox, Icon, Input, Menu } from "semantic-ui-react";
 
 import { getTranslation } from "api/i18n";
 
@@ -10,27 +10,39 @@ import "./styles.scss";
 
 const categories = ["Perspective", "Dictionary", "Service", "Language", "Field", "Organization", "Grant", "All"];
 
-const Filter = ({ filterStr: initialFilterStr, onChange }) => {
+const Filter = ({ filterStr: initialFilterStr, caseSensitive, onChange }) => {
   const [filterStr, setFilterStr] = useState(initialFilterStr);
 
   return (
-    <div>
+    <div style={{ position: "relative" }}>
       <Input
         placeholder={`${getTranslation("Filter")}...`}
         value={filterStr}
         onKeyPress={e => {
           if (e.key === "Enter" && filterStr != initialFilterStr) {
-            onChange(filterStr);
+            onChange({ filterStr });
           }
         }}
         onChange={e => setFilterStr(e.target.value)}
         icon={
           filterStr != initialFilterStr ? (
-            <Icon name="search" link onClick={() => onChange(filterStr)} />
+            <Icon name="search" link onClick={() => onChange({ filterStr })} />
           ) : (
             <Icon name="search" disabled />
           )
         }
+      />
+      <Checkbox
+        style={{
+          position: "absolute",
+          top: "50%",
+          transform: "translate(0%, -50%)",
+          marginLeft: "0.75em"
+        }}
+        label={getTranslation("Case-sensitive")}
+        checked={caseSensitive}
+        disabled={!initialFilterStr && !filterStr}
+        onChange={(e, { checked }) => onChange({ filterStr, caseSensitive: checked })}
       />
     </div>
   );
@@ -42,7 +54,8 @@ class EditTranslations extends React.Component {
 
     this.state = {
       selectedCategory: 0,
-      filterStr: ""
+      filterStr: "",
+      caseSensitive: false
     };
   }
 
@@ -78,13 +91,18 @@ class EditTranslations extends React.Component {
                 />
               ))}
             </Menu>
-            <Filter filterStr={this.state.filterStr} onChange={filterStr => this.setState({ filterStr })} />
+            <Filter
+              filterStr={this.state.filterStr}
+              caseSensitive={this.state.caseSenstitive}
+              onChange={state => this.setState(state)}
+            />
           </div>
         </div>
         {selectedCategory == -1 ? null : (
           <TranslationsBlock
             gists_type={selectedCategory == 7 ? "" : categories[selectedCategory]}
             searchstring={this.state.filterStr}
+            search_case_insensitive={!this.state.caseSensitive}
           />
         )}
       </div>
