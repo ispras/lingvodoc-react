@@ -7,7 +7,7 @@ import PropTypes from "prop-types";
 import { getTranslation } from "api/i18n";
 import { getId, getUser, signIn, signUp } from "api/user";
 import { setIsAuthenticated } from "ducks/auth";
-import { setUser } from "ducks/user";
+import { requestUser, setError, setUser } from "ducks/user";
 import { EMAIL_MATCHER } from "utils";
 import { startTrackUser } from "utils/matomo";
 
@@ -50,6 +50,7 @@ const SignUpModal = ({ close }) => {
       if (response.data.result === "Signup success.") {
         response = await signIn(login, password);
         if (response.data) {
+          dispatch(requestUser());
           response = await getUser();
           if (response.data) {
             startTrackUser(getId(), response.data.login);
@@ -58,6 +59,7 @@ const SignUpModal = ({ close }) => {
             client.resetStore();
           } else {
             window.logger.err(getTranslation("Could not get user information"));
+            dispatch(setError());
           }
         }
         window.logger.suc(getTranslation("Signup success"));

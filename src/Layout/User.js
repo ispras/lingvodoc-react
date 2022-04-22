@@ -12,13 +12,10 @@ import SignInModal from "components/SignInModal";
 import SignUpModal from "components/SignUpModal";
 import { setIsAuthenticated } from "ducks/auth";
 import { openModal as openBanModal } from "ducks/ban";
-import { setUser } from "ducks/user";
+import { requestUser, setError, setUser } from "ducks/user";
 import { startTrackUser, stopTrackUser } from "utils/matomo";
 
 import imageUser from "../images/user.svg";
-
-let requestUserForId = getId();
-let userRequested = false;
 
 const spinner = (
   <Menu.Item className="top_menu">
@@ -82,8 +79,6 @@ const Signed = ({ user }) => {
       setLoggingOut(false);
       stopTrackUser();
       navigate("/");
-      requestUserForId = undefined;
-      userRequested = false;
       dispatch(setUser({}));
       dispatch(setIsAuthenticated({ isAuthenticated: false }));
       client.cache.reset();
@@ -145,11 +140,8 @@ Signed.propTypes = {
 };
 
 const UserDropdown = () => {
-  const user = useSelector(state => state.user.user);
+  const userInfo = useSelector(state => state.user);
   const dispatch = useDispatch();
-
-  const [, setRequestingUser] = useState(false);
-  const [error, setError] = useState(false);
 
   useEffect(() => {
     const fetchUserInformation = async () => {
@@ -160,22 +152,21 @@ const UserDropdown = () => {
         dispatch(setIsAuthenticated({ isAuthenticated: true }));
       } else {
         window.logger.err(getTranslation("Could not get user information"));
-        setError(true);
+        dispatch(setError());
       }
     };
-    if (!userRequested && requestUserForId !== undefined) {
-      userRequested = true;
-      setRequestingUser(true);
+    if (!userInfo.user.id && !userInfo.loading && !userInfo.error) {
+      dispatch(requestUser());
       fetchUserInformation();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (userRequested && user.id === undefined && !error) {
+  if (userInfo.loading) {
     return spinner;
   }
 
-  return user.id === undefined ? <Anonymous /> : <Signed user={user} />;
+  return userInfo.user.id === undefined ? <Anonymous /> : <Signed user={userInfo.user} />;
 };
 
 export default UserDropdown;

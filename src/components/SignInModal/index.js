@@ -7,7 +7,7 @@ import PropTypes from "prop-types";
 import { getTranslation } from "api/i18n";
 import { getId, getUser, signIn } from "api/user";
 import { setIsAuthenticated } from "ducks/auth";
-import { setUser } from "ducks/user";
+import { requestUser, setError, setUser } from "ducks/user";
 import { startTrackUser } from "utils/matomo";
 
 const SignInModal = ({ close }) => {
@@ -33,6 +33,7 @@ const SignInModal = ({ close }) => {
       setLogginIn(false);
       return;
     }
+    dispatch(requestUser());
     response = await getUser();
     if (response.data) {
       startTrackUser(getId(), response.data.login);
@@ -41,6 +42,7 @@ const SignInModal = ({ close }) => {
       client.resetStore();
     } else {
       window.logger.err(getTranslation("Could not get user information"));
+      dispatch(setError());
     }
   }, [client, dispatch, login, password]);
 
