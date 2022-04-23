@@ -155,7 +155,7 @@ const UserDropdown = () => {
         dispatch(setError());
       }
     };
-    if (!userInfo.user.id && !userInfo.loading && !userInfo.error) {
+    if (getId() && !userInfo.user.id && !userInfo.loading && !userInfo.error) {
       dispatch(requestUser());
       fetchUserInformation();
     }
