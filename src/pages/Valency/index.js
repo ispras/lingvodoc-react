@@ -18,7 +18,7 @@ import {
 } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql, withApollo } from "@apollo/client/react/hoc";
-import { DndContext, KeyboardSensor, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
+import { DndContext, KeyboardSensor, PointerSensor, rectIntersection, useSensor, useSensors } from "@dnd-kit/core";
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import {
   arrayMove,
@@ -359,8 +359,21 @@ const Sorting = ({ sort_order_list, setSortOrder, ...props }) => {
     })
   );
 
+  function collisionDetection({ active, droppableContainers, ...rest }) {
+    return rectIntersection({
+      active,
+      droppableContainers: droppableContainers.filter(d => d.id != active.id),
+      ...rest
+    });
+  }
+
   return (
-    <DndContext sensors={sensors} modifiers={[restrictToVerticalAxis]} onDragEnd={setSortOrder}>
+    <DndContext
+      sensors={sensors}
+      modifiers={[restrictToVerticalAxis]}
+      collisionDetection={collisionDetection}
+      onDragEnd={setSortOrder}
+    >
       <SortableContext items={sort_order_list} strategy={verticalListSortingStrategy}>
         {sort_order_list.map((sort_type, index) => (
           <SortingItem key={`${index}-${sort_type}`} sort_type={sort_type} {...props} />
@@ -843,7 +856,7 @@ class Valency extends React.Component {
   setSortOrder(event) {
     const { active, over } = event;
 
-    if (active.id == over.id) {
+    if (!active || !over || active.id == over.id) {
       return;
     }
 
