@@ -1,6 +1,5 @@
 import React from "react";
 import { connect } from "react-redux";
-import { SortableContainer, SortableElement } from "react-sortable-hoc";
 import {
   Button,
   Checkbox,
@@ -19,6 +18,16 @@ import {
 } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql, withApollo } from "@apollo/client/react/hoc";
+import { closestCenter, DndContext, KeyboardSensor, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
+import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { isEqual, map } from "lodash";
 import { compose } from "recompose";
 
@@ -298,29 +307,73 @@ const SortAccept = ({ valency, setState }) => {
   );
 };
 
-const SortingItem = SortableElement(({ sort_type, ...props }) => {
+const SortingItem = ({ sort_type, ...props }) => {
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
+    id: sort_type,
+    transition: {
+      duration: 0,
+      easing: "step-start"
+    }
+  });
+
+  const style = {
+    transform: CSS.Translate.toString(transform),
+    transition
+  };
+
+  let sort_component = null;
+
   switch (sort_type) {
     case "verb":
-      return <SortVerb {...props} />;
+      sort_component = <SortVerb {...props} />;
+      break;
+
     case "case":
-      return <SortCase {...props} />;
+      sort_component = <SortCase {...props} />;
+      break;
+
     case "accept":
-      return <SortAccept {...props} />;
+      sort_component = <SortAccept {...props} />;
+      break;
+
     default:
       throw `unknown sorting type '${sort_type}'`;
   }
-});
 
-const Sorting = SortableContainer(({ sort_order_list, ...props }) => {
-  /* wrapping <div> is required, otherwise we'll get errors */
   return (
-    <div>
-      {sort_order_list.map((sort_type, index) => (
-        <SortingItem key={`${index}-${sort_type}`} index={index} sort_type={sort_type} {...props} />
-      ))}
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+      {sort_component}
     </div>
   );
-});
+};
+
+const Sorting = ({ sort_order_list, setSortOrder, ...props }) => {
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 4
+      }
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates
+    })
+  );
+
+  return (
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      modifiers={[restrictToVerticalAxis]}
+      onDragEnd={setSortOrder}
+    >
+      <SortableContext items={sort_order_list} strategy={verticalListSortingStrategy}>
+        {sort_order_list.map((sort_type, index) => (
+          <SortingItem key={`${index}-${sort_type}`} sort_type={sort_type} {...props} />
+        ))}
+      </SortableContext>
+    </DndContext>
+  );
+};
 
 class Valency extends React.Component {
   constructor(props) {
@@ -792,8 +845,10 @@ class Valency extends React.Component {
     return sort_order_list.filter(sort_type => condition_dict[sort_type]);
   }
 
-  setSortOrder({ oldIndex, newIndex }) {
-    if (oldIndex == newIndex) {
+  setSortOrder(event) {
+    const { active, over } = event;
+
+    if (active.id == over.id) {
       return;
     }
 
@@ -801,18 +856,21 @@ class Valency extends React.Component {
 
     const enabled_before_list = this.getEnabledSortOrder(sort_order_list);
 
-    sort_order_list.splice(newIndex, 0, sort_order_list.splice(oldIndex, 1)[0]);
+    const oldIndex = sort_order_list.indexOf(active.id);
+    const newIndex = sort_order_list.indexOf(over.id);
 
-    const enabled_after_list = this.getEnabledSortOrder(sort_order_list);
+    const new_sort_order_list = arrayMove(sort_order_list, oldIndex, newIndex);
 
-    this.setState({ sort_order_list });
+    const enabled_after_list = this.getEnabledSortOrder(new_sort_order_list);
+
+    this.setState({ sort_order_list: new_sort_order_list });
 
     /* Reloading data only if the order of _enabled_ sorting options is changed. */
 
     if (!isEqual(enabled_before_list, enabled_after_list)) {
       this.queryValencyData({
         current_page: 1,
-        sort_order_list
+        sort_order_list: new_sort_order_list
       });
     }
   }
@@ -1235,10 +1293,7 @@ class Valency extends React.Component {
           {(this.state.valency_data || this.state.loading_valency_data) && (
             <Sorting
               sort_order_list={this.state.sort_order_list}
-              onSortEnd={this.setSortOrder}
-              lockAxis="y"
-              transitionDuration={0}
-              distance={5}
+              setSortOrder={this.setSortOrder}
               valency={this}
               setState={state => this.setState(state)}
             />
