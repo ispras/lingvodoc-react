@@ -18,7 +18,7 @@ import {
 } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql, withApollo } from "@apollo/client/react/hoc";
-import { closestCenter, DndContext, KeyboardSensor, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
+import { DndContext, KeyboardSensor, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import {
   arrayMove,
@@ -360,12 +360,7 @@ const Sorting = ({ sort_order_list, setSortOrder, ...props }) => {
   );
 
   return (
-    <DndContext
-      sensors={sensors}
-      collisionDetection={closestCenter}
-      modifiers={[restrictToVerticalAxis]}
-      onDragEnd={setSortOrder}
-    >
+    <DndContext sensors={sensors} modifiers={[restrictToVerticalAxis]} onDragEnd={setSortOrder}>
       <SortableContext items={sort_order_list} strategy={verticalListSortingStrategy}>
         {sort_order_list.map((sort_type, index) => (
           <SortingItem key={`${index}-${sort_type}`} sort_type={sort_type} {...props} />
