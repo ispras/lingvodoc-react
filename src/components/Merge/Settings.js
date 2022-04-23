@@ -14,13 +14,13 @@ import {
 } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql, withApollo } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 import Immutable, { fromJS } from "immutable";
 import { drop, isEqual, take } from "lodash";
 import PropTypes from "prop-types";
 import { branch, compose, pure, renderNothing, withProps, withReducer } from "recompose";
 import styled from "styled-components";
 
+import { getTranslation } from "api/i18n";
 import { LexicalEntryView, queryLexicalEntries, queryPerspective } from "components/PerspectiveView";
 import { compositeIdToString as id2str } from "utils/compositeId";
 
@@ -566,12 +566,11 @@ class MergeSettings extends React.Component {
     const page = settings.get("page");
 
     const {
-      all_fields: allFields,
       perspective: { columns }
     } = data;
 
     const fieldOptions = columns.map(c => {
-      const field = allFields.find(f => isEqual(c.field_id, f.id));
+      const field = c.field;
       return {
         text: field.translation,
         value: JSON.stringify(field.id)
