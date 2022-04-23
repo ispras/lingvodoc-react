@@ -3,12 +3,12 @@ import { connect } from "react-redux";
 import { Button, Dimmer, Header, Icon, Table } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
-import { drop, find, flow, isEqual, reverse, sortBy, take } from "lodash";
+import { drop, flow, isEqual, reverse, sortBy, take } from "lodash";
 import PropTypes from "prop-types";
 import { branch, compose, renderComponent } from "recompose";
 import { bindActionCreators } from "redux";
 
+import { getTranslation } from "api/i18n";
 import ApproveModal from "components/ApproveModal";
 import Placeholder from "components/Placeholder";
 import { openModal } from "ducks/modals";
@@ -32,18 +32,18 @@ export const queryPerspective = gql`
         parent_id
         self_id
         position
+        field {
+          id
+          translation
+          # NOTE: this field of this query is not used, but it needs to stay here because otherwise on showing
+          # of CognateAnalysisModal the query's data gets invalidated and we have to refetch it, see
+          # corresponding comments in PerspectiveViewWrapper and languageQuery of CognateAnalysisModal, and
+          # fetching another translation for fields doesn't slow down everything noticeably.
+          english_translation: translation(locale_id: 2)
+          data_type
+          data_type_translation_gist_id
+        }
       }
-    }
-    all_fields {
-      id
-      translation
-      # NOTE: this field of this query is not used, but it needs to stay here because otherwise on showing
-      # of CognateAnalysisModal the query's data gets invalidated and we have to refetch it, see
-      # corresponding comments in PerspectiveViewWrapper and languageQuery of CognateAnalysisModal, and
-      # fetching another translation for fields doesn't slow down everything noticeably.
-      english_translation: translation(locale_id: 2)
-      data_type
-      data_type_translation_gist_id
     }
   }
 `;
@@ -183,7 +183,6 @@ const P = ({
   data,
   filter,
   sortByField,
-  allFields,
   columns,
   setSortByField: setSort,
   changePage,
@@ -342,7 +341,7 @@ const P = ({
   //   ...field
   // }
   const fields = columns.map(column => {
-    const field = find(allFields, f => isEqual(column.field_id, f.id));
+    const field = column.field;
     return {
       ...field,
       self_id: column.self_id,
@@ -496,13 +495,13 @@ export const queryLexicalEntry = gql`
         parent_id
         self_id
         position
+        field {
+          id
+          translation
+          data_type
+          data_type_translation_gist_id
+        }
       }
-    }
-    all_fields {
-      id
-      translation
-      data_type
-      data_type_translation_gist_id
     }
   }
 `;
@@ -538,7 +537,6 @@ const PerspectiveViewWrapper = ({
   }
 
   const {
-    all_fields: allFields,
     perspective: { columns }
   } = data;
 
@@ -552,7 +550,6 @@ const PerspectiveViewWrapper = ({
       page={page}
       filter={filter}
       sortByField={sortByField}
-      allFields={allFields}
       columns={columns}
       changePage={changePage}
     />

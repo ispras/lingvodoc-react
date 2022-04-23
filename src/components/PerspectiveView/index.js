@@ -3,13 +3,13 @@ import { connect } from "react-redux";
 import { Button, Dimmer, Header, Icon, Table } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
-import { drop, find, flow, isEqual, reverse, take } from "lodash";
+import { drop, flow, isEqual, reverse, take } from "lodash";
 import PropTypes from "prop-types";
 import { branch, compose, renderComponent } from "recompose";
 import { bindActionCreators } from "redux";
 import styled from "styled-components";
 
+import { getTranslation } from "api/i18n";
 import ApproveModal from "components/ApproveModal";
 import Placeholder from "components/Placeholder";
 import { openModal } from "ducks/modals";
@@ -42,18 +42,18 @@ export const queryPerspective = gql`
         parent_id
         self_id
         position
+        field {
+          id
+          translation
+          # NOTE: this field of this query is not used, but it needs to stay here because otherwise on showing
+          # of CognateAnalysisModal the query's data gets invalidated and we have to refetch it, see
+          # corresponding comments in PerspectiveViewWrapper and languageQuery of CognateAnalysisModal, and
+          # fetching another translation for fields doesn't slow down everything noticeably.
+          english_translation: translation(locale_id: 2)
+          data_type
+          data_type_translation_gist_id
+        }
       }
-    }
-    all_fields {
-      id
-      translation
-      # NOTE: this field of this query is not used, but it needs to stay here because otherwise on showing
-      # of CognateAnalysisModal the query's data gets invalidated and we have to refetch it, see
-      # corresponding comments in PerspectiveViewWrapper and languageQuery of CognateAnalysisModal, and
-      # fetching another translation for fields doesn't slow down everything noticeably.
-      english_translation: translation(locale_id: 2)
-      data_type
-      data_type_translation_gist_id
     }
   }
 `;
@@ -294,7 +294,6 @@ class P extends React.Component {
       data,
       filter,
       sortByField,
-      allFields,
       columns,
       setSortByField: setSort,
       resetSortByField: resetSort,
@@ -464,7 +463,7 @@ class P extends React.Component {
     //   ...field
     // }
     const fields = columns.map(column => {
-      const field = find(allFields, f => isEqual(column.field_id, f.id));
+      const field = column.field;
       return {
         ...field,
         self_id: column.self_id,
@@ -677,7 +676,6 @@ P.propTypes = {
   filter: PropTypes.string,
   data: PropTypes.object.isRequired,
   sortByField: PropTypes.object,
-  allFields: PropTypes.array.isRequired,
   columns: PropTypes.array.isRequired,
   setSortByField: PropTypes.func.isRequired,
   resetSortByField: PropTypes.func.isRequired,
@@ -738,13 +736,13 @@ export const queryLexicalEntry = gql`
         parent_id
         self_id
         position
+        field {
+          id
+          translation
+          data_type
+          data_type_translation_gist_id
+        }
       }
-    }
-    all_fields {
-      id
-      translation
-      data_type
-      data_type_translation_gist_id
     }
   }
 `;
@@ -785,12 +783,11 @@ const LexicalEntryViewBase = ({
   }
 
   const {
-    all_fields,
     perspective: { columns }
   } = data;
 
   const fields = columns.map(column => {
-    const field = find(all_fields, f => isEqual(column.field_id, f.id));
+    const field = column.field;
     return {
       ...field,
       self_id: column.self_id,
@@ -832,7 +829,6 @@ LexicalEntryViewBase.propTypes = {
   data: PropTypes.shape({
     loading: PropTypes.bool.isRequired,
     error: PropTypes.object,
-    all_fields: PropTypes.array,
     perspective: PropTypes.object
   }).isRequired,
   selectEntries: PropTypes.bool,
@@ -859,6 +855,12 @@ export const queryLexicalEntriesByIds = gql`
         parent_id
         self_id
         position
+        field {
+          id
+          translation
+          data_type
+          data_type_translation_gist_id
+        }
       }
       lexical_entries(mode: $entitiesMode, ids: $entriesIds) {
         id
@@ -881,12 +883,6 @@ export const queryLexicalEntriesByIds = gql`
         }
       }
     }
-    all_fields {
-      id
-      translation
-      data_type
-      data_type_translation_gist_id
-    }
   }
 `;
 
@@ -906,12 +902,11 @@ const LexicalEntryViewBaseByIds = ({ perspectiveId, mode, entitiesMode, data, ac
   }
 
   const {
-    all_fields,
     perspective: { columns, lexical_entries: entries }
   } = data;
 
   const fields = columns.map(column => {
-    const field = find(all_fields, f => isEqual(column.field_id, f.id));
+    const field = column.field;
     return {
       ...field,
       self_id: column.self_id,
@@ -940,7 +935,6 @@ LexicalEntryViewBaseByIds.propTypes = {
   data: PropTypes.shape({
     loading: PropTypes.bool.isRequired,
     error: PropTypes.object,
-    all_fields: PropTypes.array,
     perspective: PropTypes.object
   }).isRequired,
   actions: PropTypes.array
@@ -980,7 +974,6 @@ const PerspectiveViewWrapper = ({ id, className, mode, entitiesMode, page, data,
   }
 
   const {
-    all_fields: allFields,
     perspective: { columns }
   } = data;
 
@@ -993,7 +986,6 @@ const PerspectiveViewWrapper = ({ id, className, mode, entitiesMode, page, data,
       page={page}
       filter={filter}
       sortByField={sortByField}
-      allFields={allFields}
       columns={columns}
     />
   );
