@@ -146,7 +146,7 @@ export const EditKind = ({ kind, mode, onChange, onSave }) => {
   );
 };
 
-const EditSelect = ({ metadata_key, label, value: initialValue, valueOptions, mode, onChange, onSave }) => {
+export const EditSelect = ({ metadata_key, label, value: initialValue, valueOptions, mode, onChange, onSave }) => {
   const [lastValue, setLastValue] = useState(initialValue);
   const [value, setValue] = useState(initialValue);
 
@@ -443,7 +443,7 @@ class EditDictionaryMetadata extends React.Component {
             <EditInput
               key="speechGenre"
               metadata_key="speechGenre"
-              label={getTranslation("Type of discourse")}
+              label={getTranslation("Speech genre")}
               value={speechGenre}
               mode={mode}
               onChange={onChange}

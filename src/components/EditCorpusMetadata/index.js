@@ -9,6 +9,7 @@ import { getTranslation } from "api/i18n";
 import {
   EditInput,
   EditKind,
+  EditSelect,
   EditSelectMultiple,
   getMetadataAlternativesQuery,
   initDropdownOptions,
