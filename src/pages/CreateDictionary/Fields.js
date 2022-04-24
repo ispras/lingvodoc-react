@@ -1,6 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
-import { Button, Checkbox, Dropdown, Grid, List } from "semantic-ui-react";
+import { Button, Checkbox, Dropdown, Grid, Icon, List } from "semantic-ui-react";
 import { graphql, withApollo } from "@apollo/client/react/hoc";
 import { isEqual } from "lodash";
 import PropTypes from "prop-types";
@@ -61,7 +61,7 @@ class Column extends React.Component {
   }
 
   onFieldChange(value) {
-    const { actions, column, fields, onChange } = this.props;
+    const { actions, fields, onChange } = this.props;
 
     if (value === "new_field") {
       actions.openCreateFieldModal(field_id => {
@@ -115,7 +115,7 @@ class Column extends React.Component {
     const options = fields.map(f => ({ text: f.translation, value: compositeIdToString(f.id) }));
 
     options.push({
-      text: getTranslation("Add new field..."),
+      text: `${getTranslation("Add new field")}...`,
       value: "new_field"
     });
 
@@ -188,7 +188,8 @@ class Columns extends React.Component {
     };
 
     this.fetching = false;
-    if (props.mode == "corpus" && !this.state.columns) {
+
+    if (props.mode == "corpus" && (!this.state.columns || this.state.columns.length <= 0)) {
       this.fetching = true;
       props.client
         .query({
@@ -304,7 +305,11 @@ class Columns extends React.Component {
 
   render() {
     if (this.fetching) {
-      return null;
+      return (
+        <div>
+          {getTranslation("Loading field template")}... <Icon loading name="spinner" />
+        </div>
+      );
     }
 
     const {

@@ -4,11 +4,11 @@ import { Link, Navigate } from "react-router-dom";
 import { Breadcrumb, Dropdown, Header } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 import PropTypes from "prop-types";
 import { compose } from "recompose";
 import { bindActionCreators } from "redux";
 
+import { getTranslation } from "api/i18n";
 import { openModal as openCreatePerspectiveModal } from "ducks/createPerspective";
 import { openModal as openDictionaryOrganizationsModal } from "ducks/dictionaryOrganizations";
 import { openDictionaryPropertiesModal } from "ducks/dictionaryProperties";
@@ -245,7 +245,7 @@ class PerspectivePath extends React.Component {
           }}
         >
           <span>
-            {`${getTranslation("license")}: `}
+            {`${getTranslation("License").toLowerCase()}: `}
             {license_url ? (
               <a className="license" href={license_url}>
                 {license_str}

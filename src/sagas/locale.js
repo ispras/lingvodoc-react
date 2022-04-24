@@ -12,7 +12,7 @@ const getTranslationsQuery = gql`
   }
 `;
 
-function* reloadTranslations(action) {
+function* reloadTranslations(locales, action) {
   const client = yield select(state => state.apolloClient);
   if (action) {
     locale.set(action.payload.id);
@@ -23,7 +23,7 @@ function* reloadTranslations(action) {
     variables: { searchstrings: stringsToTranslate }
   });
   if (response.data) {
-    setTranslations(response.data.optimized_translation_search);
+    setTranslations(response.data.optimized_translation_search, locales, locale.get());
   } else {
     yield put(err("Could not load translations"));
   }
@@ -36,9 +36,9 @@ export default function* languageInit() {
   yield put(requestLocales());
   const response = yield call(getLocales);
   if (response.data) {
-    yield call(reloadTranslations);
+    yield call(reloadTranslations, response.data);
     yield put(setLocales(response.data));
-    yield takeLatest(CHANGE, reloadTranslations);
+    yield takeLatest(CHANGE, reloadTranslations, response.data);
   } else {
     yield put(err("Could not get locales"));
   }

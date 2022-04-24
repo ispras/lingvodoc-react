@@ -1,3 +1,6 @@
+import { getLocaleId } from "api/locale";
+import config from "config";
+
 const i18n = new Map();
 
 export const stringsToTranslate = [
@@ -32,6 +35,7 @@ export const stringsToTranslate = [
   "Add link",
   "Add marker to group",
   "Add new column",
+  "Add new field",
   "Add new translation gist",
   "Add news",
   "Add one or more perspectives",
@@ -144,6 +148,7 @@ export const stringsToTranslate = [
   "Create dictionary",
   "Create field",
   "Create language",
+  "Create new",
   "Create one or more perspectives",
   "Create organization",
   "Create valency data",
@@ -175,6 +180,7 @@ export const stringsToTranslate = [
   "Dictionaries created out of grant",
   "Dictionary",
   "Dictionary created",
+  "Dictionary info loading error, please contact adiministrators.",
   "Dictionary names",
   "Dictionary names and metadata",
   "Disable all markers of the groups this marker belongs to.",
@@ -302,7 +308,9 @@ export const stringsToTranslate = [
   "Linking",
   "Loading",
   "Loading additional filter data...",
+  "Loading field template",
   "Loading language data",
+  "Loading metadata",
   "Loading suggestions...",
   "Loading valency data...",
   "Location",
@@ -328,6 +336,7 @@ export const stringsToTranslate = [
   "Merging selected on current page...",
   "Message",
   "Metadata",
+  "Metadata loading error, please contact adiministrators.",
   "Mikhail Oslon",
   "Mood / Form",
   "More than",
@@ -400,6 +409,7 @@ export const stringsToTranslate = [
   "Passwords do not match",
   "Pavel Grashchenkov",
   "Perspective",
+  "perspective",
   "Perspective names",
   "Perspective state",
   "Perspectives",
@@ -622,27 +632,44 @@ export const stringsToTranslate = [
   "(for example, Eastern Mansi) as well as those that are in danger of extinction (that is, languages that have no more than 10 speakers over 60 years old left)."
 ];
 
+let i18n_was_set = false;
+let i18n_locale_id = null;
+let i18n_locale = null;
+
 export function getTranslation(string) {
   const translation = i18n.get(string);
 
-  /*console.log('translation');
-  console.log(translation);*/
-  return translation === undefined ? string : translation;
-}
+  if (config.logMissingTranslations && i18n_was_set) {
+    if (translation === undefined) {
+      console.error(`No translation string ${JSON.stringify(string)}, please add it to stringsToTranslate[].`);
+      return string;
+    } else if (translation === null) {
+      const locale_str = i18n_locale ? ` ${i18n_locale.intl_name}` : "";
 
-function setTranslation(string, translatedString) {
-  if (translatedString == null || translatedString === undefined) {
-    i18n.set(string, string);
-  } else {
-    i18n.set(string, translatedString);
-  }
-}
+      const locale_id_str =
+        i18n_locale_id && i18n_locale_id != 2 ? ` for locale id ${i18n_locale_id}${locale_str}` : "";
 
-export function setTranslations(translations) {
-  for (let i = 0; i < stringsToTranslate.length; i++) {
-    const translation = translations[i];
-    if (translation != null) {
-      setTranslation(stringsToTranslate[i], translation);
+      console.error(
+        `No translation for ${JSON.stringify(string)}${locale_id_str}, please add it in /edit_translations.`
+      );
+      return string;
     }
+
+    return translation;
+  }
+
+  return translation == null ? string : translation;
+}
+
+export function setTranslations(translations, locales, localeId = null) {
+  for (let i = 0; i < stringsToTranslate.length; i++) {
+    i18n.set(stringsToTranslate[i], translations[i]);
+  }
+
+  i18n_was_set = true;
+  i18n_locale_id = localeId;
+
+  if (localeId) {
+    i18n_locale = locales.find(locale => locale.id == localeId);
   }
 }
