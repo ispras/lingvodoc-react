@@ -1,227 +1,101 @@
-import React from "react";
-import { Button, Form, Segment } from "semantic-ui-react";
+import React, { useState } from "react";
+import { Button, Form, Icon, Message, Segment } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
 import PropTypes from "prop-types";
 
 import { getTranslation } from "api/i18n";
 
-import { license_options } from "../EditDictionaryMetadata";
+import {
+  EditInput,
+  EditKind,
+  EditSelectMultiple,
+  getMetadataAlternativesQuery,
+  initDropdownOptions,
+  license_options,
+  onAddNewAlternative
+} from "../EditDictionaryMetadata";
 import SelectSettlementMap from "../SelectSettlement/SelectSettlementMap";
 import SelectSettlementModal from "../SelectSettlement/SelectSettlementModal";
 
-const getMetadataAlternativesQuery = gql`
-  query getMetadataAlternatives {
-    select_tags_metadata
-  }
-`;
+const initial_corpus_metadata = {
+  kind: "Expedition",
+  authors: [],
+  humanSettlement: [],
+  years: [],
+  titleOfTheWork: "",
+  genre: "",
+  timeOfWriting: "",
+  quantitativeCharacteristic: "",
+  bibliographicDataOfTheSource: "",
+  translator: "",
+  bibliographicDataOfTheTranslation: "",
+  license: "proprietary"
+};
+
+const EditSettlement = ({ label, value: initialValue, valueOptions, mode, onChange, onSave }) => {
+  const [lastValue, setLastValue] = useState(initialValue);
+  const [value, setValue] = useState(initialValue);
+
+  return (
+    <Form.Group widths="equal">
+      <SelectSettlementModal
+        content={SelectSettlementMap}
+        callback={settlement => {
+          if (!valueOptions.some(item => item.value === settlement)) {
+            valueOptions.push({ text: settlement, value: settlement });
+
+            const new_value = value.concat([settlement]);
+
+            setValue(new_value);
+
+            if (onChange) {
+              onChange({ humanSettlement: new_value });
+            }
+          }
+        }}
+      />
+
+      <Form.Dropdown
+        key="humanSettlement"
+        label={getTranslation("Human settlement")}
+        fluid
+        multiple
+        selection
+        search
+        allowAdditions
+        options={valueOptions}
+        value={value}
+        disabled={!onSave && !onChange}
+        onAddItem={onAddNewAlternative}
+        onChange={(event, data) => {
+          setValue(data.value);
+          if (onChange) {
+            onChange({ humanSettlement: data.value });
+          }
+        }}
+      />
+
+      {mode !== "create" && (
+        <Form.Button
+          key="humanSettlement_save"
+          floated="right"
+          content={getTranslation("Save")}
+          disabled={JSON.stringify(value) === JSON.stringify(lastValue) || !onSave}
+          onClick={() => {
+            setLastValue(value);
+            onSave({ humanSettlement: value });
+          }}
+          className="lingvo-button-violet"
+        />
+      )}
+    </Form.Group>
+  );
+};
 
 class EditCorpusMetadata extends React.Component {
   constructor(props) {
     super(props);
-
-    this.state = props.metadata || {
-      kind: "Expedition",
-      authors: [],
-      humanSettlement: [],
-      years: [],
-      titleOfTheWork: "",
-      genre: "",
-      timeOfWriting: "",
-      quantitativeCharacteristic: "",
-      bibliographicDataOfTheSource: "",
-      translator: "",
-      bibliographicDataOfTheTranslation: "",
-      license: "proprietary"
-    };
-
-    this.initialState = {
-      kind: this.state.kind,
-      authors: this.state.authors,
-      humanSettlement: this.state.humanSettlement,
-      years: this.state.years,
-      titleOfTheWork: this.state.titleOfTheWork,
-      genre: this.state.genre,
-      timeOfWriting: this.state.timeOfWriting,
-      quantitativeCharacteristic: this.state.quantitativeCharacteristic,
-      bibliographicDataOfTheSource: this.state.bibliographicDataOfTheSource,
-      translator: this.state.translator,
-      bibliographicDataOfTheTranslation: this.state.bibliographicDataOfTheTranslation,
-      license: this.state.license
-    };
-
-    this.onAddNewAlternative = this.onAddNewAlternative.bind(this);
-    this.onChangeValue = this.onChangeValue.bind(this);
-    this.onSaveValue = this.onSaveValue.bind(this);
-  }
-
-  initDropdownOptions() {
-    const select_tags_metadata = this.props.data.select_tags_metadata;
-
-    let toAdd = this.state.authors.slice();
-    this.authorsOptions = select_tags_metadata.authors.map(author => {
-      const index = toAdd.indexOf(author);
-      if (index > -1) {
-        toAdd.splice(index, 1);
-      }
-
-      return {
-        text: author,
-        value: author
-      };
-    });
-    toAdd.forEach(author => {
-      this.authorsOptions.push({ text: author, value: author });
-    });
-
-    toAdd = this.state.humanSettlement.slice();
-    this.settlementsOptions = select_tags_metadata.humanSettlement.map(settlement => {
-      const index = toAdd.indexOf(settlement);
-      if (index > -1) {
-        toAdd.splice(index, 1);
-      }
-
-      return {
-        text: settlement,
-        value: settlement
-      };
-    });
-    toAdd.forEach(settlement => {
-      this.settlementsOptions.push({ text: settlement, value: settlement });
-    });
-
-    toAdd = this.state.years.slice();
-    this.yearsOptions = select_tags_metadata.years.map(year => {
-      const index = toAdd.indexOf(year);
-      if (index > -1) {
-        toAdd.splice(index, 1);
-      }
-
-      return {
-        text: year,
-        value: year
-      };
-    });
-    toAdd.forEach(year => {
-      this.yearsOptions.push({ text: year, value: year });
-    });
-  }
-
-  onAddNewAlternative(event, data) {
-    if (data.options.every(option => option.value !== data.value)) {
-      data.options.push({ text: data.value, value: data.value });
-    }
-  }
-
-  onChangeValue(kind, data) {
-    const callback = () => {
-      if (this.props.onChange) {
-        this.props.onChange(this.state);
-      }
-    };
-    switch (kind) {
-      case "kind":
-        this.setState({ kind: data.label }, callback);
-        break;
-      case "authors":
-        this.setState({ authors: data.value }, callback);
-        break;
-      case "settlements":
-        this.setState({ humanSettlement: data.value }, callback);
-        break;
-      case "years":
-        this.setState({ years: data.value }, callback);
-        break;
-      case "titleOfTheWork":
-        this.setState({ titleOfTheWork: data.value }, callback);
-        break;
-      case "genre":
-        this.setState({ genre: data.value }, callback);
-        break;
-      case "timeOfWriting":
-        this.setState({ timeOfWriting: data.value }, callback);
-        break;
-      case "quantitativeCharacteristic":
-        this.setState({ quantitativeCharacteristic: data.value }, callback);
-        break;
-      case "bibliographicDataOfTheSource":
-        this.setState({ bibliographicDataOfTheSource: data.value }, callback);
-        break;
-      case "translator":
-        this.setState({ translator: data.value }, callback);
-        break;
-      case "bibliographicDataOfTheTranslation":
-        this.setState({ bibliographicDataOfTheTranslation: data.value }, callback);
-        break;
-      case "license":
-        this.setState({ license: data.value }, callback);
-        break;
-      default:
-    }
-  }
-
-  onSaveValue(kind) {
-    if (!this.props.onSave) {
-      return;
-    }
-
-    let toSave = null;
-    switch (kind) {
-      case "kind":
-        toSave = { kind: this.state.kind };
-        this.initialState.kind = toSave.kind;
-        break;
-      case "authors":
-        toSave = { authors: this.state.authors };
-        this.initialState.authors = toSave.authors;
-        break;
-      case "settlements":
-        toSave = { humanSettlement: this.state.humanSettlement };
-        this.initialState.humanSettlement = toSave.humanSettlement;
-        break;
-      case "speakers":
-        toSave = { speakersAmount: this.state.speakersAmount };
-        this.initialState.speakersAmount = toSave.speakersAmount;
-        break;
-      case "years":
-        toSave = { years: this.state.years };
-        this.initialState.years = toSave.years;
-        break;
-      case "titleOfTheWork":
-        toSave = { titleOfTheWork: this.state.titleOfTheWork };
-        this.initialState.titleOfTheWork = toSave.titleOfTheWork;
-        break;
-      case "genre":
-        toSave = { genre: this.state.genre };
-        this.initialState.genre = toSave.genre;
-        break;
-      case "timeOfWriting":
-        toSave = { timeOfWriting: this.state.timeOfWriting };
-        this.initialState.timeOfWriting = toSave.timeOfWriting;
-        break;
-      case "quantitativeCharacteristic":
-        toSave = { quantitativeCharacteristic: this.state.quantitativeCharacteristic };
-        this.initialState.quantitativeCharacteristic = toSave.quantitativeCharacteristic;
-        break;
-      case "bibliographicDataOfTheSource":
-        toSave = { bibliographicDataOfTheSource: this.state.bibliographicDataOfTheSource };
-        this.initialState.bibliographicDataOfTheSource = toSave.bibliographicDataOfTheSource;
-        break;
-      case "translator":
-        toSave = { translator: this.state.translator };
-        this.initialState.translator = toSave.translator;
-        break;
-      case "bibliographicDataOfTheTranslation":
-        toSave = { bibliographicDataOfTheTranslation: this.state.bibliographicDataOfTheTranslation };
-        this.initialState.bibliographicDataOfTheTranslation = toSave.bibliographicDataOfTheTranslation;
-        break;
-      default:
-        return;
-    }
-
-    if (toSave) {
-      this.props.onSave(toSave);
-    }
   }
 
   settlementSelected(settlement) {
@@ -241,15 +115,35 @@ class EditCorpusMetadata extends React.Component {
 
   render() {
     const { loading, error } = this.props.data;
-    if (loading || error) {
-      return null;
+
+    if (loading) {
+      return (
+        <Segment>
+          {getTranslation("Loading metadata")}... <Icon loading name="spinner" />
+        </Segment>
+      );
+    } else if (error) {
+      return <Message negative>{getTranslation("Metadata loading error, please contact adiministrators.")}</Message>;
     }
+
+    const { metadata: rawMetadata } = this.props;
+
+    const metadata = rawMetadata ? { ...initial_corpus_metadata, ...rawMetadata } : initial_corpus_metadata;
 
     if (!this.authorsOptions) {
-      this.initDropdownOptions();
+      const { select_tags_metadata } = this.props.data;
+      const { authors, humanSettlement, years } = metadata;
+
+      [this.authorsOptions, this.settlementsOptions, this.yearsOptions] = initDropdownOptions(
+        select_tags_metadata,
+        authors,
+        humanSettlement,
+        years
+      );
     }
 
-    const { mode } = this.props;
+    const { mode, onChange, onSave } = this.props;
+
     const {
       kind,
       authors,
@@ -263,256 +157,158 @@ class EditCorpusMetadata extends React.Component {
       translator,
       bibliographicDataOfTheTranslation,
       license
-    } = this.state;
+    } = metadata;
 
     return (
       <Form>
         <Segment>
-          <Form.Group widths="equal">
-            <Form.Group>
-              <Form.Radio
-                label={getTranslation("Expedition")}
-                checked={kind === "Expedition"}
-                onClick={(event, data) => this.onChangeValue("kind", data)}
-              />
-              <Form.Radio
-                label={getTranslation("Archive")}
-                checked={kind === "Archive"}
-                onClick={(event, data) => this.onChangeValue("kind", data)}
-              />
-            </Form.Group>
-            {mode !== "create" && (
-              <Form.Button
-                floated="right"
-                content={getTranslation("Save")}
-                disabled={kind === this.initialState.kind}
-                onClick={() => this.onSaveValue("kind")}
-                className="lingvo-button-violet"
-              />
-            )}
-          </Form.Group>
+          <EditKind kind={kind} mode={mode} onChange={onChange} onSave={onSave} />
         </Segment>
         <Segment>
           <Form.Group widths="equal">
-            <Form.Dropdown
-              fluid
-              multiple
-              selection
-              search
-              allowAdditions
+            <EditSelectMultiple
+              key="authors"
+              metadata_key="authors"
               label={getTranslation("Authors")}
-              options={this.authorsOptions}
               value={authors}
-              onAddItem={this.onAddNewAlternative}
-              onChange={(event, data) => this.onChangeValue("authors", data)}
+              valueOptions={this.authorsOptions}
+              mode={mode}
+              onChange={onChange}
+              onSave={onSave}
             />
-            {mode !== "create" && (
-              <Button
-                content={getTranslation("Save")}
-                disabled={JSON.stringify(authors) === JSON.stringify(this.initialState.authors)}
-                onClick={() => this.onSaveValue("authors")}
-                className="lingvo-button-violet"
-              />
-            )}
           </Form.Group>
         </Segment>
 
         {mode === "create" && (
           <Segment>
             <Form.Group widths="equal">
-              <Form.Dropdown
-                fluid
+              <EditSelect
+                key="license"
+                metadata_key="license"
                 label={getTranslation("License")}
-                selection
-                search
-                options={license_options}
-                defaultValue={license}
-                onChange={(event, data) => this.onChangeValue("license", data)}
+                value={license}
+                valueOptions={license_options}
+                mode={mode}
+                onChange={onChange}
+                onSave={onSave}
               />
             </Form.Group>
           </Segment>
         )}
 
         <Segment>
-          <Form.Group widths="equal">
-            <SelectSettlementModal content={SelectSettlementMap} callback={this.settlementSelected.bind(this)} />
-            <Form.Dropdown
-              fluid
-              multiple
-              selection
-              search
-              allowAdditions
-              label={getTranslation("Human settlement")}
-              options={this.settlementsOptions}
-              value={humanSettlement}
-              onAddItem={this.onAddNewAlternative}
-              onChange={(event, data) => this.onChangeValue("settlements", data)}
-            />
-            {mode !== "create" && (
-              <Button
-                content={getTranslation("Save")}
-                disabled={JSON.stringify(humanSettlement) === JSON.stringify(this.initialState.humanSettlement)}
-                onClick={() => this.onSaveValue("settlements")}
-                className="lingvo-button-violet"
-              />
-            )}
-          </Form.Group>
+          <EditSettlement
+            key="humanSettlement"
+            value={humanSettlement}
+            valueOptions={this.settlementsOptions}
+            mode={mode}
+            onChange={onChange}
+            onSave={onSave}
+          />
         </Segment>
         <Segment>
           <Form.Group widths="equal">
-            <Form.Dropdown
-              fluid
-              multiple
-              selection
-              search
-              allowAdditions
+            <EditSelectMultiple
+              key="years"
+              metadata_key="years"
               label={getTranslation("Years")}
-              options={this.yearsOptions}
               value={years}
-              onAddItem={this.onAddNewAlternative}
-              onChange={(event, data) => this.onChangeValue("years", data)}
+              valueOptions={this.yearsOptions}
+              mode={mode}
+              onChange={onChange}
+              onSave={onSave}
             />
-            {mode !== "create" && (
-              <Button
-                content={getTranslation("Save")}
-                disabled={JSON.stringify(years) === JSON.stringify(this.initialState.years)}
-                onClick={() => this.onSaveValue("years")}
-                className="lingvo-button-violet"
-              />
-            )}
           </Form.Group>
         </Segment>
         <Segment>
           <Form.Group widths="equal">
-            <Form.Input
-              fluid
+            <EditInput
+              key="titleOfTheWork"
+              metadata_key="titleOfTheWork"
               label={getTranslation("Title of the work")}
               value={titleOfTheWork}
-              onChange={(event, data) => this.onChangeValue("titleOfTheWork", data)}
+              mode={mode}
+              onChange={onChange}
+              onSave={onSave}
             />
-            {mode !== "create" && (
-              <Form.Button
-                floated="right"
-                content={getTranslation("Save")}
-                disabled={titleOfTheWork === this.initialState.titleOfTheWork}
-                onClick={() => this.onSaveValue("titleOfTheWork")}
-                className="lingvo-button-violet"
-              />
-            )}
           </Form.Group>
         </Segment>
         <Segment>
           <Form.Group widths="equal">
-            <Form.Input
-              fluid
+            <EditInput
+              key="genre"
+              metadata_key="genre"
               label={getTranslation("Genre")}
               value={genre}
-              onChange={(event, data) => this.onChangeValue("genre", data)}
+              mode={mode}
+              onChange={onChange}
+              onSave={onSave}
             />
-            {mode !== "create" && (
-              <Form.Button
-                floated="right"
-                content={getTranslation("Save")}
-                disabled={genre === this.initialState.genre}
-                onClick={() => this.onSaveValue("genre")}
-                className="lingvo-button-violet"
-              />
-            )}
           </Form.Group>
         </Segment>
         <Segment>
           <Form.Group widths="equal">
-            <Form.Input
-              fluid
+            <EditInput
+              key="timeOfWriting"
+              metadata_key="timeOfWriting"
               label={getTranslation("Time of writing")}
               value={timeOfWriting}
-              onChange={(event, data) => this.onChangeValue("timeOfWriting", data)}
+              mode={mode}
+              onChange={onChange}
+              onSave={onSave}
             />
-            {mode !== "create" && (
-              <Form.Button
-                floated="right"
-                content={getTranslation("Save")}
-                disabled={timeOfWriting === this.initialState.timeOfWriting}
-                onClick={() => this.onSaveValue("timeOfWriting")}
-                className="lingvo-button-violet"
-              />
-            )}
           </Form.Group>
         </Segment>
         <Segment>
           <Form.Group widths="equal">
-            <Form.Input
-              fluid
+            <EditInput
+              key="quantitativeCharacteristic"
+              metadata_key="quantitativeCharacteristic"
               label={getTranslation("Quantitative characteristic")}
               value={quantitativeCharacteristic}
-              onChange={(event, data) => this.onChangeValue("quantitativeCharacteristic", data)}
+              mode={mode}
+              onChange={onChange}
+              onSave={onSave}
             />
-            {mode !== "create" && (
-              <Form.Button
-                floated="right"
-                content={getTranslation("Save")}
-                disabled={quantitativeCharacteristic === this.initialState.quantitativeCharacteristic}
-                onClick={() => this.onSaveValue("quantitativeCharacteristic")}
-                className="lingvo-button-violet"
-              />
-            )}
           </Form.Group>
         </Segment>
         <Segment>
           <Form.Group widths="equal">
-            <Form.Input
-              fluid
+            <EditInput
+              key="bibliographicDataOfTheSource"
+              metadata_key="bibliographicDataOfTheSource"
               label={getTranslation("Bibliographic data of the source")}
               value={bibliographicDataOfTheSource}
-              onChange={(event, data) => this.onChangeValue("bibliographicDataOfTheSource", data)}
+              mode={mode}
+              onChange={onChange}
+              onSave={onSave}
             />
-            {mode !== "create" && (
-              <Form.Button
-                floated="right"
-                content={getTranslation("Save")}
-                disabled={bibliographicDataOfTheSource === this.initialState.bibliographicDataOfTheSource}
-                onClick={() => this.onSaveValue("bibliographicDataOfTheSource")}
-                className="lingvo-button-violet"
-              />
-            )}
           </Form.Group>
         </Segment>
         <Segment>
           <Form.Group widths="equal">
-            <Form.Input
-              fluid
+            <EditInput
+              key="translator"
+              metadata_key="translator"
               label={getTranslation("Translator")}
               value={translator}
-              onChange={(event, data) => this.onChangeValue("translator", data)}
+              mode={mode}
+              onChange={onChange}
+              onSave={onSave}
             />
-            {mode !== "create" && (
-              <Form.Button
-                floated="right"
-                content={getTranslation("Save")}
-                disabled={translator === this.initialState.translator}
-                onClick={() => this.onSaveValue("translator")}
-                className="lingvo-button-violet"
-              />
-            )}
           </Form.Group>
         </Segment>
         <Segment>
           <Form.Group widths="equal">
-            <Form.Input
-              fluid
+            <EditInput
+              key="bibliographicDataOfTheTranslation"
+              metadata_key="bibliographicDataOfTheTranslation"
               label={getTranslation("Bibliographic data of the translation")}
               value={bibliographicDataOfTheTranslation}
-              onChange={(event, data) => this.onChangeValue("bibliographicDataOfTheTranslation", data)}
+              mode={mode}
+              onChange={onChange}
+              onSave={onSave}
             />
-            {mode !== "create" && (
-              <Form.Button
-                floated="right"
-                content={getTranslation("Save")}
-                disabled={bibliographicDataOfTheTranslation === this.initialState.bibliographicDataOfTheTranslation}
-                onClick={() => this.onSaveValue("bibliographicDataOfTheTranslation")}
-                className="lingvo-button-violet"
-              />
-            )}
           </Form.Group>
         </Segment>
       </Form>

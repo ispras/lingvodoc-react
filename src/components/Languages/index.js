@@ -38,7 +38,8 @@ const Languages = props => {
     selected,
     onSelect,
     expanded,
-    inverted
+    inverted,
+    updatableTOC
   } = props;
 
   if (dictionariesData.error || languagesData.error) {
@@ -77,6 +78,7 @@ const Languages = props => {
         selected={selected}
         onSelect={onSelect}
         expanded={expanded}
+        updatableTOC={updatableTOC}
       />
       <CreateModal />
       <EditModal />

@@ -2,13 +2,13 @@ import React from "react";
 import { connect } from "react-redux";
 import { Button, Checkbox, Dropdown, Grid, List } from "semantic-ui-react";
 import { graphql, withApollo } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 import { isEqual } from "lodash";
 import PropTypes from "prop-types";
 import { branch, compose, renderNothing } from "recompose";
 import { bindActionCreators } from "redux";
 import styled from "styled-components";
 
+import { getTranslation } from "api/i18n";
 import { openCreateFieldModal } from "ducks/fields";
 import { compositeIdToString } from "utils/compositeId";
 import { uuidv4 as uuid } from "utils/uuid";
@@ -133,6 +133,7 @@ class Column extends React.Component {
       <span>
         <Dropdown
           selection
+          search
           value={currentField}
           options={options}
           onChange={(a, { value }) => this.onFieldChange(value)}
@@ -183,11 +184,11 @@ class Columns extends React.Component {
     this.onChangeColumn = this.onChangeColumn.bind(this);
 
     this.state = {
-      columns: []
+      columns: props.perspective.get("fields").toJS() || []
     };
 
     this.fetching = false;
-    if (props.mode == "corpus") {
+    if (props.mode == "corpus" && !this.state.columns) {
       this.fetching = true;
       props.client
         .query({

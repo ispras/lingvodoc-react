@@ -84,7 +84,7 @@ class Translations extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      translations: []
+      translations: props.translations || []
     };
     this.addTranslation = this.addTranslation.bind(this);
     this.onChange = this.onChange.bind(this);
@@ -145,7 +145,9 @@ class Translations extends React.Component {
     if (loading || error) {
       return null;
     }
+
     const { translations } = this.state;
+
     const usedLocaleIds = translations.map(t => t.localeId);
     return (
       <div>

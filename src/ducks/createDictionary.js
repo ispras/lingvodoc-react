@@ -32,33 +32,43 @@ const initial = new Map({
   step: "PARENT_LANGUAGE",
   parentLanguage: null,
   translations: new List(),
-  metadata: null,
-  perspectives: new List()
+  metadata: new Map(),
+  perspectives: new List(),
+  update_flag: true
 });
 
+/*
+ * A hacky way of optimization via preventing re-rerendering of the whole CreateDictionary translations tab
+ * with its Translations and EditDictionaryMetadata / EditCorpusMetadata components when translations or
+ * metadata change, we do not return the changed translations / changed metadata unless we switch the step.
+ *
+ * Changed translations and metadata are still saved in the state and are still shown to the user via
+ * changed subcomponents of Translations and EditDictionaryMetadata / EditCorpusMetadata.
+ */
+
 export default function (state = initial, { type, payload }) {
-  let newState = state;
+  let newState = state.set("update_flag", false);
   switch (type) {
     case NEXT_STEP:
-      newState = state.update("step", updateNextStep);
+      newState = newState.update("step", updateNextStep).set("update_flag", true);
       break;
     case GOTO_STEP:
-      newState = state.set("step", payload);
+      newState = newState.set("step", payload).set("update_flag", true);
       break;
     case PARENT_LANGUAGE_SET:
-      newState = state.set("parentLanguage", payload);
+      newState = newState.set("parentLanguage", payload);
       break;
     case DICTIONARY_TRANSLATIONS_SET:
-      newState = state.set("translations", payload);
+      newState = newState.set("translations", payload);
       break;
     case DICTIONARY_METADATA_SET:
-      newState = state.set("metadata", payload);
+      newState = newState.update("metadata", metadata => metadata.merge(payload));
       break;
     case DICTIONARY_PERSPECTIVES_SET:
-      newState = state.set("perspectives", payload);
+      newState = newState.set("perspectives", payload);
       break;
     case DICTIONARY_PERSPECTIVE_CREATE:
-      newState = state.update("perspectives", addEmptyPerspective);
+      newState = newState.update("perspectives", addEmptyPerspective);
       break;
     default:
       return state;
@@ -99,12 +109,26 @@ export const selectors = {
   getParentLanguage(state) {
     return state.createDictionary.get("parentLanguage");
   },
-  getTranslations(state) {
-    return state.createDictionary.get("translations");
-  },
-  getMetadata(state) {
-    return state.createDictionary.get("metadata");
-  },
+  getTranslations: (() => {
+    let translations_value = null;
+
+    return ({ createDictionary: state }) => {
+      if (translations_value === null || state.get("update_flag")) {
+        translations_value = state.get("translations");
+      }
+      return translations_value || state.get("translations");
+    };
+  })(),
+  getMetadata: (() => {
+    let metadata_value = null;
+
+    return ({ createDictionary: state }) => {
+      if (metadata_value === null || state.get("update_flag")) {
+        metadata_value = state.get("metadata");
+      }
+      return metadata_value || state.get("metadata");
+    };
+  })(),
   getPerspectives(state) {
     return state.createDictionary.get("perspectives");
   }

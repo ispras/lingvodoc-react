@@ -136,7 +136,7 @@ class LanguagesTree extends React.Component {
         };
       }
 
-      if (user.id === 1) {
+      if (this.props.updatableTOC && user.id === 1) {
         const toc_change = this.state.toc_change_set.hasOwnProperty(id2str(node.id));
 
         const static_check = checkLanguageId(node.id);

@@ -1,21 +1,21 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { connect } from "react-redux";
-import { Button, Form, Grid, Header, Label, Modal, Segment } from "semantic-ui-react";
+import { Button, Form, Grid, Header, Label, Loader, Message, Modal, Segment } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql, withApollo } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 import { isEqual, sortBy } from "lodash";
 import PropTypes from "prop-types";
 import { branch, compose, onlyUpdateForKeys, renderNothing } from "recompose";
 import { bindActionCreators } from "redux";
 import styled from "styled-components";
 
+import { getTranslation } from "api/i18n";
 import EditCorpusMetadata from "components/EditCorpusMetadata";
 import EditDictionaryMetadata from "components/EditDictionaryMetadata";
 import Languages from "components/Languages";
 import TranslationGist from "components/TranslationGist";
 import { closeDictionaryPropertiesModal } from "ducks/dictionaryProperties";
-import { compositeIdToString } from "utils/compositeId";
+import { compositeIdToString as id2str } from "utils/compositeId";
 
 import Map from "./Map";
 
@@ -115,12 +115,15 @@ class Properties extends React.Component {
       tags: "",
       files: [],
       parent: null,
-      selectedParent: null
+      selectedParent: null,
+      parentQuery: false
     };
     this.initialState = {
       location: null,
       files: []
     };
+
+    this.check_init = this.check_init.bind(this);
 
     this.onChangeLocation = this.onChangeLocation.bind(this);
     this.onSaveLocation = this.onSaveLocation.bind(this);
@@ -133,14 +136,17 @@ class Properties extends React.Component {
     this.onUpdateParentLanguage = this.onUpdateParentLanguage.bind(this);
   }
 
-  componentDidMount() {
-    const {
-      data: { error, loading, dictionary },
-      client
-    } = this.props;
+  check_init() {
+    const { loading, error } = this.props.data;
+
     if (loading || error) {
       return;
     }
+
+    const {
+      data: { dictionary },
+      client
+    } = this.props;
 
     const {
       additional_metadata: { location, tag_list: tagList, blobs }
@@ -161,14 +167,15 @@ class Properties extends React.Component {
     }
 
     if (!isEqual(this.state.files, blobs)) {
-      this.initialState.files = blobs.map(compositeIdToString);
+      this.initialState.files = blobs.map(id2str);
       this.setState({
         files: this.initialState.files
       });
     }
 
     const { parent_id } = dictionary;
-    if (this.state.parent == null || this.state.parent.id != parent_id) {
+    if (!this.state.parentQuery && (this.state.parent == null || !isEqual(this.state.parent.id, parent_id))) {
+      this.setState({ parentQuery: true });
       client
         .query({
           query: getParentLanguageQuery,
@@ -177,10 +184,19 @@ class Properties extends React.Component {
         .then(result => {
           this.setState({
             parent: result.data.language,
-            selectedParent: result.data.language
+            selectedParent: result.data.language,
+            parentQuery: false
           });
         });
     }
+  }
+
+  componentDidMount() {
+    this.check_init();
+  }
+
+  componentDidUpdate() {
+    this.check_init();
   }
 
   onChangeLocation({ lat, lng }) {
@@ -223,7 +239,7 @@ class Properties extends React.Component {
       data: { user_blobs: allFiles }
     } = this.props;
     const ids = this.state.files
-      .map(id => allFiles.find(f => id === compositeIdToString(f.id)))
+      .map(id => allFiles.find(f => id === id2str(f.id)))
       .filter(f => f != undefined)
       .map(f => f.id);
     this.initialState.files = this.state.files;
@@ -275,8 +291,24 @@ class Properties extends React.Component {
   }
 
   render() {
+    const { loading, error } = this.props.data;
+
+    const loader = (
+      <Modal open dimmer size="fullscreen" closeOnDimmerClick={false} closeIcon className="lingvo-modal2">
+        <Loader>{getTranslation("Loading")}...</Loader>
+      </Modal>
+    );
+
+    if (loading) {
+      return loader;
+    } else if (error) {
+      return (
+        <Message negative>{getTranslation("Dictionary info loading error, please contact adiministrators.")}</Message>
+      );
+    }
+
     if (this.state.parent == null) {
-      return null;
+      return loader;
     }
 
     const {
@@ -287,7 +319,7 @@ class Properties extends React.Component {
     } = this.props;
     const { category, translation_gist_id: gistId } = dictionary;
     const options = sortBy(
-      files.map(file => ({ key: file.id, text: file.name, value: compositeIdToString(file.id) })),
+      files.map(file => ({ key: file.id, text: file.name, value: id2str(file.id) })),
       file => file.text
     );
     const parentName = this.state.parent == null ? null : this.state.parent.translation;
@@ -434,7 +466,6 @@ export default compose(
   graphql(query),
   graphql(updateMetadataMutation, { name: "update" }),
   graphql(updateAtomMutation, { name: "updateAtomMutation" }),
-  branch(({ data: { loading, error } }) => loading || !!error, renderNothing),
   onlyUpdateForKeys(["id", "data"]),
   withApollo
 )(Properties);
