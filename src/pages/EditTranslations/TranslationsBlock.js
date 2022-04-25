@@ -82,7 +82,10 @@ class TranslationsBlock extends React.Component {
       return (
         <div style={{ textAlign: "center" }}>
           <Message compact negative>
-            {getTranslation("Translation loading error")}.
+            {error.message == "InvalidRegularExpression"
+              ? getTranslation("Invalid regular expression")
+              : getTranslation("Translation loading error")}
+            .
           </Message>
         </div>
       );

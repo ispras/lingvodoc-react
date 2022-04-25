@@ -273,6 +273,7 @@ export const stringsToTranslate = [
   "Interrogator",
   "intersections",
   "Invalid email address",
+  "Invalid regular expression",
   "Ipatov Stepan Anatolievich",
   "Issuer URL",
   "It currently contains",

@@ -5,13 +5,19 @@ import { createUploadLink } from "apollo-upload-client";
 // eslint-disable-next-line import/no-unresolved
 import config from "config";
 
+const filter_out_error_set = {
+  InvalidRegularExpression: null
+};
+
 const errorLink = onError(({ networkError = {}, graphQLErrors = [] }) => {
   if (networkError.statusCode === 500) {
     window.logger.err("Internal server error");
   }
 
   graphQLErrors.forEach(error => {
-    window.logger.err(`GraphQL error: ${error.message}`);
+    if (!filter_out_error_set.hasOwnProperty(error.message)) {
+      window.logger.err(`GraphQL error: ${error.message}`);
+    }
   });
 });
 

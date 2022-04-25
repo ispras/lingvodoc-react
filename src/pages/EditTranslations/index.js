@@ -46,7 +46,6 @@ const Filter = ({ filterStr: initialFilterStr, caseSensitive, regularExpression,
           <Checkbox
             label={getTranslation("Case-sensitive")}
             checked={caseSensitive}
-            disabled={!initialFilterStr && !filterStr}
             onChange={(e, { checked }) => onChange({ filterStr, caseSensitive: checked })}
           />
         </div>
@@ -54,7 +53,6 @@ const Filter = ({ filterStr: initialFilterStr, caseSensitive, regularExpression,
           <Checkbox
             label={getTranslation("Regular expression")}
             checked={regularExpression}
-            disabled={!initialFilterStr && !filterStr}
             onChange={(e, { checked }) => onChange({ filterStr, regularExpression: checked })}
           />
         </div>
