@@ -10,7 +10,7 @@ import "./styles.scss";
 
 const categories = ["Perspective", "Dictionary", "Service", "Language", "Field", "Organization", "Grant", "All"];
 
-const Filter = ({ filterStr: initialFilterStr, caseSensitive, onChange }) => {
+const Filter = ({ filterStr: initialFilterStr, caseSensitive, regularExpression, onChange }) => {
   const [filterStr, setFilterStr] = useState(initialFilterStr);
 
   return (
@@ -32,18 +32,33 @@ const Filter = ({ filterStr: initialFilterStr, caseSensitive, onChange }) => {
           )
         }
       />
-      <Checkbox
+      <div
         style={{
+          display: "inline-block",
           position: "absolute",
           top: "50%",
           transform: "translate(0%, -50%)",
-          marginLeft: "0.75em"
+          marginLeft: "0.75em",
+          textAlign: "left"
         }}
-        label={getTranslation("Case-sensitive")}
-        checked={caseSensitive}
-        disabled={!initialFilterStr && !filterStr}
-        onChange={(e, { checked }) => onChange({ filterStr, caseSensitive: checked })}
-      />
+      >
+        <div>
+          <Checkbox
+            label={getTranslation("Case-sensitive")}
+            checked={caseSensitive}
+            disabled={!initialFilterStr && !filterStr}
+            onChange={(e, { checked }) => onChange({ filterStr, caseSensitive: checked })}
+          />
+        </div>
+        <div style={{ marginTop: "0.25em" }}>
+          <Checkbox
+            label={getTranslation("Regular expression")}
+            checked={regularExpression}
+            disabled={!initialFilterStr && !filterStr}
+            onChange={(e, { checked }) => onChange({ filterStr, regularExpression: checked })}
+          />
+        </div>
+      </div>
     </div>
   );
 };
@@ -55,7 +70,8 @@ class EditTranslations extends React.Component {
     this.state = {
       selectedCategory: 0,
       filterStr: "",
-      caseSensitive: false
+      caseSensitive: false,
+      regularExpression: false
     };
   }
 
@@ -93,7 +109,8 @@ class EditTranslations extends React.Component {
             </Menu>
             <Filter
               filterStr={this.state.filterStr}
-              caseSensitive={this.state.caseSenstitive}
+              caseSensitive={this.state.caseSensitive}
+              regularExpression={this.state.regularExpression}
               onChange={state => this.setState(state)}
             />
           </div>
@@ -103,6 +120,7 @@ class EditTranslations extends React.Component {
             gists_type={selectedCategory == 7 ? "" : categories[selectedCategory]}
             searchstring={this.state.filterStr}
             search_case_insensitive={!this.state.caseSensitive}
+            search_regular_expression={this.state.regularExpression}
           />
         )}
       </div>

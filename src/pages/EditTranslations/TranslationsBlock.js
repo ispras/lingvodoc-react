@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Container, Loader, Pagination } from "semantic-ui-react";
+import { Button, Container, Loader, Message, Pagination } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
 
@@ -8,10 +8,16 @@ import { getTranslation } from "api/i18n";
 import EditAtoms from "./EditAtoms";
 
 const getTranslationsQuery = gql`
-  query getTranslations($searchstring: String!, $search_case_insensitive: Boolean, $gists_type: String!) {
+  query getTranslations(
+    $searchstring: String!
+    $search_case_insensitive: Boolean
+    $search_regular_expression: Boolean
+    $gists_type: String!
+  ) {
     translation_search(
       searchstring: $searchstring
       search_case_insensitive: $search_case_insensitive
+      search_regular_expression: $search_regular_expression
       translation_type: $gists_type
       deleted: false
       order_by_type: true
@@ -73,15 +79,17 @@ class TranslationsBlock extends React.Component {
     const newGists = this.state.newgists;
 
     if (error) {
-      return null;
+      return (
+        <div style={{ textAlign: "center" }}>
+          <Message compact negative>
+            {getTranslation("Translation loading error")}.
+          </Message>
+        </div>
+      );
     }
 
     if (loading || this.refetching) {
-      return <Loader active content={getTranslation("Loading")}></Loader>;
-    }
-
-    if (translationgists.length <= 0) {
-      return <h1 className="lingvo-header-translations">{getTranslation("No translations.")}</h1>;
+      return <Loader active content={`${getTranslation("Loading")}...`}></Loader>;
     }
 
     const typeGistsMap = new Map();
@@ -107,16 +115,23 @@ class TranslationsBlock extends React.Component {
       }
     });
 
+    if (this.state.gistsType && types.length <= 0) {
+      types.push(this.state.gistsType);
+      typeGistsMap[this.state.gistsType] = [];
+    }
+
     return (
       <Container>
-        <div style={{ marginBottom: "26px", textAlign: "center" }}>
-          <Pagination
-            activePage={activePage}
-            totalPages={totalPages}
-            onPageChange={(e, { activePage }) => this.setState({ activePage })}
-          />
-        </div>
-        {types.map((type, index) => (
+        {translationgists.length > 0 && (
+          <div style={{ marginBottom: "26px", textAlign: "center" }}>
+            <Pagination
+              activePage={activePage}
+              totalPages={totalPages}
+              onPageChange={(e, { activePage }) => this.setState({ activePage })}
+            />
+          </div>
+        )}
+        {types.map(type => (
           <Container fluid key={type}>
             <h1 className="lingvo-header-translations">{getTranslation(type)}</h1>
 
@@ -141,18 +156,29 @@ class TranslationsBlock extends React.Component {
               </div>
             )}
 
-            {typeGistsMap[type].map((gist, index) => (
-              <EditAtoms key={gist.id} gistId={gist.id} atoms={gist.translationatoms} locales={all_locales}></EditAtoms>
-            ))}
+            {typeGistsMap[type].length > 0 ? (
+              typeGistsMap[type].map(gist => (
+                <EditAtoms
+                  key={gist.id}
+                  gistId={gist.id}
+                  atoms={gist.translationatoms}
+                  locales={all_locales}
+                ></EditAtoms>
+              ))
+            ) : (
+              <h1 className="lingvo-header-translations">{getTranslation("No translations.")}</h1>
+            )}
           </Container>
         ))}
-        <div style={{ textAlign: "center" }}>
-          <Pagination
-            activePage={activePage}
-            totalPages={totalPages}
-            onPageChange={(e, { activePage }) => this.setState({ activePage })}
-          />
-        </div>
+        {translationgists.length > 0 && (
+          <div style={{ textAlign: "center" }}>
+            <Pagination
+              activePage={activePage}
+              totalPages={totalPages}
+              onPageChange={(e, { activePage }) => this.setState({ activePage })}
+            />
+          </div>
+        )}
       </Container>
     );
   }

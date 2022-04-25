@@ -1,4 +1,3 @@
-import { getLocaleId } from "api/locale";
 import config from "config";
 
 const i18n = new Map();
@@ -445,6 +444,7 @@ export const stringsToTranslate = [
   "Reject",
   "Reject all selected",
   "Regexp",
+  "Regular expression",
   "Relation",
   "Removal date",
   "Remove",
@@ -564,8 +564,9 @@ export const stringsToTranslate = [
   "to TOC",
   "Tomsk State University",
   "Tools",
-  "Translation for",
   "Transcription rules",
+  "Translation for",
+  "Translation loading error",
   "Translations",
   "Translator",
   "Type",
@@ -640,7 +641,10 @@ export function getTranslation(string) {
   const translation = i18n.get(string);
 
   if (config.logMissingTranslations && i18n_was_set) {
+    /* Development translation issues reporting. */
+
     if (translation === undefined) {
+      // eslint-disable-next-line no-console
       console.error(`No translation string ${JSON.stringify(string)}, please add it to stringsToTranslate[].`);
       return string;
     } else if (translation === null) {
@@ -649,6 +653,7 @@ export function getTranslation(string) {
       const locale_id_str =
         i18n_locale_id && i18n_locale_id != 2 ? ` for locale id ${i18n_locale_id}${locale_str}` : "";
 
+      // eslint-disable-next-line no-console
       console.error(
         `No translation for ${JSON.stringify(string)}${locale_id_str}, please add it in /edit_translations.`
       );
