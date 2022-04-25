@@ -115,9 +115,13 @@ class TranslationsBlock extends React.Component {
       }
     });
 
-    if (this.state.gistsType && types.length <= 0) {
-      types.push(this.state.gistsType);
-      typeGistsMap[this.state.gistsType] = [];
+    if (types.length <= 0) {
+      if (this.state.gistsType) {
+        types.push(this.state.gistsType);
+        typeGistsMap[this.state.gistsType] = [];
+      } else {
+        return <h1 className="lingvo-header-translations">{getTranslation("No translations.")}</h1>;
+      }
     }
 
     return (
