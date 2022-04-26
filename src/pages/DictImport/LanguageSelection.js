@@ -2,6 +2,7 @@ import React from "react";
 import { Button, Form, Input, Modal } from "semantic-ui-react";
 import { pure } from "recompose";
 
+import { chooseTranslation as T } from "api/i18n";
 import { license_options } from "components/EditDictionaryMetadata";
 import Languages from "components/Languages";
 import TranslationContext from "Layout/TranslationContext";

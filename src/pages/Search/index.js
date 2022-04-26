@@ -246,7 +246,7 @@ class Wrapper extends React.Component {
   }
 }
 
-Wrapper.contextText = TranslationContext;
+Wrapper.contextType = TranslationContext;
 
 const WrapperWithData = compose(
   connect(

@@ -331,6 +331,7 @@ export const stringsToTranslate = [
   "Map of the languages and dialects",
   "mapping geographic areas",
   "Maps",
+  "Match",
   "Match translations",
   "Members",
   "Merge all",
@@ -418,6 +419,7 @@ export const stringsToTranslate = [
   "PDF file",
   "Perspective",
   "perspective",
+  "Perspective info loading error, please contact adiministrators.",
   "Perspective names",
   "Perspective state",
   "Perspectives",
@@ -595,7 +597,9 @@ export const stringsToTranslate = [
   "Uncheck all",
   "unique data",
   "Unique software that reproduces the experimental-phonetic, etymological and morphological work of a researcher 100 times faster",
-  "Unknow request type!",
+  "Unknown dictionary",
+  "Unknown grant",
+  "Unknown request type!",
   "Unknown type",
   "unpublished",
   "Up",
@@ -689,9 +693,9 @@ export function setTranslations(translations, locales, localeId = null) {
 
 const no_translation_str = "NO TRANSLATION AVAILABLE";
 
-export function chooseTranslation(translation_dict) {
+export function chooseTranslation(translation_dict, default_value = null) {
   if (!translation_dict) {
-    return no_translation_str;
+    return default_value !== null ? default_value : no_translation_str;
   }
 
   const locale_id_str = (i18n_locale_id || getLocaleId()).toString();
@@ -716,5 +720,5 @@ export function chooseTranslation(translation_dict) {
     return translation_list[0][1];
   }
 
-  return no_translation_str;
+  return default_value !== null ? default_value : no_translation_str;
 }

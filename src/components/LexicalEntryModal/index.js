@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Button, Modal } from "semantic-ui-react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
@@ -18,6 +18,8 @@ export const LexicalEntryLink = styled.span`
 `;
 
 function LexicalEntryModal({ node, actions, entitiesMode, defaultMode, onClose, onlyViewMode }) {
+  const getTranslation = useContext(TranslationContext);
+
   const { id, translations, lexicalEntries, parent_id: perspectiveParentId } = node;
 
   return (
@@ -44,13 +46,11 @@ function LexicalEntryModal({ node, actions, entitiesMode, defaultMode, onClose, 
         />
       </Modal.Content>
       <Modal.Actions>
-        <Button content={this.context("Cancel")} onClick={onClose} className="lingvo-button-basic-black" />
+        <Button content={getTranslation("Cancel")} onClick={onClose} className="lingvo-button-basic-black" />
       </Modal.Actions>
     </Modal>
   );
 }
-
-LexicalEntryModal.contextType = TranslationContext;
 
 LexicalEntryModal.propTypes = {
   node: PropTypes.shape({

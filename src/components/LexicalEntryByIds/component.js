@@ -133,6 +133,8 @@ class Perspective extends PureComponent {
       return null;
     }
 
+    const MODES = MODES_translator(this.context);
+
     const { mode, page } = this.state;
     const { entitiesMode } = MODES[mode];
     return (
@@ -160,6 +162,8 @@ class Perspective extends PureComponent {
     );
   }
 }
+
+Perspective.contextType = TranslationContext;
 
 Perspective.propTypes = {
   perspective: PropTypes.object.isRequired,

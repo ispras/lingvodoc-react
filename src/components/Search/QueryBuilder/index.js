@@ -156,7 +156,7 @@ function Query({ data, query, onFieldChange, onDelete }) {
       className="group-fields-adaptive"
     >
       <Select
-        placeholder="Field"
+        placeholder={`${getTranslation("Field")}...`}
         options={fieldOptions}
         value={compositeIdToString(fieldId.toJS())}
         onChange={onChange}
@@ -164,7 +164,7 @@ function Query({ data, query, onFieldChange, onDelete }) {
       <input />
       <Select
         compact
-        placeholder="Match"
+        placeholder={`${getTranslation("Match")}...`}
         options={matchingOptions}
         value={type}
         onChange={onFieldChange("matching_type")}

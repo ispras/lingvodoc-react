@@ -238,7 +238,7 @@ class Organizations extends React.Component {
                           <div className="lingvo-org-table__content">{T(organization.translations)}</div>
                         </Table.Cell>
                         <Table.Cell>
-                          <div className="lingvo-org-table__content">{T(organization.about_translations)}</div>
+                          <div className="lingvo-org-table__content">{T(organization.about_translations, "")}</div>
                         </Table.Cell>
                         <Table.Cell>
                           <div className="lingvo-org-table__content">

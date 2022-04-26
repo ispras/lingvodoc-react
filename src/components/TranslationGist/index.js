@@ -1,12 +1,13 @@
 import React from "react";
-import PropTypes from "prop-types";
-import { graphql } from "@apollo/client/react/hoc";
+import { Button, Container, List } from "semantic-ui-react";
 import { gql } from "@apollo/client";
+import { graphql } from "@apollo/client/react/hoc";
+import PropTypes from "prop-types";
 
-import { Container, Button, List } from "semantic-ui-react";
-import TranslationAtom from "../TranslationAtom";
-import { compositeIdToString } from "../../utils/compositeId";
 import TranslationContext from "Layout/TranslationContext";
+
+import { compositeIdToString } from "../../utils/compositeId";
+import TranslationAtom from "../TranslationAtom";
 
 export const translationGistQuery = gql`
   query ($id: LingvodocID!) {
@@ -24,8 +25,7 @@ export const translationGistQuery = gql`
   }
 `;
 
-@graphql(translationGistQuery)
-export default class TranslationGist extends React.Component {
+class TranslationGist extends React.Component {
   constructor(props) {
     super(props);
 
@@ -54,7 +54,7 @@ export default class TranslationGist extends React.Component {
   };
 
   getAvailableLocales(locales, atoms, currentAtomLocale) {
-    let result = [];
+    const result = [];
     locales.forEach(locale => {
       if (locale.id == currentAtomLocale) {
         result.unshift(locale);
@@ -140,3 +140,5 @@ TranslationGist.defaultProps = {
   id: [null, null],
   data: {}
 };
+
+export default graphql(translationGistQuery)(TranslationGist);
