@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useContext } from "react";
 import Autocomplete from "react-autocomplete";
 import { Container, Form, Icon, Segment } from "semantic-ui-react";
-import { getTranslation } from "api/i18n";
 import PropTypes from "prop-types";
 import { compose, lifecycle, mapProps, withHandlers, withState } from "recompose";
 
+import { chooseTranslation as T } from "api/i18n";
+import TranslationContext from "Layout/TranslationContext";
 import debounce from "utils/debounce";
 
 import { getScrollContainer, goToLanguage } from "../../../common/";
@@ -106,14 +107,14 @@ const enhance = compose(
 );
 
 /* ----------- LANGUAGE HELPERS ----------- */
-const getLangValue = lang => lang.translation;
+const getLangValue = lang => T(lang.translations);
 
 const shouldLangRender = (item, value) =>
-  item.translation.toLocaleLowerCase().indexOf(value.toLocaleLowerCase()) !== -1;
+  T(item.translations).toLocaleLowerCase().indexOf(value.toLocaleLowerCase()) !== -1;
 
 const renderLangItem = (item, isHighlighted) => (
   <div key={item.id} className={`${classNames.item} ${isHighlighted ? classNames.itemHighlighted : ""}`}>
-    {item.translation}
+    {T(item.translations)}
   </div>
 );
 
@@ -121,6 +122,8 @@ const renderLangItem = (item, isHighlighted) => (
 const LangsNavAutocomplete = props => {
   const { data, onLangChange, onLangSelect, language, langsNavAcBeside, langsNavAcFixed, disableLangsNavAcBeside } =
     props;
+
+  const getTranslation = useContext(TranslationContext);
 
   return (
     <div className={classNames.substrateContainer}>
@@ -145,7 +148,7 @@ const LangsNavAutocomplete = props => {
                 className={classNames.disableBesideButton}
                 type="button"
                 onClick={disableLangsNavAcBeside}
-                aria-label="Закрыть ввод языка"
+                aria-label={getTranslation("Закрыть ввод языка")}
               >
                 <Icon name="window close outline" />
               </button>

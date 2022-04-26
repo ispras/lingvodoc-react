@@ -1,17 +1,128 @@
 import React, { PureComponent } from "react";
 import { Button } from "semantic-ui-react";
-import { getTranslation } from "api/i18n";
 import PropTypes from "prop-types";
 
-import authorsInfo from "./authors";
-import dictionariesInfo from "./dictionaries";
-import grammarInfo from "./grammar";
-import hasAudioInfo from "./hasAudio";
-import humanSettlementInfo from "./humanSettlement";
-import kindInfo from "./kind";
-import languagesInfo from "./languages";
-import languageVulnerabilityInfo from "./languageVulnerability";
-import yearsInfo from "./years";
+import TranslationContext from "Layout/TranslationContext";
+
+import info, { isValueBoolean } from "./info";
+
+const authorsInfo = (authors, getTranslation) => {
+  let result = "";
+
+  if (authors.length === 0) {
+    result = info(getTranslation("Not chosen"), getTranslation);
+  } else {
+    result = info(authors, getTranslation);
+  }
+
+  return `${getTranslation("Authors")}: ${result}`;
+};
+
+const dictionariesInfo = (dictionaries, getTranslation) => {
+  const result = `${dictionaries.length} ${getTranslation("selected")}`;
+  return `${getTranslation("Dictionaries")}: ${result}`;
+};
+
+const grammarGroupInfo = (name, values, needComma) => {
+  return (
+    <span key={name}>
+      <strong>{name}</strong>: {info(values, getTranslation)}
+      {needComma ? ", " : ""}
+    </span>
+  );
+};
+
+const grammarInfo = (grammar, onClickCallback, getTranslation) => {
+  const grammarText = Object.keys(grammar).map((grammarGroupName, index, array) => {
+    const grammarGroupValues = Object.keys(grammar[grammarGroupName]);
+    let needComma = false;
+
+    if (index + 1 !== array.length) {
+      needComma = true;
+    }
+
+    return grammarGroupInfo(grammarGroupName, grammarGroupValues, needComma);
+  });
+
+  let result = grammarText;
+
+  if (grammarText.length === 0) {
+    result = getTranslation("Not chosen");
+  }
+
+  return (
+    <div>
+      {getTranslation("Grammar")}: <a onClick={onClickCallback}>{result}</a>
+    </div>
+  );
+};
+
+const hasAudioInfo = (hasAudio, getTranslation) => {
+  let result = "";
+
+  if (hasAudio === null) {
+    result = info(getTranslation("Not chosen"), getTranslation);
+  } else {
+    result = info(hasAudio, getTranslation);
+  }
+
+  return `${getTranslation("Audio")}: ${result}`;
+};
+
+const humanSettlementInfo = (humanSettlement, getTranslation) => {
+  let result = "";
+
+  if (humanSettlement.length === 0) {
+    result = info(getTranslation("Not chosen"), getTranslation);
+  } else {
+    result = info(humanSettlement, getTranslation);
+  }
+
+  return `${getTranslation("Settlement")}: ${result}`;
+};
+
+const kindInfo = (kind, getTranslation) => {
+  let result = "";
+
+  if (isValueBoolean(kind)) {
+    if (kind === false) {
+      result = info(getTranslation("Not chosen"), getTranslation);
+    }
+  } else {
+    result = info(kind, getTranslation);
+  }
+
+  return `${getTranslation("Data source")}: ${result}`;
+};
+
+const languagesInfo = (languages, getTranslation) => {
+  const result = `${languages.length} ${getTranslation("selected")}`;
+  return `${getTranslation("Languages")}: ${result}`;
+};
+
+const languageVulnerabilityInfo = (languageVulnerability, getTranslation) => {
+  let result = "";
+
+  if (languageVulnerability.length === 0) {
+    result = info(getTranslation("Not chosen"), getTranslation);
+  } else {
+    result = info(languageVulnerability, getTranslation);
+  }
+
+  return `${getTranslation("Language degree of endangerment")}: ${result}`;
+};
+
+const yearsInfo = (years, getTranslation) => {
+  let result = "";
+
+  if (years.length === 0) {
+    result = info(getTranslation("Not chosen"), getTranslation);
+  } else {
+    result = info(years, getTranslation);
+  }
+
+  return `${getTranslation("Years")}: ${result}`;
+};
 
 const classNames = {
   container: "additional-filter__info",
@@ -58,10 +169,10 @@ class AdditionalFilterInfo extends PureComponent {
     } = this.props;
     const { showInfo } = this.state;
 
-    const selectedText = `${capitalizeFirstLetter(getTranslation("selected"))}:`;
-    const defaultSelectedText = `${capitalizeFirstLetter(getTranslation("selected by default"))}:`;
-    const showText = getTranslation("Show");
-    const closeText = getTranslation("Close");
+    const selectedText = `${capitalizeFirstLetter(this.context("selected"))}:`;
+    const defaultSelectedText = `${capitalizeFirstLetter(this.context("selected by default"))}:`;
+    const showText = this.context("Show");
+    const closeText = this.context("Close");
     const buttonText = showInfo ? closeText : showText;
     const buttonClassName = showInfo
       ? `${classNames.toggleButton} ${classNames.toggleButtonClose}`
@@ -77,21 +188,23 @@ class AdditionalFilterInfo extends PureComponent {
         </Button>
         {showInfo ? (
           <div className={classNames.data}>
-            <div className={classNames.field}>{languagesInfo(languages)}</div>
-            <div className={classNames.field}>{dictionariesInfo(dictionaries)}</div>
-            <div className={classNames.field}>{hasAudioInfo(hasAudio)}</div>
-            <div className={classNames.field}>{kindInfo(kind)}</div>
-            <div className={classNames.field}>{yearsInfo(years)}</div>
-            <div className={classNames.field}>{humanSettlementInfo(humanSettlement)}</div>
-            <div className={classNames.field}>{authorsInfo(authors)}</div>
-            <div className={classNames.field}>{languageVulnerabilityInfo(languageVulnerability)}</div>
-            <div className={classNames.field}>{grammarInfo(grammaticalSigns, grammarClickCallback)}</div>
+            <div className={classNames.field}>{languagesInfo(languages, this.context)}</div>
+            <div className={classNames.field}>{dictionariesInfo(dictionaries, this.context)}</div>
+            <div className={classNames.field}>{hasAudioInfo(hasAudio, this.context)}</div>
+            <div className={classNames.field}>{kindInfo(kind, this.context)}</div>
+            <div className={classNames.field}>{yearsInfo(years, this.context)}</div>
+            <div className={classNames.field}>{humanSettlementInfo(humanSettlement, this.context)}</div>
+            <div className={classNames.field}>{authorsInfo(authors, this.context)}</div>
+            <div className={classNames.field}>{languageVulnerabilityInfo(languageVulnerability, this.context)}</div>
+            <div className={classNames.field}>{grammarInfo(grammaticalSigns, grammarClickCallback, this.context)}</div>
           </div>
         ) : null}
       </div>
     );
   }
 }
+
+AdditionalFilterInfo.contextType = TranslationContext;
 
 AdditionalFilterInfo.propTypes = {
   languages: PropTypes.array.isRequired,

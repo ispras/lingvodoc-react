@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { connect } from "react-redux";
 import { Icon } from "semantic-ui-react";
 import { gql } from "@apollo/client";
@@ -8,11 +8,11 @@ import PropTypes from "prop-types";
 import { compose, shouldUpdate } from "recompose";
 import { bindActionCreators } from "redux";
 
-import { getTranslation } from "api/i18n";
 import { deleteLanguageMutation, languagesQuery, moveLanguageMutation, updateLanguageMetadataMutation } from "backend";
 import CreateModal from "components/CreateLanguageModal";
 import EditModal from "components/EditLanguageModal";
 import { openModalCreate, openModalEdit } from "ducks/language";
+import TranslationContext from "Layout/TranslationContext";
 import { buildLanguageTree } from "pages/Search/treeBuilder";
 
 import LanguagesTree from "./LanguagesTree";
@@ -41,6 +41,8 @@ const Languages = props => {
     inverted,
     updatableTOC
   } = props;
+
+  const getTranslation = useContext(TranslationContext);
 
   if (dictionariesData.error || languagesData.error) {
     return null;

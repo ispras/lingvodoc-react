@@ -1,11 +1,10 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { Dropdown, Icon, Menu } from "semantic-ui-react";
 import { useApolloClient } from "@apollo/client";
 import PropTypes from "prop-types";
 
-import { getTranslation } from "api/i18n";
 import { getId, getUser, signOut } from "api/user";
 import EditUserModal from "components/EditUserModal";
 import SignInModal from "components/SignInModal";
@@ -13,6 +12,7 @@ import SignUpModal from "components/SignUpModal";
 import { setIsAuthenticated } from "ducks/auth";
 import { openModal as openBanModal } from "ducks/ban";
 import { requestUser, setError, setUser } from "ducks/user";
+import TranslationContext from "Layout/TranslationContext";
 import { startTrackUser, stopTrackUser } from "utils/matomo";
 
 import imageUser from "../images/user.svg";
@@ -27,6 +27,7 @@ const spinner = (
 
 const Anonymous = () => {
   const [modal, setModal] = useState();
+  const getTranslation = useContext(TranslationContext);
 
   return (
     <>
@@ -72,6 +73,8 @@ const Signed = ({ user }) => {
   const [editModal, setEditModal] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
 
+  const getTranslation = useContext(TranslationContext);
+
   const logoutUser = useCallback(async () => {
     setLoggingOut(true);
     const response = await signOut();
@@ -86,7 +89,7 @@ const Signed = ({ user }) => {
       setLoggingOut(false);
       window.logger.err(getTranslation("Could not sign out"));
     }
-  }, [client, dispatch, navigate]);
+  }, [client, dispatch, navigate, getTranslation]);
 
   if (loggingOut) {
     return spinner;
@@ -142,6 +145,8 @@ Signed.propTypes = {
 const UserDropdown = () => {
   const userInfo = useSelector(state => state.user);
   const dispatch = useDispatch();
+
+  const getTranslation = useContext(TranslationContext);
 
   useEffect(() => {
     const fetchUserInformation = async () => {

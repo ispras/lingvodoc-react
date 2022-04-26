@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Button, Form, Icon, Message, Segment } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
 import PropTypes from "prop-types";
 
-import { getTranslation } from "api/i18n";
+import TranslationContext from "Layout/TranslationContext";
 
 export const getMetadataAlternativesQuery = gql`
   query getMetadataAlternatives {
@@ -12,14 +12,15 @@ export const getMetadataAlternativesQuery = gql`
   }
 `;
 
-const license_name_key_list = [
+const license_name_key_list = getTranslation => [
   [getTranslation("Proprietary license"), "proprietary"],
   ["Creative Commons Attribution 4.0", "cc-by-4.0"],
   ["Creative Commons Attribution-ShareAlike 4.0", "cc-by-sa-4.0"],
   ["Creative Commons Attribution-NonCommercial-ShareAlike 4.0", "cc-by-nc-sa-4.0"]
 ];
 
-export const license_options = license_name_key_list.map(([name, key]) => ({ text: name, value: key }));
+export const license_options = getTranslation =>
+  license_name_key_list(getTranslation).map(([name, key]) => ({ text: name, value: key }));
 
 const initial_dictionary_metadata = {
   kind: "Expedition",
@@ -101,6 +102,8 @@ export const EditKind = ({ kind, mode, onChange, onSave }) => {
   const [lastValue, setLastValue] = useState(kind);
   const [value, setValue] = useState(kind);
 
+  const getTranslation = useContext(TranslationContext);
+
   return (
     <Form.Group widths="equal">
       <Form.Group>
@@ -150,6 +153,8 @@ export const EditSelect = ({ metadata_key, label, value: initialValue, valueOpti
   const [lastValue, setLastValue] = useState(initialValue);
   const [value, setValue] = useState(initialValue);
 
+  const getTranslation = useContext(TranslationContext);
+
   return (
     <>
       <Form.Dropdown
@@ -197,6 +202,8 @@ export const EditSelectMultiple = ({
   const [lastValue, setLastValue] = useState(initialValue);
   const [value, setValue] = useState(initialValue);
 
+  const getTranslation = useContext(TranslationContext);
+
   return (
     <>
       <Form.Dropdown
@@ -238,6 +245,8 @@ export const EditSelectMultiple = ({
 export const EditInput = ({ metadata_key, label, value: initialValue, mode, onChange, onSave }) => {
   const [lastValue, setLastValue] = useState(initialValue);
   const [value, setValue] = useState(initialValue);
+
+  const getTranslation = useContext(TranslationContext);
 
   return (
     <>
@@ -282,11 +291,11 @@ class EditDictionaryMetadata extends React.Component {
     if (loading) {
       return (
         <Segment>
-          {getTranslation("Loading metadata")}... <Icon loading name="spinner" />
+          {this.context("Loading metadata")}... <Icon loading name="spinner" />
         </Segment>
       );
     } else if (error) {
-      return <Message negative>{getTranslation("Metadata loading error, please contact adiministrators.")}</Message>;
+      return <Message negative>{this.context("Metadata loading error, please contact adiministrators.")}</Message>;
     }
 
     const { metadata: rawMetadata } = this.props;
@@ -332,7 +341,7 @@ class EditDictionaryMetadata extends React.Component {
             <EditSelectMultiple
               key="authors"
               metadata_key="authors"
-              label={getTranslation("Authors")}
+              label={this.context("Authors")}
               value={authors}
               valueOptions={this.authorsOptions}
               mode={mode}
@@ -342,7 +351,7 @@ class EditDictionaryMetadata extends React.Component {
             <EditSelectMultiple
               key="interrogator"
               metadata_key="interrogator"
-              label={getTranslation("Interrogator")}
+              label={this.context("Interrogator")}
               value={interrogator}
               valueOptions={this.authorsOptions}
               mode={mode}
@@ -352,7 +361,7 @@ class EditDictionaryMetadata extends React.Component {
             <EditInput
               key="informant"
               metadata_key="informant"
-              label={getTranslation("Informant")}
+              label={this.context("Informant")}
               value={informant}
               mode={mode}
               onChange={onChange}
@@ -367,9 +376,9 @@ class EditDictionaryMetadata extends React.Component {
               <EditSelect
                 key="license"
                 metadata_key="license"
-                label={getTranslation("License")}
+                label={this.context("License")}
                 value={license}
-                valueOptions={license_options}
+                valueOptions={license_options(this.context)}
                 mode={mode}
                 onChange={onChange}
                 onSave={onSave}
@@ -383,7 +392,7 @@ class EditDictionaryMetadata extends React.Component {
             <EditSelectMultiple
               key="humanSettlement"
               metadata_key="humanSettlement"
-              label={getTranslation("Human settlement")}
+              label={this.context("Human settlement")}
               value={humanSettlement}
               valueOptions={this.settlementsOptions}
               mode={mode}
@@ -397,7 +406,7 @@ class EditDictionaryMetadata extends React.Component {
             <EditSelectMultiple
               key="years"
               metadata_key="years"
-              label={getTranslation("Years")}
+              label={this.context("Years")}
               value={years}
               valueOptions={this.yearsOptions}
               mode={mode}
@@ -411,7 +420,7 @@ class EditDictionaryMetadata extends React.Component {
             <EditSelectMultiple
               key="processing"
               metadata_key="processing"
-              label={getTranslation("Processing")}
+              label={this.context("Processing")}
               value={processing}
               valueOptions={this.authorsOptions}
               mode={mode}
@@ -425,7 +434,7 @@ class EditDictionaryMetadata extends React.Component {
             <EditInput
               key="typeOfDiscourse"
               metadata_key="typeOfDiscourse"
-              label={getTranslation("Type of discourse")}
+              label={this.context("Type of discourse")}
               value={typeOfDiscourse}
               mode={mode}
               onChange={onChange}
@@ -434,7 +443,7 @@ class EditDictionaryMetadata extends React.Component {
             <EditInput
               key="typeOfSpeech"
               metadata_key="typeOfSpeech"
-              label={getTranslation("Type of speech")}
+              label={this.context("Type of speech")}
               value={typeOfSpeech}
               mode={mode}
               onChange={onChange}
@@ -443,7 +452,7 @@ class EditDictionaryMetadata extends React.Component {
             <EditInput
               key="speechGenre"
               metadata_key="speechGenre"
-              label={getTranslation("Speech genre")}
+              label={this.context("Speech genre")}
               value={speechGenre}
               mode={mode}
               onChange={onChange}
@@ -456,7 +465,7 @@ class EditDictionaryMetadata extends React.Component {
             <EditInput
               key="theThemeOfTheText"
               metadata_key="theThemeOfTheText"
-              label={getTranslation("The theme of the text")}
+              label={this.context("The theme of the text")}
               value={theThemeOfTheText}
               mode={mode}
               onChange={onChange}
@@ -468,6 +477,8 @@ class EditDictionaryMetadata extends React.Component {
     );
   }
 }
+
+EditDictionaryMetadata.contextType = TranslationContext;
 
 EditDictionaryMetadata.propTypes = {
   mode: PropTypes.string.isRequired,

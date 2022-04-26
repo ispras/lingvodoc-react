@@ -3,13 +3,13 @@ import { connect } from "react-redux";
 import { Button, Divider, Modal } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql, withApollo } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 import PropTypes from "prop-types";
 import { compose } from "recompose";
 import { bindActionCreators } from "redux";
 
 import EditLanguageMetadata from "components/EditLanguageMetadata";
 import { closeModal } from "ducks/language";
+import TranslationContext from "Layout/TranslationContext";
 
 import TranslationGist from "../TranslationGist";
 
@@ -106,9 +106,9 @@ class EditModal extends React.Component {
         onClose={actions.closeModal}
         className="lingvo-modal2"
       >
-        <Modal.Header>{getTranslation("Language edit")}</Modal.Header>
+        <Modal.Header>{this.context("Language edit")}</Modal.Header>
         <Modal.Content>
-          <h4>{getTranslation("Translations")}</h4>
+          <h4>{this.context("Translations")}</h4>
           <TranslationGist
             objectId={language.id}
             id={language.translation_gist_id}
@@ -123,16 +123,14 @@ class EditModal extends React.Component {
           />
         </Modal.Content>
         <Modal.Actions>
-          <Button
-            content={getTranslation("Close")}
-            onClick={actions.closeModal}
-            className="lingvo-button-basic-black"
-          />
+          <Button content={this.context("Close")} onClick={actions.closeModal} className="lingvo-button-basic-black" />
         </Modal.Actions>
       </Modal>
     );
   }
 }
+
+EditModal.contextType = TranslationContext;
 
 EditModal.propTypes = {
   actions: PropTypes.shape({

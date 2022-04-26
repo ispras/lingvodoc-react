@@ -1,14 +1,16 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Header, Segment } from "semantic-ui-react";
-import { getTranslation } from "api/i18n";
 import Immutable, { fromJS } from "immutable";
 import PropTypes from "prop-types";
 
 import Translations from "components/Translation";
+import TranslationContext from "Layout/TranslationContext";
 
 import Fields from "./Fields";
 
 const Perspective = props => {
+  const getTranslation = useContext(TranslationContext);
+
   const { perspective, perspectives, mode } = props;
   const translations = perspective.get("translations").toJS();
 

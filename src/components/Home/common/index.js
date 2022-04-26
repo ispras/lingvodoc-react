@@ -1,3 +1,4 @@
+import { chooseTranslation as T } from "api/i18n";
 import smoothScroll from "utils/smoothscroll";
 
 const classNames = {
@@ -7,8 +8,8 @@ const classNames = {
 };
 
 const sortLangsAlphabetically = (first, second) => {
-  const translationFirst = first.translation.toLocaleLowerCase();
-  const translationSecond = second.translation.toLocaleLowerCase();
+  const translationFirst = T(first.translations).toLocaleLowerCase();
+  const translationSecond = T(second.translations).toLocaleLowerCase();
 
   if (translationFirst < translationSecond) {
     return -1;

@@ -1,7 +1,8 @@
 import React from "react";
 import { Button, Form, Input, Modal } from "semantic-ui-react";
-import { getTranslation } from "api/i18n";
 import PropTypes from "prop-types";
+
+import TranslationContext from "Layout/TranslationContext";
 
 /** Modal dialog for creating/editing of user defined variant */
 class UserVariantModal extends React.Component {
@@ -44,7 +45,7 @@ class UserVariantModal extends React.Component {
 
     return (
       <Modal open dimmer size="small" closeIcon onClose={onClose} closeOnDimmerClick={false} className="lingvo-modal2">
-        <Modal.Header>{getTranslation("User defined variant")}</Modal.Header>
+        <Modal.Header>{this.context("User defined variant")}</Modal.Header>
         <Modal.Content>
           <Form>
             <Form.Field required>
@@ -72,16 +73,18 @@ class UserVariantModal extends React.Component {
         <Modal.Actions>
           <Button
             disabled={!isValid}
-            content={getTranslation(variant ? "Save" : "Create")}
+            content={this.context(variant ? "Save" : "Create")}
             onClick={this.save}
             className="lingvo-button-violet"
           />
-          <Button content={getTranslation("Cancel")} onClick={onClose} className="lingvo-button-basic-black" />
+          <Button content={this.context("Cancel")} onClick={onClose} className="lingvo-button-basic-black" />
         </Modal.Actions>
       </Modal>
     );
   }
 }
+
+UserVariantModal.contextType = TranslationContext;
 
 UserVariantModal.propTypes = {
   parent: PropTypes.object,

@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Button, Form, Icon, Message, Segment } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
 import PropTypes from "prop-types";
 
-import { getTranslation } from "api/i18n";
+import TranslationContext from "Layout/TranslationContext";
 
 import {
   EditInput,
@@ -37,6 +37,8 @@ const initial_corpus_metadata = {
 const EditSettlement = ({ label, value: initialValue, valueOptions, mode, onChange, onSave }) => {
   const [lastValue, setLastValue] = useState(initialValue);
   const [value, setValue] = useState(initialValue);
+
+  const getTranslation = useContext(TranslationContext);
 
   return (
     <Form.Group widths="equal">
@@ -120,11 +122,11 @@ class EditCorpusMetadata extends React.Component {
     if (loading) {
       return (
         <Segment>
-          {getTranslation("Loading metadata")}... <Icon loading name="spinner" />
+          {this.context("Loading metadata")}... <Icon loading name="spinner" />
         </Segment>
       );
     } else if (error) {
-      return <Message negative>{getTranslation("Metadata loading error, please contact adiministrators.")}</Message>;
+      return <Message negative>{this.context("Metadata loading error, please contact adiministrators.")}</Message>;
     }
 
     const { metadata: rawMetadata } = this.props;
@@ -170,7 +172,7 @@ class EditCorpusMetadata extends React.Component {
             <EditSelectMultiple
               key="authors"
               metadata_key="authors"
-              label={getTranslation("Authors")}
+              label={this.context("Authors")}
               value={authors}
               valueOptions={this.authorsOptions}
               mode={mode}
@@ -186,9 +188,9 @@ class EditCorpusMetadata extends React.Component {
               <EditSelect
                 key="license"
                 metadata_key="license"
-                label={getTranslation("License")}
+                label={this.context("License")}
                 value={license}
-                valueOptions={license_options}
+                valueOptions={license_options(this.context)}
                 mode={mode}
                 onChange={onChange}
                 onSave={onSave}
@@ -212,7 +214,7 @@ class EditCorpusMetadata extends React.Component {
             <EditSelectMultiple
               key="years"
               metadata_key="years"
-              label={getTranslation("Years")}
+              label={this.context("Years")}
               value={years}
               valueOptions={this.yearsOptions}
               mode={mode}
@@ -226,7 +228,7 @@ class EditCorpusMetadata extends React.Component {
             <EditInput
               key="titleOfTheWork"
               metadata_key="titleOfTheWork"
-              label={getTranslation("Title of the work")}
+              label={this.context("Title of the work")}
               value={titleOfTheWork}
               mode={mode}
               onChange={onChange}
@@ -239,7 +241,7 @@ class EditCorpusMetadata extends React.Component {
             <EditInput
               key="genre"
               metadata_key="genre"
-              label={getTranslation("Genre")}
+              label={this.context("Genre")}
               value={genre}
               mode={mode}
               onChange={onChange}
@@ -252,7 +254,7 @@ class EditCorpusMetadata extends React.Component {
             <EditInput
               key="timeOfWriting"
               metadata_key="timeOfWriting"
-              label={getTranslation("Time of writing")}
+              label={this.context("Time of writing")}
               value={timeOfWriting}
               mode={mode}
               onChange={onChange}
@@ -265,7 +267,7 @@ class EditCorpusMetadata extends React.Component {
             <EditInput
               key="quantitativeCharacteristic"
               metadata_key="quantitativeCharacteristic"
-              label={getTranslation("Quantitative characteristic")}
+              label={this.context("Quantitative characteristic")}
               value={quantitativeCharacteristic}
               mode={mode}
               onChange={onChange}
@@ -278,7 +280,7 @@ class EditCorpusMetadata extends React.Component {
             <EditInput
               key="bibliographicDataOfTheSource"
               metadata_key="bibliographicDataOfTheSource"
-              label={getTranslation("Bibliographic data of the source")}
+              label={this.context("Bibliographic data of the source")}
               value={bibliographicDataOfTheSource}
               mode={mode}
               onChange={onChange}
@@ -291,7 +293,7 @@ class EditCorpusMetadata extends React.Component {
             <EditInput
               key="translator"
               metadata_key="translator"
-              label={getTranslation("Translator")}
+              label={this.context("Translator")}
               value={translator}
               mode={mode}
               onChange={onChange}
@@ -304,7 +306,7 @@ class EditCorpusMetadata extends React.Component {
             <EditInput
               key="bibliographicDataOfTheTranslation"
               metadata_key="bibliographicDataOfTheTranslation"
-              label={getTranslation("Bibliographic data of the translation")}
+              label={this.context("Bibliographic data of the translation")}
               value={bibliographicDataOfTheTranslation}
               mode={mode}
               onChange={onChange}
@@ -316,6 +318,8 @@ class EditCorpusMetadata extends React.Component {
     );
   }
 }
+
+EditCorpusMetadata.contextType = TranslationContext;
 
 EditCorpusMetadata.propTypes = {
   mode: PropTypes.string.isRequired,
@@ -329,6 +333,7 @@ EditCorpusMetadata.defaultProps = {
   onSave: undefined,
   metadata: {}
 };
+
 export default graphql(getMetadataAlternativesQuery, { options: { fetchPolicy: "cache-and-network" } })(
   EditCorpusMetadata
 );

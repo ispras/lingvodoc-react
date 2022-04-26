@@ -5,7 +5,7 @@ export const perspectiveColumnsFieldsQuery = gql`
     perspective(id: $perspectiveId) {
       id
       parent_id
-      translation
+      translations
       columns {
         id
         field_id
@@ -15,12 +15,12 @@ export const perspectiveColumnsFieldsQuery = gql`
       }
       tree {
         id
-        translation
+        translations
       }
     }
     all_fields {
       id
-      translation
+      translations
       english_translation: translation(locale_id: 2)
       data_type
       data_type_translation_gist_id
@@ -33,10 +33,10 @@ export const perspectiveColumnsQuery = gql`
     perspective(id: $perspectiveId) {
       id
       parent_id
-      translation
+      translations
       tree {
         id
-        translation
+        translations
       }
       columns {
         id
@@ -84,23 +84,23 @@ export const phonologyPerspectiveInfoQuery = gql`
     perspectives(only_with_phonology_data: true) {
       id
       parent_id
-      translation
+      translations
       status
     }
     dictionaries {
       id
       parent_id
-      translation
+      translations
       status
       perspectives {
         id
-        translation
+        translations
       }
     }
     language_tree {
       id
       parent_id
-      translation
+      translations
     }
   }
 `;

@@ -1,9 +1,10 @@
 import React from "react";
 import { Dimmer, Header, Icon, Input } from "semantic-ui-react";
 import { withApollo } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 import PropTypes from "prop-types";
 import { compose, pure } from "recompose";
+
+import TranslationContext from "Layout/TranslationContext";
 
 import { searchQuery } from "./graphql";
 import buildPartialLanguageTree from "./partialTree";
@@ -68,12 +69,12 @@ class SearchLexicalEntries extends React.Component {
 
   render() {
     const { joinGroup } = this.props;
-    const actions = [{ title: getTranslation("Connect"), action: entry => joinGroup(entry) }];
+    const actions = [{ title: this.context("Connect"), action: entry => joinGroup(entry) }];
     return (
       <div style={{ paddingTop: "20px" }}>
         <Input
           action={{ icon: "search", onClick: this.search }}
-          placeholder={getTranslation("Type to search")}
+          placeholder={this.context("Type to search")}
           value={this.state.searchString}
           onChange={(e, data) => this.setState({ searchString: data.value })}
         />
@@ -89,6 +90,8 @@ class SearchLexicalEntries extends React.Component {
     );
   }
 }
+
+SearchLexicalEntries.contextType = TranslationContext;
 
 SearchLexicalEntries.propTypes = {
   lexicalEntry: PropTypes.object.isRequired,

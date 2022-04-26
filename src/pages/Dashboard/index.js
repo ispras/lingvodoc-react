@@ -1,20 +1,21 @@
-import React from "react";
+import React, { useContext } from "react";
 import { connect } from "react-redux";
 import { Confirm, Dimmer, Dropdown, Header, Icon, List, Popup, Tab } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 import { isEqual } from "lodash";
 import PropTypes from "prop-types";
 import { branch, compose, onlyUpdateForKeys, renderNothing } from "recompose";
 import { bindActionCreators } from "redux";
 
+import { chooseTranslation as T } from "api/i18n";
 import { openModal as openDictionaryOrganizationsModal } from "ducks/dictionaryOrganizations";
 import { openDictionaryPropertiesModal } from "ducks/dictionaryProperties";
 import { openPerspectivePropertiesModal } from "ducks/perspectiveProperties";
 import { openRoles } from "ducks/roles";
 import { openSaveDictionaryModal } from "ducks/saveDictionary";
 import { openStatistics } from "ducks/statistics";
+import TranslationContext from "Layout/TranslationContext";
 import { dictionaryQuery } from "pages/DialeqtImport";
 import { compositeIdToString } from "utils/compositeId";
 
@@ -25,14 +26,14 @@ export const query = gql`
     dictionaries(mode: $mode, category: $category) {
       id
       parent_id
-      translation
-      status
+      translations
+      status_translations
       state_translation_gist_id
       perspectives {
         id
         parent_id
-        translation
-        status
+        translations
+        status_translations
         state_translation_gist_id
       }
     }
@@ -41,7 +42,7 @@ export const query = gql`
       created_at
       marked_for_deletion
       type
-      translation
+      translations
     }
   }
 `;
@@ -78,7 +79,7 @@ const removeDictionaryMutation = gql`
   }
 `;
 
-const Statuses = onlyUpdateForKeys(["translation"])(({ translation, statusId, parentId, statuses, updateStatus }) => {
+const Statuses = onlyUpdateForKeys(["translations"])(({ translations, statusId, parentId, statuses, updateStatus }) => {
   const updateHandler = (id, sid) => {
     updateStatus({
       variables: { id, status_id: sid },
@@ -97,7 +98,7 @@ const Statuses = onlyUpdateForKeys(["translation"])(({ translation, statusId, pa
   return (
     <Dropdown
       item
-      text={translation}
+      text={T(translations)}
       className="lingvo-dashboard-elem lingvo-dashboard-elem_status"
       icon={<i className="lingvo-icon lingvo-icon_arrow" />}
     >
@@ -105,7 +106,7 @@ const Statuses = onlyUpdateForKeys(["translation"])(({ translation, statusId, pa
         {statuses.map(status => (
           <Dropdown.Item
             key={compositeIdToString(status.id)}
-            text={status.translation}
+            text={T(status.translations)}
             active={isEqual(statusId, status.id)}
             onClick={() => updateHandler(parentId, status.id)}
           />
@@ -149,7 +150,15 @@ class P extends React.Component {
   }
 
   render() {
-    const { id, parent_id, translation, status, state_translation_gist_id: statusId, statuses, actions } = this.props;
+    const {
+      id,
+      parent_id,
+      translations,
+      status_translations,
+      state_translation_gist_id: statusId,
+      statuses,
+      actions
+    } = this.props;
 
     const { confirmation } = this.state;
 
@@ -162,30 +171,28 @@ class P extends React.Component {
                 <Dropdown
                   trigger={
                     <span>
-                      <i className="lingvo-icon lingvo-icon_book" /> {translation}
+                      <i className="lingvo-icon lingvo-icon_book" /> {T(translations)}
                     </span>
                   }
                   className="link item lingvo-dashboard-elem"
                   icon={<i className="lingvo-icon lingvo-icon_arrow" />}
                 >
                   <Dropdown.Menu>
-                    <Dropdown.Item onClick={() => actions.openRoles(id, "perspective", getTranslation("Roles"))}>
-                      <i className="lingvo-icon lingvo-icon_roles" /> {getTranslation("Roles")}
+                    <Dropdown.Item onClick={() => actions.openRoles(id, "perspective", this.context("Roles"))}>
+                      <i className="lingvo-icon lingvo-icon_roles" /> {this.context("Roles")}
                     </Dropdown.Item>
                     <Dropdown.Item
-                      onClick={() =>
-                        actions.openPerspectivePropertiesModal(id, parent_id, getTranslation("Properties"))
-                      }
+                      onClick={() => actions.openPerspectivePropertiesModal(id, parent_id, this.context("Properties"))}
                     >
-                      <i className="lingvo-icon lingvo-icon_properties" /> {getTranslation("Properties")}
+                      <i className="lingvo-icon lingvo-icon_properties" /> {this.context("Properties")}
                     </Dropdown.Item>
                     <Dropdown.Item
-                      onClick={() => actions.openStatistics(id, "perspective", getTranslation("Statistics"))}
+                      onClick={() => actions.openStatistics(id, "perspective", this.context("Statistics"))}
                     >
-                      <i className="lingvo-icon lingvo-icon_stats" /> {getTranslation("Statistics")}
+                      <i className="lingvo-icon lingvo-icon_stats" /> {this.context("Statistics")}
                     </Dropdown.Item>
                     <Dropdown.Item onClick={() => this.setState({ confirmation: true })}>
-                      <i className="lingvo-icon lingvo-icon_delete" /> {getTranslation("Remove perspective")}
+                      <i className="lingvo-icon lingvo-icon_delete" /> {this.context("Remove perspective")}
                     </Dropdown.Item>
                   </Dropdown.Menu>
                 </Dropdown>
@@ -200,7 +207,7 @@ class P extends React.Component {
                         <i className="lingvo-icon lingvo-icon_view" />
                       </a>
                     }
-                    content={getTranslation("View")}
+                    content={this.context("View")}
                     className="lingvo-popup-inverted"
                   />
 
@@ -213,7 +220,7 @@ class P extends React.Component {
                         <i className="lingvo-icon lingvo-icon_edit" />
                       </a>
                     }
-                    content={getTranslation("Edit")}
+                    content={this.context("Edit")}
                     className="lingvo-popup-inverted"
                   />
 
@@ -226,7 +233,7 @@ class P extends React.Component {
                         <i className="lingvo-icon lingvo-icon_publish" />
                       </a>
                     }
-                    content={getTranslation("Publish")}
+                    content={this.context("Publish")}
                     className="lingvo-popup-inverted"
                   />
 
@@ -234,21 +241,26 @@ class P extends React.Component {
                     className="lingvo-dashboard-elem lingvo-dashboard-elem_button"
                     href={`/dictionary/${parent_id[0]}/${parent_id[1]}/perspective/${id[0]}/${id[1]}/contributions`}
                   >
-                    {getTranslation("Contributions")}
+                    {this.context("Contributions")}
                   </a>
                 </div>
               </div>
             </div>
 
             <div className="lingvo-dashboard-block__small">
-              <PerspectiveStatuses translation={status} statusId={statusId} parentId={id} statuses={statuses} />
+              <PerspectiveStatuses
+                translations={status_translations}
+                statusId={statusId}
+                parentId={id}
+                statuses={statuses}
+              />
             </div>
           </div>
         </List.Content>
         <Confirm
           open={confirmation}
-          header={getTranslation("Confirmation")}
-          content={`${getTranslation("Are you sure you want to delete perspective")} '${translation}'?`}
+          header={this.context("Confirmation")}
+          content={`${this.context("Are you sure you want to delete perspective")} '${T(translations)}'?`}
           onConfirm={this.onRemovePerspective}
           onCancel={() => this.setState({ confirmation: false })}
           className="lingvo-confirm"
@@ -258,13 +270,15 @@ class P extends React.Component {
   }
 }
 
+P.contextType = TranslationContext;
+
 P.propTypes = {
   id: PropTypes.array.isRequired,
   parent_id: PropTypes.array.isRequired,
-  translation: PropTypes.string.isRequired,
+  translations: PropTypes.object.isRequired,
   mode: PropTypes.number.isRequired,
   category: PropTypes.number.isRequired,
-  status: PropTypes.string.isRequired,
+  status_translations: PropTypes.object.isRequired,
   state_translation_gist_id: PropTypes.array.isRequired,
   statuses: PropTypes.array.isRequired,
   actions: PropTypes.object.isRequired,
@@ -276,7 +290,7 @@ const Perspective = compose(
     actions: bindActionCreators({ openRoles, openPerspectivePropertiesModal, openStatistics }, dispatch)
   })),
   graphql(removePerspectiveMutation, { name: "removePerspective" }),
-  onlyUpdateForKeys(["translation", "status"])
+  onlyUpdateForKeys(["translations", "status_translations"])
 )(P);
 
 class D extends React.Component {
@@ -312,8 +326,8 @@ class D extends React.Component {
   render() {
     const {
       id,
-      translation,
-      status,
+      translations,
+      status_translations,
       state_translation_gist_id: statusId,
       perspectives,
       statuses,
@@ -330,38 +344,41 @@ class D extends React.Component {
           <div className="lingvo-dashboard-block">
             <div className="lingvo-dashboard-block__big">
               <Dropdown
-                text={translation}
+                text={T(translations)}
                 className="link item lingvo-dashboard-elem lingvo-dashboard-elem_main"
                 icon={<i className="lingvo-icon lingvo-icon_arrow" />}
               >
                 <Dropdown.Menu>
-                  <Dropdown.Item onClick={() => actions.openRoles(id, "dictionary", getTranslation("Roles"))}>
-                    <i className="lingvo-icon lingvo-icon_roles" /> {getTranslation("Roles")}
+                  <Dropdown.Item onClick={() => actions.openRoles(id, "dictionary", this.context("Roles"))}>
+                    <i className="lingvo-icon lingvo-icon_roles" /> {this.context("Roles")}
                   </Dropdown.Item>
-                  <Dropdown.Item
-                    onClick={() => actions.openDictionaryPropertiesModal(id, getTranslation("Properties"))}
-                  >
-                    <i className="lingvo-icon lingvo-icon_properties" /> {getTranslation("Properties")}
+                  <Dropdown.Item onClick={() => actions.openDictionaryPropertiesModal(id, this.context("Properties"))}>
+                    <i className="lingvo-icon lingvo-icon_properties" /> {this.context("Properties")}
                   </Dropdown.Item>
                   <Dropdown.Item onClick={() => actions.openDictionaryOrganizationsModal(id)}>
-                    <i className="lingvo-icon lingvo-icon_organizations" /> {getTranslation("Organizations")}
+                    <i className="lingvo-icon lingvo-icon_organizations" /> {this.context("Organizations")}
                   </Dropdown.Item>
-                  <Dropdown.Item onClick={() => actions.openStatistics(id, "dictionary", getTranslation("Statistics"))}>
-                    <i className="lingvo-icon lingvo-icon_stats" /> {getTranslation("Statistics")}
+                  <Dropdown.Item onClick={() => actions.openStatistics(id, "dictionary", this.context("Statistics"))}>
+                    <i className="lingvo-icon lingvo-icon_stats" /> {this.context("Statistics")}
                   </Dropdown.Item>
-                  {/*<Dropdown.Item icon="circle" text={getTranslation("Create a new perspective...")} />*/}
+                  {/*<Dropdown.Item icon="circle" text={this.context("Create a new perspective...")} />*/}
                   <Dropdown.Item onClick={() => actions.openSaveDictionaryModal(id)}>
-                    <i className="lingvo-icon lingvo-icon_save" /> {getTranslation("Save dictionary")}
+                    <i className="lingvo-icon lingvo-icon_save" /> {this.context("Save dictionary")}
                   </Dropdown.Item>
                   <Dropdown.Item onClick={() => this.setState({ confirmation: true })}>
-                    <i className="lingvo-icon lingvo-icon_delete" /> {getTranslation("Remove dictionary")}
+                    <i className="lingvo-icon lingvo-icon_delete" /> {this.context("Remove dictionary")}
                   </Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
             </div>
 
             <div className="lingvo-dashboard-block__small">
-              <DicionaryStatuses translation={status} statusId={statusId} parentId={id} statuses={statuses} />
+              <DicionaryStatuses
+                translations={status_translations}
+                statusId={statusId}
+                parentId={id}
+                statuses={statuses}
+              />
             </div>
           </div>
 
@@ -380,8 +397,8 @@ class D extends React.Component {
         </List.Content>
         <Confirm
           open={confirmation}
-          header={getTranslation("Confirmation")}
-          content={`${getTranslation("Are you sure you want to delete dictionary")} '${translation}'?`}
+          header={this.context("Confirmation")}
+          content={`${this.context("Are you sure you want to delete dictionary")} '${T(translations)}'?`}
           onConfirm={this.onRemoveDictionary}
           onCancel={() => this.setState({ confirmation: false })}
           className="lingvo-confirm"
@@ -391,13 +408,15 @@ class D extends React.Component {
   }
 }
 
+D.contextType = TranslationContext;
+
 D.propTypes = {
   id: PropTypes.array.isRequired,
   perspectives: PropTypes.array.isRequired,
-  translation: PropTypes.string.isRequired,
+  translations: PropTypes.string.isRequired,
   mode: PropTypes.number.isRequired,
   category: PropTypes.number.isRequired,
-  status: PropTypes.string.isRequired,
+  status_translations: PropTypes.string.isRequired,
   state_translation_gist_id: PropTypes.array.isRequired,
   statuses: PropTypes.array.isRequired,
   actions: PropTypes.object.isRequired,
@@ -418,7 +437,7 @@ const Dictionary = compose(
     )
   })),
   graphql(removeDictionaryMutation, { name: "removeDictionary" }),
-  onlyUpdateForKeys(["translation", "status", "perspectives"])
+  onlyUpdateForKeys(["translations", "status_translations", "perspectives"])
 )(D);
 
 const Dashboard = ({ data, mode, category }) => {
@@ -461,7 +480,7 @@ const Dictionaries = compose(
   branch(({ data }) => !!data.error, renderNothing)
 )(Dashboard);
 
-const DICTIONARIES_TABS = () => {
+const DICTIONARIES_TABS = getTranslation => {
   return [
     {
       menuItem: getTranslation("My dictionaries"),
@@ -482,7 +501,7 @@ const DICTIONARIES_TABS = () => {
   ];
 };
 
-const CORPORA_TABS = () => {
+const CORPORA_TABS = getTranslation => {
   return [
     {
       menuItem: getTranslation("My corpora"),
@@ -503,15 +522,22 @@ const CORPORA_TABS = () => {
   ];
 };
 
-const DictionaryDashboard = () => (
-  <div className="background-content">
-    <Tab className="inverted lingvo-tab" panes={DICTIONARIES_TABS()} renderActiveOnly />
-  </div>
-);
-const CorpusDashboard = () => (
-  <div className="background-content">
-    <Tab className="inverted lingvo-tab" panes={CORPORA_TABS()} renderActiveOnly />
-  </div>
-);
+const DictionaryDashboard = () => {
+  const getTranslation = useContext(TranslationContext);
+  return (
+    <div className="background-content">
+      <Tab className="inverted lingvo-tab" panes={DICTIONARIES_TABS(getTranslation)} renderActiveOnly />
+    </div>
+  );
+};
+
+const CorpusDashboard = () => {
+  const getTranslation = useContext(TranslationContext);
+  return (
+    <div className="background-content">
+      <Tab className="inverted lingvo-tab" panes={CORPORA_TABS(getTranslation)} renderActiveOnly />
+    </div>
+  );
+};
 
 export { DictionaryDashboard, CorpusDashboard };

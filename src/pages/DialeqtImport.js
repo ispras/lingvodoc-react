@@ -3,11 +3,11 @@ import { connect } from "react-redux";
 import { Button, Dropdown, Header, Icon, List, Message, Radio, Segment, Step } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 import { fromJS, Map } from "immutable";
 import PropTypes from "prop-types";
 import { compose } from "recompose";
 
+import { chooseTranslation as T } from "api/i18n";
 import { license_options } from "components/EditDictionaryMetadata";
 import Languages from "components/Languages";
 import Translations from "components/Translation";
@@ -23,6 +23,7 @@ import {
   setTranslations,
   setUpdateDictionaryId
 } from "ducks/dialeqtImport";
+import TranslationContext from "Layout/TranslationContext";
 import { buildExport } from "pages/DictImport/api";
 
 import "pages/DictImport/styles.scss";
@@ -44,7 +45,7 @@ export const dictionaryQuery = gql`
       id
       tree {
         id
-        translation
+        translations
       }
     }
   }
@@ -173,7 +174,9 @@ class DialeqtImport extends React.Component {
         value: dictionary.id.join("/"),
 
         text: dictionary.tree
-          .map(value => (value.hasOwnProperty("status") ? `${value.translation} (${value.status})` : value.translation))
+          .map(value =>
+            value.hasOwnProperty("status") ? `${T(value.translations)} (${value.status})` : T(value.translations)
+          )
           .reverse()
           .join(" \u203a ")
       }));
@@ -194,16 +197,16 @@ class DialeqtImport extends React.Component {
         <Step.Group widths={4}>
           <Step link active={step === "CHOICE"} onClick={this.onStepClick("CHOICE")}>
             <Step.Content>
-              <Step.Title>{getTranslation("File selection")}</Step.Title>
-              <Step.Description>{getTranslation("Select Dialeqt file for import")}</Step.Description>
+              <Step.Title>{this.context("File selection")}</Step.Title>
+              <Step.Description>{this.context("Select Dialeqt file for import")}</Step.Description>
             </Step.Content>
           </Step>
 
           {dialeqt_action == "create" && (
             <Step link active={step === "PARENT_LANGUAGE"} onClick={this.onStepClick("PARENT_LANGUAGE")}>
               <Step.Content>
-                <Step.Title>{getTranslation("Parent language")}</Step.Title>
-                <Step.Description>{getTranslation("Select language for the new dictionary")}</Step.Description>
+                <Step.Title>{this.context("Parent language")}</Step.Title>
+                <Step.Description>{this.context("Select language for the new dictionary")}</Step.Description>
               </Step.Content>
             </Step>
           )}
@@ -211,8 +214,8 @@ class DialeqtImport extends React.Component {
           {dialeqt_action == "create" && (
             <Step link active={step === "TRANSLATIONS"} onClick={this.onStepClick("TRANSLATIONS")}>
               <Step.Content>
-                <Step.Title>{getTranslation("Dictionary names")}</Step.Title>
-                <Step.Description>{getTranslation("Set dictionary name and translations")}</Step.Description>
+                <Step.Title>{this.context("Dictionary names")}</Step.Title>
+                <Step.Description>{this.context("Set dictionary name and translations")}</Step.Description>
               </Step.Content>
             </Step>
           )}
@@ -220,15 +223,15 @@ class DialeqtImport extends React.Component {
           {dialeqt_action == "update" && (
             <Step link active={step === "UPDATE_DICTIONARY"} onClick={this.onStepClick("UPDATE_DICTIONARY")}>
               <Step.Content>
-                <Step.Title>{getTranslation("Update dictionary")}</Step.Title>
-                <Step.Description>{getTranslation("Select dictionary to be updated")}</Step.Description>
+                <Step.Title>{this.context("Update dictionary")}</Step.Title>
+                <Step.Description>{this.context("Select dictionary to be updated")}</Step.Description>
               </Step.Content>
             </Step>
           )}
 
           <Step link active={step === "FINISH"}>
             <Step.Content>
-              <Step.Title>{getTranslation("Finish")}</Step.Title>
+              <Step.Title>{this.context("Finish")}</Step.Title>
             </Step.Content>
           </Step>
         </Step.Group>
@@ -240,7 +243,7 @@ class DialeqtImport extends React.Component {
                 className="main-select"
                 search
                 selection
-                placeholder={getTranslation("Dialeqt file")}
+                placeholder={this.context("Dialeqt file")}
                 options={blobOptions}
                 value={blobSelection}
                 onChange={(event, data) => this.props.setDialeqtBlobId(data.value.split("/").map(x => parseInt(x, 10)))}
@@ -253,7 +256,7 @@ class DialeqtImport extends React.Component {
                       borderRadius: "0.25em",
                       padding: "0.5em"
                     }}
-                    label={getTranslation("Create dictionary")}
+                    label={this.context("Create dictionary")}
                     name="dictionaryGroup"
                     value="create"
                     checked={dialeqt_action === "create"}
@@ -267,7 +270,7 @@ class DialeqtImport extends React.Component {
                       borderRadius: "0.25em",
                       padding: "0.5em"
                     }}
-                    label={getTranslation("Update dictionary")}
+                    label={this.context("Update dictionary")}
                     name="dictionaryGroup"
                     value="update"
                     checked={dialeqt_action === "update"}
@@ -290,10 +293,10 @@ class DialeqtImport extends React.Component {
                 >
                   {parentLanguage ? (
                     <span>
-                      {getTranslation("You have selected:")} <b>{parentLanguage.translation}</b>
+                      {this.context("You have selected:")} <b>{T(parentLanguage.translations)}</b>
                     </span>
                   ) : (
-                    getTranslation("Please, select the parent language")
+                    this.context("Please, select the parent language")
                   )}
                 </span>
               </Header>
@@ -303,19 +306,19 @@ class DialeqtImport extends React.Component {
 
           {step === "TRANSLATIONS" && (
             <div>
-              <Header inverted>{getTranslation("Add one or more translations")}</Header>
+              <Header inverted>{this.context("Add one or more translations")}</Header>
               <Segment>
                 <Translations translations={translations.toJS()} onChange={t => this.props.setTranslations(t)} />
               </Segment>
 
-              <Header inverted>{getTranslation("Select a license")}</Header>
+              <Header inverted>{this.context("Select a license")}</Header>
               <Segment>
                 <Dropdown
                   fluid
-                  label={getTranslation("License")}
+                  label={this.context("License")}
                   selection
                   search
-                  options={license_options}
+                  options={license_options(this.context)}
                   defaultValue={license}
                   onChange={(event, data) => this.props.setLicense(data.value)}
                 />
@@ -340,7 +343,7 @@ class DialeqtImport extends React.Component {
                 className="main-select"
                 search
                 selection
-                placeholder={getTranslation("Update dictionary")}
+                placeholder={this.context("Update dictionary")}
                 options={dictionaryOptions}
                 value={dictionarySelection}
                 onChange={(event, data) =>
@@ -352,25 +355,27 @@ class DialeqtImport extends React.Component {
 
         {isNextStep && step === "TRANSLATIONS" && (
           <Button fluid className="lingvo-button-lite-violet" onClick={this.importCreate}>
-            {getTranslation("Create dictionary")}
+            {this.context("Create dictionary")}
           </Button>
         )}
 
         {isNextStep && step === "UPDATE_DICTIONARY" && (
           <Button fluid className="lingvo-button-lite-violet" onClick={this.importUpdate}>
-            {getTranslation("Update dictionary")}
+            {this.context("Update dictionary")}
           </Button>
         )}
 
         {isNextStep && step !== "TRANSLATIONS" && step !== "UPDATE_DICTIONARY" && (
           <Button fluid className="lingvo-button-lite-violet" onClick={this.onNextClick}>
-            {getTranslation("Next Step")}
+            {this.context("Next Step")}
           </Button>
         )}
       </div>
     );
   }
 }
+
+DialeqtImport.contextType = TranslationContext;
 
 function mapStateToProps(state) {
   return {

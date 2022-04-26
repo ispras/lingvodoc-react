@@ -1,11 +1,11 @@
 import React from "react";
 import { connect } from "react-redux";
 import { Button, Checkbox, Confirm, Divider, Header, List } from "semantic-ui-react";
-import { getTranslation } from "api/i18n";
 import PropTypes from "prop-types";
 import { bindActionCreators } from "redux";
 
 import { openModal } from "ducks/modals";
+import TranslationContext from "Layout/TranslationContext";
 
 import UserVariantModal from "./UserVariantModal";
 
@@ -75,7 +75,7 @@ class PropertiesView extends React.Component {
     return (
       <div id="variants_section">
         <Header size="small">
-          {selection !== null ? getTranslation("Proposed variants") : getTranslation("Please select an element")}
+          {selection !== null ? this.context("Proposed variants") : this.context("Please select an element")}
         </Header>
         {selection !== null && (
           <div>
@@ -136,7 +136,7 @@ class PropertiesView extends React.Component {
                     primary
                     fluid
                     icon="plus"
-                    content={getTranslation("Add variant")}
+                    content={this.context("Add variant")}
                     onClick={() =>
                       openModal(UserVariantModal, { parent: selectedElem, onSubmit: this.onVariantsChanged })
                     }
@@ -148,8 +148,8 @@ class PropertiesView extends React.Component {
         )}
         <Confirm
           open={elemToDelete !== null}
-          header={getTranslation("Confirmation")}
-          content={getTranslation("Are you sure you want to delete this variant?")}
+          header={this.context("Confirmation")}
+          content={this.context("Are you sure you want to delete this variant?")}
           onConfirm={this.deleteVariant}
           onCancel={() => this.setState({ elemToDelete: null })}
           className="lingvo-confirm"
@@ -158,6 +158,8 @@ class PropertiesView extends React.Component {
     );
   }
 }
+
+PropertiesView.contextType = TranslationContext;
 
 PropertiesView.propTypes = {
   selection: PropTypes.string,

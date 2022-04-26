@@ -6,7 +6,7 @@ import { difference, head, isEmpty, nth } from "lodash";
 import PropTypes from "prop-types";
 import { compose } from "recompose";
 
-import { getTranslation } from "api/i18n";
+import TranslationContext from "Layout/TranslationContext";
 
 const localesQuery = gql`
   query Locales {
@@ -132,7 +132,7 @@ class Translations extends React.Component {
           () => this.props.onChange(this.state.translations)
         );
       } else {
-        window.logger.err(getTranslation("No more locales!"));
+        window.logger.err(this.context("No more locales!"));
       }
     }
   }
@@ -164,11 +164,13 @@ class Translations extends React.Component {
             </List.Item>
           ))}
         </List>
-        <Button basic onClick={this.addTranslation} icon="plus" content={getTranslation("Add")} />
+        <Button basic onClick={this.addTranslation} icon="plus" content={this.context("Add")} />
       </div>
     );
   }
 }
+
+Translations.contextType = TranslationContext;
 
 Translations.propTypes = {
   data: PropTypes.shape({

@@ -1,13 +1,13 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Button, Form, Header, Input, Message, Modal } from "semantic-ui-react";
 import { useApolloClient } from "@apollo/client";
 import PropTypes from "prop-types";
 
-import { getTranslation } from "api/i18n";
 import { getId, getUser, signIn } from "api/user";
 import { setIsAuthenticated } from "ducks/auth";
 import { requestUser, setError, setUser } from "ducks/user";
+import TranslationContext from "Layout/TranslationContext";
 import { startTrackUser } from "utils/matomo";
 
 const SignInModal = ({ close }) => {
@@ -20,6 +20,8 @@ const SignInModal = ({ close }) => {
 
   const [logginIn, setLogginIn] = useState(false);
   const [errorMessage, setErrorMessage] = useState();
+
+  const getTranslation = useContext(TranslationContext);
 
   const onSubmit = useCallback(async () => {
     setLogginIn(true);
@@ -44,7 +46,7 @@ const SignInModal = ({ close }) => {
       window.logger.err(getTranslation("Could not get user information"));
       dispatch(setError());
     }
-  }, [client, dispatch, login, password]);
+  }, [client, dispatch, login, password, getTranslation]);
 
   const handleKeyDown = useCallback(event => {
     if (event.key === "Enter" && event.shiftKey === false) {

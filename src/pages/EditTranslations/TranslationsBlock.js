@@ -3,7 +3,7 @@ import { Button, Container, Loader, Message, Pagination } from "semantic-ui-reac
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
 
-import { getTranslation } from "api/i18n";
+import TranslationContext from "Layout/TranslationContext";
 
 import EditAtoms from "./EditAtoms";
 
@@ -83,8 +83,8 @@ class TranslationsBlock extends React.Component {
         <div style={{ textAlign: "center" }}>
           <Message compact negative>
             {error.message == "InvalidRegularExpression"
-              ? getTranslation("Invalid regular expression")
-              : getTranslation("Translation loading error")}
+              ? this.context("Invalid regular expression")
+              : this.context("Translation loading error")}
             .
           </Message>
         </div>
@@ -92,7 +92,7 @@ class TranslationsBlock extends React.Component {
     }
 
     if (loading || this.refetching) {
-      return <Loader active content={`${getTranslation("Loading")}...`}></Loader>;
+      return <Loader active content={`${this.context("Loading")}...`}></Loader>;
     }
 
     const typeGistsMap = new Map();
@@ -123,7 +123,7 @@ class TranslationsBlock extends React.Component {
         types.push(this.state.gistsType);
         typeGistsMap[this.state.gistsType] = [];
       } else {
-        return <h1 className="lingvo-header-translations">{getTranslation("No translations.")}</h1>;
+        return <h1 className="lingvo-header-translations">{this.context("No translations.")}</h1>;
       }
     }
 
@@ -140,12 +140,12 @@ class TranslationsBlock extends React.Component {
         )}
         {types.map(type => (
           <Container fluid key={type}>
-            <h1 className="lingvo-header-translations">{getTranslation(type)}</h1>
+            <h1 className="lingvo-header-translations">{this.context(type)}</h1>
 
             {this.state.gistsType && (
               <div className="lingvo-new-gists">
                 <Button onClick={this.addTranslationGist} className="lingvo-button-violet-dashed">
-                  {getTranslation("Add new translation gist")}
+                  {this.context("Add new translation gist")}
                 </Button>
 
                 {newGists
@@ -173,7 +173,7 @@ class TranslationsBlock extends React.Component {
                 ></EditAtoms>
               ))
             ) : (
-              <h1 className="lingvo-header-translations">{getTranslation("No translations.")}</h1>
+              <h1 className="lingvo-header-translations">{this.context("No translations.")}</h1>
             )}
           </Container>
         ))}
@@ -190,5 +190,7 @@ class TranslationsBlock extends React.Component {
     );
   }
 }
+
+TranslationsBlock.contextType = TranslationContext;
 
 export default graphql(getTranslationsQuery)(TranslationsBlock);

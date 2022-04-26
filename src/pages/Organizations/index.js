@@ -4,15 +4,16 @@ import { connect } from "react-redux";
 import { Button, Confirm, Container, Icon, List, Table } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 import PropTypes from "prop-types";
 import { branch, compose, renderComponent, renderNothing } from "recompose";
 import { bindActionCreators } from "redux";
 
+import { chooseTranslation as T } from "api/i18n";
 import Footer from "components/Footer";
 import { getUserRequestsQuery } from "components/Grants/graphql";
 import Placeholder from "components/Placeholder";
 import { openModal as openCreateOrganizationModal } from "ducks/createOrganization";
+import TranslationContext from "Layout/TranslationContext";
 
 import "./style.scss";
 
@@ -20,9 +21,9 @@ export const organizationsQuery = gql`
   query organizations {
     organizations {
       id
-      translation
+      translations
       created_at
-      about
+      about_translations
       additional_metadata {
         admins
         participant
@@ -94,7 +95,7 @@ class Organizations extends React.Component {
         }
       ]
     }).then(() => {
-      window.logger.suc(getTranslation("Request has been sent to the organization's administrator."));
+      window.logger.suc(this.context("Request has been sent to the organization's administrator."));
 
       const { process_member_id_set } = this.state;
 
@@ -113,7 +114,7 @@ class Organizations extends React.Component {
         }
       ]
     }).then(() => {
-      window.logger.suc(getTranslation("Request has been sent to the organization's administrator."));
+      window.logger.suc(this.context("Request has been sent to the organization's administrator."));
 
       const { process_admin_id_set } = this.state;
 
@@ -132,7 +133,7 @@ class Organizations extends React.Component {
 
     const organization_id = organization_to_delete.id;
 
-    const organization_str = organization_to_delete.translation;
+    const organization_str = T(organization_to_delete.translations);
 
     being_deleted_id_set.add(organization_id);
 
@@ -154,7 +155,7 @@ class Organizations extends React.Component {
       ]
     }).then(
       () => {
-        window.logger.suc(`${getTranslation("Successfully deleted organization")} "${organization_str}".`);
+        window.logger.suc(`${this.context("Successfully deleted organization")} "${organization_str}".`);
 
         const { being_deleted_id_set } = this.state;
 
@@ -162,7 +163,7 @@ class Organizations extends React.Component {
         this.setState({ being_deleted_id_set });
       },
       () => {
-        window.logger.err(`${getTranslation("Failed to delete organization")} "${organization_str}"!`);
+        window.logger.err(`${this.context("Failed to delete organization")} "${organization_str}"!`);
 
         const { being_deleted_id_set } = this.state;
 
@@ -191,13 +192,13 @@ class Organizations extends React.Component {
       <div className="lingvodoc-page">
         <div className="lingvodoc-page__content">
           <div className="background-header">
-            <h2 className="page-title">{getTranslation("Organizations")}</h2>
+            <h2 className="page-title">{this.context("Organizations")}</h2>
           </div>
 
           <Container className="lingvo-container_organizations">
             {user.id == 1 && (
               <Button onClick={() => this.createOrganization()} className="lingvo-button-violet-dashed">
-                {getTranslation("Add organization")}
+                {this.context("Add organization")}
               </Button>
             )}
 
@@ -206,16 +207,16 @@ class Organizations extends React.Component {
                 <Table.Header>
                   <Table.Row>
                     <Table.HeaderCell>
-                      <div className="lingvo-org-table__content">{getTranslation("Organization name")}</div>
+                      <div className="lingvo-org-table__content">{this.context("Organization name")}</div>
                     </Table.HeaderCell>
                     <Table.HeaderCell>
-                      <div className="lingvo-org-table__content">{getTranslation("About the organization")}</div>
+                      <div className="lingvo-org-table__content">{this.context("About the organization")}</div>
                     </Table.HeaderCell>
                     <Table.HeaderCell>
-                      <div className="lingvo-org-table__content">{getTranslation("Members")}</div>
+                      <div className="lingvo-org-table__content">{this.context("Members")}</div>
                     </Table.HeaderCell>
                     <Table.HeaderCell>
-                      <div className="lingvo-org-table__content">{getTranslation("Administrators")}</div>
+                      <div className="lingvo-org-table__content">{this.context("Administrators")}</div>
                     </Table.HeaderCell>
                     {user.id && <Table.HeaderCell className="lingvo-org-table__cell_buttons" />}
                     {user.id && user.id == 1 && <Table.HeaderCell className="lingvo-org-table__cell_delete" />}
@@ -234,10 +235,10 @@ class Organizations extends React.Component {
                     return (
                       <Table.Row key={organization.id}>
                         <Table.Cell>
-                          <div className="lingvo-org-table__content">{organization.translation}</div>
+                          <div className="lingvo-org-table__content">{T(organization.translations)}</div>
                         </Table.Cell>
                         <Table.Cell>
-                          <div className="lingvo-org-table__content">{organization.about}</div>
+                          <div className="lingvo-org-table__content">{T(organization.about_translations)}</div>
                         </Table.Cell>
                         <Table.Cell>
                           <div className="lingvo-org-table__content">
@@ -268,13 +269,13 @@ class Organizations extends React.Component {
                                     onClick={() => this.joinOrganization(organization)}
                                   >
                                     {!is_process_member
-                                      ? getTranslation("Become a member")
-                                      : getTranslation("In processing")}
+                                      ? this.context("Become a member")
+                                      : this.context("In processing")}
                                   </Button>
                                 </List.Item>
                               )) || (
                                 <List.Item>
-                                  <span className="lingvo-org-table__role">{getTranslation("You are a member")}</span>
+                                  <span className="lingvo-org-table__role">{this.context("You are a member")}</span>
                                 </List.Item>
                               )}
 
@@ -286,14 +287,14 @@ class Organizations extends React.Component {
                                     onClick={() => this.adminOrganization(organization)}
                                   >
                                     {!is_process_admin
-                                      ? getTranslation("Become an administrator")
-                                      : getTranslation("In processing")}
+                                      ? this.context("Become an administrator")
+                                      : this.context("In processing")}
                                   </Button>
                                 </List.Item>
                               )) || (
                                 <List.Item>
                                   <span className="lingvo-org-table__role">
-                                    {getTranslation("You are an administrator")}
+                                    {this.context("You are an administrator")}
                                   </span>
                                 </List.Item>
                               )}
@@ -305,13 +306,13 @@ class Organizations extends React.Component {
                             {!is_being_deleted ? (
                               <Button
                                 icon={<i className="lingvo-icon lingvo-icon_trash" />}
-                                title={getTranslation("Delete")}
+                                title={this.context("Delete")}
                                 className="lingvo-button-org-delete"
                                 disabled={is_being_deleted}
                                 onClick={() => this.setState({ organization_to_delete: organization })}
                               />
                             ) : (
-                              <Icon name="spinner" loading title={`${getTranslation("Deleting")}...`} />
+                              <Icon name="spinner" loading title={`${this.context("Deleting")}...`} />
                             )}
                           </Table.Cell>
                         )}
@@ -324,11 +325,11 @@ class Organizations extends React.Component {
               {organization_to_delete && (
                 <Confirm
                   open={!!organization_to_delete}
-                  cancelButton={getTranslation("No")}
-                  confirmButton={getTranslation("Yes")}
+                  cancelButton={this.context("No")}
+                  confirmButton={this.context("Yes")}
                   onCancel={() => this.setState({ organization_to_delete: null })}
                   onConfirm={this.deleteOrganization}
-                  content={`${getTranslation("Delete organization")} "${organization_to_delete.translation}"?`}
+                  content={`${this.context("Delete organization")} "${T(organization_to_delete.translations)}"?`}
                   className="lingvo-confirm"
                 />
               )}
@@ -340,6 +341,8 @@ class Organizations extends React.Component {
     );
   }
 }
+
+Organizations.contextType = TranslationContext;
 
 Organizations.propTypes = {
   data: PropTypes.shape({

@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Container, Header, List, Segment } from "semantic-ui-react";
-import { getTranslation } from "api/i18n";
 import Immutable, { fromJS, Map } from "immutable";
 import PropTypes from "prop-types";
 import { pure } from "recompose";
 
+import { chooseTranslation as T } from "api/i18n";
+import TranslationContext from "Layout/TranslationContext";
 import { assignDictsToTree, buildDictTrees } from "pages/Search/treeBuilder";
 
 import Tree from "./Tree";
@@ -21,6 +22,8 @@ function restDictionaries(dicts, grants) {
 function GrantedDicts(props) {
   const { mode, languagesTree, dictionaries, perspectives, grants, isAuthenticated } = props;
 
+  const getTranslation = useContext(TranslationContext);
+
   const dicts = fromJS(dictionaries).reduce((acc, dict) => acc.set(dict.get("id"), dict), new Map());
 
   // build grant trees
@@ -32,7 +35,7 @@ function GrantedDicts(props) {
 
       const result = {
         id: grant.get("id"),
-        title: grant.get("translation"),
+        title: T(grant.get("translations").toJS()),
         tree: assignDictsToTree(
           buildDictTrees(
             fromJS({

@@ -1,5 +1,5 @@
 /* eslint-disable */
-import React, { PureComponent } from "react";
+import React, { PureComponent, useContext } from "react";
 import { Segment, Button, Modal, Loader } from "semantic-ui-react";
 import { graphql } from "@apollo/client/react/hoc";
 import { compose } from "recompose";
@@ -7,7 +7,7 @@ import PropTypes from "prop-types";
 import { fromJS } from "immutable";
 import { gql } from "@apollo/client";
 import { buildLanguageTree } from "pages/Search/treeBuilder";
-import { getTranslation } from "api/i18n";
+import TranslationContext from "Layout/TranslationContext";
 import Languages from "./Languages";
 import AdvancedFilter from "./AdvancedFilter";
 import GrammarFilter from "./GrammarFilter";
@@ -527,7 +527,7 @@ class AdditionalFilter extends PureComponent {
     } = this.props;
     const { hasAudio, kind, years, humanSettlement, authors, languageVulnerability, isDataDefault, grammaticalSigns } =
       this.state;
-    const closeText = getTranslation("Close");
+    const closeText = this.context("Close");
 
     return (
       <div className={classNames.container}>
@@ -634,6 +634,8 @@ class AdditionalFilter extends PureComponent {
   }
 }
 
+AdditionalFilter.contextType = TranslationContext;
+
 /**
  * Component for receiving, transmitting and handling data from the API to the main component.
  * @param {Object} props - component properties
@@ -642,6 +644,8 @@ class AdditionalFilter extends PureComponent {
 const AdditionalFilterWrap = props => {
   const { languagesQuery } = props;
   const { error: languagesQueryError, loading: languagesQueryLoading } = languagesQuery;
+
+  const getTranslation = useContext(TranslationContext);
 
   if (languagesQueryError) {
     return null;
@@ -677,11 +681,11 @@ const languagesWithDictionariesQuery = gql`
     language_tree {
       id
       parent_id
-      translation
+      translations
       dictionaries(deleted: false, published: true) {
         id
         parent_id
-        translation
+        translations
         category
       }
       additional_metadata {

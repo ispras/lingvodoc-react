@@ -1,9 +1,9 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import { Button, Form, Header, Input, Message, Modal } from "semantic-ui-react";
-import { getTranslation } from "api/i18n";
-import { editProfile, getId, getUser } from "api/user";
 import PropTypes from "prop-types";
 
+import { editProfile, getId, getUser } from "api/user";
+import TranslationContext from "Layout/TranslationContext";
 import { EMAIL_MATCHER } from "utils";
 
 const EditUserModal = ({ user, setUser, close }) => {
@@ -17,6 +17,8 @@ const EditUserModal = ({ user, setUser, close }) => {
 
   const [executing, setExecuting] = useState(false);
   const [errorMessage, setErrorMessage] = useState();
+
+  const getTranslation = useContext(TranslationContext);
 
   const onSubmit = useCallback(async () => {
     if (!EMAIL_MATCHER.test(email)) {
@@ -45,7 +47,7 @@ const EditUserModal = ({ user, setUser, close }) => {
       setErrorMessage(getTranslation(typeof response.err === "string" ? response.err : response.err.error));
       setExecuting(false);
     }
-  }, [close, email, name, newPassword, oldPassword, setUser]);
+  }, [close, email, name, newPassword, oldPassword, setUser, getTranslation]);
 
   return (
     <Modal open className="lingvo-modal" closeIcon onClose={close} size="mini" dimmer="blurring">

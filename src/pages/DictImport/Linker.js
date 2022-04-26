@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Button, Checkbox, Dropdown, Grid, Icon, Popup } from "semantic-ui-react";
-import { getTranslation } from "api/i18n";
 import { pure } from "recompose";
+
+import TranslationContext from "Layout/TranslationContext";
 
 function valueColor(value) {
   if (value === "keep") {
@@ -20,6 +21,8 @@ function valueColor(value) {
 }
 
 function Column({ spread, idStr, name, linkOptions, value, onChange }) {
+  const getTranslation = useContext(TranslationContext);
+
   const trigger = (
     <Button size="tiny" className="column-button" color={valueColor(value)}>
       {name}
@@ -98,6 +101,8 @@ function Columns({ blob, spreads, linkOptions, onUpdateColumn, onToggleColumn, o
 }
 
 function Linker({ blobs, state, spreads, onSelect, onDelete, onUpdateColumn, onToggleColumn }) {
+  const getTranslation = useContext(TranslationContext);
+
   const stateOptions = blobs.reduce(
     (acc, blob) => [
       ...acc,

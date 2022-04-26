@@ -9,7 +9,6 @@ import { branch, compose, renderComponent } from "recompose";
 import { bindActionCreators } from "redux";
 import styled from "styled-components";
 
-import { getTranslation } from "api/i18n";
 import ApproveModal from "components/ApproveModal";
 import Placeholder from "components/Placeholder";
 import { openModal } from "ducks/modals";
@@ -20,6 +19,7 @@ import {
   selectLexicalEntry,
   setSortByField
 } from "ducks/perspective";
+import TranslationContext from "Layout/TranslationContext";
 
 import Pagination from "./Pagination";
 import TableBody from "./TableBody";
@@ -35,7 +35,7 @@ export const queryPerspective = gql`
   query queryPerspective1($id: LingvodocID!) {
     perspective(id: $id) {
       id
-      translation
+      translations
       columns {
         id
         field_id
@@ -44,7 +44,7 @@ export const queryPerspective = gql`
         position
         field {
           id
-          translation
+          translations
           # NOTE: this field of this query is not used, but it needs to stay here because otherwise on showing
           # of CognateAnalysisModal the query's data gets invalidated and we have to refetch it, see
           # corresponding comments in PerspectiveViewWrapper and languageQuery of CognateAnalysisModal, and
@@ -66,7 +66,7 @@ export const queryLexicalEntries = gql`
   query queryPerspective2($id: LingvodocID!, $entitiesMode: String!) {
     perspective(id: $id) {
       id
-      translation
+      translations
       lexical_entries(mode: $entitiesMode) {
         id
         parent_id
@@ -582,13 +582,13 @@ class P extends React.Component {
     return (
       <div style={{ overflowY: "auto" }} className="lingvo-scrolling-tab">
         {mode === "edit" && (
-          <Button positive icon="plus" content={getTranslation("Add lexical entry")} onClick={addEntry} />
+          <Button positive icon="plus" content={this.context("Add lexical entry")} onClick={addEntry} />
         )}
         {mode === "edit" && (
           <Button
             negative
             icon="minus"
-            content={getTranslation("Remove lexical entries")}
+            content={this.context("Remove lexical entries")}
             onClick={removeEntries}
             disabled={selectedEntries.length < 1}
           />
@@ -597,7 +597,7 @@ class P extends React.Component {
           <Button
             positive
             icon="plus"
-            content={getTranslation("Merge lexical entries")}
+            content={this.context("Merge lexical entries")}
             onClick={mergeEntries}
             disabled={selectedEntries.length < 2}
           />
@@ -605,7 +605,7 @@ class P extends React.Component {
         {mode === "publish" && isAuthenticated && (
           <Button
             positive
-            content={getTranslation("Publish Entities")}
+            content={this.context("Publish Entities")}
             disabled={approveDisableCondition(entries)}
             onClick={onApprove}
           />
@@ -613,7 +613,7 @@ class P extends React.Component {
         {mode === "contributions" && isAuthenticated && (
           <Button
             positive
-            content={getTranslation("Accept Contributions")}
+            content={this.context("Accept Contributions")}
             disabled={approveDisableCondition(entries)}
             onClick={onApprove}
           />
@@ -666,6 +666,8 @@ class P extends React.Component {
     );
   }
 }
+
+P.contextType = TranslationContext;
 
 P.propTypes = {
   id: PropTypes.array.isRequired,
@@ -729,7 +731,7 @@ export const queryLexicalEntry = gql`
   query queryLexicalEntry($perspectiveId: LingvodocID!) {
     perspective(id: $perspectiveId) {
       id
-      translation
+      translations
       columns {
         id
         field_id
@@ -738,7 +740,7 @@ export const queryLexicalEntry = gql`
         position
         field {
           id
-          translation
+          translations
           data_type
           data_type_translation_gist_id
         }
@@ -848,7 +850,7 @@ export const queryLexicalEntriesByIds = gql`
   query queryLexicalEntry($perspectiveId: LingvodocID!, $entriesIds: [LingvodocID]!, $entitiesMode: String!) {
     perspective(id: $perspectiveId) {
       id
-      translation
+      translations
       columns {
         id
         field_id
@@ -857,7 +859,7 @@ export const queryLexicalEntriesByIds = gql`
         position
         field {
           id
-          translation
+          translations
           data_type
           data_type_translation_gist_id
         }

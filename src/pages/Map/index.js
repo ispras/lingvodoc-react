@@ -9,6 +9,7 @@ import { compose } from "recompose";
 import { bindActionCreators } from "redux";
 import styled from "styled-components";
 
+import { chooseTranslation as T } from "api/i18n";
 import BlobsModal from "components/Search/blobsModal";
 import { openBlobsModal } from "ducks/blobs";
 
@@ -52,7 +53,7 @@ const dictionaryMapQuery = gql`
     dictionaries(published: true) {
       id
       parent_id
-      translation
+      translations
       additional_metadata {
         blobs
         location
@@ -149,7 +150,7 @@ class Map extends React.Component {
                 .filter(b => !!b)
             : [];
           return L.marker([lat, lng], {
-            title: dictionary.translation,
+            title: T(dictionary.translations),
             icon: isEmpty(dictionaryBlobs) ? iconWithoutDictionaries : iconWithDictionaries
           })
             .addTo(markersGroup)

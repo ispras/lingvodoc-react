@@ -1,15 +1,17 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
-import { getTranslation } from "api/i18n";
 
 import Footer from "components/Footer";
+import TranslationContext from "Layout/TranslationContext";
 
 import imageDictionares from "../../images/bookshelves.svg";
 import imageCorpora from "../../images/file_bundle.svg";
 
 import "./styles.scss";
 
-function treeRoute() {
+function TreeRoute() {
+  const getTranslation = useContext(TranslationContext);
+
   return (
     <div className="lingvodoc-page">
       <div className="background-cards lingvodoc-page__content">
@@ -33,4 +35,4 @@ function treeRoute() {
   );
 }
 
-export default treeRoute;
+export default TreeRoute;

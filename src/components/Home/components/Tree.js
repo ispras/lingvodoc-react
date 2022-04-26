@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import { Button, Checkbox, Dropdown, Icon, Label } from "semantic-ui-react";
@@ -7,9 +7,10 @@ import PropTypes from "prop-types";
 import { compose, onlyUpdateForKeys } from "recompose";
 import { bindActionCreators } from "redux";
 
-import { getTranslation } from "api/i18n";
+import { chooseTranslation as T } from "api/i18n";
 import config from "config";
 import { toggleDictionary } from "ducks/home";
+import TranslationContext from "Layout/TranslationContext";
 
 import { checkLanguage } from "./LangsNav";
 
@@ -33,7 +34,7 @@ const Perspective = ({ perspective: p }) => (
         {p.get("limited") && <Icon name="privacy" />}
       </span>
     )}
-    {p.get("translation")}
+    {T(p.get("translations").toJS())}
   </Dropdown.Item>
 );
 
@@ -43,7 +44,7 @@ Perspective.propTypes = {
 
 const Dict = ({ dictionary, actions, selected, canSelectDictionaries }) => {
   const id = dictionary.get("id");
-  const translation = dictionary.get("translation");
+  const translations = dictionary.get("translations");
   const status = dictionary.get("status");
   let perspectives = dictionary.get("children");
   const authors = dictionary.getIn(["additional_metadata", "authors"]);
@@ -54,6 +55,8 @@ const Dict = ({ dictionary, actions, selected, canSelectDictionaries }) => {
     perspectives = Immutable.fromJS(perspectives);
   }
 
+  const getTranslation = useContext(TranslationContext);
+
   return (
     <li className="dict">
       {(config.buildType === "desktop" || config.buildType === "proxy") && canSelectDictionaries && (
@@ -62,7 +65,7 @@ const Dict = ({ dictionary, actions, selected, canSelectDictionaries }) => {
       {(config.buildType === "desktop" || config.buildType === "proxy") && isDownloaded && <Icon name="download" />}
 
       <span className="dict-name">
-        {translation}{" "}
+        {translations && T(translations.toJS())}{" "}
         {config.buildType === "server" && canSelectDictionaries && status === "Published" && <Icon name="globe" />}
       </span>
       {authors && authors.size != 0 && <span className="dict-authors">({authors.toArray().join(", ")})</span>}
@@ -107,7 +110,7 @@ const Dictionary = compose(
 )(Dict);
 
 const Language = ({ language, canSelectDictionaries }) => {
-  const translation = language.get("translation");
+  const translations = language.get("translations");
   const children = language.get("children");
   const id = language.get("id").toJS().toString();
   const parent_id = language.get("parent_id");
@@ -126,7 +129,7 @@ const Language = ({ language, canSelectDictionaries }) => {
 
   return (
     <li className="lang" id={`lang_${id}`}>
-      <span className={langClass}>{translation}</span>
+      <span className={langClass}>{translations && T(translations.toJS())}</span>
       <ul>
         {children.map(n => (
           <Node key={n.get("id")} node={n} canSelectDictionaries={canSelectDictionaries} />

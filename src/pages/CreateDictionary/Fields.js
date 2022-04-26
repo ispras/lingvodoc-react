@@ -8,8 +8,9 @@ import { branch, compose, renderNothing } from "recompose";
 import { bindActionCreators } from "redux";
 import styled from "styled-components";
 
-import { getTranslation } from "api/i18n";
+import { chooseTranslation as T } from "api/i18n";
 import { openCreateFieldModal } from "ducks/fields";
+import TranslationContext from "Layout/TranslationContext";
 import { compositeIdToString } from "utils/compositeId";
 import { uuidv4 as uuid } from "utils/uuid";
 
@@ -27,7 +28,7 @@ const NestedColumn = ({ column, columns, fields, onChange }) => {
     .filter(c => !isEqual(c.id, column.id))
     .map(c => {
       const field = fields.find(f => isEqual(f.id, c.field_id));
-      return { text: field.translation, value: c.id };
+      return { text: T(field.translations), value: c.id };
     });
 
   return (
@@ -112,17 +113,17 @@ class Column extends React.Component {
     const { column, columns, fields, perspectives } = this.props;
 
     const field = fields.find(f => isEqual(f.id, this.state.field_id));
-    const options = fields.map(f => ({ text: f.translation, value: compositeIdToString(f.id) }));
+    const options = fields.map(f => ({ text: T(f.translations), value: compositeIdToString(f.id) }));
 
     options.push({
-      text: `${getTranslation("Add new field")}...`,
+      text: `${this.context("Add new field")}...`,
       value: "new_field"
     });
 
     const availablePerspectives = perspectives.map(p => ({
       text: p.hasOwnProperty("name")
-        ? `${getTranslation("Perspective")} ${p.index + 1}: ${p.name}`
-        : `${getTranslation("Perspective")} ${p.index + 1}`,
+        ? `${this.context("Perspective")} ${p.index + 1}: ${p.name}`
+        : `${this.context("Perspective")} ${p.index + 1}`,
 
       value: p.index
     }));
@@ -150,7 +151,7 @@ class Column extends React.Component {
             <CheckboxWithMargins
               defaultChecked={this.state.hasNestedField}
               onChange={(e, { checked }) => this.setState({ hasNestedField: checked })}
-              label={getTranslation("has linked field")}
+              label={this.context("has linked field")}
             />
           )}
         {this.state.hasNestedField && (
@@ -160,6 +161,8 @@ class Column extends React.Component {
     );
   }
 }
+
+Column.contextType = TranslationContext;
 
 Column.propTypes = {
   column: PropTypes.object.isRequired,
@@ -307,7 +310,7 @@ class Columns extends React.Component {
     if (this.fetching) {
       return (
         <div>
-          {getTranslation("Loading field template")}... <Icon loading name="spinner" />
+          {this.context("Loading field template")}... <Icon loading name="spinner" />
         </div>
       );
     }
@@ -349,13 +352,15 @@ class Columns extends React.Component {
 
         <Button
           basic
-          content={getTranslation("Add new column")}
+          content={this.context("Add new column")}
           onClick={() => this.onCreate(allFields.find(f => f.data_type === "Text"))}
         />
       </div>
     );
   }
 }
+
+Columns.contextType = TranslationContext;
 
 Columns.propTypes = {
   perspectives: PropTypes.array.isRequired,

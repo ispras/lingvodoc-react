@@ -7,6 +7,7 @@ import PropTypes from "prop-types";
 import { compose, pure } from "recompose";
 import { bindActionCreators } from "redux";
 
+import { chooseTranslation as T } from "api/i18n";
 import { closeBlobsModal } from "ducks/blobs";
 import { compositeIdToString } from "utils/compositeId";
 
@@ -49,7 +50,7 @@ const BlobsModal = ({ visible, actions, blobs, dictionary }) => {
   }
   return (
     <Modal closeIcon onClose={actions.closeBlobsModal} open={visible} dimmer size="small" className="lingvo-modal2">
-      <Modal.Header>{dictionary.translation}</Modal.Header>
+      <Modal.Header>{T(dictionary.translations)}</Modal.Header>
       <Modal.Content>
         <List>
           {blobs.length === 0 && <Message info>No files</Message>}

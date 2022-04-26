@@ -28,6 +28,7 @@ import NavBar from "./NavBar";
 import Routes from "./Routes";
 import Snackbar from "./Snackbar";
 import TasksSidebar from "./TasksSidebar";
+import TranslationContext from "./TranslationContext";
 
 import "semantic-ui-css/semantic.min.css";
 import "styles/main.scss";
@@ -45,48 +46,49 @@ class Layout extends React.Component {
   }
 
   render() {
-    const { selected, loading } = this.props;
+    const { translationGetter } = this.props;
 
     const scrollContainer = document.querySelector(".pusher");
     smoothScroll(0, 0, null, scrollContainer);
 
     return (
-      <div key={`${selected.id}${loading}`}>
-        <NavBar />
-        <Snackbar />
-        {
-          <Sidebar.Pushable as="div">
-            <TasksSidebar />
-            <Sidebar.Pusher as={Content}>
-              <Routes />
-            </Sidebar.Pusher>
-          </Sidebar.Pushable>
-        }
-        <Modals />
-        <PlayerModal />
-        <MarkupModal />
-        <DictionaryProperties />
-        <SaveDictionary />
-        <PerspectiveProperties />
-        <PhonemicAnalysisModal />
-        <CognateAnalysisModal />
-        <PhonologyModal />
-        <ConverEafModal />
-        <StatisticsModal />
-        <BanModal />
-        <CreateFieldModal />
-        <RolesModal />
-        <CreateOrganizationModal />
-        <DictionaryOrganizationsModal />
-        <CreatePerspectiveModal />
-        <ConfirmModal />
-      </div>
+      <TranslationContext.Provider value={translationGetter}>
+        <div>
+          <NavBar />
+          <Snackbar />
+          {
+            <Sidebar.Pushable as="div">
+              <TasksSidebar />
+              <Sidebar.Pusher as={Content}>
+                <Routes />
+              </Sidebar.Pusher>
+            </Sidebar.Pushable>
+          }
+          <Modals />
+          <PlayerModal />
+          <MarkupModal />
+          <DictionaryProperties />
+          <SaveDictionary />
+          <PerspectiveProperties />
+          <PhonemicAnalysisModal />
+          <CognateAnalysisModal />
+          <PhonologyModal />
+          <ConverEafModal />
+          <StatisticsModal />
+          <BanModal />
+          <CreateFieldModal />
+          <RolesModal />
+          <CreateOrganizationModal />
+          <DictionaryOrganizationsModal />
+          <CreatePerspectiveModal />
+          <ConfirmModal />
+        </div>
+      </TranslationContext.Provider>
     );
   }
 }
 Layout.propTypes = {
-  selected: PropTypes.object.isRequired,
-  loading: PropTypes.bool.isRequired
+  translationGetter: PropTypes.func.isRequired
 };
 
-export default connect(state => state.locale)(Layout);
+export default connect(({ locale: { translationGetter } }) => ({ translationGetter }))(Layout);

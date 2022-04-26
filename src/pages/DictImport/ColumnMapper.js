@@ -1,12 +1,13 @@
-import React from "react";
+import React, { useContext } from "react";
 import { connect } from "react-redux";
 import { Button, Dropdown, Popup } from "semantic-ui-react";
-import { getTranslation } from "api/i18n";
 import { is } from "immutable";
 import { compose } from "recompose";
 import { bindActionCreators } from "redux";
 
+import { chooseTranslation as T } from "api/i18n";
 import { openCreateFieldModal } from "ducks/fields";
+import TranslationContext from "Layout/TranslationContext";
 
 function valueColor(value) {
   if (value === "keep") {
@@ -31,6 +32,8 @@ function FieldButton({ text, onClick, isSelected }) {
 }
 
 function Column({ spread, name, value, fieldOptions, type, onSetColumnType, actions }) {
+  const getTranslation = useContext(TranslationContext);
+
   const isLink = value && value.includes("/");
 
   let columnButton = <Button className="column-button" color={valueColor(value)} content={name} />;
@@ -139,8 +142,8 @@ function Columns({ blob, spreads, fieldOptions, columnTypes, onSetColumnType }) 
 
 function ColumnMapper({ state, spreads, types, columnTypes, onSetColumnType }) {
   const typesSortedFiltered = types
-    .sortBy(type => type.get("translation"))
-    .filter(type => type.get("translation").trim() != "");
+    .sortBy(type => T(type.get("translations").toJS()))
+    .filter(type => T(type.get("translations").toJS()).trim() != "");
 
   const fieldOptions = [];
 
@@ -152,7 +155,7 @@ function ColumnMapper({ state, spreads, types, columnTypes, onSetColumnType }) {
       key: idStr,
       value: idStr,
       id: id,
-      text: type.get("translation")
+      text: T(type.get("translations").toJS())
     });
 
     fieldOptions[idStr] = id;

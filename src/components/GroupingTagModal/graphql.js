@@ -64,18 +64,18 @@ export const languageTreeSourceQuery = gql`
     language_tree {
       id
       parent_id
-      translation
+      translations
       created_at
     }
     dictionaries {
       id
       parent_id
-      translation
+      translations
     }
     perspectives {
       id
       parent_id
-      translation
+      translations
     }
   }
 `;

@@ -4,7 +4,7 @@ import { GeoSearchControl, OpenStreetMapProvider } from "leaflet-geosearch";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 
-import { getTranslation } from "api/i18n";
+import TranslationContext from "Layout/TranslationContext";
 
 import "leaflet/dist/leaflet.css";
 import "leaflet-geosearch/assets/css/leaflet.css";
@@ -75,7 +75,7 @@ class Map extends React.Component {
     new GeoSearchControl({
       provider: new OpenStreetMapProvider(),
       style: "bar",
-      searchLabel: getTranslation("Type to search"),
+      searchLabel: this.context("Type to search"),
       autoClose: true,
       marker: {
         icon: icon,
@@ -116,6 +116,8 @@ class Map extends React.Component {
     );
   }
 }
+
+Map.contextType = TranslationContext;
 
 Map.propTypes = {
   onChange: PropTypes.func.isRequired,

@@ -1,7 +1,6 @@
-import React from "react";
+import React, { useContext } from "react";
 import { connect } from "react-redux";
 import { Button, Checkbox, Popup } from "semantic-ui-react";
-import { getTranslation } from "api/i18n";
 import { find, isEqual } from "lodash";
 import PropTypes from "prop-types";
 import { onlyUpdateForKeys } from "recompose";
@@ -10,6 +9,7 @@ import { bindActionCreators } from "redux";
 import { openModal as openConfirmModal } from "ducks/confirm";
 import { openViewer } from "ducks/markup";
 import { openModal } from "ducks/modals";
+import TranslationContext from "Layout/TranslationContext";
 
 import Entities from "./index";
 import ParserResults from "./ParserResults";
@@ -26,6 +26,8 @@ function content(c) {
 const MarkupEntityContent = onlyUpdateForKeys(["entity", "mode"])(
   ({ entity, parentEntity, mode, publish, accept, remove, actions }) => {
     const forParse = entity.is_subject_for_parsing;
+    const getTranslation = useContext(TranslationContext);
+
     switch (mode) {
       case "edit":
         return (
@@ -46,6 +48,7 @@ const MarkupEntityContent = onlyUpdateForKeys(["entity", "mode"])(
             />
           </Button.Group>
         );
+
       case "publish":
         return (
           <div>
@@ -81,6 +84,7 @@ const MarkupEntityContent = onlyUpdateForKeys(["entity", "mode"])(
             {!entity.accepted && <Button basic color="black" icon="check" onClick={() => accept(entity, true)} />}
           </Button.Group>
         );
+
       default:
         return null;
     }

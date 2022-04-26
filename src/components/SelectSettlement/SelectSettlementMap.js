@@ -1,9 +1,10 @@
 import React from "react";
 import { Button } from "semantic-ui-react";
-import { getTranslation } from "api/i18n";
 import L from "leaflet";
 import { GeoSearchControl, OpenStreetMapProvider } from "leaflet-geosearch";
 import PropTypes from "prop-types";
+
+import TranslationContext from "Layout/TranslationContext";
 
 import "leaflet/dist/leaflet.css";
 import "leaflet-geosearch/assets/css/leaflet.css";
@@ -66,7 +67,7 @@ class SelectSettlementMap extends React.Component {
   _createGeoSearchControl(provider) {
     const geoSearchControl = new GeoSearchControl({
       provider,
-      searchLabel: getTranslation("Type to search"),
+      searchLabel: this.context("Type to search"),
       autoClose: true,
       style: "bar",
       marker: {
@@ -155,7 +156,7 @@ class SelectSettlementMap extends React.Component {
           }}
           className="lingvo-button-violet"
         >
-          {getTranslation("Select")}
+          {this.context("Select")}
         </Button>
         <Button
           onClick={() => {
@@ -163,12 +164,14 @@ class SelectSettlementMap extends React.Component {
           }}
           className="lingvo-button-basic-black"
         >
-          {getTranslation("Close")}
+          {this.context("Close")}
         </Button>
       </div>
     );
   }
 }
+
+SelectSettlementMap.contextType = TranslationContext;
 
 SelectSettlementMap.propTypes = {
   closeModal: PropTypes.func.isRequired,

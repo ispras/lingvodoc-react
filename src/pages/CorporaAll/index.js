@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { connect } from "react-redux";
 import { Container } from "semantic-ui-react";
 import { gql } from "@apollo/client";
@@ -7,13 +7,13 @@ import Immutable, { fromJS, OrderedMap } from "immutable";
 import PropTypes from "prop-types";
 import { branch, compose, renderNothing } from "recompose";
 
-import { getTranslation } from "api/i18n";
 import BackTopButton from "components/BackTopButton";
 import { getScrollContainer } from "components/Home/common";
 import AllDicts from "components/Home/components/AllDicts";
 import Placeholder from "components/Placeholder";
 // eslint-disable-next-line import/no-unresolved
 import config from "config";
+import TranslationContext from "Layout/TranslationContext";
 import { buildLanguageTree } from "pages/Search/treeBuilder";
 
 import "./styles.scss";
@@ -23,7 +23,7 @@ const authenticatedCorporaQuery = gql`
     dictionaries(proxy: true, category: 1) {
       id
       parent_id
-      translation
+      translations
       status
       category
       additional_metadata {
@@ -31,29 +31,29 @@ const authenticatedCorporaQuery = gql`
       }
       perspectives {
         id
-        translation
+        translations
       }
     }
     permission_lists(proxy: true) {
       view {
         id
         parent_id
-        translation
+        translations
       }
       edit {
         id
         parent_id
-        translation
+        translations
       }
       publish {
         id
         parent_id
-        translation
+        translations
       }
       limited {
         id
         parent_id
-        translation
+        translations
       }
     }
   }
@@ -64,7 +64,7 @@ const guestCorporaQuery = gql`
     dictionaries(proxy: false, published: true, category: 1) {
       id
       parent_id
-      translation
+      translations
       status
       category
       additional_metadata {
@@ -72,35 +72,37 @@ const guestCorporaQuery = gql`
       }
       perspectives {
         id
-        translation
+        translations
       }
     }
     permission_lists(proxy: false) {
       view {
         id
         parent_id
-        translation
+        translations
       }
       edit {
         id
         parent_id
-        translation
+        translations
       }
       publish {
         id
         parent_id
-        translation
+        translations
       }
       limited {
         id
         parent_id
-        translation
+        translations
       }
     }
   }
 `;
 
 const CorporaAll = props => {
+  const getTranslation = useContext(TranslationContext);
+
   const {
     dictionaries: localDictionaries,
     perspectives,
@@ -196,11 +198,11 @@ const dictionaryWithPerspectivesQuery = gql`
     perspectives {
       id
       parent_id
-      translation
+      translations
     }
     grants {
       id
-      translation
+      translations
       issuer
       grant_number
       additional_metadata {
@@ -210,7 +212,7 @@ const dictionaryWithPerspectivesQuery = gql`
     language_tree {
       id
       parent_id
-      translation
+      translations
       created_at
       additional_metadata {
         toc_mark
@@ -225,23 +227,23 @@ const dictionaryWithPerspectivesProxyQuery = gql`
     dictionaries(proxy: false, published: true, category: 1) {
       id
       parent_id
-      translation
+      translations
       additional_metadata {
         authors
       }
       perspectives {
         id
-        translation
+        translations
       }
     }
     perspectives {
       id
       parent_id
-      translation
+      translations
     }
     grants {
       id
-      translation
+      translations
       issuer
       grant_number
       additional_metadata {
@@ -251,7 +253,7 @@ const dictionaryWithPerspectivesProxyQuery = gql`
     language_tree {
       id
       parent_id
-      translation
+      translations
       created_at
       additional_metadata {
         toc_mark

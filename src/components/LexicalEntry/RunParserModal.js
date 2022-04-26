@@ -2,10 +2,10 @@ import React from "react";
 import { Button, Form, Modal } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 import PropTypes from "prop-types";
 import { compose } from "recompose";
 
+import TranslationContext from "Layout/TranslationContext";
 import { compositeIdToString as id2str } from "utils/compositeId";
 
 const parsersQuery = gql`
@@ -81,15 +81,15 @@ class RunParserModal extends React.Component {
 
     return (
       <Modal open dimmer size="small" closeIcon onClose={onClose} className="lingvo-modal2">
-        <Modal.Header>{getTranslation("Parser execution")}</Modal.Header>
+        <Modal.Header>{this.context("Parser execution")}</Modal.Header>
         <Modal.Content>
-          {success && getTranslation("Parser task has been started")}
+          {success && this.context("Parser task has been started")}
           {!success && (
             <Form loading={loading}>
               <Form.Select
                 name="parserId"
                 fluid
-                placeholder={getTranslation("Select parser")}
+                placeholder={this.context("Select parser")}
                 options={option_list}
                 onChange={(_e, { name, value }) => this.handleChange(name, parser_id_map[value])}
               />
@@ -100,13 +100,13 @@ class RunParserModal extends React.Component {
           {!success && (
             <Button
               disabled={!parserId}
-              content={getTranslation("Execute")}
+              content={this.context("Execute")}
               onClick={this.executeParser}
               className="lingvo-button-violet"
             />
           )}
           <Button
-            content={getTranslation(success ? "Close" : "Cancel")}
+            content={this.context(success ? "Close" : "Cancel")}
             onClick={onClose}
             className="lingvo-button-basic-black"
           />
@@ -115,6 +115,8 @@ class RunParserModal extends React.Component {
     );
   }
 }
+
+RunParserModal.contextType = TranslationContext;
 
 RunParserModal.propTypes = {
   entityId: PropTypes.arrayOf(PropTypes.number).isRequired,

@@ -15,7 +15,7 @@ export const languagesQuery = gql`
     language_tree {
       id
       parent_id
-      translation
+      translations
       created_at
       translation_gist_id
       additional_metadata {

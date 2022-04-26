@@ -1,10 +1,11 @@
 import React, { PureComponent } from "react";
 import { Segment } from "semantic-ui-react";
-import { getTranslation } from "api/i18n";
 import Immutable, { fromJS } from "immutable";
 import L from "leaflet";
 import { isEqual } from "lodash";
 import PropTypes from "prop-types";
+
+import TranslationContext from "Layout/TranslationContext";
 
 import getAreaOutline from "./areas";
 import initializeContextMenu from "./leaflet.contextmenu";
@@ -171,13 +172,13 @@ class MapAreas extends PureComponent {
         contextmenu: true,
         contextmenuItems: [
           {
-            text: getTranslation("Disable marker"),
+            text: this.context("Disable marker"),
             callback: () => {
               this.props.markersHandlers.deleteDictFromSearches(dictionary, markerGroups);
             }
           },
           {
-            text: getTranslation("Disable all markers of the groups this marker belongs to."),
+            text: this.context("Disable all markers of the groups this marker belongs to."),
             callback: () => {
               this.props.markersHandlers.deleteAllDictsOfGroups(markerGroups);
             }
@@ -186,18 +187,18 @@ class MapAreas extends PureComponent {
             separator: true
           },
           {
-            text: getTranslation("Add marker to group"),
+            text: this.context("Add marker to group"),
             contextmenuItems: this.getGroupItemsAddMarkerToGroup(markerGroups, dictionary)
           },
           {
-            text: getTranslation("Add all markers of the groups to which this marker belongs to the group"),
+            text: this.context("Add all markers of the groups to which this marker belongs to the group"),
             contextmenuItems: this.getGroupItemsAddAllMarkersToGroup(markerGroups)
           },
           {
             separator: true
           },
           {
-            text: getTranslation("Move marker to group"),
+            text: this.context("Move marker to group"),
             contextmenuItems: this.getGroupItemsMoveMarkerToGroup(markerGroups, dictionary)
           }
         ]
@@ -405,6 +406,8 @@ class MapAreas extends PureComponent {
     );
   }
 }
+
+MapAreas.contextType = TranslationContext;
 
 MapAreas.propTypes = {
   pointIcon: PropTypes.func.isRequired,

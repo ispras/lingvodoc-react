@@ -26,17 +26,18 @@ import PropTypes from "prop-types";
 import { branch, compose, renderNothing } from "recompose";
 import { bindActionCreators } from "redux";
 
-import { getTranslation } from "api/i18n";
+import { chooseTranslation as T } from "api/i18n";
 import { connectMutation } from "components/GroupingTagModal/graphql";
 import { checkLanguage, languageIdList } from "components/Home/components/LangsNav";
 import { closeModal } from "ducks/cognateAnalysis";
+import TranslationContext from "Layout/TranslationContext";
 import { compositeIdToString as id2str } from "utils/compositeId";
 
 const cognateAnalysisDataQuery = gql`
   query cognateAnalysisData($perspectiveId: LingvodocID!) {
     perspective(id: $perspectiveId) {
       id
-      translation
+      translations
       english_status: status(locale_id: 2)
       columns {
         id
@@ -44,7 +45,7 @@ const cognateAnalysisDataQuery = gql`
       }
       tree {
         id
-        translation
+        translations
         additional_metadata {
           toc_mark
         }
@@ -52,7 +53,7 @@ const cognateAnalysisDataQuery = gql`
     }
     all_fields {
       id
-      translation
+      translations
       english_translation: translation(locale_id: 2)
       data_type
     }
@@ -63,14 +64,14 @@ const cognateAnalysisMultiDataQuery = gql`
   query cognateAnalysisMultiData($languageIdList: [LingvodocID]!) {
     languages(id_list: $languageIdList) {
       id
-      translation
+      translations
       dictionaries(deleted: false, published: true) {
         id
-        translation
+        translations
         status
         perspectives {
           id
-          translation
+          translations
           status
           columns {
             id
@@ -83,11 +84,11 @@ const cognateAnalysisMultiDataQuery = gql`
       }
       languages(deleted: false) {
         id
-        translation
+        translations
       }
       tree {
         id
-        translation
+        translations
       }
     }
   }
@@ -105,11 +106,11 @@ const languageQuery = gql`
       id
       dictionaries(deleted: false, published: true) {
         id
-        translation
+        translations
         status
         perspectives {
           id
-          translation
+          translations
           status
           columns {
             id
@@ -122,7 +123,7 @@ const languageQuery = gql`
       }
       languages(deleted: false) {
         id
-        translation
+        translations
       }
     }
   }
@@ -262,7 +263,7 @@ class SLPerspectiveSelection extends React.Component {
             icon="right angle"
             sections={treePathList.map(e => ({
               key: e.id,
-              content: e.hasOwnProperty("status") ? `${e.translation} (${e.status})` : e.translation,
+              content: e.hasOwnProperty("status") ? `${T(e.translations)} (${e.status})` : T(e.translations),
               link: false
             }))}
           />
@@ -277,12 +278,12 @@ class SLPerspectiveSelection extends React.Component {
             <List>
               <List.Item key="selection_xcript">
                 <span style={{ marginLeft: "1em", marginRight: "0.5em" }}>
-                  {getTranslation("Source transcription field:")}
+                  {this.context("Source transcription field")}:
                 </span>
                 <Select
                   disabled={!perspectiveSelectionList[index]}
                   defaultValue={transcriptionFieldIdStrList[index]}
-                  placeholder={getTranslation("Source transcription field selection")}
+                  placeholder={this.context("Source transcription field selection")}
                   options={textFieldsOptions}
                   onChange={(e, { value }) => {
                     transcriptionFieldIdStrList[index] = value;
@@ -292,12 +293,12 @@ class SLPerspectiveSelection extends React.Component {
               </List.Item>
               <List.Item key="selection_xlat">
                 <span style={{ marginLeft: "1em", marginRight: "0.5em" }}>
-                  {getTranslation("Source translation field:")}
+                  {this.context("Source translation field")}:
                 </span>
                 <Select
                   disabled={!perspectiveSelectionList[index]}
                   defaultValue={translationFieldIdStrList[index]}
-                  placeholder={getTranslation("Source translation field selection")}
+                  placeholder={this.context("Source translation field selection")}
                   options={textFieldsOptions}
                   onChange={(e, { value }) => {
                     translationFieldIdStrList[index] = value;
@@ -312,6 +313,8 @@ class SLPerspectiveSelection extends React.Component {
     );
   }
 }
+
+SLPerspectiveSelection.contextType = TranslationContext;
 
 class SLSelection extends React.Component {
   constructor(props) {
@@ -340,7 +343,7 @@ class SLSelection extends React.Component {
         <List>
           <List.Item>
             <span style={p_max_count <= 0 ? { opacity: 0.5 } : {}}>
-              {getTranslation("Select/deselect all dictionaries")}
+              {this.context("Select/deselect all dictionaries")}
             </span>
             <Checkbox
               style={{ marginLeft: "0.5em", verticalAlign: "middle" }}
@@ -398,6 +401,8 @@ class SLSelection extends React.Component {
     );
   }
 }
+
+SLSelection.contextType = TranslationContext;
 
 class MLPerspectiveSelection extends React.Component {
   constructor(props) {
@@ -507,7 +512,7 @@ class MLPerspectiveSelection extends React.Component {
             icon="right angle"
             sections={treePathList.map(e => ({
               key: e.id,
-              content: e.hasOwnProperty("status") ? `${e.translation} (${e.status})` : e.translation,
+              content: e.hasOwnProperty("status") ? `${T(e.translations)} (${e.status})` : T(e.translations),
               link: false
             }))}
           />
@@ -521,11 +526,13 @@ class MLPerspectiveSelection extends React.Component {
           <List.Item>
             <List>
               <List.Item>
-                <span style={{ marginLeft: "1em", marginRight: "0.5em" }}>Source transcription field:</span>
+                <span style={{ marginLeft: "1em", marginRight: "0.5em" }}>
+                  {this.context("Source transcription field")}:
+                </span>
                 <Select
                   disabled={!perspectiveSelectionMap[p_key]}
                   defaultValue={transcriptionFieldIdStrMap[p_key]}
-                  placeholder="Source transcription field selection"
+                  placeholder={this.context("Source transcription field selection")}
                   options={textFieldsOptions}
                   onChange={(e, { value }) => {
                     transcriptionFieldIdStrMap[p_key] = value;
@@ -534,11 +541,13 @@ class MLPerspectiveSelection extends React.Component {
                 />
               </List.Item>
               <List.Item>
-                <span style={{ marginLeft: "1em", marginRight: "0.5em" }}>Source translation field:</span>
+                <span style={{ marginLeft: "1em", marginRight: "0.5em" }}>
+                  {this.context("Source translation field")}:
+                </span>
                 <Select
                   disabled={!perspectiveSelectionMap[p_key]}
                   defaultValue={translationFieldIdStrMap[p_key]}
-                  placeholder="Source translation field selection"
+                  placeholder={this.context("Source translation field selection")}
                   options={textFieldsOptions}
                   onChange={(e, { value }) => {
                     translationFieldIdStrMap[p_key] = value;
@@ -553,6 +562,8 @@ class MLPerspectiveSelection extends React.Component {
     );
   }
 }
+
+MLPerspectiveSelection.contextType = TranslationContext;
 
 class MLSelection extends React.Component {
   constructor(props) {
@@ -754,7 +765,7 @@ class MLSelection extends React.Component {
       <List>
         <List.Item>
           <span style={p_max_count <= 0 ? { opacity: 0.5 } : {}}>
-            {getTranslation("Select/deselect all dictionaries")}
+            {this.context("Select/deselect all dictionaries")}
           </span>
           <Checkbox
             style={{ marginLeft: "0.5em", verticalAlign: "middle" }}
@@ -778,7 +789,7 @@ class MLSelection extends React.Component {
                   icon="right angle"
                   sections={language_info.treePath.map(e => ({
                     key: e.id,
-                    content: e.translation,
+                    content: T(e.translations),
                     link: false
                   }))}
                 />
@@ -795,7 +806,7 @@ class MLSelection extends React.Component {
                 <List>
                   <List.Item>
                     <span>
-                      {getTranslation("Loading perspective data...")} <Icon name="spinner" loading />
+                      {this.context("Loading perspective data...")} <Icon name="spinner" loading />
                     </span>
                   </List.Item>
                 </List>
@@ -803,7 +814,7 @@ class MLSelection extends React.Component {
                 <div>
                   <List>
                     <List.Item>
-                      <span>{getTranslation("Select/deselect all language's dictionaries")}</span>
+                      <span>{this.context("Select/deselect all language's dictionaries")}</span>
                       <Checkbox
                         style={{ marginLeft: "0.5em", verticalAlign: "middle" }}
                         checked={p_language_select_count >= p_language_max_count}
@@ -848,7 +859,7 @@ class MLSelection extends React.Component {
         <List.Item>
           <Dropdown
             fluid
-            placeholder={getTranslation("Add language")}
+            placeholder={this.context("Add language")}
             search
             selection
             options={available_language_list
@@ -858,7 +869,7 @@ class MLSelection extends React.Component {
               .map(language => ({
                 key: language.id,
                 value: id2str(language.id),
-                text: language.translation
+                text: T(language.translations)
               }))}
             value={""}
             onChange={onAddLanguage}
@@ -868,6 +879,8 @@ class MLSelection extends React.Component {
     );
   }
 }
+
+MLSelection.contextType = TranslationContext;
 
 class SuggestionSelection extends React.Component {
   constructor(props) {
@@ -908,7 +921,7 @@ class SuggestionSelection extends React.Component {
       <Segment key={`suggestion${index}`}>
         <List>
           <List.Item>
-            <span style={opacity_style}>{getTranslation("Source perspective word:")}</span>
+            <span style={opacity_style}>{this.context("Source perspective word:")}</span>
 
             {/* List and List.Item for uniform appearance. */}
 
@@ -923,7 +936,7 @@ class SuggestionSelection extends React.Component {
                         </div>
 
                         <div style={{ marginTop: "0.5em", marginBottom: "0.5em" }}>
-                          {getTranslation("Belongs to a group:")}
+                          {this.context("Belongs to a group:")}
                         </div>
 
                         <div>
@@ -961,7 +974,7 @@ class SuggestionSelection extends React.Component {
 
           {single_list.length > 0 && (
             <List.Item>
-              <span style={opacity_style}>{getTranslation("Suggested cognates:")}</span>
+              <span style={opacity_style}>{this.context("Suggested cognates:")}</span>
 
               <List>
                 {map(
@@ -993,7 +1006,7 @@ class SuggestionSelection extends React.Component {
 
           {group_list.length > 0 && (
             <List.Item>
-              <span style={opacity_style}>{getTranslation("Suggested cognate groups:")}</span>
+              <span style={opacity_style}>{this.context("Suggested cognate groups:")}</span>
 
               <List>
                 {map(
@@ -1040,18 +1053,18 @@ class SuggestionSelection extends React.Component {
 
         {connected_flag ? (
           <Message positive>
-            <Message.Header>{getTranslation("Connected")}</Message.Header>
+            <Message.Header>{this.context("Connected")}</Message.Header>
           </Message>
         ) : error_flag ? (
           <Message negative>
-            <Message.Header>{getTranslation("Query error")}</Message.Header>
-            <p>{getTranslation("Failed to connect selected lexical entries, please contact developers.")}</p>
+            <Message.Header>{this.context("Query error")}</Message.Header>
+            <p>{this.context("Failed to connect selected lexical entries, please contact developers.")}</p>
           </Message>
         ) : invalidated_flag ? (
           <Message>
-            <Message.Header>{getTranslation("Invalidated")}</Message.Header>
+            <Message.Header>{this.context("Invalidated")}</Message.Header>
             <p>
-              {getTranslation(
+              {this.context(
                 "Another suggestion was accepted, source perspective word and/or one of suggested " +
                   "cognate words or cognate groups have been connected."
               )}
@@ -1061,7 +1074,7 @@ class SuggestionSelection extends React.Component {
           <Button
             basic
             positive
-            content={sg_state_list[index] == "connecting" ? getTranslation("Connecting...") : getTranslation("Connect")}
+            content={sg_state_list[index] == "connecting" ? this.context("Connecting...") : this.context("Connect")}
             disabled={Object.keys(sg_select_list[index]).length <= 1 || sg_state_list[index] == "connecting"}
             size="mini"
             onClick={() => sg_connect(index)}
@@ -1071,6 +1084,8 @@ class SuggestionSelection extends React.Component {
     );
   }
 }
+
+SuggestionSelection.contextType = TranslationContext;
 
 class CognateAnalysisModal extends React.Component {
   constructor(props) {
@@ -1514,7 +1529,7 @@ class CognateAnalysisModal extends React.Component {
       const textFieldsOptions = textFields.map((f, k) => ({
         key: k,
         value: id2str(f.id),
-        text: f.translation
+        text: T(f.translations)
       }));
 
       this.perspective_list.push({
@@ -1653,7 +1668,7 @@ class CognateAnalysisModal extends React.Component {
     }
   }) {
     if (result.length > 1048576 && (this.props.mode == "suggestions" || this.props.mode == "multi_suggestions")) {
-      result = getTranslation("Skipping text output, too long.");
+      result = this.context("Skipping text output, too long.");
     }
 
     /* Data of the 2d cognate distance plots. */
@@ -1949,14 +1964,12 @@ class CognateAnalysisModal extends React.Component {
         }
       }).then(
         () => {
-          window.logger.suc(
-            getTranslation("Cognate acoustic analysis is launched. Please check out tasks for details.")
-          );
+          window.logger.suc(this.context("Cognate acoustic analysis is launched. Please check out tasks for details."));
 
           this.props.closeModal();
         },
         () => {
-          window.logger.err(getTranslation("Failed to launch cognate acoustic analysis!"));
+          window.logger.err(this.context("Failed to launch cognate acoustic analysis!"));
         }
       );
     } else {
@@ -2001,7 +2014,7 @@ class CognateAnalysisModal extends React.Component {
     const groupFieldsOptions = this.groupFields.map((f, k) => ({
       key: k,
       value: id2str(f.id),
-      text: f.translation
+      text: T(f.translations)
     }));
 
     if (this.groupFields.length > 0) {
@@ -2031,7 +2044,7 @@ class CognateAnalysisModal extends React.Component {
       <List>
         <List.Item>
           <Checkbox
-            label={getTranslation("Match translations")}
+            label={this.context("Match translations")}
             style={{ marginTop: "1em", verticalAlign: "middle" }}
             checked={this.state.matchTranslationsFlag}
             onChange={(e, { checked }) => {
@@ -2046,7 +2059,7 @@ class CognateAnalysisModal extends React.Component {
               <Checkbox
                 radio
                 disabled={!this.state.matchTranslationsFlag}
-                label={getTranslation("Any three consecutive characters.")}
+                label={this.context("Any three consecutive characters.")}
                 name="matchTranslationsRadioGroup"
                 value="first_three"
                 checked={this.state.matchTranslationsValue == "first_three"}
@@ -2059,7 +2072,7 @@ class CognateAnalysisModal extends React.Component {
               <Checkbox
                 radio
                 disabled={!this.state.matchTranslationsFlag}
-                label={getTranslation("All characters.")}
+                label={this.context("All characters.")}
                 name="matchTranslationsRadioGroup"
                 value="all"
                 checked={this.state.matchTranslationsValue == "all"}
@@ -2073,7 +2086,7 @@ class CognateAnalysisModal extends React.Component {
 
         <List.Item>
           <Checkbox
-            label={getTranslation("Only for orphans (words not included in existing etymology groups)")}
+            label={this.context("Only for orphans (words not included in existing etymology groups)")}
             style={{ marginTop: "0.75em", verticalAlign: "middle" }}
             checked={this.state.onlyOrphansFlag}
             onChange={(e, { checked }) => {
@@ -2084,9 +2097,9 @@ class CognateAnalysisModal extends React.Component {
 
         {!this.state.suggestion_list && this.props.user.id === undefined && (
           <Message negative>
-            <Message.Header>{getTranslation("Unauthorized user")}</Message.Header>
+            <Message.Header>{this.context("Unauthorized user")}</Message.Header>
             <p>
-              {getTranslation("Only authorized users can create new cognate connections based on cognate suggestions.")}
+              {this.context("Only authorized users can create new cognate connections based on cognate suggestions.")}
             </p>
           </Message>
         )}
@@ -2135,9 +2148,9 @@ class CognateAnalysisModal extends React.Component {
       return (
         <Modal.Content>
           <Message negative>
-            <Message.Header>{getTranslation("Perspective is not published")}</Message.Header>
+            <Message.Header>{this.context("Perspective is not published")}</Message.Header>
             <p>
-              {getTranslation(
+              {this.context(
                 'Cognate suggestions are available only for perspectives in the "Published" or "Limited access" state.'
               )}
             </p>
@@ -2162,7 +2175,7 @@ class CognateAnalysisModal extends React.Component {
             icon="right angle"
             sections={this.treePath.map(e => ({
               key: e.id,
-              content: e.translation,
+              content: T(e.translations),
               link: false
             }))}
           />
@@ -2184,7 +2197,7 @@ class CognateAnalysisModal extends React.Component {
 
           {this.perspective_list.length <= 1 && (
             <span>
-              {getTranslation(
+              {this.context(
                 "Selected dictionary group doesn't have multiple dictionaries with selected " +
                   "cognate grouping field present, cognate analysis is impossible."
               )}
@@ -2195,7 +2208,7 @@ class CognateAnalysisModal extends React.Component {
         {!this.state.library_present && (
           <List>
             <div style={{ color: "red" }}>
-              {getTranslation("Analysis library is absent, please contact system administrator.")}
+              {this.context("Analysis library is absent, please contact system administrator.")}
             </div>
           </List>
         )}
@@ -2252,7 +2265,7 @@ class CognateAnalysisModal extends React.Component {
         {!this.state.library_present && (
           <List>
             <div style={{ color: "red" }}>
-              {getTranslation("Analysis library is absent, please contact system administrator.")}
+              {this.context("Analysis library is absent, please contact system administrator.")}
             </div>
           </List>
         )}
@@ -2263,9 +2276,9 @@ class CognateAnalysisModal extends React.Component {
 
         {!error_flag && this.props.mode == "multi_reconstruction" && this.state.language_list.length <= 1 && (
           <Message>
-            <Message.Header>{getTranslation("Multiple languages required")}</Message.Header>
+            <Message.Header>{this.context("Multiple languages required")}</Message.Header>
             <p>
-              {getTranslation("Cognate multi-language reconstruction requires dictionaries from at least 2 languages.")}
+              {this.context("Cognate multi-language reconstruction requires dictionaries from at least 2 languages.")}
             </p>
           </Message>
         )}
@@ -2302,7 +2315,7 @@ class CognateAnalysisModal extends React.Component {
       .then(
         () => {
           if (window_log_flag) {
-            window.logger.suc(`${getTranslation("Connected")}.`);
+            window.logger.suc(`${this.context("Connected")}.`);
           }
 
           sg_state_list[index] = "connected";
@@ -2358,30 +2371,30 @@ class CognateAnalysisModal extends React.Component {
       return (
         <List>
           <List.Item>
-            {sg_count.left} {getTranslation("left")}
+            {sg_count.left} {this.context("left")}
           </List.Item>
 
           {sg_count.connecting > 0 && (
             <List.Item>
-              {sg_count.connecting} {getTranslation("connecting...")}
+              {sg_count.connecting} {this.context("connecting...")}
             </List.Item>
           )}
 
           {sg_count.connected > 0 && (
             <List.Item>
-              {sg_count.connected} {getTranslation("connected")}
+              {sg_count.connected} {this.context("connected")}
             </List.Item>
           )}
 
           {sg_count.invalidated > 0 && (
             <List.Item>
-              {sg_count.invalidated} {getTranslation("invalidated")}
+              {sg_count.invalidated} {this.context("invalidated")}
             </List.Item>
           )}
 
           {sg_count.error > 0 && (
             <List.Item>
-              {sg_count.error} {getTranslation("errors")}
+              {sg_count.error} {this.context("errors")}
             </List.Item>
           )}
         </List>
@@ -2442,7 +2455,7 @@ class CognateAnalysisModal extends React.Component {
           <Button
             basic
             positive
-            content={getTranslation("Connect all selected")}
+            content={this.context("Connect all selected")}
             disabled={sg_count.left <= 0 || sg_count.connecting > 0}
             size="mini"
             onClick={() => {
@@ -2479,7 +2492,7 @@ class CognateAnalysisModal extends React.Component {
     if (!this.state.initialized) {
       return (
         <Dimmer active={true} inverted>
-          <Loader>{getTranslation("Loading...")}</Loader>
+          <Loader>{`${this.context("Loading")}...`}</Loader>
         </Dimmer>
       );
     }
@@ -2495,18 +2508,18 @@ class CognateAnalysisModal extends React.Component {
         <Modal closeIcon onClose={this.props.closeModal} dimmer open size="fullscreen" className="lingvo-modal2">
           <Modal.Header>
             {mode == "acoustic"
-              ? getTranslation("Cognate acoustic analysis")
+              ? this.context("Cognate acoustic analysis")
               : mode == "multi_analysis"
-              ? getTranslation("Cognate multi-language analysis")
+              ? this.context("Cognate multi-language analysis")
               : mode == "multi_reconstruction"
-              ? getTranslation("Cognate multi-language reconstruction")
+              ? this.context("Cognate multi-language reconstruction")
               : mode == "multi_suggestions"
-              ? getTranslation("Cognate multi-language suggestions")
+              ? this.context("Cognate multi-language suggestions")
               : mode == "reconstruction"
-              ? getTranslation("Cognate reconstruction")
+              ? this.context("Cognate reconstruction")
               : mode == "suggestions"
-              ? getTranslation("Cognate suggestions")
-              : getTranslation("Cognate analysis")}
+              ? this.context("Cognate suggestions")
+              : this.context("Cognate analysis")}
           </Modal.Header>
 
           {this.language_render(multi)}
@@ -2516,10 +2529,10 @@ class CognateAnalysisModal extends React.Component {
               content={
                 this.state.computing ? (
                   <span>
-                    {getTranslation("Computing")}... <Icon name="spinner" loading />
+                    {this.context("Computing")}... <Icon name="spinner" loading />
                   </span>
                 ) : (
-                  getTranslation("Compute")
+                  this.context("Compute")
                 )
               }
               onClick={this.handleCreate}
@@ -2537,7 +2550,11 @@ class CognateAnalysisModal extends React.Component {
               }
               className="lingvo-button-violet"
             />
-            <Button content="Close" onClick={this.props.closeModal} className="lingvo-button-basic-black" />
+            <Button
+              content={this.context("Close")}
+              onClick={this.props.closeModal}
+              className="lingvo-button-basic-black"
+            />
           </Modal.Actions>
 
           {this.state.library_present && this.state.result !== null && (
@@ -2555,7 +2572,7 @@ class CognateAnalysisModal extends React.Component {
 
                 {this.state.result.length > 0 && mode != "suggestions" && mode != "multi_suggestions" && (
                   <List.Item>
-                    <a href={this.state.xlsx_url}>{getTranslation("XLSX-exported analysis results")}</a>
+                    <a href={this.state.xlsx_url}>{this.context("XLSX-exported analysis results")}</a>
                   </List.Item>
                 )}
 
@@ -2587,9 +2604,9 @@ class CognateAnalysisModal extends React.Component {
 
                   {this.props.user.id === undefined ? (
                     <Message negative>
-                      <Message.Header>{getTranslation("Unauthorized user")}</Message.Header>
+                      <Message.Header>{this.context("Unauthorized user")}</Message.Header>
                       <p>
-                        {getTranslation(
+                        {this.context(
                           "Only authorized users can create new cognate connections based on cognate suggestions."
                         )}
                       </p>
@@ -2630,7 +2647,7 @@ class CognateAnalysisModal extends React.Component {
                             font: { size: 14 },
                             itemsizing: "constant"
                           },
-                          title: "Minimum spanning tree (2d relative distance embedding)"
+                          title: this.context("Minimum spanning tree (2d relative distance embedding)")
                         }}
                       />
                     </List.Item>
@@ -2653,7 +2670,7 @@ class CognateAnalysisModal extends React.Component {
                             scaleanchor: "x"
                           },
                           showlegend: false,
-                          title: "Minimum spanning tree (2d relative distance embedding)"
+                          title: this.context("Minimum spanning tree (2d relative distance embedding)")
                         }}
                       />
                       <Plot
@@ -2721,7 +2738,7 @@ class CognateAnalysisModal extends React.Component {
                             font: { size: 14 },
                             itemsizing: "constant"
                           },
-                          title: "Minimum spanning tree (3d relative distance embedding)"
+                          title: this.context("Minimum spanning tree (3d relative distance embedding)")
                         }}
                       />
                     </List.Item>
@@ -2760,7 +2777,7 @@ class CognateAnalysisModal extends React.Component {
                             }
                           },
                           showlegend: false,
-                          title: "Minimum spanning tree (3d relative distance embedding)"
+                          title: this.context("Minimum spanning tree (3d relative distance embedding)")
                         }}
                       />
                       <Plot
@@ -2782,7 +2799,7 @@ class CognateAnalysisModal extends React.Component {
                             font: { size: 14 },
                             itemsizing: "constant"
                           },
-                          title: "Legend"
+                          title: this.context("Legend")
                         }}
                       />
                     </List.Item>
@@ -2799,6 +2816,8 @@ class CognateAnalysisModal extends React.Component {
     );
   }
 }
+
+CognateAnalysisModal.contextType = TranslationContext;
 
 CognateAnalysisModal.propTypes = {
   perspectiveId: PropTypes.array.isRequired,

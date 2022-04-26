@@ -9,12 +9,13 @@ import { branch, compose, onlyUpdateForKeys, renderNothing } from "recompose";
 import { bindActionCreators } from "redux";
 import styled from "styled-components";
 
-import { getTranslation } from "api/i18n";
+import { chooseTranslation as T } from "api/i18n";
 import EditCorpusMetadata from "components/EditCorpusMetadata";
 import EditDictionaryMetadata from "components/EditDictionaryMetadata";
 import Languages from "components/Languages";
 import TranslationGist from "components/TranslationGist";
 import { closeDictionaryPropertiesModal } from "ducks/dictionaryProperties";
+import TranslationContext from "Layout/TranslationContext";
 import { compositeIdToString as id2str } from "utils/compositeId";
 
 import Map from "./Map";
@@ -72,7 +73,7 @@ const getParentLanguageQuery = gql`
   query getParentLanguage($id: LingvodocID!) {
     language(id: $id) {
       id
-      translation
+      translations
     }
   }
 `;
@@ -295,7 +296,7 @@ class Properties extends React.Component {
 
     const loader = (
       <Modal open dimmer size="fullscreen" closeOnDimmerClick={false} closeIcon className="lingvo-modal2">
-        <Loader>{getTranslation("Loading")}...</Loader>
+        <Loader>{this.context("Loading")}...</Loader>
       </Modal>
     );
 
@@ -303,7 +304,7 @@ class Properties extends React.Component {
       return loader;
     } else if (error) {
       return (
-        <Message negative>{getTranslation("Dictionary info loading error, please contact adiministrators.")}</Message>
+        <Message negative>{this.context("Dictionary info loading error, please contact adiministrators.")}</Message>
       );
     }
 
@@ -322,8 +323,8 @@ class Properties extends React.Component {
       files.map(file => ({ key: file.id, text: file.name, value: id2str(file.id) })),
       file => file.text
     );
-    const parentName = this.state.parent == null ? null : this.state.parent.translation;
-    const selectedParentName = this.state.selectedParent == null ? null : this.state.selectedParent.translation;
+    const parentName = this.state.parent == null ? null : T(this.state.parent.translations);
+    const selectedParentName = this.state.selectedParent == null ? null : T(this.state.selectedParent.translations);
 
     return (
       <Modal
@@ -338,22 +339,22 @@ class Properties extends React.Component {
         <Modal.Header>{title}</Modal.Header>
         <Modal.Content>
           <p>
-            {getTranslation("Created by")}
+            {this.context("Created by")}
             {": "}
             {dictionary.created_by.name}
           </p>
           <p>
-            {getTranslation("Created at")}
+            {this.context("Created at")}
             {": "}
             {new Date(dictionary.created_at * 1e3).toLocaleString()}
           </p>
           <p>
-            {getTranslation("Last modified at")}
+            {this.context("Last modified at")}
             {": "}
             {new Date(dictionary.last_modified_at * 1e3).toLocaleString()}
           </p>
           <Segment>
-            <Header as="h3">{getTranslation("Translations")}</Header>
+            <Header as="h3">{this.context("Translations")}</Header>
             <TranslationGist id={gistId} objectId={dictionary.id} editable updateAtomMutation={updateAtomMutation} />
           </Segment>
           {category === 0 ? (
@@ -364,7 +365,7 @@ class Properties extends React.Component {
           <MarginForm>
             <Segment>
               <Form.Group widths="equal">
-                <Label size="large">{getTranslation("Files")}</Label>
+                <Label size="large">{this.context("Files")}</Label>
                 <Form.Dropdown
                   labeled
                   fluid
@@ -376,7 +377,7 @@ class Properties extends React.Component {
                   value={this.state.files}
                 />
                 <Button
-                  content={getTranslation("Save")}
+                  content={this.context("Save")}
                   disabled={JSON.stringify(this.state.files) == JSON.stringify(this.initialState.files)}
                   onClick={this.onSaveFiles}
                   className="lingvo-button-violet"
@@ -385,7 +386,7 @@ class Properties extends React.Component {
             </Segment>
             <Segment>
               <Form.Group widths="equal">
-                <Label size="large">{getTranslation("Location")}</Label>
+                <Label size="large">{this.context("Location")}</Label>
                 <Form.Input
                   fluid
                   value={this.state.location == null ? "" : JSON.stringify(this.state.location)}
@@ -393,7 +394,7 @@ class Properties extends React.Component {
                   onChange={() => {}}
                 />
                 <Button
-                  content={getTranslation("Save")}
+                  content={this.context("Save")}
                   disabled={this.state.location == this.initialState.location}
                   onClick={this.onSaveLocation}
                   className="lingvo-button-violet"
@@ -407,7 +408,7 @@ class Properties extends React.Component {
                 <Form>
                   <Form.Group widths="equal">
                     <Label size="large">
-                      {getTranslation("Parent language")}: {selectedParentName || parentName}
+                      {this.context("Parent language")}: {selectedParentName || parentName}
                     </Label>
                     <Button
                       size="medium"
@@ -415,7 +416,7 @@ class Properties extends React.Component {
                       disabled={selectedParentName == parentName}
                       onClick={this.onUpdateParentLanguage}
                     >
-                      {getTranslation("Update")}
+                      {this.context("Update")}
                     </Button>
                   </Form.Group>
                 </Form>
@@ -435,7 +436,7 @@ class Properties extends React.Component {
         </Modal.Content>
         <Modal.Actions>
           <Button
-            content={getTranslation("Close")}
+            content={this.context("Close")}
             onClick={actions.closeDictionaryPropertiesModal}
             className="lingvo-button-basic-black"
           />
@@ -444,6 +445,8 @@ class Properties extends React.Component {
     );
   }
 }
+
+Properties.contextType = TranslationContext;
 
 Properties.propTypes = {
   id: PropTypes.array.isRequired,

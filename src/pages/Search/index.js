@@ -4,7 +4,6 @@ import { useParams } from "react-router-dom";
 import { Button, Container, Dimmer, Divider, Loader, Menu, Message, Segment, Tab } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql, withApollo } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 import Immutable, { fromJS } from "immutable";
 import { isEqual, memoize } from "lodash";
 import PropTypes from "prop-types";
@@ -25,6 +24,7 @@ import {
   setMainGroupLanguages
 } from "ducks/distanceMap";
 import { deleteSearch, newSearch, newSearchWithAdditionalFields, setSearches, storeSearchResult } from "ducks/search";
+import TranslationContext from "Layout/TranslationContext";
 import { buildLanguageTree, buildSearchResultsTree } from "pages/Search/treeBuilder";
 
 import "./style.scss";
@@ -79,7 +79,7 @@ const searchQuery = gql`
       dictionaries {
         id
         parent_id
-        translation
+        translations
         additional_metadata {
           location
           blobs
@@ -88,7 +88,7 @@ const searchQuery = gql`
       perspectives {
         id
         parent_id
-        translation
+        translations
         additional_metadata {
           location
         }
@@ -102,7 +102,7 @@ const searchQuery = gql`
     language_tree {
       id
       parent_id
-      translation
+      translations
       created_at
     }
   }
@@ -187,7 +187,7 @@ class Wrapper extends React.Component {
     if (this.props.preloadFlag) {
       return (
         <Dimmer active={true} inverted>
-          <Loader>{getTranslation("Loading")}</Loader>
+          <Loader>{this.context("Loading")}</Loader>
         </Dimmer>
       );
     }
@@ -200,7 +200,7 @@ class Wrapper extends React.Component {
     if (data.loading) {
       return (
         <Dimmer active={data.loading} inverted>
-          <Loader>{getTranslation("Loading")}</Loader>
+          <Loader>{this.context("Loading")}</Loader>
         </Dimmer>
       );
     }
@@ -223,7 +223,7 @@ class Wrapper extends React.Component {
       <div>
         <Message positive>
           <div>
-            {getTranslation("Found")} {resultsCount.size} {getTranslation("results on")}{" "}
+            {this.context("Found")} {resultsCount.size} {this.context("results on")}{" "}
             <a
               href=""
               onClick={e => {
@@ -231,7 +231,7 @@ class Wrapper extends React.Component {
                 document.getElementById("mapResults").scrollIntoView();
               }}
             >
-              {getTranslation("map")}
+              {this.context("map")}
             </a>
           </div>
           {advancedSearch.xlsx_url ? (
@@ -245,6 +245,8 @@ class Wrapper extends React.Component {
     );
   }
 }
+
+Wrapper.contextText = TranslationContext;
 
 const WrapperWithData = compose(
   connect(
@@ -529,7 +531,7 @@ class SearchTabs extends React.Component {
     mapSearches.map(search =>
       Immutable.fromJS({
         id: search.get("id"),
-        text: `${getTranslation("Search")} ${search.get("id")}`,
+        text: `${this.context("Search")} ${search.get("id")}`,
         color: mdColors.get(search.get("id") - 1),
         isActive: search.get("isActive")
       })
@@ -848,13 +850,13 @@ class SearchTabs extends React.Component {
       if (this.state.error_flag || data.error) {
         return (
           <Message compact negative style={{ marginTop: "1em" }}>
-            {`${getTranslation("Can't get data of the")} '${match.params.searchId}' ${getTranslation("search")}.`}
+            {`${this.context("Can't get data of the")} '${match.params.searchId}' ${this.context("search")}.`}
           </Message>
         );
       } else if (data.loading) {
         return (
           <Dimmer active={data.loading} inverted>
-            <Loader>{getTranslation("Loading")}</Loader>
+            <Loader>{this.context("Loading")}</Loader>
           </Dimmer>
         );
       }
@@ -872,7 +874,7 @@ class SearchTabs extends React.Component {
     const searchPanes = searches.map(search => ({
       menuItem: (
         <Menu.Item key={search.id}>
-          {getTranslation("Search")} {search.id}
+          {this.context("Search")} {search.id}
           <Button compact basic icon="delete" style={{ marginLeft: "1em" }} onClick={onSearchClose(search.id)} />
         </Menu.Item>
       ),
@@ -882,7 +884,7 @@ class SearchTabs extends React.Component {
         return (
           <Tab.Pane attached={false} key={search.id}>
             <Container className="lingvo-container_margin-auto">
-              <h3>{getTranslation("Search")}</h3>
+              <h3>{this.context("Search")}</h3>
               <QueryBuilder
                 searchId={search.id}
                 data={fromJS(search.query)}
@@ -979,6 +981,8 @@ class SearchTabs extends React.Component {
     );
   }
 }
+
+SearchTabs.contextType = TranslationContext;
 
 SearchTabs.propTypes = {
   searches: PropTypes.array.isRequired,

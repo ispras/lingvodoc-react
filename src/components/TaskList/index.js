@@ -1,24 +1,28 @@
-import React from "react";
+import React, { useContext } from "react";
 import { connect } from "react-redux";
 import { Button, List, Progress } from "semantic-ui-react";
-import { getTranslation } from "api/i18n";
 import PropTypes from "prop-types";
 import { branch, compose, lifecycle, renderComponent } from "recompose";
 import { bindActionCreators } from "redux";
 
 import { run, stop } from "ducks/saga";
 import { removeTask } from "ducks/task";
+import TranslationContext from "Layout/TranslationContext";
 
 import imageEmpty from "../../images/no_data.svg";
 
 import saga from "./saga";
 
-const Empty = () => (
-  <div className="lingvo-sidebar__empty">
-    <h3>{getTranslation("No background tasks")}</h3>
-    <img src={imageEmpty} className="lingvo-sidebar__empty-img" />
-  </div>
-);
+const Empty = () => {
+  const getTranslation = useContext(TranslationContext);
+
+  return (
+    <div className="lingvo-sidebar__empty">
+      <h3>{getTranslation("No background tasks")}</h3>
+      <img src={imageEmpty} className="lingvo-sidebar__empty-img" />
+    </div>
+  );
+};
 
 const enhance = branch(({ tasks }) => tasks.length === 0, renderComponent(Empty));
 

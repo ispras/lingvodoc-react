@@ -3,13 +3,13 @@ import { connect } from "react-redux";
 import { Button } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 import PropTypes from "prop-types";
 import { compose } from "recompose";
 import { bindActionCreators } from "redux";
 
 import { openModal as openConfirmModal } from "ducks/confirm";
 import { openModal } from "ducks/modals";
+import TranslationContext from "Layout/TranslationContext";
 import { compositeIdToString } from "utils/compositeId";
 
 import OdtMarkupModal from "../OdtMarkupModal";
@@ -91,13 +91,13 @@ class ParserResults extends React.Component {
               {mode === "edit" && (
                 <Button
                   icon="sync alternate"
-                  onClick={() => openConfirmModal(getTranslation("Redo parser execution?"), () => this.reexecute(res))}
+                  onClick={() => openConfirmModal(this.context("Redo parser execution?"), () => this.reexecute(res))}
                 />
               )}
               {mode === "edit" && (
                 <Button
                   icon="remove"
-                  onClick={() => openConfirmModal(getTranslation("Delete parser results?"), () => this.remove(res))}
+                  onClick={() => openConfirmModal(this.context("Delete parser results?"), () => this.remove(res))}
                 />
               )}
             </Button.Group>
@@ -107,6 +107,8 @@ class ParserResults extends React.Component {
     );
   }
 }
+
+ParserResults.contextType = TranslationContext;
 
 ParserResults.propTypes = {
   entityId: PropTypes.arrayOf(PropTypes.number).isRequired,

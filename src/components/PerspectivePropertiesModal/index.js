@@ -1,9 +1,8 @@
-import React from "react";
+import React, { useContext } from "react";
 import { connect } from "react-redux";
 import { Button, Divider, Header, Modal } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 import { isEqual } from "lodash";
 import PropTypes from "prop-types";
 import { branch, compose, onlyUpdateForKeys, renderNothing, withProps } from "recompose";
@@ -13,6 +12,7 @@ import Columns from "components/Columns";
 import EditPerspectiveMetadata from "components/EditPerspectiveMetadata";
 import TranslationGist from "components/TranslationGist";
 import { closePerspectivePropertiesModal } from "ducks/perspectiveProperties";
+import TranslationContext from "Layout/TranslationContext";
 
 const query = gql`
   query PerspectivePropsQuery($id: LingvodocID!, $parentId: LingvodocID!) {
@@ -20,7 +20,7 @@ const query = gql`
       id
       perspectives {
         id
-        translation
+        translations
       }
     }
     perspective(id: $id) {
@@ -31,7 +31,7 @@ const query = gql`
         name
       }
       parent_id
-      translation
+      translations
       translation_gist_id
       additional_metadata {
         transcription_rules
@@ -59,6 +59,8 @@ const updateMetadataMutation = gql`
 `;
 
 const Properties = props => {
+  const getTranslation = useContext(TranslationContext);
+
   const { id, parentId, title, data, actions, updateAtomMutation, updateMetadataMutation } = props;
   const { loading, error, dictionary, perspective } = data;
 

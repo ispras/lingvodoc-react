@@ -1,3 +1,5 @@
+import { chooseTranslation as T } from "api/i18n";
+
 import checkLexicalEntries from "./checkLexicalEntries";
 
 function checkCoorAndLexicalEntries(dict) {
@@ -5,7 +7,7 @@ function checkCoorAndLexicalEntries(dict) {
     let statusLexicalEntries = false;
     const { location } = el.additional_metadata;
     el.perspectives.forEach(perspective => {
-      if (checkLexicalEntries(perspective.translation)) {
+      if (checkLexicalEntries(T(perspective.translations))) {
         statusLexicalEntries = true;
       }
     });

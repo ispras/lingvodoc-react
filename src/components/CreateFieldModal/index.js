@@ -3,14 +3,15 @@ import { connect } from "react-redux";
 import { Button, Grid, Header, Modal, Select } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 import { every } from "lodash";
 import PropTypes from "prop-types";
 import { compose } from "recompose";
 import { bindActionCreators } from "redux";
 
+import { chooseTranslation as T } from "api/i18n";
 import Translations from "components/Translation";
 import { closeCreateFieldModal } from "ducks/fields";
+import TranslationContext from "Layout/TranslationContext";
 import { fieldsQuery } from "pages/DictImport";
 import { compositeIdToString } from "utils/compositeId";
 
@@ -87,34 +88,34 @@ class CreateFieldModal extends React.Component {
       .filter(dataType => !dataType.marked_for_deletion)
       .map(dataType => ({
         key: compositeIdToString(dataType.id),
-        text: dataType.translation,
+        text: T(dataType.translations),
         value: compositeIdToString(dataType.id)
       }));
 
     return (
       <Modal closeIcon onClose={actions.closeCreateFieldModal} dimmer open className="lingvo-modal2">
-        <Modal.Header>{getTranslation("Create field")}</Modal.Header>
+        <Modal.Header>{this.context("Create field")}</Modal.Header>
         <Modal.Content>
           <Grid centered divided columns={2}>
             <Grid.Column>
-              <Header>{getTranslation("Translations")}</Header>
+              <Header>{this.context("Translations")}</Header>
               <Translations onChange={translations => this.setState({ translations })} />
             </Grid.Column>
             <Grid.Column>
-              <Header>{getTranslation("Type")}</Header>
+              <Header>{this.context("Type")}</Header>
               <Select value={this.state.dataTypeId} options={options} onChange={this.onChangeDataType} />
             </Grid.Column>
           </Grid>
         </Modal.Content>
         <Modal.Actions>
           <Button
-            content={getTranslation("Save")}
+            content={this.context("Save")}
             onClick={this.saveField}
             disabled={this.isSaveDisabled()}
             className="lingvo-button-violet"
           />
           <Button
-            content={getTranslation("Cancel")}
+            content={this.context("Cancel")}
             onClick={actions.closeCreateFieldModal}
             className="lingvo-button-basic-black"
           />
@@ -123,6 +124,8 @@ class CreateFieldModal extends React.Component {
     );
   }
 }
+
+CreateFieldModal.contextType = TranslationContext;
 
 CreateFieldModal.propTypes = {
   actions: PropTypes.shape({
@@ -147,7 +150,7 @@ export default compose(
       query DataTypes {
         all_data_types {
           id
-          translation
+          translations
           marked_for_deletion
         }
       }

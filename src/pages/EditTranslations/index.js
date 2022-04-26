@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { connect } from "react-redux";
 import { Checkbox, Icon, Input, Menu } from "semantic-ui-react";
 
-import { getTranslation } from "api/i18n";
+import TranslationContext from "Layout/TranslationContext";
 
 import TranslationsBlock from "./TranslationsBlock";
 
@@ -12,6 +12,8 @@ const categories = ["Perspective", "Dictionary", "Service", "Language", "Field",
 
 const Filter = ({ filterStr: initialFilterStr, caseSensitive, regularExpression, onChange }) => {
   const [filterStr, setFilterStr] = useState(initialFilterStr);
+
+  const getTranslation = useContext(TranslationContext);
 
   return (
     <div style={{ position: "relative" }}>
@@ -83,7 +85,7 @@ class EditTranslations extends React.Component {
     if (user.id === undefined || user.id != 1) {
       return (
         <div className="page-content">
-          <h4>{getTranslation("This page is available for administrator only")}</h4>
+          <h4>{this.context("This page is available for administrator only")}</h4>
         </div>
       );
     }
@@ -98,7 +100,7 @@ class EditTranslations extends React.Component {
               {categories.map((category, index) => (
                 <Menu.Item
                   key={index}
-                  name={getTranslation(category)}
+                  name={this.context(category)}
                   index={index}
                   active={selectedCategory == index}
                   onClick={this.handleCategoryClick}
@@ -125,5 +127,7 @@ class EditTranslations extends React.Component {
     );
   }
 }
+
+EditTranslations.contextType = TranslationContext;
 
 export default connect(state => state.user)(EditTranslations);

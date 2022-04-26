@@ -4,6 +4,7 @@ import { isEqual } from "lodash";
 import PropTypes from "prop-types";
 import { onlyUpdateForKeys } from "recompose";
 
+import { chooseTranslation as T } from "api/i18n";
 import { compositeIdToString as id2str } from "utils/compositeId";
 
 import "styles/main.scss";
@@ -46,9 +47,9 @@ const Column = ({
         <ul>
           <li className="last">
             {onSortModeChange ? (
-              <label onClick={e => (e.stopPropagation(), sort_f())}>{field.translation}</label>
+              <label onClick={e => (e.stopPropagation(), sort_f())}>{T(field.translations)}</label>
             ) : (
-              <label>{field.translation}</label>
+              <label>{T(field.translations)}</label>
             )}
             {onSortModeChange &&
               (sort_flag ? (
@@ -103,7 +104,7 @@ const Column = ({
 
                 return (
                   <li key={id2str(subField.column_id)} {...cls}>
-                    {subField.translation}
+                    {T(subField.translations)}
                   </li>
                 );
               })}
@@ -117,7 +118,7 @@ const Column = ({
 
 Column.propTypes = {
   field: PropTypes.shape({
-    translation: PropTypes.string.isRequired
+    translations: PropTypes.object.isRequired
   }).isRequired,
   fields: PropTypes.array.isRequired,
   checkEntries: PropTypes.bool,

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { connect } from "react-redux";
 import {
   Button,
@@ -31,7 +31,8 @@ import { CSS } from "@dnd-kit/utilities";
 import { isEqual, map } from "lodash";
 import { compose } from "recompose";
 
-import { getTranslation } from "api/i18n";
+import { chooseTranslation as T } from "api/i18n";
+import TranslationContext from "Layout/TranslationContext";
 import { compositeIdToString as id2str } from "utils/compositeId";
 
 import "./style.scss";
@@ -42,7 +43,7 @@ const sourcePerspectiveQuery = gql`
       id
       tree {
         id
-        translation
+        translations
         marked_for_deletion
       }
       has_valency_data
@@ -89,6 +90,8 @@ const setValencyAnnotationMutation = gql`
 `;
 
 const SortVerb = ({ valency, setState }) => {
+  const getTranslation = useContext(TranslationContext);
+
   const { prefix_filter, data_verb_prefix, show_data_verb_list, show_prefix_verb_list, show_prefix_str_list } =
     valency.state;
 
@@ -219,6 +222,8 @@ const SortVerb = ({ valency, setState }) => {
 };
 
 const SortCase = ({ valency, setState }) => {
+  const getTranslation = useContext(TranslationContext);
+
   return (
     <div className="sorting_item">
       <Checkbox
@@ -245,6 +250,8 @@ const SortCase = ({ valency, setState }) => {
 };
 
 const SortAccept = ({ valency, setState }) => {
+  const getTranslation = useContext(TranslationContext);
+
   const { sort_accept, accept_value } = valency.state;
 
   return (
@@ -673,7 +680,7 @@ class Valency extends React.Component {
       })
       .then(
         () => {
-          window.logger.suc(getTranslation("Created valency data."));
+          window.logger.suc(this.context("Created valency data."));
 
           this.state.perspective.has_valency_data = true;
 
@@ -708,7 +715,7 @@ class Valency extends React.Component {
       })
       .then(
         () => {
-          window.logger.suc(getTranslation("Set valency annotation."));
+          window.logger.suc(this.context("Set valency annotation."));
 
           for (const [instance_id, annotation_value] of annotation_list) {
             if (!this.state.annotation_map.has(instance_id)) {
@@ -955,7 +962,7 @@ class Valency extends React.Component {
               basic
               compact
               positive
-              content={getTranslation("Accept")}
+              content={this.context("Accept")}
               disabled={annotation_value}
               onClick={() => this.setValencyAnnotation([[instance.id, true]])}
             />
@@ -964,13 +971,13 @@ class Valency extends React.Component {
               basic
               compact
               color="blue"
-              content={getTranslation("Reject")}
+              content={this.context("Reject")}
               disabled={!annotation_value}
               onClick={() => this.setValencyAnnotation([[instance.id, false]])}
             />
           </Button.Group>
 
-          {annotation_value && <span style={{ marginLeft: "0.5em" }}>{getTranslation("Accepted")}</span>}
+          {annotation_value && <span style={{ marginLeft: "0.5em" }}>{this.context("Accepted")}</span>}
         </div>
 
         {user_annotation_map && user_annotation_map.size > 0 && (
@@ -984,7 +991,7 @@ class Valency extends React.Component {
               .sort()
               .map(([user_name, user_id]) => (
                 <div key={user_id} style={{ marginTop: "0.25em" }}>
-                  {`${getTranslation("Accepted by")} ${user_name}`}
+                  {`${this.context("Accepted by")} ${user_name}`}
                 </div>
               ))}
           </div>
@@ -998,8 +1005,8 @@ class Valency extends React.Component {
       return (
         <div className="background-content">
           <Message>
-            <Message.Header>{getTranslation("Please sign in")}</Message.Header>
-            <p>{getTranslation("Only registered users can work with valency data.")}</p>
+            <Message.Header>{this.context("Please sign in")}</Message.Header>
+            <p>{this.context("Only registered users can work with valency data.")}</p>
           </Message>
         </div>
       );
@@ -1008,7 +1015,7 @@ class Valency extends React.Component {
         <div className="background-content">
           <Segment>
             <Loader active inline="centered" indeterminate>
-              {`${getTranslation("Loading")}...`}
+              {`${this.context("Loading")}...`}
             </Loader>
           </Segment>
         </div>
@@ -1017,7 +1024,7 @@ class Valency extends React.Component {
       return (
         <div className="background-content">
           <Message compact negative>
-            {getTranslation("User sign-in error, please sign in; if not successful, please contact administrators.")}
+            {this.context("User sign-in error, please sign in; if not successful, please contact administrators.")}
           </Message>
         </div>
       );
@@ -1025,7 +1032,7 @@ class Valency extends React.Component {
       return (
         <div className="background-content">
           <Message compact negative>
-            {getTranslation("General error, please contact administrators.")}
+            {this.context("General error, please contact administrators.")}
           </Message>
         </div>
       );
@@ -1044,7 +1051,7 @@ class Valency extends React.Component {
       const id_str = id2str(perspectives[i].id);
 
       const text_str = perspectives[i].tree
-        .map(value => value.translation)
+        .map(value => T(value.translations))
         .reverse()
         .join(" \u203a ");
 
@@ -1144,8 +1151,8 @@ class Valency extends React.Component {
 
           case "accept":
             const accept_str = is_instance_accepted(this.state.instance_list[0])
-              ? getTranslation("Accepted")
-              : getTranslation("Not accepted");
+              ? this.context("Accepted")
+              : this.context("Not accepted");
 
             render_instance_list.push(
               <Header key={`${render_instance_list.length}${accept_str}`}>{accept_str}</Header>
@@ -1203,8 +1210,8 @@ class Valency extends React.Component {
 
             case "accept":
               const accept_str = is_instance_accepted(instance)
-                ? getTranslation("Accepted")
-                : getTranslation("Not accepted");
+                ? this.context("Accepted")
+                : this.context("Not accepted");
 
               if (accept_str != prev_dict[sort_type]) {
                 render_instance_list.push(
@@ -1255,11 +1262,11 @@ class Valency extends React.Component {
     return (
       <div className="background-content">
         <Segment>
-          <div style={{ marginBottom: "0.5em" }}>{getTranslation("Perspective")}:</div>
+          <div style={{ marginBottom: "0.5em" }}>{this.context("Perspective")}:</div>
 
           <Select
             fluid
-            placeholder={getTranslation("Please select perspective.")}
+            placeholder={this.context("Please select perspective.")}
             search
             options={perspective_option_list}
             onChange={(e, { value }) => this.setPerspective(perspective_id_map.get(value))}
@@ -1273,11 +1280,11 @@ class Valency extends React.Component {
               content={
                 this.state.creating_valency_data ? (
                   <span>
-                    {`${getTranslation("Creating valency data...")} `}
+                    {`${this.context("Creating valency data...")} `}
                     <Icon name="spinner" loading />
                   </span>
                 ) : (
-                  getTranslation("Create valency data")
+                  this.context("Create valency data")
                 )
               }
               disabled={!this.state.perspective || this.state.creating_valency_data}
@@ -1289,8 +1296,8 @@ class Valency extends React.Component {
             <div style={{ marginTop: "0.5em" }}>
               <Checkbox
                 toggle
-                label={`${getTranslation("Selected by default")}: ${
-                  this.state.selection_default ? getTranslation("on") : getTranslation("off")
+                label={`${this.context("Selected by default")}: ${
+                  this.state.selection_default ? this.context("on") : this.context("off")
                 }`}
                 checked={this.state.selection_default}
                 onChange={(e, data) => this.setState({ selection_default: data.checked })}
@@ -1310,7 +1317,7 @@ class Valency extends React.Component {
           {this.state.loading_valency_data && (
             <div style={{ marginTop: "1em" }}>
               <span>
-                {`${getTranslation("Loading valency data...")} `}
+                {`${this.context("Loading valency data...")} `}
                 <Icon name="spinner" loading />
               </span>
             </div>
@@ -1319,11 +1326,11 @@ class Valency extends React.Component {
           {!this.state.loading_valency_data && this.state.valency_data && (
             <div style={{ marginTop: "1em" }}>
               {this.state.instance_list.length <= 0 ? (
-                <p>{`${getTranslation("No instances")}.`}</p>
+                <p>{`${this.context("No instances")}.`}</p>
               ) : (
                 <div>
                   <p>
-                    {`${getTranslation("Instances")} `}({(current_page - 1) * items_per_page + 1}-
+                    {`${this.context("Instances")} `}({(current_page - 1) * items_per_page + 1}-
                     {Math.min(current_page * items_per_page, this.state.instance_count)}/{this.state.instance_count}):
                   </p>
 
@@ -1334,7 +1341,7 @@ class Valency extends React.Component {
                     onPageChange={(e, { activePage }) => this.setPage(activePage)}
                   />
 
-                  <span style={{ marginLeft: "1em" }}>{`${getTranslation("Go to page")}:`}</span>
+                  <span style={{ marginLeft: "1em" }}>{`${this.context("Go to page")}:`}</span>
 
                   <Input
                     style={{ marginLeft: "0.5em", maxWidth: "7.5em" }}
@@ -1355,12 +1362,12 @@ class Valency extends React.Component {
                   <Button
                     style={{ paddingLeft: "0.75em", paddingRight: "0.75em" }}
                     basic
-                    content={getTranslation("Go")}
+                    content={this.context("Go")}
                     onClick={() => this.setPage(this.state.input_go_to_page)}
                     attached="right"
                   />
 
-                  <span style={{ marginLeft: "1em" }}>{`${getTranslation("Items per page")}:`}</span>
+                  <span style={{ marginLeft: "1em" }}>{`${this.context("Items per page")}:`}</span>
 
                   <Select
                     style={{ marginLeft: "0.5em", minWidth: "7.5em" }}
@@ -1386,7 +1393,7 @@ class Valency extends React.Component {
                       compact
                       positive
                       disabled={!has_selected_to_accept}
-                      content={getTranslation("Accept all selected")}
+                      content={this.context("Accept all selected")}
                       onClick={() => this.acceptRejectAllSelected(true)}
                     />
                     <Button
@@ -1395,7 +1402,7 @@ class Valency extends React.Component {
                       compact
                       color="blue"
                       disabled={!has_selected_to_reject}
-                      content={getTranslation("Reject all selected")}
+                      content={this.context("Reject all selected")}
                       onClick={() => this.acceptRejectAllSelected(false)}
                     />
                   </Button.Group>
@@ -1409,7 +1416,7 @@ class Valency extends React.Component {
                     onPageChange={(e, { activePage }) => this.setPage(activePage)}
                   />
 
-                  <span style={{ marginLeft: "1em" }}>{`${getTranslation("Go to page")}:`}</span>
+                  <span style={{ marginLeft: "1em" }}>{`${this.context("Go to page")}:`}</span>
 
                   <Input
                     style={{ marginLeft: "0.5em", maxWidth: "7.5em" }}
@@ -1430,7 +1437,7 @@ class Valency extends React.Component {
                   <Button
                     style={{ paddingLeft: "0.75em", paddingRight: "0.75em" }}
                     basic
-                    content={getTranslation("Go")}
+                    content={this.context("Go")}
                     onClick={() => this.setPage(this.state.input_go_to_page)}
                     attached="right"
                   />
@@ -1443,6 +1450,8 @@ class Valency extends React.Component {
     );
   }
 }
+
+Valency.contextType = TranslationContext;
 
 export default compose(
   connect(state => state.user),

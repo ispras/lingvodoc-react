@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { connect, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { Button, Divider, Header, Message, Segment, Step } from "semantic-ui-react";
@@ -7,7 +7,7 @@ import Immutable from "immutable";
 import PropTypes from "prop-types";
 import { compose, withProps } from "recompose";
 
-import { getTranslation } from "api/i18n";
+import { chooseTranslation as T } from "api/i18n";
 import EditCorpusMetadata from "components/EditCorpusMetadata";
 import EditDictionaryMetadata from "components/EditDictionaryMetadata";
 import Languages from "components/Languages";
@@ -22,6 +22,7 @@ import {
   setPerspectives,
   setTranslations
 } from "ducks/createDictionary";
+import TranslationContext from "Layout/TranslationContext";
 import { query as dashboardQuery } from "pages/Dashboard";
 
 import { createDictionaryMutation } from "./graphql";
@@ -29,13 +30,14 @@ import Perspectives from "./Perspectives";
 
 const TabParentLanguage = ({ onSelect }) => {
   const parentLanguage = useSelector(selectors.getParentLanguage);
+  const getTranslation = useContext(TranslationContext);
 
   return (
     <div className="inverted" style={{ height: "600px" }}>
       {!parentLanguage && <Header className="inverted">{getTranslation("Please, select the parent language")}</Header>}
       {parentLanguage && (
         <Header className="inverted">
-          {getTranslation("You have selected:")} <b>{parentLanguage.translation}</b>
+          {getTranslation("You have selected:")} <b>{T(parentLanguage.translations)}</b>
         </Header>
       )}
       <Languages expanded={false} selected={parentLanguage} onSelect={onSelect} />
@@ -46,6 +48,7 @@ const TabParentLanguage = ({ onSelect }) => {
 const TabTranslations = ({ setTranslations, setMetadata, mode }) => {
   const translations = useSelector(selectors.getTranslations);
   const metadata = useSelector(selectors.getMetadata);
+  const getTranslation = useContext(TranslationContext);
 
   return (
     <div>
@@ -67,6 +70,7 @@ const TabTranslations = ({ setTranslations, setMetadata, mode }) => {
 
 const TabPerspectives = ({ setPerspectives, createPerspective, mode }) => {
   const perspectives = useSelector(selectors.getPerspectives);
+  const getTranslation = useContext(TranslationContext);
 
   return (
     <div>
@@ -81,9 +85,9 @@ const TabPerspectives = ({ setPerspectives, createPerspective, mode }) => {
 
 const StepButton = ({ step, onCreateDictionary, onNextClick }) => {
   const isNextStep = useSelector(selectors.getNextStep);
+  const getTranslation = useContext(TranslationContext);
 
   const create = isNextStep && step === "PERSPECTIVES";
-
   const next_step = isNextStep && step !== "PERSPECTIVES" && step !== "FINISH";
 
   return (
@@ -104,6 +108,8 @@ const CreateButton = ({ onCreateDictionary }) => {
   const translations = useSelector(selectors.getTranslations);
   const metadata = useSelector(selectors.getMetadata);
   const perspectives = useSelector(selectors.getPerspectives);
+
+  const getTranslation = useContext(TranslationContext);
 
   return (
     <Button
@@ -195,24 +201,22 @@ class CreateDictionaryWizard extends React.Component {
         <Step.Group widths={4}>
           <Step link active={step === "PARENT_LANGUAGE"} onClick={this.onStepClick("PARENT_LANGUAGE")}>
             <Step.Content>
-              <Step.Title>{getTranslation("Parent language")}</Step.Title>
-              <Step.Description>{getTranslation("Select language")}</Step.Description>
+              <Step.Title>{this.context("Parent language")}</Step.Title>
+              <Step.Description>{this.context("Select language")}</Step.Description>
             </Step.Content>
           </Step>
 
           <Step link active={step === "TRANSLATIONS"} onClick={this.onStepClick("TRANSLATIONS")}>
             <Step.Content>
-              <Step.Title>
-                {getTranslation(`${mode.replace(/^\w/, c => c.toUpperCase())} names and metadata`)}
-              </Step.Title>
-              <Step.Description>{getTranslation(`Set ${mode} name, translations and metadata`)}</Step.Description>
+              <Step.Title>{this.context(`${mode.replace(/^\w/, c => c.toUpperCase())} names and metadata`)}</Step.Title>
+              <Step.Description>{this.context(`Set ${mode} name, translations and metadata`)}</Step.Description>
             </Step.Content>
           </Step>
 
           <Step link active={step === "PERSPECTIVES"} onClick={this.onStepClick("PERSPECTIVES")}>
             <Step.Content>
-              <Step.Title>{getTranslation("Perspectives")}</Step.Title>
-              <Step.Description>{getTranslation("Create one or more perspectives")}</Step.Description>
+              <Step.Title>{this.context("Perspectives")}</Step.Title>
+              <Step.Description>{this.context("Create one or more perspectives")}</Step.Description>
             </Step.Content>
           </Step>
 
@@ -226,7 +230,7 @@ class CreateDictionaryWizard extends React.Component {
             }}
           >
             <Step.Content>
-              <Step.Title>{getTranslation("Finish")}</Step.Title>
+              <Step.Title>{this.context("Finish")}</Step.Title>
             </Step.Content>
           </Step>
         </Step.Group>
@@ -251,17 +255,17 @@ class CreateDictionaryWizard extends React.Component {
 
           {step === "FINISH" && this.createdDictionary && (
             <Message>
-              <Message.Header>{getTranslation(`${mode.replace(/^\w/, c => c.toUpperCase())} created`)}</Message.Header>
+              <Message.Header>{this.context(`${mode.replace(/^\w/, c => c.toUpperCase())} created`)}</Message.Header>
               <Message.Content>
-                {`${getTranslation(`Your ${mode} is created, click`)} `}
+                {`${this.context(`Your ${mode} is created, click`)} `}
                 <Link
                   to={`/dictionary/${this.createdDictionary.id.join(
                     "/"
                   )}/perspective/${this.createdDictionary.perspective_id.join("/")}/edit`}
                 >
-                  {getTranslation("here")}
+                  {this.context("here")}
                 </Link>
-                {` ${getTranslation("to view.")}`}
+                {` ${this.context("to view.")}`}
               </Message.Content>
             </Message>
           )}
@@ -272,6 +276,8 @@ class CreateDictionaryWizard extends React.Component {
     );
   }
 }
+
+CreateDictionaryWizard.contextType = TranslationContext;
 
 CreateDictionaryWizard.propTypes = {
   step: PropTypes.string.isRequired,

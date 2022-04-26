@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Button, Image as Img, Modal } from "semantic-ui-react";
-import { getTranslation } from "api/i18n";
 import { find, isEqual } from "lodash";
 import PropTypes from "prop-types";
+
+import TranslationContext from "Layout/TranslationContext";
 
 import Entities from "./index";
 
@@ -20,6 +21,8 @@ const Image = props => {
   } = props;
   const subColumn = find(columns, c => isEqual(c.self_id, column.column_id));
   const { content } = entity;
+
+  const getTranslation = useContext(TranslationContext);
 
   return (
     <Component className={className}>

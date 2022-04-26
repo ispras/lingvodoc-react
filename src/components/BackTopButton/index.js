@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Button, Icon } from "semantic-ui-react";
 import PropTypes from "prop-types";
 
-import { getTranslation } from "api/i18n";
+import TranslationContext from "Layout/TranslationContext";
 import debounce from "utils/debounce";
 import smoothScroll from "utils/smoothscroll";
 
@@ -10,6 +10,7 @@ import "./styles.scss";
 
 const BackTopButton = ({ scrollContainer }) => {
   const [show, setShow] = useState(false);
+  const getTranslation = useContext(TranslationContext);
 
   useEffect(() => {
     const onScroll = debounce(() => {
@@ -32,7 +33,7 @@ const BackTopButton = ({ scrollContainer }) => {
     <Button
       className={`back-top-button lingvo-button-lite-violet ${show ? "back-top-button_show" : ""}`}
       onClick={() => smoothScroll(0, 500, null, scrollContainer)}
-      aria-label="Вернуться наверх"
+      aria-label={getTranslation("Вернуться наверх")}
     >
       <Icon name="arrow up" />
       {getTranslation("Up")}

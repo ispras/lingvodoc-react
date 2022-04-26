@@ -5,6 +5,8 @@ import isEqual from "lodash/isEqual";
 import PropTypes from "prop-types";
 import { compose } from "recompose";
 
+import { chooseTranslation as T } from "api/i18n";
+
 import { flattenNodes, getNodeValue, nodeHasDictionariesChildren, propsNames } from "../helpers";
 import TreeNode from "../TreeNode";
 
@@ -539,7 +541,7 @@ class Tree extends PureComponent {
           key={nodeValue}
           checked={flatNode.checkState}
           expanded={flatNode.expanded}
-          label={node.translation}
+          label={T(node.translations)}
           isLeaf={flatNode.isLeaf}
           isParent={flatNode.isParent}
           type={flatNode.type}

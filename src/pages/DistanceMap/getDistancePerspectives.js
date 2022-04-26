@@ -1,3 +1,4 @@
+import { chooseTranslation as T } from "api/i18n";
 import { compositeIdToString as id2str } from "utils/compositeId";
 
 import checkLexicalEntries from "./checkLexicalEntries";
@@ -20,7 +21,7 @@ const getDistance = async (dictionaries, allField, mainDictionary, computeDistan
   });
 
   mainDictionary.perspectives.forEach(el => {
-    if (checkLexicalEntries(el.translation)) {
+    if (checkLexicalEntries(T(el.translation))) {
       sourcePerspectiveId = el.id;
       groupFields = el.columns
         .map(column => fieldDict[id2str(column.field_id)])

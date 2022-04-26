@@ -1,9 +1,10 @@
 import React from "react";
 import { Button, Form, Label, Segment } from "semantic-ui-react";
-import { getTranslation } from "api/i18n";
 import PropTypes from "prop-types";
 
-const speakersAmountOptions = [
+import TranslationContext from "Layout/TranslationContext";
+
+const speakersAmountOptions = getTranslation => [
   { text: getTranslation("Vulnerable"), value: "Vulnerable" },
   { text: getTranslation("Definitely endangered"), value: "Definitely endangered" },
   { text: getTranslation("Critically endangered"), value: "Critically endangered" },
@@ -46,20 +47,20 @@ class EditLanguageMetadata extends React.Component {
 
     return (
       <Form>
-        <h4>{getTranslation("Metadata")}</h4>
+        <h4>{this.context("Metadata")}</h4>
         <Segment>
           <Form.Group widths="equal">
-            <Label size="large">{getTranslation("Number of native speakers")}</Label>
+            <Label size="large">{this.context("Number of native speakers")}</Label>
             <Form.Dropdown
               fluid
               selection
-              options={speakersAmountOptions}
+              options={speakersAmountOptions(this.context)}
               value={speakersAmount}
               onChange={this.onChangeValue}
             />
             {mode != "create" && (
               <Button
-                content={getTranslation("Save")}
+                content={this.context("Save")}
                 disabled={JSON.stringify(speakersAmount) == JSON.stringify(this.initialState.speakersAmount)}
                 onClick={this.onSaveValue}
                 className="lingvo-button-violet"
@@ -71,6 +72,8 @@ class EditLanguageMetadata extends React.Component {
     );
   }
 }
+
+EditLanguageMetadata.contextType = TranslationContext;
 
 EditLanguageMetadata.propTypes = {
   mode: PropTypes.string.isRequired,

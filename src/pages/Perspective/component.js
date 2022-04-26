@@ -1,10 +1,9 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { connect } from "react-redux";
 import { Link, Navigate, Route, Routes } from "react-router-dom";
 import { Container, Dropdown, Label, Menu } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 import { map } from "lodash";
 import PropTypes from "prop-types";
 import { branch, compose, onlyUpdateForKeys, renderNothing, withHandlers, withState } from "recompose";
@@ -12,6 +11,7 @@ import { branch, compose, onlyUpdateForKeys, renderNothing, withHandlers, withSt
 import { queryCounter } from "backend";
 import Merge from "components/Merge";
 import PerspectiveView from "components/PerspectiveView";
+import TranslationContext from "Layout/TranslationContext";
 import NotFound from "pages/NotFound";
 
 import PerspectivePath from "./PerspectivePath";
@@ -97,6 +97,8 @@ const Tools = graphql(toolsQuery)(
 
     const published = english_status === "Published" || english_status === "Limited access";
 
+    const getTranslation = useContext(TranslationContext);
+
     return (
       <Dropdown item text={getTranslation("Tools")}>
         <Dropdown.Menu>
@@ -150,13 +152,15 @@ const Tools = graphql(toolsQuery)(
 
           <Dropdown.Item
             // eslint-disable-next-line no-use-before-define
-            onClick={() => soundAndMarkup(id, mode, launchSoundAndMarkup)}
+            onClick={() => soundAndMarkup(id, mode, launchSoundAndMarkup, getTranslation)}
           >
             {getTranslation("Sound and markup")}
           </Dropdown.Item>
 
           {user_id != null && (
-            <Dropdown.Item onClick={() => valency(id, launchValency)}>{getTranslation("Valency")}</Dropdown.Item>
+            <Dropdown.Item onClick={() => valency(id, launchValency, getTranslation)}>
+              {getTranslation("Valency")}
+            </Dropdown.Item>
           )}
         </Dropdown.Menu>
       </Dropdown>
@@ -179,16 +183,20 @@ const handlers = compose(
   })
 );
 
-const Filter = handlers(({ value, onChange, onSubmit }) => (
-  <div className="ui right aligned category search item">
-    <form className="ui transparent icon input" onSubmit={onSubmit}>
-      <input className="white" type="text" placeholder={getTranslation("Search")} value={value} onChange={onChange} />
-      <button type="submit" className="white">
-        <i className="search link icon" />
-      </button>
-    </form>
-  </div>
-));
+const Filter = handlers(({ value, onChange, onSubmit }) => {
+  const getTranslation = useContext(TranslationContext);
+
+  return (
+    <div className="ui right aligned category search item">
+      <form className="ui transparent icon input" onSubmit={onSubmit}>
+        <input className="white" type="text" placeholder={getTranslation("Search")} value={value} onChange={onChange} />
+        <button type="submit" className="white">
+          <i className="search link icon" />
+        </button>
+      </form>
+    </div>
+  );
+});
 
 const ModeSelector = compose(
   connect(state => state.user),
@@ -207,6 +215,8 @@ const ModeSelector = compose(
     id,
     user
   }) => {
+    const getTranslation = useContext(TranslationContext);
+
     const modes = {};
     if (user.id !== undefined) {
       Object.assign(modes, {
@@ -266,7 +276,7 @@ const ModeSelector = compose(
   }
 );
 
-const soundAndMarkup = (perspectiveId, mode, launchSoundAndMarkup) => {
+const soundAndMarkup = (perspectiveId, mode, launchSoundAndMarkup, getTranslation) => {
   launchSoundAndMarkup({
     variables: {
       perspectiveId,
@@ -282,7 +292,7 @@ const soundAndMarkup = (perspectiveId, mode, launchSoundAndMarkup) => {
   );
 };
 
-const valency = (perspectiveId, launchValency) => {
+const valency = (perspectiveId, launchValency, getTranslation) => {
   launchValency({
     variables: {
       perspectiveId
@@ -310,6 +320,7 @@ const Perspective = ({
   user,
   location
 }) => {
+  const getTranslation = useContext(TranslationContext);
   useEffect(() => {
     init({ location });
   }, [init, location]);

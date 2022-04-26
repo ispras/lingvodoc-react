@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Checkbox, Table } from "semantic-ui-react";
-import { getTranslation } from "api/i18n";
 import { isEmpty, isEqual, sortBy } from "lodash";
 import PropTypes from "prop-types";
 import { onlyUpdateForKeys } from "recompose";
 
+import TranslationContext from "Layout/TranslationContext";
 import { compositeIdToString } from "utils/compositeId";
 
 import Column from "./Column";
@@ -32,55 +32,59 @@ const TableHeader = ({
   /* eslint-enable react/prop-types */
   onSortModeChange,
   onSortModeReset
-}) => (
-  <Table.Header style={disabled ? { opacity: "0.5" } : {}}>
-    <Table.Row>
-      {selectEntries && (
-        <Table.HeaderCell className="entityHeader">
-          {selectAllEntries && (
+}) => {
+  const getTranslation = useContext(TranslationContext);
+
+  return (
+    <Table.Header style={disabled ? { opacity: "0.5" } : {}}>
+      <Table.Row>
+        {selectEntries && (
+          <Table.HeaderCell className="entityHeader">
+            {selectAllEntries && (
+              <Checkbox
+                disabled={selectDisabled}
+                indeterminate={selectDisabledIndeterminate || selectAllIndeterminate}
+                checked={selectAllChecked}
+                onChange={(_, { checked }) => onAllEntriesSelect(checked)}
+              />
+            )}
+          </Table.HeaderCell>
+        )}
+
+        {checkEntries && (
+          <Table.HeaderCell className="entityHeader lingvo-sticky-checkbox-column">
             <Checkbox
-              disabled={selectDisabled}
-              indeterminate={selectDisabledIndeterminate || selectAllIndeterminate}
-              checked={selectAllChecked}
-              onChange={(_, { checked }) => onAllEntriesSelect(checked)}
+              className="lingvo-checkbox"
+              checked={entries.length === selectedRows.length}
+              onChange={(e, { checked }) => {
+                onCheckAll(checked);
+              }}
             />
-          )}
-        </Table.HeaderCell>
-      )}
+          </Table.HeaderCell>
+        )}
 
-      {checkEntries && (
-        <Table.HeaderCell className="entityHeader lingvo-sticky-checkbox-column">
-          <Checkbox
-            className="lingvo-checkbox"
-            checked={entries.length === selectedRows.length}
-            onChange={(e, { checked }) => {
-              onCheckAll(checked);
-            }}
+        {showEntryId && <Table.HeaderCell className="entityHeader">{getTranslation("id")}</Table.HeaderCell>}
+        {sortBy(
+          columns.filter(column => column.self_id == null),
+          column => column.position
+        ).map(column => (
+          <Column
+            key={compositeIdToString(column.column_id)}
+            field={column}
+            fields={columns}
+            checkEntries={checkEntries}
+            selectedColumns={selectedColumns}
+            onCheckColumn={onCheckColumn}
+            sortByField={sortByField}
+            onSortModeChange={onSortModeChange}
+            onSortModeReset={onSortModeReset}
           />
-        </Table.HeaderCell>
-      )}
-
-      {showEntryId && <Table.HeaderCell className="entityHeader">{getTranslation("id")}</Table.HeaderCell>}
-      {sortBy(
-        columns.filter(column => column.self_id == null),
-        column => column.position
-      ).map(column => (
-        <Column
-          key={compositeIdToString(column.column_id)}
-          field={column}
-          fields={columns}
-          checkEntries={checkEntries}
-          selectedColumns={selectedColumns}
-          onCheckColumn={onCheckColumn}
-          sortByField={sortByField}
-          onSortModeChange={onSortModeChange}
-          onSortModeReset={onSortModeReset}
-        />
-      ))}
-      {!isEmpty(actions) && <Table.HeaderCell />}
-    </Table.Row>
-  </Table.Header>
-);
+        ))}
+        {!isEmpty(actions) && <Table.HeaderCell />}
+      </Table.Row>
+    </Table.Header>
+  );
+};
 
 TableHeader.propTypes = {
   columns: PropTypes.array.isRequired,

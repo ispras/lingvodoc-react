@@ -1,9 +1,9 @@
 import React from "react";
 import { Button, Input, Select } from "semantic-ui-react";
-import { getTranslation } from "api/i18n";
 import PropTypes from "prop-types";
 
 import { languagesQuery } from "backend";
+import TranslationContext from "Layout/TranslationContext";
 
 import { translationGistQuery } from "../TranslationGist";
 
@@ -112,7 +112,7 @@ export default class TranslationAtom extends React.Component {
             onClick={() => this.createAtom(locale.id)}
             className="lingvo-button-violet lingvo-button-violet_bradius-right"
           >
-            {getTranslation("Save")}
+            {this.context("Save")}
           </Button>
         )}
         {editable && !isAtomNew && (
@@ -121,13 +121,15 @@ export default class TranslationAtom extends React.Component {
             onClick={() => this.updateAtom(locale.id)}
             className="lingvo-button-basic-black lingvo-button-violet_bradius-right"
           >
-            {getTranslation("Update")}
+            {this.context("Update")}
           </Button>
         )}
       </Input>
     );
   }
 }
+
+TranslationAtom.contextType = TranslationContext;
 
 TranslationAtom.propTypes = {
   objectId: PropTypes.array.isRequired,

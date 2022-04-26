@@ -4,7 +4,7 @@ export const grantsQuery = gql`
   query publicGrants {
     grants {
       id
-      translation
+      translations
       grant_url
       grant_number
       issuer
@@ -57,7 +57,7 @@ export const getUserRequestsQuery = gql`
     }
     grants {
       id
-      translation
+      translations
       grant_url
       grant_number
       issuer
@@ -66,11 +66,11 @@ export const getUserRequestsQuery = gql`
     }
     dictionaries {
       id
-      translation
+      translations
     }
     organizations {
       id
-      translation
+      translations
       about
     }
   }

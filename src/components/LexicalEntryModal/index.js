@@ -1,10 +1,11 @@
 import React from "react";
 import { Button, Modal } from "semantic-ui-react";
-import { getTranslation } from "api/i18n";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 
+import { chooseTranslation as T } from "api/i18n";
 import LexicalEntryByIds from "components/LexicalEntryByIds";
+import TranslationContext from "Layout/TranslationContext";
 
 export const LexicalEntryLink = styled.span`
   cursor: pointer;
@@ -17,7 +18,7 @@ export const LexicalEntryLink = styled.span`
 `;
 
 function LexicalEntryModal({ node, actions, entitiesMode, defaultMode, onClose, onlyViewMode }) {
-  const { id, translation, lexicalEntries, parent_id: perspectiveParentId } = node;
+  const { id, translations, lexicalEntries, parent_id: perspectiveParentId } = node;
 
   return (
     <Modal
@@ -29,7 +30,7 @@ function LexicalEntryModal({ node, actions, entitiesMode, defaultMode, onClose, 
       onClose={onClose}
       className="lingvo-modal2"
     >
-      <Modal.Header>{translation}</Modal.Header>
+      <Modal.Header>{T(translations)}</Modal.Header>
       <Modal.Content scrolling>
         <LexicalEntryByIds
           className="perspective"
@@ -43,16 +44,18 @@ function LexicalEntryModal({ node, actions, entitiesMode, defaultMode, onClose, 
         />
       </Modal.Content>
       <Modal.Actions>
-        <Button content={getTranslation("Cancel")} onClick={onClose} className="lingvo-button-basic-black" />
+        <Button content={this.context("Cancel")} onClick={onClose} className="lingvo-button-basic-black" />
       </Modal.Actions>
     </Modal>
   );
 }
 
+LexicalEntryModal.contextType = TranslationContext;
+
 LexicalEntryModal.propTypes = {
   node: PropTypes.shape({
     id: PropTypes.array.isRequired,
-    translation: PropTypes.string.isRequired,
+    translations: PropTypes.object.isRequired,
     lexicalEntries: PropTypes.array.isRequired
   }).isRequired,
   actions: PropTypes.array,

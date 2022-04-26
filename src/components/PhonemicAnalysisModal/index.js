@@ -8,7 +8,9 @@ import PropTypes from "prop-types";
 import { branch, compose, renderNothing } from "recompose";
 import { bindActionCreators } from "redux";
 
+import { chooseTranslation as T } from "api/i18n";
 import { closeModal } from "ducks/phonemicAnalysis";
+import TranslationContext from "Layout/TranslationContext";
 import { compositeIdToString as id2str } from "utils/compositeId";
 
 import "./style.scss";
@@ -17,7 +19,7 @@ export const perspectiveColumnsFieldsQuery = gql`
   query perspectiveColumnsFields($perspectiveId: LingvodocID!) {
     perspective(id: $perspectiveId) {
       id
-      translation
+      translations
       columns {
         id
         field_id
@@ -28,7 +30,7 @@ export const perspectiveColumnsFieldsQuery = gql`
     }
     all_fields {
       id
-      translation
+      translations
       english_translation: translation(locale_id: 2)
       data_type
     }
@@ -156,7 +158,7 @@ class PhonemicAnalysisModal extends React.Component {
       },
 
       error_data => {
-        window.logger.err("Failed to compute phonemic analysis!");
+        window.logger.err(this.context("Failed to compute phonemic analysis!"));
 
         if (error_data.message === "GraphQL error: Analysis library is absent, please contact system administrator.") {
           this.setState({
@@ -171,7 +173,7 @@ class PhonemicAnalysisModal extends React.Component {
     const textFieldsOptions = this.textFields.map((f, k) => ({
       key: k,
       value: id2str(f.id),
-      text: f.translation
+      text: T(f.translations)
     }));
 
     return (
@@ -183,19 +185,19 @@ class PhonemicAnalysisModal extends React.Component {
             {this.textFields.length > 0 && (
               <List>
                 <List.Item>
-                  <span style={{ marginRight: "0.5em" }}>Source transcription field:</span>
+                  <span style={{ marginRight: "0.5em" }}>{this.context("Source transcription field")}:</span>
                   <Select
                     defaultValue={this.state.transcriptionFieldIdStr}
-                    placeholder="Source transcription field selection"
+                    placeholder={this.context("Source transcription field selection")}
                     options={textFieldsOptions}
                     onChange={(e, { value }) => this.setState({ transcriptionFieldIdStr: value })}
                   />
                 </List.Item>
                 <List.Item>
-                  <span style={{ marginRight: "0.5em" }}>Source translation field:</span>
+                  <span style={{ marginRight: "0.5em" }}>{this.context("Source translation field")}:</span>
                   <Select
                     defaultValue={this.state.translationFieldIdStr}
-                    placeholder="Source translation field selection"
+                    placeholder={this.context("Source translation field selection")}
                     options={textFieldsOptions}
                     onChange={(e, { value }) => this.setState({ translationFieldIdStr: value })}
                   />
@@ -217,7 +219,7 @@ class PhonemicAnalysisModal extends React.Component {
               <List>
                 <List.Item>
                   <Checkbox
-                    label="Debug flag"
+                    label={this.context("Debug flag")}
                     style={{ marginTop: "1em", verticalAlign: "middle" }}
                     checked={this.state.debugFlag}
                     onChange={(e, { checked }) => {
@@ -227,7 +229,7 @@ class PhonemicAnalysisModal extends React.Component {
                 </List.Item>
                 <List.Item>
                   <Checkbox
-                    label="Save intermediate data"
+                    label={this.context("Save intermediate data")}
                     style={{ marginTop: "1em", verticalAlign: "middle" }}
                     checked={this.state.intermediateFlag}
                     onChange={(e, { checked }) => {
@@ -266,18 +268,24 @@ class PhonemicAnalysisModal extends React.Component {
 
           <Modal.Actions>
             <Button
-              content="Compute"
+              content={this.context("Compute")}
               onClick={this.handleCreate}
               disabled={this.textFields.length <= 0}
               className="lingvo-button-violet"
             />
-            <Button content="Close" onClick={this.props.closeModal} className="lingvo-button-basic-black" />
+            <Button
+              content={this.context("Close")}
+              onClick={this.props.closeModal}
+              className="lingvo-button-basic-black"
+            />
           </Modal.Actions>
         </Modal>
       </div>
     );
   }
 }
+
+PhonemicAnalysisModal.contextType = TranslationContext;
 
 PhonemicAnalysisModal.propTypes = {
   perspectiveId: PropTypes.array.isRequired,

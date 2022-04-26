@@ -17,6 +17,9 @@ const errorLink = onError(({ networkError = {}, graphQLErrors = [] }) => {
   graphQLErrors.forEach(error => {
     if (!filter_out_error_set.hasOwnProperty(error.message)) {
       window.logger.err(`GraphQL error: ${error.message}`);
+      if (config.logGraphQLErrors) {
+        console.warn(`GraphQL error: ${error.message}`);
+      }
     }
   });
 });

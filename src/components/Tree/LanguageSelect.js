@@ -5,6 +5,7 @@ import { graphql } from "@apollo/client/react/hoc";
 import Immutable from "immutable";
 import styled from "styled-components";
 
+import { chooseTranslation as T } from "api/i18n";
 import { buildLanguageTree } from "pages/Search/treeBuilder";
 
 const languagesQuery = gql`
@@ -12,7 +13,7 @@ const languagesQuery = gql`
     language_tree {
       id
       parent_id
-      translation
+      translations
       created_at
     }
   }
@@ -43,7 +44,7 @@ class LanguageSelect extends React.PureComponent {
     return {
       title: (
         <Language selected={this.props.selected} onClick={() => this.props.onSelect(node)}>
-          {node.translation}
+          {T(node.translations)}
         </Language>
       )
     };

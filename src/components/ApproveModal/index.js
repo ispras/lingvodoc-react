@@ -3,7 +3,6 @@ import DatePicker from "react-datepicker";
 import { Button, Container, Divider, Form, Grid, Header, Modal, Table } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 import { clone } from "lodash";
 import moment from "moment";
 import PropTypes from "prop-types";
@@ -11,6 +10,7 @@ import { compose } from "recompose";
 
 import { queryCounter } from "backend";
 import { queryLexicalEntries } from "components/PerspectiveView";
+import TranslationContext from "Layout/TranslationContext";
 
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -137,7 +137,7 @@ class ApproveModal extends React.Component {
     const { mode, onClose } = this.props;
     const { startDate, endDate, user_id, approveMap } = this.state;
     const { statistic: statistics } = perspective || { statistic: [] };
-    const publishOrAccept = mode === "publish" ? getTranslation("Publish") : getTranslation("Accept");
+    const publishOrAccept = mode === "publish" ? this.context("Publish") : this.context("Accept");
 
     let toApprove = null;
     let keys = [];
@@ -160,12 +160,12 @@ class ApproveModal extends React.Component {
     return (
       <Modal open closeIcon closeOnDimmerClick={false} onClose={onClose} className="lingvo-modal2">
         <Modal.Header>
-          {mode === "publish" ? getTranslation("Publish Entities") : getTranslation("Accept Contributions")}
+          {mode === "publish" ? this.context("Publish Entities") : this.context("Accept Contributions")}
         </Modal.Header>
         <Modal.Content scrolling>
           <div className="lingvo-statistics">
             <div className="lingvo-statistics-block">
-              {getTranslation("From")}
+              {this.context("From")}
               <DatePicker
                 selected={startDate.toDate()}
                 showTimeSelect
@@ -176,7 +176,7 @@ class ApproveModal extends React.Component {
               />
             </div>
             <div className="lingvo-statistics-block">
-              {getTranslation("To")}
+              {this.context("To")}
               <DatePicker
                 selected={endDate.toDate()}
                 showTimeSelect
@@ -188,7 +188,7 @@ class ApproveModal extends React.Component {
             </div>
           </div>
           <Container textAlign="center">
-            <Button color="blue" loading={loading} content={getTranslation("Refresh")} onClick={this.getStatistics} />
+            <Button color="blue" loading={loading} content={this.context("Refresh")} onClick={this.getStatistics} />
           </Container>
           <Divider />
           <Grid columns={2} divided centered>
@@ -208,12 +208,12 @@ class ApproveModal extends React.Component {
             <Grid.Column>
               {user_id === null && (
                 <Container textAlign="center">
-                  <Header>{getTranslation("Please select a user")}</Header>
+                  <Header>{this.context("Please select a user")}</Header>
                 </Container>
               )}
               {user_id !== null && keys.length === 0 && (
                 <Container textAlign="center">
-                  <Header>{`${getTranslation("Nothing to")} ${publishOrAccept.toLowerCase()}`}</Header>
+                  <Header>{`${this.context("Nothing to")} ${publishOrAccept.toLowerCase()}`}</Header>
                 </Container>
               )}
               {toApprove && keys.length !== 0 && (
@@ -241,7 +241,7 @@ class ApproveModal extends React.Component {
                 <Container textAlign="center">
                   <Button
                     color="green"
-                    content={`${publishOrAccept} ${getTranslation("All")}`}
+                    content={`${publishOrAccept} ${this.context("All")}`}
                     disabled={approveMap[user_id] && keys.every(key => approveMap[user_id].indexOf(key.name) !== -1)}
                     onClick={() => this.onApprove(keys)}
                   />
@@ -254,6 +254,8 @@ class ApproveModal extends React.Component {
     );
   }
 }
+
+ApproveModal.contextType = TranslationContext;
 
 ApproveModal.propTypes = {
   perspectiveId: PropTypes.arrayOf(PropTypes.number).isRequired,

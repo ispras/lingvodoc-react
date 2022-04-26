@@ -1,12 +1,13 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Button, Card, Tab, Table } from "semantic-ui-react";
 import { graphql } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 import { groupBy, isEqual } from "lodash";
 import moment from "moment";
 import { branch, compose, renderComponent, renderNothing } from "recompose";
 
+import { chooseTranslation as T } from "api/i18n";
 import Placeholder from "components/Placeholder";
+import TranslationContext from "Layout/TranslationContext";
 import { organizationsQuery } from "pages/Organizations";
 
 import { acceptMutation, getUserRequestsQuery } from "./graphql";
@@ -15,7 +16,7 @@ const timestampToDate = ts => moment(ts * 1000).format("LLLL");
 const objectById = (id, objs) => objs.find(o => o.id === id);
 const objectByCompositeId = (id, objs) => objs.find(o => isEqual(o.id, id));
 /* eslint-disable react/prop-types */
-function acceptRequest(mutation, id, accept) {
+function acceptRequest(mutation, id, accept, getTranslation) {
   mutation({
     variables: {
       id,
@@ -28,6 +29,8 @@ function acceptRequest(mutation, id, accept) {
 }
 
 const Subject = ({ request, grants, dictionaries, organizations }) => {
+  const getTranslation = useContext(TranslationContext);
+
   const { subject } = request;
 
   switch (request.type) {
@@ -39,9 +42,9 @@ const Subject = ({ request, grants, dictionaries, organizations }) => {
         <div>
           <p>Grant</p>
           <Card
-            header={grant.translation}
+            header={T(grant.translations)}
             meta={grant.grant_number}
-            description={dictionary ? dictionary.translation : getTranslation("Unknown dictionary")}
+            description={dictionary ? T(dictionary.translations) : getTranslation("Unknown dictionary")}
           />
         </div>
       );
@@ -55,9 +58,9 @@ const Subject = ({ request, grants, dictionaries, organizations }) => {
         <div>
           <p>Organization</p>
           <Card
-            header={organization.translation}
+            header={T(organization.translations)}
             meta={organization.about}
-            description={dictionary ? dictionary.translation : getTranslation("Unknown dictionary")}
+            description={dictionary ? T(dictionary.translations) : getTranslation("Unknown dictionary")}
           />
         </div>
       );
@@ -69,7 +72,7 @@ const Subject = ({ request, grants, dictionaries, organizations }) => {
 
       return (
         <Card
-          header={organization ? organization.translation : ""}
+          header={organization ? T(organization.translations) : ""}
           description={organization ? organization.about : ""}
         />
       );
@@ -80,58 +83,64 @@ const Subject = ({ request, grants, dictionaries, organizations }) => {
   }
 };
 
-const RequestsPane = ({ requests, grants, users, dictionaries, organizations, accept }) => (
-  <Tab.Pane>
-    <Table celled padded>
-      <Table.Header>
-        <Table.Row>
-          <Table.HeaderCell>{getTranslation("User")}</Table.HeaderCell>
-          <Table.HeaderCell>{getTranslation("Subject")}</Table.HeaderCell>
-          <Table.HeaderCell>{getTranslation("Date")}</Table.HeaderCell>
-          <Table.HeaderCell>{getTranslation("Message")}</Table.HeaderCell>
-          <Table.HeaderCell>{getTranslation("Action")}</Table.HeaderCell>
-        </Table.Row>
-      </Table.Header>
+const RequestsPane = ({ requests, grants, users, dictionaries, organizations, accept }) => {
+  const getTranslation = useContext(TranslationContext);
 
-      <Table.Body>
-        {requests.length === 0 && (
+  return (
+    <Tab.Pane>
+      <Table celled padded>
+        <Table.Header>
           <Table.Row>
-            <Table.Cell>{getTranslation("No entries")}</Table.Cell>
+            <Table.HeaderCell>{getTranslation("User")}</Table.HeaderCell>
+            <Table.HeaderCell>{getTranslation("Subject")}</Table.HeaderCell>
+            <Table.HeaderCell>{getTranslation("Date")}</Table.HeaderCell>
+            <Table.HeaderCell>{getTranslation("Message")}</Table.HeaderCell>
+            <Table.HeaderCell>{getTranslation("Action")}</Table.HeaderCell>
           </Table.Row>
-        )}
-        {requests.map(r => (
-          <Table.Row key={r.broadcast_uuid}>
-            <Table.Cell>{objectById(r.sender_id, users).intl_name}</Table.Cell>
+        </Table.Header>
 
-            <Table.Cell>
-              <Subject
-                request={r}
-                grants={grants}
-                users={users}
-                dictionaries={dictionaries}
-                organizations={organizations}
-              />
-            </Table.Cell>
-            <Table.Cell>{timestampToDate(r.created_at)}</Table.Cell>
-            <Table.Cell>{r.message}</Table.Cell>
-            <Table.Cell>
-              <Button positive size="mini" onClick={() => acceptRequest(accept, r.id, true)}>
-                {getTranslation("Accept")}
-              </Button>
-              <Button negative size="mini" onClick={() => acceptRequest(accept, r.id, false)}>
-                {getTranslation("Reject")}
-              </Button>
-            </Table.Cell>
-          </Table.Row>
-        ))}
-      </Table.Body>
-    </Table>
-  </Tab.Pane>
-);
+        <Table.Body>
+          {requests.length === 0 && (
+            <Table.Row>
+              <Table.Cell>{getTranslation("No entries")}</Table.Cell>
+            </Table.Row>
+          )}
+          {requests.map(r => (
+            <Table.Row key={r.broadcast_uuid}>
+              <Table.Cell>{objectById(r.sender_id, users).intl_name}</Table.Cell>
+
+              <Table.Cell>
+                <Subject
+                  request={r}
+                  grants={grants}
+                  users={users}
+                  dictionaries={dictionaries}
+                  organizations={organizations}
+                />
+              </Table.Cell>
+              <Table.Cell>{timestampToDate(r.created_at)}</Table.Cell>
+              <Table.Cell>{r.message}</Table.Cell>
+              <Table.Cell>
+                <Button positive size="mini" onClick={() => acceptRequest(accept, r.id, true, this.context)}>
+                  {getTranslation("Accept")}
+                </Button>
+                <Button negative size="mini" onClick={() => acceptRequest(accept, r.id, false, this.context)}>
+                  {getTranslation("Reject")}
+                </Button>
+              </Table.Cell>
+            </Table.Row>
+          ))}
+        </Table.Body>
+      </Table>
+    </Tab.Pane>
+  );
+};
 
 const Requests = ({ data, accept }) => {
   const { userrequests, grants, users, dictionaries, organizations } = data;
   const requestsByType = groupBy(userrequests, u => u.type);
+
+  const getTranslation = useContext(TranslationContext);
 
   const panes = [
     {
