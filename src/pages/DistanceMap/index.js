@@ -22,11 +22,8 @@ const DistanceMap = ({
   allField,
   actions,
   selected,
-  mainGroupDictionaresAndLanguages,
-  user
+  mainGroupDictionaresAndLanguages
 }) => {
-  const getTranslation = useContext(TranslationContext);
-
   const {
     language_tree: languageTree,
     dictionaries,
@@ -34,6 +31,10 @@ const DistanceMap = ({
     perspectives,
     is_authenticated: isAuthenticated
   } = dictionaryWithPerspectives;
+
+  if (loading && !dataForTree.dictionaries) {
+    return <Placeholder />;
+  }
 
   useEffect(() => {
     if (!dataForTree.dictionaries) {
@@ -43,28 +44,7 @@ const DistanceMap = ({
         id: selected.id
       });
     }
-  });
-
-  useEffect(() => {
-    if (mainGroupDictionaresAndLanguages.length !== 0) {
-      actions.setMainGroupLanguages({});
-      actions.setCheckStateTreeFlat({});
-    }
-  });
-
-  if (!user || user.id !== 1) {
-    return (
-      <div style={{ marginTop: "1em" }}>
-        <Label>
-          {getTranslation("For the time being Distance Map functionality is available only for the administrator.")}
-        </Label>
-      </div>
-    );
-  }
-
-  if (loading && !dataForTree.dictionaries) {
-    return <Placeholder />;
-  }
+  }, []);
 
   if (selected.id !== dataForTree.idLocale) {
     if (!dictionaries) {
@@ -76,6 +56,13 @@ const DistanceMap = ({
       return <Placeholder />;
     }
   }
+
+  useEffect(() => {
+    if (mainGroupDictionaresAndLanguages.length !== 0) {
+      actions.setMainGroupLanguages({});
+      actions.setCheckStateTreeFlat({});
+    }
+  }, []);
 
   const newDictionaries = checkCoordAndLexicalEntries(dictionaries || dataForTree.dictionaries);
   const newLanguagesTree = languageTree || dataForTree.languageTree;
@@ -110,7 +97,7 @@ DistanceMap.propTypes = {
   mainGroupDictionaresAndLanguages: PropTypes.object.isRequired
 };
 
-export default compose(
+const DistanceMapC = compose(
   connect(
     state => state.distanceMap,
     dispatch => ({
@@ -126,7 +113,24 @@ export default compose(
     })
   ),
   connect(state => state.locale),
-  connect(state => state.user),
-  graphql(dictionaryWithPerspectivesQuery, { name: "dictionaryWithPerspectives", skip: props => props.user.id !== 1 }),
-  graphql(allFieldQuery, { name: "allField", skip: props => props.user.id !== 1 })
+  graphql(dictionaryWithPerspectivesQuery, { name: "dictionaryWithPerspectives" }),
+  graphql(allFieldQuery, { name: "allField" })
 )(DistanceMap);
+
+const Wrapper = ({ user }) => {
+  const getTranslation = useContext(TranslationContext);
+
+  if (!user || user.id !== 1) {
+    return (
+      <div style={{ marginTop: "1em" }}>
+        <Label>
+          {getTranslation("For the time being Distance Map functionality is available only for the administrator.")}
+        </Label>
+      </div>
+    );
+  }
+
+  return <DistanceMapC />;
+};
+
+export default connect(state => state.user)(Wrapper);

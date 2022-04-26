@@ -21,7 +21,7 @@ const getDistance = async (dictionaries, allField, mainDictionary, computeDistan
   });
 
   mainDictionary.perspectives.forEach(el => {
-    if (checkLexicalEntries(T(el.translation))) {
+    if (checkLexicalEntries(T(el.translations))) {
       sourcePerspectiveId = el.id;
       groupFields = el.columns
         .map(column => fieldDict[id2str(column.field_id)])
