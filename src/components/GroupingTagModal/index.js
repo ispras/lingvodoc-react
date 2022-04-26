@@ -1,13 +1,13 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Button, Checkbox, Dimmer, Header, Icon, Modal, Segment, Tab } from "semantic-ui-react";
 import { graphql } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 import { isEqual } from "lodash";
 import PropTypes from "prop-types";
 import { compose, pure } from "recompose";
 import styled from "styled-components";
 
 import { queryLexicalEntries, queryPerspective } from "components/PerspectiveView";
+import TranslationContext from "Layout/TranslationContext";
 
 import ConnectedEntries from "./ConnectedEntries";
 import {
@@ -36,6 +36,8 @@ const EditGroupingTag = props => {
     joinGroup,
     leaveGroup
   } = props;
+
+  const getTranslation = useContext(TranslationContext);
 
   const panes = [
     {
@@ -94,6 +96,8 @@ EditGroupingTag.propTypes = {
 const ViewGroupingTag = props => {
   const { lexicalEntry, fieldId, entitiesMode, allLanguages, allDictionaries, allPerspectives, connectedWords } = props;
 
+  const getTranslation = useContext(TranslationContext);
+
   const panes = [
     {
       menuItem: getTranslation("View"),
@@ -139,6 +143,8 @@ const PublishGroupingTag = props => {
     connectedWords,
     publish
   } = props;
+
+  const getTranslation = useContext(TranslationContext);
 
   const entity = lexicalEntry.entities.find(e => isEqual(e.field_id, fieldId));
 
@@ -199,6 +205,8 @@ const ContributionsGroupingTag = props => {
     connectedWords,
     accept
   } = props;
+
+  const getTranslation = useContext(TranslationContext);
 
   const entity = lexicalEntry.entities.find(e => isEqual(e.field_id, fieldId));
 
@@ -293,7 +301,7 @@ class GroupingTagModal extends React.Component {
         }
       ]
     }).then(() => {
-      window.logger.suc(getTranslation("Connected"));
+      window.logger.suc(this.context("Connected"));
     });
   }
 
@@ -313,7 +321,7 @@ class GroupingTagModal extends React.Component {
         }
       ]
     }).then(() => {
-      window.logger.suc(getTranslation("Disconnected"));
+      window.logger.suc(this.context("Disconnected"));
     });
   }
 
@@ -405,7 +413,7 @@ class GroupingTagModal extends React.Component {
           onClose={onClose}
           className="lingvo-modal2"
         >
-          <Modal.Header>{getTranslation("Grouping tag")}</Modal.Header>
+          <Modal.Header>{this.context("Grouping tag")}</Modal.Header>
           <Modal.Content scrolling>
             <ModalContentWrapper>
               <Component
@@ -424,13 +432,15 @@ class GroupingTagModal extends React.Component {
             </ModalContentWrapper>
           </Modal.Content>
           <Modal.Actions>
-            <Button content={getTranslation("Cancel")} onClick={onClose} className="lingvo-button-basic-black" />
+            <Button content={this.context("Cancel")} onClick={onClose} className="lingvo-button-basic-black" />
           </Modal.Actions>
         </Modal>
       </div>
     );
   }
 }
+
+GroupingTagModal.contextType = TranslationContext;
 
 GroupingTagModal.propTypes = {
   data: PropTypes.shape({

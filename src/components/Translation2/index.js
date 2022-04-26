@@ -2,10 +2,11 @@ import React from "react";
 import { Button, Dropdown, Input, List, TextArea } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 import { difference, head, isEmpty, nth } from "lodash";
 import PropTypes from "prop-types";
 import { compose } from "recompose";
+
+import TranslationContext from "Layout/TranslationContext";
 
 const localesQuery = gql`
   query Locales {
@@ -202,7 +203,7 @@ class Translations extends React.Component {
           () => this.props.onChange(this.state.translations)
         );
       } else {
-        window.logger.err(getTranslation("No more locales!"));
+        window.logger.err(this.context("No more locales!"));
       }
     }
   }
@@ -247,7 +248,7 @@ class Translations extends React.Component {
         </List>
         <Button
           onClick={this.addTranslation}
-          content={getTranslation("Add translation")}
+          content={this.context("Add translation")}
           disabled={this.isAddTranslationDisabled()}
           className="lingvo-button-violet"
         />
@@ -255,6 +256,8 @@ class Translations extends React.Component {
     );
   }
 }
+
+Translations.contextType = TranslationContext;
 
 Translations.propTypes = {
   data: PropTypes.shape({

@@ -3,6 +3,7 @@ import { Container } from "semantic-ui-react";
 import PropTypes from "prop-types";
 import { compose, mapProps } from "recompose";
 
+import { chooseTranslation as T } from "api/i18n";
 import LangsNavAutocomplete from "components/Home/components/LangsNav/LangsNavAutocomplete/index";
 import LangsNavList from "components/Home/components/LangsNav/LangsNavList/index";
 
@@ -270,7 +271,7 @@ const prepareData = (resultData, language) => {
 
 const makeLetterMap = data =>
   data.reduce((acc, cur) => {
-    const letter = cur.translation[0].toLocaleUpperCase();
+    const letter = T(cur.translations)[0].toLocaleUpperCase();
 
     if (acc[letter]) {
       acc[letter].push(cur);

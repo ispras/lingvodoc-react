@@ -1,11 +1,14 @@
-import React from "react";
-import { getTranslation } from "api/i18n";
+import React, { useContext } from "react";
+
+import TranslationContext from "Layout/TranslationContext";
 
 import Info from "../Info";
 
 import "./styles.scss";
 
-function authorsRoute() {
+function AuthorsRoute() {
+  const getTranslation = useContext(TranslationContext);
+
   return (
     <div className="authorsRoute">
       <div className="background-header">
@@ -16,4 +19,4 @@ function authorsRoute() {
   );
 }
 
-export default authorsRoute;
+export default AuthorsRoute;

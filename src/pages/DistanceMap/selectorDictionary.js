@@ -1,18 +1,20 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Container, Label, Segment } from "semantic-ui-react";
-import { getTranslation } from "api/i18n";
 import { fromJS, Map } from "immutable";
 import PropTypes from "prop-types";
 
 import BackTopButton from "components/BackTopButton";
 import { getScrollContainer } from "components/Home/common";
 import AllDicts from "components/Home/components/AllDicts";
+import TranslationContext from "Layout/TranslationContext";
 import { buildLanguageTree } from "pages/Search/treeBuilder";
 
 import "components/Home/published.scss";
 import "./styles.scss";
 
-const selectorDict = props => {
+const SelectorDict = props => {
+  const getTranslation = useContext(TranslationContext);
+
   const { languageTree: languages, dictionaries, perspectives, isAuthenticated } = props;
 
   const localDictionaries = dictionaries;
@@ -62,14 +64,14 @@ const selectorDict = props => {
   );
 };
 
-selectorDict.defaultProps = {
+SelectorDict.defaultProps = {
   isAuthenticated: false
 };
-selectorDict.propTypes = {
+SelectorDict.propTypes = {
   perspectives: PropTypes.array.isRequired,
   languageTree: PropTypes.array.isRequired,
   isAuthenticated: PropTypes.bool,
   dictionaries: PropTypes.array.isRequired
 };
 
-export default selectorDict;
+export default SelectorDict;

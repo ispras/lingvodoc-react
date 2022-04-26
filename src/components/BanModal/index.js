@@ -3,13 +3,13 @@ import { connect } from "react-redux";
 import { Button, Dropdown, Modal } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 import { sortBy } from "lodash";
 import PropTypes from "prop-types";
 import { compose } from "recompose";
 import { bindActionCreators } from "redux";
 
 import { closeModal } from "ducks/ban";
+import TranslationContext from "Layout/TranslationContext";
 
 const queryUsers = gql`
   query Users {
@@ -61,12 +61,12 @@ class BanModal extends React.Component {
       })
       .then(
         () => {
-          window.logger.suc(`${getTranslation(success_str)} ${user_str}.`);
+          window.logger.suc(`${this.context(success_str)} ${user_str}.`);
           this.props.closeModal();
           refetch();
         },
         () => {
-          window.logger.err(`${getTranslation(error_str)} ${user_str}!`);
+          window.logger.err(`${this.context(error_str)} ${user_str}!`);
         }
       );
   }
@@ -96,12 +96,12 @@ class BanModal extends React.Component {
     return (
       <div>
         <Modal closeIcon onClose={this.props.closeModal} dimmer open size="small" className="lingvo-modal2">
-          <Modal.Header>{getTranslation("User account activation/deactivation")}</Modal.Header>
+          <Modal.Header>{this.context("User account activation/deactivation")}</Modal.Header>
           <Modal.Content>
             <div style={{ width: "80%" }}>
               <Dropdown
                 fluid
-                placeholder={getTranslation("Select user")}
+                placeholder={this.context("Select user")}
                 search
                 selection
                 options={user_selection}
@@ -114,16 +114,16 @@ class BanModal extends React.Component {
               disabled={this.state.selected_user === null}
               content={
                 this.state.selected_user === null
-                  ? getTranslation("Activate / Deactivate")
+                  ? this.context("Activate / Deactivate")
                   : this.state.selected_user.is_active
-                  ? getTranslation("Deactivate")
-                  : getTranslation("Activate")
+                  ? this.context("Deactivate")
+                  : this.context("Activate")
               }
               onClick={this.handleActivateDeactivate}
               className="lingvo-button-violet"
             />
             <Button
-              content={getTranslation("Cancel")}
+              content={this.context("Cancel")}
               onClick={this.props.closeModal}
               className="lingvo-button-basic-black"
             />
@@ -133,6 +133,8 @@ class BanModal extends React.Component {
     );
   }
 }
+
+BanModal.contextType = TranslationContext;
 
 BanModal.propTypes = {
   data: PropTypes.shape({

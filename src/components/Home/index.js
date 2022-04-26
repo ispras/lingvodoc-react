@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { connect } from "react-redux";
 import { Button, Container, Form, Radio, Segment } from "semantic-ui-react";
 import { gql } from "@apollo/client";
@@ -8,12 +8,12 @@ import PropTypes from "prop-types";
 import { compose } from "recompose";
 import { bindActionCreators } from "redux";
 
-import { getTranslation } from "api/i18n";
 import BackTopButton from "components/BackTopButton";
 import Placeholder from "components/Placeholder";
 // eslint-disable-next-line import/no-unresolved
 import config from "config";
 import { resetDictionaries, setSortMode } from "ducks/home";
+import TranslationContext from "Layout/TranslationContext";
 import { buildLanguageTree } from "pages/Search/treeBuilder";
 
 import AllDicts from "./components/AllDicts";
@@ -27,7 +27,7 @@ const authenticatedDictionariesQuery = gql`
     dictionaries(proxy: true, category: 0) {
       id
       parent_id
-      translation
+      translations
       status
       category
       additional_metadata {
@@ -35,29 +35,29 @@ const authenticatedDictionariesQuery = gql`
       }
       perspectives {
         id
-        translation
+        translations
       }
     }
     permission_lists(proxy: true) {
       view {
         id
         parent_id
-        translation
+        translations
       }
       edit {
         id
         parent_id
-        translation
+        translations
       }
       publish {
         id
         parent_id
-        translation
+        translations
       }
       limited {
         id
         parent_id
-        translation
+        translations
       }
     }
   }
@@ -68,7 +68,7 @@ const guestDictionariesQuery = gql`
     dictionaries(proxy: false, published: true, category: 0) {
       id
       parent_id
-      translation
+      translations
       status
       category
       additional_metadata {
@@ -76,29 +76,29 @@ const guestDictionariesQuery = gql`
       }
       perspectives {
         id
-        translation
+        translations
       }
     }
     permission_lists(proxy: false) {
       view {
         id
         parent_id
-        translation
+        translations
       }
       edit {
         id
         parent_id
-        translation
+        translations
       }
       publish {
         id
         parent_id
-        translation
+        translations
       }
       limited {
         id
         parent_id
-        translation
+        translations
       }
     }
   }
@@ -126,6 +126,8 @@ const Home = props => {
     isAuthenticated,
     data: { loading, error, dictionaries, permission_lists: permissionLists }
   } = props;
+
+  const getTranslation = useContext(TranslationContext);
 
   if (error) {
     return null;
@@ -296,11 +298,11 @@ const dictionaryWithPerspectivesQuery = gql`
     perspectives {
       id
       parent_id
-      translation
+      translations
     }
     grants {
       id
-      translation
+      translations
       issuer
       grant_number
       additional_metadata {
@@ -309,7 +311,7 @@ const dictionaryWithPerspectivesQuery = gql`
     }
     organizations {
       id
-      translation
+      translations
       additional_metadata {
         participant
       }
@@ -317,7 +319,7 @@ const dictionaryWithPerspectivesQuery = gql`
     language_tree {
       id
       parent_id
-      translation
+      translations
       created_at
       additional_metadata {
         toc_mark
@@ -332,23 +334,23 @@ const dictionaryWithPerspectivesProxyQuery = gql`
     dictionaries(proxy: false, published: true, category: 0) {
       id
       parent_id
-      translation
+      translations
       additional_metadata {
         authors
       }
       perspectives {
         id
-        translation
+        translations
       }
     }
     perspectives {
       id
       parent_id
-      translation
+      translations
     }
     grants {
       id
-      translation
+      translations
       issuer
       grant_number
       additional_metadata {
@@ -357,7 +359,7 @@ const dictionaryWithPerspectivesProxyQuery = gql`
     }
     organizations {
       id
-      translation
+      translations
       additional_metadata {
         participant
       }
@@ -365,7 +367,7 @@ const dictionaryWithPerspectivesProxyQuery = gql`
     language_tree {
       id
       parent_id
-      translation
+      translations
       created_at
       additional_metadata {
         toc_mark

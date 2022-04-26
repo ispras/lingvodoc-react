@@ -2,6 +2,8 @@ import React from "react";
 import PropTypes from "prop-types";
 import { compose, pure } from "recompose";
 
+import { chooseTranslation as T } from "api/i18n";
+
 /* ----------- PROPS ----------- */
 const classNames = {
   main: "langs-nav-list__item",
@@ -23,16 +25,21 @@ const ListItem = ({ data, onLangSelect }) => {
     const thinSpace = "\u2009";
     let text = null;
     if (!lang.dictsCount.dicts) {
-      text = `${lang.translation} [${lang.dictsCount.corps}]`;
+      text = `${T(lang.translations)} [${lang.dictsCount.corps}]`;
     } else if (!lang.dictsCount.corps) {
-      text = `${lang.translation} [${lang.dictsCount.dicts}]`;
+      text = `${T(lang.translations)} [${lang.dictsCount.dicts}]`;
     } else {
-      text = `${lang.translation} [${lang.dictsCount.dicts}${thinSpace}|${thinSpace}${lang.dictsCount.corps}]`;
+      text = `${T(lang.translations)} [${lang.dictsCount.dicts}${thinSpace}|${thinSpace}${lang.dictsCount.corps}]`;
     }
 
     return (
       <li key={lang.id} className={classNames.innerItem}>
-        <button className={classNames.button} data-id={lang.id} data-value={lang.translation} onClick={onLangSelect}>
+        <button
+          className={classNames.button}
+          data-id={lang.id}
+          data-value={T(lang.translations)}
+          onClick={onLangSelect}
+        >
           {text}
         </button>
         {`${index !== arr.length - 1 ? ", " : ""}`}

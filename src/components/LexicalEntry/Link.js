@@ -6,6 +6,7 @@ import PropTypes from "prop-types";
 import { branch, compose, renderNothing } from "recompose";
 import { bindActionCreators } from "redux";
 
+import { chooseTranslation as T } from "api/i18n";
 import LinkModal from "components/LinkModal";
 import { openModal } from "ducks/modals";
 
@@ -13,7 +14,7 @@ const DirectedLink = props => {
   const { entry, column, mode, entitiesMode, as: Component = "div", openModal, disabled } = props;
 
   const count = entry.entities.filter(e => isEqual(e.field_id, column.id)).length;
-  const content = `${column.translation} (${count})`;
+  const content = `${T(column.translations)} (${count})`;
 
   return (
     <Component className="gentium">

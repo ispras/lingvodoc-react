@@ -1,16 +1,16 @@
-import React from "react";
+import React, { useContext } from "react";
 import { connect } from "react-redux";
 import { Button, Modal } from "semantic-ui-react";
-import { getTranslation } from "api/i18n";
 import PropTypes from "prop-types";
 import { compose, onlyUpdateForKeys } from "recompose";
 import { bindActionCreators } from "redux";
 
 import { closeRoles as close } from "ducks/roles";
+import TranslationContext from "Layout/TranslationContext";
 
 import { DictionaryRoles, PerspectiveRoles } from "./component";
 
-function getComponent(id, mode) {
+function getComponent(id, mode, getTranslation) {
   switch (mode) {
     case "dictionary":
       return DictionaryRoles;
@@ -22,7 +22,9 @@ function getComponent(id, mode) {
 }
 
 const RolesModal = ({ visible, id, mode, title, actions, user }) => {
-  const Component = getComponent(id, mode);
+  const getTranslation = useContext(TranslationContext);
+
+  const Component = getComponent(id, mode, getTranslation);
 
   return (
     <Modal closeIcon onClose={actions.close} open={visible} dimmer size="large" className="lingvo-modal2">

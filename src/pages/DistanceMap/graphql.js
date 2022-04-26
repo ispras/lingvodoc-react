@@ -4,7 +4,7 @@ export const allFieldQuery = gql`
   query {
     all_fields {
       id
-      translation
+      translations
       english_translation: translation(locale_id: 2)
       data_type
     }
@@ -16,7 +16,7 @@ export const dictionaryWithPerspectivesQuery = gql`
     dictionaries(proxy: false, published: true) {
       id
       parent_id
-      translation
+      translations
       category
       additional_metadata {
         authors
@@ -24,7 +24,7 @@ export const dictionaryWithPerspectivesQuery = gql`
       }
       perspectives {
         id
-        translation
+        translations
         columns {
           field_id
         }
@@ -33,17 +33,17 @@ export const dictionaryWithPerspectivesQuery = gql`
     perspectives {
       id
       parent_id
-      translation
+      translations
     }
     language_tree {
       id
       parent_id
-      translation
+      translations
       created_at
       dictionaries(deleted: false, published: true) {
         id
         parent_id
-        translation
+        translations
         category
         additional_metadata {
           authors
@@ -51,7 +51,7 @@ export const dictionaryWithPerspectivesQuery = gql`
         }
         perspectives {
           id
-          translation
+          translations
           columns {
             field_id
           }
@@ -69,7 +69,7 @@ export const dictionaryName = gql`
   query dictionaryName($id: LingvodocID) {
     dictionary(id: $id) {
       id
-      translation
+      translations
       parent_id
       additional_metadata {
         authors
@@ -77,7 +77,7 @@ export const dictionaryName = gql`
       }
       perspectives {
         id
-        translation
+        translations
         columns {
           field_id
         }

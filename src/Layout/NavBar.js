@@ -1,13 +1,13 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { Button, Menu } from "semantic-ui-react";
 import { useMutation } from "@apollo/client";
 
-import { getTranslation } from "api/i18n";
 import { synchronizeMutation } from "backend";
 // eslint-disable-next-line import/no-unresolved
 import config from "config";
+import TranslationContext from "Layout/TranslationContext";
 
 import Locale from "./Locale";
 import Tasks from "./Tasks";
@@ -17,6 +17,8 @@ import "./style.scss";
 
 const SyncButton = () => {
   const [synchronize] = useMutation(synchronizeMutation);
+
+  const getTranslation = useContext(TranslationContext);
 
   return (
     <Menu.Item>

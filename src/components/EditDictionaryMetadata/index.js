@@ -1,256 +1,321 @@
-import React from "react";
-import { Button, Form, Segment } from "semantic-ui-react";
+import React, { useContext, useState } from "react";
+import { Button, Form, Icon, Message, Segment } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 import PropTypes from "prop-types";
 
-const getMetadataAlternativesQuery = gql`
+import TranslationContext from "Layout/TranslationContext";
+
+export const getMetadataAlternativesQuery = gql`
   query getMetadataAlternatives {
     select_tags_metadata
   }
 `;
 
-const license_name_key_list = [
+const license_name_key_list = getTranslation => [
   [getTranslation("Proprietary license"), "proprietary"],
   ["Creative Commons Attribution 4.0", "cc-by-4.0"],
   ["Creative Commons Attribution-ShareAlike 4.0", "cc-by-sa-4.0"],
   ["Creative Commons Attribution-NonCommercial-ShareAlike 4.0", "cc-by-nc-sa-4.0"]
 ];
 
-export const license_options = license_name_key_list.map(([name, key]) => ({ text: name, value: key }));
+export const license_options = getTranslation =>
+  license_name_key_list(getTranslation).map(([name, key]) => ({ text: name, value: key }));
+
+const initial_dictionary_metadata = {
+  kind: "Expedition",
+  authors: [],
+  humanSettlement: [],
+  years: [],
+  interrogator: [],
+  informant: "",
+  processing: [],
+  typeOfDiscourse: "",
+  typeOfSpeech: "",
+  speechGenre: "",
+  theThemeOfTheText: "",
+  license: "proprietary"
+};
+
+export function initDropdownOptions(select_tags_metadata, authors, humanSettlement, years) {
+  let toAdd = authors.slice();
+
+  const authorsOptions = select_tags_metadata.authors.map(author => {
+    const index = toAdd.indexOf(author);
+    if (index > -1) {
+      toAdd.splice(index, 1);
+    }
+
+    return {
+      text: author,
+      value: author
+    };
+  });
+  toAdd.forEach(author => {
+    this.authorsOptions.push({ text: author, value: author });
+  });
+
+  toAdd = humanSettlement.slice();
+
+  const settlementsOptions = select_tags_metadata.humanSettlement.map(settlement => {
+    const index = toAdd.indexOf(settlement);
+    if (index > -1) {
+      toAdd.splice(index, 1);
+    }
+
+    return {
+      text: settlement,
+      value: settlement
+    };
+  });
+  toAdd.forEach(settlement => {
+    this.settlementsOptions.push({ text: settlement, value: settlement });
+  });
+
+  toAdd = years.slice();
+
+  const yearsOptions = select_tags_metadata.years.map(year => {
+    const index = toAdd.indexOf(year);
+    if (index > -1) {
+      toAdd.splice(index, 1);
+    }
+
+    return {
+      text: year,
+      value: year
+    };
+  });
+  toAdd.forEach(year => {
+    this.yearsOptions.push({ text: year, value: year });
+  });
+
+  return [authorsOptions, settlementsOptions, yearsOptions];
+}
+
+export function onAddNewAlternative(event, data) {
+  if (data.options.every(option => option.value !== data.value)) {
+    data.options.push({ text: data.value, value: data.value });
+  }
+}
+
+export const EditKind = ({ kind, mode, onChange, onSave }) => {
+  const [lastValue, setLastValue] = useState(kind);
+  const [value, setValue] = useState(kind);
+
+  const getTranslation = useContext(TranslationContext);
+
+  return (
+    <Form.Group widths="equal">
+      <Form.Group>
+        <Form.Radio
+          key="kind_expedition"
+          label={getTranslation("Expedition")}
+          checked={value === "Expedition"}
+          disabled={!onSave && !onChange}
+          onClick={() => {
+            setValue("Expedition");
+            if (onChange) {
+              onChange({ kind: "Expedition" });
+            }
+          }}
+        />
+        <Form.Radio
+          key="kind_archive"
+          label={getTranslation("Archive")}
+          checked={value === "Archive"}
+          disabled={!onSave && !onChange}
+          onClick={() => {
+            setValue("Archive");
+            if (onChange) {
+              onChange({ kind: "Archive" });
+            }
+          }}
+        />
+      </Form.Group>
+      {mode !== "create" && (
+        <Form.Button
+          key="kind_save"
+          floated="right"
+          content={getTranslation("Save")}
+          disabled={value === lastValue || !onSave}
+          onClick={() => {
+            setLastValue(value);
+            onSave({ kind: value });
+          }}
+          className="lingvo-button-violet"
+        />
+      )}
+    </Form.Group>
+  );
+};
+
+export const EditSelect = ({ metadata_key, label, value: initialValue, valueOptions, mode, onChange, onSave }) => {
+  const [lastValue, setLastValue] = useState(initialValue);
+  const [value, setValue] = useState(initialValue);
+
+  const getTranslation = useContext(TranslationContext);
+
+  return (
+    <>
+      <Form.Dropdown
+        key={metadata_key}
+        label={label}
+        fluid
+        selection
+        search
+        options={valueOptions}
+        value={value}
+        disabled={!onSave && !onChange}
+        onChange={(event, data) => {
+          setValue(data.value);
+          if (onChange) {
+            onChange({ [metadata_key]: data.value });
+          }
+        }}
+      />
+      {mode !== "create" && (
+        <Form.Button
+          key={`${metadata_key}_save`}
+          floated="right"
+          content={getTranslation("Save")}
+          disabled={value === lastValue || !onSave}
+          onClick={() => {
+            setLastValue(value);
+            onSave({ [metadata_key]: value });
+          }}
+          className="lingvo-button-violet"
+        />
+      )}
+    </>
+  );
+};
+
+export const EditSelectMultiple = ({
+  metadata_key,
+  label,
+  value: initialValue,
+  valueOptions,
+  mode,
+  onChange,
+  onSave
+}) => {
+  const [lastValue, setLastValue] = useState(initialValue);
+  const [value, setValue] = useState(initialValue);
+
+  const getTranslation = useContext(TranslationContext);
+
+  return (
+    <>
+      <Form.Dropdown
+        key={metadata_key}
+        label={label}
+        fluid
+        multiple
+        selection
+        search
+        allowAdditions
+        options={valueOptions}
+        value={value}
+        disabled={!onSave && !onChange}
+        onAddItem={onAddNewAlternative}
+        onChange={(event, data) => {
+          setValue(data.value);
+          if (onChange) {
+            onChange({ [metadata_key]: data.value });
+          }
+        }}
+      />
+      {mode !== "create" && (
+        <Form.Button
+          key={`${metadata_key}_save`}
+          floated="right"
+          content={getTranslation("Save")}
+          disabled={JSON.stringify(value) === JSON.stringify(lastValue) || !onSave}
+          onClick={() => {
+            setLastValue(value);
+            onSave({ [metadata_key]: value });
+          }}
+          className="lingvo-button-violet"
+        />
+      )}
+    </>
+  );
+};
+
+export const EditInput = ({ metadata_key, label, value: initialValue, mode, onChange, onSave }) => {
+  const [lastValue, setLastValue] = useState(initialValue);
+  const [value, setValue] = useState(initialValue);
+
+  const getTranslation = useContext(TranslationContext);
+
+  return (
+    <>
+      <Form.Input
+        key={metadata_key}
+        label={label}
+        fluid
+        value={value}
+        disabled={!onSave && !onChange}
+        onChange={(event, data) => {
+          setValue(data.value);
+          if (onChange) {
+            onChange({ [metadata_key]: data.value });
+          }
+        }}
+      />
+      {mode !== "create" && (
+        <Form.Button
+          key={`${metadata_key}_save`}
+          floated="right"
+          content={getTranslation("Save")}
+          disabled={value === lastValue || !onSave}
+          onClick={() => {
+            setLastValue(value);
+            onSave({ [metadata_key]: value });
+          }}
+          className="lingvo-button-violet"
+        />
+      )}
+    </>
+  );
+};
 
 class EditDictionaryMetadata extends React.Component {
   constructor(props) {
     super(props);
-
-    this.state = props.metadata || {
-      kind: "Expedition",
-      authors: [],
-      humanSettlement: [],
-      years: [],
-      interrogator: "",
-      informant: "",
-      processing: "",
-      typeOfDiscourse: "",
-      typeOfSpeech: "",
-      speechGenre: "",
-      theThemeOfTheText: "",
-      license: "proprietary"
-    };
-
-    this.initialState = {
-      kind: this.state.kind,
-      authors: this.state.authors,
-      humanSettlement: this.state.humanSettlement,
-      years: this.state.years,
-      interrogator: this.state.interrogator,
-      informant: this.state.informant,
-      processing: this.state.processing,
-      typeOfDiscourse: this.state.typeOfDiscourse,
-      typeOfSpeech: this.state.typeOfSpeech,
-      speechGenre: this.state.speechGenre,
-      theThemeOfTheText: this.state.theThemeOfTheText,
-      license: this.state.license
-    };
-
-    this.onAddNewAlternative = this.onAddNewAlternative.bind(this);
-    this.onChangeValue = this.onChangeValue.bind(this);
-    this.onSaveValue = this.onSaveValue.bind(this);
-  }
-
-  initDropdownOptions() {
-    const { select_tags_metadata } = this.props.data;
-
-    let toAdd = this.state.authors.slice();
-    this.authorsOptions = select_tags_metadata.authors.map(author => {
-      const index = toAdd.indexOf(author);
-      if (index > -1) {
-        toAdd.splice(index, 1);
-      }
-
-      return {
-        text: author,
-        value: author
-      };
-    });
-    toAdd.forEach(author => {
-      this.authorsOptions.push({ text: author, value: author });
-    });
-
-    toAdd = this.state.humanSettlement.slice();
-    this.settlementsOptions = select_tags_metadata.humanSettlement.map(settlement => {
-      const index = toAdd.indexOf(settlement);
-      if (index > -1) {
-        toAdd.splice(index, 1);
-      }
-
-      return {
-        text: settlement,
-        value: settlement
-      };
-    });
-    toAdd.forEach(settlement => {
-      this.settlementsOptions.push({ text: settlement, value: settlement });
-    });
-
-    toAdd = this.state.years.slice();
-    this.yearsOptions = select_tags_metadata.years.map(year => {
-      const index = toAdd.indexOf(year);
-      if (index > -1) {
-        toAdd.splice(index, 1);
-      }
-
-      return {
-        text: year,
-        value: year
-      };
-    });
-    toAdd.forEach(year => {
-      this.yearsOptions.push({ text: year, value: year });
-    });
-  }
-  /* eslint-disable react/sort-comp */
-  // eslint-disable-next-line class-methods-use-this
-  onAddNewAlternative(event, data) {
-    if (data.options.every(option => option.value !== data.value)) {
-      data.options.push({ text: data.value, value: data.value });
-    }
-  }
-  /* eslint-enable react/sort-comp */
-  onChangeValue(kind, data) {
-    const callback = () => {
-      if (this.props.onChange) {
-        this.props.onChange(this.state);
-      }
-    };
-    switch (kind) {
-      case "kind":
-        this.setState({ kind: data }, callback);
-        break;
-      case "authors":
-        this.setState({ authors: data.value }, callback);
-        break;
-      case "settlements":
-        this.setState({ humanSettlement: data.value }, callback);
-        break;
-      case "years":
-        this.setState({ years: data.value }, callback);
-        break;
-      case "interrogator":
-        this.setState({ interrogator: data.value }, callback);
-        break;
-      case "informant":
-        this.setState({ informant: data.value }, callback);
-        break;
-      case "processing":
-        this.setState({ processing: data.value }, callback);
-        break;
-      case "typeOfDiscourse":
-        this.setState({ typeOfDiscourse: data.value }, callback);
-        break;
-      case "typeOfSpeech":
-        this.setState({ typeOfSpeech: data.value }, callback);
-        break;
-      case "speechGenre":
-        this.setState({ speechGenre: data.value }, callback);
-        break;
-      case "theThemeOfTheText":
-        this.setState({ theThemeOfTheText: data.value }, callback);
-        break;
-      case "license":
-        this.setState({ license: data.value }, callback);
-        break;
-      default:
-    }
-  }
-
-  onSaveValue(kind) {
-    if (!this.props.onSave) {
-      return;
-    }
-
-    let toSave = null;
-    switch (kind) {
-      case "kind":
-        toSave = { kind: this.state.kind };
-        this.initialState.kind = toSave.kind;
-        break;
-      case "authors":
-        toSave = { authors: this.state.authors };
-        this.initialState.authors = toSave.authors;
-        break;
-      case "settlements":
-        toSave = { humanSettlement: this.state.humanSettlement };
-        this.initialState.humanSettlement = toSave.humanSettlement;
-        break;
-      case "speakers":
-        toSave = { speakersAmount: this.state.speakersAmount };
-        this.initialState.speakersAmount = toSave.speakersAmount;
-        break;
-      case "years":
-        toSave = { years: this.state.years };
-        this.initialState.years = toSave.years;
-        break;
-      case "interrogator":
-        toSave = { interrogator: this.state.interrogator };
-        this.initialState.interrogator = toSave.interrogator;
-        break;
-      case "informant":
-        toSave = { informant: this.state.informant };
-        this.initialState.informant = toSave.informant;
-        break;
-      case "processing":
-        toSave = { processing: this.state.processing };
-        this.initialState.processing = toSave.processing;
-        break;
-      case "typeOfDiscourse":
-        toSave = { typeOfDiscourse: this.state.typeOfDiscourse };
-        this.initialState.typeOfDiscourse = toSave.typeOfDiscourse;
-        break;
-      case "typeOfSpeech":
-        toSave = { typeOfSpeech: this.state.typeOfSpeech };
-        this.initialState.typeOfSpeech = toSave.typeOfSpeech;
-        break;
-      case "speechGenre":
-        toSave = { speechGenre: this.state.speechGenre };
-        this.initialState.speechGenre = toSave.speechGenre;
-        break;
-      case "theThemeOfTheText":
-        toSave = { theThemeOfTheText: this.state.theThemeOfTheText };
-        this.initialState.theThemeOfTheText = toSave.theThemeOfTheText;
-        break;
-      default:
-        return;
-    }
-
-    if (toSave) {
-      this.props.onSave(toSave);
-    }
-  }
-
-  componentWillMount() {
-    if (!this.props.loading) {
-      this.refetching = true;
-      this.props.data.refetch().then(() => {
-        this.refetching = false;
-        this.initDropdownOptions();
-        this.forceUpdate();
-      });
-    }
   }
 
   render() {
     const { loading, error } = this.props.data;
-    if (loading || error || this.refetching) {
-      return null;
+
+    if (loading) {
+      return (
+        <Segment>
+          {this.context("Loading metadata")}... <Icon loading name="spinner" />
+        </Segment>
+      );
+    } else if (error) {
+      return <Message negative>{this.context("Metadata loading error, please contact adiministrators.")}</Message>;
     }
+
+    const { metadata: rawMetadata } = this.props;
+
+    const metadata = rawMetadata ? { ...initial_dictionary_metadata, ...rawMetadata } : initial_dictionary_metadata;
 
     if (!this.authorsOptions) {
-      this.initDropdownOptions();
+      const { select_tags_metadata } = this.props.data;
+      const { authors, humanSettlement, years } = metadata;
+
+      [this.authorsOptions, this.settlementsOptions, this.yearsOptions] = initDropdownOptions(
+        select_tags_metadata,
+        authors,
+        humanSettlement,
+        years
+      );
     }
 
-    const { mode } = this.props;
+    const { mode, onChange, onSave } = this.props;
+
     const {
       kind,
       authors,
@@ -264,107 +329,59 @@ class EditDictionaryMetadata extends React.Component {
       speechGenre,
       theThemeOfTheText,
       license
-    } = this.state;
+    } = metadata;
 
     return (
       <Form>
         <Segment>
-          <Form.Group widths="equal">
-            <Form.Group>
-              <Form.Radio
-                label={getTranslation("Expedition")}
-                checked={kind === "Expedition"}
-                onClick={() => this.onChangeValue("kind", "Expedition")}
-              />
-              <Form.Radio
-                label={getTranslation("Archive")}
-                checked={kind === "Archive"}
-                onClick={() => this.onChangeValue("kind", "Archive")}
-              />
-            </Form.Group>
-            {mode !== "create" && (
-              <Form.Button
-                floated="right"
-                content={getTranslation("Save")}
-                disabled={kind === this.initialState.kind}
-                onClick={() => this.onSaveValue("kind")}
-                className="lingvo-button-violet"
-              />
-            )}
-          </Form.Group>
+          <EditKind kind={kind} mode={mode} onChange={onChange} onSave={onSave} />
         </Segment>
         <Segment>
           <Form.Group widths="equal">
-            <Form.Dropdown
-              fluid
-              label={getTranslation("Authors")}
-              multiple
-              selection
-              search
-              allowAdditions
-              options={this.authorsOptions}
-              defaultValue={authors}
-              onAddItem={this.onAddNewAlternative}
-              onChange={(event, data) => this.onChangeValue("authors", data)}
+            <EditSelectMultiple
+              key="authors"
+              metadata_key="authors"
+              label={this.context("Authors")}
+              value={authors}
+              valueOptions={this.authorsOptions}
+              mode={mode}
+              onChange={onChange}
+              onSave={onSave}
             />
-            {mode !== "create" && (
-              <Button
-                content={getTranslation("Save")}
-                disabled={JSON.stringify(authors) === JSON.stringify(this.initialState.authors)}
-                onClick={() => this.onSaveValue("authors")}
-                className="lingvo-button-violet"
-              />
-            )}
-            <Form.Dropdown
-              fluid
-              multiple
-              selection
-              search
-              allowAdditions
-              label={getTranslation("Interrogator")}
-              options={this.authorsOptions}
-              defaultValue={interrogator}
-              onAddItem={this.onAddNewAlternative}
-              onChange={(event, data) => this.onChangeValue("interrogator", data)}
+            <EditSelectMultiple
+              key="interrogator"
+              metadata_key="interrogator"
+              label={this.context("Interrogator")}
+              value={interrogator}
+              valueOptions={this.authorsOptions}
+              mode={mode}
+              onChange={onChange}
+              onSave={onSave}
             />
-            {mode !== "create" && (
-              <Form.Button
-                floated="right"
-                content={getTranslation("Save")}
-                disabled={interrogator === this.initialState.interrogator}
-                onClick={() => this.onSaveValue("interrogator")}
-                className="lingvo-button-violet"
-              />
-            )}
-            <Form.Input
-              fluid
-              label={getTranslation("Informant")}
-              defaultValue={informant}
-              onChange={(event, data) => this.onChangeValue("informant", data)}
+            <EditInput
+              key="informant"
+              metadata_key="informant"
+              label={this.context("Informant")}
+              value={informant}
+              mode={mode}
+              onChange={onChange}
+              onSave={onSave}
             />
-            {mode !== "create" && (
-              <Form.Button
-                floated="right"
-                content={getTranslation("Save")}
-                disabled={informant === this.initialState.informant}
-                onClick={() => this.onSaveValue("informant")}
-                className="lingvo-button-violet"
-              />
-            )}
           </Form.Group>
         </Segment>
 
         {mode === "create" && (
           <Segment>
             <Form.Group widths="equal">
-              <Form.Dropdown
-                fluid
-                label={getTranslation("License")}
-                selection
-                search
-                options={license_options}
-                defaultValue={license}
-                onChange={(event, data) => this.onChangeValue("license", data)}
+              <EditSelect
+                key="license"
+                metadata_key="license"
+                label={this.context("License")}
+                value={license}
+                valueOptions={license_options(this.context)}
+                mode={mode}
+                onChange={onChange}
+                onSave={onSave}
               />
             </Form.Group>
           </Segment>
@@ -372,149 +389,96 @@ class EditDictionaryMetadata extends React.Component {
 
         <Segment>
           <Form.Group widths="equal">
-            <Form.Dropdown
-              fluid
-              label={getTranslation("Human settlement")}
-              multiple
-              selection
-              search
-              allowAdditions
-              options={this.settlementsOptions}
-              defaultValue={humanSettlement}
-              onAddItem={this.onAddNewAlternative}
-              onChange={(event, data) => this.onChangeValue("settlements", data)}
+            <EditSelectMultiple
+              key="humanSettlement"
+              metadata_key="humanSettlement"
+              label={this.context("Human settlement")}
+              value={humanSettlement}
+              valueOptions={this.settlementsOptions}
+              mode={mode}
+              onChange={onChange}
+              onSave={onSave}
             />
-            {mode !== "create" && (
-              <Button
-                content={getTranslation("Save")}
-                disabled={JSON.stringify(humanSettlement) === JSON.stringify(this.initialState.humanSettlement)}
-                onClick={() => this.onSaveValue("settlements")}
-                className="lingvo-button-violet"
-              />
-            )}
           </Form.Group>
         </Segment>
         <Segment>
           <Form.Group widths="equal">
-            <Form.Dropdown
-              fluid
-              label={getTranslation("Years")}
-              multiple
-              selection
-              search
-              allowAdditions
-              options={this.yearsOptions}
-              defaultValue={years}
-              onAddItem={this.onAddNewAlternative}
-              onChange={(event, data) => this.onChangeValue("years", data)}
+            <EditSelectMultiple
+              key="years"
+              metadata_key="years"
+              label={this.context("Years")}
+              value={years}
+              valueOptions={this.yearsOptions}
+              mode={mode}
+              onChange={onChange}
+              onSave={onSave}
             />
-            {mode !== "create" && (
-              <Button
-                content={getTranslation("Save")}
-                disabled={JSON.stringify(years) === JSON.stringify(this.initialState.years)}
-                onClick={() => this.onSaveValue("years")}
-                className="lingvo-button-violet"
-              />
-            )}
           </Form.Group>
         </Segment>
         <Segment>
           <Form.Group widths="equal">
-            <Form.Dropdown
-              fluid
-              multiple
-              selection
-              search
-              allowAdditions
-              label={getTranslation("Processing")}
-              options={this.authorsOptions}
-              defaultValue={processing}
-              onAddItem={this.onAddNewAlternative}
-              onChange={(event, data) => this.onChangeValue("processing", data)}
+            <EditSelectMultiple
+              key="processing"
+              metadata_key="processing"
+              label={this.context("Processing")}
+              value={processing}
+              valueOptions={this.authorsOptions}
+              mode={mode}
+              onChange={onChange}
+              onSave={onSave}
             />
-            {mode !== "create" && (
-              <Form.Button
-                floated="right"
-                content={getTranslation("Save")}
-                disabled={processing === this.initialState.processing}
-                onClick={() => this.onSaveValue("processing")}
-                className="lingvo-button-violet"
-              />
-            )}
           </Form.Group>
         </Segment>
         <Segment>
           <Form.Group widths="equal">
-            <Form.Input
-              fluid
-              label={getTranslation("Type of discourse")}
-              defaultValue={typeOfDiscourse}
-              onChange={(event, data) => this.onChangeValue("typeOfDiscourse", data)}
+            <EditInput
+              key="typeOfDiscourse"
+              metadata_key="typeOfDiscourse"
+              label={this.context("Type of discourse")}
+              value={typeOfDiscourse}
+              mode={mode}
+              onChange={onChange}
+              onSave={onSave}
             />
-            {mode !== "create" && (
-              <Form.Button
-                floated="right"
-                content={getTranslation("Save")}
-                disabled={typeOfDiscourse === this.initialState.typeOfDiscourse}
-                onClick={() => this.onSaveValue("typeOfDiscourse")}
-                className="lingvo-button-violet"
-              />
-            )}
-            <Form.Input
-              fluid
-              label={getTranslation("Type of speech")}
-              defaultValue={typeOfSpeech}
-              onChange={(event, data) => this.onChangeValue("typeOfSpeech", data)}
+            <EditInput
+              key="typeOfSpeech"
+              metadata_key="typeOfSpeech"
+              label={this.context("Type of speech")}
+              value={typeOfSpeech}
+              mode={mode}
+              onChange={onChange}
+              onSave={onSave}
             />
-            {mode !== "create" && (
-              <Form.Button
-                floated="right"
-                content={getTranslation("Save")}
-                disabled={typeOfSpeech === this.initialState.typeOfSpeech}
-                onClick={() => this.onSaveValue("typeOfSpeech")}
-                className="lingvo-button-violet"
-              />
-            )}
-            <Form.Input
-              fluid
-              label={getTranslation("Speech genre")}
-              defaultValue={speechGenre}
-              onChange={(event, data) => this.onChangeValue("speechGenre", data)}
+            <EditInput
+              key="speechGenre"
+              metadata_key="speechGenre"
+              label={this.context("Speech genre")}
+              value={speechGenre}
+              mode={mode}
+              onChange={onChange}
+              onSave={onSave}
             />
-            {mode !== "create" && (
-              <Form.Button
-                floated="right"
-                content={getTranslation("Save")}
-                disabled={speechGenre === this.initialState.speechGenre}
-                onClick={() => this.onSaveValue("speechGenre")}
-                className="lingvo-button-violet"
-              />
-            )}
           </Form.Group>
         </Segment>
         <Segment>
           <Form.Group widths="equal">
-            <Form.Input
-              fluid
-              label={getTranslation("The theme of the text")}
-              defaultValue={theThemeOfTheText}
-              onBlur={event => this.onChangeValue("theThemeOfTheText", event.currentTarget)}
+            <EditInput
+              key="theThemeOfTheText"
+              metadata_key="theThemeOfTheText"
+              label={this.context("The theme of the text")}
+              value={theThemeOfTheText}
+              mode={mode}
+              onChange={onChange}
+              onSave={onSave}
             />
-            {mode !== "create" && (
-              <Form.Button
-                floated="right"
-                content={getTranslation("Save")}
-                disabled={theThemeOfTheText === this.initialState.theThemeOfTheText}
-                onClick={() => this.onSaveValue("theThemeOfTheText")}
-                className="lingvo-button-violet"
-              />
-            )}
           </Form.Group>
         </Segment>
       </Form>
     );
   }
 }
+
+EditDictionaryMetadata.contextType = TranslationContext;
 
 EditDictionaryMetadata.propTypes = {
   mode: PropTypes.string.isRequired,
@@ -531,4 +495,6 @@ EditDictionaryMetadata.defaultProps = {
   loading: false
 };
 
-export default graphql(getMetadataAlternativesQuery)(EditDictionaryMetadata);
+export default graphql(getMetadataAlternativesQuery, { options: { fetchPolicy: "cache-and-network" } })(
+  EditDictionaryMetadata
+);

@@ -1,9 +1,10 @@
-import React, { PureComponent } from "react";
+import React, { PureComponent, useContext } from "react";
 import { Container, Menu } from "semantic-ui-react";
 import { gql } from "@apollo/client";
-import { getTranslation } from "api/i18n";
 import PropTypes from "prop-types";
 import { compose, onlyUpdateForKeys, withHandlers, withState } from "recompose";
+
+import TranslationContext from "Layout/TranslationContext";
 
 import PerspectivePath from "../../pages/Perspective/PerspectivePath";
 
@@ -19,29 +20,9 @@ export const launchSoundAndMarkupMutation = gql`
   }
 `;
 
-/* Old Counter */
-// const queryCounter = gql`
-//   query qcounter($id: LingvodocID!, $entriesIds: [LingvodocID]!, $mode: String!) {
-//     perspective(id: $id) {
-//       id
-//       lexical_entries(ids: $entriesIds, mode: $mode) {
-//         id
-//       }
-//     }
-//   }
-// `;
-
-// const Counter = graphql(queryCounter)(({ data }) => {
-//   if (data.loading || data.error) {
-//     return null;
-//   }
-//   const { perspective: { lexical_entries: lexicalEntries } } = data;
-//   return ` (${lexicalEntries.length})`;
-// });
-
 const Counter = ({ entriesIds }) => ` (${entriesIds.length})`;
 
-const MODES = {
+const MODES_translator = getTranslation => ({
   edit: {
     entitiesMode: "all",
     text: getTranslation("Edit")
@@ -54,7 +35,7 @@ const MODES = {
     entitiesMode: "all",
     text: getTranslation("Publish")
   }
-};
+});
 
 const handlers = compose(
   withState("value", "updateValue", props => props.filter),
@@ -71,37 +52,46 @@ const handlers = compose(
   })
 );
 
-const Filter = handlers(({ value, onChange, onSubmit }) => (
-  <div className="ui right aligned category search item">
-    <form className="ui icon input" onSubmit={onSubmit}>
-      <input type="text" placeholder={getTranslation("Filter")} value={value} onChange={onChange} />
-      <button type="submit">
-        <i className="search link icon" />
-      </button>
-    </form>
-  </div>
-));
+const Filter = handlers(({ value, onChange, onSubmit }) => {
+  const getTranslation = useContext(TranslationContext);
+
+  return (
+    <div className="ui right aligned category search item">
+      <form className="ui icon input" onSubmit={onSubmit}>
+        <input type="text" placeholder={getTranslation("Filter")} value={value} onChange={onChange} />
+        <button type="submit">
+          <i className="search link icon" />
+        </button>
+      </form>
+    </div>
+  );
+});
 
 const ModeSelector = onlyUpdateForKeys(["mode", "filter"])(
-  ({ mode, filter, submitFilter, toggleMode, id, entriesIds }) => (
-    <Menu tabular>
-      <Menu.Item active={mode === "view"} onClick={toggleMode("view")}>
-        {MODES.view.text}
-        <Counter id={id} mode={MODES.view.entitiesMode} entriesIds={entriesIds} />
-      </Menu.Item>
-      <Menu.Item active={mode === "edit"} onClick={toggleMode("edit")}>
-        {MODES.edit.text}
-        <Counter id={id} mode={MODES.edit.entitiesMode} entriesIds={entriesIds} />
-      </Menu.Item>
-      <Menu.Item active={mode === "publish"} onClick={toggleMode("publish")}>
-        {MODES.publish.text}
-        <Counter id={id} mode={MODES.publish.entitiesMode} entriesIds={entriesIds} />
-      </Menu.Item>
-      <Menu.Menu position="right">
-        <Filter filter={filter} submitFilter={submitFilter} />
-      </Menu.Menu>
-    </Menu>
-  )
+  ({ mode, filter, submitFilter, toggleMode, id, entriesIds }) => {
+    const getTranslation = useContext(TranslationContext);
+    const MODES = MODES_translator(getTranslation);
+
+    return (
+      <Menu tabular>
+        <Menu.Item active={mode === "view"} onClick={toggleMode("view")}>
+          {MODES.view.text}
+          <Counter id={id} mode={MODES.view.entitiesMode} entriesIds={entriesIds} />
+        </Menu.Item>
+        <Menu.Item active={mode === "edit"} onClick={toggleMode("edit")}>
+          {MODES.edit.text}
+          <Counter id={id} mode={MODES.edit.entitiesMode} entriesIds={entriesIds} />
+        </Menu.Item>
+        <Menu.Item active={mode === "publish"} onClick={toggleMode("publish")}>
+          {MODES.publish.text}
+          <Counter id={id} mode={MODES.publish.entitiesMode} entriesIds={entriesIds} />
+        </Menu.Item>
+        <Menu.Menu position="right">
+          <Filter filter={filter} submitFilter={submitFilter} />
+        </Menu.Menu>
+      </Menu>
+    );
+  }
 );
 
 class Perspective extends PureComponent {

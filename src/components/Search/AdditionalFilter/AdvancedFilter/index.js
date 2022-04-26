@@ -2,9 +2,10 @@ import React, { PureComponent } from "react";
 import { Segment } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 import PropTypes from "prop-types";
 import { compose } from "recompose";
+
+import TranslationContext from "Layout/TranslationContext";
 
 import AudioField from "./AudioField";
 import Authors from "./AuthorsField";
@@ -97,7 +98,7 @@ class AdvancedFilter extends PureComponent {
                 classNames={classNames}
                 value={this.props.hasAudio}
                 onChange={this.onHasAudioChange}
-                getTranslation={getTranslation}
+                getTranslation={this.context}
               />
             </Segment>
             <Segment>
@@ -105,7 +106,7 @@ class AdvancedFilter extends PureComponent {
                 classNames={classNames}
                 value={this.props.kind}
                 onChange={this.onKindChange}
-                getTranslation={getTranslation}
+                getTranslation={this.context}
               />
             </Segment>
             <Segment>
@@ -114,7 +115,7 @@ class AdvancedFilter extends PureComponent {
                 options={yearOptions}
                 value={this.props.years}
                 onChange={this.onFieldChange}
-                getTranslation={getTranslation}
+                getTranslation={this.context}
               />
             </Segment>
             <Segment>
@@ -123,7 +124,7 @@ class AdvancedFilter extends PureComponent {
                 options={humanSettlementOptions}
                 value={this.props.humanSettlement}
                 onChange={this.onFieldChange}
-                getTranslation={getTranslation}
+                getTranslation={this.context}
               />
             </Segment>
             <Segment>
@@ -132,7 +133,7 @@ class AdvancedFilter extends PureComponent {
                 options={authorsOptions}
                 value={this.props.authors}
                 onChange={this.onFieldChange}
-                getTranslation={getTranslation}
+                getTranslation={this.context}
               />
             </Segment>
             <Segment>
@@ -142,7 +143,7 @@ class AdvancedFilter extends PureComponent {
                 value={this.props.languageVulnerability}
                 showVulnerabilityWarning={this.props.showVulnerabilityWarning}
                 onChange={this.onFieldChange}
-                getTranslation={getTranslation}
+                getTranslation={this.context}
               />
             </Segment>
           </Segment.Group>
@@ -151,6 +152,8 @@ class AdvancedFilter extends PureComponent {
     );
   }
 }
+
+AdvancedFilter.contextType = TranslationContext;
 
 /**
  * Component for receiving, transmitting and handling data from the API to the main component.

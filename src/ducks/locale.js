@@ -1,11 +1,14 @@
-import locale from "api/locale";
 import { combineReducers } from "redux";
+
+import { getTranslation } from "api/i18n";
+import locale from "api/locale";
 
 // Actions
 export const REQUEST = "@locale/REQUEST";
 export const SELECT = "@locale/SELECT";
 export const SET = "@locale/SET";
 export const CHANGE = "@locale/CHANGE";
+export const RESET_TRANSLATIONS = "@locale/RESET_TRANSLATIONS";
 
 // Reducers
 function locales(state = [], action = {}) {
@@ -45,10 +48,20 @@ function loading(state = false, action = {}) {
   }
 }
 
+function translationGetter(state = getTranslation, action = {}) {
+  switch (action.type) {
+    case RESET_TRANSLATIONS:
+      return (...args) => getTranslation(...args);
+    default:
+      return state;
+  }
+}
+
 export default combineReducers({
   locales,
   selected,
-  loading
+  loading,
+  translationGetter
 });
 
 // Action Creators
@@ -66,4 +79,8 @@ export function setLocales(payload) {
 
 export function changeLocale(payload) {
   return { type: CHANGE, payload };
+}
+
+export function resetTranslations() {
+  return { type: RESET_TRANSLATIONS };
 }

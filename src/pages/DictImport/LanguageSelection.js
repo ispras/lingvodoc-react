@@ -1,10 +1,10 @@
 import React from "react";
 import { Button, Form, Input, Modal } from "semantic-ui-react";
-import { getTranslation } from "api/i18n";
 import { pure } from "recompose";
 
 import { license_options } from "components/EditDictionaryMetadata";
 import Languages from "components/Languages";
+import TranslationContext from "Layout/TranslationContext";
 
 class Dictionary extends React.Component {
   constructor(props) {
@@ -18,7 +18,8 @@ class Dictionary extends React.Component {
   render() {
     const { blob, language, license, locales, onSetLanguage, onSetTranslation, onSetLicense } = this.props;
 
-    const triggerText = (language && language.get("translation", false)) || getTranslation("Select Parent Language");
+    const translations = language && language.get("translations", null);
+    const triggerText = translations ? T(translations.toJS()) : this.context("Select Parent Language");
     const trigger = <Button onClick={this.toggle}>{triggerText}</Button>;
 
     return (
@@ -34,7 +35,7 @@ class Dictionary extends React.Component {
             className="lingvo-modal2"
           >
             <Modal.Header>
-              {getTranslation("Select Language for")} {blob.get("name")}
+              {this.context("Select Language for")} {blob.get("name")}
             </Modal.Header>
             <Modal.Content style={{ minHeight: "500px" }}>
               <div style={{ height: "500px" }}>
@@ -53,7 +54,7 @@ class Dictionary extends React.Component {
               {locales.map(locale => (
                 <Form.Field key={locale.id}>
                   <label>
-                    {getTranslation("Translation for")} {locale.intl_name}
+                    {this.context("Translation for")} {locale.intl_name}
                   </label>
                   <Input
                     value={blob.getIn(["translation", locale.id], "")}
@@ -66,10 +67,10 @@ class Dictionary extends React.Component {
             <Form.Group widths="equal">
               <Form.Dropdown
                 fluid
-                label={getTranslation("License")}
+                label={this.context("License")}
                 selection
                 search
-                options={license_options}
+                options={license_options(this.context)}
                 defaultValue={license || "proprietary"}
                 onChange={(event, data) => onSetLicense(data.value)}
               />
@@ -80,6 +81,8 @@ class Dictionary extends React.Component {
     );
   }
 }
+
+Dictionary.contextType = TranslationContext;
 
 function LanguageSelection({ state, languages, licenses, locales, onSetLanguage, onSetTranslation, onSetLicense }) {
   return (

@@ -6,7 +6,7 @@ import { gql } from "@apollo/client";
 import { Container, Button, List } from "semantic-ui-react";
 import TranslationAtom from "../TranslationAtom";
 import { compositeIdToString } from "../../utils/compositeId";
-import { getTranslation } from "api/i18n";
+import TranslationContext from "Layout/TranslationContext";
 
 export const translationGistQuery = gql`
   query ($id: LingvodocID!) {
@@ -119,12 +119,14 @@ export default class TranslationGist extends React.Component {
           onClick={this.addAtom}
           className="lingvo-button-violet"
         >
-          {getTranslation("Add")}
+          {this.context("Add")}
         </Button>
       </Container>
     );
   }
 }
+
+TranslationGist.contextType = TranslationContext;
 
 TranslationGist.propTypes = {
   objectId: PropTypes.array.isRequired,

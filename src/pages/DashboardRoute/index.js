@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
-import { getTranslation } from "api/i18n";
 
 import Footer from "components/Footer";
+import TranslationContext from "Layout/TranslationContext";
 
 import imageDictionaries from "../../images/books1.svg";
 import imageCreate from "../../images/books2.svg";
@@ -13,7 +13,9 @@ import imageCorpora from "../../images/file_bundle2.svg";
 
 import "./styles.scss";
 
-function dashboardRoute() {
+function DashboardRoute() {
+  const getTranslation = useContext(TranslationContext);
+
   return (
     <div className="lingvodoc-page">
       <div className="background-cards lingvodoc-page__content">
@@ -53,4 +55,4 @@ function dashboardRoute() {
   );
 }
 
-export default dashboardRoute;
+export default DashboardRoute;

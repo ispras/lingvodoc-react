@@ -1,21 +1,22 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { connect } from "react-redux";
-import { Button, Form, Grid, Header, Label, Modal, Segment } from "semantic-ui-react";
+import { Button, Form, Grid, Header, Label, Loader, Message, Modal, Segment } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql, withApollo } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 import { isEqual, sortBy } from "lodash";
 import PropTypes from "prop-types";
 import { branch, compose, onlyUpdateForKeys, renderNothing } from "recompose";
 import { bindActionCreators } from "redux";
 import styled from "styled-components";
 
+import { chooseTranslation as T } from "api/i18n";
 import EditCorpusMetadata from "components/EditCorpusMetadata";
 import EditDictionaryMetadata from "components/EditDictionaryMetadata";
 import Languages from "components/Languages";
 import TranslationGist from "components/TranslationGist";
 import { closeDictionaryPropertiesModal } from "ducks/dictionaryProperties";
-import { compositeIdToString } from "utils/compositeId";
+import TranslationContext from "Layout/TranslationContext";
+import { compositeIdToString as id2str } from "utils/compositeId";
 
 import Map from "./Map";
 
@@ -72,7 +73,7 @@ const getParentLanguageQuery = gql`
   query getParentLanguage($id: LingvodocID!) {
     language(id: $id) {
       id
-      translation
+      translations
     }
   }
 `;
@@ -115,12 +116,15 @@ class Properties extends React.Component {
       tags: "",
       files: [],
       parent: null,
-      selectedParent: null
+      selectedParent: null,
+      parentQuery: false
     };
     this.initialState = {
       location: null,
       files: []
     };
+
+    this.check_init = this.check_init.bind(this);
 
     this.onChangeLocation = this.onChangeLocation.bind(this);
     this.onSaveLocation = this.onSaveLocation.bind(this);
@@ -133,14 +137,17 @@ class Properties extends React.Component {
     this.onUpdateParentLanguage = this.onUpdateParentLanguage.bind(this);
   }
 
-  componentDidMount() {
-    const {
-      data: { error, loading, dictionary },
-      client
-    } = this.props;
+  check_init() {
+    const { loading, error } = this.props.data;
+
     if (loading || error) {
       return;
     }
+
+    const {
+      data: { dictionary },
+      client
+    } = this.props;
 
     const {
       additional_metadata: { location, tag_list: tagList, blobs }
@@ -161,14 +168,15 @@ class Properties extends React.Component {
     }
 
     if (!isEqual(this.state.files, blobs)) {
-      this.initialState.files = blobs.map(compositeIdToString);
+      this.initialState.files = blobs.map(id2str);
       this.setState({
         files: this.initialState.files
       });
     }
 
     const { parent_id } = dictionary;
-    if (this.state.parent == null || this.state.parent.id != parent_id) {
+    if (!this.state.parentQuery && (this.state.parent == null || !isEqual(this.state.parent.id, parent_id))) {
+      this.setState({ parentQuery: true });
       client
         .query({
           query: getParentLanguageQuery,
@@ -177,10 +185,19 @@ class Properties extends React.Component {
         .then(result => {
           this.setState({
             parent: result.data.language,
-            selectedParent: result.data.language
+            selectedParent: result.data.language,
+            parentQuery: false
           });
         });
     }
+  }
+
+  componentDidMount() {
+    this.check_init();
+  }
+
+  componentDidUpdate() {
+    this.check_init();
   }
 
   onChangeLocation({ lat, lng }) {
@@ -223,7 +240,7 @@ class Properties extends React.Component {
       data: { user_blobs: allFiles }
     } = this.props;
     const ids = this.state.files
-      .map(id => allFiles.find(f => id === compositeIdToString(f.id)))
+      .map(id => allFiles.find(f => id === id2str(f.id)))
       .filter(f => f != undefined)
       .map(f => f.id);
     this.initialState.files = this.state.files;
@@ -275,8 +292,24 @@ class Properties extends React.Component {
   }
 
   render() {
+    const { loading, error } = this.props.data;
+
+    const loader = (
+      <Modal open dimmer size="fullscreen" closeOnDimmerClick={false} closeIcon className="lingvo-modal2">
+        <Loader>{this.context("Loading")}...</Loader>
+      </Modal>
+    );
+
+    if (loading) {
+      return loader;
+    } else if (error) {
+      return (
+        <Message negative>{this.context("Dictionary info loading error, please contact adiministrators.")}</Message>
+      );
+    }
+
     if (this.state.parent == null) {
-      return null;
+      return loader;
     }
 
     const {
@@ -287,11 +320,11 @@ class Properties extends React.Component {
     } = this.props;
     const { category, translation_gist_id: gistId } = dictionary;
     const options = sortBy(
-      files.map(file => ({ key: file.id, text: file.name, value: compositeIdToString(file.id) })),
+      files.map(file => ({ key: file.id, text: file.name, value: id2str(file.id) })),
       file => file.text
     );
-    const parentName = this.state.parent == null ? null : this.state.parent.translation;
-    const selectedParentName = this.state.selectedParent == null ? null : this.state.selectedParent.translation;
+    const parentName = this.state.parent == null ? null : T(this.state.parent.translations);
+    const selectedParentName = this.state.selectedParent == null ? null : T(this.state.selectedParent.translations);
 
     return (
       <Modal
@@ -306,22 +339,22 @@ class Properties extends React.Component {
         <Modal.Header>{title}</Modal.Header>
         <Modal.Content>
           <p>
-            {getTranslation("Created by")}
+            {this.context("Created by")}
             {": "}
             {dictionary.created_by.name}
           </p>
           <p>
-            {getTranslation("Created at")}
+            {this.context("Created at")}
             {": "}
             {new Date(dictionary.created_at * 1e3).toLocaleString()}
           </p>
           <p>
-            {getTranslation("Last modified at")}
+            {this.context("Last modified at")}
             {": "}
             {new Date(dictionary.last_modified_at * 1e3).toLocaleString()}
           </p>
           <Segment>
-            <Header as="h3">{getTranslation("Translations")}</Header>
+            <Header as="h3">{this.context("Translations")}</Header>
             <TranslationGist id={gistId} objectId={dictionary.id} editable updateAtomMutation={updateAtomMutation} />
           </Segment>
           {category === 0 ? (
@@ -332,7 +365,7 @@ class Properties extends React.Component {
           <MarginForm>
             <Segment>
               <Form.Group widths="equal">
-                <Label size="large">{getTranslation("Files")}</Label>
+                <Label size="large">{this.context("Files")}</Label>
                 <Form.Dropdown
                   labeled
                   fluid
@@ -344,7 +377,7 @@ class Properties extends React.Component {
                   value={this.state.files}
                 />
                 <Button
-                  content={getTranslation("Save")}
+                  content={this.context("Save")}
                   disabled={JSON.stringify(this.state.files) == JSON.stringify(this.initialState.files)}
                   onClick={this.onSaveFiles}
                   className="lingvo-button-violet"
@@ -353,7 +386,7 @@ class Properties extends React.Component {
             </Segment>
             <Segment>
               <Form.Group widths="equal">
-                <Label size="large">{getTranslation("Location")}</Label>
+                <Label size="large">{this.context("Location")}</Label>
                 <Form.Input
                   fluid
                   value={this.state.location == null ? "" : JSON.stringify(this.state.location)}
@@ -361,7 +394,7 @@ class Properties extends React.Component {
                   onChange={() => {}}
                 />
                 <Button
-                  content={getTranslation("Save")}
+                  content={this.context("Save")}
                   disabled={this.state.location == this.initialState.location}
                   onClick={this.onSaveLocation}
                   className="lingvo-button-violet"
@@ -375,7 +408,7 @@ class Properties extends React.Component {
                 <Form>
                   <Form.Group widths="equal">
                     <Label size="large">
-                      {getTranslation("Parent language")}: {selectedParentName || parentName}
+                      {this.context("Parent language")}: {selectedParentName || parentName}
                     </Label>
                     <Button
                       size="medium"
@@ -383,7 +416,7 @@ class Properties extends React.Component {
                       disabled={selectedParentName == parentName}
                       onClick={this.onUpdateParentLanguage}
                     >
-                      {getTranslation("Update")}
+                      {this.context("Update")}
                     </Button>
                   </Form.Group>
                 </Form>
@@ -403,7 +436,7 @@ class Properties extends React.Component {
         </Modal.Content>
         <Modal.Actions>
           <Button
-            content={getTranslation("Close")}
+            content={this.context("Close")}
             onClick={actions.closeDictionaryPropertiesModal}
             className="lingvo-button-basic-black"
           />
@@ -412,6 +445,8 @@ class Properties extends React.Component {
     );
   }
 }
+
+Properties.contextType = TranslationContext;
 
 Properties.propTypes = {
   id: PropTypes.array.isRequired,
@@ -434,7 +469,6 @@ export default compose(
   graphql(query),
   graphql(updateMetadataMutation, { name: "update" }),
   graphql(updateAtomMutation, { name: "updateAtomMutation" }),
-  branch(({ data: { loading, error } }) => loading || !!error, renderNothing),
   onlyUpdateForKeys(["id", "data"]),
   withApollo
 )(Properties);

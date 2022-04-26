@@ -3,15 +3,16 @@ import { connect } from "react-redux";
 import { Button, Grid, Header, Modal, Select, Table } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 import { map } from "lodash";
 import PropTypes from "prop-types";
 import { branch, compose, renderNothing } from "recompose";
 import { bindActionCreators } from "redux";
 
+import { chooseTranslation as T } from "api/i18n";
 import { getUserRequestsQuery } from "components/Grants/graphql";
 import Translations from "components/Translation";
 import { closeModal as closeDictionaryOrganizationsModal } from "ducks/dictionaryOrganizations";
+import TranslationContext from "Layout/TranslationContext";
 import { organizationsQuery } from "pages/Organizations";
 import { compositeIdToString as id2str } from "utils/compositeId";
 
@@ -46,18 +47,18 @@ class DictionaryOrganizationsModal extends React.Component {
 
     return (
       <Modal closeIcon onClose={closeDictionaryOrganizationsModal} dimmer open className="lingvo-modal2">
-        <Modal.Header>{getTranslation("Organizations")}</Modal.Header>
+        <Modal.Header>{this.context("Organizations")}</Modal.Header>
 
         <Modal.Content>
           <div>
-            <div className="lingvo-organizations-head-table">{getTranslation("Linked organizations:")}</div>
+            <div className="lingvo-organizations-head-table">{this.context("Linked organizations:")}</div>
 
             {(this.linked_list.length > 0 && (
               <Table celled className="lingvo-organizations-table">
                 <Table.Body>
                   {map(this.linked_list, organization => (
                     <Table.Row key={organization.id}>
-                      <Table.Cell>{organization.translation}</Table.Cell>
+                      <Table.Cell>{T(organization.translations)}</Table.Cell>
                     </Table.Row>
                   ))}
                 </Table.Body>
@@ -66,9 +67,7 @@ class DictionaryOrganizationsModal extends React.Component {
           </div>
 
           <div style={{ marginTop: "1.75em" }}>
-            <div className="lingvo-organizations-head-table">
-              {getTranslation("Organizations available to link to:")}
-            </div>
+            <div className="lingvo-organizations-head-table">{this.context("Organizations available to link to:")}</div>
 
             {(this.link_to_list.length > 0 && (
               <Table celled className="lingvo-organizations-table">
@@ -80,11 +79,11 @@ class DictionaryOrganizationsModal extends React.Component {
 
                     return (
                       <Table.Row key={organization.id}>
-                        <Table.Cell>{organization.translation}</Table.Cell>
+                        <Table.Cell>{T(organization.translations)}</Table.Cell>
 
                         <Table.Cell>
                           <Button
-                            content={already ? getTranslation("Link requested") : getTranslation("Request link")}
+                            content={already ? this.context("Link requested") : this.context("Request link")}
                             disabled={already}
                             className="lingvo-button-green-small"
                             onClick={() => {
@@ -101,7 +100,7 @@ class DictionaryOrganizationsModal extends React.Component {
                               }).then(
                                 () => {
                                   window.logger.suc(
-                                    getTranslation("Request has been sent to the organization's administrator.")
+                                    this.context("Request has been sent to the organization's administrator.")
                                   );
 
                                   this.state.requested_id_set[id_str] = null;
@@ -128,7 +127,7 @@ class DictionaryOrganizationsModal extends React.Component {
 
         <Modal.Actions>
           <Button
-            content={getTranslation("Close")}
+            content={this.context("Close")}
             onClick={closeDictionaryOrganizationsModal}
             className="lingvo-button-basic-black"
           />
@@ -137,6 +136,8 @@ class DictionaryOrganizationsModal extends React.Component {
     );
   }
 }
+
+DictionaryOrganizationsModal.contextType = TranslationContext;
 
 DictionaryOrganizationsModal.propTypes = {
   closeDictionaryOrganizationsModal: PropTypes.func.isRequired,

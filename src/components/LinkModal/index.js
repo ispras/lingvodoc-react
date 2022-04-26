@@ -1,7 +1,6 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Button, Checkbox, Dimmer, Header, Icon, Modal, Segment, Tab } from "semantic-ui-react";
 import { graphql } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 import { isEqual } from "lodash";
 import PropTypes from "prop-types";
 import { compose } from "recompose";
@@ -11,6 +10,7 @@ import buildPartialLanguageTree from "components/GroupingTagModal/partialTree";
 import SearchLexicalEntries from "components/GroupingTagModal/search";
 import Tree from "components/GroupingTagModal/Tree";
 import { LexicalEntryByIds, queryPerspective } from "components/PerspectiveView";
+import TranslationContext from "Layout/TranslationContext";
 
 import { acceptMutation, createMutation, languageTreeSourceQuery, publishMutation, removeMutation } from "./graphql";
 
@@ -37,6 +37,8 @@ function buildTree(lexicalEntry, column, allLanguages, allDictionaries, allPersp
 
 const ViewLink = props => {
   const { lexicalEntry, column, allLanguages, allDictionaries, allPerspectives } = props;
+
+  const getTranslation = useContext(TranslationContext);
 
   const tree = buildTree(lexicalEntry, column, allLanguages, allDictionaries, allPerspectives);
 
@@ -65,6 +67,8 @@ ViewLink.propTypes = {
 
 const EditLink = props => {
   const { lexicalEntry, column, allLanguages, allDictionaries, allPerspectives, create, remove } = props;
+
+  const getTranslation = useContext(TranslationContext);
 
   const tree = buildTree(lexicalEntry, column, allLanguages, allDictionaries, allPerspectives);
 
@@ -124,6 +128,8 @@ EditLink.propTypes = {
 const PublishLink = props => {
   const { lexicalEntry, column, allLanguages, allDictionaries, allPerspectives, publish } = props;
 
+  const getTranslation = useContext(TranslationContext);
+
   const tree = buildTree(lexicalEntry, column, allLanguages, allDictionaries, allPerspectives);
   const entity = lexicalEntry.entities.find(e => isEqual(e.field_id, column.field_id));
   const label = entity.published
@@ -166,6 +172,8 @@ PublishLink.propTypes = {
 
 const ContributionsLink = props => {
   const { lexicalEntry, column, allLanguages, allDictionaries, allPerspectives, accept } = props;
+
+  const getTranslation = useContext(TranslationContext);
 
   const tree = buildTree(lexicalEntry, column, allLanguages, allDictionaries, allPerspectives);
   const entity = lexicalEntry.entities.find(e => isEqual(e.field_id, column.field_id));
@@ -383,6 +391,7 @@ const Content = compose(
 )(LinkModalContent);
 
 const LinkModal = props => {
+  const getTranslation = useContext(TranslationContext);
   return (
     <Modal
       dimmer

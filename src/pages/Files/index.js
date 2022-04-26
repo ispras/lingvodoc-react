@@ -1,13 +1,13 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { connect } from "react-redux";
 import { Button, Confirm, Dropdown, Icon, Input, Loader, Message, Segment, Table } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 import { reverse, sortBy } from "lodash";
 import PropTypes from "prop-types";
 import { compose, pure, withReducer } from "recompose";
 
+import TranslationContext from "Layout/TranslationContext";
 import { fieldsQuery } from "pages/DictImport";
 import { compositeIdToString } from "utils/compositeId";
 
@@ -42,6 +42,7 @@ const deleteBlobMutation = gql`
 
 const Blob = ({ blob, user_is_active, deleteBlob }) => {
   const [confirmation, setConfirmation] = useState(false);
+  const getTranslation = useContext(TranslationContext);
 
   const remove = () => {
     setConfirmation(false);
@@ -138,11 +139,11 @@ class Files extends React.Component {
     }).then(
       () => {
         const { trigger } = this.state;
-        window.logger.suc(getTranslation("Upload successful"));
+        window.logger.suc(this.context("Upload successful"));
         this.setState({ file: undefined, trigger: !trigger });
       },
       () => {
-        window.logger.err(getTranslation("Upload failed"));
+        window.logger.err(this.context("Upload failed"));
       }
     );
   }
@@ -152,8 +153,8 @@ class Files extends React.Component {
       return (
         <div className="background-content">
           <Message>
-            <Message.Header>{getTranslation("Please sign in")}</Message.Header>
-            <p>{getTranslation("Only registered users can work with files.")}</p>
+            <Message.Header>{this.context("Please sign in")}</Message.Header>
+            <p>{this.context("Only registered users can work with files.")}</p>
           </Message>
         </div>
       );
@@ -162,7 +163,7 @@ class Files extends React.Component {
         <div className="background-content">
           <Segment>
             <Loader active inline="centered" indeterminate>
-              {`${getTranslation("Loading")}...`}
+              {`${this.context("Loading")}...`}
             </Loader>
           </Segment>
         </div>
@@ -171,7 +172,7 @@ class Files extends React.Component {
       return (
         <div className="background-content">
           <Message compact negative>
-            {getTranslation("User sign-in error, please sign in; if not successful, please contact administrators.")}
+            {this.context("User sign-in error, please sign in; if not successful, please contact administrators.")}
           </Message>
         </div>
       );
@@ -179,7 +180,7 @@ class Files extends React.Component {
       return (
         <div className="background-content">
           <Message compact negative>
-            {getTranslation("General error, please contact administrators.")}
+            {this.context("General error, please contact administrators.")}
           </Message>
         </div>
       );
@@ -198,22 +199,22 @@ class Files extends React.Component {
 
     const fileTypes = [
       {
-        text: getTranslation("PDF file"),
+        text: this.context("PDF file"),
         value: "pdf",
         icon: "file pdf outline"
       },
       {
-        text: getTranslation("Dialeqt file"),
+        text: this.context("Dialeqt file"),
         value: "dialeqt_dictionary",
         icon: "conversation"
       },
       {
-        text: getTranslation("Starling"),
+        text: this.context("Starling"),
         value: "starling/csv",
         icon: "conversation"
       },
       {
-        text: getTranslation("Image"),
+        text: this.context("Image"),
         value: "image",
         icon: "file outline"
       }
@@ -233,9 +234,9 @@ class Files extends React.Component {
                       onClick={() => document.getElementById("file-select").click()}
                       style={{ marginRight: "1rem" }}
                     >
-                      {`${getTranslation("Browse")}...`}
+                      {`${this.context("Browse")}...`}
                     </Button>
-                    {file === undefined ? getTranslation("No file selected") : file.name}
+                    {file === undefined ? this.context("No file selected") : file.name}
                     <Input
                       id="file-select"
                       key={trigger}
@@ -253,7 +254,7 @@ class Files extends React.Component {
                     />
                     <Button
                       color="green"
-                      content={getTranslation("Upload")}
+                      content={this.context("Upload")}
                       disabled={file === undefined}
                       onClick={this.uploadBlob}
                     />
@@ -261,7 +262,7 @@ class Files extends React.Component {
                 )}
                 <Input
                   icon={{ name: "search" }}
-                  placeholder={getTranslation("Search")}
+                  placeholder={this.context("Search")}
                   onChange={event => this.setState({ filter: event.target.value })}
                   style={{ float: "right", width: "300px" }}
                 />
@@ -271,19 +272,19 @@ class Files extends React.Component {
               <SortableColumnHeader
                 onSortModeChange={order => dispatch({ type: "SET_SORT_MODE", payload: { prop: "name", order } })}
               >
-                {getTranslation("Name")}
+                {this.context("Name")}
               </SortableColumnHeader>
               <SortableColumnHeader
                 onSortModeChange={order => dispatch({ type: "SET_SORT_MODE", payload: { prop: "data_type", order } })}
               >
-                {getTranslation("Type")}
+                {this.context("Type")}
               </SortableColumnHeader>
               <SortableColumnHeader
                 onSortModeChange={order => dispatch({ type: "SET_SORT_MODE", payload: { prop: "created_at", order } })}
               >
-                {getTranslation("Created")}
+                {this.context("Created")}
               </SortableColumnHeader>
-              <Table.HeaderCell>{getTranslation("Actions")}</Table.HeaderCell>
+              <Table.HeaderCell>{this.context("Actions")}</Table.HeaderCell>
             </Table.Row>
           </Table.Header>
 
@@ -299,6 +300,8 @@ class Files extends React.Component {
     );
   }
 }
+
+Files.contextType = TranslationContext;
 
 Files.propTypes = {
   data: PropTypes.shape({

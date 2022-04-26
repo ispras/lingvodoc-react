@@ -1,8 +1,9 @@
 import React, { PureComponent } from "react";
 import { Accordion, Checkbox, Icon } from "semantic-ui-react";
-import { getTranslation } from "api/i18n";
 import { memoize } from "lodash";
 import PropTypes from "prop-types";
+
+import TranslationContext from "Layout/TranslationContext";
 
 import AreaGroup from "./Group";
 
@@ -178,7 +179,7 @@ class AreaGroupsSelect extends PureComponent {
       <Accordion className={isActive ? "area-groups-select active" : "area-groups-select"}>
         <Accordion.Title active={activeIndex === 0} index={0} onClick={this.handleClick}>
           <Icon name="dropdown" />
-          {getTranslation("Choose groups for areas")}
+          {this.context("Choose groups for areas")}
         </Accordion.Title>
         <Accordion.Content active={activeIndex === 0}>
           {data.map(group => (
@@ -192,13 +193,13 @@ class AreaGroupsSelect extends PureComponent {
             />
           ))}
           {data.length === 0 ? (
-            <strong>{getTranslation("No groups to select")}</strong>
+            <strong>{this.context("No groups to select")}</strong>
           ) : (
             <div className="area-groups-select__group area-groups-select__group_all">
               <Checkbox
                 toggle
                 checked={selectedAll}
-                label={getTranslation("Select all")}
+                label={this.context("Select all")}
                 onChange={this.onSelectAllChange}
                 disabled={!isActive}
               />
@@ -209,6 +210,8 @@ class AreaGroupsSelect extends PureComponent {
     );
   }
 }
+
+AreaGroupsSelect.contextType = TranslationContext;
 
 AreaGroupsSelect.propTypes = {
   data: PropTypes.object.isRequired,

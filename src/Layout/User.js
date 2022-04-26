@@ -1,24 +1,21 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { Dropdown, Icon, Menu } from "semantic-ui-react";
 import { useApolloClient } from "@apollo/client";
 import PropTypes from "prop-types";
 
-import { getTranslation } from "api/i18n";
 import { getId, getUser, signOut } from "api/user";
 import EditUserModal from "components/EditUserModal";
 import SignInModal from "components/SignInModal";
 import SignUpModal from "components/SignUpModal";
 import { setIsAuthenticated } from "ducks/auth";
 import { openModal as openBanModal } from "ducks/ban";
-import { setUser } from "ducks/user";
+import { requestUser, setError, setUser } from "ducks/user";
+import TranslationContext from "Layout/TranslationContext";
 import { startTrackUser, stopTrackUser } from "utils/matomo";
 
 import imageUser from "../images/user.svg";
-
-let requestUserForId = getId();
-let userRequested = false;
 
 const spinner = (
   <Menu.Item className="top_menu">
@@ -30,6 +27,7 @@ const spinner = (
 
 const Anonymous = () => {
   const [modal, setModal] = useState();
+  const getTranslation = useContext(TranslationContext);
 
   return (
     <>
@@ -75,6 +73,8 @@ const Signed = ({ user }) => {
   const [editModal, setEditModal] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
 
+  const getTranslation = useContext(TranslationContext);
+
   const logoutUser = useCallback(async () => {
     setLoggingOut(true);
     const response = await signOut();
@@ -82,8 +82,6 @@ const Signed = ({ user }) => {
       setLoggingOut(false);
       stopTrackUser();
       navigate("/");
-      requestUserForId = undefined;
-      userRequested = false;
       dispatch(setUser({}));
       dispatch(setIsAuthenticated({ isAuthenticated: false }));
       client.cache.reset();
@@ -91,7 +89,7 @@ const Signed = ({ user }) => {
       setLoggingOut(false);
       window.logger.err(getTranslation("Could not sign out"));
     }
-  }, [client, dispatch, navigate]);
+  }, [client, dispatch, navigate, getTranslation]);
 
   if (loggingOut) {
     return spinner;
@@ -145,11 +143,10 @@ Signed.propTypes = {
 };
 
 const UserDropdown = () => {
-  const user = useSelector(state => state.user.user);
+  const userInfo = useSelector(state => state.user);
   const dispatch = useDispatch();
 
-  const [, setRequestingUser] = useState(false);
-  const [error, setError] = useState(false);
+  const getTranslation = useContext(TranslationContext);
 
   useEffect(() => {
     const fetchUserInformation = async () => {
@@ -160,22 +157,21 @@ const UserDropdown = () => {
         dispatch(setIsAuthenticated({ isAuthenticated: true }));
       } else {
         window.logger.err(getTranslation("Could not get user information"));
-        setError(true);
+        dispatch(setError());
       }
     };
-    if (!userRequested && requestUserForId !== undefined) {
-      userRequested = true;
-      setRequestingUser(true);
+    if (getId() && !userInfo.user.id && !userInfo.loading && !userInfo.error) {
+      dispatch(requestUser());
       fetchUserInformation();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (userRequested && user.id === undefined && !error) {
+  if (userInfo.loading) {
     return spinner;
   }
 
-  return user.id === undefined ? <Anonymous /> : <Signed user={user} />;
+  return userInfo.user.id === undefined ? <Anonymous /> : <Signed user={userInfo.user} />;
 };
 
 export default UserDropdown;

@@ -47,24 +47,24 @@ export const languageTreeSourceQuery = gql`
     language_tree {
       id
       parent_id
-      translation
+      translations
       created_at
       translation_gist_id
     }
     dictionaries {
       id
       parent_id
-      translation
+      translations
     }
     perspectives {
       id
       parent_id
-      translation
+      translations
     }
     perspective(id: $perspectiveId) {
       id
       parent_id
-      translation
+      translations
       columns {
         id
         parent_id

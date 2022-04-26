@@ -14,14 +14,15 @@ import {
 } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql, withApollo } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 import Immutable, { fromJS } from "immutable";
 import { drop, isEqual, take } from "lodash";
 import PropTypes from "prop-types";
 import { branch, compose, pure, renderNothing, withProps, withReducer } from "recompose";
 import styled from "styled-components";
 
+import { chooseTranslation as T } from "api/i18n";
 import { LexicalEntryView, queryLexicalEntries, queryPerspective } from "components/PerspectiveView";
+import TranslationContext from "Layout/TranslationContext";
 import { compositeIdToString as id2str } from "utils/compositeId";
 
 import Pagination from "./Pagination";
@@ -215,7 +216,7 @@ class MergeSettings extends React.Component {
       }
     }).then(
       () => {
-        window.logger.suc(getTranslation("Merged successfully"));
+        window.logger.suc(this.context("Merged successfully"));
 
         result_map[group_str] = "success";
 
@@ -313,7 +314,7 @@ class MergeSettings extends React.Component {
         groupList: groups
       }
     }).then(() => {
-      window.logger.suc(getTranslation("Merge task created successfully"));
+      window.logger.suc(this.context("Merge task created successfully"));
     });
   }
 
@@ -566,14 +567,13 @@ class MergeSettings extends React.Component {
     const page = settings.get("page");
 
     const {
-      all_fields: allFields,
       perspective: { columns }
     } = data;
 
     const fieldOptions = columns.map(c => {
-      const field = allFields.find(f => isEqual(c.field_id, f.id));
+      const field = c.field;
       return {
-        text: field.translation,
+        text: T(field.translations),
         value: JSON.stringify(field.id)
       };
     });
@@ -590,7 +590,7 @@ class MergeSettings extends React.Component {
     return (
       <div>
         <Segment>
-          <Header>{getTranslation("Entity matching algorithm")}</Header>
+          <Header>{this.context("Entity matching algorithm")}</Header>
 
           <List>
             <List.Item>
@@ -598,7 +598,7 @@ class MergeSettings extends React.Component {
                 radio
                 name="mode"
                 value="simple"
-                label={getTranslation("Simple")}
+                label={this.context("Simple")}
                 checked={mode === "simple"}
                 onChange={(e, { value }) => dispatch({ type: "SET_MODE", payload: value })}
               />
@@ -608,7 +608,7 @@ class MergeSettings extends React.Component {
                 radio
                 name="mode"
                 value="fields"
-                label={getTranslation("With field selection")}
+                label={this.context("With field selection")}
                 checked={mode === "fields"}
                 onChange={(e, { value }) => dispatch({ type: "SET_MODE", payload: value })}
               />
@@ -618,7 +618,7 @@ class MergeSettings extends React.Component {
           {mode === "fields" && (
             <Container className="lingvo-container_margin-auto">
               {fields.size === 0 && (
-                <Segment textAlign="center">{getTranslation("No fields, click button below to add a new one")}</Segment>
+                <Segment textAlign="center">{this.context("No fields, click button below to add a new one")}</Segment>
               )}
               {fields.map((e, i) => (
                 <FieldBlock key={i}>
@@ -642,7 +642,7 @@ class MergeSettings extends React.Component {
                     </List.Item>
                     <List.Item>
                       <Input
-                        label={getTranslation("Levenshtein distance limit for entity content matching")}
+                        label={this.context("Levenshtein distance limit for entity content matching")}
                         value={
                           Math.round(e.levenshtein) == e.levenshtein ? `${e.levenshtein.toString()}.0` : e.levenshtein
                         }
@@ -654,7 +654,7 @@ class MergeSettings extends React.Component {
                     </List.Item>
                     <List.Item>
                       <Checkbox
-                        label={getTranslation("Split contents of the field on whitespace before matching")}
+                        label={this.context("Split contents of the field on whitespace before matching")}
                         checked={e.split_space}
                         onChange={(_e, { checked }) =>
                           dispatch({ type: "SET_WHITESPACE_FLAG", payload: { index: i, checked } })
@@ -663,7 +663,7 @@ class MergeSettings extends React.Component {
                     </List.Item>
                     <List.Item>
                       <Checkbox
-                        label={getTranslation("Split contents of the field on punctuation before matching")}
+                        label={this.context("Split contents of the field on punctuation before matching")}
                         checked={e.split_punctuation}
                         onChange={(_e, { checked }) =>
                           dispatch({ type: "SET_PUNCTUATION_FLAG", payload: { index: i, checked } })
@@ -674,14 +674,14 @@ class MergeSettings extends React.Component {
                 </FieldBlock>
               ))}
               <Container textAlign="center">
-                <Button basic content={getTranslation("Add field")} onClick={() => dispatch({ type: "ADD_FIELD" })} />
+                <Button basic content={this.context("Add field")} onClick={() => dispatch({ type: "ADD_FIELD" })} />
               </Container>
             </Container>
           )}
 
           {mode === "simple" && (
             <Input
-              label={getTranslation("Entity matching threshold")}
+              label={this.context("Entity matching threshold")}
               value={Math.round(threshold) == threshold ? `${threshold.toString()}.0` : threshold}
               onChange={(e, { value }) => dispatch({ type: "SET_THRESHOLD", payload: value })}
               className="label-input-adaptive"
@@ -692,7 +692,7 @@ class MergeSettings extends React.Component {
             <div style={{ marginTop: "0.75em" }}>
               <Button
                 positive
-                content={getTranslation("View suggestions")}
+                content={this.context("View suggestions")}
                 onClick={this.getSuggestions}
                 disabled={this.state.loading}
               />
@@ -703,7 +703,7 @@ class MergeSettings extends React.Component {
         {this.state.loading && (
           <Segment>
             <Container textAlign="center">
-              {getTranslation("Loading suggestions...")}
+              {this.context("Loading suggestions...")}
               <div style={{ marginTop: "2em" }}>
                 <Header as="h4" icon>
                   <Icon name="spinner" loading />
@@ -719,7 +719,7 @@ class MergeSettings extends React.Component {
               <List>
                 <List.Item>
                   <Checkbox
-                    label={getTranslation("Publish result of entity merge if any merged entity is published")}
+                    label={this.context("Publish result of entity merge if any merged entity is published")}
                     checked={publishedAny}
                     onChange={(e, { checked }) => dispatch({ type: "SET_MERGE_PUBLISHED_MODE", payload: checked })}
                   />
@@ -729,7 +729,7 @@ class MergeSettings extends React.Component {
                   <Button
                     disabled={this.state.error_message}
                     size="small"
-                    content={getTranslation("Select all on current page")}
+                    content={this.context("Select all on current page")}
                     onClick={() => this.entrySelectAllPage(page, group_index_shift)}
                   />
                   <Button
@@ -739,8 +739,8 @@ class MergeSettings extends React.Component {
                     size="small"
                     content={
                       page_state == "merging"
-                        ? getTranslation("Merging selected on current page...")
-                        : getTranslation("Merge selected on current page")
+                        ? this.context("Merging selected on current page...")
+                        : this.context("Merge selected on current page")
                     }
                     onClick={() => this.mergeSelectedPage(page, group_index_shift)}
                   />
@@ -751,14 +751,14 @@ class MergeSettings extends React.Component {
                     disabled
                     positive
                     size="small"
-                    content={getTranslation('Merge all')}
+                    content={this.context('Merge all')}
                     onClick={this.mergeAll}
                   />
                 </List.Item>*/}
               </List>
             )}
 
-            {groups.length === 0 && <Container textAlign="center">{getTranslation("No suggestions")}</Container>}
+            {groups.length === 0 && <Container textAlign="center">{this.context("No suggestions")}</Container>}
 
             {groups.map((group, i) => {
               const index = group_index_shift + i;
@@ -805,7 +805,7 @@ class MergeSettings extends React.Component {
               return (
                 <div key={i}>
                   <Header disabled={!!this.state.error_message || attached || empty_flag}>
-                    {`${getTranslation("Group")} #${index}, ${getTranslation("confidence")}: ${
+                    {`${this.context("Group")} #${index}, ${this.context("confidence")}: ${
                       group.confidence.toFixed(4).length < group.confidence.toString().length
                         ? group.confidence.toFixed(4)
                         : group.confidence.toString()
@@ -833,21 +833,19 @@ class MergeSettings extends React.Component {
                   <Container textAlign="center">
                     <div style={{ marginTop: "0.75em" }}>
                       {empty_flag ? (
-                        <Message>{getTranslation("Group doesn't have any unmerged lexical entries left.")}</Message>
+                        <Message>{this.context("Group doesn't have any unmerged lexical entries left.")}</Message>
                       ) : attached ? (
-                        <Message>{getTranslation("Attached to another group.")}</Message>
+                        <Message>{this.context("Attached to another group.")}</Message>
                       ) : result == "merging" ? (
-                        <Button basic positive disabled content={getTranslation("Merging...")} />
+                        <Button basic positive disabled content={this.context("Merging...")} />
                       ) : result == "success" ? (
                         <Message positive>
-                          <Message.Header>{getTranslation("Merged successfully")}</Message.Header>
+                          <Message.Header>{this.context("Merged successfully")}</Message.Header>
                         </Message>
                       ) : result == "error" ? (
                         <Message negative>
-                          <Message.Header>{getTranslation("Merge error")}</Message.Header>
-                          <p>
-                            {getTranslation("Failed to merge selected lexical entries, please contact developers.")}
-                          </p>
+                          <Message.Header>{this.context("Merge error")}</Message.Header>
+                          <p>{this.context("Failed to merge selected lexical entries, please contact developers.")}</p>
                           <p
                             style={{
                               display: "inline-block",
@@ -866,12 +864,12 @@ class MergeSettings extends React.Component {
                         </Message>
                       ) : this.state.error_message ? (
                         <Message>
-                          {getTranslation("Merges are disabled due to an error, please contact developers.")}
+                          {this.context("Merges are disabled due to an error, please contact developers.")}
                         </Message>
                       ) : (
                         <Button
                           positive
-                          content={getTranslation("Merge group")}
+                          content={this.context("Merge group")}
                           onClick={() => this.mergeGroup(index, entry_list, selected_id_list)}
                           disabled={selected_id_list.length < 2}
                         />
@@ -894,6 +892,8 @@ class MergeSettings extends React.Component {
     );
   }
 }
+
+MergeSettings.contextType = TranslationContext;
 
 MergeSettings.propTypes = {
   id: PropTypes.array.isRequired,

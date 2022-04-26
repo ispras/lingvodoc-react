@@ -3,7 +3,6 @@ import { connect } from "react-redux";
 import { Button, Divider, Modal } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 import PropTypes from "prop-types";
 import { compose } from "recompose";
 import { bindActionCreators } from "redux";
@@ -12,6 +11,7 @@ import { languagesQuery } from "backend";
 import EditLanguageMetadata from "components/EditLanguageMetadata";
 import Translations from "components/Translation";
 import { closeModal } from "ducks/language";
+import TranslationContext from "Layout/TranslationContext";
 
 class CreateLanguageModal extends React.Component {
   constructor(props) {
@@ -58,25 +58,23 @@ class CreateLanguageModal extends React.Component {
         onClose={actions.closeModal}
         className="lingvo-modal2"
       >
-        <Modal.Header>{getTranslation("Create language")}</Modal.Header>
+        <Modal.Header>{this.context("Create language")}</Modal.Header>
         <Modal.Content>
-          <h4>{getTranslation("Translations")}</h4>
+          <h4>{this.context("Translations")}</h4>
           <Translations onChange={translations => this.setState({ translations })} />
           <Divider />
           <EditLanguageMetadata mode="create" onChange={metadata => this.setState({ metadata })} />
         </Modal.Content>
         <Modal.Actions>
-          <Button content={getTranslation("Save")} onClick={this.saveLanguage} className="lingvo-button-violet" />
-          <Button
-            content={getTranslation("Cancel")}
-            onClick={actions.closeModal}
-            className="lingvo-button-basic-black"
-          />
+          <Button content={this.context("Save")} onClick={this.saveLanguage} className="lingvo-button-violet" />
+          <Button content={this.context("Cancel")} onClick={actions.closeModal} className="lingvo-button-basic-black" />
         </Modal.Actions>
       </Modal>
     );
   }
 }
+
+CreateLanguageModal.contextType = TranslationContext;
 
 CreateLanguageModal.propTypes = {
   actions: PropTypes.shape({

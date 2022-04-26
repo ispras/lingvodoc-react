@@ -1,14 +1,14 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { connect } from "react-redux";
 import { Label } from "semantic-ui-react";
 import { graphql } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 import PropTypes from "prop-types";
 import { compose } from "recompose";
 import { bindActionCreators } from "redux";
 
 import Placeholder from "components/Placeholder";
 import { setCheckStateTreeFlat, setDataForTree, setDefaultGroup, setMainGroupLanguages } from "ducks/distanceMap";
+import TranslationContext from "Layout/TranslationContext";
 
 import checkCoordAndLexicalEntries from "./checkCoordinatesAndLexicalEntries";
 import { allFieldQuery, dictionaryWithPerspectivesQuery } from "./graphql";
@@ -25,6 +25,33 @@ const DistanceMap = ({
   mainGroupDictionaresAndLanguages,
   user
 }) => {
+  const getTranslation = useContext(TranslationContext);
+
+  const {
+    language_tree: languageTree,
+    dictionaries,
+    loading,
+    perspectives,
+    is_authenticated: isAuthenticated
+  } = dictionaryWithPerspectives;
+
+  useEffect(() => {
+    if (!dataForTree.dictionaries) {
+      actions.setDataForTree({
+        ...dictionaryWithPerspectives,
+        allField: allField.all_fields,
+        id: selected.id
+      });
+    }
+  });
+
+  useEffect(() => {
+    if (mainGroupDictionaresAndLanguages.length !== 0) {
+      actions.setMainGroupLanguages({});
+      actions.setCheckStateTreeFlat({});
+    }
+  });
+
   if (!user || user.id !== 1) {
     return (
       <div style={{ marginTop: "1em" }}>
@@ -35,27 +62,9 @@ const DistanceMap = ({
     );
   }
 
-  const {
-    language_tree: languageTree,
-    dictionaries,
-    loading,
-    perspectives,
-    is_authenticated: isAuthenticated
-  } = dictionaryWithPerspectives;
-
   if (loading && !dataForTree.dictionaries) {
     return <Placeholder />;
   }
-
-  useEffect(() => {
-    if (!dataForTree.dictionaries) {
-      actions.setDataForTree({
-        ...dictionaryWithPerspectives,
-        allField: allField.all_fields,
-        id: selected.id
-      });
-    }
-  }, []);
 
   if (selected.id !== dataForTree.idLocale) {
     if (!dictionaries) {
@@ -67,13 +76,6 @@ const DistanceMap = ({
       return <Placeholder />;
     }
   }
-
-  useEffect(() => {
-    if (mainGroupDictionaresAndLanguages.length !== 0) {
-      actions.setMainGroupLanguages({});
-      actions.setCheckStateTreeFlat({});
-    }
-  }, []);
 
   const newDictionaries = checkCoordAndLexicalEntries(dictionaries || dataForTree.dictionaries);
   const newLanguagesTree = languageTree || dataForTree.languageTree;

@@ -4,6 +4,6 @@ import Component from "components/Languages";
 
 export default () => (
   <div className="background-content background-content_fix-height">
-    <Component />
+    <Component updatableTOC={true} />
   </div>
 );

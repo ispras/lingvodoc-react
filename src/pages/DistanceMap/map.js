@@ -4,15 +4,16 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Button, Label, Segment } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql, withApollo } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 import L from "leaflet";
 import HeatMapOverlay from "leaflet-heatmap";
 import PropTypes from "prop-types";
 import { compose } from "recompose";
 import { bindActionCreators } from "redux";
 
+import { chooseTranslation as T } from "api/i18n";
 import Placeholder from "components/Placeholder";
 import { setDefaultGroup, setDictionariesGroup } from "ducks/distanceMap";
+import TranslationContext from "Layout/TranslationContext";
 
 import icon from "../../images/point.png";
 
@@ -163,13 +164,13 @@ class MapAreas extends PureComponent {
     const data = this.dictionariesWithColors.map(el => {
       const lat = Number(el.additional_metadata.location.lat);
       const lng = Number(el.additional_metadata.location.lng);
-      const { translation, distanceDict, normolizeDistanceNumber } = el;
+      const { translations, distanceDict, normolizeDistanceNumber } = el;
 
       if (maxCount < normolizeDistanceNumber) {
         maxCount = normolizeDistanceNumber;
       }
 
-      L.marker([lat, lng], { icon: pointIcon, title: `${translation}  distance:${distanceDict}` }).addTo(this.map);
+      L.marker([lat, lng], { icon: pointIcon, title: `${T(translations)}  distance:${distanceDict}` }).addTo(this.map);
 
       return { lat, lng, count: normolizeDistanceNumber };
     });
@@ -198,7 +199,7 @@ class MapAreas extends PureComponent {
       return (
         <div style={{ marginTop: "1em" }}>
           <Label>
-            {getTranslation("For the time being Distance Map functionality is available only for the administrator.")}
+            {this.context("For the time being Distance Map functionality is available only for the administrator.")}
           </Label>
         </div>
       );
@@ -208,7 +209,7 @@ class MapAreas extends PureComponent {
       <div className="page-content">
         {!this.state.statusRequest && (
           <div>
-            <Segment>{getTranslation("No data found for analysis, please select another dictionary")}</Segment>
+            <Segment>{this.context("No data found for analysis, please select another dictionary")}</Segment>
           </div>
         )}
         {this.state.statusMap === false && this.state.statusRequest && <Placeholder />}
@@ -227,10 +228,10 @@ class MapAreas extends PureComponent {
         {(this.state.statusMap || !this.state.statusRequest) && (
           <div>
             <Button style={ButtonBack} onClick={this.returnToTree}>
-              {getTranslation("Return to tree")}
+              {this.context("Return to tree")}
             </Button>
             <Button style={ButtonBack} onClick={this.back}>
-              {getTranslation("Back")}
+              {this.context("Back")}
             </Button>
           </div>
         )}
@@ -238,6 +239,8 @@ class MapAreas extends PureComponent {
     );
   }
 }
+
+MapAreas.contextType = TranslationContext;
 
 MapAreas.propTypes = {
   actions: PropTypes.object.isRequired,

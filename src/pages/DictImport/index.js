@@ -3,7 +3,6 @@ import { connect } from "react-redux";
 import { Button, Message, Step } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 import { fromJS, Map } from "immutable";
 import PropTypes from "prop-types";
 import { compose } from "recompose";
@@ -22,6 +21,7 @@ import {
   toggleAddColumn,
   updateColumn
 } from "ducks/dictImport";
+import TranslationContext from "Layout/TranslationContext";
 
 import { buildExport } from "./api";
 import ColumnMapper from "./ColumnMapper";
@@ -34,7 +34,7 @@ export const fieldsQuery = gql`
   query field {
     all_fields {
       id
-      translation
+      translations
       data_type
       data_type_translation_gist_id
     }
@@ -173,28 +173,28 @@ class Info extends React.Component {
         <Step.Group widths={4}>
           <Step link active={step === "LINKING"} onClick={this.onStepClick("LINKING")}>
             <Step.Content>
-              <Step.Title>{getTranslation("Linking")}</Step.Title>
-              <Step.Description>{getTranslation("Link columns from files with each other")}</Step.Description>
+              <Step.Title>{this.context("Linking")}</Step.Title>
+              <Step.Description>{this.context("Link columns from files with each other")}</Step.Description>
             </Step.Content>
           </Step>
 
           <Step link active={step === "COLUMNS"} onClick={this.onStepClick("COLUMNS")}>
             <Step.Content>
-              <Step.Title>{getTranslation("Columns Mapping")}</Step.Title>
-              <Step.Description>{getTranslation("Map linked columns to LingvoDoc types")}</Step.Description>
+              <Step.Title>{this.context("Columns Mapping")}</Step.Title>
+              <Step.Description>{this.context("Map linked columns to LingvoDoc types")}</Step.Description>
             </Step.Content>
           </Step>
 
           <Step link active={step === "LANGUAGES"} onClick={this.onStepClick("LANGUAGES")}>
             <Step.Content>
-              <Step.Title>{getTranslation("Language Selection")}</Step.Title>
-              <Step.Description>{getTranslation("Map dictionaries to LingvoDoc languages")}</Step.Description>
+              <Step.Title>{this.context("Language Selection")}</Step.Title>
+              <Step.Description>{this.context("Map dictionaries to LingvoDoc languages")}</Step.Description>
             </Step.Content>
           </Step>
 
           <Step link active={step === "FINISH"}>
             <Step.Content>
-              <Step.Title>{getTranslation("Finish")}</Step.Title>
+              <Step.Title>{this.context("Finish")}</Step.Title>
             </Step.Content>
           </Step>
         </Step.Group>
@@ -233,9 +233,9 @@ class Info extends React.Component {
           )}
           {step === "FINISH" && (
             <Message>
-              <Message.Header>{getTranslation("Conversion is in progress...")}</Message.Header>
+              <Message.Header>{this.context("Conversion is in progress...")}</Message.Header>
               <Message.Content>
-                {getTranslation(
+                {this.context(
                   "Your dictionaries are scheduled for conversion. Please, check tasks tab for conversion status."
                 )}
               </Message.Content>
@@ -249,12 +249,12 @@ class Info extends React.Component {
               className="lingvo-button-lite-violet lingvo-button-lite-violet_bradius-bottom"
               onClick={this.onSubmit}
             >
-              {getTranslation("Submit")}
+              {this.context("Submit")}
             </Button>
           ) : (
             <Message style={{ margin: 0, textAlign: "center" }}>
               <Message.Content>
-                {getTranslation("Please select parent language for each Starling dictionary.")}
+                {this.context("Please select parent language for each Starling dictionary.")}
               </Message.Content>
             </Message>
           )
@@ -264,21 +264,23 @@ class Info extends React.Component {
             className="lingvo-button-lite-violet lingvo-button-lite-violet_bradius-bottom"
             onClick={this.onNextClick}
           >
-            {getTranslation("Next Step")}
+            {this.context("Next Step")}
           </Button>
         ) : step === "LINKING" ? (
           <Message style={{ margin: 0, textAlign: "center" }}>
-            <Message.Content>{getTranslation("Please use at least one Starling column.")}</Message.Content>
+            <Message.Content>{this.context("Please use at least one Starling column.")}</Message.Content>
           </Message>
         ) : step === "COLUMNS" ? (
           <Message style={{ margin: 0, textAlign: "center" }}>
-            <Message.Content>{getTranslation("Please map all Starling columns to Lingvodoc types.")}</Message.Content>
+            <Message.Content>{this.context("Please map all Starling columns to Lingvodoc types.")}</Message.Content>
           </Message>
         ) : null}
       </div>
     );
   }
 }
+
+Info.contextType = TranslationContext;
 
 function mapStateToProps(state) {
   return {

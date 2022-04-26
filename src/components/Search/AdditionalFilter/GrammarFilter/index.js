@@ -1,7 +1,8 @@
 import React, { PureComponent } from "react";
 import { Button, Grid } from "semantic-ui-react";
-import { getTranslation } from "api/i18n";
 import PropTypes from "prop-types";
+
+import TranslationContext from "Layout/TranslationContext";
 
 import grammaticalSignsRaw from "./grammaticalSigns.json";
 import GridGenerator from "./GridGenerator";
@@ -68,7 +69,7 @@ class GrammarFilter extends PureComponent {
     return data;
   }
 
-  static getGrammaticalSigns() {
+  static getGrammaticalSigns(getTranslation) {
     const grammaticalSigns = grammaticalSignsRaw.map(grammaticalGroup => {
       return {
         name: getTranslation(grammaticalGroup.name),
@@ -87,7 +88,7 @@ class GrammarFilter extends PureComponent {
   constructor() {
     super();
 
-    this.grammaticalSigns = this.constructor.getGrammaticalSigns();
+    this.grammaticalSigns = null;
     this.onCheckedChange = this.onCheckedChange.bind(this);
     this.checkAll = this.checkAll.bind(this);
     this.uncheckAll = this.uncheckAll.bind(this);
@@ -122,8 +123,10 @@ class GrammarFilter extends PureComponent {
 
   getGridData(rowsData) {
     const { checked } = this.props;
-    const { grammaticalSigns } = this;
-    const grammaticalSignsData = this.constructor.updateSignsWithChecked(grammaticalSigns, checked);
+    if (this.grammaticalSigns == null) {
+      this.grammaticalSigns = this.constructor.getGrammaticalSigns(this.context);
+    }
+    const grammaticalSignsData = this.constructor.updateSignsWithChecked(this.grammaticalSigns, checked);
 
     return rowsData.map(row => {
       const resultRow = {};
@@ -190,8 +193,8 @@ class GrammarFilter extends PureComponent {
 
   render() {
     const grammarBlock = this.renderSigns();
-    const uncheckAllButtonText = getTranslation("Uncheck all");
-    const checkAllButtonText = getTranslation("Check all");
+    const uncheckAllButtonText = this.context("Uncheck all");
+    const checkAllButtonText = this.context("Check all");
 
     return (
       <div className={classNames.container}>
@@ -208,5 +211,7 @@ class GrammarFilter extends PureComponent {
     );
   }
 }
+
+GrammarFilter.contextType = TranslationContext;
 
 export default GrammarFilter;

@@ -3,22 +3,23 @@ import { connect } from "react-redux";
 import { Button, Checkbox, Dropdown, Grid, Icon, List } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 import { findIndex, isEqual } from "lodash";
 import PropTypes from "prop-types";
 import { compose, onlyUpdateForKeys } from "recompose";
 import { bindActionCreators } from "redux";
 
+import { chooseTranslation as T } from "api/i18n";
 import { queryPerspective } from "components/PerspectiveView";
 import { openCreateFieldModal } from "ducks/fields";
-import { compositeIdToString } from "utils/compositeId";
+import TranslationContext from "Layout/TranslationContext";
+import { compositeIdToString as id2str } from "utils/compositeId";
 
 const columnsQuery = gql`
   query ColumnsQuery($perspectiveId: LingvodocID!) {
     perspective(id: $perspectiveId) {
       id
       parent_id
-      translation
+      translations
       columns {
         id
         parent_id
@@ -31,7 +32,7 @@ const columnsQuery = gql`
     }
     all_fields {
       id
-      translation
+      translations
       data_type
     }
   }
@@ -117,17 +118,17 @@ const updateNestedMutation = gql`
 
 const NestedColumn = ({ column, columns, fields, onChange }) => {
   const nested = columns.find(({ self_id: s }) => isEqual(column.id, s));
-  const selectedValue = nested ? compositeIdToString(nested.id) : "";
+  const selectedValue = nested ? id2str(nested.id) : "";
   const options = columns
     .filter(c => !isEqual(c.id, column.id))
     .map(c => {
       const field = fields.find(f => isEqual(f.id, c.field_id));
-      return { text: field.translation, value: compositeIdToString(c.id) };
+      return { text: T(field.translations), value: id2str(c.id) };
     });
 
   // XXX: Temporary workaround
   const getChangedField = value => {
-    const newColumn = columns.find(c => isEqual(compositeIdToString(c.id), value));
+    const newColumn = columns.find(c => isEqual(id2str(c.id), value));
     return [
       {
         ...newColumn,
@@ -184,7 +185,7 @@ class C extends React.Component {
       return;
     }
 
-    const field = fields.find(f => compositeIdToString(f.id) === value);
+    const field = fields.find(f => id2str(f.id) === value);
     if (field) {
       this.setState({ field_id: field.id }, () => {
         this.update(column, field.id, column.link_id);
@@ -194,7 +195,7 @@ class C extends React.Component {
 
   onLinkChange(value) {
     const { column, perspectives } = this.props;
-    const perspective = perspectives.find(p => compositeIdToString(p.id) === value);
+    const perspective = perspectives.find(p => id2str(p.id) === value);
     this.setState({ link_id: perspective.id }, () => {
       this.update(column, column.field_id, perspective.id);
     });
@@ -293,15 +294,15 @@ class C extends React.Component {
     const { column, columns, fields, perspectives } = this.props;
 
     const field = fields.find(f => isEqual(f.id, this.state.field_id));
-    const options = fields.map(f => ({ text: f.translation, value: compositeIdToString(f.id) }));
+    const options = fields.map(f => ({ text: T(f.translations), value: id2str(f.id) }));
 
     options.push({
-      text: getTranslation("Add new field..."),
+      text: this.context("Add new field..."),
       value: "new_field"
     });
 
-    const availablePerspectives = perspectives.map(p => ({ text: p.translation, value: compositeIdToString(p.id) }));
-    const currentField = compositeIdToString(this.state.field_id);
+    const availablePerspectives = perspectives.map(p => ({ text: T(p.translations), value: id2str(p.id) }));
+    const currentField = id2str(this.state.field_id);
 
     return (
       <span>
@@ -316,7 +317,7 @@ class C extends React.Component {
         {field && field.data_type === "Link" && (
           <Dropdown
             selection
-            defaultValue={this.state.link_id ? compositeIdToString(this.state.link_id) : null}
+            defaultValue={this.state.link_id ? id2str(this.state.link_id) : null}
             options={availablePerspectives}
             onChange={(a, { value }) => this.onLinkChange(value)}
           />
@@ -328,7 +329,7 @@ class C extends React.Component {
             <Checkbox
               defaultChecked={this.state.hasNestedField}
               onChange={(e, { checked }) => this.onNestedCheckboxChange(checked)}
-              label={getTranslation("has linked field")}
+              label={this.context("has linked field")}
             />
           )}
         {this.state.hasNestedField && (
@@ -338,6 +339,8 @@ class C extends React.Component {
     );
   }
 }
+
+C.contextType = TranslationContext;
 
 C.propTypes = {
   column: PropTypes.object.isRequired,
@@ -503,13 +506,15 @@ class Columns extends React.Component {
 
         <Button
           basic
-          content={getTranslation("Add new column")}
+          content={this.context("Add new column")}
           onClick={() => this.onCreate(allFields.find(f => f.data_type === "Text"))}
         />
       </div>
     );
   }
 }
+
+Columns.contextType = TranslationContext;
 
 Columns.propTypes = {
   perspectiveId: PropTypes.array.isRequired,

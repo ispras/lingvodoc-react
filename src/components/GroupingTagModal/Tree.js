@@ -1,10 +1,11 @@
 import React from "react";
 import SortableTree, { map } from "react-sortable-tree";
-import { getTranslation } from "api/i18n";
 import PropTypes from "prop-types";
 import { pure } from "recompose";
 
+import { chooseTranslation as T } from "api/i18n";
 import { LexicalEntryLink } from "components/Search/LanguageTree";
+import TranslationContext from "Layout/TranslationContext";
 
 class Tree extends React.Component {
   constructor(props) {
@@ -24,7 +25,7 @@ class Tree extends React.Component {
 
   generateNodeProps({ node }) {
     const { actions, entitiesMode, mode } = this.props;
-    const defaultTitle = node.translation || getTranslation("None");
+    const defaultTitle = T(node.translations) || this.context("None");
     const onlyViewMode = true;
     const title =
       node.type === "perspective" ? (
@@ -56,6 +57,8 @@ class Tree extends React.Component {
     );
   }
 }
+
+Tree.contextType = TranslationContext;
 
 Tree.propTypes = {
   resultsTree: PropTypes.object.isRequired,

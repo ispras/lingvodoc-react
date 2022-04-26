@@ -3,14 +3,15 @@ import { connect } from "react-redux";
 import { Breadcrumb, Button, Checkbox, Divider, Dropdown, Icon, Input, List, Modal, Select } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql, withApollo } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 import { fromJS } from "immutable";
 import { isEqual, map } from "lodash";
 import PropTypes from "prop-types";
 import { branch, compose, renderNothing } from "recompose";
 import { bindActionCreators } from "redux";
 
+import { chooseTranslation as T } from "api/i18n";
 import { closeModal } from "ducks/phonology";
+import TranslationContext from "Layout/TranslationContext";
 import { assignDictsToTree, buildDictTrees, buildLanguageTree } from "pages/Search/treeBuilder";
 import { compositeIdToString as id2str } from "utils/compositeId";
 
@@ -135,7 +136,9 @@ class PhonologyModal extends React.Component {
       this.state.perspective_list.push([
         perspective,
         tree
-          .map(value => (value.hasOwnProperty("status") ? `${value.translation} (${value.status})` : value.translation))
+          .map(value =>
+            value.hasOwnProperty("status") ? `${T(value.translations)} (${value.status})` : T(value.translations)
+          )
           .reverse()
           .join(" \u203a ")
       ]);
@@ -183,8 +186,8 @@ class PhonologyModal extends React.Component {
 
     function f(object) {
       const object_str = object.hasOwnProperty("status")
-        ? `${object.translation} (${object.status})`
-        : object.translation;
+        ? `${T(object.translations)} (${object.status})`
+        : T(object.translations);
 
       tree_path.push(object_str);
 
@@ -425,7 +428,7 @@ class PhonologyModal extends React.Component {
       perspectiveData.textFieldsOptions = perspectiveData.textFields.map((field, index) => ({
         key: index,
         value: id2str(field.id),
-        text: field.translation
+        text: T(field.translations)
       }));
 
       /* Saving perspective info. */
@@ -571,7 +574,7 @@ class PhonologyModal extends React.Component {
     const textFieldsOptions = this.textFields.map((f, k) => ({
       key: k,
       value: id2str(f.id),
-      text: f.translation
+      text: T(f.translations)
     }));
 
     const linkPerspectiveDataList = this.state.linkPerspectiveDataList.filter(
@@ -582,7 +585,7 @@ class PhonologyModal extends React.Component {
       <div>
         <Modal closeIcon onClose={this.props.closeModal} dimmer open size="fullscreen" className="lingvo-modal2">
           <Modal.Header>
-            {getTranslation(
+            {this.context(
               this.props.mode == "statistical_distance" ? "Phonological statistical distance" : "Phonology"
             )}
           </Modal.Header>
@@ -592,7 +595,7 @@ class PhonologyModal extends React.Component {
               <List.Item>
                 <Checkbox
                   radio
-                  label={getTranslation("All vowels.")}
+                  label={this.context("All vowels.")}
                   name="vowelsRadioGroup"
                   value="all"
                   checked={this.state.vowelsMode === "all"}
@@ -603,7 +606,7 @@ class PhonologyModal extends React.Component {
               <List.Item>
                 <Checkbox
                   radio
-                  label={getTranslation("Only longest vowels and vowels with highest intensity.")}
+                  label={this.context("Only longest vowels and vowels with highest intensity.")}
                   name="vowelsRadioGroup"
                   value="longest"
                   checked={this.state.vowelsMode === "longest"}
@@ -628,7 +631,7 @@ class PhonologyModal extends React.Component {
                 <List.Item>
                   <Checkbox
                     radio
-                    label={getTranslation("Show all translations of each word.")}
+                    label={this.context("Show all translations of each word.")}
                     name="translationsRadioGroup"
                     value="all"
                     checked={this.state.translationsMode === "all"}
@@ -639,7 +642,7 @@ class PhonologyModal extends React.Component {
                 <List.Item>
                   <Checkbox
                     radio
-                    label={getTranslation("Show only the first translation of each word.")}
+                    label={this.context("Show only the first translation of each word.")}
                     name="translationsRadioGroup"
                     value="longest"
                     checked={this.state.translationsMode === "longest"}
@@ -653,7 +656,7 @@ class PhonologyModal extends React.Component {
               <List>
                 <List.Item>
                   <Checkbox
-                    label={getTranslation("Use linked data")}
+                    label={this.context("Use linked data")}
                     checked={this.state.useLinkedData}
                     onChange={(e, { checked }) => this.handleLinkChange(checked)}
                   />
@@ -674,7 +677,7 @@ class PhonologyModal extends React.Component {
                         {map(this.linkFields, field => (
                           <List.Item key={id2str(field.id)}>
                             <Checkbox
-                              label={field.translation}
+                              label={T(field.translations)}
                               checked={this.state.selectedLinkFieldSet[id2str(field.id)]}
                               onChange={(e, { checked }) => this.handleSelectLink(field, checked)}
                             />
@@ -691,7 +694,7 @@ class PhonologyModal extends React.Component {
                                 sections={perspectiveData.tree
                                   .slice()
                                   .reverse()
-                                  .map(x => ({ key: x.id, content: x.translation, link: false }))}
+                                  .map(x => ({ key: x.id, content: T(x.translations), link: false }))}
                               />
                               <span style={{ marginLeft: "1em" }}>
                                 <Select
@@ -721,7 +724,7 @@ class PhonologyModal extends React.Component {
               <List>
                 <List.Item>
                   <Checkbox
-                    label={getTranslation("Group phonology data by markup descriptions.")}
+                    label={this.context("Group phonology data by markup descriptions.")}
                     checked={this.state.enabledGroup}
                     onChange={(e, { checked }) => this.setState({ enabledGroup: checked })}
                   />
@@ -734,7 +737,7 @@ class PhonologyModal extends React.Component {
                 <List.Item>
                   {!this.props.mode ? (
                     <Input
-                      label={getTranslation("Formant chart threshold")}
+                      label={this.context("Formant chart threshold")}
                       value={this.state.chartThreshold}
                       onChange={(e, { value }) =>
                         this.setState({
@@ -745,7 +748,7 @@ class PhonologyModal extends React.Component {
                     />
                   ) : (
                     <Input
-                      label={getTranslation("Vowel formant count threshold")}
+                      label={this.context("Vowel formant count threshold")}
                       value={this.state.chartThreshold}
                       onChange={(e, { value }) =>
                         this.setState({
@@ -762,7 +765,7 @@ class PhonologyModal extends React.Component {
               <List>
                 <List.Item>
                   <Checkbox
-                    label={getTranslation("Export phonology data to a CSV file.")}
+                    label={this.context("Export phonology data to a CSV file.")}
                     checked={this.state.enabledCsv}
                     onChange={(e, { checked }) => this.setState({ enabledCsv: checked })}
                   />
@@ -774,7 +777,7 @@ class PhonologyModal extends React.Component {
               <List>
                 <List.Item>
                   <Checkbox
-                    label={getTranslation("Choose markup tiers")}
+                    label={this.context("Choose markup tiers")}
                     checked={this.state.enabledTiers}
                     onChange={(e, { checked }) => this.handleTiersChange(checked)}
                   />
@@ -814,7 +817,7 @@ class PhonologyModal extends React.Component {
               <List>
                 <List.Item>
                   <Checkbox
-                    label={getTranslation("Keep skipped vowel interval characters")}
+                    label={this.context("Keep skipped vowel interval characters")}
                     checked={this.state.enabledKeep}
                     onChange={(e, { checked }) => this.handleKeepChange(checked)}
                   />
@@ -852,7 +855,7 @@ class PhonologyModal extends React.Component {
               <List>
                 <List.Item>
                   <Checkbox
-                    label={getTranslation("Combine with adjacent interval characters")}
+                    label={this.context("Combine with adjacent interval characters")}
                     checked={this.state.enabledJoin}
                     onChange={(e, { checked }) => this.handleJoinChange(checked)}
                   />
@@ -890,7 +893,7 @@ class PhonologyModal extends React.Component {
               <List>
                 <List.Item>
                   <Checkbox
-                    label={getTranslation("'Fast Track' formant extraction")}
+                    label={this.context("'Fast Track' formant extraction")}
                     checked={this.state.enabledFastTrack}
                     onChange={(e, { checked }) => this.setState({ enabledFastTrack: checked })}
                   />
@@ -980,6 +983,8 @@ class PhonologyModal extends React.Component {
     );
   }
 }
+
+PhonologyModal.contextType = TranslationContext;
 
 PhonologyModal.propTypes = {
   perspectiveId: PropTypes.array.isRequired,

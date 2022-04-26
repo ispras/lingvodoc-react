@@ -1,8 +1,9 @@
 import React, { PureComponent } from "react";
 import { Checkbox } from "semantic-ui-react";
-import { getTranslation } from "api/i18n";
 import { memoize } from "lodash";
 import PropTypes from "prop-types";
+
+import TranslationContext from "Layout/TranslationContext";
 
 import AreaGroupsSelect from "./AreaGroupsSelect";
 
@@ -22,12 +23,14 @@ class AreasMode extends PureComponent {
       <div className="areas-mode">
         <AreaGroupsSelect data={areasGroups} isActive={isAreasModeOn} onChange={onSelectedAreaGroupsChange} />
         <div className="areas-mode__toggle-mode">
-          <Checkbox toggle label={getTranslation("Areas mode")} checked={isAreasModeOn} onChange={onAreasModeChange} />
+          <Checkbox toggle label={this.context("Areas mode")} checked={isAreasModeOn} onChange={onAreasModeChange} />
         </div>
       </div>
     );
   }
 }
+
+AreasMode.contextType = TranslationContext;
 
 AreasMode.propTypes = {
   isAreasModeOn: PropTypes.bool.isRequired,

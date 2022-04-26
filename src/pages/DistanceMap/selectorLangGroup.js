@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button, Label, Segment } from "semantic-ui-react";
 import { withApollo } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 import { fromJS } from "immutable";
 import PropTypes from "prop-types";
 import { compose } from "recompose";
 import { bindActionCreators } from "redux";
 
+import { chooseTranslation as T } from "api/i18n";
 import Placeholder from "components/Placeholder";
 import Languages from "components/Search/AdditionalFilter/Languages";
 import {
@@ -18,6 +18,7 @@ import {
   setDictionariesGroup,
   setMainGroupLanguages
 } from "ducks/distanceMap";
+import TranslationContext from "Layout/TranslationContext";
 import { buildLanguageTree } from "pages/Search/treeBuilder";
 import { compositeIdToString } from "utils/compositeId";
 
@@ -126,14 +127,16 @@ class FilterDictionaries extends React.Component {
             selectedLanguages={selectedLanguages}
             showTree={this.state.showSearchSelectLanguages}
             filterMode={this.state.filterMode}
-            checkAllButtonText={getTranslation("Check all")}
-            uncheckAllButtonText={getTranslation("Uncheck all")}
+            checkAllButtonText={this.context("Check all")}
+            uncheckAllButtonText={this.context("Uncheck all")}
           />
         )}
       </Segment>
     );
   }
 }
+
+FilterDictionaries.contextType = TranslationContext;
 
 FilterDictionaries.propTypes = {
   newProps: PropTypes.shape({
@@ -148,8 +151,17 @@ FilterDictionaries.propTypes = {
 };
 
 function SelectorLangGroup(props) {
+  const getTranslation = useContext(TranslationContext);
+
   const location = useLocation();
   const navigate = useNavigate();
+
+  /* Initializing here due to eact-hooks/rules-of-hooks, exact same hook order. */
+
+  const { actions, dataForTree, client, mainGroupDictionaresAndLanguages, selected, user } = props;
+
+  const [mainGroupDictsAndLangs, setMainGroupDictsAndLangs] = useState(mainGroupDictionaresAndLanguages);
+  const [mainDictionary, setMainDictionary] = useState(null);
 
   useEffect(() => {
     if (!location.state) {
@@ -159,8 +171,6 @@ function SelectorLangGroup(props) {
   }, [location, navigate]);
 
   try {
-    const { actions, dataForTree, client, mainGroupDictionaresAndLanguages, selected, user } = props;
-
     if (!location.state) {
       navigate("/distance_map");
       return null;
@@ -180,8 +190,6 @@ function SelectorLangGroup(props) {
     let selectedLanguagesChecken = [];
     let rootLanguage = {};
     const arrDictionariesGroup = [];
-    const [mainGroupDictsAndLangs, setMainGroupDictsAndLangs] = useState(mainGroupDictionaresAndLanguages);
-    const [mainDictionary, setMainDictionary] = useState(null);
     const parentId = mainPerspectives[0].parent_id;
 
     client
@@ -258,7 +266,7 @@ function SelectorLangGroup(props) {
       <div className="page-content">
         {mainDictionary && (
           <div>
-            <h1 style={{ margin: "15px 0" }}>{mainDictionary.translation}</h1>
+            <h1 style={{ margin: "15px 0" }}>{T(mainDictionary.translations)}</h1>
             <FilterDictionaries
               newProps={{
                 ...props,

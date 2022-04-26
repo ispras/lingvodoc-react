@@ -2,10 +2,10 @@ import React from "react";
 import { Button, Confirm, Dimmer, Header, Icon, Modal } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 import PropTypes from "prop-types";
 import { compose } from "recompose";
 
+import TranslationContext from "Layout/TranslationContext";
 import scrollParent from "utils/scrollParent";
 
 import PropertiesView from "./PropertiesView";
@@ -308,7 +308,7 @@ class OdtMarkupModal extends React.Component {
 
     this.setState({
       confirmation: {
-        content: getTranslation("Are you sure you want to remove selected element from markup?"),
+        content: this.context("Are you sure you want to remove selected element from markup?"),
         func: () => {
           const prev = elem.previousSibling;
           let content = "";
@@ -334,7 +334,7 @@ class OdtMarkupModal extends React.Component {
 
     this.setState({
       confirmation: {
-        content: getTranslation("Are you sure you want to move selected element?"),
+        content: this.context("Are you sure you want to move selected element?"),
         func: () => {
           const prev = elem.previousSibling;
           const copiedElem = elem;
@@ -443,7 +443,7 @@ class OdtMarkupModal extends React.Component {
     if (this.state.dirty) {
       this.setState({
         confirmation: {
-          content: getTranslation("There are unsaved changes present. Are you sure you want to discard it?"),
+          content: this.context("There are unsaved changes present. Are you sure you want to discard it?"),
           func: this.props.onClose
         }
       });
@@ -492,7 +492,7 @@ class OdtMarkupModal extends React.Component {
         closeOnDimmerClick={false}
         className="lingvo-modal2"
       >
-        <Modal.Header>{getTranslation("Text markup")}</Modal.Header>
+        <Modal.Header>{this.context("Text markup")}</Modal.Header>
         <div style={{ display: "flex", flexDirection: "row" }}>
           <PropertiesView
             selection={selection}
@@ -511,7 +511,7 @@ class OdtMarkupModal extends React.Component {
             <Button
               color="violet"
               icon="plus"
-              content={`${getTranslation("Add to markup")} '${browserSelection.toString()}'`}
+              content={`${this.context("Add to markup")} '${browserSelection.toString()}'`}
               onClick={this.addToMarkup}
               style={{ float: "left" }}
             />
@@ -521,19 +521,19 @@ class OdtMarkupModal extends React.Component {
               <Button
                 color="orange"
                 icon="minus"
-                content={`${getTranslation("Remove from markup")} '${selectedElem.innerText}'`}
+                content={`${this.context("Remove from markup")} '${selectedElem.innerText}'`}
                 onClick={this.removeFromMarkup}
               />
               <Button
                 color="blue"
                 icon="minus"
-                content={`${getTranslation("Move markup element")} '${selectedElem.innerText}'`}
+                content={`${this.context("Move markup element")} '${selectedElem.innerText}'`}
                 onClick={this.moveMarkup}
               />
               <Button
                 color="green"
                 icon="plus"
-                content={`${getTranslation("Parse element")} '${selectedElem.innerText}'`}
+                content={`${this.context("Parse element")} '${selectedElem.innerText}'`}
                 onClick={this.parseElement}
               />
             </div>
@@ -542,30 +542,30 @@ class OdtMarkupModal extends React.Component {
             <Button
               color="violet"
               icon="plus"
-              content={`${getTranslation("Move copied markup element")} '${copiedElem.lastChild.nodeValue}'`}
+              content={`${this.context("Move copied markup element")} '${copiedElem.lastChild.nodeValue}'`}
               onClick={this.addCopiedMarkup}
               style={{ float: "left" }}
             />
           )}
           {movingElem && browserSelection == null && (
             <div style={{ float: "left" }}>
-              {getTranslation("Select a new position for a markup element")} {copiedElem.lastChild.nodeValue}
+              {this.context("Select a new position for a markup element")} {copiedElem.lastChild.nodeValue}
             </div>
           )}
           {mode === "edit" && (
             <Button
               disabled={saving || !dirty}
               loading={saving}
-              content={getTranslation("Save")}
+              content={this.context("Save")}
               onClick={this.save}
               className="lingvo-button-violet"
             />
           )}
-          <Button content={getTranslation("Close")} onClick={this.onClose} className="lingvo-button-basic-black" />
+          <Button content={this.context("Close")} onClick={this.onClose} className="lingvo-button-basic-black" />
         </Modal.Actions>
         <Confirm
           open={confirmation !== null}
-          header={getTranslation("Confirmation")}
+          header={this.context("Confirmation")}
           content={confirmation ? confirmation.content : null}
           onConfirm={confirmation ? confirmation.func : null}
           onCancel={() => this.setState({ confirmation: null })}
@@ -575,6 +575,8 @@ class OdtMarkupModal extends React.Component {
     );
   }
 }
+
+OdtMarkupModal.contextType = TranslationContext;
 
 OdtMarkupModal.propTypes = {
   entityId: PropTypes.arrayOf(PropTypes.number).isRequired,

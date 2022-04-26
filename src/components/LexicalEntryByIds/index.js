@@ -24,7 +24,7 @@ const PermissionLists = graphql(gql`
     permission_lists(proxy: false) {
       edit {
         id
-        translation
+        translations
       }
     }
   }

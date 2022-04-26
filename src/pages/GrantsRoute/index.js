@@ -1,11 +1,12 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import { Container } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 
+import { chooseTranslation as T } from "api/i18n";
 import Footer from "components/Footer";
+import TranslationContext from "Layout/TranslationContext";
 
 import imageOffGrant from "../../images/add_document.svg";
 import imageGrants from "../../images/winners.svg";
@@ -18,13 +19,15 @@ const grants = gql`
       id
       begin
       end
-      translation
+      translations
       issuer
       grant_number
     }
   }
 `;
-function grantsRoute(props) {
+function GrantsRoute(props) {
+  const getTranslation = useContext(TranslationContext);
+
   const {
     data: { grants }
   } = props;
@@ -33,6 +36,7 @@ function grantsRoute(props) {
     const newDate = new Date(Number(date) * 1000);
     return newDate.getFullYear();
   }
+
   return (
     <div className="lingvodoc-page">
       <div className="background-cards lingvodoc-page__content">
@@ -75,7 +79,7 @@ function grantsRoute(props) {
                   <li key={grant.id} style={{ margin: "0 0 5px 0" }}>
                     {`(${grant.issuer}  `}
                     {`${grant.grant_number})  `}
-                    {`${grant.translation}  `}
+                    {`${T(grant.translations)}  `}
                     {`${correctDate(grant.begin)}-${correctDate(grant.end)}  `}
                   </li>
                 ))}
@@ -88,4 +92,4 @@ function grantsRoute(props) {
   );
 }
 
-export default graphql(grants)(grantsRoute);
+export default graphql(grants)(GrantsRoute);

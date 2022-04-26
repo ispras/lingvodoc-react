@@ -3,7 +3,6 @@ import { connect } from "react-redux";
 import { Button, Modal } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 import { every } from "lodash";
 import PropTypes from "prop-types";
 import { compose } from "recompose";
@@ -11,6 +10,7 @@ import { bindActionCreators } from "redux";
 
 import Translations from "components/Translation2";
 import { closeModal as closeCreateOrganizationModal } from "ducks/createOrganization";
+import TranslationContext from "Layout/TranslationContext";
 import { organizationsQuery } from "pages/Organizations";
 import { compositeIdToString } from "utils/compositeId";
 
@@ -66,25 +66,25 @@ class CreateOrganizationModal extends React.Component {
 
     return (
       <Modal closeIcon onClose={closeCreateOrganizationModal} dimmer open className="lingvo-modal2">
-        <Modal.Header>{getTranslation("New organization")}</Modal.Header>
+        <Modal.Header>{this.context("New organization")}</Modal.Header>
 
         <Modal.Content>
-          <h4 className="lingvo-org-translation__header">{getTranslation("Organization name")}</h4>
+          <h4 className="lingvo-org-translation__header">{this.context("Organization name")}</h4>
           <Translations onChange={translations => this.setState({ translations })} />
 
-          <h4 className="lingvo-org-translation__header">{getTranslation("About the organization")}</h4>
+          <h4 className="lingvo-org-translation__header">{this.context("About the organization")}</h4>
           <Translations onChange={translations_about => this.setState({ translations_about })} textArea={true} />
         </Modal.Content>
 
         <Modal.Actions>
           <Button
-            content={getTranslation("Save")}
+            content={this.context("Save")}
             onClick={this.saveOrganization}
             disabled={this.isSaveDisabled()}
             className="lingvo-button-violet"
           />
           <Button
-            content={getTranslation("Cancel")}
+            content={this.context("Cancel")}
             onClick={closeCreateOrganizationModal}
             className="lingvo-button-basic-black"
           />
@@ -93,6 +93,8 @@ class CreateOrganizationModal extends React.Component {
     );
   }
 }
+
+CreateOrganizationModal.contextType = TranslationContext;
 
 CreateOrganizationModal.propTypes = {
   closeCreateOrganizationModal: PropTypes.func.isRequired,

@@ -1,16 +1,18 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Container } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 import { map } from "lodash";
 import { compose } from "recompose";
 
 import Footer from "components/Footer";
+import TranslationContext from "Layout/TranslationContext";
 
 import "./styles.scss";
 
-const versionRoute = props => {
+const VersionRoute = props => {
+  const getTranslation = useContext(TranslationContext);
+
   const {
     data: { version, version_uniparser }
   } = props;
@@ -81,4 +83,4 @@ export default compose(
       }
     `
   )
-)(versionRoute);
+)(VersionRoute);

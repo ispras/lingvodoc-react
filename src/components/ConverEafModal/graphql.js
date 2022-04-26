@@ -5,7 +5,7 @@ export const dictionariesQuery = gql`
     dictionaries {
       id
       parent_id
-      translation
+      translations
       additional_metadata {
         authors
       }

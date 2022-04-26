@@ -1,11 +1,12 @@
 import React from "react";
 import { Button, Table } from "semantic-ui-react";
 import { graphql } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 import PropTypes from "prop-types";
 import { branch, compose, renderComponent, renderNothing } from "recompose";
 
+import { chooseTranslation as T } from "api/i18n";
 import Placeholder from "components/Placeholder";
+import TranslationContext from "Layout/TranslationContext";
 
 import { createGrantPermissionMutation, grantsQuery } from "./graphql";
 
@@ -29,7 +30,7 @@ class GrantsList extends React.Component {
     createGrantPermission({
       variables: { grantId: grant.id }
     }).then(() => {
-      window.logger.suc(getTranslation("Request has been sent to the grant's owner."));
+      window.logger.suc(this.context("Request has been sent to the grant's owner."));
     });
   }
 
@@ -49,14 +50,14 @@ class GrantsList extends React.Component {
         <Table celled padded>
           <Table.Header>
             <Table.Row>
-              <Table.HeaderCell>{getTranslation("Grant Issuer")}</Table.HeaderCell>
-              <Table.HeaderCell>{getTranslation("Grant")}</Table.HeaderCell>
-              <Table.HeaderCell>{getTranslation("Issuer URL")}</Table.HeaderCell>
-              <Table.HeaderCell>{getTranslation("Grant URL")}</Table.HeaderCell>
-              <Table.HeaderCell>{getTranslation("Grant Number")}</Table.HeaderCell>
-              <Table.HeaderCell>{getTranslation("Begin")}</Table.HeaderCell>
-              <Table.HeaderCell>{getTranslation("End")}</Table.HeaderCell>
-              <Table.HeaderCell>{getTranslation("Owners")}</Table.HeaderCell>
+              <Table.HeaderCell>{this.context("Grant Issuer")}</Table.HeaderCell>
+              <Table.HeaderCell>{this.context("Grant")}</Table.HeaderCell>
+              <Table.HeaderCell>{this.context("Issuer URL")}</Table.HeaderCell>
+              <Table.HeaderCell>{this.context("Grant URL")}</Table.HeaderCell>
+              <Table.HeaderCell>{this.context("Grant Number")}</Table.HeaderCell>
+              <Table.HeaderCell>{this.context("Begin")}</Table.HeaderCell>
+              <Table.HeaderCell>{this.context("End")}</Table.HeaderCell>
+              <Table.HeaderCell>{this.context("Owners")}</Table.HeaderCell>
               <Table.HeaderCell />
             </Table.Row>
           </Table.Header>
@@ -64,7 +65,7 @@ class GrantsList extends React.Component {
             {grants.map(grant => (
               <Table.Row key={grant.id}>
                 <Table.Cell>{grant.issuer}</Table.Cell>
-                <Table.Cell>{grant.translation}</Table.Cell>
+                <Table.Cell>{T(grant.translations)}</Table.Cell>
                 <Table.Cell className="lingvo-column-issuer-url">
                   <a href={grant.issuer_url}>{grant.issuer_url}</a>
                 </Table.Cell>
@@ -82,7 +83,7 @@ class GrantsList extends React.Component {
                 <Table.Cell>
                   {!this.isOwner(grant) && (
                     <Button positive onClick={() => this.joinGrant(grant)}>
-                      {getTranslation("Join")}
+                      {this.context("Join")}
                     </Button>
                   )}
                 </Table.Cell>
@@ -94,6 +95,8 @@ class GrantsList extends React.Component {
     );
   }
 }
+
+GrantsList.contextType = TranslationContext;
 
 GrantsList.propTypes = {
   data: PropTypes.shape({

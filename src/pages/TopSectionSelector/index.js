@@ -1,10 +1,10 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { Accordion } from "semantic-ui-react";
 
-import { getTranslation } from "api/i18n";
 import Footer from "components/Footer";
+import TranslationContext from "Layout/TranslationContext";
 
 import imageAddFiles from "../../images/advantages_add_files.svg";
 import imagePlanet from "../../images/advantages_planet.svg";
@@ -24,6 +24,7 @@ const TopSectionSelector = () => {
   const { isAuthenticated } = useSelector(state => state.auth);
 
   const [activeIndexes, setActiveIndexes] = useState([]);
+  const getTranslation = useContext(TranslationContext);
 
   const handleClick = useCallback(
     (_e, titleProps) => {

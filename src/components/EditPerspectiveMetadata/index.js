@@ -1,7 +1,8 @@
 import React from "react";
 import { Button, Form, Input, Label, Segment } from "semantic-ui-react";
-import { getTranslation } from "api/i18n";
 import PropTypes from "prop-types";
+
+import TranslationContext from "Layout/TranslationContext";
 
 class EditPerspectiveMetadata extends React.Component {
   constructor(props) {
@@ -51,12 +52,12 @@ class EditPerspectiveMetadata extends React.Component {
           this.setState({ transcription_rules: data.value });
         }}
       >
-        <Label>{getTranslation("Transcription rules")}</Label>
+        <Label>{this.context("Transcription rules")}</Label>
 
         <input />
 
         <Button
-          content={getTranslation("Save")}
+          content={this.context("Save")}
           disabled={this.state.transcription_rules == this.initialState.transcription_rules}
           onClick={() => this.onSaveValue("transcription_rules")}
           className="lingvo-button-violet lingvo-button-violet_bradius-right"
@@ -65,6 +66,8 @@ class EditPerspectiveMetadata extends React.Component {
     );
   }
 }
+
+EditPerspectiveMetadata.contextType = TranslationContext;
 
 EditPerspectiveMetadata.propTypes = {
   metadata: PropTypes.object,

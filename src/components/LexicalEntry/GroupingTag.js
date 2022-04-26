@@ -6,6 +6,7 @@ import PropTypes from "prop-types";
 import { branch, compose, renderNothing } from "recompose";
 import { bindActionCreators } from "redux";
 
+import { chooseTranslation as T } from "api/i18n";
 import GroupingTagModal from "components/GroupingTagModal";
 import { openModal } from "ducks/modals";
 
@@ -18,7 +19,7 @@ const GroupingTag = props => {
         disabled={disabled}
         basic
         as="button"
-        content={column.translation}
+        content={T(column.translations)}
         icon="code"
         labelPosition="left"
         onClick={() => openModal(GroupingTagModal, { lexicalEntry: entry, fieldId: column.id, mode, entitiesMode })}

@@ -3,8 +3,9 @@ import { connect } from "react-redux";
 import { Button, Checkbox, Dimmer, Icon, Input, Label, List, Loader, Message, Segment } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 import { compose } from "recompose";
+
+import TranslationContext from "Layout/TranslationContext";
 
 const docx2eafMutation = gql`
   mutation docx2eaf(
@@ -91,13 +92,13 @@ class Docx2Eaf extends React.Component {
       <div className="background-content">
         {this.props.user.id === undefined && !this.props.loading ? (
           <Message>
-            <Message.Header>{getTranslation("Please sign in")}</Message.Header>
-            <p>{getTranslation("Only registered users can convert .docx to .eaf.")}</p>
+            <Message.Header>{this.context("Please sign in")}</Message.Header>
+            <p>{this.context("Only registered users can convert .docx to .eaf.")}</p>
           </Message>
         ) : this.props.loading ? (
           <Segment>
             <Loader active inline="centered" indeterminate>
-              {getTranslation("Loading...")}
+              {this.context("Loading...")}
             </Loader>
           </Segment>
         ) : (
@@ -105,7 +106,7 @@ class Docx2Eaf extends React.Component {
             <List>
               <List.Item>
                 <Checkbox
-                  label={getTranslation("All tables")}
+                  label={this.context("All tables")}
                   checked={this.state.all_tables_flag}
                   onChange={(e, { checked }) =>
                     this.setState({
@@ -119,7 +120,7 @@ class Docx2Eaf extends React.Component {
 
               <List.Item>
                 <Checkbox
-                  label={getTranslation("Separate by paragraphs")}
+                  label={this.context("Separate by paragraphs")}
                   checked={this.state.separate_flag}
                   onChange={(e, { checked }) =>
                     this.setState({
@@ -133,7 +134,7 @@ class Docx2Eaf extends React.Component {
 
               <List.Item>
                 <Checkbox
-                  label={getTranslation("No header")}
+                  label={this.context("No header")}
                   checked={this.state.no_header_flag}
                   onChange={(e, { checked }) =>
                     this.setState({
@@ -147,7 +148,7 @@ class Docx2Eaf extends React.Component {
 
               <List.Item>
                 <Checkbox
-                  label={getTranslation("No parsing")}
+                  label={this.context("No parsing")}
                   checked={this.state.no_parsing_flag}
                   onChange={(e, { checked }) =>
                     this.setState({
@@ -161,7 +162,7 @@ class Docx2Eaf extends React.Component {
 
               <List.Item>
                 <span>
-                  {getTranslation(
+                  {this.context(
                     this.state.file ? ".docx file for convertion:" : "Please select .docx file for convertion."
                   )}
                 </span>
@@ -174,7 +175,7 @@ class Docx2Eaf extends React.Component {
                 )}
 
                 <Button style={{ marginLeft: "1em" }} onClick={() => document.getElementById("file-select").click()}>
-                  {`${getTranslation("Browse")}...`}
+                  {`${this.context("Browse")}...`}
                 </Button>
 
                 <Input
@@ -194,7 +195,7 @@ class Docx2Eaf extends React.Component {
               <List.Item>
                 <Button
                   color="green"
-                  content={getTranslation("Convert")}
+                  content={this.context("Convert")}
                   disabled={!this.state.file}
                   onClick={this.onConvert}
                 />
@@ -203,56 +204,56 @@ class Docx2Eaf extends React.Component {
 
             {this.state.error_message && (
               <Message negative>
-                <Message.Header>{getTranslation("Convertion error")}</Message.Header>
+                <Message.Header>{this.context("Convertion error")}</Message.Header>
                 <p>
                   <span>Please contact developers at </span>
                   <a href="https://t.me/lingvodoc_support" target="_blank" rel="noreferrer">
-                    {getTranslation("Support@Telegram")}
+                    {this.context("Support@Telegram")}
                   </a>
                   <span> or at </span>
-                  <a href="https://github.com/ispras/lingvodoc-react/issues">{getTranslation("Lingvodoc Github")}</a>
+                  <a href="https://github.com/ispras/lingvodoc-react/issues">{this.context("Lingvodoc Github")}</a>
                   <span>.</span>
                 </p>
-                <p>{getTranslation(this.state.error_message)}</p>
+                <p>{this.context(this.state.error_message)}</p>
               </Message>
             )}
 
             {this.state.converting_flag && (
               <Dimmer active inverted>
                 <Loader inverted indeterminate>
-                  {getTranslation("Converting...")}
+                  {this.context("Converting...")}
                 </Loader>
               </Dimmer>
             )}
 
             {result && !result.triumph && (
               <Message>
-                <Message.Header>{getTranslation("Convertion failed")}</Message.Header>
-                <p>{getTranslation(result.message)}</p>
+                <Message.Header>{this.context("Convertion failed")}</Message.Header>
+                <p>{this.context(result.message)}</p>
               </Message>
             )}
 
             {result && result.triumph && (
               <Message positive>
-                <Message.Header>{getTranslation("Converted successfully")}</Message.Header>
+                <Message.Header>{this.context("Converted successfully")}</Message.Header>
                 <List>
                   <List.Item>
-                    <a href={result.eaf_url}>{getTranslation(".eaf file")}</a>
+                    <a href={result.eaf_url}>{this.context(".eaf file")}</a>
                   </List.Item>
 
                   <List.Item>
-                    <a href={result.check_txt_url}>{getTranslation("check .txt")}</a>
+                    <a href={result.check_txt_url}>{this.context("check .txt")}</a>
                   </List.Item>
 
                   {result.check_docx_url && (
                     <List.Item>
-                      <a href={result.check_docx_url}>{getTranslation("check .docx")}</a>
+                      <a href={result.check_docx_url}>{this.context("check .docx")}</a>
                     </List.Item>
                   )}
 
                   {result.alignment_url && (
                     <List.Item>
-                      <a href={result.alignment_url}>{getTranslation("alignment .docx")}</a>
+                      <a href={result.alignment_url}>{this.context("alignment .docx")}</a>
                     </List.Item>
                   )}
                 </List>
@@ -264,6 +265,8 @@ class Docx2Eaf extends React.Component {
     );
   }
 }
+
+Docx2Eaf.contextType = TranslationContext;
 
 export default compose(
   connect(state => state.user),

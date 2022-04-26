@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useContext } from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
-import { getTranslation } from "api/i18n";
 
 import Footer from "components/Footer";
+import TranslationContext from "Layout/TranslationContext";
 
 import imageLanguages from "../../images/around_world.svg";
 import imageStorage from "../../images/collecting.svg";
@@ -15,7 +15,9 @@ import imageValency from "../../images/verb_valency.svg";
 
 import "./styles.scss";
 
-function toolsRoute(props) {
+function ToolsRoute(props) {
+  const getTranslation = useContext(TranslationContext);
+
   return (
     <div className="lingvodoc-page">
       <div className="background-cards lingvodoc-page__content">
@@ -70,4 +72,4 @@ function toolsRoute(props) {
   );
 }
 
-export default connect(state => state.user)(toolsRoute);
+export default connect(state => state.user)(ToolsRoute);

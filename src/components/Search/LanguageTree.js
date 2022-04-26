@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 import { bindActionCreators } from "redux";
 import styled from "styled-components";
 
+import { chooseTranslation as T } from "api/i18n";
 import LexicalEntryModal from "components/LexicalEntryModal";
 import { openModal } from "ducks/modals";
 
@@ -19,12 +20,12 @@ const Link = styled.a`
 `;
 
 const LexicalEntryLinkComponent = ({ node, actions, entitiesMode, defaultMode, openModalAction, onlyViewMode }) => {
-  const { translation, lexicalEntries } = node;
+  const { translations, lexicalEntries } = node;
   return (
     <Link
       onClick={() => openModalAction(LexicalEntryModal, { node, actions, entitiesMode, defaultMode, onlyViewMode })}
     >
-      {translation}: {lexicalEntries.length} result(s)
+      {T(translations)}: {lexicalEntries.length} result(s)
     </Link>
   );
 };
@@ -32,7 +33,7 @@ const LexicalEntryLinkComponent = ({ node, actions, entitiesMode, defaultMode, o
 LexicalEntryLinkComponent.propTypes = {
   node: PropTypes.shape({
     id: PropTypes.array.isRequired,
-    translation: PropTypes.string.isRequired,
+    translations: PropTypes.object.isRequired,
     lexicalEntries: PropTypes.array.isRequired
   }).isRequired,
   actions: PropTypes.array,
@@ -55,8 +56,8 @@ export const LexicalEntryLink = connect(null, mapDispatchToProps)(LexicalEntryLi
 
 class LanguageTree extends React.Component {
   static generateNodeProps({ node }) {
-    const { translation } = node;
-    const defaultTitle = translation || "None";
+    const { translations } = node;
+    const defaultTitle = translations ? T(translations) : "None";
 
     const title = node.type === "perspective" ? <LexicalEntryLink node={node} /> : defaultTitle;
     return { title };

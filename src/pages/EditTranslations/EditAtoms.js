@@ -2,8 +2,9 @@ import React from "react";
 import { Button, Dropdown, Input, Popup } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { withApollo } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
+
 import locale from "api/locale";
+import TranslationContext from "Layout/TranslationContext";
 
 const createTranslationsMutation = gql`
   mutation ($type: String!) {
@@ -352,19 +353,21 @@ class EditAtoms extends React.Component {
             onClick={this.onAddTranslation}
             className="lingvo-button-basic-black lingvo-button-basic-black_small"
           >
-            {getTranslation("Add Translation")}
+            {this.context("Add Translation")}
           </Button>
           <Button
             disabled={JSON.stringify(this.state.atoms) === JSON.stringify(this.initialState.atoms)}
             onClick={this.onSave}
             className="lingvo-button-violet lingvo-button-violet_small"
           >
-            {getTranslation("Save")}
+            {this.context("Save")}
           </Button>
         </div>
       </div>
     );
   }
 }
+
+EditAtoms.contextType = TranslationContext;
 
 export default withApollo(EditAtoms);

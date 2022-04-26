@@ -3,15 +3,16 @@ import { connect } from "react-redux";
 import { Button, Grid, Header, Modal, Select } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 import { fromJS, List, Map } from "immutable";
 import { every } from "lodash";
 import PropTypes from "prop-types";
 import { compose } from "recompose";
 import { bindActionCreators } from "redux";
 
+import { chooseTranslation as T } from "api/i18n";
 import Translations from "components/Translation";
 import { closeModal as closeCreatePerspectiveModal } from "ducks/createPerspective";
+import TranslationContext from "Layout/TranslationContext";
 import Fields from "pages/CreateDictionary/Fields";
 import { queryAvailablePerspectives as queryPerspectivePathAvailable } from "pages/Perspective/PerspectivePath";
 
@@ -22,7 +23,7 @@ const queryAvailablePerspectives = gql`
       category
       perspectives {
         id
-        translation
+        translations
       }
     }
   }
@@ -79,7 +80,7 @@ class CreatePerspectiveModal extends React.Component {
     }).then(({ data }) => {
       closeCreatePerspectiveModal();
 
-      window.logger.suc(getTranslation("Successfully created perspective."));
+      window.logger.suc(this.context("Successfully created perspective."));
     });
   }
 
@@ -95,18 +96,18 @@ class CreatePerspectiveModal extends React.Component {
     const perspective_info_list = perspectives.map((perspective, index) => ({
       index,
       id: perspective.id,
-      name: perspective.translation
+      name: T(perspective.translations)
     }));
 
     return (
       <Modal closeIcon onClose={closeCreatePerspectiveModal} dimmer open className="lingvo-modal2">
-        <Modal.Header>{getTranslation("Create perspective")}</Modal.Header>
+        <Modal.Header>{this.context("Create perspective")}</Modal.Header>
 
         <Modal.Content>
-          <Header>{getTranslation("Perspective names")}</Header>
+          <Header>{this.context("Perspective names")}</Header>
           <Translations onChange={translations => this.setState({ translations })} />
 
-          <Header>{getTranslation("Perspective fields")}</Header>
+          <Header>{this.context("Perspective fields")}</Header>
           <Fields
             mode={category == 0 ? "dictionary" : "corpus"}
             perspectives={perspective_info_list}
@@ -121,13 +122,13 @@ class CreatePerspectiveModal extends React.Component {
 
         <Modal.Actions>
           <Button
-            content={getTranslation("Save")}
+            content={this.context("Save")}
             onClick={this.savePerspective}
             disabled={this.isSaveDisabled()}
             className="lingvo-button-violet"
           />
           <Button
-            content={getTranslation("Cancel")}
+            content={this.context("Cancel")}
             onClick={closeCreatePerspectiveModal}
             className="lingvo-button-basic-black"
           />
@@ -136,6 +137,8 @@ class CreatePerspectiveModal extends React.Component {
     );
   }
 }
+
+CreatePerspectiveModal.contextType = TranslationContext;
 
 CreatePerspectiveModal.propTypes = {
   closeCreatePerspectiveModal: PropTypes.func.isRequired,

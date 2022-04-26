@@ -1,15 +1,15 @@
-import React from "react";
+import React, { useContext } from "react";
 import { connect } from "react-redux";
 import { Button, Modal } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 import PropTypes from "prop-types";
 import { branch, compose, renderNothing } from "recompose";
 import { bindActionCreators } from "redux";
 
 import MarkupViewer from "components/MarkupViewer";
 import { closeViewer, openConvert } from "ducks/markup";
+import TranslationContext from "Layout/TranslationContext";
 
 const q = gql`
   query convertMarkup($id: LingvodocID!) {
@@ -44,6 +44,8 @@ const MarkupModal = props => {
     markup: { id }
   } = data;
   const audioUrl = audio ? audio.content : null;
+
+  const getTranslation = useContext(TranslationContext);
 
   return (
     <Modal closeIcon onClose={actions.closeViewer} open={visible} dimmer size="large" className="lingvo-modal2">

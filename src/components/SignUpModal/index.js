@@ -1,13 +1,13 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Button, Form, Header, Input, Message, Modal } from "semantic-ui-react";
 import { useApolloClient } from "@apollo/client";
 import PropTypes from "prop-types";
 
-import { getTranslation } from "api/i18n";
 import { getId, getUser, signIn, signUp } from "api/user";
 import { setIsAuthenticated } from "ducks/auth";
-import { setUser } from "ducks/user";
+import { requestUser, setError, setUser } from "ducks/user";
+import TranslationContext from "Layout/TranslationContext";
 import { EMAIL_MATCHER } from "utils";
 import { startTrackUser } from "utils/matomo";
 
@@ -27,6 +27,8 @@ const SignUpModal = ({ close }) => {
 
   const [signingUp, setSigningUp] = useState(false);
   const [errorMessage, setErrorMessage] = useState();
+
+  const getTranslation = useContext(TranslationContext);
 
   const checkPasswordsMatch = useCallback(() => {
     const error = password !== "" && password2 !== "" && password !== password2;
@@ -50,6 +52,7 @@ const SignUpModal = ({ close }) => {
       if (response.data.result === "Signup success.") {
         response = await signIn(login, password);
         if (response.data) {
+          dispatch(requestUser());
           response = await getUser();
           if (response.data) {
             startTrackUser(getId(), response.data.login);
@@ -58,6 +61,7 @@ const SignUpModal = ({ close }) => {
             client.resetStore();
           } else {
             window.logger.err(getTranslation("Could not get user information"));
+            dispatch(setError());
           }
         }
         window.logger.suc(getTranslation("Signup success"));
@@ -70,7 +74,7 @@ const SignUpModal = ({ close }) => {
       setErrorMessage(getTranslation(typeof response.err === "string" ? response.err : response.err.error));
       setSigningUp(false);
     }
-  }, [checkPasswordsMatch, client, dispatch, email, login, name, password]);
+  }, [checkPasswordsMatch, client, dispatch, email, login, name, password, getTranslation]);
 
   return (
     <Modal open className="lingvo-modal" closeIcon onClose={close} size="mini" dimmer="blurring">

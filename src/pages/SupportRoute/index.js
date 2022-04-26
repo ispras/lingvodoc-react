@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
-import { getTranslation } from "api/i18n";
 
 import Footer from "components/Footer";
+import TranslationContext from "Layout/TranslationContext";
 
 import imageHelp from "../../images/active_support.svg";
 import imageTelegram from "../../images/ideas.svg";
@@ -10,7 +10,9 @@ import imageVersion from "../../images/version_control.svg";
 
 import "./styles.scss";
 
-const supportRoute = props => {
+const SupportRoute = props => {
+  const getTranslation = useContext(TranslationContext);
+
   return (
     <div className="lingvodoc-page">
       <div className="background-cards lingvodoc-page__content">
@@ -49,4 +51,4 @@ const supportRoute = props => {
   );
 };
 
-export default supportRoute;
+export default SupportRoute;

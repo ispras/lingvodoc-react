@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Card, Container } from "semantic-ui-react";
-import { getTranslation } from "api/i18n";
+
+import TranslationContext from "Layout/TranslationContext";
 
 const Info = () => {
+  const getTranslation = useContext(TranslationContext);
+
   const linguistsContributorsRAN = [
     {
       header: getTranslation("Normanskaya Julia Viktorovna"),

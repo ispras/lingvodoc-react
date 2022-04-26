@@ -2,16 +2,17 @@ import React from "react";
 import { Button, Container, Dropdown, Radio, Table } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 import { filter, find, some, union, uniq, without } from "lodash";
 import PropTypes from "prop-types";
 import { compose, onlyUpdateForKeys } from "recompose";
+
+import TranslationContext from "Layout/TranslationContext";
 
 const queryDictionary = gql`
   query DictionaryRoles($id: LingvodocID!) {
     dictionary(id: $id) {
       id
-      translation
+      translations
       roles {
         roles_users
         roles_organizations
@@ -40,7 +41,7 @@ const queryPerspective = gql`
   query PerspectiveRoles($id: LingvodocID!) {
     perspective(id: $id) {
       id
-      translation
+      translations
       roles {
         roles_users
         roles_organizations
@@ -209,7 +210,7 @@ class Roles extends React.Component {
       <Container>
         <Dropdown
           key={selectedUser}
-          placeholder={getTranslation("Select user")}
+          placeholder={this.context("Select user")}
           search
           selection
           options={userOptions}
@@ -224,19 +225,19 @@ class Roles extends React.Component {
           disabled={selectedUser === undefined}
           onClick={() => this.onAddUser(permissions)}
         >
-          {getTranslation("Add")}
+          {this.context("Add")}
         </Button>
 
         <Table celled className="lingvo-roles-table">
           <Table.Header>
             <Table.Row>
-              <Table.HeaderCell>{getTranslation("Role")}</Table.HeaderCell>
+              <Table.HeaderCell>{this.context("Role")}</Table.HeaderCell>
               {users.map(user => (
                 <Table.HeaderCell key={user.id}>
                   {user.name}
                   <Button
                     icon={<i className="lingvo-icon lingvo-icon_trash" />}
-                    title={getTranslation("Remove user")}
+                    title={this.context("Remove user")}
                     onClick={() => this.onDeleteUser(user.id, permissions)}
                     className="lingvo-button-roles-delete"
                     disabled={user.id === currentUser.id}
@@ -249,7 +250,7 @@ class Roles extends React.Component {
           <Table.Body>
             {permissions.map(role => (
               <Table.Row key={role.group.id}>
-                <Table.Cell>{getTranslation(role.group.name)}</Table.Cell>
+                <Table.Cell>{this.context(role.group.name)}</Table.Cell>
                 {users.map(user => (
                   <Table.Cell key={user.id}>
                     <Radio
@@ -268,6 +269,8 @@ class Roles extends React.Component {
     );
   }
 }
+
+Roles.contextType = TranslationContext;
 
 Roles.propTypes = {
   id: PropTypes.array.isRequired,

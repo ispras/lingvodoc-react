@@ -1,18 +1,19 @@
-import React from "react";
+import React, { useContext } from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import { Button, Checkbox, Divider, Grid, Icon, Input, Message, Radio, Segment, Select } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
-import { getTranslation } from "api/i18n";
 import { fromJS, List } from "immutable";
 import PropTypes from "prop-types";
 import { compose, pure } from "recompose";
 import { bindActionCreators } from "redux";
 import styled from "styled-components";
 
+import { chooseTranslation as T } from "api/i18n";
 import AdditionalFilter from "components/Search/AdditionalFilter";
 import { setQuery } from "ducks/search";
+import TranslationContext from "Layout/TranslationContext";
 import { compositeIdToString } from "utils/compositeId";
 
 import "./index.scss";
@@ -109,12 +110,14 @@ const fieldsQuery = gql`
   query searchBootstrapQuery {
     all_fields(common: true) {
       id
-      translation
+      translations
     }
   }
 `;
 
 function Query({ data, query, onFieldChange, onDelete }) {
+  const getTranslation = useContext(TranslationContext);
+
   const fieldId = query.get("field_id", fromJS([]));
   const str = query.get("search_string", "");
   const type = query.get("matching_type", "");
@@ -126,7 +129,7 @@ function Query({ data, query, onFieldChange, onDelete }) {
   const { all_fields: fields } = data;
   const fieldOptions = fields.map(field => ({
     key: compositeIdToString(field.id),
-    text: field.translation,
+    text: T(field.translations),
     value: compositeIdToString(field.id)
   }));
 
@@ -181,6 +184,7 @@ function SearchBlock({
   onDeleteInnerSearchBlock,
   onDeleteSearchBlock
 }) {
+  const getTranslation = useContext(TranslationContext);
   const subBlocksModeText = subBlocksMode.toUpperCase();
   return (
     <OrWrapper>
@@ -479,20 +483,20 @@ class QueryBuilder extends React.Component {
     return (
       <div>
         <Segment.Group className="search-group">
-          <Segment>{getTranslation("Search in")}</Segment>
+          <Segment>{this.context("Search in")}</Segment>
           <Segment.Group>
             <Segment>
               <Grid columns="equal" stackable>
                 <Grid.Column>
                   <Checkbox
-                    label={getTranslation("Dictionaries")}
+                    label={this.context("Dictionaries")}
                     checked={this.state.source.dictionaries}
                     onChange={() => this.changeSource("dictionaries")}
                   />
                 </Grid.Column>
                 <Grid.Column>
                   <Checkbox
-                    label={getTranslation("Corpora")}
+                    label={this.context("Corpora")}
                     checked={this.state.source.corpora}
                     onChange={() => this.changeSource("corpora")}
                   />
@@ -500,7 +504,7 @@ class QueryBuilder extends React.Component {
                 {showCreateSearchButton ? (
                   <Grid.Column>
                     <Button primary basic onClick={this.props.createSearchWithAdditionalFields}>
-                      {getTranslation("Search in found")}
+                      {this.context("Search in found")}
                     </Button>
                   </Grid.Column>
                 ) : null}
@@ -516,27 +520,27 @@ class QueryBuilder extends React.Component {
         />
 
         <Segment.Group className="search-group">
-          <Segment>{getTranslation("Search options")}</Segment>
+          <Segment>{this.context("Search options")}</Segment>
           <Segment.Group>
             <Segment>
               <Grid columns="equal" divided stackable>
                 <Grid.Column>
                   <Radio
-                    label={getTranslation("Ignore adoptions")}
+                    label={this.context("Ignore adoptions")}
                     name="adoptedMode"
                     value="ignore"
                     checked={this.state.mode.adopted === "ignore"}
                     onChange={(e, { value }) => this.changeMode("adopted", value)}
                   />
                   <Radio
-                    label={getTranslation("Search for adoptions")}
+                    label={this.context("Search for adoptions")}
                     name="adoptedMode"
                     value="include"
                     checked={this.state.mode.adopted === "include"}
                     onChange={(e, { value }) => this.changeMode("adopted", value)}
                   />
                   <Radio
-                    label={getTranslation("Exclude adoptions")}
+                    label={this.context("Exclude adoptions")}
                     name="adoptedMode"
                     value="exclude"
                     checked={this.state.mode.adopted === "exclude"}
@@ -545,21 +549,21 @@ class QueryBuilder extends React.Component {
                 </Grid.Column>
                 <Grid.Column>
                   <Radio
-                    label={getTranslation("Ignore etymology")}
+                    label={this.context("Ignore etymology")}
                     name="etymologyMode"
                     value="ignore"
                     checked={this.state.mode.etymology === "ignore"}
                     onChange={(e, { value }) => this.changeMode("etymology", value)}
                   />
                   <Radio
-                    label={getTranslation("Has etymology")}
+                    label={this.context("Has etymology")}
                     name="etymologyMode"
                     value="include"
                     checked={this.state.mode.etymology === "include"}
                     onChange={(e, { value }) => this.changeMode("etymology", value)}
                   />
                   <Radio
-                    label={getTranslation("Doesn't have etymology")}
+                    label={this.context("Doesn't have etymology")}
                     name="etymologyMode"
                     value="exclude"
                     checked={this.state.mode.etymology === "exclude"}
@@ -570,7 +574,7 @@ class QueryBuilder extends React.Component {
             </Segment>
             <Segment>
               <Checkbox
-                label={getTranslation("Ignore diacritics")}
+                label={this.context("Ignore diacritics")}
                 checked={this.state.mode.diacritics === "ignore"}
                 onChange={() => this.changeMode("diacritics", this.state.mode.diacritics === "ignore" ? "" : "ignore")}
               />
@@ -579,18 +583,18 @@ class QueryBuilder extends React.Component {
         </Segment.Group>
         <Segment.Group className="search-group">
           <Segment>
-            <div>{getTranslation("OR/AND mode")}</div>
+            <div>{this.context("OR/AND mode")}</div>
             <Segment.Group>
               <Segment>
                 <Radio
-                  label={getTranslation("AND")}
+                  label={this.context("AND")}
                   name="blocksMode"
                   value="and"
                   checked={this.state.mode.blocks === "and"}
                   onChange={(e, { value }) => this.changeMode("blocks", value)}
                 />
                 <Radio
-                  label={getTranslation("OR")}
+                  label={this.context("OR")}
                   name="blocksMode"
                   value="or"
                   checked={this.state.mode.blocks === "or"}
@@ -613,21 +617,21 @@ class QueryBuilder extends React.Component {
                 onDeleteSearchBlock={this.onDeleteSearchBlock(id)}
               />,
               <Divider key={`d_${id}`} horizontal>
-                {getTranslation(blocksText)}
+                {this.context(blocksText)}
               </Divider>
             )
           )}
           <Button primary basic fluid onClick={this.onAddSearchBlock}>
-            {getTranslation(`Add ${blocksText} block`)}
+            {this.context(`Add ${blocksText} block`)}
           </Button>
 
           <Divider />
           <Button primary basic onClick={this.onSearchButtonClick}>
-            {getTranslation("Search")}
+            {this.context("Search")}
           </Button>
           <Checkbox
             style={{ margin: "10px" }}
-            label={getTranslation("Export to XLSX")}
+            label={this.context("Export to XLSX")}
             checked={this.state.xlsxExport}
             onChange={() => this.setState({ xlsxExport: !this.state.xlsxExport })}
           />
@@ -638,7 +642,7 @@ class QueryBuilder extends React.Component {
                 float: "right"
               }}
             >
-              {getTranslation("Link to search results:")}{" "}
+              {this.context("Link to search results:")}{" "}
               <Link to={`/map_search/${searchURLId}`}>
                 {`${window.location.protocol}\/\/${window.location.host}/map_search/${searchURLId}`}
               </Link>
@@ -656,24 +660,24 @@ class QueryBuilder extends React.Component {
                   padding: "0.78571429em 1.5em"
                 }}
               >
-                {getTranslation("Failed to get search link, please contact administrators.")}
+                {this.context("Failed to get search link, please contact administrators.")}
               </Message>
             </div>
           ) : !user.id ? (
             <Button basic floated="right" disabled>
-              {getTranslation("Only registered users can create new search links")}
+              {this.context("Only registered users can create new search links")}
             </Button>
           ) : searchLinkLoading ? (
             <Button basic positive floated="right" disabled>
               <span>
-                {getTranslation("Getting link to search results")}
+                {this.context("Getting link to search results")}
                 {"... "}
                 <Icon name="spinner" loading />
               </span>
             </Button>
           ) : (
             <Button basic positive floated="right" onClick={getSearchURL}>
-              {getTranslation("Get link to search results")}
+              {this.context("Get link to search results")}
             </Button>
           )}
         </Wrapper>
@@ -681,6 +685,8 @@ class QueryBuilder extends React.Component {
     );
   }
 }
+
+QueryBuilder.contextType = TranslationContext;
 
 QueryBuilder.propTypes = {
   data: PropTypes.object,

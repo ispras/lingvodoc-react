@@ -30,7 +30,7 @@ export const allFieldsQuery = gql`
   query allFields {
     all_fields {
       id
-      translation
+      translations
       data_type
       data_type_translation_gist_id
     }
@@ -41,7 +41,7 @@ export const corpusTemplateFieldsQuery = gql`
   query allFields {
     template_fields(mode: "corpora") {
       id
-      translation
+      translations
       fake_id
       self_fake_id
     }

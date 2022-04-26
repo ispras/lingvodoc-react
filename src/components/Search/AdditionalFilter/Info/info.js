@@ -1,5 +1,3 @@
-import { getTranslation } from "api/i18n";
-
 const isValueString = value => {
   return Object.prototype.toString.call(value) === "[object String]";
 };
@@ -12,7 +10,7 @@ const isValueBoolean = value => {
   return Object.prototype.toString.call(value) === "[object Boolean]";
 };
 
-const info = value => {
+const info = (value, getTranslation) => {
   let result = "";
 
   if (isValueString(value)) {
