@@ -9,7 +9,7 @@ const filter_out_error_set = {
   InvalidRegularExpression: null
 };
 
-const errorLink = onError(({ networkError = {}, graphQLErrors = [] }) => {
+export const globalErrorHandler = ({ networkError = {}, graphQLErrors = [] }) => {
   if (networkError.statusCode === 500) {
     window.logger.err("Internal server error");
   }
@@ -22,7 +22,7 @@ const errorLink = onError(({ networkError = {}, graphQLErrors = [] }) => {
       }
     }
   });
-});
+};
 
 const uploadLink = createUploadLink({
   uri: `${config.apiUrl}/graphql`,
@@ -30,7 +30,7 @@ const uploadLink = createUploadLink({
 });
 
 export default new ApolloClient({
-  link: from([errorLink, uploadLink]),
+  link: from([onError(globalErrorHandler), uploadLink]),
   cache: new InMemoryCache({
     typePolicies: {
       Metadata: { merge: true }

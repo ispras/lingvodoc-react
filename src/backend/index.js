@@ -22,7 +22,25 @@ export const languagesQuery = gql`
         toc_mark
       }
     }
-    is_authenticated
+  }
+`;
+
+export const getLanguageMetadataQuery = gql`
+  query GetLanguageMetadata($id: LingvodocID!) {
+    language(id: $id) {
+      additional_metadata {
+        speakersAmount
+      }
+    }
+  }
+`;
+
+export const dictionariesInfoQuery = gql`
+  query getAllDictionaries {
+    dictionaries(mode: 1) {
+      parent_id
+      category
+    }
   }
 `;
 
@@ -36,12 +54,9 @@ export const synchronizeMutation = gql`
 `;
 
 export const createLanguageMutation = gql`
-  mutation ($parent_id: LingvodocID!, $translation_atoms: [ObjectVal]!) {
-    create_language(parent_id: $parent_id, translation_atoms: $translation_atoms) {
-      language {
-        id
-        translation_gist_id
-      }
+  mutation createLanguage($parent_id: LingvodocID!, $translationAtoms: [ObjectVal]!, $metadata: ObjectVal) {
+    create_language(parent_id: $parent_id, translation_atoms: $translationAtoms, additional_metadata: $metadata) {
+      triumph
     }
   }
 `;
@@ -65,6 +80,14 @@ export const deleteLanguageMutation = gql`
 export const updateLanguageMetadataMutation = gql`
   mutation UpdateLanguageMetadata($id: LingvodocID!, $metadata: ObjectVal!) {
     update_language(id: $id, additional_metadata: $metadata) {
+      triumph
+    }
+  }
+`;
+
+export const updateLanguageAtomMutation = gql`
+  mutation updateAtom($id: LingvodocID!, $atom_id: LingvodocID, $locale_id: Int!, $content: String!) {
+    update_language_atom(id: $id, atom_id: $atom_id, locale_id: $locale_id, content: $content) {
       triumph
     }
   }

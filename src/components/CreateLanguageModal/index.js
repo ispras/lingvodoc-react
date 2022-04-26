@@ -1,106 +1,57 @@
-import React from "react";
-import { connect } from "react-redux";
+import React, { useCallback, useContext, useState } from "react";
 import { Button, Divider, Modal } from "semantic-ui-react";
-import { gql } from "@apollo/client";
-import { graphql } from "@apollo/client/react/hoc";
+import { useMutation } from "@apollo/client";
 import PropTypes from "prop-types";
-import { compose } from "recompose";
-import { bindActionCreators } from "redux";
 
-import { languagesQuery } from "backend";
+import { globalErrorHandler } from "apolo";
+import { createLanguageMutation, languagesQuery } from "backend";
 import EditLanguageMetadata from "components/EditLanguageMetadata";
 import Translations from "components/Translation";
-import { closeModal } from "ducks/language";
 import TranslationContext from "Layout/TranslationContext";
 
-class CreateLanguageModal extends React.Component {
-  constructor(props) {
-    super(props);
+const CreateLanguageModal = ({ parent, close }) => {
+  const getTranslation = useContext(TranslationContext);
 
-    this.state = {
-      translations: [],
-      metadata: null
-    };
+  const [translations, setTranslations] = useState([]);
+  const [metadata, setMetadata] = useState(null);
 
-    this.saveLanguage = this.saveLanguage.bind(this);
-  }
+  const [createLanguage] = useMutation(createLanguageMutation, {
+    onCompleted: () => close(true),
+    onError: globalErrorHandler
+  });
 
-  saveLanguage() {
-    const { createLanguage, parent, actions } = this.props;
-    const translationAtoms = this.state.translations.map(t => ({ locale_id: t.localeId, content: t.content }));
-
+  const saveLanguage = useCallback(() => {
     createLanguage({
-      variables: { parent_id: parent.id, translationAtoms, metadata: this.state.metadata },
-      refetchQueries: [
-        {
-          query: languagesQuery
-        }
-      ]
-    }).then(() => {
-      actions.closeModal();
+      variables: {
+        parent_id: parent.id,
+        translationAtoms: translations.map(t => ({ locale_id: t.localeId, content: t.content })),
+        metadata
+      },
+      refetchQueries: [{ query: languagesQuery }],
+      awaitRefetchQueries: true
     });
-  }
+  }, [createLanguage, metadata, parent, translations]);
 
-  render() {
-    const { visible, actions } = this.props;
-
-    if (!visible) {
-      return null;
-    }
-
-    return (
-      <Modal
-        dimmer
-        open
-        size="small"
-        closeIcon
-        closeOnDimmerClick={false}
-        onClose={actions.closeModal}
-        className="lingvo-modal2"
-      >
-        <Modal.Header>{this.context("Create language")}</Modal.Header>
-        <Modal.Content>
-          <h4>{this.context("Translations")}</h4>
-          <Translations onChange={translations => this.setState({ translations })} />
-          <Divider />
-          <EditLanguageMetadata mode="create" onChange={metadata => this.setState({ metadata })} />
-        </Modal.Content>
-        <Modal.Actions>
-          <Button content={this.context("Save")} onClick={this.saveLanguage} className="lingvo-button-violet" />
-          <Button content={this.context("Cancel")} onClick={actions.closeModal} className="lingvo-button-basic-black" />
-        </Modal.Actions>
-      </Modal>
-    );
-  }
-}
-
-CreateLanguageModal.contextType = TranslationContext;
-
-CreateLanguageModal.propTypes = {
-  actions: PropTypes.shape({
-    closeModal: PropTypes.func
-  }).isRequired,
-  visible: PropTypes.bool.isRequired,
-  parent: PropTypes.object,
-  createLanguage: PropTypes.func.isRequired
+  return (
+    <Modal className="lingvo-modal2" dimmer open size="small" closeIcon onClose={() => close()}>
+      <Modal.Header>{getTranslation("Create language")}</Modal.Header>
+      <Modal.Content>
+        <h4>{getTranslation("Translations")}</h4>
+        <Translations onChange={newTranslations => setTranslations(newTranslations)} />
+        <Divider />
+        <EditLanguageMetadata mode="create" onChange={newMetadata => setMetadata(newMetadata)} />
+      </Modal.Content>
+      <Modal.Actions>
+        <Button content={getTranslation("Save")} onClick={saveLanguage} className="lingvo-button-violet" />
+        <Button content={getTranslation("Cancel")} onClick={() => close()} className="lingvo-button-basic-black" />
+      </Modal.Actions>
+    </Modal>
+  );
 };
 
-const mapStateToProps = state => ({ parent: state.language.parent, visible: state.language.createVisible });
+CreateLanguageModal.propTypes = {
+  parent: PropTypes.object.isRequired,
+  close: PropTypes.func.isRequired
+};
 
-const mapDispatchToProps = dispatch => ({
-  actions: bindActionCreators({ closeModal }, dispatch)
-});
-
-export default compose(
-  connect(mapStateToProps, mapDispatchToProps),
-  graphql(
-    gql`
-      mutation createLanguage($parent_id: LingvodocID!, $translationAtoms: [ObjectVal]!, $metadata: ObjectVal) {
-        create_language(parent_id: $parent_id, translation_atoms: $translationAtoms, additional_metadata: $metadata) {
-          triumph
-        }
-      }
-    `,
-    { name: "createLanguage" }
-  )
-)(CreateLanguageModal);
+export default CreateLanguageModal;
