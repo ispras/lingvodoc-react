@@ -77,6 +77,7 @@ class EditAtoms extends React.Component {
     this.onAddTranslation = this.onAddTranslation.bind(this);
     this.onSave = this.onSave.bind(this);
     this.onFocusTextArea = this.onFocusTextArea.bind(this);
+    this.onBlurTextArea = this.onBlurTextArea.bind(this);
   }
 
   shouldComponentUpdate(nextProps, nextState) {
