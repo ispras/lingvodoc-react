@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { connect } from "react-redux";
 import { Button, Dimmer, Header, Icon, Table } from "semantic-ui-react";
 import { gql } from "@apollo/client";
@@ -198,6 +198,8 @@ const P = ({
   selectedEntries,
   user
 }) => {
+  const getTranslation = useContext(TranslationContext);
+
   const { loading, error } = data;
 
   if (loading || (!loading && !error && !data.perspective)) {
@@ -367,13 +369,13 @@ const P = ({
     <div style={{ overflowY: "auto" }}>
       <div className={mode === "edit" ? "lexical-entries-actions" : ""}>
         {mode === "edit" && (
-          <Button positive icon="plus" content={this.context("Add lexical entry")} onClick={addEntry} />
+          <Button positive icon="plus" content={getTranslation("Add lexical entry")} onClick={addEntry} />
         )}
         {mode === "edit" && (
           <Button
             negative
             icon="minus"
-            content={this.context("Remove lexical entries")}
+            content={getTranslation("Remove lexical entries")}
             onClick={removeEntries}
             disabled={selectedEntries.length < 1}
           />
@@ -382,7 +384,7 @@ const P = ({
           <Button
             positive
             icon="plus"
-            content={this.context('Merge lexical entries')}
+            content={getTranslation('Merge lexical entries')}
             onClick={mergeEntries}
             disabled={selectedEntries.length < 2}
           />
@@ -390,7 +392,7 @@ const P = ({
         {/* {mode === 'publish' && isAuthenticated &&
           <Button
             positive
-            content={this.context('Publish Entities')}
+            content={getTranslation('Publish Entities')}
             disabled={approveDisableCondition(entries)}
             onClick={onApprove}
           />
@@ -398,7 +400,7 @@ const P = ({
         {mode === "contributions" && isAuthenticated && (
           <Button
             positive
-            content={this.context("Accept Contributions")}
+            content={getTranslation("Accept Contributions")}
             disabled={approveDisableCondition(entries)}
             onClick={onApprove}
           />
@@ -425,8 +427,6 @@ const P = ({
     </div>
   );
 };
-
-P.contextType = TranslationContext;
 
 P.propTypes = {
   id: PropTypes.array.isRequired,
