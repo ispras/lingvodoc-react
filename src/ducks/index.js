@@ -14,7 +14,6 @@ import dictionaryProperties from "./dictionaryProperties";
 import distanceMap from "./distanceMap";
 import fields from "./fields";
 import home from "./home";
-import language from "./language";
 import locale from "./locale";
 import markup from "./markup";
 import modals from "./modals";
@@ -39,7 +38,6 @@ export default {
   user,
   snackbar,
   saga,
-  language,
   player,
   markup,
   roles,

@@ -246,7 +246,7 @@ class Wrapper extends React.Component {
   }
 }
 
-Wrapper.contextText = TranslationContext;
+Wrapper.contextType = TranslationContext;
 
 const WrapperWithData = compose(
   connect(
@@ -463,7 +463,7 @@ class SearchTabs extends React.Component {
               },
 
               error_data => {
-                window.logger.err("Failed search query!");
+                window.logger.err(this.context("Failed search query!"));
                 console.log(error_data);
 
                 this.setState({ preload_count: this.state.preload_count - 1 });

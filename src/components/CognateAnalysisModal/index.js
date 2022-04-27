@@ -2367,34 +2367,34 @@ class CognateAnalysisModal extends React.Component {
 
     /* Shows current suggestion state counts. */
 
-    function f_count() {
+    function f_count(getTranslation) {
       return (
         <List>
           <List.Item>
-            {sg_count.left} {this.context("left")}
+            {sg_count.left} {getTranslation("left")}
           </List.Item>
 
           {sg_count.connecting > 0 && (
             <List.Item>
-              {sg_count.connecting} {this.context("connecting...")}
+              {sg_count.connecting} {getTranslation("connecting...")}
             </List.Item>
           )}
 
           {sg_count.connected > 0 && (
             <List.Item>
-              {sg_count.connected} {this.context("connected")}
+              {sg_count.connected} {getTranslation("connected")}
             </List.Item>
           )}
 
           {sg_count.invalidated > 0 && (
             <List.Item>
-              {sg_count.invalidated} {this.context("invalidated")}
+              {sg_count.invalidated} {getTranslation("invalidated")}
             </List.Item>
           )}
 
           {sg_count.error > 0 && (
             <List.Item>
-              {sg_count.error} {this.context("errors")}
+              {sg_count.error} {getTranslation("errors")}
             </List.Item>
           )}
         </List>
@@ -2407,7 +2407,7 @@ class CognateAnalysisModal extends React.Component {
 
     return (
       <div>
-        {sg_count.left < suggestion_list.length && f_count()}
+        {sg_count.left < suggestion_list.length && f_count(this.context)}
 
         <Pagination
           activePage={sg_current_page}
@@ -2449,7 +2449,7 @@ class CognateAnalysisModal extends React.Component {
           onPageChange={(e, { activePage }) => this.setState({ sg_current_page: activePage })}
         />
 
-        {sg_count.left < suggestion_list.length && f_count()}
+        {sg_count.left < suggestion_list.length && f_count(this.context)}
 
         <div style={{ marginTop: "1em" }}>
           <Button

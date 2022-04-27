@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { connect } from "react-redux";
-import { Button, Divider, Header, Modal } from "semantic-ui-react";
+import { Button, Divider, Header, Loader, Message, Modal } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
 import { isEqual } from "lodash";
@@ -64,8 +64,23 @@ const Properties = props => {
   const { id, parentId, title, data, actions, updateAtomMutation, updateMetadataMutation } = props;
   const { loading, error, dictionary, perspective } = data;
 
-  if (loading || error) {
-    return null;
+  if (loading) {
+    return (
+      <Modal open dimmer size="fullscreen" closeOnDimmerClick={false} closeIcon className="lingvo-modal2">
+        <Loader>{getTranslation("Loading")}...</Loader>
+      </Modal>
+    );
+  } else if (error) {
+    return (
+      <Modal closeIcon onClose={actions.closePerspectivePropertiesModal} open className="lingvo-modal2">
+        <Modal.Header>{title}</Modal.Header>
+        <Modal.Content>
+          <Message negative>
+            {getTranslation("Perspective info loading error, please contact adiministrators.")}
+          </Message>
+        </Modal.Content>
+      </Modal>
+    );
   }
 
   const { translation_gist_id: gistId } = perspective;

@@ -254,7 +254,7 @@ export const EditInput = ({ metadata_key, label, value: initialValue, mode, onCh
         key={metadata_key}
         label={label}
         fluid
-        value={value}
+        value={value != null ? value : ""}
         disabled={!onSave && !onChange}
         onChange={(event, data) => {
           setValue(data.value);

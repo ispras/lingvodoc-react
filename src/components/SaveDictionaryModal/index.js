@@ -7,6 +7,7 @@ import PropTypes from "prop-types";
 import { branch, compose, onlyUpdateForKeys, renderNothing } from "recompose";
 import { bindActionCreators } from "redux";
 
+import { chooseTranslation as T } from "api/i18n";
 import { closeSaveDictionaryModal } from "ducks/saveDictionary";
 import TranslationContext from "Layout/TranslationContext";
 

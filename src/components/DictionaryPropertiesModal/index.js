@@ -167,8 +167,10 @@ class Properties extends React.Component {
       });
     }
 
-    if (!isEqual(this.state.files, blobs)) {
-      this.initialState.files = blobs.map(id2str);
+    const blobs_str_list = blobs.map(id2str);
+
+    if (!isEqual(this.state.files, blobs_str_list)) {
+      this.initialState.files = blobs_str_list;
       this.setState({
         files: this.initialState.files
       });
@@ -292,7 +294,11 @@ class Properties extends React.Component {
   }
 
   render() {
-    const { loading, error } = this.props.data;
+    const {
+      actions,
+      title,
+      data: { loading, error }
+    } = this.props;
 
     const loader = (
       <Modal open dimmer size="fullscreen" closeOnDimmerClick={false} closeIcon className="lingvo-modal2">
@@ -304,7 +310,18 @@ class Properties extends React.Component {
       return loader;
     } else if (error) {
       return (
-        <Message negative>{this.context("Dictionary info loading error, please contact adiministrators.")}</Message>
+        <Modal
+          open
+          closeOnDimmerClick={false}
+          closeIcon
+          onClose={actions.closeDictionaryPropertiesModal}
+          className="lingvo-modal2"
+        >
+          <Modal.Header>{title}</Modal.Header>
+          <Modal.Content>
+            <Message negative>{this.context("Dictionary info loading error, please contact adiministrators.")}</Message>
+          </Modal.Content>
+        </Modal>
       );
     }
 
@@ -313,9 +330,7 @@ class Properties extends React.Component {
     }
 
     const {
-      title,
       data: { dictionary, user_blobs: files },
-      actions,
       updateAtomMutation
     } = this.props;
     const { category, translation_gist_id: gistId } = dictionary;

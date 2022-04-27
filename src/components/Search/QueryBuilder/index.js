@@ -118,7 +118,7 @@ const fieldsQuery = gql`
 function Query({ data, query, onFieldChange, onDelete }) {
   const getTranslation = useContext(TranslationContext);
 
-  const fieldId = query.get("field_id", fromJS([]));
+  const fieldId = query.get("field_id", null);
   const str = query.get("search_string", "");
   const type = query.get("matching_type", "");
 
@@ -137,7 +137,7 @@ function Query({ data, query, onFieldChange, onDelete }) {
   const fieldById = compositeId => fields.find(f => compositeId === compositeIdToString(f.id));
   const onChange = (event, { value }) => {
     const field = fieldById(value);
-    onFieldChange("field_id")(event, { value: fromJS(field.id) });
+    onFieldChange("field_id")(event, { value: field ? fromJS(field.id) : null });
   };
 
   const matchingOptions = [
@@ -150,21 +150,23 @@ function Query({ data, query, onFieldChange, onDelete }) {
     <QueryInput
       action
       type="text"
-      placeholder={getTranslation("Search String")}
+      placeholder={`${getTranslation("Search string")}...`}
       value={str}
       onChange={onFieldChange("search_string")}
       className="group-fields-adaptive"
     >
       <Select
-        placeholder="Field"
+        placeholder={`${getTranslation("Field")}...`}
+        clearable
+        search
         options={fieldOptions}
-        value={compositeIdToString(fieldId.toJS())}
+        value={fieldId && compositeIdToString(fieldId.toJS())}
         onChange={onChange}
       />
       <input />
       <Select
         compact
-        placeholder="Match"
+        placeholder={`${getTranslation("Match")}...`}
         options={matchingOptions}
         value={type}
         onChange={onFieldChange("matching_type")}

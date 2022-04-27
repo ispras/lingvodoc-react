@@ -6,6 +6,7 @@ import { ApolloProvider } from "@apollo/client";
 import { applyMiddleware, bindActionCreators, compose, createStore } from "redux";
 import createSagaMiddleware from "redux-saga";
 
+import apollo from "apolo";
 // eslint-disable-next-line import/no-unresolved
 import config from "config";
 import { setApolloClient } from "ducks/apolloClient";
@@ -13,7 +14,6 @@ import { setRunner } from "ducks/saga";
 import { err, log, suc, warn } from "ducks/snackbar";
 import { initMatomo } from "utils/matomo";
 
-import apollo from "./apollo";
 import Layout from "./Layout";
 import combinedReducer from "./reducer";
 import mainFlow from "./sagas";

@@ -70,16 +70,25 @@ const Subject = ({ request, grants, dictionaries, organizations }) => {
     case "administrate_org": {
       const organization = objectById(subject.org_id, organizations);
 
+      return organization ? (
+        <Card header={T(organization.translations)} description={T(organization.about_translations, "")} />
+      ) : null;
+    }
+
+    case "grant_permission": {
+      const grant = objectById(subject.grant_id, grants);
+
       return (
         <Card
-          header={organization ? T(organization.translations) : ""}
-          description={organization ? organization.about : ""}
+          header={T(grant.translations)}
+          meta={grant.grant_number}
+          description={grant ? T(grant.translations) : getTranslation("Unknown grant")}
         />
       );
     }
-    case "grant_permission":
+
     default:
-      return <div>{getTranslation("Unknow request type!")}</div>;
+      return <div>{getTranslation("Unknown request type!")}</div>;
   }
 };
 
@@ -121,10 +130,10 @@ const RequestsPane = ({ requests, grants, users, dictionaries, organizations, ac
               <Table.Cell>{timestampToDate(r.created_at)}</Table.Cell>
               <Table.Cell>{r.message}</Table.Cell>
               <Table.Cell>
-                <Button positive size="mini" onClick={() => acceptRequest(accept, r.id, true, this.context)}>
+                <Button positive size="mini" onClick={() => acceptRequest(accept, r.id, true, getTranslation)}>
                   {getTranslation("Accept")}
                 </Button>
-                <Button negative size="mini" onClick={() => acceptRequest(accept, r.id, false, this.context)}>
+                <Button negative size="mini" onClick={() => acceptRequest(accept, r.id, false, getTranslation)}>
                   {getTranslation("Reject")}
                 </Button>
               </Table.Cell>
