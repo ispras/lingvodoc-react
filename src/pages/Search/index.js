@@ -75,6 +75,7 @@ const searchQuery = gql`
       search_metadata: $searchMetadata
       simple: $blocks
       xlsx_export: $xlsxExport
+      load_entities: false
     ) {
       dictionaries {
         id
