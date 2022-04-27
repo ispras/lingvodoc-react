@@ -86,6 +86,15 @@
   &_gistatom {
     min-width: 45px !important;
     min-height: 38px !important;
+
+    @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+      &,
+      &.ui.visible.popup, 
+      &.visible.transition {
+        display: none !important;
+        visibility: hidden !important;
+      }
+    }
   }
 }
 /* /popups */
@@ -281,10 +290,17 @@
     border: 1px solid rgba(34, 36, 38, 0.15) !important;
     outline: none !important;
     box-shadow: none !important;
-
+    
     &:focus {
       border: 1px solid #5d54cd !important;
       outline: none !important;
+    }
+
+    &_fix {
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      max-height: 42px !important;
+      resize: none;
     }
   }
 }

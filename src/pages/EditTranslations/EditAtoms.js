@@ -1,5 +1,6 @@
 import React from "react";
-import { Button, Dropdown, Input, Popup } from "semantic-ui-react";
+import TextareaAutosize from 'react-textarea-autosize';
+import { Button, Dropdown, Popup } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { withApollo } from "@apollo/client/react/hoc";
 
@@ -75,6 +76,8 @@ class EditAtoms extends React.Component {
     this.onDeleteAtom = this.onDeleteAtom.bind(this);
     this.onAddTranslation = this.onAddTranslation.bind(this);
     this.onSave = this.onSave.bind(this);
+    this.onFocusTextArea = this.onFocusTextArea.bind(this);
+    this.onBlurTextArea = this.onBlurTextArea.bind(this);
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -99,7 +102,7 @@ class EditAtoms extends React.Component {
     this.languageOptions.every(langOption => {
       if (
         this.state.atoms.every(atom => {
-          return atom.locale_id != langOption.value;
+          return atom.locale_id !== langOption.value;
         })
       ) {
         langOptions.push(langOption);
@@ -113,7 +116,7 @@ class EditAtoms extends React.Component {
   getSelectedLanguageOption(atom) {
     let result = null;
     this.languageOptions.some(langOption => {
-      if (atom.locale_id == langOption.value) {
+      if (atom.locale_id === langOption.value) {
         result = langOption;
         return true;
       }
@@ -129,7 +132,7 @@ class EditAtoms extends React.Component {
     this.props.locales.some(locale => {
       if (
         this.state.atoms.every(atom => {
-          return atom.locale_id != locale.id;
+          return atom.locale_id !== locale.id;
         })
       ) {
         result = locale.id;
@@ -140,15 +143,17 @@ class EditAtoms extends React.Component {
     return result;
   }
 
-  onContentChange(event, { value, defaultValue, atomid }) {
-    if (value == defaultValue) {
+  onContentChange(event) {
+    const textarea = event.target;
+
+    if (textarea.value === textarea.defaultValue) {
       return;
     }
 
     const newAtoms = JSON.parse(JSON.stringify(this.state.atoms));
     newAtoms.some(atom => {
-      if (atom.id.toString() == atomid.toString()) {
-        atom.content = value;
+      if (atom.id.toString() === textarea.getAttribute('atomid').toString()) {
+        atom.content = textarea.value;
         return true;
       }
 
@@ -157,14 +162,36 @@ class EditAtoms extends React.Component {
     this.setState({ atoms: newAtoms });
   }
 
+  onFocusTextArea(event) {
+    const width = Math.min(window.screen.width, window.innerWidth);
+    const el = event.target;
+
+    if (width <= 767) {
+      el.classList.remove('lingvo-gist-elem_textarea_fix');
+
+      setTimeout(() => {
+        el.setSelectionRange(el.value.length, el.value.length);
+      }, 0);
+    }
+  }
+
+  onBlurTextArea(event) {
+    const width = Math.min(window.screen.width, window.innerWidth);
+    const el = event.target;
+
+    if (width <= 767) {
+      el.classList.add('lingvo-gist-elem_textarea_fix'); 
+    }
+  }
+
   onLanguageChange(event, { value, defaultValue, atomid }) {
-    if (value == defaultValue) {
+    if (value === defaultValue) {
       return;
     }
 
     const newAtoms = JSON.parse(JSON.stringify(this.state.atoms));
     newAtoms.some(atom => {
-      if (atom.id.toString() == atomid.toString()) {
+      if (atom.id.toString() === atomid.toString()) {
         atom.locale_id = value;
         return true;
       }
@@ -176,7 +203,7 @@ class EditAtoms extends React.Component {
 
   onDeleteAtom(event, { atomid }) {
     const newAtoms = JSON.parse(JSON.stringify(this.state.atoms));
-    this.setState({ atoms: newAtoms.filter(atom => atom.id.toString() != atomid.toString()) });
+    this.setState({ atoms: newAtoms.filter(atom => atom.id.toString() !== atomid.toString()) });
   }
 
   onAddTranslation() {
@@ -229,7 +256,7 @@ class EditAtoms extends React.Component {
       const createResult = result.data.create_translationatom;
       if (createResult && createResult.triumph) {
         newAtoms.some(atom => {
-          if (atom.locale_id == createResult.translationatom.locale_id) {
+          if (atom.locale_id === createResult.translationatom.locale_id) {
             atom.id = createResult.translationatom.id;
             return true;
           }
@@ -248,7 +275,7 @@ class EditAtoms extends React.Component {
     newAtoms.forEach(newAtom => {
       const oldItem = atoms.find(a => a.id.toString() === newAtom.id.toString());
       if (oldItem) {
-        if (oldItem.locale_id != newAtom.locale_id || oldItem.content != newAtom.content) {
+        if (oldItem.locale_id !== newAtom.locale_id || oldItem.content !== newAtom.content) {
           mutations.push(this.updateAtom(oldItem.id, newAtom));
         }
       } else {
@@ -292,7 +319,7 @@ class EditAtoms extends React.Component {
 
     let header = "";
     atoms.some(atom => {
-      if (atom.locale_id == currentLocaleId) {
+      if (atom.locale_id === currentLocaleId) {
         header = atom.content;
         return true;
       }
@@ -307,21 +334,24 @@ class EditAtoms extends React.Component {
           {atoms.map(atom => (
             <div className="lingvo-atom-grid" key={atom.id}>
               <div className="lingvo-atom-grid__text">
-                <Popup
-                  disabled={!!newGist}
+                <Popup 
+                  disabled={ !!newGist }
                   trigger={
-                    <Input
-                      value={atom.content}
-                      onChange={this.onContentChange}
-                      atomid={atom.id}
-                      fluid
-                      className="lingvo-gist-elem"
+                    <TextareaAutosize 
+                      defaultValue={atom.content}
+                      onFocus={this.onFocusTextArea}
+                      onBlur={this.onBlurTextArea} 
+                      onChange={this.onContentChange} 
+                      atomid={atom.id} 
+                      className="lingvo-gist-elem lingvo-gist-elem_textarea lingvo-gist-elem_textarea_fix" 
                     />
                   }
+                  hideOnScroll={true}
                   content={atom.content}
                   className="lingvo-popup-inverted lingvo-popup-inverted_gistatom"
                 />
               </div>
+
               <div className="lingvo-atom-grid__lang">
                 <Dropdown
                   className="lingvo-gist-elem lingvo-gist-elem_language"
@@ -337,7 +367,7 @@ class EditAtoms extends React.Component {
               <div className="lingvo-atom-grid__delete">
                 <Button
                   icon={<i className="lingvo-icon lingvo-icon_trash" />}
-                  disabled={atoms.length == 1}
+                  disabled={atoms.length === 1}
                   onClick={this.onDeleteAtom}
                   atomid={atom.id}
                   className="lingvo-button-atom-delete"
@@ -349,7 +379,7 @@ class EditAtoms extends React.Component {
 
         <div className="lingvo-gist__buttons">
           <Button
-            disabled={this.getFreeLocale() == null}
+            disabled={!this.getFreeLocale()}
             onClick={this.onAddTranslation}
             className="lingvo-button-basic-black lingvo-button-basic-black_small"
           >
