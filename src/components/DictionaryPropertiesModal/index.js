@@ -167,8 +167,10 @@ class Properties extends React.Component {
       });
     }
 
-    if (!isEqual(this.state.files, blobs)) {
-      this.initialState.files = blobs.map(id2str);
+    const blobs_str_list = blobs.map(id2str);
+
+    if (!isEqual(this.state.files, blobs_str_list)) {
+      this.initialState.files = blobs_str_list;
       this.setState({
         files: this.initialState.files
       });
