@@ -2,13 +2,12 @@ import React, { useCallback, useContext, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import SortableTree, { getFlatDataFromTree, getNodeAtPath, map } from "react-sortable-tree";
 import { Button, Icon } from "semantic-ui-react";
-import { useMutation, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import Immutable from "immutable";
 import { findIndex, isEqual } from "lodash";
 import PropTypes from "prop-types";
 
 import { chooseTranslation } from "api/i18n";
-import { globalErrorHandler } from "apolo";
 import {
   deleteLanguageMutation,
   dictionariesInfoQuery,
@@ -19,6 +18,7 @@ import {
 import CreateLanguageModal from "components/CreateLanguageModal";
 import EditLanguageModal from "components/EditLanguageModal";
 import { checkLanguageId } from "components/Home/components/LangsNav";
+import { useMutation } from "hooks";
 import TranslationContext from "Layout/TranslationContext";
 import { buildLanguageTree } from "pages/Search/treeBuilder";
 import { compositeIdToString } from "utils/compositeId";
@@ -86,18 +86,9 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
     onCompleted: data => setTreeDataFromQuery(data.language_tree)
   });
 
-  const [deleteLanguage] = useMutation(deleteLanguageMutation, {
-    onCompleted: () => refetch(),
-    onError: globalErrorHandler
-  });
-  const [moveLanguage] = useMutation(moveLanguageMutation, {
-    onCompleted: () => refetch(),
-    onError: globalErrorHandler
-  });
-  const [updateLanguageMetadata] = useMutation(updateLanguageMetadataMutation, {
-    onCompleted: () => refetch(),
-    onError: globalErrorHandler
-  });
+  const [deleteLanguage] = useMutation(deleteLanguageMutation, { onCompleted: () => refetch() });
+  const [moveLanguage] = useMutation(moveLanguageMutation, { onCompleted: () => refetch() });
+  const [updateLanguageMetadata] = useMutation(updateLanguageMetadataMutation, { onCompleted: () => refetch() });
 
   const onNodeSelected = useCallback(
     node => {

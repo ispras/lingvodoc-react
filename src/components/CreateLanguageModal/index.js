@@ -1,12 +1,11 @@
 import React, { useCallback, useContext, useState } from "react";
 import { Button, Divider, Modal } from "semantic-ui-react";
-import { useMutation } from "@apollo/client";
 import PropTypes from "prop-types";
 
-import { globalErrorHandler } from "apolo";
 import { createLanguageMutation, languagesQuery } from "backend";
 import EditLanguageMetadata from "components/EditLanguageMetadata";
 import Translations from "components/Translation";
+import { useMutation } from "hooks";
 import TranslationContext from "Layout/TranslationContext";
 
 const CreateLanguageModal = ({ parent, close }) => {
@@ -15,10 +14,7 @@ const CreateLanguageModal = ({ parent, close }) => {
   const [translations, setTranslations] = useState([]);
   const [metadata, setMetadata] = useState(null);
 
-  const [createLanguage] = useMutation(createLanguageMutation, {
-    onCompleted: () => close(true),
-    onError: globalErrorHandler
-  });
+  const [createLanguage] = useMutation(createLanguageMutation, { onCompleted: () => close(true) });
 
   const saveLanguage = useCallback(() => {
     createLanguage({
