@@ -16,6 +16,7 @@ class ELAN extends React.Component {
       this.init();
     }
 
+    // eslint-disable-next-line no-undef
     this.elan = Object.create(WaveSurfer.ELAN);
     if (this.props.wavesurfer) {
       this.props.wavesurfer.on("ready", () => {
@@ -35,9 +36,9 @@ class ELAN extends React.Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (this.elan && nextProps.zoom !== this.props.zoom) {
-      const { zoom } = nextProps;
+  componentDidUpdate(prevProps) {
+    if (this.elan && prevProps.zoom !== this.props.zoom) {
+      const { zoom } = this.props;
       this.elan.setPxPerSec(zoom);
       if (this.props.wavesurfer) {
         this.props.wavesurfer.zoom(zoom);
@@ -46,8 +47,6 @@ class ELAN extends React.Component {
       }
     }
   }
-
-  comp;
 
   render() {
     return (
@@ -67,7 +66,5 @@ ELAN.propTypes = {
   markup: PropTypes.string,
   zoom: PropTypes.number
 };
-
-ELAN.defaultProps = {};
 
 export default ELAN;

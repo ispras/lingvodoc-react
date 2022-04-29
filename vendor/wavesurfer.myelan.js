@@ -232,6 +232,10 @@ WaveSurfer.ELAN = {
   },
 
   cursorMove() {
+    if (!this.wavesurfer.drawer.wrapper) {
+      return;
+    }
+
     this.tiersNode.scrollLeft = this.wavesurfer.drawer.getScrollX();
 
     const progress = this.wavesurfer.getCurrentTime();
