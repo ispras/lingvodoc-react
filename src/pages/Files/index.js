@@ -149,26 +149,7 @@ class Files extends React.Component {
   }
 
   render() {
-    if (this.props.user.id === undefined && !this.props.loading) {
-      return (
-        <div className="background-content">
-          <Message>
-            <Message.Header>{this.context("Please sign in")}</Message.Header>
-            <p>{this.context("Only registered users can work with files.")}</p>
-          </Message>
-        </div>
-      );
-    } else if ((this.props.loading && !this.props.error) || (this.props.data.loading && !this.props.data.error)) {
-      return (
-        <div className="background-content">
-          <Segment>
-            <Loader active inline="centered" indeterminate>
-              {`${this.context("Loading")}...`}
-            </Loader>
-          </Segment>
-        </div>
-      );
-    } else if (this.props.error) {
+    if (this.props.error) {
       return (
         <div className="background-content">
           <Message compact negative>
@@ -184,7 +165,27 @@ class Files extends React.Component {
           </Message>
         </div>
       );
+    } else if (this.props.loading || this.props.data.loading) {
+      return (
+        <div className="background-content">
+          <Segment>
+            <Loader active inline="centered" indeterminate>
+              {`${this.context("Loading")}...`}
+            </Loader>
+          </Segment>
+        </div>
+      );
+    } else if (this.props.user.id === undefined) {
+      return (
+        <div className="background-content">
+          <Message>
+            <Message.Header>{this.context("Please sign in")}</Message.Header>
+            <p>{this.context("Only registered users can work with files.")}</p>
+          </Message>
+        </div>
+      );
     }
+
     const { data, sortByField, dispatch } = this.props;
 
     const { user_blobs: userBlobs } = data;
