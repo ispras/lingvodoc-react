@@ -39,7 +39,7 @@ import "./style.scss";
 
 const sourcePerspectiveQuery = gql`
   query sourcePersepctiveData {
-    perspectives(only_with_parser_result_data: true) {
+    perspectives(only_with_valency_data: true) {
       id
       tree {
         id
