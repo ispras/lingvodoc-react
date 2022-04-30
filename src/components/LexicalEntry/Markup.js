@@ -16,6 +16,9 @@ import ParserResults from "./ParserResults";
 import RunParserModal from "./RunParserModal";
 
 function content(c) {
+  if (!c) {
+    return "";
+  }
   const MAX_CONTENT_LENGTH = 12;
   if (c.length <= MAX_CONTENT_LENGTH) {
     return c;
