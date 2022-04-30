@@ -1039,20 +1039,12 @@ class Valency extends React.Component {
           </Message>
         </div>
       );
-    } else if (this.props.data.error) {
-      return (
-        <div className="background-content">
-          <Message compact negative>
-            {this.context("General error, please contact administrators.")}
-          </Message>
-        </div>
-      );
-    } else if (this.props.loading || this.props.data.loading) {
+    } else if (this.props.loading) {
       return (
         <div className="background-content">
           <Segment>
             <Loader active inline="centered" indeterminate>
-              {`${this.context("Loading")}...`}
+              {`${this.context("Loading sign-in data")}...`}
             </Loader>
           </Segment>
         </div>
@@ -1064,6 +1056,24 @@ class Valency extends React.Component {
             <Message.Header>{this.context("Please sign in")}</Message.Header>
             <p>{this.context("Only registered users can work with valency data.")}</p>
           </Message>
+        </div>
+      );
+    } else if (this.props.data.error) {
+      return (
+        <div className="background-content">
+          <Message compact negative>
+            {this.context("General error, please contact administrators.")}
+          </Message>
+        </div>
+      );
+    } else if (this.props.data.loading) {
+      return (
+        <div className="background-content">
+          <Segment>
+            <Loader active inline="centered" indeterminate>
+              {`${this.context("Loading perspective data")}...`}
+            </Loader>
+          </Segment>
         </div>
       );
     }
@@ -1485,7 +1495,7 @@ Valency.contextType = TranslationContext;
 
 export default compose(
   connect(state => state.user),
-  graphql(sourcePerspectiveQuery),
+  graphql(sourcePerspectiveQuery, { skip: ({ user }) => user.id === undefined }),
   graphql(createValencyDataMutation, { name: "createValencyData" }),
   graphql(setValencyAnnotationMutation, { name: "setValencyAnnotation" }),
   withApollo
