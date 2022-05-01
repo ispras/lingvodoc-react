@@ -13,6 +13,9 @@ import TranslationContext from "Layout/TranslationContext";
 import Entities from "./index";
 
 function content(c) {
+  if (!c) {
+    return "";
+  }
   const MAX_CONTENT_LENGTH = 12;
   if (c.length <= MAX_CONTENT_LENGTH) {
     return c;
