@@ -47,6 +47,11 @@ ul.tree {
     font-weight: bold;
     font-size: 1.4em;
   }
+
+  &.highlighted {
+    background-color: #edecf6;
+    border-radius: 0 12px 12px 0;
+  }
 }
 
 .lang {
