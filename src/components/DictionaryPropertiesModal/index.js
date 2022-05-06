@@ -119,10 +119,13 @@ class Properties extends React.Component {
       selectedParent: null,
       parentQuery: false
     };
+
     this.initialState = {
       location: null,
       files: []
     };
+
+    this.check_init_flag = false;
 
     this.check_init = this.check_init.bind(this);
 
@@ -138,6 +141,10 @@ class Properties extends React.Component {
   }
 
   check_init() {
+    if (this.check_init_flag) {
+      return;
+    }
+
     const { loading, error } = this.props.data;
 
     if (loading || error) {
@@ -192,6 +199,8 @@ class Properties extends React.Component {
           });
         });
     }
+
+    this.check_init_flag = true;
   }
 
   componentDidMount() {
