@@ -1,20 +1,19 @@
-import React, { useContext, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Container, Tab } from "semantic-ui-react";
 
-import { chooseTranslation } from "api/i18n";
 import { getLanguagesForSearch } from "backend";
 import LanguageSearchField from "components/LanguageSearchField";
 import LanguageTree from "components/LanguageTree";
 import TableOfContents from "components/TableOfContents";
-import TranslationContext from "Layout/TranslationContext";
+import { useTranslations } from "hooks";
 
 import SortModeSelector from "./sort_mode_selector";
 
 import "./styles.scss";
 
 const DictionariesAll = () => {
-  const getTranslation = useContext(TranslationContext);
+  const { getTranslation, chooseTranslation } = useTranslations();
 
   const [searchParams, setSearchParams] = useSearchParams();
 

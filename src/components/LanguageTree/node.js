@@ -21,7 +21,7 @@ const generateId = entity => {
 };
 
 /** Language tree node, can be language, grant, organization, dictionary or text */
-const Node = ({ nodeInfo, root, selected, setSelected }) => {
+const Node = ({ nodeInfo, root, selected, setSelected, proxyData }) => {
   const { getTranslation, chooseTranslation } = useTranslations();
 
   const user = useSelector(state => state.user.user);
@@ -43,7 +43,9 @@ const Node = ({ nodeInfo, root, selected, setSelected }) => {
               <Node key={index} nodeInfo={child} selected={selected} setSelected={setSelected} />
             ))}
             {entity.dictionaries.map((dictionary, index) => {
-              const isDownloaded = true;
+              const isDownloaded = proxyData
+                ? proxyData.dictionaries.find(d => d.id.toString() === dictionary.id.toString()) !== undefined
+                : false;
               const authors = dictionary.additional_metadata.authors;
               const perspectives = dictionary.perspectives;
               return (
@@ -63,9 +65,7 @@ const Node = ({ nodeInfo, root, selected, setSelected }) => {
                       }}
                     />
                   )}
-                  {(config.buildType === "desktop" || config.buildType === "proxy") && isDownloaded && (
-                    <Icon name="download" />
-                  )}
+                  {isDownloaded && <Icon name="download" />}
                   <span className="dict-name">
                     {dictionary.translations && chooseTranslation(dictionary.translations)}{" "}
                     {config.buildType === "server" &&
@@ -76,23 +76,34 @@ const Node = ({ nodeInfo, root, selected, setSelected }) => {
                   {perspectives && perspectives.length !== 0 && (
                     <Dropdown inline text={`${getTranslation("View")} (${perspectives.length})`}>
                       <Dropdown.Menu>
-                        {perspectives.map(perspective => (
-                          <Dropdown.Item
-                            key={compositeIdToString(perspective.id)}
-                            as={Link}
-                            to={`/dictionary/${dictionary.id.join("/")}/perspective/${perspective.id.join("/")}`}
-                          >
-                            {(config.buildType === "desktop" || config.buildType === "proxy") && (
-                              <span>
-                                {perspective.view && <Icon name="book" />}
-                                {perspective.edit && <Icon name="edit" />}
-                                {perspective.publish && <Icon name="external share" />}
-                                {perspective.limited && <Icon name="privacy" />}
-                              </span>
-                            )}
-                            {perspective.translations && chooseTranslation(perspective.translations)}
-                          </Dropdown.Item>
-                        ))}
+                        {perspectives.map(perspective => {
+                          const permissions = proxyData ? proxyData.permission_lists : undefined;
+                          return (
+                            <Dropdown.Item
+                              key={compositeIdToString(perspective.id)}
+                              as={Link}
+                              to={`/dictionary/${dictionary.id.join("/")}/perspective/${perspective.id.join("/")}`}
+                            >
+                              {(config.buildType === "desktop" || config.buildType === "proxy") && (
+                                <span>
+                                  {permissions.view.find(
+                                    p => compositeIdToString(p.id) !== compositeIdToString(perspective.id)
+                                  ) !== undefined && <Icon name="book" />}
+                                  {permissions.edit.find(
+                                    p => compositeIdToString(p.id) !== compositeIdToString(perspective.id)
+                                  ) !== undefined && <Icon name="edit" />}
+                                  {permissions.publish.find(
+                                    p => compositeIdToString(p.id) !== compositeIdToString(perspective.id)
+                                  ) !== undefined && <Icon name="external share" />}
+                                  {permissions.limited.find(
+                                    p => compositeIdToString(p.id) !== compositeIdToString(perspective.id)
+                                  ) !== undefined && <Icon name="privacy" />}
+                                </span>
+                              )}
+                              {perspective.translations && chooseTranslation(perspective.translations)}
+                            </Dropdown.Item>
+                          );
+                        })}
                       </Dropdown.Menu>
                     </Dropdown>
                   )}
@@ -110,7 +121,14 @@ const Node = ({ nodeInfo, root, selected, setSelected }) => {
             entity.grant_number
           })`}</Header>
           {children.map((child, index) => (
-            <Node key={index} nodeInfo={child} root selected={selected} setSelected={setSelected} />
+            <Node
+              key={index}
+              nodeInfo={child}
+              root
+              selected={selected}
+              setSelected={setSelected}
+              proxyData={proxyData}
+            />
           ))}
         </div>
       );
@@ -119,7 +137,14 @@ const Node = ({ nodeInfo, root, selected, setSelected }) => {
         <div id={generateId(entity)} className="grant">
           <Header>{chooseTranslation(entity.translations)}</Header>
           {children.map((child, index) => (
-            <Node key={index} nodeInfo={child} root selected={selected} setSelected={setSelected} />
+            <Node
+              key={index}
+              nodeInfo={child}
+              root
+              selected={selected}
+              setSelected={setSelected}
+              proxyData={proxyData}
+            />
           ))}
         </div>
       );
@@ -128,7 +153,14 @@ const Node = ({ nodeInfo, root, selected, setSelected }) => {
         <div className="grant">
           <div className="grant-title">{getTranslation("Individual work")}</div>
           {children.map((child, index) => (
-            <Node key={index} nodeInfo={child} root selected={selected} setSelected={setSelected} />
+            <Node
+              key={index}
+              nodeInfo={child}
+              root
+              selected={selected}
+              setSelected={setSelected}
+              proxyData={proxyData}
+            />
           ))}
         </div>
       );
@@ -141,7 +173,8 @@ Node.propTypes = {
   nodeInfo: PropTypes.object.isRequired,
   root: PropTypes.bool,
   selected: PropTypes.array.isRequired,
-  setSelected: PropTypes.func.isRequired
+  setSelected: PropTypes.func.isRequired,
+  proxyData: PropTypes.object
 };
 
 export default Node;

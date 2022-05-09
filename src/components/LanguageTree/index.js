@@ -3,8 +3,10 @@ import { Container } from "semantic-ui-react";
 import { useLazyQuery, useQuery } from "@apollo/client";
 import PropTypes from "prop-types";
 
-import { getLanguageTree, getTocGrants, getTocOrganizations } from "backend";
+import { getLanguageTree, getTocGrants, getTocOrganizations, proxyDictionaryInfo } from "backend";
 import Placeholder from "components/Placeholder";
+// eslint-disable-next-line import/no-unresolved
+import config from "config";
 import { compositeIdToString, stringToCompositeId } from "utils/compositeId";
 import smoothScroll from "utils/smoothscroll";
 
@@ -55,7 +57,18 @@ const LanguageTree = ({ kind, entityId, selected, setSelected, style }) => {
     fetchPolicy: "network-only"
   });
 
+  const [requestProxyData, { called: proxyDataRequested, loading: proxyDataLoading, data: proxyData }] = useLazyQuery(
+    proxyDictionaryInfo,
+    {
+      fetchPolicy: "network-only"
+    }
+  );
+
   const loading = useMemo(() => {
+    if (proxyDataLoading) {
+      return true;
+    }
+
     switch (kind) {
       case "language":
         return treeLoading;
@@ -64,7 +77,7 @@ const LanguageTree = ({ kind, entityId, selected, setSelected, style }) => {
       case "organization":
         return treeLoading || organizationsLoading;
     }
-  }, [grantsLoading, kind, organizationsLoading, treeLoading]);
+  }, [grantsLoading, kind, organizationsLoading, proxyDataLoading, treeLoading]);
 
   const tree = useMemo(() => {
     if (loading || !treeData || (kind === "grant" && !grantsData) || (kind === "organization" && !organizationsData)) {
@@ -145,6 +158,12 @@ const LanguageTree = ({ kind, entityId, selected, setSelected, style }) => {
     }
   }, [entityId, revealEntity, tree]);
 
+  useEffect(() => {
+    if ((config.buildType === "desktop" || config.buildType === "proxy") && !proxyDataRequested) {
+      requestProxyData();
+    }
+  }, [proxyDataRequested, requestProxyData]);
+
   if (loading) {
     return <Placeholder />;
   }
@@ -157,7 +176,7 @@ const LanguageTree = ({ kind, entityId, selected, setSelected, style }) => {
     <Container className="container-gray" style={style}>
       <ul className="tree">
         {tree.map((node, index) => (
-          <Node key={index} nodeInfo={node} root selected={selected} setSelected={setSelected} />
+          <Node key={index} nodeInfo={node} root selected={selected} setSelected={setSelected} proxyData={proxyData} />
         ))}
       </ul>
     </Container>

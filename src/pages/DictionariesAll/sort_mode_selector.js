@@ -1,4 +1,4 @@
-import React, { useContext, useMemo } from "react";
+import React, { useMemo } from "react";
 import { useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 import { Button, Container, Form, Radio, Segment } from "semantic-ui-react";
@@ -7,13 +7,12 @@ import PropTypes from "prop-types";
 import { downloadDictionariesMutation } from "backend";
 // eslint-disable-next-line import/no-unresolved
 import config from "config";
-import { useMutation } from "hooks";
-import TranslationContext from "Layout/TranslationContext";
+import { useMutation, useTranslations } from "hooks";
 
 import "./styles.scss";
 
 const SortModeSelector = ({ selected, setSelected }) => {
-  const getTranslation = useContext(TranslationContext);
+  const { getTranslation } = useTranslations();
 
   const [searchParams, setSearchParams] = useSearchParams();
   const sortMode = useMemo(() => {

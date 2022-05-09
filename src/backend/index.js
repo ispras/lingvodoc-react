@@ -113,6 +113,28 @@ export const languagesQuery = gql`
   }
 `;
 
+export const proxyDictionaryInfo = gql`
+  query qcounter($id: LingvodocID!, $mode: String!) {
+    dictionaries(proxy: false, published: true, category: 0) {
+      id
+    }
+    permission_lists(proxy: true) {
+      view {
+        id
+      }
+      edit {
+        id
+      }
+      publish {
+        id
+      }
+      limited {
+        id
+      }
+    }
+  }
+`;
+
 export const queryCounter = gql`
   query qcounter($id: LingvodocID!, $mode: String!) {
     perspective(id: $id) {

@@ -1,11 +1,10 @@
-import React, { useContext, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Container, Form, Select } from "semantic-ui-react";
 import { useLazyQuery } from "@apollo/client";
 
-import { chooseTranslation } from "api/i18n";
 import { getLanguagesForSearch } from "backend";
-import TranslationContext from "Layout/TranslationContext";
+import { useTranslations } from "hooks";
 import { compositeIdToString } from "utils/compositeId";
 
 import "./styles.scss";
@@ -14,7 +13,7 @@ import "./styles.scss";
  * Dropdown language selector with search capability.
  */
 const LanguageSearchField = () => {
-  const getTranslation = useContext(TranslationContext);
+  const { getTranslation, chooseTranslation } = useTranslations();
 
   const [searchParams, setSearchParams] = useSearchParams();
 
