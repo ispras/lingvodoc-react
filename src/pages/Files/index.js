@@ -149,30 +149,30 @@ class Files extends React.Component {
   }
 
   render() {
-    if (this.props.user.id === undefined && !this.props.loading) {
+    if (this.props.error) {
+      return (
+        <div className="background-content">
+          <Message compact negative>
+            {this.context("User sign-in error, please sign in; if not successful, please contact administrators.")}
+          </Message>
+        </div>
+      );
+    } else if (this.props.loading) {
+      return (
+        <div className="background-content">
+          <Segment>
+            <Loader active inline="centered" indeterminate>
+              {`${this.context("Loading sign-in data")}...`}
+            </Loader>
+          </Segment>
+        </div>
+      );
+    } else if (this.props.user.id === undefined) {
       return (
         <div className="background-content">
           <Message>
             <Message.Header>{this.context("Please sign in")}</Message.Header>
             <p>{this.context("Only registered users can work with files.")}</p>
-          </Message>
-        </div>
-      );
-    } else if ((this.props.loading && !this.props.error) || (this.props.data.loading && !this.props.data.error)) {
-      return (
-        <div className="background-content">
-          <Segment>
-            <Loader active inline="centered" indeterminate>
-              {`${this.context("Loading")}...`}
-            </Loader>
-          </Segment>
-        </div>
-      );
-    } else if (this.props.error) {
-      return (
-        <div className="background-content">
-          <Message compact negative>
-            {this.context("User sign-in error, please sign in; if not successful, please contact administrators.")}
           </Message>
         </div>
       );
@@ -184,7 +184,18 @@ class Files extends React.Component {
           </Message>
         </div>
       );
+    } else if (this.props.data.loading) {
+      return (
+        <div className="background-content">
+          <Segment>
+            <Loader active inline="centered" indeterminate>
+              {`${this.context("Loading file data")}...`}
+            </Loader>
+          </Segment>
+        </div>
+      );
     }
+
     const { data, sortByField, dispatch } = this.props;
 
     const { user_blobs: userBlobs } = data;
@@ -331,7 +342,7 @@ function sortByFieldReducer(state, { type, payload }) {
 
 export default compose(
   connect(state => state.user),
-  graphql(userBlobsQuery),
+  graphql(userBlobsQuery, { skip: ({ user }) => user.id === undefined }),
   graphql(createBlobMutation, { name: "createBlob" }),
   withReducer("sortByField", "dispatch", sortByFieldReducer, null)
 )(Files);

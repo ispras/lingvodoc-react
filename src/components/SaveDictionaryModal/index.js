@@ -42,14 +42,6 @@ class Properties extends React.Component {
     this.onSaveData = this.onSaveData.bind(this);
   }
 
-  componentWillReceiveProps(props) {
-    const {
-      data: { error, loading, dictionary }
-    } = props;
-    if (!(loading && error)) {
-    }
-  }
-
   onChangeMode(e, { value }) {
     this.setState({
       mode: value
@@ -141,9 +133,7 @@ Properties.contextType = TranslationContext;
 
 Properties.propTypes = {
   id: PropTypes.array.isRequired,
-  data: PropTypes.shape({
-    loading: PropTypes.bool.isRequired
-  }).isRequired,
+  data: PropTypes.object.isRequired,
   save: PropTypes.func.isRequired,
   actions: PropTypes.shape({
     closeSaveDictionaryModal: PropTypes.func.isRequired

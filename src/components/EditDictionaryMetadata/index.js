@@ -52,7 +52,7 @@ export function initDropdownOptions(select_tags_metadata, authors, humanSettleme
     };
   });
   toAdd.forEach(author => {
-    this.authorsOptions.push({ text: author, value: author });
+    authorsOptions.push({ text: author, value: author });
   });
 
   toAdd = humanSettlement.slice();
@@ -69,7 +69,7 @@ export function initDropdownOptions(select_tags_metadata, authors, humanSettleme
     };
   });
   toAdd.forEach(settlement => {
-    this.settlementsOptions.push({ text: settlement, value: settlement });
+    settlementsOptions.push({ text: settlement, value: settlement });
   });
 
   toAdd = years.slice();
@@ -86,7 +86,7 @@ export function initDropdownOptions(select_tags_metadata, authors, humanSettleme
     };
   });
   toAdd.forEach(year => {
-    this.yearsOptions.push({ text: year, value: year });
+    yearsOptions.push({ text: year, value: year });
   });
 
   return [authorsOptions, settlementsOptions, yearsOptions];

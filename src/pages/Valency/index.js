@@ -39,7 +39,7 @@ import "./style.scss";
 
 const sourcePerspectiveQuery = gql`
   query sourcePersepctiveData {
-    perspectives(only_with_parser_result_data: true) {
+    perspectives(only_with_valency_data: true) {
       id
       tree {
         id
@@ -682,9 +682,38 @@ class Valency extends React.Component {
         () => {
           window.logger.suc(this.context("Created valency data."));
 
-          this.state.perspective.has_valency_data = true;
+          const { client } = this.props;
+          const id_str = client.cache.identify(this.state.perspective);
+
+          const result = client.writeFragment({
+            id: id_str,
+            fragment: gql`
+              fragment HasValencyData on DictionaryPerspective {
+                has_valency_data
+              }
+            `,
+            data: {
+              has_valency_data: true
+            }
+          });
+
+          const perspective = client.readFragment({
+            id: id_str,
+            fragment: gql`
+              fragment Perspective on DictionaryPerspective {
+                id
+                tree {
+                  id
+                  translations
+                  marked_for_deletion
+                }
+                has_valency_data
+              }
+            `
+          });
 
           this.setState({
+            perspective,
             current_page: 1,
             input_go_to_page: 1,
             creating_valency_data: false,
@@ -694,6 +723,7 @@ class Valency extends React.Component {
           });
 
           this.queryValencyData({
+            perspective,
             current_page: 1
           });
         },
@@ -1001,30 +1031,30 @@ class Valency extends React.Component {
   }
 
   render() {
-    if (this.props.user.id === undefined && !this.props.loading) {
+    if (this.props.error) {
+      return (
+        <div className="background-content">
+          <Message compact negative>
+            {this.context("User sign-in error, please sign in; if not successful, please contact administrators.")}
+          </Message>
+        </div>
+      );
+    } else if (this.props.loading) {
+      return (
+        <div className="background-content">
+          <Segment>
+            <Loader active inline="centered" indeterminate>
+              {`${this.context("Loading sign-in data")}...`}
+            </Loader>
+          </Segment>
+        </div>
+      );
+    } else if (this.props.user.id === undefined) {
       return (
         <div className="background-content">
           <Message>
             <Message.Header>{this.context("Please sign in")}</Message.Header>
             <p>{this.context("Only registered users can work with valency data.")}</p>
-          </Message>
-        </div>
-      );
-    } else if ((this.props.loading && !this.props.error) || (this.props.data.loading && !this.props.data.error)) {
-      return (
-        <div className="background-content">
-          <Segment>
-            <Loader active inline="centered" indeterminate>
-              {`${this.context("Loading")}...`}
-            </Loader>
-          </Segment>
-        </div>
-      );
-    } else if (this.props.error) {
-      return (
-        <div className="background-content">
-          <Message compact negative>
-            {this.context("User sign-in error, please sign in; if not successful, please contact administrators.")}
           </Message>
         </div>
       );
@@ -1034,6 +1064,16 @@ class Valency extends React.Component {
           <Message compact negative>
             {this.context("General error, please contact administrators.")}
           </Message>
+        </div>
+      );
+    } else if (this.props.data.loading) {
+      return (
+        <div className="background-content">
+          <Segment>
+            <Loader active inline="centered" indeterminate>
+              {`${this.context("Loading perspective data")}...`}
+            </Loader>
+          </Segment>
         </div>
       );
     }
@@ -1455,7 +1495,7 @@ Valency.contextType = TranslationContext;
 
 export default compose(
   connect(state => state.user),
-  graphql(sourcePerspectiveQuery),
+  graphql(sourcePerspectiveQuery, { skip: ({ user }) => user.id === undefined }),
   graphql(createValencyDataMutation, { name: "createValencyData" }),
   graphql(setValencyAnnotationMutation, { name: "setValencyAnnotation" }),
   withApollo

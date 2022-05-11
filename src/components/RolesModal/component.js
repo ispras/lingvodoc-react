@@ -115,14 +115,6 @@ class Roles extends React.Component {
     this.onDeleteUser = this.onDeleteUser.bind(this);
   }
 
-  componentWillReceiveProps(props) {
-    const { data, close } = props;
-
-    if (data.error) {
-      close();
-    }
-  }
-
   onToggleRole(user, role) {
     const {
       id,
@@ -199,10 +191,10 @@ class Roles extends React.Component {
 
     const users = uniq(union(...permissions.map(p => p.users)));
     const userOptions = without(allUsers, ...users)
-      .map(user => ({
-        key: user.id,
-        value: user.id,
-        text: user.name
+      .map(u => ({
+        key: u.id,
+        value: u.id,
+        text: u.name
       }))
       .filter(u => u.value !== 1);
 
@@ -232,15 +224,15 @@ class Roles extends React.Component {
           <Table.Header>
             <Table.Row>
               <Table.HeaderCell>{this.context("Role")}</Table.HeaderCell>
-              {users.map(user => (
-                <Table.HeaderCell key={user.id}>
-                  {user.name}
+              {users.map(u => (
+                <Table.HeaderCell key={u.id}>
+                  {u.name}
                   <Button
                     icon={<i className="lingvo-icon lingvo-icon_trash" />}
                     title={this.context("Remove user")}
-                    onClick={() => this.onDeleteUser(user.id, permissions)}
+                    onClick={() => this.onDeleteUser(u.id, permissions)}
                     className="lingvo-button-roles-delete"
-                    disabled={user.id === currentUser.id}
+                    disabled={u.id === currentUser.id}
                   />
                 </Table.HeaderCell>
               ))}
@@ -251,12 +243,12 @@ class Roles extends React.Component {
             {permissions.map(role => (
               <Table.Row key={role.group.id}>
                 <Table.Cell>{this.context(role.group.name)}</Table.Cell>
-                {users.map(user => (
-                  <Table.Cell key={user.id}>
+                {users.map(u => (
+                  <Table.Cell key={u.id}>
                     <Radio
                       toggle
-                      onChange={() => this.onToggleRole(user, role, permissions)}
-                      checked={Roles.hasRole(user, role)}
+                      onChange={() => this.onToggleRole(u, role, permissions)}
+                      checked={Roles.hasRole(u, role)}
                       className="lingvo-radio-toggle"
                     />
                   </Table.Cell>
@@ -277,13 +269,8 @@ Roles.propTypes = {
   mode: PropTypes.string.isRequired,
   addRole: PropTypes.func.isRequired,
   deleteRole: PropTypes.func.isRequired,
-  data: PropTypes.shape({
-    loading: PropTypes.bool.isRequired,
-    all_basegroups: PropTypes.array,
-    users: PropTypes.array
-  }).isRequired,
-  user: PropTypes.object.isRequired,
-  close: PropTypes.func.isRequired
+  data: PropTypes.object.isRequired,
+  user: PropTypes.object.isRequired
 };
 
 export const DictionaryRoles = compose(

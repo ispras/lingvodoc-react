@@ -1,11 +1,11 @@
 import React, { useCallback, useContext, useState } from "react";
 import { Button, Divider, Icon, Modal } from "semantic-ui-react";
-import { useMutation, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import PropTypes from "prop-types";
 
-import { globalErrorHandler } from "apolo";
 import { getLanguageMetadataQuery, updateLanguageAtomMutation, updateLanguageMetadataMutation } from "backend";
 import EditLanguageMetadata from "components/EditLanguageMetadata";
+import { useMutation } from "hooks";
 import TranslationContext from "Layout/TranslationContext";
 
 import TranslationGist from "../TranslationGist";
@@ -21,8 +21,8 @@ const EditLanguageModal = ({ language, close }) => {
     onCompleted: data => setMetadata(data.language.additional_metadata)
   });
 
-  const [updateLanguageMetadata] = useMutation(updateLanguageMetadataMutation, { onError: globalErrorHandler });
-  const [updateLanguageAtom] = useMutation(updateLanguageAtomMutation, { onError: globalErrorHandler });
+  const [updateLanguageMetadata] = useMutation(updateLanguageMetadataMutation);
+  const [updateLanguageAtom] = useMutation(updateLanguageAtomMutation);
 
   const updateMetadata = useCallback(
     newMetadata => {
