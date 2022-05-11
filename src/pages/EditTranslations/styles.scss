@@ -33,13 +33,13 @@
       }
     }
 
-    @media only screen and (max-device-width: 810px), only screen and (max-width: 810px) {
+    @media only screen and (max-device-width: 1000px), only screen and (max-width: 1000px) {
       & .item {
         margin: 0 8px !important;
       }
     }
 
-    @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+    @media only screen and (max-device-width: 915px), only screen and (max-width: 915px) {
       flex-wrap: wrap;
 
       & .item {
@@ -56,7 +56,7 @@
   font-size: 20px;
   line-height: 20px;
   font-weight: 700;
-  margin-bottom: 26px;
+  margin-bottom: 16px;
 }
 
 .lingvo-button-atom-delete {
@@ -360,3 +360,180 @@
   }
 }
 /* /atom grid */
+
+
+/* lingvo search translations */
+.lingvo-search-translations {
+  margin: 0 0 10px 0;
+  
+  &__input {
+    position: relative;
+    display: block !important;
+
+    & > .lingvo-icon_search {
+      display: block;
+      position: absolute;
+      top: 12px;
+      left: 16px;
+    }
+
+    & > input {
+      width: 100%;
+      background: #fafafa !important;
+      border-radius: 8px !important;
+      padding: 12px 22px !important;
+      border-color: transparent !important;
+      font-family: Rubik, Arial, sans-serif !important;
+      font-weight: 400 !important;
+      font-size: 16px !important;
+      line-height: 24px !important;
+    }
+
+    &.ui[class*="left icon"].input > input {
+      padding-left: 56px !important;
+      padding-right: 22px !important;
+
+      @media only screen and (max-device-width: 340px), only screen and (max-width: 340px) {
+        & {
+          padding-left: 45px !important;
+        }
+      }
+    }
+
+    & > input:hover {
+      border-color: #5d54cd !important;
+      background: #fff !important;
+    }
+
+    & > input:focus {
+      border-color: #5d54cd !important;
+      background: #fff !important;
+      box-shadow: 0px 0px 4px rgba(93, 84, 205, 0.5) !important;
+    }
+
+  }
+
+  &__checkboxes {
+    margin: 7px 0 0 0;
+    text-align: left;
+
+    & .lingvo-checkbox {
+      padding: 5px 17px;
+    }
+  }
+
+}
+/* /lingvo search translations */
+
+.lingvo-subheader-translations {
+  text-align: left;
+  font-family: Rubik, Arial, sans-serif;
+  font-size: 18px;
+  line-height: 18px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+/* lingvo pagination */
+.lingvo-pagination {
+  border: none !important;
+  box-shadow: none !important;
+  font-family: Rubik, Arial, sans-serif !important;
+  font-size: 14px !important;
+  line-height: 22px !important;
+
+  & .item {
+    margin: 4px !important;
+    border: 1px solid #DCDCDC !important;
+    border-radius: 8px !important;
+    padding: 4px 8px !important;
+    min-width: 32px !important;
+    line-height: 22px !important;
+    justify-content: center !important;
+
+    &::before {
+      content: none !important;
+    }
+
+    &:hover {
+      background-color: #EDECF6 !important;
+    }
+
+    &.active {
+      background-color: #5D54CD !important;
+      color: #fff !important;
+      border: 1px solid #5D54CD !important;
+    }
+
+    &[type=ellipsisItem] {
+      border: none !important;
+      color: #DCDCDC !important;
+      letter-spacing: 3px !important;
+      background-color: #fff !important;
+      padding-left: 4px !important;
+      padding-right: 2px !important;
+      min-width: auto !important;
+      font-weight: 500 !important;
+    }
+
+    &[type=prevItem],
+    &[type=nextItem] {
+      font-size: 16px !important;
+      font-weight: normal !important;
+    }
+
+    &[type=firstItem],
+    &[type=lastItem] {
+      font-size: 18px !important;
+      font-weight: normal !important;
+    }
+
+  }
+
+  @media only screen and (max-device-width: 580px), only screen and (max-width: 580px) {
+    display: flex !important;
+    flex-wrap: wrap !important;
+  }
+
+}
+/* /lingvo pagination */
+
+.lingvo-pagination-block {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  margin: 0 -4px 20px -4px;
+  justify-content: space-between;
+
+  &__total {
+    flex: 0 1 auto;
+    padding: 0 4px;
+  }
+
+  &__pages {
+    flex: 1 1 auto;
+    text-align: right;
+    align-self: flex-end;
+  }
+
+  &__total + &__pages {
+    flex: 0 1 auto;
+    padding-left: 15px;
+    align-self: auto;
+  }
+
+  @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-left: 10px;
+    margin-right: 10px;
+
+    &__total {
+      padding-bottom: 12px;
+    }
+
+    &__total + &__pages {
+      padding-left: 0;
+    }
+  }
+}
