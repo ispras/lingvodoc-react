@@ -835,8 +835,8 @@ body {
     color: #fff !important;
   }
 
-  &.button.disabled,
-  &.button:disabled {
+  &.ui.button.disabled,
+  &.ui.button:disabled {
     background: #fff !important;
     box-shadow: 0px 0px 0px 1px #999ca0 inset !important;
     color: #999ca0 !important;
