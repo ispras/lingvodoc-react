@@ -1847,6 +1847,18 @@ body {
     height: 20px;
     background-color: #999ca0;
   }
+
+  &_search {
+    -webkit-mask-image: url("../images/icon_search.svg");
+    mask-image: url("../images/icon_search.svg");
+    width: 24px;
+    height: 24px;
+    background-color: #5D54CD;
+
+    &_disabled {
+      background-color: #5D54CD;
+    }
+  }
 }
 /* /icon */
 

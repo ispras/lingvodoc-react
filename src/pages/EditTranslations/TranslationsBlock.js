@@ -60,12 +60,12 @@ class TranslationsBlock extends React.Component {
 
   componentWillReceiveProps(props) {
     if (!props.data.loading) {
-      if (props.gists_type != this.state.gistsType) {
+      if (props.gists_type !== this.state.gistsType) {
         this.refetching = true;
-
+        
         props.data.refetch().then(result => {
           this.refetching = false;
-          this.setState({ gistsType: props.gists_type, translationgists: result.data.translationgists, newgists: [] });
+          this.setState({ gistsType: props.gists_type, translationgists: result.data.translationgists, newgists: [], activePage: 1 });
         });
       }
     }
@@ -82,7 +82,7 @@ class TranslationsBlock extends React.Component {
       return (
         <div style={{ textAlign: "center" }}>
           <Message compact negative>
-            {error.message == "InvalidRegularExpression"
+            {error.message === "InvalidRegularExpression"
               ? this.context("Invalid regular expression")
               : this.context("Translation loading error")}
             .
@@ -101,19 +101,50 @@ class TranslationsBlock extends React.Component {
 
     const { activePage, gistsPerPage } = this.state;
 
-    const totalPages = Math.ceil(translationgists.length / gistsPerPage);
+    const translationGists = translationgists.filter(item => {
+      return (item.translationatoms.length > 1) || ((item.translationatoms.length === 1) && (item.translationatoms[0].content !== ''));
+    });
 
-    translationgists.slice((activePage - 1) * gistsPerPage, activePage * gistsPerPage).forEach(item => {
-      if (item.translationatoms.length == 0) {
-        return;
+    const totalPages = Math.ceil(translationGists.length / gistsPerPage);
+
+    const totalItems = translationGists.length;
+
+    /* sorting */
+    translationGists.sort((a, b) => {
+      let nameA, nameB;
+
+      const localeA = a.translationatoms.filter(item => item.locale_id === 2)[0];
+      if (localeA) {
+        nameA = localeA.content.toLowerCase();
+      } else {
+        nameA = a.translationatoms[0].content.toLowerCase();
       }
 
-      if (currentType == null || currentType != item.type) {
+      const localeB = b.translationatoms.filter(item => item.locale_id === 2)[0];
+      if (localeB) {
+        nameB = localeB.content.toLowerCase();
+      } else {
+        nameB = b.translationatoms[0].content.toLowerCase();
+      }
+
+      /* sort string ascending */
+      if (nameA < nameB && a.type === b.type) {
+        return -1;
+      }
+      if (nameA > nameB && a.type === b.type) {
+        return 1;
+      }
+      /* default return value (no sorting) */
+      return 0;
+    });
+
+    translationGists.slice((activePage - 1) * gistsPerPage, activePage * gistsPerPage).forEach(item => {
+      if (currentType === null || currentType !== item.type) {
         currentType = item.type;
         types.push(currentType);
         typeGistsMap[currentType] = [];
         typeGistsMap[currentType].push(item);
-      } else if (currentType == item.type) {
+      } else if (currentType === item.type) {
         typeGistsMap[currentType].push(item);
       }
     });
@@ -128,19 +159,33 @@ class TranslationsBlock extends React.Component {
     }
 
     return (
-      <Container>
-        {translationgists.length > 0 && (
-          <div style={{ marginBottom: "26px", textAlign: "center" }}>
-            <Pagination
-              activePage={activePage}
-              totalPages={totalPages}
-              onPageChange={(e, { activePage }) => this.setState({ activePage })}
-            />
+      <div>
+        {translationGists.length > 0 && (
+          <div className="lingvo-pagination-block">
+            <div className="lingvo-pagination-block__pages">
+              <Pagination
+                activePage={activePage}
+                totalPages={totalPages}
+                onPageChange={(e, { activePage }) => this.setState({ activePage })}
+                className="lingvo-pagination"
+                nextItem={{
+                  'aria-label': 'Next item',
+                  'content': '>'
+                }}
+                prevItem={{
+                  'aria-label': 'Previous item',
+                  'content': '<'
+                }}
+              />
+            </div>
           </div>
         )}
+
         {types.map(type => (
           <Container fluid key={type}>
-            <h1 className="lingvo-header-translations">{this.context(type)}</h1>
+            {!this.state.gistsType && (
+              <h2 className="lingvo-subheader-translations">{this.context(type)}</h2>
+            )}
 
             {this.state.gistsType && (
               <div className="lingvo-new-gists">
@@ -177,16 +222,31 @@ class TranslationsBlock extends React.Component {
             )}
           </Container>
         ))}
-        {translationgists.length > 0 && (
-          <div style={{ textAlign: "center" }}>
-            <Pagination
-              activePage={activePage}
-              totalPages={totalPages}
-              onPageChange={(e, { activePage }) => this.setState({ activePage })}
-            />
+        
+        {translationGists.length > 0 && (
+          <div className="lingvo-pagination-block">
+            <div className="lingvo-pagination-block__total">
+              Всего записей: {totalItems}
+            </div>
+            <div className="lingvo-pagination-block__pages">
+              <Pagination
+                activePage={activePage}
+                totalPages={totalPages}
+                onPageChange={(e, { activePage }) => this.setState({ activePage })}
+                className="lingvo-pagination"
+                nextItem={{
+                  'aria-label': 'Next item',
+                  'content': '>'
+                }}
+                prevItem={{
+                  'aria-label': 'Previous item',
+                  'content': '<'
+                }}
+              />
+            </div>
           </div>
         )}
-      </Container>
+      </div>
     );
   }
 }
