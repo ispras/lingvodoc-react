@@ -98,7 +98,7 @@ class Docx2Eaf extends React.Component {
         ) : this.props.loading ? (
           <Segment>
             <Loader active inline="centered" indeterminate>
-              {this.context("Loading...")}
+              {this.context("Loading")}...
             </Loader>
           </Segment>
         ) : (
@@ -221,7 +221,7 @@ class Docx2Eaf extends React.Component {
             {this.state.converting_flag && (
               <Dimmer active inverted>
                 <Loader inverted indeterminate>
-                  {this.context("Converting...")}
+                  {this.context("Converting")}...
                 </Loader>
               </Dimmer>
             )}
