@@ -417,6 +417,7 @@ class Valency extends React.Component {
       total_pages: null,
 
       instance_list: null,
+      merge_map: null,
       sentence_map: null,
       annotation_map: null,
       user_map: null,
@@ -522,7 +523,18 @@ class Valency extends React.Component {
             return;
           }
 
-          const { instance_count, instance_list, sentence_list, annotation_list, user_list } = data.valency_data;
+          const { instance_count, instance_list, merge_list, sentence_list, annotation_list, user_list } =
+            data.valency_data;
+
+          const merge_map = new Map();
+
+          for (const verb_lex_list of merge_list) {
+            const verb_lex_list_str = verb_lex_list.join(", ");
+
+            for (const verb_lex of verb_lex_list) {
+              merge_map.set(verb_lex, verb_lex_list_str);
+            }
+          }
 
           const sentence_map = new Map(sentence_list.map(sentence => [sentence.id, sentence]));
 
@@ -537,6 +549,7 @@ class Valency extends React.Component {
             instance_count,
             total_pages: Math.floor((instance_count + items_per_page - 1) / items_per_page),
             instance_list,
+            merge_map,
             sentence_map,
             annotation_map,
             user_map,
@@ -1167,14 +1180,17 @@ class Valency extends React.Component {
         }
       }
 
+      const { merge_map } = this.state;
+
       for (const sort_type of enabled_list) {
         switch (sort_type) {
           case "verb":
             const { verb_lex } = this.state.instance_list[0];
+            const header_str = merge_map.get(verb_lex) || verb_lex;
 
-            render_instance_list.push(<Header key={`${render_instance_list.length}${verb_lex}`}>{verb_lex}</Header>);
+            render_instance_list.push(<Header key={`${render_instance_list.length}${verb_lex}`}>{header_str}</Header>);
 
-            prev_dict[sort_type] = verb_lex;
+            prev_dict[sort_type] = header_str;
 
             break;
 
@@ -1216,13 +1232,14 @@ class Valency extends React.Component {
           switch (sort_type) {
             case "verb":
               const { verb_lex } = instance;
+              const header_str = merge_map.get(verb_lex) || verb_lex;
 
-              if (verb_lex != prev_dict[sort_type]) {
+              if (header_str != prev_dict[sort_type]) {
                 render_instance_list.push(
-                  <Header key={`${render_instance_list.length}${verb_lex}`}>{verb_lex}</Header>
+                  <Header key={`${render_instance_list.length}${verb_lex}`}>{header_str}</Header>
                 );
 
-                prev_dict[sort_type] = verb_lex;
+                prev_dict[sort_type] = header_str;
 
                 for (let k = j + 1; k < enabled_list.length; k++) {
                   prev_dict[enabled_list[k]] = null;
