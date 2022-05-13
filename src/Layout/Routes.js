@@ -1,6 +1,7 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 
+// eslint-disable-next-line import/no-unresolved
 import config from "config";
 import AuthorsRoute from "pages/AuthorsRoute";
 import CorporaAll from "pages/CorporaAll";
@@ -43,6 +44,7 @@ const AppRoutes = () => (
     <Route path="/languages" element={<Languages />} />
     <Route path="/dashboard/dictionaries" element={<DictionaryDashboard />} />
     <Route path="/dashboard/corpora" element={<CorpusDashboard />} />
+    <Route path="/dashboard/corpora_all" element={<CorporaAll />} />
     <Route path="/dashboard/create_dictionary" element={<CreateDictionary />} />
     <Route path="/dashboard/create_corpus" element={<CreateCorpus />} />
     <Route path="/dashboard/dictionaries_all" element={<DictionariesAll />} />
@@ -66,7 +68,6 @@ const AppRoutes = () => (
     <Route path="/grantsRoute" element={<GrantsRoute />} />
     <Route path="/supportRoute" element={<SupportRoute />} />
     <Route path="/without_grants" element={<WithoutGrants />} />
-    <Route path="/corpora_all" element={<CorporaAll />} />
     <Route path="/authors_route" element={<AuthorsRoute />} />
     <Route path="/version_route" element={<VersionRoute />} />
     <Route path="/docx2eaf" element={<Docx2Eaf />} />

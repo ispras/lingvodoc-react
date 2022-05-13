@@ -1,10 +1,14 @@
 import React, { useMemo, useState } from "react";
+import { useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 import { Container, Tab } from "semantic-ui-react";
 
+import { getId } from "api/user";
 import { getLanguagesForSearch } from "backend";
+import BackTopButton from "components/BackTopButton";
 import LanguageSearchField from "components/LanguageSearchField";
 import LanguageTree from "components/LanguageTree";
+import Placeholder from "components/Placeholder";
 import TableOfContents from "components/TableOfContents";
 import { useTranslations } from "hooks";
 
@@ -12,10 +16,14 @@ import SortModeSelector from "./sort_mode_selector";
 
 import "./styles.scss";
 
+/** Dashboard dictionaries page */
 const DictionariesAll = () => {
   const { getTranslation, chooseTranslation } = useTranslations();
 
   const [searchParams, setSearchParams] = useSearchParams();
+
+  const user = useSelector(state => state.user);
+  const published = useMemo(() => (user.user.id === undefined ? true : undefined), [user]);
 
   const sortMode = useMemo(() => {
     const mode = searchParams.get("sortMode");
@@ -29,6 +37,10 @@ const DictionariesAll = () => {
 
   const [selected, setSelected] = useState([]);
 
+  if (user.loading || (getId() && user.user.id === undefined && !user.error)) {
+    return <Placeholder />;
+  }
+
   return (
     <div className="dictionariesAll">
       <SortModeSelector selected={selected} setSelected={setSelected} />
@@ -36,6 +48,7 @@ const DictionariesAll = () => {
         <LanguageSearchField
           queryData={{
             query: getLanguagesForSearch,
+            variables: { category: 0 },
             getEntries: data => data.language_tree.languages
           }}
           getLabel={language => chooseTranslation(language.translations)}
@@ -54,10 +67,11 @@ const DictionariesAll = () => {
               menuItem: getTranslation("Table of contents"),
               render: () => (
                 <Tab.Pane>
-                  <TableOfContents kind={sortMode} />
+                  <TableOfContents sortMode={sortMode} published={published} />
                   {entityId && (
                     <LanguageTree
-                      kind={sortMode}
+                      sortMode={sortMode}
+                      published={published}
                       entityId={searchParams.get("entity")}
                       selected={selected}
                       setSelected={setSelected}
@@ -71,7 +85,12 @@ const DictionariesAll = () => {
               menuItem: getTranslation("Dictionaries"),
               render: () => (
                 <Tab.Pane>
-                  <LanguageTree kind={sortMode} selected={selected} setSelected={setSelected} />
+                  <LanguageTree
+                    sortMode={sortMode}
+                    published={published}
+                    selected={selected}
+                    setSelected={setSelected}
+                  />
                 </Tab.Pane>
               )
             }
@@ -90,6 +109,7 @@ const DictionariesAll = () => {
           }}
         />
       </Container>
+      <BackTopButton scrollContainer={document.querySelector(".pusher")} />
     </div>
   );
 };

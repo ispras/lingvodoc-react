@@ -6,21 +6,23 @@ import LanguagesToc from "./languages";
 import OrganizationsToc from "./organizations";
 
 /** Table of contents for languages, grants or organizations */
-const TableOfContents = ({ kind }) => {
-  switch (kind) {
+const TableOfContents = ({ sortMode, published, forCorpora = false }) => {
+  switch (sortMode) {
     case "language":
-      return <LanguagesToc />;
+      return <LanguagesToc published={published} category={forCorpora ? 1 : 0} />;
     case "grant":
-      return <GrantsToc />;
+      return <GrantsToc published={published} category={forCorpora ? 1 : 0} />;
     case "organization":
-      return <OrganizationsToc />;
+      return <OrganizationsToc published={published} category={forCorpora ? 1 : 0} />;
     default:
       return null;
   }
 };
 
 TableOfContents.propTypes = {
-  kind: PropTypes.string.isRequired
+  sortMode: PropTypes.string.isRequired,
+  published: PropTypes.bool,
+  forCorpora: PropTypes.bool
 };
 
 export default TableOfContents;

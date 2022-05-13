@@ -2,18 +2,22 @@ import React from "react";
 import { useSearchParams } from "react-router-dom";
 import { Container, Header, List } from "semantic-ui-react";
 import { useQuery } from "@apollo/client";
+import PropTypes from "prop-types";
 
 import { getTocGrants } from "backend";
 import Placeholder from "components/Placeholder";
 import { useTranslations } from "hooks";
 
 /** Table of contents for grants */
-const GrantsToc = () => {
+const GrantsToc = ({ published, category }) => {
   const { getTranslation, chooseTranslation } = useTranslations();
 
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const { loading, error, data } = useQuery(getTocGrants, { fetchPolicy: "network-only" });
+  const { loading, error, data } = useQuery(getTocGrants, {
+    variables: { participantPublished: published, participantCategory: category },
+    fetchPolicy: "network-only"
+  });
 
   if (loading) {
     return <Placeholder />;
@@ -44,6 +48,11 @@ const GrantsToc = () => {
       </List>
     </Container>
   );
+};
+
+GrantsToc.propTypes = {
+  published: PropTypes.bool,
+  category: PropTypes.number.isRequired
 };
 
 export default GrantsToc;

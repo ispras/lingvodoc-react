@@ -12,11 +12,13 @@ import smoothScroll from "utils/smoothscroll";
 
 import Node from "./node";
 
+import "./styles.scss";
+
 /** Language tree with dictionaries or corpora */
-const LanguageTree = ({ kind, entityId, selected, setSelected, style }) => {
+const LanguageTree = ({ sortMode, published, forCorpora = false, entityId, selected, setSelected, style }) => {
   const variables = useMemo(() => {
-    const result = {};
-    switch (kind) {
+    const result = { category: forCorpora ? 1 : 0 };
+    switch (sortMode) {
       case "language":
         if (entityId) {
           result.languageId = stringToCompositeId(entityId);
@@ -37,7 +39,7 @@ const LanguageTree = ({ kind, entityId, selected, setSelected, style }) => {
       default:
     }
     return result;
-  }, [entityId, kind]);
+  }, [entityId, forCorpora, sortMode]);
   const { loading: treeLoading, data: treeData } = useQuery(getLanguageTree, {
     variables,
     fetchPolicy: "network-only"
@@ -60,6 +62,7 @@ const LanguageTree = ({ kind, entityId, selected, setSelected, style }) => {
   const [requestProxyData, { called: proxyDataRequested, loading: proxyDataLoading, data: proxyData }] = useLazyQuery(
     proxyDictionaryInfo,
     {
+      variables: { proxy: published ? false : true, category: forCorpora ? 1 : 0 },
       fetchPolicy: "network-only"
     }
   );
@@ -69,7 +72,7 @@ const LanguageTree = ({ kind, entityId, selected, setSelected, style }) => {
       return true;
     }
 
-    switch (kind) {
+    switch (sortMode) {
       case "language":
         return treeLoading;
       case "grant":
@@ -77,10 +80,15 @@ const LanguageTree = ({ kind, entityId, selected, setSelected, style }) => {
       case "organization":
         return treeLoading || organizationsLoading;
     }
-  }, [grantsLoading, kind, organizationsLoading, proxyDataLoading, treeLoading]);
+  }, [grantsLoading, sortMode, organizationsLoading, proxyDataLoading, treeLoading]);
 
   const tree = useMemo(() => {
-    if (loading || !treeData || (kind === "grant" && !grantsData) || (kind === "organization" && !organizationsData)) {
+    if (
+      loading ||
+      !treeData ||
+      (sortMode === "grant" && !grantsData) ||
+      (sortMode === "organization" && !organizationsData)
+    ) {
       return [];
     }
 
@@ -94,15 +102,15 @@ const LanguageTree = ({ kind, entityId, selected, setSelected, style }) => {
       const result = {};
       const id = node[0];
       if (id === null) {
-        result.entity = { __typename: "Text" };
+        result.entity = { __typename: "None" };
       } else {
         if (Array.isArray(id)) {
           result.entity = languagesMap[compositeIdToString(id)];
         } else {
-          if (kind === "language") {
+          if (sortMode === "language") {
             result.entity = { __typename: "Unknown" };
           } else {
-            const collection = kind === "grant" ? grantsData.grants : organizationsData.organizations;
+            const collection = sortMode === "grant" ? grantsData.grants : organizationsData.organizations;
             result.entity = collection.find(entity => entity.id === id);
             if (!result.entity) {
               result.entity = { __typename: "Unknown" };
@@ -114,29 +122,32 @@ const LanguageTree = ({ kind, entityId, selected, setSelected, style }) => {
       return result;
     };
     const result =
-      entityId && kind === "language" ? [mapIdNodeToEntityNode(idTree)] : idTree[1].map(mapIdNodeToEntityNode);
+      entityId && sortMode === "language" ? [mapIdNodeToEntityNode(idTree)] : idTree[1].map(mapIdNodeToEntityNode);
 
     return result;
-  }, [loading, treeData, kind, grantsData, organizationsData, entityId]);
+  }, [loading, treeData, sortMode, grantsData, organizationsData, entityId]);
 
   const revealEntity = useCallback(() => {
-    const elem = document.getElementById(`${kind}_${entityId}`);
-    if (!elem) {
-      return;
+    const container = document.querySelector(".pusher");
+    let elem = document.getElementById(`${sortMode}_${entityId}`);
+    if (!elem && sortMode !== "language") {
+      elem = document.querySelector(".language_tree");
+      if (!elem) {
+        return;
+      }
     }
 
-    const container = document.querySelector(".pusher");
     smoothScroll(elem.offsetTop - 160, 500, null, container);
-    elem.classList.add("highlighted");
+    elem.classList.add("highlighted_subtree");
     setTimeout(() => {
-      elem.classList.remove("highlighted");
+      elem.classList.remove("highlighted_subtree");
     }, 2000);
-  }, [entityId, kind]);
+  }, [entityId, sortMode]);
 
   useEffect(() => {
     let requested = false;
     let requestData;
-    switch (kind) {
+    switch (sortMode) {
       case "grant":
         requested = grantsRequested;
         requestData = requestGrants;
@@ -150,7 +161,7 @@ const LanguageTree = ({ kind, entityId, selected, setSelected, style }) => {
     if (requestData && !requested) {
       requestData();
     }
-  }, [grantsRequested, kind, organizationsRequested, requestGrants, requestOrganizations]);
+  }, [grantsRequested, sortMode, organizationsRequested, requestGrants, requestOrganizations]);
 
   useEffect(() => {
     if (entityId && tree.length !== 0) {
@@ -174,7 +185,7 @@ const LanguageTree = ({ kind, entityId, selected, setSelected, style }) => {
 
   return (
     <Container className="container-gray" style={style}>
-      <ul className="tree">
+      <ul className="language_tree">
         {tree.map((node, index) => (
           <Node key={index} nodeInfo={node} root selected={selected} setSelected={setSelected} proxyData={proxyData} />
         ))}
@@ -184,7 +195,9 @@ const LanguageTree = ({ kind, entityId, selected, setSelected, style }) => {
 };
 
 LanguageTree.propTypes = {
-  kind: PropTypes.string.isRequired,
+  sortMode: PropTypes.string.isRequired,
+  published: PropTypes.bool,
+  forCorpora: PropTypes.bool,
   entityId: PropTypes.string,
   selected: PropTypes.array.isRequired,
   setSelected: PropTypes.func.isRequired,

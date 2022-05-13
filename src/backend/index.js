@@ -27,6 +27,8 @@ export const getLanguageTree = gql`
     $grantId: Int
     $byOrganizations: Boolean
     $organizationId: Int
+    $published: Boolean
+    $category: Int
   ) {
     language_tree(
       language_id: $languageId
@@ -40,7 +42,7 @@ export const getLanguageTree = gql`
         id
         translations
         in_toc
-        dictionaries(deleted: false, category: 0) {
+        dictionaries(deleted: false, published: $published, category: $category) {
           id
           translations
           english_status: status(locale_id: 2)
@@ -69,8 +71,13 @@ export const getLanguagesForSearch = gql`
 `;
 
 export const getTocGrants = gql`
-  query GetTocGrants {
-    grants(has_participant: true) {
+  query GetTocGrants($participantPublished: Boolean, $participantCategory: Int) {
+    grants(
+      has_participant: true
+      participant_deleted: false
+      participant_published: $participantPublished
+      participant_category: $participantCategory
+    ) {
       id
       translations
       issuer_translations
@@ -80,18 +87,23 @@ export const getTocGrants = gql`
 `;
 
 export const getTocLanguages = gql`
-  query GetTocLanguages {
+  query GetTocLanguages($published: Boolean, $category: Int) {
     language_toc {
       id
       translations
-      dictionary_count(recursive: true)
+      dictionary_count(recursive: true, published: $published, category: $category)
     }
   }
 `;
 
 export const getTocOrganizations = gql`
-  query GetTocOrganizations {
-    organizations(has_participant: true) {
+  query GetTocOrganizations($participantPublished: Boolean, $participantCategory: Int) {
+    organizations(
+      has_participant: true
+      participant_deleted: false
+      participant_published: $participantPublished
+      participant_category: $participantCategory
+    ) {
       id
       translations
     }
@@ -114,11 +126,11 @@ export const languagesQuery = gql`
 `;
 
 export const proxyDictionaryInfo = gql`
-  query qcounter($id: LingvodocID!, $mode: String!) {
-    dictionaries(proxy: false, published: true, category: 0) {
+  query ProxyDictionaryInfo($proxy: Boolean, $category: Int) {
+    dictionaries(proxy: false, published: true, category: $category) {
       id
     }
-    permission_lists(proxy: true) {
+    permission_lists(proxy: $proxy) {
       view {
         id
       }

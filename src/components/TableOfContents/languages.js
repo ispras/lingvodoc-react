@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Container } from "semantic-ui-react";
 import { useQuery } from "@apollo/client";
+import PropTypes from "prop-types";
 
 import { getTocLanguages } from "backend";
 import Placeholder from "components/Placeholder";
@@ -9,12 +10,15 @@ import { useTranslations } from "hooks";
 import { compositeIdToString } from "utils/compositeId";
 
 /** Table of contents for languages */
-const LanguagesToc = () => {
+const LanguagesToc = ({ published, category }) => {
   const { chooseTranslation } = useTranslations();
 
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const { loading, error, data } = useQuery(getTocLanguages, { fetchPolicy: "network-only" });
+  const { loading, error, data } = useQuery(getTocLanguages, {
+    variables: { published, category },
+    fetchPolicy: "network-only"
+  });
   const letterToLanguageMap = useMemo(() => {
     if (!data) {
       return new Map();
@@ -96,6 +100,11 @@ const LanguagesToc = () => {
       </div>
     </Container>
   );
+};
+
+LanguagesToc.propTypes = {
+  published: PropTypes.bool,
+  category: PropTypes.number.isRequired
 };
 
 export default LanguagesToc;

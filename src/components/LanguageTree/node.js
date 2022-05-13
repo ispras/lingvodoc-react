@@ -36,7 +36,7 @@ const Node = ({ nodeInfo, root, selected, setSelected, proxyData }) => {
         langClass = "confirmed-lang-name";
       }
       return (
-        <li className="lang" id={generateId(entity)}>
+        <li className="node_lang" id={generateId(entity)}>
           <span className={langClass}>{entity.translations && chooseTranslation(entity.translations)}</span>
           <ul>
             {children.map((child, index) => (
@@ -49,7 +49,7 @@ const Node = ({ nodeInfo, root, selected, setSelected, proxyData }) => {
               const authors = dictionary.additional_metadata.authors;
               const perspectives = dictionary.perspectives;
               return (
-                <li key={index} className="dict">
+                <li key={index} className="node_dict">
                   {(config.buildType === "desktop" || config.buildType === "proxy") && user.id !== undefined && (
                     <Checkbox
                       defaultChecked={selected.includes(dictionary.id)}
@@ -116,7 +116,7 @@ const Node = ({ nodeInfo, root, selected, setSelected, proxyData }) => {
     }
     case "Grant":
       return (
-        <div id={generateId(entity)} className="grant">
+        <div id={generateId(entity)} className="node_grant">
           <Header>{`${chooseTranslation(entity.translations)} (${chooseTranslation(entity.issuer_translations)} ${
             entity.grant_number
           })`}</Header>
@@ -134,7 +134,7 @@ const Node = ({ nodeInfo, root, selected, setSelected, proxyData }) => {
       );
     case "Organization":
       return (
-        <div id={generateId(entity)} className="grant">
+        <div id={generateId(entity)} className="node_grant">
           <Header>{chooseTranslation(entity.translations)}</Header>
           {children.map((child, index) => (
             <Node
@@ -148,9 +148,9 @@ const Node = ({ nodeInfo, root, selected, setSelected, proxyData }) => {
           ))}
         </div>
       );
-    case "Text":
+    case "None":
       return (
-        <div className="grant">
+        <div className="node_grant">
           <div className="grant-title">{getTranslation("Individual work")}</div>
           {children.map((child, index) => (
             <Node

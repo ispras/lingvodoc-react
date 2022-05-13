@@ -2,18 +2,22 @@ import React from "react";
 import { useSearchParams } from "react-router-dom";
 import { Container, List } from "semantic-ui-react";
 import { useQuery } from "@apollo/client";
+import PropTypes from "prop-types";
 
 import { getTocOrganizations } from "backend";
 import Placeholder from "components/Placeholder";
 import { useTranslations } from "hooks";
 
 /** Table of contents for organizations */
-const OrganizationsToc = () => {
+const OrganizationsToc = ({ published, category }) => {
   const { chooseTranslation } = useTranslations();
 
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const { loading, error, data } = useQuery(getTocOrganizations, { fetchPolicy: "network-only" });
+  const { loading, error, data } = useQuery(getTocOrganizations, {
+    variables: { participantPublished: published, participantCategory: category },
+    fetchPolicy: "network-only"
+  });
 
   if (loading) {
     return <Placeholder />;
@@ -41,6 +45,11 @@ const OrganizationsToc = () => {
       </List>
     </Container>
   );
+};
+
+OrganizationsToc.propTypes = {
+  published: PropTypes.bool,
+  category: PropTypes.number.isRequired
 };
 
 export default OrganizationsToc;
