@@ -600,6 +600,7 @@ export const stringsToTranslate = [
   "Tomsk State University",
   "Tools",
   "total",
+  "Total items",
   "Transcription rules",
   "Translation for",
   "Translation loading error",
