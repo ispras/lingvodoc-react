@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Container, Dropdown, Radio, Table } from "semantic-ui-react";
+import { Button, Container, Dropdown, Icon, Message, Radio, Table } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
 import { filter, find, some, union, uniq, without } from "lodash";
@@ -158,7 +158,17 @@ class Roles extends React.Component {
     const { mode, data, user } = this.props;
 
     if (data.error) {
-      return null;
+      return (
+        <Message negative compact>
+          {this.context("Role data loading error, please contact adiministrators.")}
+        </Message>
+      );
+    } else if (data.loading) {
+      return (
+        <span>
+          {this.context("Loading role data")}... <Icon name="spinner" loading />
+        </span>
+      );
     }
 
     const { selectedUser } = this.state;
@@ -194,7 +204,7 @@ class Roles extends React.Component {
       .map(u => ({
         key: u.id,
         value: u.id,
-        text: u.name
+        text: `${u.name} (${u.intl_name !== u.login ? `${u.intl_name}, ` : ""}${u.login})`
       }))
       .filter(u => u.value !== 1);
 
