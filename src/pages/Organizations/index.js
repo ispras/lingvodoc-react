@@ -91,7 +91,8 @@ class Organizations extends React.Component {
       variables: { organizationId: organization.id },
       refetchQueries: [
         {
-          query: getUserRequestsQuery
+          query: getUserRequestsQuery,
+          fetchPolicy: "network-only"
         }
       ]
     }).then(() => {
@@ -110,7 +111,8 @@ class Organizations extends React.Component {
       variables: { organizationId: organization.id },
       refetchQueries: [
         {
-          query: getUserRequestsQuery
+          query: getUserRequestsQuery,
+          fetchPolicy: "network-only"
         }
       ]
     }).then(() => {
@@ -150,7 +152,8 @@ class Organizations extends React.Component {
       },
       refetchQueries: [
         {
-          query: organizationsQuery
+          query: organizationsQuery,
+          fetchPolicy: "network-only"
         }
       ]
     }).then(

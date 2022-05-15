@@ -49,7 +49,8 @@ class CreateOrganizationModal extends React.Component {
       variables: { translationAtoms, translationAtomsAbout },
       refetchQueries: [
         {
-          query: organizationsQuery
+          query: organizationsQuery,
+          fetchPolicy: "network-only"
         }
       ]
     }).then(({ data }) => {
