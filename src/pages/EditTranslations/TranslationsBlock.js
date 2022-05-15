@@ -48,8 +48,6 @@ class TranslationsBlock extends React.Component {
     ]);
 
     this.state = {
-      gistsType: props.gists_type,
-      translationgists: props.translationgists,
       newgists: [],
       activePageMap: Immutable.Map([[search_key, 1]]),
       gistsPerPage: 25
@@ -62,7 +60,7 @@ class TranslationsBlock extends React.Component {
     const newGists = this.state.newgists;
     const date = new Date();
     const date_str = date.toISOString() + date.getUTCMilliseconds().toString();
-    newGists.push({ type: this.state.gistsType, atoms: [{ id: date_str, locale_id: 2, content: "" }] });
+    newGists.push({ type: this.props.gists_type, atoms: [{ id: date_str, locale_id: 2, content: "" }] });
     this.setState({ newgists: newGists });
   }
 
@@ -157,9 +155,9 @@ class TranslationsBlock extends React.Component {
     });
 
     if (types.length <= 0) {
-      if (this.state.gistsType) {
-        types.push(this.state.gistsType);
-        typeGistsMap[this.state.gistsType] = [];
+      if (this.props.gists_type) {
+        types.push(this.props.gists_type);
+        typeGistsMap[this.props.gists_type] = [];
       } else {
         return <h1 className="lingvo-header-translations">{this.context("No translations.")}</h1>;
       }
@@ -195,9 +193,9 @@ class TranslationsBlock extends React.Component {
 
         {types.map(type => (
           <Container fluid key={type}>
-            {!this.state.gistsType && <h2 className="lingvo-subheader-translations">{this.context(type)}</h2>}
+            {!this.props.gists_type && <h2 className="lingvo-subheader-translations">{this.context(type)}</h2>}
 
-            {this.state.gistsType && (
+            {this.props.gists_type && (
               <div className="lingvo-new-gists">
                 <Button onClick={this.addTranslationGist} className="lingvo-button-violet-dashed">
                   {this.context("Add new translation gist")}
