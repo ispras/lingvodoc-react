@@ -329,6 +329,7 @@ export const stringsToTranslate = [
   "Loading field template",
   "Loading language data",
   "Loading metadata",
+  "Loading perspective data",
   "Loading role data",
   "Loading suggestions...",
   "Loading valency data...",
