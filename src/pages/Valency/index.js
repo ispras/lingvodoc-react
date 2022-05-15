@@ -47,6 +47,7 @@ const sourcePerspectiveQuery = gql`
         marked_for_deletion
       }
       has_valency_data
+      new_valency_data_count
     }
   }
 `;
@@ -685,6 +686,8 @@ class Valency extends React.Component {
   createValencyData() {
     this.setState({ creating_valency_data: true });
 
+    const { has_valency_data } = this.state.perspective;
+
     this.props
       .createValencyData({
         variables: {
@@ -693,7 +696,7 @@ class Valency extends React.Component {
       })
       .then(
         () => {
-          window.logger.suc(this.context("Created valency data."));
+          window.logger.suc(this.context(has_valency_data ? "Updated valency data." : "Created valency data."));
 
           const { client } = this.props;
           const id_str = client.cache.identify(this.state.perspective);
@@ -703,10 +706,12 @@ class Valency extends React.Component {
             fragment: gql`
               fragment HasValencyData on DictionaryPerspective {
                 has_valency_data
+                new_valency_data_count
               }
             `,
             data: {
-              has_valency_data: true
+              has_valency_data: true,
+              new_valency_data_count: 0
             }
           });
 
@@ -721,6 +726,7 @@ class Valency extends React.Component {
                   marked_for_deletion
                 }
                 has_valency_data
+                new_valency_data_count
               }
             `
           });
@@ -1084,7 +1090,7 @@ class Valency extends React.Component {
         <div className="background-content">
           <Segment>
             <Loader active inline="centered" indeterminate>
-              {`${this.context("Loading perspective data")}...`}
+              {this.context("Loading perspective data")}...
             </Loader>
           </Segment>
         </div>
@@ -1118,6 +1124,8 @@ class Valency extends React.Component {
     }
 
     const {
+      perspective,
+
       current_page,
       items_per_page,
       show_data_verb_list,
@@ -1329,22 +1337,25 @@ class Valency extends React.Component {
             onChange={(e, { value }) => this.setPerspective(perspective_id_map.get(value))}
           />
 
-          {this.state.perspective && !this.state.perspective.has_valency_data && (
+          {perspective && (!perspective.has_valency_data || perspective.new_valency_data_count > 0) && (
             <Button
+              key={perspective.has_valency_data ? "_update" : "_create"}
               style={{ marginTop: "0.5em" }}
               basic
-              positive
+              color={perspective.has_valency_data ? "violet" : "green"}
               content={
                 this.state.creating_valency_data ? (
                   <span>
-                    {`${this.context("Creating valency data...")} `}
+                    {this.context(
+                      perspective.has_valency_data ? "Updating valency data..." : "Creating valency data..."
+                    )}
                     <Icon name="spinner" loading />
                   </span>
                 ) : (
-                  this.context("Create valency data")
+                  this.context(perspective.has_valency_data ? "Update valency data" : "Create valency data")
                 )
               }
-              disabled={!this.state.perspective || this.state.creating_valency_data}
+              disabled={!perspective || this.state.creating_valency_data}
               onClick={() => this.createValencyData()}
             />
           )}
