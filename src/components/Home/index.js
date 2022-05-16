@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { connect } from "react-redux";
-import { Button, Container, Form, Radio, Segment } from "semantic-ui-react";
+import { Button, Container, Form, Message, Radio, Segment } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
 import Immutable, { fromJS, OrderedMap } from "immutable";
@@ -130,7 +130,11 @@ const Home = props => {
   const getTranslation = useContext(TranslationContext);
 
   if (error) {
-    return null;
+    return (
+      <Message negative compact>
+        {getTranslation("Dictionary data loading error, please contact administrators.")}
+      </Message>
+    );
   }
 
   if (loading) {
@@ -379,6 +383,8 @@ const dictionaryWithPerspectivesProxyQuery = gql`
 
 const AuthWrapper = ({
   data: {
+    loading,
+    error,
     perspectives,
     grants,
     organizations,
@@ -387,6 +393,20 @@ const AuthWrapper = ({
     dictionaries
   }
 }) => {
+  const getTranslation = useContext(TranslationContext);
+
+  if (error) {
+    return (
+      <Message negative compact>
+        {getTranslation("Dictionary data loading error, please contact administrators.")}
+      </Message>
+    );
+  }
+
+  if (loading) {
+    return <Placeholder />;
+  }
+
   const Component = compose(
     connect(
       state => ({ ...state.home, ...state.router }),

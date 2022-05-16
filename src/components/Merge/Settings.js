@@ -69,6 +69,7 @@ const mergeLexicalEntriesMutation = gql`
 `;
 
 const initial_state = {
+  blank: true,
   loading: false,
   groups: [],
   entry_map: null,
@@ -124,6 +125,7 @@ class MergeSettings extends React.Component {
     this.setState(
       {
         ...initial_state,
+        blank: false,
         loading: true,
         result_map: {},
         merged_set: {},
@@ -692,9 +694,18 @@ class MergeSettings extends React.Component {
             <div style={{ marginTop: "0.75em" }}>
               <Button
                 positive
-                content={this.context("View suggestions")}
+                basic={this.props.dataLexicalEntries.loading}
+                content={
+                  this.props.dataLexicalEntries.loading ? (
+                    <span>
+                      {this.context("Loading perspective data")}... <Icon name="spinner" loading />
+                    </span>
+                  ) : (
+                    this.context("View suggestions")
+                  )
+                }
                 onClick={this.getSuggestions}
-                disabled={this.state.loading}
+                disabled={this.props.dataLexicalEntries.loading || this.state.loading}
               />
             </div>
           </Container>
@@ -713,7 +724,7 @@ class MergeSettings extends React.Component {
           </Segment>
         )}
 
-        {!this.state.loading && (
+        {!(this.state.blank || this.state.loading) && (
           <Segment>
             {this.state.groups.length > 0 && (
               <List>

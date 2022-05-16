@@ -47,6 +47,7 @@ const sourcePerspectiveQuery = gql`
         marked_for_deletion
       }
       has_valency_data
+      new_valency_data_count
     }
   }
 `;
@@ -417,6 +418,7 @@ class Valency extends React.Component {
       total_pages: null,
 
       instance_list: null,
+      merge_map: null,
       sentence_map: null,
       annotation_map: null,
       user_map: null,
@@ -522,7 +524,18 @@ class Valency extends React.Component {
             return;
           }
 
-          const { instance_count, instance_list, sentence_list, annotation_list, user_list } = data.valency_data;
+          const { instance_count, instance_list, merge_list, sentence_list, annotation_list, user_list } =
+            data.valency_data;
+
+          const merge_map = new Map();
+
+          for (const verb_lex_list of merge_list) {
+            const verb_lex_list_str = verb_lex_list.join(", ");
+
+            for (const verb_lex of verb_lex_list) {
+              merge_map.set(verb_lex, verb_lex_list_str);
+            }
+          }
 
           const sentence_map = new Map(sentence_list.map(sentence => [sentence.id, sentence]));
 
@@ -537,6 +550,7 @@ class Valency extends React.Component {
             instance_count,
             total_pages: Math.floor((instance_count + items_per_page - 1) / items_per_page),
             instance_list,
+            merge_map,
             sentence_map,
             annotation_map,
             user_map,
@@ -672,6 +686,8 @@ class Valency extends React.Component {
   createValencyData() {
     this.setState({ creating_valency_data: true });
 
+    const { has_valency_data } = this.state.perspective;
+
     this.props
       .createValencyData({
         variables: {
@@ -680,7 +696,7 @@ class Valency extends React.Component {
       })
       .then(
         () => {
-          window.logger.suc(this.context("Created valency data."));
+          window.logger.suc(this.context(has_valency_data ? "Updated valency data." : "Created valency data."));
 
           const { client } = this.props;
           const id_str = client.cache.identify(this.state.perspective);
@@ -690,10 +706,12 @@ class Valency extends React.Component {
             fragment: gql`
               fragment HasValencyData on DictionaryPerspective {
                 has_valency_data
+                new_valency_data_count
               }
             `,
             data: {
-              has_valency_data: true
+              has_valency_data: true,
+              new_valency_data_count: 0
             }
           });
 
@@ -708,6 +726,7 @@ class Valency extends React.Component {
                   marked_for_deletion
                 }
                 has_valency_data
+                new_valency_data_count
               }
             `
           });
@@ -1071,7 +1090,7 @@ class Valency extends React.Component {
         <div className="background-content">
           <Segment>
             <Loader active inline="centered" indeterminate>
-              {`${this.context("Loading perspective data")}...`}
+              {this.context("Loading perspective data")}...
             </Loader>
           </Segment>
         </div>
@@ -1105,6 +1124,8 @@ class Valency extends React.Component {
     }
 
     const {
+      perspective,
+
       current_page,
       items_per_page,
       show_data_verb_list,
@@ -1167,14 +1188,17 @@ class Valency extends React.Component {
         }
       }
 
+      const { merge_map } = this.state;
+
       for (const sort_type of enabled_list) {
         switch (sort_type) {
           case "verb":
             const { verb_lex } = this.state.instance_list[0];
+            const header_str = merge_map.get(verb_lex) || verb_lex;
 
-            render_instance_list.push(<Header key={`${render_instance_list.length}${verb_lex}`}>{verb_lex}</Header>);
+            render_instance_list.push(<Header key={`${render_instance_list.length}${verb_lex}`}>{header_str}</Header>);
 
-            prev_dict[sort_type] = verb_lex;
+            prev_dict[sort_type] = header_str;
 
             break;
 
@@ -1216,13 +1240,14 @@ class Valency extends React.Component {
           switch (sort_type) {
             case "verb":
               const { verb_lex } = instance;
+              const header_str = merge_map.get(verb_lex) || verb_lex;
 
-              if (verb_lex != prev_dict[sort_type]) {
+              if (header_str != prev_dict[sort_type]) {
                 render_instance_list.push(
-                  <Header key={`${render_instance_list.length}${verb_lex}`}>{verb_lex}</Header>
+                  <Header key={`${render_instance_list.length}${verb_lex}`}>{header_str}</Header>
                 );
 
-                prev_dict[sort_type] = verb_lex;
+                prev_dict[sort_type] = header_str;
 
                 for (let k = j + 1; k < enabled_list.length; k++) {
                   prev_dict[enabled_list[k]] = null;
@@ -1312,22 +1337,25 @@ class Valency extends React.Component {
             onChange={(e, { value }) => this.setPerspective(perspective_id_map.get(value))}
           />
 
-          {this.state.perspective && !this.state.perspective.has_valency_data && (
+          {perspective && (!perspective.has_valency_data || perspective.new_valency_data_count > 0) && (
             <Button
+              key={perspective.has_valency_data ? "_update" : "_create"}
               style={{ marginTop: "0.5em" }}
               basic
-              positive
+              color={perspective.has_valency_data ? "violet" : "green"}
               content={
                 this.state.creating_valency_data ? (
                   <span>
-                    {`${this.context("Creating valency data...")} `}
+                    {this.context(
+                      perspective.has_valency_data ? "Updating valency data..." : "Creating valency data..."
+                    )}
                     <Icon name="spinner" loading />
                   </span>
                 ) : (
-                  this.context("Create valency data")
+                  this.context(perspective.has_valency_data ? "Update valency data" : "Create valency data")
                 )
               }
-              disabled={!this.state.perspective || this.state.creating_valency_data}
+              disabled={!perspective || this.state.creating_valency_data}
               onClick={() => this.createValencyData()}
             />
           )}
