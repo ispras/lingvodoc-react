@@ -206,11 +206,11 @@ class Docx2Eaf extends React.Component {
               <Message negative>
                 <Message.Header>{this.context("Convertion error")}</Message.Header>
                 <p>
-                  <span>Please contact developers at </span>
+                  <span>{this.context("Please contact developers at")} </span>
                   <a href="https://t.me/lingvodoc_support" target="_blank" rel="noreferrer">
                     {this.context("Support@Telegram")}
                   </a>
-                  <span> or at </span>
+                  <span> {this.context("or at")} </span>
                   <a href="https://github.com/ispras/lingvodoc-react/issues">{this.context("Lingvodoc Github")}</a>
                   <span>.</span>
                 </p>
