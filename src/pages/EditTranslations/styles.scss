@@ -537,3 +537,20 @@
     }
   }
 }
+
+/* lingvo loader translations */
+.lingvo-loader-translations {
+
+  @media only screen and (max-device-width: 580px), only screen and (max-width: 580px) {
+    position: relative;
+    padding: 15px 0 0 0;
+
+    & .ui.loader {
+      position: relative !important;
+      top: auto !important;
+      left: auto !important;
+      transform: none !important;
+    }
+  }
+}
+/* /lingvo loader translations */

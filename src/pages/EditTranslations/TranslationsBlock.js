@@ -85,7 +85,11 @@ class TranslationsBlock extends React.Component {
     }
 
     if (loading || this.refetching) {
-      return <Loader active content={`${this.context("Loading")}...`}></Loader>;
+      return (
+        <div className="lingvo-loader-translations">
+          <Loader active content={`${this.context("Loading")}...`}></Loader>
+        </div>
+      );
     }
 
     const typeGistsMap = new Map();
