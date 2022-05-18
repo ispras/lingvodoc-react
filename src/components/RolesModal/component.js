@@ -199,7 +199,9 @@ class Roles extends React.Component {
         .map(role => find(allUsers, u => u.id === role.user_id))
     }));
 
-    const users = uniq(union(...permissions.map(p => p.users)));
+    const users = uniq(union(...permissions.map(p => p.users))).sort((user1, user2) =>
+      user1.name.localeCompare(user2.name)
+    );
     const userOptions = without(allUsers, ...users)
       .map(u => ({
         key: u.id,
