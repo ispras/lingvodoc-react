@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Button, Checkbox, Dimmer, Header, Icon, Modal, Segment, Tab } from "semantic-ui-react";
+import { Button, Checkbox, Dimmer, Header, Icon, Message, Modal, Segment, Tab } from "semantic-ui-react";
 import { graphql } from "@apollo/client/react/hoc";
 import { isEqual } from "lodash";
 import PropTypes from "prop-types";
@@ -326,7 +326,11 @@ class LinkModalContent extends React.PureComponent {
     } = data;
 
     if (error) {
-      return null;
+      return (
+        <Message negative compact>
+          {this.context("Link data loading error, please contact administrators.")}
+        </Message>
+      );
     }
 
     if (loading) {
@@ -341,7 +345,9 @@ class LinkModalContent extends React.PureComponent {
       );
     }
 
-    const column = perspective.columns.find(c => isEqual(c.field_id, fieldId) && !!c.link_id);
+    const column =
+      perspective.columns.find(c => isEqual(c.field_id, fieldId) && !!c.link_id) ||
+      perspective.columns.find(c => isEqual(c.field_id, fieldId));
 
     const Component = getComponent(mode);
 
@@ -364,6 +370,8 @@ class LinkModalContent extends React.PureComponent {
     );
   }
 }
+
+LinkModalContent.contextType = TranslationContext;
 
 LinkModalContent.propTypes = {
   data: PropTypes.shape({

@@ -210,17 +210,17 @@ class Files extends React.Component {
 
     const fileTypes = [
       {
-        text: this.context("PDF file"),
+        text: this.context("PDF"),
         value: "pdf",
         icon: "file pdf outline"
       },
       {
-        text: this.context("Dialeqt file"),
+        text: this.context("Dialeqt"),
         value: "dialeqt_dictionary",
         icon: "conversation"
       },
       {
-        text: this.context("Starling"),
+        text: this.context("Starling/CSV"),
         value: "starling/csv",
         icon: "conversation"
       },
