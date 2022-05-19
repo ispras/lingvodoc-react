@@ -3,12 +3,9 @@ import { connect } from "react-redux";
 import {
   Button,
   Checkbox,
-  Dimmer,
   Header,
   Icon,
   Input,
-  Label,
-  List,
   Loader,
   Message,
   Pagination,
@@ -28,7 +25,7 @@ import {
   verticalListSortingStrategy
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { isEqual, map } from "lodash";
+import { isEqual } from "lodash";
 import { compose } from "recompose";
 
 import { chooseTranslation as T } from "api/i18n";
@@ -258,7 +255,6 @@ const SortAccept = ({ valency, setState }) => {
   return (
     <div className="sorting_item">
       <Checkbox
-        label={getTranslation("Sort by acceptance")}
         label={
           sort_accept ? (
             <label>
@@ -375,8 +371,11 @@ const Sorting = ({ sort_order_list, setSortOrder, ...props }) => {
     });
   }
 
+  const { sort_accept, sort_case, sort_verb } = props.valency.state;
+
   return (
     <DndContext
+      key={`${sort_accept}${sort_case}${sort_verb}`}
       sensors={sensors}
       modifiers={[restrictToVerticalAxis]}
       collisionDetection={collisionDetection}
