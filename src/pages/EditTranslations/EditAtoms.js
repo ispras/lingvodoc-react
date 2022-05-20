@@ -316,14 +316,7 @@ class EditAtoms extends React.Component {
   render() {
     const { atoms, newGist } = this.state;
     const currentLocaleId = locale.get();
-
-    console.log('atoms======');
-    console.log(atoms);
-
     const atomsSort = [...atoms];
-
-    console.log('atomsSort======');
-    console.log(atomsSort);
 
     /* sorting */
     atomsSort.sort((a, b) => {
@@ -331,21 +324,15 @@ class EditAtoms extends React.Component {
       if (a && b && Array.isArray(a.id) && Array.isArray(b.id)) {
 
         let nameA = a.locale_id;
-
         if (nameA && nameA === 2) {
           nameA = -1;
         }
 
-        console.log(nameA);
-
         let nameB = b.locale_id;
-
         if (nameB && nameB === 2) {
           nameB = -1;
         }
-
-        console.log(nameB);
-
+        
         /* sort string ascending */
         if (nameA && nameB && nameA < nameB) {
           return -1;
