@@ -1840,6 +1840,23 @@ body {
     background-color: #999ca0;
   }
 
+  &_sort_up {
+    -webkit-mask-image: url("../images/icon_arrow2.svg");
+    mask-image: url("../images/icon_arrow2.svg");
+    width: 12px;
+    height: 8px;
+    background-color: #BDBDBD;
+    transform: rotate(180deg);
+  }
+
+  &_sort_down {
+    -webkit-mask-image: url("../images/icon_arrow2.svg");
+    mask-image: url("../images/icon_arrow2.svg");
+    width: 12px;
+    height: 8px;
+    background-color: #BDBDBD;
+  }
+
   &_trash {
     -webkit-mask-image: url("../images/icon_trash2.svg");
     mask-image: url("../images/icon_trash2.svg");
@@ -1858,6 +1875,14 @@ body {
     &_disabled {
       background-color: #5D54CD;
     }
+  }
+
+  &_divider {
+    -webkit-mask-image: url("../images/icon_divider.svg");
+    mask-image: url("../images/icon_divider.svg");
+    width: 10px;
+    height: 14px;
+    background-color: #fff;
   }
 }
 /* /icon */

@@ -316,6 +316,36 @@ class EditAtoms extends React.Component {
   render() {
     const { atoms, newGist } = this.state;
     const currentLocaleId = locale.get();
+    const atomsSort = [...atoms];
+
+    /* sorting */
+    atomsSort.sort((a, b) => {
+
+      if (a && b && Array.isArray(a.id) && Array.isArray(b.id)) {
+
+        let nameA = a.locale_id;
+        if (nameA && nameA === 2) {
+          nameA = -1;
+        }
+
+        let nameB = b.locale_id;
+        if (nameB && nameB === 2) {
+          nameB = -1;
+        }
+        
+        /* sort string ascending */
+        if (nameA && nameB && nameA < nameB) {
+          return -1;
+        }
+        if (nameA && nameB && nameA > nameB) {
+          return 1;
+        }
+
+      }
+      
+      /* default return value (no sorting) */
+      return 0;
+    });
 
     let header = "";
     atoms.some(atom => {
@@ -331,7 +361,7 @@ class EditAtoms extends React.Component {
         <h4 className="lingvo-gist__header">{header}</h4>
 
         <div className="lingvo-atoms-grid">
-          {atoms.map(atom => (
+          {atomsSort.map(atom => (
             <div className="lingvo-atom-grid" key={atom.id}>
               <div className="lingvo-atom-grid__text">
                 <Popup 
