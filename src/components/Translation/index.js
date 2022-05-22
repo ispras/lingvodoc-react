@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Form, Input, List, Select } from "semantic-ui-react";
+import { Button, Form, Icon, Input, List, Message, Select } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
 import { difference, head, isEmpty, nth } from "lodash";
@@ -84,10 +84,40 @@ class Translations extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      translations: props.translations || []
+      translations: props.translations || [],
+      initialize: props.initialize
     };
+    this.checkInit = this.checkInit.bind(this);
     this.addTranslation = this.addTranslation.bind(this);
     this.onChange = this.onChange.bind(this);
+  }
+
+  checkInit() {
+    if (!this.state.initialize) {
+      return;
+    }
+
+    const { loading, error } = this.props.data;
+
+    if (loading || error) {
+      return;
+    }
+
+    this.state.initialize = false;
+
+    if (this.state.translations.length > 0) {
+      return;
+    }
+
+    this.addTranslation();
+  }
+
+  componentDidMount() {
+    this.checkInit();
+  }
+
+  componentDidUpdate() {
+    this.checkInit();
   }
 
   onChange(translation) {
@@ -142,8 +172,24 @@ class Translations extends React.Component {
       data: { error, loading, all_locales: locales },
       textArea
     } = this.props;
-    if (loading || error) {
-      return null;
+
+    if (error) {
+      return (
+        <Message negative compact>
+          <Message.Header>{this.context("Locale data loading error")}</Message.Header>
+          <div style={{ marginTop: "0.25em" }}>
+            {this.context("Try reloading the page; if the error persists, please contact administrators.")}
+          </div>
+        </Message>
+      );
+    }
+
+    if (loading) {
+      return (
+        <span>
+          {this.context("Loading locale data")}... <Icon name="spinner" loading />
+        </span>
+      );
     }
 
     const { translations } = this.state;

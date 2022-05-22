@@ -12,11 +12,10 @@ import TranslationContext from "Layout/TranslationContext";
 
 import Entities from "./index";
 
-function content(c) {
+export function content(c, MAX_CONTENT_LENGTH = 12) {
   if (!c) {
     return "";
   }
-  const MAX_CONTENT_LENGTH = 12;
   if (c.length <= MAX_CONTENT_LENGTH) {
     return c;
   }
@@ -88,6 +87,7 @@ const Sound = props => {
     columns,
     entity,
     entry,
+    allEntriesGenerator,
     mode,
     entitiesMode,
     as: Component = "li",
@@ -116,6 +116,7 @@ const Sound = props => {
           column={subColumn}
           columns={columns}
           entry={entry}
+          allEntriesGenerator={allEntriesGenerator}
           mode={mode}
           entitiesMode={entitiesMode}
           parentEntity={entity}

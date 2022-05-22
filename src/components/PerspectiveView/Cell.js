@@ -11,6 +11,7 @@ import "styles/main.scss";
 const Cell = ({
   perspectiveId,
   entry,
+  allEntriesGenerator,
   column,
   columns,
   checkEntries,
@@ -39,6 +40,7 @@ const Cell = ({
         resetCheckedColumn={resetCheckedColumn}
         resetCheckedAll={resetCheckedAll}
         entry={entry}
+        allEntriesGenerator={allEntriesGenerator}
         mode={mode}
         entitiesMode={entitiesMode}
         disabled={disabled}

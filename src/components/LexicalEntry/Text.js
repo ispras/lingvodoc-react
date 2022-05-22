@@ -193,6 +193,7 @@ const Text = onlyUpdateForKeys([
     checkedAll,
     resetCheckedAll,
     entry,
+    allEntriesGenerator,
     entity,
     mode,
     entitiesMode,
@@ -234,6 +235,7 @@ const Text = onlyUpdateForKeys([
           column={subColumn}
           columns={columns}
           entry={entry}
+          allEntriesGenerator={allEntriesGenerator}
           mode={mode}
           entitiesMode={entitiesMode}
           publish={publish}

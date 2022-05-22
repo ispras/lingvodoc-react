@@ -20,6 +20,7 @@ import {
   setSortByField
 } from "ducks/perspective";
 import TranslationContext from "Layout/TranslationContext";
+import { compositeIdToString as id2str } from "utils/compositeId";
 
 import Pagination from "./Pagination";
 import TableBody from "./TableBody";
@@ -443,7 +444,14 @@ class P extends React.Component {
       }
     ]);
 
-    const newEntries = processEntries(lexicalEntries.filter(e => !!createdEntries.find(c => isEqual(e.id, c.id))));
+    const created_id_str_set = {};
+
+    for (const entry of createdEntries) {
+      created_id_str_set[id2str(entry.id)] = null;
+    }
+
+    const newEntries = processEntries(lexicalEntries.filter(e => created_id_str_set.hasOwnProperty(id2str(e.id))));
+
     const entries = processEntries(lexicalEntries.slice());
 
     const pageEntries =
@@ -452,7 +460,7 @@ class P extends React.Component {
     // Put newly created entries at the top of page.
     const e = [
       ...newEntries,
-      ...pageEntries.filter(pageEntry => !createdEntries.find(c => isEqual(c.id, pageEntry.id)))
+      ...pageEntries.filter(pageEntry => !created_id_str_set.hasOwnProperty(id2str(pageEntry.id)))
     ];
 
     // join fields and columns
@@ -579,6 +587,11 @@ class P extends React.Component {
     }
     /* /isTableLanguagesPublish */
 
+    function* allEntriesGenerator() {
+      yield* newEntries;
+      yield* entries;
+    }
+
     return (
       <div style={{ overflowY: "auto" }} className="lingvo-scrolling-tab">
         {mode === "edit" && (
@@ -638,6 +651,7 @@ class P extends React.Component {
               perspectiveId={id}
               entitiesMode={entitiesMode}
               entries={items}
+              allEntriesGenerator={allEntriesGenerator}
               columns={fields}
               mode={mode}
               selectEntries={mode === "edit"}

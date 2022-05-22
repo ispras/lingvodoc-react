@@ -413,10 +413,10 @@ D.contextType = TranslationContext;
 D.propTypes = {
   id: PropTypes.array.isRequired,
   perspectives: PropTypes.array.isRequired,
-  translations: PropTypes.string.isRequired,
+  translations: PropTypes.object.isRequired,
   mode: PropTypes.number.isRequired,
   category: PropTypes.number.isRequired,
-  status_translations: PropTypes.string.isRequired,
+  status_translations: PropTypes.object.isRequired,
   state_translation_gist_id: PropTypes.array.isRequired,
   statuses: PropTypes.array.isRequired,
   actions: PropTypes.object.isRequired,

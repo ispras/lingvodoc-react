@@ -15,11 +15,10 @@ import Entities from "./index";
 import ParserResults from "./ParserResults";
 import RunParserModal from "./RunParserModal";
 
-function content(c) {
+export function content(c, MAX_CONTENT_LENGTH = 12) {
   if (!c) {
     return "";
   }
-  const MAX_CONTENT_LENGTH = 12;
   if (c.length <= MAX_CONTENT_LENGTH) {
     return c;
   }
@@ -27,7 +26,7 @@ function content(c) {
 }
 
 const MarkupEntityContent = onlyUpdateForKeys(["entity", "mode"])(
-  ({ entity, parentEntity, mode, publish, accept, remove, actions }) => {
+  ({ entity, parentEntity, mode, publish, accept, remove, actions, columns, allEntriesGenerator }) => {
     const forParse = entity.is_subject_for_parsing;
     const getTranslation = useContext(TranslationContext);
 
@@ -42,7 +41,7 @@ const MarkupEntityContent = onlyUpdateForKeys(["entity", "mode"])(
               onClick={() =>
                 forParse
                   ? actions.openModal(RunParserModal, { entityId: entity.id })
-                  : actions.openViewer(parentEntity, entity)
+                  : actions.openViewer(parentEntity, entity, columns, allEntriesGenerator)
               }
             />
             <Button
@@ -58,7 +57,12 @@ const MarkupEntityContent = onlyUpdateForKeys(["entity", "mode"])(
             <Button.Group basic icon size="mini">
               <Button as="a" href={entity.content} icon="download" />
               <Popup trigger={<Button content={content(entity.content)} />} content={entity.content} />
-              {!forParse && <Button icon="table" onClick={() => actions.openViewer(parentEntity, entity)} />}
+              {!forParse && (
+                <Button
+                  icon="table"
+                  onClick={() => actions.openViewer(parentEntity, entity, columns, allEntriesGenerator)}
+                />
+              )}
             </Button.Group>
             <Checkbox size="tiny" checked={entity.published} onChange={(_e, { checked }) => publish(entity, checked)} />
           </div>
@@ -69,7 +73,12 @@ const MarkupEntityContent = onlyUpdateForKeys(["entity", "mode"])(
           <Button.Group basic icon size="mini">
             <Button as="a" href={entity.content} icon="download" />
             <Popup trigger={<Button content={content(entity.content)} />} content={entity.content} />
-            {!forParse && <Button icon="table" onClick={() => actions.openViewer(parentEntity, entity)} />}
+            {!forParse && (
+              <Button
+                icon="table"
+                onClick={() => actions.openViewer(parentEntity, entity, columns, allEntriesGenerator)}
+              />
+            )}
           </Button.Group>
         );
 
@@ -82,7 +91,12 @@ const MarkupEntityContent = onlyUpdateForKeys(["entity", "mode"])(
               content={entity.content}
             />
             {!forParse && (
-              <Button basic color="black" icon="table" onClick={() => actions.openViewer(parentEntity, entity)} />
+              <Button
+                basic
+                color="black"
+                icon="table"
+                onClick={() => actions.openViewer(parentEntity, entity, columns, allEntriesGenerator)}
+              />
             )}
             {!entity.accepted && <Button basic color="black" icon="check" onClick={() => accept(entity, true)} />}
           </Button.Group>
@@ -101,6 +115,7 @@ const Markup = props => {
     entity,
     parentEntity,
     entry,
+    allEntriesGenerator,
     mode,
     as: Component = "li",
     className = "",
@@ -116,13 +131,25 @@ const Markup = props => {
       <MarkupEntityContent
         entity={entity}
         parentEntity={parentEntity}
+        columns={columns}
+        allEntriesGenerator={allEntriesGenerator}
         mode={mode}
         publish={publish}
         accept={accept}
         remove={remove}
         actions={actions}
       />
-      {subColumn && <Entities column={subColumn} columns={columns} entry={entry} parentEntity={entity} mode={mode} />}
+      {subColumn && (
+        <Entities
+          column={subColumn}
+          columns={columns}
+          entry={entry}
+          allEntriesGenerator={allEntriesGenerator}
+          parentEntity={entity}
+          parentColumn={column}
+          mode={mode}
+        />
+      )}
       {!subColumn && entity.is_subject_for_parsing && <ParserResults entityId={entity.id} mode={mode} />}
     </Component>
   );
