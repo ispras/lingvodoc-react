@@ -5,7 +5,7 @@ const dev = {
   dev: true,
   logMissingTranslations: true,
   logGraphQLErrors: true,
-  pollingInterval: 2000000
+  pollingInterval: 20000
 };
 
 export default {
