@@ -520,9 +520,7 @@ class ConvertEafModal extends React.Component {
             <div style={{ marginTop: "0.5em" }}>
               <Checkbox
                 checked={additionalEntries}
-                label={this.context(
-                  "Add words and transcriptions from paradigms to lexical entries, grouping by meaning."
-                )}
+                label={`${this.context("Add words and transcriptions from paradigms to lexical entries")}.`}
                 onChange={(e, { checked }) => this.setState({ additionalEntries: checked })}
               />
               {additionalEntries && (
@@ -530,7 +528,7 @@ class ConvertEafModal extends React.Component {
                   <div style={{ marginTop: "0.25em" }} key="empty">
                     <Checkbox
                       radio
-                      label={this.context("Only to entries lacking words and transcriptions.")}
+                      label={`${this.context("Only to entries lacking words and transcriptions")}.`}
                       checked={!additionalEntriesAll}
                       onChange={e => this.setState({ additionalEntriesAll: false })}
                     />
@@ -538,7 +536,7 @@ class ConvertEafModal extends React.Component {
                   <div style={{ marginTop: "0.25em" }} key="all">
                     <Checkbox
                       radio
-                      label={this.context("To all lexical entries linked to paradigms.")}
+                      label={`${this.context("To all entries")}.`}
                       checked={additionalEntriesAll}
                       onChange={e => this.setState({ additionalEntriesAll: true })}
                     />
@@ -560,7 +558,10 @@ class ConvertEafModal extends React.Component {
                     </span>
                   ) : additionalMarkupInfo.error ? (
                     <Message negative compact>
-                      {getTranslation("Markup data loading error, please contact administrators.")}
+                      <Message.Header>{this.context("Markup data loading error")}</Message.Header>
+                      <div style={{ marginTop: "0.25em" }}>
+                        {this.context("Try reloading the page; if the error persists, please contact administrators.")}
+                      </div>
                     </Message>
                   ) : (
                     <AdditionalMarkup info={additionalMarkupInfo} />
@@ -602,7 +603,10 @@ class ConvertEafModal extends React.Component {
               </span>
             ) : error ? (
               <Message negative compact>
-                {this.context("Dictionary data loading error, please contact adiministrators.")}
+                <Message.Header>{this.context("Dictionary data loading error")}</Message.Header>
+                <div style={{ marginTop: "0.25em" }}>
+                  {this.context("Try reloading the page; if the error persists, please contact administrators.")}
+                </div>
               </Message>
             ) : (
               <div>

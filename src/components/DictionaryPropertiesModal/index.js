@@ -328,7 +328,12 @@ class Properties extends React.Component {
         >
           <Modal.Header>{title}</Modal.Header>
           <Modal.Content>
-            <Message negative>{this.context("Dictionary info loading error, please contact adiministrators.")}</Message>
+            <Message negative compact>
+              <Message.Header>{this.context("Dictionary info loading error")}</Message.Header>
+              <div style={{ marginTop: "0.25em" }}>
+                {this.context("Try reloading the page; if the error persists, please contact administrators.")}
+              </div>
+            </Message>
           </Modal.Content>
         </Modal>
       );
