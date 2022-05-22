@@ -160,8 +160,9 @@ class ConvertEafModal extends React.Component {
       translations: [],
       dictionary: null,
       mergeByMeaning: true,
+      mergeByMeaningAll: true,
       additionalEntries: true,
-      additionalEntriesMode: "all",
+      additionalEntriesAll: true,
       useAdditionalMarkup: false,
       additionalMarkupInfo: null
     };
@@ -358,8 +359,9 @@ class ConvertEafModal extends React.Component {
       dictionary,
       translations,
       mergeByMeaning,
+      mergeByMeaningAll,
       additionalEntries,
-      additionalEntriesMode,
+      additionalEntriesAll,
       useAdditionalMarkup,
       additionalMarkupInfo
     } = this.state;
@@ -383,8 +385,9 @@ class ConvertEafModal extends React.Component {
           languageId: parentLanguage.id,
           atoms: translations.map(a => ({ locale_id: a.localeId, content: a.content })),
           mergeByMeaning,
+          mergeByMeaningAll,
           additionalEntries,
-          additionalEntriesAll: additionalEntriesMode == "all"
+          additionalEntriesAll
         }
       }).then(
         () => {
@@ -403,8 +406,9 @@ class ConvertEafModal extends React.Component {
           markupIdList,
           dictionaryId: dictionary.id,
           mergeByMeaning,
+          mergeByMeaningAll,
           additionalEntries,
-          additionalEntriesAll: additionalEntriesMode == "all"
+          additionalEntriesAll
         }
       }).then(
         () => {
@@ -445,8 +449,9 @@ class ConvertEafModal extends React.Component {
       parentLanguage,
       translations,
       mergeByMeaning,
+      mergeByMeaningAll,
       additionalEntries,
-      additionalEntriesMode,
+      additionalEntriesAll,
       useAdditionalMarkup,
       additionalMarkupInfo
     } = this.state;
@@ -485,11 +490,33 @@ class ConvertEafModal extends React.Component {
         </Modal.Header>
         <Modal.Content>
           <div style={{ marginBottom: "1.75em" }}>
-            <Checkbox
-              checked={mergeByMeaning}
-              label={`${this.context("Merge lexical entries by meaning")}.`}
-              onChange={(e, { checked }) => this.setState({ mergeByMeaning: checked })}
-            />
+            <div>
+              <Checkbox
+                checked={mergeByMeaning}
+                label={`${this.context("Merge lexical entries by meaning")}.`}
+                onChange={(e, { checked }) => this.setState({ mergeByMeaning: checked })}
+              />
+              {mergeByMeaning && (
+                <div style={{ marginLeft: "1em" }}>
+                  <div style={{ marginTop: "0.25em" }} key="empty">
+                    <Checkbox
+                      radio
+                      label={`${this.context("Only entries of paradigmatic annotated forms")}.`}
+                      checked={!mergeByMeaningAll}
+                      onChange={e => this.setState({ mergeByMeaningAll: false })}
+                    />
+                  </div>
+                  <div style={{ marginTop: "0.25em" }} key="all">
+                    <Checkbox
+                      radio
+                      label={`${this.context("All entries")}.`}
+                      checked={mergeByMeaningAll}
+                      onChange={e => this.setState({ mergeByMeaningTrue: false })}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
             <div style={{ marginTop: "0.5em" }}>
               <Checkbox
                 checked={additionalEntries}
@@ -504,16 +531,16 @@ class ConvertEafModal extends React.Component {
                     <Checkbox
                       radio
                       label={this.context("Only to entries lacking words and transcriptions.")}
-                      checked={additionalEntriesMode === "empty"}
-                      onChange={e => this.setState({ additionalEntriesMode: "empty" })}
+                      checked={!additionalEntriesAll}
+                      onChange={e => this.setState({ additionalEntriesAll: false })}
                     />
                   </div>
                   <div style={{ marginTop: "0.25em" }} key="all">
                     <Checkbox
                       radio
                       label={this.context("To all lexical entries linked to paradigms.")}
-                      checked={additionalEntriesMode === "all"}
-                      onChange={e => this.setState({ additionalEntriesMode: "all" })}
+                      checked={additionalEntriesAll}
+                      onChange={e => this.setState({ additionalEntriesAll: true })}
                     />
                   </div>
                 </div>
