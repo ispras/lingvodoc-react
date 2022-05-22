@@ -549,9 +549,7 @@ class ConvertEafModal extends React.Component {
                 <Translations
                   translations={translations}
                   initialize={true}
-                  onChange={t => {
-                    this.state.translations = t;
-                  }}
+                  onChange={t => this.setState({ translations: t })}
                 />
               </div>
 
