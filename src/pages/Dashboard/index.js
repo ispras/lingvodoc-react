@@ -182,7 +182,15 @@ class P extends React.Component {
                       <i className="lingvo-icon lingvo-icon_roles" /> {this.context("Roles")}
                     </Dropdown.Item>
                     <Dropdown.Item
-                      onClick={() => actions.openPerspectivePropertiesModal(id, parent_id, this.context("Properties"))}
+                      onClick={() =>
+                        actions.openPerspectivePropertiesModal(
+                          id,
+                          parent_id,
+                          `${this.context("Perspective")} '${T(translations)}' ${this.context(
+                            "Properties"
+                          ).toLowerCase()}`
+                        )
+                      }
                     >
                       <i className="lingvo-icon lingvo-icon_properties" /> {this.context("Properties")}
                     </Dropdown.Item>
@@ -352,7 +360,14 @@ class D extends React.Component {
                   <Dropdown.Item onClick={() => actions.openRoles(id, "dictionary", this.context("Roles"))}>
                     <i className="lingvo-icon lingvo-icon_roles" /> {this.context("Roles")}
                   </Dropdown.Item>
-                  <Dropdown.Item onClick={() => actions.openDictionaryPropertiesModal(id, this.context("Properties"))}>
+                  <Dropdown.Item
+                    onClick={() =>
+                      actions.openDictionaryPropertiesModal(
+                        id,
+                        `${this.context("Dictionary")} '${T(translations)}' ${this.context("Properties").toLowerCase()}`
+                      )
+                    }
+                  >
                     <i className="lingvo-icon lingvo-icon_properties" /> {this.context("Properties")}
                   </Dropdown.Item>
                   <Dropdown.Item onClick={() => actions.openDictionaryOrganizationsModal(id)}>
