@@ -319,7 +319,7 @@ Files.propTypes = {
     loading: PropTypes.bool,
     error: PropTypes.object,
     user_blobs: PropTypes.array
-  }).isRequired,
+  }),
   createBlob: PropTypes.func.isRequired,
   sortByField: PropTypes.object,
   dispatch: PropTypes.func.isRequired
