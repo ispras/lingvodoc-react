@@ -511,7 +511,7 @@ class ConvertEafModal extends React.Component {
                       radio
                       label={`${this.context("All entries")}.`}
                       checked={mergeByMeaningAll}
-                      onChange={e => this.setState({ mergeByMeaningTrue: false })}
+                      onChange={e => this.setState({ mergeByMeaningAll: true })}
                     />
                   </div>
                 </div>
