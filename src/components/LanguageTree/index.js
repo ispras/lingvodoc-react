@@ -132,9 +132,9 @@ const LanguageTree = ({ sortMode, published, forCorpora = false, entityId, selec
     let elem = document.getElementById(`${sortMode}_${entityId}`);
     if (!elem && sortMode !== "language") {
       elem = document.querySelector(".language_tree");
-      if (!elem) {
-        return;
-      }
+    }
+    if (!elem) {
+      return;
     }
 
     smoothScroll(elem.offsetTop - 160, 500, null, container);

@@ -60,12 +60,16 @@ export const getLanguageTree = gql`
 `;
 
 export const getLanguagesForSearch = gql`
-  query GetLanguagesForSearch {
-    language_tree {
-      languages {
-        id
-        translations
-      }
+  query GetLanguagesForSearch($category: Int, $published: Boolean) {
+    languages(
+      only_with_dictionaries_recursive: true
+      dictionary_category: $category
+      dictionary_published: $published
+    ) {
+      id
+      translations
+      in_toc
+      dictionary_count(recursive: true, category: $category, published: $published)
     }
   }
 `;
@@ -82,16 +86,6 @@ export const getTocGrants = gql`
       translations
       issuer_translations
       grant_number
-    }
-  }
-`;
-
-export const getTocLanguages = gql`
-  query GetTocLanguages($published: Boolean, $category: Int) {
-    language_toc {
-      id
-      translations
-      dictionary_count(recursive: true, published: $published, category: $category)
     }
   }
 `;

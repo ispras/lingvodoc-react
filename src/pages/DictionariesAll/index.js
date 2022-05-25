@@ -48,9 +48,10 @@ const DictionariesAll = () => {
         <LanguageSearchField
           queryData={{
             query: getLanguagesForSearch,
-            variables: { category: 0 },
+            variables: { category: 0, published },
             getEntries: data => data.language_tree.languages
           }}
+          variables={{ category: 0, published }}
           getLabel={language => chooseTranslation(language.translations)}
           getValue={language => language.id.toString()}
           search

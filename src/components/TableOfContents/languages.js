@@ -4,7 +4,7 @@ import { Container } from "semantic-ui-react";
 import { useQuery } from "@apollo/client";
 import PropTypes from "prop-types";
 
-import { getTocLanguages } from "backend";
+import { getLanguagesForSearch } from "backend";
 import Placeholder from "components/Placeholder";
 import { useTranslations } from "hooks";
 import { compositeIdToString } from "utils/compositeId";
@@ -15,7 +15,7 @@ const LanguagesToc = ({ published, category }) => {
 
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const { loading, error, data } = useQuery(getTocLanguages, {
+  const { loading, error, data } = useQuery(getLanguagesForSearch, {
     variables: { published, category },
     fetchPolicy: "network-only"
   });
@@ -24,10 +24,13 @@ const LanguagesToc = ({ published, category }) => {
       return new Map();
     }
 
-    const { language_toc } = data;
+    const { languages } = data;
 
     const language_toc_list = [];
-    for (const language of language_toc) {
+    for (const language of languages) {
+      if (!language.in_toc) {
+        continue;
+      }
       const language_extended = { ...language, translation: chooseTranslation(language.translations) };
       language_toc_list.push(language_extended);
     }

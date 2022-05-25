@@ -39,6 +39,7 @@ const SortModeSelector = ({ selected, setSelected }) => {
                 onChange={() => {
                   searchParams.delete("sortMode");
                   searchParams.delete("entity");
+                  searchParams.delete("tab");
                   setSearchParams(searchParams);
                   if (selected.length !== 0) {
                     setSelected([]);
@@ -54,6 +55,7 @@ const SortModeSelector = ({ selected, setSelected }) => {
                 onChange={() => {
                   searchParams.set("sortMode", "grant");
                   searchParams.delete("entity");
+                  searchParams.delete("tab");
                   setSearchParams(searchParams);
                   if (selected.length !== 0) {
                     setSelected([]);
@@ -69,6 +71,7 @@ const SortModeSelector = ({ selected, setSelected }) => {
                 onChange={() => {
                   searchParams.set("sortMode", "organization");
                   searchParams.delete("entity");
+                  searchParams.delete("tab");
                   setSearchParams(searchParams);
                   if (selected.length !== 0) {
                     setSelected([]);

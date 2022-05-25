@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Container, Form, Select } from "semantic-ui-react";
-import { useLazyQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 
 import { getLanguagesForSearch } from "backend";
 import { useTranslations } from "hooks";
@@ -12,7 +12,7 @@ import "./styles.scss";
 /**
  * Dropdown language selector with search capability.
  */
-const LanguageSearchField = () => {
+const LanguageSearchField = ({ variables }) => {
   const { getTranslation, chooseTranslation } = useTranslations();
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -20,15 +20,15 @@ const LanguageSearchField = () => {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState();
 
-  const [requestData, { called, loading, data }] = useLazyQuery(getLanguagesForSearch, {
-    fetchPolicy: "network-only",
-    onCompleted: () => setOpen(true)
+  const { loading, data } = useQuery(getLanguagesForSearch, {
+    variables,
+    fetchPolicy: "network-only"
   });
 
   const options = useMemo(
     () =>
       data
-        ? data.language_tree.languages
+        ? data.languages
             .map(language => ({
               text: chooseTranslation(language.translations),
               value: compositeIdToString(language.id)
@@ -59,15 +59,6 @@ const LanguageSearchField = () => {
             clearable
             lazyLoad
             loading={loading}
-            open={open}
-            onOpen={() => {
-              if (called) {
-                setOpen(true);
-              } else {
-                requestData();
-              }
-            }}
-            onClose={() => setOpen(false)}
             selectOnBlur={false}
             selectOnNavigation={false}
             placeholder={getTranslation("Start typing language name")}

@@ -66,15 +66,27 @@ const Node = ({ nodeInfo, root, selected, setSelected, proxyData }) => {
                     />
                   )}
                   {isDownloaded && <Icon name="download" />}
-                  <span className="dict-name">
-                    {dictionary.translations && chooseTranslation(dictionary.translations)}{" "}
-                    {config.buildType === "server" &&
-                      user.id !== undefined &&
-                      dictionary.english_status === "Published" && <Icon name="globe" />}
-                  </span>
-                  {authors && authors.length !== 0 && <span className="dict-authors">({authors.join(", ")})</span>}
-                  {perspectives && perspectives.length !== 0 && (
-                    <Dropdown inline text={`${getTranslation("View")} (${perspectives.length})`}>
+                  {!perspectives || perspectives.length <= 0 ? (
+                    <span className="dict-name">
+                      {dictionary.translations && chooseTranslation(dictionary.translations)}{" "}
+                      {config.buildType === "server" &&
+                        user.id !== undefined &&
+                        dictionary.english_status === "Published" && <Icon name="globe" />}
+                    </span>
+                  ) : (
+                    <Dropdown
+                      inline
+                      icon={null}
+                      trigger={
+                        <span className="dict-name">
+                          {dictionary.translations && chooseTranslation(dictionary.translations)}{" "}
+                          {config.buildType === "server" &&
+                            user.id !== undefined &&
+                            dictionary.english_status === "Published" && <Icon name="globe" />}
+                          ({perspectives.length})
+                        </span>
+                      }
+                    >
                       <Dropdown.Menu>
                         {perspectives.map(perspective => {
                           const permissions = proxyData ? proxyData.permission_lists : undefined;
@@ -107,6 +119,7 @@ const Node = ({ nodeInfo, root, selected, setSelected, proxyData }) => {
                       </Dropdown.Menu>
                     </Dropdown>
                   )}
+                  {authors && authors.length !== 0 && <span className="dict-authors">({authors.join(", ")})</span>}
                 </li>
               );
             })}
