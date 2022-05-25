@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Container, Form, Select } from "semantic-ui-react";
 import { useQuery } from "@apollo/client";
+import PropTypes from "prop-types";
 
 import { getLanguagesForSearch } from "backend";
 import { useTranslations } from "hooks";
@@ -17,7 +18,6 @@ const LanguageSearchField = ({ variables }) => {
 
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState();
 
   const { loading, data } = useQuery(getLanguagesForSearch, {
@@ -45,7 +45,7 @@ const LanguageSearchField = ({ variables }) => {
               return 0;
             })
         : [],
-    [data]
+    [chooseTranslation, data]
   );
 
   return (
@@ -67,7 +67,11 @@ const LanguageSearchField = ({ variables }) => {
             value={selected}
             onChange={(_event, d) => {
               setSelected(d.value);
-              searchParams.set("entity", d.value);
+              if (d.value === "") {
+                searchParams.delete("entity");
+              } else {
+                searchParams.set("entity", d.value);
+              }
               setSearchParams(searchParams);
             }}
           />
@@ -75,6 +79,10 @@ const LanguageSearchField = ({ variables }) => {
       </Form>
     </Container>
   );
+};
+
+LanguageSearchField.propTypes = {
+  variables: PropTypes.object
 };
 
 export default LanguageSearchField;

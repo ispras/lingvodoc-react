@@ -4,7 +4,6 @@ import { useSearchParams } from "react-router-dom";
 import { Container, Tab } from "semantic-ui-react";
 
 import { getId } from "api/user";
-import { getLanguagesForSearch } from "backend";
 import BackTopButton from "components/BackTopButton";
 import LanguageSearchField from "components/LanguageSearchField";
 import LanguageTree from "components/LanguageTree";
@@ -14,7 +13,7 @@ import { useTranslations } from "hooks";
 
 /** Dashboard corpora page */
 const CorporaAll = () => {
-  const { getTranslation, chooseTranslation } = useTranslations();
+  const { getTranslation } = useTranslations();
 
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -40,18 +39,7 @@ const CorporaAll = () => {
           <h2 className="page-title">{getTranslation("Language corpora")}</h2>
         </Container>
       </div>
-      <LanguageSearchField
-        queryData={{
-          query: getLanguagesForSearch,
-          variables: { category: 1 },
-          getEntries: data => data.language_tree.languages
-        }}
-        getLabel={language => chooseTranslation(language.translations)}
-        getValue={language => language.id.toString()}
-        search
-        clearable
-        placeholder={getTranslation("Start typing language name")}
-      />
+      <LanguageSearchField key={activeTab} variables={{ category: 1, published }} />
       <Container style={{ marginTop: "26px" }}>
         <Tab
           className="dictionaries-tabs"
@@ -81,9 +69,11 @@ const CorporaAll = () => {
               render: () => (
                 <Tab.Pane>
                   <LanguageTree
+                    global
                     forCorpora
                     sortMode="language"
                     published={published}
+                    entityId={searchParams.get("entity")}
                     selected={selected}
                     setSelected={setSelected}
                   />

@@ -4,7 +4,6 @@ import { useSearchParams } from "react-router-dom";
 import { Container, Tab } from "semantic-ui-react";
 
 import { getId } from "api/user";
-import { getLanguagesForSearch } from "backend";
 import BackTopButton from "components/BackTopButton";
 import LanguageSearchField from "components/LanguageSearchField";
 import LanguageTree from "components/LanguageTree";
@@ -18,7 +17,7 @@ import "./styles.scss";
 
 /** Dashboard dictionaries page */
 const DictionariesAll = () => {
-  const { getTranslation, chooseTranslation } = useTranslations();
+  const { getTranslation } = useTranslations();
 
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -44,21 +43,7 @@ const DictionariesAll = () => {
   return (
     <div className="dictionariesAll">
       <SortModeSelector selected={selected} setSelected={setSelected} />
-      {sortMode === "language" && (
-        <LanguageSearchField
-          queryData={{
-            query: getLanguagesForSearch,
-            variables: { category: 0, published },
-            getEntries: data => data.language_tree.languages
-          }}
-          variables={{ category: 0, published }}
-          getLabel={language => chooseTranslation(language.translations)}
-          getValue={language => language.id.toString()}
-          search
-          clearable
-          placeholder={getTranslation("Start typing language name")}
-        />
-      )}
+      {sortMode === "language" && <LanguageSearchField key={activeTab} variables={{ category: 0, published }} />}
       <Container style={{ marginTop: "26px" }}>
         <Tab
           className="dictionaries-tabs"
@@ -87,8 +72,10 @@ const DictionariesAll = () => {
               render: () => (
                 <Tab.Pane>
                   <LanguageTree
+                    global
                     sortMode={sortMode}
                     published={published}
+                    entityId={searchParams.get("entity")}
                     selected={selected}
                     setSelected={setSelected}
                   />

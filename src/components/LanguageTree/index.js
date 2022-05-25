@@ -15,9 +15,12 @@ import Node from "./node";
 import "./styles.scss";
 
 /** Language tree with dictionaries or corpora */
-const LanguageTree = ({ sortMode, published, forCorpora = false, entityId, selected, setSelected, style }) => {
+const LanguageTree = ({ global, sortMode, published, forCorpora = false, entityId, selected, setSelected, style }) => {
   const variables = useMemo(() => {
     const result = { category: forCorpora ? 1 : 0 };
+    if (global) {
+      return result;
+    }
     switch (sortMode) {
       case "language":
         if (entityId) {
@@ -39,7 +42,7 @@ const LanguageTree = ({ sortMode, published, forCorpora = false, entityId, selec
       default:
     }
     return result;
-  }, [entityId, forCorpora, sortMode]);
+  }, [entityId, forCorpora, global, sortMode]);
   const { loading: treeLoading, data: treeData } = useQuery(getLanguageTree, {
     variables,
     fetchPolicy: "network-only"
@@ -187,7 +190,14 @@ const LanguageTree = ({ sortMode, published, forCorpora = false, entityId, selec
     <Container className="container-gray" style={style}>
       <ul className="language_tree">
         {tree.map((node, index) => (
-          <Node key={index} nodeInfo={node} root selected={selected} setSelected={setSelected} proxyData={proxyData} />
+          <Node
+            key={index}
+            nodeInfo={node}
+            root={node.parent_id === null}
+            selected={selected}
+            setSelected={setSelected}
+            proxyData={proxyData}
+          />
         ))}
       </ul>
     </Container>
@@ -195,6 +205,7 @@ const LanguageTree = ({ sortMode, published, forCorpora = false, entityId, selec
 };
 
 LanguageTree.propTypes = {
+  global: PropTypes.bool,
   sortMode: PropTypes.string.isRequired,
   published: PropTypes.bool,
   forCorpora: PropTypes.bool,

@@ -40,6 +40,7 @@ export const getLanguageTree = gql`
       tree
       languages {
         id
+        parent_id
         translations
         in_toc
         dictionaries(deleted: false, published: $published, category: $category) {
