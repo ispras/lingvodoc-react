@@ -671,9 +671,8 @@ export default compose(
     columns,
     allEntriesGenerator
   })),
-  graphql(dictionariesQuery),
+  graphql(dictionariesQuery, { options: { fetchPolicy: "cache-and-network" } }),
   graphql(convertToNewDictionaryMutation, { name: "convertToNewDictionary" }),
   graphql(convertToExistingDictionaryMutation, { name: "convertToExistingDictionary" }),
-  //branch(({ data }) => data.loading, renderNothing),
   withApollo
 )(ConvertEafModal);
