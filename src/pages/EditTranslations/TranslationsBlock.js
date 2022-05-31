@@ -1,9 +1,11 @@
 import React from "react";
-import { Button, Container, Loader, Message, Pagination } from "semantic-ui-react";
+import { Button, Container, Loader, Message } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
 import Immutable from "immutable";
+import PropTypes from "prop-types";
 
+import Pagination from "components/Pagination";
 import TranslationContext from "Layout/TranslationContext";
 
 import EditAtoms from "./EditAtoms";
@@ -54,6 +56,7 @@ class TranslationsBlock extends React.Component {
     };
 
     this.addTranslationGist = this.addTranslationGist.bind(this);
+    this.onPageChange = this.onPageChange.bind(this);
   }
 
   addTranslationGist() {
@@ -62,6 +65,19 @@ class TranslationsBlock extends React.Component {
     const date_str = date.toISOString() + date.getUTCMilliseconds().toString();
     newGists.push({ type: this.props.gists_type, atoms: [{ id: date_str, locale_id: 2, content: "" }] });
     this.setState({ newgists: newGists });
+  }
+
+  onPageChange(activePage) {
+    const search_key = Immutable.List([
+      this.props.searchstring,
+      this.props.search_case_insensitive,
+      this.props.search_regular_expression,
+      this.props.gists_type
+    ]);
+    this.setState({
+      activePageMap: this.state.activePageMap.set(search_key, activePage),
+      activePage
+    });
   }
 
   render() {
@@ -114,10 +130,6 @@ class TranslationsBlock extends React.Component {
       );
     });
 
-    const totalPages = Math.ceil(translationGists.length / gistsPerPage);
-
-    const totalItems = translationGists.length;
-
     /* sorting */
     translationGists.sort((a, b) => {
       let nameA, nameB;
@@ -167,34 +179,14 @@ class TranslationsBlock extends React.Component {
       }
     }
 
-    const pagination = (
-      <div className="lingvo-pagination-block__pages">
-        <Pagination
-          activePage={activePage}
-          totalPages={totalPages}
-          onPageChange={(e, { activePage }) =>
-            this.setState({
-              activePageMap: activePageMap.set(search_key, activePage),
-              activePage
-            })
-          }
-          className="lingvo-pagination"
-          nextItem={{
-            "aria-label": "Next item",
-            content: ">"
-          }}
-          prevItem={{
-            "aria-label": "Previous item",
-            content: "<"
-          }}
-        />
-      </div>
-    );
-
     return (
       <div>
-        {translationGists.length > 0 && <div className="lingvo-pagination-block">{pagination}</div>}
-
+        <Pagination
+          activePage={activePage}
+          pageSize={gistsPerPage}
+          totalItems={translationGists.length}
+          onPageChanged={this.onPageChange}
+        />
         {types.map(type => (
           <Container fluid key={type}>
             {!this.props.gists_type && <h2 className="lingvo-subheader-translations">{this.context(type)}</h2>}
@@ -234,20 +226,26 @@ class TranslationsBlock extends React.Component {
             )}
           </Container>
         ))}
-
-        {translationGists.length > 0 && (
-          <div className="lingvo-pagination-block">
-            <div className="lingvo-pagination-block__total">
-              {this.context("Total items")}: {totalItems}
-            </div>
-            {pagination}
-          </div>
-        )}
+        <Pagination
+          activePage={activePage}
+          pageSize={25}
+          totalItems={translationGists.length}
+          showTotal
+          onPageChanged={this.onPageChange}
+        />
       </div>
     );
   }
 }
 
 TranslationsBlock.contextType = TranslationContext;
+
+TranslationsBlock.propTypes = {
+  gists_type: PropTypes.string.isRequired,
+  searchstring: PropTypes.string,
+  search_case_insensitive: PropTypes.bool,
+  search_regular_expression: PropTypes.bool,
+  data: PropTypes.object
+};
 
 export default graphql(getTranslationsQuery)(TranslationsBlock);

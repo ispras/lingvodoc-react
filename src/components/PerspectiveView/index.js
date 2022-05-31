@@ -10,6 +10,7 @@ import { bindActionCreators } from "redux";
 import styled from "styled-components";
 
 import ApproveModal from "components/ApproveModal";
+import Pagination from "components/Pagination";
 import Placeholder from "components/Placeholder";
 import { openModal } from "ducks/modals";
 import {
@@ -21,8 +22,8 @@ import {
 } from "ducks/perspective";
 import TranslationContext from "Layout/TranslationContext";
 import { compositeIdToString as id2str } from "utils/compositeId";
+import smoothScroll from "utils/smoothscroll";
 
-import Pagination from "./Pagination";
 import TableBody from "./TableBody";
 import TableHeader from "./TableHeader";
 
@@ -450,7 +451,9 @@ class P extends React.Component {
       created_id_str_set[id2str(entry.id)] = null;
     }
 
-    const newEntries = processEntries(lexicalEntries.filter(e => created_id_str_set.hasOwnProperty(id2str(e.id))));
+    const newEntries = processEntries(
+      lexicalEntries.filter(e => Object.prototype.hasOwnProperty.call(created_id_str_set, id2str(e.id)))
+    );
 
     const entries = processEntries(lexicalEntries.slice());
 
@@ -460,7 +463,9 @@ class P extends React.Component {
     // Put newly created entries at the top of page.
     const e = [
       ...newEntries,
-      ...pageEntries.filter(pageEntry => !created_id_str_set.hasOwnProperty(id2str(pageEntry.id)))
+      ...pageEntries.filter(
+        pageEntry => !Object.prototype.hasOwnProperty.call(created_id_str_set, id2str(pageEntry.id))
+      )
     ];
 
     // join fields and columns
@@ -670,11 +675,20 @@ class P extends React.Component {
           </Table>
         </div>
         <Pagination
-          current={page}
-          total={Math.floor(entries.length / ROWS_PER_PAGE) + 1}
-          checkEntries={isTableLanguagesPublish}
-          resetCheckedColumn={this.resetCheckedColumn}
-          resetCheckedAll={this.resetCheckedAll}
+          urlBased
+          activePage={page}
+          pageSize={ROWS_PER_PAGE}
+          totalItems={entries.length}
+          showTotal
+          onPageChanged={() => {
+            const scrollContainer = document.querySelector(".lingvo-scrolling-tab__table");
+            smoothScroll(0, 0, null, scrollContainer);
+            if (isTableLanguagesPublish) {
+              this.resetCheckedColumn();
+              this.resetCheckedAll();
+            }
+          }}
+          style={{ position: "fixed", left: "24px", bottom: "-12px" }}
         />
       </div>
     );
