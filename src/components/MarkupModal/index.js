@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { connect } from "react-redux";
-import { Button, Modal } from "semantic-ui-react";
+import { Button, Icon, Message, Modal } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
 import PropTypes from "prop-types";
@@ -17,22 +17,37 @@ const q = gql`
   }
 `;
 
-const validateQuery = gql`
-  query validate($id: LingvodocID!) {
-    convert_five_tiers_validate(markup_id: $id)
+export const validateQuery = gql`
+  query validate($idList: [LingvodocID]!) {
+    convert_five_tiers_validate(markup_id_list: $idList)
   }
 `;
 
 const ConvertButton = compose(
-  graphql(validateQuery),
-  branch(({ data }) => data.loading, renderNothing),
-  branch(({ data: { convert_five_tiers_validate: isValid } }) => !isValid, renderNothing)
+  graphql(validateQuery, { options: props => ({ variables: { idList: [props.id] } }) }),
+  branch(({ data }) => data.loading || data.error, renderNothing),
+  branch(({ data: { convert_five_tiers_validate: isValidList } }) => !isValidList[0], renderNothing)
 )(props => <Button {...props} />);
 
 const MarkupEntity = graphql(q)(props => {
+  const getTranslation = useContext(TranslationContext);
   const { data, file } = props;
   if (data.loading) {
-    return null;
+    return (
+      <span>
+        {getTranslation("Loading markup data")}... <Icon name="spinner" loading />
+      </span>
+    );
+  }
+  if (data.error) {
+    return (
+      <Message negative compact>
+        <Message.Header>{getTranslation("Markup data loading error")}</Message.Header>
+        <div style={{ marginTop: "0.25em" }}>
+          {getTranslation("Try reloading the page; if the error persists, please contact administrators.")}
+        </div>
+      </Message>
+    );
   }
   return <MarkupViewer file={file} markup={data.convert_markup} />;
 });
@@ -41,7 +56,9 @@ const MarkupModal = props => {
   const { visible, data, actions } = props;
   const {
     audio,
-    markup: { id }
+    markup: { id },
+    columns,
+    allEntriesGenerator
   } = data;
   const audioUrl = audio ? audio.content : null;
 
@@ -55,7 +72,7 @@ const MarkupModal = props => {
       <Modal.Actions>
         <ConvertButton
           content={getTranslation("Convert to dictionary...")}
-          onClick={() => actions.openConvert(audio, data.markup)}
+          onClick={() => actions.openConvert(audio, data.markup, columns, allEntriesGenerator)}
           id={data.markup.id}
           className="lingvo-button-violet"
         />

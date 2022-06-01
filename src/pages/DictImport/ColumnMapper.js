@@ -107,25 +107,32 @@ const ColumnWithData = compose(
 
 function Columns({ blob, spreads, fieldOptions, columnTypes, onSetColumnType }) {
   const blobId = blob.get("id");
+  const columns = blob.getIn(["additional_metadata", "starling_fields"]);
   const values = blob.get("values");
 
   return (
     <div className="blob">
       <b className="blob-name">{blob.get("name")}</b>
       <div className="blob-columns">
-        {values
-          .filter(value => value !== null)
-          .map((value, columnIdStr) => (
-            <ColumnWithData
-              key={columnIdStr}
-              name={columnIdStr.slice(columnIdStr.indexOf(":") + 1)}
-              value={value}
-              type={columnTypes.getIn([blobId, columnIdStr])}
-              onSetColumnType={onSetColumnType(columnIdStr)}
-              fieldOptions={fieldOptions}
-            />
-          ))
-          .toArray()}
+        {columns.reduce((columnList, column, index) => {
+          const columnIdStr = `${index}:${column}`;
+          const value = values.get(columnIdStr);
+
+          if (value != null) {
+            columnList.push(
+              <ColumnWithData
+                key={columnIdStr}
+                name={columnIdStr.slice(columnIdStr.indexOf(":") + 1)}
+                value={value}
+                type={columnTypes.getIn([blobId, columnIdStr])}
+                onSetColumnType={onSetColumnType(columnIdStr)}
+                fieldOptions={fieldOptions}
+              />
+            );
+          }
+
+          return columnList;
+        }, [])}
         {spreads.map(spread => (
           <ColumnWithData
             spread

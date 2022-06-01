@@ -11,6 +11,7 @@ import Cell from "./Cell";
 const Row = ({
   perspectiveId,
   entry,
+  allEntriesGenerator,
   columns,
   mode,
   entitiesMode,
@@ -80,6 +81,7 @@ const Row = ({
           column={column}
           columns={columns}
           entry={entry}
+          allEntriesGenerator={allEntriesGenerator}
           checkEntries={checkEntries}
           checkedRow={checkedRow}
           checkedColumn={checkedColumn}

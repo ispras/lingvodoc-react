@@ -89,7 +89,7 @@
 
     @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
       &,
-      &.ui.visible.popup, 
+      &.ui.visible.popup,
       &.visible.transition {
         display: none !important;
         visibility: hidden !important;
@@ -134,6 +134,7 @@
     font-weight: bold;
     font-family: Mulish;
     margin-bottom: 18px;
+    white-space: pre-wrap;
   }
 
   &__buttons {
@@ -290,14 +291,14 @@
     border: 1px solid rgba(34, 36, 38, 0.15) !important;
     outline: none !important;
     box-shadow: none !important;
-    
+
     &:focus {
       border: 1px solid #5d54cd !important;
       outline: none !important;
     }
 
     &_fix {
-      white-space: nowrap !important;
+      white-space: pre !important;
       overflow: hidden !important;
       max-height: 42px !important;
       resize: none;
@@ -361,11 +362,10 @@
 }
 /* /atom grid */
 
-
 /* lingvo search translations */
 .lingvo-search-translations {
   margin: 0 0 10px 0;
-  
+
   &__input {
     position: relative;
     display: block !important;
@@ -410,7 +410,6 @@
       background: #fff !important;
       box-shadow: 0px 0px 4px rgba(93, 84, 205, 0.5) !important;
     }
-
   }
 
   &__checkboxes {
@@ -421,7 +420,6 @@
       padding: 5px 17px;
     }
   }
-
 }
 /* /lingvo search translations */
 
@@ -434,113 +432,8 @@
   margin-bottom: 16px;
 }
 
-/* lingvo pagination */
-.lingvo-pagination {
-  border: none !important;
-  box-shadow: none !important;
-  font-family: Rubik, Arial, sans-serif !important;
-  font-size: 14px !important;
-  line-height: 22px !important;
-
-  & .item {
-    margin: 4px !important;
-    border: 1px solid #DCDCDC !important;
-    border-radius: 8px !important;
-    padding: 4px 8px !important;
-    min-width: 32px !important;
-    line-height: 22px !important;
-    justify-content: center !important;
-
-    &::before {
-      content: none !important;
-    }
-
-    &:hover {
-      background-color: #EDECF6 !important;
-    }
-
-    &.active {
-      background-color: #5D54CD !important;
-      color: #fff !important;
-      border: 1px solid #5D54CD !important;
-    }
-
-    &[type=ellipsisItem] {
-      border: none !important;
-      color: #DCDCDC !important;
-      letter-spacing: 3px !important;
-      background-color: #fff !important;
-      padding-left: 4px !important;
-      padding-right: 2px !important;
-      min-width: auto !important;
-      font-weight: 500 !important;
-    }
-
-    &[type=prevItem],
-    &[type=nextItem] {
-      font-size: 16px !important;
-      font-weight: normal !important;
-    }
-
-    &[type=firstItem],
-    &[type=lastItem] {
-      font-size: 18px !important;
-      font-weight: normal !important;
-    }
-
-  }
-
-  @media only screen and (max-device-width: 580px), only screen and (max-width: 580px) {
-    display: flex !important;
-    flex-wrap: wrap !important;
-  }
-
-}
-/* /lingvo pagination */
-
-.lingvo-pagination-block {
-  display: flex;
-  flex-wrap: nowrap;
-  align-items: center;
-  margin: 0 -4px 20px -4px;
-  justify-content: space-between;
-
-  &__total {
-    flex: 0 1 auto;
-    padding: 0 4px;
-  }
-
-  &__pages {
-    flex: 1 1 auto;
-    text-align: right;
-    align-self: flex-end;
-  }
-
-  &__total + &__pages {
-    flex: 0 1 auto;
-    padding-left: 15px;
-    align-self: auto;
-  }
-
-  @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
-    flex-direction: column;
-    align-items: flex-start;
-    margin-left: 10px;
-    margin-right: 10px;
-
-    &__total {
-      padding-bottom: 12px;
-    }
-
-    &__total + &__pages {
-      padding-left: 0;
-    }
-  }
-}
-
 /* lingvo loader translations */
 .lingvo-loader-translations {
-
   @media only screen and (max-device-width: 580px), only screen and (max-width: 580px) {
     position: relative;
     padding: 15px 0 0 0;

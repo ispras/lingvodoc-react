@@ -976,7 +976,8 @@ body {
   }
 }
 
-.lingvo-button-close {
+.lingvo-button-close,
+.lingvo-button-refresh {
   border-radius: 10px !important;
   font-family: Rubik, Arial, sans-serif !important;
   font-weight: 500 !important;
@@ -1128,6 +1129,12 @@ body {
   &__close {
     position: absolute;
     right: 16px;
+    top: 72px;
+  }
+
+  &__refresh {
+    position: absolute;
+    left: 16px;
     top: 72px;
   }
 
@@ -1845,7 +1852,7 @@ body {
     mask-image: url("../images/icon_arrow2.svg");
     width: 12px;
     height: 8px;
-    background-color: #BDBDBD;
+    background-color: #bdbdbd;
     transform: rotate(180deg);
   }
 
@@ -1854,7 +1861,7 @@ body {
     mask-image: url("../images/icon_arrow2.svg");
     width: 12px;
     height: 8px;
-    background-color: #BDBDBD;
+    background-color: #bdbdbd;
   }
 
   &_trash {
@@ -1870,10 +1877,10 @@ body {
     mask-image: url("../images/icon_search.svg");
     width: 24px;
     height: 24px;
-    background-color: #5D54CD;
+    background-color: #5d54cd;
 
     &_disabled {
-      background-color: #5D54CD;
+      background-color: #5d54cd;
     }
   }
 

@@ -3,12 +3,9 @@ import { connect } from "react-redux";
 import {
   Button,
   Checkbox,
-  Dimmer,
   Header,
   Icon,
   Input,
-  Label,
-  List,
   Loader,
   Message,
   Pagination,
@@ -28,7 +25,7 @@ import {
   verticalListSortingStrategy
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { isEqual, map } from "lodash";
+import { isEqual } from "lodash";
 import { compose } from "recompose";
 
 import { chooseTranslation as T } from "api/i18n";
@@ -78,6 +75,15 @@ const createValencyDataMutation = gql`
   mutation createValencyData($perspectiveId: LingvodocID!) {
     create_valency_data(perspective_id: $perspectiveId) {
       triumph
+    }
+  }
+`;
+
+const saveValencyDataMutation = gql`
+  mutation saveValencyData($perspectiveId: LingvodocID!) {
+    save_valency_data(perspective_id: $perspectiveId) {
+      triumph
+      data_url
     }
   }
 `;
@@ -258,7 +264,6 @@ const SortAccept = ({ valency, setState }) => {
   return (
     <div className="sorting_item">
       <Checkbox
-        label={getTranslation("Sort by acceptance")}
         label={
           sort_accept ? (
             <label>
@@ -375,8 +380,11 @@ const Sorting = ({ sort_order_list, setSortOrder, ...props }) => {
     });
   }
 
+  const { sort_accept, sort_case, sort_verb } = props.valency.state;
+
   return (
     <DndContext
+      key={`${sort_accept}${sort_case}${sort_verb}`}
       sensors={sensors}
       modifiers={[restrictToVerticalAxis]}
       collisionDetection={collisionDetection}
@@ -408,6 +416,8 @@ class Valency extends React.Component {
       creating_valency_error: false,
       loading_valency_data: false,
       loading_valency_error: false,
+      saving_valency_data: false,
+      saving_valency_error: false,
 
       valency_data: null,
 
@@ -435,10 +445,13 @@ class Valency extends React.Component {
       accept_value: true,
 
       selection_default: false,
-      selection_dict: {}
+      selection_dict: {},
+
+      downloadUrl: null
     };
 
     this.createValencyData = this.createValencyData.bind(this);
+    this.saveValencyData = this.saveValencyData.bind(this);
     this.setValencyAnnotation = this.setValencyAnnotation.bind(this);
     this.acceptRejectAllSelected = this.acceptRejectAllSelected.bind(this);
 
@@ -654,7 +667,8 @@ class Valency extends React.Component {
         sort_accept: false,
         valency_data: null,
         prefix_filter: "",
-        selection_dict: {}
+        selection_dict: {},
+        downloadUrl: null
       });
 
       return;
@@ -668,6 +682,7 @@ class Valency extends React.Component {
       valency_data: null,
       prefix_filter: "",
       selection_dict: {},
+      downloadUrl: null,
       loading_valency_data: true,
       loading_valency_error: false
     });
@@ -755,6 +770,41 @@ class Valency extends React.Component {
       );
   }
 
+  saveValencyData() {
+    this.setState({
+      saving_valency_data: true,
+      downloadUrl: null
+    });
+
+    this.props
+      .saveValencyData({
+        variables: {
+          perspectiveId: this.state.perspective.id
+        }
+      })
+      .then(
+        ({
+          data: {
+            save_valency_data: { data_url }
+          }
+        }) => {
+          this.setState({
+            saving_valency_data: false,
+            downloadUrl: data_url
+          });
+
+          this.downloadA.href = data_url;
+          this.downloadA.click();
+        },
+        () => {
+          this.setState({
+            saving_valency_data: false,
+            saving_valency_error: true
+          });
+        }
+      );
+  }
+
   setValencyAnnotation(annotation_list) {
     this.props
       .setValencyAnnotation({
@@ -778,7 +828,10 @@ class Valency extends React.Component {
             }
           }
 
-          this.setState({ annotation_map: this.state.annotation_map });
+          this.setState({
+            annotation_map: this.state.annotation_map,
+            downloadUrl: null
+          });
         },
         () => {}
       );
@@ -1337,27 +1390,59 @@ class Valency extends React.Component {
             onChange={(e, { value }) => this.setPerspective(perspective_id_map.get(value))}
           />
 
-          {perspective && (!perspective.has_valency_data || perspective.new_valency_data_count > 0) && (
-            <Button
-              key={perspective.has_valency_data ? "_update" : "_create"}
-              style={{ marginTop: "0.5em" }}
-              basic
-              color={perspective.has_valency_data ? "violet" : "green"}
-              content={
-                this.state.creating_valency_data ? (
-                  <span>
-                    {this.context(
-                      perspective.has_valency_data ? "Updating valency data..." : "Creating valency data..."
-                    )}
-                    <Icon name="spinner" loading />
-                  </span>
-                ) : (
-                  this.context(perspective.has_valency_data ? "Update valency data" : "Create valency data")
-                )
-              }
-              disabled={!perspective || this.state.creating_valency_data}
-              onClick={() => this.createValencyData()}
-            />
+          {perspective && (
+            <div style={{ marginTop: "0.5em" }}>
+              {(!perspective.has_valency_data || perspective.new_valency_data_count > 0) && (
+                <Button
+                  key={perspective.has_valency_data ? "_update" : "_create"}
+                  style={{ marginRight: "0.5em" }}
+                  basic
+                  color={perspective.has_valency_data ? "violet" : "green"}
+                  content={
+                    this.state.creating_valency_data ? (
+                      <span>
+                        {this.context(
+                          perspective.has_valency_data ? "Updating valency data..." : "Creating valency data..."
+                        )}
+                        <Icon name="spinner" loading />
+                      </span>
+                    ) : (
+                      this.context(perspective.has_valency_data ? "Update valency data" : "Create valency data")
+                    )
+                  }
+                  disabled={!perspective || this.state.creating_valency_data}
+                  onClick={() => this.createValencyData()}
+                />
+              )}
+
+              {perspective.has_valency_data && (
+                <Button
+                  key="_save"
+                  style={{ marginRight: "0.5em" }}
+                  basic
+                  color="blue"
+                  content={
+                    this.state.saving_valency_data ? (
+                      <span>
+                        {this.context("Saving valency data")}... <Icon name="spinner" loading />
+                      </span>
+                    ) : (
+                      this.context("Save valency data")
+                    )
+                  }
+                  disabled={!perspective || this.state.saving_valency_data}
+                  onClick={() => this.saveValencyData()}
+                />
+              )}
+
+              <a
+                style={this.state.downloadUrl ? { marginLeft: "0.5em" } : { display: "none" }}
+                href={this.state.downloadUrl}
+                ref={e => (this.downloadA = e)}
+              >
+                {this.context("Valency data")}
+              </a>
+            </div>
           )}
 
           {(this.state.valency_data || this.state.loading_valency_data) && (
@@ -1525,6 +1610,7 @@ export default compose(
   connect(state => state.user),
   graphql(sourcePerspectiveQuery, { skip: ({ user }) => user.id === undefined }),
   graphql(createValencyDataMutation, { name: "createValencyData" }),
+  graphql(saveValencyDataMutation, { name: "saveValencyData" }),
   graphql(setValencyAnnotationMutation, { name: "setValencyAnnotation" }),
   withApollo
 )(Valency);

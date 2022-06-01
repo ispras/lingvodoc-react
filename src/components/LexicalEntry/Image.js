@@ -14,6 +14,7 @@ const Image = props => {
     columns,
     entity,
     entry,
+    allEntriesGenerator,
     mode,
     entitiesMode,
     as: Component = "li",
@@ -41,6 +42,7 @@ const Image = props => {
           column={subColumn}
           columns={columns}
           entry={entry}
+          allEntriesGenerator={allEntriesGenerator}
           mode={mode}
           entitiesMode={entitiesMode}
           parentEntity={entity}

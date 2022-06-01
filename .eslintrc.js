@@ -50,7 +50,7 @@ module.exports = {
   rules: {
     "comma-spacing": ["warn", { before: false, after: true }],
     curly: ["warn", "all"],
-    eqeqeq: "error",
+    eqeqeq: ["error", "allow-null"],
     "func-call-spacing": ["warn", "never"],
     "key-spacing": ["warn", { beforeColon: false }],
     "no-alert": process.env.NODE_ENV === "production" ? "off" : "warn",

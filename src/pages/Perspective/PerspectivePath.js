@@ -95,6 +95,10 @@ class PerspectivePath extends React.Component {
 
     const [license_str, license_url] = license_dict[license_dict.hasOwnProperty(license) ? license : "proprietary"];
 
+    const roles_str = this.context("Roles").toLowerCase();
+    const properties_str = this.context("Properties").toLowerCase();
+    const statistics_str = this.context("Statistics").toLowerCase();
+
     return (
       <Header as="h2" className={className}>
         <Breadcrumb
@@ -129,24 +133,18 @@ class PerspectivePath extends React.Component {
                         <Dropdown.Item
                           key="roles"
                           icon="users"
-                          text={`'${T(e.translations)}' ${this.context("Roles").toLowerCase()}...`}
-                          onClick={() =>
-                            actions.openRoles(
-                              id,
-                              "perspective",
-                              `'${T(e.translations)}' ${this.context("Roles").toLowerCase()}`
-                            )
-                          }
+                          text={`'${T(e.translations)}' ${roles_str}...`}
+                          onClick={() => actions.openRoles(id, "perspective", `'${T(e.translations)}' ${roles_str}`)}
                         />,
                         <Dropdown.Item
                           key="properties"
                           icon="setting"
-                          text={`'${T(e.translations)}' ${this.context("Properties").toLowerCase()}...`}
+                          text={`'${T(e.translations)}' ${properties_str}...`}
                           onClick={() =>
                             actions.openPerspectivePropertiesModal(
                               id,
                               dictionary_id,
-                              `'${T(e.translations)}' ${this.context("Properties").toLowerCase()}`
+                              `${this.context("Perspective")} '${T(e.translations)}' ${properties_str}`
                             )
                           }
                         />
@@ -154,13 +152,9 @@ class PerspectivePath extends React.Component {
                       <Dropdown.Item
                         key="statistics"
                         icon="percent"
-                        text={`'${T(e.translations)}' ${this.context("Statistics").toLowerCase()}...`}
+                        text={`'${T(e.translations)}' ${statistics_str}...`}
                         onClick={() =>
-                          actions.openStatistics(
-                            id,
-                            "perspective",
-                            `'${T(e.translations)}' ${this.context("Statistics").toLowerCase()}`
-                          )
+                          actions.openStatistics(id, "perspective", `'${T(e.translations)}' ${statistics_str}`)
                         }
                       />
                     </Dropdown.Menu>
@@ -172,24 +166,20 @@ class PerspectivePath extends React.Component {
                         <Dropdown.Item
                           key="roles"
                           icon="users"
-                          text={`'${T(e.translations)}' ${this.context("Roles").toLowerCase()}...`}
+                          text={`'${T(e.translations)}' ${roles_str}...`}
                           onClick={() =>
-                            actions.openRoles(
-                              dictionary_id,
-                              "dictionary",
-                              `'${T(e.translations)}' ${this.context("Roles").toLowerCase()}`
-                            )
+                            actions.openRoles(dictionary_id, "dictionary", `'${T(e.translations)}' ${roles_str}`)
                           }
                         />,
 
                         <Dropdown.Item
                           key="properties"
                           icon="setting"
-                          text={`'${T(e.translations)}' ${this.context("Properties").toLowerCase()}...`}
+                          text={`'${T(e.translations)}' ${properties_str}...`}
                           onClick={() =>
                             actions.openDictionaryPropertiesModal(
                               dictionary_id,
-                              `'${T(e.translations)}' ${this.context("Properties").toLowerCase()}`
+                              `${this.context("Dictionary")} '${T(e.translations)}' ${properties_str}`
                             )
                           }
                         />,
@@ -205,12 +195,12 @@ class PerspectivePath extends React.Component {
                       <Dropdown.Item
                         key="statistics"
                         icon="percent"
-                        text={`'${T(e.translations)}' ${this.context("Statistics").toLowerCase()}...`}
+                        text={`'${T(e.translations)}' ${statistics_str}...`}
                         onClick={() =>
                           actions.openStatistics(
                             dictionary_id,
                             "dictionary",
-                            `'${T(e.translations)}' ${this.context("Statistics").toLowerCase()}`
+                            `'${T(e.translations)}' ${statistics_str}`
                           )
                         }
                       />

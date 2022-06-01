@@ -114,6 +114,7 @@ class Files extends React.Component {
 
     this.state = {
       fileType: "pdf",
+      mimeType: ".pdf",
       file: undefined,
       trigger: true,
       filter: ""
@@ -123,8 +124,23 @@ class Files extends React.Component {
     this.onFileChange = this.onFileChange.bind(this);
   }
 
-  onFileTypeChange(event, target) {
-    this.setState({ fileType: target.value });
+  onFileTypeChange(_event, target) {
+    let mimeType;
+    switch (target.value) {
+      case "pdf":
+        mimeType = ".pdf";
+        break;
+      case "dialeqt_dictionary":
+        mimeType = ".sqlite";
+        break;
+      case "starling/csv":
+        mimeType = ".csv,.txt";
+        break;
+      case "image":
+        mimeType = "image/*";
+        break;
+    }
+    this.setState({ fileType: target.value, mimeType });
   }
 
   onFileChange(e) {
@@ -199,7 +215,7 @@ class Files extends React.Component {
     const { data, sortByField, dispatch } = this.props;
 
     const { user_blobs: userBlobs } = data;
-    const { file, trigger, filter } = this.state;
+    const { file, trigger, mimeType, filter } = this.state;
     let blobs = userBlobs.filter(b => !b.marked_for_deletion);
     if (filter !== "") {
       blobs = blobs.filter(b => b.name.includes(filter));
@@ -210,17 +226,17 @@ class Files extends React.Component {
 
     const fileTypes = [
       {
-        text: this.context("PDF file"),
+        text: this.context("PDF"),
         value: "pdf",
         icon: "file pdf outline"
       },
       {
-        text: this.context("Dialeqt file"),
+        text: this.context("Dialeqt"),
         value: "dialeqt_dictionary",
         icon: "conversation"
       },
       {
-        text: this.context("Starling"),
+        text: this.context("Starling/CSV"),
         value: "starling/csv",
         icon: "conversation"
       },
@@ -252,6 +268,7 @@ class Files extends React.Component {
                       id="file-select"
                       key={trigger}
                       type="file"
+                      accept={mimeType}
                       onChange={this.onFileChange}
                       style={{ display: "none" }}
                     />
@@ -319,7 +336,7 @@ Files.propTypes = {
     loading: PropTypes.bool,
     error: PropTypes.object,
     user_blobs: PropTypes.array
-  }).isRequired,
+  }),
   createBlob: PropTypes.func.isRequired,
   sortByField: PropTypes.object,
   dispatch: PropTypes.func.isRequired

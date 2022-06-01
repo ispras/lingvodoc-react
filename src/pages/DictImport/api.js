@@ -1,4 +1,4 @@
-import { fromJS, Map } from "immutable";
+import { Map } from "immutable";
 
 /* eslint-disable camelcase */
 function singleColumn(name, value, columnTypes) {
@@ -36,11 +36,18 @@ function blobExport(blob, columnTypes, language, license) {
 
   const parent_id = language.get("id", new Map()).toArray();
 
-  const field_map = blob
-    .get("values", new Map())
-    .filter(value => value !== null)
-    .map((value, name) => singleColumn(name, value, columnTypes))
-    .toArray();
+  const values = blob.get("values", new Map());
+
+  const field_map = blob.getIn(["additional_metadata", "starling_fields"]).reduce((columnList, column, index) => {
+    const columnIdStr = `${index}:${column}`;
+    const value = values.get(columnIdStr);
+
+    if (value != null) {
+      columnList.push(singleColumn(columnIdStr, value, columnTypes));
+    }
+
+    return columnList;
+  }, []);
 
   const add_etymology = blob.get("add", false);
 

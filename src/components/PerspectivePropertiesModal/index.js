@@ -75,8 +75,11 @@ const Properties = props => {
       <Modal closeIcon onClose={actions.closePerspectivePropertiesModal} open className="lingvo-modal2">
         <Modal.Header>{title}</Modal.Header>
         <Modal.Content>
-          <Message negative>
-            {getTranslation("Perspective info loading error, please contact adiministrators.")}
+          <Message negative compact>
+            <Message.Header>{getTranslation("Perspective info loading error")}</Message.Header>
+            <div style={{ marginTop: "0.25em" }}>
+              {getTranslation("Try reloading the page; if the error persists, please contact administrators.")}
+            </div>
           </Message>
         </Modal.Content>
       </Modal>

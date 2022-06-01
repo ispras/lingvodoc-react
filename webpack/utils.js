@@ -27,7 +27,13 @@ try {
   }
 } catch (error) {}
 
-if ("TRAVIS_BUILD_NUMBER" in process.env) {
+if ("LINGVODOC_BUILD_NUMBER" in process.env) {
+  if (versionString) {
+    versionString += "-";
+  }
+
+  versionString += process.env.LINGVODOC_BUILD_NUMBER;
+} else if ("TRAVIS_BUILD_NUMBER" in process.env) {
   if (versionString) {
     versionString += "-";
   }
@@ -35,7 +41,13 @@ if ("TRAVIS_BUILD_NUMBER" in process.env) {
   versionString += process.env.TRAVIS_BUILD_NUMBER;
 }
 
-if ("TRAVIS_BRANCH" in process.env) {
+if ("LINGVODOC_BRANCH" in process.env) {
+  if (versionString) {
+    versionString += "-";
+  }
+
+  versionString += process.env.LINGVODOC_BRANCH;
+} else if ("TRAVIS_BRANCH" in process.env) {
   if (versionString) {
     versionString += "-";
   }

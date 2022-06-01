@@ -373,6 +373,7 @@ class Entities extends React.Component {
     const {
       perspectiveId,
       entry,
+      allEntriesGenerator,
       column,
       columns,
       mode,
@@ -417,6 +418,7 @@ class Entities extends React.Component {
             checkedAll={checkedAll}
             resetCheckedAll={resetCheckedAll}
             entry={entry}
+            allEntriesGenerator={allEntriesGenerator}
             entity={entity}
             mode={mode}
             entitiesMode={entitiesMode}

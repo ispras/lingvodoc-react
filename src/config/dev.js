@@ -2,9 +2,10 @@ import base from "./base";
 
 const dev = {
   apiUrl: "/api",
-  pollingInterval: 20000,
+  dev: true,
   logMissingTranslations: true,
-  logGraphQLErrors: true
+  logGraphQLErrors: true,
+  pollingInterval: 20000
 };
 
 export default {

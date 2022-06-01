@@ -1,11 +1,14 @@
 import React, { useContext } from "react";
 import { connect } from "react-redux";
-import { Button, Sidebar } from "semantic-ui-react";
+import { Button, Icon, Sidebar } from "semantic-ui-react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 
+import { getTasks } from "api";
 import TaskList from "components/TaskList";
-import { removeTask, toggleTasks } from "ducks/task";
+import config from "config";
+import { err } from "ducks/snackbar";
+import { removeTask, setTasks, toggleTasks } from "ducks/task";
 import TranslationContext from "Layout/TranslationContext";
 
 const Wrapper = styled.div`
@@ -22,8 +25,17 @@ const onClearTasks = (tasks, remove) => {
   });
 };
 
-const TasksSidebar = ({ visible, tasks, toggle, remove }) => {
+const TasksSidebar = ({ visible, tasks, toggle, remove, set, err }) => {
   const getTranslation = useContext(TranslationContext);
+
+  const refresh = async () => {
+    const response = await getTasks();
+    if (response.data) {
+      set(response.data);
+    } else {
+      err("Could not get tasks");
+    }
+  };
 
   return (
     <Sidebar
@@ -35,6 +47,12 @@ const TasksSidebar = ({ visible, tasks, toggle, remove }) => {
       className="lingvo-sidebar"
     >
       <div className="lingvo-sidebar__content">
+        {config.dev && (
+          <Button className="lingvo-button-refresh lingvo-sidebar__refresh" onClick={refresh} icon>
+            <Icon name="refresh" />
+          </Button>
+        )}
+
         <Button className="lingvo-button-close lingvo-sidebar__close" onClick={toggle} icon>
           <i className="lingvo-icon-close" />
         </Button>
@@ -71,4 +89,4 @@ function mapStateToProps(state) {
   return state.task;
 }
 
-export default connect(mapStateToProps, { toggle: toggleTasks, remove: removeTask })(TasksSidebar);
+export default connect(mapStateToProps, { toggle: toggleTasks, remove: removeTask, set: setTasks, err })(TasksSidebar);

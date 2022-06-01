@@ -5,61 +5,10 @@ import { onlyUpdateForKeys } from "recompose";
 
 import Row from "./Row";
 
-const TableBody = ({
-  perspectiveId,
-  entitiesMode,
-  entries,
-  columns,
-  mode,
-  actions,
-  selectEntries,
-  checkEntries,
-  selectedEntries,
-  selectedRows,
-  checkedRow,
-  checkedColumn,
-  checkedAll,
-  onEntrySelect,
-  onCheckRow,
-  resetCheckedRow,
-  resetCheckedColumn,
-  resetCheckedAll,
-  /* eslint-disable react/prop-types */
-  showEntryId,
-  selectDisabled,
-  selectDisabledIndeterminate,
-  disabledEntrySet,
-  removeSelectionEntrySet
-  /* eslint-enable react/prop-types */
-}) => (
+const TableBody = ({ entries, ...rest }) => (
   <Table.Body>
     {entries.map(entry => (
-      <Row
-        key={entry.id}
-        perspectiveId={perspectiveId}
-        entry={entry}
-        columns={columns}
-        mode={mode}
-        entitiesMode={entitiesMode}
-        actions={actions}
-        selectEntries={selectEntries}
-        checkEntries={checkEntries}
-        selectedEntries={selectedEntries}
-        selectedRows={selectedRows}
-        checkedRow={checkedRow}
-        checkedColumn={checkedColumn}
-        checkedAll={checkedAll}
-        onEntrySelect={onEntrySelect}
-        onCheckRow={onCheckRow}
-        resetCheckedRow={resetCheckedRow}
-        resetCheckedColumn={resetCheckedColumn}
-        resetCheckedAll={resetCheckedAll}
-        showEntryId={showEntryId}
-        selectDisabled={selectDisabled}
-        selectDisabledIndeterminate={selectDisabledIndeterminate}
-        disabledEntrySet={disabledEntrySet}
-        removeSelectionEntrySet={removeSelectionEntrySet}
-      />
+      <Row key={entry.id} entry={entry} {...rest} />
     ))}
   </Table.Body>
 );

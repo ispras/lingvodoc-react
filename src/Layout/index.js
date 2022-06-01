@@ -7,7 +7,7 @@ import styled from "styled-components";
 import BanModal from "components/BanModal";
 import CognateAnalysisModal from "components/CognateAnalysisModal";
 import ConfirmModal from "components/ConfirmModal";
-import ConverEafModal from "components/ConverEafModal";
+import ConvertEafModal from "components/ConvertEafModal";
 import CreateFieldModal from "components/CreateFieldModal";
 import CreateOrganizationModal from "components/CreateOrganizationModal";
 import CreatePerspectiveModal from "components/CreatePerspectiveModal";
@@ -73,7 +73,7 @@ class Layout extends React.Component {
           <PhonemicAnalysisModal />
           <CognateAnalysisModal />
           <PhonologyModal />
-          <ConverEafModal />
+          <ConvertEafModal />
           <StatisticsModal />
           <BanModal />
           <CreateFieldModal />

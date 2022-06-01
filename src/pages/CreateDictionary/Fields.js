@@ -121,7 +121,7 @@ class Column extends React.Component {
     });
 
     const availablePerspectives = perspectives.map(p => ({
-      text: p.hasOwnProperty("name")
+      text: Object.prototype.hasOwnProperty.call(p, "name")
         ? `${this.context("Perspective")} ${p.index + 1}: ${p.name}`
         : `${this.context("Perspective")} ${p.index + 1}`,
 
@@ -169,7 +169,8 @@ Column.propTypes = {
   columns: PropTypes.array.isRequired,
   perspectives: PropTypes.array.isRequired,
   fields: PropTypes.array.isRequired,
-  onChange: PropTypes.func.isRequired
+  onChange: PropTypes.func.isRequired,
+  actions: PropTypes.object
 };
 
 const ColumnWithData = compose(
@@ -181,54 +182,53 @@ const ColumnWithData = compose(
 class Columns extends React.Component {
   constructor(props) {
     super(props);
+
     this.onChangePos = this.onChangePos.bind(this);
     this.onCreate = this.onCreate.bind(this);
     this.onRemove = this.onRemove.bind(this);
     this.onChangeColumn = this.onChangeColumn.bind(this);
 
+    const { perspective, mode } = props;
+
     this.state = {
-      columns: props.perspective.get("fields").toJS() || []
+      columns: perspective ? perspective.get("fields").toJS() || [] : []
     };
 
     this.fetching = false;
 
-    if (props.mode == "corpus" && (!this.state.columns || this.state.columns.length <= 0)) {
+    if (mode === "corpus" && (!this.state.columns || this.state.columns.length <= 0)) {
       this.fetching = true;
-      props.client
-        .query({
-          query: corpusTemplateFieldsQuery
-        })
-        .then(result => {
-          const { template_fields } = result.data;
-          const columns = [];
-          for (let i = 0; i < template_fields.length; i++) {
-            const templateField = template_fields[i];
-            if (templateField.self_fake_id) {
-              columns.push({
-                id: uuid(),
-                self_id: templateField.self_fake_id,
-                link_id: null,
-                field_id: templateField.id
-              });
-            }
+      props.client.query({ query: corpusTemplateFieldsQuery }).then(result => {
+        const { template_fields } = result.data;
+        const columns = [];
+        for (let i = 0; i < template_fields.length; i++) {
+          const templateField = template_fields[i];
+          if (templateField.self_fake_id) {
             columns.push({
-              id: templateField.fake_id || uuid(),
-              self_id: null,
+              id: uuid(),
+              self_id: templateField.self_fake_id,
               link_id: null,
               field_id: templateField.id
             });
           }
-          this.fetching = false;
-          this.setState(
-            {
-              columns: columns
-            },
-            () => {
-              this.fetching = false;
-              props.onChange(this.state.columns);
-            }
-          );
-        });
+          columns.push({
+            id: templateField.fake_id || uuid(),
+            self_id: null,
+            link_id: null,
+            field_id: templateField.id
+          });
+        }
+        this.fetching = false;
+        this.setState(
+          {
+            columns: columns
+          },
+          () => {
+            this.fetching = false;
+            props.onChange(this.state.columns);
+          }
+        );
+      });
     }
   }
 
@@ -363,10 +363,11 @@ class Columns extends React.Component {
 Columns.contextType = TranslationContext;
 
 Columns.propTypes = {
+  client: PropTypes.object,
+  mode: PropTypes.string,
+  perspective: PropTypes.object,
   perspectives: PropTypes.array.isRequired,
-  data: PropTypes.shape({
-    loading: PropTypes.bool.isRequired
-  }).isRequired,
+  data: PropTypes.object,
   onChange: PropTypes.func.isRequired
 };
 

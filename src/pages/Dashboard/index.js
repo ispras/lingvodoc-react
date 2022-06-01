@@ -182,7 +182,15 @@ class P extends React.Component {
                       <i className="lingvo-icon lingvo-icon_roles" /> {this.context("Roles")}
                     </Dropdown.Item>
                     <Dropdown.Item
-                      onClick={() => actions.openPerspectivePropertiesModal(id, parent_id, this.context("Properties"))}
+                      onClick={() =>
+                        actions.openPerspectivePropertiesModal(
+                          id,
+                          parent_id,
+                          `${this.context("Perspective")} '${T(translations)}' ${this.context(
+                            "Properties"
+                          ).toLowerCase()}`
+                        )
+                      }
                     >
                       <i className="lingvo-icon lingvo-icon_properties" /> {this.context("Properties")}
                     </Dropdown.Item>
@@ -352,7 +360,14 @@ class D extends React.Component {
                   <Dropdown.Item onClick={() => actions.openRoles(id, "dictionary", this.context("Roles"))}>
                     <i className="lingvo-icon lingvo-icon_roles" /> {this.context("Roles")}
                   </Dropdown.Item>
-                  <Dropdown.Item onClick={() => actions.openDictionaryPropertiesModal(id, this.context("Properties"))}>
+                  <Dropdown.Item
+                    onClick={() =>
+                      actions.openDictionaryPropertiesModal(
+                        id,
+                        `${this.context("Dictionary")} '${T(translations)}' ${this.context("Properties").toLowerCase()}`
+                      )
+                    }
+                  >
                     <i className="lingvo-icon lingvo-icon_properties" /> {this.context("Properties")}
                   </Dropdown.Item>
                   <Dropdown.Item onClick={() => actions.openDictionaryOrganizationsModal(id)}>
@@ -413,10 +428,10 @@ D.contextType = TranslationContext;
 D.propTypes = {
   id: PropTypes.array.isRequired,
   perspectives: PropTypes.array.isRequired,
-  translations: PropTypes.string.isRequired,
+  translations: PropTypes.object.isRequired,
   mode: PropTypes.number.isRequired,
   category: PropTypes.number.isRequired,
-  status_translations: PropTypes.string.isRequired,
+  status_translations: PropTypes.object.isRequired,
   state_translation_gist_id: PropTypes.array.isRequired,
   statuses: PropTypes.array.isRequired,
   actions: PropTypes.object.isRequired,

@@ -97,10 +97,10 @@ class Info extends React.Component {
     this.onSubmit = this.onSubmit.bind(this);
   }
 
-  componentWillReceiveProps(props) {
+  componentDidUpdate() {
     const {
       data: { loading, error, user_blobs: blobs }
-    } = props;
+    } = this.props;
     if (!loading && !error) {
       const newBlobs = fromJS(blobs.filter(b => b.data_type === "starling/csv")).map(v => v.set("values", new Map()));
       // XXX: Ugly workaround
@@ -308,6 +308,13 @@ const mapDispatchToProps = {
   setLanguage,
   setTranslation,
   setLicense
+};
+
+Info.propTypes = {
+  data: PropTypes.object,
+  convert: PropTypes.func.isRequired,
+  licenses: PropTypes.object.isRequired,
+  setLicense: PropTypes.func.isRequired
 };
 
 export default compose(
