@@ -162,7 +162,7 @@ const TableComponent = ({
   actions
 }) => (
   <div style={{ overflowY: "auto" }}>
-    <Table celled padded>
+    <Table celled padded className="lingvo-perspective-table">
       <TableHeader
         columns={columns}
         entries={entries}
@@ -496,7 +496,6 @@ class P extends React.Component {
     /* eslint-enable no-shadow */
     const isAuthenticated = user && user.user.id;
 
-    /*const isTableLanguages = JSON.stringify(id) === JSON.stringify([3148, 13330]);*/
     const isTableLanguages = JSON.stringify(id) === JSON.stringify([4839, 2]);
 
     const isTableLanguagesPublish = mode === "publish" && isTableLanguages;
@@ -598,7 +597,7 @@ class P extends React.Component {
     }
 
     return (
-      <div style={{ overflowY: "auto" }} className="lingvo-scrolling-tab">
+      <div style={{ overflowY: "auto" }} className={mode === "edit" && "lingvo-scrolling-tab lingvo-scrolling-tab_edit" || "lingvo-scrolling-tab"}>
         {mode === "edit" && (
           <Button positive icon="plus" content={this.context("Add lexical entry")} onClick={addEntry} />
         )}
@@ -638,7 +637,7 @@ class P extends React.Component {
         )}
 
         <div className="lingvo-scrolling-tab__table">
-          <Table celled padded className={className}>
+          <Table celled padded className={`${className} lingvo-perspective-table`}>
             <TableHeader
               columns={fields}
               sortByField={sortByField}

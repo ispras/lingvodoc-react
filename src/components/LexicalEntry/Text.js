@@ -118,7 +118,7 @@ class TextEntityContent extends React.Component {
         );
       case "publish":
         return (
-          <div className={checkEntries ? "lingvo-entry-text" : ""}>
+          <div className="lingvo-entry-text">
             {column.english_translation &&
             column.english_translation === "Number of the languages" &&
             entity.id &&
@@ -133,7 +133,7 @@ class TextEntityContent extends React.Component {
               entity.content
             )}
             <Checkbox
-              className={checkEntries ? "lingvo-checkbox lingvo-entry-text__checkbox" : ""}
+              className="lingvo-checkbox lingvo-entry-text__checkbox" 
               checked={entity.published}
               onChange={(e, { checked }) => {
                 publish(entity, checked);

@@ -16,30 +16,6 @@
   .content {
     margin-top: 0;
   }
-
-  &-menu-adaptive {
-    @media only screen and (max-device-width: 1000px), only screen and (max-width: 1000px) {
-      & {
-        display: flex !important;
-        flex-direction: column !important;
-        border-left: 1px solid #d4d4d5 !important;
-        border-bottom: 0 !important;
-        margin-top: 35px !important;
-
-        &.ui.tabular.menu .active.item {
-          border-radius: 0 4px 4px 0 !important;
-        }
-
-        &.ui.tabular.menu .right.menu {
-          margin-left: 0 !important;
-        }
-
-        &.ui.tabular.menu .category.search {
-          margin-left: 0 !important;
-        }
-      }
-    }
-  }
 }
 
 /* Scrolling */
@@ -70,35 +46,60 @@
     overflow: hidden !important;
     position: relative;
 
+    background: #fff;
+    padding: 24px 20px 20px 20px;
+    border-radius: 12px;
+
+    &_edit {
+      border-radius: 0 12px 12px 12px;
+    }
+
+    @media only screen and (max-device-width: 1000px), only screen and (max-width: 1000px) {
+      border-radius: 0 12px 12px 12px;
+    }
+
+    @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+      margin-bottom: 86px;
+    }
+
+    @media only screen and (max-device-width: 540px), only screen and (max-width: 540px) {
+      margin-bottom: 125px;
+    }
+
+    @media only screen and (max-device-width: 320px), only screen and (max-width: 320px) {
+      margin-bottom: 165px;
+    }
+
     &__table {
       overflow-y: auto;
       position: absolute;
-      width: 100%;
-      top: 0;
-      bottom: 0;
-      left: 0;
+      
+      left: 20px;
+      width: calc(100% - 20px);
+      top: 24px;
+      bottom: 20px;
 
       &:not(:first-child) {
-        top: 36px;
+        top: 84px;
       }
 
       & thead th {
-        position: static;
+        position: relative;
         position: sticky;
         top: 0;
         z-index: 1;
       }
 
       & td.lingvo-sticky-checkbox-column {
-        position: static;
-        position: sticky;
+        position: relative !important;
+        position: sticky !important;
         left: 0;
         z-index: 1;
         background-color: #fff;
 
         & + td {
-          position: static;
-          position: sticky;
+          position: relative !important;
+          position: sticky !important;
           left: 45px;
           z-index: 1;
           background-color: #fff;
@@ -110,14 +111,20 @@
         }
       }
 
+      & .lingvo-perspective-table td.lingvo-sticky-checkbox-column {
+        & + td {
+          left: 49px;
+        }
+      }
+
       & thead th.lingvo-sticky-checkbox-column {
-        position: static;
+        position: relative;
         position: sticky;
         left: 0;
         z-index: 2;
 
         & + th {
-          position: static;
+          position: relative;
           position: sticky;
           left: 45px;
           z-index: 2;
@@ -129,25 +136,37 @@
         }
       }
 
+      & .lingvo-perspective-table thead th.lingvo-sticky-checkbox-column {
+        & + th {
+          left: 49px;
+        }
+      }
+
       @media only screen and (max-device-width: 1000px), only screen and (max-width: 1000px) {
         position: static;
-        top: auto;
+        top: auto !important;
         bottom: auto;
         left: auto;
+        margin-top: 24px;
+        width: 100%;
 
         & thead th {
-          position: static;
+          position: relative;
           top: auto;
         }
       }
 
       @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
-        & td.lingvo-sticky-checkbox-column {
+        & thead th {
           position: static;
+        }
+        
+        & td.lingvo-sticky-checkbox-column {
+          position: static !important;
           left: auto;
 
           & + td {
-            position: static;
+            position: static !important;
             left: auto;
           }
         }
@@ -173,16 +192,66 @@
       left: 34px;
     }
   }
+
+  & .lingvo-pagination-block {
+    padding: 1px 16px;
+    border-radius: 12px;
+    z-index: 100;
+
+    @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+      padding: 10px 16px;
+      right: 34px;
+    }
+  }
 }
 
 /* /Scrolling */
 
+/* breadcrumbs */
 .lingvo-breadcrumbs {
+  &.ui.breadcrumb {
+    font-family: Mulish !important;
+    font-size: 16px !important;
+    line-height: 20px !important;
+    font-weight: 700 !important;
+
+    & .ui.dropdown .lingvo-icon_arrow {
+      background-color: #dcdcdc !important;
+      margin-left: 3px !important;
+      vertical-align: middle !important;
+    }
+
+    & .lingvo-icon_divider {
+      opacity: 1 !important;
+      margin: 0 10px 0 11px !important;
+      vertical-align: middle !important;
+    }
+  }
+
   .white &.ui.breadcrumb .divider.text {
-    color: #fff;
-    font-size: 1em;
+    opacity: 1 !important;
+    color: #dcdcdc !important;
+    font-size: 16px !important;
   }
 }
+/* /breadcrumbs */
+
+/* license */
+.lingvo-license {
+  float: right;
+  font-size: 16px;
+  font-family: Mulish;
+  margin: 3px 0 0 0;
+
+  & a.license {
+    color: #fff;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+/* /license */
 
 /* link "Number of the languages" */
 .lingvo-languages-link {
@@ -199,3 +268,236 @@
   }
 }
 /* /link "Number of the languages" */
+
+/* perspective menu */
+.lingvo-perspective-menu {
+  font-family: Mulish !important;
+  font-size: 16px !important;
+  line-height: 22px !important;
+  margin-bottom: 0 !important;
+
+  & .ui.dropdown .lingvo-icon_arrow {
+    background-color: #fff !important;
+    margin-left: 5px !important;
+    vertical-align: middle !important;
+  }
+
+  &.ui.tabular.menu {
+    border-bottom: none !important;
+
+    & .item {
+      padding: 11px 16px !important;
+      border-radius: 8px 8px 0 0 !important;
+      flex: 0 1 auto !important;
+    }
+
+    & .active.item {
+      border-radius: 8px 8px 0 0 !important;
+      background: #F4F6F8 !important;
+      border: none !important;
+      color: #5D54CD !important;
+  
+      & .lingvo-icon_arrow {
+        background-color: #5D54CD !important;
+      }
+    }
+  }
+
+  @media only screen and (max-device-width: 1230px), only screen and (max-width: 1230px) {
+    &.ui.tabular.menu {
+      font-size: 15px !important;
+    }
+  }
+
+  @media only screen and (max-device-width: 1000px), only screen and (max-width: 1000px) {
+    &.ui.tabular.menu {
+      font-size: 16px !important;
+      display: flex !important;
+      flex-direction: column !important;
+      border-left: 1px solid #d4d4d5 !important;
+      border-bottom: 0 !important;
+      margin-top: 35px !important;
+
+      & .active.item {
+        border-radius: 0 8px 8px 0 !important;
+      }
+
+      & .right.menu {
+        margin-left: 0 !important;
+      }
+
+      & .category.search {
+        margin-left: 0 !important;
+      }
+    }
+  }
+}
+/* /perspective menu */
+
+/* perspective table */
+.lingvo-perspective-table {
+  border: none !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  font-size: 16px !important;
+  line-height: 22px !important;
+  border-collapse: collapse !important;
+  
+  & thead th {
+    border: 0 !important;
+    background: #f5f5f5 !important;
+    font-family: Mulish, Arial, sans-serif !important;
+    font-weight: bold !important;
+    padding: 13px 16px 13px 16px !important;
+    position: relative;
+
+    &:not(:last-child) {
+      &::after {
+        content: "";
+        position: absolute;
+        right: 1px;
+        top: 13px;
+        bottom: 13px;
+        width: 1px;
+        border-right: 1px solid rgba(0, 0, 0, 0.08);
+        font-size: 0;
+      }
+    }
+
+    &.entityHeader ul li.last {
+      background-color: #f5f5f5 !important;
+    }
+
+    &:first-child {
+      border-radius: 8px 0 0 8px !important;
+    }
+
+    &:last-child {
+      border-radius: 0 8px 8px 0 !important;
+    }
+
+    @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+      &:first-child {
+        border-radius: 8px 8px 0 0 !important;
+      }
+
+      &:last-child {
+        border-radius: 0 0 8px 8px !important;
+      }
+
+      &:not(:last-child) {
+        &::after {
+          content: none;
+        }
+      }
+    }
+  }
+
+  & tr:nth-child(2n) {
+    & td {
+      background: #fafafa !important;
+
+      &.entity ul li.last {
+        background-color: #fafafa !important;
+      }
+    }
+
+    & td:first-child {
+      border-radius: 8px 0 0 8px !important;
+    }
+
+    & td:last-child {
+      border-radius: 0 8px 8px 0 !important;
+    }
+
+    @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+      & td:first-child {
+        border-radius: 8px 8px 0 0 !important;
+      }
+
+      & td:last-child {
+        border-radius: 0 0 8px 8px !important;
+      }
+    }
+  }
+
+  & tr td {
+    border: 0 !important;
+    padding: 16px 16px 16px 16px !important;
+
+    &:not(:last-child) {
+      position: relative !important;
+
+      &::after {
+        content: "";
+        position: absolute;
+        right: 1px;
+        top: 16px;
+        bottom: 16px;
+        width: 1px;
+        border-right: 1px solid rgba(0, 0, 0, 0.08);
+        font-size: 0;
+      }
+
+      @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+        position: static !important;
+
+        &::after {
+          content: none;
+        }
+      }
+
+    }
+
+  }
+
+  @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+    &.ui.table tr {
+      box-shadow: none !important;
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+
+      &:not(.unstackable) {
+        box-shadow: none !important;
+      }
+
+      & td:first-child {
+        padding-top: 18px !important;
+      }
+
+      & td:last-child {
+        padding-bottom: 18px !important;
+      }
+    }
+
+    &.ui.table thead tr {
+      & th:first-child {
+        padding-top: 18px !important;
+      }
+
+      & th:last-child {
+        padding-bottom: 18px !important;
+      }
+    }
+  }
+
+}
+/* /perspective table */
+
+/* perspective sort */
+.lingvo-perspective-sort {
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0 0 0 3px;
+
+  & .lingvo-icon_sort_up,
+  & .lingvo-icon_sort_down {
+    display: block;
+  }
+
+  & .lingvo-icon + .lingvo-icon {
+    margin-top: 4px;
+  }
+}
+/* /perspective sort */
+
