@@ -806,7 +806,7 @@ class MLSelection extends React.Component {
                 <List>
                   <List.Item>
                     <span>
-                      {this.context("Loading perspective data...")} <Icon name="spinner" loading />
+                      {this.context("Loading perspective data")}... <Icon name="spinner" loading />
                     </span>
                   </List.Item>
                 </List>
