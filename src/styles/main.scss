@@ -1854,6 +1854,10 @@ body {
     height: 8px;
     background-color: #bdbdbd;
     transform: rotate(180deg);
+
+    &_active {
+      background-color: #5d54cd;
+    }
   }
 
   &_sort_down {
@@ -1862,6 +1866,10 @@ body {
     width: 12px;
     height: 8px;
     background-color: #bdbdbd;
+
+    &_active {
+      background-color: #5d54cd;
+    }
   }
 
   &_trash {
@@ -2265,6 +2273,18 @@ body {
     color: #fff !important;
     font-size: 10px !important;
   }
+
+  &.ui.checkbox input:not([type=radio]):indeterminate ~ .box:before, 
+  &.ui.checkbox input:not([type=radio]):indeterminate ~ label:before {
+    background: #4e46b4 !important;
+    border: 1px solid #4e46b4 !important;
+  }
+
+  &.ui.checkbox input:not([type=radio]):indeterminate ~ .box:after, 
+  &.ui.checkbox input:not([type=radio]):indeterminate ~ label:after {
+    color: #fff !important;
+    top: 1px !important;
+  }
 }
 /* /checkbox */
 
@@ -2370,7 +2390,7 @@ body {
 
   &__checkbox {
     position: absolute !important;
-    right: -5px;
+    right: -8px;
     top: 50%;
     margin-top: -9px;
 
@@ -2391,9 +2411,37 @@ body {
     top: 50%;
     margin-top: -9px;
 
+    .entity li li & {
+      right: -32px;
+    }
+
     @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
       right: -15px;
+
+      .entity li li & {
+        right: -27px;
+      }
     }
   }
 }
 /* /lingvo entry text */
+
+/* lingvo segment */
+
+.lingvo-segment {
+  position: relative;
+  background: #fff;
+  padding: 24px 20px 20px 20px;
+  border-radius: 12px;
+  margin: 14px 0;
+
+  &:first-child {
+    margin-top: 0;
+  }
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+/* /lingvo segment */

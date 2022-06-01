@@ -48,6 +48,7 @@ const Row = ({
         <Table.Cell>
           {!remove_selection_flag && (
             <Checkbox
+              className="lingvo-checkbox" 
               disabled={selectDisabled || disabled_flag}
               indeterminate={selectDisabledIndeterminate}
               checked={!!selectedEntries.find(e => isEqual(e, entry.id))}

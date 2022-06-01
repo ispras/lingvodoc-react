@@ -100,9 +100,9 @@ const Tools = graphql(toolsQuery)(
     const getTranslation = useContext(TranslationContext);
 
     return (
-      <Dropdown item text={getTranslation("Tools")}>
+      <Dropdown item text={getTranslation("Tools")} icon={<i className="lingvo-icon lingvo-icon_arrow" />}>
         <Dropdown.Menu>
-          {(user_id == 1 || user_id == author_id || edit_check) && (
+          {(user_id === 1 || user_id === author_id || edit_check) && (
             <>
               <Dropdown.Item onClick={() => openCognateAnalysisModal(id, "acoustic")}>
                 {getTranslation("Cognate acoustic analysis")}
@@ -251,7 +251,7 @@ const ModeSelector = compose(
     });
 
     return (
-      <Menu tabular className="perspective-menu-adaptive">
+      <Menu tabular className="lingvo-perspective-menu">
         {map(modes, (info, stub) => (
           <Menu.Item key={stub} as={Link} to={`${baseUrl}/${stub}`} active={mode === stub}>
             {info.text}

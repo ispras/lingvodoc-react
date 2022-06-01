@@ -102,7 +102,7 @@ class PerspectivePath extends React.Component {
     return (
       <Header as="h2" className={className}>
         <Breadcrumb
-          icon="right angle"
+          icon={<i className="lingvo-icon lingvo-icon_divider" />}
           className="lingvo-breadcrumbs"
           sections={tree
             .slice()
@@ -112,7 +112,7 @@ class PerspectivePath extends React.Component {
               content:
                 // eslint-disable-next-line no-nested-ternary
                 index === tree.length - 1 ? (
-                  <Dropdown inline text={T(e.translations)}>
+                  <Dropdown inline text={T(e.translations)} icon={<i className="lingvo-icon lingvo-icon_arrow" />}>
                     <Dropdown.Menu>
                       {perspectives.length > 1 && [
                         perspectives
@@ -160,7 +160,7 @@ class PerspectivePath extends React.Component {
                     </Dropdown.Menu>
                   </Dropdown>
                 ) : index === tree.length - 2 ? (
-                  <Dropdown inline text={T(e.translations)}>
+                  <Dropdown inline text={T(e.translations)} icon={<i className="lingvo-icon lingvo-icon_arrow" />}>
                     <Dropdown.Menu>
                       {user.id !== undefined && [
                         <Dropdown.Item
@@ -227,12 +227,7 @@ class PerspectivePath extends React.Component {
               link: false
             }))}
         />
-        <div
-          style={{
-            float: "right",
-            fontSize: "1rem"
-          }}
-        >
+        <div className="lingvo-license">
           <span>
             {`${this.context("License").toLowerCase()}: `}
             {license_url ? (
@@ -243,11 +238,6 @@ class PerspectivePath extends React.Component {
               <span>{license_str}</span>
             )}
           </span>
-          <style type="text/css">
-            {"a.license:link { color: white }"}
-            {"a.license:visited { color: white }"}
-            {"a.license:hover { color: #1e70bf }"}
-          </style>
         </div>
       </Header>
     );

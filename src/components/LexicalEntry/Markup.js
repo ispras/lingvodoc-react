@@ -53,7 +53,7 @@ const MarkupEntityContent = onlyUpdateForKeys(["entity", "mode"])(
 
       case "publish":
         return (
-          <div>
+          <div className="lingvo-entry-text">
             <Button.Group basic icon size="mini">
               <Button as="a" href={entity.content} icon="download" />
               <Popup trigger={<Button content={content(entity.content)} />} content={entity.content} />
@@ -64,7 +64,7 @@ const MarkupEntityContent = onlyUpdateForKeys(["entity", "mode"])(
                 />
               )}
             </Button.Group>
-            <Checkbox size="tiny" checked={entity.published} onChange={(_e, { checked }) => publish(entity, checked)} />
+            <Checkbox size="tiny" checked={entity.published} onChange={(_e, { checked }) => publish(entity, checked)} className="lingvo-checkbox lingvo-entry-text__checkbox" />
           </div>
         );
 

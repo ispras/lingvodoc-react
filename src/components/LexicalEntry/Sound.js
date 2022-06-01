@@ -42,13 +42,13 @@ const SoundEntityContent = onlyUpdateForKeys(["entity", "mode"])(
 
       case "publish":
         return (
-          <div>
+          <div className="lingvo-entry-text">
             <Button.Group basic icon size="mini">
               <Button as="a" href={entity.content} icon="download" />
               <Popup trigger={<Button content={content(entity.content)} />} content={entity.content} />
               <Button icon="play" onClick={() => actions.openPlayer(entity)} />
             </Button.Group>
-            <Checkbox size="tiny" checked={entity.published} onChange={(e, { checked }) => publish(entity, checked)} />
+            <Checkbox size="tiny" checked={entity.published} onChange={(e, { checked }) => publish(entity, checked)} className="lingvo-checkbox lingvo-entry-text__checkbox" />
           </div>
         );
 

@@ -591,7 +591,7 @@ class MergeSettings extends React.Component {
 
     return (
       <div>
-        <Segment>
+        <div className="lingvo-segment">
           <Header>{this.context("Entity matching algorithm")}</Header>
 
           <List>
@@ -709,10 +709,10 @@ class MergeSettings extends React.Component {
               />
             </div>
           </Container>
-        </Segment>
+        </div>
 
         {this.state.loading && (
-          <Segment>
+          <div className="lingvo-segment">
             <Container textAlign="center">
               {this.context("Loading suggestions...")}
               <div style={{ marginTop: "2em" }}>
@@ -721,11 +721,11 @@ class MergeSettings extends React.Component {
                 </Header>
               </div>
             </Container>
-          </Segment>
+          </div>
         )}
 
         {!(this.state.blank || this.state.loading) && (
-          <Segment>
+          <div className="lingvo-segment">
             {this.state.groups.length > 0 && (
               <List>
                 <List.Item>
@@ -744,12 +744,12 @@ class MergeSettings extends React.Component {
                     onClick={() => this.entrySelectAllPage(page, group_index_shift)}
                   />
                   <Button
-                    basic={page_state == "merging"}
-                    disabled={page_state == "merging" || this.state.error_message}
+                    basic={page_state === "merging"}
+                    disabled={page_state === "merging" || this.state.error_message}
                     positive
                     size="small"
                     content={
-                      page_state == "merging"
+                      page_state === "merging"
                         ? this.context("Merging selected on current page...")
                         : this.context("Merge selected on current page")
                     }
@@ -781,7 +781,7 @@ class MergeSettings extends React.Component {
 
               const merged_select_set = this.state.merged_select_map[index_str];
 
-              const group_merged_set = result == "success" ? merged_select_set : this.state.merged_set;
+              const group_merged_set = result === "success" ? merged_select_set : this.state.merged_set;
 
               /* Lexical entries of the group. */
 
@@ -811,7 +811,7 @@ class MergeSettings extends React.Component {
               const selectAllIndeterminate =
                 selected_id_list.length > 0 && selected_id_list.length < entry_ready_list.length;
 
-              const selectAllChecked = selected_id_list.length == entry_ready_list.length;
+              const selectAllChecked = selected_id_list.length === entry_ready_list.length;
 
               return (
                 <div key={i}>
@@ -835,11 +835,11 @@ class MergeSettings extends React.Component {
                     selectAllChecked={selectAllChecked}
                     onAllEntriesSelect={checked => this.entrySelectAll(index, entry_ready_list, checked)}
                     showEntryId
-                    selectDisabled={result == "success" || !!this.state.error_message || attached || empty_flag}
+                    selectDisabled={result === "success" || !!this.state.error_message || attached || empty_flag}
                     selectDisabledIndeterminate={attached}
                     disabledEntrySet={this.state.merged_set}
                     disabledHeader={merged_count >= entry_list.length && result != "success"}
-                    removeSelectionEntrySet={result == "success" ? merged_select_set : this.state.merged_set}
+                    removeSelectionEntrySet={result === "success" ? merged_select_set : this.state.merged_set}
                   />
                   <Container textAlign="center">
                     <div style={{ marginTop: "0.75em" }}>
@@ -847,13 +847,13 @@ class MergeSettings extends React.Component {
                         <Message>{this.context("Group doesn't have any unmerged lexical entries left.")}</Message>
                       ) : attached ? (
                         <Message>{this.context("Attached to another group.")}</Message>
-                      ) : result == "merging" ? (
+                      ) : result === "merging" ? (
                         <Button basic positive disabled content={this.context("Merging...")} />
-                      ) : result == "success" ? (
+                      ) : result === "success" ? (
                         <Message positive>
                           <Message.Header>{this.context("Merged successfully")}</Message.Header>
                         </Message>
-                      ) : result == "error" ? (
+                      ) : result === "error" ? (
                         <Message negative>
                           <Message.Header>{this.context("Merge error")}</Message.Header>
                           <p>{this.context("Failed to merge selected lexical entries, please contact developers.")}</p>
@@ -891,7 +891,7 @@ class MergeSettings extends React.Component {
                 </div>
               );
             })}
-          </Segment>
+          </div>
         )}
 
         <Pagination

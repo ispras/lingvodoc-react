@@ -42,6 +42,7 @@ const TableHeader = ({
           <Table.HeaderCell className="entityHeader">
             {selectAllEntries && (
               <Checkbox
+                className="lingvo-checkbox" 
                 disabled={selectDisabled}
                 indeterminate={selectDisabledIndeterminate || selectAllIndeterminate}
                 checked={selectAllChecked}

@@ -53,47 +53,32 @@ const Column = ({
             )}
             {onSortModeChange &&
               (sort_flag ? (
-                <span>
-                  {" "}
+                <span className="lingvo-perspective-sort">
                   {sortByField.order == "a" ? (
-                    <Icon fitted size="large" name="angle up" onClick={e => (e.stopPropagation(), onSortModeReset())} />
-                  ) : (
-                    <Icon
-                      fitted
-                      size="large"
-                      name="caret up"
-                      onClick={e => (e.stopPropagation(), onSortModeChange(field.id, "a"))}
-                    />
-                  )}{" "}
-                  {sortByField.order == "d" ? (
-                    <Icon
-                      fitted
-                      size="large"
-                      name="angle down"
+                    <i className="lingvo-icon lingvo-icon_sort_up lingvo-icon_sort_up_active" 
                       onClick={e => (e.stopPropagation(), onSortModeReset())}
                     />
                   ) : (
-                    <Icon
-                      fitted
-                      size="large"
-                      name="caret down"
+                    <i className="lingvo-icon lingvo-icon_sort_up" 
+                      onClick={e => (e.stopPropagation(), onSortModeChange(field.id, "a"))}
+                    />
+                  )}
+                  {sortByField.order == "d" ? (
+                    <i className="lingvo-icon lingvo-icon_sort_down lingvo-icon_sort_down_active" 
+                      onClick={e => (e.stopPropagation(), onSortModeReset())}
+                    />
+                  ) : (
+                    <i className="lingvo-icon lingvo-icon_sort_down" 
                       onClick={e => (e.stopPropagation(), onSortModeChange(field.id, "d"))}
                     />
                   )}
                 </span>
               ) : (
-                <span>
-                  {" "}
-                  <Icon
-                    fitted
-                    size="large"
-                    name="caret up"
-                    onClick={e => (e.stopPropagation(), onSortModeChange(field.id, "a"))}
-                  />{" "}
-                  <Icon
-                    fitted
-                    size="large"
-                    name="caret down"
+                <span className="lingvo-perspective-sort">
+                  <i className="lingvo-icon lingvo-icon_sort_up" 
+                    onClick={e => (e.stopPropagation(), onSortModeChange(field.id, "a"))} 
+                  />
+                  <i className="lingvo-icon lingvo-icon_sort_down" 
                     onClick={e => (e.stopPropagation(), onSortModeChange(field.id, "d"))}
                   />
                 </span>
