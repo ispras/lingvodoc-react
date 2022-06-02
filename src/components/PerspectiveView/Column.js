@@ -1,5 +1,5 @@
 import React from "react";
-import { Checkbox, Icon, Table } from "semantic-ui-react";
+import { Checkbox, Table } from "semantic-ui-react";
 import { isEqual } from "lodash";
 import PropTypes from "prop-types";
 import { onlyUpdateForKeys } from "recompose";

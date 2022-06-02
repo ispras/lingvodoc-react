@@ -471,7 +471,7 @@ class Columns extends React.Component {
           <div>
             <Icon name="spinner" size="big" loading />
           </div>
-          <div style={{ marginTop: "0.5em" }}>Loading</div>
+          <div style={{ marginTop: "0.5em" }}>{this.context("Loading")}</div>
         </div>
       );
     }
