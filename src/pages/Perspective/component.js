@@ -394,7 +394,7 @@ const Perspective = ({
             {getTranslation("This entity was deleted")}
           </div>
         )}
-        {!isDeleted && <PerspectivePath id={id} dictionary_id={parent_id} mode={mode} />}
+        {!isDeleted && <PerspectivePath id={id} dictionary_id={parent_id} mode={mode} performRedirect />}
         {!isDeleted && (
           <ModeSelector
             mode={mode}

@@ -59,7 +59,7 @@ const license_dict_translator = getTranslation => ({
 class PerspectivePath extends React.Component {
   render() {
     /* eslint-disable no-shadow */
-    const { id, dictionary_id, queryPerspectivePath, queryAvailablePerspectives, mode, className, actions, user } =
+    const { id, dictionary_id, queryPerspectivePath, queryAvailablePerspectives, mode, className, actions, user, performRedirect } =
       this.props;
     /* eslint-enable no-shadow */
     if (
@@ -84,7 +84,7 @@ class PerspectivePath extends React.Component {
 
     /* If the dictionary in the URL is not actually the perspective's dictionary,
      * we redirect to the proper URL with the perspective's dictionary. */
-    if (dictionary_id_tree[0] !== dictionary_id[0] || dictionary_id_tree[1] !== dictionary_id[1]) {
+    if (performRedirect && (dictionary_id_tree[0] !== dictionary_id[0] || dictionary_id_tree[1] !== dictionary_id[1])) {
       const redirect_url =
         `/dictionary/${dictionary_id_tree[0]}/${dictionary_id_tree[1]}` + `/perspective/${id[0]}/${id[1]}/${mode}`;
 
@@ -254,7 +254,8 @@ PerspectivePath.propTypes = {
   mode: PropTypes.string.isRequired,
   className: PropTypes.string,
   actions: PropTypes.object.isRequired,
-  user: PropTypes.object.isRequired
+  user: PropTypes.object.isRequired,
+  performRedirect: PropTypes.bool
 };
 
 PerspectivePath.defaultProps = {
