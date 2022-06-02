@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { Checkbox, Table } from "semantic-ui-react";
-import { isEmpty, isEqual, sortBy } from "lodash";
+import { isEmpty, sortBy } from "lodash";
 import PropTypes from "prop-types";
 import { onlyUpdateForKeys } from "recompose";
 
