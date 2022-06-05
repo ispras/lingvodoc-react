@@ -100,7 +100,7 @@ const searchQuery = gql`
       }
       xlsx_url
     }
-    language_tree {
+    languages(in_tree_order: true) {
       id
       parent_id
       translations
@@ -206,7 +206,7 @@ class Wrapper extends React.Component {
       );
     }
 
-    const { language_tree: allLanguages, advanced_search: advancedSearch, variables } = data;
+    const { languages: allLanguages, advanced_search: advancedSearch, variables } = data;
     const { query } = variables;
     const needToRenderLanguageTree = isNeedToRenderLanguageTree(query);
     const searchResults = Immutable.fromJS(advancedSearch);

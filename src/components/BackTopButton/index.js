@@ -33,7 +33,7 @@ const BackTopButton = ({ scrollContainer }) => {
     <Button
       className={`back-top-button lingvo-button-lite-violet ${show ? "back-top-button_show" : ""}`}
       onClick={() => smoothScroll(0, 500, null, scrollContainer)}
-      aria-label={getTranslation("Вернуться наверх")}
+      aria-label={getTranslation("Up")}
     >
       <Icon name="arrow up" />
       {getTranslation("Up")}

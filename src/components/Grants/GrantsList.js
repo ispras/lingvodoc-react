@@ -64,7 +64,7 @@ class GrantsList extends React.Component {
           <Table.Body>
             {grants.map(grant => (
               <Table.Row key={grant.id}>
-                <Table.Cell>{grant.issuer}</Table.Cell>
+                <Table.Cell>{T(grant.issuer_translations)}</Table.Cell>
                 <Table.Cell>{T(grant.translations)}</Table.Cell>
                 <Table.Cell className="lingvo-column-issuer-url">
                   <a href={grant.issuer_url}>{grant.issuer_url}</a>

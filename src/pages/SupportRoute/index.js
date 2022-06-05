@@ -39,7 +39,7 @@ const SupportRoute = props => {
               <label className="card-item__label card__label_telegram">{getTranslation("Support@Telegram")}</label>
               <img className="card-item__img card-item__img_telegram" src={imageTelegram} />
             </a>
-            <Link className="card-item" to="/version_route">
+            <Link className="card-item" to="/version">
               <label className="card-item__label">{getTranslation("Version")}</label>
               <img className="card-item__img" src={imageVersion} />
             </Link>

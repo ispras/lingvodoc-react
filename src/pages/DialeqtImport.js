@@ -175,7 +175,9 @@ class DialeqtImport extends React.Component {
 
         text: dictionary.tree
           .map(value =>
-            value.hasOwnProperty("status") ? `${T(value.translations)} (${value.status})` : T(value.translations)
+            value.hasOwnProperty("status_translations")
+              ? `${T(value.translations)} (${T(value.status_translations)})`
+              : T(value.translations)
           )
           .reverse()
           .join(" \u203a ")

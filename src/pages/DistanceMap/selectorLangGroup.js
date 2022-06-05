@@ -33,7 +33,7 @@ class FilterDictionaries extends React.Component {
 
     const { actions, dataForTree, mainGroupDictionaresAndLanguages, mainDictionary, selected } = newProps;
 
-    const { dictionaries, languageTree } = dataForTree;
+    const { dictionaries, languages } = dataForTree;
 
     this.state = {
       filterMode: true,
@@ -48,9 +48,9 @@ class FilterDictionaries extends React.Component {
       dict => compositeIdToString(dict.id) !== compositeIdToString(mainDictionary.id)
     );
 
-    const copyLanguageTree = JSON.parse(JSON.stringify(languageTree));
+    const copyLanguages = JSON.parse(JSON.stringify(languages));
 
-    const fileredLanguageTree = copyLanguageTree.map(lang => {
+    const filteredLanguages = copyLanguages.map(lang => {
       lang.dictionaries = lang.dictionaries.filter(
         dict => compositeIdToString(dict.id) !== compositeIdToString(mainDictionary.id)
       );
@@ -61,12 +61,12 @@ class FilterDictionaries extends React.Component {
       (mainGroupDictionaresAndLanguages && !mainGroupDictionaresAndLanguages.dictsChecked) ||
       selected.id !== dataForTree.idLocale
     ) {
-      this.languages = fileredLanguageTree.map(el => el.id);
+      this.languages = filteredLanguages.map(el => el.id);
       this.dictsChecked = allDictionaries.map(el => el.id);
       actions.setMainGroupLanguages({ dictsChecked: [], languages: [] });
     }
 
-    const rawLanguagesTree = buildLanguageTree(fromJS(fileredLanguageTree)).toJS();
+    const rawLanguagesTree = buildLanguageTree(fromJS(filteredLanguages)).toJS();
     this.languagesTree = this.getUpdatedLanguagesTree(rawLanguagesTree);
   }
 
@@ -210,7 +210,7 @@ function SelectorLangGroup(props) {
     }
 
     if (mainDictionary) {
-      dataForTree.languageTree.forEach(lang => {
+      dataForTree.languages.forEach(lang => {
         if (compositeIdToString(lang.id) === compositeIdToString(mainDictionary.parent_id)) {
           rootLanguage = lang;
         }
@@ -223,15 +223,16 @@ function SelectorLangGroup(props) {
           name: "dictionaryWithPerspectives"
         })
         .then(result => {
-          const { language_tree, dictionaries, perspectives, is_authenticated } = result.data;
+          const { languages, dictionaries, perspectives, is_authenticated } = result.data;
           const filteredDictionary = checkCoordAndLexicalEntries(dictionaries);
-          const fileredLanguageTree = language_tree.map(lang => {
+          const filteredLanguages = languages.map(l => {
+            const lang = { ...l };
             lang.dictionaries = checkCoordAndLexicalEntries(lang.dictionaries);
             return lang;
           });
 
           actions.setDataForTree({
-            language_tree: fileredLanguageTree,
+            languages: filteredLanguages,
             dictionaries: filteredDictionary,
             perspectives,
             is_authenticated,

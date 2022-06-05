@@ -7,7 +7,7 @@ export const grantsQuery = gql`
       translations
       grant_url
       grant_number
-      issuer
+      issuer_translations
       issuer_url
       created_at
       owners {
@@ -60,7 +60,7 @@ export const getUserRequestsQuery = gql`
       translations
       grant_url
       grant_number
-      issuer
+      issuer_translations
       issuer_url
       created_at
     }

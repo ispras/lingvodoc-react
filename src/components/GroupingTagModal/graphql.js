@@ -61,7 +61,7 @@ export const searchQuery = gql`
 
 export const languageTreeSourceQuery = gql`
   query languageTreeSource {
-    language_tree {
+    languages(in_tree_order: true) {
       id
       parent_id
       translations
