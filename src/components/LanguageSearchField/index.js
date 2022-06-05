@@ -19,40 +19,43 @@ const LanguageSearchField = ({ sortMode, entityId, dataList }) => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const data = dataList[0] || dataList[1];
-  const languageIdSet = new Set();
 
-  const options = useMemo(
-    () =>
-      data
-        ? (data.languages ? data.languages : data.language_tree.languages)
-            .map(language => {
-              const languageIdStr = compositeIdToString(language.id);
-              languageIdSet.add(languageIdStr);
-              return {
-                text: chooseTranslation(language.translations),
-                value: languageIdStr
-              };
-            })
-            .filter(option => option.value !== undefined && option.text !== "")
-            .sort((first, second) => {
-              const translationFirst = first.text;
-              const translationSecond = second.text;
-              const translationFirstLower = translationFirst.toLocaleLowerCase();
-              const translationSecondLower = translationSecond.toLocaleLowerCase();
-              if (translationFirstLower < translationSecondLower) {
-                return -1;
-              } else if (translationFirstLower > translationSecondLower) {
-                return 1;
-              } else if (translationFirst < translationSecond) {
-                return -1;
-              } else if (translationFirst > translationSecond) {
-                return 1;
-              }
-              return 0;
-            })
-        : [],
-    [chooseTranslation, data]
-  );
+  const [options, languageIdSet] = useMemo(() => {
+    const languageIdSet = new Set();
+
+    if (!data) {
+      return [[], languageIdSet];
+    }
+
+    const options = (data.languages ? data.languages : data.language_tree.languages)
+      .map(language => {
+        const languageIdStr = compositeIdToString(language.id);
+        languageIdSet.add(languageIdStr);
+        return {
+          text: chooseTranslation(language.translations),
+          value: languageIdStr
+        };
+      })
+      .filter(option => option.value !== undefined && option.text !== "")
+      .sort((first, second) => {
+        const translationFirst = first.text;
+        const translationSecond = second.text;
+        const translationFirstLower = translationFirst.toLocaleLowerCase();
+        const translationSecondLower = translationSecond.toLocaleLowerCase();
+        if (translationFirstLower < translationSecondLower) {
+          return -1;
+        } else if (translationFirstLower > translationSecondLower) {
+          return 1;
+        } else if (translationFirst < translationSecond) {
+          return -1;
+        } else if (translationFirst > translationSecond) {
+          return 1;
+        }
+        return 0;
+      });
+
+    return [options, languageIdSet];
+  }, [chooseTranslation, data]);
 
   return (
     <Container>
