@@ -4,190 +4,200 @@ import { Link } from "react-router-dom";
 import { Checkbox, Dropdown, Header, Icon } from "semantic-ui-react";
 import PropTypes from "prop-types";
 
+import { chooseTranslation } from "api/i18n";
 // eslint-disable-next-line import/no-unresolved
 import config from "config";
 import { useTranslations } from "hooks";
 import { compositeIdToString } from "utils/compositeId";
 
-const generateId = entity => {
-  switch (entity.__typename) {
-    case "Language":
-      return `language_${compositeIdToString(entity.id)}`;
-    case "Grant":
-      return `grant_${entity.id}`;
-    case "Organization":
-      return `organization_${entity.id}`;
-  }
-};
-
-/** Language tree node, can be language, grant, organization, dictionary or text */
-const Node = ({ nodeInfo, root, selected, setSelected, proxyData }) => {
+/** Language tree node of a language. */
+export const LanguageNode = ({ node, languageMap, selected, setSelected, proxyData }) => {
   const { getTranslation, chooseTranslation } = useTranslations();
-
   const user = useSelector(state => state.user.user);
 
-  const { entity, children } = nodeInfo;
-  switch (entity.__typename) {
-    case "Language": {
-      let langClass = "lang-name";
-      if (root) {
-        langClass = "root-lang-name";
-      } else if (entity.in_toc) {
-        langClass = "confirmed-lang-name";
-      }
-      return (
-        <li className="node_lang" id={generateId(entity)}>
-          <span className={langClass}>{entity.translations && chooseTranslation(entity.translations)}</span>
-          <ul>
-            {children.map((child, index) => (
-              <Node key={index} nodeInfo={child} selected={selected} setSelected={setSelected} />
-            ))}
-            {entity.dictionaries.map((dictionary, index) => {
-              const isDownloaded = proxyData
-                ? proxyData.dictionaries.find(d => d.id.toString() === dictionary.id.toString()) !== undefined
-                : false;
-              const authors = dictionary.additional_metadata.authors;
-              const perspectives = dictionary.perspectives;
-              return (
-                <li key={index} className="node_dict">
-                  {(config.buildType === "desktop" || config.buildType === "proxy") && user.id !== undefined && (
-                    <Checkbox
-                      defaultChecked={selected.includes(dictionary.id)}
-                      onChange={() => {
-                        const newSelected = selected.slice();
-                        const idx = newSelected.indexOf(dictionary.id);
-                        if (idx === -1) {
-                          newSelected.push(dictionary.id);
-                        } else {
-                          newSelected.splice(idx, 1);
-                        }
-                        setSelected(newSelected);
-                      }}
-                    />
-                  )}
-                  {isDownloaded && <Icon name="download" />}
-                  {!perspectives || perspectives.length <= 0 ? (
-                    <span className="dict-name">
-                      {dictionary.translations && chooseTranslation(dictionary.translations)}{" "}
-                      {config.buildType === "server" &&
-                        user.id !== undefined &&
-                        dictionary.english_status === "Published" && <Icon name="globe" />}
-                    </span>
-                  ) : (
-                    <Dropdown
-                      inline
-                      icon={null}
-                      trigger={
-                        <span className="dict-name">
-                          {dictionary.translations && chooseTranslation(dictionary.translations)}{" "}
-                          {config.buildType === "server" &&
-                            user.id !== undefined &&
-                            dictionary.english_status === "Published" && <Icon name="globe" />}
-                          ({perspectives.length})
-                        </span>
-                      }
-                    >
-                      <Dropdown.Menu>
-                        {perspectives.map(perspective => {
-                          const permissions = proxyData ? proxyData.permission_lists : undefined;
-                          return (
-                            <Dropdown.Item
-                              key={compositeIdToString(perspective.id)}
-                              as={Link}
-                              to={`/dictionary/${dictionary.id.join("/")}/perspective/${perspective.id.join("/")}`}
-                            >
-                              {(config.buildType === "desktop" || config.buildType === "proxy") && (
-                                <span>
-                                  {permissions.view.find(
-                                    p => compositeIdToString(p.id) !== compositeIdToString(perspective.id)
-                                  ) !== undefined && <Icon name="book" />}
-                                  {permissions.edit.find(
-                                    p => compositeIdToString(p.id) !== compositeIdToString(perspective.id)
-                                  ) !== undefined && <Icon name="edit" />}
-                                  {permissions.publish.find(
-                                    p => compositeIdToString(p.id) !== compositeIdToString(perspective.id)
-                                  ) !== undefined && <Icon name="external share" />}
-                                  {permissions.limited.find(
-                                    p => compositeIdToString(p.id) !== compositeIdToString(perspective.id)
-                                  ) !== undefined && <Icon name="privacy" />}
-                                </span>
-                              )}
-                              {perspective.translations && chooseTranslation(perspective.translations)}
-                            </Dropdown.Item>
-                          );
-                        })}
-                      </Dropdown.Menu>
-                    </Dropdown>
-                  )}
-                  {authors && authors.length !== 0 && <span className="dict-authors">({authors.join(", ")})</span>}
-                </li>
-              );
-            })}
-          </ul>
-        </li>
-      );
-    }
-    case "Grant":
-      return (
-        <div id={generateId(entity)} className="node_grant">
-          <Header>{`${chooseTranslation(entity.translations)} (${chooseTranslation(entity.issuer_translations)} ${
-            entity.grant_number
-          })`}</Header>
-          {children.map((child, index) => (
-            <Node
-              key={index}
-              nodeInfo={child}
-              root
-              selected={selected}
-              setSelected={setSelected}
-              proxyData={proxyData}
-            />
-          ))}
-        </div>
-      );
-    case "Organization":
-      return (
-        <div id={generateId(entity)} className="node_grant">
-          <Header>{chooseTranslation(entity.translations)}</Header>
-          {children.map((child, index) => (
-            <Node
-              key={index}
-              nodeInfo={child}
-              root
-              selected={selected}
-              setSelected={setSelected}
-              proxyData={proxyData}
-            />
-          ))}
-        </div>
-      );
-    case "None":
-      return (
-        <div className="node_grant">
-          <div className="grant-title">{getTranslation("Individual work")}</div>
-          {children.map((child, index) => (
-            <Node
-              key={index}
-              nodeInfo={child}
-              root
-              selected={selected}
-              setSelected={setSelected}
-              proxyData={proxyData}
-            />
-          ))}
-        </div>
-      );
-    default:
-      return null;
+  const signedIn = user.id !== undefined;
+  const publishedStr = getTranslation("Published");
+
+  const languageId = compositeIdToString(node[0]);
+  const language = languageMap[languageId];
+
+  let langClass = "lang-name";
+  if (!language.parent_id) {
+    langClass = "root-lang-name";
+  } else if (language.in_toc) {
+    langClass = "confirmed-lang-name";
   }
+
+  return (
+    <li className="node_lang" id={`language_${languageId}`}>
+      <span className={langClass}>{language.translations && chooseTranslation(language.translations)}</span>
+      <ul>
+        {node[1] &&
+          node[1].map((node, index) => (
+            <LanguageNode
+              key={index}
+              node={node}
+              languageMap={languageMap}
+              selected={selected}
+              setSelected={setSelected}
+            />
+          ))}
+        {language.dictionaries.map((dictionary, index) => {
+          const isDownloaded = proxyData
+            ? proxyData.dictionaries.find(d => d.id.toString() === dictionary.id.toString()) !== undefined
+            : false;
+          const authors = dictionary.additional_metadata.authors;
+          const perspectives = dictionary.perspectives;
+          return (
+            <li key={index} className="node_dict">
+              {(config.buildType === "desktop" || config.buildType === "proxy") && signedIn && (
+                <Checkbox
+                  defaultChecked={selected.includes(dictionary.id)}
+                  onChange={() => {
+                    const newSelected = selected.slice();
+                    const idx = newSelected.indexOf(dictionary.id);
+                    if (idx === -1) {
+                      newSelected.push(dictionary.id);
+                    } else {
+                      newSelected.splice(idx, 1);
+                    }
+                    setSelected(newSelected);
+                  }}
+                />
+              )}
+              {isDownloaded && <Icon name="download" />}
+              {!perspectives || perspectives.length <= 0 ? (
+                <span className="dict-name">
+                  {dictionary.translations && chooseTranslation(dictionary.translations)}{" "}
+                </span>
+              ) : (
+                <Dropdown
+                  inline
+                  icon={null}
+                  trigger={
+                    <span className="dict-name">
+                      {dictionary.translations && chooseTranslation(dictionary.translations)} ({perspectives.length})
+                    </span>
+                  }
+                >
+                  <Dropdown.Menu>
+                    {perspectives.map(perspective => {
+                      const permissions = proxyData ? proxyData.permission_lists : undefined;
+                      return (
+                        <Dropdown.Item
+                          key={compositeIdToString(perspective.id)}
+                          as={Link}
+                          to={`/dictionary/${dictionary.id.join("/")}/perspective/${perspective.id.join("/")}`}
+                        >
+                          {(config.buildType === "desktop" || config.buildType === "proxy") && (
+                            <span>
+                              {permissions.view.find(
+                                p => compositeIdToString(p.id) !== compositeIdToString(perspective.id)
+                              ) !== undefined && <Icon name="book" />}
+                              {permissions.edit.find(
+                                p => compositeIdToString(p.id) !== compositeIdToString(perspective.id)
+                              ) !== undefined && <Icon name="edit" />}
+                              {permissions.publish.find(
+                                p => compositeIdToString(p.id) !== compositeIdToString(perspective.id)
+                              ) !== undefined && <Icon name="external share" />}
+                              {permissions.limited.find(
+                                p => compositeIdToString(p.id) !== compositeIdToString(perspective.id)
+                              ) !== undefined && <Icon name="privacy" />}
+                            </span>
+                          )}
+                          {perspective.translations && chooseTranslation(perspective.translations)}
+                        </Dropdown.Item>
+                      );
+                    })}
+                  </Dropdown.Menu>
+                </Dropdown>
+              )}
+              {authors && authors.length !== 0 && <span className="dict-authors">({authors.join(", ")})</span>}
+              {config.buildType === "server" && signedIn && dictionary.english_status === "Published" && (
+                <span className="dict-published">{publishedStr}</span>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+    </li>
+  );
 };
 
-Node.propTypes = {
-  nodeInfo: PropTypes.object.isRequired,
-  root: PropTypes.bool,
-  selected: PropTypes.array.isRequired,
-  setSelected: PropTypes.func.isRequired,
-  proxyData: PropTypes.object
+/** Language tree node of a grant. */
+export const GrantNode = ({ node, groupMap: grantMap, languageMap, selected, setSelected, proxyData }) => {
+  const { getTranslation, chooseTranslation } = useTranslations();
+
+  const grantId = String(node[0]);
+  const grant = grantMap[grantId];
+
+  return (
+    <div id={`grant_${grantId}`} className="node_grant">
+      <Header>
+        {chooseTranslation(grant.translations)} ({chooseTranslation(grant.issuer_translations)} {grant.grant_number})
+      </Header>
+      {node[1].map((node, index) => (
+        <LanguageNode
+          key={index}
+          node={node}
+          languageMap={languageMap}
+          selected={selected}
+          setSelected={setSelected}
+          proxyData={proxyData}
+        />
+      ))}
+    </div>
+  );
 };
 
-export default Node;
+/** Language tree node of an organization. */
+export const OrganizationNode = ({
+  node,
+  groupMap: organizationMap,
+  languageMap,
+  selected,
+  setSelected,
+  proxyData
+}) => {
+  const { getTranslation, chooseTranslation } = useTranslations();
+
+  const organizationId = String(node[0]);
+  const organization = organizationMap[organizationId];
+
+  return (
+    <div id={`organization_${organizationId}`} className="node_grant">
+      <Header>{chooseTranslation(organization.translations)}</Header>
+      {node[1].map((node, index) => (
+        <LanguageNode
+          key={index}
+          node={node}
+          languageMap={languageMap}
+          selected={selected}
+          setSelected={setSelected}
+          proxyData={proxyData}
+        />
+      ))}
+    </div>
+  );
+};
+
+/** Language tree node of languages with dictionaries outside any grant / any organization. */
+export const IndividualNode = ({ node, languageMap, selected, setSelected, proxyData }) => {
+  const { getTranslation, chooseTranslation } = useTranslations();
+
+  return (
+    <div className="node_grant">
+      <div className="grant-title">{getTranslation("Individual work")}</div>
+      {node[1].map((node, index) => (
+        <LanguageNode
+          key={index}
+          node={node}
+          languageMap={languageMap}
+          selected={selected}
+          setSelected={setSelected}
+          proxyData={proxyData}
+        />
+      ))}
+    </div>
+  );
+};

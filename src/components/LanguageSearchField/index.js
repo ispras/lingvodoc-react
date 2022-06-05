@@ -13,31 +13,37 @@ import "./styles.scss";
 /**
  * Dropdown language selector with search capability.
  */
-const LanguageSearchField = ({ variables }) => {
+const LanguageSearchField = ({ sortMode, entityId, dataList }) => {
   const { getTranslation, chooseTranslation } = useTranslations();
 
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const [selected, setSelected] = useState();
-
-  const { loading, data } = useQuery(getLanguagesForSearch, {
-    variables,
-    fetchPolicy: "network-only"
-  });
+  const data = dataList[0] || dataList[1];
+  const languageIdSet = new Set();
 
   const options = useMemo(
     () =>
       data
-        ? data.languages
-            .map(language => ({
-              text: chooseTranslation(language.translations),
-              value: compositeIdToString(language.id)
-            }))
+        ? (data.languages ? data.languages : data.language_tree.languages)
+            .map(language => {
+              const languageIdStr = compositeIdToString(language.id);
+              languageIdSet.add(languageIdStr);
+              return {
+                text: chooseTranslation(language.translations),
+                value: languageIdStr
+              };
+            })
             .filter(option => option.value !== undefined && option.text !== "")
             .sort((first, second) => {
-              const translationFirst = first.text.toLocaleLowerCase();
-              const translationSecond = second.text.toLocaleLowerCase();
-              if (translationFirst < translationSecond) {
+              const translationFirst = first.text;
+              const translationSecond = second.text;
+              const translationFirstLower = translationFirst.toLocaleLowerCase();
+              const translationSecondLower = translationSecond.toLocaleLowerCase();
+              if (translationFirstLower < translationSecondLower) {
+                return -1;
+              } else if (translationFirstLower > translationSecondLower) {
+                return 1;
+              } else if (translationFirst < translationSecond) {
                 return -1;
               } else if (translationFirst > translationSecond) {
                 return 1;
@@ -53,24 +59,24 @@ const LanguageSearchField = ({ variables }) => {
       <Form>
         <Form.Field>
           <Select
-            className={`langs-search-field${selected ? " langs-search-field-filled" : ""}`}
+            className={`langs-search-field${entityId ? " langs-search-field-filled" : ""}`}
             fluid
             search
             clearable
             lazyLoad
-            loading={loading}
+            loading={!data}
+            disabled={!data}
             selectOnBlur={false}
             selectOnNavigation={false}
-            placeholder={getTranslation("Start typing language name")}
+            placeholder={data ? getTranslation("Start typing language name") : `${getTranslation("Loading")}...`}
             noResultsMessage={getTranslation("No languages found")}
             options={options}
-            value={selected}
+            value={languageIdSet.has(entityId) ? entityId : undefined}
             onChange={(_event, d) => {
-              setSelected(d.value);
-              if (d.value === "") {
-                searchParams.delete("entity");
+              if (sortMode === "language" && d.value === "") {
+                searchParams.delete("language");
               } else {
-                searchParams.set("entity", d.value);
+                searchParams.set(sortMode, d.value);
               }
               setSearchParams(searchParams);
             }}
@@ -81,8 +87,6 @@ const LanguageSearchField = ({ variables }) => {
   );
 };
 
-LanguageSearchField.propTypes = {
-  variables: PropTypes.object
-};
+LanguageSearchField.propTypes = {};
 
 export default LanguageSearchField;

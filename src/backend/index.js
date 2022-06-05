@@ -31,6 +31,8 @@ export const getLanguageTree = gql`
     $category: Int
   ) {
     language_tree(
+      dictionary_category: $category
+      dictionary_published: $published
       language_id: $languageId
       by_grants: $byGrants
       grant_id: $grantId
@@ -76,12 +78,12 @@ export const getLanguagesForSearch = gql`
 `;
 
 export const getTocGrants = gql`
-  query GetTocGrants($participantPublished: Boolean, $participantCategory: Int) {
+  query GetTocGrants($category: Int, $published: Boolean) {
     grants(
       has_participant: true
+      participant_category: $category
       participant_deleted: false
-      participant_published: $participantPublished
-      participant_category: $participantCategory
+      participant_published: $published
     ) {
       id
       translations
@@ -92,12 +94,12 @@ export const getTocGrants = gql`
 `;
 
 export const getTocOrganizations = gql`
-  query GetTocOrganizations($participantPublished: Boolean, $participantCategory: Int) {
+  query GetTocOrganizations($category: Int, $published: Boolean) {
     organizations(
       has_participant: true
+      participant_category: $category
       participant_deleted: false
-      participant_published: $participantPublished
-      participant_category: $participantCategory
+      participant_published: $published
     ) {
       id
       translations
@@ -107,7 +109,7 @@ export const getTocOrganizations = gql`
 
 export const languagesQuery = gql`
   query Languages {
-    language_tree {
+    languages(in_tree_order: true) {
       id
       parent_id
       translations

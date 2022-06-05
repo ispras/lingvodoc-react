@@ -9,17 +9,14 @@ import Placeholder from "components/Placeholder";
 import { useTranslations } from "hooks";
 
 /** Table of contents for organizations */
-const OrganizationsToc = ({ published, category }) => {
+const OrganizationsToc = ({ queryOrganizations }) => {
   const { chooseTranslation } = useTranslations();
 
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const { loading, error, data } = useQuery(getTocOrganizations, {
-    variables: { participantPublished: published, participantCategory: category },
-    fetchPolicy: "network-only"
-  });
+  const { loading, error, data } = queryOrganizations;
 
-  if (loading) {
+  if (loading && !data) {
     return <Placeholder />;
   }
 
@@ -35,7 +32,7 @@ const OrganizationsToc = ({ published, category }) => {
             key={organization.id}
             as="a"
             onClick={() => {
-              searchParams.set("entity", organization.id);
+              searchParams.set("organization", organization.id);
               setSearchParams(searchParams);
             }}
           >
@@ -47,9 +44,6 @@ const OrganizationsToc = ({ published, category }) => {
   );
 };
 
-OrganizationsToc.propTypes = {
-  published: PropTypes.bool,
-  category: PropTypes.number.isRequired
-};
+OrganizationsToc.propTypes = {};
 
 export default OrganizationsToc;

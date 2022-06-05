@@ -48,30 +48,30 @@ const TopSectionSelector = () => {
         <div className="background-main-page">
           <div className="main-page">
             <div className="top-section-selector_icon">
-              <Link className="card-item" to="/LanguagesDatabasesRoute">
-                <label className="card-item__label">{getTranslation("Languages databases")}</label>
+              <Link className="card-item" to="/language_databases">
+                <label className="card-item__label">{getTranslation("Language databases")}</label>
                 <img className="card-item__img card-item__img_languages" src={imageLanguages} />
               </Link>
-              <Link className="card-item" to="/toolsRoute">
+              <Link className="card-item" to="/tools">
                 <label className="card-item__label">{getTranslation("Tools")}</label>
                 <img className="card-item__img" src={imageTools} />
               </Link>
               {isAuthenticated && (
-                <Link className="card-item" to="/dashboardRoute">
+                <Link className="card-item" to="/dashboard">
                   <label className="card-item__label">{getTranslation("Dashboard")}</label>
                   <img className="card-item__img" src={imageDashboard} />
                 </Link>
               )}
 
-              <Link className="card-item" to="/grantsRoute">
+              <Link className="card-item" to="/grants_info">
                 <label className="card-item__label">{getTranslation("Grants")}</label>
                 <img className="card-item__img card-item__img_grants" src={imageGrants} />
               </Link>
-              <Link className="card-item" to="/authors_route">
+              <Link className="card-item" to="/authors">
                 <label className="card-item__label">{getTranslation("Lingvodoc creators")}</label>
                 <img className="card-item__img card-item__img_creators" src={imageCreators} />
               </Link>
-              <Link className="card-item" to="/supportRoute">
+              <Link className="card-item" to="/support">
                 <label className="card-item__label">{getTranslation("Support")}</label>
                 <img className="card-item__img card-item__img_support" src={imageSupport} />
               </Link>

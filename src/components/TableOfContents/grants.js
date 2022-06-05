@@ -9,17 +9,14 @@ import Placeholder from "components/Placeholder";
 import { useTranslations } from "hooks";
 
 /** Table of contents for grants */
-const GrantsToc = ({ published, category }) => {
+const GrantsToc = ({ queryGrants }) => {
   const { getTranslation, chooseTranslation } = useTranslations();
 
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const { loading, error, data } = useQuery(getTocGrants, {
-    variables: { participantPublished: published, participantCategory: category },
-    fetchPolicy: "network-only"
-  });
+  const { loading, error, data } = queryGrants;
 
-  if (loading) {
+  if (loading && !data) {
     return <Placeholder />;
   }
 
@@ -36,7 +33,7 @@ const GrantsToc = ({ published, category }) => {
             key={grant.id}
             as="a"
             onClick={() => {
-              searchParams.set("entity", grant.id);
+              searchParams.set("grant", grant.id);
               setSearchParams(searchParams);
             }}
           >
@@ -50,9 +47,6 @@ const GrantsToc = ({ published, category }) => {
   );
 };
 
-GrantsToc.propTypes = {
-  published: PropTypes.bool,
-  category: PropTypes.number.isRequired
-};
+GrantsToc.propTypes = {};
 
 export default GrantsToc;

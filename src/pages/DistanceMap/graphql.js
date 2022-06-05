@@ -35,7 +35,7 @@ export const dictionaryWithPerspectivesQuery = gql`
       parent_id
       translations
     }
-    language_tree {
+    languages(in_tree_order: true) {
       id
       parent_id
       translations

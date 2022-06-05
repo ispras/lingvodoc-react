@@ -10,15 +10,13 @@ import { useTranslations } from "hooks";
 import { compositeIdToString } from "utils/compositeId";
 
 /** Table of contents for languages */
-const LanguagesToc = ({ published, category }) => {
+const LanguagesToc = ({ queryLanguages }) => {
   const { chooseTranslation } = useTranslations();
 
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const { loading, error, data } = useQuery(getLanguagesForSearch, {
-    variables: { published, category },
-    fetchPolicy: "network-only"
-  });
+  const { loading, error, data } = queryLanguages;
+
   const letterToLanguageMap = useMemo(() => {
     if (!data) {
       return new Map();
@@ -31,7 +29,11 @@ const LanguagesToc = ({ published, category }) => {
       if (!language.in_toc) {
         continue;
       }
-      const language_extended = { ...language, translation: chooseTranslation(language.translations) };
+      const language_extended = {
+        dictionary_count: language.dictionary_count,
+        id_str: compositeIdToString(language.id),
+        translation: chooseTranslation(language.translations)
+      };
       language_toc_list.push(language_extended);
     }
     language_toc_list.sort((language_a, language_b) => {
@@ -66,7 +68,7 @@ const LanguagesToc = ({ published, category }) => {
     return letter_map;
   }, [chooseTranslation, data]);
 
-  if (loading) {
+  if (loading && !data) {
     return <Placeholder />;
   }
 
@@ -77,24 +79,22 @@ const LanguagesToc = ({ published, category }) => {
   return (
     <Container className="container-gray container-gray_education langs-nav-list__wrap">
       <div className="langs-nav-list">
-        {Array.from(letterToLanguageMap.keys()).map(letter => (
+        {Array.from(letterToLanguageMap, ([letter, language_list]) => (
           <div key={letter} className="langs-nav-list__item">
             <div className="langs-nav-list__letter">{letter}</div>
             <ul className="langs-nav-list__item-list">
-              {letterToLanguageMap.get(letter).map((language, index, arr) => (
-                <li key={compositeIdToString(language.id)} className="langs-nav-list__inner-item">
+              {language_list.map((language, index) => (
+                <li key={language.id_str} className="langs-nav-list__inner-item">
                   <button
                     className="langs-nav-list__button"
-                    data-id={language.id}
-                    data-value={chooseTranslation(language.translations)}
                     onClick={() => {
-                      searchParams.set("entity", compositeIdToString(language.id));
+                      searchParams.set("language", language.id_str);
                       setSearchParams(searchParams);
                     }}
                   >
-                    {`${language.translation} [${language.dictionary_count}]`}
+                    {language.translation} [{language.dictionary_count}]
                   </button>
-                  {`${index !== arr.length - 1 ? ", " : ""}`}
+                  {index !== language_list.length - 1 ? ", " : ""}
                 </li>
               ))}
             </ul>
@@ -105,9 +105,6 @@ const LanguagesToc = ({ published, category }) => {
   );
 };
 
-LanguagesToc.propTypes = {
-  published: PropTypes.bool,
-  category: PropTypes.number.isRequired
-};
+LanguagesToc.propTypes = {};
 
 export default LanguagesToc;

@@ -144,7 +144,7 @@ class AdditionalFilter extends PureComponent {
   constructor(props) {
     super();
 
-    const rawLanguagesTree = buildLanguageTree(fromJS(props.languagesQuery.language_tree)).toJS();
+    const rawLanguagesTree = buildLanguageTree(fromJS(props.languagesQuery.languages)).toJS();
 
     const { hasAudio, kind, years, humanSettlement, authors, languageVulnerability, grammaticalSigns } = props.data;
 
@@ -678,7 +678,7 @@ AdditionalFilterWrap.propTypes = {
 /* ----------- QUERIES ----------- */
 const languagesWithDictionariesQuery = gql`
   query Languages {
-    language_tree {
+    languages(in_tree_order: true) {
       id
       parent_id
       translations

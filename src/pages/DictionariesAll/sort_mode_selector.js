@@ -11,14 +11,10 @@ import { useMutation, useTranslations } from "hooks";
 
 import "./styles.scss";
 
-const SortModeSelector = ({ selected, setSelected }) => {
+const SortModeSelector = ({ sortMode, onChange, selected, setSelected }) => {
   const { getTranslation } = useTranslations();
 
   const [searchParams, setSearchParams] = useSearchParams();
-  const sortMode = useMemo(() => {
-    const mode = searchParams.get("sortMode");
-    return mode ? mode : "language";
-  }, [searchParams]);
 
   const user = useSelector(state => state.user.user);
 
@@ -37,9 +33,10 @@ const SortModeSelector = ({ selected, setSelected }) => {
                 value="1"
                 checked={sortMode === "language"}
                 onChange={() => {
-                  searchParams.delete("sortMode");
-                  searchParams.delete("entity");
-                  searchParams.delete("tab");
+                  onChange();
+                  searchParams.delete("language");
+                  searchParams.delete("grant");
+                  searchParams.delete("organization");
                   setSearchParams(searchParams);
                   if (selected.length !== 0) {
                     setSelected([]);
@@ -53,9 +50,10 @@ const SortModeSelector = ({ selected, setSelected }) => {
                 value="2"
                 checked={sortMode === "grant"}
                 onChange={() => {
-                  searchParams.set("sortMode", "grant");
-                  searchParams.delete("entity");
-                  searchParams.delete("tab");
+                  onChange();
+                  searchParams.delete("language");
+                  searchParams.delete("organization");
+                  searchParams.set("grant", "");
                   setSearchParams(searchParams);
                   if (selected.length !== 0) {
                     setSelected([]);
@@ -69,9 +67,10 @@ const SortModeSelector = ({ selected, setSelected }) => {
                 value="3"
                 checked={sortMode === "organization"}
                 onChange={() => {
-                  searchParams.set("sortMode", "organization");
-                  searchParams.delete("entity");
-                  searchParams.delete("tab");
+                  onChange();
+                  searchParams.delete("language");
+                  searchParams.delete("grant");
+                  searchParams.set("organization", "");
                   setSearchParams(searchParams);
                   if (selected.length !== 0) {
                     setSelected([]);

@@ -19,11 +19,11 @@ function TreeRoute() {
           <h2 className="tree-header">{getTranslation("Languages databases")}</h2>
 
           <div className="cards-list">
-            <Link className="card-item" to="/dashboard/dictionaries_all">
+            <Link className="card-item" to="/dictionaries_all">
               <label className="card-item__label">{getTranslation("Dictionaries")}</label>
               <img className="card-item__img" src={imageDictionares} />
             </Link>
-            <Link className="card-item" to="/dashboard/corpora_all">
+            <Link className="card-item" to="/corpora_all">
               <label className="card-item__label">{getTranslation("Language corpora")}</label>
               <img className="card-item__img card-item__img_corpora" src={imageCorpora} />
             </Link>
