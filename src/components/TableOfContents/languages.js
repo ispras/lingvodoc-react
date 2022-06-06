@@ -93,7 +93,7 @@ const LanguagesToc = ({ queryLanguages, onSelectId }) => {
                       setSearchParams(searchParams);
                     }}
                   >
-                    {language.translation} [{language.dictionary_count}]
+                    {`${language.translation} [${language.dictionary_count}]`}
                   </button>
                   {index !== language_list.length - 1 ? ", " : ""}
                 </li>

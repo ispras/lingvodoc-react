@@ -58,6 +58,7 @@ function constructTree(
   data,
   sortMode,
   entityId,
+  entityAll,
   grantMap,
   grantDictionaryIdSetMap,
   organizationMap,
@@ -97,15 +98,7 @@ function constructTree(
   /* For efficiency we do not transform the tree structure in any way and use it directly. */
 
   if (sortMode === "language") {
-    return entityId ? (
-      <LanguageNode
-        node={tree}
-        languageMap={languageMap}
-        selected={selected}
-        setSelected={setSelected}
-        proxyData={proxyData}
-      />
-    ) : (
+    return entityAll ? (
       tree[1].map((node, index) => (
         <LanguageNode
           key={index}
@@ -116,19 +109,17 @@ function constructTree(
           proxyData={proxyData}
         />
       ))
-    );
-  } else {
-    return entityId ? (
-      <NodeComponent
-        node={[Number(entityId), tree[1]]}
-        groupMap={groupMap}
-        dictionaryIdSet={groupDictionaryIdSetMap[entityId]}
+    ) : (
+      <LanguageNode
+        node={tree}
         languageMap={languageMap}
         selected={selected}
         setSelected={setSelected}
         proxyData={proxyData}
       />
-    ) : (
+    );
+  } else {
+    return entityAll ? (
       tree[1].map((node, index) =>
         node[0] ? (
           <NodeComponent
@@ -153,6 +144,16 @@ function constructTree(
           />
         )
       )
+    ) : (
+      <NodeComponent
+        node={[Number(entityId), tree[1]]}
+        groupMap={groupMap}
+        dictionaryIdSet={groupDictionaryIdSetMap[entityId]}
+        languageMap={languageMap}
+        selected={selected}
+        setSelected={setSelected}
+        proxyData={proxyData}
+      />
     );
   }
 }
@@ -390,6 +391,7 @@ const DictionariesAll = ({ forCorpora = false }) => {
         dataTreeId,
         sortMode,
         entityId,
+        false,
         grantMap,
         grantDictionaryIdSetMap,
         organizationMap,
@@ -428,6 +430,7 @@ const DictionariesAll = ({ forCorpora = false }) => {
         dataTreeAll,
         sortMode,
         entityId,
+        true,
         grantMap,
         grantDictionaryIdSetMap,
         organizationMap,
