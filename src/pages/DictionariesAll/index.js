@@ -29,7 +29,43 @@ import SortModeSelector from "./sort_mode_selector";
 
 import "./styles.scss";
 
-function constructTree(data, sortMode, entityId, grantMap, organizationMap, proxyData, selected, setSelected) {
+function groupMaps(groups) {
+  const groupMap = {};
+
+  const allGroupDictionaryIdSet = new Set();
+  const groupDictionaryIdSetMap = { "": allGroupDictionaryIdSet };
+
+  groups.forEach(group => {
+    const groupIdStr = String(group.id);
+    groupMap[groupIdStr] = group;
+
+    const dictionaryIdSet = new Set();
+
+    for (const dictionaryId of group.additional_metadata.participant) {
+      const dictionarIdStr = compositeIdToString(dictionaryId);
+
+      dictionaryIdSet.add(dictionarIdStr);
+      allGroupDictionaryIdSet.add(dictionarIdStr);
+    }
+
+    groupDictionaryIdSetMap[groupIdStr] = dictionaryIdSet;
+  });
+
+  return [groupMap, groupDictionaryIdSetMap];
+}
+
+function constructTree(
+  data,
+  sortMode,
+  entityId,
+  grantMap,
+  grantDictionaryIdSetMap,
+  organizationMap,
+  organizationDictionaryIdSetMap,
+  proxyData,
+  selected,
+  setSelected
+) {
   const { languages, tree } = data.language_tree;
   const languageMap = {};
 
@@ -42,13 +78,19 @@ function constructTree(data, sortMode, entityId, grantMap, organizationMap, prox
   });
 
   let groupMap = undefined;
+  let groupDictionaryIdSetMap = undefined;
+
   let NodeComponent = undefined;
 
   if (sortMode === "grant") {
     groupMap = grantMap;
+    groupDictionaryIdSetMap = grantDictionaryIdSetMap;
+
     NodeComponent = GrantNode;
   } else if (sortMode === "organization") {
     groupMap = organizationMap;
+    groupDictionaryIdSetMap = organizationDictionaryIdSetMap;
+
     NodeComponent = OrganizationNode;
   }
 
@@ -80,6 +122,7 @@ function constructTree(data, sortMode, entityId, grantMap, organizationMap, prox
       <NodeComponent
         node={[Number(entityId), tree[1]]}
         groupMap={groupMap}
+        dictionaryIdSet={groupDictionaryIdSetMap[entityId]}
         languageMap={languageMap}
         selected={selected}
         setSelected={setSelected}
@@ -92,6 +135,7 @@ function constructTree(data, sortMode, entityId, grantMap, organizationMap, prox
             key={index}
             node={node}
             groupMap={groupMap}
+            dictionaryIdSet={groupDictionaryIdSetMap[String(node[0])]}
             languageMap={languageMap}
             selected={selected}
             setSelected={setSelected}
@@ -102,6 +146,7 @@ function constructTree(data, sortMode, entityId, grantMap, organizationMap, prox
             key={index}
             node={node}
             languageMap={languageMap}
+            dictionaryIdSet={groupDictionaryIdSetMap[""]}
             selected={selected}
             setSelected={setSelected}
             proxyData={proxyData}
@@ -300,32 +345,20 @@ const DictionariesAll = ({ forCorpora = false }) => {
   const { data: grantData } = queryGrants;
   const { data: organizationData } = queryOrganizations;
 
-  const grantMap = useMemo(() => {
+  const [grantMap, grantDictionaryIdSetMap] = useMemo(() => {
     if (!grantData) {
-      return undefined;
+      return [undefined, undefined];
     }
 
-    const grantMap = {};
-
-    grantData.grants.forEach(grant => {
-      grantMap[String(grant.id)] = grant;
-    });
-
-    return grantMap;
+    return groupMaps(grantData.grants);
   }, [grantData]);
 
-  const organizationMap = useMemo(() => {
+  const [organizationMap, organizationDictionaryIdSetMap] = useMemo(() => {
     if (!organizationData) {
-      return undefined;
+      return [undefined, undefined];
     }
 
-    const organizationMap = {};
-
-    organizationData.organizations.forEach(organization => {
-      organizationMap[String(organization.id)] = organization;
-    });
-
-    return organizationMap;
+    return groupMaps(organizationData.organizations);
   }, [organizationData]);
 
   const [selected, setSelected] = useState([]);
@@ -358,7 +391,9 @@ const DictionariesAll = ({ forCorpora = false }) => {
         sortMode,
         entityId,
         grantMap,
+        grantDictionaryIdSetMap,
         organizationMap,
+        organizationDictionaryIdSetMap,
         proxyData,
         selected,
         setSelected
@@ -394,7 +429,9 @@ const DictionariesAll = ({ forCorpora = false }) => {
         sortMode,
         entityId,
         grantMap,
+        grantDictionaryIdSetMap,
         organizationMap,
+        organizationDictionaryIdSetMap,
         proxyData,
         selected,
         setSelected
@@ -419,6 +456,16 @@ const DictionariesAll = ({ forCorpora = false }) => {
   if (user_loading) {
     return <Placeholder />;
   }
+
+  /* When we select a subtree in the ToC, we immediately stop displaying the current one, in particular so
+   * that we do not navigate to the just selected language in current tree only for it to vanish and for us
+   * to re-navigate to the tree of the selected language when it would be displayed. */
+
+  const onSelectId = id => {
+    if (id != entityId) {
+      setTreeId(undefined);
+    }
+  };
 
   return (
     <div className="dictionariesAll">
@@ -445,6 +492,7 @@ const DictionariesAll = ({ forCorpora = false }) => {
           sortMode={sortMode}
           entityId={entityId}
           dataList={activeTab === "0" ? [queryLanguages.data, dataTreeAll] : [dataTreeAll, queryLanguages.data]}
+          onSelectId={onSelectId}
         />
       )}
       <Container style={{ marginTop: "26px" }}>
@@ -457,11 +505,11 @@ const DictionariesAll = ({ forCorpora = false }) => {
               render: () => (
                 <Tab.Pane>
                   {sortMode === "language" ? (
-                    <LanguagesToc queryLanguages={queryLanguages} />
+                    <LanguagesToc queryLanguages={queryLanguages} onSelectId={onSelectId} />
                   ) : sortMode === "grant" ? (
-                    <GrantsToc queryGrants={queryGrants} />
+                    <GrantsToc queryGrants={queryGrants} onSelectId={onSelectId} />
                   ) : sortMode === "organization" ? (
-                    <OrganizationsToc queryOrganizations={queryOrganizations} />
+                    <OrganizationsToc queryOrganizations={queryOrganizations} onSelectId={onSelectId} />
                   ) : null}
                   {entityId && (
                     <Wrapper tree={treeId} sortMode={sortMode} entityId={entityId} style={{ background: "white" }} />

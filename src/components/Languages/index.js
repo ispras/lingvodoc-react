@@ -83,7 +83,7 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
     data: languagesData,
     refetch
   } = useQuery(languagesQuery, {
-    onCompleted: data => setTreeDataFromQuery(data.language_tree)
+    onCompleted: data => setTreeDataFromQuery(data.languages)
   });
 
   const [deleteLanguage] = useMutation(deleteLanguageMutation, { onCompleted: () => refetch() });

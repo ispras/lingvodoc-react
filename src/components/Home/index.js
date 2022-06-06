@@ -320,7 +320,7 @@ const dictionaryWithPerspectivesQuery = gql`
         participant
       }
     }
-    language_tree {
+    languages(in_tree_order: true) {
       id
       parent_id
       translations
@@ -368,7 +368,7 @@ const dictionaryWithPerspectivesProxyQuery = gql`
         participant
       }
     }
-    language_tree {
+    languages(in_tree_order: true) {
       id
       parent_id
       translations
@@ -388,7 +388,7 @@ const AuthWrapper = ({
     perspectives,
     grants,
     organizations,
-    language_tree: languages,
+    languages,
     is_authenticated: isAuthenticated,
     dictionaries
   }
@@ -450,7 +450,7 @@ AuthWrapper.propTypes = {
     perspectives: PropTypes.array,
     grants: PropTypes.array,
     organizations: PropTypes.array,
-    language_tree: PropTypes.array,
+    languages: PropTypes.array,
     is_authenticated: PropTypes.bool,
     dictionaries: PropTypes.array
   }).isRequired

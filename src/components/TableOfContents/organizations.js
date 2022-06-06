@@ -9,7 +9,7 @@ import Placeholder from "components/Placeholder";
 import { useTranslations } from "hooks";
 
 /** Table of contents for organizations */
-const OrganizationsToc = ({ queryOrganizations }) => {
+const OrganizationsToc = ({ queryOrganizations, onSelectId }) => {
   const { chooseTranslation } = useTranslations();
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -32,6 +32,7 @@ const OrganizationsToc = ({ queryOrganizations }) => {
             key={organization.id}
             as="a"
             onClick={() => {
+              onSelectId(String(organization.id));
               searchParams.set("organization", organization.id);
               setSearchParams(searchParams);
             }}

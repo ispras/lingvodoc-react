@@ -9,7 +9,7 @@ import Placeholder from "components/Placeholder";
 import { useTranslations } from "hooks";
 
 /** Table of contents for grants */
-const GrantsToc = ({ queryGrants }) => {
+const GrantsToc = ({ queryGrants, onSelectId }) => {
   const { getTranslation, chooseTranslation } = useTranslations();
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -33,6 +33,7 @@ const GrantsToc = ({ queryGrants }) => {
             key={grant.id}
             as="a"
             onClick={() => {
+              onSelectId(String(grant.id));
               searchParams.set("grant", grant.id);
               setSearchParams(searchParams);
             }}

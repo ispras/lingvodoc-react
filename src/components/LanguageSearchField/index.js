@@ -13,7 +13,7 @@ import "./styles.scss";
 /**
  * Dropdown language selector with search capability.
  */
-const LanguageSearchField = ({ sortMode, entityId, dataList }) => {
+const LanguageSearchField = ({ sortMode, entityId, dataList, onSelectId }) => {
   const { getTranslation, chooseTranslation } = useTranslations();
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -74,8 +74,11 @@ const LanguageSearchField = ({ sortMode, entityId, dataList }) => {
             placeholder={data ? getTranslation("Start typing language name") : `${getTranslation("Loading")}...`}
             noResultsMessage={getTranslation("No languages found")}
             options={options}
-            value={languageIdSet.has(entityId) ? entityId : undefined}
+            value={languageIdSet.has(entityId) ? entityId : ""}
             onChange={(_event, d) => {
+              if (d.value) {
+                onSelectId(d.value);
+              }
               if (sortMode === "language" && d.value === "") {
                 searchParams.delete("language");
               } else {

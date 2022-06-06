@@ -10,7 +10,7 @@ import { useTranslations } from "hooks";
 import { compositeIdToString } from "utils/compositeId";
 
 /** Table of contents for languages */
-const LanguagesToc = ({ queryLanguages }) => {
+const LanguagesToc = ({ queryLanguages, onSelectId }) => {
   const { chooseTranslation } = useTranslations();
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -88,6 +88,7 @@ const LanguagesToc = ({ queryLanguages }) => {
                   <button
                     className="langs-nav-list__button"
                     onClick={() => {
+                      onSelectId(language.id_str);
                       searchParams.set("language", language.id_str);
                       setSearchParams(searchParams);
                     }}

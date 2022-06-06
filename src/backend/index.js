@@ -89,6 +89,9 @@ export const getTocGrants = gql`
       translations
       issuer_translations
       grant_number
+      additional_metadata {
+        participant
+      }
     }
   }
 `;
@@ -103,6 +106,9 @@ export const getTocOrganizations = gql`
     ) {
       id
       translations
+      additional_metadata {
+        participant
+      }
     }
   }
 `;

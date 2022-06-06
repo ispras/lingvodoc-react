@@ -11,7 +11,15 @@ import { useTranslations } from "hooks";
 import { compositeIdToString } from "utils/compositeId";
 
 /** Language tree node of a language. */
-export const LanguageNode = ({ node, languageMap, selected, setSelected, proxyData }) => {
+export const LanguageNode = ({
+  node,
+  languageMap,
+  dictionaryIdSet,
+  dictionaryIdSetReverse,
+  selected,
+  setSelected,
+  proxyData
+}) => {
   const { getTranslation, chooseTranslation } = useTranslations();
   const user = useSelector(state => state.user.user);
 
@@ -28,6 +36,13 @@ export const LanguageNode = ({ node, languageMap, selected, setSelected, proxyDa
     langClass = "confirmed-lang-name";
   }
 
+  const dictionaries = dictionaryIdSet
+    ? language.dictionaries.filter(dictionary => {
+        const check = dictionaryIdSet.has(compositeIdToString(dictionary.id));
+        return dictionaryIdSetReverse ? !check : check;
+      })
+    : language.dictionaries;
+
   return (
     <li className="node_lang" id={`language_${languageId}`}>
       <span className={langClass}>{language.translations && chooseTranslation(language.translations)}</span>
@@ -38,11 +53,13 @@ export const LanguageNode = ({ node, languageMap, selected, setSelected, proxyDa
               key={index}
               node={node}
               languageMap={languageMap}
+              dictionaryIdSet={dictionaryIdSet}
+              dictionaryIdSetReverse={dictionaryIdSetReverse}
               selected={selected}
               setSelected={setSelected}
             />
           ))}
-        {language.dictionaries.map((dictionary, index) => {
+        {dictionaries.map((dictionary, index) => {
           const isDownloaded = proxyData
             ? proxyData.dictionaries.find(d => d.id.toString() === dictionary.id.toString()) !== undefined
             : false;
@@ -125,7 +142,15 @@ export const LanguageNode = ({ node, languageMap, selected, setSelected, proxyDa
 };
 
 /** Language tree node of a grant. */
-export const GrantNode = ({ node, groupMap: grantMap, languageMap, selected, setSelected, proxyData }) => {
+export const GrantNode = ({
+  node,
+  groupMap: grantMap,
+  dictionaryIdSet,
+  languageMap,
+  selected,
+  setSelected,
+  proxyData
+}) => {
   const { getTranslation, chooseTranslation } = useTranslations();
 
   const grantId = String(node[0]);
@@ -141,6 +166,7 @@ export const GrantNode = ({ node, groupMap: grantMap, languageMap, selected, set
           key={index}
           node={node}
           languageMap={languageMap}
+          dictionaryIdSet={dictionaryIdSet}
           selected={selected}
           setSelected={setSelected}
           proxyData={proxyData}
@@ -154,6 +180,7 @@ export const GrantNode = ({ node, groupMap: grantMap, languageMap, selected, set
 export const OrganizationNode = ({
   node,
   groupMap: organizationMap,
+  dictionaryIdSet,
   languageMap,
   selected,
   setSelected,
@@ -172,6 +199,7 @@ export const OrganizationNode = ({
           key={index}
           node={node}
           languageMap={languageMap}
+          dictionaryIdSet={dictionaryIdSet}
           selected={selected}
           setSelected={setSelected}
           proxyData={proxyData}
@@ -182,7 +210,7 @@ export const OrganizationNode = ({
 };
 
 /** Language tree node of languages with dictionaries outside any grant / any organization. */
-export const IndividualNode = ({ node, languageMap, selected, setSelected, proxyData }) => {
+export const IndividualNode = ({ node, languageMap, dictionaryIdSet, selected, setSelected, proxyData }) => {
   const { getTranslation, chooseTranslation } = useTranslations();
 
   return (
@@ -193,6 +221,8 @@ export const IndividualNode = ({ node, languageMap, selected, setSelected, proxy
           key={index}
           node={node}
           languageMap={languageMap}
+          dictionaryIdSet={dictionaryIdSet}
+          dictionaryIdSetReverse={true}
           selected={selected}
           setSelected={setSelected}
           proxyData={proxyData}
