@@ -31,7 +31,7 @@ import { connectMutation } from "components/GroupingTagModal/graphql";
 import { checkLanguage, languageIdList } from "components/Home/components/LangsNav";
 import { closeModal } from "ducks/cognateAnalysis";
 import TranslationContext from "Layout/TranslationContext";
-import { compositeIdToString as id2str } from "utils/compositeId";
+import { compositeIdToString as id2str, stringToCompositeId as str2id } from "utils/compositeId";
 
 const cognateAnalysisDataQuery = gql`
   query cognateAnalysisData($perspectiveId: LingvodocID!) {
@@ -2297,7 +2297,7 @@ class CognateAnalysisModal extends React.Component {
 
     const entry_id_str_list = Object.keys(sg_select_list[index]);
 
-    const entry_id_list = entry_id_str_list.map(id_str => id_str.split("/").map(str => parseInt(str)));
+    const entry_id_list = entry_id_str_list.map(str2id);
 
     sg_state_list[index] = "connecting";
 
