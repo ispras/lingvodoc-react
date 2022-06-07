@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
-import SortableTree, { getFlatDataFromTree, getNodeAtPath, map } from "react-sortable-tree";
+import { getFlatDataFromTree, getNodeAtPath, map } from "react-sortable-tree";
 import { Button, Icon } from "semantic-ui-react";
 import { useQuery } from "@apollo/client";
 import Immutable from "immutable";
@@ -18,6 +18,7 @@ import {
 import CreateLanguageModal from "components/CreateLanguageModal";
 import EditLanguageModal from "components/EditLanguageModal";
 import { checkLanguageId } from "components/Home/components/LangsNav";
+import TreeWithSearch from "components/TreeWithSearch";
 import { useMutation } from "hooks";
 import TranslationContext from "Layout/TranslationContext";
 import { buildLanguageTree } from "pages/Search/treeBuilder";
@@ -265,7 +266,8 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
   return (
     <div className={inverted ? "inverted" : ""} style={height ? { height: height } : { height: "100%" }}>
       <div style={{ height: "100%" }}>
-        <SortableTree
+        <TreeWithSearch
+          inverted={inverted}
           treeData={treeData}
           onChange={td => setTreeData(td)}
           generateNodeProps={generateNodeProps}
