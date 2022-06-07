@@ -317,7 +317,6 @@ class EditAtoms extends React.Component {
     const { atoms, newGist } = this.state;
     const currentLocaleId = locale.get();
     const atomsSort = [...atoms];
-
     
     /* sorting */
     atomsSort.sort((a, b) => {
@@ -349,8 +348,8 @@ class EditAtoms extends React.Component {
     });
 
     let header = "";
-    
-    const currentLocale = atoms.some(atom => {
+
+    const currentLocaleHeader = atoms.some(atom => {
       if (atom.locale_id === currentLocaleId && atom.content !== "") {
         header = atom.content;
         return true;
@@ -358,9 +357,9 @@ class EditAtoms extends React.Component {
       return false;
     });
 
-    if (!currentLocale) {
+    if (!currentLocaleHeader) {
 
-      const inglishLocale = atoms.some(atom => {
+      const englishLocaleHeader = atoms.some(atom => {
         if (atom.locale_id === 2 && atom.content !== "") {
           header = atom.content;
           return true;
@@ -368,8 +367,7 @@ class EditAtoms extends React.Component {
         return false;
       });
       
-
-      if (!inglishLocale) {
+      if (!englishLocaleHeader) {
         atoms.some(atom => {
           if (atom.locale_id === 1 && atom.content !== "") {
             header = atom.content;
