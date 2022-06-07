@@ -318,6 +318,7 @@ class EditAtoms extends React.Component {
     const currentLocaleId = locale.get();
     const atomsSort = [...atoms];
 
+    
     /* sorting */
     atomsSort.sort((a, b) => {
 
@@ -348,13 +349,37 @@ class EditAtoms extends React.Component {
     });
 
     let header = "";
-    atoms.some(atom => {
-      if (atom.locale_id === currentLocaleId) {
+    
+    const currentLocale = atoms.some(atom => {
+      if (atom.locale_id === currentLocaleId && atom.content !== "") {
         header = atom.content;
         return true;
       }
       return false;
     });
+
+    if (!currentLocale) {
+
+      const inglishLocale = atoms.some(atom => {
+        if (atom.locale_id === 2 && atom.content !== "") {
+          header = atom.content;
+          return true;
+        }
+        return false;
+      });
+      
+
+      if (!inglishLocale) {
+        atoms.some(atom => {
+          if (atom.locale_id === 1 && atom.content !== "") {
+            header = atom.content;
+            return true;
+          }
+          return false;
+        });
+      }
+
+    }
 
     return (
       <div className="lingvo-gist">
