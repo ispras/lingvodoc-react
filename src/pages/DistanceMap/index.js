@@ -25,26 +25,33 @@ const DistanceMap = ({
   mainGroupDictionaresAndLanguages
 }) => {
   const {
-    language_tree: languageTree,
+    languages,
     dictionaries,
     loading,
     perspectives,
     is_authenticated: isAuthenticated
   } = dictionaryWithPerspectives;
 
-  if (loading && !dataForTree.dictionaries) {
-    return <Placeholder />;
-  }
-
   useEffect(() => {
-    if (!dataForTree.dictionaries) {
+    if (!loading && !allField.loading && !dataForTree.dictionaries) {
       actions.setDataForTree({
         ...dictionaryWithPerspectives,
         allField: allField.all_fields,
         id: selected.id
       });
     }
+  }, [loading, allField.loading, dataForTree.dictionaries]);
+
+  useEffect(() => {
+    if (mainGroupDictionaresAndLanguages.length !== 0) {
+      actions.setMainGroupLanguages({});
+      actions.setCheckStateTreeFlat({});
+    }
   }, []);
+
+  if (loading || allField.loading || !dataForTree.dictionaries) {
+    return <Placeholder />;
+  }
 
   if (selected.id !== dataForTree.idLocale) {
     if (!dictionaries) {
@@ -57,16 +64,9 @@ const DistanceMap = ({
     }
   }
 
-  useEffect(() => {
-    if (mainGroupDictionaresAndLanguages.length !== 0) {
-      actions.setMainGroupLanguages({});
-      actions.setCheckStateTreeFlat({});
-    }
-  }, []);
-
   const newDictionaries = checkCoordAndLexicalEntries(dictionaries || dataForTree.dictionaries);
-  const newLanguagesTree = languageTree || dataForTree.languageTree;
-  const fileredLanguageTree = newLanguagesTree.map(lang => ({
+  const newLanguages = languages || dataForTree.languages;
+  const filteredLanguages = newLanguages.map(lang => ({
     ...lang,
     dictionaries: checkCoordAndLexicalEntries(lang.dictionaries)
   }));
@@ -74,7 +74,7 @@ const DistanceMap = ({
   return (
     <div>
       <SelectorDictionary
-        languageTree={fileredLanguageTree}
+        languages={filteredLanguages}
         dictionaries={newDictionaries}
         perspectives={perspectives || dataForTree.perspectives}
         isAuthenticated={isAuthenticated}
@@ -86,7 +86,7 @@ const DistanceMap = ({
 
 DistanceMap.propTypes = {
   dictionaryWithPerspectives: PropTypes.shape({
-    language_tree: PropTypes.array,
+    languages: PropTypes.array,
     dictionaries: PropTypes.array,
     loading: PropTypes.bool
   }),

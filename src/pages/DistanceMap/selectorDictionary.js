@@ -15,7 +15,7 @@ import "./styles.scss";
 const SelectorDict = props => {
   const getTranslation = useContext(TranslationContext);
 
-  const { languageTree: languages, dictionaries, perspectives, isAuthenticated } = props;
+  const { languages, dictionaries, perspectives, isAuthenticated } = props;
 
   const localDictionaries = dictionaries;
   const languagesTree = buildLanguageTree(fromJS(languages));
@@ -69,7 +69,7 @@ SelectorDict.defaultProps = {
 };
 SelectorDict.propTypes = {
   perspectives: PropTypes.array.isRequired,
-  languageTree: PropTypes.array.isRequired,
+  languages: PropTypes.array.isRequired,
   isAuthenticated: PropTypes.bool,
   dictionaries: PropTypes.array.isRequired
 };

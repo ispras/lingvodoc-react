@@ -52,7 +52,7 @@ function dataForTree(state = {}, { type, payload }) {
     case SET_DATA_FOR_TREE:
       return {
         dictionaries: payload.dictionaries,
-        languageTree: payload.language_tree,
+        languages: payload.languages,
         perspectives: payload.perspectives,
         isAuthenticated: payload.is_authenticated,
         allField: payload.allField,

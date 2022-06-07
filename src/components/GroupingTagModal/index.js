@@ -367,7 +367,7 @@ class GroupingTagModal extends React.Component {
     const {
       loading,
       error,
-      language_tree: allLanguages,
+      languages: allLanguages,
       dictionaries: allDictionaries,
       perspectives: allPerspectives
     } = data;
@@ -444,7 +444,7 @@ GroupingTagModal.contextType = TranslationContext;
 
 GroupingTagModal.propTypes = {
   data: PropTypes.shape({
-    language_tree: PropTypes.array,
+    languages: PropTypes.array,
     dictionaries: PropTypes.array,
     perspectives: PropTypes.array
   }).isRequired,

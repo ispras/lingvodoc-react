@@ -1,9 +1,9 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 
+// eslint-disable-next-line import/no-unresolved
 import config from "config";
 import AuthorsRoute from "pages/AuthorsRoute";
-import CorporaAll from "pages/CorporaAll";
 import { CreateCorpus, CreateDictionary } from "pages/CreateDictionary";
 import { CorpusDashboard, DictionaryDashboard } from "pages/Dashboard";
 import DashboardRoute from "pages/DashboardRoute";
@@ -41,11 +41,12 @@ const AppRoutes = () => (
     <Route path="/info" element={<Info />} />
     <Route path="/desktop" element={<Desktop />} />
     <Route path="/languages" element={<Languages />} />
-    <Route path="/dashboard/dictionaries" element={<DictionaryDashboard />} />
-    <Route path="/dashboard/corpora" element={<CorpusDashboard />} />
-    <Route path="/dashboard/create_dictionary" element={<CreateDictionary />} />
-    <Route path="/dashboard/create_corpus" element={<CreateCorpus />} />
-    <Route path="/dashboard/dictionaries_all" element={<DictionariesAll />} />
+    <Route path="/dictionaries" element={<DictionaryDashboard />} />
+    <Route path="/corpora" element={<CorpusDashboard />} />
+    <Route path="/corpora_all" element={<DictionariesAll forCorpora={true} />} />
+    <Route path="/create_dictionary" element={<CreateDictionary />} />
+    <Route path="/create_corpus" element={<CreateCorpus />} />
+    <Route path="/dictionaries_all" element={<DictionariesAll />} />
     <Route path="/grants" element={<Grants />} />
     <Route path="/requests" element={<Requests />} />
     <Route path="/map" element={<Map />} />
@@ -54,21 +55,20 @@ const AppRoutes = () => (
     <Route path="/distance_map/selected_languages/map" element={<MapSelectedLanguages />} />
     <Route path="/distance_map/selected_languages" element={<SelectedLanguages />} />
     <Route path="/distance_map" element={<DistanceMap />} />
-    <Route path="/import" element={<DictImport />} />
+    <Route path="/import_csv" element={<DictImport />} />
     <Route path="/import_dialeqt" element={<DialeqtImport />} />
     <Route path="/dictionary/:pcid/:poid/perspective/:cid/:oid/*" element={<Perspective />} />
     <Route path="/files" element={<Files />} />
     <Route path="/edit_translations" element={<EditTranslations />} />
     <Route path="/organizations" element={<Organizations />} />
-    <Route path="/LanguagesDatabasesRoute" element={<LanguagesDatabasesRoute />} />
-    <Route path="/toolsRoute" element={<ToolsRoute />} />
-    <Route path="/dashboardRoute" element={<DashboardRoute />} />
-    <Route path="/grantsRoute" element={<GrantsRoute />} />
-    <Route path="/supportRoute" element={<SupportRoute />} />
+    <Route path="/language_databases" element={<LanguagesDatabasesRoute />} />
+    <Route path="/tools" element={<ToolsRoute />} />
+    <Route path="/dashboard" element={<DashboardRoute />} />
+    <Route path="/grants_info" element={<GrantsRoute />} />
+    <Route path="/support" element={<SupportRoute />} />
     <Route path="/without_grants" element={<WithoutGrants />} />
-    <Route path="/corpora_all" element={<CorporaAll />} />
-    <Route path="/authors_route" element={<AuthorsRoute />} />
-    <Route path="/version_route" element={<VersionRoute />} />
+    <Route path="/authors" element={<AuthorsRoute />} />
+    <Route path="/version" element={<VersionRoute />} />
     <Route path="/docx2eaf" element={<Docx2Eaf />} />
     <Route path="/valency" element={<Valency />} />
     <Route element={<NotFound />} />

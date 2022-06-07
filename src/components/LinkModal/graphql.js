@@ -44,7 +44,7 @@ export const removeMutation = gql`
 
 export const languageTreeSourceQuery = gql`
   query linkInfo($perspectiveId: LingvodocID) {
-    language_tree {
+    languages(in_tree_order: true) {
       id
       parent_id
       translations

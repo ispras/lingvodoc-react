@@ -319,7 +319,7 @@ class LinkModalContent extends React.PureComponent {
     const {
       loading,
       error,
-      language_tree: allLanguages,
+      languages: allLanguages,
       dictionaries: allDictionaries,
       perspectives: allPerspectives,
       perspective
@@ -375,7 +375,7 @@ LinkModalContent.contextType = TranslationContext;
 
 LinkModalContent.propTypes = {
   data: PropTypes.shape({
-    language_tree: PropTypes.array,
+    languages: PropTypes.array,
     dictionaries: PropTypes.array,
     perspectives: PropTypes.array
   }).isRequired,

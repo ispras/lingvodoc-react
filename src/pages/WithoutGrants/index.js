@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { connect } from "react-redux";
-import { Container } from "semantic-ui-react";
+import { Container, Message } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
 import Immutable, { fromJS, Map } from "immutable";
@@ -25,7 +25,7 @@ const authenticatedCorporaQuery = gql`
       id
       parent_id
       translations
-      status
+      status_translations
       category
       additional_metadata {
         authors
@@ -66,7 +66,7 @@ const guestCorporaQuery = gql`
       id
       parent_id
       translations
-      status
+      status_translations
       category
       additional_metadata {
         authors
@@ -114,7 +114,11 @@ const CorporaAll = props => {
   } = props;
 
   if (error) {
-    return null;
+    return (
+      <Message negative compact>
+        {getTranslation("Dictionary info loading error, please contact adiministrators.")}
+      </Message>
+    );
   }
 
   if (loading) {
@@ -206,13 +210,13 @@ const dictionaryWithPerspectivesQuery = gql`
     grants {
       id
       translations
-      issuer
+      issuer_translations
       grant_number
       additional_metadata {
         participant
       }
     }
-    language_tree {
+    languages(in_tree_order: true) {
       id
       parent_id
       translations
@@ -244,13 +248,13 @@ const dictionaryWithPerspectivesProxyQuery = gql`
     grants {
       id
       translations
-      issuer
+      issuer_translations
       grant_number
       additional_metadata {
         participant
       }
     }
-    language_tree {
+    languages(in_tree_order: true) {
       id
       parent_id
       translations
@@ -261,8 +265,22 @@ const dictionaryWithPerspectivesProxyQuery = gql`
 `;
 
 const AuthWrapper = ({
-  data: { perspectives, grants, language_tree: languages, is_authenticated: isAuthenticated, dictionaries }
+  data: { loading, error, perspectives, grants, languages, is_authenticated: isAuthenticated, dictionaries }
 }) => {
+  const getTranslation = useContext(TranslationContext);
+
+  if (error) {
+    return (
+      <Message negative compact>
+        {getTranslation("Dictionary info loading error, please contact adiministrators.")}
+      </Message>
+    );
+  }
+
+  if (loading) {
+    return <Placeholder />;
+  }
+
   const Component = compose(
     connect(state => ({ ...state.router })),
     graphql(isAuthenticated ? authenticatedCorporaQuery : guestCorporaQuery, {
@@ -294,12 +312,11 @@ AuthWrapper.propTypes = {
     loading: PropTypes.bool.isRequired,
     perspectives: PropTypes.array,
     grants: PropTypes.array,
-    language_tree: PropTypes.array,
+    languages: PropTypes.array,
     is_authenticated: PropTypes.bool
   }).isRequired
 };
 
 export default compose(
-  graphql(config.buildType === "server" ? dictionaryWithPerspectivesQuery : dictionaryWithPerspectivesProxyQuery),
-  branch(({ data }) => data.loading || data.error, renderNothing)
+  graphql(config.buildType === "server" ? dictionaryWithPerspectivesQuery : dictionaryWithPerspectivesProxyQuery)
 )(AuthWrapper);

@@ -85,19 +85,19 @@ export const phonologyPerspectiveInfoQuery = gql`
       id
       parent_id
       translations
-      status
+      status_translations
     }
     dictionaries {
       id
       parent_id
       translations
-      status
+      status_translations
       perspectives {
         id
         translations
       }
     }
-    language_tree {
+    languages(in_tree_order: true) {
       id
       parent_id
       translations

@@ -23,19 +23,19 @@ function DashboardRoute() {
           <h2 className="dashboard-header">{getTranslation("Dashboard")}</h2>
 
           <div className="cards-list">
-            <Link className="card-item" to="/dashboard/dictionaries">
+            <Link className="card-item" to="/dictionaries">
               <label className="card-item__label">{getTranslation("Dictionaries")}</label>
               <img className="card-item__img" src={imageDictionaries} />
             </Link>
-            <Link className="card-item" to="/dashboard/create_dictionary">
+            <Link className="card-item" to="/create_dictionary">
               <label className="card-item__label">{getTranslation("Create dictionary")}</label>
               <img className="card-item__img" src={imageCreate} />
             </Link>
-            <Link className="card-item" to="/dashboard/create_corpus">
+            <Link className="card-item" to="/create_corpus">
               <label className="card-item__label">{getTranslation("Create corpus")}</label>
               <img className="card-item__img" src={imageCreateCorpus} />
             </Link>
-            <Link className="card-item" to="/dashboard/corpora">
+            <Link className="card-item" to="/corpora">
               <label className="card-item__label">{getTranslation("Corpora")}</label>
               <img className="card-item__img" src={imageCorpora} />
             </Link>
@@ -43,7 +43,7 @@ function DashboardRoute() {
               <label className="card-item__label">{getTranslation("Import Dialeqt dictionary")}</label>
               <img className="card-item__img card-item__img_dialeqt" src={imageDialeqt} />
             </Link>
-            <Link className="card-item" to="/import">
+            <Link className="card-item" to="/import_csv">
               <label className="card-item__label">{getTranslation("Import Excel and Starling dictionaries")}</label>
               <img className="card-item__img card-item__img_import" src={imageImport} />
             </Link>

@@ -1,3 +1,36 @@
 .dictionariesAll {
   padding-bottom: 70px;
 }
+
+.dictionaries-tabs {
+  .ui.tabular.menu {
+    border-bottom: none;
+
+    .item {
+      margin-right: 2px;
+      font-size: 16px;
+      border: 1px solid #f0f0f0;
+      border-radius: 8px 8px 0px 0px;
+
+      &.active {
+        color: white;
+        background-color: #5d54cd;
+        font-weight: 500;
+        border-radius: 8px 8px 0px 0px !important;
+      }
+    }
+  }
+
+  .ui.attached.segment {
+    padding: 0;
+    border: none;
+
+    .container-gray {
+      border-top-left-radius: 0;
+    }
+  }
+}
+
+.dict-published {
+  color: green;
+}

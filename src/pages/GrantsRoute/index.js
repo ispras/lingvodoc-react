@@ -20,7 +20,7 @@ const grants = gql`
       begin
       end
       translations
-      issuer
+      issuer_translations
       grant_number
     }
   }
@@ -77,10 +77,8 @@ function GrantsRoute(props) {
               {grants &&
                 grants.map(grant => (
                   <li key={grant.id} style={{ margin: "0 0 5px 0" }}>
-                    {`(${grant.issuer}  `}
-                    {`${grant.grant_number})  `}
-                    {`${T(grant.translations)}  `}
-                    {`${correctDate(grant.begin)}-${correctDate(grant.end)}  `}
+                    ({T(grant.issuer_translations)} {grant.grant_number}) {T(grant.translations)}{" "}
+                    {correctDate(grant.begin)}-{correctDate(grant.end)}
                   </li>
                 ))}
             </ul>

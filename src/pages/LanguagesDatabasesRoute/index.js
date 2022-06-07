@@ -1,8 +1,8 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 
 import Footer from "components/Footer";
-import TranslationContext from "Layout/TranslationContext";
+import { useTranslations } from "hooks";
 
 import imageDictionares from "../../images/bookshelves.svg";
 import imageCorpora from "../../images/file_bundle.svg";
@@ -10,7 +10,7 @@ import imageCorpora from "../../images/file_bundle.svg";
 import "./styles.scss";
 
 function TreeRoute() {
-  const getTranslation = useContext(TranslationContext);
+  const { getTranslation } = useTranslations();
 
   return (
     <div className="lingvodoc-page">
@@ -19,7 +19,7 @@ function TreeRoute() {
           <h2 className="tree-header">{getTranslation("Languages databases")}</h2>
 
           <div className="cards-list">
-            <Link className="card-item" to="/dashboard/dictionaries_all">
+            <Link className="card-item" to="/dictionaries_all">
               <label className="card-item__label">{getTranslation("Dictionaries")}</label>
               <img className="card-item__img" src={imageDictionares} />
             </Link>

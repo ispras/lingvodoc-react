@@ -137,7 +137,9 @@ class PhonologyModal extends React.Component {
         perspective,
         tree
           .map(value =>
-            value.hasOwnProperty("status") ? `${T(value.translations)} (${value.status})` : T(value.translations)
+            value.hasOwnProperty("status_translations")
+              ? `${T(value.translations)} (${T(value.status_translations)})`
+              : T(value.translations)
           )
           .reverse()
           .join(" \u203a ")
@@ -151,8 +153,8 @@ class PhonologyModal extends React.Component {
           variables: {}
         })
         .then(
-          ({ data: { perspectives, dictionaries, language_tree } }) => {
-            this.initialize_perspective_data(perspectives, dictionaries, language_tree);
+          ({ data: { perspectives, dictionaries, languages } }) => {
+            this.initialize_perspective_data(perspectives, dictionaries, languages);
           },
 
           error => {
@@ -165,7 +167,7 @@ class PhonologyModal extends React.Component {
     }
   }
 
-  initialize_perspective_data(perspectives, dictionaries, language_tree) {
+  initialize_perspective_data(perspectives, dictionaries, languages) {
     const tree = assignDictsToTree(
       buildDictTrees(
         fromJS({
@@ -174,7 +176,7 @@ class PhonologyModal extends React.Component {
           dictionaries
         })
       ),
-      buildLanguageTree(fromJS(language_tree))
+      buildLanguageTree(fromJS(languages))
     ).toJS();
 
     /* Collecting perspectives by languages and dictionaries. */
@@ -185,8 +187,8 @@ class PhonologyModal extends React.Component {
     const tree_path = [];
 
     function f(object) {
-      const object_str = object.hasOwnProperty("status")
-        ? `${T(object.translations)} (${object.status})`
+      const object_str = object.hasOwnProperty("status_translations")
+        ? `${T(object.translations)} (${T(object.status_translations)})`
         : T(object.translations);
 
       tree_path.push(object_str);
