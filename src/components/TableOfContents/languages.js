@@ -11,7 +11,7 @@ import { compositeIdToString } from "utils/compositeId";
 
 /** Table of contents for languages */
 const LanguagesToc = ({ queryLanguages, onSelectId }) => {
-  const { chooseTranslation } = useTranslations();
+  const { getTranslation, chooseTranslation } = useTranslations();
 
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -66,7 +66,7 @@ const LanguagesToc = ({ queryLanguages, onSelectId }) => {
     }
 
     return letter_map;
-  }, [chooseTranslation, data]);
+  }, [getTranslation, data]);
 
   if (loading && !data) {
     return <Placeholder />;

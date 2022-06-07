@@ -746,34 +746,42 @@ export function setTranslations(translations, locales, localeId = null) {
   }
 }
 
-const no_translation_str = "NO TRANSLATION AVAILABLE";
+const no_translation_str = "";
 
-export function chooseTranslation(translation_dict, default_value = null) {
+export function chooseTranslation(translation_dict, default_value = undefined) {
   if (!translation_dict) {
-    return default_value !== null ? default_value : no_translation_str;
+    return default_value !== undefined ? default_value : no_translation_str;
   }
 
   const locale_id_str = (i18n_locale_id || getLocaleId()).toString();
 
-  if (translation_dict.hasOwnProperty(locale_id_str)) {
-    return translation_dict[locale_id_str];
+  const translation = translation_dict[locale_id_str];
+
+  if (translation) {
+    return translation;
   }
 
   /* Fallback to English, Russian and then anything we have. */
 
-  if ("2" != locale_id_str && translation_dict.hasOwnProperty("2")) {
-    return translation_dict["2"];
+  if ("2" != locale_id_str) {
+    const translation = translation_dict["2"];
+    if (translation) {
+      return translation;
+    }
   }
 
-  if ("1" != locale_id_str && translation_dict.hasOwnProperty("1")) {
-    return translation_dict["1"];
+  if ("1" != locale_id_str) {
+    const translation = translation_dict["1"];
+    if (translation) {
+      return translation;
+    }
   }
 
-  const translation_list = Object.entries(translation_dict).sort();
-
-  if (translation_list.length > 0) {
-    return translation_list[0][1];
+  for (const [locale_id_str, translation] of Object.entries(translation_dict).sort()) {
+    if (translation) {
+      return translation;
+    }
   }
 
-  return default_value !== null ? default_value : no_translation_str;
+  return default_value !== undefined ? default_value : no_translation_str;
 }
