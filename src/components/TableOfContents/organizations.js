@@ -1,6 +1,6 @@
 import React from "react";
 import { useSearchParams } from "react-router-dom";
-import { Container, List } from "semantic-ui-react";
+import { List } from "semantic-ui-react";
 import { useQuery } from "@apollo/client";
 import PropTypes from "prop-types";
 
@@ -25,7 +25,7 @@ const OrganizationsToc = ({ queryOrganizations, onSelectId }) => {
   }
 
   return (
-    <Container className="container-gray">
+    <div className="container-gray">
       <List ordered className="lingvo-list">
         {data.organizations.map(organization => (
           <List.Item
@@ -41,7 +41,7 @@ const OrganizationsToc = ({ queryOrganizations, onSelectId }) => {
           </List.Item>
         ))}
       </List>
-    </Container>
+    </div>
   );
 };
 

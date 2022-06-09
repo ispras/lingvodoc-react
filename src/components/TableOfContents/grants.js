@@ -1,6 +1,6 @@
 import React from "react";
 import { useSearchParams } from "react-router-dom";
-import { Container, Header, List } from "semantic-ui-react";
+import { Header, List } from "semantic-ui-react";
 import { useQuery } from "@apollo/client";
 import PropTypes from "prop-types";
 
@@ -25,7 +25,7 @@ const GrantsToc = ({ queryGrants, onSelectId }) => {
   }
 
   return (
-    <Container className="container-gray">
+    <div className="container-gray">
       <Header>{`${getTranslation("The work is supported by the following grants")}:`}</Header>
       <List ordered className="lingvo-list">
         {data.grants.map(grant => (
@@ -44,7 +44,7 @@ const GrantsToc = ({ queryGrants, onSelectId }) => {
           </List.Item>
         ))}
       </List>
-    </Container>
+    </div>
   );
 };
 

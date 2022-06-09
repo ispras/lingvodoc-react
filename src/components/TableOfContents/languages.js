@@ -1,6 +1,5 @@
 import React, { useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Container } from "semantic-ui-react";
 import { useQuery } from "@apollo/client";
 import PropTypes from "prop-types";
 
@@ -77,7 +76,7 @@ const LanguagesToc = ({ queryLanguages, onSelectId }) => {
   }
 
   return (
-    <Container className="container-gray container-gray_education langs-nav-list__wrap">
+    <div className="container-gray container-gray_education langs-nav-list__wrap">
       <div className="langs-nav-list">
         {Array.from(letterToLanguageMap, ([letter, language_list]) => (
           <div key={letter} className="langs-nav-list__item">
@@ -102,7 +101,7 @@ const LanguagesToc = ({ queryLanguages, onSelectId }) => {
           </div>
         ))}
       </div>
-    </Container>
+    </div>
   );
 };
 
