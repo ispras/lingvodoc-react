@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useMemo } from "react";
-import { Container } from "semantic-ui-react";
 import { useLazyQuery, useQuery } from "@apollo/client";
 import PropTypes from "prop-types";
 
@@ -42,9 +41,9 @@ const LanguageTree = ({ tree, sortMode, entityId, style }) => {
   }
 
   return (
-    <Container className="container-gray" style={style}>
+    <div className="container-gray" style={style}>
       <ul className="language_tree">{tree}</ul>
-    </Container>
+    </div>
   );
 };
 

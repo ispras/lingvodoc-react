@@ -11,12 +11,27 @@
       font-size: 16px;
       border: 1px solid #f0f0f0;
       border-radius: 8px 8px 0px 0px;
+      margin-bottom: -1px;
+      font-family: Rubik, Arial, sans-serif;
+      line-height: 22px;
+      padding: 9px 16px;
+      -webkit-transition: background-color .1s ease, color .1s ease, -webkit-box-shadow .1s ease, border-color .1s ease, font-weight .1s ease;
+      transition: background-color .1s ease, color .1s ease, -webkit-box-shadow .1s ease, border-color .1s ease, font-weight .1s ease;
+      transition: background-color .1s ease, box-shadow .1s ease, color .1s ease, border-color .1s ease, font-weight .1s ease;
+      transition: background-color .1s ease, box-shadow .1s ease, color .1s ease, border-color .1s ease, font-weight .1s ease;
 
       &.active {
         color: white;
         background-color: #5d54cd;
+        border-color: #5d54cd;
         font-weight: 500;
         border-radius: 8px 8px 0px 0px !important;
+      }
+    }
+
+    @media only screen and (max-device-width: 350px), only screen and (max-width: 350px) {
+      .item {
+        padding: 9px 12px;
       }
     }
   }
@@ -32,5 +47,5 @@
 }
 
 .dict-published {
-  color: green;
+  color: #57B894;
 }
