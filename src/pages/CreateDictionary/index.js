@@ -3,7 +3,6 @@ import { connect, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { Button, Divider, Header, Message, Segment, Step } from "semantic-ui-react";
 import { graphql } from "@apollo/client/react/hoc";
-import Immutable from "immutable";
 import PropTypes from "prop-types";
 import { compose, withProps } from "recompose";
 
@@ -33,7 +32,7 @@ const TabParentLanguage = ({ onSelect }) => {
   const getTranslation = useContext(TranslationContext);
 
   return (
-    <div className="inverted" style={{ height: "600px" }}>
+    <div className="inverted" style={{ height: "550px" }}>
       {!parentLanguage && <Header className="inverted">{getTranslation("Please, select the parent language")}</Header>}
       {parentLanguage && (
         <Header className="inverted">
@@ -163,7 +162,7 @@ class CreateDictionaryWizard extends React.Component {
       .toJS();
 
     const variables = {
-      category: mode == "dictionary" ? 0 : 1,
+      category: mode === "dictionary" ? 0 : 1,
       parentId,
       dictionaryTranslations,
       perspectives
@@ -177,7 +176,7 @@ class CreateDictionaryWizard extends React.Component {
         {
           query: dashboardQuery,
           variables: {
-            mode: mode == "dictionary" ? 0 : 1,
+            mode: mode === "dictionary" ? 0 : 1,
             category: 0
           }
         }
@@ -235,7 +234,7 @@ class CreateDictionaryWizard extends React.Component {
           </Step>
         </Step.Group>
 
-        <div style={{ minHeight: "500px" }}>
+        <div style={{ minHeight: "calc(100vh - 303px)" }}>
           {step === "PARENT_LANGUAGE" && <TabParentLanguage onSelect={this.selectParent} />}
           {step === "TRANSLATIONS" && (
             <TabTranslations
