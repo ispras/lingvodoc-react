@@ -143,6 +143,7 @@ const NestedColumn = ({ column, columns, fields, onChange }) => {
 
   return (
     <Dropdown
+      search
       selection
       defaultValue={selectedValue}
       options={options}
@@ -243,8 +244,8 @@ class C extends React.Component {
       variables: {
         id1: nested[0].id,
         id2: nested[1].id,
-        selfId1: nested[0].self_id,
-        selfId2: nested[1].self_id,
+        selfId1: nested[0].self_id ? nested[0].self_id : [0, 0],
+        selfId2: nested[1].self_id ? nested[1].self_id : [0, 0],
         parentId: column.parent_id
       },
       refetchQueries: [
@@ -297,7 +298,7 @@ class C extends React.Component {
     const options = fields.map(f => ({ text: T(f.translations), value: id2str(f.id) }));
 
     options.push({
-      text: this.context("Add new field..."),
+      text: `${this.context("Add new field")}...`,
       value: "new_field"
     });
 
@@ -308,6 +309,7 @@ class C extends React.Component {
       <span>
         <Dropdown
           selection
+          search
           value={currentField}
           options={options}
           onChange={(a, { value }) => this.onFieldChange(value)}
@@ -317,6 +319,7 @@ class C extends React.Component {
         {field && field.data_type === "Link" && (
           <Dropdown
             selection
+            search
             defaultValue={this.state.link_id ? id2str(this.state.link_id) : null}
             options={availablePerspectives}
             onChange={(a, { value }) => this.onLinkChange(value)}
@@ -411,8 +414,6 @@ class Columns extends React.Component {
 
     createColumn({
       variables: {
-        // id: perspective.id,
-        // parentId: perspective.parentId,
         parentId: perspective.id,
         fieldId: field.id,
         pos,
@@ -471,7 +472,7 @@ class Columns extends React.Component {
           <div>
             <Icon name="spinner" size="big" loading />
           </div>
-          <div style={{ marginTop: "0.5em" }}>{this.context("Loading")}</div>
+          <div style={{ marginTop: "0.5em" }}>`${this.context("Loading")}...`</div>
         </div>
       );
     }
