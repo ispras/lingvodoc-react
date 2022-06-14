@@ -27,6 +27,7 @@ const TreeWithSearch = ({ inverted, ...props }) => {
             setSearchString(value === "" ? null : value);
             setCurrentMatch(1);
           }}
+          style={{ minWidth: "500px" }}
         />
         {totalMatches !== 0 && (
           <>
