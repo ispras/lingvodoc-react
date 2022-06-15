@@ -14,16 +14,7 @@ import TranslationContext from "Layout/TranslationContext";
 import Entities from "./index";
 import ParserResults from "./ParserResults";
 import RunParserModal from "./RunParserModal";
-
-export function content(c, MAX_CONTENT_LENGTH = 12) {
-  if (!c) {
-    return "";
-  }
-  if (c.length <= MAX_CONTENT_LENGTH) {
-    return c;
-  }
-  return `${c.substr(c.lastIndexOf("/") + 1).substr(0, MAX_CONTENT_LENGTH)}...`;
-}
+import { content } from "./Sound";
 
 const MarkupEntityContent = onlyUpdateForKeys(["entity", "mode"])(
   ({ entity, parentEntity, mode, publish, accept, remove, actions, columns, allEntriesGenerator }) => {
@@ -46,7 +37,7 @@ const MarkupEntityContent = onlyUpdateForKeys(["entity", "mode"])(
             />
             <Button
               icon="remove"
-              onClick={() => actions.openConfirmModal(getTranslation("Delete markup file?"), () => remove(entity))}
+              onClick={() => actions.openConfirmModal(`${getTranslation("Delete markup file")}?`, () => remove(entity))}
             />
           </Button.Group>
         );
@@ -64,7 +55,12 @@ const MarkupEntityContent = onlyUpdateForKeys(["entity", "mode"])(
                 />
               )}
             </Button.Group>
-            <Checkbox size="tiny" checked={entity.published} onChange={(_e, { checked }) => publish(entity, checked)} className="lingvo-checkbox lingvo-entry-text__checkbox" />
+            <Checkbox
+              size="tiny"
+              checked={entity.published}
+              onChange={(_e, { checked }) => publish(entity, checked)}
+              className="lingvo-checkbox lingvo-entry-text__checkbox"
+            />
           </div>
         );
 

@@ -1,11 +1,89 @@
 import React, { useContext } from "react";
-import { Button, Image as Img, Modal } from "semantic-ui-react";
+import { connect } from "react-redux";
+import { Button, Checkbox, Image as Img, Modal, Popup } from "semantic-ui-react";
 import { find, isEqual } from "lodash";
 import PropTypes from "prop-types";
+import { onlyUpdateForKeys } from "recompose";
+import { bindActionCreators } from "redux";
 
+import { openModal as openConfirmModal } from "ducks/confirm";
 import TranslationContext from "Layout/TranslationContext";
 
 import Entities from "./index";
+import { content } from "./Sound";
+
+const ImageEntityContent = onlyUpdateForKeys(["entity", "mode"])(
+  ({ entity, mode, publish, accept, remove, actions }) => {
+    const getTranslation = useContext(TranslationContext);
+
+    const standardFragment = (
+      <>
+        <Button as="a" href={entity.content} icon="download" download />
+        <Popup trigger={<Button content={content(entity.content)} />} content={entity.content} />
+        <Modal basic trigger={<Button icon="image" />} style={{ width: "95%" }}>
+          <Modal.Content>
+            <Img src={entity.content} style={{ display: "block", margin: "auto" }} />
+          </Modal.Content>
+        </Modal>
+      </>
+    );
+
+    switch (mode) {
+      case "edit":
+        return (
+          <Button.Group basic icon size="mini">
+            {standardFragment}
+            <Button
+              icon="remove"
+              onClick={() => actions.openConfirmModal(`${getTranslation("Delete image file")}?`, () => remove(entity))}
+            />
+          </Button.Group>
+        );
+
+      case "publish":
+        return (
+          <div className="lingvo-entry-text">
+            <Button.Group basic icon size="mini">
+              {standardFragment}
+            </Button.Group>
+            <Checkbox
+              size="tiny"
+              checked={entity.published}
+              onChange={(e, { checked }) => publish(entity, checked)}
+              className="lingvo-checkbox lingvo-entry-text__checkbox"
+            />
+          </div>
+        );
+
+      case "view":
+        return (
+          <Button.Group basic icon size="mini">
+            {standardFragment}
+          </Button.Group>
+        );
+
+      case "contributions":
+        return (
+          <Button.Group icon size="mini">
+            <Button basic color="black" as="a" href={entity.content} icon="download" download />
+            <Popup
+              trigger={<Button basic color="black" content={content(entity.content)} />}
+              content={entity.content}
+            />
+            <Modal basic trigger={<Button basic color="black" icon="image" />} style={{ width: "95%" }}>
+              <Modal.Content>
+                <Img src={entity.content} style={{ display: "block", margin: "auto" }} />
+              </Modal.Content>
+            </Modal>
+            {!entity.accepted && <Button basic color="black" icon="check" onClick={() => accept(entity, true)} />}
+          </Button.Group>
+        );
+
+      default:
+        return null;
+    }
+  }
+);
 
 const Image = props => {
   const {
@@ -18,7 +96,11 @@ const Image = props => {
     mode,
     entitiesMode,
     as: Component = "li",
-    className = ""
+    className = "",
+    publish,
+    accept,
+    remove,
+    actions
   } = props;
   const subColumn = find(columns, c => isEqual(c.self_id, column.column_id));
   const { content } = entity;
@@ -27,14 +109,14 @@ const Image = props => {
 
   return (
     <Component className={className}>
-      <Button.Group basic icon size="mini">
-        <Button as="a" href={content} icon="download" download />
-        <Modal basic trigger={<Button>{getTranslation("View")}</Button>}>
-          <Modal.Content>
-            <Img src={content} />
-          </Modal.Content>
-        </Modal>
-      </Button.Group>
+      <ImageEntityContent
+        entity={entity}
+        mode={mode}
+        publish={publish}
+        accept={accept}
+        remove={remove}
+        actions={actions}
+      />
 
       {subColumn && (
         <Entities
@@ -81,4 +163,8 @@ Image.Edit.defaultProps = {
   onCancel: () => {}
 };
 
-export default Image;
+const mapDispatchToProps = dispatch => ({
+  actions: bindActionCreators({ openConfirmModal }, dispatch)
+});
+
+export default connect(state => state, mapDispatchToProps)(Image);
