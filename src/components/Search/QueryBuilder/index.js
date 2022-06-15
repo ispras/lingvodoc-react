@@ -127,14 +127,16 @@ function Query({ data, query, onFieldChange, onDelete }) {
   }
 
   const { all_fields: fields } = data;
-  const fieldOptions = fields.map(field => ({
-    key: compositeIdToString(field.id),
-    text: T(field.translations),
-    value: compositeIdToString(field.id)
-  }));
+  const fieldOptions = fields
+    ? fields.map(field => ({
+        key: compositeIdToString(field.id),
+        text: T(field.translations),
+        value: compositeIdToString(field.id)
+      }))
+    : [];
 
   // wrapper functions to map str field ids to array ids.
-  const fieldById = compositeId => fields.find(f => compositeId === compositeIdToString(f.id));
+  const fieldById = compositeId => (fields || []).find(f => compositeId === compositeIdToString(f.id));
   const onChange = (event, { value }) => {
     const field = fieldById(value);
     onFieldChange("field_id")(event, { value: field ? fromJS(field.id) : null });

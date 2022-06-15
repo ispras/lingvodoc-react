@@ -597,7 +597,10 @@ class P extends React.Component {
     }
 
     return (
-      <div style={{ overflowY: "auto" }} className={mode === "edit" && "lingvo-scrolling-tab lingvo-scrolling-tab_edit" || "lingvo-scrolling-tab"}>
+      <div
+        style={{ overflowY: "auto" }}
+        className={(mode === "edit" && "lingvo-scrolling-tab lingvo-scrolling-tab_edit") || "lingvo-scrolling-tab"}
+      >
         {mode === "edit" && (
           <Button positive icon="plus" content={this.context("Add lexical entry")} onClick={addEntry} />
         )}
@@ -928,6 +931,10 @@ const LexicalEntryViewBaseByIds = ({ perspectiveId, mode, entitiesMode, data, ac
         </Dimmer>
       </ModalContentWrapper>
     );
+  }
+
+  if (!data) {
+    return null;
   }
 
   const {

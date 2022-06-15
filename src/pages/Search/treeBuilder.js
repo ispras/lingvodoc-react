@@ -3,6 +3,10 @@ import { is, List } from "immutable";
 const parentGrouper = x => x.get("parent_id");
 
 export function buildLanguageTree(data) {
+  if (!data) {
+    return new List();
+  }
+
   const byParentId = data.groupBy(parentGrouper);
   function innerBuild(lang) {
     const langId = lang.get("id");

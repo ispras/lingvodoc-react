@@ -1,16 +1,14 @@
 import React, { useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
-import { useQuery } from "@apollo/client";
 import PropTypes from "prop-types";
 
-import { getLanguagesForSearch } from "backend";
 import Placeholder from "components/Placeholder";
 import { useTranslations } from "hooks";
 import { compositeIdToString } from "utils/compositeId";
 
 /** Table of contents for languages */
 const LanguagesToc = ({ queryLanguages, onSelectId }) => {
-  const { getTranslation, chooseTranslation } = useTranslations();
+  const { chooseTranslation } = useTranslations();
 
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -55,17 +53,19 @@ const LanguagesToc = ({ queryLanguages, onSelectId }) => {
 
     const letter_map = new Map();
     for (const language of language_toc_list) {
-      const letter = language.translation[0].toLocaleUpperCase();
-      const language_list = letter_map.get(letter);
-      if (!language_list) {
-        letter_map.set(letter, [language]);
-      } else {
-        language_list.push(language);
+      if (language.translation.length > 0) {
+        const letter = language.translation[0].toLocaleUpperCase();
+        const language_list = letter_map.get(letter);
+        if (!language_list) {
+          letter_map.set(letter, [language]);
+        } else {
+          language_list.push(language);
+        }
       }
     }
 
     return letter_map;
-  }, [getTranslation, data]);
+  }, [data, chooseTranslation]);
 
   if (loading && !data) {
     return <Placeholder />;
@@ -105,6 +105,9 @@ const LanguagesToc = ({ queryLanguages, onSelectId }) => {
   );
 };
 
-LanguagesToc.propTypes = {};
+LanguagesToc.propTypes = {
+  queryLanguages: PropTypes.object.isRequired,
+  onSelectId: PropTypes.func.isRequired
+};
 
 export default LanguagesToc;
