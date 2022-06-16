@@ -8,7 +8,10 @@ import TranslationContext from "Layout/TranslationContext";
 export function useTranslations() {
   const getTranslation = useContext(TranslationContext);
 
-  const result = useMemo(() => ({ getTranslation, chooseTranslation }), [getTranslation]);
+  const result = useMemo(
+    () => ({ getTranslation, chooseTranslation: translations => chooseTranslation(translations) }),
+    [getTranslation]
+  );
 
   return result;
 }
