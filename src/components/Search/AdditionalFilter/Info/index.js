@@ -23,7 +23,7 @@ const dictionariesInfo = (dictionaries, getTranslation) => {
   return `${getTranslation("Dictionaries")}: ${result}`;
 };
 
-const grammarGroupInfo = (name, values, needComma) => {
+const grammarGroupInfo = (name, values, needComma, getTranslation) => {
   return (
     <span key={name}>
       <strong>{name}</strong>: {info(values, getTranslation)}
@@ -41,7 +41,7 @@ const grammarInfo = (grammar, onClickCallback, getTranslation) => {
       needComma = true;
     }
 
-    return grammarGroupInfo(grammarGroupName, grammarGroupValues, needComma);
+    return grammarGroupInfo(grammarGroupName, grammarGroupValues, needComma, getTranslation);
   });
 
   let result = grammarText;
