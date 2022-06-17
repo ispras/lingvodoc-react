@@ -27,6 +27,10 @@ const getScrollContainer = () => document.querySelector(`.${classNames.scrollCon
 const getMainHeaderHeight = () => document.querySelector(`.${classNames.mainHeader}`).clientHeight;
 
 const goToLanguage = id => {
+  if (!id) {
+    return;
+  }
+
   const el = document.getElementById(getLangElementId(id));
   const container = getScrollContainer(classNames.scrollContainer);
   const offsetTop = 160;

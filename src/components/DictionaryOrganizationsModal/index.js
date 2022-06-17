@@ -1,6 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
-import { Button, Grid, Header, Modal, Select, Table } from "semantic-ui-react";
+import { Button, Modal, Table } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
 import { map } from "lodash";
@@ -10,7 +10,6 @@ import { bindActionCreators } from "redux";
 
 import { chooseTranslation as T } from "api/i18n";
 import { getUserRequestsQuery } from "components/Grants/graphql";
-import Translations from "components/Translation";
 import { closeModal as closeDictionaryOrganizationsModal } from "ducks/dictionaryOrganizations";
 import TranslationContext from "Layout/TranslationContext";
 import { organizationsQuery } from "pages/Organizations";
@@ -31,11 +30,13 @@ class DictionaryOrganizationsModal extends React.Component {
       data: { organizations },
       dictionaryId
     } = this.props;
+    if (!organizations) {
+      return;
+    }
 
     const dictionaryIdStr = id2str(dictionaryId);
-
     for (const organization of organizations) {
-      (organization.additional_metadata.participant.some(id => id2str(id) == dictionaryIdStr)
+      (organization.additional_metadata.participant.some(id => id2str(id) === dictionaryIdStr)
         ? this.linked_list
         : this.link_to_list
       ).push(organization);
@@ -43,10 +44,10 @@ class DictionaryOrganizationsModal extends React.Component {
   }
 
   render() {
-    const { addDictionaryToOrganization, closeDictionaryOrganizationsModal, data, dictionaryId } = this.props;
+    const { addDictionaryToOrganization, closeDictionaryOrganizationsModal: closeModal, dictionaryId } = this.props;
 
     return (
-      <Modal closeIcon onClose={closeDictionaryOrganizationsModal} dimmer open className="lingvo-modal2">
+      <Modal closeIcon onClose={closeModal} dimmer open className="lingvo-modal2">
         <Modal.Header>{this.context("Organizations")}</Modal.Header>
 
         <Modal.Content>
@@ -75,7 +76,7 @@ class DictionaryOrganizationsModal extends React.Component {
                   {map(this.link_to_list, organization => {
                     const id_str = `${organization.id}`;
 
-                    const already = this.state.requested_id_set.hasOwnProperty(id_str);
+                    const already = Object.prototype.hasOwnProperty.call(this.state.requested_id_set, id_str);
 
                     return (
                       <Table.Row key={organization.id}>
@@ -126,11 +127,7 @@ class DictionaryOrganizationsModal extends React.Component {
         </Modal.Content>
 
         <Modal.Actions>
-          <Button
-            content={this.context("Close")}
-            onClick={closeDictionaryOrganizationsModal}
-            className="lingvo-button-basic-black"
-          />
+          <Button content={this.context("Close")} onClick={closeModal} className="lingvo-button-basic-black" />
         </Modal.Actions>
       </Modal>
     );
@@ -141,7 +138,10 @@ DictionaryOrganizationsModal.contextType = TranslationContext;
 
 DictionaryOrganizationsModal.propTypes = {
   closeDictionaryOrganizationsModal: PropTypes.func.isRequired,
-  visible: PropTypes.bool.isRequired
+  visible: PropTypes.bool.isRequired,
+  data: PropTypes.object.isRequired,
+  dictionaryId: PropTypes.array,
+  addDictionaryToOrganization: PropTypes.func.isRequired
 };
 
 export default compose(
