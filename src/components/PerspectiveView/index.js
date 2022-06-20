@@ -933,7 +933,7 @@ const LexicalEntryViewBaseByIds = ({ perspectiveId, mode, entitiesMode, data, ac
     );
   }
 
-  if (!data) {
+  if (!data || !data.perspective) {
     return null;
   }
 
