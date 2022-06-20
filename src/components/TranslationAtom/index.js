@@ -51,7 +51,8 @@ export default class TranslationAtom extends React.Component {
         },
         {
           query: languagesQuery
-        }
+        },
+        "queryPerspectivePath"
       ]
     }).then(() => {
       onAtomCreated();
@@ -76,7 +77,8 @@ export default class TranslationAtom extends React.Component {
         },
         {
           query: languagesQuery
-        }
+        },
+        "queryPerspectivePath"
       ]
     });
   }
