@@ -25,7 +25,7 @@ const LexicalEntryLinkComponent = ({ node, actions, entitiesMode, defaultMode, o
     <Link
       onClick={() => openModalAction(LexicalEntryModal, { node, actions, entitiesMode, defaultMode, onlyViewMode })}
     >
-      {T(translations)}: {lexicalEntries.length} result(s)
+      {`${T(translations)}: ${lexicalEntries.length} result(s)`}
     </Link>
   );
 };
@@ -54,12 +54,26 @@ const mapDispatchToProps = dispatch => bindActionCreators({ openModalAction: ope
 
 export const LexicalEntryLink = connect(null, mapDispatchToProps)(LexicalEntryLinkComponent);
 
+const PerspectiveLink = ({ node }) => {
+  return (
+    <a href={`/dictionary/${node.parent_id.join("/")}/perspective/${node.id.join("/")}`}>{T(node.translations)}</a>
+  );
+};
+
 class LanguageTree extends React.Component {
-  static generateNodeProps({ node }) {
+  static generateNodePropsWithEntries({ node }) {
     const { translations } = node;
     const defaultTitle = translations ? T(translations) : "None";
 
     const title = node.type === "perspective" ? <LexicalEntryLink node={node} /> : defaultTitle;
+    return { title };
+  }
+
+  static generateNodePropsOnlyPerspectives({ node }) {
+    const { translations } = node;
+    const defaultTitle = translations ? T(translations) : "None";
+
+    const title = node.type === "perspective" ? <PerspectiveLink node={node} /> : defaultTitle;
     return { title };
   }
 
@@ -74,6 +88,10 @@ class LanguageTree extends React.Component {
         ignoreCollapsed: false
       })
     };
+
+    this.generateNodeProps = this.props.onlyPerspectives
+      ? LanguageTree.generateNodePropsOnlyPerspectives
+      : LanguageTree.generateNodePropsWithEntries;
   }
 
   render() {
@@ -84,7 +102,7 @@ class LanguageTree extends React.Component {
           rowHeight={42}
           scaffoldBlockPxWidth={32}
           treeData={this.state.treeData}
-          generateNodeProps={LanguageTree.generateNodeProps}
+          generateNodeProps={this.generateNodeProps}
           onChange={treeData => this.setState({ treeData })}
         />
       </div>

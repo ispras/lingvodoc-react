@@ -115,6 +115,63 @@ const fieldsQuery = gql`
   }
 `;
 
+const regexpCheckSet = new Set(["", ".*", ".+", ".", "..*", ".*.", "..+", ".+.", "..", "...", "...."]);
+
+export function queryCheck(query) {
+  const result = { check: true, empty: true };
+
+  for (const block of query) {
+    for (const condition of block) {
+      result.empty = false;
+
+      switch (condition.matching_type) {
+        case "full_string":
+          break;
+
+        case "substring":
+          if (condition.search_string === "") {
+            result.check = false;
+            result.substring = true;
+          }
+          break;
+
+        case "regexp":
+          if (regexpCheckSet.has(condition.search_string)) {
+            result.check = false;
+            result.regexp = true;
+          }
+          break;
+
+        default:
+          result.check = false;
+          result.matching_type = true;
+          break;
+      }
+    }
+  }
+
+  return result;
+}
+
+export function additionalParamsCheck(langs, dicts, searchMetadata) {
+  if ((langs && langs.length > 0) || (dicts && dicts.length > 0)) {
+    return true;
+  }
+
+  if (
+    searchMetadata &&
+    (searchMetadata.hasAudio !== null ||
+      searchMetadata.kind !== null ||
+      searchMetadata.years.length > 0 ||
+      searchMetadata.humanSettlement.length > 0 ||
+      searchMetadata.authors.length > 0)
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
 function Query({ data, query, onFieldChange, onDelete }) {
   const getTranslation = useContext(TranslationContext);
 
@@ -122,8 +179,25 @@ function Query({ data, query, onFieldChange, onDelete }) {
   const str = query.get("search_string", "");
   const type = query.get("matching_type", "");
 
+  if (data.error) {
+    return (
+      <div>
+        <Message negative compact>
+          <Message.Header>{getTranslation("Field data loading error")}</Message.Header>
+          <div style={{ marginTop: "0.25em" }}>
+            {getTranslation("Try reloading the page; if the error persists, please contact administrators.")}
+          </div>
+        </Message>
+      </div>
+    );
+  }
+
   if (data.loading) {
-    return null;
+    return (
+      <div>
+        {`${getTranslation("Loading field data")}...`} <Icon name="spinner" loading />
+      </div>
+    );
   }
 
   const { all_fields: fields } = data;
@@ -262,18 +336,6 @@ class QueryBuilder extends React.Component {
       authors = searchMetadata.authors || authors;
     }
 
-    this.additionalFields = {
-      languages,
-      dictionaries,
-      hasAudio,
-      kind,
-      years,
-      humanSettlement,
-      authors,
-      languageVulnerability,
-      grammaticalSigns
-    };
-
     this.state = {
       data: fromJS(props.data),
       source: {
@@ -287,6 +349,17 @@ class QueryBuilder extends React.Component {
         blocks: "or"
       },
       allLangsDictsChecked: !this.props.langs && !this.props.dicts,
+      additionalFields: {
+        languages,
+        dictionaries,
+        hasAudio,
+        kind,
+        years,
+        humanSettlement,
+        authors,
+        languageVulnerability,
+        grammaticalSigns
+      },
       xlsxExport: false
     };
   }
@@ -327,10 +400,7 @@ class QueryBuilder extends React.Component {
   }
 
   onAdditionalFieldsChange(data) {
-    this.additionalFields = {
-      ...this.additionalFields,
-      ...data
-    };
+    this.setState({ additionalFields: { ...this.state.additionalFields, ...data } });
   }
 
   onSearchButtonClick() {
@@ -345,7 +415,7 @@ class QueryBuilder extends React.Component {
       authors,
       grammaticalSigns,
       languageVulnerability
-    } = this.additionalFields;
+    } = this.state.additionalFields;
 
     const adopted = mode2bool(this.state.mode.adopted);
     const etymology = mode2bool(this.state.mode.etymology);
@@ -397,7 +467,7 @@ class QueryBuilder extends React.Component {
   }
 
   addGrammaticalSigns(query) {
-    const { grammaticalSigns } = this.additionalFields;
+    const { grammaticalSigns } = this.state.additionalFields;
     const grammaticalGroupNames = Object.keys(grammaticalSigns);
 
     if (grammaticalGroupNames.length === 0) {
@@ -425,7 +495,7 @@ class QueryBuilder extends React.Component {
 
     query.forEach(q => {
       const innerQuery = [...q];
-      if (innerQuery[0].search_string === "") {
+      if (innerQuery.length > 0 && innerQuery[0].search_string === "") {
         innerQuery.shift();
       }
 
@@ -484,6 +554,29 @@ class QueryBuilder extends React.Component {
     const blocksText = this.getBlocksText();
     const subBlocksMode = this.getSubBlocksMode();
 
+    const query = this.addGrammaticalSigns(this.state.data.toJS());
+    const checkInfo = queryCheck(query);
+
+    const {
+      languages: langsToFilter,
+      dictionaries: dictsToFilter,
+      hasAudio,
+      kind,
+      years,
+      humanSettlement,
+      authors
+    } = this.state.additionalFields;
+
+    const searchMetadata = {
+      hasAudio,
+      kind: kind || null,
+      years,
+      humanSettlement,
+      authors
+    };
+
+    const additionalParamsFlag = additionalParamsCheck(langsToFilter, dictsToFilter, searchMetadata);
+
     return (
       <div>
         <Segment.Group className="search-group">
@@ -519,7 +612,7 @@ class QueryBuilder extends React.Component {
 
         <AdditionalFilter
           onChange={this.onAdditionalFieldsChange}
-          data={this.additionalFields}
+          data={this.state.additionalFields}
           allLangsDictsChecked={allLangsDictsChecked}
         />
 
@@ -630,59 +723,86 @@ class QueryBuilder extends React.Component {
           </Button>
 
           <Divider />
-          <Button primary basic onClick={this.onSearchButtonClick}>
-            {this.context("Search")}
-          </Button>
-          <Checkbox
-            style={{ margin: "10px" }}
-            label={this.context("Export to XLSX")}
-            checked={this.state.xlsxExport}
-            onChange={() => this.setState({ xlsxExport: !this.state.xlsxExport })}
-          />
-          {searchURLId ? (
-            <div
-              style={{
-                padding: "0.78571429em 0.25em 0.78571429em",
-                float: "right"
-              }}
-            >
-              {this.context("Link to search results:")}{" "}
-              <Link to={`/map_search/${searchURLId}`}>
-                {`${window.location.protocol}\/\/${window.location.host}/map_search/${searchURLId}`}
-              </Link>
-            </div>
-          ) : searchLinkError ? (
-            <div
-              style={{
-                float: "right"
-              }}
-            >
-              <Message
-                compact
-                negative
-                style={{
-                  padding: "0.78571429em 1.5em"
-                }}
-              >
-                {this.context("Failed to get search link, please contact administrators.")}
-              </Message>
-            </div>
-          ) : !user.id ? (
-            <Button basic floated="right" disabled>
-              {this.context("Only registered users can create new search links")}
-            </Button>
-          ) : searchLinkLoading ? (
-            <Button basic positive floated="right" disabled>
-              <span>
-                {this.context("Getting link to search results")}
-                {"... "}
-                <Icon name="spinner" loading />
-              </span>
-            </Button>
+          {!checkInfo.check ? (
+            <Message negative={checkInfo.matching_type}>
+              {checkInfo.matching_type && (
+                <p>{`${this.context("Invalid search condition matching type, please contact administrators")}.`}</p>
+              )}
+              {checkInfo.substring && <p>{`${this.context("Empty substrings are not allowed")}.`}</p>}
+              {checkInfo.regexp && <p>{`${this.context("Too broad regular expressions are not allowed")}.`}</p>}
+              {(checkInfo.substring || checkInfo.regexp) && (
+                <>
+                  <p>{`${this.context(
+                    "Please either narrow down search conditions or add grammatical signs conditions"
+                  )}.`}</p>
+                  <p>{`${this.context(
+                    "Or, if you would like to search just for dictionaries and perspective based on metadata, delete all search conditions"
+                  )}.`}</p>
+                </>
+              )}
+            </Message>
+          ) : checkInfo.empty && !additionalParamsFlag ? (
+            <Message>
+              <p>{`${this.context("Empty search query and no language/metadata conditions")}.`}</p>
+              <p>{`${this.context("Please add either search conditions or language/metadata conditions")}.`}</p>
+            </Message>
           ) : (
-            <Button basic positive floated="right" onClick={getSearchURL}>
-              {this.context("Get link to search results")}
-            </Button>
+            <>
+              <Button primary basic onClick={this.onSearchButtonClick}>
+                {this.context("Search")}
+              </Button>
+              <Checkbox
+                style={{ margin: "1em" }}
+                label={this.context("Export to XLSX")}
+                checked={this.state.xlsxExport}
+                onChange={() => this.setState({ xlsxExport: !this.state.xlsxExport })}
+              />
+              {searchURLId ? (
+                <div
+                  style={{
+                    padding: "0.78571429em 0.25em 0.78571429em",
+                    float: "right"
+                  }}
+                >
+                  {this.context("Link to search results:")}{" "}
+                  <Link to={`/map_search/${searchURLId}`}>
+                    {`${window.location.protocol}\/\/${window.location.host}/map_search/${searchURLId}`}
+                  </Link>
+                </div>
+              ) : searchLinkError ? (
+                <div
+                  style={{
+                    float: "right"
+                  }}
+                >
+                  <Message
+                    compact
+                    negative
+                    style={{
+                      padding: "0.78571429em 1.5em"
+                    }}
+                  >
+                    {this.context("Failed to get search link, please contact administrators.")}
+                  </Message>
+                </div>
+              ) : !user.id ? (
+                <Button basic floated="right" disabled>
+                  {this.context("Only registered users can create new search links")}
+                </Button>
+              ) : searchLinkLoading ? (
+                <Button basic positive floated="right" disabled>
+                  <span>
+                    {this.context("Getting link to search results")}
+                    {"... "}
+                    <Icon name="spinner" loading />
+                  </span>
+                </Button>
+              ) : (
+                <Button basic positive floated="right" onClick={getSearchURL}>
+                  {this.context("Get link to search results")}
+                </Button>
+              )}
+            </>
           )}
         </Wrapper>
       </div>
@@ -705,11 +825,9 @@ QueryBuilder.propTypes = {
   actions: PropTypes.shape({
     setQuery: PropTypes.func.isRequired
   }).isRequired
-  // langsQueryRes: PropTypes.object.isRequired,
 };
 
 QueryBuilder.defaultProps = {
-  data: [[newBlock]],
   showCreateSearchButton: false
 };
 

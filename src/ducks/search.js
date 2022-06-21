@@ -75,7 +75,7 @@ const newBlock = {
 
 const emptyQuery = [[newBlock]];
 
-let counter = 1;
+let counter = 0;
 
 function buildNewQuery() {
   counter += 1;
@@ -93,28 +93,14 @@ function buildNewQuery() {
     languageVulnerability: null,
     blocks: false,
     results: null,
-    subQuery: false
+    subQuery: false,
+    activated: false
   };
 }
 
-const initialState = {
-  id: 1,
-  query: emptyQuery,
-  category: null,
-  adopted: null,
-  etymology: null,
-  diacritics: null,
-  langs: null,
-  dicts: null,
-  searchMetadata: null,
-  grammaticalSigns: null,
-  languageVulnerability: null,
-  blocks: false,
-  results: null,
-  subQuery: false
-};
+const initialQuery = buildNewQuery();
 
-const searches = (state = [initialState], action) => {
+const searches = (state = [initialQuery], action) => {
   switch (action.type) {
     case NEW_SEARCH:
       return [...state, buildNewQuery()];
@@ -146,7 +132,8 @@ const searches = (state = [initialState], action) => {
               languageVulnerability: action.payload.languageVulnerability,
               blocks: action.payload.blocks,
               xlsxExport: action.payload.xlsxExport,
-              subQuery: false
+              subQuery: false,
+              activated: true
             }
           : search
       );

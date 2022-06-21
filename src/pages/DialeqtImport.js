@@ -335,7 +335,7 @@ class DialeqtImport extends React.Component {
                   padding: "0.5em"
                 }}
               >
-                Loading dictionary data... <Icon loading name="spinner" />
+                {`${this.context("Loading dictionary data")}...`} <Icon loading name="spinner" />
               </span>
             ) : (
               <Dropdown

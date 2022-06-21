@@ -15,7 +15,7 @@ import BlobsModal from "components/Search/blobsModal";
 import IntersectionControl from "components/Search/IntersectionControl";
 import Labels from "components/Search/Labels";
 import LanguageTree from "components/Search/LanguageTree";
-import QueryBuilder from "components/Search/QueryBuilder";
+import QueryBuilder, { additionalParamsCheck, queryCheck } from "components/Search/QueryBuilder";
 import ResultsMap from "components/Search/ResultsMap";
 import {
   setCheckStateTreeFlat,
@@ -128,45 +128,6 @@ const newUnstructuredDataMutation = gql`
   }
 `;
 
-const isAdditionalParamsSet = (langs, dicts, searchMetadata) => {
-  if ((langs && langs.length > 0) || (dicts && dicts.length > 0)) {
-    return true;
-  }
-
-  if (
-    searchMetadata &&
-    searchMetadata.hasAudio !== null &&
-    searchMetadata.kind !== null &&
-    searchMetadata.years.length > 0 &&
-    searchMetadata.humanSettlement.length > 0 &&
-    searchMetadata.authors.length > 0
-  ) {
-    return true;
-  }
-
-  return false;
-};
-
-// const allQueriesOnlyWithRegexp = (queryGroup) => {
-//   return queryGroup.every(query => query.matching_type === 'regexp');
-// };
-
-const isQueryWithoutEmptyString = query => {
-  return query.search_string.length > 0 && query.matching_type.length > 0;
-};
-
-const getCleanQueries = query => {
-  return query.map(q => q.filter(p => isQueryWithoutEmptyString(p))).filter(q => q.length > 0);
-};
-
-const isQueriesClean = query => {
-  return getCleanQueries(query).length > 0;
-};
-
-const isNeedToRenderLanguageTree = query => {
-  return isQueriesClean(query);
-};
-
 class Wrapper extends React.Component {
   componentWillReceiveProps(props) {
     if (props.preloadFlag) {
@@ -208,7 +169,10 @@ class Wrapper extends React.Component {
 
     const { languages: allLanguages, advanced_search: advancedSearch, variables } = data;
     const { query } = variables;
-    const needToRenderLanguageTree = isNeedToRenderLanguageTree(query);
+
+    const checkResult = queryCheck(query);
+    const needToRenderLanguageTree = checkResult.check;
+
     const searchResults = Immutable.fromJS(advancedSearch);
     const resultsCount = searchResults
       .get("dictionaries")
@@ -241,7 +205,9 @@ class Wrapper extends React.Component {
             </div>
           ) : null}
         </Message>
-        {needToRenderLanguageTree ? <LanguageTree searchResultsTree={searchResultsTree} /> : null}
+        {needToRenderLanguageTree ? (
+          <LanguageTree searchResultsTree={searchResultsTree} onlyPerspectives={checkResult.empty} />
+        ) : null}
       </div>
     );
   }
@@ -273,22 +239,23 @@ const Info = ({
   blocks,
   xlsxExport,
   subQuery,
+  activated,
   preloadFlag,
   props
 }) => {
-  if (subQuery) {
+  if (subQuery || !activated) {
     return null;
   }
 
-  const queryClean = isQueriesClean(query);
-  const additionalParamsSet = isAdditionalParamsSet(langs, dicts, searchMetadata);
+  const checkInfo = queryCheck(query);
+  const additionalParamsFlag = additionalParamsCheck(langs, dicts, searchMetadata);
   let resultQuery = query;
 
-  if (!queryClean) {
+  if (checkInfo.empty) {
     resultQuery = [];
   }
 
-  if (queryClean || additionalParamsSet) {
+  if (checkInfo.check && (!checkInfo.empty || additionalParamsFlag)) {
     return (
       <WrapperWithData
         searchId={searchId}
@@ -422,7 +389,7 @@ class SearchTabs extends React.Component {
         const searches = [];
 
         for (const [key, value] of entry_list) {
-          searches.push(value);
+          searches.push({ ...value, activated: true });
         }
 
         actions.setSearches(searches);
@@ -435,13 +402,23 @@ class SearchTabs extends React.Component {
             continue;
           }
 
+          /* Checking search query validity. */
+
+          const checkInfo = queryCheck(value.query);
+          const additionalParamsFlag = additionalParamsCheck(value.langs, value.dicts, value.searchMetadata);
+
+          if (!checkInfo.check || (checkInfo.empty && !additionalParamsFlag)) {
+            this.state.preload_count--;
+            continue;
+          }
+
           client
 
             .query({
               query: searchQuery,
               variables: {
                 mode: "published",
-                query: isQueriesClean(value.query) ? value.query : [],
+                query: checkInfo.empty ? [] : value.query,
                 category: value.category,
                 adopted: value.adopted,
                 etymology: value.etymology,
@@ -813,7 +790,7 @@ class SearchTabs extends React.Component {
       return false;
     }
 
-    return isNeedToRenderLanguageTree(search.query);
+    return queryCheck(search.query).check;
   }
 
   createSearchWithAdditionalFields = search => () => {
@@ -916,6 +893,7 @@ class SearchTabs extends React.Component {
                 blocks={search.blocks}
                 xlsxExport={search.xlsxExport}
                 subQuery={search.subQuery}
+                activated={search.activated}
                 preloadFlag={this.state.preload_count > 0}
               />
             </Container>
