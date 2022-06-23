@@ -7,6 +7,7 @@ import { findIndex, isEqual } from "lodash";
 import PropTypes from "prop-types";
 import { compose, onlyUpdateForKeys } from "recompose";
 import { bindActionCreators } from "redux";
+import styled from "styled-components";
 
 import { chooseTranslation as T } from "api/i18n";
 import { queryPerspective } from "components/PerspectiveView";
@@ -116,6 +117,11 @@ const updateNestedMutation = gql`
   }
 `;
 
+const CheckboxWithMargins = styled(Checkbox)`
+  margin-left: 0.5em;
+  margin-right: 0.5em;
+`;
+
 const NestedColumn = ({ column, columns, fields, onChange }) => {
   const nested = columns.find(({ self_id: s }) => isEqual(column.id, s));
   const selectedValue = nested ? id2str(nested.id) : "";
@@ -143,8 +149,8 @@ const NestedColumn = ({ column, columns, fields, onChange }) => {
 
   return (
     <Dropdown
-      search
       selection
+      search
       defaultValue={selectedValue}
       options={options}
       onChange={(a, { value }) => onChange(getChangedField(value))}
@@ -329,7 +335,7 @@ class C extends React.Component {
           field.data_type !== "Link" &&
           field.data_type !== "Directed Link" &&
           field.data_type !== "Grouping Tag" && (
-            <Checkbox
+            <CheckboxWithMargins
               defaultChecked={this.state.hasNestedField}
               onChange={(e, { checked }) => this.onNestedCheckboxChange(checked)}
               label={this.context("has linked field")}
