@@ -67,7 +67,7 @@ const Pagination = ({ urlBased, activePage, pageSize = 20, totalItems, showTotal
         />
       </div>
       <span style={{ marginRight: "4px" }}>
-        Go to page
+        {getTranslation("Go to page")}
         <Input
           value={goto}
           onChange={(_event, { value }) => setGoto(value)}
