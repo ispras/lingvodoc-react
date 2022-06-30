@@ -56,7 +56,7 @@ const Subject = ({ request, grants, dictionaries, organizations }) => {
 
       return (
         <div>
-          <p>Organization</p>
+          <p>{getTranslation("Organization")}</p>
           <Card
             header={T(organization.translations)}
             meta={organization.about}
