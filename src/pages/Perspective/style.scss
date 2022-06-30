@@ -80,7 +80,7 @@
       bottom: 20px;
 
       &:not(:first-child) {
-        top: 84px;
+        top: 70px;
       }
 
       & thead th {
@@ -147,7 +147,7 @@
         top: auto !important;
         bottom: auto;
         left: auto;
-        margin-top: 24px;
+        margin-top: 4px;
         width: 100%;
 
         & thead th {
@@ -333,6 +333,20 @@
   }
 }
 /* /perspective menu */
+
+/* perspective buttons */
+
+.lingvo-perspective-buttons {
+  text-align: right;
+}
+/* /perspective buttons */
+
+/* perspective button */
+
+.lingvo-perspective-button {
+  margin: 0 0 10px 10px !important;
+}
+/* /perspective button */
 
 /* perspective table */
 .lingvo-perspective-table {
