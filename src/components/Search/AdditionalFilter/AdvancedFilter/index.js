@@ -1,5 +1,5 @@
-import React, { PureComponent } from "react";
-import { Segment } from "semantic-ui-react";
+import React, { PureComponent, useContext } from "react";
+import { Icon, Message, Segment } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
 import PropTypes from "prop-types";
@@ -161,11 +161,30 @@ AdvancedFilter.contextType = TranslationContext;
  * @returns {AdditionalFields} - component with added properties (data from API)
  */
 const AdvancedFilterWrap = props => {
+  const getTranslation = useContext(TranslationContext);
+
   const { metadataQuery } = props;
   const { error: metadataQueryError, loading: metadataQueryLoading } = metadataQuery;
 
-  if (metadataQueryError || metadataQueryLoading) {
-    return null;
+  if (metadataQueryError) {
+    return (
+      <div>
+        <Message negative compact>
+          <Message.Header>{getTranslation("Tag data loading error")}</Message.Header>
+          <div style={{ marginTop: "0.25em" }}>
+            {getTranslation("Try reloading the page; if the error persists, please contact administrators.")}
+          </div>
+        </Message>
+      </div>
+    );
+  }
+
+  if (metadataQueryLoading) {
+    return (
+      <div>
+        {`${getTranslation("Loading tag data")}...`} <Icon name="spinner" loading />
+      </div>
+    );
   }
 
   const newProps = {

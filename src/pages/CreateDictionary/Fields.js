@@ -11,14 +11,14 @@ import styled from "styled-components";
 import { chooseTranslation as T } from "api/i18n";
 import { openCreateFieldModal } from "ducks/fields";
 import TranslationContext from "Layout/TranslationContext";
-import { compositeIdToString } from "utils/compositeId";
+import { compositeIdToString as id2str } from "utils/compositeId";
 import { uuidv4 as uuid } from "utils/uuid";
 
 import { allFieldsQuery, corpusTemplateFieldsQuery } from "./graphql";
 
 const CheckboxWithMargins = styled(Checkbox)`
-  margin-left: 1em;
-  margin-right: 1em;
+  margin-left: 0.5em;
+  margin-right: 0.5em;
 `;
 
 const NestedColumn = ({ column, columns, fields, onChange }) => {
@@ -34,6 +34,7 @@ const NestedColumn = ({ column, columns, fields, onChange }) => {
   return (
     <Dropdown
       selection
+      search
       options={options}
       value={nested ? nested.id : null}
       onChange={(a, { value }) => onChange(value, nested ? nested.id : null)}
@@ -58,6 +59,7 @@ class Column extends React.Component {
     };
     this.onFieldChange = this.onFieldChange.bind(this);
     this.onLinkChange = this.onLinkChange.bind(this);
+    this.onNestedCheckboxChange = this.onNestedCheckboxChange.bind(this);
     this.onNestedChange = this.onNestedChange.bind(this);
   }
 
@@ -72,7 +74,7 @@ class Column extends React.Component {
       return;
     }
 
-    const field = fields.find(f => compositeIdToString(f.id) === value);
+    const field = fields.find(f => id2str(f.id) === value);
     if (field) {
       this.setState(
         {
@@ -91,6 +93,22 @@ class Column extends React.Component {
       },
       () => onChange(this.state)
     );
+  }
+
+  onNestedCheckboxChange(checked) {
+    this.setState({ hasNestedField: checked });
+
+    // If we disable selected nested column, we unlink its self id.
+
+    if (!checked) {
+      const { onChange, column, columns } = this.props;
+      const nestedColumn = columns.find(c => c.self_id === column.id);
+
+      if (nestedColumn) {
+        nestedColumn.self_id = null;
+        onChange(nestedColumn);
+      }
+    }
   }
 
   onNestedChange(newNested, oldNested) {
@@ -113,7 +131,7 @@ class Column extends React.Component {
     const { column, columns, fields, perspectives } = this.props;
 
     const field = fields.find(f => isEqual(f.id, this.state.field_id));
-    const options = fields.map(f => ({ text: T(f.translations), value: compositeIdToString(f.id) }));
+    const options = fields.map(f => ({ text: T(f.translations), value: id2str(f.id) }));
 
     options.push({
       text: `${this.context("Add new field")}...`,
@@ -128,7 +146,7 @@ class Column extends React.Component {
       value: p.index
     }));
 
-    const currentField = compositeIdToString(this.state.field_id);
+    const currentField = id2str(this.state.field_id);
 
     return (
       <span>
@@ -142,7 +160,13 @@ class Column extends React.Component {
           loading={!field}
         />
         {field && field.data_type === "Link" && (
-          <Dropdown selection options={availablePerspectives} onChange={(a, { value }) => this.onLinkChange(value)} />
+          <Dropdown
+            selection
+            search
+            defaultValue={this.state.link_id ? id2str(this.state.link_id) : null}
+            options={availablePerspectives}
+            onChange={(a, { value }) => this.onLinkChange(value)}
+          />
         )}
         {field &&
           field.data_type !== "Link" &&
@@ -150,7 +174,7 @@ class Column extends React.Component {
           field.data_type !== "Grouping Tag" && (
             <CheckboxWithMargins
               defaultChecked={this.state.hasNestedField}
-              onChange={(e, { checked }) => this.setState({ hasNestedField: checked })}
+              onChange={(e, { checked }) => this.onNestedCheckboxChange(checked)}
               label={this.context("has linked field")}
             />
           )}
@@ -201,6 +225,12 @@ class Columns extends React.Component {
       props.client.query({ query: corpusTemplateFieldsQuery }).then(result => {
         const { template_fields } = result.data;
         const columns = [];
+
+        /* NOTE:
+         *
+         * There is intentional discrepancy between what we receive from the backend (3 fields, Sound ->
+         * Markup, Comment) and what we set up here (4 columns, Sound -> Markup, Markup, Comment). */
+
         for (let i = 0; i < template_fields.length; i++) {
           const templateField = template_fields[i];
           if (templateField.self_fake_id) {
@@ -218,7 +248,9 @@ class Columns extends React.Component {
             field_id: templateField.id
           });
         }
+
         this.fetching = false;
+
         this.setState(
           {
             columns: columns

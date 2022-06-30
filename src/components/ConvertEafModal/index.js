@@ -9,8 +9,7 @@ import { bindActionCreators } from "redux";
 
 import { chooseTranslation as T } from "api/i18n";
 import Languages from "components/Languages";
-import { content as contentMarkup } from "components/LexicalEntry/Markup";
-import { content as contentSound } from "components/LexicalEntry/Sound";
+import { content } from "components/LexicalEntry/Sound";
 import { validateQuery } from "components/MarkupModal";
 import Translations from "components/Translation";
 import { closeConvert } from "ducks/markup";
@@ -56,10 +55,10 @@ const AdditionalMarkup = ({ info }) => {
         text = entity.content;
         break;
       case "Sound":
-        text = contentSound(entity.content, 64);
+        text = content(entity.content, 64);
         break;
       case "Markup":
-        text = contentMarkup(entity.content, 64);
+        text = content(entity.content, 64);
         if (is_markup && !is_valid) {
           text += " (Invalid)";
         }

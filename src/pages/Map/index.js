@@ -105,7 +105,7 @@ class Map extends React.Component {
       data: { loading, dictionaries, blobs: allBlobs }
     } = nextProps;
 
-    if (!loading) {
+    if (!loading && dictionaries) {
       const markersGroup = L.markerClusterGroup({ maxClusterRadius: 70, showCoverageOnHover: false });
       const map = this.leaflet;
       markersGroup.on("clustermouseover", event => {

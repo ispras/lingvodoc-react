@@ -1,9 +1,8 @@
 import React from "react";
 import { connect } from "react-redux";
-import { Button, Dropdown, Header, Icon, List, Message, Radio, Segment, Step } from "semantic-ui-react";
+import { Button, Dropdown, Header, Icon, List, Radio, Segment, Step } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
-import { fromJS, Map } from "immutable";
 import PropTypes from "prop-types";
 import { compose } from "recompose";
 
@@ -24,7 +23,6 @@ import {
   setUpdateDictionaryId
 } from "ducks/dialeqtImport";
 import TranslationContext from "Layout/TranslationContext";
-import { buildExport } from "pages/DictImport/api";
 
 import "pages/DictImport/styles.scss";
 
@@ -204,7 +202,7 @@ class DialeqtImport extends React.Component {
             </Step.Content>
           </Step>
 
-          {dialeqt_action == "create" && (
+          {dialeqt_action === "create" && (
             <Step link active={step === "PARENT_LANGUAGE"} onClick={this.onStepClick("PARENT_LANGUAGE")}>
               <Step.Content>
                 <Step.Title>{this.context("Parent language")}</Step.Title>
@@ -213,7 +211,7 @@ class DialeqtImport extends React.Component {
             </Step>
           )}
 
-          {dialeqt_action == "create" && (
+          {dialeqt_action === "create" && (
             <Step link active={step === "TRANSLATIONS"} onClick={this.onStepClick("TRANSLATIONS")}>
               <Step.Content>
                 <Step.Title>{this.context("Dictionary names")}</Step.Title>
@@ -222,7 +220,7 @@ class DialeqtImport extends React.Component {
             </Step>
           )}
 
-          {dialeqt_action == "update" && (
+          {dialeqt_action === "update" && (
             <Step link active={step === "UPDATE_DICTIONARY"} onClick={this.onStepClick("UPDATE_DICTIONARY")}>
               <Step.Content>
                 <Step.Title>{this.context("Update dictionary")}</Step.Title>
@@ -238,7 +236,7 @@ class DialeqtImport extends React.Component {
           </Step>
         </Step.Group>
 
-        <div style={{ height: "450px" }}>
+        <div style={{ height: "550px" }}>
           {step === "CHOICE" && (
             <div>
               <Dropdown
@@ -284,7 +282,7 @@ class DialeqtImport extends React.Component {
           )}
 
           {step === "PARENT_LANGUAGE" && (
-            <div className="inverted" style={{ height: "400px" }}>
+            <div className="inverted" style={{ height: "450px" }}>
               <Header>
                 <span
                   style={{
@@ -337,7 +335,7 @@ class DialeqtImport extends React.Component {
                   padding: "0.5em"
                 }}
               >
-                Loading dictionary data... <Icon loading name="spinner" />
+                {`${this.context("Loading dictionary data")}...`} <Icon loading name="spinner" />
               </span>
             ) : (
               <Dropdown
@@ -348,9 +346,7 @@ class DialeqtImport extends React.Component {
                 placeholder={this.context("Update dictionary")}
                 options={dictionaryOptions}
                 value={dictionarySelection}
-                onChange={(event, data) =>
-                  this.props.setUpdateDictionaryId(data.value.split("/").map(x => parseInt(x, 10)))
-                }
+                onChange={(_event, d) => this.props.setUpdateDictionaryId(d.value.split("/").map(x => parseInt(x, 10)))}
               />
             ))}
         </div>

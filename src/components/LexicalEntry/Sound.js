@@ -35,7 +35,7 @@ const SoundEntityContent = onlyUpdateForKeys(["entity", "mode"])(
             <Button icon="play" onClick={() => actions.openPlayer(entity)} />
             <Button
               icon="remove"
-              onClick={() => actions.openConfirmModal(getTranslation("Delete sound file?"), () => remove(entity))}
+              onClick={() => actions.openConfirmModal(`${getTranslation("Delete sound file")}?`, () => remove(entity))}
             />
           </Button.Group>
         );
@@ -48,7 +48,12 @@ const SoundEntityContent = onlyUpdateForKeys(["entity", "mode"])(
               <Popup trigger={<Button content={content(entity.content)} />} content={entity.content} />
               <Button icon="play" onClick={() => actions.openPlayer(entity)} />
             </Button.Group>
-            <Checkbox size="tiny" checked={entity.published} onChange={(e, { checked }) => publish(entity, checked)} className="lingvo-checkbox lingvo-entry-text__checkbox" />
+            <Checkbox
+              size="tiny"
+              checked={entity.published}
+              onChange={(e, { checked }) => publish(entity, checked)}
+              className="lingvo-checkbox lingvo-entry-text__checkbox"
+            />
           </div>
         );
 

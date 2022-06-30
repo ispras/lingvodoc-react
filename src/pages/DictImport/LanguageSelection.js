@@ -39,8 +39,9 @@ class Dictionary extends React.Component {
               {this.context("Select Language for")} {blob.get("name")}
             </Modal.Header>
             <Modal.Content style={{ minHeight: "500px" }}>
-              <div style={{ height: "500px" }}>
+              <div style={{ height: "400px" }}>
                 <Languages
+                  inverted={false}
                   onSelect={params => {
                     onSetLanguage(params);
                     this.toggle();

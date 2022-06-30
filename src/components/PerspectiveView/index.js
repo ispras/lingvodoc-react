@@ -944,6 +944,10 @@ const LexicalEntryViewBaseByIds = ({ perspectiveId, mode, entitiesMode, data, ac
     );
   }
 
+  if (!data || !data.perspective) {
+    return null;
+  }
+
   const {
     perspective: { columns, lexical_entries: entries }
   } = data;
