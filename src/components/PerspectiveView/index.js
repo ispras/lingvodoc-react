@@ -597,7 +597,10 @@ class P extends React.Component {
     }
 
     return (
-      <div style={{ overflowY: "auto" }} className={mode === "edit" && "lingvo-scrolling-tab lingvo-scrolling-tab_edit" || "lingvo-scrolling-tab"}>
+      <div
+        style={{ overflowY: "auto" }}
+        className={(mode === "edit" && "lingvo-scrolling-tab lingvo-scrolling-tab_edit") || "lingvo-scrolling-tab"}
+      >
         {((mode === "edit") || (mode === "publish" && isAuthenticated) || (mode === "contributions" && isAuthenticated)) && (
           <div className="lingvo-perspective-buttons">
             {mode === "edit" && (
