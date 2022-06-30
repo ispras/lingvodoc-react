@@ -601,42 +601,53 @@ class P extends React.Component {
         style={{ overflowY: "auto" }}
         className={(mode === "edit" && "lingvo-scrolling-tab lingvo-scrolling-tab_edit") || "lingvo-scrolling-tab"}
       >
-        {mode === "edit" && (
-          <Button positive icon="plus" content={this.context("Add lexical entry")} onClick={addEntry} />
-        )}
-        {mode === "edit" && (
-          <Button
-            negative
-            icon="minus"
-            content={this.context("Remove lexical entries")}
-            onClick={removeEntries}
-            disabled={selectedEntries.length < 1}
-          />
-        )}
-        {mode === "edit" && (
-          <Button
-            positive
-            icon="plus"
-            content={this.context("Merge lexical entries")}
-            onClick={mergeEntries}
-            disabled={selectedEntries.length < 2}
-          />
-        )}
-        {mode === "publish" && isAuthenticated && (
-          <Button
-            positive
-            content={this.context("Publish Entities")}
-            disabled={approveDisableCondition(entries)}
-            onClick={onApprove}
-          />
-        )}
-        {mode === "contributions" && isAuthenticated && (
-          <Button
-            positive
-            content={this.context("Accept Contributions")}
-            disabled={approveDisableCondition(entries)}
-            onClick={onApprove}
-          />
+        {((mode === "edit") || (mode === "publish" && isAuthenticated) || (mode === "contributions" && isAuthenticated)) && (
+          <div className="lingvo-perspective-buttons">
+            {mode === "edit" && (
+              <Button 
+                icon={<i className="lingvo-icon lingvo-icon_add" />}
+                content={this.context("Add lexical entry")} 
+                onClick={addEntry} 
+                className="lingvo-button-green lingvo-perspective-button" 
+              />
+            )}
+            {mode === "edit" && (
+              <Button
+                icon={<i className="lingvo-icon lingvo-icon_delete" />}
+                content={this.context("Remove lexical entries")}
+                onClick={removeEntries}
+                disabled={selectedEntries.length < 1}
+                className="lingvo-button-red lingvo-perspective-button"
+              />
+            )}
+            {mode === "edit" && (
+              <Button
+                icon={<i className="lingvo-icon lingvo-icon_add" />}
+                content={this.context("Merge lexical entries")}
+                onClick={mergeEntries}
+                disabled={selectedEntries.length < 2}
+                className="lingvo-button-green lingvo-perspective-button"
+              />
+            )}
+            {mode === "publish" && isAuthenticated && (
+              <Button
+                icon={<i className="lingvo-icon lingvo-icon_check" />}
+                content={this.context("Publish Entities")}
+                disabled={approveDisableCondition(entries)}
+                onClick={onApprove}
+                className="lingvo-button-green lingvo-perspective-button"
+              />
+            )}
+            {mode === "contributions" && isAuthenticated && (
+              <Button
+                icon={<i className="lingvo-icon lingvo-icon_check" />}
+                content={this.context("Accept Contributions")}
+                disabled={approveDisableCondition(entries)}
+                onClick={onApprove}
+                className="lingvo-button-green lingvo-perspective-button"
+              />
+            )}
+          </div>
         )}
 
         <div className="lingvo-scrolling-tab__table">

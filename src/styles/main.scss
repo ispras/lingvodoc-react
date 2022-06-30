@@ -902,6 +902,98 @@ body {
   }
 }
 
+.lingvo-button-green {
+  border-radius: 10px !important;
+  font-family: Rubik, Arial, sans-serif !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  line-height: 24px !important;
+  min-height: 24px !important;
+  padding: 3px 16px !important;
+  color: #57b894 !important;
+  background-color: #fff !important;
+  border: 1px solid #fff !important;
+  box-shadow: none !important;
+  -webkit-transition: opacity .1s ease,background-color .1s ease,color .1s ease,background .1s ease,border-color .1s ease;
+  transition: opacity .1s ease,background-color .1s ease,color .1s ease,background .1s ease,border-color .1s ease !important;
+
+  & .lingvo-icon {
+    background-color: #57b894;
+    margin-top: 3px;
+    margin-right: 4px;
+    vertical-align: top;
+  }
+
+  &:hover {
+    background-color: #57b894 !important;
+    color: #fff !important;
+    border: 1px solid #57b894 !important;
+
+    & .lingvo-icon {
+      background-color: #fff;
+    }
+  }
+
+  &.ui.button.disabled,
+  &.ui.button:disabled {
+    background-color: #fff !important;
+    border: 1px solid #fff !important;
+    color: #999ca0 !important;
+    opacity: 1 !important;
+
+    & .lingvo-icon {
+      background-color: #999ca0;
+    }
+  }
+
+}
+
+.lingvo-button-red {
+  border-radius: 10px !important;
+  font-family: Rubik, Arial, sans-serif !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  line-height: 24px !important;
+  min-height: 24px !important;
+  padding: 3px 16px !important;
+  color: #db4e4e !important;
+  background-color: #fff !important;
+  border: 1px solid #fff !important;
+  box-shadow: none !important;
+  -webkit-transition: opacity .1s ease,background-color .1s ease,color .1s ease,background .1s ease,border-color .1s ease;
+  transition: opacity .1s ease,background-color .1s ease,color .1s ease,background .1s ease,border-color .1s ease !important;
+
+  & .lingvo-icon {
+    background-color: #db4e4e;
+    margin-top: 3px;
+    margin-right: 4px;
+    vertical-align: top;
+  }
+  
+  &:hover {
+    background-color: #db4e4e !important;
+    color: #fff !important;
+    border: 1px solid #db4e4e !important;
+
+    & .lingvo-icon {
+      background-color: #fff;
+    }
+  }
+
+  &.ui.button.disabled,
+  &.ui.button:disabled {
+    background-color: #fff !important;
+    border: 1px solid #fff !important;
+    color: #999ca0 !important;
+    opacity: 1 !important;
+
+    & .lingvo-icon {
+      background-color: #999ca0;
+    }
+  }
+
+}
+
 /* confirm */
 
 .lingvo-confirm {
@@ -1894,6 +1986,20 @@ body {
     width: 10px;
     height: 14px;
     background-color: #fff;
+  }
+
+  &_add {
+    -webkit-mask-image: url("../images/icon_add.svg");
+    mask-image: url("../images/icon_add.svg");
+    width: 18px;
+    height: 18px;
+  }
+
+  &_check {
+    -webkit-mask-image: url("../images/icon_check.svg");
+    mask-image: url("../images/icon_check.svg");
+    width: 18px;
+    height: 18px;
   }
 }
 /* /icon */
