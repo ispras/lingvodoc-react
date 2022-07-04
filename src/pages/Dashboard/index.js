@@ -217,6 +217,7 @@ class P extends React.Component {
                     }
                     content={this.context("View")}
                     className="lingvo-popup-inverted"
+                    hideOnScroll={true}
                   />
 
                   <Popup
@@ -230,6 +231,7 @@ class P extends React.Component {
                     }
                     content={this.context("Edit")}
                     className="lingvo-popup-inverted"
+                    hideOnScroll={true}
                   />
 
                   <Popup
@@ -243,6 +245,7 @@ class P extends React.Component {
                     }
                     content={this.context("Publish")}
                     className="lingvo-popup-inverted"
+                    hideOnScroll={true}
                   />
 
                   <a
