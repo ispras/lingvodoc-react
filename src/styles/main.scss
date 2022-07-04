@@ -2001,10 +2001,75 @@ body {
     width: 18px;
     height: 18px;
   }
+
+  &_published {
+    -webkit-mask-image: url("../images/icon_published.svg");
+    mask-image: url("../images/icon_published.svg");
+    width: 10px;
+    height: 10px;
+    background-color: #57B894;
+    cursor: pointer;
+  }
 }
 /* /icon */
 
 /* popups */
+.lingvo-popup {
+
+  &.popup {
+    font-family: Rubik, Arial, sans-serif !important;
+    border-radius: 4px !important;
+    border: 1px solid #fff !important;
+    font-size: 12px !important;
+    line-height: 16px !important;
+    padding: 0 !important;
+
+    & .content {
+      padding: 8px 12px !important;
+      background: #fff !important;
+      position: relative !important;
+      z-index: 3 !important;
+    }
+  }
+
+  &::before {
+    background: #fff !important;
+    border: 1px solid #fff !important;
+    border-radius: 2px !important;
+    width: 14px !important;
+    height: 14px !important;
+    box-shadow: 2px 2px 8px 0 rgb(34 36 38 / 15%) !important;
+    z-index: 2 !important;
+  }
+
+  &.top.popup {
+    margin: 0 0 10px 0 !important;
+
+    &::before {
+      bottom: -6px !important;
+    }
+  }
+
+  &_published {
+    &.top.left.popup {
+      margin-left: -27px !important;
+  
+      &::before {
+        left: 24px !important;
+      }
+    }
+
+    &.top.right.popup {
+      margin-right: -27px !important;
+  
+      &::before {
+        right: 24px !important;
+      }
+    }
+  }
+  
+}
+
 .lingvo-popup-inverted {
   background: #5d54cd !important;
   border-radius: 4px !important;
