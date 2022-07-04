@@ -1,7 +1,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { Checkbox, Dropdown, Header, Icon } from "semantic-ui-react";
+import { Checkbox, Dropdown, Header, Icon, Popup } from "semantic-ui-react";
 import PropTypes from "prop-types";
 
 import { chooseTranslation } from "api/i18n";
@@ -131,7 +131,14 @@ export const LanguageNode = ({
               )}
               {authors && authors.length !== 0 && <span className="dict-authors">({authors.join(", ")})</span>}
               {config.buildType === "server" && signedIn && dictionary.english_status === "Published" && (
-                <span className="dict-published">{publishedStr}</span>
+                <Popup
+                  trigger={
+                    <i className="lingvo-icon lingvo-icon_published" />
+                  }
+                  content={publishedStr}
+                  className="lingvo-popup lingvo-popup_published"
+                  hideOnScroll={true}
+                />
               )}
             </li>
           );
