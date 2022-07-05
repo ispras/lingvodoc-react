@@ -2005,8 +2005,8 @@ body {
   &_published {
     -webkit-mask-image: url("../images/icon_published.svg");
     mask-image: url("../images/icon_published.svg");
-    width: 10px;
-    height: 10px;
+    width: 13px;
+    height: 12px;
     background-color: #57B894;
     cursor: pointer;
   }
@@ -2052,7 +2052,7 @@ body {
 
   &_published {
     &.top.left.popup {
-      margin-left: -27px !important;
+      margin-left: -26px !important;
   
       &::before {
         left: 24px !important;
@@ -2060,14 +2060,14 @@ body {
     }
 
     &.top.right.popup {
-      margin-right: -27px !important;
+      margin-right: -26px !important;
   
       &::before {
         right: 24px !important;
       }
     }
   }
-  
+
 }
 
 .lingvo-popup-inverted {

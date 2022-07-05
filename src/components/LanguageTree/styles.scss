@@ -135,10 +135,14 @@
     font-size: 14px;
     padding-right: 5px;
     font-weight: 400;
+
+    &_link:hover {
+      color: #5D54CD;
+    }
   }
 
   .dict-authors {
-    margin-right: 6px;
+    margin-right: 8px;
     font-style: italic;
     font-weight: normal;
   }

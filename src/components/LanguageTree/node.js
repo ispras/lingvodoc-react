@@ -92,7 +92,7 @@ export const LanguageNode = ({
                   inline
                   icon={null}
                   trigger={
-                    <span className="dict-name">
+                    <span className={perspectives.length && "dict-name dict-name_link" || "dict-name"}>
                       {dictionary.translations && chooseTranslation(dictionary.translations)} ({perspectives.length})
                     </span>
                   }
