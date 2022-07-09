@@ -188,7 +188,7 @@ class Wrapper extends React.Component {
       <div>
         <Message positive>
           <div>
-            {this.context("Found")} {resultsCount.size} {this.context("results on")}{" "}
+            {`${this.context("Found")} ${resultsCount.size} ${this.context("results on")} `}
             <a
               href=""
               onClick={e => {
@@ -311,7 +311,7 @@ class SearchTabs extends React.Component {
 
     const sourceSearches = searchesFromProps(props.searches);
 
-    const source_searches_info = sourceSearches.map(search => search.delete("results"));
+    const source_searches_info = sourceSearches.map(search => search.delete("results").delete("activated"));
 
     this.state = {
       mapSearches: this.addDefaultActiveStateToMapSearches(sourceSearches),
@@ -469,7 +469,9 @@ class SearchTabs extends React.Component {
 
     /* toJS() / fromJS() for canonical representation. */
 
-    const source_searches_info = fromJS(sourceSearches.map(search => search.delete("results")).toJS());
+    const source_searches_info = fromJS(
+      sourceSearches.map(search => search.delete("results").delete("activated")).toJS()
+    );
 
     this.setState({
       mapSearches,

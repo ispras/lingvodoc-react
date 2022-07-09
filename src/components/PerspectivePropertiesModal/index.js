@@ -67,7 +67,7 @@ const Properties = props => {
   if (loading) {
     return (
       <Modal open dimmer size="fullscreen" closeOnDimmerClick={false} closeIcon className="lingvo-modal2">
-        <Loader>{getTranslation("Loading")}...</Loader>
+        <Loader>{`${getTranslation("Loading")}...`}</Loader>
       </Modal>
     );
   } else if (error) {
