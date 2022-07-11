@@ -13,6 +13,7 @@ import { queryLexicalEntries } from "components/PerspectiveView";
 import TranslationContext from "Layout/TranslationContext";
 
 import "react-datepicker/dist/react-datepicker.css";
+import "./styles.scss";
 
 const perspectiveStatisticsQuery = gql`
   query statisticsPerspective($id: LingvodocID!, $start: Int!, $end: Int!) {
@@ -53,7 +54,8 @@ class ApproveModal extends React.Component {
       startDate: moment().subtract(5, "years"),
       endDate: moment(),
       user_id: null,
-      approveMap: []
+      approveMap: [],
+      showStatistics: null
     };
 
     this.getStatistics = this.getStatistics.bind(this);
@@ -67,8 +69,14 @@ class ApproveModal extends React.Component {
     this.props.data.refetch({ id: perspectiveId, start: startDate.unix(), end: endDate.unix() }).then(
       result => {
         if (!result.data.perspective.statistic.some(stat => stat.user_id === this.state.user_id)) {
-          this.setState({ user_id: null });
+          this.setState({ 
+            user_id: null
+          });
         }
+        
+        this.setState({
+          showStatistics: true
+        });
       },
       () => {
         this.setState({ user_id: null });
@@ -139,6 +147,12 @@ class ApproveModal extends React.Component {
     const { statistic: statistics } = perspective || { statistic: [] };
     const publishOrAccept = mode === "publish" ? this.context("Publish") : this.context("Accept");
 
+    let { showStatistics } = this.state;
+
+    if (!loading && (showStatistics === null)) {
+      showStatistics = true;
+    }
+
     let toApprove = null;
     let keys = [];
     if (user_id !== null) {
@@ -171,7 +185,7 @@ class ApproveModal extends React.Component {
                 showTimeSelect
                 timeFormat="HH:mm"
                 timeIntervals={15}
-                onChange={date => this.setState({ startDate: moment(date) })}
+                onChange={date => this.setState({ startDate: moment(date), showStatistics: false })}
                 dateFormat="dd.MM.yyyy HH:mm"
               />
             </div>
@@ -182,16 +196,24 @@ class ApproveModal extends React.Component {
                 showTimeSelect
                 timeFormat="HH:mm"
                 timeIntervals={15}
-                onChange={date => this.setState({ endDate: moment(date) })}
+                onChange={date => this.setState({ endDate: moment(date), showStatistics: false })}
                 dateFormat="dd.MM.yyyy HH:mm"
               />
             </div>
           </div>
           <Container textAlign="center">
-            <Button color="blue" loading={loading} content={this.context("Refresh")} onClick={this.getStatistics} />
+            <Button 
+              loading={loading} 
+              content={this.context("Refresh")} 
+              onClick={this.getStatistics} 
+              className="lingvo-button-violet" 
+              disabled={showStatistics}
+            />
           </Container>
-          <Divider />
-          <Grid columns={2} divided centered>
+
+          <Divider className="lingvo-divider_approve-modal" />
+          
+          <Grid columns={2} centered>
             <Grid.Column>
               <Form>
                 {statistics.map(stat => (
@@ -201,35 +223,46 @@ class ApproveModal extends React.Component {
                     value={stat.user_id}
                     checked={user_id === stat.user_id}
                     onChange={this.handleUserSelected}
+                    className="lingvo-radio"
                   />
                 ))}
               </Form>
             </Grid.Column>
             <Grid.Column>
               {user_id === null && (
-                <Container textAlign="center">
-                  <Header>{this.context("Please select a user")}</Header>
-                </Container>
+                <div className="lingvo-approve-empty">
+                  {this.context("Please select a user")}
+                </div>
               )}
               {user_id !== null && keys.length === 0 && (
-                <Container textAlign="center">
-                  <Header>{`${this.context("Nothing to")} ${publishOrAccept.toLowerCase()}`}</Header>
-                </Container>
+                <div className="lingvo-approve-empty">
+                  {`${this.context("Nothing to")} ${publishOrAccept.toLowerCase()}`}
+                </div>
+              )}
+              {toApprove && keys.length > 1 && (
+                <div style={{ marginBottom: "14px", textAlign: "right" }}>
+                  <Button
+                    content={`${publishOrAccept} ${this.context("All")}`}
+                    disabled={approveMap[user_id] && keys.every(key => approveMap[user_id].indexOf(key.name) !== -1)}
+                    onClick={() => this.onApprove(keys)}
+                    className="lingvo-button-greenest"
+                  />
+                </div>
               )}
               {toApprove && keys.length !== 0 && (
-                <Table celled compact definition>
+                <Table celled className="lingvo-approve-table">
                   <Table.Body>
                     {keys.map(key => (
                       <Table.Row key={key.name}>
                         <Table.Cell>{key.name}</Table.Cell>
                         <Table.Cell>{toApprove[key.name].total}</Table.Cell>
-                        <Table.Cell>
+                        <Table.Cell className="lingvo-approve-table__td_button">
                           <Button
-                            color="green"
                             loading={loading}
                             content={publishOrAccept}
                             disabled={approveMap[user_id] && approveMap[user_id].indexOf(key.name) !== -1}
                             onClick={() => this.onApprove([key])}
+                            className="lingvo-button-greenest"
                           />
                         </Table.Cell>
                       </Table.Row>
@@ -237,19 +270,12 @@ class ApproveModal extends React.Component {
                   </Table.Body>
                 </Table>
               )}
-              {toApprove && keys.length > 1 && (
-                <Container textAlign="center">
-                  <Button
-                    color="green"
-                    content={`${publishOrAccept} ${this.context("All")}`}
-                    disabled={approveMap[user_id] && keys.every(key => approveMap[user_id].indexOf(key.name) !== -1)}
-                    onClick={() => this.onApprove(keys)}
-                  />
-                </Container>
-              )}
             </Grid.Column>
           </Grid>
         </Modal.Content>
+        <Modal.Actions>
+          <Button content={this.context("Close")} onClick={onClose} className="lingvo-button-basic-black" />
+        </Modal.Actions>
       </Modal>
     );
   }
