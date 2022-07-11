@@ -994,6 +994,36 @@ body {
 
 }
 
+.lingvo-button-greenest {
+  border-radius: 10px !important;
+  font-family: Rubik, Arial, sans-serif !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  line-height: 24px !important;
+  min-height: 24px !important;
+  padding: 3px 16px !important;
+  background-color: #57b894 !important;
+  color: #fff !important;
+  border: 1px solid #57b894 !important;
+  box-shadow: none !important;
+  -webkit-transition: opacity .1s ease,background-color .1s ease,color .1s ease,background .1s ease,border-color .1s ease;
+  transition: opacity .1s ease,background-color .1s ease,color .1s ease,background .1s ease,border-color .1s ease !important;
+
+  &:hover {
+    background: #333 !important;
+    border: 1px solid #333 !important;
+  }
+
+  &.ui.button.disabled,
+  &.ui.button:disabled {
+    background-color: #fff !important;
+    border: 1px solid #999CA0 !important;
+    color: #999ca0 !important;
+    opacity: 1 !important;
+  }
+
+}
+
 /* confirm */
 
 .lingvo-confirm {
@@ -2454,6 +2484,51 @@ body {
   }
 }
 /* /checkbox */
+
+/* radio button */
+.lingvo-radio {
+  margin: 0 0 12px 0 !important;
+
+  & .ui.checkbox {
+    font-family: Rubik !important;
+    font-size: 14px !important;
+    line-height: 20px !important;
+    vertical-align: top !important;
+
+    & label {
+      font-size: 14px !important;
+    }
+  }
+
+  & .ui.checkbox .box:before,
+  & .ui.checkbox label:before {
+    border: 1px solid #4e46b4 !important;
+    top: 2px !important;
+  }
+
+  & .ui.checkbox:hover .box:before,
+  & .ui.checkbox:hover label:before {
+    box-shadow: 0px 0px 0px 4px #efeefa !important;
+    background-color: #efeefa !important;
+  }
+
+  & .ui.radio.checkbox .box:after, 
+  & .ui.radio.checkbox label:after {
+    background-color: #5D54CD !important;
+    top: 2px !important;
+  }
+
+  & .ui.radio.checkbox input:checked ~ .box:after, 
+  & .ui.radio.checkbox input:checked ~ label:after {
+    background-color: #5D54CD !important;
+  }
+ 
+  & .ui.radio.checkbox input:checked ~ label {
+    color: #5D54CD !important;
+    font-weight: 500 !important;
+  }
+}
+/* /radio button */
 
 /* segment */
 .lingvo-segment-modal {
