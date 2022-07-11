@@ -55,7 +55,7 @@ class ApproveModal extends React.Component {
       endDate: moment(),
       user_id: null,
       approveMap: [],
-      showStatistics: null /* new!!!!! */
+      showStatistics: null
     };
 
     this.getStatistics = this.getStatistics.bind(this);
@@ -75,7 +75,7 @@ class ApproveModal extends React.Component {
         }
         
         this.setState({
-          showStatistics: true /* new!!!!! */
+          showStatistics: true
         });
       },
       () => {
@@ -147,13 +147,11 @@ class ApproveModal extends React.Component {
     const { statistic: statistics } = perspective || { statistic: [] };
     const publishOrAccept = mode === "publish" ? this.context("Publish") : this.context("Accept");
 
-    /* new!!!!!! */
     let { showStatistics } = this.state;
 
     if (!loading && (showStatistics === null)) {
       showStatistics = true;
     }
-    /* /new!!!!!! */
 
     let toApprove = null;
     let keys = [];
@@ -187,7 +185,7 @@ class ApproveModal extends React.Component {
                 showTimeSelect
                 timeFormat="HH:mm"
                 timeIntervals={15}
-                onChange={date => this.setState({ startDate: moment(date), showStatistics: false/* new!!!! */ })}
+                onChange={date => this.setState({ startDate: moment(date), showStatistics: false })}
                 dateFormat="dd.MM.yyyy HH:mm"
               />
             </div>
@@ -198,7 +196,7 @@ class ApproveModal extends React.Component {
                 showTimeSelect
                 timeFormat="HH:mm"
                 timeIntervals={15}
-                onChange={date => this.setState({ endDate: moment(date), showStatistics: false/* new!!!! */})}
+                onChange={date => this.setState({ endDate: moment(date), showStatistics: false })}
                 dateFormat="dd.MM.yyyy HH:mm"
               />
             </div>
@@ -209,7 +207,7 @@ class ApproveModal extends React.Component {
               content={this.context("Refresh")} 
               onClick={this.getStatistics} 
               className="lingvo-button-violet" 
-              disabled={showStatistics} /* new!!!!! */
+              disabled={showStatistics}
             />
           </Container>
 
