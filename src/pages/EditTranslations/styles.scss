@@ -209,7 +209,7 @@
 
     & > .text {
       display: inline !important;
-      vertical-align: middle !important;
+      vertical-align: top !important;
     }
 
     &.active {
@@ -217,8 +217,14 @@
       color: #fff !important;
       transition: all 0.2s;
 
-      &.selection {
+      &.ui.selection {
         border-radius: 10px !important;
+        border-color: #5d54cd !important;
+
+        &.upward,
+        &.upward.visible {
+          border-radius: 10px !important;
+        }
 
         &:hover {
           border-color: #5d54cd !important;
