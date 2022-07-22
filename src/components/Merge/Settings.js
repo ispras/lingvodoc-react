@@ -3,14 +3,11 @@ import {
   Button,
   Checkbox,
   Container,
-  Divider,
   Dropdown,
   Header,
   Icon,
   Input,
-  List,
-  Message,
-  Segment
+  List
 } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql, withApollo } from "@apollo/client/react/hoc";
@@ -18,7 +15,6 @@ import Immutable, { fromJS } from "immutable";
 import { drop, isEqual, take } from "lodash";
 import PropTypes from "prop-types";
 import { branch, compose, pure, renderNothing, withProps, withReducer } from "recompose";
-import styled from "styled-components";
 
 import { chooseTranslation as T } from "api/i18n";
 import { LexicalEntryView, queryLexicalEntries, queryPerspective } from "components/PerspectiveView";
@@ -28,17 +24,6 @@ import { compositeIdToString as id2str } from "utils/compositeId";
 import Pagination from "./Pagination";
 
 const ROWS_PER_PAGE = 10;
-
-const FieldBlock = styled(Segment)`
-  .delete-button {
-    box-shadow: none !important;
-    position: absolute !important;
-    padding: 10px !important;
-    margin: 0;
-    right: 0;
-    top: 0;
-  }
-`;
 
 const mergeSuggestionsQuery = gql`
   query mergeSuggestions(
@@ -592,57 +577,59 @@ class MergeSettings extends React.Component {
     return (
       <div>
         <div className="lingvo-segment">
-          <Header>{this.context("Entity matching algorithm")}</Header>
+          <div className="lingvo-merge-header" style={{ marginBottom: "16px" }}>
+            {this.context("Entity matching algorithm")}
+          </div>
 
-          <List>
-            <List.Item>
-              <Checkbox
-                radio
-                name="mode"
-                value="simple"
-                label={this.context("Simple")}
-                checked={mode === "simple"}
-                onChange={(e, { value }) => dispatch({ type: "SET_MODE", payload: value })}
-              />
-            </List.Item>
-            <List.Item>
-              <Checkbox
-                radio
-                name="mode"
-                value="fields"
-                label={this.context("With field selection")}
-                checked={mode === "fields"}
-                onChange={(e, { value }) => dispatch({ type: "SET_MODE", payload: value })}
-              />
-            </List.Item>
-          </List>
+          <div className="lingvo-radio">
+            <Checkbox
+              radio
+              name="mode"
+              value="simple"
+              label={this.context("Simple")}
+              checked={mode === "simple"}
+              onChange={(e, { value }) => dispatch({ type: "SET_MODE", payload: value })}
+            />
+          </div>
+
+          <div className="lingvo-radio">
+            <Checkbox
+              radio
+              name="mode"
+              value="fields"
+              label={this.context("With field selection")}
+              checked={mode === "fields"}
+              onChange={(e, { value }) => dispatch({ type: "SET_MODE", payload: value })}
+            />
+          </div>
 
           {mode === "fields" && (
-            <Container className="lingvo-container_margin-auto">
+            <div style={{ paddingTop: "4px" }}>
               {fields.size === 0 && (
-                <Segment textAlign="center">{this.context("No fields, click button below to add a new one")}</Segment>
+                <div className="container-gray" style={{ textAlign: "center" }}>
+                  {this.context("No fields, click button below to add a new one")}
+                </div>
               )}
               {fields.map((e, i) => (
-                <FieldBlock key={i}>
-                  <Button
-                    className="delete-button"
-                    compact
-                    basic
-                    icon="delete"
-                    onClick={() => dispatch({ type: "REMOVE_FIELD", payload: i })}
+                <div key={i} className="container-gray lingvo-merge-field-selection">
+                  <i 
+                    className="lingvo-icon lingvo-icon_close" 
+                    onClick={() => dispatch({ type: "REMOVE_FIELD", payload: i })} 
                   />
                   <List>
                     <List.Item>
                       <Dropdown
                         selection
                         options={fieldOptions}
-                        defaultValue={JSON.stringify(e.field_id)}
                         onChange={(_e, { value }) =>
                           dispatch({ type: "CHANGE_FIELD_ID", payload: { id: JSON.parse(value), index: i } })
                         }
+                        icon={<i className="lingvo-icon lingvo-icon_arrow" />}
+                        className="lingvo-dropdown-select lingvo-dropdown-select_merge"
+                        placeholder={this.context("Choose what?")}
                       />
                     </List.Item>
-                    <List.Item>
+                    <List.Item style={{ paddingTop: "13px" }}>
                       <Input
                         label={this.context("Levenshtein distance limit for entity content matching")}
                         value={
@@ -651,16 +638,17 @@ class MergeSettings extends React.Component {
                         onChange={(ev, { value }) =>
                           dispatch({ type: "SET_LEVENSHTEIN", payload: { index: i, levenshtein: value } })
                         }
-                        className="label-input-adaptive"
+                        className="lingvo-labeled-input"
                       />
                     </List.Item>
-                    <List.Item>
+                    <List.Item style={{ paddingTop: "15px" }}>
                       <Checkbox
                         label={this.context("Split contents of the field on whitespace before matching")}
                         checked={e.split_space}
                         onChange={(_e, { checked }) =>
                           dispatch({ type: "SET_WHITESPACE_FLAG", payload: { index: i, checked } })
                         }
+                        className="lingvo-checkbox"
                       />
                     </List.Item>
                     <List.Item>
@@ -670,15 +658,16 @@ class MergeSettings extends React.Component {
                         onChange={(_e, { checked }) =>
                           dispatch({ type: "SET_PUNCTUATION_FLAG", payload: { index: i, checked } })
                         }
+                        className="lingvo-checkbox"
                       />
                     </List.Item>
                   </List>
-                </FieldBlock>
+                </div>
               ))}
-              <Container textAlign="center">
-                <Button basic content={this.context("Add field")} onClick={() => dispatch({ type: "ADD_FIELD" })} />
-              </Container>
-            </Container>
+              <div style={{ marginTop: "12px" }}>
+                <Button content={this.context("Add field")} onClick={() => dispatch({ type: "ADD_FIELD" })} className="lingvo-button-violet-dashed" />
+              </div>
+            </div>
           )}
 
           {mode === "simple" && (
@@ -686,29 +675,27 @@ class MergeSettings extends React.Component {
               label={this.context("Entity matching threshold")}
               value={Math.round(threshold) == threshold ? `${threshold.toString()}.0` : threshold}
               onChange={(e, { value }) => dispatch({ type: "SET_THRESHOLD", payload: value })}
-              className="label-input-adaptive"
+              className="lingvo-labeled-input"
             />
           )}
 
-          <Container textAlign="center">
-            <div style={{ marginTop: "0.75em" }}>
-              <Button
-                positive
-                basic={this.props.dataLexicalEntries.loading}
-                content={
-                  this.props.dataLexicalEntries.loading ? (
-                    <span>
-                      {this.context("Loading perspective data")}... <Icon name="spinner" loading />
-                    </span>
-                  ) : (
-                    this.context("View suggestions")
-                  )
-                }
-                onClick={this.getSuggestions}
-                disabled={this.props.dataLexicalEntries.loading || this.state.loading}
-              />
-            </div>
-          </Container>
+          <div style={{ marginTop: "30px", marginBottom: "4px", textAlign: "center" }}>
+            <Button
+              className="lingvo-button-violet"
+              basic={this.props.dataLexicalEntries.loading}
+              content={
+                this.props.dataLexicalEntries.loading ? (
+                  <span>
+                    {this.context("Loading perspective data")}... <Icon name="spinner" loading />
+                  </span>
+                ) : (
+                  this.context("View suggestions")
+                )
+              }
+              onClick={this.getSuggestions}
+              disabled={this.props.dataLexicalEntries.loading || this.state.loading}
+            />
+          </div>
         </div>
 
         {this.state.loading && (
@@ -728,33 +715,35 @@ class MergeSettings extends React.Component {
           <div className="lingvo-segment">
             {this.state.groups.length > 0 && (
               <List>
-                <List.Item>
+                <List.Item style={{ marginBottom: "10px" }}>
                   <Checkbox
                     label={this.context("Publish result of entity merge if any merged entity is published")}
                     checked={publishedAny}
                     onChange={(e, { checked }) => dispatch({ type: "SET_MERGE_PUBLISHED_MODE", payload: checked })}
+                    className="lingvo-checkbox"
                   />
                 </List.Item>
 
                 <List.Item>
-                  <Button
-                    disabled={this.state.error_message}
-                    size="small"
-                    content={this.context("Select all on current page")}
-                    onClick={() => this.entrySelectAllPage(page, group_index_shift)}
-                  />
-                  <Button
-                    basic={page_state === "merging"}
-                    disabled={page_state === "merging" || this.state.error_message}
-                    positive
-                    size="small"
-                    content={
-                      page_state === "merging"
-                        ? this.context("Merging selected on current page...")
-                        : this.context("Merge selected on current page")
-                    }
-                    onClick={() => this.mergeSelectedPage(page, group_index_shift)}
-                  />
+                  <div className="lingvo-merge-buttons">
+                    <Button
+                      className="lingvo-button-black"
+                      disabled={this.state.error_message}
+                      content={this.context("Select all on current page")}
+                      onClick={() => this.entrySelectAllPage(page, group_index_shift)}
+                    />
+                    <Button
+                      className="lingvo-button-greenest"
+                      basic={page_state === "merging"}
+                      disabled={page_state === "merging" || this.state.error_message}
+                      content={
+                        page_state === "merging"
+                          ? this.context("Merging selected on current page...")
+                          : this.context("Merge selected on current page")
+                      }
+                      onClick={() => this.mergeSelectedPage(page, group_index_shift)}
+                    />
+                  </div>
                 </List.Item>
 
                 {/*<List.Item>
@@ -814,14 +803,14 @@ class MergeSettings extends React.Component {
               const selectAllChecked = selected_id_list.length === entry_ready_list.length;
 
               return (
-                <div key={i}>
-                  <Header disabled={!!this.state.error_message || attached || empty_flag}>
+                <div key={i} className="lingvo-merge-group">
+                  <div className={!!this.state.error_message || attached || empty_flag && "lingvo-merge-header lingvo-merge-header_disabled" || "lingvo-merge-header"} style={{ marginBottom: "8px" }}>
                     {`${this.context("Group")} #${index}, ${this.context("confidence")}: ${
                       group.confidence.toFixed(4).length < group.confidence.toString().length
                         ? group.confidence.toFixed(4)
                         : group.confidence.toString()
                     }`}
-                  </Header>
+                  </div>
                   <LexicalEntryView
                     perspectiveId={id}
                     entries={entry_list}
@@ -838,56 +827,57 @@ class MergeSettings extends React.Component {
                     selectDisabled={result === "success" || !!this.state.error_message || attached || empty_flag}
                     selectDisabledIndeterminate={attached}
                     disabledEntrySet={this.state.merged_set}
-                    disabledHeader={merged_count >= entry_list.length && result != "success"}
+                    disabledHeader={merged_count >= entry_list.length && result !== "success"}
                     removeSelectionEntrySet={result === "success" ? merged_select_set : this.state.merged_set}
                   />
-                  <Container textAlign="center">
-                    <div style={{ marginTop: "0.75em" }}>
-                      {empty_flag ? (
-                        <Message>{this.context("Group doesn't have any unmerged lexical entries left.")}</Message>
-                      ) : attached ? (
-                        <Message>{this.context("Attached to another group.")}</Message>
-                      ) : result === "merging" ? (
-                        <Button basic positive disabled content={this.context("Merging...")} />
-                      ) : result === "success" ? (
-                        <Message positive>
-                          <Message.Header>{this.context("Merged successfully")}</Message.Header>
-                        </Message>
-                      ) : result === "error" ? (
-                        <Message negative>
-                          <Message.Header>{this.context("Merge error")}</Message.Header>
-                          <p>{this.context("Failed to merge selected lexical entries, please contact developers.")}</p>
-                          <p
-                            style={{
-                              display: "inline-block",
-                              margin: "0",
-                              textAlign: "left",
-                              whiteSpace: "pre"
-                            }}
-                          >
-                            {this.state.error_message.split(/[\r\n]+/).map((line, i) => (
-                              <span key={i}>
-                                {line}
-                                <br />
-                              </span>
-                            ))}
-                          </p>
-                        </Message>
-                      ) : this.state.error_message ? (
-                        <Message>
-                          {this.context("Merges are disabled due to an error, please contact developers.")}
-                        </Message>
-                      ) : (
+                  
+                  <div style={{ marginTop: "10px", paddingBottom: "6px" }}>
+                    {empty_flag ? (
+                      <div className="lingvo-message lingvo-message_info">
+                        {this.context("Group doesn't have any unmerged lexical entries left.")}
+                      </div>
+                    ) : attached ? (
+                      <div className="lingvo-message lingvo-message_info">
+                        {this.context("Attached to another group.")}
+                      </div>
+                    ) : result === "merging" ? (
+                      <div style={{ textAlign: "center", paddingTop: "10px" }}>
+                        <Button className="lingvo-button-greenest" disabled content={this.context("Merging...")} />
+                      </div>
+                    ) : result === "success" ? (
+                      <div className="lingvo-message lingvo-message_success">
+                        {this.context("Merged successfully")}
+                      </div>
+                    ) : result === "error" ? (
+                      <div className="lingvo-message lingvo-message_error">
+                        {this.context("Merge error")}
+                        <p>
+                          {this.context("Failed to merge selected lexical entries, please contact developers.")}
+                        </p>
+                        <p>
+                          {this.state.error_message.split(/[\r\n]+/).map((line, i) => (
+                            <span key={i}>
+                              {line}
+                              <br />
+                            </span>
+                          ))}
+                        </p>
+                      </div>
+                    ) : this.state.error_message ? (
+                      <div className="lingvo-message lingvo-message_warning">
+                        {this.context("Merges are disabled due to an error, please contact developers.")}
+                      </div>
+                    ) : (
+                      <div style={{ textAlign: "center", paddingTop: "10px" }}>
                         <Button
-                          positive
+                          className="lingvo-button-greenest"
                           content={this.context("Merge group")}
                           onClick={() => this.mergeGroup(index, entry_list, selected_id_list)}
                           disabled={selected_id_list.length < 2}
                         />
-                      )}
-                    </div>
-                  </Container>
-                  <Divider />
+                      </div>
+                    )}
+                  </div>
                 </div>
               );
             })}

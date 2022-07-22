@@ -2036,7 +2036,7 @@ class CognateAnalysisModal extends React.Component {
         </List>
       );
     } else {
-      return <span>Perspective does not have any grouping fields, cognate analysis is impossible.</span>;
+      return <span>{this.context("Perspective does not have any grouping fields, cognate analysis is impossible.")}</span>;
     }
   }
 

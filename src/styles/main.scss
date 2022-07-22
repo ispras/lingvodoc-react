@@ -1024,6 +1024,37 @@ body {
 
 }
 
+.lingvo-button-black {
+  border-radius: 10px !important;
+  font-family: Rubik, Arial, sans-serif !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  line-height: 24px !important;
+  min-height: 24px !important;
+  padding: 3px 16px !important;
+  background-color: #333 !important;
+  border: 1px solid #333 !important;
+  color: #fff !important;
+  box-shadow: none !important;
+  -webkit-transition: opacity .1s ease,background-color .1s ease,color .1s ease,background .1s ease,border-color .1s ease;
+  transition: opacity .1s ease,background-color .1s ease,color .1s ease,background .1s ease,border-color .1s ease !important;
+
+  &:hover {
+    background-color: #fff !important;
+    border: 1px solid #333 !important;
+    color: #333 !important;
+  }
+
+  &.ui.button.disabled,
+  &.ui.button:disabled {
+    background-color: #fff !important;
+    border: 1px solid #999CA0 !important;
+    color: #999ca0 !important;
+    opacity: 1 !important;
+  }
+
+}
+
 /* confirm */
 
 .lingvo-confirm {
@@ -2040,6 +2071,14 @@ body {
     background-color: #57B894;
     cursor: pointer;
   }
+
+  &_close {
+    width: 14px;
+    height: 14px;
+    background-color: #372f9d !important;
+    -webkit-mask-image: url("../images/merge_close.svg");
+    mask-image: url("../images/merge_close.svg");
+  }
 }
 /* /icon */
 
@@ -2687,3 +2726,357 @@ body {
 }
 
 /* /lingvo segment */
+
+/* lingvo merge group */
+.lingvo-merge-group {
+  padding: 6px 0 14px 0;
+  margin: 0 0 14px 0;
+  border-bottom: 1px solid #DCDCDC;
+
+  &:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 0;
+  }
+}
+/* /lingvo merge group */
+
+/* lingvo merge header */
+.lingvo-merge-header {
+  font-family: Mulish, Arial, sans-serif;
+  font-size: 18px;
+  line-height: 24px;
+  font-weight: 700;
+
+  &_disabled {
+    opacity: 0.45;
+  }
+}
+/* /lingvo merge header */
+
+/* lingvo merge field selection */
+.lingvo-merge-field-selection {
+  position: relative;
+  padding: 24px !important;
+
+  @media only screen and (max-device-width: 500px), only screen and (max-width: 500px) {
+    padding: 30px 15px !important;
+  }
+
+  & .lingvo-icon_close {
+    position: absolute;
+    top: 27px;
+    right: 25px;
+    cursor: pointer;
+
+    @media only screen and (max-device-width: 500px), only screen and (max-width: 500px) {
+      top: 10px;
+      right: 10px;
+    }
+  }
+
+  & .ui.list {
+    margin-top: 0 !important;
+  }
+
+  & + & {
+    margin-top: 16px !important;
+  }
+}
+/* /lingvo merge field selection */
+
+/* lingvo merge buttons  */
+.lingvo-merge-buttons {
+  display: flex;
+  padding: 0 0 4px 0;
+
+  & .ui.button {
+    margin: 0 10px 0 0;
+
+    &:nth-child(2n) {
+      margin: 0 0 0 10px;
+    }
+  }
+
+  @media only screen and (max-device-width: 660px), only screen and (max-width: 660px) {
+    flex-direction: column;
+
+    & .ui.button {
+      margin: 0 0 10px 0; 
+  
+      &:last-child {
+        margin: 0;
+      }
+    }
+  }
+
+}
+/* /lingvo merge buttons  */
+
+/* lingvo labeled input */
+.lingvo-labeled-input {
+
+  &.ui.labeled.input > .label {
+    font-family: Rubik, Arial, sans-serif !important;
+    font-size: 16px !important;
+    line-height: 20px !important;
+    font-weight: 500 !important;
+    color: #333 !important;
+    background-color: #ebebeb !important;
+    padding: 11px 22px !important;
+  }
+
+  &.ui.labeled.input > input {
+    font-family: Rubik, Arial, sans-serif !important;
+    font-size: 16px !important;
+    line-height: 20px !important;
+    font-weight: 400 !important;
+    padding: 11px 19px !important;
+    border: 1px solid #dcdcdc !important;
+    color: #333 !important;
+  }
+
+  &.ui.labeled.input > input:focus {
+    border-color: #5d54cd !important;
+    outline: none !important;
+  }
+
+  &.ui.labeled.input .label:first-child {
+    border-radius: 10px 0 0 10px !important;
+
+    & + input {
+      border-radius: 0 10px 10px 0 !important;
+      border-left-color: transparent !important;
+      width: 103px !important;
+
+      &:focus {
+        border-left-color: #5d54cd !important;
+      }
+    }
+  }
+
+  @media only screen and (max-device-width: 1000px), only screen and (max-width: 1000px) {
+    & {
+      display: flex !important;
+      flex-direction: column !important;
+
+      &.ui.labeled.input .label:first-child {
+        border-radius: 10px 10px 0 0 !important;
+
+        & + input {
+          border-radius: 0 0 10px 10px !important;
+          border: 1px solid #dcdcdc !important;
+          border-top-color: transparent !important;
+          width: auto !important;
+
+          &:focus {
+            border-color: #5d54cd !important;
+          }
+        }
+      }
+    }
+  }
+}
+/* /lingvo labeled input */
+
+/* lingvo dropdown select */
+.lingvo-dropdown-select {
+  background: #fff !important;
+  border-radius: 10px !important;
+  padding: 11px 20px !important;
+  font-family: Rubik, Arial, sans-serif !important;
+  font-size: 16px !important;
+  line-height: 18px !important;
+
+  &.input {
+    padding: 0 !important;
+
+    & > input {
+      border-radius: 10px !important;
+      padding: 11px 20px !important;
+      font-size: 16px !important;
+      line-height: 18px !important;
+      font-family: Rubik, Arial, sans-serif !important;
+      min-height: 42px !important;
+
+      &:focus {
+        border: 1px solid #5d54cd !important;
+      }
+    }
+  }
+
+  &.dropdown {
+    min-height: 42px !important;
+    padding-right: 40px !important;
+    position: relative !important;
+
+    &:hover {
+      border: 1px solid #5d54cd !important;
+    }
+
+    &:focus {
+      border: 1px solid #5d54cd !important;
+      transition: border 0.2s;
+    }
+
+    & .lingvo-icon {
+      vertical-align: middle;
+
+      &_arrow {
+        position: absolute;
+        right: 17px;
+        top: calc(50% - 4px);
+      }
+    }
+
+    & > .text {
+      display: inline !important;
+      vertical-align: top !important;
+    }
+
+    &.active {
+
+      &.ui.selection {
+        border-radius: 10px !important;
+        border-color: #5d54cd !important;
+
+        &.upward,
+        &.upward.visible {
+          border-radius: 10px !important;
+        }
+
+        &:hover {
+          border-color: #5d54cd !important;
+        }
+      }
+
+      & .lingvo-icon {
+        &_arrow {
+          transform: rotate(180deg);
+        }
+      }
+    }
+
+    &.ui.active .menu {
+      box-shadow: 0px 8px 24px -6px rgba(0, 0, 0, 0.16), 0px 0px 1px rgba(0, 0, 0, 0.4) !important;
+      border-radius: 12px !important;
+      border: none !important;
+      padding: 4px !important;
+      margin: 4px 0 0 0 !important;
+
+      & > .item {
+        border-radius: 8px !important;
+        border-top: none !important;
+        font-size: 14px !important;
+        line-height: 20px !important;
+        padding: 9px 8px !important;
+
+        &.active {
+          font-weight: 500 !important;
+        }
+
+        &.selected {
+          background: transparent !important;
+        }
+
+        & + .item {
+          margin-top: 3px !important;
+        }
+
+        &:hover {
+          background: #edecf6 !important;
+          color: #372f9d !important;
+        }
+      }
+
+    }
+
+    &.upward > .menu {
+      margin: 0 0 4px 0 !important;
+    }
+  }
+
+  &_merge {
+    &.ui.selection.dropdown {
+      min-width: 277px !important;
+
+      @media only screen and (max-device-width: 500px), only screen and (max-width: 500px) {
+        min-width: 100% !important;
+      }
+    }
+  }
+}
+/* /lingvo dropdown select */
+
+/* lingvo message */
+.lingvo-message {
+  font-family: Rubik, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 16px;
+  font-weight: 400;
+  line-height: 20px;
+  color: #333;
+  padding: 13px 16px 13px 62px;
+  background-color: #e5efff;
+  border: 1px solid #367bf5;
+  border-radius: 10px;
+  position: relative;
+  min-height: 48px;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: calc(50% - 17px);
+    left: 15px;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    padding: 0;
+  }
+
+  &_success {
+    background-color: #ecf6ef;
+    border-color: #57b894;
+
+    &::before {
+      background: #57b894 url("../images/message_success.svg") 6px 6px no-repeat;
+    }
+  }
+
+  &_info {
+    background-color: #e5efff;
+    border-color: #367bf5;
+
+    &::before {
+      background: #367bf5 url("../images/message_info.svg") 6px 6px no-repeat;
+    }
+  }
+
+  &_warning {
+    border-color: #f3aa18;
+    background-color: #fcf3d7;
+
+    &::before {
+      background: #f3aa18 url("../images/message_error.svg") 6px 6px no-repeat;
+    }
+  }
+
+  &_error {
+    border-color: #db4e4e;
+    background-color: #f9edea;
+
+    &::before {
+      background: #db4e4e url("../images/message_error.svg") 6px 6px no-repeat;
+    }
+  }
+
+  & p {
+    font-size: 14px;
+    margin: 8px 0 0 0;
+
+    &:first-child {
+      margin-top: 8px !important;
+    }
+  }
+}
+/* /lingvo message */
