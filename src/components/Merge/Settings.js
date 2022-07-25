@@ -682,7 +682,6 @@ class MergeSettings extends React.Component {
           <div style={{ marginTop: "30px", marginBottom: "4px", textAlign: "center" }}>
             <Button
               className="lingvo-button-violet"
-              basic={this.props.dataLexicalEntries.loading}
               content={
                 this.props.dataLexicalEntries.loading ? (
                   <span>
@@ -734,7 +733,6 @@ class MergeSettings extends React.Component {
                     />
                     <Button
                       className="lingvo-button-greenest"
-                      basic={page_state === "merging"}
                       disabled={page_state === "merging" || this.state.error_message}
                       content={
                         page_state === "merging"
