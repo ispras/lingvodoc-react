@@ -414,7 +414,7 @@ class StatisticsModal extends React.Component {
           </Container>
           <div className="lingvo-statistics-view">
             {this.state.emptyStatistics ? (
-              <div className="lingvo-stat-empty">{this.context("No statistics for the selected period")}</div>
+              <div className="lingvo-message lingvo-message_warning" style={{ marginBottom: "6px" }}>{this.context("No statistics for the selected period")}</div>
             ) : (
               <Statistics statistics={statistics} mode={mode} />
             )}
