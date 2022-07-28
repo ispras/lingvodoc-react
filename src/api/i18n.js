@@ -195,6 +195,7 @@ export const stringsToTranslate = [
   "Create field",
   "Create language",
   "Create new",
+  "Create new perspective",
   "Create one or more perspectives",
   "Create organization",
   "Create valency data",
