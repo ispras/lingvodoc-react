@@ -1988,6 +1988,20 @@ body {
     height: 18px;
   }
 
+  &_create {
+    -webkit-mask-image: url("../images/icon_create2.svg");
+    mask-image: url("../images/icon_create2.svg");
+    width: 18px;
+    height: 18px;
+  }
+
+  &_table {
+    -webkit-mask-image: url("../images/icon_table.svg");
+    mask-image: url("../images/icon_table.svg");
+    width: 18px;
+    height: 16px;
+  }
+
   &_arrow {
     -webkit-mask-image: url("../images/icon_arrow.svg");
     mask-image: url("../images/icon_arrow.svg");
@@ -3007,6 +3021,97 @@ body {
   }
 }
 /* /lingvo dropdown select */
+
+/* lingvo dropdown inline */
+.lingvo-dropdown-inline {
+
+  &.dropdown {
+    display: inline-block !important;
+    position: relative !important;
+
+    & .lingvo-icon {
+      vertical-align: middle;
+    }
+
+    &.active {
+      & .lingvo-icon {
+        &_arrow {
+          transform: rotate(180deg);
+        }
+      }
+    }
+
+    &.ui.active .menu {
+      box-shadow: 0px 8px 24px -6px rgba(0, 0, 0, 0.16), 0px 0px 1px rgba(0, 0, 0, 0.4) !important;
+      border-radius: 12px !important;
+      border: none !important;
+      padding: 10px 4px !important;
+      margin: 4px 0 0 0 !important;
+
+      & > .item {
+        border-radius: 8px !important;
+        border-top: none !important;
+        font-family: Rubik, Arial, sans-serif !important;
+        font-size: 14px !important;
+        line-height: 20px !important;
+        padding: 9px 8px !important;
+
+        &.active {
+          font-weight: 500 !important;
+        }
+
+        &.selected {
+          background: transparent !important;
+        }
+
+        & + .item {
+          margin-top: 3px !important;
+        }
+
+        & .lingvo-icon {
+          vertical-align: top;
+          background-color: #5d54cd;
+          margin-right: 8px;
+  
+          &_save,
+          &_table  {
+            background-color: #57b894;
+          }
+
+          &_create {
+            background-color: #f3aa18;
+          }
+  
+        }
+
+        &:hover {
+          background: #edecf6 !important;
+          color: #372f9d !important;
+        }
+      }
+
+    }
+
+    &.upward > .menu {
+      margin: 0 0 4px 0 !important;
+    }
+  }
+
+  &_perspective {
+    &.ui.dropdown {
+
+      & .menu {
+        min-width: 374px !important;
+
+        @media only screen and (max-device-width: 500px), only screen and (max-width: 500px) {
+          min-width: auto !important;
+        }
+      }
+    }
+  }
+
+}
+/* /lingvo dropdown inline */
 
 /* lingvo message */
 .lingvo-message {

@@ -216,7 +216,7 @@
     font-weight: 700 !important;
 
     & .ui.dropdown .lingvo-icon_arrow {
-      background-color: #dcdcdc !important;
+      background-color: #ebebeb !important;
       margin-left: 3px !important;
       vertical-align: middle !important;
     }
@@ -230,8 +230,14 @@
 
   .white &.ui.breadcrumb .divider.text {
     opacity: 1 !important;
-    color: #dcdcdc !important;
+    color: #ebebeb !important;
     font-size: 16px !important;
+    user-select: none;
+
+    &:hover,
+    &:active {
+      text-decoration: underline;
+    }
   }
 }
 /* /breadcrumbs */

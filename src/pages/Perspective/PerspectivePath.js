@@ -112,7 +112,7 @@ class PerspectivePath extends React.Component {
               content:
                 // eslint-disable-next-line no-nested-ternary
                 index === tree.length - 1 ? (
-                  <Dropdown inline text={T(e.translations)} icon={<i className="lingvo-icon lingvo-icon_arrow" />}>
+                  <Dropdown className="lingvo-dropdown-inline lingvo-dropdown-inline_perspective" text={T(e.translations)} icon={<i className="lingvo-icon lingvo-icon_arrow" />}>
                     <Dropdown.Menu>
                       {perspectives.length > 1 && [
                         perspectives
@@ -122,24 +122,23 @@ class PerspectivePath extends React.Component {
                               key={pers.id}
                               as={Link}
                               to={`/dictionary/${pers.parent_id.join("/")}/perspective/${pers.id.join("/")}/${mode}`}
-                              icon="chevron right"
+                              icon={<i className="lingvo-icon lingvo-icon_table" />}
                               text={T(pers.translations)}
                             />
                           )),
-                        <Dropdown.Divider key="divider" />
                       ]}
 
                       {user.id !== undefined && [
                         <Dropdown.Item
                           key="roles"
-                          icon="users"
-                          text={`'${T(e.translations)}' ${roles_str}...`}
+                          icon={<i className="lingvo-icon lingvo-icon_roles" />}
+                          text={`${this.context("Roles")}`}
                           onClick={() => actions.openRoles(id, "perspective", `'${T(e.translations)}' ${roles_str}`)}
                         />,
                         <Dropdown.Item
                           key="properties"
-                          icon="setting"
-                          text={`'${T(e.translations)}' ${properties_str}...`}
+                          icon={<i className="lingvo-icon lingvo-icon_properties" />}
+                          text={`${this.context("Properties")}`}
                           onClick={() =>
                             actions.openPerspectivePropertiesModal(
                               id,
@@ -151,8 +150,8 @@ class PerspectivePath extends React.Component {
                       ]}
                       <Dropdown.Item
                         key="statistics"
-                        icon="percent"
-                        text={`'${T(e.translations)}' ${statistics_str}...`}
+                        icon={<i className="lingvo-icon lingvo-icon_stats" />}
+                        text={`${this.context("Statistics")}`}
                         onClick={() =>
                           actions.openStatistics(id, "perspective", `'${T(e.translations)}' ${statistics_str}`)
                         }
@@ -160,13 +159,13 @@ class PerspectivePath extends React.Component {
                     </Dropdown.Menu>
                   </Dropdown>
                 ) : index === tree.length - 2 ? (
-                  <Dropdown inline text={T(e.translations)} icon={<i className="lingvo-icon lingvo-icon_arrow" />}>
+                  <Dropdown className="lingvo-dropdown-inline lingvo-dropdown-inline_perspective" text={T(e.translations)} icon={<i className="lingvo-icon lingvo-icon_arrow" />}>
                     <Dropdown.Menu>
                       {user.id !== undefined && [
                         <Dropdown.Item
                           key="roles"
-                          icon="users"
-                          text={`'${T(e.translations)}' ${roles_str}...`}
+                          icon={<i className="lingvo-icon lingvo-icon_roles" />}
+                          text={`${this.context("Roles")}`}
                           onClick={() =>
                             actions.openRoles(dictionary_id, "dictionary", `'${T(e.translations)}' ${roles_str}`)
                           }
@@ -174,8 +173,8 @@ class PerspectivePath extends React.Component {
 
                         <Dropdown.Item
                           key="properties"
-                          icon="setting"
-                          text={`'${T(e.translations)}' ${properties_str}...`}
+                          icon={<i className="lingvo-icon lingvo-icon_properties" />}
+                          text={`${this.context("Properties")}`}
                           onClick={() =>
                             actions.openDictionaryPropertiesModal(
                               dictionary_id,
@@ -186,16 +185,16 @@ class PerspectivePath extends React.Component {
 
                         <Dropdown.Item
                           key="organizations"
-                          icon="address book"
-                          text={`'${T(e.translations)}' ${this.context("Organizations").toLowerCase()}...`}
+                          icon={<i className="lingvo-icon lingvo-icon_organizations" />}
+                          text={`${this.context("Organizations")}`}
                           onClick={() => actions.openDictionaryOrganizationsModal(dictionary_id)}
                         />
                       ]}
 
                       <Dropdown.Item
                         key="statistics"
-                        icon="percent"
-                        text={`'${T(e.translations)}' ${statistics_str}...`}
+                        icon={<i className="lingvo-icon lingvo-icon_stats" />}
+                        text={`${this.context("Statistics")}`}
                         onClick={() =>
                           actions.openStatistics(
                             dictionary_id,
@@ -207,15 +206,15 @@ class PerspectivePath extends React.Component {
 
                       <Dropdown.Item
                         key="create_perspective"
-                        icon="file outline"
-                        text={`${this.context("Create new")} '${T(e.translations)}' ${this.context("perspective")}...`}
+                        icon={<i className="lingvo-icon lingvo-icon_create" />}
+                        text={`${this.context("Create new")} ${this.context("perspective")}`}
                         onClick={() => actions.openCreatePerspectiveModal(dictionary_id)}
                       />
 
                       <Dropdown.Item
                         key="save"
-                        icon="save"
-                        text={`${this.context("Save dictionary")} '${T(e.translations)}'...`}
+                        icon={<i className="lingvo-icon lingvo-icon_save" />}
+                        text={`${this.context("Save dictionary")}`}
                         onClick={() => actions.openSaveDictionaryModal(dictionary_id)}
                       />
                     </Dropdown.Menu>
