@@ -3090,6 +3090,13 @@ body {
         }
       }
 
+      & > .divider {
+        display: block !important;
+        margin: 0 !important;
+        height: 14px !important;
+        border: none !important;
+      }
+
     }
 
     &.upward > .menu {
