@@ -126,6 +126,7 @@ class PerspectivePath extends React.Component {
                               text={T(pers.translations)}
                             />
                           )),
+                        <Dropdown.Divider key="divider" />
                       ]}
 
                       {user.id !== undefined && [
