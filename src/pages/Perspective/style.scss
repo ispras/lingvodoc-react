@@ -295,6 +295,7 @@
       padding: 11px 16px !important;
       border-radius: 8px 8px 0 0 !important;
       flex: 0 1 auto !important;
+      margin: 0 2px 0 0 !important;
     }
 
     & .active.item {
@@ -323,6 +324,11 @@
       border-left: 1px solid #d4d4d5 !important;
       border-bottom: 0 !important;
       margin-top: 35px !important;
+
+      & .item {
+        margin: 0 0 2px 0 !important;
+        border-radius: 0 8px 8px 0 !important;
+      }
 
       & .active.item {
         border-radius: 0 8px 8px 0 !important;

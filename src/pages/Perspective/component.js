@@ -100,7 +100,7 @@ const Tools = graphql(toolsQuery)(
     const getTranslation = useContext(TranslationContext);
 
     return (
-      <Dropdown item text={getTranslation("Tools")} icon={<i className="lingvo-icon lingvo-icon_arrow" />}>
+      <Dropdown className="lingvo-dropdown-item lingvo-dropdown-item_tools" item text={getTranslation("Tools")} icon={<i className="lingvo-icon lingvo-icon_arrow" />}>
         <Dropdown.Menu>
           {(user_id === 1 || user_id === author_id || edit_check) && (
             <>
