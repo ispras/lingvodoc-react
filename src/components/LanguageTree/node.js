@@ -89,17 +89,22 @@ export const LanguageNode = ({
                 </span>
               ) : (
                 <Dropdown
-                  inline
                   icon={null}
                   trigger={
                     <span className={perspectives.length && "dict-name dict-name_link" || "dict-name"}>
                       {dictionary.translations && chooseTranslation(dictionary.translations)} ({perspectives.length})
                     </span>
                   }
+                  className="lingvo-dropdown-inline lingvo-dropdown-inline_perspectives"
                 >
                   <Dropdown.Menu>
                     {perspectives.map(perspective => {
                       const permissions = proxyData ? proxyData.permission_lists : undefined;
+
+                      if (!perspective.translations || (perspective.translations && !chooseTranslation(perspective.translations))) {
+                        return;
+                      }
+
                       return (
                         <Dropdown.Item
                           key={compositeIdToString(perspective.id)}
@@ -122,7 +127,11 @@ export const LanguageNode = ({
                               ) !== undefined && <Icon name="privacy" />}
                             </span>
                           )}
-                          {perspective.translations && chooseTranslation(perspective.translations)}
+                          {perspective.translations && (
+                            <>
+                              <i className="lingvo-icon lingvo-icon_table" />{chooseTranslation(perspective.translations)}
+                            </>
+                          )}
                         </Dropdown.Item>
                       );
                     })}
