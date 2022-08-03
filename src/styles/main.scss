@@ -3055,7 +3055,7 @@ body {
       box-shadow: 0px 8px 24px -6px rgba(0, 0, 0, 0.16), 0px 0px 1px rgba(0, 0, 0, 0.4) !important;
       border-radius: 12px !important;
       border: none !important;
-      padding: 10px 4px !important;
+      padding: 8px 4px 10px 4px !important;
       margin: 4px 0 0 0 !important;
 
       & > .item {
@@ -3121,6 +3121,19 @@ body {
         min-width: 374px !important;
 
         @media only screen and (max-device-width: 500px), only screen and (max-width: 500px) {
+          min-width: auto !important;
+        }
+      }
+    }
+  }
+
+  &_perspectives {
+    &.ui.dropdown {
+
+      & .menu {
+        min-width: 374px !important;
+
+        @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
           min-width: auto !important;
         }
       }
