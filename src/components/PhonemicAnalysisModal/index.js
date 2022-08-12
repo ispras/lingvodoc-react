@@ -1,6 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
-import { Button, Checkbox, Divider, List, Modal, Select } from "semantic-ui-react";
+import { Button, Checkbox, Divider, Modal, Select } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql, withApollo } from "@apollo/client/react/hoc";
 import { map } from "lodash";
@@ -179,86 +179,98 @@ class PhonemicAnalysisModal extends React.Component {
     return (
       <div>
         <Modal closeIcon onClose={this.props.closeModal} dimmer open centered size="large" className="lingvo-modal2">
-          <Modal.Header>Phonemic analysis</Modal.Header>
+          <Modal.Header>{this.context("Phonemic analysis")}</Modal.Header>
 
           <Modal.Content>
             {this.textFields.length > 0 && (
-              <List>
-                <List.Item>
-                  <span style={{ marginRight: "0.5em" }}>{this.context("Source transcription field")}:</span>
+              <>
+                <div>
+                  <div className="lingvo-form-header" style={{ marginBottom: "10px" }}>
+                    {this.context("Source transcription field")}
+                  </div>
                   <Select
                     defaultValue={this.state.transcriptionFieldIdStr}
                     placeholder={this.context("Source transcription field selection")}
                     options={textFieldsOptions}
                     onChange={(e, { value }) => this.setState({ transcriptionFieldIdStr: value })}
+                    icon={<i className="lingvo-icon lingvo-icon_arrow" />}
+                    className="lingvo-dropdown-select lingvo-dropdown-select_phonemic"
                   />
-                </List.Item>
-                <List.Item>
-                  <span style={{ marginRight: "0.5em" }}>{this.context("Source translation field")}:</span>
+                </div>
+                <div style={{ paddingTop: "20px" }}>
+                  <div className="lingvo-form-header" style={{ marginBottom: "10px" }}>
+                    {this.context("Source translation field")}
+                  </div>
                   <Select
                     defaultValue={this.state.translationFieldIdStr}
                     placeholder={this.context("Source translation field selection")}
                     options={textFieldsOptions}
                     onChange={(e, { value }) => this.setState({ translationFieldIdStr: value })}
+                    icon={<i className="lingvo-icon lingvo-icon_arrow" />}
+                    className="lingvo-dropdown-select lingvo-dropdown-select_phonemic"
                   />
-                </List.Item>
-              </List>
+                </div>
+              </>
             )}
 
             {this.textFields.length <= 0 && (
-              <span>Perspective does not have any text fields, phonemic analysis is impossible.</span>
+              <div className="lingvo-message lingvo-message_warning" style={{ marginTop: "16px" }}>
+                {this.context("Perspective does not have any text fields, phonemic analysis is impossible")}.
+              </div>
             )}
 
             {!this.state.library_present && (
-              <List>
-                <div style={{ color: "red" }}>Analysis library is absent, please contact system administrator.</div>
-              </List>
+              <div className="lingvo-message lingvo-message_error" style={{ marginTop: "16px" }}>
+                {this.context("Analysis library is absent, please contact system administrator")}.
+              </div>
             )}
 
-            {this.props.user.id == 1 && (
-              <List>
-                <List.Item>
+            {this.props.user.id === 1 && (
+              <div style={{ paddingTop: "20px" }}>
+                <div style={{ marginBottom: "7px" }}>
                   <Checkbox
                     label={this.context("Debug flag")}
-                    style={{ marginTop: "1em", verticalAlign: "middle" }}
                     checked={this.state.debugFlag}
                     onChange={(e, { checked }) => {
                       this.setState({ debugFlag: checked });
                     }}
+                    className="lingvo-checkbox lingvo-checkbox_labeled"
                   />
-                </List.Item>
-                <List.Item>
+                </div>
+                <div style={{ marginBottom: "7px" }}>
                   <Checkbox
                     label={this.context("Save intermediate data")}
-                    style={{ marginTop: "1em", verticalAlign: "middle" }}
                     checked={this.state.intermediateFlag}
                     onChange={(e, { checked }) => {
                       this.setState({ intermediateFlag: checked });
                     }}
+                    className="lingvo-checkbox lingvo-checkbox_labeled"
                   />
-                </List.Item>
-              </List>
+                </div>
+              </div>
             )}
           </Modal.Content>
 
           {this.state.library_present &&
             this.state.result.length > 0 && [
-              <Divider key="divider" />,
+              <Divider key="divider" style={{ marginTop: "0", marginBottom: "0" }} />,
               <Modal.Content key="content" scrolling>
-                <h3>Analysis results ({this.state.entity_count} text entities analysed):</h3>
+                <h3 className="lingvo-form-header" style={{ marginBottom: "0" }}>
+                  {this.context("Analysis results")} ({this.state.entity_count} {this.context("text entities analysed")}):
+                </h3>
                 {this.state.intermediate_url_list && (
-                  <List.Item>
-                    <div style={{ marginTop: "0.75em" }}>
-                      <span>Intermediate data:</span>
-                      <List>
-                        {map(this.state.intermediate_url_list, intermediate_url => (
-                          <List.Item key={intermediate_url}>
-                            <a href={intermediate_url}>{intermediate_url}</a>
-                          </List.Item>
-                        ))}
-                      </List>
+                  <div style={{ marginTop: "12px" }}>
+                    <div className="lingvo-phonemic-subheader">
+                      {this.context("Intermediate data")}:
                     </div>
-                  </List.Item>
+                    <div className="lingvo-phonemic-results-data" style={{ paddingTop: "12px" }}>
+                      {map(this.state.intermediate_url_list, intermediate_url => (
+                        <div key={intermediate_url} style={{ marginBottom: "7px" }}>
+                          <a href={intermediate_url}>{intermediate_url}</a>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 )}
                 <div>
                   <pre>{this.state.result}</pre>
