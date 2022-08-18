@@ -1,10 +1,8 @@
 import React from "react";
 import { connect } from "react-redux";
 import { Breadcrumb, Button, Checkbox, Dropdown, Icon, Input, Modal, Select } from "semantic-ui-react";
-import { gql } from "@apollo/client";
 import { graphql, withApollo } from "@apollo/client/react/hoc";
 import { fromJS } from "immutable";
-import { DivIcon } from "leaflet";
 import { map } from "lodash";
 import PropTypes from "prop-types";
 import { branch, compose, renderNothing } from "recompose";
