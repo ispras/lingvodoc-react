@@ -1,0 +1,40 @@
+.lingvo-perspective-item {
+  padding: 9px 48px 9px 16px;
+  border-radius: 8px;
+  background-color: #fff;
+  font-family: Rubik, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+  position: relative;
+  min-height: 58px;
+  display: flex;
+  align-items: center;
+
+  &:nth-child(2n) {
+    background-color: #fafafa;
+  }
+
+  .lingvo-form-header + & {
+    margin-top: 7px;
+  }
+
+  & .lingvo-icon_trash {
+    position: absolute;
+    top: 50%;
+    right: 17px;
+    margin-top: -10px;
+    cursor: pointer;
+    transition: 0.2s;
+
+    &:hover {
+      background-color: #DB4E4E;
+    }
+  }
+}
+
+.lingvo-breadcrumbs-phonology {
+  font-family: Rubik, Arial, sans-serif !important;
+  font-size: 14px !important;
+  line-height: 20px !important;
+}

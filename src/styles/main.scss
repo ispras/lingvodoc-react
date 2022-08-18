@@ -2884,6 +2884,12 @@ body {
     }
   }
 
+  &_phonology.ui.labeled.input .label:first-child {
+    & + input {
+      width: 94px !important;
+    }
+  }
+
   @media only screen and (max-device-width: 1000px), only screen and (max-width: 1000px) {
     & {
       display: flex !important;
@@ -3035,7 +3041,8 @@ body {
     }
   }
 
-  &_phonemic {
+  &_phonemic,
+  &_phonology {
     &.ui.selection.dropdown {
       min-width: 320px !important;
 
