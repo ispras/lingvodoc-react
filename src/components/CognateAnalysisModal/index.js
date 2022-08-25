@@ -6,11 +6,9 @@ import {
   Button,
   Checkbox,
   Dimmer,
-  Divider,
   Dropdown,
   Header,
   Icon,
-  Input,
   List,
   Loader,
   Message,
@@ -436,7 +434,7 @@ class MLPerspectiveSelection extends React.Component {
 
     const no_compute_before =
       language_list.length <= 0 ||
-      (mode == "multi_reconstruction" &&
+      (mode === "multi_reconstruction" &&
         language_list.filter(language => perspectiveSelectionCountMap[id2str(language.id)] > 0).length <= 1) ||
       p_select_count <= 0;
 
@@ -464,7 +462,7 @@ class MLPerspectiveSelection extends React.Component {
 
     const no_compute_after =
       language_list.length <= 0 ||
-      (mode == "multi_reconstruction" &&
+      (mode === "multi_reconstruction" &&
         language_list.filter(language => perspectiveSelectionCountMap[id2str(language.id)] > 0).length <= 1) ||
       p_select_count_new <= 0;
 
@@ -600,7 +598,7 @@ class MLSelection extends React.Component {
 
     const no_compute_before =
       language_list.length <= 0 ||
-      (mode == "multi_reconstruction" &&
+      (mode === "multi_reconstruction" &&
         language_list.filter(language => perspectiveSelectionCountMap[id2str(language.id)] > 0).length <= 1) ||
       p_select_count <= 0;
 
@@ -622,7 +620,7 @@ class MLSelection extends React.Component {
 
     const no_compute_after =
       language_list.length <= 0 ||
-      (mode == "multi_reconstruction" &&
+      (mode === "multi_reconstruction" &&
         language_list.filter(language => perspectiveSelectionCountMap[id2str(language.id)] > 0).length <= 1) ||
       p_select_count_new <= 0;
 
@@ -643,7 +641,7 @@ class MLSelection extends React.Component {
 
     const no_compute_before =
       language_list.length <= 0 ||
-      (mode == "multi_reconstruction" &&
+      (mode === "multi_reconstruction" &&
         language_list.filter(language => perspectiveSelectionCountMap[id2str(language.id)] > 0).length <= 1) ||
       p_select_count <= 0;
 
@@ -675,7 +673,7 @@ class MLSelection extends React.Component {
 
     const no_compute_after =
       language_list.length <= 0 ||
-      (mode == "multi_reconstruction" &&
+      (mode === "multi_reconstruction" &&
         language_list.filter(language => perspectiveSelectionCountMap[id2str(language.id)] > 0).length <= 1) ||
       p_select_count_new <= 0;
 
@@ -695,7 +693,7 @@ class MLSelection extends React.Component {
 
     const no_compute_before =
       language_list.length <= 0 ||
-      (mode == "multi_reconstruction" &&
+      (mode === "multi_reconstruction" &&
         language_list.filter(language => perspectiveSelectionCountMap[id2str(language.id)] > 0).length <= 1) ||
       p_select_count <= 0;
 
@@ -736,7 +734,7 @@ class MLSelection extends React.Component {
 
     const no_compute_after =
       language_list.length <= 0 ||
-      (mode == "multi_reconstruction" &&
+      (mode === "multi_reconstruction" &&
         language_list.filter(language => perspectiveSelectionCountMap[id2str(language.id)] > 0).length <= 1) ||
       p_select_count_new <= 0;
 
@@ -911,11 +909,11 @@ class SuggestionSelection extends React.Component {
       sg_connect
     } = this.props;
 
-    const connected_flag = sg_state_list[index] == "connected";
+    const connected_flag = sg_state_list[index] === "connected";
 
-    const error_flag = sg_state_list[index] == "error";
+    const error_flag = sg_state_list[index] === "error";
 
-    const invalidated_flag = sg_state_list[index] == "invalidated";
+    const invalidated_flag = sg_state_list[index] === "invalidated";
 
     const disabled_flag = connected_flag || error_flag || invalidated_flag;
 
@@ -925,7 +923,7 @@ class SuggestionSelection extends React.Component {
       <Segment key={`suggestion${index}`}>
         <List>
           <List.Item>
-            <span style={opacity_style}>{this.context("Source perspective word:")}</span>
+            <span style={opacity_style}>{this.context("Source perspective word")}:</span>
 
             {/* List and List.Item for uniform appearance. */}
 
@@ -940,7 +938,7 @@ class SuggestionSelection extends React.Component {
                         </div>
 
                         <div style={{ marginTop: "0.5em", marginBottom: "0.5em" }}>
-                          {this.context("Belongs to a group:")}
+                          {this.context("Belongs to a group")}:
                         </div>
 
                         <div>
@@ -978,7 +976,7 @@ class SuggestionSelection extends React.Component {
 
           {single_list.length > 0 && (
             <List.Item>
-              <span style={opacity_style}>{this.context("Suggested cognates:")}</span>
+              <span style={opacity_style}>{this.context("Suggested cognates")}:</span>
 
               <List>
                 {map(
@@ -1010,7 +1008,7 @@ class SuggestionSelection extends React.Component {
 
           {group_list.length > 0 && (
             <List.Item>
-              <span style={opacity_style}>{this.context("Suggested cognate groups:")}</span>
+              <span style={opacity_style}>{this.context("Suggested cognate groups")}:</span>
 
               <List>
                 {map(
@@ -1056,30 +1054,30 @@ class SuggestionSelection extends React.Component {
         </List>
 
         {connected_flag ? (
-          <Message positive>
-            <Message.Header>{this.context("Connected")}</Message.Header>
-          </Message>
+          <div className="lingvo-message lingvo-message_success">
+            {this.context("Connected")}
+          </div>
         ) : error_flag ? (
-          <Message negative>
-            <Message.Header>{this.context("Query error")}</Message.Header>
-            <p>{this.context("Failed to connect selected lexical entries, please contact developers.")}</p>
-          </Message>
+          <div className="lingvo-message lingvo-message_error">
+            {this.context("Query error")}
+            <p>{this.context("Failed to connect selected lexical entries, please contact developers")}.</p>
+          </div>
         ) : invalidated_flag ? (
-          <Message>
-            <Message.Header>{this.context("Invalidated")}</Message.Header>
+          <div className="lingvo-message lingvo-message_warning">
+            {this.context("Invalidated")}
             <p>
               {this.context(
                 "Another suggestion was accepted, source perspective word and/or one of suggested " +
                   "cognate words or cognate groups have been connected."
               )}
             </p>
-          </Message>
+          </div>
         ) : (
           <Button
             basic
             positive
-            content={sg_state_list[index] == "connecting" ? this.context("Connecting...") : this.context("Connect")}
-            disabled={Object.keys(sg_select_list[index]).length <= 1 || sg_state_list[index] == "connecting"}
+            content={sg_state_list[index] === "connecting" ? this.context("Connecting...") : this.context("Connect")}
+            disabled={Object.keys(sg_select_list[index]).length <= 1 || sg_state_list[index] === "connecting"}
             size="mini"
             onClick={() => sg_connect(index)}
           />
@@ -1187,9 +1185,9 @@ class CognateAnalysisModal extends React.Component {
 
   componentDidMount() {
     const multi =
-      this.props.mode == "multi_analysis" ||
-      this.props.mode == "multi_reconstruction" ||
-      this.props.mode == "multi_suggestions";
+      this.props.mode === "multi_analysis" ||
+      this.props.mode === "multi_reconstruction" ||
+      this.props.mode === "multi_suggestions";
 
     (multi ? this.initialize_multi : this.initialize_single)();
   }
@@ -1280,7 +1278,7 @@ class CognateAnalysisModal extends React.Component {
     /* If we are selecting perspectives for cognate suggestions, and the source perspective is not
      * published, we won't be able to proceed and therefore we need not bother with initialization. */
 
-    if (mode == "suggestions" && english_status != "Published" && english_status != "Limited access") {
+    if (mode === "suggestions" && english_status !== "Published" && english_status !== "Limited access") {
       this.setState({ initialized: true });
       return;
     }
@@ -1344,7 +1342,7 @@ class CognateAnalysisModal extends React.Component {
     /* If we are selecting perspectives for cognate suggestions, and the source perspective is not
      * published, we won't be able to proceed and therefore we need not bother with initialization. */
 
-    if (mode == "multi_suggestions" && english_status != "Published" && english_status != "Limited access") {
+    if (mode === "multi_suggestions" && english_status !== "Published" && english_status !== "Limited access") {
       this.setState({ initialized: true });
       return;
     }
@@ -1599,9 +1597,9 @@ class CognateAnalysisModal extends React.Component {
     /* Selecting grouping field for many languages. */
 
     if (
-      this.props.mode == "multi_analysis" ||
-      this.props.mode == "multi_reconstruction" ||
-      this.props.mode == "multi_suggestions"
+      this.props.mode === "multi_analysis" ||
+      this.props.mode === "multi_reconstruction" ||
+      this.props.mode === "multi_suggestions"
     ) {
       this.state.groupFieldIdStr = value;
 
@@ -1671,7 +1669,7 @@ class CognateAnalysisModal extends React.Component {
       }
     }
   }) {
-    if (result.length > 1048576 && (this.props.mode == "suggestions" || this.props.mode == "multi_suggestions")) {
+    if (result.length > 1048576 && (this.props.mode === "suggestions" || this.props.mode === "multi_suggestions")) {
       result = this.context("Skipping text output, too long.");
     }
 
@@ -1873,12 +1871,12 @@ class CognateAnalysisModal extends React.Component {
         error_data.message === "Network error: JSON.parse: unexpected character at line 1 column 1 of the JSON data" &&
         (error_data.networkError.statusCode == 502 || error_data.networkError.statusCode == 504)
       ) {
-        window.logger.err("Failed to compute cognate analysis! Analysis library or server connection error.");
+        window.logger.err(this.context("Failed to compute cognate analysis! Analysis library or server connection error."));
       } else {
-        window.logger.err("Failed to compute cognate analysis! Server connection error.");
+        window.logger.err(this.context("Failed to compute cognate analysis! Server connection error."));
       }
     } else {
-      window.logger.err("Failed to compute cognate analysis!");
+      window.logger.err(this.context("Failed to compute cognate analysis!"));
     }
 
     console.log(error_data.message);
@@ -1907,9 +1905,9 @@ class CognateAnalysisModal extends React.Component {
     const multiList = [];
 
     if (
-      this.props.mode == "multi_analysis" ||
-      this.props.mode == "multi_reconstruction" ||
-      this.props.mode == "multi_suggestions"
+      this.props.mode === "multi_analysis" ||
+      this.props.mode === "multi_reconstruction" ||
+      this.props.mode === "multi_suggestions"
     ) {
       for (const language of this.state.language_list) {
         let p_count = 0;
@@ -1945,14 +1943,14 @@ class CognateAnalysisModal extends React.Component {
     /* Match translations parameter for suggestions. */
 
     const matchTranslationsValue = this.state.matchTranslationsFlag
-      ? this.state.matchTranslationsValue == "first_three"
+      ? this.state.matchTranslationsValue === "first_three"
         ? 1
         : 2
       : 0;
 
     /* If we are to perform acoustic analysis, we will try to launch it in the background. */
 
-    if (this.props.mode == "acoustic") {
+    if (this.props.mode === "acoustic") {
       computeCognateAnalysis({
         variables: {
           sourcePerspectiveId: perspectiveId,
@@ -1983,11 +1981,11 @@ class CognateAnalysisModal extends React.Component {
       });
 
       const backend_mode =
-        this.props.mode == "multi_analysis"
+        this.props.mode === "multi_analysis"
           ? ""
-          : this.props.mode == "multi_reconstruction"
+          : this.props.mode === "multi_reconstruction"
           ? "multi"
-          : this.props.mode == "multi_suggestions"
+          : this.props.mode === "multi_suggestions"
           ? "suggestions"
           : this.props.mode;
       computeCognateAnalysis({
@@ -2025,10 +2023,10 @@ class CognateAnalysisModal extends React.Component {
       return (
         <List>
           <List.Item>
-            <span style={{ marginRight: "0.5em" }}>Grouping field:</span>
+            <span style={{ marginRight: "0.5em" }}>{this.context("Grouping field")}:</span>
             <Select
               defaultValue={this.state.groupFieldIdStr}
-              placeholder="Grouping field selection"
+              placeholder={this.context("Grouping field selection")}
               options={groupFieldsOptions}
               onChange={(e, { value }) => this.select_group_field(value)}
             />
@@ -2066,7 +2064,7 @@ class CognateAnalysisModal extends React.Component {
                 label={this.context("Any three consecutive characters.")}
                 name="matchTranslationsRadioGroup"
                 value="first_three"
-                checked={this.state.matchTranslationsValue == "first_three"}
+                checked={this.state.matchTranslationsValue === "first_three"}
                 onChange={(e, { value }) => {
                   this.setState({ matchTranslationsValue: value });
                 }}
@@ -2079,7 +2077,7 @@ class CognateAnalysisModal extends React.Component {
                 label={this.context("All characters.")}
                 name="matchTranslationsRadioGroup"
                 value="all"
-                checked={this.state.matchTranslationsValue == "all"}
+                checked={this.state.matchTranslationsValue === "all"}
                 onChange={(e, { value }) => {
                   this.setState({ matchTranslationsValue: value });
                 }}
@@ -2119,7 +2117,7 @@ class CognateAnalysisModal extends React.Component {
       <List>
         <List.Item>
           <Checkbox
-            label="Debug flag"
+            label={this.context("Debug flag")}
             style={{ marginTop: "1em", verticalAlign: "middle" }}
             checked={this.state.debugFlag}
             onChange={(e, { checked }) => {
@@ -2129,7 +2127,7 @@ class CognateAnalysisModal extends React.Component {
         </List.Item>
         <List.Item>
           <Checkbox
-            label="Save intermediate data"
+            label={this.context("Save intermediate data")}
             style={{ marginTop: "1em", verticalAlign: "middle" }}
             checked={this.state.intermediateFlag}
             onChange={(e, { checked }) => {
@@ -2145,9 +2143,9 @@ class CognateAnalysisModal extends React.Component {
     /* If we are selecting perspectives for cognate suggestions, we check the source perspective state. */
 
     if (
-      this.props.mode == "suggestions" &&
-      this.englishStatus != "Published" &&
-      this.englishStatus != "Limited access"
+      this.props.mode === "suggestions" &&
+      this.englishStatus !== "Published" &&
+      this.englishStatus !== "Limited access"
     ) {
       return (
         <Modal.Content>
@@ -2155,7 +2153,7 @@ class CognateAnalysisModal extends React.Component {
             <Message.Header>{this.context("Perspective is not published")}</Message.Header>
             <p>
               {this.context(
-                'Cognate suggestions are available only for perspectives in the "Published" or "Limited access" state.'
+                'Cognate suggestions are available only for perspectives in the “Published” or “Limited access” state.'
               )}
             </p>
           </Message>
@@ -2212,12 +2210,12 @@ class CognateAnalysisModal extends React.Component {
         {!this.state.library_present && (
           <List>
             <div style={{ color: "red" }}>
-              {this.context("Analysis library is absent, please contact system administrator.")}
+              {this.context("Analysis library is absent, please contact system administrator")}.
             </div>
           </List>
         )}
 
-        {!error_flag && this.props.mode == "suggestions" && this.match_translations_render()}
+        {!error_flag && this.props.mode === "suggestions" && this.match_translations_render()}
 
         {!error_flag && this.props.user.id == 1 && this.admin_section_render()}
       </Modal.Content>
@@ -2269,16 +2267,16 @@ class CognateAnalysisModal extends React.Component {
         {!this.state.library_present && (
           <List>
             <div style={{ color: "red" }}>
-              {this.context("Analysis library is absent, please contact system administrator.")}
+              {this.context("Analysis library is absent, please contact system administrator")}.
             </div>
           </List>
         )}
 
-        {!error_flag && this.props.mode == "multi_suggestions" && this.match_translations_render()}
+        {!error_flag && this.props.mode === "multi_suggestions" && this.match_translations_render()}
 
         {!error_flag && this.props.user.id == 1 && this.admin_section_render()}
 
-        {!error_flag && this.props.mode == "multi_reconstruction" && this.state.language_list.length <= 1 && (
+        {!error_flag && this.props.mode === "multi_reconstruction" && this.state.language_list.length <= 1 && (
           <Message>
             <Message.Header>{this.context("Multiple languages required")}</Message.Header>
             <p>
@@ -2329,7 +2327,7 @@ class CognateAnalysisModal extends React.Component {
 
           for (const entry_id_str of entry_id_str_list) {
             for (const sg_index of Object.keys(sg_entry_map[entry_id_str])) {
-              if (sg_state_list[sg_index] == "left") {
+              if (sg_state_list[sg_index] === "left") {
                 sg_state_list[sg_index] = "invalidated";
 
                 sg_count.invalidated++;
@@ -2469,7 +2467,7 @@ class CognateAnalysisModal extends React.Component {
               const invalid_set = {};
 
               for (let i = 0; i < suggestion_list.length; i++) {
-                if (sg_state_list[i] != "left" || invalid_set.hasOwnProperty(i)) {
+                if (sg_state_list[i] !== "left" || invalid_set.hasOwnProperty(i)) {
                   continue;
                 }
 
@@ -2503,7 +2501,7 @@ class CognateAnalysisModal extends React.Component {
 
     const { mode } = this.props;
 
-    const multi = mode == "multi_analysis" || mode == "multi_reconstruction" || mode == "multi_suggestions";
+    const multi = mode === "multi_analysis" || mode === "multi_reconstruction" || mode === "multi_suggestions";
 
     const { language_list, perspectiveSelectionCountMap } = this.state;
 
@@ -2511,17 +2509,17 @@ class CognateAnalysisModal extends React.Component {
       <div>
         <Modal closeIcon onClose={this.props.closeModal} dimmer open size="fullscreen" className="lingvo-modal2">
           <Modal.Header>
-            {mode == "acoustic"
+            {mode === "acoustic"
               ? this.context("Cognate acoustic analysis")
-              : mode == "multi_analysis"
+              : mode === "multi_analysis"
               ? this.context("Cognate multi-language analysis")
-              : mode == "multi_reconstruction"
+              : mode === "multi_reconstruction"
               ? this.context("Cognate multi-language reconstruction")
-              : mode == "multi_suggestions"
+              : mode === "multi_suggestions"
               ? this.context("Cognate multi-language suggestions")
-              : mode == "reconstruction"
+              : mode === "reconstruction"
               ? this.context("Cognate reconstruction")
-              : mode == "suggestions"
+              : mode === "suggestions"
               ? this.context("Cognate suggestions")
               : this.context("Cognate analysis")}
           </Modal.Header>
@@ -2546,7 +2544,7 @@ class CognateAnalysisModal extends React.Component {
                     !this.state.perspectiveSelectionList.some(enabled => enabled))) ||
                 (multi &&
                   (language_list.length <= 0 ||
-                    (mode == "multi_reconstruction" &&
+                    (mode === "multi_reconstruction" &&
                       language_list.filter(language => perspectiveSelectionCountMap[id2str(language.id)] > 0).length <=
                         1) ||
                     perspectiveSelectionCountMap[""] <= 0)) ||
@@ -2564,17 +2562,15 @@ class CognateAnalysisModal extends React.Component {
           {this.state.library_present && this.state.result !== null && (
             <Modal.Content scrolling style={{ maxHeight: "95vh" }}>
               <h3>
-                Analysis results ({this.state.dictionary_count} dictionaries, {this.state.group_count} cognate groups
-                and {this.state.transcription_count} transcriptions analysed):
+                {this.context("Analysis results")} ({this.state.dictionary_count} {this.context("dictionaries,")} {this.state.group_count} {this.context("cognate groups and")} {this.state.transcription_count} {this.context("transcriptions analysed")}):
               </h3>
 
               <List relaxed>
                 <List.Item>
-                  {this.state.not_enough_count} cognate groups were excluded from the analysis due to not having lexical
-                  entries in at least two selected dictionaries.
+                  {this.state.not_enough_count} {this.context("cognate groups were excluded from the analysis due to not having lexical entries in at least two selected dictionaries")}.
                 </List.Item>
 
-                {this.state.result.length > 0 && mode != "suggestions" && mode != "multi_suggestions" && (
+                {this.state.result.length > 0 && mode !== "suggestions" && mode !== "multi_suggestions" && (
                   <List.Item>
                     <a href={this.state.xlsx_url}>{this.context("XLSX-exported analysis results")}</a>
                   </List.Item>
@@ -2583,7 +2579,7 @@ class CognateAnalysisModal extends React.Component {
                 {this.state.result.length > 0 && this.state.intermediate_url_list && (
                   <List.Item>
                     <div style={{ marginTop: "0.75em" }}>
-                      <span>Intermediate data:</span>
+                      <span>{this.context("Intermediate data")}:</span>
                       <List>
                         {map(this.state.intermediate_url_list, intermediate_url => (
                           <List.Item key={intermediate_url}>
@@ -2598,13 +2594,13 @@ class CognateAnalysisModal extends React.Component {
 
               {this.state.result.length <= 0 && (
                 <List>
-                  <List.Item>No data for cognate analysis.</List.Item>
+                  <List.Item>{this.context("No data for cognate analysis")}.</List.Item>
                 </List>
               )}
 
               {this.state.suggestion_list && (
                 <div>
-                  <Header style={{ marginTop: "1em" }}>{this.state.suggestion_list.length} suggestions</Header>
+                  <Header style={{ marginTop: "1em" }}>{this.state.suggestion_list.length} {this.context("suggestions")}</Header>
 
                   {this.props.user.id === undefined ? (
                     <Message negative>
@@ -2623,7 +2619,7 @@ class CognateAnalysisModal extends React.Component {
 
               {this.state.plotly_data.length > 0 && (
                 <List>
-                  <List.Item>Etymological distance tree:</List.Item>
+                  <List.Item>{this.context("Etymological distance tree")}:</List.Item>
 
                   {this.state.embedding_2d.length <= 25 ? (
                     <List.Item>
@@ -2696,7 +2692,7 @@ class CognateAnalysisModal extends React.Component {
                             font: { size: 14 },
                             itemsizing: "constant"
                           },
-                          title: "Legend"
+                          title: this.context("Legend")
                         }}
                       />
                     </List.Item>
