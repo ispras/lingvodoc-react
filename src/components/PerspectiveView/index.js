@@ -701,7 +701,7 @@ class P extends React.Component {
               this.resetCheckedAll();
             }
           }}
-          style={{ position: "fixed", left: "24px", bottom: "-12px" }}
+          className="lingvo-pagination-block_perspective"
         />
       </div>
     );

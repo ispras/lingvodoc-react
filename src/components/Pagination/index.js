@@ -7,7 +7,7 @@ import TranslationContext from "Layout/TranslationContext";
 
 import "./style.scss";
 
-const Pagination = ({ urlBased, activePage, pageSize = 20, totalItems, showTotal, onPageChanged, style }) => {
+const Pagination = ({ urlBased, activePage, pageSize = 20, totalItems, showTotal, onPageChanged, style, className }) => {
   const getTranslation = useContext(TranslationContext);
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -51,7 +51,7 @@ const Pagination = ({ urlBased, activePage, pageSize = 20, totalItems, showTotal
   }
 
   return (
-    <div className="lingvo-pagination-block" style={style}>
+    <div className={className && `lingvo-pagination-block ${className}` || `lingvo-pagination-block`} style={style}>
       {showTotal && (
         <div className="lingvo-pagination-block__total">{`${getTranslation("Total items")}: ${totalItems}`}</div>
       )}
@@ -61,12 +61,13 @@ const Pagination = ({ urlBased, activePage, pageSize = 20, totalItems, showTotal
           activePage={currentPage}
           totalPages={totalPages}
           onPageChange={(_event, { activePage: newPage }) => pageChanged(newPage)}
-          nextItem={{ "aria-label": "Next item", content: ">" }}
-          prevItem={{ "aria-label": "Previous item", content: "<" }}
-          style={{ marginRight: "8px" }}
+          nextItem={(currentPage === totalPages) && { "aria-label": "Next item", content: ">", disabled: true } || { "aria-label": "Next item", content: ">" }}
+          prevItem={(currentPage === 1) && { "aria-label": "Previous item", content: "<", disabled: true } || { "aria-label": "Previous item", content: "<" }}
+          firstItem={(currentPage === 1) && { "aria-label": "First item", content: "«", disabled: true } || { "aria-label": "First item", content: "«" }}
+          lastItem={(currentPage === totalPages) && { "aria-label": "Last item", content: "»", disabled: true } || { "aria-label": "Last item", content: "»" }}
         />
       </div>
-      <span style={{ marginRight: "4px" }}>
+      <div className="lingvo-pagination-block__goto">
         {getTranslation("Go to page")}
         <Input
           value={goto}
@@ -77,9 +78,10 @@ const Pagination = ({ urlBased, activePage, pageSize = 20, totalItems, showTotal
             }
           }}
           onBlur={gotoPage}
-          style={{ height: "32px", marginLeft: "4px", maxWidth: "62px" }}
+          style={{ marginLeft: "10px", maxWidth: "58px" }}
+          className="lingvo-input"
         />
-      </span>
+      </div>
     </div>
   );
 };
@@ -91,7 +93,8 @@ Pagination.propTypes = {
   totalItems: PropTypes.number.isRequired,
   showTotal: PropTypes.bool,
   onPageChanged: PropTypes.func.isRequired,
-  style: PropTypes.object
+  style: PropTypes.object,
+  className: PropTypes.string
 };
 
 export default Pagination;
