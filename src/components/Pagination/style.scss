@@ -2,26 +2,52 @@
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
-  margin: 0 -4px 20px -4px;
+  margin: 0 0 20px 0;
   justify-content: space-between;
   background: white;
   border-radius: 4px;
 
   &__total {
     flex: 0 1 auto;
-    padding: 0 4px;
+    padding: 0 4px 0 0;
   }
 
   &__pages {
     flex: 1 1 auto;
     text-align: right;
-    align-self: flex-end;
   }
 
   &__total + &__pages {
-    flex: 0 1 auto;
     padding-left: 15px;
-    align-self: auto;
+  }
+
+  &__goto {
+    flex: 0 1 auto;
+    text-align: right;
+  }
+
+  &__pages + &__goto {
+    margin-left: 26px;
+  }
+
+  @media only screen and (max-device-width: 1000px), only screen and (max-width: 1000px) {
+    flex-wrap: wrap;
+
+    &__total {
+      flex: 1 1 100%;
+      padding: 0 0 6px 0;
+    }
+
+    &__total + &__pages {
+      flex: 0 1 auto;
+      padding-left: 0;
+      margin-left: -4px;
+    }
+
+    &__total + &__pages + &__goto {
+      flex: 1 1 auto;
+      text-align: left;
+    }
   }
 
   @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
@@ -30,12 +56,23 @@
     margin-left: 10px;
     margin-right: 10px;
 
+    &__goto {
+      padding-left: 4px;
+    }
+
+    &__pages + &__goto {
+      margin-left: 0;
+      padding-top: 6px;
+    }
+    
     &__total {
-      padding-bottom: 12px;
+      padding-bottom: 6px;
+      padding-left: 4px;
     }
 
     &__total + &__pages {
       padding-left: 0;
+      margin-left: 0;
     }
   }
 }
@@ -92,6 +129,12 @@
       font-size: 18px !important;
       font-weight: normal !important;
     }
+    
+  }
+
+  &.ui.menu .item.disabled,
+  &.ui.menu .item.disabled:hover {
+    color: #999ca0 !important;
   }
 
   @media only screen and (max-device-width: 580px), only screen and (max-width: 580px) {

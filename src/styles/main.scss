@@ -3242,6 +3242,40 @@ body {
 }
 /* /lingvo dropdown item */
 
+/* lingvo input */
+.lingvo-input {
+  background: #fff !important;
+  border-radius: 8px !important;
+  padding: 6px 12px !important;
+  font-family: Rubik, Arial, sans-serif !important;
+  font-size: 14px !important;
+  line-height: 18px !important;
+
+  &.input {
+    padding: 0 !important;
+
+    & > input {
+      border-radius: 10px !important;
+      padding: 6px 12px !important;
+      font-size: 14px !important;
+      line-height: 18px !important;
+      font-family: Rubik, Arial, sans-serif !important;
+      min-height: 32px !important;
+      border: 1px solid #dcdcdc !important;
+
+      &:hover {
+        border: 1px solid #5d54cd !important;
+      }
+
+      &:focus {
+        border: 1px solid #5d54cd !important;
+        box-shadow: 0 0 4px 0 rgb(#5d54cd, 0.5) !important;
+      }
+    }
+  }
+}
+/* /lingvo input */
+
 /* lingvo form header */
 .lingvo-form-header {
   font-family: Mulish, Arial, sans-serif;

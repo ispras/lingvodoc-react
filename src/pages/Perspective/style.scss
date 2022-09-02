@@ -23,7 +23,7 @@
 .lingvo-scrolling-content {
   display: flex;
   min-height: 100%;
-  padding-bottom: 55px;
+  padding-bottom: 70px;
 
   @media only screen and (max-device-width: 1000px), only screen and (max-width: 1000px) {
     min-height: auto;
@@ -56,6 +56,7 @@
 
     @media only screen and (max-device-width: 1000px), only screen and (max-width: 1000px) {
       border-radius: 0 12px 12px 12px;
+      margin-bottom: 24px;
     }
 
     @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
@@ -193,14 +194,25 @@
     }
   }
 
+  
   & .lingvo-pagination-block {
-    padding: 1px 16px;
+    position: fixed;
+    left: 20px;
+    right: 20px;
+    bottom: -12px;
+    padding: 6px 24px;
     border-radius: 12px;
-    z-index: 100;
+    z-index: 18;
+
+    @media only screen and (max-device-width: 1000px), only screen and (max-width: 1000px) {
+      right: 30px;
+    }
 
     @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
       padding: 10px 16px;
-      right: 34px;
+      right: 30px;
+      margin-left: 14px;
+      margin-right: 14px;
     }
   }
 }
