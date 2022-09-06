@@ -92,6 +92,8 @@
     min-width: 32px !important;
     line-height: 22px !important;
     justify-content: center !important;
+    outline: none !important;
+    transition: background-color .1s ease, box-shadow .1s ease, color .1s ease, border-color .1s ease !important;
 
     &::before {
       content: none !important;
