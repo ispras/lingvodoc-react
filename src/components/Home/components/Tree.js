@@ -34,7 +34,9 @@ const Perspective = ({ perspective: p }) => (
         {p.get("limited") && <Icon name="privacy" />}
       </span>
     )}
-    {T(p.get("translations").toJS())}
+    <>
+      <i className="lingvo-icon lingvo-icon_table" />{T(p.get("translations").toJS())}
+    </>
   </Dropdown.Item>
 );
 
@@ -70,7 +72,9 @@ const Dict = ({ dictionary, actions, selected, canSelectDictionaries }) => {
       </span>
       {authors && authors.size != 0 && <span className="dict-authors">({authors.toArray().join(", ")})</span>}
       {perspectives && !selectorStatus && perspectives.valueSeq && (
-        <Dropdown inline text={`${getTranslation("View")} (${perspectives.size})`}>
+        <Dropdown inline text={`${getTranslation("View")} (${perspectives.size})`} 
+          className="lingvo-dropdown-inline lingvo-dropdown-inline_perspectives"
+        >
           <Dropdown.Menu>
             {perspectives.valueSeq().map(pers => (
               <Perspective key={pers.get("id")} perspective={pers} />
