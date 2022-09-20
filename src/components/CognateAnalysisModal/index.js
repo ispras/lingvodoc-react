@@ -31,6 +31,8 @@ import { closeModal } from "ducks/cognateAnalysis";
 import TranslationContext from "Layout/TranslationContext";
 import { compositeIdToString as id2str, stringToCompositeId as str2id } from "utils/compositeId";
 
+import "./style.scss";
+
 const cognateAnalysisDataQuery = gql`
   query cognateAnalysisData($perspectiveId: LingvodocID!) {
     perspective(id: $perspectiveId) {
@@ -254,62 +256,72 @@ class SLPerspectiveSelection extends React.Component {
     } = this.props;
 
     return (
-      <List key={`perspective${index}`}>
-        <List.Item key="check">
-          <Breadcrumb
-            style={perspectiveSelectionList[index] ? {} : { opacity: 0.5 }}
-            icon="right angle"
-            sections={treePathList.map(e => ({
-              key: e.id,
-              content: e.hasOwnProperty("status_translations")
-                ? `${T(e.translations)} (${T(e.status_translations)})`
-                : T(e.translations),
-              link: false
-            }))}
-          />
+      <div className="lingvo-cognate-sub-language" key={`perspective${index}`}>
+        <div key="check">
           <Checkbox
-            style={{ marginLeft: "0.5em", verticalAlign: "middle" }}
+            className="lingvo-checkbox lingvo-checkbox_labeled"
             checked={perspectiveSelectionList[index]}
             onChange={(e, { checked }) => this.onChangeSelect(checked)}
+            label={
+              <label>
+                <Breadcrumb
+                  style={perspectiveSelectionList[index] ? {} : { opacity: 0.5 }}
+                  icon="right angle"
+                  sections={treePathList.map(e => ({
+                    key: e.id,
+                    content: e.hasOwnProperty("status_translations")
+                      ? `${T(e.translations)} (${T(e.status_translations)})`
+                      : T(e.translations),
+                    link: false
+                  }))}
+                />
+              </label>
+            }
           />
-        </List.Item>
+        </div>
         {perspectiveSelectionList[index] && (
-          <List.Item key="selection">
-            <List>
-              <List.Item key="selection_xcript">
-                <span style={{ marginLeft: "1em", marginRight: "0.5em" }}>
-                  {this.context("Source transcription field")}:
-                </span>
-                <Select
-                  disabled={!perspectiveSelectionList[index]}
-                  defaultValue={transcriptionFieldIdStrList[index]}
-                  placeholder={this.context("Source transcription field selection")}
-                  options={textFieldsOptions}
-                  onChange={(e, { value }) => {
-                    transcriptionFieldIdStrList[index] = value;
-                    this.setState({ transcriptionFieldIdStrList });
-                  }}
-                />
-              </List.Item>
-              <List.Item key="selection_xlat">
-                <span style={{ marginLeft: "1em", marginRight: "0.5em" }}>
-                  {this.context("Source translation field")}:
-                </span>
-                <Select
-                  disabled={!perspectiveSelectionList[index]}
-                  defaultValue={translationFieldIdStrList[index]}
-                  placeholder={this.context("Source translation field selection")}
-                  options={textFieldsOptions}
-                  onChange={(e, { value }) => {
-                    translationFieldIdStrList[index] = value;
-                    this.setState({ translationFieldIdStrList });
-                  }}
-                />
-              </List.Item>
-            </List>
-          </List.Item>
+          <div className="lingvo-cognate-grid" key="selection">
+            {/*<List.Item key="selection_xcript">*/}
+            <div className="lingvo-cognate-grid__name">
+              {this.context("Source transcription field")}:
+            </div>
+            <div className="lingvo-cognate-grid__select">
+              <Select
+                disabled={!perspectiveSelectionList[index]}
+                defaultValue={transcriptionFieldIdStrList[index]}
+                placeholder={this.context("Source transcription field selection")}
+                options={textFieldsOptions}
+                onChange={(e, { value }) => {
+                  transcriptionFieldIdStrList[index] = value;
+                  this.setState({ transcriptionFieldIdStrList });
+                }}
+                icon={<i className="lingvo-icon lingvo-icon_arrow" />}
+                className="lingvo-dropdown-select lingvo-dropdown-select_cognate"
+              />
+            </div>
+            {/*</List.Item>*/}
+            {/*<List.Item key="selection_xlat">*/}
+            <div className="lingvo-cognate-grid__name">
+              {this.context("Source translation field")}:
+            </div>
+            <div className="lingvo-cognate-grid__select">
+              <Select
+                disabled={!perspectiveSelectionList[index]}
+                defaultValue={translationFieldIdStrList[index]}
+                placeholder={this.context("Source translation field selection")}
+                options={textFieldsOptions}
+                onChange={(e, { value }) => {
+                  translationFieldIdStrList[index] = value;
+                  this.setState({ translationFieldIdStrList });
+                }}
+                icon={<i className="lingvo-icon lingvo-icon_arrow" />}
+                className="lingvo-dropdown-select lingvo-dropdown-select_cognate"
+              />
+            </div>
+            {/*</List.Item>*/}
+          </div>
         )}
-      </List>
+      </div>
     );
   }
 }
@@ -340,63 +352,60 @@ class SLSelection extends React.Component {
 
     return (
       <div>
-        <List>
-          <List.Item>
-            <span style={p_max_count <= 0 ? { opacity: 0.5 } : {}}>
-              {this.context("Select/deselect all dictionaries")}
-            </span>
-            <Checkbox
-              style={{ marginLeft: "0.5em", verticalAlign: "middle" }}
-              checked={p_select_count >= p_max_count}
-              indeterminate={(p_select_count > 0 && p_select_count < p_max_count) || p_max_count <= 0}
-              disabled={p_max_count <= 0}
-              onChange={(e, { checked }) => {
-                let p_select_count_new = p_select_count;
+        <div className="lingvo-cognate-all-languages-checkbox">
+          <Checkbox
+            label={this.context("Select/deselect all dictionaries")}
+            checked={p_select_count >= p_max_count}
+            indeterminate={(p_select_count > 0 && p_select_count < p_max_count) || p_max_count <= 0}
+            disabled={p_max_count <= 0}
+            onChange={(e, { checked }) => {
+              let p_select_count_new = p_select_count;
 
-                if (p_select_count < p_max_count) {
-                  perspectiveSelectionList.fill(true);
-                  p_select_count_new = p_max_count;
-                } else {
-                  perspectiveSelectionList.fill(false);
-                  p_select_count_new = 0;
-                }
+              if (p_select_count < p_max_count) {
+                perspectiveSelectionList.fill(true);
+                p_select_count_new = p_max_count;
+              } else {
+                perspectiveSelectionList.fill(false);
+                p_select_count_new = 0;
+              }
 
-                perspectiveSelectionCountMap[""] = p_select_count_new;
+              perspectiveSelectionCountMap[""] = p_select_count_new;
 
-                const no_compute_before = perspective_list.length <= 1 || p_select_count <= 0;
+              const no_compute_before = perspective_list.length <= 1 || p_select_count <= 0;
 
-                const no_compute_after = perspective_list.length <= 1 || p_select_count_new <= 0;
+              const no_compute_after = perspective_list.length <= 1 || p_select_count_new <= 0;
 
-                if (no_compute_before != no_compute_after) {
-                  onModalStateChange();
-                  return;
-                }
+              if (no_compute_before != no_compute_after) {
+                onModalStateChange();
+                return;
+              }
 
-                this.setState({ perspectiveSelectionCountMap });
-              }}
-            />
-          </List.Item>
-        </List>
-
-        {map(perspective_list, ({ treePathList, perspective, textFieldsOptions }, index) => (
-          // Not so good hack in the name of performance,
-          // we just give our state to be modified in the child compoment.
-
-          <SLPerspectiveSelection
-            key={`perspective${index}`}
-            treePathList={treePathList}
-            perspective={perspective}
-            textFieldsOptions={textFieldsOptions}
-            index={index}
-            perspective_list={perspective_list}
-            perspectiveSelectionList={perspectiveSelectionList}
-            transcriptionFieldIdStrList={transcriptionFieldIdStrList}
-            translationFieldIdStrList={translationFieldIdStrList}
-            perspectiveSelectionCountMap={perspectiveSelectionCountMap}
-            onChangeSelectAll={() => this.setState({ perspectiveSelectionCountMap })}
-            onModalStateChange={onModalStateChange}
+              this.setState({ perspectiveSelectionCountMap });
+            }}
+            className="lingvo-checkbox lingvo-checkbox_labeled"
           />
-        ))}
+        </div>
+
+        <div className="lingvo-cognate-language">
+          {map(perspective_list, ({ treePathList, perspective, textFieldsOptions }, index) => (
+            // Not so good hack in the name of performance,
+            // we just give our state to be modified in the child compoment.
+            <SLPerspectiveSelection
+              key={`perspective${index}`}
+              treePathList={treePathList}
+              perspective={perspective}
+              textFieldsOptions={textFieldsOptions}
+              index={index}
+              perspective_list={perspective_list}
+              perspectiveSelectionList={perspectiveSelectionList}
+              transcriptionFieldIdStrList={transcriptionFieldIdStrList}
+              translationFieldIdStrList={translationFieldIdStrList}
+              perspectiveSelectionCountMap={perspectiveSelectionCountMap}
+              onChangeSelectAll={() => this.setState({ perspectiveSelectionCountMap })}
+              onModalStateChange={onModalStateChange}
+            />
+          ))}
+        </div>
       </div>
     );
   }
@@ -505,62 +514,68 @@ class MLPerspectiveSelection extends React.Component {
     } = this.props;
 
     return (
-      <List key={`perspective${p_key}`}>
-        <List.Item>
-          <Breadcrumb
-            style={perspectiveSelectionMap[p_key] ? {} : { opacity: 0.5 }}
-            icon="right angle"
-            sections={treePathList.map(e => ({
-              key: e.id,
-              content: e.hasOwnProperty("status_translations")
-                ? `${T(e.translations)} (${T(e.status_translations)})`
-                : T(e.translations),
-              link: false
-            }))}
-          />
+      <div className="lingvo-cognate-sub-language" key={`perspective${p_key}`}>
+        <div>
           <Checkbox
-            style={{ marginLeft: "0.5em", verticalAlign: "middle" }}
+            className="lingvo-checkbox lingvo-checkbox_labeled"
             checked={perspectiveSelectionMap[p_key]}
             onChange={(e, { checked }) => this.onChangeSelect(checked)}
+            label={
+              <label>
+                <Breadcrumb
+                  style={perspectiveSelectionMap[p_key] ? {} : { opacity: 0.5 }}
+                  icon="right angle"
+                  sections={treePathList.map(e => ({
+                    key: e.id,
+                    content: e.hasOwnProperty("status_translations")
+                      ? `${T(e.translations)} (${T(e.status_translations)})`
+                      : T(e.translations),
+                    link: false
+                  }))}
+                />
+              </label>
+            }
           />
-        </List.Item>
+        </div>
         {perspectiveSelectionMap[p_key] && (
-          <List.Item>
-            <List>
-              <List.Item>
-                <span style={{ marginLeft: "1em", marginRight: "0.5em" }}>
-                  {this.context("Source transcription field")}:
-                </span>
-                <Select
-                  disabled={!perspectiveSelectionMap[p_key]}
-                  defaultValue={transcriptionFieldIdStrMap[p_key]}
-                  placeholder={this.context("Source transcription field selection")}
-                  options={textFieldsOptions}
-                  onChange={(e, { value }) => {
-                    transcriptionFieldIdStrMap[p_key] = value;
-                    this.setState({ transcriptionFieldIdStrMap });
-                  }}
-                />
-              </List.Item>
-              <List.Item>
-                <span style={{ marginLeft: "1em", marginRight: "0.5em" }}>
-                  {this.context("Source translation field")}:
-                </span>
-                <Select
-                  disabled={!perspectiveSelectionMap[p_key]}
-                  defaultValue={translationFieldIdStrMap[p_key]}
-                  placeholder={this.context("Source translation field selection")}
-                  options={textFieldsOptions}
-                  onChange={(e, { value }) => {
-                    translationFieldIdStrMap[p_key] = value;
-                    this.setState({ translationFieldIdStrMap });
-                  }}
-                />
-              </List.Item>
-            </List>
-          </List.Item>
+          <div className="lingvo-cognate-grid">
+            <div className="lingvo-cognate-grid__name">
+              {this.context("Source transcription field")}:
+            </div>
+            <div className="lingvo-cognate-grid__select">
+              <Select
+                disabled={!perspectiveSelectionMap[p_key]}
+                defaultValue={transcriptionFieldIdStrMap[p_key]}
+                placeholder={this.context("Source transcription field selection")}
+                options={textFieldsOptions}
+                onChange={(e, { value }) => {
+                  transcriptionFieldIdStrMap[p_key] = value;
+                  this.setState({ transcriptionFieldIdStrMap });
+                }}
+                icon={<i className="lingvo-icon lingvo-icon_arrow" />}
+                className="lingvo-dropdown-select lingvo-dropdown-select_cognate"
+              />
+            </div>
+            <div className="lingvo-cognate-grid__name">
+              {this.context("Source translation field")}:
+            </div>
+            <div className="lingvo-cognate-grid__select">
+              <Select
+                disabled={!perspectiveSelectionMap[p_key]}
+                defaultValue={translationFieldIdStrMap[p_key]}
+                placeholder={this.context("Source translation field selection")}
+                options={textFieldsOptions}
+                onChange={(e, { value }) => {
+                  translationFieldIdStrMap[p_key] = value;
+                  this.setState({ translationFieldIdStrMap });
+                }}
+                icon={<i className="lingvo-icon lingvo-icon_arrow" />}
+                className="lingvo-dropdown-select lingvo-dropdown-select_cognate"
+              />
+            </div>
+          </div>
         )}
-      </List>
+      </div>
     );
   }
 }
@@ -572,6 +587,7 @@ class MLSelection extends React.Component {
     super(props);
 
     this.state = {
+      languageSelectionMap: props.languageSelectionMap,
       perspectiveSelectionCountMap: props.perspectiveSelectionCountMap,
       language_list: props.language_list,
       language_id_set: props.language_id_set
@@ -581,18 +597,21 @@ class MLSelection extends React.Component {
 
     this.onChangeSelectAll = this.onChangeSelectAll.bind(this);
     this.onChangeSelectLanguageAll = this.onChangeSelectLanguageAll.bind(this);
+
+    this.onClickToggle = this.onClickToggle.bind(this);
   }
 
   onDeleteLanguage(language_info, l_index) {
     const {
       mode,
       language_list,
+      languageSelectionMap,
       perspectiveSelectionMap,
       perspectiveSelectionCountMap,
       language_id_set,
       onModalStateChange
     } = this.props;
-
+    
     const p_select_count = perspectiveSelectionCountMap[""];
     const p_max_count = perspectiveSelectionCountMap["_max"];
 
@@ -630,6 +649,10 @@ class MLSelection extends React.Component {
     }
 
     this.setState({ perspectiveSelectionCountMap });
+
+    languageSelectionMap[language_id_str] = false;
+
+    this.setState({ languageSelectionMap });
   }
 
   onChangeSelectAll() {
@@ -746,6 +769,20 @@ class MLSelection extends React.Component {
     this.setState({ perspectiveSelectionCountMap });
   }
 
+  onClickToggle(language_id_str) {
+    const {
+      languageSelectionMap
+    } = this.props;
+
+    if (languageSelectionMap[language_id_str]) {
+      languageSelectionMap[language_id_str] = false;
+    } else {
+      languageSelectionMap[language_id_str] = true;
+    }
+
+    this.setState({ languageSelectionMap });
+  }
+
   render() {
     const {
       mode,
@@ -755,6 +792,7 @@ class MLSelection extends React.Component {
       translationFieldIdStrMap,
       perspectiveSelectionCountMap,
       language_id_set,
+      languageSelectionMap,
       available_language_list,
       onAddLanguage,
       onModalStateChange
@@ -764,19 +802,17 @@ class MLSelection extends React.Component {
     const p_max_count = perspectiveSelectionCountMap["_max"];
 
     return (
-      <List>
-        <List.Item>
-          <span style={p_max_count <= 0 ? { opacity: 0.5 } : {}}>
-            {this.context("Select/deselect all dictionaries")}
-          </span>
+      <div>
+        <div className="lingvo-cognate-all-languages-checkbox">
           <Checkbox
-            style={{ marginLeft: "0.5em", verticalAlign: "middle" }}
+            label={this.context("Select/deselect all dictionaries")}
             checked={p_select_count >= p_max_count}
             indeterminate={(p_select_count > 0 && p_select_count < p_max_count) || p_max_count <= 0}
             disabled={p_max_count <= 0}
             onChange={(e, { checked }) => this.onChangeSelectAll(checked)}
+            className="lingvo-checkbox lingvo-checkbox_labeled"
           />
-        </List.Item>
+        </div>
 
         {map(language_list, (language_info, l_index) => {
           const language_id_str = id2str(language_info.id);
@@ -785,8 +821,11 @@ class MLSelection extends React.Component {
           const p_language_max_count = perspectiveSelectionCountMap[`${language_id_str}_max`];
 
           return (
-            <List.Item key={`language${l_index}`}>
-              <Header as="h3">
+            <div className="lingvo-cognate-language" key={`language${l_index}`}>
+              <h3 
+                className={languageSelectionMap[language_id_str] && "lingvo-cognate-header lingvo-cognate-header_open" || "lingvo-cognate-header"}
+                onClick={() => this.onClickToggle(language_id_str)}
+              >
                 <Breadcrumb
                   icon="right angle"
                   sections={language_info.treePath.map(e => ({
@@ -795,71 +834,71 @@ class MLSelection extends React.Component {
                     link: false
                   }))}
                 />
-                <span>
-                  <Icon
-                    name="delete"
-                    style={{ paddingLeft: "0.5em", paddingRight: "0.5em" }}
-                    onClick={() => this.onDeleteLanguage(language_info, l_index)}
-                  />
-                </span>
-              </Header>
+                <i 
+                  className="lingvo-icon lingvo-icon_trash"
+                  onClick={(e) => {
+                    e.stopPropagation(); 
+                    this.onDeleteLanguage(language_info, l_index);
+                  }}
+                />
+              </h3>
 
-              {language_info.loading ? (
-                <List>
-                  <List.Item>
-                    <span>
-                      {this.context("Loading perspective data")}... <Icon name="spinner" loading />
-                    </span>
-                  </List.Item>
-                </List>
-              ) : (
-                <div>
-                  <List>
-                    <List.Item>
-                      <span>{this.context("Select/deselect all language's dictionaries")}</span>
-                      <Checkbox
-                        style={{ marginLeft: "0.5em", verticalAlign: "middle" }}
-                        checked={p_language_select_count >= p_language_max_count}
-                        indeterminate={p_language_select_count > 0 && p_language_select_count < p_language_max_count}
-                        onChange={(e, { checked }) => this.onChangeSelectLanguageAll(language_info, checked)}
-                      />
-                    </List.Item>
-                  </List>
+              {languageSelectionMap[language_id_str] && (
+              <div>
+                {language_info.loading ? (
+                  <div className="lingvo-cognate-loading">
+                    {this.context("Loading perspective data")}... <Icon name="spinner" loading /> 
+                  </div>
+                ) : (
+                  <div>
+                    <div className="lingvo-cognate-language-checkbox">
+                        <Checkbox
+                          label={this.context("Select/deselect all language's dictionaries")}
+                          checked={p_language_select_count >= p_language_max_count}
+                          indeterminate={p_language_select_count > 0 && p_language_select_count < p_language_max_count}
+                          onChange={(e, { checked }) => this.onChangeSelectLanguageAll(language_info, checked)}
+                          className="lingvo-checkbox lingvo-checkbox_labeled"
+                        />
+                    </div>
 
-                  {map(language_info.perspective_list, ({ treePathList, perspective, textFieldsOptions }, p_index) => {
-                    const p_key = id2str(perspective.id);
+                    {map(language_info.perspective_list, ({ treePathList, perspective, textFieldsOptions }, p_index) => {
+                      const p_key = id2str(perspective.id);
 
-                    // Not so good hack in the name of performance,
-                    // we just give our state to be modified in the child compoment.
+                      // Not so good hack in the name of performance,
+                      // we just give our state to be modified in the child compoment.
 
-                    return (
-                      <MLPerspectiveSelection
-                        mode={mode}
-                        language_list={language_list}
-                        key={`perspective${p_key}`}
-                        treePathList={treePathList}
-                        perspective={perspective}
-                        textFieldsOptions={textFieldsOptions}
-                        p_index={p_index}
-                        p_key={p_key}
-                        perspectiveSelectionMap={perspectiveSelectionMap}
-                        transcriptionFieldIdStrMap={transcriptionFieldIdStrMap}
-                        translationFieldIdStrMap={translationFieldIdStrMap}
-                        perspectiveSelectionCountMap={perspectiveSelectionCountMap}
-                        language_id_str={language_id_str}
-                        onChangeSelectAll={() => this.setState({ perspectiveSelectionCountMap })}
-                        onModalStateChange={onModalStateChange}
-                      />
-                    );
-                  })}
-                </div>
+                      return (
+                        <MLPerspectiveSelection
+                          mode={mode}
+                          language_list={language_list}
+                          key={`perspective${p_key}`}
+                          treePathList={treePathList}
+                          perspective={perspective}
+                          textFieldsOptions={textFieldsOptions}
+                          p_index={p_index}
+                          p_key={p_key}
+                          perspectiveSelectionMap={perspectiveSelectionMap}
+                          transcriptionFieldIdStrMap={transcriptionFieldIdStrMap}
+                          translationFieldIdStrMap={translationFieldIdStrMap}
+                          perspectiveSelectionCountMap={perspectiveSelectionCountMap}
+                          language_id_str={language_id_str}
+                          onChangeSelectAll={() => this.setState({ perspectiveSelectionCountMap })}
+                          onModalStateChange={onModalStateChange}
+                        />
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
               )}
-            </List.Item>
+            </div>
           );
         })}
 
-        <List.Item>
+        <div style={{ paddingTop: "12px", paddingBottom: "25px" }}>
           <Dropdown
+            className="lingvo-dropdown-select"
+            icon={<i className="lingvo-icon lingvo-icon_arrow" />}
             fluid
             placeholder={this.context("Add language")}
             search
@@ -876,8 +915,8 @@ class MLSelection extends React.Component {
             value={""}
             onChange={onAddLanguage}
           />
-        </List.Item>
-      </List>
+        </div>
+      </div>
     );
   }
 }
@@ -1153,6 +1192,7 @@ class CognateAnalysisModal extends React.Component {
       transcriptionFieldIdStrMap: {},
       translationFieldIdStrMap: {},
       perspectiveSelectionMap: {},
+      languageSelectionMap: [],
 
       perspectiveSelectionCountMap: new Map(),
 
@@ -1406,6 +1446,7 @@ class CognateAnalysisModal extends React.Component {
    * Initializes data of perspectives of a selected language.
    */
   async initialize_language(language) {
+
     this.available_list = [];
     await this.initPerspectiveData(language.id, []);
 
@@ -2021,17 +2062,21 @@ class CognateAnalysisModal extends React.Component {
 
     if (this.groupFields.length > 0) {
       return (
-        <List>
-          <List.Item>
-            <span style={{ marginRight: "0.5em" }}>{this.context("Grouping field")}:</span>
+        <div className="lingvo-cognate-grid">
+          <div className="lingvo-cognate-grid__name">
+            {this.context("Grouping field")}:
+          </div>
+          <div className="lingvo-cognate-grid__select">
             <Select
               defaultValue={this.state.groupFieldIdStr}
               placeholder={this.context("Grouping field selection")}
               options={groupFieldsOptions}
               onChange={(e, { value }) => this.select_group_field(value)}
+              icon={<i className="lingvo-icon lingvo-icon_arrow" />}
+              className="lingvo-dropdown-select lingvo-dropdown-select_cognate"
             />
-          </List.Item>
-        </List>
+          </div>
+        </div>
       );
     } else {
       return <span>{this.context("Perspective does not have any grouping fields, cognate analysis is impossible.")}</span>;
@@ -2043,59 +2088,57 @@ class CognateAnalysisModal extends React.Component {
    */
   match_translations_render() {
     return (
-      <List>
-        <List.Item>
+      <>
+        <div className="lingvo-cognate-checkbox">
           <Checkbox
             label={this.context("Match translations")}
-            style={{ marginTop: "1em", verticalAlign: "middle" }}
             checked={this.state.matchTranslationsFlag}
             onChange={(e, { checked }) => {
               this.setState({ matchTranslationsFlag: checked });
             }}
+            className="lingvo-checkbox lingvo-checkbox_labeled"
           />
-        </List.Item>
+        </div>
 
-        <List.Item>
-          <List relaxed>
-            <List.Item>
-              <Checkbox
-                radio
-                disabled={!this.state.matchTranslationsFlag}
-                label={this.context("Any three consecutive characters.")}
-                name="matchTranslationsRadioGroup"
-                value="first_three"
-                checked={this.state.matchTranslationsValue === "first_three"}
-                onChange={(e, { value }) => {
-                  this.setState({ matchTranslationsValue: value });
-                }}
-              />
-            </List.Item>
-            <List.Item>
-              <Checkbox
-                radio
-                disabled={!this.state.matchTranslationsFlag}
-                label={this.context("All characters.")}
-                name="matchTranslationsRadioGroup"
-                value="all"
-                checked={this.state.matchTranslationsValue === "all"}
-                onChange={(e, { value }) => {
-                  this.setState({ matchTranslationsValue: value });
-                }}
-              />
-            </List.Item>
-          </List>
-        </List.Item>
+        <div style={{ paddingLeft: "34px", paddingTop: "6px" }}>
+          <div className="lingvo-radio lingvo-radio_cognate">
+            <Checkbox
+              radio
+              disabled={!this.state.matchTranslationsFlag}
+              label={this.context("Any three consecutive characters")}
+              name="matchTranslationsRadioGroup"
+              value="first_three"
+              checked={this.state.matchTranslationsValue === "first_three"}
+              onChange={(e, { value }) => {
+                this.setState({ matchTranslationsValue: value });
+              }}
+            />
+          </div>
+          <div className="lingvo-radio lingvo-radio_cognate">
+            <Checkbox
+              radio
+              disabled={!this.state.matchTranslationsFlag}
+              label={this.context("All characters")}
+              name="matchTranslationsRadioGroup"
+              value="all"
+              checked={this.state.matchTranslationsValue === "all"}
+              onChange={(e, { value }) => {
+                this.setState({ matchTranslationsValue: value });
+              }}
+            />
+          </div>
+        </div>
 
-        <List.Item>
+        <div className="lingvo-cognate-checkbox">
           <Checkbox
             label={this.context("Only for orphans (words not included in existing etymology groups)")}
-            style={{ marginTop: "0.75em", verticalAlign: "middle" }}
             checked={this.state.onlyOrphansFlag}
             onChange={(e, { checked }) => {
               this.setState({ onlyOrphansFlag: checked });
             }}
+            className="lingvo-checkbox lingvo-checkbox_labeled"
           />
-        </List.Item>
+        </div>
 
         {!this.state.suggestion_list && this.props.user.id === undefined && (
           <Message negative>
@@ -2105,7 +2148,7 @@ class CognateAnalysisModal extends React.Component {
             </p>
           </Message>
         )}
-      </List>
+      </>
     );
   }
 
@@ -2114,28 +2157,28 @@ class CognateAnalysisModal extends React.Component {
    */
   admin_section_render() {
     return (
-      <List>
-        <List.Item>
+      <>
+        <div className="lingvo-cognate-checkbox">
           <Checkbox
             label={this.context("Debug flag")}
-            style={{ marginTop: "1em", verticalAlign: "middle" }}
             checked={this.state.debugFlag}
             onChange={(e, { checked }) => {
               this.setState({ debugFlag: checked });
             }}
+            className="lingvo-checkbox lingvo-checkbox_labeled"
           />
-        </List.Item>
-        <List.Item>
+        </div>
+        <div className="lingvo-cognate-checkbox">
           <Checkbox
             label={this.context("Save intermediate data")}
-            style={{ marginTop: "1em", verticalAlign: "middle" }}
             checked={this.state.intermediateFlag}
             onChange={(e, { checked }) => {
               this.setState({ intermediateFlag: checked });
             }}
+            className="lingvo-checkbox lingvo-checkbox_labeled"
           />
-        </List.Item>
-      </List>
+        </div>
+      </>
     );
   }
 
@@ -2236,6 +2279,7 @@ class CognateAnalysisModal extends React.Component {
           mode={this.props.mode}
           language_list={this.state.language_list}
           perspectiveSelectionMap={this.state.perspectiveSelectionMap}
+          languageSelectionMap={this.state.languageSelectionMap}
           transcriptionFieldIdStrMap={this.state.transcriptionFieldIdStrMap}
           translationFieldIdStrMap={this.state.translationFieldIdStrMap}
           perspectiveSelectionCountMap={this.state.perspectiveSelectionCountMap}

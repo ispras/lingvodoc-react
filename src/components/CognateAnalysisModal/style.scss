@@ -1,0 +1,204 @@
+/* lingvo cognate language */
+.lingvo-cognate-language {
+  background: #fafafa;
+  margin: 0 0 10px 0;
+  border-radius: 10px;
+  padding: 10px 10px 10px 10px;
+
+  &:last-of-type {
+    margin-bottom: 15px;
+  }
+}
+/* /lingvo cognate language */
+
+/* lingvo cognate grid */
+.lingvo-cognate-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  padding: 0;
+  font-family: Rubik, Arial, sans-serif;
+  font-size: 16px;
+
+  &__name {
+    margin: 0 10px 0 0;
+    line-height: 42px;
+
+    &:not(:first-child) {
+      margin-top: 10px;
+    }
+  }
+
+  &__name:not(:first-child) + &__select {
+    margin-top: 10px;
+  }
+
+  @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+    grid-template-columns: 100%;
+    padding-left: 0;
+
+    &__name {
+      margin: 0 0 10px 0;
+      line-height: 24px;
+
+      &:not(:first-child) {
+        margin-top: 10px;
+      }
+    }
+
+    &__name:not(:first-child) + &__select {
+      margin-top: 0;
+    }
+  }
+
+}
+/* /lingvo cognate grid */
+
+/* lingvo cognate all languages checkbox */
+.lingvo-cognate-all-languages-checkbox {
+  padding: 20px 0 0 0;
+  margin: 0 0 20px 0;
+
+  & .lingvo-checkbox.ui.checkbox {
+    font-size: 16px !important;
+
+    & label {
+      font-size: 16px !important;
+    }
+  }
+}
+/* /lingvo cognate all languages checkbox */
+
+/* lingvo cognate language checkbox */
+.lingvo-cognate-language-checkbox {
+  padding: 0 0 0 14px;
+  margin: 0 0 10px 0;
+
+  & .lingvo-checkbox.ui.checkbox {
+    font-size: 16px !important;
+
+    & label {
+      font-size: 16px !important;
+    }
+  }
+}
+/* /lingvo cognate language checkbox */
+
+/* lingvo cognate checkbox */
+.lingvo-cognate-checkbox {
+  padding: 8px 0 0 0;
+  margin: 0 0 7px 0;
+
+  & .lingvo-checkbox.ui.checkbox {
+    font-size: 16px !important;
+
+    & label {
+      font-size: 16px !important;
+    }
+  }
+}
+/* /lingvo cognate checkbox */
+
+/* lingvo cognate sub language */
+.lingvo-cognate-sub-language {
+  background: transparent;
+  padding: 16px 14px 12px 14px;
+  border-radius: 10px;
+  margin: 0 0 10px 0;
+  font-family: Rubik, Arial, sans-serif;
+  font-size: 16px;
+
+  &:nth-child(2n) {
+    background: #fff;
+  }
+
+  & .lingvo-checkbox.ui.checkbox {
+    font-size: 16px !important;
+
+    & label {
+      font-size: 16px !important;
+    }
+  }
+
+  & .ui.breadcrumb {
+    font-size: 16px !important;
+    line-height: 22px !important;
+
+    & .divider {
+      opacity: 1 !important;
+      color: #999CA0 !important;
+      font-size: 17px !important;
+    }
+  }
+
+  & .lingvo-checkbox.ui.checkbox .ui.breadcrumb {
+    margin-top: -3px;
+  }
+
+  & .lingvo-cognate-grid {
+    padding-top: 15px;
+    padding-left: 34px;
+  }
+}
+/* /lingvo cognate sub language */
+
+/* lingvo cognate header */
+.lingvo-cognate-header {
+  display: block !important;
+  margin: 0 !important;
+  padding: 10px 40px 10px 14px !important;
+  font-size: 18px !important;
+  line-height: 24px !important;
+  position: relative !important;
+  cursor: pointer !important;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 20px;
+    right: 18px;
+    width: 16px;
+    height: 10px;
+    padding: 0;
+    background: url("../../images/icon_arrow_b.svg") 0 0 no-repeat;
+  }
+
+  &_open {
+    &::before {
+      transform: rotate(180deg);
+    }
+  }
+
+  & .ui.breadcrumb {
+    font-family: Mulish, Arial, sans-serif !important;
+    font-size: 18px !important;
+    line-height: 24px !important;
+    font-weight: 700 !important;
+    color: #5d54cd !important;
+
+    & .divider {
+      color: #5d54cd !important;
+      opacity: 1 !important;
+      font-size: 17px !important;
+    }
+  }
+
+  & .lingvo-icon_trash {
+    cursor: pointer;
+    transition: 0.2s;
+    margin: 0 0 0 17px;
+    vertical-align: middle;
+
+    &:hover {
+      background-color: #DB4E4E;
+    }
+  }
+}
+/* /lingvo cognate header */
+
+/* lingvo cognate loading */
+.lingvo-cognate-loading {
+  padding: 0 0 0 14px;
+  margin: 0;
+  font-size: 16px;
+}
+/* /lingvo cognate loading */

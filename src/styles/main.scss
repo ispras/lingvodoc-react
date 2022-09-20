@@ -2595,6 +2595,10 @@ body {
   &_phonology {
     margin-bottom: 7px !important;
   }
+
+  &_cognate {
+    margin-bottom: 10px !important;
+  }
 }
 /* /radio button */
 
@@ -3047,6 +3051,16 @@ body {
       min-width: 320px !important;
 
       @media only screen and (max-device-width: 500px), only screen and (max-width: 500px) {
+        min-width: 100% !important;
+      }
+    }
+  }
+
+  &_cognate {
+    &.ui.selection.dropdown {
+      min-width: 320px !important;
+
+      @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
         min-width: 100% !important;
       }
     }
