@@ -28,7 +28,6 @@ import { chooseTranslation as T } from "api/i18n";
 import { connectMutation } from "components/GroupingTagModal/graphql";
 import { checkLanguage, languageIdList } from "components/Home/components/LangsNav";
 import { closeModal } from "ducks/cognateAnalysis";
-import { DirectiveLocation } from "graphql";
 import TranslationContext from "Layout/TranslationContext";
 import { compositeIdToString as id2str, stringToCompositeId as str2id } from "utils/compositeId";
 
