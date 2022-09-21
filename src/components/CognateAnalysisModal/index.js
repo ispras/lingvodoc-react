@@ -2321,12 +2321,14 @@ class CognateAnalysisModal extends React.Component {
         {!error_flag && this.props.user.id == 1 && this.admin_section_render()}
 
         {!error_flag && this.props.mode === "multi_reconstruction" && this.state.language_list.length <= 1 && (
-          <Message>
-            <Message.Header>{this.context("Multiple languages required")}</Message.Header>
+          <div className="lingvo-info-message">
+            <div className="lingvo-info-message__header">
+              {this.context("Multiple languages required")}
+            </div>
             <p>
               {this.context("Cognate multi-language reconstruction requires dictionaries from at least 2 languages.")}
             </p>
-          </Message>
+          </div>
         )}
       </Modal.Content>
     );
