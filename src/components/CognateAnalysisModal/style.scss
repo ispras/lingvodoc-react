@@ -141,8 +141,8 @@
 }
 /* /lingvo cognate sub language */
 
-/* lingvo cognate header */
-.lingvo-cognate-header {
+/* lingvo cognate language header */
+.lingvo-cognate-language-header {
   display: block !important;
   margin: 0 !important;
   padding: 10px 40px 10px 14px !important;
@@ -193,7 +193,7 @@
     }
   }
 }
-/* /lingvo cognate header */
+/* /lingvo cognate language header */
 
 /* lingvo cognate loading */
 .lingvo-cognate-loading {
@@ -202,3 +202,27 @@
   font-size: 16px;
 }
 /* /lingvo cognate loading */
+
+/* lingvo cognate header */
+.lingvo-cognate-header {
+  display: block !important;
+  margin: 0 0 14px 0 !important;
+  padding: 0 !important;
+  font-size: 18px !important;
+  line-height: 24px !important;
+
+  & .ui.breadcrumb {
+    font-family: Mulish, Arial, sans-serif !important;
+    font-size: 18px !important;
+    line-height: 24px !important;
+    font-weight: 700 !important;
+    color: #5d54cd !important;
+
+    & .divider {
+      color: #5d54cd !important;
+      opacity: 1 !important;
+      font-size: 17px !important;
+    }
+  }
+}
+/* /lingvo cognate header */

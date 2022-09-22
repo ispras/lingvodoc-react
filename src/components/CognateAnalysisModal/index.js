@@ -823,7 +823,7 @@ class MLSelection extends React.Component {
           return (
             <div className="lingvo-cognate-language" key={`language${l_index}`}>
               <h3 
-                className={languageSelectionMap[language_id_str] && "lingvo-cognate-header lingvo-cognate-header_open" || "lingvo-cognate-header"}
+                className={languageSelectionMap[language_id_str] && "lingvo-cognate-language-header lingvo-cognate-language-header_open" || "lingvo-cognate-language-header"}
                 onClick={() => this.onClickToggle(language_id_str)}
               >
                 <Breadcrumb
@@ -2215,7 +2215,7 @@ class CognateAnalysisModal extends React.Component {
 
     return (
       <Modal.Content>
-        <Header as="h2">
+        <h2 className="lingvo-cognate-header">
           <Breadcrumb
             icon="right angle"
             sections={this.treePath.map(e => ({
@@ -2224,11 +2224,11 @@ class CognateAnalysisModal extends React.Component {
               link: false
             }))}
           />
-        </Header>
+        </h2>
 
         {this.grouping_field_render()}
 
-        <div style={{ marginTop: "1.5em" }}>
+        <div>
           {this.perspective_list.length > 1 && (
             <SLSelection
               perspective_list={this.perspective_list}
