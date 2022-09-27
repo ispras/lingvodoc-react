@@ -90,7 +90,7 @@ const StepButton = ({ step, onCreateDictionary, onNextClick }) => {
   const next_step = isNextStep && step !== "PERSPECTIVES" && step !== "FINISH";
 
   return (
-    <>
+    <div className="lingvo-create-dict-button">
       {(create || next_step) && <Divider />}
       {create && <CreateButton onCreateDictionary={onCreateDictionary} />}
       {next_step && (
@@ -98,7 +98,7 @@ const StepButton = ({ step, onCreateDictionary, onNextClick }) => {
           {getTranslation("Next Step")}
         </Button>
       )}
-    </>
+    </div>
   );
 };
 

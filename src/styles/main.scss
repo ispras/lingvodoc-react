@@ -3412,3 +3412,15 @@ body {
   }
 }
 /* /lingvo info message */
+
+/* lingvo create dict button */
+.lingvo-create-dict-button {
+  position: relative;
+  margin-top: 90px;
+
+  @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+    margin-top: 60px;
+    top: 55px;
+  }
+}
+/* /lingvo create dict button */
