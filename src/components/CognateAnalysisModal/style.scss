@@ -60,9 +60,28 @@
 
   & .lingvo-checkbox.ui.checkbox {
     font-size: 16px !important;
+    line-height: 22px !important;
 
     & label {
       font-size: 16px !important;
+      line-height: 22px !important;
+      padding-left: 25px !important;
+    }
+
+    & .box:before,
+    & label:before {
+      top: 2px !important;
+      line-height: 17px !important;
+    }
+
+    & .box:after,
+    & label:after {
+      top: 2px !important;
+      line-height: 17px !important;
+    }
+
+    & input[type=checkbox] {
+      top: 2px !important;
     }
   }
 }
@@ -88,11 +107,35 @@
   padding: 8px 0 0 0;
   margin: 0 0 7px 0;
 
+  &_result {
+    padding: 6px 0 0 0;
+    margin: 0 0 5px 0;
+  }
+
   & .lingvo-checkbox.ui.checkbox {
     font-size: 16px !important;
+    line-height: 22px !important;
 
     & label {
       font-size: 16px !important;
+      line-height: 22px !important;
+      padding-left: 25px !important;
+    }
+
+    & .box:before,
+    & label:before {
+      top: 2px !important;
+      line-height: 17px !important;
+    }
+
+    & .box:after,
+    & label:after {
+      top: 2px !important;
+      line-height: 17px !important;
+    }
+
+    & input[type=checkbox] {
+      top: 2px !important;
     }
   }
 }
@@ -226,3 +269,150 @@
   }
 }
 /* /lingvo cognate header */
+
+/* lingvo cognate result segment */
+.lingvo-cognate-result-segment {
+  background: #fff;
+  border: 1px solid #dcdcdc;
+  border-radius: 10px;
+  padding: 20px 30px;
+  margin: 10px 0;
+  position: relative;
+
+  &__block {
+    margin: 0;
+    padding: 0 0 6px 0;
+  }
+}
+/* /lingvo cognate result segment */
+
+/* lingvo cognate result tit */
+.lingvo-cognate-result-tit {
+  display: block;
+  font-family: Mulish, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 18px;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+}
+/* /lingvo cognate result tit */
+
+/* lingvo cognate header suggestions */
+.lingvo-cognate-header-suggestions {
+  font-family: Mulish, Arial, sans-serif;
+  font-size: 24px;
+  line-height: 30px;
+  font-weight: 800;
+  margin: 0 0 6px 0;
+  color: #5d54cd;
+}
+/* /lingvo cognate header suggestions */
+
+/* lingvo cognate count */
+.lingvo-cognate-count {
+  font-size: 16px;
+  line-height: 19px;
+  margin: 0 0 6px 0;
+}
+/* /lingvo cognate count */
+
+/* lingvo cognate header results */
+.lingvo-cognate-header-results {
+  font-family: Mulish, Arial, sans-serif;
+  font-size: 22px;
+  line-height: 24px;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+}
+/* /lingvo cognate header results */
+
+/* lingvo cognate results */
+.lingvo-cognate-results {
+  align-content: center;
+  display: flex;
+  margin: 0 -12px;
+  flex-wrap: wrap;
+
+  &__item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    border-radius: 12px;
+    padding: 16px 20px;
+    max-width: 286px;
+    min-width: 286px;
+    background: #fff;
+    margin: 12px;
+    box-shadow: 0px 100px 309px rgba(210, 208, 225, 0.24), 0px 41.7776px 129.093px rgba(210, 208, 225, 0.172525),
+    0px 22.3363px 69.0192px rgba(210, 208, 225, 0.143066), 0px 12.5216px 38.6916px rgba(210, 208, 225, 0.12),
+    0px 6.6501px 20.5488px rgba(210, 208, 225, 0.0969343), 0px 2.76726px 8.55082px rgba(210, 208, 225, 0.0674749);
+
+  }
+
+  &__number {
+    font-family: Mulish, Arial, sans-serif;
+    font-size: 24px;
+    line-height: 30px;
+    font-weight: 800;
+    color: #5d54cd;
+    margin: 0 0 8px 0;
+  }
+
+  &__text {
+    font-family: Mulish, Arial, sans-serif;
+    font-size: 18px;
+    line-height: 24px;
+    font-weight: 700;
+    margin: 0;
+  }
+}
+/* /lingvo cognate results */
+
+/* lingvo cognate text */
+.lingvo-cognate-text {
+  margin: 0 0 24px 0;
+  font-family: Rubik, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+
+  & a {
+    color: #5d54cd;
+
+    &:hover {
+      color: #5d54cd;
+      text-decoration: underline;
+    }
+
+    &:active {
+      color: #372f9d;
+    }
+  }
+
+  &__title {
+    font-family: Mulish, Arial, sans-serif;
+    font-size: 18px;
+    line-height: 24px;
+    font-weight: 700;
+    margin: 0 0 2px 0;
+    display: block;
+  }
+
+  &__list {
+    margin: 0;
+  }
+
+  &__item {
+    padding: 3px 0;
+    margin: 0;
+  }
+}
+/* /lingvo cognate text */
+
+/* lingvo cognate result block */
+.lingvo-cognate-result-block {
+  & .lingvo-pagination {
+    background: transparent !important;
+  }
+}
+/* /lingvo cognate result block */

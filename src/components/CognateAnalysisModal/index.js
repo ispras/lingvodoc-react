@@ -7,19 +7,16 @@ import {
   Checkbox,
   Dimmer,
   Dropdown,
-  Header,
   Icon,
   List,
   Loader,
-  Message,
   Modal,
   Pagination,
-  Segment,
   Select
 } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql, withApollo } from "@apollo/client/react/hoc";
-import { cloneDeep, isEqual, map } from "lodash";
+import { cloneDeep, map } from "lodash";
 import PropTypes from "prop-types";
 import { branch, compose, renderNothing } from "recompose";
 import { bindActionCreators } from "redux";
@@ -959,70 +956,73 @@ class SuggestionSelection extends React.Component {
     const opacity_style = disabled_flag ? { opacity: 0.5 } : {};
 
     return (
-      <Segment key={`suggestion${index}`}>
-        <List>
-          <List.Item>
-            <span style={opacity_style}>{this.context("Source perspective word")}:</span>
+      <div className="lingvo-cognate-result-segment" key={`suggestion${index}`}>
+        <div>
+          <div className="lingvo-cognate-result-segment__block">
+            <span style={opacity_style} className="lingvo-cognate-result-tit">
+              {this.context("Source perspective word")}:
+            </span>
 
             {/* List and List.Item for uniform appearance. */}
 
-            <List>
-              <List.Item>
-                <Checkbox
-                  label={
-                    word_group ? (
-                      <label>
-                        <div>
-                          {word} ({this.state.perspective_name_list[perspective_index]})
-                        </div>
+            <div className="lingvo-cognate-checkbox lingvo-cognate-checkbox_result">
+              <Checkbox
+                label={
+                  word_group ? (
+                    <label>
+                      <div>
+                        {word} ({this.state.perspective_name_list[perspective_index]})
+                      </div>
 
-                        <div style={{ marginTop: "0.5em", marginBottom: "0.5em" }}>
-                          {this.context("Belongs to a group")}:
-                        </div>
+                      <div style={{ marginTop: "0.5em", marginBottom: "0.5em" }}>
+                        {this.context("Belongs to a group")}:
+                      </div>
 
-                        <div>
-                          {map(
-                            word_group[0],
+                      <div>
+                        {map(
+                          word_group[0],
 
-                            ([perspective_index, [transcription_str, translation_str]], word_index) => (
-                              <div key={`sg${index}gr_self_word${word_index}`}>
-                                {`${transcription_str} ${translation_str}
-                              (${this.state.perspective_name_list[perspective_index]})`}
-                              </div>
-                            )
-                          )}
-                        </div>
-                      </label>
-                    ) : (
-                      `${word} (${this.state.perspective_name_list[perspective_index]})`
-                    )
+                          ([perspective_index, [transcription_str, translation_str]], word_index) => (
+                            <div key={`sg${index}gr_self_word${word_index}`}>
+                              {`${transcription_str} ${translation_str}
+                            (${this.state.perspective_name_list[perspective_index]})`}
+                            </div>
+                          )
+                        )}
+                      </div>
+                    </label>
+                  ) : (
+                    `${word} (${this.state.perspective_name_list[perspective_index]})`
+                  )
+                }
+                checked={sg_select_list[index].hasOwnProperty(id2str(word_entry_id))}
+                disabled={disabled_flag}
+                onChange={(e, { checked }) => {
+                  if (checked) {
+                    sg_select_list[index][id2str(word_entry_id)] = null;
+                  } else {
+                    delete sg_select_list[index][id2str(word_entry_id)];
                   }
-                  checked={sg_select_list[index].hasOwnProperty(id2str(word_entry_id))}
-                  disabled={disabled_flag}
-                  onChange={(e, { checked }) => {
-                    if (checked) {
-                      sg_select_list[index][id2str(word_entry_id)] = null;
-                    } else {
-                      delete sg_select_list[index][id2str(word_entry_id)];
-                    }
 
-                    this.setState({ sg_select_list });
-                  }}
-                />
-              </List.Item>
-            </List>
-          </List.Item>
+                  this.setState({ sg_select_list });
+                }}
+                className="lingvo-checkbox lingvo-checkbox_labeled"
+              />
+            </div>
+          </div>
 
           {single_list.length > 0 && (
-            <List.Item>
-              <span style={opacity_style}>{this.context("Suggested cognates")}:</span>
+            <div className="lingvo-cognate-result-segment__block">
+              <span style={opacity_style} className="lingvo-cognate-result-tit">
+                {this.context("Suggested cognates")}:
+              </span>
 
-              <List>
+              <div>
                 {map(
                   single_list,
 
                   ([perspective_index, [transcription_str, translation_str], entry_id], single_index) => (
-                    <List.Item key={`sg${index}single${single_index}`}>
+                    <div key={`sg${index}single${single_index}`} className="lingvo-cognate-checkbox lingvo-cognate-checkbox_result">
                       <Checkbox
                         label={`${transcription_str} ${translation_str}
                         (${this.state.perspective_name_list[perspective_index]})`}
@@ -1037,24 +1037,27 @@ class SuggestionSelection extends React.Component {
 
                           this.setState({ sg_select_list });
                         }}
+                        className="lingvo-checkbox lingvo-checkbox_labeled"
                       />
-                    </List.Item>
+                    </div>
                   )
                 )}
-              </List>
-            </List.Item>
+              </div>
+            </div>
           )}
 
           {group_list.length > 0 && (
-            <List.Item>
-              <span style={opacity_style}>{this.context("Suggested cognate groups")}:</span>
+            <div className="lingvo-cognate-result-segment__block">
+              <span style={opacity_style} className="lingvo-cognate-result-tit">
+                {this.context("Suggested cognate groups")}:
+              </span>
 
-              <List>
+              <div>
                 {map(
                   group_list,
 
                   ([word_list, entry_id], group_index) => (
-                    <List.Item key={`sg${index}group${group_index}`}>
+                    <div key={`sg${index}group${group_index}`} className="lingvo-cognate-checkbox lingvo-cognate-checkbox_result">
                       <Checkbox
                         checked={sg_select_list[index].hasOwnProperty(id2str(entry_id))}
                         disabled={disabled_flag}
@@ -1083,14 +1086,15 @@ class SuggestionSelection extends React.Component {
                             </div>
                           </label>
                         }
+                        className="lingvo-checkbox lingvo-checkbox_labeled"
                       />
-                    </List.Item>
+                    </div>
                   )
                 )}
-              </List>
-            </List.Item>
+              </div>
+            </div>
           )}
-        </List>
+        </div>
 
         {connected_flag ? (
           <div className="lingvo-message lingvo-message_success">
@@ -1113,15 +1117,13 @@ class SuggestionSelection extends React.Component {
           </div>
         ) : (
           <Button
-            basic
-            positive
             content={sg_state_list[index] === "connecting" ? this.context("Connecting...") : this.context("Connect")}
             disabled={Object.keys(sg_select_list[index]).length <= 1 || sg_state_list[index] === "connecting"}
-            size="mini"
             onClick={() => sg_connect(index)}
+            className="lingvo-button-greenest"
           />
         )}
-      </Segment>
+      </div>
     );
   }
 }
@@ -2141,12 +2143,12 @@ class CognateAnalysisModal extends React.Component {
         </div>
 
         {!this.state.suggestion_list && this.props.user.id === undefined && (
-          <Message negative>
-            <Message.Header>{this.context("Unauthorized user")}</Message.Header>
+          <div className="lingvo-message lingvo-message_error" style={{ marginTop: "14px", marginBottom: "14px" }}>
+            {this.context("Unauthorized user")}
             <p>
               {this.context("Only authorized users can create new cognate connections based on cognate suggestions.")}
             </p>
-          </Message>
+          </div>
         )}
       </>
     );
@@ -2192,14 +2194,14 @@ class CognateAnalysisModal extends React.Component {
     ) {
       return (
         <Modal.Content>
-          <Message negative>
-            <Message.Header>{this.context("Perspective is not published")}</Message.Header>
+          <div className="lingvo-message lingvo-message_error" style={{ marginTop: "14px", marginBottom: "14px" }}>
+            {this.context("Perspective is not published")}
             <p>
               {this.context(
                 'Cognate suggestions are available only for perspectives in the “Published” or “Limited access” state.'
               )}
             </p>
-          </Message>
+          </div>
         </Modal.Content>
       );
     }
@@ -2417,35 +2419,35 @@ class CognateAnalysisModal extends React.Component {
 
     function f_count(getTranslation) {
       return (
-        <List>
-          <List.Item>
+        <div className="lingvo-cognate-count">
+          <span>
             {sg_count.left} {getTranslation("left")}
-          </List.Item>
+          </span>
 
           {sg_count.connecting > 0 && (
-            <List.Item>
-              {sg_count.connecting} {getTranslation("connecting...")}
-            </List.Item>
+            <span>
+              , {sg_count.connecting} {getTranslation("connecting...")}
+            </span>
           )}
 
           {sg_count.connected > 0 && (
-            <List.Item>
-              {sg_count.connected} {getTranslation("connected")}
-            </List.Item>
+            <span>
+              , {sg_count.connected} {getTranslation("connected")}
+            </span>
           )}
 
           {sg_count.invalidated > 0 && (
-            <List.Item>
-              {sg_count.invalidated} {getTranslation("invalidated")}
-            </List.Item>
+            <span>
+              , {sg_count.invalidated} {getTranslation("invalidated")}
+            </span>
           )}
 
           {sg_count.error > 0 && (
-            <List.Item>
-              {sg_count.error} {getTranslation("errors")}
-            </List.Item>
+            <span>
+              , {sg_count.error} {getTranslation("errors")}
+            </span>
           )}
-        </List>
+        </div>
       );
     }
 
@@ -2454,14 +2456,21 @@ class CognateAnalysisModal extends React.Component {
     const start_index = (sg_current_page - 1) * SUGGESTIONS_PER_PAGE;
 
     return (
-      <div>
+      <div className="lingvo-cognate-result-block">
         {sg_count.left < suggestion_list.length && f_count(this.context)}
 
-        <Pagination
-          activePage={sg_current_page}
-          totalPages={total_pages}
-          onPageChange={(e, { activePage }) => this.setState({ sg_current_page: activePage })}
-        />
+        <div style={{ paddingTop: "6px", paddingBottom: "2px" }}>
+          <Pagination
+            activePage={sg_current_page}
+            totalPages={total_pages}
+            onPageChange={(e, { activePage }) => this.setState({ sg_current_page: activePage })}
+            className="lingvo-pagination"
+            nextItem={(sg_current_page === total_pages) && { "aria-label": "Next item", content: ">", disabled: true } || { "aria-label": "Next item", content: ">" }}
+            prevItem={(sg_current_page === 1) && { "aria-label": "Previous item", content: "<", disabled: true } || { "aria-label": "Previous item", content: "<" }}
+            firstItem={(sg_current_page === 1) && { "aria-label": "First item", content: "«", disabled: true } || { "aria-label": "First item", content: "«" }}
+            lastItem={(sg_current_page === total_pages) && { "aria-label": "Last item", content: "»", disabled: true } || { "aria-label": "Last item", content: "»" }}
+          />
+        </div>
 
         {map(
           suggestion_list.slice(start_index, start_index + SUGGESTIONS_PER_PAGE),
@@ -2491,21 +2500,23 @@ class CognateAnalysisModal extends React.Component {
           )
         )}
 
-        <Pagination
-          activePage={sg_current_page}
-          totalPages={total_pages}
-          onPageChange={(e, { activePage }) => this.setState({ sg_current_page: activePage })}
-        />
+        <div style={{ paddingTop: "2px" }}>
+          <Pagination
+            activePage={sg_current_page}
+            totalPages={total_pages}
+            onPageChange={(e, { activePage }) => this.setState({ sg_current_page: activePage })}
+            className="lingvo-pagination"
+            nextItem={(sg_current_page === total_pages) && { "aria-label": "Next item", content: ">", disabled: true } || { "aria-label": "Next item", content: ">" }}
+            prevItem={(sg_current_page === 1) && { "aria-label": "Previous item", content: "<", disabled: true } || { "aria-label": "Previous item", content: "<" }}
+            firstItem={(sg_current_page === 1) && { "aria-label": "First item", content: "«", disabled: true } || { "aria-label": "First item", content: "«" }}
+            lastItem={(sg_current_page === total_pages) && { "aria-label": "Last item", content: "»", disabled: true } || { "aria-label": "Last item", content: "»" }}
+          />
+        </div>
 
-        {sg_count.left < suggestion_list.length && f_count(this.context)}
-
-        <div style={{ marginTop: "1em" }}>
+        <div style={{ marginTop: "22px", paddingBottom: "14px" }}>
           <Button
-            basic
-            positive
             content={this.context("Connect all selected")}
             disabled={sg_count.left <= 0 || sg_count.connecting > 0}
-            size="mini"
             onClick={() => {
               /* Launching connections of all suggestions with enough selected lexical entries, skipping
                * suggestions which would be invalidated if launched connections are successful. */
@@ -2530,6 +2541,7 @@ class CognateAnalysisModal extends React.Component {
                 this.sg_connect(i, false);
               }
             }}
+            className="lingvo-button-greenest"
           />
         </div>
       </div>
@@ -2607,56 +2619,85 @@ class CognateAnalysisModal extends React.Component {
 
           {this.state.library_present && this.state.result !== null && (
             <Modal.Content scrolling style={{ maxHeight: "95vh" }}>
-              <h3>
-                {this.context("Analysis results")} ({this.state.dictionary_count} {this.context("dictionaries,")} {this.state.group_count} {this.context("cognate groups and")} {this.state.transcription_count} {this.context("transcriptions analysed")}):
+              <h3 className="lingvo-cognate-header-results">
+                {this.context("Analysis results")}:
               </h3>
 
-              <List relaxed>
-                <List.Item>
+              <div className="lingvo-cognate-results">
+                <div className="lingvo-cognate-results__item">
+                  <div className="lingvo-cognate-results__number">
+                    {this.state.dictionary_count}
+                  </div>
+                  <div className="lingvo-cognate-results__text">
+                    {this.context("dictionaries")}
+                  </div>
+                </div>
+                <div className="lingvo-cognate-results__item"> 
+                  <div className="lingvo-cognate-results__number">
+                    {this.state.group_count}
+                  </div>
+                  <div className="lingvo-cognate-results__text">
+                    {this.context("cognate groups")}
+                  </div>
+                </div>
+                <div className="lingvo-cognate-results__item">
+                  <div className="lingvo-cognate-results__number">
+                    {this.state.transcription_count}
+                  </div>
+                  <div className="lingvo-cognate-results__text">
+                    {this.context("transcriptions analysed")}
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <div className="lingvo-cognate-text" style={{ paddingTop: "6px", paddingBottom: "3px" }}>
                   {this.state.not_enough_count} {this.context("cognate groups were excluded from the analysis due to not having lexical entries in at least two selected dictionaries")}.
-                </List.Item>
+                </div>
 
                 {this.state.result.length > 0 && mode !== "suggestions" && mode !== "multi_suggestions" && (
-                  <List.Item>
+                  <div className="lingvo-cognate-text" style={{ paddingTop: "6px", paddingBottom: "3px" }}>
                     <a href={this.state.xlsx_url}>{this.context("XLSX-exported analysis results")}</a>
-                  </List.Item>
+                  </div>
                 )}
 
                 {this.state.result.length > 0 && this.state.intermediate_url_list && (
-                  <List.Item>
-                    <div style={{ marginTop: "0.75em" }}>
-                      <span>{this.context("Intermediate data")}:</span>
-                      <List>
-                        {map(this.state.intermediate_url_list, intermediate_url => (
-                          <List.Item key={intermediate_url}>
-                            <a href={intermediate_url}>{intermediate_url}</a>
-                          </List.Item>
-                        ))}
-                      </List>
+                  <div className="lingvo-cognate-text">
+                    <span className="lingvo-cognate-text__title">
+                      {this.context("Intermediate data")}:
+                    </span>
+                    <div className="lingvo-cognate-text__list">
+                      {map(this.state.intermediate_url_list, intermediate_url => (
+                        <div className="lingvo-cognate-text__item" key={intermediate_url}>
+                          <a href={intermediate_url}>{intermediate_url}</a>
+                        </div>
+                      ))}
                     </div>
-                  </List.Item>
+                  </div>
                 )}
-              </List>
+              </div>
 
               {this.state.result.length <= 0 && (
-                <List>
-                  <List.Item>{this.context("No data for cognate analysis")}.</List.Item>
-                </List>
+                <div className="lingvo-cognate-text" style={{ paddingTop: "6px", paddingBottom: "3px" }}>
+                  {this.context("No data for cognate analysis")}.
+                </div>
               )}
 
               {this.state.suggestion_list && (
                 <div>
-                  <Header style={{ marginTop: "1em" }}>{this.state.suggestion_list.length} {this.context("suggestions")}</Header>
+                  <div className="lingvo-cognate-header-suggestions">
+                    {this.state.suggestion_list.length} {this.context("suggestions")}:
+                  </div>
 
                   {this.props.user.id === undefined ? (
-                    <Message negative>
-                      <Message.Header>{this.context("Unauthorized user")}</Message.Header>
+                    <div className="lingvo-message lingvo-message_error">
+                      {this.context("Unauthorized user")}
                       <p>
                         {this.context(
                           "Only authorized users can create new cognate connections based on cognate suggestions."
                         )}
                       </p>
-                    </Message>
+                    </div>
                   ) : (
                     <div>{this.suggestions_render()}</div>
                   )}

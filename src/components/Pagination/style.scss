@@ -87,6 +87,7 @@
   & .item {
     margin: 4px !important;
     border: 1px solid #dcdcdc !important;
+    background-color: #fff !important;
     border-radius: 8px !important;
     padding: 4px 8px !important;
     min-width: 32px !important;
@@ -137,6 +138,7 @@
   &.ui.menu .item.disabled,
   &.ui.menu .item.disabled:hover {
     color: #999ca0 !important;
+    background-color: #fff !important;
   }
 
   @media only screen and (max-device-width: 580px), only screen and (max-width: 580px) {
