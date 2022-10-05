@@ -2619,10 +2619,6 @@ class CognateAnalysisModal extends React.Component {
 
           {this.state.library_present && this.state.result !== null && (
             <Modal.Content scrolling style={{ maxHeight: "95vh" }}>
-              {/*<h3>
-                {this.context("Analysis results")} ({this.state.dictionary_count} {this.context("dictionaries,")} {this.state.group_count} {this.context("cognate groups and")} {this.state.transcription_count} {this.context("transcriptions analysed")}):
-              </h3>*/}
-
               <h3 className="lingvo-cognate-header-results">
                 {this.context("Analysis results")}:
               </h3>
