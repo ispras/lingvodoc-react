@@ -963,8 +963,6 @@ class SuggestionSelection extends React.Component {
               {this.context("Source perspective word")}:
             </span>
 
-            {/* List and List.Item for uniform appearance. */}
-
             <div className="lingvo-cognate-checkbox lingvo-cognate-checkbox_result">
               <Checkbox
                 label={
@@ -2253,11 +2251,9 @@ class CognateAnalysisModal extends React.Component {
         </div>
 
         {!this.state.library_present && (
-          <List>
-            <div style={{ color: "red" }}>
-              {this.context("Analysis library is absent, please contact system administrator")}.
-            </div>
-          </List>
+          <div className="lingvo-message lingvo-message_error" style={{ marginTop: "14px", marginBottom: "14px" }}>
+            {this.context("Analysis library is absent, please contact system administrator")}.
+          </div>
         )}
 
         {!error_flag && this.props.mode === "suggestions" && this.match_translations_render()}
@@ -2705,193 +2701,197 @@ class CognateAnalysisModal extends React.Component {
               )}
 
               {this.state.plotly_data.length > 0 && (
-                <List>
-                  <List.Item>{this.context("Etymological distance tree")}:</List.Item>
+                <div className="lingvo-cognate-text">
+                  <div className="lingvo-cognate-text__title">
+                    {this.context("Etymological distance tree")}:
+                  </div>
 
-                  {this.state.embedding_2d.length <= 25 ? (
-                    <List.Item>
-                      <Plot
-                        data={this.state.plotly_data}
-                        layout={{
-                          width: 1200,
-                          height: 800 + 28 * this.state.embedding_2d.length,
-                          xaxis: {
-                            color: "#DDD",
-                            gridcolor: "#DDD",
-                            tickfont: { color: "#444" }
-                          },
-                          yaxis: {
-                            color: "#DDD",
-                            gridcolor: "#DDD",
-                            tickfont: { color: "#444" },
-                            scaleanchor: "x"
-                          },
-                          legend: {
-                            xanchor: "left",
-                            yanchor: "top",
-                            x: 0.0,
-                            y: -0.05,
-                            font: { size: 14 },
-                            itemsizing: "constant"
-                          },
-                          title: this.context("Minimum spanning tree (2d relative distance embedding)")
-                        }}
-                      />
-                    </List.Item>
-                  ) : (
-                    <List.Item>
-                      <Plot
-                        data={this.state.plotly_data}
-                        layout={{
-                          width: 1200,
-                          height: 800,
-                          xaxis: {
-                            color: "#DDD",
-                            gridcolor: "#DDD",
-                            tickfont: { color: "#444" }
-                          },
-                          yaxis: {
-                            color: "#DDD",
-                            gridcolor: "#DDD",
-                            tickfont: { color: "#444" },
-                            scaleanchor: "x"
-                          },
-                          showlegend: false,
-                          title: this.context("Minimum spanning tree (2d relative distance embedding)")
-                        }}
-                      />
-                      <Plot
-                        data={this.state.plotly_legend_data}
-                        layout={{
-                          width: 1200,
-                          height: 24 * this.state.embedding_2d.length,
-                          xaxis: {
-                            visible: false
-                          },
-                          yaxis: {
-                            visible: false
-                          },
-                          legend: {
-                            xanchor: "left",
-                            yanchor: "top",
-                            x: 0.0,
-                            y: 1.0,
-                            font: { size: 14 },
-                            itemsizing: "constant"
-                          },
-                          title: this.context("Legend")
-                        }}
-                      />
-                    </List.Item>
-                  )}
-                  {this.state.embedding_3d.length <= 25 ? (
-                    <List.Item>
-                      <Plot
-                        data={this.state.plotly_3d_data}
-                        layout={{
-                          width: 1200,
-                          height: 900 + 28 * this.state.embedding_2d.length,
-                          scene: {
+                  <div className="lingvo-cognate-text__list">
+                    {this.state.embedding_2d.length <= 25 ? (
+                      <div className="lingvo-cognate-text__item">
+                        <Plot
+                          data={this.state.plotly_data}
+                          layout={{
+                            width: 1200,
+                            height: 800 + 28 * this.state.embedding_2d.length,
                             xaxis: {
                               color: "#DDD",
                               gridcolor: "#DDD",
-                              tickfont: { color: "#444" },
-                              range: this.state.x_range
+                              tickfont: { color: "#444" }
                             },
                             yaxis: {
                               color: "#DDD",
                               gridcolor: "#DDD",
                               tickfont: { color: "#444" },
-                              range: this.state.y_range
+                              scaleanchor: "x"
                             },
-                            zaxis: {
-                              color: "#DDD",
-                              gridcolor: "#DDD",
-                              tickfont: { color: "#444" },
-                              range: this.state.z_range
+                            legend: {
+                              xanchor: "left",
+                              yanchor: "top",
+                              x: 0.0,
+                              y: -0.05,
+                              font: { size: 14 },
+                              itemsizing: "constant"
                             },
-                            camera: {
-                              eye: {
-                                x: 0,
-                                y: (-this.state.z_span / Math.max(this.state.y_span, this.state.z_span)) * 1.5,
-                                z: (this.state.y_span / Math.max(this.state.y_span, this.state.z_span)) * 1.5
-                              }
-                            }
-                          },
-                          legend: {
-                            x: -0.05,
-                            y: -0.05,
-                            yanchor: "top",
-                            font: { size: 14 },
-                            itemsizing: "constant"
-                          },
-                          title: this.context("Minimum spanning tree (3d relative distance embedding)")
-                        }}
-                      />
-                    </List.Item>
-                  ) : (
-                    <List.Item>
-                      <Plot
-                        data={this.state.plotly_3d_data}
-                        layout={{
-                          width: 1200,
-                          height: 900,
-                          scene: {
+                            title: this.context("Minimum spanning tree (2d relative distance embedding)")
+                          }}
+                        />
+                      </div>
+                    ) : (
+                      <div className="lingvo-cognate-text__item">
+                        <Plot
+                          data={this.state.plotly_data}
+                          layout={{
+                            width: 1200,
+                            height: 800,
                             xaxis: {
                               color: "#DDD",
                               gridcolor: "#DDD",
-                              tickfont: { color: "#444" },
-                              range: this.state.x_range
+                              tickfont: { color: "#444" }
                             },
                             yaxis: {
                               color: "#DDD",
                               gridcolor: "#DDD",
                               tickfont: { color: "#444" },
-                              range: this.state.y_range
+                              scaleanchor: "x"
                             },
-                            zaxis: {
-                              color: "#DDD",
-                              gridcolor: "#DDD",
-                              tickfont: { color: "#444" },
-                              range: this.state.z_range
+                            showlegend: false,
+                            title: this.context("Minimum spanning tree (2d relative distance embedding)")
+                          }}
+                        />
+                        <Plot
+                          data={this.state.plotly_legend_data}
+                          layout={{
+                            width: 1200,
+                            height: 24 * this.state.embedding_2d.length,
+                            xaxis: {
+                              visible: false
                             },
-                            camera: {
-                              eye: {
-                                x: 0,
-                                y: (-this.state.z_span / Math.max(this.state.y_span, this.state.z_span)) * 1.5,
-                                z: (this.state.y_span / Math.max(this.state.y_span, this.state.z_span)) * 1.5
+                            yaxis: {
+                              visible: false
+                            },
+                            legend: {
+                              xanchor: "left",
+                              yanchor: "top",
+                              x: 0.0,
+                              y: 1.0,
+                              font: { size: 14 },
+                              itemsizing: "constant"
+                            },
+                            title: this.context("Legend")
+                          }}
+                        />
+                      </div>
+                    )}
+                    {this.state.embedding_3d.length <= 25 ? (
+                      <div className="lingvo-cognate-text__item">
+                        <Plot
+                          data={this.state.plotly_3d_data}
+                          layout={{
+                            width: 1200,
+                            height: 900 + 28 * this.state.embedding_2d.length,
+                            scene: {
+                              xaxis: {
+                                color: "#DDD",
+                                gridcolor: "#DDD",
+                                tickfont: { color: "#444" },
+                                range: this.state.x_range
+                              },
+                              yaxis: {
+                                color: "#DDD",
+                                gridcolor: "#DDD",
+                                tickfont: { color: "#444" },
+                                range: this.state.y_range
+                              },
+                              zaxis: {
+                                color: "#DDD",
+                                gridcolor: "#DDD",
+                                tickfont: { color: "#444" },
+                                range: this.state.z_range
+                              },
+                              camera: {
+                                eye: {
+                                  x: 0,
+                                  y: (-this.state.z_span / Math.max(this.state.y_span, this.state.z_span)) * 1.5,
+                                  z: (this.state.y_span / Math.max(this.state.y_span, this.state.z_span)) * 1.5
+                                }
                               }
-                            }
-                          },
-                          showlegend: false,
-                          title: this.context("Minimum spanning tree (3d relative distance embedding)")
-                        }}
-                      />
-                      <Plot
-                        data={this.state.plotly_legend_data}
-                        layout={{
-                          width: 1200,
-                          height: 24 * this.state.embedding_2d.length,
-                          xaxis: {
-                            visible: false
-                          },
-                          yaxis: {
-                            visible: false
-                          },
-                          legend: {
-                            xanchor: "left",
-                            yanchor: "top",
-                            x: 0.0,
-                            y: 1.0,
-                            font: { size: 14 },
-                            itemsizing: "constant"
-                          },
-                          title: this.context("Legend")
-                        }}
-                      />
-                    </List.Item>
-                  )}
-                </List>
+                            },
+                            legend: {
+                              x: -0.05,
+                              y: -0.05,
+                              yanchor: "top",
+                              font: { size: 14 },
+                              itemsizing: "constant"
+                            },
+                            title: this.context("Minimum spanning tree (3d relative distance embedding)")
+                          }}
+                        />
+                      </div>
+                    ) : (
+                      <div className="lingvo-cognate-text__item">
+                        <Plot
+                          data={this.state.plotly_3d_data}
+                          layout={{
+                            width: 1200,
+                            height: 900,
+                            scene: {
+                              xaxis: {
+                                color: "#DDD",
+                                gridcolor: "#DDD",
+                                tickfont: { color: "#444" },
+                                range: this.state.x_range
+                              },
+                              yaxis: {
+                                color: "#DDD",
+                                gridcolor: "#DDD",
+                                tickfont: { color: "#444" },
+                                range: this.state.y_range
+                              },
+                              zaxis: {
+                                color: "#DDD",
+                                gridcolor: "#DDD",
+                                tickfont: { color: "#444" },
+                                range: this.state.z_range
+                              },
+                              camera: {
+                                eye: {
+                                  x: 0,
+                                  y: (-this.state.z_span / Math.max(this.state.y_span, this.state.z_span)) * 1.5,
+                                  z: (this.state.y_span / Math.max(this.state.y_span, this.state.z_span)) * 1.5
+                                }
+                              }
+                            },
+                            showlegend: false,
+                            title: this.context("Minimum spanning tree (3d relative distance embedding)")
+                          }}
+                        />
+                        <Plot
+                          data={this.state.plotly_legend_data}
+                          layout={{
+                            width: 1200,
+                            height: 24 * this.state.embedding_2d.length,
+                            xaxis: {
+                              visible: false
+                            },
+                            yaxis: {
+                              visible: false
+                            },
+                            legend: {
+                              xanchor: "left",
+                              yanchor: "top",
+                              x: 0.0,
+                              y: 1.0,
+                              font: { size: 14 },
+                              itemsizing: "constant"
+                            },
+                            title: this.context("Legend")
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
               )}
               <div>
                 <pre>{this.state.result}</pre>
