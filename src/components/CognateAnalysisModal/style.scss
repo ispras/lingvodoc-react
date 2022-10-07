@@ -53,40 +53,6 @@
 }
 /* /lingvo cognate grid */
 
-/* lingvo cognate all languages checkbox */
-.lingvo-cognate-all-languages-checkbox {
-  padding: 20px 0 0 0;
-  margin: 0 0 20px 0;
-
-  & .lingvo-checkbox.ui.checkbox {
-    font-size: 16px !important;
-    line-height: 22px !important;
-
-    & label {
-      font-size: 16px !important;
-      line-height: 22px !important;
-      padding-left: 25px !important;
-    }
-
-    & .box:before,
-    & label:before {
-      top: 2px !important;
-      line-height: 17px !important;
-    }
-
-    & .box:after,
-    & label:after {
-      top: 2px !important;
-      line-height: 17px !important;
-    }
-
-    & input[type=checkbox] {
-      top: 2px !important;
-    }
-  }
-}
-/* /lingvo cognate all languages checkbox */
-
 /* lingvo cognate language checkbox */
 .lingvo-cognate-language-checkbox {
   padding: 0 0 0 14px;
@@ -112,6 +78,11 @@
     margin: 0 0 5px 0;
   }
 
+  &_all-langs {
+    padding: 20px 0 0 0;
+    margin: 0 0 20px 0;
+  }
+
   & .lingvo-checkbox.ui.checkbox {
     font-size: 16px !important;
     line-height: 22px !important;
@@ -136,6 +107,11 @@
 
     & input[type=checkbox] {
       top: 2px !important;
+    }
+
+    & input:not([type=radio]):indeterminate ~ .box:after,
+    & input:not([type=radio]):indeterminate ~ label:after {
+      top: 3px !important;
     }
   }
 }
