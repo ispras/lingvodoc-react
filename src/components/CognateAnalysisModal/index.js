@@ -349,7 +349,7 @@ class SLSelection extends React.Component {
 
     return (
       <div>
-        <div className="lingvo-cognate-all-languages-checkbox">
+        <div className="lingvo-cognate-checkbox lingvo-cognate-checkbox_all-langs">
           <Checkbox
             label={this.context("Select/deselect all dictionaries")}
             checked={p_select_count >= p_max_count}
@@ -800,7 +800,7 @@ class MLSelection extends React.Component {
 
     return (
       <div>
-        <div className="lingvo-cognate-all-languages-checkbox">
+        <div className="lingvo-cognate-checkbox lingvo-cognate-checkbox_all-langs">
           <Checkbox
             label={this.context("Select/deselect all dictionaries")}
             checked={p_select_count >= p_max_count}
