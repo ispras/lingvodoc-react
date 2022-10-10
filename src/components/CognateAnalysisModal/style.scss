@@ -53,21 +53,6 @@
 }
 /* /lingvo cognate grid */
 
-/* lingvo cognate language checkbox */
-.lingvo-cognate-language-checkbox {
-  padding: 0 0 0 14px;
-  margin: 0 0 10px 0;
-
-  & .lingvo-checkbox.ui.checkbox {
-    font-size: 16px !important;
-
-    & label {
-      font-size: 16px !important;
-    }
-  }
-}
-/* /lingvo cognate language checkbox */
-
 /* lingvo cognate checkbox */
 .lingvo-cognate-checkbox {
   padding: 8px 0 0 0;
@@ -81,6 +66,11 @@
   &_all-langs {
     padding: 20px 0 0 0;
     margin: 0 0 20px 0;
+  }
+
+  &_lang {
+    padding: 0 0 0 14px;
+    margin: 0 0 10px 0;
   }
 
   & .lingvo-checkbox.ui.checkbox {
@@ -135,6 +125,7 @@
 
     & label {
       font-size: 16px !important;
+      padding-left: 25px !important;
     }
   }
 
@@ -155,7 +146,7 @@
 
   & .lingvo-cognate-grid {
     padding-top: 15px;
-    padding-left: 34px;
+    padding-left: 30px;
   }
 }
 /* /lingvo cognate sub language */
@@ -258,6 +249,10 @@
   &__block {
     margin: 0;
     padding: 0 0 6px 0;
+  }
+
+  @media only screen and (max-device-width: 500px), only screen and (max-width: 500px) {
+    padding: 20px;
   }
 }
 /* /lingvo cognate result segment */

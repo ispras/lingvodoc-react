@@ -278,7 +278,6 @@ class SLPerspectiveSelection extends React.Component {
         </div>
         {perspectiveSelectionList[index] && (
           <div className="lingvo-cognate-grid" key="selection">
-            {/*<List.Item key="selection_xcript">*/}
             <div className="lingvo-cognate-grid__name">
               {this.context("Source transcription field")}:
             </div>
@@ -296,8 +295,6 @@ class SLPerspectiveSelection extends React.Component {
                 className="lingvo-dropdown-select lingvo-dropdown-select_cognate"
               />
             </div>
-            {/*</List.Item>*/}
-            {/*<List.Item key="selection_xlat">*/}
             <div className="lingvo-cognate-grid__name">
               {this.context("Source translation field")}:
             </div>
@@ -315,7 +312,6 @@ class SLPerspectiveSelection extends React.Component {
                 className="lingvo-dropdown-select lingvo-dropdown-select_cognate"
               />
             </div>
-            {/*</List.Item>*/}
           </div>
         )}
       </div>
@@ -848,7 +844,7 @@ class MLSelection extends React.Component {
                   </div>
                 ) : (
                   <div>
-                    <div className="lingvo-cognate-language-checkbox">
+                    <div className="lingvo-cognate-checkbox lingvo-cognate-checkbox_lang">
                         <Checkbox
                           label={this.context("Select/deselect all language's dictionaries")}
                           checked={p_language_select_count >= p_language_max_count}
