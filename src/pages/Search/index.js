@@ -174,9 +174,10 @@ class Wrapper extends React.Component {
     const needToRenderLanguageTree = checkResult.check;
 
     const searchResults = Immutable.fromJS(advancedSearch);
-    const resultsCount = searchResults
+    const resultsCount = searchResults.get("dictionaries").size;
+    const mapCount = searchResults
       .get("dictionaries")
-      .filter(d => d.getIn(["additional_metadata", "location"]) !== null);
+      .filter(d => d.getIn(["additional_metadata", "location"]) !== null).size;
     let searchResultsTree = null;
     if (needToRenderLanguageTree) {
       const languages = Immutable.fromJS(allLanguages);
@@ -188,7 +189,7 @@ class Wrapper extends React.Component {
       <div>
         <Message positive>
           <div>
-            {`${this.context("Found")} ${resultsCount.size} ${this.context("results on")} `}
+            {`${this.context("Found")} ${resultsCount} ${this.context("results")}, ${mapCount} ${this.context("on")} `}
             <a
               href=""
               onClick={e => {

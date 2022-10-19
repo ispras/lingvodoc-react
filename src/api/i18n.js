@@ -696,6 +696,7 @@ export const stringsToTranslate = [
   "responsible editor of Ural dictionaries",
   "Result",
   "resultative",
+  "results",
   "results on",
   "Return to tree",
   "Role",
