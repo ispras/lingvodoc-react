@@ -2008,6 +2008,22 @@ body {
     width: 12px;
     height: 8px;
     background-color: #999ca0;
+
+    &_up {
+      transform: rotate(180deg);
+
+      &:hover {
+        background-color: #5d54cd;
+      }
+    }
+
+    &_down {
+      
+      &:hover {
+        background-color: #5d54cd;
+      }
+    }
+
   }
 
   &_sort_up {
@@ -2171,6 +2187,12 @@ body {
     height: 12px !important;
     left: 16px !important;
     bottom: -6px !important;
+  }
+}
+
+.lingvo-popup-break {
+  & .content {
+    overflow-wrap: break-word;
   }
 }
 /* /popups */
@@ -3062,6 +3084,46 @@ body {
 
       @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
         min-width: 100% !important;
+      }
+    }
+  }
+
+  &_fields {
+    &.ui.selection.dropdown {
+      min-width: 290px !important;
+
+      @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+        min-width: 100% !important;
+      }
+    }
+  }
+
+  &_dark {
+    &.dropdown {
+      &.active {
+        background: #5d54cd !important;
+        color: #fff !important;
+        transition: all 0.2s;
+
+        & > .text {
+          color: #fff !important;
+          transition: color 0.2s;
+        }
+
+        & .lingvo-icon {
+          &_arrow {
+            transition: background-color 0.2s;
+            background-color: #fff;
+          }
+        }
+
+        &.ui.search.selection input::selection {
+          background-color: #fff !important;
+        }
+
+        &.ui.search.selection > input.search {
+          color: #fff !important;
+        }
       }
     }
   }

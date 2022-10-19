@@ -31,7 +31,12 @@ const SoundEntityContent = onlyUpdateForKeys(["entity", "mode"])(
         return (
           <Button.Group basic icon size="mini">
             <Button as="a" href={entity.content} icon="download" />
-            <Popup trigger={<Button content={content(entity.content)} />} content={entity.content} />
+            <Popup 
+              trigger={<Button content={content(entity.content)} />} 
+              content={entity.content} 
+              hideOnScroll={true}
+              className="lingvo-popup-break"
+            />
             <Button icon="play" onClick={() => actions.openPlayer(entity)} />
             <Button
               icon="remove"
@@ -45,7 +50,12 @@ const SoundEntityContent = onlyUpdateForKeys(["entity", "mode"])(
           <div className="lingvo-entry-text">
             <Button.Group basic icon size="mini">
               <Button as="a" href={entity.content} icon="download" />
-              <Popup trigger={<Button content={content(entity.content)} />} content={entity.content} />
+              <Popup 
+                trigger={<Button content={content(entity.content)} />} 
+                content={entity.content} 
+                hideOnScroll={true}
+                className="lingvo-popup-break"
+              />
               <Button icon="play" onClick={() => actions.openPlayer(entity)} />
             </Button.Group>
             <Checkbox
@@ -61,7 +71,12 @@ const SoundEntityContent = onlyUpdateForKeys(["entity", "mode"])(
         return (
           <Button.Group basic icon size="mini">
             <Button as="a" href={entity.content} icon="download" />
-            <Popup trigger={<Button content={content(entity.content)} />} content={entity.content} />
+            <Popup 
+              trigger={<Button content={content(entity.content)} />} 
+              content={entity.content} 
+              hideOnScroll={true}
+              className="lingvo-popup-break"
+            />
             <Button icon="play" onClick={() => actions.openPlayer(entity)} />
           </Button.Group>
         );
@@ -72,7 +87,9 @@ const SoundEntityContent = onlyUpdateForKeys(["entity", "mode"])(
             <Button basic color="black" as="a" href={entity.content} icon="download" />
             <Popup
               trigger={<Button basic color="black" content={content(entity.content)} />}
-              content={entity.content}
+              content={entity.content} 
+              hideOnScroll={true}
+              className="lingvo-popup-break"
             />
             <Button basic color="black" icon="play" onClick={() => actions.openPlayer(entity)} />
             {!entity.accepted && <Button basic color="black" icon="check" onClick={() => accept(entity, true)} />}
