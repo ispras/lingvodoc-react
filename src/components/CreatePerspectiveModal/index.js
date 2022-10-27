@@ -1,6 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
-import { Button, Grid, Header, Modal, Select } from "semantic-ui-react";
+import { Button, Modal } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
 import { fromJS, List, Map } from "immutable";
@@ -10,11 +10,13 @@ import { compose } from "recompose";
 import { bindActionCreators } from "redux";
 
 import { chooseTranslation as T } from "api/i18n";
-import Translations from "components/Translation";
+import Translations from "components/Translation2";
 import { closeModal as closeCreatePerspectiveModal } from "ducks/createPerspective";
 import TranslationContext from "Layout/TranslationContext";
 import Fields from "pages/CreateDictionary/Fields";
 import { queryAvailablePerspectives as queryPerspectivePathAvailable } from "pages/Perspective/PerspectivePath";
+
+import "./style.scss";
 
 const queryAvailablePerspectives = gql`
   query availablePerspectives($dictionary_id: LingvodocID!) {
@@ -104,10 +106,18 @@ class CreatePerspectiveModal extends React.Component {
         <Modal.Header>{this.context("Create perspective")}</Modal.Header>
 
         <Modal.Content>
-          <Header>{this.context("Perspective names")}</Header>
-          <Translations onChange={translations => this.setState({ translations })} />
+          <h4 className="lingvo-create-perspective__header">
+            {this.context("Perspective names")}
+          </h4>
+          <Translations 
+            onChange={translations => this.setState({ translations })} 
+            textAddButton="Add"
+          />
 
-          <Header>{this.context("Perspective fields")}</Header>
+          <h4 className="lingvo-create-perspective__header">
+            {this.context("Perspective fields")}
+          </h4>
+          
           <Fields
             mode={category == 0 ? "dictionary" : "corpus"}
             perspectives={perspective_info_list}
@@ -117,6 +127,7 @@ class CreatePerspectiveModal extends React.Component {
                 fields: f
               })
             }
+            translations={this.state.translations}
           />
         </Modal.Content>
 

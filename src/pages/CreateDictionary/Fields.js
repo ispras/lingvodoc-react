@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useContext } from "react";
 import { connect } from "react-redux";
 import { Button, Checkbox, Dropdown, Grid, Icon, List } from "semantic-ui-react";
 import { graphql, withApollo } from "@apollo/client/react/hoc";
-import { isEqual } from "lodash";
+import { every, isEqual } from "lodash";
 import PropTypes from "prop-types";
 import { branch, compose, renderNothing } from "recompose";
 import { bindActionCreators } from "redux";
@@ -16,13 +16,12 @@ import { uuidv4 as uuid } from "utils/uuid";
 
 import { allFieldsQuery, corpusTemplateFieldsQuery } from "./graphql";
 
-const CheckboxWithMargins = styled(Checkbox)`
-  margin-left: 0.5em;
-  margin-right: 0.5em;
-`;
+import "./styles_fields.scss";
 
 const NestedColumn = ({ column, columns, fields, onChange }) => {
   const nested = columns.find(({ self_id: s }) => column.id === s);
+
+  const getTranslation = useContext(TranslationContext);
 
   const options = columns
     .filter(c => !isEqual(c.id, column.id))
@@ -33,11 +32,14 @@ const NestedColumn = ({ column, columns, fields, onChange }) => {
 
   return (
     <Dropdown
+      className="lingvo-dropdown-select lingvo-dropdown-select_dark lingvo-dropdown-select_fields"
       selection
       search
       options={options}
       value={nested ? nested.id : null}
       onChange={(a, { value }) => onChange(value, nested ? nested.id : null)}
+      icon={<i className="lingvo-icon lingvo-icon_arrow" />}
+      noResultsMessage={getTranslation("No results found.")}
     />
   );
 };
@@ -149,39 +151,54 @@ class Column extends React.Component {
     const currentField = id2str(this.state.field_id);
 
     return (
-      <span>
-        <Dropdown
-          selection
-          search
-          value={currentField}
-          options={options}
-          onChange={(a, { value }) => this.onFieldChange(value)}
-          disabled={!field}
-          loading={!field}
-        />
-        {field && field.data_type === "Link" && (
+      <div className="lingvo-create-fields-block">
+      {/*<div className={(field && field.data_type === "Link") ? (this.state.hasNestedField ? "lingvo-create-fields-block lingvo-create-fields-block_free" : "lingvo-create-fields-block lingvo-create-fields-block_link") : "lingvo-create-fields-block"}>*/}
+        <div className="lingvo-create-fields-block__dropdown">
           <Dropdown
+            className="lingvo-dropdown-select lingvo-dropdown-select_dark lingvo-dropdown-select_fields"
             selection
             search
-            defaultValue={this.state.link_id ? id2str(this.state.link_id) : null}
-            options={availablePerspectives}
-            onChange={(a, { value }) => this.onLinkChange(value)}
+            value={currentField}
+            options={options}
+            onChange={(a, { value }) => this.onFieldChange(value)}
+            disabled={!field}
+            loading={!field}
+            icon={<i className="lingvo-icon lingvo-icon_arrow" />}
           />
+        </div>
+        {/* Paradigm and contexts */}
+        {field && field.data_type === "Link" && (
+          <div className="lingvo-create-fields-block__dropdown lingvo-create-fields-block__dropdown_link">
+            <Dropdown
+              className="lingvo-dropdown-select lingvo-dropdown-select_dark lingvo-dropdown-select_fields"
+              selection
+              search
+              defaultValue={this.state.link_id ? id2str(this.state.link_id) : null}
+              options={availablePerspectives}
+              onChange={(a, { value }) => this.onLinkChange(value)}
+              icon={<i className="lingvo-icon lingvo-icon_arrow" />}
+            />
+          </div>
         )}
         {field &&
           field.data_type !== "Link" &&
           field.data_type !== "Directed Link" &&
           field.data_type !== "Grouping Tag" && (
-            <CheckboxWithMargins
-              defaultChecked={this.state.hasNestedField}
-              onChange={(e, { checked }) => this.onNestedCheckboxChange(checked)}
-              label={this.context("has linked field")}
-            />
+            <div className="lingvo-create-fields-block__checkbox">
+              <Checkbox 
+                defaultChecked={this.state.hasNestedField}
+                onChange={(e, { checked }) => this.onNestedCheckboxChange(checked)}
+                label={this.context("has linked field")}
+                className="lingvo-checkbox lingvo-checkbox_labeled"
+              />
+            </div>
           )}
         {this.state.hasNestedField && (
-          <NestedColumn column={column} columns={columns} fields={fields} onChange={this.onNestedChange} />
+          <div className="lingvo-create-fields-block__dropdown">
+            <NestedColumn column={column} columns={columns} fields={fields} onChange={this.onNestedChange} />
+          </div>
         )}
-      </span>
+      </div>
     );
   }
 }
@@ -349,19 +366,21 @@ class Columns extends React.Component {
 
     const {
       perspectives,
+      translations,
       data: { all_fields: allFields }
     } = this.props;
     const { columns } = this.state;
 
+    const columnsFiltered = columns.filter(column => !column.self_id);
+    
     return (
       <div>
-        <List divided relaxed>
-          {columns
-            .filter(column => !column.self_id)
-            .map(column => (
-              <List.Item key={column.id}>
-                <Grid centered columns={2}>
-                  <Grid.Column width={11}>
+        <List relaxed>
+          {columnsFiltered
+            .map((column, i) => (
+              <List.Item key={column.id} style={{ padding: "0" }}>
+                <div className="lingvo-fields-grid">
+                  <div className="lingvo-fields-grid__data">
                     <ColumnWithData
                       column={column}
                       columns={columns}
@@ -369,23 +388,38 @@ class Columns extends React.Component {
                       perspectives={perspectives}
                       onChange={this.onChangeColumn}
                     />
-                  </Grid.Column>
-                  <Grid.Column width={1}>
+                  </div>
+                  <div className="lingvo-fields-grid__buttons">
                     <Button.Group icon>
-                      <Button basic icon="caret up" onClick={() => this.onChangePos(column, "up")} />
-                      <Button basic icon="caret down" onClick={() => this.onChangePos(column, "down")} />
-                      <Button negative icon="cancel" onClick={() => this.onRemove(column)} />
+                      <Button 
+                        icon={<i className="lingvo-icon lingvo-icon_arrow lingvo-icon_arrow_up" />}
+                        onClick={() => this.onChangePos(column, "up")} 
+                        className="lingvo-fields-button-action"
+                        disabled={i === 0}
+                      />
+                      <Button 
+                        icon={<i className="lingvo-icon lingvo-icon_arrow lingvo-icon_arrow_down" />}
+                        onClick={() => this.onChangePos(column, "down")}
+                        className="lingvo-fields-button-action"
+                        disabled={i === columnsFiltered.length-1}
+                      />
+                      <Button
+                        icon={<i className="lingvo-icon lingvo-icon_trash" />}
+                        onClick={() => this.onRemove(column)}
+                        className="lingvo-fields-button-action lingvo-fields-button-action_disab-hidden"
+                      />
                     </Button.Group>
-                  </Grid.Column>
-                </Grid>
+                  </div>
+                </div>
               </List.Item>
             ))}
         </List>
 
         <Button
-          basic
+          className="lingvo-button-violet"
           content={this.context("Add new column")}
           onClick={() => this.onCreate(allFields.find(f => f.data_type === "Text"))}
+          disabled={translations.length === 0 || (every(translations, translation => translation.content.length === 0))}
         />
       </div>
     );
@@ -399,6 +433,7 @@ Columns.propTypes = {
   mode: PropTypes.string,
   perspective: PropTypes.object,
   perspectives: PropTypes.array.isRequired,
+  translations: PropTypes.array,
   data: PropTypes.object,
   onChange: PropTypes.func.isRequired
 };

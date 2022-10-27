@@ -217,7 +217,7 @@ class Translations extends React.Component {
   render() {
     const {
       data: { error, loading, all_locales: locales },
-      textArea
+      textArea, textAddButton
     } = this.props;
 
     if (loading || error) {
@@ -248,7 +248,7 @@ class Translations extends React.Component {
         </List>
         <Button
           onClick={this.addTranslation}
-          content={this.context("Add translation")}
+          content={textAddButton && this.context(textAddButton) || this.context("Add translation")}
           disabled={this.isAddTranslationDisabled()}
           className="lingvo-button-violet"
         />
