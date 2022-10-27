@@ -800,6 +800,7 @@ export const stringsToTranslate = [
   "subjunctive",
   "Submit",
   "Successfully added",
+  "Successfully created perspective.",
   "Successfully deleted organization",
   "Successfully removed",
   "Suggested cognates",
