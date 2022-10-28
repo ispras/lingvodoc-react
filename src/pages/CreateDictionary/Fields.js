@@ -1,12 +1,11 @@
 import React, { useContext } from "react";
 import { connect } from "react-redux";
-import { Button, Checkbox, Dropdown, Grid, Icon, List } from "semantic-ui-react";
+import { Button, Checkbox, Dropdown, Icon, List } from "semantic-ui-react";
 import { graphql, withApollo } from "@apollo/client/react/hoc";
 import { every, isEqual } from "lodash";
 import PropTypes from "prop-types";
 import { branch, compose, renderNothing } from "recompose";
 import { bindActionCreators } from "redux";
-import styled from "styled-components";
 
 import { chooseTranslation as T } from "api/i18n";
 import { openCreateFieldModal } from "ducks/fields";
@@ -152,7 +151,6 @@ class Column extends React.Component {
 
     return (
       <div className="lingvo-create-fields-block">
-      {/*<div className={(field && field.data_type === "Link") ? (this.state.hasNestedField ? "lingvo-create-fields-block lingvo-create-fields-block_free" : "lingvo-create-fields-block lingvo-create-fields-block_link") : "lingvo-create-fields-block"}>*/}
         <div className="lingvo-create-fields-block__dropdown">
           <Dropdown
             className="lingvo-dropdown-select lingvo-dropdown-select_dark lingvo-dropdown-select_fields"
@@ -166,7 +164,6 @@ class Column extends React.Component {
             icon={<i className="lingvo-icon lingvo-icon_arrow" />}
           />
         </div>
-        {/* Paradigm and contexts */}
         {field && field.data_type === "Link" && (
           <div className="lingvo-create-fields-block__dropdown lingvo-create-fields-block__dropdown_link">
             <Dropdown
@@ -414,7 +411,7 @@ class Columns extends React.Component {
               </List.Item>
             ))}
         </List>
-
+        
         <Button
           className="lingvo-button-violet"
           content={this.context("Add new column")}
