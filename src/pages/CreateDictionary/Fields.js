@@ -411,12 +411,12 @@ class Columns extends React.Component {
               </List.Item>
             ))}
         </List>
-        
+
         <Button
           className="lingvo-button-violet"
           content={this.context("Add new column")}
           onClick={() => this.onCreate(allFields.find(f => f.data_type === "Text"))}
-          disabled={translations.length === 0 || (every(translations, translation => translation.content.length === 0))}
+          disabled={translations && (translations.length === 0 || (every(translations, translation => translation.content.length === 0)))}
         />
       </div>
     );
