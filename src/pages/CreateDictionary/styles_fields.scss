@@ -1,0 +1,85 @@
+/* lingvo fields grid */
+.lingvo-fields-grid {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  padding: 2px 0;
+
+  &__buttons {
+    padding: 6px 0;
+  }
+
+  @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+    padding: 4px 0 6px 0;
+  }
+}
+/* /lingvo fields grid */
+
+/* lingvo create fields block */
+.lingvo-create-fields-block {
+  display: flex;
+  flex-wrap: wrap;
+
+  &__dropdown {
+    flex: 0 1 auto;
+    padding: 6px 0;
+
+    &_link {
+      padding-left: 10px;
+      padding-right: 10px;
+
+      @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+        padding-left: 0;
+        padding-right: 0;
+      }
+    }
+  }
+
+  &__checkbox {
+    flex: 0 1 auto;
+    padding: 6px 10px 6px 6px;
+    line-height: 40px;
+
+    & .lingvo-checkbox {
+      vertical-align: middle !important;
+    }
+
+    @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+      padding: 0;
+    }
+  }
+
+  @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+    flex-direction: column;
+  }
+
+}
+/* /lingvo create fields block */
+
+/* lingvo fields button action  */
+.lingvo-fields-button-action {
+  background: transparent !important;
+  padding: 11px 8px 11px 8px !important;
+  min-height: 42px !important;
+  max-height: 42px !important;
+  margin: 0 !important;
+
+  &:last-child {
+    padding-right: 2px !important;
+    padding-left: 9px !important;
+  }
+
+  &:hover {
+    & .lingvo-icon_trash {
+      background-color: #db4e4e;
+    }
+  }
+
+  &_disab-hidden {
+    &.ui.disabled.button,
+    &.ui.button:disabled {
+      opacity: 0 !important;
+      visibility: hidden !important;
+    }
+  }
+}
+/* /lingvo fields button action  */

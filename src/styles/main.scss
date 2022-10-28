@@ -2995,6 +2995,16 @@ body {
       vertical-align: top !important;
     }
 
+    &.ui.search.selection {
+      vertical-align: top !important;
+
+      & > input.search {
+        font-family: Rubik, Arial, sans-serif !important;
+        padding: 11px 40px 11px 19px !important;
+        line-height: 18px !important;
+      }
+    }
+
     &.active {
 
       &.ui.selection {
@@ -3090,10 +3100,62 @@ body {
 
   &_fields {
     &.ui.selection.dropdown {
-      min-width: 290px !important;
+      min-width: 285px !important;
+      max-width: 285px !important;
+
+      @media only screen and (max-device-width: 1200px), only screen and (max-width: 1200px) {
+        min-width: 260px !important;
+        max-width: 260px !important;
+      }
+
+      @media only screen and (max-device-width: 1000px), only screen and (max-width: 1000px) {
+        min-width: 260px !important;
+        max-width: 260px !important;
+      }
+
+      @media only screen and (max-device-width: 990px), only screen and (max-width: 990px) {
+        min-width: 250px !important;
+        max-width: 250px !important;
+      }
+
+      @media only screen and (max-device-width: 950px), only screen and (max-width: 950px) {
+        min-width: 245px !important;
+        max-width: 245px !important;
+      }
+
+      @media only screen and (max-device-width: 940px), only screen and (max-width: 940px) {
+        min-width: 235px !important;
+        max-width: 235px !important;
+      }
+
+      @media only screen and (max-device-width: 920px), only screen and (max-width: 920px) {
+        min-width: 220px !important;
+        max-width: 220px !important;
+      }
+
+      @media only screen and (max-device-width: 880px), only screen and (max-width: 880px) {
+        min-width: 210px !important;
+        max-width: 210px !important;
+      }
+
+      @media only screen and (max-device-width: 860px), only screen and (max-width: 860px) {
+        min-width: 195px !important;
+        max-width: 195px !important;
+      }
+
+      @media only screen and (max-device-width: 830px), only screen and (max-width: 830px) {
+        min-width: 180px !important;
+        max-width: 180px !important;
+      }
+
+      @media only screen and (max-device-width: 800px), only screen and (max-width: 800px) {
+        min-width: 170px !important;
+        max-width: 170px !important;
+      }
 
       @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
         min-width: 100% !important;
+        max-width: 100% !important;
       }
     }
   }
@@ -3108,6 +3170,10 @@ body {
         & > .text {
           color: #fff !important;
           transition: color 0.2s;
+        }
+
+        &.ui.search input.search:focus + .text {
+          color: #fff !important;
         }
 
         & .lingvo-icon {

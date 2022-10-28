@@ -1,0 +1,17 @@
+.lingvo-create-perspective {
+  &__header {
+    font-size: 18px;
+    line-height: 24px;
+    font-weight: bold;
+    font-family: Mulish;
+    margin: 0 0 4px 0;
+
+    .lingvo-translation__content + & {
+      margin-top: 26px;
+    }
+
+    & + .lingvo-translation__content {
+      padding-top: 8px;
+    }
+  }
+}
