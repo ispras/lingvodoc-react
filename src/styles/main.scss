@@ -2189,6 +2189,22 @@ body {
     height: 20px;
     background-color: #999ca0;
   }
+
+  &_image {
+    -webkit-mask-image: url("../images/icon_image.svg");
+    mask-image: url("../images/icon_image.svg");
+    width: 18px;
+    height: 18px;
+    background-color: #999ca0;
+  }
+
+  &_power {
+    -webkit-mask-image: url("../images/icon_power.svg");
+    mask-image: url("../images/icon_power.svg");
+    width: 18px;
+    height: 18px;
+    background-color: #999ca0;
+  }
 }
 /* /icon */
 
@@ -3644,16 +3660,20 @@ body {
 /* /lingvo input file */
 
 /* lingvo buttons group */
-/*.lingvo-buttons-group {
+.lingvo-buttons-group {
+  max-height: 36px;
+
   &.ui.basic.buttons {
     border-radius: 10px !important;
 
     & .button {
-      padding: 9px !important;
+      padding: 8px 9px !important;
+      border-left: 2px solid #dcdcdc !important;
 
       &:first-child {
         border-top-left-radius: 10px !important;
         border-bottom-left-radius: 10px !important;
+        border-left: none !important;
       }
 
       &:last-child {
@@ -3680,10 +3700,155 @@ body {
           &_plus {
             background-color: #57b894;
           }
+
+          &_power {
+            background-color: #db4e4e;
+          }
+        }
+      }
+    }
+
+  }
+
+  &__text.button {
+    flex: 0 1 auto !important;
+    white-space: nowrap !important;
+  }
+}
+/* /lingvo buttons group */
+
+/* lingvo input action */
+.lingvo-input-action {
+  &.ui.input {
+    font-size: 16px !important;
+
+    & > input {
+      border-color: #dcdcdc !important;
+      border-radius: 10px !important;
+      font-family: Rubik, Arial, sans-serif !important;
+      line-height: 20px !important;
+      padding: 7px 12px !important;
+      width: 143px !important;
+      min-height: 36px !important;
+      max-height: 36px !important;
+
+      &:focus {
+        border: 1px solid #5d54cd !important;
+      }
+
+      @media only screen and (max-device-width: 350px), only screen and (max-width: 350px) {
+        width: 118px !important;
+      }
+    }
+  }
+
+  &.ui.action.input:not([class*="left action"]) {
+    & > input {
+      border-top-right-radius: 0 !important;
+      border-bottom-right-radius: 0 !important;
+      border-right-color: #dcdcdc !important;
+
+      &:focus {
+        border-right-color: #5d54cd !important;
+      }
+
+      & + .lingvo-buttons-group {
+        &.ui.basic.buttons {
+          border-top-left-radius: 0 !important;
+          border-bottom-left-radius: 0 !important;
+      
+          & .button {
+            &:first-child {
+              border-top-left-radius: 0 !important;
+              border-bottom-left-radius: 0 !important;
+            }
+          }
         }
       }
     }
   }
-}*/
-/* /lingvo buttons group */
 
+}
+/* /lingvo input action */
+
+/* lingvo input buttons group */
+.lingvo-input-buttons-group {
+  display: flex;
+
+  & .lingvo-input-action.ui.input {
+    /*flex: 1 0 auto;*/
+
+    & > input {
+      border-top-right-radius: 0 !important;
+      border-bottom-right-radius: 0 !important;
+    }
+
+    & + .lingvo-buttons-group.ui.basic.buttons {
+      border-top-left-radius: 0 !important;
+      border-bottom-left-radius: 0 !important;
+
+      & .button:first-child {
+        border-top-left-radius: 0 !important;
+        border-bottom-left-radius: 0 !important;
+      }
+    }
+  }
+}
+/* /lingvo input buttons group */
+
+/* lingvo labeled button */
+.lingvo-labeled-button {
+
+  &.ui.button {
+    font-family: Rubik, Arial, sans-serif !important;
+    font-size: 16px !important;
+    line-height: 20px !important;
+  }
+
+  &.ui.basic.button {
+    border-radius: 10px !important;
+    padding: 8px 12px !important;
+    color: #333 !important;
+    -webkit-box-shadow: 0 0 0 1px #dcdcdc inset;
+    box-shadow: 0 0 0 1px #dcdcdc inset;
+
+    &:hover {
+      -webkit-box-shadow: 0 0 0 1px #dcdcdc inset;
+      box-shadow: 0 0 0 1px #dcdcdc inset;
+    }
+  }
+
+  &.ui.labeled.icon.button {
+    padding-left: 48px !important;
+    padding-right: 12px !important;
+    position: relative !important;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 36px;
+      height: 100%;
+      background-color: #f5f5f5;
+      border: 1px solid #dcdcdc;
+      border-right-width: 2px;
+      border-radius: 10px 0 0 10px;
+    }
+
+    & > .lingvo-icon {
+      position: absolute;
+      top: 50%;
+      left: 8px;
+      margin-top: -9px;
+    }
+
+    &:hover {
+      & > .lingvo-icon {
+        background-color: #333;
+      }
+    }
+  }
+
+}
+/* /lingvo labeled button */
