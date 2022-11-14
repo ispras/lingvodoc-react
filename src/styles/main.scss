@@ -3660,7 +3660,7 @@ body {
 /* /lingvo input file */
 
 /* lingvo buttons group */
-.lingvo-buttons-group {
+/*.lingvo-buttons-group {
   max-height: 36px;
 
   &.ui.basic.buttons {
@@ -3714,10 +3714,11 @@ body {
     flex: 0 1 auto !important;
     white-space: nowrap !important;
   }
-}
+}*/
 /* /lingvo buttons group */
 
 /* lingvo input action */
+/*
 .lingvo-input-action {
   &.ui.input {
     font-size: 16px !important;
@@ -3769,15 +3770,16 @@ body {
   }
 
 }
+*/
 /* /lingvo input action */
 
 /* lingvo input buttons group */
+/*
 .lingvo-input-buttons-group {
   display: flex;
 
   & .lingvo-input-action.ui.input {
-    /*flex: 1 0 auto;*/
-
+    
     & > input {
       border-top-right-radius: 0 !important;
       border-bottom-right-radius: 0 !important;
@@ -3794,9 +3796,11 @@ body {
     }
   }
 }
+*/
 /* /lingvo input buttons group */
 
 /* lingvo labeled button */
+/*
 .lingvo-labeled-button {
 
   &.ui.button {
@@ -3851,4 +3855,5 @@ body {
   }
 
 }
+*/
 /* /lingvo labeled button */
