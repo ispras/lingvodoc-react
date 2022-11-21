@@ -94,7 +94,6 @@ class TextEntityContent extends React.Component {
       case "edit":
         return (
           <div className="lingvo-input-buttons-group">
-            {/*!(is_being_updated || this.state.edit) && this.state.content*/}
             {!(is_being_updated || this.state.edit) && (
               <span className="lingvo-input-buttons-group__name">{this.state.content}</span>
             )}
