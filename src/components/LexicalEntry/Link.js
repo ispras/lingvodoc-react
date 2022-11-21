@@ -19,11 +19,12 @@ const DirectedLink = props => {
   return (
     <Component className="gentium">
       <Button
+        className="lingvo-labeled-button"
         disabled={disabled}
         basic
         as="button"
         content={content}
-        icon="code"
+        icon={<i className="lingvo-icon lingvo-icon_code" />}
         labelPosition="left"
         onClick={() =>
           openModal(LinkModal, {

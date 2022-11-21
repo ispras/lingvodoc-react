@@ -150,6 +150,7 @@ body {
     background: url(../images/vline.png) repeat-y;
     margin: 0;
     padding: 0;
+
     ul {
       list-style-type: none;
       background: url(../images/vline.png) repeat-y;
@@ -157,6 +158,7 @@ body {
       padding: 0;
       margin-left: 10px;
     }
+
     li {
       margin: 0;
       padding: 0 12px;
@@ -164,6 +166,7 @@ body {
       background: url(../images/node.png) no-repeat;
       color: #333;
     }
+
     li.last {
       background: #ffffff url(../images/lastnode.png) no-repeat;
     }
@@ -2179,7 +2182,7 @@ body {
     mask-image: url("../images/icon_spinner.svg");
     width: 18px;
     height: 18px;
-    background-color: #5d54cd;
+    background-color: #5d54cd !important;
   }
 
   &_check2 {
@@ -2201,6 +2204,14 @@ body {
   &_power {
     -webkit-mask-image: url("../images/icon_power.svg");
     mask-image: url("../images/icon_power.svg");
+    width: 18px;
+    height: 18px;
+    background-color: #999ca0;
+  }
+
+  &_refresh {
+    -webkit-mask-image: url("../images/icon_refresh.svg");
+    mask-image: url("../images/icon_refresh.svg");
     width: 18px;
     height: 18px;
     background-color: #999ca0;
@@ -2805,6 +2816,8 @@ body {
 
 /* parser buttons group */
 .lingvo-parser-buttons-group {
+  max-height: none !important;
+
   .ui.buttons &__parser.button {
     flex: 0 1 auto;
     white-space: nowrap;
@@ -2857,6 +2870,15 @@ body {
   }
 }
 /* /lingvo entry text */
+
+/* lingvo entry content */
+.lingvo-entry-content {
+  display: flex;
+  align-items: center;
+  padding: 0 6px;
+  min-height: 32px;
+}
+/* /lingvo entry content */
 
 /* lingvo segment */
 
@@ -3660,11 +3682,12 @@ body {
 /* /lingvo input file */
 
 /* lingvo buttons group */
-/*.lingvo-buttons-group {
+.lingvo-buttons-group {
   max-height: 36px;
 
   &.ui.basic.buttons {
     border-radius: 10px !important;
+    vertical-align: top !important;
 
     & .button {
       padding: 8px 9px !important;
@@ -3714,11 +3737,10 @@ body {
     flex: 0 1 auto !important;
     white-space: nowrap !important;
   }
-}*/
+}
 /* /lingvo buttons group */
 
 /* lingvo input action */
-/*
 .lingvo-input-action {
   &.ui.input {
     font-size: 16px !important;
@@ -3769,14 +3791,23 @@ body {
     }
   }
 
+  &.ui.action.input {
+    & > .lingvo-buttons-group.buttons {
+      align-items: normal !important;
+    }
+  }
+
 }
-*/
 /* /lingvo input action */
 
 /* lingvo input buttons group */
-/*
 .lingvo-input-buttons-group {
   display: flex;
+  align-items: center;
+
+  &__name {
+    padding: 0 6px; 
+  }
 
   & .lingvo-input-action.ui.input {
     
@@ -3796,15 +3827,12 @@ body {
     }
   }
 }
-*/
 /* /lingvo input buttons group */
 
 /* lingvo labeled button */
-/*
 .lingvo-labeled-button {
 
   &.ui.button {
-    font-family: Rubik, Arial, sans-serif !important;
     font-size: 16px !important;
     line-height: 20px !important;
   }
@@ -3855,5 +3883,14 @@ body {
   }
 
 }
-*/
 /* /lingvo labeled button */
+
+/* lingvo button spinner */
+.lingvo-button-spinner {
+
+  &.ui.button:disabled, 
+  .ui.buttons &.disabled.button {
+    opacity: 1 !important;
+  }
+}
+/* /lingvo button spinner */

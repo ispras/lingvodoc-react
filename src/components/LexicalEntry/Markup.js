@@ -24,19 +24,26 @@ const MarkupEntityContent = onlyUpdateForKeys(["entity", "mode"])(
     switch (mode) {
       case "edit":
         return (
-          <Button.Group basic icon size="mini">
-            <Button as="a" href={entity.content} icon="download" />
-            <Popup trigger={<Button content={content(entity.content)} />} content={entity.content} />
+          <Button.Group basic icon className="lingvo-buttons-group">
+            <Button icon={<i className="lingvo-icon lingvo-icon_download" />}
+              as="a" 
+              href={entity.content}
+            />
+            <Popup 
+              trigger={<Button content={content(entity.content)} className="lingvo-buttons-group__text" />} 
+              content={entity.content} 
+              hideOnScroll={true}
+              className="lingvo-popup-break"
+            />
             <Button
-              icon={forParse ? "power" : "table"}
+              icon={forParse ? <i className="lingvo-icon lingvo-icon_power" /> : <i className="lingvo-icon lingvo-icon_table2" />} 
               onClick={() =>
                 forParse
                   ? actions.openModal(RunParserModal, { entityId: entity.id })
                   : actions.openViewer(parentEntity, entity, columns, allEntriesGenerator)
               }
             />
-            <Button
-              icon="remove"
+            <Button icon={<i className="lingvo-icon lingvo-icon_delete2" />} 
               onClick={() => actions.openConfirmModal(`${getTranslation("Delete markup file")}?`, () => remove(entity))}
             />
           </Button.Group>
@@ -45,12 +52,20 @@ const MarkupEntityContent = onlyUpdateForKeys(["entity", "mode"])(
       case "publish":
         return (
           <div className="lingvo-entry-text">
-            <Button.Group basic icon size="mini">
-              <Button as="a" href={entity.content} icon="download" />
-              <Popup trigger={<Button content={content(entity.content)} />} content={entity.content} />
+            <Button.Group basic icon className="lingvo-buttons-group">
+              <Button icon={<i className="lingvo-icon lingvo-icon_download" />}
+                as="a" 
+                href={entity.content}
+              />
+              <Popup 
+                trigger={<Button content={content(entity.content)} className="lingvo-buttons-group__text" />} 
+                content={entity.content} 
+                hideOnScroll={true}
+                className="lingvo-popup-break"
+              />
               {!forParse && (
                 <Button
-                  icon="table"
+                  icon={<i className="lingvo-icon lingvo-icon_table2" />}
                   onClick={() => actions.openViewer(parentEntity, entity, columns, allEntriesGenerator)}
                 />
               )}
@@ -66,12 +81,20 @@ const MarkupEntityContent = onlyUpdateForKeys(["entity", "mode"])(
 
       case "view":
         return (
-          <Button.Group basic icon size="mini">
-            <Button as="a" href={entity.content} icon="download" />
-            <Popup trigger={<Button content={content(entity.content)} />} content={entity.content} />
+          <Button.Group basic icon className="lingvo-buttons-group">
+            <Button icon={<i className="lingvo-icon lingvo-icon_download" />}
+              as="a" 
+              href={entity.content}
+            />
+            <Popup 
+              trigger={<Button content={content(entity.content)} className="lingvo-buttons-group__text" />} 
+              content={entity.content} 
+              hideOnScroll={true}
+              className="lingvo-popup-break"
+            />
             {!forParse && (
               <Button
-                icon="table"
+                icon={<i className="lingvo-icon lingvo-icon_table2" />}
                 onClick={() => actions.openViewer(parentEntity, entity, columns, allEntriesGenerator)}
               />
             )}
@@ -80,21 +103,29 @@ const MarkupEntityContent = onlyUpdateForKeys(["entity", "mode"])(
 
       case "contributions":
         return (
-          <Button.Group icon size="mini">
-            <Button basic color="black" as="a" href={entity.content} icon="download" />
+          <Button.Group basic icon className="lingvo-buttons-group">
+            <Button icon={<i className="lingvo-icon lingvo-icon_download" />}
+              as="a" 
+              href={entity.content}
+            />
             <Popup
-              trigger={<Button basic color="black" content={content(entity.content)} />}
-              content={entity.content}
+              trigger={<Button content={content(entity.content)} className="lingvo-buttons-group__text" />}
+              content={entity.content} 
+              hideOnScroll={true}
+              className="lingvo-popup-break"
             />
             {!forParse && (
               <Button
-                basic
-                color="black"
-                icon="table"
+                icon={<i className="lingvo-icon lingvo-icon_table2" />}
                 onClick={() => actions.openViewer(parentEntity, entity, columns, allEntriesGenerator)}
               />
             )}
-            {!entity.accepted && <Button basic color="black" icon="check" onClick={() => accept(entity, true)} />}
+            {!entity.accepted && 
+              <Button 
+                icon={<i className="lingvo-icon lingvo-icon_check2" />} 
+                onClick={() => accept(entity, true)}
+              />
+            }
           </Button.Group>
         );
 
@@ -172,7 +203,7 @@ Markup.defaultProps = {
   className: ""
 };
 
-Markup.Edit = ({ onSave }) => <input type="file" onChange={e => onSave(e.target.files[0])} />;
+Markup.Edit = ({ onSave }) => <input type="file" onChange={e => onSave(e.target.files[0])} className="lingvo-input-file" />;
 
 Markup.Edit.propTypes = {
   onSave: PropTypes.func,
