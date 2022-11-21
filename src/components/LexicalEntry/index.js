@@ -197,6 +197,7 @@ class Entities extends React.Component {
     }
 
     this.setState({ edit: false });
+
   }
 
   create(content, self_id) {
@@ -235,7 +236,10 @@ class Entities extends React.Component {
         }
       ],
       awaitRefetchQueries: true
-    }).then(() => this.update_check());
+    }).then(() => {
+      this.update_check();
+      this.setState({ is_being_created: false });
+    });
   }
 
   publish(entity, published) {
@@ -433,11 +437,13 @@ class Entities extends React.Component {
             is_being_updated={this.state.update_set.hasOwnProperty(id2str(entity.id))}
           />
         ))}
-        {mode == "edit" && (
+        {mode === "edit" && (
           <li className="last">
             {!this.state.edit && (
-              <Button.Group basic size="mini">
-                <Button icon="plus" onClick={() => this.setState({ edit: true })} />
+              <Button.Group basic className="lingvo-buttons-group">
+                <Button icon={<i className="lingvo-icon lingvo-icon_plus" />}
+                  onClick={() => this.setState({ edit: true })} 
+                />
               </Button.Group>
             )}
 

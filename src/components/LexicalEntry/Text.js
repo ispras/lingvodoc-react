@@ -93,25 +93,28 @@ class TextEntityContent extends React.Component {
     switch (mode) {
       case "edit":
         return (
-          <div>
-            {!(is_being_updated || this.state.edit) && this.state.content}
+          <div className="lingvo-input-buttons-group">
+            {/*!(is_being_updated || this.state.edit) && this.state.content*/}
+            {!(is_being_updated || this.state.edit) && (
+              <span className="lingvo-input-buttons-group__name">{this.state.content}</span>
+            )}
             {(is_being_updated || this.state.edit) && (
               <Input
-                size="mini"
+                className="lingvo-input-action"
                 onChange={(event, target) => this.setState({ content: target.value })}
                 value={this.state.content}
               />
             )}
-            <Button.Group basic icon size="mini">
-              <Button
-                icon={is_being_updated ? "spinner" : this.state.edit ? "save" : "edit"}
+            <Button.Group basic icon className="lingvo-buttons-group">
+              <Button icon={is_being_updated ? <i className="lingvo-icon lingvo-icon_spinner" /> : this.state.edit ? <i className="lingvo-icon lingvo-icon_save2" /> : <i className="lingvo-icon lingvo-icon_edit2" />}
                 onClick={this.onEdit}
-                disabled={is_being_updated}
+                disabled={is_being_updated} 
+                className={is_being_updated ? "lingvo-button-spinner" : ""}
               />
               {is_being_removed ? (
-                <Button icon="spinner" disabled />
+                <Button icon={<i className="lingvo-icon lingvo-icon_spinner" />} disabled className="lingvo-button-spinner" />
               ) : (
-                <Button icon="remove" onClick={() => remove(entity)} />
+                <Button icon={<i className="lingvo-icon lingvo-icon_delete2" />} onClick={() => remove(entity)} />
               )}
             </Button.Group>
           </div>
@@ -120,17 +123,19 @@ class TextEntityContent extends React.Component {
         return (
           <div className="lingvo-entry-text">
             {column.english_translation &&
-            column.english_translation === "Number of the languages" &&
+            column.english_translation === "Number of the languages" && 
             entity.id &&
             entity.parent_id ? (
-              <a
-                href={`/dictionary/${entity.parent_id[0]}/${entity.parent_id[1]}/perspective/${entity.id[0]}/${entity.id[1]}/edit`}
-                className="lingvo-languages-link"
-              >
-                {entity.content}
-              </a>
+              <span className="lingvo-entry-content">
+                <a
+                  href={`/dictionary/${entity.parent_id[0]}/${entity.parent_id[1]}/perspective/${entity.id[0]}/${entity.id[1]}/edit`}
+                  className="lingvo-languages-link"
+                >
+                  {entity.content}
+                </a>
+              </span>
             ) : (
-              entity.content
+              <span className="lingvo-entry-content">{entity.content}</span>
             )}
             <Checkbox
               className="lingvo-checkbox lingvo-entry-text__checkbox" 
@@ -155,14 +160,19 @@ class TextEntityContent extends React.Component {
         );
 
       case "view":
-        return entity.content;
+        return (
+          <span className="lingvo-entry-content">{entity.content}</span>
+        );
       case "contributions":
         return entity.accepted ? (
-          entity.content
+          <span className="lingvo-entry-content">{entity.content}</span>
         ) : (
-          <Button.Group icon size="small">
-            <Button basic color="black" content={entity.content} />
-            <Button basic color="black" icon="check" onClick={() => accept(entity, true)} />
+          <Button.Group basic icon className="lingvo-buttons-group">
+            <Button content={entity.content} className="lingvo-buttons-group__text" />
+            <Button 
+              icon={<i className="lingvo-icon lingvo-icon_check2" />} 
+              onClick={() => accept(entity, true)} 
+            />
           </Button.Group>
         );
       default:
@@ -309,15 +319,18 @@ class Edit extends React.Component {
     const { onSave, onCancel, is_being_created } = this.props;
     return (
       <Input
-        size="mini"
+        className="lingvo-input-action"
         onChange={this.onChange}
         onKeyPress={this.onKeyPress}
         onKeyDown={this.onKeyDown}
         onBlur={() => onSave(this.state.content)}
         action={
-          <Button.Group basic size="mini">
-            <Button icon={is_being_created ? "spinner" : "save"} disabled={is_being_created} />
-            <Button icon="remove" onClick={onCancel} />
+          <Button.Group basic className="lingvo-buttons-group">
+            <Button icon={is_being_created ? <i className="lingvo-icon lingvo-icon_spinner" /> : <i className="lingvo-icon lingvo-icon_save2" />} 
+              disabled={is_being_created} 
+              className={is_being_created ? "lingvo-button-spinner" : ""}
+            />
+            <Button icon={<i className="lingvo-icon lingvo-icon_delete2" />} onClick={onCancel} />
           </Button.Group>
         }
       />

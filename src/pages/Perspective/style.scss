@@ -489,6 +489,29 @@
 
   }
 
+  & .entity {
+    ul {
+      background: url(../../images/line2.png) repeat-y;
+
+      li {
+        padding: 0 12px 6px 10px !important;
+        background: url(../../images/node2.png) 0 0 no-repeat;
+      }
+
+      li.last {
+        padding-bottom: 0 !important;
+        background: #fff url(../../images/lastnode2.png) 0 0 no-repeat;
+      }
+
+      ul {
+        & li {
+          padding-top: 6px !important;
+          padding-bottom: 0 !important;
+        }
+      }
+    }
+  }
+
   @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
     &.ui.table tr {
       box-shadow: none !important;

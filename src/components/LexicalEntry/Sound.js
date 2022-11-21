@@ -29,17 +29,21 @@ const SoundEntityContent = onlyUpdateForKeys(["entity", "mode"])(
     switch (mode) {
       case "edit":
         return (
-          <Button.Group basic icon size="mini">
-            <Button as="a" href={entity.content} icon="download" />
+          <Button.Group basic icon className="lingvo-buttons-group">
+            <Button icon={<i className="lingvo-icon lingvo-icon_download" />}
+              as="a" 
+              href={entity.content}
+            />
             <Popup 
               trigger={<Button content={content(entity.content)} />} 
               content={entity.content} 
               hideOnScroll={true}
               className="lingvo-popup-break"
             />
-            <Button icon="play" onClick={() => actions.openPlayer(entity)} />
-            <Button
-              icon="remove"
+            <Button icon={<i className="lingvo-icon lingvo-icon_play" />} 
+              onClick={() => actions.openPlayer(entity)} 
+            />
+            <Button icon={<i className="lingvo-icon lingvo-icon_delete2" />} 
               onClick={() => actions.openConfirmModal(`${getTranslation("Delete sound file")}?`, () => remove(entity))}
             />
           </Button.Group>
@@ -48,15 +52,20 @@ const SoundEntityContent = onlyUpdateForKeys(["entity", "mode"])(
       case "publish":
         return (
           <div className="lingvo-entry-text">
-            <Button.Group basic icon size="mini">
-              <Button as="a" href={entity.content} icon="download" />
+            <Button.Group basic icon className="lingvo-buttons-group">
+              <Button icon={<i className="lingvo-icon lingvo-icon_download" />}
+                as="a" 
+                href={entity.content}
+              />
               <Popup 
                 trigger={<Button content={content(entity.content)} />} 
                 content={entity.content} 
                 hideOnScroll={true}
                 className="lingvo-popup-break"
               />
-              <Button icon="play" onClick={() => actions.openPlayer(entity)} />
+              <Button icon={<i className="lingvo-icon lingvo-icon_play" />} 
+                onClick={() => actions.openPlayer(entity)} 
+              />
             </Button.Group>
             <Checkbox
               size="tiny"
@@ -69,30 +78,45 @@ const SoundEntityContent = onlyUpdateForKeys(["entity", "mode"])(
 
       case "view":
         return (
-          <Button.Group basic icon size="mini">
-            <Button as="a" href={entity.content} icon="download" />
+          <Button.Group basic icon className="lingvo-buttons-group">
+            <Button icon={<i className="lingvo-icon lingvo-icon_download" />}
+              as="a" 
+              href={entity.content}
+            />
             <Popup 
               trigger={<Button content={content(entity.content)} />} 
               content={entity.content} 
               hideOnScroll={true}
               className="lingvo-popup-break"
             />
-            <Button icon="play" onClick={() => actions.openPlayer(entity)} />
+            <Button icon={<i className="lingvo-icon lingvo-icon_play" />} 
+              onClick={() => actions.openPlayer(entity)} 
+            />
           </Button.Group>
         );
 
       case "contributions":
         return (
-          <Button.Group icon size="mini">
-            <Button basic color="black" as="a" href={entity.content} icon="download" />
+          <Button.Group basic icon className="lingvo-buttons-group">
+            <Button icon={<i className="lingvo-icon lingvo-icon_download" />}
+              as="a" 
+              href={entity.content}
+            />
             <Popup
-              trigger={<Button basic color="black" content={content(entity.content)} />}
+              trigger={<Button content={content(entity.content)} />}
               content={entity.content} 
               hideOnScroll={true}
               className="lingvo-popup-break"
             />
-            <Button basic color="black" icon="play" onClick={() => actions.openPlayer(entity)} />
-            {!entity.accepted && <Button basic color="black" icon="check" onClick={() => accept(entity, true)} />}
+            <Button icon={<i className="lingvo-icon lingvo-icon_play" />} 
+              onClick={() => actions.openPlayer(entity)} 
+            />
+            {!entity.accepted && 
+              <Button 
+                icon={<i className="lingvo-icon lingvo-icon_check2" />} 
+                onClick={() => accept(entity, true)}
+              />
+            }
           </Button.Group>
         );
 
@@ -169,7 +193,7 @@ Sound.defaultProps = {
   className: ""
 };
 
-Sound.Edit = ({ onSave }) => <input type="file" onChange={e => onSave(e.target.files[0])} />;
+Sound.Edit = ({ onSave }) => <input type="file" onChange={e => onSave(e.target.files[0])} className="lingvo-input-file" />;
 
 Sound.Edit.propTypes = {
   onSave: PropTypes.func,

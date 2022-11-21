@@ -18,9 +18,18 @@ const ImageEntityContent = onlyUpdateForKeys(["entity", "mode"])(
 
     const standardFragment = (
       <>
-        <Button as="a" href={entity.content} icon="download" download />
-        <Popup trigger={<Button content={content(entity.content)} />} content={entity.content} />
-        <Modal basic trigger={<Button icon="image" />} style={{ width: "95%" }}>
+        <Button icon={<i className="lingvo-icon lingvo-icon_download" />}
+          as="a" 
+          href={entity.content}
+          download
+        />
+        <Popup 
+          trigger={<Button content={content(entity.content)} className="lingvo-buttons-group__text" />} 
+          content={entity.content} 
+          hideOnScroll={true} 
+          className="lingvo-popup-break"
+        />
+        <Modal basic trigger={<Button icon={<i className="lingvo-icon lingvo-icon_image" />} />} style={{ width: "95%" }}>
           <Modal.Content>
             <Img src={entity.content} style={{ display: "block", margin: "auto" }} />
           </Modal.Content>
@@ -31,10 +40,9 @@ const ImageEntityContent = onlyUpdateForKeys(["entity", "mode"])(
     switch (mode) {
       case "edit":
         return (
-          <Button.Group basic icon size="mini">
+          <Button.Group basic icon className="lingvo-buttons-group">
             {standardFragment}
-            <Button
-              icon="remove"
+            <Button icon={<i className="lingvo-icon lingvo-icon_delete2" />} 
               onClick={() => actions.openConfirmModal(`${getTranslation("Delete image file")}?`, () => remove(entity))}
             />
           </Button.Group>
@@ -43,7 +51,7 @@ const ImageEntityContent = onlyUpdateForKeys(["entity", "mode"])(
       case "publish":
         return (
           <div className="lingvo-entry-text">
-            <Button.Group basic icon size="mini">
+            <Button.Group basic icon className="lingvo-buttons-group">
               {standardFragment}
             </Button.Group>
             <Checkbox
@@ -57,25 +65,36 @@ const ImageEntityContent = onlyUpdateForKeys(["entity", "mode"])(
 
       case "view":
         return (
-          <Button.Group basic icon size="mini">
+          <Button.Group basic icon className="lingvo-buttons-group">
             {standardFragment}
           </Button.Group>
         );
 
       case "contributions":
         return (
-          <Button.Group icon size="mini">
-            <Button basic color="black" as="a" href={entity.content} icon="download" download />
-            <Popup
-              trigger={<Button basic color="black" content={content(entity.content)} />}
-              content={entity.content}
+          <Button.Group basic icon className="lingvo-buttons-group">
+            <Button icon={<i className="lingvo-icon lingvo-icon_download" />}
+              as="a" 
+              href={entity.content}
+              download
             />
-            <Modal basic trigger={<Button basic color="black" icon="image" />} style={{ width: "95%" }}>
+            <Popup
+              trigger={<Button content={content(entity.content)} className="lingvo-buttons-group__text" />}
+              content={entity.content}
+              hideOnScroll={true}
+              className="lingvo-popup-break"
+            />
+            <Modal basic trigger={<Button icon={<i className="lingvo-icon lingvo-icon_image" />} />} style={{ width: "95%" }}>
               <Modal.Content>
                 <Img src={entity.content} style={{ display: "block", margin: "auto" }} />
               </Modal.Content>
             </Modal>
-            {!entity.accepted && <Button basic color="black" icon="check" onClick={() => accept(entity, true)} />}
+            {!entity.accepted && 
+              <Button 
+                icon={<i className="lingvo-icon lingvo-icon_check2" />} 
+                onClick={() => accept(entity, true)}
+              />
+            }
           </Button.Group>
         );
 
@@ -151,7 +170,7 @@ Image.defaultProps = {
   className: ""
 };
 
-Image.Edit = ({ onSave }) => <input type="file" onChange={e => onSave(e.target.files[0])} />;
+Image.Edit = ({ onSave }) => <input type="file" onChange={e => onSave(e.target.files[0])} className="lingvo-input-file" />;
 
 Image.Edit.propTypes = {
   onSave: PropTypes.func,
