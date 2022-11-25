@@ -107,7 +107,7 @@ class TextEntityContent extends React.Component {
             <Button.Group basic icon className="lingvo-buttons-group">
               <Button icon={is_being_updated ? <i className="lingvo-icon lingvo-icon_spinner" /> : this.state.edit ? <i className="lingvo-icon lingvo-icon_save2" /> : <i className="lingvo-icon lingvo-icon_edit2" />}
                 onClick={this.onEdit}
-                disabled={is_being_updated} 
+                disabled={is_being_updated || !this.state.content} 
                 className={is_being_updated ? "lingvo-button-spinner" : ""}
               />
               {is_being_removed ? (
@@ -294,6 +294,7 @@ class Edit extends React.Component {
     this.onChange = this.onChange.bind(this);
     this.onKeyPress = this.onKeyPress.bind(this);
     this.onKeyDown = this.onKeyDown.bind(this);
+    this.onBlur = this.onBlur.bind(this);
   }
 
   onChange(event, target) {
@@ -303,7 +304,9 @@ class Edit extends React.Component {
   onKeyPress(e) {
     const { onSave } = this.props;
     if (e.key === "Enter") {
-      onSave(this.state.content);
+      if (this.state.content) {
+        onSave(this.state.content);
+      }
     }
   }
 
@@ -311,6 +314,13 @@ class Edit extends React.Component {
     const { onCancel } = this.props;
     if (e.keyCode === 27) {
       onCancel();
+    }
+  }
+
+  onBlur() {
+    const { onSave } = this.props;
+    if (this.state.content) {
+      onSave(this.state.content);
     }
   }
 
@@ -322,11 +332,11 @@ class Edit extends React.Component {
         onChange={this.onChange}
         onKeyPress={this.onKeyPress}
         onKeyDown={this.onKeyDown}
-        onBlur={() => onSave(this.state.content)}
+        onBlur={this.onBlur}
         action={
           <Button.Group basic className="lingvo-buttons-group">
             <Button icon={is_being_created ? <i className="lingvo-icon lingvo-icon_spinner" /> : <i className="lingvo-icon lingvo-icon_save2" />} 
-              disabled={is_being_created} 
+              disabled={is_being_created || !this.state.content}
               className={is_being_created ? "lingvo-button-spinner" : ""}
             />
             <Button icon={<i className="lingvo-icon lingvo-icon_delete2" />} onClick={onCancel} />
