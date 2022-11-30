@@ -162,7 +162,7 @@ function ColumnMapper({ state, spreads, types, columnTypes, onSetColumnType }) {
       key: idStr,
       value: idStr,
       id: id,
-      text: T(type.get("translations").toJS())
+      text: `${T(type.get("translations").toJS())} (${type.get("data_type")})`
     });
 
     fieldOptions[idStr] = id;
