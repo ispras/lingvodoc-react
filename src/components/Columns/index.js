@@ -129,7 +129,7 @@ const NestedColumn = ({ column, columns, fields, onChange }) => {
     .filter(c => !isEqual(c.id, column.id))
     .map(c => {
       const field = fields.find(f => isEqual(f.id, c.field_id));
-      return { text: T(field.translations), value: id2str(c.id) };
+      return { text: `${T(field.translations)} (${field.data_type})`, value: id2str(c.id) };
     });
 
   // XXX: Temporary workaround
@@ -301,7 +301,7 @@ class C extends React.Component {
     const { column, columns, fields, perspectives } = this.props;
 
     const field = fields.find(f => isEqual(f.id, this.state.field_id));
-    const options = fields.map(f => ({ text: T(f.translations), value: id2str(f.id) }));
+    const options = fields.map(f => ({ text: `${T(f.translations)} (${f.data_type})`, value: id2str(f.id) }));
 
     options.push({
       text: `${this.context("Add new field")}...`,
