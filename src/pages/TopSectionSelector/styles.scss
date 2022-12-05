@@ -431,3 +431,91 @@
   }
 }
 /* /main block */
+
+/* lingvo comm bar */
+.lingvo-comm-bar {
+  font-family: Rubik, Arial, sans-serif;
+  font-size: 14px;
+  margin: -20px 0 20px 0;
+
+  &__title {
+    padding: 9px 20px;
+    background-color: #57b894;
+    color: #fff;
+    transition: 0.3s;
+    cursor: pointer;
+    font-weight: 500;
+    line-height: 14px;
+    user-select: none;
+  
+    &:hover {
+      background-color: #f4c854;
+    }
+
+    &-inner {
+      margin: 0 auto;
+      max-width: 1000px;
+    }
+
+    & .lingvo-icon_arrow {
+      background-color: #fff;
+      margin: 0 5px 0 0;
+    }
+
+    &_visible .lingvo-icon_arrow {
+      transform: rotate(180deg);
+    }
+  }
+
+  &__desc {
+    padding: 20px 20px;
+    background-color: #ecf6ef;
+    line-height: 18px;
+
+    &-inner {
+      margin: 0 auto;
+      max-width: 1000px;
+      padding: 0 150px 0 22px;
+      position: relative;
+
+      &::before {
+        content: "";
+        display: block;
+        position: absolute;
+        top: -75px;
+        right: -80px;
+        width: 246px;
+        height: 238px;
+        background: url("../../images/kite_red.svg") 0 0 no-repeat;
+        background-size: 246px 238px;
+      }
+
+      @media only screen and (max-device-width: 500px), only screen and (max-width: 500px) {
+        padding-right: 100px;
+
+        &::before {
+          top: -30px;
+          right: -50px;
+          width: 147.6px;
+          height: 142.8px;
+          background-size: 147.6px 142.8px;
+        }
+      }
+    }
+
+    & a {
+      color: #5d54cd;
+
+      &:hover {
+        color: #5d54cd;
+        text-decoration: underline;
+      }
+
+      &:active {
+        color: #372f9d;
+        text-decoration: underline;
+      }
+    }
+  }
+}
+/* /lingvo comm bar */
