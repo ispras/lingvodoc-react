@@ -1,7 +1,7 @@
 import React, { useCallback, useContext, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { Accordion } from "semantic-ui-react";
+import { Accordion, Transition } from "semantic-ui-react";
 
 import Footer from "components/Footer";
 import TranslationContext from "Layout/TranslationContext";
@@ -25,6 +25,14 @@ const TopSectionSelector = () => {
 
   const [activeIndexes, setActiveIndexes] = useState([]);
   const getTranslation = useContext(TranslationContext);
+
+  const [visible, setVisible] = useState(false);
+
+  const toggleVisibility = useCallback(
+    () => {
+      setVisible((prevState => !prevState));
+    }
+  );
 
   const handleClick = useCallback(
     (_e, titleProps) => {
@@ -77,6 +85,23 @@ const TopSectionSelector = () => {
               </Link>
             </div>
           </div>
+        </div>
+
+        <div className="lingvo-comm-bar">
+          <div className={visible && "lingvo-comm-bar__title lingvo-comm-bar__title_visible" || "lingvo-comm-bar__title"} onClick={toggleVisibility}>
+            <div className="lingvo-comm-bar__title-inner">
+              <i className="lingvo-icon lingvo-icon_arrow" /> {getTranslation("For grantees and commercial use.")}
+            </div>
+          </div>
+          <Transition visible={visible} duration={30}>
+            <div className="lingvo-comm-bar__desc">
+              <div className="lingvo-comm-bar__desc-inner">
+                {getTranslation("If you receive a grant for the development of the platform or intend to use it")} <br />
+                {getTranslation("for commercial purposes, you must sign an agreement with ISP RAS.")} <br /> 
+                {getTranslation("To get an agreement, you need to")} <a href="https://docs.google.com/spreadsheets/d/1ZFDWxw42ArYzIBGmpDm2oQH0Wd0JJG7kc1-8YC2wxaI/edit?usp=sharing" target="_blank" rel="noreferrer">{getTranslation("register")}</a>.
+              </div>
+            </div>
+          </Transition>
         </div>
 
         <div className="lingvo-main-block">
