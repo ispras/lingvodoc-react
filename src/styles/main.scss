@@ -3936,13 +3936,20 @@ body {
 /* /lingvo button spinner */
 
 /* lingvo rst tree */
-/*
 .lingvo-rst-tree {
   & .rst__lineHalfHorizontalRight::before,
   & .rst__lineFullVertical::after,
   & .rst__lineHalfVerticalTop::after, 
   & .rst__lineHalfVerticalBottom::after {
     background-color: #dcdcdc !important;
+  }
+
+  & .rst__lineChildren::after {
+    background-color: #dcdcdc !important;
+  }
+
+  & .rst__rowWrapper {
+    padding: 7px 10px 7px 0;
   }
 
   & .rst__row {
@@ -3961,10 +3968,113 @@ body {
     -webkit-box-shadow: none !important;
     box-shadow: none !important;
 
+    & .rst__rowLabel {
+      padding-right: 0 !important;
+      
+      & + .rst__rowToolbar:not(:empty) {
+        padding-left: 20px !important;
+      }
+    }
+
     & .rst__rowTitle {
       font-weight: 400 !important;
+
+      & a {
+        color: #5d54cd !important;
+
+        &:hover {
+          text-decoration: underline !important;
+          color: #5d54cd !important;
+        }
+
+        &:active {
+          text-decoration: underline !important;
+          color: #372f9d !important;
+        }
+      }
+    }
+  }
+
+  & .rst__expandButton {
+    width: 24px !important;
+    height: 24px !important;
+    -webkit-box-shadow: none !important;
+    box-shadow: none !important;
+    background: #fff url("../images/icon_open_default.svg") 0 0 no-repeat;
+    transition: 0.2s;
+
+    &:hover {
+      background: #fff url("../images/icon_open_hover.svg") 0 0 no-repeat;
+    }
+  }
+
+  & .rst__collapseButton {
+    width: 24px !important;
+    height: 24px !important;
+    -webkit-box-shadow: none !important;
+    box-shadow: none !important;
+    background: #fff url("../images/icon_close_default.svg") 0 0 no-repeat;
+    transition: 0.2s;
+
+    &:hover {
+      background: #fff url("../images/icon_close_hover.svg") 0 0 no-repeat;
     }
   }
 }
-*/
 /* /lingvo rst tree */
+
+/* lingvo dictionaries tabs */
+.lingvo-dictionaries-tabs {
+  .ui.tabular.menu {
+    border-bottom: none;
+
+    .item {
+      margin-right: 2px;
+      font-size: 16px;
+      border: 1px solid #f0f0f0;
+      border-radius: 8px 8px 0px 0px;
+      margin-bottom: -1px;
+      font-family: Mulish, Arial, sans-serif;
+      line-height: 22px;
+      padding: 10px 16px 11px 16px;
+      -webkit-transition: background-color .1s ease, color .1s ease, -webkit-box-shadow .1s ease, border-color .1s ease, font-weight .1s ease;
+      transition: background-color .1s ease, color .1s ease, -webkit-box-shadow .1s ease, border-color .1s ease, font-weight .1s ease;
+      transition: background-color .1s ease, box-shadow .1s ease, color .1s ease, border-color .1s ease, font-weight .1s ease;
+      transition: background-color .1s ease, box-shadow .1s ease, color .1s ease, border-color .1s ease, font-weight .1s ease;
+
+      &.active {
+        color: #fff;
+        background-color: #5d54cd;
+        border-color: #5d54cd;
+        font-weight: bold;
+        border-radius: 8px 8px 0px 0px !important;
+      }
+    }
+
+    @media only screen and (max-device-width: 350px), only screen and (max-width: 350px) {
+      .item {
+        padding: 9px 12px;
+      }
+    }
+  }
+
+  & .ui.segment {
+    border-radius: 12px !important;
+    -webkit-box-shadow: none !important;
+    box-shadow: none !important;
+
+    &:first-of-type {
+      border-radius: 0 12px 12px 12px !important;
+    }
+  }
+
+  & .ui[class*="very padded"].segment {
+    padding: 33px 17px 33px 0 !important;
+
+    @media only screen and (max-device-width: 580px), only screen and (max-width: 580px) {
+      padding: 10px 10px 10px 0 !important;
+    }
+  }
+
+}
+/* /lingvo dictionaries tabs */

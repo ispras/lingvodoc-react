@@ -49,9 +49,11 @@ class Tree extends React.Component {
         <SortableTree
           canDrag={false}
           treeData={this.state.treeData}
-          rowHeight={42}
+          rowHeight={52}
+          scaffoldBlockPxWidth={64}
           generateNodeProps={this.generateNodeProps}
           onChange={treeData => this.setState({ treeData })}
+          className="lingvo-rst-tree"
         />
       </div>
     );
