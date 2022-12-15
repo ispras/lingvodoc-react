@@ -22,6 +22,7 @@ import Search from "./search";
 
 const ModalContentWrapper = styled("div")`
   min-height: 60vh;
+  background: #fff;
 `;
 
 const EditGroupingTag = props => {
@@ -78,7 +79,7 @@ const EditGroupingTag = props => {
       )
     }
   ];
-  return <Tab panes={panes} />;
+  return <Tab panes={panes} className="lingvo-dictionaries-tabs" />;
 };
 
 EditGroupingTag.propTypes = {
@@ -119,7 +120,7 @@ const ViewGroupingTag = props => {
       )
     }
   ];
-  return <Tab panes={panes} />;
+  return <Tab panes={panes} className="lingvo-dictionaries-tabs" />;
 };
 
 ViewGroupingTag.propTypes = {
@@ -180,7 +181,7 @@ const PublishGroupingTag = props => {
       )
     }
   ];
-  return <Tab panes={panes} />;
+  return <Tab panes={panes} className="lingvo-dictionaries-tabs" />;
 };
 
 PublishGroupingTag.propTypes = {
@@ -241,7 +242,7 @@ const ContributionsGroupingTag = props => {
       )
     }
   ];
-  return <Tab panes={panes} />;
+  return <Tab panes={panes} className="lingvo-dictionaries-tabs" />;
 };
 
 ContributionsGroupingTag.propTypes = {

@@ -11,12 +11,6 @@ import { openModal } from "ducks/modals";
 
 const Link = styled.a`
   cursor: pointer;
-  color: #2185d0;
-
-  &:hover {
-    color: #1678c2;
-    text-decoration: underline;
-  }
 `;
 
 const LexicalEntryLinkComponent = ({ node, actions, entitiesMode, defaultMode, openModalAction, onlyViewMode }) => {

@@ -16,6 +16,7 @@ import { acceptMutation, createMutation, languageTreeSourceQuery, publishMutatio
 
 const ModalContentWrapper = styled("div")`
   min-height: 60vh;
+  background-color: #fff;
 `;
 
 function buildTree(lexicalEntry, column, allLanguages, allDictionaries, allPerspectives) {
@@ -54,7 +55,7 @@ const ViewLink = props => {
       )
     }
   ];
-  return <Tab panes={panes} />;
+  return <Tab panes={panes} className="lingvo-dictionaries-tabs" />;
 };
 
 ViewLink.propTypes = {
@@ -112,7 +113,7 @@ const EditLink = props => {
       )
     }
   ];
-  return <Tab panes={panes} />;
+  return <Tab panes={panes} className="lingvo-dictionaries-tabs" />;
 };
 
 EditLink.propTypes = {
@@ -158,7 +159,7 @@ const PublishLink = props => {
       )
     }
   ];
-  return <Tab panes={panes} />;
+  return <Tab panes={panes} className="lingvo-dictionaries-tabs" />;
 };
 
 PublishLink.propTypes = {
