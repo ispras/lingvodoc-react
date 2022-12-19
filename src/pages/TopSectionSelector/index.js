@@ -98,7 +98,7 @@ const TopSectionSelector = () => {
               <div className="lingvo-comm-bar__desc-inner">
                 {getTranslation("If you receive a grant for the development of the platform or intend to use it")} <br />
                 {getTranslation("for commercial purposes, you must sign an agreement with ISP RAS.")} <br /> 
-                {getTranslation("To get an agreement, you need to")} <a href="https://docs.google.com/spreadsheets/d/1ZFDWxw42ArYzIBGmpDm2oQH0Wd0JJG7kc1-8YC2wxaI/edit?usp=sharing" target="_blank" rel="noreferrer">{getTranslation("register")}</a>.
+                {getTranslation("To get an agreement, you need to")} <a href="https://docs.google.com/forms/d/e/1FAIpQLSd-h0GFww61WmQgJBRYf72s1eFfNPYjx7-ZF0PcCK4cquZ-QQ/viewform" target="_blank" rel="noreferrer">{getTranslation("register")}</a>.
               </div>
             </div>
           </Transition>
