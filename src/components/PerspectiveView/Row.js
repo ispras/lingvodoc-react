@@ -102,9 +102,10 @@ const Row = ({
             <Button
               disabled={disabled_flag}
               key={action.title}
-              basic
+              /*basic*/
               content={action.title}
               onClick={() => action.action(entry)}
+              className={action.className}
             />
           ))}
         </Table.Cell>

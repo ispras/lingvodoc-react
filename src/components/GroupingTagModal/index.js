@@ -46,7 +46,12 @@ const EditGroupingTag = props => {
       render: () => (
         <div>
           <Segment textAlign="center">
-            <Button negative content={getTranslation("Disconnect")} onClick={leaveGroup} />
+            <Button 
+              className="lingvo-button-redder" 
+              content={getTranslation("Disconnect")} 
+              onClick={leaveGroup} 
+              style={{ marginTop: "6px", marginBottom: "6px" }} 
+            />
           </Segment>
           <Segment padded="very" textAlign="center" className="lingvo-grouping-tag">
             <ConnectedEntries
@@ -156,13 +161,14 @@ const PublishGroupingTag = props => {
         <div>
           {entity && (
             <Segment>
-              <Checkbox toggle checked={entity.published} onChange={(e, { checked }) => publish(entity, checked)} />
-              {entity.published && (
-                <span>{getTranslation("The entity is currently published. Click to unpublish.")}</span>
-              )}
-              {!entity.published && (
-                <span>{getTranslation("The entity is NOT currently published. Click to publish.")}</span>
-              )}
+              <Checkbox 
+                toggle 
+                label={entity.published && getTranslation("The entity is currently published. Click to unpublish.") || getTranslation("The entity is NOT currently published. Click to publish.")}
+                checked={entity.published} 
+                onChange={(e, { checked }) => publish(entity, checked)} 
+                className="lingvo-radio-toggle"
+                style={{ marginTop: "10px", marginBottom: "10px" }}
+              />
             </Segment>
           )}
           <Segment padded="very" textAlign="center" className="lingvo-grouping-tag">
@@ -217,12 +223,13 @@ const ContributionsGroupingTag = props => {
       render: () => (
         <div>
           {entity && (
-            <Segment>
+            <Segment textAlign="center">
               <Button
-                positive
                 content={getTranslation("Accept")}
                 disabled={entity.accepted}
                 onClick={() => accept(entity, true)}
+                className="lingvo-button-greenest" 
+                style={{ marginTop: "6px", marginBottom: "6px" }}
               />
             </Segment>
           )}
