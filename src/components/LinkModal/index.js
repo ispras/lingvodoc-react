@@ -83,7 +83,8 @@ const EditLink = props => {
         if (entity) {
           remove(entity);
         }
-      }
+      },
+      className: "lingvo-button-redder"
     }
   ];
 
@@ -149,6 +150,8 @@ const PublishLink = props => {
                 label={label}
                 checked={entity.published}
                 onChange={(e, { checked }) => publish(entity, checked)}
+                className="lingvo-radio-toggle"
+                style={{ marginTop: "10px", marginBottom: "10px" }}
               />
             </Segment>
           )}
@@ -185,12 +188,13 @@ const ContributionsLink = props => {
       render: () => (
         <div>
           {entity && (
-            <Segment>
-              <Button
-                positive
+            <Segment textAlign="center">
+              <Button 
                 content={getTranslation("Accept")}
                 disabled={entity.accepted}
                 onClick={() => accept(entity, true)}
+                className="lingvo-button-greenest" 
+                style={{ marginTop: "6px", marginBottom: "6px" }}
               />
             </Segment>
           )}

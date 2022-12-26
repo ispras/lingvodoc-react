@@ -1,5 +1,5 @@
 import React from "react";
-import { Dimmer, Header, Icon, Input } from "semantic-ui-react";
+import { Dimmer, Header, Icon, Input, Segment } from "semantic-ui-react";
 import { withApollo } from "@apollo/client/react/hoc";
 import PropTypes from "prop-types";
 import { compose, pure } from "recompose";
@@ -69,23 +69,26 @@ class SearchLexicalEntries extends React.Component {
 
   render() {
     const { joinGroup } = this.props;
-    const actions = [{ title: this.context("Connect"), action: entry => joinGroup(entry) }];
+    const actions = [{ title: this.context("Connect"), className: "lingvo-button-greenest", action: entry => joinGroup(entry) }];
     return (
-      <div style={{ paddingTop: "20px" }}>
-        <Input
-          action={{ icon: "search", onClick: this.search }}
-          placeholder={this.context("Type to search")}
-          value={this.state.searchString}
-          onChange={(e, data) => this.setState({ searchString: data.value })}
-        />
-        {this.state.searchInProgress && (
-          <Dimmer active style={{ minHeight: "600px", background: "none" }}>
-            <Header as="h2" icon>
-              <Icon name="spinner" loading />
-            </Header>
-          </Dimmer>
-        )}
-        {this.state.resultsTree && <Tree resultsTree={this.state.resultsTree} actions={actions} />}
+      <div>
+        <Segment className="lingvo-segment-grouptag-search">
+          <Input
+            action={{ icon: <i className="lingvo-icon lingvo-icon_search2" />, onClick: this.search }}
+            placeholder={this.context("Type to search")}
+            value={this.state.searchString}
+            onChange={(e, data) => this.setState({ searchString: data.value })}
+            className="lingvo-search-input lingvo-search-input_grouptag"
+          />
+          {this.state.searchInProgress && (
+            <Dimmer active style={{ minHeight: "600px", background: "none" }}>
+              <Header as="h2" icon>
+                <Icon name="spinner" loading />
+              </Header>
+            </Dimmer>
+          )}
+          {this.state.resultsTree && <Tree resultsTree={this.state.resultsTree} actions={actions} />}
+        </Segment>
       </div>
     );
   }

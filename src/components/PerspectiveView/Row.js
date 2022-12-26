@@ -101,10 +101,10 @@ const Row = ({
           {actions.map(action => (
             <Button
               disabled={disabled_flag}
-              key={action.title}
-              basic
+              key={action.title} 
               content={action.title}
               onClick={() => action.action(entry)}
+              className={action.className}
             />
           ))}
         </Table.Cell>
