@@ -3714,6 +3714,42 @@ body {
 }
 /* /lingvo message */
 
+/* snackbar message */
+.snackbar-exit,
+.snackbar-enter,
+.snackbar-enter-done {
+  &.ui.green.message {
+    font-family: Rubik, Arial, sans-serif !important;
+    font-size: 16px !important;
+    line-height: 16px !important;
+    font-weight: 400 !important;
+    line-height: 20px !important;
+    color: #333 !important;
+    padding: 13px 16px 13px 62px !important;
+    background-color: #ecf6ef !important;
+    border: none !important;
+    -webkit-box-shadow: 0 0 0 1px #57b894 inset, 0 0 0 0 transparent !important;
+    box-shadow: 0 0 0 1px #57b894 inset, 0 0 0 0 transparent !important;
+    border-radius: 10px !important;
+    position: relative !important;
+    min-height: 48px !important;
+    max-width: none !important;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: calc(50% - 17px);
+      left: 15px;
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      padding: 0;
+      background: #57b894 url("../images/message_success.svg") 6px 6px no-repeat;
+    }
+  }
+}
+/* /snackbar message */
+
 /* lingvo info message */
 .lingvo-info-message {
   font-family: Rubik, Arial, sans-serif;
