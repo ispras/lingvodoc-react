@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
-import { Button, Checkbox, Dropdown, Icon, Label } from "semantic-ui-react";
+import { Button, Checkbox, Dropdown, Icon } from "semantic-ui-react";
 import Immutable from "immutable";
 import PropTypes from "prop-types";
 import { compose, onlyUpdateForKeys } from "recompose";
@@ -66,13 +66,15 @@ const Dict = ({ dictionary, actions, selected, canSelectDictionaries }) => {
       )}
       {(config.buildType === "desktop" || config.buildType === "proxy") && isDownloaded && <Icon name="download" />}
 
-      <span className="dict-name">
-        {translations && T(translations.toJS())}{" "}
-        {config.buildType === "server" && canSelectDictionaries && status === "Published" && <Icon name="globe" />}
-      </span>
-      {authors && authors.size != 0 && <span className="dict-authors">({authors.toArray().join(", ")})</span>}
-      {perspectives && !selectorStatus && perspectives.valueSeq && (
-        <Dropdown inline text={`${getTranslation("View")} (${perspectives.size})`} 
+      {perspectives && !selectorStatus && perspectives.valueSeq ? (
+        <Dropdown 
+          icon={null}
+          trigger={
+            <span className={perspectives.size && "dict-name dict-name_link" || "dict-name"}>
+              {translations && T(translations.toJS())}{" "} ({perspectives.size})
+              {config.buildType === "server" && canSelectDictionaries && status === "Published" && <Icon name="globe" />}
+            </span>
+          }
           className="lingvo-dropdown-inline lingvo-dropdown-inline_perspectives"
         >
           <Dropdown.Menu>
@@ -81,14 +83,19 @@ const Dict = ({ dictionary, actions, selected, canSelectDictionaries }) => {
             ))}
           </Dropdown.Menu>
         </Dropdown>
+      ) : (
+        <span className="dict-name">
+          {translations && T(translations.toJS())}{" "}
+          {config.buildType === "server" && canSelectDictionaries && status === "Published" && <Icon name="globe" />}
+        </span>
       )}
+
+      {authors && authors.size != 0 && <span className="dict-authors">({authors.toArray().join(", ")})</span>}
 
       {selectorStatus && (
         <Link to="/distance_map/selected_languages" state={{ mainPerspectives: perspectives.toJS() }}>
-          {" "}
-          <Button size="tiny" style={{ margin: "0 0 3px 0" }}>
-            {" "}
-            {getTranslation("Select dictionary")}{" "}
+          <Button style={{ margin: "0 0 3px 0" }} className="lingvo-button-green2">
+            {getTranslation("Select")}
           </Button>
         </Link>
       )}
