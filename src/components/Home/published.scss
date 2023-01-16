@@ -2,23 +2,25 @@ ul.tree {
   list-style: none;
   margin: 0;
   padding: 0;
+  font-family: Rubik, Arial, sans-serif;
+
   ul {
     list-style: none;
     margin: 0;
     padding: 0;
     margin-left: 10px;
   }
+
   li {
     margin: 0;
     padding: 0 7px;
     line-height: 20px;
     border-left: 1px solid rgb(100, 100, 100);
-    &:first-child.dict {
-      margin: 1em 0 0 0;
-    }
+
     &:last-child {
       border-left: none;
     }
+
     &:before {
       position: relative;
       top: -0.3em;
@@ -30,8 +32,17 @@ ul.tree {
       display: inline-block;
       left: -7px;
     }
+
     &:last-child:before {
       border-left: 1px solid rgb(100, 100, 100);
+    }
+
+    &.dict {
+      padding-bottom: 4px;
+    }
+
+    &.lang {
+      padding-bottom: 4px;
     }
   }
 }
@@ -60,20 +71,34 @@ ul.tree {
 
   .lang-name {
     padding-right: 9px;
-    font-size: 1.2em;
-    color: rgb(25, 0, 255);
+    font-size: 14px;
+    font-weight: 500;
+    color: #0f69c9;
+
+    & + ul {
+      margin-top: 6px;
+    }
+    
   }
 
   .root-lang-name {
     padding-right: 9px;
-    font-size: 2em;
-    color: rgb(211, 0, 0);
+    font-size: 24px;
+    color: #f05f6b;
+
+    & + ul {
+      margin-top: 9px;
+    }
   }
 
   .confirmed-lang-name {
     padding-right: 9px;
-    font-size: 1.4em;
-    color: rgb(148, 0, 211);
+    font-size: 18px;
+    color: #5d54cd;
+
+    & + ul {
+      margin-top: 9px;
+    }
   }
 
   &.highlighted {
@@ -86,16 +111,19 @@ ul.tree {
   padding: 2px 1em;
 
   .dict-name {
-    font-size: 0.95em;
+    font-size: 14px;
     padding-right: 5px;
-    font-weight: 300;
+    font-weight: 400;
+
+    &_link:hover {
+      color: #5d54cd;
+    }
   }
 
   .dict-authors {
+    margin-right: 8px;
     font-style: italic;
-    font-weight: 200;
-    margin-right: 1em;
-    font-style: italic;
+    font-weight: normal;
   }
 }
 
