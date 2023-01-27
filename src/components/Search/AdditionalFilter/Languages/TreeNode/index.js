@@ -9,7 +9,7 @@ const classNames = {
   node: "search-language-tree__node",
   translationWrap: "search-language-tree__translation-wrap",
   translation: "search-language-tree__translation",
-  checkbox: "search-language-tree__checkbox",
+  checkbox: "search-language-tree__checkbox lingvo-checkbox",
   expandButton: "search-language-tree__button search-language-tree__button_expand",
   collapseButton: "search-language-tree__button search-language-tree__button_collapse",
   title: "search-language-tree__title",
@@ -180,22 +180,11 @@ class TreeNode extends PureComponent {
    */
   renderCheckbox() {
     const { checked } = this.props;
-
-    if (checked === 2) {
-      return (
-        <Checkbox
-          className={classNames.checkbox}
-          indeterminate
-          onChange={this.onCheck}
-          onKeyPress={this.onCheckboxKeyPress}
-          aria-label="Check"
-        />
-      );
-    }
-
+    
     return (
       <Checkbox
         className={classNames.checkbox}
+        indeterminate={checked === 2}
         checked={checked === 1}
         onChange={this.onCheck}
         onKeyPress={this.onCheckboxKeyPress}

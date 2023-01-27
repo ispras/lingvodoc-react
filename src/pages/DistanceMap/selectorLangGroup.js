@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Button, Label, Segment } from "semantic-ui-react";
+import { Button, Container, Label } from "semantic-ui-react";
 import { withApollo } from "@apollo/client/react/hoc";
 import { fromJS } from "immutable";
 import PropTypes from "prop-types";
@@ -9,6 +9,7 @@ import { compose } from "recompose";
 import { bindActionCreators } from "redux";
 
 import { chooseTranslation as T } from "api/i18n";
+import Footer from "components/Footer";
 import Placeholder from "components/Placeholder";
 import Languages from "components/Search/AdditionalFilter/Languages";
 import {
@@ -117,7 +118,7 @@ class FilterDictionaries extends React.Component {
     const { mainGroupDictionaresAndLanguages, onLangsDictsChange, selectedLanguages } = newProps;
 
     return (
-      <Segment className="filter-dictionaries">
+      <div className="filter-dictionaries">
         {mainGroupDictionaresAndLanguages.languages && (
           <Languages
             onChange={onLangsDictsChange}
@@ -131,7 +132,7 @@ class FilterDictionaries extends React.Component {
             uncheckAllButtonText={this.context("Uncheck all")}
           />
         )}
-      </Segment>
+      </div>
     );
   }
 }
@@ -264,37 +265,52 @@ function SelectorLangGroup(props) {
     }
 
     return (
-      <div className="page-content">
-        {mainDictionary && (
-          <div>
-            <h1 style={{ margin: "15px 0" }}>{T(mainDictionary.translations)}</h1>
-            <FilterDictionaries
-              newProps={{
-                ...props,
-                onLangsDictsChange,
-                mainDictionary,
-                selectedLanguages
-              }}
-            />
-          </div>
-        )}
-        <Button
-          style={{ margin: "15px 15px 0 0" }}
-          onClick={() => {
-            actions.setDefaultGroup();
-            navigate(-1);
-          }}
-        >
-          {" "}
-          {getTranslation("Back")}
-        </Button>
+      <div className="lingvodoc-page">
+        <div className="lingvodoc-page__content">
+          {mainDictionary && (
+            <div>
+              <div className="background-header">
+                <Container className="published">
+                  <h2 className="page-title">{T(mainDictionary.translations)}</h2>
+                </Container>
+              </div>
 
-        <Link to="/distance_map/selected_languages/map" state={{ mainDictionary, rootLanguage }}>
-          <Button style={{ margin: "15px 0" }} onClick={() => send()}>
-            {" "}
-            {getTranslation("Next")}{" "}
-          </Button>
-        </Link>
+              <Container>
+                <FilterDictionaries
+                  newProps={{
+                    ...props,
+                    onLangsDictsChange,
+                    mainDictionary,
+                    selectedLanguages
+                  }}
+                />
+              </Container>
+            </div>
+          )}
+          <Container>
+            <Button 
+              style={{ margin: "24px 20px 0 0" }}
+              onClick={() => {
+                actions.setDefaultGroup();
+                navigate(-1);
+              }}
+              className="lingvo-button-basic-black lingvo-button-basic-black_small"
+            >
+              {getTranslation("Back")}
+            </Button>
+
+            <Link to="/distance_map/selected_languages/map" state={{ mainDictionary, rootLanguage }}>
+              <Button 
+                style={{ margin: "24px 0" }} 
+                onClick={() => send()}
+                className="lingvo-button-violet lingvo-button-violet_small"
+              >
+                {getTranslation("Next")}
+              </Button>
+            </Link>
+          </Container>
+        </div>
+        <Footer />
       </div>
     );
   } catch (er) {

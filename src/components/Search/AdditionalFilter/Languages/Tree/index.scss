@@ -25,6 +25,10 @@
     margin-left: 0;
   }
 
+  &__top-buttons {
+    margin-bottom: 20px;
+  }
+
   &__buttons {
     margin-top: 20px;
   }
@@ -155,4 +159,127 @@
   &__group_hidden {
     display: none;
   }
+
+  .filter-dictionaries & {
+    font-family: Rubik, Arial, sans-serif !important;
+    font-size: 16px !important;
+    line-height: 20px !important;
+
+    &__button {
+      margin-top: -12px !important;
+      left: 47px !important;
+
+      width: 24px !important;
+      height: 24px !important;
+      -webkit-box-shadow: none !important;
+      box-shadow: none !important;
+      transition: 0.2s;
+    }
+
+    &__button_expand {
+      background: #fff url("../../../../../images/icon_close_default.svg") 0 0 no-repeat;
+
+      &:hover {
+        background: #fff url("../../../../../images/icon_close_hover.svg") 0 0 no-repeat;
+      }
+    }
+  
+    &__button_collapse {
+      background: #fff url("../../../../../images/icon_open_default.svg") 0 0 no-repeat;
+
+      &:hover {
+        background: #fff url("../../../../../images/icon_open_hover.svg") 0 0 no-repeat;
+      }
+    }
+
+    &__checkbox {
+      left: 20px !important;
+    }
+  
+    &__checkbox input[type="checkbox"]:focus + label:before {
+      outline: none !important;
+    }
+
+    &__leaf {
+      margin-left: 57px !important;
+    }
+
+    &__group {
+      margin-left: 57px !important;
+
+      &.ui.segments {
+        margin-left: 0 !important;
+        border-radius: 12px !important;
+        -webkit-box-shadow: none !important;
+        box-shadow: none !important;
+
+        &:not(.horizontal) > .segment:only-child {
+          border-radius: 12px !important;
+          -webkit-box-shadow: none !important;
+          box-shadow: none !important;
+          padding: 24px !important;
+        }
+      }
+    }
+
+    &__wrap > .search-language-tree__items > .search-language-tree__leaf,
+    &__wrap > .search-language-tree__items > .search-language-tree__group {
+      margin-left: 0 !important;
+    }
+
+    &__group .search-language-tree__title {
+      padding-left: 75px !important;
+    }
+
+    &__group > .search-language-tree__title:before {
+      width: 47px !important;
+    }
+
+    &__leaf > .search-language-tree__title:before {
+      width: 37px !important;
+    }
+
+    &__leaf .search-language-tree__title {
+      padding-left: 0 !important;
+    }
+
+    &__leaf .search-language-tree__translation-wrap {
+      padding-left: 42px !important;
+    }
+
+    &__leaf,
+    &__group {
+      border-left: 1px solid #dcdcdc !important;
+    }
+
+    &__group > .search-language-tree__title:before {
+      background-color: #dcdcdc !important;
+    }
+  
+    &__node > .search-language-tree__title:before {
+      background-color: #dcdcdc !important;
+    }
+
+    &__node:last-child {
+      border-left: none !important;
+    }
+
+    &__node:last-child:before {
+      background-color: #dcdcdc !important;
+    }
+
+    &__translation-wrap {
+      padding: 10px 5px 10px 0 !important;
+    }
+
+    &__node:last-child.search-language-tree__group:before {
+      height: 20px !important;
+    }
+
+    &__node:last-child.search-language-tree__leaf:before {
+      height: 50% !important;
+    }
+  
+  }
+  
 }

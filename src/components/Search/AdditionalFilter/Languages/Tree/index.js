@@ -1,6 +1,6 @@
 import React, { PureComponent } from "react";
 import { connect } from "react-redux";
-import { Button, Segment } from "semantic-ui-react";
+import { Checkbox, Segment } from "semantic-ui-react";
 import isEqual from "lodash/isEqual";
 import PropTypes from "prop-types";
 import { compose } from "recompose";
@@ -18,6 +18,7 @@ const classNames = {
   wrap: "search-language-tree__wrap",
   items: "search-language-tree__items",
   buttons: "search-language-tree__buttons",
+  topbuttons: "search-language-tree__top-buttons",
   group: "search-language-tree__group",
   groupHidden: "search-language-tree__group_hidden"
 };
@@ -84,8 +85,9 @@ class Tree extends PureComponent {
     }
 
     this.updateNodesWithChecked(props.checked, props.filterMode);
-
+    
     this.state = {
+      checkAll: false,
       expanded:
         Object.values(this.flatNodes)
           .filter(item => item.expanded)
@@ -100,8 +102,7 @@ class Tree extends PureComponent {
 
     this.onCheck = this.onCheck.bind(this);
     this.onExpand = this.onExpand.bind(this);
-    this.checkAll = this.checkAll.bind(this);
-    this.uncheckAll = this.uncheckAll.bind(this);
+    this.actionCheckAll = this.actionCheckAll.bind(this);
   }
 
   /**
@@ -135,6 +136,20 @@ class Tree extends PureComponent {
   onCheck(nodeInfo) {
     this.toggleChecked(nodeInfo.value, nodeInfo.checked);
     this.recountParentsCheck(nodeInfo.value);
+
+    const nextCheckedList = this.getCheckedList();
+    const flatNodes = this.getFlatNodes();
+
+    if ((nextCheckedList[0].checked.length + nextCheckedList[1].checked.length) === Object.keys(flatNodes).length) {
+      this.setState({
+        checkAll: true
+      });
+    } else {
+      this.setState({
+        checkAll: false
+      });
+    }
+    
     this.sendCheckedListToTop();
   }
 
@@ -349,18 +364,18 @@ class Tree extends PureComponent {
     this.sendCheckedListToTop();
   }
 
-  /**
-   * Toggles checked state of all tree nodes to true.
-   */
-  checkAll() {
-    this.toggleCheckedAll(true);
-  }
-
-  /**
-   * Toggles checked state of all tree nodes to false.
-   */
-  uncheckAll() {
-    this.toggleCheckedAll(false);
+  actionCheckAll(checked) {
+    if (checked) {
+      this.toggleCheckedAll(true);
+      this.setState({
+        checkAll: true
+      });
+    } else {
+      this.toggleCheckedAll(false);
+      this.setState({
+        checkAll: false
+      });
+    }
   }
 
   /**
@@ -571,17 +586,21 @@ class Tree extends PureComponent {
         {showTree ? (
           <Segment>
             <div className={classNames.container}>
+
+              <div className={classNames.topbuttons}>
+                <Checkbox 
+                  toggle 
+                  label={this.props.checkAllButtonText}
+                  checked={this.state.checkAll}
+                  onChange={(e, { checked }) => this.actionCheckAll(checked)}
+                  className="lingvo-radio-toggle"
+                />
+              </div>
+
               <div className={classNames.wrap}>
                 <div className={classNames.items}>{this.renderTreeNodes(nodes)}</div>
               </div>
-              <div className={classNames.buttons}>
-                <Button primary basic onClick={this.uncheckAll}>
-                  {this.props.uncheckAllButtonText}
-                </Button>
-                <Button primary basic onClick={this.checkAll}>
-                  {this.props.checkAllButtonText}
-                </Button>
-              </div>
+
             </div>
           </Segment>
         ) : null}
