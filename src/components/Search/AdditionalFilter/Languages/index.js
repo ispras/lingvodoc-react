@@ -1,5 +1,4 @@
 import React, { PureComponent } from "react";
-import { Segment } from "semantic-ui-react";
 import PropTypes from "prop-types";
 
 import Tree from "./Tree";
@@ -110,7 +109,7 @@ class Languages extends PureComponent {
     const checkedData = this.getDataInInternalFormat(langsChecked, dictsChecked);
 
     return (
-      <Segment.Group className={!showTree ? classNames.hide : ""}>
+      <div className={!showTree ? classNames.hide : ""}>
         <Tree
           checked={checkedData}
           selectedLanguages={selectedLanguages}
@@ -121,7 +120,7 @@ class Languages extends PureComponent {
           showTree={showTree}
           filterMode={this.props.filterMode}
         />
-      </Segment.Group>
+      </div>
     );
   }
 }

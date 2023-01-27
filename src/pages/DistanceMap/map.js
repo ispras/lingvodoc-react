@@ -1,7 +1,7 @@
 import React, { PureComponent } from "react";
 import { connect } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Button, Label, Segment } from "semantic-ui-react";
+import { Button, Container, Label, Segment } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql, withApollo } from "@apollo/client/react/hoc";
 import L from "leaflet";
@@ -11,6 +11,7 @@ import { compose } from "recompose";
 import { bindActionCreators } from "redux";
 
 import { chooseTranslation as T } from "api/i18n";
+import Footer from "components/Footer";
 import Placeholder from "components/Placeholder";
 import { setDefaultGroup, setDictionariesGroup } from "ducks/distanceMap";
 import TranslationContext from "Layout/TranslationContext";
@@ -59,7 +60,7 @@ const mutationDistancePerspectives = gql`
   }
 `;
 const ButtonBack = {
-  margin: " 10px 10px 0  0"
+  margin: "26px 20px 0 0"
 };
 
 const cfg = {
@@ -191,6 +192,8 @@ class MapAreas extends PureComponent {
   render() {
     const { location, user } = this.props;
 
+    const { mainDictionary } = location.state;
+
     if (!location.state) {
       return null;
     }
@@ -206,35 +209,57 @@ class MapAreas extends PureComponent {
     }
 
     return (
-      <div className="page-content">
-        {!this.state.statusRequest && (
-          <div>
-            <Segment>{this.context("No data found for analysis, please select another dictionary")}</Segment>
-          </div>
-        )}
-        {this.state.statusMap === false && this.state.statusRequest && <Placeholder />}
-        {this.state.statusMap && this.state.statusRequest && (
-          <Segment>
-            <div className="leaflet">
-              <div
-                ref={ref => {
-                  this.mapContainer = ref;
-                }}
-                className="leaflet__map"
-              />
-            </div>
-          </Segment>
-        )}
-        {(this.state.statusMap || !this.state.statusRequest) && (
-          <div>
-            <Button style={ButtonBack} onClick={this.returnToTree}>
-              {this.context("Return to tree")}
-            </Button>
-            <Button style={ButtonBack} onClick={this.back}>
-              {this.context("Back")}
-            </Button>
-          </div>
-        )}
+      <div className="lingvodoc-page">
+        <div className="lingvodoc-page__content">
+
+          {mainDictionary && (
+              <div className="background-header">
+                <Container className="published">
+                  <h2 className="page-title">{T(mainDictionary.translations)}</h2>
+                </Container>
+              </div>
+          )}
+          <Container>
+            {!this.state.statusRequest && (
+              <div className="lingvo-message lingvo-message_warning">
+                {this.context("No data found for analysis, please select another dictionary")}
+              </div>
+            )}
+            {this.state.statusMap === false && this.state.statusRequest && <Placeholder />}
+            {this.state.statusMap && this.state.statusRequest && (
+              <Segment>
+                <div className="leaflet">
+                  <div
+                    ref={ref => {
+                      this.mapContainer = ref;
+                    }}
+                    className="leaflet__map"
+                  />
+                </div>
+              </Segment>
+            )}
+            {(this.state.statusMap || !this.state.statusRequest) && (
+              <div>
+                <Button 
+                  style={ButtonBack} 
+                  onClick={this.returnToTree} 
+                  className="lingvo-button-basic-black lingvo-button-basic-black_small"
+                >
+                  {this.context("Return to tree")}
+                </Button>
+                <Button 
+                  style={ButtonBack} 
+                  onClick={this.back}
+                  className="lingvo-button-violet lingvo-button-violet_small"
+                >
+                  {this.context("Back")}
+                </Button>
+              </div>
+            )}
+          </Container>
+        </div>
+
+        <Footer />
       </div>
     );
   }
