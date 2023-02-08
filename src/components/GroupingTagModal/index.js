@@ -147,7 +147,8 @@ const PublishGroupingTag = props => {
     allDictionaries,
     allPerspectives,
     connectedWords,
-    publish
+    publish,
+    published
   } = props;
 
   const getTranslation = useContext(TranslationContext);
@@ -163,8 +164,8 @@ const PublishGroupingTag = props => {
             <Segment>
               <Checkbox 
                 toggle 
-                label={entity.published && getTranslation("The entity is currently published. Click to unpublish.") || getTranslation("The entity is NOT currently published. Click to publish.")}
-                checked={entity.published} 
+                label={published && getTranslation("The entity is currently published. Click to unpublish.") || getTranslation("The entity is NOT currently published. Click to publish.")}
+                checked={published}  
                 onChange={(e, { checked }) => publish(entity, checked)} 
                 className="lingvo-radio-toggle"
                 style={{ marginTop: "10px", marginBottom: "10px" }}
@@ -198,7 +199,8 @@ PublishGroupingTag.propTypes = {
   allDictionaries: PropTypes.array.isRequired,
   allPerspectives: PropTypes.array.isRequired,
   connectedWords: PropTypes.object,
-  publish: PropTypes.func.isRequired
+  publish: PropTypes.func.isRequired,
+  published: PropTypes.bool.isRequired
 };
 
 const ContributionsGroupingTag = props => {
@@ -281,7 +283,12 @@ const getComponent = mode => {
 class GroupingTagModal extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+
+    const entity = props.lexicalEntry.entities.find(e => isEqual(e.field_id, props.fieldId));
+
+    this.state = {
+      entityPublish: entity && entity.published || false
+    };
 
     this.joinGroup = this.joinGroup.bind(this);
     this.leaveGroup = this.leaveGroup.bind(this);
@@ -341,14 +348,19 @@ class GroupingTagModal extends React.Component {
       refetchQueries: [
         {
           // XXX: Expensive operation!
-          query: queryPerspective,
+          query: queryLexicalEntries,
           variables: {
             id: lexicalEntry.parent_id,
             entitiesMode
           }
         }
       ]
+    }).then(() => {
+      this.setState({
+        entityPublish: published
+      });
     });
+
   }
 
   changeAccepted(entity, accepted) {
@@ -427,6 +439,7 @@ class GroupingTagModal extends React.Component {
               <Component
                 lexicalEntry={lexicalEntry}
                 fieldId={fieldId}
+                published={this.state.entityPublish}
                 entitiesMode={entitiesMode}
                 allLanguages={allLanguages}
                 allDictionaries={allDictionaries}

@@ -9,7 +9,7 @@ import styled from "styled-components";
 import buildPartialLanguageTree from "components/GroupingTagModal/partialTree";
 import SearchLexicalEntries from "components/GroupingTagModal/search";
 import Tree from "components/GroupingTagModal/Tree";
-import { LexicalEntryByIds, queryPerspective } from "components/PerspectiveView";
+import { LexicalEntryByIds, queryLexicalEntries, queryPerspective } from "components/PerspectiveView";
 import TranslationContext from "Layout/TranslationContext";
 
 import { acceptMutation, createMutation, languageTreeSourceQuery, publishMutation, removeMutation } from "./graphql";
@@ -128,13 +128,22 @@ EditLink.propTypes = {
 };
 
 const PublishLink = props => {
-  const { lexicalEntry, column, allLanguages, allDictionaries, allPerspectives, publish } = props;
+  const { 
+    lexicalEntry, 
+    column, 
+    allLanguages, 
+    allDictionaries, 
+    allPerspectives, 
+    publish, 
+    published
+  } = props;
 
   const getTranslation = useContext(TranslationContext);
 
   const tree = buildTree(lexicalEntry, column, allLanguages, allDictionaries, allPerspectives);
   const entity = lexicalEntry.entities.find(e => isEqual(e.field_id, column.field_id));
-  const label = entity.published
+
+  const label = published
     ? getTranslation("The entity is currently published. Click to unpublish.")
     : getTranslation("The entity is NOT currently published. Click to publish.");
 
@@ -147,8 +156,8 @@ const PublishLink = props => {
             <Segment>
               <Checkbox
                 toggle
-                label={label}
-                checked={entity.published}
+                label={label} 
+                checked={published}
                 onChange={(e, { checked }) => publish(entity, checked)}
                 className="lingvo-radio-toggle"
                 style={{ marginTop: "10px", marginBottom: "10px" }}
@@ -171,7 +180,8 @@ PublishLink.propTypes = {
   allLanguages: PropTypes.array.isRequired,
   allDictionaries: PropTypes.array.isRequired,
   allPerspectives: PropTypes.array.isRequired,
-  publish: PropTypes.func.isRequired
+  publish: PropTypes.func.isRequired,
+  published: PropTypes.bool.isRequired
 };
 
 const ContributionsLink = props => {
@@ -236,6 +246,12 @@ class LinkModalContent extends React.PureComponent {
   constructor(props) {
     super(props);
 
+    const entity = props.lexicalEntry.entities.find(e => isEqual(e.field_id, props.fieldId));
+
+    this.state = {
+      entityPublish: entity && entity.published || false
+    };
+
     this.createEntity = this.createEntity.bind(this);
     this.changePublished = this.changePublished.bind(this);
     this.changeAccepted = this.changeAccepted.bind(this);
@@ -273,14 +289,19 @@ class LinkModalContent extends React.PureComponent {
       refetchQueries: [
         {
           // XXX: Expensive operation!
-          query: queryPerspective,
+          query: queryLexicalEntries, 
           variables: {
             id: lexicalEntry.parent_id,
             entitiesMode
           }
         }
       ]
+    }).then(() => {
+      this.setState({
+        entityPublish: published
+      });
     });
+
   }
 
   changeAccepted(entity, accepted) {
@@ -361,6 +382,7 @@ class LinkModalContent extends React.PureComponent {
         <Component
           lexicalEntry={lexicalEntry}
           fieldId={fieldId}
+          published={this.state.entityPublish}
           column={column}
           entitiesMode={entitiesMode}
           allLanguages={allLanguages}
