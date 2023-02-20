@@ -1,10 +1,10 @@
 import React, { useCallback, useContext, useState } from "react";
-import { Button, Divider, Modal } from "semantic-ui-react";
+import { Button, Modal } from "semantic-ui-react";
 import PropTypes from "prop-types";
 
 import { createLanguageMutation, languagesQuery } from "backend";
 import EditLanguageMetadata from "components/EditLanguageMetadata";
-import Translations from "components/Translation";
+import Translations from "components/Translation2";
 import { useMutation } from "hooks";
 import TranslationContext from "Layout/TranslationContext";
 
@@ -32,9 +32,14 @@ const CreateLanguageModal = ({ parent, close }) => {
     <Modal className="lingvo-modal2" dimmer open size="small" closeIcon onClose={() => close()}>
       <Modal.Header>{getTranslation("Create language")}</Modal.Header>
       <Modal.Content>
-        <h4>{getTranslation("Translations")}</h4>
-        <Translations onChange={newTranslations => setTranslations(newTranslations)} />
-        <Divider />
+        <h4 className="lingvo-language__header">
+          {getTranslation("Translations")}
+        </h4>
+        <Translations 
+          onChange={newTranslations => setTranslations(newTranslations)} 
+          textAddButton="Add"
+        />
+        
         <EditLanguageMetadata mode="create" onChange={newMetadata => setMetadata(newMetadata)} />
       </Modal.Content>
       <Modal.Actions>
