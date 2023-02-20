@@ -3308,6 +3308,18 @@ body {
     }
   }
 
+  &_metadata {
+    &.ui.selection.dropdown {
+      min-width: 320px !important;
+      max-width: 320px !important;
+
+      @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+        min-width: 100% !important;
+        max-width: 100% !important;
+      }
+    }
+  }
+
   &_cognate {
     &.ui.selection.dropdown {
       min-width: 320px !important;

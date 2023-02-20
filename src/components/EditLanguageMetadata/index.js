@@ -1,8 +1,10 @@
 import React from "react";
-import { Button, Form, Label, Segment } from "semantic-ui-react";
+import { Button, Dropdown, Form } from "semantic-ui-react";
 import PropTypes from "prop-types";
 
 import TranslationContext from "Layout/TranslationContext";
+
+import "./style.scss";
 
 const speakersAmountOptions = getTranslation => [
   { text: getTranslation("Vulnerable"), value: "Vulnerable" },
@@ -46,19 +48,29 @@ class EditLanguageMetadata extends React.Component {
     const { speakersAmount } = this.state;
 
     return (
-      <Form>
-        <h4>{this.context("Metadata")}</h4>
-        <Segment>
-          <Form.Group widths="equal">
-            <Label size="large">{this.context("Number of native speakers")}</Label>
-            <Form.Dropdown
-              fluid
-              selection
-              options={speakersAmountOptions(this.context)}
-              value={speakersAmount}
-              onChange={this.onChangeValue}
-            />
-            {mode != "create" && (
+      <>
+        <h4 className="lingvo-language__header">
+          {this.context("Metadata")}
+        </h4>
+        <Form>
+          <Form.Group widths="equal" className="lingvo-language-metadata">
+            <div className="lingvo-language-metadata__label">
+              {this.context("Number of native speakers")}
+            </div>
+            
+            <Form.Field>
+              <Dropdown
+                fluid
+                selection
+                options={speakersAmountOptions(this.context)}
+                value={speakersAmount}
+                onChange={this.onChangeValue}
+                icon={<i className="lingvo-icon lingvo-icon_arrow" />}
+                className="lingvo-dropdown-select lingvo-dropdown-select_dark lingvo-dropdown-select_metadata"
+              />
+            </Form.Field>
+
+            {mode !== "create" && (
               <Button
                 content={this.context("Save")}
                 disabled={JSON.stringify(speakersAmount) == JSON.stringify(this.initialState.speakersAmount)}
@@ -67,8 +79,8 @@ class EditLanguageMetadata extends React.Component {
               />
             )}
           </Form.Group>
-        </Segment>
-      </Form>
+        </Form>
+      </>
     );
   }
 }

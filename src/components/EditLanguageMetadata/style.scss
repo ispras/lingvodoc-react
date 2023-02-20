@@ -1,0 +1,39 @@
+.lingvo-language {
+  &__header {
+    font-size: 18px;
+    line-height: 24px;
+    font-weight: bold;
+    font-family: Mulish;
+    margin: 0 0 4px 0;
+
+    .lingvo-translation__content + & {
+      margin-top: 20px;
+    }
+
+    & + .lingvo-translation__content {
+      padding-top: 8px;
+    }
+  }
+}
+
+.lingvo-language-metadata {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+
+  &.fields > .field {
+    padding-left: 0 !important;
+    width: auto !important;
+  }
+
+  &__label {
+    font-size: 16px;
+    font-family: Rubik, Arial, sans-serif;
+    line-height: 18px;
+    margin: 0 16px 0 0;
+    align-self: center;
+
+    @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+      margin: 10px 0 15px 0;
+    }
+  }
+}
