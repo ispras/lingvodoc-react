@@ -267,6 +267,7 @@ export const stringsToTranslate = [
   "Dictionary names and metadata",
   "Disable all markers of the groups this marker belongs to.",
   "Disable marker",
+  "Disconnect",
   "Disconnected",
   "Display mode",
   "Distance map",
