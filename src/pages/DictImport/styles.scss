@@ -49,10 +49,30 @@
   display: flex;
   flex-wrap: wrap;
   min-width: 30vw;
+  max-width: 30vw;
   max-height: 35vh;
   overflow: auto;
 
   & > button {
     margin: 0.2em !important;
   }
+
+  @media only screen and (max-device-width: 660px), only screen and (max-width: 660px) {
+    max-width: none;
+
+    & .ui.button {
+      word-break: break-all;
+      word-break: break-word;
+    }
+  }
+}
+
+.lingvo-column-mapper-select {
+  word-break: break-all;
+  word-break: break-word;
+}
+
+.lingvo-column-mapper-selected {
+  word-break: break-all;
+  word-break: break-word;
 }
