@@ -63,7 +63,7 @@ function Column({ spread, name, value, fieldOptions, type, onSetColumnType, acti
   }
 
   if (!spread && !isLink) {
-    const trigger = <Button content={triggerText} {...triggerColor} />;
+    const trigger = <Button content={triggerText} {...triggerColor} className="lingvo-column-mapper-selected" />;
 
     inner = (
       <Popup trigger={trigger} position="bottom center" on="click">
@@ -72,7 +72,7 @@ function Column({ spread, name, value, fieldOptions, type, onSetColumnType, acti
         </Popup.Header>
         <Dropdown
           style={{ marginTop: "0.5em", marginBottom: "0.25em" }}
-          className="main-select"
+          className="main-select lingvo-column-mapper-select"
           search
           selection
           placeholder={`${getTranslation("Field selection")}...`}
