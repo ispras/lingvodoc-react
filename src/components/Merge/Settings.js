@@ -337,6 +337,11 @@ class MergeSettings extends React.Component {
       /* Getting group's selected entries info. */
 
       const group = this.state.groups[index];
+
+      if (!group) {
+        break;
+      }
+
       const available_list = settings.getIn(["available", index]);
 
       const entry_list = available_list
@@ -511,6 +516,10 @@ class MergeSettings extends React.Component {
 
       const group = this.state.groups[index];
 
+      if (!group) {
+        break;
+      }
+
       let available_list = settings.getIn(["available", index]);
       let available_count = available_list ? available_list.size : 0;
 
@@ -519,6 +528,7 @@ class MergeSettings extends React.Component {
       ).filter(entry_id_str => !this.state.merged_set.hasOwnProperty(entry_id_str));
 
       settings = this.selection_update(index, entry_id_str_list, true, settings);
+      
 
       /* Continuing to select until we have no more new selectable entries. */
 
