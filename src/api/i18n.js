@@ -329,6 +329,7 @@ export const stringsToTranslate = [
   "Fast Track formant extraction",
   "feminine",
   "Field",
+  "Field data loading error",
   "Field Type",
   "Fields",
   "File selection",

@@ -129,23 +129,26 @@ const newUnstructuredDataMutation = gql`
 `;
 
 class Wrapper extends React.Component {
-  componentWillReceiveProps(props) {
-    if (props.preloadFlag) {
+
+  componentDidUpdate(prevProps) {
+    if (this.props.preloadFlag) {
       return;
     }
 
     // store search results aquired with graphql into Redux state
-    const { data, searchId, actions } = props;
+    const { data, searchId, actions } = this.props;
     if (!data.error && !data.loading) {
-      const oldSearchResult = this.props.searches.find(s => s.id === searchId);
+      const oldSearchResult = prevProps.searches.find(s => s.id === searchId);
       // only update if results are different to avoid infinite loop
       if (!isEqual(oldSearchResult.results, data.advanced_search)) {
         actions.storeSearchResult(searchId, data.advanced_search);
       }
     }
-  }
 
+  }
+  
   render() {
+
     if (this.props.preloadFlag) {
       return (
         <Dimmer active={true} inverted>
@@ -297,6 +300,7 @@ const searchesFromProps = memoize(searches =>
 );
 
 class SearchTabs extends React.Component {
+
   static groupHasDicts(groupId, dictsResults) {
     return dictsResults
       .valueSeq()
@@ -364,7 +368,19 @@ class SearchTabs extends React.Component {
     this.setState = (state, callback) => null;
   }
 
-  componentWillReceiveProps(nextProps) {
+  shouldComponentUpdate(nextProps, nextState) {
+    if (!isEqual(nextProps.searches, this.props.searches) || !isEqual(nextProps.data, this.props.data) || !isEqual(nextProps.match, this.props.match)) {
+      return true;
+    };
+
+    if (!isEqual(this.state, nextState)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  componentDidUpdate(prevProps) {
     const {
       actions,
       match: {
@@ -372,11 +388,11 @@ class SearchTabs extends React.Component {
       },
       data,
       client
-    } = nextProps;
+    } = this.props;
 
-    /* We have new search data loaded by a search data id. */
+    // We have new search data loaded by a search data id. 
 
-    if (search_id && !this.state.search_id_set.has(search_id)) {
+    if (data && search_id && !this.state.search_id_set.has(search_id)) {
       if (!data.loading && !data.error) {
         const {
           unstructured_data: { data: search_data }
@@ -394,26 +410,25 @@ class SearchTabs extends React.Component {
 
         actions.setSearches(searches);
 
-        this.state.preload_count = entry_list.length;
+        let preload_count = entry_list.length;
 
         for (const [key, value] of entry_list) {
           if (value.subQuery) {
-            this.state.preload_count--;
+            preload_count--;
             continue;
           }
 
-          /* Checking search query validity. */
+          // Checking search query validity.
 
           const checkInfo = queryCheck(value.query);
           const additionalParamsFlag = additionalParamsCheck(value.langs, value.dicts, value.searchMetadata);
 
           if (!checkInfo.check || (checkInfo.empty && !additionalParamsFlag)) {
-            this.state.preload_count--;
+            preload_count--;
             continue;
           }
 
           client
-
             .query({
               query: searchQuery,
               variables: {
@@ -430,21 +445,18 @@ class SearchTabs extends React.Component {
                 xlsxExport: value.xlsxExport
               }
             })
-
             .then(
               ({ data: { advanced_search } }) => {
-                this.setState({ preload_count: this.state.preload_count - 1 });
+                this.setState({ preload_count: preload_count - 1 });
 
                 if (this.is_mounted) {
                   actions.storeSearchResult(value.id, advanced_search);
                 }
               },
-
               error_data => {
                 window.logger.err(this.context("Failed search query!"));
                 console.log(error_data);
-
-                this.setState({ preload_count: this.state.preload_count - 1 });
+                this.setState({ preload_count: preload_count - 1 });
               }
             );
         }
@@ -465,32 +477,35 @@ class SearchTabs extends React.Component {
       return;
     }
 
-    const [mapSearches, sourceSearches] = this.updateMapSearchesActiveState(searchesFromProps(nextProps.searches));
+    if (!isEqual(this.props.searches, prevProps.searches)) {
 
-    /* toJS() / fromJS() for canonical representation. */
+      const [mapSearches, sourceSearches] = this.updateMapSearchesActiveState(searchesFromProps(this.props.searches));
 
-    const source_searches_info = fromJS(sourceSearches.map(search => search.delete("results")).toJS());
+      // toJS() / fromJS() for canonical representation. 
 
-    this.setState({
-      mapSearches,
-      sourceSearches,
-      source_searches_info,
-      intersec: 0
-    });
-  }
+      const source_searches_info = fromJS(sourceSearches.map(search => search.delete("results")).toJS());
 
-  componentDidUpdate(prevProps) {
-    const currentSearchesCount = this.props.searches.length;
-    const lastSearch = this.props.searches[currentSearchesCount - 1];
+      this.setState({
+        mapSearches,
+        sourceSearches,
+        source_searches_info,
+        intersec: 0
+      });
 
-    if (this.props.searches.length > prevProps.searches.length && lastSearch.subQuery) {
-      const tabsItems = this.tabsRef.querySelectorAll(".ui.menu .item");
-      const newSearchItem = tabsItems[currentSearchesCount - 1];
+      const currentSearchesCount = this.props.searches.length;
+      const lastSearch = this.props.searches[currentSearchesCount - 1];
 
-      if (newSearchItem) {
-        newSearchItem.click();
+      if (this.props.searches.length > prevProps.searches.length && lastSearch.subQuery) {
+        const tabsItems = this.tabsRef.querySelectorAll(".ui.menu .item");
+        const newSearchItem = tabsItems[currentSearchesCount - 1];
+
+        if (newSearchItem) {
+          newSearchItem.click();
+        }
       }
+
     }
+
   }
 
   onAreasModeChange(ev, { checked }) {
@@ -822,6 +837,7 @@ class SearchTabs extends React.Component {
   };
 
   render() {
+
     const { searches, actions, match, data } = this.props;
 
     if (match.params.searchId) {
