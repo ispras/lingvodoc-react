@@ -172,7 +172,7 @@ export function additionalParamsCheck(langs, dicts, searchMetadata) {
   return false;
 }
 
-function Query({ data, query, onFieldChange, onDelete }) {
+function Query({ data, query, onFieldChange, onDelete, setSearch }) {
   const getTranslation = useContext(TranslationContext);
 
   const fieldId = query.get("field_id", null);
@@ -222,6 +222,12 @@ function Query({ data, query, onFieldChange, onDelete }) {
     { key: "regexp", text: getTranslation("Regexp"), value: "regexp" }
   ];
 
+  const onKeyEnter = e => {
+    if (e.key === "Enter") {
+      setSearch();
+    }
+  };
+
   return (
     <QueryInput
       action
@@ -230,6 +236,7 @@ function Query({ data, query, onFieldChange, onDelete }) {
       value={str}
       onChange={onFieldChange("search_string")}
       className="group-fields-adaptive"
+      onKeyPress={onKeyEnter}
     >
       <Select
         placeholder={`${getTranslation("Field")}...`}
@@ -238,6 +245,7 @@ function Query({ data, query, onFieldChange, onDelete }) {
         options={fieldOptions}
         value={fieldId && compositeIdToString(fieldId.toJS())}
         onChange={onChange}
+        onKeyPress={onKeyEnter}
       />
       <input />
       <Select
@@ -246,6 +254,7 @@ function Query({ data, query, onFieldChange, onDelete }) {
         options={matchingOptions}
         value={type}
         onChange={onFieldChange("matching_type")}
+        onKeyPress={onKeyEnter}
       />
       <Button compact basic color="red" icon="delete" onClick={onDelete} />
     </QueryInput>
@@ -260,7 +269,8 @@ function SearchBlock({
   onFieldChange,
   onAddInnerSearchBlock,
   onDeleteInnerSearchBlock,
-  onDeleteSearchBlock
+  onDeleteSearchBlock,
+  setSearch
 }) {
   const getTranslation = useContext(TranslationContext);
   const subBlocksModeText = subBlocksMode.toUpperCase();
@@ -274,6 +284,7 @@ function SearchBlock({
             query={block}
             onFieldChange={onFieldChange(id)}
             onDelete={onDeleteInnerSearchBlock(id)}
+            setSearch={setSearch}
           />
         ))}
         <div>
@@ -712,6 +723,7 @@ class QueryBuilder extends React.Component {
                 onAddInnerSearchBlock={this.onAddInnerSearchBlock(id)}
                 onDeleteInnerSearchBlock={this.onDeleteInnerSearchBlock(id)}
                 onDeleteSearchBlock={this.onDeleteSearchBlock(id)}
+                setSearch={this.onSearchButtonClick}
               />,
               <Divider key={`d_${id}`} horizontal>
                 {this.context(blocksText)}
