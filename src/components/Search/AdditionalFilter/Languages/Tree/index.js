@@ -107,21 +107,22 @@ class Tree extends PureComponent {
 
   /**
    * Updates the tree data if the props were changed.
-   * @param {Object} - next component properties
+   * @param {Object} - prev component properties
    */
 
-  componentWillReceiveProps({ nodes: netxtNodes, checked: nextChecked, filterMode: nextFilterMode }) {
-    const { nodes: currentNodes, checked: currentChecked, filterMode: currentFilterMode } = this.props;
+  componentDidUpdate({ nodes: currentNodes, checked: currentChecked, filterMode: currentFilterMode }) {
+    const { nodes: netxtNodes, checked: nextChecked, filterMode: nextFilterMode } = this.props;
     if (!isEqual(currentNodes, netxtNodes)) {
       flattenNodes(netxtNodes, this.getFlatNodes());
     }
 
-    const needToRecount =
-      (nextFilterMode && !currentFilterMode) ||
-      (currentFilterMode && !nextFilterMode) ||
-      (currentFilterMode && nextFilterMode);
-
     if (!isEqual(currentChecked, nextChecked)) {
+
+      const needToRecount =
+        (nextFilterMode && !currentFilterMode) ||
+        (currentFilterMode && !nextFilterMode) ||
+        (currentFilterMode && nextFilterMode);
+
       this.updateNodesWithChecked(nextChecked, needToRecount);
       if (needToRecount) {
         this.recountTree();
