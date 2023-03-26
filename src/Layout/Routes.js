@@ -32,6 +32,7 @@ import SupportRoute from "pages/SupportRoute";
 import ToolsRoute from "pages/ToolsRoute";
 import TopSectionSelector from "pages/TopSectionSelector";
 import Valency from "pages/Valency";
+import Adverb from "pages/Adverb";
 import VersionRoute from "pages/VersionRoute";
 import WithoutGrants from "pages/WithoutGrants";
 
@@ -71,6 +72,7 @@ const AppRoutes = () => (
     <Route path="/version" element={<VersionRoute />} />
     <Route path="/docx2eaf" element={<Docx2Eaf />} />
     <Route path="/valency" element={<Valency />} />
+    <Route path="/adverb" element={<Adverb />} />
     <Route element={<NotFound />} />
   </Routes>
 );
