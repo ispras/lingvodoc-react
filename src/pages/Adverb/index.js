@@ -36,21 +36,21 @@ import "./style.scss";
 
 const sourcePerspectiveQuery = gql`
   query sourcePersepctiveData {
-    perspectives(only_with_valency_data: true) {
+    perspectives(only_with_adverb_data: true) {
       id
       tree {
         id
         translations
         marked_for_deletion
       }
-      has_valency_data
-      new_valency_data_count
+      has_adverb_data
+      new_adverb_data_count
     }
   }
 `;
 
-export const valencyDataQuery = gql`
-  query valencyData(
+export const adverbDataQuery = gql`
+  query adverbData(
     $perspectiveId: LingvodocID!
     $offset: Int
     $limit: Int
@@ -59,7 +59,7 @@ export const valencyDataQuery = gql`
     $acceptValue: Boolean
     $sortOrderList: [String]
   ) {
-    valency_data(
+    adverb_data(
       perspective_id: $perspectiveId
       offset: $offset
       limit: $limit
@@ -71,26 +71,26 @@ export const valencyDataQuery = gql`
   }
 `;
 
-const createValencyDataMutation = gql`
-  mutation createValencyData($perspectiveId: LingvodocID!) {
-    create_valency_data(perspective_id: $perspectiveId) {
+const createAdverbDataMutation = gql`
+  mutation createAdverbData($perspectiveId: LingvodocID!) {
+    create_adverb_data(perspective_id: $perspectiveId) {
       triumph
     }
   }
 `;
 
-const saveValencyDataMutation = gql`
-  mutation saveValencyData($perspectiveId: LingvodocID!) {
-    save_valency_data(perspective_id: $perspectiveId) {
+const saveAdverbDataMutation = gql`
+  mutation saveAdverbData($perspectiveId: LingvodocID!) {
+    save_adverb_data(perspective_id: $perspectiveId) {
       triumph
       data_url
     }
   }
 `;
 
-const setValencyAnnotationMutation = gql`
-  mutation setValencyAnnotation($annotationList: [ValencyInstanceAnnotation]!) {
-    set_valency_annotation(annotation_list: $annotationList) {
+const setAdverbAnnotationMutation = gql`
+  mutation setAdverbAnnotation($annotationList: [AdverbInstanceAnnotation]!) {
+    set_adverb_annotation(annotation_list: $annotationList) {
       triumph
     }
   }
@@ -112,9 +112,9 @@ const SortVerb = ({ valency, setState }) => {
             sort_verb: checked,
             current_page: 1,
             input_go_to_page: 1,
-            loading_valency_data: true,
-            loading_valency_error: false,
-            valency_data: null,
+            loading_adverb_data: true,
+            loading_adverb_error: false,
+            adverb_data: null,
             prefix_filter: "",
             all_verb_list: [],
             data_verb_list: [],
@@ -124,7 +124,7 @@ const SortVerb = ({ valency, setState }) => {
             show_prefix_str_list: []
           });
 
-          valency.queryValencyData({
+          valency.queryAdverbData({
             current_page: 1,
             sort_verb: checked,
             verb_prefix: ""
@@ -133,7 +133,7 @@ const SortVerb = ({ valency, setState }) => {
       />
 
       {valency.state.sort_verb && (
-        <Segment disabled={valency.state.loading_valency_data} className="sort_verb_selection">
+        <Segment disabled={valency.state.loading_adverb_data} className="sort_verb_selection">
           <div>
             {show_data_verb_list.length > 0
               ? data_verb_prefix
@@ -241,12 +241,12 @@ const SortCase = ({ valency, setState }) => {
             sort_case: checked,
             current_page: 1,
             input_go_to_page: 1,
-            loading_valency_data: true,
-            loading_valency_error: false,
-            valency_data: null
+            loading_adverb_data: true,
+            loading_adverb_error: false,
+            adverb_data: null
           });
 
-          valency.queryValencyData({
+          valency.queryAdverbData({
             currenet_page: 1,
             sort_case: checked
           });
@@ -281,12 +281,12 @@ const SortAccept = ({ valency, setState }) => {
             sort_accept: checked,
             current_page: 1,
             input_go_to_page: 1,
-            loading_valency_data: true,
-            loading_valency_error: false,
-            valency_data: null
+            loading_adverb_data: true,
+            loading_adverb_error: false,
+            adverb_data: null
           });
 
-          valency.queryValencyData({
+          valency.queryAdverbData({
             current_page: 1,
             sort_accept: checked
           });
@@ -303,13 +303,13 @@ const SortAccept = ({ valency, setState }) => {
             setState({
               current_page: 1,
               input_go_to_page: 1,
-              loading_valency_data: true,
-              loading_valency_error: false,
-              valency_data: null,
+              loading_adverb_data: true,
+              loading_adverb_error: false,
+              adverb_data: null,
               accept_value: new_accept_value
             });
 
-            valency.queryValencyData({
+            valency.queryAdverbData({
               current_page: 1,
               accept_value: new_accept_value
             });
@@ -399,7 +399,7 @@ const Sorting = ({ sort_order_list, setSortOrder, ...props }) => {
   );
 };
 
-class Valency extends React.Component {
+class Adverb extends React.Component {
   constructor(props) {
     super(props);
 
@@ -412,14 +412,14 @@ class Valency extends React.Component {
       sort_case: false,
       sort_accept: false,
 
-      creating_valency_data: false,
-      creating_valency_error: false,
-      loading_valency_data: false,
-      loading_valency_error: false,
-      saving_valency_data: false,
-      saving_valency_error: false,
+      creating_adverb_data: false,
+      creating_adverb_error: false,
+      loading_adverb_data: false,
+      loading_adverb_error: false,
+      saving_adverb_data: false,
+      saving_adverb_error: false,
 
-      valency_data: null,
+      adverb_data: null,
 
       instance_count: null,
       current_page: 1,
@@ -450,12 +450,12 @@ class Valency extends React.Component {
       downloadUrl: null
     };
 
-    this.createValencyData = this.createValencyData.bind(this);
-    this.saveValencyData = this.saveValencyData.bind(this);
-    this.setValencyAnnotation = this.setValencyAnnotation.bind(this);
+    this.createAdverbData = this.createAdverbData.bind(this);
+    this.saveAdverbData = this.saveAdverbData.bind(this);
+    this.setAdverbAnnotation = this.setAdverbAnnotation.bind(this);
     this.acceptRejectAllSelected = this.acceptRejectAllSelected.bind(this);
 
-    this.queryValencyData = this.queryValencyData.bind(this);
+    this.queryAdverbData = this.queryAdverbData.bind(this);
 
     this.setPerspective = this.setPerspective.bind(this);
     this.setPage = this.setPage.bind(this);
@@ -467,10 +467,10 @@ class Valency extends React.Component {
 
     this.render_instance = this.render_instance.bind(this);
 
-    this.valency_data_query_count = 0;
+    this.adverb_data_query_count = 0;
   }
 
-  queryValencyData({
+  queryAdverbData({
     perspective = null,
     current_page = null,
     items_per_page = null,
@@ -515,11 +515,11 @@ class Valency extends React.Component {
       sort_order_list = this.state.sort_order_list;
     }
 
-    const query_index = ++this.valency_data_query_count;
+    const query_index = ++this.adverb_data_query_count;
 
     client
       .query({
-        query: valencyDataQuery,
+        query: adverbDataQuery,
         variables: {
           perspectiveId: perspective.id,
           offset: (current_page - 1) * items_per_page,
@@ -533,12 +533,12 @@ class Valency extends React.Component {
       })
       .then(
         ({ data }) => {
-          if (query_index < this.valency_data_query_count) {
+          if (query_index < this.adverb_data_query_count) {
             return;
           }
 
           const { instance_count, instance_list, merge_list, sentence_list, annotation_list, user_list } =
-            data.valency_data;
+            data.adverb_data;
 
           const merge_map = new Map();
 
@@ -559,7 +559,7 @@ class Valency extends React.Component {
           const user_map = new Map(user_list);
 
           const state_obj = {
-            valency_data: data.valency_data,
+            adverb_data: data.adverb_data,
             instance_count,
             total_pages: Math.floor((instance_count + items_per_page - 1) / items_per_page),
             instance_list,
@@ -568,11 +568,11 @@ class Valency extends React.Component {
             annotation_map,
             user_map,
             data_verb_prefix: verb_prefix,
-            loading_valency_data: false
+            loading_adverb_data: false
           };
 
           if (sort_verb) {
-            const verb_list = data.valency_data.verb_list;
+            const verb_list = data.adverb_data.verb_list;
 
             const all_verb_list = [];
             const data_verb_list = [];
@@ -651,21 +651,21 @@ class Valency extends React.Component {
 
         error => {
           this.setState({
-            loading_valency_data: false,
-            loading_valency_error: true
+            loading_adverb_data: false,
+            loading_adverb_error: true
           });
         }
       );
   }
 
   setPerspective(perspective) {
-    if (!perspective.has_valency_data) {
+    if (!perspective.has_adverb_data) {
       this.setState({
         perspective,
         sort_verb: false,
         sort_case: false,
         sort_accept: false,
-        valency_data: null,
+        adverb_data: null,
         prefix_filter: "",
         selection_dict: {},
         downloadUrl: null
@@ -679,15 +679,15 @@ class Valency extends React.Component {
       sort_verb: false,
       sort_case: false,
       sort_accept: false,
-      valency_data: null,
+      adverb_data: null,
       prefix_filter: "",
       selection_dict: {},
       downloadUrl: null,
-      loading_valency_data: true,
-      loading_valency_error: false
+      loading_adverb_data: true,
+      loading_adverb_error: false
     });
 
-    this.queryValencyData({
+    this.queryAdverbData({
       perspective,
       current_page: 1,
       sort_verb: false,
@@ -698,20 +698,20 @@ class Valency extends React.Component {
     });
   }
 
-  createValencyData() {
-    this.setState({ creating_valency_data: true });
+  createAdverbData() {
+    this.setState({ creating_adverb_data: true });
 
-    const { has_valency_data } = this.state.perspective;
+    const { has_adverb_data } = this.state.perspective;
 
     this.props
-      .createValencyData({
+      .createAdverbData({
         variables: {
           perspectiveId: this.state.perspective.id
         }
       })
       .then(
         () => {
-          window.logger.suc(this.context(has_valency_data ? "Updated valency data." : "Created valency data."));
+          window.logger.suc(this.context(has_adverb_data ? "Updated adverb data." : "Created adverb data."));
 
           const { client } = this.props;
           const id_str = client.cache.identify(this.state.perspective);
@@ -719,14 +719,14 @@ class Valency extends React.Component {
           const result = client.writeFragment({
             id: id_str,
             fragment: gql`
-              fragment HasValencyData on DictionaryPerspective {
-                has_valency_data
-                new_valency_data_count
+              fragment HasAdverbData on DictionaryPerspective {
+                has_adverb_data
+                new_adverb_data_count
               }
             `,
             data: {
-              has_valency_data: true,
-              new_valency_data_count: 0
+              has_adverb_data: true,
+              new_adverb_data_count: 0
             }
           });
 
@@ -740,8 +740,8 @@ class Valency extends React.Component {
                   translations
                   marked_for_deletion
                 }
-                has_valency_data
-                new_valency_data_count
+                has_adverb_data
+                new_adverb_data_count
               }
             `
           });
@@ -750,34 +750,34 @@ class Valency extends React.Component {
             perspective,
             current_page: 1,
             input_go_to_page: 1,
-            creating_valency_data: false,
-            loading_valency_data: true,
-            loading_valency_error: false,
-            valency_data: null
+            creating_adverb_data: false,
+            loading_adverb_data: true,
+            loading_adverb_error: false,
+            adverb_data: null
           });
 
-          this.queryValencyData({
+          this.queryAdverbData({
             perspective,
             current_page: 1
           });
         },
         () => {
           this.setState({
-            creating_valency_data: false,
-            creating_valency_error: true
+            creating_adverb_data: false,
+            creating_adverb_error: true
           });
         }
       );
   }
 
-  saveValencyData() {
+  saveAdverbData() {
     this.setState({
-      saving_valency_data: true,
+      saving_adverb_data: true,
       downloadUrl: null
     });
 
     this.props
-      .saveValencyData({
+      .saveAdverbData({
         variables: {
           perspectiveId: this.state.perspective.id
         }
@@ -785,11 +785,11 @@ class Valency extends React.Component {
       .then(
         ({
           data: {
-            save_valency_data: { data_url }
+            save_adverb_data: { data_url }
           }
         }) => {
           this.setState({
-            saving_valency_data: false,
+            saving_adverb_data: false,
             downloadUrl: data_url
           });
 
@@ -798,23 +798,23 @@ class Valency extends React.Component {
         },
         () => {
           this.setState({
-            saving_valency_data: false,
-            saving_valency_error: true
+            saving_adverb_data: false,
+            saving_adverb_error: true
           });
         }
       );
   }
 
-  setValencyAnnotation(annotation_list) {
+  setAdverbAnnotation(annotation_list) {
     this.props
-      .setValencyAnnotation({
+      .setAdverbAnnotation({
         variables: {
           annotationList: annotation_list
         }
       })
       .then(
         () => {
-          window.logger.suc(this.context("Set valency annotation."));
+          window.logger.suc(this.context("Set adverb annotation."));
 
           for (const [instance_id, annotation_value] of annotation_list) {
             if (!this.state.annotation_map.has(instance_id)) {
@@ -861,7 +861,7 @@ class Valency extends React.Component {
     }
 
     if (annotation_list.length > 0) {
-      this.setValencyAnnotation(annotation_list);
+      this.setAdverbAnnotation(annotation_list);
     }
   }
 
@@ -871,12 +871,12 @@ class Valency extends React.Component {
     this.setState({
       current_page: active_page,
       input_go_to_page: active_page,
-      loading_valency_data: true,
-      loading_valency_error: false,
-      valency_data: null
+      loading_adverb_data: true,
+      loading_adverb_error: false,
+      adverb_data: null
     });
 
-    this.queryValencyData({ current_page: active_page });
+    this.queryAdverbData({ current_page: active_page });
   }
 
   setItemsPerPage(items_per_page) {
@@ -886,12 +886,12 @@ class Valency extends React.Component {
       current_page,
       input_go_to_page: current_page,
       items_per_page,
-      loading_valency_data: true,
-      loading_valency_error: false,
-      valency_data: null
+      loading_adverb_data: true,
+      loading_adverb_error: false,
+      adverb_data: null
     });
 
-    this.queryValencyData({ current_page, items_per_page });
+    this.queryAdverbData({ current_page, items_per_page });
   }
 
   setPrefix(prefix_str) {
@@ -985,7 +985,7 @@ class Valency extends React.Component {
     /* Reloading data only if the order of _enabled_ sorting options is changed. */
 
     if (!isEqual(enabled_before_list, enabled_after_list)) {
-      this.queryValencyData({
+      this.queryAdverbData({
         current_page: 1,
         sort_order_list: new_sort_order_list
       });
@@ -1066,7 +1066,7 @@ class Valency extends React.Component {
               positive
               content={this.context("Accept")}
               disabled={annotation_value}
-              onClick={() => this.setValencyAnnotation([[instance.id, true]])}
+              onClick={() => this.setAdverbAnnotation([[instance.id, true]])}
             />
 
             <Button
@@ -1075,7 +1075,7 @@ class Valency extends React.Component {
               color="blue"
               content={this.context("Reject")}
               disabled={!annotation_value}
-              onClick={() => this.setValencyAnnotation([[instance.id, false]])}
+              onClick={() => this.setAdverbAnnotation([[instance.id, false]])}
             />
           </Button.Group>
 
@@ -1126,7 +1126,7 @@ class Valency extends React.Component {
         <div className="background-content">
           <Message>
             <Message.Header>{this.context("Please sign in")}</Message.Header>
-            <p>{this.context("Only registered users can work with valency data.")}</p>
+            <p>{this.context("Only registered users can work with adverb data.")}</p>
           </Message>
         </div>
       );
@@ -1197,7 +1197,7 @@ class Valency extends React.Component {
     let has_selected_to_accept = false;
     let has_selected_to_reject = false;
 
-    if (!this.state.loading_valency_data && this.state.valency_data && this.state.instance_list.length > 0) {
+    if (!this.state.loading_adverb_data && this.state.adverb_data && this.state.instance_list.length > 0) {
       const prev_dict = {
         verb: null,
         case: null,
@@ -1392,46 +1392,46 @@ class Valency extends React.Component {
 
           {perspective && (
             <div style={{ marginTop: "0.5em" }}>
-              {(!perspective.has_valency_data || perspective.new_valency_data_count > 0) && (
+              {(!perspective.has_adverb_data || perspective.new_adverb_data_count > 0) && (
                 <Button
-                  key={perspective.has_valency_data ? "_update" : "_create"}
+                  key={perspective.has_adverb_data ? "_update" : "_create"}
                   style={{ marginRight: "0.5em" }}
                   basic
-                  color={perspective.has_valency_data ? "violet" : "green"}
+                  color={perspective.has_adverb_data ? "violet" : "green"}
                   content={
-                    this.state.creating_valency_data ? (
+                    this.state.creating_adverb_data ? (
                       <span>
                         {this.context(
-                          perspective.has_valency_data ? "Updating valency data..." : "Creating valency data..."
+                          perspective.has_adverb_data ? "Updating adverb data..." : "Creating adverb data..."
                         )}
                         <Icon name="spinner" loading />
                       </span>
                     ) : (
-                      this.context(perspective.has_valency_data ? "Update valency data" : "Create valency data")
+                      this.context(perspective.has_adverb_data ? "Update adverb data" : "Create adverb data")
                     )
                   }
-                  disabled={!perspective || this.state.creating_valency_data}
-                  onClick={() => this.createValencyData()}
+                  disabled={!perspective || this.state.creating_adverb_data}
+                  onClick={() => this.createAdverbData()}
                 />
               )}
 
-              {perspective.has_valency_data && (
+              {perspective.has_adverb_data && (
                 <Button
                   key="_save"
                   style={{ marginRight: "0.5em" }}
                   basic
                   color="blue"
                   content={
-                    this.state.saving_valency_data ? (
+                    this.state.saving_adverb_data ? (
                       <span>
-                        {this.context("Saving valency data")}... <Icon name="spinner" loading />
+                        {this.context("Saving adverb data")}... <Icon name="spinner" loading />
                       </span>
                     ) : (
-                      this.context("Save valency data")
+                      this.context("Save adverb data")
                     )
                   }
-                  disabled={!perspective || this.state.saving_valency_data}
-                  onClick={() => this.saveValencyData()}
+                  disabled={!perspective || this.state.saving_adverb_data}
+                  onClick={() => this.saveAdverbData()}
                 />
               )}
 
@@ -1440,12 +1440,12 @@ class Valency extends React.Component {
                 href={this.state.downloadUrl}
                 ref={e => (this.downloadA = e)}
               >
-                {this.context("Valency data")}
+                {this.context("Adverb data")}
               </a>
             </div>
           )}
 
-          {(this.state.valency_data || this.state.loading_valency_data) && (
+          {(this.state.adverb_data || this.state.loading_adverb_data) && (
             <div style={{ marginTop: "0.5em" }}>
               <Checkbox
                 toggle
@@ -1458,7 +1458,7 @@ class Valency extends React.Component {
             </div>
           )}
 
-          {(this.state.valency_data || this.state.loading_valency_data) && (
+          {(this.state.adverb_data || this.state.loading_adverb_data) && (
             <Sorting
               sort_order_list={this.state.sort_order_list}
               setSortOrder={this.setSortOrder}
@@ -1467,16 +1467,16 @@ class Valency extends React.Component {
             />
           )}
 
-          {this.state.loading_valency_data && (
+          {this.state.loading_adverb_data && (
             <div style={{ marginTop: "1em" }}>
               <span>
-                {`${this.context("Loading valency data...")} `}
+                {`${this.context("Loading adverb data...")} `}
                 <Icon name="spinner" loading />
               </span>
             </div>
           )}
 
-          {!this.state.loading_valency_data && this.state.valency_data && (
+          {!this.state.loading_adverb_data && this.state.adverb_data && (
             <div style={{ marginTop: "1em" }}>
               {this.state.instance_list.length <= 0 ? (
                 <p>{`${this.context("No instances")}.`}</p>
@@ -1604,13 +1604,13 @@ class Valency extends React.Component {
   }
 }
 
-Valency.contextType = TranslationContext;
+Adverb.contextType = TranslationContext;
 
 export default compose(
   connect(state => state.user),
   graphql(sourcePerspectiveQuery, { skip: ({ user }) => user.id === undefined }),
-  graphql(createValencyDataMutation, { name: "createValencyData" }),
-  graphql(saveValencyDataMutation, { name: "saveValencyData" }),
-  graphql(setValencyAnnotationMutation, { name: "setValencyAnnotation" }),
+  graphql(createAdverbDataMutation, { name: "createAdverbData" }),
+  graphql(saveAdverbDataMutation, { name: "saveAdverbData" }),
+  graphql(setAdverbAnnotationMutation, { name: "setAdverbAnnotation" }),
   withApollo
-)(Valency);
+)(Adverb);
