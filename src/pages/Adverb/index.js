@@ -143,12 +143,12 @@ const SortVerb = ({ valency, setState }) => {
               ? `${getTranslation("No verbs")} (${getTranslation("prefix")} "${data_verb_prefix}").`
               : `${getTranslation("No verbs")}.`}
 
-            {show_data_verb_list.map((verb, index) =>
-              show_data_verb_list.length > 15 && verb == "..." ? (
+            {show_data_verb_list.map((adverb, index) =>
+              show_data_verb_list.length > 15 && adverb == "..." ? (
                 "..., "
               ) : (
-                <span key={index} className="clickable" onClick={() => valency.setPrefix(verb)}>
-                  {verb}
+                <span key={index} className="clickable" onClick={() => valency.setPrefix(adverb)}>
+                  {adverb}
                   {index < show_data_verb_list.length - 1 ? ", " : ""}
                 </span>
               )
@@ -159,7 +159,7 @@ const SortVerb = ({ valency, setState }) => {
 
           <Input
             style={{ marginTop: "0.5em" }}
-            placeholder={`${getTranslation("Verb prefix filter")}...`}
+            placeholder={`${getTranslation("Adverb prefix filter")}...`}
             value={prefix_filter}
             onKeyPress={e => {
               if (e.key === "Enter") {
@@ -196,12 +196,12 @@ const SortVerb = ({ valency, setState }) => {
               ? `${getTranslation("No filtered verbs")} (${getTranslation("prefix")} "${prefix_filter}").`
               : `${getTranslation("No filtered verbs")}.`}
 
-            {show_prefix_verb_list.map((verb, index) =>
-              show_prefix_verb_list.length > 15 && verb == "..." ? (
+            {show_prefix_verb_list.map((adverb, index) =>
+              show_prefix_verb_list.length > 15 && adverb == "..." ? (
                 "..., "
               ) : (
-                <span key={index} className="clickable" onClick={() => valency.setPrefix(verb)}>
-                  {verb}
+                <span key={index} className="clickable" onClick={() => valency.setPrefix(adverb)}>
+                  {adverb}
                   {index < show_prefix_verb_list.length - 1 ? ", " : ""}
                 </span>
               )
@@ -337,7 +337,7 @@ const SortingItem = ({ sort_type, ...props }) => {
   let sort_component = null;
 
   switch (sort_type) {
-    case "verb":
+    case "adverb":
       sort_component = <SortVerb {...props} />;
       break;
 
@@ -406,7 +406,7 @@ class Adverb extends React.Component {
     this.state = {
       perspective: null,
 
-      sort_order_list: ["verb", "case", "accept"],
+      sort_order_list: ["adverb", "case", "accept"],
 
       sort_verb: false,
       sort_case: false,
@@ -578,12 +578,12 @@ class Adverb extends React.Component {
             const data_verb_list = [];
             const prefix_verb_list = [];
 
-            for (const [verb, has_prefix] of verb_list) {
-              all_verb_list.push(verb);
+            for (const [adverb, has_prefix] of verb_list) {
+              all_verb_list.push(adverb);
 
               if (has_prefix) {
-                data_verb_list.push(verb);
-                prefix_verb_list.push(verb);
+                data_verb_list.push(adverb);
+                prefix_verb_list.push(adverb);
               }
             }
 
@@ -595,28 +595,28 @@ class Adverb extends React.Component {
             let show_prefix_verb_list = [];
 
             if (data_verb_list.length > 15) {
-              for (const verb of data_verb_list.slice(0, 10)) {
-                show_data_verb_list.push(verb);
+              for (const adverb of data_verb_list.slice(0, 10)) {
+                show_data_verb_list.push(adverb);
               }
 
               show_data_verb_list.push("...");
 
-              for (const verb of data_verb_list.slice(-5)) {
-                show_data_verb_list.push(verb);
+              for (const adverb of data_verb_list.slice(-5)) {
+                show_data_verb_list.push(adverb);
               }
             } else {
               show_data_verb_list = data_verb_list;
             }
 
             if (prefix_verb_list.length > 15) {
-              for (const verb of prefix_verb_list.slice(0, 10)) {
-                show_prefix_verb_list.push(verb);
+              for (const adverb of prefix_verb_list.slice(0, 10)) {
+                show_prefix_verb_list.push(adverb);
               }
 
               show_prefix_verb_list.push("...");
 
-              for (const verb of prefix_verb_list.slice(-5)) {
-                show_prefix_verb_list.push(verb);
+              for (const adverb of prefix_verb_list.slice(-5)) {
+                show_prefix_verb_list.push(adverb);
               }
             } else {
               show_prefix_verb_list = prefix_verb_list;
@@ -630,12 +630,12 @@ class Adverb extends React.Component {
 
             const prefix_length = verb_prefix.length;
 
-            for (const verb of prefix_verb_list) {
-              if (verb.length < prefix_length) {
+            for (const adverb of prefix_verb_list) {
+              if (adverb.length < prefix_length) {
                 continue;
               }
 
-              const prefix_str = verb.slice(0, prefix_length + 1);
+              const prefix_str = adverb.slice(0, prefix_length + 1);
 
               if (prefix_str.length > prefix_length && !show_prefix_str_set.has(prefix_str)) {
                 show_prefix_str_set.add(prefix_str);
@@ -900,23 +900,23 @@ class Adverb extends React.Component {
     /* Refinement. */
 
     if (prefix_str.startsWith(this.state.prefix_filter)) {
-      prefix_verb_list = this.state.prefix_verb_list.filter(verb => verb.startsWith(prefix_str));
+      prefix_verb_list = this.state.prefix_verb_list.filter(adverb => adverb.startsWith(prefix_str));
     } else {
       /* Not a refinement, have to start from the list of all verbs. */
-      prefix_verb_list = this.state.all_verb_list.filter(verb => verb.startsWith(prefix_str));
+      prefix_verb_list = this.state.all_verb_list.filter(adverb => adverb.startsWith(prefix_str));
     }
 
     let show_prefix_verb_list = [];
 
     if (prefix_verb_list.length > 15) {
-      for (const verb of prefix_verb_list.slice(0, 10)) {
-        show_prefix_verb_list.push(verb);
+      for (const adverb of prefix_verb_list.slice(0, 10)) {
+        show_prefix_verb_list.push(adverb);
       }
 
       show_prefix_verb_list.push("...");
 
-      for (const verb of prefix_verb_list.slice(-5)) {
-        show_prefix_verb_list.push(verb);
+      for (const adverb of prefix_verb_list.slice(-5)) {
+        show_prefix_verb_list.push(adverb);
       }
     } else {
       show_prefix_verb_list = prefix_verb_list;
@@ -927,12 +927,12 @@ class Adverb extends React.Component {
 
     const prefix_length = prefix_str.length;
 
-    for (const verb of prefix_verb_list) {
-      if (verb.length < prefix_length) {
+    for (const adverb of prefix_verb_list) {
+      if (adverb.length < prefix_length) {
         continue;
       }
 
-      const new_prefix_str = verb.slice(0, prefix_length + 1);
+      const new_prefix_str = adverb.slice(0, prefix_length + 1);
 
       if (new_prefix_str.length > prefix_length && !show_prefix_str_set.has(new_prefix_str)) {
         show_prefix_str_set.add(new_prefix_str);
@@ -954,7 +954,7 @@ class Adverb extends React.Component {
     }
 
     const condition_dict = {
-      verb: this.state.sort_verb,
+      adverb: this.state.sort_adverb,
       case: this.state.sort_case,
       accept: this.state.sort_accept
     };
@@ -1199,7 +1199,7 @@ class Adverb extends React.Component {
 
     if (!this.state.loading_adverb_data && this.state.adverb_data && this.state.instance_list.length > 0) {
       const prev_dict = {
-        verb: null,
+        adverb: null,
         case: null,
         accept: null
       };
@@ -1245,7 +1245,7 @@ class Adverb extends React.Component {
 
       for (const sort_type of enabled_list) {
         switch (sort_type) {
-          case "verb":
+          case "adverb":
             const { verb_lex } = this.state.instance_list[0];
             const header_str = merge_map.get(verb_lex) || verb_lex;
 
@@ -1291,7 +1291,7 @@ class Adverb extends React.Component {
           const sort_type = enabled_list[j];
 
           switch (sort_type) {
-            case "verb":
+            case "adverb":
               const { verb_lex } = instance;
               const header_str = merge_map.get(verb_lex) || verb_lex;
 
