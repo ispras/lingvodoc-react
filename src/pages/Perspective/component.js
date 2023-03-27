@@ -1,8 +1,8 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { Link, Navigate, Route, Routes } from "react-router-dom";
-import { Container, Dropdown, Label, Menu } from "semantic-ui-react";
-import { gql } from "@apollo/client";
+import { Checkbox, Container, Dropdown, Icon, Input, Label, List, Menu, Message, Modal } from "semantic-ui-react";
+import { gql, useMutation, useQuery } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
 import { map } from "lodash";
 import PropTypes from "prop-types";
@@ -49,6 +49,16 @@ export const launchValencyMutation = gql`
   }
 `;
 
+export const valencyVerbCasesMutation = gql`
+  mutation valencyVerbCases($perspectiveId: LingvodocID!) {
+    valency_verb_cases(perspective_id: $perspectiveId) {
+      triumph
+      xlsx_url
+      verb_case_list
+    }
+  }
+`;
+
 const Counter = graphql(queryCounter)(({ data }) => {
   if (data.loading || data.error) {
     return null;
@@ -72,35 +82,172 @@ const toolsQuery = gql`
   }
 `;
 
-const Tools = graphql(toolsQuery)(
-  ({
-    data,
-    openCognateAnalysisModal,
-    openPhonemicAnalysisModal,
-    openPhonologyModal,
-    launchSoundAndMarkup,
-    launchValency,
-    id /* perspective_id */,
-    user_id,
-    mode
-  }) => {
-    if (data.loading || data.error) {
-      return null;
-    }
+function renderData(getTranslation, data, sentences, setSentences, filter, setFilter, refInput) {
+  let filterValue = filter;
 
-    const {
-      perspective: {
-        english_status,
-        created_by: { id: author_id },
-        edit_check
+  const {
+    valency_verb_cases: { xlsx_url, verb_case_list }
+  } = data;
+
+  let final_list = verb_case_list;
+
+  if (filter) {
+    final_list = [];
+
+    const filterLower = filter.toLowerCase();
+
+    for (const item of verb_case_list) {
+      const [verb_xlat, verb_case_sentence_list, verb_list] = item;
+      let found = false;
+
+      if (verb_xlat.toLowerCase().indexOf(filterLower) !== -1) {
+        found = true;
+      } else {
+        for (const verb of verb_list) {
+          if (verb.toLowerCase().indexOf(filterLower) !== -1) {
+            found = true;
+            break;
+          }
+        }
       }
-    } = data;
 
-    const published = english_status === "Published" || english_status === "Limited access";
+      if (found) {
+        final_list.push(item);
+      }
+    }
+  }
 
-    const getTranslation = useContext(TranslationContext);
+  return (
+    <>
+      <div>
+        <a href={xlsx_url}>{getTranslation("XLSX-exported data")}</a>
+      </div>
 
-    return (
+      <div style={{ marginTop: "0.75em" }}>
+        <Checkbox
+          label={getTranslation("Show sentences")}
+          checked={sentences}
+          onChange={(e, { checked }) => setSentences(checked)}
+        />
+      </div>
+
+      <div style={{ marginTop: "0.75em" }}>
+        <Input
+          placeholder={`${getTranslation("Verb lexeme/translation filter")}...`}
+          onChange={(e, { value }) => {
+            filterValue = value;
+          }}
+          onKeyPress={e => {
+            if (e.key === "Enter") {
+              setFilter(filterValue);
+            }
+          }}
+          icon={<Icon name="filter" link onClick={() => setFilter(filterValue)} />}
+        />
+      </div>
+
+      <div style={{ marginTop: "0.75em" }}>{`${final_list.length} ${getTranslation("verbs")}`}</div>
+
+      <div style={{ marginTop: "1em" }}>
+        <List>
+          {final_list.map(([verb_xlat, case_verb_sentence_list, _]) => (
+            <List.Item key={verb_xlat}>
+              {verb_xlat}
+              <List>
+                {case_verb_sentence_list.map(([case_str, verb_list, verb_sentence_list]) =>
+                  sentences ? (
+                    <List.Item key={case_str}>
+                      {case_str}
+                      <List>
+                        {verb_sentence_list.map(([verb, sentence_list]) => (
+                          <List.Item key={verb}>
+                            {verb}
+                            <List>
+                              {sentence_list.map((sentence, index) => (
+                                <List.Item key={index}>{sentence}</List.Item>
+                              ))}
+                            </List>
+                          </List.Item>
+                        ))}
+                      </List>
+                    </List.Item>
+                  ) : (
+                    <List.Item key={case_str}>{`${case_str}: ${verb_list.join(", ")}`}</List.Item>
+                  )
+                )}
+              </List>
+            </List.Item>
+          ))}
+        </List>
+      </div>
+    </>
+  );
+}
+
+const VerbCasesModal = ({ verbCases, setVerbCases, data, error, loading }) => {
+  const getTranslation = useContext(TranslationContext);
+
+  const [filter, setFilter] = useState("");
+  const [sentences, setSentences] = useState(false);
+
+  return (
+    <Modal closeIcon onClose={() => setVerbCases(false)} open={verbCases} size="large">
+      <Modal.Header>{getTranslation("Valency verb cases")}</Modal.Header>
+      <Modal.Content>
+        {loading && (
+          <span>
+            {`${getTranslation("Loading valency verb cases data")}...`} <Icon name="spinner" loading />
+          </span>
+        )}
+        {error && (
+          <Message negative compact>
+            <Message.Header>{getTranslation("Valency verb cases error")}</Message.Header>
+            <div style={{ marginTop: "0.25em" }}>
+              {getTranslation(
+                "Try closing the dialog and opening it again; if the error persists, please contact administrators."
+              )}
+            </div>
+          </Message>
+        )}
+        {data && renderData(getTranslation, data, sentences, setSentences, filter, setFilter)}
+      </Modal.Content>
+    </Modal>
+  );
+};
+
+const Tools = ({
+  openCognateAnalysisModal,
+  openPhonemicAnalysisModal,
+  openPhonologyModal,
+  launchSoundAndMarkup,
+  launchValency,
+  id /* perspective_id */,
+  user_id,
+  mode
+}) => {
+  const getTranslation = useContext(TranslationContext);
+
+  const [verbCases, setVerbCases] = useState(false);
+
+  const { data, error, loading } = useQuery(toolsQuery, { variables: { id } });
+  const [valencyVerbCases, { data: vcd, error: vce, loading: vcl }] = useMutation(valencyVerbCasesMutation);
+
+  if (loading || error) {
+    return null;
+  }
+
+  const {
+    perspective: {
+      english_status,
+      created_by: { id: author_id },
+      edit_check
+    }
+  } = data;
+
+  const published = english_status === "Published" || english_status === "Limited access";
+
+  return (
+    <>
       <Dropdown
         className="lingvo-dropdown-item lingvo-dropdown-item_tools"
         item
@@ -164,15 +311,28 @@ const Tools = graphql(toolsQuery)(
           </Dropdown.Item>
 
           {user_id != null && (
-            <Dropdown.Item onClick={() => valency(id, launchValency, getTranslation)}>
-              {getTranslation("Valency")}
-            </Dropdown.Item>
+            <>
+              <Dropdown.Item onClick={() => valency(id, launchValency, getTranslation)}>
+                {getTranslation("Valency data")}
+              </Dropdown.Item>
+
+              <Dropdown.Item
+                onClick={() => {
+                  valencyVerbCases({ variables: { perspectiveId: id } });
+                  setVerbCases(true);
+                }}
+              >
+                {getTranslation("Valency verb cases")}
+              </Dropdown.Item>
+            </>
           )}
         </Dropdown.Menu>
       </Dropdown>
-    );
-  }
-);
+
+      <VerbCasesModal verbCases={verbCases} setVerbCases={setVerbCases} data={vcd} error={vce} loading={vcl} />
+    </>
+  );
+};
 
 const handlers = compose(
   withState("value", "updateValue", props => props.filter),
