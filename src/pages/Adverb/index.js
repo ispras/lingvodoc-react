@@ -36,15 +36,15 @@ import "./style.scss";
 
 const sourcePerspectiveQuery = gql`
   query sourcePersepctiveData {
-    perspectives(only_with_adverb_data: true) {
+    perspectives(only_with_valency_data: true) {
       id
       tree {
         id
         translations
         marked_for_deletion
       }
-      has_adverb_data
-      new_adverb_data_count
+      has_valency_data
+      new_valency_data_count
     }
   }
 `;
@@ -659,7 +659,7 @@ class Adverb extends React.Component {
   }
 
   setPerspective(perspective) {
-    if (!perspective.has_adverb_data) {
+    if (!perspective.has_valency_data) {
       this.setState({
         perspective,
         sort_adverb: false,
@@ -701,7 +701,7 @@ class Adverb extends React.Component {
   createAdverbData() {
     this.setState({ creating_adverb_data: true });
 
-    const { has_adverb_data } = this.state.perspective;
+    const { has_valency_data } = this.state.perspective;
 
     this.props
       .createAdverbData({
@@ -711,7 +711,7 @@ class Adverb extends React.Component {
       })
       .then(
         () => {
-          window.logger.suc(this.context(has_adverb_data ? "Updated adverb data." : "Created adverb data."));
+          window.logger.suc(this.context(has_valency_data ? "Updated adverb data." : "Created adverb data."));
 
           const { client } = this.props;
           const id_str = client.cache.identify(this.state.perspective);
@@ -719,14 +719,14 @@ class Adverb extends React.Component {
           const result = client.writeFragment({
             id: id_str,
             fragment: gql`
-              fragment HasAdverbData on DictionaryPerspective {
-                has_adverb_data
-                new_adverb_data_count
+              fragment HasValencyData on DictionaryPerspective {
+                has_valency_data
+                new_valency_data_count
               }
             `,
             data: {
-              has_adverb_data: true,
-              new_adverb_data_count: 0
+              has_valency_data: true,
+              new_valency_data_count: 0
             }
           });
 
@@ -740,8 +740,8 @@ class Adverb extends React.Component {
                   translations
                   marked_for_deletion
                 }
-                has_adverb_data
-                new_adverb_data_count
+                has_valency_data
+                new_valency_data_count
               }
             `
           });
@@ -1392,22 +1392,22 @@ class Adverb extends React.Component {
 
           {perspective && (
             <div style={{ marginTop: "0.5em" }}>
-              {(!perspective.has_adverb_data || perspective.new_adverb_data_count > 0) && (
+              {(!perspective.has_valency_data || perspective.new_valency_data_count > 0) && (
                 <Button
-                  key={perspective.has_adverb_data ? "_update" : "_create"}
+                  key={perspective.has_valency_data ? "_update" : "_create"}
                   style={{ marginRight: "0.5em" }}
                   basic
-                  color={perspective.has_adverb_data ? "violet" : "green"}
+                  color={perspective.has_valency_data ? "violet" : "green"}
                   content={
                     this.state.creating_adverb_data ? (
                       <span>
                         {this.context(
-                          perspective.has_adverb_data ? "Updating adverb data..." : "Creating adverb data..."
+                          perspective.has_valency_data ? "Updating adverb data..." : "Creating adverb data..."
                         )}
                         <Icon name="spinner" loading />
                       </span>
                     ) : (
-                      this.context(perspective.has_adverb_data ? "Update adverb data" : "Create adverb data")
+                      this.context(perspective.has_valency_data ? "Update adverb data" : "Create adverb data")
                     )
                   }
                   disabled={!perspective || this.state.creating_adverb_data}
@@ -1415,7 +1415,7 @@ class Adverb extends React.Component {
                 />
               )}
 
-              {perspective.has_adverb_data && (
+              {perspective.has_valency_data && (
                 <Button
                   key="_save"
                   style={{ marginRight: "0.5em" }}
