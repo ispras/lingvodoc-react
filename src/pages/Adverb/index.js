@@ -428,7 +428,6 @@ class Adverb extends React.Component {
       total_pages: null,
 
       instance_list: null,
-      merge_map: null,
       sentence_map: null,
       annotation_map: null,
       user_map: null,
@@ -537,18 +536,7 @@ class Adverb extends React.Component {
             return;
           }
 
-          const { instance_count, instance_list, merge_list, sentence_list, annotation_list, user_list } =
-            data.adverb_data;
-
-          const merge_map = new Map();
-
-          for (const adverb_lex_list of merge_list) {
-            const adverb_lex_list_str = adverb_lex_list.join(", ");
-
-            for (const adverb_lex of adverb_lex_list) {
-              merge_map.set(adverb_lex, adverb_lex_list_str);
-            }
-          }
+          const { instance_count, instance_list, sentence_list, annotation_list, user_list } = data.adverb_data;
 
           const sentence_map = new Map(sentence_list.map(sentence => [sentence.id, sentence]));
 
@@ -563,7 +551,6 @@ class Adverb extends React.Component {
             instance_count,
             total_pages: Math.floor((instance_count + items_per_page - 1) / items_per_page),
             instance_list,
-            merge_map,
             sentence_map,
             annotation_map,
             user_map,
@@ -1241,17 +1228,13 @@ class Adverb extends React.Component {
         }
       }
 
-      const { merge_map } = this.state;
-
       for (const sort_type of enabled_list) {
         switch (sort_type) {
           case "adverb":
             const { adverb_lex } = this.state.instance_list[0];
-            const header_str = merge_map.get(adverb_lex) || adverb_lex;
 
-            render_instance_list.push(<Header key={`${render_instance_list.length}${adverb_lex}`}>{header_str}</Header>);
-
-            prev_dict[sort_type] = header_str;
+            render_instance_list.push(<Header key={`${render_instance_list.length}${adverb_lex}`}>{adverb_lex}</Header>);
+            prev_dict[sort_type] = adverb_lex;
 
             break;
 
@@ -1293,14 +1276,13 @@ class Adverb extends React.Component {
           switch (sort_type) {
             case "adverb":
               const { adverb_lex } = instance;
-              const header_str = merge_map.get(adverb_lex) || adverb_lex;
 
-              if (header_str != prev_dict[sort_type]) {
+              if (adverb_lex != prev_dict[sort_type]) {
                 render_instance_list.push(
-                  <Header key={`${render_instance_list.length}${adverb_lex}`}>{header_str}</Header>
+                  <Header key={`${render_instance_list.length}${adverb_lex}`}>{adverb_lex}</Header>
                 );
 
-                prev_dict[sort_type] = header_str;
+                prev_dict[sort_type] = adverb_lex;
 
                 for (let k = j + 1; k < enabled_list.length; k++) {
                   prev_dict[enabled_list[k]] = null;
