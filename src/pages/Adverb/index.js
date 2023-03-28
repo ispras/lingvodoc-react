@@ -248,7 +248,7 @@ const SortCase = ({ valency, setState }) => {
           });
 
           valency.queryAdverbData({
-            currenet_page: 1,
+            current_page: 1,
             sort_case: checked
           });
         }}
