@@ -1413,7 +1413,7 @@ class Adverb extends React.Component {
                 />
               )}
 
-              {perspective.has_valency_data && (
+              {perspective.has_valency_data && false && (
                 <Button
                   key="_save"
                   style={{ marginRight: "0.5em" }}
