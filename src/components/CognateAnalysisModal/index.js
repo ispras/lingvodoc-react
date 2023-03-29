@@ -57,36 +57,52 @@ const cognateAnalysisDataQuery = gql`
   }
 `;
 
-const cognateAnalysisMultiDataQuery = gql`
-  query cognateAnalysisMultiData($languageIdList: [LingvodocID]!) {
-    languages(id_list: $languageIdList) {
+const multiLanguageFragment = gql`
+  fragment LanguageMultiData on Language {
+    id
+    translations
+    dictionaries(deleted: false, published: true) {
       id
       translations
-      dictionaries(deleted: false, published: true) {
+      status_translations
+      perspectives {
         id
         translations
         status_translations
-        perspectives {
+        columns {
           id
-          translations
-          status_translations
-          columns {
-            id
-            field_id
-            parent_id
-            self_id
-            position
-          }
+          field_id
+          parent_id
+          self_id
+          position
         }
       }
-      languages(deleted: false) {
-        id
-        translations
-      }
-      tree {
-        id
-        translations
-      }
+    }
+    languages(deleted: false) {
+      id
+      translations
+    }
+    tree {
+      id
+      translations
+    }
+  }
+`;
+
+const cognateAnalysisMultiDataQuery = gql`
+  ${multiLanguageFragment}
+  query cognateAnalysisMultiData {
+    languages(only_in_toc: true) {
+      ...LanguageMultiData
+    }
+  }
+`;
+
+const cognateAnalysisMultiBaseQuery = gql`
+  ${multiLanguageFragment}
+  query cognateAnalysisMultiBase($id: LingvodocID!) {
+    language(id: $id) {
+      ...LanguageMultiData
     }
   }
 `;
@@ -278,9 +294,7 @@ class SLPerspectiveSelection extends React.Component {
         </div>
         {perspectiveSelectionList[index] && (
           <div className="lingvo-cognate-grid" key="selection">
-            <div className="lingvo-cognate-grid__name">
-              {this.context("Source transcription field")}:
-            </div>
+            <div className="lingvo-cognate-grid__name">{this.context("Source transcription field")}:</div>
             <div className="lingvo-cognate-grid__select">
               <Select
                 disabled={!perspectiveSelectionList[index]}
@@ -295,9 +309,7 @@ class SLPerspectiveSelection extends React.Component {
                 className="lingvo-dropdown-select lingvo-dropdown-select_cognate"
               />
             </div>
-            <div className="lingvo-cognate-grid__name">
-              {this.context("Source translation field")}:
-            </div>
+            <div className="lingvo-cognate-grid__name">{this.context("Source translation field")}:</div>
             <div className="lingvo-cognate-grid__select">
               <Select
                 disabled={!perspectiveSelectionList[index]}
@@ -532,9 +544,7 @@ class MLPerspectiveSelection extends React.Component {
         </div>
         {perspectiveSelectionMap[p_key] && (
           <div className="lingvo-cognate-grid">
-            <div className="lingvo-cognate-grid__name">
-              {this.context("Source transcription field")}:
-            </div>
+            <div className="lingvo-cognate-grid__name">{this.context("Source transcription field")}:</div>
             <div className="lingvo-cognate-grid__select">
               <Select
                 disabled={!perspectiveSelectionMap[p_key]}
@@ -549,9 +559,7 @@ class MLPerspectiveSelection extends React.Component {
                 className="lingvo-dropdown-select lingvo-dropdown-select_cognate"
               />
             </div>
-            <div className="lingvo-cognate-grid__name">
-              {this.context("Source translation field")}:
-            </div>
+            <div className="lingvo-cognate-grid__name">{this.context("Source translation field")}:</div>
             <div className="lingvo-cognate-grid__select">
               <Select
                 disabled={!perspectiveSelectionMap[p_key]}
@@ -604,7 +612,7 @@ class MLSelection extends React.Component {
       language_id_set,
       onModalStateChange
     } = this.props;
-    
+
     const p_select_count = perspectiveSelectionCountMap[""];
     const p_max_count = perspectiveSelectionCountMap["_max"];
 
@@ -763,9 +771,7 @@ class MLSelection extends React.Component {
   }
 
   onClickToggle(language_id_str) {
-    const {
-      languageSelectionMap
-    } = this.props;
+    const { languageSelectionMap } = this.props;
 
     if (languageSelectionMap[language_id_str]) {
       languageSelectionMap[language_id_str] = false;
@@ -815,8 +821,12 @@ class MLSelection extends React.Component {
 
           return (
             <div className="lingvo-cognate-language" key={`language${l_index}`}>
-              <h3 
-                className={languageSelectionMap[language_id_str] && "lingvo-cognate-language-header lingvo-cognate-language-header_open" || "lingvo-cognate-language-header"}
+              <h3
+                className={
+                  (languageSelectionMap[language_id_str] &&
+                    "lingvo-cognate-language-header lingvo-cognate-language-header_open") ||
+                  "lingvo-cognate-language-header"
+                }
                 onClick={() => this.onClickToggle(language_id_str)}
               >
                 <Breadcrumb
@@ -827,24 +837,24 @@ class MLSelection extends React.Component {
                     link: false
                   }))}
                 />
-                <i 
+                <i
                   className="lingvo-icon lingvo-icon_trash"
-                  onClick={(e) => {
-                    e.stopPropagation(); 
+                  onClick={e => {
+                    e.stopPropagation();
                     this.onDeleteLanguage(language_info, l_index);
                   }}
                 />
               </h3>
 
               {languageSelectionMap[language_id_str] && (
-              <div>
-                {language_info.loading ? (
-                  <div className="lingvo-cognate-loading">
-                    {this.context("Loading perspective data")}... <Icon name="spinner" loading /> 
-                  </div>
-                ) : (
-                  <div>
-                    <div className="lingvo-cognate-checkbox lingvo-cognate-checkbox_lang">
+                <div>
+                  {language_info.loading ? (
+                    <div className="lingvo-cognate-loading">
+                      {this.context("Loading perspective data")}... <Icon name="spinner" loading />
+                    </div>
+                  ) : (
+                    <div>
+                      <div className="lingvo-cognate-checkbox lingvo-cognate-checkbox_lang">
                         <Checkbox
                           label={this.context("Select/deselect all language's dictionaries")}
                           checked={p_language_select_count >= p_language_max_count}
@@ -852,37 +862,40 @@ class MLSelection extends React.Component {
                           onChange={(e, { checked }) => this.onChangeSelectLanguageAll(language_info, checked)}
                           className="lingvo-checkbox lingvo-checkbox_labeled"
                         />
+                      </div>
+
+                      {map(
+                        language_info.perspective_list,
+                        ({ treePathList, perspective, textFieldsOptions }, p_index) => {
+                          const p_key = id2str(perspective.id);
+
+                          // Not so good hack in the name of performance,
+                          // we just give our state to be modified in the child compoment.
+
+                          return (
+                            <MLPerspectiveSelection
+                              mode={mode}
+                              language_list={language_list}
+                              key={`perspective${p_key}`}
+                              treePathList={treePathList}
+                              perspective={perspective}
+                              textFieldsOptions={textFieldsOptions}
+                              p_index={p_index}
+                              p_key={p_key}
+                              perspectiveSelectionMap={perspectiveSelectionMap}
+                              transcriptionFieldIdStrMap={transcriptionFieldIdStrMap}
+                              translationFieldIdStrMap={translationFieldIdStrMap}
+                              perspectiveSelectionCountMap={perspectiveSelectionCountMap}
+                              language_id_str={language_id_str}
+                              onChangeSelectAll={() => this.setState({ perspectiveSelectionCountMap })}
+                              onModalStateChange={onModalStateChange}
+                            />
+                          );
+                        }
+                      )}
                     </div>
-
-                    {map(language_info.perspective_list, ({ treePathList, perspective, textFieldsOptions }, p_index) => {
-                      const p_key = id2str(perspective.id);
-
-                      // Not so good hack in the name of performance,
-                      // we just give our state to be modified in the child compoment.
-
-                      return (
-                        <MLPerspectiveSelection
-                          mode={mode}
-                          language_list={language_list}
-                          key={`perspective${p_key}`}
-                          treePathList={treePathList}
-                          perspective={perspective}
-                          textFieldsOptions={textFieldsOptions}
-                          p_index={p_index}
-                          p_key={p_key}
-                          perspectiveSelectionMap={perspectiveSelectionMap}
-                          transcriptionFieldIdStrMap={transcriptionFieldIdStrMap}
-                          translationFieldIdStrMap={translationFieldIdStrMap}
-                          perspectiveSelectionCountMap={perspectiveSelectionCountMap}
-                          language_id_str={language_id_str}
-                          onChangeSelectAll={() => this.setState({ perspectiveSelectionCountMap })}
-                          onModalStateChange={onModalStateChange}
-                        />
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
+                  )}
+                </div>
               )}
             </div>
           );
@@ -1016,7 +1029,10 @@ class SuggestionSelection extends React.Component {
                   single_list,
 
                   ([perspective_index, [transcription_str, translation_str], entry_id], single_index) => (
-                    <div key={`sg${index}single${single_index}`} className="lingvo-cognate-checkbox lingvo-cognate-checkbox_result">
+                    <div
+                      key={`sg${index}single${single_index}`}
+                      className="lingvo-cognate-checkbox lingvo-cognate-checkbox_result"
+                    >
                       <Checkbox
                         label={`${transcription_str} ${translation_str}
                         (${this.state.perspective_name_list[perspective_index]})`}
@@ -1051,7 +1067,10 @@ class SuggestionSelection extends React.Component {
                   group_list,
 
                   ([word_list, entry_id], group_index) => (
-                    <div key={`sg${index}group${group_index}`} className="lingvo-cognate-checkbox lingvo-cognate-checkbox_result">
+                    <div
+                      key={`sg${index}group${group_index}`}
+                      className="lingvo-cognate-checkbox lingvo-cognate-checkbox_result"
+                    >
                       <Checkbox
                         checked={sg_select_list[index].hasOwnProperty(id2str(entry_id))}
                         disabled={disabled_flag}
@@ -1091,9 +1110,7 @@ class SuggestionSelection extends React.Component {
         </div>
 
         {connected_flag ? (
-          <div className="lingvo-message lingvo-message_success">
-            {this.context("Connected")}
-          </div>
+          <div className="lingvo-message lingvo-message_success">{this.context("Connected")}</div>
         ) : error_flag ? (
           <div className="lingvo-message lingvo-message_error">
             {this.context("Query error")}
@@ -1355,20 +1372,21 @@ class CognateAnalysisModal extends React.Component {
       variables: { perspectiveId }
     });
 
-    const language_id_list = languageIdList.slice();
-
-    if (!checkLanguage(tree[tree.length - 1])) {
-      language_id_list.push(tree[tree.length - 1].id);
-    }
-
-    const {
+    let {
       data: { languages }
     } = await client.query({
-      query: cognateAnalysisMultiDataQuery,
-      variables: {
-        languageIdList: language_id_list
-      }
+      query: cognateAnalysisMultiDataQuery
     });
+
+    if (!checkLanguage(tree[tree.length - 1])) {
+      const { data: language } = await client.query({
+        query: cognateAnalysisMultiBaseQuery,
+        variables: { id: tree[tree.length - 1] }
+      });
+
+      languages = languages.slice();
+      languages.push(language);
+    }
 
     this.initialize_common(allFields, columns, tree, english_status);
 
@@ -1442,7 +1460,6 @@ class CognateAnalysisModal extends React.Component {
    * Initializes data of perspectives of a selected language.
    */
   async initialize_language(language) {
-
     this.available_list = [];
     await this.initPerspectiveData(language.id, []);
 
@@ -1908,7 +1925,9 @@ class CognateAnalysisModal extends React.Component {
         error_data.message === "Network error: JSON.parse: unexpected character at line 1 column 1 of the JSON data" &&
         (error_data.networkError.statusCode == 502 || error_data.networkError.statusCode == 504)
       ) {
-        window.logger.err(this.context("Failed to compute cognate analysis! Analysis library or server connection error."));
+        window.logger.err(
+          this.context("Failed to compute cognate analysis! Analysis library or server connection error.")
+        );
       } else {
         window.logger.err(this.context("Failed to compute cognate analysis! Server connection error."));
       }
@@ -2059,9 +2078,7 @@ class CognateAnalysisModal extends React.Component {
     if (this.groupFields.length > 0) {
       return (
         <div className="lingvo-cognate-grid">
-          <div className="lingvo-cognate-grid__name">
-            {this.context("Grouping field")}:
-          </div>
+          <div className="lingvo-cognate-grid__name">{this.context("Grouping field")}:</div>
           <div className="lingvo-cognate-grid__select">
             <Select
               defaultValue={this.state.groupFieldIdStr}
@@ -2075,7 +2092,9 @@ class CognateAnalysisModal extends React.Component {
         </div>
       );
     } else {
-      return <span>{this.context("Perspective does not have any grouping fields, cognate analysis is impossible.")}</span>;
+      return (
+        <span>{this.context("Perspective does not have any grouping fields, cognate analysis is impossible.")}</span>
+      );
     }
   }
 
@@ -2192,7 +2211,7 @@ class CognateAnalysisModal extends React.Component {
             {this.context("Perspective is not published")}
             <p>
               {this.context(
-                'Cognate suggestions are available only for perspectives in the “Published” or “Limited access” state.'
+                "Cognate suggestions are available only for perspectives in the “Published” or “Limited access” state."
               )}
             </p>
           </div>
@@ -2316,9 +2335,7 @@ class CognateAnalysisModal extends React.Component {
 
         {!error_flag && this.props.mode === "multi_reconstruction" && this.state.language_list.length <= 1 && (
           <div className="lingvo-info-message">
-            <div className="lingvo-info-message__header">
-              {this.context("Multiple languages required")}
-            </div>
+            <div className="lingvo-info-message__header">{this.context("Multiple languages required")}</div>
             <p>
               {this.context("Cognate multi-language reconstruction requires dictionaries from at least 2 languages.")}
             </p>
@@ -2457,10 +2474,30 @@ class CognateAnalysisModal extends React.Component {
             totalPages={total_pages}
             onPageChange={(e, { activePage }) => this.setState({ sg_current_page: activePage })}
             className="lingvo-pagination"
-            nextItem={(sg_current_page === total_pages) && { "aria-label": "Next item", content: ">", disabled: true } || { "aria-label": "Next item", content: ">" }}
-            prevItem={(sg_current_page === 1) && { "aria-label": "Previous item", content: "<", disabled: true } || { "aria-label": "Previous item", content: "<" }}
-            firstItem={(sg_current_page === 1) && { "aria-label": "First item", content: "«", disabled: true } || { "aria-label": "First item", content: "«" }}
-            lastItem={(sg_current_page === total_pages) && { "aria-label": "Last item", content: "»", disabled: true } || { "aria-label": "Last item", content: "»" }}
+            nextItem={
+              (sg_current_page === total_pages && { "aria-label": "Next item", content: ">", disabled: true }) || {
+                "aria-label": "Next item",
+                content: ">"
+              }
+            }
+            prevItem={
+              (sg_current_page === 1 && { "aria-label": "Previous item", content: "<", disabled: true }) || {
+                "aria-label": "Previous item",
+                content: "<"
+              }
+            }
+            firstItem={
+              (sg_current_page === 1 && { "aria-label": "First item", content: "«", disabled: true }) || {
+                "aria-label": "First item",
+                content: "«"
+              }
+            }
+            lastItem={
+              (sg_current_page === total_pages && { "aria-label": "Last item", content: "»", disabled: true }) || {
+                "aria-label": "Last item",
+                content: "»"
+              }
+            }
           />
         </div>
 
@@ -2498,10 +2535,30 @@ class CognateAnalysisModal extends React.Component {
             totalPages={total_pages}
             onPageChange={(e, { activePage }) => this.setState({ sg_current_page: activePage })}
             className="lingvo-pagination"
-            nextItem={(sg_current_page === total_pages) && { "aria-label": "Next item", content: ">", disabled: true } || { "aria-label": "Next item", content: ">" }}
-            prevItem={(sg_current_page === 1) && { "aria-label": "Previous item", content: "<", disabled: true } || { "aria-label": "Previous item", content: "<" }}
-            firstItem={(sg_current_page === 1) && { "aria-label": "First item", content: "«", disabled: true } || { "aria-label": "First item", content: "«" }}
-            lastItem={(sg_current_page === total_pages) && { "aria-label": "Last item", content: "»", disabled: true } || { "aria-label": "Last item", content: "»" }}
+            nextItem={
+              (sg_current_page === total_pages && { "aria-label": "Next item", content: ">", disabled: true }) || {
+                "aria-label": "Next item",
+                content: ">"
+              }
+            }
+            prevItem={
+              (sg_current_page === 1 && { "aria-label": "Previous item", content: "<", disabled: true }) || {
+                "aria-label": "Previous item",
+                content: "<"
+              }
+            }
+            firstItem={
+              (sg_current_page === 1 && { "aria-label": "First item", content: "«", disabled: true }) || {
+                "aria-label": "First item",
+                content: "«"
+              }
+            }
+            lastItem={
+              (sg_current_page === total_pages && { "aria-label": "Last item", content: "»", disabled: true }) || {
+                "aria-label": "Last item",
+                content: "»"
+              }
+            }
           />
         </div>
 
@@ -2611,40 +2668,28 @@ class CognateAnalysisModal extends React.Component {
 
           {this.state.library_present && this.state.result !== null && (
             <Modal.Content scrolling style={{ maxHeight: "95vh" }}>
-              <h3 className="lingvo-cognate-header-results">
-                {this.context("Analysis results")}:
-              </h3>
+              <h3 className="lingvo-cognate-header-results">{this.context("Analysis results")}:</h3>
 
               <div className="lingvo-cognate-results">
                 <div className="lingvo-cognate-results__item">
-                  <div className="lingvo-cognate-results__number">
-                    {this.state.dictionary_count}
-                  </div>
-                  <div className="lingvo-cognate-results__text">
-                    {this.context("dictionaries")}
-                  </div>
-                </div>
-                <div className="lingvo-cognate-results__item"> 
-                  <div className="lingvo-cognate-results__number">
-                    {this.state.group_count}
-                  </div>
-                  <div className="lingvo-cognate-results__text">
-                    {this.context("cognate groups")}
-                  </div>
+                  <div className="lingvo-cognate-results__number">{this.state.dictionary_count}</div>
+                  <div className="lingvo-cognate-results__text">{this.context("dictionaries")}</div>
                 </div>
                 <div className="lingvo-cognate-results__item">
-                  <div className="lingvo-cognate-results__number">
-                    {this.state.transcription_count}
-                  </div>
-                  <div className="lingvo-cognate-results__text">
-                    {this.context("transcriptions analysed")}
-                  </div>
+                  <div className="lingvo-cognate-results__number">{this.state.group_count}</div>
+                  <div className="lingvo-cognate-results__text">{this.context("cognate groups")}</div>
+                </div>
+                <div className="lingvo-cognate-results__item">
+                  <div className="lingvo-cognate-results__number">{this.state.transcription_count}</div>
+                  <div className="lingvo-cognate-results__text">{this.context("transcriptions analysed")}</div>
                 </div>
               </div>
 
               <div>
                 <div className="lingvo-cognate-text" style={{ paddingTop: "6px", paddingBottom: "3px" }}>
-                  {this.state.not_enough_count} {this.context("cognate groups were excluded from the analysis due to not having lexical entries in at least two selected dictionaries")}.
+                  {`${this.state.not_enough_count} ${this.context(
+                    "cognate groups were excluded from the analysis due to not having lexical entries in at least two selected dictionaries"
+                  )}.`}
                 </div>
 
                 {this.state.result.length > 0 && mode !== "suggestions" && mode !== "multi_suggestions" && (
@@ -2655,9 +2700,7 @@ class CognateAnalysisModal extends React.Component {
 
                 {this.state.result.length > 0 && this.state.intermediate_url_list && (
                   <div className="lingvo-cognate-text">
-                    <span className="lingvo-cognate-text__title">
-                      {this.context("Intermediate data")}:
-                    </span>
+                    <span className="lingvo-cognate-text__title">{this.context("Intermediate data")}:</span>
                     <div className="lingvo-cognate-text__list">
                       {map(this.state.intermediate_url_list, intermediate_url => (
                         <div className="lingvo-cognate-text__item" key={intermediate_url}>
@@ -2698,9 +2741,7 @@ class CognateAnalysisModal extends React.Component {
 
               {this.state.plotly_data.length > 0 && (
                 <div className="lingvo-cognate-text">
-                  <div className="lingvo-cognate-text__title">
-                    {this.context("Etymological distance tree")}:
-                  </div>
+                  <div className="lingvo-cognate-text__title">{this.context("Etymological distance tree")}:</div>
 
                   <div className="lingvo-cognate-text__list">
                     {this.state.embedding_2d.length <= 25 ? (

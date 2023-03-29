@@ -13,6 +13,7 @@ import Merge from "components/Merge";
 import PerspectiveView from "components/PerspectiveView";
 import TranslationContext from "Layout/TranslationContext";
 import NotFound from "pages/NotFound";
+import { compositeIdToString as id2str } from "utils/compositeId";
 
 import PerspectivePath from "./PerspectivePath";
 
@@ -100,7 +101,12 @@ const Tools = graphql(toolsQuery)(
     const getTranslation = useContext(TranslationContext);
 
     return (
-      <Dropdown className="lingvo-dropdown-item lingvo-dropdown-item_tools" item text={getTranslation("Tools")} icon={<i className="lingvo-icon lingvo-icon_arrow" />}>
+      <Dropdown
+        className="lingvo-dropdown-item lingvo-dropdown-item_tools"
+        item
+        text={getTranslation("Tools")}
+        icon={<i className="lingvo-icon lingvo-icon_arrow" />}
+      >
         <Dropdown.Menu>
           {(user_id === 1 || user_id === author_id || edit_check) && (
             <>
@@ -198,6 +204,31 @@ const Filter = handlers(({ value, onChange, onSubmit }) => {
   );
 });
 
+const tsakorpusIdStrSet = {
+  "3796,6": null,
+  "4222,7": null,
+  "3235,7": null,
+  "4083,7": null,
+  "3421,8": null,
+  "3648,8": null,
+  "3814,9": null,
+  "3872,9": null,
+  "5180,9": null,
+  "3428,9": null,
+  "4448,9": null,
+  "4830,11": null,
+  "5039,22": null,
+  "4830,27": null,
+  "4473,32": null,
+  "4443,37": null,
+  "5124,45": null,
+  "4447,99": null,
+  "4447,130": null,
+  "3539,769": null,
+  "3391,9437": null,
+  "4084,86722": null
+};
+
 const ModeSelector = compose(
   connect(state => state.user),
   onlyUpdateForKeys(["mode", "baseUrl", "filter", "user"])
@@ -250,6 +281,8 @@ const ModeSelector = compose(
       }
     });
 
+    const tsakorpusFlag = tsakorpusIdStrSet.hasOwnProperty(id2str(id));
+
     return (
       <Menu tabular className="lingvo-perspective-menu">
         {map(modes, (info, stub) => (
@@ -258,6 +291,11 @@ const ModeSelector = compose(
             {info.component === PerspectiveView ? <Counter id={id} mode={info.entitiesMode} /> : null}
           </Menu.Item>
         ))}
+        {tsakorpusFlag && (
+          <Menu.Item key="corpus_search" href={`http://83.149.198.78:8080/${id[0]}_${id[1]}/search`}>
+            {getTranslation("Corpus search")}
+          </Menu.Item>
+        )}
         <Tools
           id={id}
           user_id={user.id}
