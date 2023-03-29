@@ -30,7 +30,7 @@ const PermissionLists = graphql(gql`
   }
 `);
 
-const isAdminUser = user => user && parseInt(user.id, 10) === 1;
+const isAdminUser = user => user && parseString(user.id) === '1';
 
 const LexicalEntryByIdsWrapper = ({ data, ...restProps }) => {
   const { permission_lists: permissionLists } = data;

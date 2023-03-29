@@ -161,7 +161,7 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
         />
       );
       const nodeProps = { buttons };
-      if (!onSelect && user.id === 1) {
+      if (!onSelect && (user.id === 1 || user.id === '1')) {
         const stats = languageStats[node.id.toString()];
         const dictionariesCount = stats ? stats.dictionariesCount : 0;
         const corporaCount = stats ? stats.corporaCount : 0;
@@ -183,7 +183,7 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
       if (selection && node.id.toString() === selection.id.toString()) {
         nodeProps.style = { boxShadow: `0 0 0 4px blue` };
       }
-      if (updatableTOC && user.id === 1) {
+      if (updatableTOC && (user.id === 1 || user.id === '1')) {
         const modifying = modifyingTocs.includes(compositeIdToString(node.id));
         const staticCheck = checkLanguageId(node.id);
         const tocMark = staticCheck || (node.additional_metadata && node.additional_metadata.toc_mark);

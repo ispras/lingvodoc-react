@@ -177,7 +177,7 @@ function SelectorLangGroup(props) {
       return null;
     }
 
-    if (!user || user.id !== 1) {
+    if (!user || !(user.id !== 1 || user.id !== "1")) {
       return (
         <div style={{ marginTop: "1em" }}>
           <Label>

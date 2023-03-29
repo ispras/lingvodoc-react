@@ -105,7 +105,7 @@ const Signed = ({ user }) => {
             <span className="top_menu__signed-user">{user.name}</span>
           </span>
         }
-        className={user.id === 1 ? "top_menu top_menu__item_user top_menu__item_admin" : "top_menu top_menu__item_user"}
+        className={(user.id === 1 || user.id === '1') ? "top_menu top_menu__item_user top_menu__item_admin" : "top_menu top_menu__item_user"}
       >
         <Dropdown.Menu>
           <Dropdown.Item as="a" onClick={() => setEditModal(true)}>
@@ -126,7 +126,7 @@ const Signed = ({ user }) => {
           <Dropdown.Item as="a" onClick={async () => await logoutUser()}>
             {getTranslation("Sign out")}
           </Dropdown.Item>
-          {user.id === 1 && (
+          {(user.id === 1 || user.id === '1') && (
             <Dropdown.Item onClick={() => dispatch(openBanModal())}>
               {getTranslation("User account activation/deactivation")}
             </Dropdown.Item>

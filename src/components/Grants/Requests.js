@@ -14,6 +14,7 @@ import { acceptMutation, getUserRequestsQuery } from "./graphql";
 
 const timestampToDate = ts => moment(ts * 1000).format("LLLL");
 const objectById = (id, objs) => objs.find(o => o.id === id);
+const objectByIdStr = (id, objs) => objs.find(o => o.id === id.toString());
 const objectByCompositeId = (id, objs) => objs.find(o => isEqual(o.id, id));
 /* eslint-disable react/prop-types */
 function acceptRequest(mutation, id, accept, getTranslation) {
@@ -116,7 +117,7 @@ const RequestsPane = ({ requests, grants, users, dictionaries, organizations, ac
           )}
           {requests.map(r => (
             <Table.Row key={r.broadcast_uuid}>
-              <Table.Cell>{objectById(r.sender_id, users).intl_name}</Table.Cell>
+              <Table.Cell>{objectByIdStr(r.sender_id, users).intl_name}</Table.Cell>
 
               <Table.Cell>
                 <Subject

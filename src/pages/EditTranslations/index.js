@@ -75,7 +75,7 @@ class EditTranslations extends React.Component {
   render() {
     const { user } = this.props;
 
-    if (user.id === undefined || user.id !== 1) {
+    if (user.id === undefined || !(user.id !== 1 || user.id !== "1")) {
       return (
         <div className="page-content">
           <h4>{this.context("This page is available for administrator only")}</h4>

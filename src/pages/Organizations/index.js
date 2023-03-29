@@ -183,7 +183,7 @@ class Organizations extends React.Component {
 
   isAdmin(organization) {
     const user = this.props.user;
-    return !!organization.additional_metadata.admins.find(id => user.id === id);
+    return !! organization.additional_metadata.admins.find(id => user.id === id.toString());
   }
 
   render() {
@@ -199,7 +199,7 @@ class Organizations extends React.Component {
           </div>
 
           <Container className="lingvo-container_organizations">
-            {user.id == 1 && (
+            {(user.id == 1 || user.id == '1') && (
               <Button onClick={() => this.createOrganization()} className="lingvo-button-violet-dashed">
                 {this.context("Add organization")}
               </Button>
@@ -222,7 +222,7 @@ class Organizations extends React.Component {
                       <div className="lingvo-org-table__content">{this.context("Administrators")}</div>
                     </Table.HeaderCell>
                     {user.id && <Table.HeaderCell className="lingvo-org-table__cell_buttons" />}
-                    {user.id && user.id == 1 && <Table.HeaderCell className="lingvo-org-table__cell_delete" />}
+                    {user.id && (user.id == 1 || user.id == '1') && <Table.HeaderCell className="lingvo-org-table__cell_delete" />}
                   </Table.Row>
                 </Table.Header>
                 <Table.Body>
@@ -304,7 +304,7 @@ class Organizations extends React.Component {
                             </List>
                           </Table.Cell>
                         )}
-                        {user.id && user.id == 1 && (
+                        {user.id && (user.id == 1 || user.id == '1') && (
                           <Table.Cell className="lingvo-org-table__cell_delete">
                             {!is_being_deleted ? (
                               <Button

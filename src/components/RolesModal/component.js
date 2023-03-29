@@ -67,7 +67,7 @@ const queryPerspective = gql`
 `;
 
 const addDictionaryRoleMutation = gql`
-  mutation addRole($id: LingvodocID!, $userId: Int!, $rolesIds: [Int]!) {
+  mutation addRole($id: LingvodocID!, $userId: String!, $rolesIds: [Int]!) {
     add_dictionary_roles(id: $id, user_id: $userId, roles_users: $rolesIds) {
       triumph
     }
@@ -75,7 +75,7 @@ const addDictionaryRoleMutation = gql`
 `;
 
 const deleteDictionaryRoleMutation = gql`
-  mutation deleteRole($id: LingvodocID!, $userId: Int!, $rolesIds: [Int]!) {
+  mutation deleteRole($id: LingvodocID!, $userId: String!, $rolesIds: [Int]!) {
     delete_dictionary_roles(id: $id, user_id: $userId, roles_users: $rolesIds) {
       triumph
     }
@@ -83,7 +83,7 @@ const deleteDictionaryRoleMutation = gql`
 `;
 
 const addPerspectiveRoleMutation = gql`
-  mutation addRole($id: LingvodocID!, $userId: Int!, $rolesIds: [Int]!) {
+  mutation addRole($id: LingvodocID!, $userId: String!, $rolesIds: [Int]!) {
     add_perspective_roles(id: $id, user_id: $userId, roles_users: $rolesIds) {
       triumph
     }
@@ -91,7 +91,7 @@ const addPerspectiveRoleMutation = gql`
 `;
 
 const deletePerspectiveRoleMutation = gql`
-  mutation deleteRole($id: LingvodocID!, $userId: Int!, $rolesIds: [Int]!) {
+  mutation deleteRole($id: LingvodocID!, $userId: String!, $rolesIds: [Int]!) {
     delete_perspective_roles(id: $id, user_id: $userId, roles_users: $rolesIds) {
       triumph
     }
@@ -100,7 +100,7 @@ const deletePerspectiveRoleMutation = gql`
 
 class Roles extends React.Component {
   static hasRole(user, role) {
-    return some(role.users, u => u.id === user.id);
+    return some(role.users, u => u.id === user.id.toString());
   }
 
   constructor(props) {
@@ -196,7 +196,7 @@ class Roles extends React.Component {
       group,
       users: rolesUsers
         .filter(role => role.roles_ids.indexOf(group.id) >= 0)
-        .map(role => find(allUsers, u => u.id === role.user_id))
+        .map(role => find(allUsers, u => u.id === role.user_id.toString()))
     }));
 
     const users = uniq(union(...permissions.map(p => p.users))).sort((user1, user2) =>

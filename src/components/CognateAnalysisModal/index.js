@@ -2273,7 +2273,7 @@ class CognateAnalysisModal extends React.Component {
 
         {!error_flag && this.props.mode === "suggestions" && this.match_translations_render()}
 
-        {!error_flag && this.props.user.id == 1 && this.admin_section_render()}
+        {!error_flag && (this.props.user.id == 1 || this.props.user.id == '1') && this.admin_section_render()}
       </Modal.Content>
     );
   }
@@ -2331,7 +2331,7 @@ class CognateAnalysisModal extends React.Component {
 
         {!error_flag && this.props.mode === "multi_suggestions" && this.match_translations_render()}
 
-        {!error_flag && this.props.user.id == 1 && this.admin_section_render()}
+        {!error_flag && (this.props.user.id == 1 || this.props.user.id == '1') && this.admin_section_render()}
 
         {!error_flag && this.props.mode === "multi_reconstruction" && this.state.language_list.length <= 1 && (
           <div className="lingvo-info-message">

@@ -25,7 +25,7 @@ const queryUsers = gql`
 `;
 
 const activateDeactivateUserMutation = gql`
-  mutation activateDeactivateUser($userId: Int!, $isActive: Boolean!) {
+  mutation activateDeactivateUser($userId: String!, $isActive: Boolean!) {
     activate_deactivate_user(user_id: $userId, is_active: $isActive) {
       triumph
     }
@@ -79,7 +79,7 @@ class BanModal extends React.Component {
 
     const { users } = data;
     const user_list = sortBy(
-      users.filter(user => user.id != 1),
+      users.filter(user => !(user.id !== 1 || user.id !== "1")),
       user => [user.login, user.name, user.intl_name, user.email]
     );
     const user_map = new Map(user_list.map(user => [user.id, user]));

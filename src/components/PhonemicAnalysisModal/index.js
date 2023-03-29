@@ -225,7 +225,7 @@ class PhonemicAnalysisModal extends React.Component {
               </div>
             )}
 
-            {this.props.user.id === 1 && (
+            {(this.props.user.id === 1 || this.props.user.id === '1') && (
               <div style={{ paddingTop: "20px" }}>
                 <div style={{ marginBottom: "7px" }}>
                   <Checkbox

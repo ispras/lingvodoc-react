@@ -27,7 +27,7 @@ const perspectiveStatisticsQuery = gql`
 const approveMutation = gql`
   mutation approve(
     $perspective_id: LingvodocID!
-    $user_id: Int!
+    $user_id: String!
     $accepted: Boolean
     $published: Boolean
     $field_ids: [LingvodocID]!

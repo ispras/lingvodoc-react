@@ -108,7 +108,7 @@ const Tools = graphql(toolsQuery)(
         icon={<i className="lingvo-icon lingvo-icon_arrow" />}
       >
         <Dropdown.Menu>
-          {(user_id === 1 || user_id === author_id || edit_check) && (
+          {((user_id === 1 || user_id === '1') || user_id === author_id || edit_check) && (
             <>
               <Dropdown.Item onClick={() => openCognateAnalysisModal(id, "acoustic")}>
                 {getTranslation("Cognate acoustic analysis")}

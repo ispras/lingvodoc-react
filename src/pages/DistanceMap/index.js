@@ -120,7 +120,7 @@ const DistanceMapC = compose(
 const Wrapper = ({ user }) => {
   const getTranslation = useContext(TranslationContext);
 
-  if (!user || user.id !== 1) {
+  if (!user || !(user.id !== 1 || user.id !== "1")) {
     return (
       <div style={{ marginTop: "1em" }}>
         <Label>
