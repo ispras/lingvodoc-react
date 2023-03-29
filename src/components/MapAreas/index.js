@@ -1,4 +1,4 @@
-import React, { PureComponent } from "react";
+import React from "react";
 import { Segment } from "semantic-ui-react";
 import Immutable, { fromJS } from "immutable";
 import L from "leaflet";
@@ -14,26 +14,11 @@ import "leaflet/dist/leaflet.css";
 import "./leaflet.contextmenu.scss";
 import "./index.scss";
 
-function initMap(mountPoint) {
-  const map = L.map(mountPoint, {
-    contextmenu: true,
-    contextmenuWidth: 270,
-    zoomSnap: 0.5,
-    zoomDelta: 0.5
-  }).setView([62.8818649, 117.4730521], 4);
-
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-  }).addTo(map);
-
-  return map;
-}
-
-function wrapDivIcon(func) {
+const wrapDivIcon = (func) => {
   return options => L.divIcon(func(options));
-}
+};
 
-class MapAreas extends PureComponent {
+class MapAreas extends React.PureComponent {
   constructor(props) {
     super();
     initializeContextMenu(L);
@@ -54,12 +39,13 @@ class MapAreas extends PureComponent {
     this.markerWidth = 24;
     this.markerHeight = 24;
 
+    this.initMap = this.initMap.bind(this);
     this.onZoomStartEventHandler = this.onZoomStartEventHandler.bind(this);
     this.onZoomEndEventHandler = this.onZoomEndEventHandler.bind(this);
   }
 
   componentDidMount() {
-    this.map = initMap(this.mapContainer);
+    this.map = this.initMap(this.mapContainer);
 
     const { points, areas, areasMode, markersGroups } = this.props;
     this.updateMap(points, areas, areasMode, markersGroups);
@@ -69,6 +55,21 @@ class MapAreas extends PureComponent {
     const { points, areas, areasMode, markersGroups } = this.props;
 
     this.updateMap(points, areas, areasMode, markersGroups);
+  }
+
+  initMap(mountPoint) {
+    const map = L.map(mountPoint, {
+      contextmenu: true,
+      contextmenuWidth: 270,
+      zoomSnap: 0.5,
+      zoomDelta: 0.5
+    }).setView([62.8818649, 117.4730521], 4);
+  
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+  
+    return map;
   }
 
   setAreasEventHandlers() {
