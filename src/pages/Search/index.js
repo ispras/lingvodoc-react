@@ -301,14 +301,6 @@ const searchesFromProps = memoize(searches =>
 );
 
 class SearchTabs extends React.Component {
-
-  static groupHasDicts(groupId, dictsResults) {
-    return dictsResults
-      .valueSeq()
-      .toJS()
-      .some(groupsIds => groupsIds.indexOf(groupId) !== -1);
-  }
-
   constructor(props) {
     super(props);
 
