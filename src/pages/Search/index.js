@@ -861,12 +861,12 @@ class SearchTabs extends React.Component {
 
     const search_url_id = this.state.search_id_map.get(this.state.source_searches_info);
 
-    function onSearchClose(id) {
+    const onSearchClose = (id) => {
       return event => {
         event.stopPropagation();
         actions.deleteSearch(id);
       };
-    }
+    };
 
     const searchPanes = searches.map(search => ({
       menuItem: (
