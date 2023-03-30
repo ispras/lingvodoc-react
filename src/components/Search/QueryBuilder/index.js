@@ -172,7 +172,8 @@ export function additionalParamsCheck(langs, dicts, searchMetadata) {
   return false;
 }
 
-function Query({ data, query, onFieldChange, onDelete, setSearch }) {
+const Query = ({ data, query, onFieldChange, onDelete, setSearch }) => {
+
   const getTranslation = useContext(TranslationContext);
 
   const fieldId = query.get("field_id", null);
@@ -259,11 +260,11 @@ function Query({ data, query, onFieldChange, onDelete, setSearch }) {
       <Button compact basic color="red" icon="delete" onClick={onDelete} />
     </QueryInput>
   );
-}
+};
 
 const QueryWithData = graphql(fieldsQuery)(Query);
 
-function SearchBlock({
+const SearchBlock = ({
   data,
   subBlocksMode,
   onFieldChange,
@@ -271,7 +272,7 @@ function SearchBlock({
   onDeleteInnerSearchBlock,
   onDeleteSearchBlock,
   setSearch
-}) {
+}) => {
   const getTranslation = useContext(TranslationContext);
   const subBlocksModeText = subBlocksMode.toUpperCase();
   return (
@@ -297,7 +298,7 @@ function SearchBlock({
       <Button className="delete-and" compact basic icon="delete" onClick={onDeleteSearchBlock} />
     </OrWrapper>
   );
-}
+};
 
 class QueryBuilder extends React.Component {
   constructor(props) {
