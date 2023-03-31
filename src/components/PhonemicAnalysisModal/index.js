@@ -12,6 +12,7 @@ import { chooseTranslation as T } from "api/i18n";
 import { closeModal } from "ducks/phonemicAnalysis";
 import TranslationContext from "Layout/TranslationContext";
 import { compositeIdToString as id2str } from "utils/compositeId";
+import { isAdmin } from "utils/isadmin";
 
 import "./style.scss";
 
@@ -225,7 +226,7 @@ class PhonemicAnalysisModal extends React.Component {
               </div>
             )}
 
-            {(this.props.user.id === 1 || this.props.user.id === '1') && (
+            {isAdmin(this.props.user.id) && (
               <div style={{ paddingTop: "20px" }}>
                 <div style={{ marginBottom: "7px" }}>
                   <Checkbox

@@ -12,6 +12,7 @@ import imageDistanceMap from "../../images/distance_map.svg";
 import imageSearch from "../../images/location_search.svg";
 import imageTranslations from "../../images/text_field.svg";
 import imageValency from "../../images/verb_valency.svg";
+import { isAdmin } from "utils/isadmin";
 
 import "./styles.scss";
 
@@ -42,7 +43,7 @@ function ToolsRoute(props) {
               <label className="card-item__label">{getTranslation("Library of linguistic maps")}</label>
               <img className="card-item__img" src={imageStorage} />
             </a>
-            {props.user && (props.user.id == 1 || props.user.id == '1') && (
+            {props.user && isAdmin(props.user.id) && (
               <Link className="card-item" to="/distance_map">
                 <label className="card-item__label">{getTranslation("Language genetic proximity map")}</label>
                 <img className="card-item__img card-item__img_distance-map" src={imageDistanceMap} />
@@ -52,7 +53,7 @@ function ToolsRoute(props) {
               <label className="card-item__label">{getTranslation("Edit of the dialects classification")}</label>
               <img className="card-item__img" src={imageLanguages} />
             </Link>
-            {props.user && (props.user.id == 1 || props.user.id == '1') && (
+            {props.user && isAdmin(props.user.id)  && (
               <Link className="card-item" to="/edit_translations">
                 <label className="card-item__label">{getTranslation("Edit translations")}</label>
                 <img className="card-item__img" src={imageTranslations} />

@@ -14,6 +14,7 @@ import PerspectiveView from "components/PerspectiveView";
 import TranslationContext from "Layout/TranslationContext";
 import NotFound from "pages/NotFound";
 import { compositeIdToString as id2str } from "utils/compositeId";
+import { isAdmin } from "utils/isadmin";
 
 import PerspectivePath from "./PerspectivePath";
 
@@ -108,7 +109,7 @@ const Tools = graphql(toolsQuery)(
         icon={<i className="lingvo-icon lingvo-icon_arrow" />}
       >
         <Dropdown.Menu>
-          {((user_id === 1 || user_id === '1') || user_id === author_id || edit_check) && (
+          {(isAdmin(user_id) || user_id === author_id || edit_check) && (
             <>
               <Dropdown.Item onClick={() => openCognateAnalysisModal(id, "acoustic")}>
                 {getTranslation("Cognate acoustic analysis")}

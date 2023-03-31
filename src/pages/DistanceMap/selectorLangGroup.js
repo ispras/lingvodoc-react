@@ -22,6 +22,7 @@ import {
 import TranslationContext from "Layout/TranslationContext";
 import { buildLanguageTree } from "pages/Search/treeBuilder";
 import { compositeIdToString } from "utils/compositeId";
+import { isAdmin } from "utils/isadmin";
 
 import checkCoordAndLexicalEntries from "./checkCoordinatesAndLexicalEntries";
 import { dictionaryName, dictionaryWithPerspectivesQuery } from "./graphql";
@@ -177,7 +178,7 @@ function SelectorLangGroup(props) {
       return null;
     }
 
-    if (!user || !(user.id !== 1 || user.id !== "1")) {
+    if (!user || !isAdmin(user.id)) {
       return (
         <div style={{ marginTop: "1em" }}>
           <Label>

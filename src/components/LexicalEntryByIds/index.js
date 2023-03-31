@@ -12,6 +12,7 @@ import Placeholder from "components/Placeholder";
 
 import LexicalEntryByIdsAdvanced from "./LexicalEntryByIdsAdvanced";
 import { isOnlyViewModeAllowed } from "./utils";
+import { isAdmin } from "utils/isadmin";
 
 import "./style.scss";
 
@@ -30,7 +31,7 @@ const PermissionLists = graphql(gql`
   }
 `);
 
-const isAdminUser = user => user && parseString(user.id) === '1';
+const isAdminUser = user => user && isAdmin(user.id);
 
 const LexicalEntryByIdsWrapper = ({ data, ...restProps }) => {
   const { permission_lists: permissionLists } = data;

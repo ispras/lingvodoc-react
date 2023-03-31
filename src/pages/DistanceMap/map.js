@@ -21,6 +21,7 @@ import icon from "../../images/point.png";
 import getDistancePoint from "./getDistancePerspectives";
 import { dictionaryName } from "./graphql";
 import normolizeMethod from "./normolizeMethod";
+import { isAdmin } from "utils/isadmin";
 
 import "leaflet/dist/leaflet.css";
 
@@ -198,7 +199,7 @@ class MapAreas extends PureComponent {
       return null;
     }
 
-    if (!user || !(user.id !== 1 || user.id !== "1")) {
+    if (!user || !isAdmin(user.id)) {
       return (
         <div style={{ marginTop: "1em" }}>
           <Label>

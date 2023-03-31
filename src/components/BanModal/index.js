@@ -7,6 +7,7 @@ import { sortBy } from "lodash";
 import PropTypes from "prop-types";
 import { compose } from "recompose";
 import { bindActionCreators } from "redux";
+import { isAdmin } from "utils/isadmin";
 
 import { closeModal } from "ducks/ban";
 import TranslationContext from "Layout/TranslationContext";
@@ -79,7 +80,7 @@ class BanModal extends React.Component {
 
     const { users } = data;
     const user_list = sortBy(
-      users.filter(user => !(user.id !== 1 || user.id !== "1")),
+      users.filter(user => !isAdmin(user.id)),
       user => [user.login, user.name, user.intl_name, user.email]
     );
     const user_map = new Map(user_list.map(user => [user.id, user]));

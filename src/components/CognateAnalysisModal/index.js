@@ -27,6 +27,7 @@ import { checkLanguage, languageIdList } from "components/Home/components/LangsN
 import { closeModal } from "ducks/cognateAnalysis";
 import TranslationContext from "Layout/TranslationContext";
 import { compositeIdToString as id2str, stringToCompositeId as str2id } from "utils/compositeId";
+import { isAdmin } from "utils/isadmin";
 
 import "./style.scss";
 
@@ -2273,7 +2274,7 @@ class CognateAnalysisModal extends React.Component {
 
         {!error_flag && this.props.mode === "suggestions" && this.match_translations_render()}
 
-        {!error_flag && (this.props.user.id == 1 || this.props.user.id == '1') && this.admin_section_render()}
+        {!error_flag && isAdmin(this.props.user.id) && this.admin_section_render()}
       </Modal.Content>
     );
   }
@@ -2331,7 +2332,7 @@ class CognateAnalysisModal extends React.Component {
 
         {!error_flag && this.props.mode === "multi_suggestions" && this.match_translations_render()}
 
-        {!error_flag && (this.props.user.id == 1 || this.props.user.id == '1') && this.admin_section_render()}
+        {!error_flag && isAdmin(this.props.user.id) && this.admin_section_render()}
 
         {!error_flag && this.props.mode === "multi_reconstruction" && this.state.language_list.length <= 1 && (
           <div className="lingvo-info-message">

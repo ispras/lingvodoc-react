@@ -13,6 +13,7 @@ import TranslationContext from "Layout/TranslationContext";
 import checkCoordAndLexicalEntries from "./checkCoordinatesAndLexicalEntries";
 import { allFieldQuery, dictionaryWithPerspectivesQuery } from "./graphql";
 import SelectorDictionary from "./selectorDictionary";
+import { isAdmin } from "utils/isadmin";
 
 import "./styles.scss";
 
@@ -120,7 +121,7 @@ const DistanceMapC = compose(
 const Wrapper = ({ user }) => {
   const getTranslation = useContext(TranslationContext);
 
-  if (!user || !(user.id !== 1 || user.id !== "1")) {
+  if (!user || !isAdmin(user.id)) {
     return (
       <div style={{ marginTop: "1em" }}>
         <Label>

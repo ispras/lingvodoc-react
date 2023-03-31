@@ -6,7 +6,7 @@ import Footer from "components/Footer";
 import TranslationContext from "Layout/TranslationContext";
 
 import TranslationsBlock from "./TranslationsBlock";
-
+import { isAdmin } from "utils/isadmin";
 import "./styles.scss";
 
 const categories = ["Perspective", "Dictionary", "Service", "Language", "Field", "Organization", "Grant", "All"];
@@ -75,7 +75,7 @@ class EditTranslations extends React.Component {
   render() {
     const { user } = this.props;
 
-    if (user.id === undefined || !(user.id !== 1 || user.id !== "1")) {
+    if (user.id === undefined || !isAdmin(user.id)) {
       return (
         <div className="page-content">
           <h4>{this.context("This page is available for administrator only")}</h4>

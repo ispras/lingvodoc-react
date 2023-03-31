@@ -14,6 +14,7 @@ import { getUserRequestsQuery } from "components/Grants/graphql";
 import Placeholder from "components/Placeholder";
 import { openModal as openCreateOrganizationModal } from "ducks/createOrganization";
 import TranslationContext from "Layout/TranslationContext";
+import { isAdmin } from "utils/isadmin";
 
 import "./style.scss";
 
@@ -199,7 +200,7 @@ class Organizations extends React.Component {
           </div>
 
           <Container className="lingvo-container_organizations">
-            {(user.id == 1 || user.id == '1') && (
+            {isAdmin(user.id) && (
               <Button onClick={() => this.createOrganization()} className="lingvo-button-violet-dashed">
                 {this.context("Add organization")}
               </Button>
@@ -222,7 +223,7 @@ class Organizations extends React.Component {
                       <div className="lingvo-org-table__content">{this.context("Administrators")}</div>
                     </Table.HeaderCell>
                     {user.id && <Table.HeaderCell className="lingvo-org-table__cell_buttons" />}
-                    {user.id && (user.id == 1 || user.id == '1') && <Table.HeaderCell className="lingvo-org-table__cell_delete" />}
+                    {user.id && isAdmin(user.id) && <Table.HeaderCell className="lingvo-org-table__cell_delete" />}
                   </Table.Row>
                 </Table.Header>
                 <Table.Body>
@@ -304,7 +305,7 @@ class Organizations extends React.Component {
                             </List>
                           </Table.Cell>
                         )}
-                        {user.id && (user.id == 1 || user.id == '1') && (
+                        {user.id && isAdmin(user.id) && (
                           <Table.Cell className="lingvo-org-table__cell_delete">
                             {!is_being_deleted ? (
                               <Button
