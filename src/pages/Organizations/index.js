@@ -73,7 +73,7 @@ class Organizations extends React.Component {
     this.adminOrganization = this.adminOrganization.bind(this);
 
     this.isMember = this.isMember.bind(this);
-    this.isAdmin = this.isAdmin.bind(this);
+    this.isAdminOrganization = this.isAdminOrganization.bind(this);
 
     this.createOrganization = this.createOrganization.bind(this);
     this.deleteOrganization = this.deleteOrganization.bind(this);
@@ -182,7 +182,7 @@ class Organizations extends React.Component {
     return !!organization.members.find(u => user.id === u.id);
   }
 
-  isAdmin(organization) {
+  isAdminOrganization(organization) {
     const user = this.props.user;
     return !! organization.additional_metadata.admins.find(id => user.id === id.toString());
   }
@@ -229,7 +229,7 @@ class Organizations extends React.Component {
                 <Table.Body>
                   {organizations.map(organization => {
                     const is_member = this.isMember(organization);
-                    const is_admin = this.isAdmin(organization);
+                    const is_admin = this.isAdminOrganization(organization);
 
                     const is_being_deleted = this.state.being_deleted_id_set.has(organization.id);
 
