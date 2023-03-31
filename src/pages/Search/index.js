@@ -5,7 +5,7 @@ import { Button, Container, Dimmer, Divider, Loader, Menu, Message, Segment, Tab
 import { gql } from "@apollo/client";
 import { graphql, withApollo } from "@apollo/client/react/hoc";
 import Immutable, { fromJS } from "immutable";
-import { isEqual, memoize } from "lodash";
+import { isEqual/*, memoize*/ } from "lodash";
 import PropTypes from "prop-types";
 import { compose } from "recompose";
 import { bindActionCreators } from "redux";
@@ -296,9 +296,13 @@ Info.propTypes = {
   subQuery: PropTypes.bool.isRequired
 };
 
-const searchesFromProps = memoize(searches =>
+const searchesFromProps = (searches =>
   Immutable.fromJS(searches).reduce((result, search) => result.set(search.get("id"), search), new Immutable.Map())
 );
+/*
+const searchesFromProps = memoize(searches =>
+  Immutable.fromJS(searches).reduce((result, search) => result.set(search.get("id"), search), new Immutable.Map())
+);*/
 
 class SearchTabs extends React.Component {
   constructor(props) {
@@ -515,7 +519,18 @@ class SearchTabs extends React.Component {
     });
   }
 
-  getUniqueSearchGroups = memoize(mapSearches =>
+  /*getUniqueSearchGroups = memoize(mapSearches =>
+    mapSearches.map(search =>
+      Immutable.fromJS({
+        id: search.get("id"),
+        text: `${this.context("Search")} ${search.get("id")}`,
+        color: mdColors.get(search.get("id") - 1),
+        isActive: search.get("isActive")
+      })
+    )
+  );*/
+
+  getUniqueSearchGroups = (mapSearches =>
     mapSearches.map(search =>
       Immutable.fromJS({
         id: search.get("id"),
@@ -526,9 +541,25 @@ class SearchTabs extends React.Component {
     )
   );
 
-  getSearchGroups = memoize(mapSearches => this.getUniqueSearchGroups(mapSearches));
+  /*getSearchGroups = memoize(mapSearches => this.getUniqueSearchGroups(mapSearches));*/
 
-  getActiveSearchGroups = memoize(mapSearches => {
+  getSearchGroups = (mapSearches => this.getUniqueSearchGroups(mapSearches));
+
+  /*getActiveSearchGroups = memoize(mapSearches => {
+    const activeSearchGroups = this.getSearchGroups(mapSearches).filter(f => f.get("isActive"));
+
+    return activeSearchGroups.filter(groupMeta => {
+      const group = mapSearches.get(groupMeta.get("id"));
+      const results = group.get("results");
+      if (!results || !results.get("dictionaries") || results.get("dictionaries").size === 0) {
+        return false;
+      }
+
+      return true;
+    });
+  });*/
+
+  getActiveSearchGroups = (mapSearches => {
     const activeSearchGroups = this.getSearchGroups(mapSearches).filter(f => f.get("isActive"));
 
     return activeSearchGroups.filter(groupMeta => {
@@ -542,7 +573,27 @@ class SearchTabs extends React.Component {
     });
   });
 
-  getDictsResults = memoize(mapSearches => {
+  /*getDictsResults = memoize(mapSearches => {
+    const activeSearchGroups = this.getActiveSearchGroups(mapSearches);
+
+    return new Immutable.Map().withMutations(map => {
+      mapSearches.forEach(search => {
+        const searchInActive = activeSearchGroups.get(search.get("id"));
+        if (!searchInActive || !search.get("results") || !search.get("results").get("dictionaries")) {
+          return;
+        }
+
+        const filteredDicts = search
+          .get("results")
+          .get("dictionaries")
+          .filter(dict => dict.getIn(["additional_metadata", "location"]));
+
+        filteredDicts.forEach(dict => map.update(dict, new Immutable.Set(), v => v.add(search.get("id"))));
+      });
+    });
+  });*/
+
+  getDictsResults = (mapSearches => {
     const activeSearchGroups = this.getActiveSearchGroups(mapSearches);
 
     return new Immutable.Map().withMutations(map => {
@@ -562,7 +613,10 @@ class SearchTabs extends React.Component {
     });
   });
 
-  addDefaultActiveStateToMapSearches = memoize(mapSearches => mapSearches.map(search => search.set("isActive", true)));
+  /*addDefaultActiveStateToMapSearches = memoize(mapSearches => mapSearches.map(search => search.set("isActive", true)));
+  */
+
+  addDefaultActiveStateToMapSearches = (mapSearches => mapSearches.map(search => search.set("isActive", true)));
 
   updateMapSearchesActiveState = sourceSearches => {
     const { mapSearches: oldMapSearches, sourceSearches: oldSourceSearches } = this.state;
