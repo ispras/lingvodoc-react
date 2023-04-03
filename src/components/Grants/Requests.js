@@ -14,7 +14,7 @@ import { acceptMutation, getUserRequestsQuery } from "./graphql";
 
 const timestampToDate = ts => moment(ts * 1000).format("LLLL");
 const objectById = (id, objs) => objs.find(o => o.id === id);
-const objectByIdStr = (id, objs) => objs.find(o => o.id === id.toString());
+const objectByIdStr = (id, objs) => objs.find(o => o.id == id.toString());
 const objectByCompositeId = (id, objs) => objs.find(o => isEqual(o.id, id));
 /* eslint-disable react/prop-types */
 function acceptRequest(mutation, id, accept, getTranslation) {
