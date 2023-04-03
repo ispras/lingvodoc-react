@@ -1,6 +1,6 @@
 import React, { PureComponent } from "react";
 import { Accordion, Checkbox, Icon } from "semantic-ui-react";
-import { memoize } from "lodash";
+/*import { memoize } from "lodash";*/
 import PropTypes from "prop-types";
 
 import TranslationContext from "Layout/TranslationContext";
@@ -80,7 +80,8 @@ class AreaGroupsSelect extends PureComponent {
     }
   }
 
-  getIterableData = memoize(data => Object.values(data));
+  /*getIterableData = memoize(data => Object.values(data));*/
+  getIterableData = (data => Object.values(data));
 
   getGroupIdByName(groupName) {
     const group = this.props.data[groupName];
