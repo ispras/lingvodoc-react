@@ -117,10 +117,15 @@ const fieldsQuery = gql`
 
 const regexpCheckSet = new Set(["", ".*", ".+", ".", "..*", ".*.", "..+", ".+.", "..", "...", "...."]);
 
-export function queryCheck(query) {
+export function queryCheck(query, subBlocksMode) {
   const result = { check: true, empty: true };
 
   for (const block of query) {
+    if (block.length <= 0 && subBlocksMode == "and") {
+      result.check = false;
+      result.emptyOr = true;
+    }
+
     for (const condition of block) {
       result.empty = false;
 
@@ -173,7 +178,6 @@ export function additionalParamsCheck(langs, dicts, searchMetadata) {
 }
 
 const Query = ({ data, query, onFieldChange, onDelete, setSearch }) => {
-
   const getTranslation = useContext(TranslationContext);
 
   const fieldId = query.get("field_id", null);
@@ -567,7 +571,7 @@ class QueryBuilder extends React.Component {
     const subBlocksMode = this.getSubBlocksMode();
 
     const query = this.addGrammaticalSigns(this.state.data.toJS());
-    const checkInfo = queryCheck(query);
+    const checkInfo = queryCheck(query, subBlocksMode);
 
     const {
       languages: langsToFilter,
@@ -743,7 +747,8 @@ class QueryBuilder extends React.Component {
               )}
               {checkInfo.substring && <p>{`${this.context("Empty substrings are not allowed")}.`}</p>}
               {checkInfo.regexp && <p>{`${this.context("Too broad regular expressions are not allowed")}.`}</p>}
-              {(checkInfo.substring || checkInfo.regexp) && (
+              {checkInfo.emptyOr && <p>{`${this.context("Empty AND blocks in OR mode are not allowed")}.`}</p>}
+              {(checkInfo.substring || checkInfo.regexp || checkInfo.emptyOr) && (
                 <>
                   <p>{`${this.context(
                     "Please either narrow down search conditions or add grammatical signs conditions"
