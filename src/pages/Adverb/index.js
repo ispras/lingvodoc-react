@@ -43,8 +43,8 @@ const sourcePerspectiveQuery = gql`
         translations
         marked_for_deletion
       }
-      has_valency_data
-      new_valency_data_count
+      has_adverb_data
+      new_adverb_data_count
     }
   }
 `;
@@ -54,19 +54,21 @@ export const adverbDataQuery = gql`
     $perspectiveId: LingvodocID!
     $offset: Int
     $limit: Int
-    #$adverbPrefix: String
-    #$caseFlag: Boolean
+    $specificityFlag: Boolean
+    $adverbPrefix: String
+    $caseFlag: Boolean
     $acceptValue: Boolean
-    #$sortOrderList: [String]
+    $sortOrderList: [String]
   ) {
     adverb_data(
       perspective_id: $perspectiveId
       offset: $offset
       limit: $limit
-      #adverb_prefix: $adverbPrefix
-      #case_flag: $caseFlag
+      specificity_flag: $specificityFlag
+      adverb_prefix: $adverbPrefix
+      case_flag: $caseFlag
       accept_value: $acceptValue
-      #sort_order_list: $sortOrderList
+      sort_order_list: $sortOrderList
     )
   }
 `;
@@ -87,7 +89,6 @@ const setAdverbAnnotationMutation = gql`
   }
 `;
 
-/*
 const saveAdverbDataMutation = gql`
   mutation saveAdverbData($perspectiveId: LingvodocID!) {
     save_adverb_data(perspective_id: $perspectiveId) {
@@ -96,6 +97,34 @@ const saveAdverbDataMutation = gql`
     }
   }
 `;
+
+const SortSpecificity = ({ valency, setState }) => {
+  const getTranslation = useContext(TranslationContext);
+
+  return (
+    <div className="sorting_item">
+      <Checkbox
+        label={getTranslation("Sort by specificity")}
+        checked={valency.state.sort_specificity}
+        onChange={(e, { checked }) => {
+          setState({
+            sort_specificity: checked,
+            current_page: 1,
+            input_go_to_page: 1,
+            loading_adverb_data: true,
+            loading_adverb_error: false,
+            adverb_data: null
+          });
+
+          valency.queryAdverbData({
+            current_page: 1,
+            sort_specificity: checked
+          });
+        }}
+      />
+    </div>
+  );
+};
 
 const SortAdverb = ({ valency, setState }) => {
   const getTranslation = useContext(TranslationContext);
@@ -155,7 +184,8 @@ const SortAdverb = ({ valency, setState }) => {
               )
             )}
 
-            {show_data_adverb_list.length > 0 && ` (${valency.state.data_adverb_list.length} ${getTranslation("adverbs")})`}
+            {show_data_adverb_list.length > 0 &&
+              ` (${valency.state.data_adverb_list.length} ${getTranslation("adverbs")})`}
           </div>
 
           <Input
@@ -235,7 +265,7 @@ const SortCase = ({ valency, setState }) => {
   return (
     <div className="sorting_item">
       <Checkbox
-        label={getTranslation("Sort by cases")}
+        label={getTranslation("Sort by marks")}
         checked={valency.state.sort_case}
         onChange={(e, { checked }) => {
           setState({
@@ -338,6 +368,10 @@ const SortingItem = ({ sort_type, ...props }) => {
   let sort_component = null;
 
   switch (sort_type) {
+    case "specificity":
+      sort_component = <SortSpecificity {...props} />;
+      break;
+
     case "adverb":
       sort_component = <SortAdverb {...props} />;
       break;
@@ -381,11 +415,11 @@ const Sorting = ({ sort_order_list, setSortOrder, ...props }) => {
     });
   }
 
-  const { sort_accept, sort_case, sort_adverb } = props.valency.state;
+  const { sort_accept, sort_case, sort_adverb, sort_specificity } = props.valency.state;
 
   return (
     <DndContext
-      key={`${sort_accept}${sort_case}${sort_adverb}`}
+      key={`${sort_accept}${sort_case}${sort_adverb}${sort_specificity}`}
       sensors={sensors}
       modifiers={[restrictToVerticalAxis]}
       collisionDetection={collisionDetection}
@@ -399,7 +433,6 @@ const Sorting = ({ sort_order_list, setSortOrder, ...props }) => {
     </DndContext>
   );
 };
-*/
 
 class Adverb extends React.Component {
   constructor(props) {
@@ -408,11 +441,12 @@ class Adverb extends React.Component {
     this.state = {
       perspective: null,
 
-      //sort_order_list: ["adverb", "case", "accept"],
+      sort_order_list: ["specificity", "adverb", "case", "accept"],
 
-      //sort_adverb: false,
-      //sort_case: false,
-      //sort_accept: false,
+      sort_specificity: true,
+      sort_adverb: false,
+      sort_case: false,
+      sort_accept: false,
 
       creating_adverb_data: false,
       creating_adverb_error: false,
@@ -452,7 +486,7 @@ class Adverb extends React.Component {
     };
 
     this.createAdverbData = this.createAdverbData.bind(this);
-    //this.saveAdverbData = this.saveAdverbData.bind(this);
+    this.saveAdverbData = this.saveAdverbData.bind(this);
     this.setAdverbAnnotation = this.setAdverbAnnotation.bind(this);
     this.acceptRejectAllSelected = this.acceptRejectAllSelected.bind(this);
 
@@ -463,8 +497,8 @@ class Adverb extends React.Component {
     this.setItemsPerPage = this.setItemsPerPage.bind(this);
     this.setPrefix = this.setPrefix.bind(this);
 
-    //this.getEnabledSortOrder = this.getEnabledSortOrder.bind(this);
-    //this.setSortOrder = this.setSortOrder.bind(this);
+    this.getEnabledSortOrder = this.getEnabledSortOrder.bind(this);
+    this.setSortOrder = this.setSortOrder.bind(this);
 
     this.render_instance = this.render_instance.bind(this);
 
@@ -475,12 +509,13 @@ class Adverb extends React.Component {
     perspective = null,
     current_page = null,
     items_per_page = null,
-    //sort_adverb = null,
-    //sort_case = null,
-    //sort_accept = null,
+    sort_specificity = null,
+    sort_adverb = null,
+    sort_case = null,
+    sort_accept = null,
     adverb_prefix = null,
     accept_value = null,
-    //sort_order_list = null
+    sort_order_list = null
   } = {}) {
     const { client } = this.props;
 
@@ -492,7 +527,10 @@ class Adverb extends React.Component {
 
     items_per_page = items_per_page || this.state.items_per_page;
 
-    /*
+    if (sort_specificity == null) {
+      sort_specificity = this.state.sort_specificity;
+    }
+
     if (sort_adverb == null) {
       sort_adverb = this.state.sort_adverb;
     }
@@ -516,7 +554,6 @@ class Adverb extends React.Component {
     if (sort_order_list == null) {
       sort_order_list = this.state.sort_order_list;
     }
-    */
 
     const query_index = ++this.adverb_data_query_count;
 
@@ -527,10 +564,11 @@ class Adverb extends React.Component {
           perspectiveId: perspective.id,
           offset: (current_page - 1) * items_per_page,
           limit: items_per_page,
-          //adverbPrefix: sort_adverb ? adverb_prefix : null,
-          //caseFlag: sort_case,
-          //acceptValue: sort_accept ? accept_value : null,
-          //sortOrderList: sort_order_list
+          specificityFlag: sort_specificity,
+          adverbPrefix: sort_adverb ? adverb_prefix : null,
+          caseFlag: sort_case,
+          acceptValue: sort_accept ? accept_value : null,
+          sortOrderList: sort_order_list
         },
         fetchPolicy: "no-cache"
       })
@@ -562,7 +600,6 @@ class Adverb extends React.Component {
             loading_adverb_data: false
           };
 
-          /*
           if (sort_adverb) {
             const adverb_list = data.adverb_data.adverb_list;
 
@@ -637,7 +674,6 @@ class Adverb extends React.Component {
 
             state_obj.show_prefix_str_list = show_prefix_str_list;
           }
-          */
 
           this.setState(state_obj);
         },
@@ -652,12 +688,13 @@ class Adverb extends React.Component {
   }
 
   setPerspective(perspective) {
-    if (!perspective.has_valency_data) {
+    if (!perspective.has_adverb_data) {
       this.setState({
         perspective,
-        //sort_adverb: false,
-        //sort_case: false,
-        //sort_accept: false,
+        sort_specificity: true,
+        sort_adverb: false,
+        sort_case: false,
+        sort_accept: false,
         adverb_data: null,
         prefix_filter: "",
         selection_dict: {},
@@ -669,9 +706,10 @@ class Adverb extends React.Component {
 
     this.setState({
       perspective,
-      //sort_adverb: false,
-      //sort_case: false,
-      //sort_accept: false,
+      sort_specificity: true,
+      sort_adverb: false,
+      sort_case: false,
+      sort_accept: false,
       adverb_data: null,
       prefix_filter: "",
       selection_dict: {},
@@ -683,10 +721,11 @@ class Adverb extends React.Component {
     this.queryAdverbData({
       perspective,
       current_page: 1,
-      //sort_adverb: false,
-      //adverb_prefix: "",
-      //sort_case: false,
-      //sort_accept: false,
+      sort_specificity: true,
+      sort_adverb: false,
+      adverb_prefix: "",
+      sort_case: false,
+      sort_accept: false,
       accept_value: null
     });
   }
@@ -694,7 +733,7 @@ class Adverb extends React.Component {
   createAdverbData() {
     this.setState({ creating_adverb_data: true });
 
-    const { has_valency_data } = this.state.perspective;
+    const { has_adverb_data } = this.state.perspective;
 
     this.props
       .createAdverbData({
@@ -704,7 +743,7 @@ class Adverb extends React.Component {
       })
       .then(
         () => {
-          window.logger.suc(this.context(has_valency_data ? "Updated adverb data." : "Created adverb data."));
+          window.logger.suc(this.context(has_adverb_data ? "Updated adverb data." : "Created adverb data."));
 
           const { client } = this.props;
           const id_str = client.cache.identify(this.state.perspective);
@@ -713,13 +752,13 @@ class Adverb extends React.Component {
             id: id_str,
             fragment: gql`
               fragment HasValencyData on DictionaryPerspective {
-                has_valency_data
-                new_valency_data_count
+                has_adverb_data
+                new_adverb_data_count
               }
             `,
             data: {
-              has_valency_data: true,
-              new_valency_data_count: 0
+              has_adverb_data: true,
+              new_adverb_data_count: 0
             }
           });
 
@@ -733,8 +772,8 @@ class Adverb extends React.Component {
                   translations
                   marked_for_deletion
                 }
-                has_valency_data
-                new_valency_data_count
+                has_adverb_data
+                new_adverb_data_count
               }
             `
           });
@@ -763,7 +802,6 @@ class Adverb extends React.Component {
       );
   }
 
-/*
   saveAdverbData() {
     this.setState({
       saving_adverb_data: true,
@@ -798,7 +836,6 @@ class Adverb extends React.Component {
         }
       );
   }
-*/
 
   setAdverbAnnotation(annotation_list) {
     this.props
@@ -943,13 +980,13 @@ class Adverb extends React.Component {
     });
   }
 
-/*
   getEnabledSortOrder(sort_order_list = null) {
     if (sort_order_list == null) {
       sort_order_list = this.state.sort_order_list;
     }
 
     const condition_dict = {
+      specificity: this.state.sort_specificity,
       adverb: this.state.sort_adverb,
       case: this.state.sort_case,
       accept: this.state.sort_accept
@@ -987,7 +1024,6 @@ class Adverb extends React.Component {
       });
     }
   }
-*/
 
   render_instance(instance) {
     const sentence = this.state.sentence_map.get(instance.sentence_id);
@@ -1196,6 +1232,7 @@ class Adverb extends React.Component {
 
     if (!this.state.loading_adverb_data && this.state.adverb_data && this.state.instance_list.length > 0) {
       const prev_dict = {
+        specificity: null,
         adverb: null,
         case: null,
         accept: null
@@ -1204,7 +1241,6 @@ class Adverb extends React.Component {
       /* Showing accepted / not accepted headers only if some other sorting option is enabled and goes after
        * 'sort by acceptance' in the sorting option order. */
 
-      /*
       let enabled_list = this.getEnabledSortOrder();
       let accept_header_flag = false;
 
@@ -1224,7 +1260,6 @@ class Adverb extends React.Component {
       if (!accept_header_flag) {
         enabled_list = enabled_list.filter(sort_type => sort_type != "accept");
       }
-      */
 
       /* Checks if instance is accepted by at least 1 user. */
 
@@ -1240,13 +1275,17 @@ class Adverb extends React.Component {
         }
       }
 
-      /*
       for (const sort_type of enabled_list) {
         switch (sort_type) {
+          case "specificity":
+            break;
+
           case "adverb":
             const { adverb_lex } = this.state.instance_list[0];
 
-            render_instance_list.push(<Header key={`${render_instance_list.length}${adverb_lex}`}>{adverb_lex}</Header>);
+            render_instance_list.push(
+              <Header key={`${render_instance_list.length}${adverb_lex}`}>{adverb_lex}</Header>
+            );
             prev_dict[sort_type] = adverb_lex;
 
             break;
@@ -1279,16 +1318,17 @@ class Adverb extends React.Component {
             throw `unknown sorting type '${sort_type}'`;
         }
       }
-      */
 
       for (let i = 0; i < this.state.instance_list.length; i++) {
         const instance = this.state.instance_list[i];
 
-        /*
         for (let j = 0; j < enabled_list.length; j++) {
           const sort_type = enabled_list[j];
 
           switch (sort_type) {
+            case "specificity":
+              break;
+
             case "adverb":
               const { adverb_lex } = instance;
 
@@ -1346,7 +1386,6 @@ class Adverb extends React.Component {
               throw `unknown sorting type '${sort_type}'`;
           }
         }
-        */
 
         render_instance_list.push(this.render_instance(instance));
 
@@ -1390,22 +1429,22 @@ class Adverb extends React.Component {
 
           {perspective && (
             <div style={{ marginTop: "0.5em" }}>
-              {(!perspective.has_valency_data || perspective.new_valency_data_count > 0) && (
+              {(!perspective.has_adverb_data || perspective.new_adverb_data_count > 0) && (
                 <Button
-                  key={perspective.has_valency_data ? "_update" : "_create"}
+                  key={perspective.has_adverb_data ? "_update" : "_create"}
                   style={{ marginRight: "0.5em" }}
                   basic
-                  color={perspective.has_valency_data ? "violet" : "green"}
+                  color={perspective.has_adverb_data ? "violet" : "green"}
                   content={
                     this.state.creating_adverb_data ? (
                       <span>
                         {this.context(
-                          perspective.has_valency_data ? "Updating adverb data..." : "Creating adverb data..."
+                          perspective.has_adverb_data ? "Updating adverb data..." : "Creating adverb data..."
                         )}
                         <Icon name="spinner" loading />
                       </span>
                     ) : (
-                      this.context(perspective.has_valency_data ? "Update adverb data" : "Create adverb data")
+                      this.context(perspective.has_adverb_data ? "Update adverb data" : "Create adverb data")
                     )
                   }
                   disabled={!perspective || this.state.creating_adverb_data}
@@ -1413,7 +1452,7 @@ class Adverb extends React.Component {
                 />
               )}
 
-              {perspective.has_valency_data && false && (
+              {perspective.has_adverb_data && false && (
                 <Button
                   key="_save"
                   style={{ marginRight: "0.5em" }}
@@ -1456,7 +1495,7 @@ class Adverb extends React.Component {
             </div>
           )}
 
-          {(this.state.adverb_data || this.state.loading_adverb_data) && false && (
+          {(this.state.adverb_data || this.state.loading_adverb_data) && (
             <Sorting
               sort_order_list={this.state.sort_order_list}
               setSortOrder={this.setSortOrder}
@@ -1608,7 +1647,7 @@ export default compose(
   connect(state => state.user),
   graphql(sourcePerspectiveQuery, { skip: ({ user }) => user.id === undefined }),
   graphql(createAdverbDataMutation, { name: "createAdverbData" }),
-  //graphql(saveAdverbDataMutation, { name: "saveAdverbData" }),
+  graphql(saveAdverbDataMutation, { name: "saveAdverbData" }),
   graphql(setAdverbAnnotationMutation, { name: "setAdverbAnnotation" }),
   withApollo
 )(Adverb);

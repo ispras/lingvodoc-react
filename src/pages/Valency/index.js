@@ -247,7 +247,7 @@ const SortCase = ({ valency, setState }) => {
           });
 
           valency.queryValencyData({
-            currenet_page: 1,
+            current_page: 1,
             sort_case: checked
           });
         }}
