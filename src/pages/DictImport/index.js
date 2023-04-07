@@ -254,7 +254,9 @@ class Info extends React.Component {
           ) : (
             <Message style={{ margin: 0, textAlign: "center" }}>
               <Message.Content>
-                {this.context("Please select parent language for each Starling dictionary.")}
+                {this.context(
+                  "Please select parent language and specify at least one translation for each Starling dictionary."
+                )}
               </Message.Content>
             </Message>
           )
