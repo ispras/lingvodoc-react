@@ -151,11 +151,7 @@ function renderData(getTranslation, data, sentences, setSentences, filter, setFi
       </div>
 
       <div style={{ marginTop: "0.75em" }}>
-        <Checkbox
-          label={getTranslation("Show sentences")}
-          checked={sentences}
-          onChange={(e, { checked }) => setSentences(checked)}
-        />
+        <SentenceCheckbox sentences={sentences} setSentences={setSentences} />
       </div>
 
       <div style={{ marginTop: "0.75em" }}>
@@ -184,7 +180,7 @@ function renderData(getTranslation, data, sentences, setSentences, filter, setFi
                 {case_verb_sentence_list.map(([case_str, verb_list, verb_sentence_list]) =>
                   sentences ? (
                     <List.Item key={case_str}>
-                      {case_str}
+                      {case_str.toUpperCase()}
                       <List>
                         {verb_sentence_list.map(([verb, sentence_list]) => (
                           <List.Item key={verb}>
@@ -199,7 +195,7 @@ function renderData(getTranslation, data, sentences, setSentences, filter, setFi
                       </List>
                     </List.Item>
                   ) : (
-                    <List.Item key={case_str}>{`${case_str}: ${verb_list.join(", ")}`}</List.Item>
+                    <List.Item key={case_str}>{`${case_str.toUpperCase()}: ${verb_list.join(", ")}`}</List.Item>
                   )
                 )}
               </List>
