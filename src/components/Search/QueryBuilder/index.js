@@ -121,9 +121,9 @@ export function queryCheck(query, subBlocksMode) {
   const result = { check: true, empty: true };
 
   for (const block of query) {
-    if (block.length <= 0 && subBlocksMode == "and") {
+    if (block.length <= 0) {
       result.check = false;
-      result.emptyOr = true;
+      result.emptyBlock = true;
     }
 
     for (const condition of block) {
@@ -747,14 +747,20 @@ class QueryBuilder extends React.Component {
               )}
               {checkInfo.substring && <p>{`${this.context("Empty substrings are not allowed")}.`}</p>}
               {checkInfo.regexp && <p>{`${this.context("Too broad regular expressions are not allowed")}.`}</p>}
-              {checkInfo.emptyOr && <p>{`${this.context("Empty AND blocks in OR mode are not allowed")}.`}</p>}
-              {(checkInfo.substring || checkInfo.regexp || checkInfo.emptyOr) && (
+              {checkInfo.emptyBlock && (
+                <p>{`${this.context(
+                  this.state.mode.blocks === "or"
+                    ? "Empty AND blocks in OR mode are not allowed"
+                    : "Empty OR blocks in AND mode are not allowed"
+                )}.`}</p>
+              )}
+              {(checkInfo.substring || checkInfo.regexp || checkInfo.emptyBlock) && (
                 <>
                   <p>{`${this.context(
                     "Please either narrow down search conditions or add grammatical signs conditions"
                   )}.`}</p>
                   <p>{`${this.context(
-                    "Or, if you would like to search just for dictionaries and perspective based on metadata, delete all search conditions"
+                    "Or, if you would like to search just for dictionaries and perspective based on metadata, use OR mode and delete all search conditions"
                   )}.`}</p>
                 </>
               )}
