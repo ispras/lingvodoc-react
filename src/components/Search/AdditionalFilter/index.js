@@ -1,5 +1,5 @@
 /* eslint-disable */
-import React, { PureComponent, useContext } from "react";
+import React, { useContext } from "react";
 import { Segment, Button, Modal, Loader } from "semantic-ui-react";
 import { graphql } from "@apollo/client/react/hoc";
 import { compose } from "recompose";
@@ -29,7 +29,7 @@ const classNames = {
 /**
  * Additional fields for the search form.
  */
-class AdditionalFilter extends PureComponent {
+class AdditionalFilter extends React.PureComponent {
   static propTypes = {
     onChange: PropTypes.func.isRequired,
     data: PropTypes.object.isRequired,
