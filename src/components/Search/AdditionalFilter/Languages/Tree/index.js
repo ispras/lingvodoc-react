@@ -43,6 +43,36 @@ class Tree extends React.PureComponent {
     uncheckAllButtonText: "Uncheck all"
   };
 
+  /**
+   * Checks if all nodes of the tree were checked.
+   * @param {number} numOfNodes - number of tree nodes
+   * @param {Array} checkedList - list of checked tree nodes
+   */
+  static isAllNodesChecked(numOfNodes, checkedList) {
+    if (!numOfNodes || !checkedList) {
+      return false;
+    }
+
+    if (numOfNodes === checkedList[0].checked.length + checkedList[1].checked.length) {
+      return true;
+    }
+
+    return false;
+  }
+  
+  /**
+   * Checks if flat node has defined checkState
+   * @param {Object} flatNode - flat node
+   */
+  static isCheckStateSet(flatNode) {
+    const { checkState } = flatNode;
+    if (checkState === null || checkState === undefined) {
+      return false;
+    }
+
+    return checkState === 0 || checkState === 1 || checkState === 2;
+  }
+
   constructor(props) {
     super(props);
     const { checkStateTreeFlat } = props;
@@ -53,12 +83,6 @@ class Tree extends React.PureComponent {
     } else {
       flattenNodes(props.nodes, this.flatNodes);
     }
-
-    this.updateNodesWithChecked = this.updateNodesWithChecked.bind(this);
-    this.updateNodesWithExpanded = this.updateNodesWithExpanded.bind(this);
-    this.isAllNodesChecked = this.isAllNodesChecked.bind(this);
-    this.isCheckStateSet = this.isCheckStateSet.bind(this);
-    this.renderTreeNodes = this.renderTreeNodes.bind(this);
 
     this.updateNodesWithChecked(props.checked, props.filterMode);
     
@@ -105,37 +129,6 @@ class Tree extends React.PureComponent {
         this.recountTree();
       }
     }
-  }
-
-  /**
-   * Checks if all nodes of the tree were checked.
-   * @param {number} numOfNodes - number of tree nodes
-   * @param {Array} checkedList - list of checked tree nodes
-   */
-  isAllNodesChecked(numOfNodes, checkedList) {
-    if (!numOfNodes || !checkedList) {
-      return false;
-    }
-
-    if (numOfNodes === checkedList[0].checked.length + checkedList[1].checked.length) {
-      return true;
-    }
-
-    return false;
-  }
-
-  /**
-   * Checks if flat node has defined checkState
-   * @param {Object} flatNode - flat node
-   */
-  isCheckStateSet(flatNode) {
-
-    const { checkState } = flatNode;
-    if (checkState === null || checkState === undefined) {
-      return false;
-    }
-
-    return checkState === 0 || checkState === 1 || checkState === 2;
   }
 
   /**
@@ -463,7 +456,7 @@ class Tree extends React.PureComponent {
   updateNodesWithChecked(checkedLists, filterMode) {
 
     const flatNodes = this.getFlatNodes();
-    const isAllChecked = this.isAllNodesChecked(Object.keys(flatNodes).length, checkedLists);
+    const isAllChecked = this.constructor.isAllNodesChecked(Object.keys(flatNodes).length, checkedLists);
 
     if (isAllChecked) {
       // Set all values to true
@@ -547,7 +540,7 @@ class Tree extends React.PureComponent {
         : null;
 
       // Get the checked state after all children checked states are determined
-      if (!this.isCheckStateSet(flatNode)) {
+      if (!this.constructor.isCheckStateSet(flatNode)) {
         flatNode.checkState = this.isNodeChecked(node) ? 1 : 0;
       }
 
