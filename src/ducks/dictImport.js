@@ -169,7 +169,11 @@ export default function (state = initial, { type, payload }) {
       newState = state.setIn(["licenses", payload.id], payload.license);
       break;
     case LOCALE_SET:
-      return state.setIn(["linking", payload.id, "translation", payload.locale], payload.value);
+      if (payload.value) {
+        return state.setIn(["linking", payload.id, "translation", payload.locale], payload.value);
+      } else {
+        return state.deleteIn(["linking", payload.id, "translation", payload.locale]);
+      }
     default:
       return state;
   }
@@ -204,7 +208,9 @@ export const selectors = {
       case "LANGUAGES":
         const languages = state.dictImport.get("languages");
 
-        return state.dictImport.get("linking").every((_, blob_id) => languages.has(blob_id));
+        return state.dictImport
+          .get("linking")
+          .every((item, blob_id) => languages.has(blob_id) && item.get("translation").size > 0);
 
       default:
         return false;

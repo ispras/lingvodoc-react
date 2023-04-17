@@ -23,7 +23,6 @@ import { bindActionCreators } from "redux";
 
 import { chooseTranslation as T } from "api/i18n";
 import { connectMutation } from "components/GroupingTagModal/graphql";
-import { checkLanguage, languageIdList } from "components/Home/components/LangsNav";
 import { closeModal } from "ducks/cognateAnalysis";
 import TranslationContext from "Layout/TranslationContext";
 import { compositeIdToString as id2str, stringToCompositeId as str2id } from "utils/compositeId";
@@ -43,8 +42,8 @@ const cognateAnalysisDataQuery = gql`
       tree {
         id
         translations
-        additional_metadata {
-          toc_mark
+        ... on Language {
+          in_toc
         }
       }
     }
@@ -1284,7 +1283,7 @@ class CognateAnalysisModal extends React.Component {
     this.baseLanguageId = tree[tree.length - 1].id;
 
     for (let i = 0; i < tree.length; i++) {
-      if (checkLanguage(tree[i])) {
+      if (tree[i].in_toc) {
         this.treePath = tree.slice(i, tree.length).reverse();
         this.baseLanguageId = tree[i].id;
         break;
@@ -1378,7 +1377,7 @@ class CognateAnalysisModal extends React.Component {
       query: cognateAnalysisMultiDataQuery
     });
 
-    if (!checkLanguage(tree[tree.length - 1])) {
+    if (!tree[tree.length - 1].in_toc) {
       const { data: language } = await client.query({
         query: cognateAnalysisMultiBaseQuery,
         variables: { id: tree[tree.length - 1] }

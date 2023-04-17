@@ -17,7 +17,6 @@ import {
 } from "backend";
 import CreateLanguageModal from "components/CreateLanguageModal";
 import EditLanguageModal from "components/EditLanguageModal";
-import { checkLanguageId } from "components/Home/components/LangsNav";
 import TreeWithSearch from "components/TreeWithSearch";
 import { useMutation } from "hooks";
 import TranslationContext from "Layout/TranslationContext";
@@ -185,8 +184,7 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
       }
       if (updatableTOC && user.id === 1) {
         const modifying = modifyingTocs.includes(compositeIdToString(node.id));
-        const staticCheck = checkLanguageId(node.id);
-        const tocMark = staticCheck || (node.additional_metadata && node.additional_metadata.toc_mark);
+        const tocMark = node.additional_metadata && node.additional_metadata.toc_mark;
 
         nodeProps.buttons.push(
           <Button
@@ -195,7 +193,7 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
                 ? `${getTranslation(tocMark ? "Removing" : "Adding")}...`
                 : getTranslation(tocMark ? "Remove from TOC" : "Add to TOC")
             }
-            disabled={staticCheck || modifying}
+            disabled={modifying}
             onClick={() => onToggleTOC(node)}
           />
         );

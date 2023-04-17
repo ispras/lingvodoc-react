@@ -12,8 +12,6 @@ import config from "config";
 import { toggleDictionary } from "ducks/home";
 import TranslationContext from "Layout/TranslationContext";
 
-import { checkLanguage } from "./LangsNav";
-
 import "../published.scss";
 
 let selectorStatus = false;
@@ -35,7 +33,8 @@ const Perspective = ({ perspective: p }) => (
       </span>
     )}
     <>
-      <i className="lingvo-icon lingvo-icon_table" />{T(p.get("translations").toJS())}
+      <i className="lingvo-icon lingvo-icon_table" />
+      {T(p.get("translations").toJS())}
     </>
   </Dropdown.Item>
 );
@@ -67,12 +66,14 @@ const Dict = ({ dictionary, actions, selected, canSelectDictionaries }) => {
       {(config.buildType === "desktop" || config.buildType === "proxy") && isDownloaded && <Icon name="download" />}
 
       {perspectives && !selectorStatus && perspectives.valueSeq ? (
-        <Dropdown 
+        <Dropdown
           icon={null}
           trigger={
-            <span className={perspectives.size && "dict-name dict-name_link" || "dict-name"}>
-              {translations && T(translations.toJS())}{" "} ({perspectives.size})
-              {config.buildType === "server" && canSelectDictionaries && status === "Published" && <Icon name="globe" />}
+            <span className={(perspectives.size && "dict-name dict-name_link") || "dict-name"}>
+              {translations && T(translations.toJS())} ({perspectives.size})
+              {config.buildType === "server" && canSelectDictionaries && status === "Published" && (
+                <Icon name="globe" />
+              )}
             </span>
           }
           className="lingvo-dropdown-inline lingvo-dropdown-inline_perspectives"
@@ -129,12 +130,7 @@ const Language = ({ language, canSelectDictionaries }) => {
   let langClass = "lang-name";
   if (parent_id == null) {
     langClass = "root-lang-name";
-  } else if (
-    checkLanguage({
-      id,
-      additional_metadata: metadata && metadata.toJS()
-    })
-  ) {
+  } else if (language.get("in_toc")) {
     langClass = "confirmed-lang-name";
   }
 

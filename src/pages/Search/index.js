@@ -129,7 +129,6 @@ const newUnstructuredDataMutation = gql`
 `;
 
 class Wrapper extends React.Component {
-
   componentDidUpdate(prevProps) {
     if (this.props.preloadFlag) {
       return;
@@ -144,11 +143,9 @@ class Wrapper extends React.Component {
         actions.storeSearchResult(searchId, data.advanced_search);
       }
     }
-
   }
-  
-  render() {
 
+  render() {
     if (this.props.preloadFlag) {
       return (
         <Dimmer active={true} inverted>
@@ -171,9 +168,9 @@ class Wrapper extends React.Component {
     }
 
     const { languages: allLanguages, advanced_search: advancedSearch, variables } = data;
-    const { query } = variables;
+    const { query, blocks } = variables;
 
-    const checkResult = queryCheck(query);
+    const checkResult = queryCheck(query, blocks);
     const needToRenderLanguageTree = checkResult.check;
 
     const searchResults = Immutable.fromJS(advancedSearch);
@@ -251,7 +248,7 @@ const Info = ({
     return null;
   }
 
-  const checkInfo = queryCheck(query);
+  const checkInfo = queryCheck(query, blocks);
   const additionalParamsFlag = additionalParamsCheck(langs, dicts, searchMetadata);
   let resultQuery = query;
 
@@ -296,9 +293,8 @@ Info.propTypes = {
   subQuery: PropTypes.bool.isRequired
 };
 
-const searchesFromProps = (searches =>
-  Immutable.fromJS(searches).reduce((result, search) => result.set(search.get("id"), search), new Immutable.Map())
-);
+const searchesFromProps = searches =>
+  Immutable.fromJS(searches).reduce((result, search) => result.set(search.get("id"), search), new Immutable.Map());
 
 class SearchTabs extends React.Component {
   constructor(props) {
@@ -362,9 +358,13 @@ class SearchTabs extends React.Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    if (!isEqual(nextProps.searches, this.props.searches) || !isEqual(nextProps.data, this.props.data) || !isEqual(nextProps.match, this.props.match)) {
+    if (
+      !isEqual(nextProps.searches, this.props.searches) ||
+      !isEqual(nextProps.data, this.props.data) ||
+      !isEqual(nextProps.match, this.props.match)
+    ) {
       return true;
-    };
+    }
 
     if (!isEqual(this.state, nextState)) {
       return true;
@@ -383,7 +383,7 @@ class SearchTabs extends React.Component {
       client
     } = this.props;
 
-    // We have new search data loaded by a search data id. 
+    // We have new search data loaded by a search data id.
 
     if (data && search_id && !this.state.search_id_set.has(search_id)) {
       if (!data.loading && !data.error) {
@@ -413,7 +413,7 @@ class SearchTabs extends React.Component {
 
           // Checking search query validity.
 
-          const checkInfo = queryCheck(value.query);
+          const checkInfo = queryCheck(value.query, value.blocks);
           const additionalParamsFlag = additionalParamsCheck(value.langs, value.dicts, value.searchMetadata);
 
           if (!checkInfo.check || (checkInfo.empty && !additionalParamsFlag)) {
@@ -471,11 +471,10 @@ class SearchTabs extends React.Component {
     }
 
     if (!isEqual(this.props.searches, prevProps.searches)) {
-
       const [mapSearches, sourceSearches] = this.updateMapSearchesActiveState(searchesFromProps(this.props.searches));
 
-      // toJS() / fromJS() for canonical representation. 
-      
+      // toJS() / fromJS() for canonical representation.
+
       const source_searches_info = fromJS(
         sourceSearches.map(search => search.delete("results").delete("activated")).toJS()
       );
@@ -498,9 +497,7 @@ class SearchTabs extends React.Component {
           newSearchItem.click();
         }
       }
-
     }
-
   }
 
   onAreasModeChange(ev, { checked }) {
@@ -515,7 +512,7 @@ class SearchTabs extends React.Component {
     });
   }
 
-  getUniqueSearchGroups = (mapSearches =>
+  getUniqueSearchGroups = mapSearches =>
     mapSearches.map(search =>
       Immutable.fromJS({
         id: search.get("id"),
@@ -523,12 +520,11 @@ class SearchTabs extends React.Component {
         color: mdColors.get(search.get("id") - 1),
         isActive: search.get("isActive")
       })
-    )
-  );
+    );
 
-  getSearchGroups = (mapSearches => this.getUniqueSearchGroups(mapSearches));
+  getSearchGroups = mapSearches => this.getUniqueSearchGroups(mapSearches);
 
-  getActiveSearchGroups = (mapSearches => {
+  getActiveSearchGroups = mapSearches => {
     const activeSearchGroups = this.getSearchGroups(mapSearches).filter(f => f.get("isActive"));
 
     return activeSearchGroups.filter(groupMeta => {
@@ -540,9 +536,9 @@ class SearchTabs extends React.Component {
 
       return true;
     });
-  });
+  };
 
-  getDictsResults = (mapSearches => {
+  getDictsResults = mapSearches => {
     const activeSearchGroups = this.getActiveSearchGroups(mapSearches);
 
     return new Immutable.Map().withMutations(map => {
@@ -560,10 +556,10 @@ class SearchTabs extends React.Component {
         filteredDicts.forEach(dict => map.update(dict, new Immutable.Set(), v => v.add(search.get("id"))));
       });
     });
-  });
-  
-  addDefaultActiveStateToMapSearches = (mapSearches => mapSearches.map(search => search.set("isActive", true)));
-  
+  };
+
+  addDefaultActiveStateToMapSearches = mapSearches => mapSearches.map(search => search.set("isActive", true));
+
   updateMapSearchesActiveState = sourceSearches => {
     const { mapSearches: oldMapSearches, sourceSearches: oldSourceSearches } = this.state;
 
@@ -800,7 +796,7 @@ class SearchTabs extends React.Component {
       return false;
     }
 
-    return queryCheck(search.query).check;
+    return queryCheck(search.query, search.blocks).check;
   }
 
   createSearchWithAdditionalFields = search => () => {
@@ -832,7 +828,6 @@ class SearchTabs extends React.Component {
   };
 
   render() {
-
     const { searches, actions, match, data } = this.props;
 
     if (match.params.searchId) {
@@ -853,7 +848,7 @@ class SearchTabs extends React.Component {
 
     const search_url_id = this.state.search_id_map.get(this.state.source_searches_info);
 
-    const onSearchClose = (id) => {
+    const onSearchClose = id => {
       return event => {
         event.stopPropagation();
         actions.deleteSearch(id);
