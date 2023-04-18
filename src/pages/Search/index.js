@@ -932,7 +932,7 @@ class SearchTabs extends React.Component {
               this.tabsRef = ref;
             }}
           >
-            <Tab menu={{ pointing: true, stackable: true }} panes={panes} />
+            <Tab menu={{ pointing: true, stackable: true, className: "lingvo-map-search-menu" }} panes={panes} />
           </div>
           <Divider id="mapResults" section />
           <Labels data={labels} isActive={!areasMode} onClick={this.clickLabel} />

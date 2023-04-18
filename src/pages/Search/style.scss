@@ -84,3 +84,37 @@
     z-index: 5;
   }
 }
+
+.lingvo-map-search-menu {
+  &.ui.menu {
+    flex-wrap: wrap;
+
+    & .item {
+      outline: 1px solid #dedede;
+      margin: 0 1px 1px 0;
+
+      &::before {
+        content: none !important;
+      }
+    }
+
+    & > .item:first-child {
+      border-bottom-left-radius: 0 !important;
+    }
+
+    @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+      & .item {
+        outline: none;
+        margin: 0;
+  
+        &::before {
+          content: '' !important;
+        }
+      }
+
+      & > .item:first-child {
+        border-radius: .28571429rem 0 0 .28571429rem !important;
+      }
+    }
+  }
+}
