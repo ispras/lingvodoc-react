@@ -1,6 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import SortableTree, { map } from "react-sortable-tree";
+import { isEqual } from "lodash";
 import PropTypes from "prop-types";
 import { pure } from "recompose";
 import { bindActionCreators } from "redux";
@@ -87,6 +88,37 @@ class LanguageTree extends React.Component {
 
     const title = node.type === "perspective" ? <PerspectiveLink node={node} /> : defaultTitle;
     return { title };
+  }
+
+  componentDidUpdate(prevProps) {
+    if (
+      !isEqual(prevProps.searchResultsTree, this.props.searchResultsTree) ||
+      !isEqual(prevProps.expanded, this.props.expanded)
+    ) {
+      this.setState(
+        {treeData: map({
+          treeData: this.props.searchResultsTree.toJS(),
+          callback: ({ node }) => ({ ...node, expanded: !!this.props.expanded }),
+          getNodeKey: ({ treeIndex }) => treeIndex,
+          ignoreCollapsed: false
+        })
+      });
+    }
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    if (
+      !isEqual(nextProps.searchResultsTree, this.props.searchResultsTree) ||
+      !isEqual(nextProps.expanded, this.props.expanded)
+    ) {
+      return true;
+    }
+
+    if (!isEqual(this.state.treeData, nextState.treeData)) {
+      return true;
+    }
+
+    return false;
   }
 
   render() {
