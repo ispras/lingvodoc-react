@@ -66,7 +66,7 @@ function Column({ spread, name, value, fieldOptions, type, onSetColumnType, acti
     const trigger = <Button content={triggerText} {...triggerColor} className="lingvo-column-mapper-selected" />;
 
     inner = (
-      <Popup trigger={trigger} position="bottom center" on="click">
+      <Popup trigger={trigger} position="bottom center" on="click" className="lingvo-column-mapper-popup">
         <Popup.Header>
           <Button basic content={getTranslation("Create a new field")} onClick={actions.openCreateFieldModal} />
         </Popup.Header>

@@ -48,8 +48,8 @@
 .popup-field-type {
   display: flex;
   flex-wrap: wrap;
-  min-width: 30vw;
-  max-width: 30vw;
+  width: 400px;
+  max-width: 400px;
   max-height: 35vh;
   overflow: auto;
 
@@ -57,7 +57,13 @@
     margin: 0.2em !important;
   }
 
+  @media only screen and (max-device-width: 1440px), only screen and (max-width: 1440px) {
+    width: 30vw;
+    max-width: 400px;
+  }
+
   @media only screen and (max-device-width: 660px), only screen and (max-width: 660px) {
+    width: auto;
     max-width: none;
 
     & .ui.button {
