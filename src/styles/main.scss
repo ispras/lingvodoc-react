@@ -521,6 +521,7 @@ body {
   &_education {
     background: #fafafa;
     position: relative;
+    min-height: 150px;
 
     & .langs-nav-list {
       position: relative;
@@ -539,6 +540,7 @@ body {
     @media only screen and (max-device-width: 1000px), only screen and (max-width: 1000px) {
       & {
         padding-bottom: 150px;
+        min-height: auto;
       }
     }
   }

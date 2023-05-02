@@ -34,12 +34,12 @@ const enhance = compose(addHandlers, pure);
 /* ----------- COMPONENT ----------- */
 const LangsNavList = ({ data, onLangSelect }) => {
   const list = data.map(langSet => <ListItem key={langSet[0]} data={langSet} onLangSelect={onLangSelect} />);
-
-  return (
+  
+  return list.length ? (
     <Container className={classNames.wrap}>
       <div className={classNames.main}>{list}</div>
     </Container>
-  );
+  ) : null;
 };
 
 /* ----------- PROPS VALIDATION ----------- */
