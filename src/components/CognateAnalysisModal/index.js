@@ -2666,7 +2666,7 @@ class CognateAnalysisModal extends React.Component {
           </Modal.Actions>
 
           {this.state.library_present && this.state.result !== null && (
-            <Modal.Content style={{ maxWidth: "100%", overflowX: "scroll" }}>
+            <Modal.Content style={{ maxWidth: "100%", overflowX: "auto" }}>
               <h3 className="lingvo-cognate-header-results">{this.context("Analysis results")}:</h3>
 
               <div className="lingvo-cognate-results">
