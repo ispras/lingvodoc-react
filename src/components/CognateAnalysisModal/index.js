@@ -267,6 +267,8 @@ class SLPerspectiveSelection extends React.Component {
       translationFieldIdStrList
     } = this.props;
 
+    hide_for_swadesh = (mode === "swadesh" ? "hidden" : "")
+
     return (
       <div className="lingvo-cognate-sub-language" key={`perspective${index}`}>
         <div key="check">
@@ -293,7 +295,7 @@ class SLPerspectiveSelection extends React.Component {
         </div>
         {perspectiveSelectionList[index] && (
           <div className="lingvo-cognate-grid" key="selection">
-            <div className="lingvo-cognate-grid__name">{this.context("Source transcription field")}:</div>
+            <div className="lingvo-cognate-grid__name" ${hide_for_swadesh}>{this.context("Source transcription field")}:</div>
             <div className="lingvo-cognate-grid__select">
               <Select
                 disabled={!perspectiveSelectionList[index]}
@@ -2027,6 +2029,30 @@ class CognateAnalysisModal extends React.Component {
         },
         () => {
           window.logger.err(this.context("Failed to launch cognate acoustic analysis!"));
+        }
+      );
+    } else if (this.props.mode === "swadesh") {
+      computeSwadeshAnalysis({
+        variables: {
+          sourcePerspectiveId: perspectiveId,
+          baseLanguageId: this.baseLanguageId,
+          groupFieldId: groupField.id,
+          perspectiveInfoList: perspectiveInfoList,
+          mode: "swadesh",
+          matchTranslationsValue,
+          onlyOrphansFlag: this.state.onlyOrphansFlag,
+          figureFlag: true,
+          debugFlag: this.state.debugFlag,
+          intermediateFlag: this.state.intermediateFlag
+        }
+      }).then(
+        () => {
+          window.logger.suc(this.context("Swadesh analysis is launched. Please check out tasks for details."));
+
+          this.props.closeModal();
+        },
+        () => {
+          window.logger.err(this.context("Failed to launch swadesh analysis!"));
         }
       );
     } else {
