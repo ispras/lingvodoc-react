@@ -258,6 +258,7 @@ class SLPerspectiveSelection extends React.Component {
 
   render() {
     const {
+      mode,
       treePathList,
       perspective,
       textFieldsOptions,
@@ -267,7 +268,7 @@ class SLPerspectiveSelection extends React.Component {
       translationFieldIdStrList
     } = this.props;
 
-    hide_for_swadesh = (mode === "swadesh" ? "hidden" : "")
+    const hide_for_swadesh = (mode === "swadesh" ? true : false)
 
     return (
       <div className="lingvo-cognate-sub-language" key={`perspective${index}`}>
@@ -295,8 +296,8 @@ class SLPerspectiveSelection extends React.Component {
         </div>
         {perspectiveSelectionList[index] && (
           <div className="lingvo-cognate-grid" key="selection">
-            <div className="lingvo-cognate-grid__name" {hide_for_swadesh}>{this.context("Source transcription field")}:</div>
-            <div className="lingvo-cognate-grid__select">
+            <div className="lingvo-cognate-grid__name" hidden={hide_for_swadesh}>{this.context("Source transcription field")}:</div>
+            <div className="lingvo-cognate-grid__select" hidden={hide_for_swadesh}>
               <Select
                 disabled={!perspectiveSelectionList[index]}
                 defaultValue={transcriptionFieldIdStrList[index]}
@@ -345,6 +346,7 @@ class SLSelection extends React.Component {
 
   render() {
     const {
+      mode,
       perspective_list,
       perspectiveSelectionList,
       transcriptionFieldIdStrList,
@@ -397,6 +399,7 @@ class SLSelection extends React.Component {
             // Not so good hack in the name of performance,
             // we just give our state to be modified in the child compoment.
             <SLPerspectiveSelection
+              mode={mode}
               key={`perspective${index}`}
               treePathList={treePathList}
               perspective={perspective}
@@ -2032,7 +2035,7 @@ class CognateAnalysisModal extends React.Component {
         }
       );
     } else if (this.props.mode === "swadesh") {
-      computeSwadeshAnalysis({
+      computeCognateAnalysis({
         variables: {
           sourcePerspectiveId: perspectiveId,
           baseLanguageId: this.baseLanguageId,
@@ -2271,6 +2274,7 @@ class CognateAnalysisModal extends React.Component {
         <div>
           {this.perspective_list.length > 1 && (
             <SLSelection
+              mode={this.props.mode}
               perspective_list={this.perspective_list}
               perspectiveSelectionList={this.state.perspectiveSelectionList}
               transcriptionFieldIdStrList={this.state.transcriptionFieldIdStrList}
