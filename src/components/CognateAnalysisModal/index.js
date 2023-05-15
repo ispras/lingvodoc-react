@@ -295,7 +295,7 @@ class SLPerspectiveSelection extends React.Component {
         </div>
         {perspectiveSelectionList[index] && (
           <div className="lingvo-cognate-grid" key="selection">
-            <div className="lingvo-cognate-grid__name" ${hide_for_swadesh}>{this.context("Source transcription field")}:</div>
+            <div className="lingvo-cognate-grid__name" {hide_for_swadesh}>{this.context("Source transcription field")}:</div>
             <div className="lingvo-cognate-grid__select">
               <Select
                 disabled={!perspectiveSelectionList[index]}
