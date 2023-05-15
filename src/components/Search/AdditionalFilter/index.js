@@ -568,16 +568,18 @@ class AdditionalFilter extends React.PureComponent {
           >
             <Modal.Header>{showLanguagesTreeText}</Modal.Header>
             <Modal.Content scrolling>
-              <Languages
-                onChange={this.onLangsDictsChange}
-                languagesTree={languagesTree}
-                langsChecked={languages}
-                dictsChecked={dictionaries}
-                showTree={this.state.showSearchSelectLanguages}
-                filterMode
-                checkAllButtonText={checkAllButtonText}
-                uncheckAllButtonText={uncheckAllButtonText}
-              />
+              <div className="filter-dictionaries">
+                <Languages
+                  onChange={this.onLangsDictsChange}
+                  languagesTree={languagesTree}
+                  langsChecked={languages}
+                  dictsChecked={dictionaries}
+                  showTree={this.state.showSearchSelectLanguages}
+                  filterMode
+                  checkAllButtonText={checkAllButtonText}
+                  uncheckAllButtonText={uncheckAllButtonText}
+                />
+              </div>
             </Modal.Content>
             <Modal.Actions>
               <Button onClick={this.onShowLangsButtonClick} className="lingvo-button-basic-black">

@@ -85,9 +85,11 @@ class Tree extends React.PureComponent {
     }
 
     this.updateNodesWithChecked(props.checked, props.filterMode);
+
+    const isAllChecked = this.constructor.isAllNodesChecked(Object.keys(this.flatNodes).length, props.checked);
     
     this.state = {
-      checkAll: false,
+      checkAll: isAllChecked || false,
       expanded:
         Object.values(this.flatNodes)
           .filter(item => item.expanded)
