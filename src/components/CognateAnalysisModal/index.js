@@ -268,7 +268,7 @@ class SLPerspectiveSelection extends React.Component {
       translationFieldIdStrList
     } = this.props;
 
-    const hide_for_swadesh = (mode === "swadesh" ? true : false)
+    const is_swadesh = (mode === "swadesh" ? true : false)
 
     return (
       <div className="lingvo-cognate-sub-language" key={`perspective${index}`}>
@@ -296,8 +296,8 @@ class SLPerspectiveSelection extends React.Component {
         </div>
         {perspectiveSelectionList[index] && (
           <div className="lingvo-cognate-grid" key="selection">
-            <div className="lingvo-cognate-grid__name" hidden={hide_for_swadesh}>{this.context("Source transcription field")}:</div>
-            <div className="lingvo-cognate-grid__select" hidden={hide_for_swadesh}>
+            <div className="lingvo-cognate-grid__name" hidden={is_swadesh}>{this.context("Source transcription field")}:</div>
+            <div className="lingvo-cognate-grid__select" hidden={is_swadesh}>
               <Select
                 disabled={!perspectiveSelectionList[index]}
                 defaultValue={transcriptionFieldIdStrList[index]}
@@ -2657,6 +2657,8 @@ class CognateAnalysisModal extends React.Component {
               ? this.context("Cognate reconstruction")
               : mode === "suggestions"
               ? this.context("Cognate suggestions")
+              : mode === "swadesh"
+              ? this.context("Swadesh analysis")
               : this.context("Cognate analysis")}
           </Modal.Header>
 
