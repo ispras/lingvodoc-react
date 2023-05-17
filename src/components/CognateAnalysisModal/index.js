@@ -2990,7 +2990,8 @@ CognateAnalysisModal.contextType = TranslationContext;
 CognateAnalysisModal.propTypes = {
   perspectiveId: PropTypes.array.isRequired,
   closeModal: PropTypes.func.isRequired,
-  computeCognateAnalysis: PropTypes.func.isRequired
+  computeCognateAnalysis: PropTypes.func.isRequired,
+  computeSwadeshAnalysis: PropTypes.func.isRequired
 };
 
 export default compose(
@@ -3001,6 +3002,7 @@ export default compose(
   connect(state => state.user),
   branch(({ visible }) => !visible, renderNothing),
   graphql(computeCognateAnalysisMutation, { name: "computeCognateAnalysis" }),
+  graphql(computeSwadeshAnalysisMutation, { name: "computeSwadeshAnalysis" }),
   graphql(connectMutation, { name: "connectGroup" }),
   withApollo
 )(CognateAnalysisModal);
