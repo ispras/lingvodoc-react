@@ -2054,6 +2054,7 @@ class CognateAnalysisModal extends React.Component {
         }
       );
     } else if (this.props.mode === "swadesh") {
+      this.setState({ computing: true });
       computeSwadeshAnalysis({
         variables: {
           sourcePerspectiveId: perspectiveId,
