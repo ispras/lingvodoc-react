@@ -195,7 +195,7 @@ const computeSwadeshAnalysisMutation = gql`
     $groupFieldId: LingvodocID!
     $perspectiveInfoList: [[LingvodocID]]!
   ) {
-    cognate_analysis(
+    swadesh_analysis(
       source_perspective_id: $sourcePerspectiveId
       base_language_id: $baseLanguageId
       group_field_id: $groupFieldId
@@ -1974,7 +1974,7 @@ class CognateAnalysisModal extends React.Component {
   }
 
   handleCreate() {
-    const { perspectiveId, computeCognateAnalysis } = this.props;
+    const { perspectiveId, computeCognateAnalysis, computeSwadeshAnalysis } = this.props;
 
     const groupField = this.fieldDict[this.state.groupFieldIdStr];
 
