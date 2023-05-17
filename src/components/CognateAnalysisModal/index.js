@@ -188,6 +188,25 @@ const computeCognateAnalysisMutation = gql`
   }
 `;
 
+const computeSwadeshAnalysisMutation = gql`
+  mutation computeSwadeshAnalysis(
+    $sourcePerspectiveId: LingvodocID!
+    $baseLanguageId: LingvodocID!
+    $groupFieldId: LingvodocID!
+    $perspectiveInfoList: [[LingvodocID]]!
+  ) {
+    cognate_analysis(
+      source_perspective_id: $sourcePerspectiveId
+      base_language_id: $baseLanguageId
+      group_field_id: $groupFieldId
+      perspective_info_list: $perspectiveInfoList
+    ) {
+      triumph
+    }
+  }
+`;
+
+
 const SUGGESTIONS_PER_PAGE = 50;
 
 function equalIds(id_a, id_b) {
@@ -2035,22 +2054,16 @@ class CognateAnalysisModal extends React.Component {
         }
       );
     } else if (this.props.mode === "swadesh") {
-      computeCognateAnalysis({
+      computeSwadeshAnalysis({
         variables: {
           sourcePerspectiveId: perspectiveId,
           baseLanguageId: this.baseLanguageId,
           groupFieldId: groupField.id,
           perspectiveInfoList: perspectiveInfoList,
-          mode: "swadesh",
-          matchTranslationsValue,
-          onlyOrphansFlag: this.state.onlyOrphansFlag,
-          figureFlag: true,
-          debugFlag: this.state.debugFlag,
-          intermediateFlag: this.state.intermediateFlag
         }
       }).then(
         () => {
-          window.logger.suc(this.context("Swadesh analysis is launched. Please check out tasks for details."));
+          window.logger.suc(this.context("Swadesh analysis is launched."));
 
           this.props.closeModal();
         },
