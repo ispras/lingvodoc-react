@@ -2212,9 +2212,10 @@ class CognateAnalysisModal extends React.Component {
    * Additional options for administrator.
    */
   admin_section_render() {
+    const is_swadesh = (this.props.mode === "swadesh" ? true : false)
     return (
       <>
-        <div className="lingvo-cognate-checkbox">
+        <div className="lingvo-cognate-checkbox" hidden={is_swadesh}>
           <Checkbox
             label={this.context("Debug flag")}
             checked={this.state.debugFlag}
@@ -2224,7 +2225,7 @@ class CognateAnalysisModal extends React.Component {
             className="lingvo-checkbox lingvo-checkbox_labeled"
           />
         </div>
-        <div className="lingvo-cognate-checkbox">
+        <div className="lingvo-cognate-checkbox" hidden={is_swadesh}>
           <Checkbox
             label={this.context("Save intermediate data")}
             checked={this.state.intermediateFlag}
