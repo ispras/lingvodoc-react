@@ -205,6 +205,7 @@ const computeSwadeshAnalysisMutation = gql`
       minimum_spanning_tree
       embedding_2d
       embedding_3d
+      perspective_name_list
     }
   }
 `;
@@ -1729,7 +1730,7 @@ class CognateAnalysisModal extends React.Component {
 
   handleResult({
     data: {
-      cognate_analysis: {
+      /*cognate_analysis: {
         dictionary_count,
         group_count,
         not_enough_count,
@@ -1744,10 +1745,17 @@ class CognateAnalysisModal extends React.Component {
         perspective_name_list,
         suggestion_list,
         suggestion_field_id,
-        intermediate_url_list
+        intermediate_url_list*/
+        swadesh_analysis: {
+        minimum_spanning_tree,
+        embedding_2d,
+        embedding_3d,
+        perspective_name_list
       }
     }
   }) {
+    const result = "Success"
+    const suggestion_list = null
     if (result.length > 1048576 && (this.props.mode === "suggestions" || this.props.mode === "multi_suggestions")) {
       result = this.context("Skipping text output, too long.");
     }
