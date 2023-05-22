@@ -202,10 +202,12 @@ const computeSwadeshAnalysisMutation = gql`
       perspective_info_list: $perspectiveInfoList
     ) {
       triumph
+      minimum_spanning_tree
+      embedding_2d
+      embedding_3d
     }
   }
 `;
-
 
 const SUGGESTIONS_PER_PAGE = 50;
 
@@ -2063,14 +2065,8 @@ class CognateAnalysisModal extends React.Component {
           perspectiveInfoList: perspectiveInfoList,
         }
       }).then(
-        () => {
-          window.logger.suc(this.context("Swadesh analysis is launched."));
-
-          this.props.closeModal();
-        },
-        () => {
-          window.logger.err(this.context("Failed to launch swadesh analysis!"));
-        }
+        data => this.handleResult(data),
+        error_data => this.handleError(error_data)
       );
     } else {
       /* Otherwise we will launch it as usual and then will wait for results to display them. */
