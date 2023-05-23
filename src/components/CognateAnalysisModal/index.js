@@ -290,7 +290,6 @@ class SLPerspectiveSelection extends React.Component {
       translationFieldIdStrList
     } = this.props;
 
-    const is_swadesh = (mode === "swadesh" ? true : false)
 
     return (
       <div className="lingvo-cognate-sub-language" key={`perspective${index}`}>
@@ -318,8 +317,8 @@ class SLPerspectiveSelection extends React.Component {
         </div>
         {perspectiveSelectionList[index] && (
           <div className="lingvo-cognate-grid" key="selection">
-            <div className="lingvo-cognate-grid__name" hidden={is_swadesh}>{this.context("Source transcription field")}:</div>
-            <div className="lingvo-cognate-grid__select" hidden={is_swadesh}>
+            <div className="lingvo-cognate-grid__name" hidden={mode === "swadesh"}>{this.context("Source transcription field")}:</div>
+            <div className="lingvo-cognate-grid__select" hidden={mode === "swadesh"}>
               <Select
                 disabled={!perspectiveSelectionList[index]}
                 defaultValue={transcriptionFieldIdStrList[index]}
@@ -2291,10 +2290,9 @@ class CognateAnalysisModal extends React.Component {
    * Additional options for administrator.
    */
   admin_section_render() {
-    const is_swadesh = (this.props.mode === "swadesh" ? true : false)
     return (
       <>
-        <div className="lingvo-cognate-checkbox" hidden={is_swadesh}>
+        <div className="lingvo-cognate-checkbox" hidden={this.props.mode === "swadesh"}>
           <Checkbox
             label={this.context("Debug flag")}
             checked={this.state.debugFlag}
@@ -2304,7 +2302,7 @@ class CognateAnalysisModal extends React.Component {
             className="lingvo-checkbox lingvo-checkbox_labeled"
           />
         </div>
-        <div className="lingvo-cognate-checkbox" hidden={is_swadesh}>
+        <div className="lingvo-cognate-checkbox" hidden={this.props.mode === "swadesh"}>
           <Checkbox
             label={this.context("Save intermediate data")}
             checked={this.state.intermediateFlag}
