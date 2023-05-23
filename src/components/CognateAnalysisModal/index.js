@@ -1923,6 +1923,7 @@ class CognateAnalysisModal extends React.Component {
       embedding_3d,
       perspective_name_list,
       computing: false
+    });
     /*
     this.setState({
       dictionary_count,
