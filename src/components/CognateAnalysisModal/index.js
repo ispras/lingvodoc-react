@@ -1729,33 +1729,13 @@ class CognateAnalysisModal extends React.Component {
   }
 
   handleResult({
-    data: {
-      /*cognate_analysis: {
-        dictionary_count,
-        group_count,
-        not_enough_count,
-        transcription_count,
-        translation_count,
-        result,
-        xlsx_url,
-        figure_url,
-        minimum_spanning_tree,
-        embedding_2d,
-        embedding_3d,
-        perspective_name_list,
-        suggestion_list,
-        suggestion_field_id,
-        intermediate_url_list*/
-      swadesh_analysis: {
-        minimum_spanning_tree,
-        embedding_2d,
-        embedding_3d,
-        perspective_name_list
-      }
-    }
+    minimum_spanning_tree,
+    embedding_2d,
+    embedding_3d,
+    perspective_name_list,
+    result = "Lingvodoc"
   }) {
-    const result = "Success"
-    const suggestion_list = null
+
     if (result.length > 1048576 && (this.props.mode === "suggestions" || this.props.mode === "multi_suggestions")) {
       result = this.context("Skipping text output, too long.");
     }
@@ -1866,6 +1846,99 @@ class CognateAnalysisModal extends React.Component {
       z_range = [z_center - range / 2, z_center + range / 2];
     }
 
+    return {
+      plotly_data: plotly_data,
+      plotly_legend_data: plotly_legend_data,
+      plotly_3d_data: plotly_3d_data,
+      x_range: x_range,
+      y_range: y_range,
+      z_range: z_range,
+      x_span: x_span,
+      y_span: y_span,
+      z_span: z_span
+    }
+  }
+
+  handleSwadeshResult({
+    data: {
+      swadesh_analysis: {
+        minimum_spanning_tree,
+        embedding_2d,
+        embedding_3d,
+        perspective_name_list,
+        result = "Lingvodoc"
+      }
+    }
+  }) {
+
+    /* Calculate plotly data */
+    const {
+      plotly_data,
+      plotly_legend_data,
+      plotly_3d_data,
+      x_range,
+      y_range,
+      z_range,
+      x_span,
+      y_span,
+      z_span
+    } = this.handleResult(data);
+
+    this.setState({
+      library_present: true,
+      result,
+      minimum_spanning_tree,
+      embedding_2d,
+      embedding_3d,
+      perspective_name_list,
+      plotly_data,
+      plotly_legend_data,
+      plotly_3d_data,
+      x_range,
+      y_range,
+      z_range,
+      x_span,
+      y_span,
+      z_span,
+      computing: false
+    });
+  }
+
+  handleCognateResult({
+    data: {
+      cognate_analysis: {
+        dictionary_count,
+        group_count,
+        not_enough_count,
+        transcription_count,
+        translation_count,
+        result,
+        xlsx_url,
+        figure_url,
+        minimum_spanning_tree,
+        embedding_2d,
+        embedding_3d,
+        perspective_name_list,
+        suggestion_list,
+        suggestion_field_id,
+        intermediate_url_list
+      }
+    }
+  }) {
+
+    /* Calculate plotly data */
+    const {
+      plotly_data,
+      plotly_legend_data,
+      plotly_3d_data,
+      x_range,
+      y_range,
+      z_range,
+      x_span,
+      y_span,
+      z_span
+    } = this.handleResult(data);
+
     /* Initializing suggestions data, if required. */
 
     const sg_select_list = [];
@@ -1918,19 +1991,6 @@ class CognateAnalysisModal extends React.Component {
 
     /* Updating state with computed analysis info. */
     this.setState({
-      minimum_spanning_tree,
-      embedding_2d,
-      embedding_3d,
-      perspective_name_list,
-      result,
-      library_present: true,
-      computing: false,
-      plotly_data,
-      //plotly_legend_data, (?)
-      plotly_3d_data
-    });
-    /*
-    this.setState({
       dictionary_count,
       group_count,
       not_enough_count,
@@ -1962,7 +2022,6 @@ class CognateAnalysisModal extends React.Component {
       sg_count,
       sg_entry_map
     });
-    */
   }
 
   handleError(error_data) {
@@ -2086,7 +2145,7 @@ class CognateAnalysisModal extends React.Component {
           perspectiveInfoList: perspectiveInfoList,
         }
       }).then(
-        data => this.handleResult(data),
+        data => this.handleSwadeshResult(data),
         error_data => this.handleError(error_data)
       );
     } else {
@@ -2118,7 +2177,7 @@ class CognateAnalysisModal extends React.Component {
           intermediateFlag: this.state.intermediateFlag
         }
       }).then(
-        data => this.handleResult(data),
+        data => this.handleCognateResult(data),
         error_data => this.handleError(error_data)
       );
     }
