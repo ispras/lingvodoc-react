@@ -1728,9 +1728,9 @@ class CognateAnalysisModal extends React.Component {
     }
   }
 
-  handleResult({
+  setCognateResult({
     data: {
-      /*cognate_analysis: {
+      cognate_analysis: {
         dictionary_count,
         group_count,
         not_enough_count,
@@ -1745,17 +1745,38 @@ class CognateAnalysisModal extends React.Component {
         perspective_name_list,
         suggestion_list,
         suggestion_field_id,
-        intermediate_url_list*/
-      swadesh_analysis: {
-        minimum_spanning_tree,
-        embedding_2d,
-        embedding_3d,
-        perspective_name_list
+        intermediate_url_list
       }
     }
   }) {
-    const result = "Success"
-    const suggestion_list = null
+    this.setState({
+      dictionary_count,
+      group_count,
+      not_enough_count,
+      transcription_count,
+      translation_count,
+      result,
+      xlsx_url,
+      figure_url,
+      minimum_spanning_tree,
+      embedding_2d,
+      embedding_3d,
+      perspective_name_list,
+      suggestion_list,
+      suggestion_field_id,
+      intermediate_url_list
+    });
+  }
+
+  handleResult({
+    minimum_spanning_tree,
+    embedding_2d,
+    embedding_3d,
+    perspective_name_list,
+    result = "Lingvodoc",
+    suggestion_list = null
+  }) {
+
     if (result.length > 1048576 && (this.props.mode === "suggestions" || this.props.mode === "multi_suggestions")) {
       result = this.context("Skipping text output, too long.");
     }
@@ -1918,35 +1939,8 @@ class CognateAnalysisModal extends React.Component {
 
     /* Updating state with computed analysis info. */
     this.setState({
-      minimum_spanning_tree,
-      embedding_2d,
-      embedding_3d,
-      perspective_name_list,
-      result,
       library_present: true,
       computing: false,
-      plotly_data,
-      //plotly_legend_data, (?)
-      plotly_3d_data
-    });
-    /*
-    this.setState({
-      dictionary_count,
-      group_count,
-      not_enough_count,
-      transcription_count,
-      translation_count,
-      library_present: true,
-      result,
-      xlsx_url,
-      figure_url,
-      minimum_spanning_tree,
-      embedding_2d,
-      embedding_3d,
-      perspective_name_list,
-      suggestion_list,
-      suggestion_field_id,
-      intermediate_url_list,
       plotly_data,
       plotly_legend_data,
       plotly_3d_data,
@@ -1956,13 +1950,11 @@ class CognateAnalysisModal extends React.Component {
       x_span,
       y_span,
       z_span,
-      computing: false,
       sg_select_list,
       sg_state_list,
       sg_count,
       sg_entry_map
     });
-    */
   }
 
   handleError(error_data) {
@@ -2086,7 +2078,7 @@ class CognateAnalysisModal extends React.Component {
           perspectiveInfoList: perspectiveInfoList,
         }
       }).then(
-        data => this.handleResult(data),
+        data => this.handleResult(swadesh_analysis),
         error_data => this.handleError(error_data)
       );
     } else {
@@ -2118,7 +2110,8 @@ class CognateAnalysisModal extends React.Component {
           intermediateFlag: this.state.intermediateFlag
         }
       }).then(
-        data => this.handleResult(data),
+        set_state => this.setCognateResult(data),
+        data => this.handleResult(cognate_analysis),
         error_data => this.handleError(error_data)
       );
     }
@@ -2775,34 +2768,34 @@ class CognateAnalysisModal extends React.Component {
                     </div>
                   )}
                 </div>
-              </>)}
 
-              {this.state.result.length <= 0 && (
-                <div className="lingvo-cognate-text" style={{ paddingTop: "6px", paddingBottom: "3px" }}>
-                  {this.context("No data for cognate analysis")}.
-                </div>
-              )}
-
-              {this.state.suggestion_list && (
-                <div>
-                  <div className="lingvo-cognate-header-suggestions">
-                    {this.state.suggestion_list.length} {this.context("suggestions")}:
+                {this.state.result.length <= 0 && (
+                  <div className="lingvo-cognate-text" style={{ paddingTop: "6px", paddingBottom: "3px" }}>
+                    {this.context("No data for cognate analysis")}.
                   </div>
+                )}
 
-                  {this.props.user.id === undefined ? (
-                    <div className="lingvo-message lingvo-message_error">
-                      {this.context("Unauthorized user")}
-                      <p>
-                        {this.context(
-                          "Only authorized users can create new cognate connections based on cognate suggestions."
-                        )}
-                      </p>
+                {this.state.suggestion_list && (
+                  <div>
+                    <div className="lingvo-cognate-header-suggestions">
+                      {this.state.suggestion_list.length} {this.context("suggestions")}:
                     </div>
-                  ) : (
-                    <div>{this.suggestions_render()}</div>
-                  )}
-                </div>
-              )}
+
+                    {this.props.user.id === undefined ? (
+                      <div className="lingvo-message lingvo-message_error">
+                        {this.context("Unauthorized user")}
+                        <p>
+                          {this.context(
+                            "Only authorized users can create new cognate connections based on cognate suggestions."
+                          )}
+                        </p>
+                      </div>
+                    ) : (
+                      <div>{this.suggestions_render()}</div>
+                    )}
+                  </div>
+                )}
+              </>)}
 
               {this.state.plotly_data.length > 0 && (
                 <div className="lingvo-cognate-text">
