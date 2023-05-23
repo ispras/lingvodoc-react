@@ -1746,7 +1746,7 @@ class CognateAnalysisModal extends React.Component {
         suggestion_list,
         suggestion_field_id,
         intermediate_url_list*/
-        swadesh_analysis: {
+      swadesh_analysis: {
         minimum_spanning_tree,
         embedding_2d,
         embedding_3d,
@@ -1917,7 +1917,13 @@ class CognateAnalysisModal extends React.Component {
     }
 
     /* Updating state with computed analysis info. */
-
+    this.setState({
+      minimum_spanning_tree,
+      embedding_2d,
+      embedding_3d,
+      perspective_name_list,
+      computing: false
+    /*
     this.setState({
       dictionary_count,
       group_count,
@@ -1950,6 +1956,7 @@ class CognateAnalysisModal extends React.Component {
       sg_count,
       sg_entry_map
     });
+    */
   }
 
   handleError(error_data) {
