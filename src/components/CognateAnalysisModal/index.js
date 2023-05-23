@@ -1861,6 +1861,7 @@ class CognateAnalysisModal extends React.Component {
 
   handleSwadeshResult({
     data: {
+      swadesh_analysis,
       swadesh_analysis: {
         minimum_spanning_tree,
         embedding_2d,
@@ -1882,7 +1883,7 @@ class CognateAnalysisModal extends React.Component {
       x_span,
       y_span,
       z_span
-    } = this.handleResult(data);
+    } = this.handleResult(swadesh_analysis);
 
     this.setState({
       library_present: true,
@@ -1906,6 +1907,7 @@ class CognateAnalysisModal extends React.Component {
 
   handleCognateResult({
     data: {
+      cognate_analysis,
       cognate_analysis: {
         dictionary_count,
         group_count,
@@ -1937,7 +1939,7 @@ class CognateAnalysisModal extends React.Component {
       x_span,
       y_span,
       z_span
-    } = this.handleResult(data);
+    } = this.handleResult(cognate_analysis);
 
     /* Initializing suggestions data, if required. */
 
