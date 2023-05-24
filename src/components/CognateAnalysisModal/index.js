@@ -1865,7 +1865,6 @@ class CognateAnalysisModal extends React.Component {
       /* Calculate plotly data */
       ...this.handleResult(swadesh_analysis),
       result: "Lingvodoc",
-      library_present: true,
       computing: false
     });
   }
@@ -2699,7 +2698,8 @@ class CognateAnalysisModal extends React.Component {
             />
           </Modal.Actions>
 
-          {this.state.library_present && this.state.result !== null && (
+          {(mode === "swadesh" || this.state.library_present
+            ) && this.state.result !== null && (
             <Modal.Content style={{ maxWidth: "100%", overflowX: "auto" }}>
               {mode !== "swadesh" && (<>
                 <h3 className="lingvo-cognate-header-results">{this.context("Analysis results")}:</h3>
