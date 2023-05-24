@@ -1846,33 +1846,6 @@ class CognateAnalysisModal extends React.Component {
     }
 
     return {
-      plotly_data: plotly_data,
-      plotly_legend_data: plotly_legend_data,
-      plotly_3d_data: plotly_3d_data,
-      x_range: x_range,
-      y_range: y_range,
-      z_range: z_range,
-      x_span: x_span,
-      y_span: y_span,
-      z_span: z_span
-    }
-  }
-
-  handleSwadeshResult({
-    data: {
-      swadesh_analysis,
-      swadesh_analysis: {
-        minimum_spanning_tree,
-        embedding_2d,
-        embedding_3d,
-        perspective_name_list,
-        result = "Lingvodoc"
-      }
-    }
-  }) {
-
-    /* Calculate plotly data */
-    const {
       plotly_data,
       plotly_legend_data,
       plotly_3d_data,
@@ -1882,64 +1855,23 @@ class CognateAnalysisModal extends React.Component {
       x_span,
       y_span,
       z_span
-    } = this.handleResult(swadesh_analysis);
+    }
+  }
 
+  handleSwadeshResult({ data: { swadesh_analysis }})
+  {
     this.setState({
+      ...swadesh_analysis,
+      /* Calculate plotly data */
+      ...this.handleResult(swadesh_analysis),
+      result: "Lingvodoc",
       library_present: true,
-      result,
-      minimum_spanning_tree,
-      embedding_2d,
-      embedding_3d,
-      perspective_name_list,
-      plotly_data,
-      plotly_legend_data,
-      plotly_3d_data,
-      x_range,
-      y_range,
-      z_range,
-      x_span,
-      y_span,
-      z_span,
       computing: false
     });
   }
 
-  handleCognateResult({
-    data: {
-      cognate_analysis,
-      cognate_analysis: {
-        dictionary_count,
-        group_count,
-        not_enough_count,
-        transcription_count,
-        translation_count,
-        result,
-        xlsx_url,
-        figure_url,
-        minimum_spanning_tree,
-        embedding_2d,
-        embedding_3d,
-        perspective_name_list,
-        suggestion_list,
-        suggestion_field_id,
-        intermediate_url_list
-      }
-    }
-  }) {
-
-    /* Calculate plotly data */
-    const {
-      plotly_data,
-      plotly_legend_data,
-      plotly_3d_data,
-      x_range,
-      y_range,
-      z_range,
-      x_span,
-      y_span,
-      z_span
-    } = this.handleResult(cognate_analysis);
-
+  handleCognateResult({ data: { cognate_analysis }})
+  {
     /* Initializing suggestions data, if required. */
 
     const sg_select_list = [];
@@ -1955,7 +1887,7 @@ class CognateAnalysisModal extends React.Component {
 
     const sg_entry_map = {};
 
-    if (suggestion_list) {
+    if (cognate_analysis.suggestion_list) {
       for (var i = 0; i < suggestion_list.length; i++) {
         const [perspective_index, word, word_entry_id, word_group, single_list, group_list] = suggestion_list[i];
 
@@ -1992,31 +1924,10 @@ class CognateAnalysisModal extends React.Component {
 
     /* Updating state with computed analysis info. */
     this.setState({
-      dictionary_count,
-      group_count,
-      not_enough_count,
-      transcription_count,
-      translation_count,
+      ...cognate_analysis,
+       /* Calculate plotly data */
+      ...this.handleResult(cognate_analysis),
       library_present: true,
-      result,
-      xlsx_url,
-      figure_url,
-      minimum_spanning_tree,
-      embedding_2d,
-      embedding_3d,
-      perspective_name_list,
-      suggestion_list,
-      suggestion_field_id,
-      intermediate_url_list,
-      plotly_data,
-      plotly_legend_data,
-      plotly_3d_data,
-      x_range,
-      y_range,
-      z_range,
-      x_span,
-      y_span,
-      z_span,
       computing: false,
       sg_select_list,
       sg_state_list,
