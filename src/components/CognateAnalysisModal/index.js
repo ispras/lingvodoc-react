@@ -1873,7 +1873,7 @@ class CognateAnalysisModal extends React.Component {
   handleCognateResult({ data: { cognate_analysis }})
   {
     /* Initializing suggestions data, if required. */
-
+    const {suggestion_list} = cognate_analysis
     const sg_select_list = [];
     const sg_state_list = [];
 
@@ -1887,8 +1887,8 @@ class CognateAnalysisModal extends React.Component {
 
     const sg_entry_map = {};
 
-    if (cognate_analysis.suggestion_list) {
-      for (var i = 0; i < cognate_analysis.suggestion_list.length; i++) {
+    if (suggestion_list) {
+      for (var i = 0; i < suggestion_list.length; i++) {
         const [perspective_index, word, word_entry_id, word_group, single_list, group_list] = suggestion_list[i];
 
         const sg_select_item = {};
