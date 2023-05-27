@@ -202,6 +202,7 @@ const computeSwadeshAnalysisMutation = gql`
       perspective_info_list: $perspectiveInfoList
     ) {
       triumph
+      result
       minimum_spanning_tree
       embedding_2d
       embedding_3d
@@ -1864,7 +1865,6 @@ class CognateAnalysisModal extends React.Component {
       ...swadesh_analysis,
       /* Calculate plotly data */
       ...this.handleResult(swadesh_analysis),
-      result: "Lingvodoc",
       computing: false
     });
   }
