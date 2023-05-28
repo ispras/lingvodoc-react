@@ -2966,7 +2966,7 @@ class CognateAnalysisModal extends React.Component {
                 </div>
               )}
               <div>
-                <pre>{this.state.result}</pre>
+                {mode !== "swadesh" ? <pre>}{this.state.result}{mode !== "swadesh" ? </pre>}
               </div>
             </Modal.Content>
           )}
