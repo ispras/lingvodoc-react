@@ -2674,7 +2674,7 @@ class CognateAnalysisModal extends React.Component {
               : mode === "suggestions"
               ? this.context("Cognate suggestions")
               : mode === "swadesh"
-              ? this.context("Swadesh analysis")
+              ? this.context("Glottochronology")
               : this.context("Cognate analysis")}
           </Modal.Header>
 
