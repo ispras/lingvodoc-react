@@ -943,7 +943,7 @@ const Tools = ({
           {(user_id === 1 || user_id === author_id || edit_check) && (
             <>
               <Dropdown.Item onClick={() => openCognateAnalysisModal(id, "swadesh")}>
-                {getTranslation("Swadesh analysis")}
+                {getTranslation("Glottochronology")}
               </Dropdown.Item>
 
               <Dropdown.Item onClick={() => openCognateAnalysisModal(id, "acoustic")}>

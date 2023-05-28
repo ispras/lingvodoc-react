@@ -318,12 +318,19 @@ class SLPerspectiveSelection extends React.Component {
         </div>
         {perspectiveSelectionList[index] && (
           <div className="lingvo-cognate-grid" key="selection">
-            <div className="lingvo-cognate-grid__name" hidden={mode === "swadesh"}>{this.context("Source transcription field")}:</div>
-            <div className="lingvo-cognate-grid__select" hidden={mode === "swadesh"}>
+            <div className="lingvo-cognate-grid__name">
+              {this.context(mode !== "swadesh"
+                            ? "Source transcription field"
+                            : "Source word field"
+              )}:
+            </div>
+            <div className="lingvo-cognate-grid__select">
               <Select
                 disabled={!perspectiveSelectionList[index]}
                 defaultValue={transcriptionFieldIdStrList[index]}
-                placeholder={this.context("Source transcription field selection")}
+                placeholder={this.context(mode !== "swadesh"
+                                          ? "Source transcription field selection"
+                                          : "Source word field selection")}
                 options={textFieldsOptions}
                 onChange={(e, { value }) => {
                   transcriptionFieldIdStrList[index] = value;
