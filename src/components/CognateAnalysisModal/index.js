@@ -1628,7 +1628,15 @@ class CognateAnalysisModal extends React.Component {
       for (const field of textFields) {
         const check_str = field.english_translation.toLowerCase();
 
-        if (!transcriptionFieldIdStr && check_str.includes("transcription")) {
+        if (!transcriptionFieldIdStr &&
+            this.props.mode !== "swadesh" &&
+            check_str.includes("transcription")) {
+          transcriptionFieldIdStr = id2str(field.id);
+        }
+
+        if (!transcriptionFieldIdStr &&
+            this.props.mode === "swadesh" &&
+            check_str.includes("word")) {
           transcriptionFieldIdStr = id2str(field.id);
         }
 
@@ -2969,7 +2977,7 @@ class CognateAnalysisModal extends React.Component {
                 {mode !== "swadesh" && (
                   <pre>{this.state.result}</pre>
                 ) || (
-                  <>{this.state.result}</>
+                  <div dangerouslySetInnerHTML={{ __html: this.state.result }} />
                 )}
               </div>
             </Modal.Content>
