@@ -203,6 +203,7 @@ const computeSwadeshAnalysisMutation = gql`
     ) {
       triumph
       result
+      xlsx_url
       minimum_spanning_tree
       embedding_2d
       embedding_3d
@@ -2732,35 +2733,35 @@ class CognateAnalysisModal extends React.Component {
                     <div className="lingvo-cognate-results__number">{this.state.transcription_count}</div>
                     <div className="lingvo-cognate-results__text">{this.context("transcriptions analysed")}</div>
                   </div>
-                </div>
 
-                <div>
                   <div className="lingvo-cognate-text" style={{ paddingTop: "6px", paddingBottom: "3px" }}>
                     {`${this.state.not_enough_count} ${this.context(
                       "cognate groups were excluded from the analysis due to not having lexical entries in at least two selected dictionaries"
                     )}.`}
                   </div>
-
-                  {this.state.result.length > 0 && mode !== "suggestions" && mode !== "multi_suggestions" && (
-                    <div className="lingvo-cognate-text" style={{ paddingTop: "6px", paddingBottom: "3px" }}>
-                      <a href={this.state.xlsx_url}>{this.context("XLSX-exported analysis results")}</a>
-                    </div>
-                  )}
-
-                  {this.state.result.length > 0 && this.state.intermediate_url_list && (
-                    <div className="lingvo-cognate-text">
-                      <span className="lingvo-cognate-text__title">{this.context("Intermediate data")}:</span>
-                      <div className="lingvo-cognate-text__list">
-                        {map(this.state.intermediate_url_list, intermediate_url => (
-                          <div className="lingvo-cognate-text__item" key={intermediate_url}>
-                            <a href={intermediate_url}>{intermediate_url}</a>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
                 </div>
               </>)}
+
+              <div className="lingvo-cognate-results">
+                {this.state.result.length > 0 && mode !== "suggestions" && mode !== "multi_suggestions" && (
+                  <div className="lingvo-cognate-text" style={{ paddingTop: "6px", paddingBottom: "3px" }}>
+                    <a href={this.state.xlsx_url}>{this.context("XLSX-exported analysis results")}</a>
+                  </div>
+                )}
+
+                {this.state.result.length > 0 && this.state.intermediate_url_list && (
+                  <div className="lingvo-cognate-text">
+                    <span className="lingvo-cognate-text__title">{this.context("Intermediate data")}:</span>
+                    <div className="lingvo-cognate-text__list">
+                      {map(this.state.intermediate_url_list, intermediate_url => (
+                        <div className="lingvo-cognate-text__item" key={intermediate_url}>
+                          <a href={intermediate_url}>{intermediate_url}</a>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
 
               {this.state.result.length <= 0 && (
                 <div className="lingvo-cognate-text" style={{ paddingTop: "6px", paddingBottom: "3px" }}>
