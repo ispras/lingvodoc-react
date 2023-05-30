@@ -320,18 +320,13 @@ class SLPerspectiveSelection extends React.Component {
         {perspectiveSelectionList[index] && (
           <div className="lingvo-cognate-grid" key="selection">
             <div className="lingvo-cognate-grid__name">
-              {this.context(mode !== "swadesh"
-                            ? "Source transcription field"
-                            : "Source word field"
-              )}:
+              {this.context("Source transcription field")}:
             </div>
             <div className="lingvo-cognate-grid__select">
               <Select
                 disabled={!perspectiveSelectionList[index]}
                 defaultValue={transcriptionFieldIdStrList[index]}
-                placeholder={this.context(mode !== "swadesh"
-                                          ? "Source transcription field selection"
-                                          : "Source word field selection")}
+                placeholder={this.context("Source transcription field selection")}
                 options={textFieldsOptions}
                 onChange={(e, { value }) => {
                   transcriptionFieldIdStrList[index] = value;
@@ -1636,15 +1631,7 @@ class CognateAnalysisModal extends React.Component {
       for (const field of textFields) {
         const check_str = field.english_translation.toLowerCase();
 
-        if (!transcriptionFieldIdStr &&
-            this.props.mode !== "swadesh" &&
-            check_str.includes("transcription")) {
-          transcriptionFieldIdStr = id2str(field.id);
-        }
-
-        if (!transcriptionFieldIdStr &&
-            this.props.mode === "swadesh" &&
-            check_str.includes("word")) {
+        if (!transcriptionFieldIdStr && check_str.includes("transcription")) {
           transcriptionFieldIdStr = id2str(field.id);
         }
 
