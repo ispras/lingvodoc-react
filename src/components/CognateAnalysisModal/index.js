@@ -188,6 +188,30 @@ const computeCognateAnalysisMutation = gql`
   }
 `;
 
+const computeSwadeshAnalysisMutation = gql`
+  mutation computeSwadeshAnalysis(
+    $sourcePerspectiveId: LingvodocID!
+    $baseLanguageId: LingvodocID!
+    $groupFieldId: LingvodocID!
+    $perspectiveInfoList: [[LingvodocID]]!
+  ) {
+    swadesh_analysis(
+      source_perspective_id: $sourcePerspectiveId
+      base_language_id: $baseLanguageId
+      group_field_id: $groupFieldId
+      perspective_info_list: $perspectiveInfoList
+    ) {
+      triumph
+      result
+      xlsx_url
+      minimum_spanning_tree
+      embedding_2d
+      embedding_3d
+      perspective_name_list
+    }
+  }
+`;
+
 const SUGGESTIONS_PER_PAGE = 50;
 
 function equalIds(id_a, id_b) {
@@ -258,6 +282,7 @@ class SLPerspectiveSelection extends React.Component {
 
   render() {
     const {
+      mode,
       treePathList,
       perspective,
       textFieldsOptions,
@@ -266,6 +291,7 @@ class SLPerspectiveSelection extends React.Component {
       transcriptionFieldIdStrList,
       translationFieldIdStrList
     } = this.props;
+
 
     return (
       <div className="lingvo-cognate-sub-language" key={`perspective${index}`}>
@@ -293,7 +319,9 @@ class SLPerspectiveSelection extends React.Component {
         </div>
         {perspectiveSelectionList[index] && (
           <div className="lingvo-cognate-grid" key="selection">
-            <div className="lingvo-cognate-grid__name">{this.context("Source transcription field")}:</div>
+            <div className="lingvo-cognate-grid__name">
+              {this.context("Source transcription field")}:
+            </div>
             <div className="lingvo-cognate-grid__select">
               <Select
                 disabled={!perspectiveSelectionList[index]}
@@ -343,6 +371,7 @@ class SLSelection extends React.Component {
 
   render() {
     const {
+      mode,
       perspective_list,
       perspectiveSelectionList,
       transcriptionFieldIdStrList,
@@ -395,6 +424,7 @@ class SLSelection extends React.Component {
             // Not so good hack in the name of performance,
             // we just give our state to be modified in the child compoment.
             <SLPerspectiveSelection
+              mode={mode}
               key={`perspective${index}`}
               treePathList={treePathList}
               perspective={perspective}
@@ -1702,26 +1732,13 @@ class CognateAnalysisModal extends React.Component {
   }
 
   handleResult({
-    data: {
-      cognate_analysis: {
-        dictionary_count,
-        group_count,
-        not_enough_count,
-        transcription_count,
-        translation_count,
-        result,
-        xlsx_url,
-        figure_url,
-        minimum_spanning_tree,
-        embedding_2d,
-        embedding_3d,
-        perspective_name_list,
-        suggestion_list,
-        suggestion_field_id,
-        intermediate_url_list
-      }
-    }
+    minimum_spanning_tree,
+    embedding_2d,
+    embedding_3d,
+    perspective_name_list,
+    result = "Lingvodoc"
   }) {
+
     if (result.length > 1048576 && (this.props.mode === "suggestions" || this.props.mode === "multi_suggestions")) {
       result = this.context("Skipping text output, too long.");
     }
@@ -1832,8 +1849,33 @@ class CognateAnalysisModal extends React.Component {
       z_range = [z_center - range / 2, z_center + range / 2];
     }
 
-    /* Initializing suggestions data, if required. */
+    return {
+      plotly_data,
+      plotly_legend_data,
+      plotly_3d_data,
+      x_range,
+      y_range,
+      z_range,
+      x_span,
+      y_span,
+      z_span
+    }
+  }
 
+  handleSwadeshResult({ data: { swadesh_analysis }})
+  {
+    this.setState({
+      ...swadesh_analysis,
+      /* Calculate plotly data */
+      ...this.handleResult(swadesh_analysis),
+      computing: false
+    });
+  }
+
+  handleCognateResult({ data: { cognate_analysis }})
+  {
+    /* Initializing suggestions data, if required. */
+    const {suggestion_list} = cognate_analysis
     const sg_select_list = [];
     const sg_state_list = [];
 
@@ -1883,33 +1925,11 @@ class CognateAnalysisModal extends React.Component {
     }
 
     /* Updating state with computed analysis info. */
-
     this.setState({
-      dictionary_count,
-      group_count,
-      not_enough_count,
-      transcription_count,
-      translation_count,
+      ...cognate_analysis,
+       /* Calculate plotly data */
+      ...this.handleResult(cognate_analysis),
       library_present: true,
-      result,
-      xlsx_url,
-      figure_url,
-      minimum_spanning_tree,
-      embedding_2d,
-      embedding_3d,
-      perspective_name_list,
-      suggestion_list,
-      suggestion_field_id,
-      intermediate_url_list,
-      plotly_data,
-      plotly_legend_data,
-      plotly_3d_data,
-      x_range,
-      y_range,
-      z_range,
-      x_span,
-      y_span,
-      z_span,
       computing: false,
       sg_select_list,
       sg_state_list,
@@ -1950,7 +1970,7 @@ class CognateAnalysisModal extends React.Component {
   }
 
   handleCreate() {
-    const { perspectiveId, computeCognateAnalysis } = this.props;
+    const { perspectiveId, computeCognateAnalysis, computeSwadeshAnalysis } = this.props;
 
     const groupField = this.fieldDict[this.state.groupFieldIdStr];
 
@@ -2029,6 +2049,19 @@ class CognateAnalysisModal extends React.Component {
           window.logger.err(this.context("Failed to launch cognate acoustic analysis!"));
         }
       );
+    } else if (this.props.mode === "swadesh") {
+      this.setState({ computing: true });
+      computeSwadeshAnalysis({
+        variables: {
+          sourcePerspectiveId: perspectiveId,
+          baseLanguageId: this.baseLanguageId,
+          groupFieldId: groupField.id,
+          perspectiveInfoList: perspectiveInfoList,
+        }
+      }).then(
+        data => this.handleSwadeshResult(data),
+        error_data => this.handleError(error_data)
+      );
     } else {
       /* Otherwise we will launch it as usual and then will wait for results to display them. */
       this.setState({
@@ -2058,7 +2091,7 @@ class CognateAnalysisModal extends React.Component {
           intermediateFlag: this.state.intermediateFlag
         }
       }).then(
-        data => this.handleResult(data),
+        data => this.handleCognateResult(data),
         error_data => this.handleError(error_data)
       );
     }
@@ -2172,7 +2205,7 @@ class CognateAnalysisModal extends React.Component {
   admin_section_render() {
     return (
       <>
-        <div className="lingvo-cognate-checkbox">
+        <div className="lingvo-cognate-checkbox" hidden={this.props.mode === "swadesh"}>
           <Checkbox
             label={this.context("Debug flag")}
             checked={this.state.debugFlag}
@@ -2182,7 +2215,7 @@ class CognateAnalysisModal extends React.Component {
             className="lingvo-checkbox lingvo-checkbox_labeled"
           />
         </div>
-        <div className="lingvo-cognate-checkbox">
+        <div className="lingvo-cognate-checkbox" hidden={this.props.mode === "swadesh"}>
           <Checkbox
             label={this.context("Save intermediate data")}
             checked={this.state.intermediateFlag}
@@ -2245,6 +2278,7 @@ class CognateAnalysisModal extends React.Component {
         <div>
           {this.perspective_list.length > 1 && (
             <SLSelection
+              mode={this.props.mode}
               perspective_list={this.perspective_list}
               perspectiveSelectionList={this.state.perspectiveSelectionList}
               transcriptionFieldIdStrList={this.state.transcriptionFieldIdStrList}
@@ -2627,6 +2661,8 @@ class CognateAnalysisModal extends React.Component {
               ? this.context("Cognate reconstruction")
               : mode === "suggestions"
               ? this.context("Cognate suggestions")
+              : mode === "swadesh"
+              ? this.context("Glottochronology")
               : this.context("Cognate analysis")}
           </Modal.Header>
 
@@ -2665,32 +2701,35 @@ class CognateAnalysisModal extends React.Component {
             />
           </Modal.Actions>
 
-          {this.state.library_present && this.state.result !== null && (
+          {(mode === "swadesh" || this.state.library_present
+            ) && this.state.result !== null && (
             <Modal.Content style={{ maxWidth: "100%", overflowX: "auto" }}>
-              <h3 className="lingvo-cognate-header-results">{this.context("Analysis results")}:</h3>
+              {mode !== "swadesh" && (<>
+                <h3 className="lingvo-cognate-header-results">{this.context("Analysis results")}:</h3>
+
+                <div className="lingvo-cognate-results">
+                  <div className="lingvo-cognate-results__item">
+                    <div className="lingvo-cognate-results__number">{this.state.dictionary_count}</div>
+                    <div className="lingvo-cognate-results__text">{this.context("dictionaries")}</div>
+                  </div>
+                  <div className="lingvo-cognate-results__item">
+                    <div className="lingvo-cognate-results__number">{this.state.group_count}</div>
+                    <div className="lingvo-cognate-results__text">{this.context("cognate groups")}</div>
+                  </div>
+                  <div className="lingvo-cognate-results__item">
+                    <div className="lingvo-cognate-results__number">{this.state.transcription_count}</div>
+                    <div className="lingvo-cognate-results__text">{this.context("transcriptions analysed")}</div>
+                  </div>
+
+                  <div className="lingvo-cognate-text" style={{ paddingTop: "6px", paddingBottom: "3px" }}>
+                    {`${this.state.not_enough_count} ${this.context(
+                      "cognate groups were excluded from the analysis due to not having lexical entries in at least two selected dictionaries"
+                    )}.`}
+                  </div>
+                </div>
+              </>)}
 
               <div className="lingvo-cognate-results">
-                <div className="lingvo-cognate-results__item">
-                  <div className="lingvo-cognate-results__number">{this.state.dictionary_count}</div>
-                  <div className="lingvo-cognate-results__text">{this.context("dictionaries")}</div>
-                </div>
-                <div className="lingvo-cognate-results__item">
-                  <div className="lingvo-cognate-results__number">{this.state.group_count}</div>
-                  <div className="lingvo-cognate-results__text">{this.context("cognate groups")}</div>
-                </div>
-                <div className="lingvo-cognate-results__item">
-                  <div className="lingvo-cognate-results__number">{this.state.transcription_count}</div>
-                  <div className="lingvo-cognate-results__text">{this.context("transcriptions analysed")}</div>
-                </div>
-              </div>
-
-              <div>
-                <div className="lingvo-cognate-text" style={{ paddingTop: "6px", paddingBottom: "3px" }}>
-                  {`${this.state.not_enough_count} ${this.context(
-                    "cognate groups were excluded from the analysis due to not having lexical entries in at least two selected dictionaries"
-                  )}.`}
-                </div>
-
                 {this.state.result.length > 0 && mode !== "suggestions" && mode !== "multi_suggestions" && (
                   <div className="lingvo-cognate-text" style={{ paddingTop: "6px", paddingBottom: "3px" }}>
                     <a href={this.state.xlsx_url}>{this.context("XLSX-exported analysis results")}</a>
@@ -2929,9 +2968,11 @@ class CognateAnalysisModal extends React.Component {
                   </div>
                 </div>
               )}
-              <div>
-                <pre>{this.state.result}</pre>
-              </div>
+              {mode !== "swadesh" && (
+                <div><pre>{this.state.result}</pre></div>
+              ) || (
+                <div dangerouslySetInnerHTML={{ __html: this.state.result }}></div>
+              )}
             </Modal.Content>
           )}
         </Modal>
@@ -2945,7 +2986,8 @@ CognateAnalysisModal.contextType = TranslationContext;
 CognateAnalysisModal.propTypes = {
   perspectiveId: PropTypes.array.isRequired,
   closeModal: PropTypes.func.isRequired,
-  computeCognateAnalysis: PropTypes.func.isRequired
+  computeCognateAnalysis: PropTypes.func.isRequired,
+  computeSwadeshAnalysis: PropTypes.func.isRequired
 };
 
 export default compose(
@@ -2956,6 +2998,7 @@ export default compose(
   connect(state => state.user),
   branch(({ visible }) => !visible, renderNothing),
   graphql(computeCognateAnalysisMutation, { name: "computeCognateAnalysis" }),
+  graphql(computeSwadeshAnalysisMutation, { name: "computeSwadeshAnalysis" }),
   graphql(connectMutation, { name: "connectGroup" }),
   withApollo
 )(CognateAnalysisModal);
