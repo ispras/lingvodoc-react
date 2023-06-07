@@ -1269,7 +1269,8 @@ class CognateAnalysisModal extends React.Component {
     const multi =
       this.props.mode === "multi_analysis" ||
       this.props.mode === "multi_reconstruction" ||
-      this.props.mode === "multi_suggestions";
+      this.props.mode === "multi_suggestions" ||
+      this.props.mode === "multi_swadesh";
 
     (multi ? this.initialize_multi : this.initialize_single)();
   }
@@ -1682,7 +1683,8 @@ class CognateAnalysisModal extends React.Component {
     if (
       this.props.mode === "multi_analysis" ||
       this.props.mode === "multi_reconstruction" ||
-      this.props.mode === "multi_suggestions"
+      this.props.mode === "multi_suggestions" ||
+      this.props.mode === "multi_swadesh"
     ) {
       this.state.groupFieldIdStr = value;
 
@@ -1982,7 +1984,8 @@ class CognateAnalysisModal extends React.Component {
     if (
       this.props.mode === "multi_analysis" ||
       this.props.mode === "multi_reconstruction" ||
-      this.props.mode === "multi_suggestions"
+      this.props.mode === "multi_suggestions" ||
+      this.props.mode === "multi_swadesh"
     ) {
       for (const language of this.state.language_list) {
         let p_count = 0;
@@ -2062,6 +2065,19 @@ class CognateAnalysisModal extends React.Component {
         data => this.handleSwadeshResult(data),
         error_data => this.handleError(error_data)
       );
+    } else if (this.props.mode === "multi_swadesh") {
+      this.setState({ computing: true });
+      computeSwadeshAnalysis({
+        variables: {
+          sourcePerspectiveId: perspectiveId,
+          baseLanguageId: this.baseLanguageId,
+          groupFieldId: groupField.id,
+          perspectiveInfoList: perspectiveInfoList,
+        }
+      }).then(
+        data => this.handleSwadeshResult(data),
+        error_data => this.handleError(error_data)
+      );
     } else {
       /* Otherwise we will launch it as usual and then will wait for results to display them. */
       this.setState({
@@ -2069,7 +2085,7 @@ class CognateAnalysisModal extends React.Component {
       });
 
       const backend_mode =
-        this.props.mode === "multi_analysis"
+          this.props.mode === "multi_analysis"
           ? ""
           : this.props.mode === "multi_reconstruction"
           ? "multi"
@@ -2205,7 +2221,7 @@ class CognateAnalysisModal extends React.Component {
   admin_section_render() {
     return (
       <>
-        <div className="lingvo-cognate-checkbox" hidden={this.props.mode === "swadesh"}>
+        <div className="lingvo-cognate-checkbox" hidden={/swadesh$/.test(this.props.mode)}>
           <Checkbox
             label={this.context("Debug flag")}
             checked={this.state.debugFlag}
@@ -2215,7 +2231,7 @@ class CognateAnalysisModal extends React.Component {
             className="lingvo-checkbox lingvo-checkbox_labeled"
           />
         </div>
-        <div className="lingvo-cognate-checkbox" hidden={this.props.mode === "swadesh"}>
+        <div className="lingvo-cognate-checkbox" hidden={/swadesh$/.test(this.props.mode)}>
           <Checkbox
             label={this.context("Save intermediate data")}
             checked={this.state.intermediateFlag}
@@ -2641,7 +2657,11 @@ class CognateAnalysisModal extends React.Component {
 
     const { mode } = this.props;
 
-    const multi = mode === "multi_analysis" || mode === "multi_reconstruction" || mode === "multi_suggestions";
+    const multi =
+      mode === "multi_analysis" ||
+      mode === "multi_reconstruction" ||
+      mode === "multi_suggestions" ||
+      mode === "multi_swadesh";
 
     const { language_list, perspectiveSelectionCountMap } = this.state;
 
@@ -2663,6 +2683,8 @@ class CognateAnalysisModal extends React.Component {
               ? this.context("Cognate suggestions")
               : mode === "swadesh"
               ? this.context("Glottochronology")
+              : mode === "multi_swadesh"
+              ? this.context("Glottochronology multi-language")
               : this.context("Cognate analysis")}
           </Modal.Header>
 
@@ -2701,10 +2723,10 @@ class CognateAnalysisModal extends React.Component {
             />
           </Modal.Actions>
 
-          {(mode === "swadesh" || this.state.library_present
+          {(/swadesh$/.test(mode) || this.state.library_present
             ) && this.state.result !== null && (
             <Modal.Content style={{ maxWidth: "100%", overflowX: "auto" }}>
-              {mode !== "swadesh" && (<>
+              {! /swadesh$/.test(mode) && (<>
                 <h3 className="lingvo-cognate-header-results">{this.context("Analysis results")}:</h3>
 
                 <div className="lingvo-cognate-results">
@@ -2968,7 +2990,7 @@ class CognateAnalysisModal extends React.Component {
                   </div>
                 </div>
               )}
-              {mode !== "swadesh" && (
+              {! /swadesh$/.test(mode) && (
                 <div><pre>{this.state.result}</pre></div>
               ) || (
                 <div dangerouslySetInnerHTML={{ __html: this.state.result }}></div>
