@@ -942,10 +942,6 @@ const Tools = ({
         <Dropdown.Menu>
           {(user_id === 1 || user_id === author_id || edit_check) && (
             <>
-              <Dropdown.Item onClick={() => openCognateAnalysisModal(id, "swadesh")}>
-                {getTranslation("Glottochronology")}
-              </Dropdown.Item>
-
               <Dropdown.Item onClick={() => openCognateAnalysisModal(id, "acoustic")}>
                 {getTranslation("Cognate acoustic analysis")}
               </Dropdown.Item>
@@ -978,6 +974,14 @@ const Tools = ({
                 {getTranslation(
                   published ? "Cognate suggestions" : "Cognate suggestions (disabled, perspective is not published)"
                 )}
+              </Dropdown.Item>
+
+              <Dropdown.Item onClick={() => openCognateAnalysisModal(id, "swadesh")}>
+                {getTranslation("Glottochronology")}
+              </Dropdown.Item>
+
+              <Dropdown.Item onClick={() => openCognateAnalysisModal(id, "multi_swadesh")}>
+                {getTranslation("Glottochronology multi-language")}
               </Dropdown.Item>
             </>
           )}
