@@ -225,11 +225,11 @@ class EditAtoms extends React.Component {
     };
   }
 
-  createAtom(atom) {
+  createAtom(atom, gistId) {
     return {
       mutation: createAtomMutation,
       variables: {
-        parent_id: this.state.gistId,
+        parent_id: gistId || this.state.gistId,
         locale_id: atom.locale_id,
         content: atom.content
       }
@@ -246,7 +246,7 @@ class EditAtoms extends React.Component {
   }
 
   executeSequence(mutations, newAtoms) {
-    if (mutations.length == 0) {
+    if (!mutations.length) {
       this.initialState = { atoms: newAtoms };
       this.setState({ atoms: newAtoms });
       return;
@@ -267,7 +267,7 @@ class EditAtoms extends React.Component {
     });
   }
 
-  atomActions() {
+  atomActions(gistId) {
     const { atoms } = this.initialState;
     const { atoms: newAtoms } = this.state;
 
@@ -279,7 +279,7 @@ class EditAtoms extends React.Component {
           mutations.push(this.updateAtom(oldItem.id, newAtom));
         }
       } else {
-        mutations.push(this.createAtom(newAtom));
+        mutations.push(this.createAtom(newAtom, gistId));
       }
     });
     atoms.forEach(oldItem => {
@@ -288,7 +288,7 @@ class EditAtoms extends React.Component {
         mutations.push(this.deleteAtom(oldItem));
       }
     });
-    if (mutations.length != 0) {
+    if (mutations.length) {
       this.executeSequence(mutations, JSON.parse(JSON.stringify(newAtoms)));
     }
   }
@@ -297,15 +297,14 @@ class EditAtoms extends React.Component {
     if (this.state.newGist) {
       const mutationsGist = [];
       mutationsGist.push(this.createTranslationGist());
-      if (mutationsGist.length != 0) {
+      if (mutationsGist.length) {
         const that = this;
         this.props.client.mutate(mutationsGist.shift()).then(result => {
           const idGist = result.data.create_translationgist.translationgist.id;
 
           /* idGist for method "createAtom" */
           that.setState({ newGist: false, gistId: idGist });
-
-          that.atomActions();
+          that.atomActions(idGist);
         });
       }
     } else {
