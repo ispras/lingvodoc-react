@@ -1,6 +1,12 @@
 import { gql } from "@apollo/client";
 
 // Queries
+export const fillLogsQuery = gql`
+  query fillLogs($worker: Int) {
+    fill_logs(worker: $worker)
+  }
+`;
+
 export const dictionariesInfoQuery = gql`
   query getAllDictionaries {
     dictionaries(mode: 1) {
