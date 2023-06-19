@@ -361,6 +361,8 @@ export const stringsToTranslate = [
   "Genus",
   "Get link to search results",
   "Getting link to search results",
+  "Glottochronology",
+  "Glottochronology multi-language",
   "Go",
   "Go to page",
   "Grammar",
