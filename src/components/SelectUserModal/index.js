@@ -1,36 +1,35 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 import { Button, Container, Dropdown, Icon, Message, Radio, Table } from "semantic-ui-react";
-import { gql } from "@apollo/client";
+import { gql, useQuery } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
 import { filter, find, some, union, uniq, without } from "lodash";
 import PropTypes from "prop-types";
 import { compose, onlyUpdateForKeys } from "recompose";
+import { queryUsers } from "components/BanModal";
 
 import TranslationContext from "Layout/TranslationContext";
 
-class SelectUserModal extends React.Component {
-  constructor(props) {
-    super(props);
-  }
+const SelectUserModal = ({}) => {
 
-  render() {
-    const { mode, data, user } = this.props;
+    const { users: allUsers } = useQuery(queryUsers);
+    console.log("Users: ", allUsers);
 
+    const [ selectedUser, setSelectedUser ] = useState(null);
+
+    /*
     if (data.error) {
       return (
         <Message negative compact>
-          {this.context("Role data loading error, please contact adiministrators.")}
+          {useContext("Role data loading error, please contact adiministrators.")}
         </Message>
       );
     } else if (data.loading) {
       return (
         <span>
-          {this.context("Loading role data")}... <Icon name="spinner" loading />
+          {useContext("Loading role data")}... <Icon name="spinner" loading />
         </span>
       );
     }
-
-    const { selectedUser } = this.state;
 
     const currentUser = user;
 
@@ -61,7 +60,9 @@ class SelectUserModal extends React.Component {
     const users = uniq(union(...permissions.map(p => p.users))).sort((user1, user2) =>
       user1.name.localeCompare(user2.name)
     );
-    const userOptions = without(allUsers, ...users)
+    */
+
+    const userOptions = allUsers
       .map(u => ({
         key: u.id,
         value: u.id,
@@ -73,69 +74,26 @@ class SelectUserModal extends React.Component {
       <Container>
         <Dropdown
           key={selectedUser}
-          placeholder={this.context("Select user")}
+          placeholder={useContext("Select user")}
           search
           selection
           options={userOptions}
           selectOnBlur={false}
           value={selectedUser}
-          onChange={(e, d) => this.setState({ selectedUser: d.value })}
+          onChange={(e, d) => setSelectedUser(d.value)}
           className="lingvo-roles-dropdown lingvo-roles-dropdown_search"
           icon={<i className="lingvo-icon lingvo-icon_arrow" />}
         />
-        <Button
-          className="lingvo-button-violet"
-          disabled={selectedUser === undefined}
-          onClick={() => this.onAddUser(permissions)}
-        >
-          {this.context("Add")}
-        </Button>
-
-        <Table celled className="lingvo-roles-table">
-          <Table.Header>
-            <Table.Row>
-              <Table.HeaderCell>{this.context("Role")}</Table.HeaderCell>
-              {users.map(u => (
-                <Table.HeaderCell key={u.id}>
-                  {u.name}
-                  <Button
-                    icon={<i className="lingvo-icon lingvo-icon_trash" />}
-                    title={this.context("Remove user")}
-                    onClick={() => this.onDeleteUser(u.id, permissions)}
-                    className="lingvo-button-roles-delete"
-                    disabled={u.id === currentUser.id}
-                  />
-                </Table.HeaderCell>
-              ))}
-            </Table.Row>
-          </Table.Header>
-
-          <Table.Body>
-            {permissions.map(role => (
-              <Table.Row key={role.group.id}>
-                <Table.Cell>{this.context(role.group.name)}</Table.Cell>
-                {users.map(u => (
-                  <Table.Cell key={u.id}>
-                    <Radio
-                      toggle
-                      onChange={() => this.onToggleRole(u, role, permissions)}
-                      checked={Roles.hasRole(u, role)}
-                      className="lingvo-radio-toggle"
-                    />
-                  </Table.Cell>
-                ))}
-              </Table.Row>
-            ))}
-          </Table.Body>
-        </Table>
-      </Container>
-    );
-  }
+    </Container>
+  );
 }
 
+/*
 SelectUserModal.propTypes = {
-  language: PropTypes.object.isRequired,
-  close: PropTypes.func.isRequired
+  mode: PropTypes.string.isRequired,
+  data: PropTypes.object.isRequired,
+  user: PropTypes.object.isRequired
 };
+*/
 
 export default SelectUserModal;
