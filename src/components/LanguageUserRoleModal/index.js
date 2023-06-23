@@ -63,8 +63,10 @@ const SelectUserModal = ({ language, close }) => {
         {content}
       </Modal.Content>
       <Modal.Actions>
-        <Button content={getTranslation("Add roles")}
-                disabled={!selectedUser}
+        <Button content={addRoleLoading
+                         ? <span>{getTranslation("Adding roles")}... <Icon name="spinner" loading /></span>
+                         : getTranslation("Add roles")}
+                disabled={!selectedUser || addRoleLoading}
                 onClick={() => selectedUser && onSelectUser(selectedUser)}
                 className="lingvo-button-violet"
         />
@@ -90,13 +92,6 @@ const SelectUserModal = ({ language, close }) => {
       </Message>
     );
   }
-  if (addRoleLoading) {
-    return asModal(
-      <span>
-        {getTranslation("Adding user roles")}... <Icon name="spinner" loading />
-      </span>
-    );
-  }
   if (addRoleError) {
     return (
       <Message negative compact>
@@ -120,6 +115,7 @@ const SelectUserModal = ({ language, close }) => {
       onChange={(e, d) => setSelectedUser(d.value)}
       className="lingvo-roles-dropdown lingvo-roles-dropdown_search"
       icon={<i className="lingvo-icon lingvo-icon_arrow" />}
+      disabled={addRoleLoading}
     />
   );
 }
