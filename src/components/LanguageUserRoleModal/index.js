@@ -3,7 +3,6 @@ import { Button, Dropdown, Icon, Message, Modal } from "semantic-ui-react";
 import { gql, useQuery } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
 import { filter } from "lodash";
-//import { filter, find, some, union, uniq, without } from "lodash";
 import PropTypes from "prop-types";
 import { queryUsers } from "components/BanModal";
 import { useMutation } from "hooks";
@@ -29,6 +28,9 @@ const computeRolesBulkMutation = gql`
 
 // functional component
 const SelectUserModal = ({ language, close }) => {
+  const getTranslation = useContext(TranslationContext);
+  const [ selectedUser, setSelectedUser ] = useState(null);
+
   // handling gql to add new role by using mutation
   const [addRole, { error: addRoleError, loading: addRoleLoading }] = useMutation(computeRolesBulkMutation);
   const onSelectUser = (userId) =>
@@ -39,6 +41,7 @@ const SelectUserModal = ({ language, close }) => {
         close();
         window.logger.suc(getTranslation("Added roles successfully."));
     });
+
   // handling gql to query users list
   const { data, error, loading } = useQuery(queryUsers);
   const userOptions = useMemo(
@@ -52,11 +55,26 @@ const SelectUserModal = ({ language, close }) => {
         }))
         .filter(u => u.value !== 1),
     [data]);
-  const getTranslation = useContext(TranslationContext);
-  const [ selectedUser, setSelectedUser ] = useState(null);
+
+  const asModal = (content) => (
+    <Modal className="lingvo-modal2" dimmer open size="small" closeIcon onClose={close}>
+      <Modal.Header>{getTranslation("Add roles")}</Modal.Header>
+      <Modal.Content>
+        {content}
+      </Modal.Content>
+      <Modal.Actions>
+        <Button content={getTranslation("Add roles")}
+                disabled={!selectedUser}
+                onClick={() => selectedUser && onSelectUser(selectedUser)}
+                className="lingvo-button-violet"
+        />
+        <Button content={getTranslation("Close")} onClick={close} className="lingvo-button-basic-black" />
+      </Modal.Actions>
+    </Modal>
+  );
 
   if (loading) {
-    return (
+    return asModal(
       <span>
         {getTranslation("Loading user data")}... <Icon name="spinner" loading />
       </span>
@@ -73,7 +91,7 @@ const SelectUserModal = ({ language, close }) => {
     );
   }
   if (addRoleLoading) {
-    return (
+    return asModal(
       <span>
         {getTranslation("Adding user roles")}... <Icon name="spinner" loading />
       </span>
@@ -90,31 +108,19 @@ const SelectUserModal = ({ language, close }) => {
     );
   }
 
-  return (
-    <Modal className="lingvo-modal2" dimmer open size="small" closeIcon onClose={close}>
-      <Modal.Header>{getTranslation("Add roles")}</Modal.Header>
-      <Modal.Content>
-        <Dropdown
-          key={selectedUser}
-          placeholder={getTranslation("Select user")}
-          search
-          selection
-          options={userOptions}
-          selectOnBlur={false}
-          value={selectedUser}
-          onChange={(e, d) => setSelectedUser(d.value)}
-          className="lingvo-roles-dropdown lingvo-roles-dropdown_search"
-          icon={<i className="lingvo-icon lingvo-icon_arrow" />}
-        />
-      </Modal.Content>
-      <Modal.Actions>
-        <Button content={getTranslation("Add roles")}
-                onClick={() => selectedUser && onSelectUser(selectedUser)}
-                className="lingvo-button-violet"
-        />
-        <Button content={getTranslation("Close")} onClick={close} className="lingvo-button-basic-black" />
-      </Modal.Actions>
-    </Modal>
+  return asModal(
+    <Dropdown
+      key={selectedUser}
+      placeholder={getTranslation("Select user")}
+      search
+      selection
+      options={userOptions}
+      selectOnBlur={false}
+      value={selectedUser}
+      onChange={(e, d) => setSelectedUser(d.value)}
+      className="lingvo-roles-dropdown lingvo-roles-dropdown_search"
+      icon={<i className="lingvo-icon lingvo-icon_arrow" />}
+    />
   );
 }
 
