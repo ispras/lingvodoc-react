@@ -17,7 +17,7 @@ import {
 } from "backend";
 import CreateLanguageModal from "components/CreateLanguageModal";
 import EditLanguageModal from "components/EditLanguageModal";
-import SelectUserModal from "components/SelectUserModal";
+import SelectUserModal from "components/LanguageUserRoleModal";
 import TreeWithSearch from "components/TreeWithSearch";
 import { useMutation } from "hooks";
 import TranslationContext from "Layout/TranslationContext";
