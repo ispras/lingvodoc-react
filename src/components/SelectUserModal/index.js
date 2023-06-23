@@ -1,80 +1,72 @@
 import React, { useContext, useState } from "react";
-import { Button, Container, Dropdown, Icon, Message, Radio, Table } from "semantic-ui-react";
+import { Button, Dropdown, Icon, Message, Modal } from "semantic-ui-react";
 import { gql, useQuery } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
-import { filter, find, some, union, uniq, without } from "lodash";
+import { filter } from "lodash";
+//import { filter, find, some, union, uniq, without } from "lodash";
 import PropTypes from "prop-types";
-import { compose, onlyUpdateForKeys } from "recompose";
 import { queryUsers } from "components/BanModal";
+import { useMutation } from "hooks";
 
 import TranslationContext from "Layout/TranslationContext";
 
-const SelectUserModal = ({}) => {
-
-    const { users: allUsers } = useQuery(queryUsers);
-    console.log("Users: ", allUsers);
-
-    const [ selectedUser, setSelectedUser ] = useState(null);
-
-    /*
-    if (data.error) {
-      return (
-        <Message negative compact>
-          {useContext("Role data loading error, please contact adiministrators.")}
-        </Message>
-      );
-    } else if (data.loading) {
-      return (
-        <span>
-          {useContext("Loading role data")}... <Icon name="spinner" loading />
-        </span>
-      );
+const computeRolesBulkMutation = gql`
+  mutation computeRolesBulk(
+    $userId: Int!
+    $languageId: LingvodocID!
+  ) {
+    add_roles_bulk(
+      user_id: $userId
+      language_id: $languageId
+    ) {
+      language_count,
+      dictionary_count,
+      perspective_count
     }
+  }
+`;
 
-    const currentUser = user;
+const SelectUserModal = ({ language, close }) => {
+  const [addRole] = useMutation(computeRolesBulkMutation);
+  const getTranslation = useContext(TranslationContext);
+  const [ selectedUser, setSelectedUser ] = useState(null);
+  const { data, error, loading } = useQuery(queryUsers);
 
-    const baseGroups = data.all_basegroups ? data.all_basegroups : [];
-
-    const allUsers = data.users ? data.users : [];
-    const rolesUsers = data[mode] ? data[mode].roles.roles_users : [];
-
-    // list of all base groups that can be applied to target
-    const groups = filter(baseGroups, g => {
-      switch (mode) {
-        case "dictionary":
-          return g.dictionary_default;
-        case "perspective":
-          return g.perspective_default;
-        default:
-          return false;
-      }
-    });
-
-    const permissions = groups.map(group => ({
-      group,
-      users: rolesUsers
-        .filter(role => role.roles_ids.indexOf(group.id) >= 0)
-        .map(role => find(allUsers, u => u.id === role.user_id))
-    }));
-
-    const users = uniq(union(...permissions.map(p => p.users))).sort((user1, user2) =>
-      user1.name.localeCompare(user2.name)
-    );
-    */
-
-    const userOptions = allUsers
-      .map(u => ({
-        key: u.id,
-        value: u.id,
-        text: `${u.name} (${u.intl_name !== u.login ? `${u.intl_name}, ` : ""}${u.login})`
-      }))
-      .filter(u => u.value !== 1);
-
+  if (loading) {
     return (
-      <Container>
+      <span>
+        {getTranslation("Loading user data")}... <Icon name="spinner" loading />
+      </span>
+    );
+  }
+  if (error) {
+    return (
+      <Message negative compact>
+        <Message.Header>{getTranslation("User data loading error")}</Message.Header>
+        <div style={{ marginTop: "0.25em" }}>
+          {getTranslation("Try reloading the page; if the error persists, please contact administrators.")}
+        </div>
+      </Message>
+    );
+  }
+
+  const allUsers = data.users ? data.users : [];
+  const userOptions = allUsers
+    .map(u => ({
+      key: u.id,
+      value: u.id,
+      text: `${u.name} (${u.intl_name !== u.login ? `${u.intl_name}, ` : ""}${u.login})`
+    }))
+    .filter(u => u.value !== 1);
+
+  return (
+    <Modal className="lingvo-modal2" dimmer open size="small" closeIcon onClose={close}>
+      <Modal.Header>{getTranslation("Allow permissions")}</Modal.Header>
+      <Modal.Content>
+        <h4>{getTranslation("Allow permissions")}</h4>
         <Dropdown
           key={selectedUser}
-          placeholder={useContext("Select user")}
+          placeholder={getTranslation("Select user")}
           search
           selection
           options={userOptions}
@@ -84,16 +76,17 @@ const SelectUserModal = ({}) => {
           className="lingvo-roles-dropdown lingvo-roles-dropdown_search"
           icon={<i className="lingvo-icon lingvo-icon_arrow" />}
         />
-    </Container>
+      </Modal.Content>
+      <Modal.Actions>
+        <Button content={getTranslation("Close")} onClick={close} className="lingvo-button-basic-black" />
+      </Modal.Actions>
+    </Modal>
   );
 }
 
-/*
 SelectUserModal.propTypes = {
-  mode: PropTypes.string.isRequired,
-  data: PropTypes.object.isRequired,
-  user: PropTypes.object.isRequired
+  language: PropTypes.object.isRequired,
+  close: PropTypes.func.isRequired
 };
-*/
 
 export default SelectUserModal;

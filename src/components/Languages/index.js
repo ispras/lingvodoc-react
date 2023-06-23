@@ -17,6 +17,7 @@ import {
 } from "backend";
 import CreateLanguageModal from "components/CreateLanguageModal";
 import EditLanguageModal from "components/EditLanguageModal";
+import SelectUserModal from "components/SelectUserModal";
 import TreeWithSearch from "components/TreeWithSearch";
 import { useMutation } from "hooks";
 import TranslationContext from "Layout/TranslationContext";
@@ -159,6 +160,13 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
           onClick={() => setModalInfo({ kind: "create", node })}
         />
       );
+      buttons.push(
+        <Button
+          color="violet"
+          content={getTranslation("Grand permission")}
+          onClick={() => setModalInfo({ kind: "permission", node })}
+        />
+      );
       const nodeProps = { buttons };
       if (!onSelect && user.id === 1) {
         const stats = languageStats[node.id.toString()];
@@ -285,6 +293,7 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
         />
       )}
       {modalInfo.kind === "edit" && <EditLanguageModal language={modalInfo.node} close={() => setModalInfo({})} />}
+      {modalInfo.kind === "permission" && <SelectUserModal language={modalInfo.node} close={() => setModalInfo({})} />}
     </div>
   );
 };
