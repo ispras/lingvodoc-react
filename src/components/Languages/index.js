@@ -17,6 +17,7 @@ import {
 } from "backend";
 import CreateLanguageModal from "components/CreateLanguageModal";
 import EditLanguageModal from "components/EditLanguageModal";
+import SelectUserModal from "components/LanguageUserRoleModal";
 import TreeWithSearch from "components/TreeWithSearch";
 import { useMutation } from "hooks";
 import TranslationContext from "Layout/TranslationContext";
@@ -198,6 +199,15 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
           />
         );
       }
+      if (user.id === 1) {
+        nodeProps.buttons.push(
+          <Button
+            color="violet"
+            content={getTranslation("Add roles")}
+            onClick={() => setModalInfo({ kind: "roles", node })}
+          />
+        );
+      }
       return nodeProps;
     },
     [
@@ -285,6 +295,7 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
         />
       )}
       {modalInfo.kind === "edit" && <EditLanguageModal language={modalInfo.node} close={() => setModalInfo({})} />}
+      {modalInfo.kind === "roles" && <SelectUserModal language={modalInfo.node} close={() => setModalInfo({})} />}
     </div>
   );
 };
