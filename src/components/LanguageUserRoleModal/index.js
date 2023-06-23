@@ -92,9 +92,8 @@ const SelectUserModal = ({ language, close }) => {
 
   return (
     <Modal className="lingvo-modal2" dimmer open size="small" closeIcon onClose={close}>
-      <Modal.Header>{getTranslation("Allow permissions")}</Modal.Header>
+      <Modal.Header>{getTranslation("Add roles")}</Modal.Header>
       <Modal.Content>
-        <h4>{getTranslation("Allow permissions")}</h4>
         <Dropdown
           key={selectedUser}
           placeholder={getTranslation("Select user")}

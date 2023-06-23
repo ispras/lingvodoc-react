@@ -203,8 +203,8 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
         nodeProps.buttons.push(
           <Button
             color="violet"
-            content={getTranslation("Permissions")}
-            onClick={() => setModalInfo({ kind: "permission", node })}
+            content={getTranslation("Add roles")}
+            onClick={() => setModalInfo({ kind: "roles", node })}
           />
         );
       }
@@ -295,7 +295,7 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
         />
       )}
       {modalInfo.kind === "edit" && <EditLanguageModal language={modalInfo.node} close={() => setModalInfo({})} />}
-      {modalInfo.kind === "permission" && <SelectUserModal language={modalInfo.node} close={() => setModalInfo({})} />}
+      {modalInfo.kind === "roles" && <SelectUserModal language={modalInfo.node} close={() => setModalInfo({})} />}
     </div>
   );
 };
