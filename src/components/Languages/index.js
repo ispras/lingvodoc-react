@@ -160,13 +160,6 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
           onClick={() => setModalInfo({ kind: "create", node })}
         />
       );
-      buttons.push(
-        <Button
-          color="violet"
-          content={getTranslation("Grand permission")}
-          onClick={() => setModalInfo({ kind: "permission", node })}
-        />
-      );
       const nodeProps = { buttons };
       if (!onSelect && user.id === 1) {
         const stats = languageStats[node.id.toString()];
@@ -203,6 +196,15 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
             }
             disabled={modifying}
             onClick={() => onToggleTOC(node)}
+          />
+        );
+      }
+      if (user.id === 1) {
+        nodeProps.buttons.push(
+          <Button
+            color="violet"
+            content={getTranslation("Permissions")}
+            onClick={() => setModalInfo({ kind: "permission", node })}
           />
         );
       }

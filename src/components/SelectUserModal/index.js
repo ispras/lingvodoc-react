@@ -31,9 +31,9 @@ const computeRolesBulkMutation = gql`
 const SelectUserModal = ({ language, close }) => {
   // handling gql to add new role by using mutation
   const [addRole, { error: addRoleError, loading: addRoleLoading }] = useMutation(computeRolesBulkMutation);
-  const onSelectUser = (user_id) =>
+  const onSelectUser = (userId) =>
     addRole({
-      variables: { user_id, language_id: language.id },
+      variables: { userId, languageId: language.id },
     }).then(
       () => {
         close();
