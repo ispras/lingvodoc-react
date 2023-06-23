@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useMemo } from "react";
 import { Button, Dropdown, Icon, Message, Modal } from "semantic-ui-react";
 import { gql, useQuery } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
@@ -10,6 +10,7 @@ import { useMutation } from "hooks";
 
 import TranslationContext from "Layout/TranslationContext";
 
+// gql to call add_roles_bulk mutation
 const computeRolesBulkMutation = gql`
   mutation computeRolesBulk(
     $userId: Int!
@@ -26,11 +27,33 @@ const computeRolesBulkMutation = gql`
   }
 `;
 
+// functional component
 const SelectUserModal = ({ language, close }) => {
-  const [addRole] = useMutation(computeRolesBulkMutation);
+  // handling gql to add new role by using mutation
+  const [addRole, { error: addRoleError, loading: addRoleLoading }] = useMutation(computeRolesBulkMutation);
+  const onSelectUser = (user_id) =>
+    addRole({
+      variables: { user_id, language_id: language.id },
+    }).then(
+      () => {
+        close();
+        window.logger.suc(getTranslation("Added roles successfully."));
+    });
+  // handling gql to query users list
+  const { data, error, loading } = useQuery(queryUsers);
+  const userOptions = useMemo(
+    () =>
+      data && data.users &&
+      data.users
+        .map(u => ({
+          key: u.id,
+          value: u.id,
+          text: `${u.name} (${u.intl_name !== u.login ? `${u.intl_name}, ` : ""}${u.login})`
+        }))
+        .filter(u => u.value !== 1),
+    [data]);
   const getTranslation = useContext(TranslationContext);
   const [ selectedUser, setSelectedUser ] = useState(null);
-  const { data, error, loading } = useQuery(queryUsers);
 
   if (loading) {
     return (
@@ -49,15 +72,23 @@ const SelectUserModal = ({ language, close }) => {
       </Message>
     );
   }
-
-  const allUsers = data.users ? data.users : [];
-  const userOptions = allUsers
-    .map(u => ({
-      key: u.id,
-      value: u.id,
-      text: `${u.name} (${u.intl_name !== u.login ? `${u.intl_name}, ` : ""}${u.login})`
-    }))
-    .filter(u => u.value !== 1);
+  if (addRoleLoading) {
+    return (
+      <span>
+        {getTranslation("Adding user roles")}... <Icon name="spinner" loading />
+      </span>
+    );
+  }
+  if (addRoleError) {
+    return (
+      <Message negative compact>
+        <Message.Header>{getTranslation("Adding role error")}</Message.Header>
+        <div style={{ marginTop: "0.25em" }}>
+          {getTranslation("Please contact administrators.")}
+        </div>
+      </Message>
+    );
+  }
 
   return (
     <Modal className="lingvo-modal2" dimmer open size="small" closeIcon onClose={close}>
@@ -78,6 +109,10 @@ const SelectUserModal = ({ language, close }) => {
         />
       </Modal.Content>
       <Modal.Actions>
+        <Button content={getTranslation("Add roles")}
+                onClick={() => selectedUser && onSelectUser(selectedUser)}
+                className="lingvo-button-violet"
+        />
         <Button content={getTranslation("Close")} onClick={close} className="lingvo-button-basic-black" />
       </Modal.Actions>
     </Modal>
