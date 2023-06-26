@@ -123,6 +123,7 @@ export const languagesQuery = gql`
       translation_gist_id
       additional_metadata {
         toc_mark
+        allowed_users
       }
     }
   }
