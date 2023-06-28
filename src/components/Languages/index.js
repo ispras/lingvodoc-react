@@ -1,7 +1,7 @@
 import React, { useCallback, useContext, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { getFlatDataFromTree, getNodeAtPath, map } from "react-sortable-tree";
-import { Button, Icon } from "semantic-ui-react";
+import { Button, Icon, Popup } from "semantic-ui-react";
 import { useQuery } from "@apollo/client";
 import Immutable from "immutable";
 import { findIndex, isEqual } from "lodash";
@@ -201,10 +201,17 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
       }
       if (user.id === 1) {
         nodeProps.buttons.push(
-          <Button
-            color="violet"
-            content={getTranslation("Add roles")}
-            onClick={() => setModalInfo({ kind: "roles", node })}
+          <Popup
+            trigger={
+              <Button
+                color="violet"
+                content={getTranslation("Add roles")}
+                onClick={() => setModalInfo({ kind: "roles", node })}
+              />
+            }
+            content={`$("Some tip ".repeat(50))`}
+            hideOnScroll={true}
+            position='right center'
           />
         );
       }
