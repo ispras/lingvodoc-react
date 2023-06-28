@@ -217,7 +217,7 @@ export const updateLanguageMetadataMutation = gql`
   }
 `;
 
-export const queryAttachedUsers = gql`
+export const queryAllAttachedUsers = gql`
   query AttachedUsers($languageId: LingvodocID!) {
     attached_users(language_id: $languageId)
   }

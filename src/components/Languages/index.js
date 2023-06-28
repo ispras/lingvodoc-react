@@ -2,7 +2,7 @@ import React, { useCallback, useContext, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { getFlatDataFromTree, getNodeAtPath, map } from "react-sortable-tree";
 import { Button, Icon, Popup } from "semantic-ui-react";
-import { useQuery } from "@apollo/client";
+import { useQuery, useLazyQuery } from "@apollo/client";
 import Immutable from "immutable";
 import { findIndex, isEqual } from "lodash";
 import PropTypes from "prop-types";
@@ -13,7 +13,8 @@ import {
   dictionariesInfoQuery,
   languagesQuery,
   moveLanguageMutation,
-  updateLanguageMetadataMutation
+  updateLanguageMetadataMutation,
+  queryAllAttachedUsers
 } from "backend";
 import CreateLanguageModal from "components/CreateLanguageModal";
 import EditLanguageModal from "components/EditLanguageModal";
@@ -140,6 +141,8 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
     [getTranslation, modifyingTocs, updateLanguageMetadata]
   );
 
+  const [getAllAttached, { loading: allUsersLoading, data: allUsersData }] = useLazyQuery(queryAllAttachedUsers);
+
   const generateNodeProps = useCallback(
     ({ node }) => {
       if (!canEdit) {
@@ -200,6 +203,7 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
         );
       }
       if (user.id === 1) {
+        //getAllAttached({variables: {languageId: node.id}})
         nodeProps.buttons.push(
           <Popup
             trigger={
@@ -209,7 +213,9 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
                 onClick={() => setModalInfo({ kind: "roles", node })}
               />
             }
-            content={`$("Some tip ".repeat(50))`}
+            content={allUsersLoading
+                     ? <span>{getTranslation("Collecting users...")}... <Icon name="spinner" loading /></span>
+                     : allUsersData}
             hideOnScroll={true}
             position='right center'
           />
