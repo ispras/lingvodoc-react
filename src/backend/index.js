@@ -210,15 +210,9 @@ export const updateLanguageAtomMutation = gql`
 `;
 
 export const updateLanguageMetadataMutation = gql`
-  mutation UpdateLanguageMetadata($id: LingvodocID!, $metadata: ObjectVal!) {
-    update_language(id: $id, additional_metadata: $metadata) {
+  mutation UpdateLanguageMetadata($id: LingvodocID!, $metadata: ObjectVal!, $new_user: Int) {
+    update_language(id: $id, additional_metadata: $metadata, new_user: $new_user) {
       triumph
     }
-  }
-`;
-
-export const queryAllAttachedUsers = gql`
-  query AttachedUsers($languageId: LingvodocID!) {
-    attached_users(language_id: $languageId)
   }
 `;

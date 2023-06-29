@@ -37,6 +37,13 @@ const SelectUserModal = ({ language, close }) => {
     addRole({
       variables: { userId, languageId: language.id },
     }).then(
+      updateLanguageMetadata({
+        variables: {
+          id: node.id,
+          metadata: {},
+          new_user: userId
+        },
+    }).then(
       () => {
         close();
         window.logger.suc(getTranslation("Added roles successfully."));
