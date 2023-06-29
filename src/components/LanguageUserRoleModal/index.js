@@ -6,6 +6,7 @@ import { filter } from "lodash";
 import PropTypes from "prop-types";
 import { queryUsers } from "components/BanModal";
 import { useMutation } from "hooks";
+import { updateLanguageMetadataMutation } from "backend";
 
 import TranslationContext from "Layout/TranslationContext";
 
@@ -30,6 +31,7 @@ const computeRolesBulkMutation = gql`
 const SelectUserModal = ({ language, close }) => {
   const getTranslation = useContext(TranslationContext);
   const [ selectedUser, setSelectedUser ] = useState(null);
+  const [updateLanguageMetadata] = useMutation(updateLanguageMetadataMutation, { onCompleted: () => refetch() });
 
   // handling gql to add new role by using mutation
   const [addRole, { error: addRoleError, loading: addRoleLoading }] = useMutation(computeRolesBulkMutation);
@@ -39,11 +41,11 @@ const SelectUserModal = ({ language, close }) => {
     }).then(
       updateLanguageMetadata({
         variables: {
-          id: node.id,
+          id: language.id,
           metadata: {},
           new_user: userId
         },
-    }).then(
+    })).then(
       () => {
         close();
         window.logger.suc(getTranslation("Added roles successfully."));
