@@ -14,7 +14,6 @@ import {
   languagesQuery,
   moveLanguageMutation,
   updateLanguageMetadataMutation,
-  queryAllAttachedUsers
 } from "backend";
 import CreateLanguageModal from "components/CreateLanguageModal";
 import EditLanguageModal from "components/EditLanguageModal";
@@ -61,6 +60,11 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
     });
     return langStats;
   }, [dictionariesData]);
+
+  const logger = (input) => {
+    console.log(input);
+    return input;
+  }
 
   const setTreeDataFromQuery = useCallback(
     tree => {
@@ -141,14 +145,14 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
     [getTranslation, modifyingTocs, updateLanguageMetadata]
   );
 
-  const [getAllAttached, { loading: allUsersLoading, data: allUsersData }] = useLazyQuery(queryAllAttachedUsers);
+  //const [getAllAttached, { loading: allUsersLoading, data: allUsersData }] = useLazyQuery(queryAllAttachedUsers);
 
   const generateNodeProps = useCallback(
     ({ node }) => {
       if (!canEdit) {
         return { title: chooseTranslation(node.translations) };
       }
-
+      //console.log(treeData)
       const buttons = [];
       if (onSelect) {
         buttons.push(<Button color="blue" content={getTranslation("Select")} onClick={() => onNodeSelected(node)} />);
@@ -204,6 +208,11 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
       }
       if (user.id === 1) {
         //getAllAttached({variables: {languageId: node.id}})
+        const langAtt = node.additional_metadata.attached_users;
+        const landInh = node.additional_metadata.inherited_users;
+        const onlyUnique = (value, index, array) => array.indexOf(value) === index;
+        const langAllUsr = [...langAtt || [], ...landInh || []].filter(onlyUnique);
+
         nodeProps.buttons.push(
           <Popup
             trigger={
@@ -213,9 +222,7 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
                 onClick={() => setModalInfo({ kind: "roles", node })}
               />
             }
-            content={allUsersLoading
-                     ? <span>{getTranslation("Collecting users...")}... <Icon name="spinner" loading /></span>
-                     : allUsersData}
+            content={langAllUsr}
             hideOnScroll={true}
             position='right center'
           />

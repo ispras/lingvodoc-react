@@ -10,14 +10,24 @@ export function buildLanguageTree(data) {
   const byParentId = data.groupBy(parentGrouper);
   const innerBuild = (lang) => {
     const langId = lang.get("id");
-    return lang.set("type", "language").set("children", byParentId.get(langId, new List()).map(innerBuild));
+    const langAtt = lang.get("additional_metadata", "attached_users");
+    const landInh = lang.get("additional_metadata", "inherited_users");
+    const onlyUnique = (value, index, array) => array.indexOf(value) === index;
+    const langAllUsr = [...langAtt || [], ...landInh || []].filter(onlyUnique);
+
+    return lang.set("type", "language")
+           .set("children", byParentId.get(langId, new List())
+           .map(x => x.set("additional_metadata", "inherited_users", langAllUsr))
+           .map(innerBuild));
   };
 
   if (byParentId.size <= 0) {
     return new List();
   }
 
-  return byParentId.get(null).map(innerBuild);
+  return byParentId.get(null)
+         .map(x => x.set("additional_metadata", "inherited_users", new List()))
+         .map(innerBuild);
 }
 
 export function buildDictTrees(data) {
