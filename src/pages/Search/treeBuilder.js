@@ -10,14 +10,15 @@ export function buildLanguageTree(data) {
   const byParentId = data.groupBy(parentGrouper);
   const innerBuild = (lang) => {
     const langId = lang.get("id");
-    const langAtt = lang.get("additional_metadata", "attached_users");
-    const landInh = lang.get("additional_metadata", "inherited_users");
+    const langAtt = lang.getIn(["additional_metadata", "attached_users"]);
+    const landInh = lang.getIn(["additional_metadata", "inherited_users"]);
     const onlyUnique = (value, index, array) => array.indexOf(value) === index;
     const langAllUsr = [...langAtt || [], ...landInh || []].filter(onlyUnique);
+    //if (langAllUsr) console.log(`All users (${langId}): ${langAllUsr}`)
 
     return lang.set("type", "language")
            .set("children", byParentId.get(langId, new List())
-           .map(x => x.set("additional_metadata", "inherited_users", langAllUsr))
+           .map(x => x.setIn(["additional_metadata", "inherited_users"], langAllUsr))
            .map(innerBuild));
   };
 
@@ -26,7 +27,7 @@ export function buildLanguageTree(data) {
   }
 
   return byParentId.get(null)
-         .map(x => x.set("additional_metadata", "inherited_users", new List()))
+         .map(x => x.setIn(["additional_metadata", "inherited_users"], []))
          .map(innerBuild);
 }
 
