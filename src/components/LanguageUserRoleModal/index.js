@@ -28,7 +28,7 @@ const computeRolesBulkMutation = gql`
 `;
 
 // functional component
-const SelectUserModal = ({ language, close }) => {
+const SelectUserModal = ({ language, close, added }) => {
   const getTranslation = useContext(TranslationContext);
   const [ selectedUser, setSelectedUser ] = useState(null);
   const [updateLanguageMetadata] = useMutation(updateLanguageMetadataMutation, { onCompleted: () => refetch() });
@@ -48,6 +48,7 @@ const SelectUserModal = ({ language, close }) => {
     })).then(
       () => {
         close();
+        added({user_id: userId, language_id: language.id});
         window.logger.suc(getTranslation("Added roles successfully."));
     });
 
@@ -131,7 +132,8 @@ const SelectUserModal = ({ language, close }) => {
 
 SelectUserModal.propTypes = {
   language: PropTypes.object.isRequired,
-  close: PropTypes.func.isRequired
+  close: PropTypes.func.isRequired,
+  added: PropTypes.func.isRequired
 };
 
 export default SelectUserModal;

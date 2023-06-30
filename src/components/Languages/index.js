@@ -325,7 +325,11 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
         />
       )}
       {modalInfo.kind === "edit" && <EditLanguageModal language={modalInfo.node} close={() => setModalInfo({})} />}
-      {modalInfo.kind === "roles" && <SelectUserModal language={modalInfo.node} close={() => setModalInfo({})} />}
+      {modalInfo.kind === "roles" && <SelectUserModal
+        language={modalInfo.node}
+        close={() => setModalInfo({})}
+        added={({user_id, language_id}) => console.log("Added " + user_id + " for " + language_id)}
+      />}
     </div>
   );
 };
