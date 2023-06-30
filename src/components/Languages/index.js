@@ -23,6 +23,7 @@ import { useMutation } from "hooks";
 import TranslationContext from "Layout/TranslationContext";
 import { buildLanguageTree } from "pages/Search/treeBuilder";
 import { compositeIdToString } from "utils/compositeId";
+import { queryUsers } from "components/BanModal";
 
 const getNodeKey = ({ node, treeIndex }) => (node.id ? node.id.toString() : treeIndex);
 
@@ -36,6 +37,24 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
   const [selection, setSelection] = useState(selected);
   const [modifyingTocs, setModifyingTocs] = useState([]);
   const [modalInfo, setModalInfo] = useState({});
+
+  const {
+    data: userData,
+    error: userError,
+    loading: userLoading
+  } = useQuery(queryUsers);
+
+  const getUserName = useCallback((user_id) => {
+    console.log("getUserName was called");
+    if (userLoading) return "Loading...";
+    if (userError) return "Error!";
+    if (userData.users) {
+      const user = userData.users.find(x => x.id === user_id);
+      if (user)
+        return user[0].name;
+    }
+    return "Anonymous";
+  }, [userData]);
 
   const { loading: dictionariesLoading, data: dictionariesData } = useQuery(dictionariesInfoQuery);
   const languageStats = useMemo(() => {
@@ -207,11 +226,11 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
         );
       }
       if (user.id === 1) {
-        //getAllAttached({variables: {languageId: node.id}})
         const langAtt = node.additional_metadata.attached_users;
         const landInh = node.additional_metadata.inherited_users;
         const onlyUnique = (value, index, array) => array.indexOf(value) === index;
         const langAllUsr = [...langAtt || [], ...landInh || []].filter(onlyUnique);
+        //const os = require('os');
 
         nodeProps.buttons.push(
           <Popup
@@ -222,10 +241,12 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
                 onClick={() => setModalInfo({ kind: "roles", node })}
               />
             }
-            content={langAllUsr}
             hideOnScroll={true}
             position='right center'
-          />
+          >
+            <h4>Summary allowed users</h4>
+            <pre>{langAllUsr.map(x => getUserName(x)).join(" | ")}</pre>
+          </Popup>
         );
       }
       return nodeProps;
