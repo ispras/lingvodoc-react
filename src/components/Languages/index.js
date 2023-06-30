@@ -38,23 +38,7 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
   const [modifyingTocs, setModifyingTocs] = useState([]);
   const [modalInfo, setModalInfo] = useState({});
 
-  const {
-    data: userData,
-    error: userError,
-    loading: userLoading
-  } = useQuery(queryUsers);
-
-  const getUserName = useCallback((user_id) => {
-    console.log("getUserName was called");
-    if (userLoading) return "Loading...";
-    if (userError) return "Error!";
-    if (userData.users) {
-      const user = userData.users.find(x => x.id === user_id);
-      if (user)
-        return user[0].name;
-    }
-    return "Anonymous";
-  }, [userData]);
+  const { loading: userLoading, data: userData } = useQuery(queryUsers);
 
   const { loading: dictionariesLoading, data: dictionariesData } = useQuery(dictionariesInfoQuery);
   const languageStats = useMemo(() => {
@@ -164,8 +148,6 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
     [getTranslation, modifyingTocs, updateLanguageMetadata]
   );
 
-  //const [getAllAttached, { loading: allUsersLoading, data: allUsersData }] = useLazyQuery(queryAllAttachedUsers);
-
   const generateNodeProps = useCallback(
     ({ node }) => {
       if (!canEdit) {
@@ -243,12 +225,19 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
             }
             hideOnScroll={true}
             position='right center'
-          >
-            <h4>Summary allowed users</h4>
-            <pre>{langAllUsr.map(x => getUserName(x)).join(" | ")}</pre>
-          </Popup>
+            content={() => {
+              if (!langAllUsr.length) return "No assigned users";
+              return langAllUsr.map(id => {
+                if (!userData) return "N/A";
+                const user = userData.users.find(x => x.id === id);
+                if (user) return user.name;
+                return "Anonymous";
+              }).join(" | ");
+            }}
+          />
         );
       }
+      console.log(userData.users.find(x => x.id === 1))
       return nodeProps;
     },
     [
@@ -262,7 +251,8 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
       onToggleTOC,
       selection,
       updatableTOC,
-      user
+      user,
+      userData
     ]
   );
 
@@ -294,7 +284,7 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
     [moveLanguage]
   );
 
-  if (dictionariesLoading || languagesLoading) {
+  if (dictionariesLoading || languagesLoading || userLoading) {
     return (
       <span
         style={{
@@ -308,7 +298,7 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
     );
   }
 
-  if (!dictionariesData || !languagesData || !treeData) {
+  if (!dictionariesData || !languagesData || !treeData || !userData) {
     return null;
   }
 
