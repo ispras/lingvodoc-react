@@ -212,7 +212,15 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
         const landInh = node.additional_metadata.inherited_users;
         const onlyUnique = (value, index, array) => array.indexOf(value) === index;
         const langAllUsr = [...langAtt || [], ...landInh || []].filter(onlyUnique);
-        //const os = require('os');
+        const allUsrName = () => {
+          if (!langAllUsr.length) return "No assigned users";
+          return langAllUsr.map(id => {
+            if (!userData) return "N/A";
+            const user = userData.users.find(x => x.id === id);
+            if (user) return user.name;
+            return "Anonymous";
+          }).join(" | ");
+        }
 
         nodeProps.buttons.push(
           <Popup
@@ -225,19 +233,10 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
             }
             hideOnScroll={true}
             position='right center'
-            content={() => {
-              if (!langAllUsr.length) return "No assigned users";
-              return langAllUsr.map(id => {
-                if (!userData) return "N/A";
-                const user = userData.users.find(x => x.id === id);
-                if (user) return user.name;
-                return "Anonymous";
-              }).join(" | ");
-            }}
+            content={allUsrName}
           />
         );
       }
-      console.log(userData.users.find(x => x.id === 1))
       return nodeProps;
     },
     [
