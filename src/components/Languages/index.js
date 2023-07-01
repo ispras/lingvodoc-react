@@ -95,6 +95,16 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
     onCompleted: data => setTreeDataFromQuery(data.languages)
   });
 
+  const rebuildTree = ({user_id, language_id}) => {
+    const index = languagesData.languages
+                  .findIndex(x => x.id.toString() === language_id.toString())
+    const users = languagesData.languages[index].additional_metadata.attached_users
+    if (!users || !users.includes(user_id))
+      languagesData.languages[index]
+      .additional_metadata
+      .attached_users = [...users || [], [user_id]]
+    setTreeDataFromQuery(languagesData.languages)
+  }
   const [deleteLanguage] = useMutation(deleteLanguageMutation, { onCompleted: () => refetch() });
   const [moveLanguage] = useMutation(moveLanguageMutation, { onCompleted: () => refetch() });
   const [updateLanguageMetadata] = useMutation(updateLanguageMetadataMutation, { onCompleted: () => refetch() });
@@ -328,7 +338,7 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
       {modalInfo.kind === "roles" && <SelectUserModal
         language={modalInfo.node}
         close={() => setModalInfo({})}
-        added={({user_id, language_id}) => console.log("Added " + user_id + " for " + language_id)}
+        added={info => rebuildTree(info)}
       />}
     </div>
   );
