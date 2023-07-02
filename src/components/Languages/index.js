@@ -102,17 +102,20 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
     const innerUpdate = (node) => {
       const langAttUsr = node.additional_metadata.attached_users;
       const landInhUsr = node.additional_metadata.inherited_users;
+
       if (isFound) {
         const langAllUsr = uniqSum(langAttUsr, landInhUsr);
         return node.children
                .map(x => {
-                 if (x.additional_metadata) x.additional_metadata.inherit_users = langAllUsr;
+                 if (!x.additional_metadata) x.additional_metadata = {};
+                 x.additional_metadata.inherit_users = langAllUsr;
                  return x;
                })
                .map(innerUpdate);
       }
       if (node.id.toString() === language_id.toString()) {
         const sumAttUsr = uniqSum(langAttUsr, [user_id]);
+        if (!node.additional_metadata) node.additional_metadata = {};
         node.additional_metadata.attached_users = sumAttUsr;
         isFound = true;
       }
