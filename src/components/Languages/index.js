@@ -64,11 +64,6 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
     return langStats;
   }, [dictionariesData]);
 
-  const logger = (input) => {
-    console.log(input);
-    return input;
-  }
-
   const setTreeDataFromQuery = useCallback(
     (tree, readyData) => {
       setTreeData(
@@ -104,7 +99,6 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
 
       if (node.id.toString() === language_id.toString()) {
         langAttUsr = uniqSum(langAttUsr, [user_id]);
-        //if (!node.additional_metadata) node.additional_metadata = {};
         node.additional_metadata.attached_users = langAttUsr;
         isFound = true;
       }
@@ -177,12 +171,9 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
 
   const generateNodeProps = useCallback(
     ({ node }) => {
-      if (!node.id) console.log("Странная нода: " + node)
-
       if (!canEdit) {
         return { title: chooseTranslation(node.translations) };
       }
-      //console.log(treeData)
       const buttons = [];
       if (onSelect) {
         buttons.push(<Button color="blue" content={getTranslation("Select")} onClick={() => onNodeSelected(node)} />);
