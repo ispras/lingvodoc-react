@@ -109,7 +109,7 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
         node.children.forEach(x =>
           x.additional_metadata.inherit_users = langAllUsr);
       }
-      return node.children.map(innerUpdate);
+      return node.children.forEach(innerUpdate);
     }
     const readyData = cloneDeep(treeData);
     readyData.forEach(innerUpdate);
