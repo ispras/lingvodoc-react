@@ -4,7 +4,7 @@ import { getFlatDataFromTree, getNodeAtPath, map } from "react-sortable-tree";
 import { Button, Icon, Popup } from "semantic-ui-react";
 import { useQuery, useLazyQuery } from "@apollo/client";
 import Immutable from "immutable";
-import { findIndex, isEqual } from "lodash";
+import { findIndex, isEqual, cloneDeep } from "lodash";
 import PropTypes from "prop-types";
 
 import { chooseTranslation } from "api/i18n";
@@ -21,7 +21,7 @@ import SelectUserModal from "components/LanguageUserRoleModal";
 import TreeWithSearch from "components/TreeWithSearch";
 import { useMutation } from "hooks";
 import TranslationContext from "Layout/TranslationContext";
-import { buildLanguageTree } from "pages/Search/treeBuilder";
+import { buildLanguageTree, uniqSum } from "pages/Search/treeBuilder";
 import { compositeIdToString } from "utils/compositeId";
 import { queryUsers } from "components/BanModal";
 
@@ -70,10 +70,12 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
   }
 
   const setTreeDataFromQuery = useCallback(
-    tree => {
+    (tree, readyData) => {
       setTreeData(
         map({
-          treeData: buildLanguageTree(Immutable.fromJS(tree)).toJS(),
+          treeData: readyData
+                    ? readyData
+                    : buildLanguageTree(Immutable.fromJS(tree)).toJS(),
           callback: ({ node, path }) => {
             // Preserve expanded state of nodes from the previous state
             const displayedNode = treeData ? getNodeAtPath({ treeData, path, getNodeKey }) : undefined;
@@ -92,19 +94,31 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
     data: languagesData,
     refetch
   } = useQuery(languagesQuery, {
-    onCompleted: data => setTreeDataFromQuery(data.languages)
+    onCompleted: data => setTreeDataFromQuery(data.languages, null)
   });
 
-  const rebuildTree = ({user_id, language_id}) => {
-    const index = languagesData.languages
-                  .findIndex(x => x.id.toString() === language_id.toString())
-    const users = languagesData.languages[index].additional_metadata.attached_users
-    if (!users || !users.includes(user_id))
-      languagesData.languages[index]
-      .additional_metadata
-      .attached_users = [...users || [], [user_id]]
-    setTreeDataFromQuery(languagesData.languages)
+  const updateLanguageTree = ({language_id, user_id}) => {
+    let isFound = false;
+    const innerUpdate = (node) => {
+      const langAttUsr = node.additional_metadata.attached_users;
+      const landInhUsr = node.additional_metadata.inherited_users;
+      if (isFound) {
+        const langAllUsr = uniqSum(langAttUsr, landInhUsr);
+        return node.children
+               .map(x => x.additional_metadata.inherit_users = langAllUsr)
+               .map(innerUpdate);
+      }
+      if (node.id.toString() === language_id.toString()) {
+        const sumAttUsr = uniqSum(langAttUsr, [user_id]);
+        node.additional_metadata.attached_users = sumAttUsr;
+        isFound = true;
+      }
+      return node.children.map(innerUpdate);
+    }
+    readyData = cloneDeep(treeData).map(innerUpdate);
+    setTreeDataFromQuery(null, readyData);
   }
+
   const [deleteLanguage] = useMutation(deleteLanguageMutation, { onCompleted: () => refetch() });
   const [moveLanguage] = useMutation(moveLanguageMutation, { onCompleted: () => refetch() });
   const [updateLanguageMetadata] = useMutation(updateLanguageMetadataMutation, { onCompleted: () => refetch() });
@@ -218,10 +232,9 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
         );
       }
       if (user.id === 1) {
-        const langAtt = node.additional_metadata.attached_users;
-        const landInh = node.additional_metadata.inherited_users;
-        const onlyUnique = (value, index, array) => array.indexOf(value) === index;
-        const langAllUsr = [...langAtt || [], ...landInh || []].filter(onlyUnique);
+        const langAttUsr = node.additional_metadata.attached_users;
+        const landInhUsr = node.additional_metadata.inherited_users;
+        const langAllUsr = uniqSum(langAttUsr, landInhUsr);
         const allUsrName = () => {
           if (!langAllUsr.length) return "No assigned users";
           return langAllUsr.map(id => {
@@ -338,7 +351,7 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
       {modalInfo.kind === "roles" && <SelectUserModal
         language={modalInfo.node}
         close={() => setModalInfo({})}
-        added={info => rebuildTree(info)}
+        added={info => updateLanguageTree(info)}
       />}
     </div>
   );

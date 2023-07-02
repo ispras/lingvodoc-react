@@ -16,7 +16,7 @@ export function buildLanguageTree(data) {
     const langId = lang.get("id");
     const langAttUsr = lang.getIn(["additional_metadata", "attached_users"]);
     const landInhUsr = lang.getIn(["additional_metadata", "inherited_users"]);
-    const LangAllUsr = uniqSum(langAttUsr, landInhUsr);
+    const langAllUsr = uniqSum(langAttUsr, landInhUsr);
 
     return lang.set("type", "language")
            .set("children", byParentId.get(langId, new List())
