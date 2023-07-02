@@ -1,9 +1,9 @@
 import { is, List } from "immutable";
 
 const parentGrouper = x => x.get("parent_id");
-const uniqSum = (list1, list2) => {
-    const onlyUnique = (value, index, array) => array.indexOf(value) === index;
-    return [...list1 || [], ...list2 || []].filter(onlyUnique);
+export const uniqSum = (list1, list2) => {
+  const onlyUnique = (value, index, array) => array.indexOf(value) === index;
+  return [...list1 || [], ...list2 || []].filter(onlyUnique);
 }
 
 export function buildLanguageTree(data) {
