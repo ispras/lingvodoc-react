@@ -107,7 +107,7 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
         const landInhUsr = node.additional_metadata.inherited_users;
         const langAllUsr = uniqSum(langAttUsr, landInhUsr);
         node.children.forEach(x =>
-          x.additional_metadata.inherit_users = langAllUsr);
+          x.additional_metadata.inherited_users = langAllUsr);
       }
       return node.children.forEach(innerUpdate);
     }
