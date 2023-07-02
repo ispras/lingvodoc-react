@@ -10,11 +10,10 @@ export function buildLanguageTree(data) {
   const byParentId = data.groupBy(parentGrouper);
   const innerBuild = (lang) => {
     const langId = lang.get("id");
-    const langAtt = lang.getIn(["additional_metadata", "attached_users"]);
-    const landInh = lang.getIn(["additional_metadata", "inherited_users"]);
+    const langAttUsr = lang.getIn(["additional_metadata", "attached_users"]);
+    const landInhUsr = lang.getIn(["additional_metadata", "inherited_users"]);
     const onlyUnique = (value, index, array) => array.indexOf(value) === index;
-    const langAllUsr = [...langAtt || [], ...landInh || []].filter(onlyUnique);
-    //if (langAllUsr) console.log(`All users (${langId}): ${langAllUsr}`)
+    const langAllUsr = [...langAttUsr || [], ...landInhUsr || []].filter(onlyUnique);
 
     return lang.set("type", "language")
            .set("children", byParentId.get(langId, new List())
