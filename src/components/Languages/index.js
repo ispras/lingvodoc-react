@@ -2,7 +2,7 @@ import React, { useCallback, useContext, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { getFlatDataFromTree, getNodeAtPath, map } from "react-sortable-tree";
 import { Button, Icon, Popup } from "semantic-ui-react";
-import { useQuery, useLazyQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import Immutable from "immutable";
 import { findIndex, isEqual, cloneDeep } from "lodash";
 import PropTypes from "prop-types";
@@ -13,7 +13,7 @@ import {
   dictionariesInfoQuery,
   languagesQuery,
   moveLanguageMutation,
-  updateLanguageMetadataMutation,
+  updateLanguageMetadataMutation
 } from "backend";
 import CreateLanguageModal from "components/CreateLanguageModal";
 import EditLanguageModal from "components/EditLanguageModal";
@@ -100,24 +100,20 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
   const updateLanguageTree = ({language_id, user_id}) => {
     let isFound = false;
     const innerUpdate = (node) => {
-      const langAttUsr = node.additional_metadata.attached_users;
-      const landInhUsr = node.additional_metadata.inherited_users;
+      let langAttUsr = node.additional_metadata.attached_users;
+
+      if (node.id.toString() === language_id.toString()) {
+        langAttUsr = uniqSum(langAttUsr, [user_id]);
+        //if (!node.additional_metadata) node.additional_metadata = {};
+        node.additional_metadata.attached_users = langAttUsr;
+        isFound = true;
+      }
 
       if (isFound) {
+        const landInhUsr = node.additional_metadata.inherited_users;
         const langAllUsr = uniqSum(langAttUsr, landInhUsr);
-        return node.children
-               .map(x => {
-                 if (!x.additional_metadata) x.additional_metadata = {};
-                 x.additional_metadata.inherit_users = langAllUsr;
-                 return x;
-               })
-               .map(innerUpdate);
-      }
-      if (node.id.toString() === language_id.toString()) {
-        const sumAttUsr = uniqSum(langAttUsr, [user_id]);
-        if (!node.additional_metadata) node.additional_metadata = {};
-        node.additional_metadata.attached_users = sumAttUsr;
-        isFound = true;
+        node.children.forEach(x =>
+          x.additional_metadata.inherit_users = langAllUsr);
       }
       return node.children.map(innerUpdate);
     }
@@ -180,6 +176,8 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
 
   const generateNodeProps = useCallback(
     ({ node }) => {
+      if (!node.id) console.log("Странная нода: " + node)
+
       if (!canEdit) {
         return { title: chooseTranslation(node.translations) };
       }
