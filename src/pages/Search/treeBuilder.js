@@ -1,6 +1,10 @@
 import { is, List } from "immutable";
 
 const parentGrouper = x => x.get("parent_id");
+const uniqSum = (list1, list2) => {
+    const onlyUnique = (value, index, array) => array.indexOf(value) === index;
+    return [...list1 || [], ...list2 || []].filter(onlyUnique);
+}
 
 export function buildLanguageTree(data) {
   if (!data) {
@@ -12,8 +16,7 @@ export function buildLanguageTree(data) {
     const langId = lang.get("id");
     const langAttUsr = lang.getIn(["additional_metadata", "attached_users"]);
     const landInhUsr = lang.getIn(["additional_metadata", "inherited_users"]);
-    const onlyUnique = (value, index, array) => array.indexOf(value) === index;
-    const langAllUsr = [...langAttUsr || [], ...landInhUsr || []].filter(onlyUnique);
+    const LangAllUsr = uniqSum(langAttUsr, landInhUsr);
 
     return lang.set("type", "language")
            .set("children", byParentId.get(langId, new List())
