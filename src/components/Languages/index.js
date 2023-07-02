@@ -117,9 +117,9 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
       }
       return node.children.map(innerUpdate);
     }
-    const tree = cloneDeep(treeData);
-    tree.forEach(innerUpdate);
-    setTreeDataFromQuery(null, readyData=tree);
+    const readyData = cloneDeep(treeData);
+    readyData.forEach(innerUpdate);
+    setTreeDataFromQuery(null, readyData);
   }
 
   const [deleteLanguage] = useMutation(deleteLanguageMutation, { onCompleted: () => refetch() });
