@@ -105,7 +105,10 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
       if (isFound) {
         const langAllUsr = uniqSum(langAttUsr, landInhUsr);
         return node.children
-               .map(x => x.additional_metadata.inherit_users = langAllUsr)
+               .map(x => {
+                 if (x.additional_metadata) x.additional_metadata.inherit_users = langAllUsr;
+                 return x;
+               })
                .map(innerUpdate);
       }
       if (node.id.toString() === language_id.toString()) {
@@ -115,7 +118,7 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
       }
       return node.children.map(innerUpdate);
     }
-    readyData = cloneDeep(treeData).map(innerUpdate);
+    const readyData = cloneDeep(treeData).map(innerUpdate);
     setTreeDataFromQuery(null, readyData);
   }
 
