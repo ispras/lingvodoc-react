@@ -94,25 +94,31 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
 
   const updateLanguageTree = ({language_id, user_id}) => {
     let isFound = false;
-    const innerUpdate = (node) => {
+    const innerUpdate = (node, toChange) => {
       let langAttUsr = node.additional_metadata.attached_users;
 
       if (node.id.toString() === language_id.toString()) {
         langAttUsr = uniqSum(langAttUsr, [user_id]);
         node.additional_metadata.attached_users = langAttUsr;
         isFound = true;
+        toChange = true;
       }
 
-      if (isFound) {
+      if (isFound && toChange) {
         const landInhUsr = node.additional_metadata.inherited_users;
         const langAllUsr = uniqSum(langAttUsr, landInhUsr);
         node.children.forEach(x =>
           x.additional_metadata.inherited_users = langAllUsr);
       }
-      return node.children.forEach(innerUpdate);
+
+      //stop search if result is found in another branch of recursion
+      if (isFound && !toChange)
+        return node.children;
+
+      return node.children.forEach(n => innerUpdate(n, toChange));
     }
     const readyData = cloneDeep(treeData);
-    readyData.forEach(innerUpdate);
+    readyData.forEach(n => innerUpdate(n, false));
     setTreeDataFromQuery(null, readyData);
   }
 
