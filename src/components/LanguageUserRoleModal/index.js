@@ -28,29 +28,30 @@ const computeRolesBulkMutation = gql`
 `;
 
 // functional component
-const SelectUserModal = ({ language, close, added }) => {
+const SelectUserModal = ({ language, close, added, kind}) => {
   const getTranslation = useContext(TranslationContext);
   const [ selectedUser, setSelectedUser ] = useState(null);
-  const [updateLanguageMetadata] = useMutation(updateLanguageMetadataMutation, { onCompleted: () => refetch() });
-
-  // handling gql to add new role by using mutation
   const [addRole, { error: addRoleError, loading: addRoleLoading }] = useMutation(computeRolesBulkMutation);
-  const onSelectUser = (userId) =>
-    addRole({
-      variables: { userId, languageId: language.id },
-    }).then(
-      updateLanguageMetadata({
+  const [addSign, { error: addSignError, loading: addSignLoading }] = useMutation(updateLanguageMetadataMutation);
+
+  const onSelectUser = (userId) => {
+    const onSuccess = () => {
+      close();
+      added({user_id: userId, language_id: language.id});
+      window.logger.suc(getTranslation("Added " + kind + " successfully."));
+    }
+
+    if (kind === 'roles')
+      addRole({ variables: { userId, languageId: language.id }}).then(onSuccess);
+
+    if (kind === 'sign')
+      addSign({
         variables: {
           id: language.id,
           metadata: {},
           new_user: userId
-        },
-    })).then(
-      () => {
-        close();
-        added({user_id: userId, language_id: language.id});
-        window.logger.suc(getTranslation("Added roles successfully."));
-    });
+        }
+      }).then(onSuccess);
 
   // handling gql to query users list
   const { data, error, loading } = useQuery(queryUsers);
@@ -68,15 +69,15 @@ const SelectUserModal = ({ language, close, added }) => {
 
   const asModal = (content) => (
     <Modal className="lingvo-modal2" dimmer open size="small" closeIcon onClose={close}>
-      <Modal.Header>{getTranslation("Add roles")}</Modal.Header>
+      <Modal.Header>{getTranslation("Add " + kind)}</Modal.Header>
       <Modal.Content>
         {content}
       </Modal.Content>
       <Modal.Actions>
-        <Button content={addRoleLoading
-                         ? <span>{getTranslation("Adding roles")}... <Icon name="spinner" loading /></span>
-                         : getTranslation("Add roles")}
-                disabled={!selectedUser || addRoleLoading}
+        <Button content={addRoleLoading || addSignLoading
+                         ? <span>{getTranslation("Adding " + kind)}... <Icon name="spinner" loading /></span>
+                         : getTranslation("Add " + kind)}
+                disabled={!selectedUser || addRoleLoading || addSignLoading}
                 onClick={() => selectedUser && onSelectUser(selectedUser)}
                 className="lingvo-button-violet"
         />
@@ -102,10 +103,10 @@ const SelectUserModal = ({ language, close, added }) => {
       </Message>
     );
   }
-  if (addRoleError) {
+  if (addRoleError || addSignError) {
     return (
       <Message negative compact>
-        <Message.Header>{getTranslation("Adding role error")}</Message.Header>
+        <Message.Header>{getTranslation("Adding " + kind + " error")}</Message.Header>
         <div style={{ marginTop: "0.25em" }}>
           {getTranslation("Please contact administrators.")}
         </div>
@@ -125,7 +126,7 @@ const SelectUserModal = ({ language, close, added }) => {
       onChange={(e, d) => setSelectedUser(d.value)}
       className="lingvo-roles-dropdown lingvo-roles-dropdown_search"
       icon={<i className="lingvo-icon lingvo-icon_arrow" />}
-      disabled={addRoleLoading}
+      disabled={addRoleLoading || addSignLoading}
     />
   );
 }
@@ -133,7 +134,8 @@ const SelectUserModal = ({ language, close, added }) => {
 SelectUserModal.propTypes = {
   language: PropTypes.object.isRequired,
   close: PropTypes.func.isRequired,
-  added: PropTypes.func.isRequired
+  added: PropTypes.func.isRequired,
+  kind: PropTypes.string.isRequired
 };
 
 export default SelectUserModal;

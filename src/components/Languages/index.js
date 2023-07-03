@@ -181,6 +181,35 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
         return { title: chooseTranslation(node.translations) };
       }
       const buttons = [];
+
+      if (user.id === 1) {
+        const langAttUsr = node.additional_metadata.attached_users;
+        const landInhUsr = node.additional_metadata.inherited_users;
+        const langAllUsr = uniqSum(langAttUsr, landInhUsr);
+        const allUsrName = () => {
+          if (!langAllUsr.length) return "No assigned users";
+          return langAllUsr.map(id => {
+            if (!userData) return "N/A";
+            const user = userData.users.find(x => x.id === id);
+            if (user) return user.name;
+            return "Anonymous";
+          }).join(" | ");
+        }
+        buttons.push(
+          <Popup
+            trigger={
+              <Button
+                color="blue"
+                content={getTranslation("Add sign")}
+                onClick={() => setModalInfo({ kind: "sign", node })}
+              />
+            }
+            hideOnScroll={true}
+            position='right center'
+            content={allUsrName}
+          />
+        );
+      }
       if (onSelect) {
         buttons.push(<Button color="blue" content={getTranslation("Select")} onClick={() => onNodeSelected(node)} />);
       }
@@ -234,19 +263,6 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
         );
       }
       if (user.id === 1) {
-        const langAttUsr = node.additional_metadata.attached_users;
-        const landInhUsr = node.additional_metadata.inherited_users;
-        const langAllUsr = uniqSum(langAttUsr, landInhUsr);
-        const allUsrName = () => {
-          if (!langAllUsr.length) return "No assigned users";
-          return langAllUsr.map(id => {
-            if (!userData) return "N/A";
-            const user = userData.users.find(x => x.id === id);
-            if (user) return user.name;
-            return "Anonymous";
-          }).join(" | ");
-        }
-
         nodeProps.buttons.push(
           <Popup
             trigger={
@@ -258,7 +274,7 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
             }
             hideOnScroll={true}
             position='right center'
-            content={allUsrName}
+            content="Subscribe all the existing dictionaries and corpora related to this language and its sublanguages"
           />
         );
       }
@@ -353,7 +369,14 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
       {modalInfo.kind === "roles" && <SelectUserModal
         language={modalInfo.node}
         close={() => setModalInfo({})}
+        added={info => null} //dummy function
+        kind="roles"
+      />}
+      {modalInfo.kind === "sign" && <SelectUserModal
+        language={modalInfo.node}
+        close={() => setModalInfo({})}
         added={info => updateLanguageTree(info)}
+        kind="sign"
       />}
     </div>
   );
