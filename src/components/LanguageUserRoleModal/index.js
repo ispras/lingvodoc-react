@@ -52,6 +52,7 @@ const SelectUserModal = ({ language, close, added, kind}) => {
           new_user: userId
         }
       }).then(onSuccess);
+  }
 
   // handling gql to query users list
   const { data, error, loading } = useQuery(queryUsers);
