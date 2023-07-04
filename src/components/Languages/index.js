@@ -113,7 +113,7 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
 
       //stop search if result is found in another branch of recursion
       if (isFound && !toChange)
-        return node.children;
+        return null;
 
       return node.children.forEach(n => innerUpdate(n, toChange));
     }
