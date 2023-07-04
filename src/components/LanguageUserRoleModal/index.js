@@ -49,7 +49,16 @@ const SelectUserModal = ({ language, close, added, kind}) => {
         variables: {
           id: language.id,
           metadata: {},
-          new_user: userId
+          add_user: userId
+        }
+      }).then(onSuccess);
+
+    if (kind === 'unsign')
+      addSign({
+        variables: {
+          id: language.id,
+          metadata: {},
+          del_user: userId
         }
       }).then(onSuccess);
   }

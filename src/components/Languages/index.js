@@ -224,6 +224,14 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
             </Popup.Content>
           </Popup>
         );
+        buttons.push(
+          <Button
+            color='cyan'
+            title={getTranslation("Delete assigned user")}
+            icon='minus'
+            onClick={() => setModalInfo({ kind: "unsign", node })}
+          />
+        );
       }
       if (onSelect) {
         buttons.push(<Button color="blue" content={getTranslation("Select")} onClick={() => onNodeSelected(node)} />);
@@ -385,6 +393,12 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
         close={() => setModalInfo({})}
         added={info => updateLanguageTree(info)}
         kind="sign"
+      />}
+      {modalInfo.kind === "unsign" && <SelectUserModal
+        language={modalInfo.node}
+        close={() => setModalInfo({})}
+        added={info => updateLanguageTree(info)}
+        kind="unsign"
       />}
     </div>
   );
