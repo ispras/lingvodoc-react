@@ -99,7 +99,7 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
 
       if (node.id.toString() === language_id.toString()) {
         if (add_user_id) langAttUsr = uniqSum(langAttUsr, [add_user_id]);
-        if (del_user_id) langAttUsr = langAttUsr //- [del_user_id]
+        if (del_user_id) langAttUsr = langAttUsr.filter(x => x !== del_user_id)
         node.additional_metadata.attached_users = langAttUsr;
         isFound = true;
         toChange = true;
