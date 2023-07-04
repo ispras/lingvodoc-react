@@ -191,7 +191,7 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
           const user = userData.users.find(x => x.id === id);
           if (user) return user.name;
           return "Anonymous";
-        }).join(" | ");
+        });
       }
 
       const langAttUsr = node.additional_metadata.attached_users;
@@ -203,7 +203,7 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
         <Popup
           trigger={
             <div title="Own assigned users" >
-              {attUsrName}
+              {attUsrName.join(" | ")}
             </div>
           }
           hideOnScroll={true}
@@ -211,7 +211,7 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
         >
           <Popup.Header>Own and inherited users</Popup.Header>
           <Popup.Content>
-            {allUsrName}
+            {allUsrName.join(" | ")}
           </Popup.Content>
         </Popup>
       );
