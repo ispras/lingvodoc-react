@@ -181,33 +181,48 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
         return { title: chooseTranslation(node.translations) };
       }
       const buttons = [];
+      const nodeProps = { buttons };
+      const toName = (userIdList) => {
+        if (!userData || !userData.users) return "No user data";
+        if (!userIdList || !userIdList.length) return "No assigned users";
+        return userIdList.map(id => {
+          const user = userData.users.find(x => x.id === id);
+          if (user) return user.name;
+          return "Anonymous";
+        }).join(" | ");
+      }
 
       if (user.id === 1) {
         const langAttUsr = node.additional_metadata.attached_users;
         const landInhUsr = node.additional_metadata.inherited_users;
         const langAllUsr = uniqSum(langAttUsr, landInhUsr);
-        const allUsrName = () => {
-          if (!langAllUsr.length) return "No assigned users";
-          return langAllUsr.map(id => {
-            if (!userData) return "N/A";
-            const user = userData.users.find(x => x.id === id);
-            if (user) return user.name;
-            return "Anonymous";
-          }).join(" | ");
-        }
+        const attUsrName = toName(langAttUsr);
+        const allUsrName = toName(langAllUsr);
+        nodeProps.subtitle = (
+          <div
+            title="Own assigned users"
+          >
+            {attUsrName}
+          </div>
+        );
         buttons.push(
           <Popup
             trigger={
               <Button
-                color="blue"
-                content={getTranslation("Add sign")}
+                color='cyan'
+                title={getTranslation("Add assigned user")}
+                icon='add'
                 onClick={() => setModalInfo({ kind: "sign", node })}
               />
             }
             hideOnScroll={true}
-            position='right center'
-            content={allUsrName}
-          />
+            position='left center'
+          >
+            <Popup.Header>Own and inherited users</Popup.Header>
+            <Popup.Content>
+              {allUsrName}
+            </Popup.Content>
+          </Popup>
         );
       }
       if (onSelect) {
@@ -223,7 +238,6 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
           onClick={() => setModalInfo({ kind: "create", node })}
         />
       );
-      const nodeProps = { buttons };
       if (!onSelect && user.id === 1) {
         const stats = languageStats[node.id.toString()];
         const dictionariesCount = stats ? stats.dictionariesCount : 0;
@@ -264,17 +278,11 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
       }
       if (user.id === 1) {
         nodeProps.buttons.push(
-          <Popup
-            trigger={
-              <Button
-                color="violet"
-                content={getTranslation("Add roles")}
-                onClick={() => setModalInfo({ kind: "roles", node })}
-              />
-            }
-            hideOnScroll={true}
-            position='right center'
-            content="Subscribe all the existing dictionaries and corpora related to this language and its sublanguages"
+          <Button
+            color="violet"
+            title="Subscribe all the existing dictionaries and corpora related to this language and its sublanguages"
+            content={getTranslation("Add roles")}
+            onClick={() => setModalInfo({ kind: "roles", node })}
           />
         );
       }
