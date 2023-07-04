@@ -28,39 +28,45 @@ const computeRolesBulkMutation = gql`
 `;
 
 // functional component
-const SelectUserModal = ({ language, close, added, kind}) => {
+const SelectUserModal = ({ language, close, success, kind}) => {
   const getTranslation = useContext(TranslationContext);
   const [ selectedUser, setSelectedUser ] = useState(null);
   const [addRole, { error: addRoleError, loading: addRoleLoading }] = useMutation(computeRolesBulkMutation);
   const [addSign, { error: addSignError, loading: addSignLoading }] = useMutation(updateLanguageMetadataMutation);
 
   const onSelectUser = (userId) => {
-    const onSuccess = () => {
-      close();
-      added({user_id: userId, language_id: language.id});
-      window.logger.suc(getTranslation("Added " + kind + " successfully."));
-    }
-
     if (kind === 'roles')
-      addRole({ variables: { userId, languageId: language.id }}).then(onSuccess);
+      addRole({ variables: { userId, languageId: language.id }}
+    ).then(() => {
+      close();
+      window.logger.suc(getTranslation("Added roles successfully."));
+    });
 
     if (kind === 'sign')
       addSign({
         variables: {
           id: language.id,
           metadata: {},
-          add_user: userId
+          add_user_id: userId
         }
-      }).then(onSuccess);
+    }).then(() => {
+      close();
+      success({add_user_id: userId, language_id: language.id});
+      window.logger.suc(getTranslation("Signed successfully."));
+    });
 
     if (kind === 'unsign')
       addSign({
         variables: {
           id: language.id,
           metadata: {},
-          del_user: userId
+          del_user_id: userId
         }
-      }).then(onSuccess);
+    }).then(() => {
+      close();
+      success({del_user_id: userId, language_id: language.id});
+      window.logger.suc(getTranslation("Unsigned successfully."));
+    });
   }
 
   // handling gql to query users list
@@ -144,7 +150,7 @@ const SelectUserModal = ({ language, close, added, kind}) => {
 SelectUserModal.propTypes = {
   language: PropTypes.object.isRequired,
   close: PropTypes.func.isRequired,
-  added: PropTypes.func.isRequired,
+  success: PropTypes.func.isRequired,
   kind: PropTypes.string.isRequired
 };
 

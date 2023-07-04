@@ -92,13 +92,14 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
     onCompleted: data => setTreeDataFromQuery(data.languages, null)
   });
 
-  const updateLanguageTree = ({language_id, user_id}) => {
+  const updateLanguageTree = ({add_user_id, del_user_id, language_id}) => {
     let isFound = false;
     const innerUpdate = (node, toChange) => {
       let langAttUsr = node.additional_metadata.attached_users;
 
       if (node.id.toString() === language_id.toString()) {
-        langAttUsr = uniqSum(langAttUsr, [user_id]);
+        if (add_user_id) langAttUsr = uniqSum(langAttUsr, [add_user_id]);
+        if (del_user_id) langAttUsr = langAttUsr //- [del_user_id]
         node.additional_metadata.attached_users = langAttUsr;
         isFound = true;
         toChange = true;
@@ -385,19 +386,19 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
       {modalInfo.kind === "roles" && <SelectUserModal
         language={modalInfo.node}
         close={() => setModalInfo({})}
-        added={info => null} //dummy function
+        success={info => null} //dummy function
         kind="roles"
       />}
       {modalInfo.kind === "sign" && <SelectUserModal
         language={modalInfo.node}
         close={() => setModalInfo({})}
-        added={info => updateLanguageTree(info)}
+        success={info => updateLanguageTree(info)}
         kind="sign"
       />}
       {modalInfo.kind === "unsign" && <SelectUserModal
         language={modalInfo.node}
         close={() => setModalInfo({})}
-        added={info => updateLanguageTree(info)}
+        success={info => updateLanguageTree(info)}
         kind="unsign"
       />}
     </div>
