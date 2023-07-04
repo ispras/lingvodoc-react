@@ -34,6 +34,11 @@ const SelectUserModal = ({ language, close, success, kind}) => {
   const [addRole, { error: addRoleError, loading: addRoleLoading }] = useMutation(computeRolesBulkMutation);
   const [addSign, { error: addSignError, loading: addSignLoading }] = useMutation(updateLanguageMetadataMutation);
 
+  const use = kind === 'roles'  ? "Add roles"
+            : kind === 'sign'   ? "Add sign"
+            : kind === 'unsign' ? "Delete sign"
+            : "Select user";
+
   const onSelectUser = (userId) => {
     if (kind === 'roles')
       addRole({ variables: { userId, languageId: language.id }}
@@ -85,14 +90,14 @@ const SelectUserModal = ({ language, close, success, kind}) => {
 
   const asModal = (content) => (
     <Modal className="lingvo-modal2" dimmer open size="small" closeIcon onClose={close}>
-      <Modal.Header>{getTranslation("Add " + kind)}</Modal.Header>
+      <Modal.Header>{getTranslation(use)}</Modal.Header>
       <Modal.Content>
         {content}
       </Modal.Content>
       <Modal.Actions>
         <Button content={addRoleLoading || addSignLoading
                          ? <span>{getTranslation("Adding " + kind)}... <Icon name="spinner" loading /></span>
-                         : getTranslation("Add " + kind)}
+                         : getTranslation(use)}
                 disabled={!selectedUser || addRoleLoading || addSignLoading}
                 onClick={() => selectedUser && onSelectUser(selectedUser)}
                 className="lingvo-button-violet"

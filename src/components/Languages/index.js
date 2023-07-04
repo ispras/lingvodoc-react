@@ -1,7 +1,7 @@
 import React, { useCallback, useContext, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { getFlatDataFromTree, getNodeAtPath, map } from "react-sortable-tree";
-import { Button, Icon, Popup } from "semantic-ui-react";
+import { Button, ButtonGroup, Icon, Popup } from "semantic-ui-react";
 import { useQuery } from "@apollo/client";
 import Immutable from "immutable";
 import { findIndex, isEqual, cloneDeep } from "lodash";
@@ -183,6 +183,7 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
       }
       const buttons = [];
       const nodeProps = { buttons };
+
       const toName = (userIdList) => {
         if (!userData || !userData.users) return "No user data";
         if (!userIdList || !userIdList.length) return "No assigned users";
@@ -193,45 +194,44 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
         }).join(" | ");
       }
 
+      const langAttUsr = node.additional_metadata.attached_users;
+      const landInhUsr = node.additional_metadata.inherited_users;
+      const langAllUsr = uniqSum(langAttUsr, landInhUsr);
+      const attUsrName = toName(langAttUsr);
+      const allUsrName = toName(langAllUsr);
+      nodeProps.subtitle = (
+        <Popup
+          trigger={
+            <div title="Own assigned users" >
+              {attUsrName}
+            </div>
+          }
+          hideOnScroll={true}
+          position='top left'
+        >
+          <Popup.Header>Own and inherited users</Popup.Header>
+          <Popup.Content>
+            {allUsrName}
+          </Popup.Content>
+        </Popup>
+      );
+
       if (user.id === 1) {
-        const langAttUsr = node.additional_metadata.attached_users;
-        const landInhUsr = node.additional_metadata.inherited_users;
-        const langAllUsr = uniqSum(langAttUsr, landInhUsr);
-        const attUsrName = toName(langAttUsr);
-        const allUsrName = toName(langAllUsr);
-        nodeProps.subtitle = (
-          <div
-            title="Own assigned users"
-          >
-            {attUsrName}
-          </div>
-        );
         buttons.push(
-          <Popup
-            trigger={
-              <Button
-                color='cyan'
-                title={getTranslation("Add assigned user")}
-                icon='add'
-                onClick={() => setModalInfo({ kind: "sign", node })}
-              />
-            }
-            hideOnScroll={true}
-            position='left center'
-          >
-            <Popup.Header>Own and inherited users</Popup.Header>
-            <Popup.Content>
-              {allUsrName}
-            </Popup.Content>
-          </Popup>
-        );
-        buttons.push(
-          <Button
-            color='cyan'
-            title={getTranslation("Delete assigned user")}
-            icon='minus'
-            onClick={() => setModalInfo({ kind: "unsign", node })}
-          />
+          <ButtonGroup>
+            <Button
+              color='white'
+              icon='add'
+              title={getTranslation("Add assigned user")}
+              onClick={() => setModalInfo({ kind: "sign", node })}
+            />
+            <Button
+              color='white'
+              icon='minus'
+              title={getTranslation("Delete assigned user")}
+              onClick={() => setModalInfo({ kind: "unsign", node })}
+            />
+          </ButtonGroup>
         );
       }
       if (onSelect) {
