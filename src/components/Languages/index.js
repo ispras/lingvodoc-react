@@ -225,12 +225,14 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
               title={getTranslation("Add assigned user")}
               onClick={() => setModalInfo({ kind: "sign", node })}
             />
-            <Button
-              color='white'
-              icon='minus'
-              title={getTranslation("Delete assigned user")}
-              onClick={() => setModalInfo({ kind: "unsign", node })}
-            />
+            { langAttUsr && langAttUsr.length &&
+              <Button
+                color='white'
+                icon='minus'
+                title={getTranslation("Delete assigned user")}
+                onClick={() => setModalInfo({ kind: "unsign", node })}
+              />
+            }
           </ButtonGroup>
         );
       }
