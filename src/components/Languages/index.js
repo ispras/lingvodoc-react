@@ -218,7 +218,7 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
 
       if (user.id === 1) {
         buttons.push(
-          <ButtonGroup>
+          <ButtonGroup style={{marginRight: "0.25rem"}}>
             <Button
               color='white'
               icon='add'
