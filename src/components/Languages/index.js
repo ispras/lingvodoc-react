@@ -202,14 +202,14 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
       nodeProps.subtitle = (
         <Popup
           trigger={
-            <div title="Own assigned users" >
+            <div title={getTranslation("Own assigned users")}>
               {attUsrName}
             </div>
           }
           hideOnScroll={true}
           position='top left'
         >
-          <Popup.Header>Own and inherited users</Popup.Header>
+          <Popup.Header>{getTranslation("Own and inherited users")}</Popup.Header>
           <Popup.Content>
             {allUsrName}
           </Popup.Content>
@@ -291,7 +291,7 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
         nodeProps.buttons.push(
           <Button
             color="violet"
-            title="Subscribe all the existing dictionaries and corpora related to this language and its sublanguages"
+            title={getTranslation("Subscribe all the existing dictionaries and corpora related to this language and its sublanguages")}
             content={getTranslation("Add roles")}
             onClick={() => setModalInfo({ kind: "roles", node })}
           />
