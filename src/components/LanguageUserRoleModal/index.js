@@ -6,6 +6,7 @@ import { filter } from "lodash";
 import PropTypes from "prop-types";
 import { queryUsers } from "components/BanModal";
 import { useMutation } from "hooks";
+
 import { updateLanguageMetadataMutation } from "backend";
 
 import TranslationContext from "Layout/TranslationContext";
@@ -127,6 +128,7 @@ const SelectUserModal = ({ language, kind, close, success, filter_by}) => {
       </Message>
     );
   }
+
   if (addRoleError || addSignError) {
     return (
       <Message negative compact>
