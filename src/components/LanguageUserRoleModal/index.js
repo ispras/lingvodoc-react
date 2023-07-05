@@ -7,6 +7,8 @@ import PropTypes from "prop-types";
 import { queryUsers } from "components/BanModal";
 import { useMutation } from "hooks";
 
+import { updateLanguageMetadataMutation } from "backend";
+
 import TranslationContext from "Layout/TranslationContext";
 
 // gql to call add_roles_bulk mutation
@@ -27,20 +29,51 @@ const computeRolesBulkMutation = gql`
 `;
 
 // functional component
-const SelectUserModal = ({ language, close }) => {
+const SelectUserModal = ({ language, kind, close, success, filter_by}) => {
   const getTranslation = useContext(TranslationContext);
   const [ selectedUser, setSelectedUser ] = useState(null);
-
-  // handling gql to add new role by using mutation
   const [addRole, { error: addRoleError, loading: addRoleLoading }] = useMutation(computeRolesBulkMutation);
-  const onSelectUser = (userId) =>
-    addRole({
-      variables: { userId, languageId: language.id },
-    }).then(
-      () => {
-        close();
-        window.logger.suc(getTranslation("Added roles successfully."));
+  const [addSign, { error: addSignError, loading: addSignLoading }] = useMutation(updateLanguageMetadataMutation);
+
+  const use = kind === 'roles'  ? "Add roles"
+            : kind === 'sign'   ? "Add sign"
+            : kind === 'unsign' ? "Delete sign"
+            : "Select user";
+
+  const onSelectUser = (userId) => {
+    if (kind === 'roles')
+      addRole({ variables: { userId, languageId: language.id }}
+    ).then(() => {
+      close();
+      window.logger.suc(getTranslation("Added roles successfully."));
     });
+
+    if (kind === 'sign')
+      addSign({
+        variables: {
+          id: language.id,
+          metadata: {},
+          add_user_id: userId
+        }
+    }).then(() => {
+      close();
+      success({add_user_id: userId, language_id: language.id});
+      window.logger.suc(getTranslation("Signed successfully."));
+    });
+
+    if (kind === 'unsign')
+      addSign({
+        variables: {
+          id: language.id,
+          metadata: {},
+          del_user_id: userId
+        }
+    }).then(() => {
+      close();
+      success({del_user_id: userId, language_id: language.id});
+      window.logger.suc(getTranslation("Unsigned successfully."));
+    });
+  }
 
   // handling gql to query users list
   const { data, error, loading } = useQuery(queryUsers);
@@ -53,20 +86,23 @@ const SelectUserModal = ({ language, close }) => {
           value: u.id,
           text: `${u.name} (${u.intl_name !== u.login ? `${u.intl_name}, ` : ""}${u.login})`
         }))
-        .filter(u => u.value !== 1),
-    [data]);
+        .filter(u => u.value !== 1)
+        .filter(u => {
+          if (!filter_by) return true;
+          return filter_by.indexOf(u.value) >= 0;
+        }), [data]);
 
   const asModal = (content) => (
     <Modal className="lingvo-modal2" dimmer open size="small" closeIcon onClose={close}>
-      <Modal.Header>{getTranslation("Add roles")}</Modal.Header>
+      <Modal.Header>{getTranslation(use)}</Modal.Header>
       <Modal.Content>
         {content}
       </Modal.Content>
       <Modal.Actions>
-        <Button content={addRoleLoading
-                         ? <span>{getTranslation("Adding roles")}... <Icon name="spinner" loading /></span>
-                         : getTranslation("Add roles")}
-                disabled={!selectedUser || addRoleLoading}
+        <Button content={addRoleLoading || addSignLoading
+                         ? <span>{getTranslation("Adding " + kind)}... <Icon name="spinner" loading /></span>
+                         : getTranslation(use)}
+                disabled={!selectedUser || addRoleLoading || addSignLoading}
                 onClick={() => selectedUser && onSelectUser(selectedUser)}
                 className="lingvo-button-violet"
         />
@@ -92,10 +128,11 @@ const SelectUserModal = ({ language, close }) => {
       </Message>
     );
   }
-  if (addRoleError) {
+
+  if (addRoleError || addSignError) {
     return (
       <Message negative compact>
-        <Message.Header>{getTranslation("Adding role error")}</Message.Header>
+        <Message.Header>{getTranslation("Adding " + kind + " error")}</Message.Header>
         <div style={{ marginTop: "0.25em" }}>
           {getTranslation("Please contact administrators.")}
         </div>
@@ -115,14 +152,17 @@ const SelectUserModal = ({ language, close }) => {
       onChange={(e, d) => setSelectedUser(d.value)}
       className="lingvo-roles-dropdown lingvo-roles-dropdown_search"
       icon={<i className="lingvo-icon lingvo-icon_arrow" />}
-      disabled={addRoleLoading}
+      disabled={addRoleLoading || addSignLoading}
     />
   );
 }
 
 SelectUserModal.propTypes = {
   language: PropTypes.object.isRequired,
-  close: PropTypes.func.isRequired
+  kind: PropTypes.string.isRequired,
+  close: PropTypes.func.isRequired,
+  success: PropTypes.func,
+  filter_by: PropTypes.array
 };
 
 export default SelectUserModal;
