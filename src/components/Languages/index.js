@@ -186,7 +186,7 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
 
       const toName = (userIdList) => {
         if (!userData || !userData.users) return "No user data";
-        if (!userIdList || !userIdList.length) return "No assigned users";
+        if (!userIdList || !userIdList.length) return getTranslation("No assigned users");
         return userIdList.map(id => {
           const user = userData.users.find(x => x.id === id);
           if (user) return user.name;
