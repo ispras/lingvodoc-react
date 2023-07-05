@@ -388,7 +388,6 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
       {modalInfo.kind === "roles" && <SelectUserModal
         language={modalInfo.node}
         close={() => setModalInfo({})}
-        success={info => null} //dummy function
         kind="roles"
       />}
       {modalInfo.kind === "sign" && <SelectUserModal
@@ -402,6 +401,7 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
         close={() => setModalInfo({})}
         success={info => updateLanguageTree(info)}
         kind="unsign"
+        filter_by={modalInfo.node.additional_metadata.attached_users}
       />}
     </div>
   );

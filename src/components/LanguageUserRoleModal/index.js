@@ -28,7 +28,7 @@ const computeRolesBulkMutation = gql`
 `;
 
 // functional component
-const SelectUserModal = ({ language, close, success, kind}) => {
+const SelectUserModal = ({ language, kind, close, success, filter_by}) => {
   const getTranslation = useContext(TranslationContext);
   const [ selectedUser, setSelectedUser ] = useState(null);
   const [addRole, { error: addRoleError, loading: addRoleLoading }] = useMutation(computeRolesBulkMutation);
@@ -85,8 +85,11 @@ const SelectUserModal = ({ language, close, success, kind}) => {
           value: u.id,
           text: `${u.name} (${u.intl_name !== u.login ? `${u.intl_name}, ` : ""}${u.login})`
         }))
-        .filter(u => u.value !== 1),
-    [data]);
+        .filter(u => u.value !== 1)
+        .filter(u => {
+          if (!filter_by) return true;
+          return filter_by.indexOf(u.value) >= 0;
+        }), [data]);
 
   const asModal = (content) => (
     <Modal className="lingvo-modal2" dimmer open size="small" closeIcon onClose={close}>
@@ -154,9 +157,10 @@ const SelectUserModal = ({ language, close, success, kind}) => {
 
 SelectUserModal.propTypes = {
   language: PropTypes.object.isRequired,
+  kind: PropTypes.string.isRequired,
   close: PropTypes.func.isRequired,
-  success: PropTypes.func.isRequired,
-  kind: PropTypes.string.isRequired
+  success: PropTypes.func,
+  filter_by: PropTypes.array
 };
 
 export default SelectUserModal;
