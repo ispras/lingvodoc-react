@@ -233,7 +233,11 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
         >
           <Popup.Header>{getTranslation("Own and inherited users")}</Popup.Header>
           <Popup.Content>
-            <ul>{allUsrName.map(name => <li>{name}</li>)}</ul>
+            <ul>
+              {allUsrName
+               ? allUsrName.map(name => <li>{name}</li>)
+               : getTranslation("No assigned users")}
+            </ul>
           </Popup.Content>
         </Popup>
       );
