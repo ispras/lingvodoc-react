@@ -24,10 +24,13 @@ import TranslationContext from "Layout/TranslationContext";
 import { buildLanguageTree, uniqSum } from "pages/Search/treeBuilder";
 import { compositeIdToString } from "utils/compositeId";
 import { queryUsers } from "components/BanModal";
+import { openModal as openConfirmModal } from "ducks/confirm";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
 
 const getNodeKey = ({ node, treeIndex }) => (node.id ? node.id.toString() : treeIndex);
 
-const Languages = ({ height, selected, onSelect, expanded = true, inverted = true, updatableTOC }) => {
+const Languages = ({ actions, height, selected, onSelect, expanded = true, inverted = true, updatableTOC }) => {
   const getTranslation = useContext(TranslationContext);
 
   const user = useSelector(state => state.user.user);
@@ -223,8 +226,9 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
                   content={name}
                   icon={user.id === 1 && 'delete'}
                   style={{fontSize: "0.9em"}}
-                  title={getTranslation("Delete assigned user")}
-                  onClick={() => toUnsign(node.id, langAttUsr[i])}
+                  title={getTranslation("Detach the user")}
+                  onClick={() => actions.openConfirmModal(`${getTranslation("Detach the user")}?`,
+                                                          () => toUnsign(node.id, langAttUsr[i]))}
                   disabled={user.id !== 1}
                 />)
                 : <span style={{marginRight: "4px"}}>
@@ -237,7 +241,7 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
                 basic
                 icon='add'
                 style={{fontSize: "0.9em"}}
-                title={getTranslation("Add assigned user")}
+                title={getTranslation("Attach new user")}
                 onClick={() => setModalInfo({ kind: "sign", node })}
               />}
             </div>
@@ -429,4 +433,8 @@ Languages.propTypes = {
   updatableTOC: PropTypes.bool
 };
 
-export default Languages;
+const mapDispatchToProps = dispatch => ({
+  actions: bindActionCreators({ openConfirmModal }, dispatch)
+});
+
+export default connect(state => state, mapDispatchToProps)(Languages);
