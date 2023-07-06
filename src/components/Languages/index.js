@@ -185,14 +185,26 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
       const nodeProps = { buttons };
 
       const toName = (userIdList) => {
-        if (!userData || !userData.users) return "No user data";
-        if (!userIdList || !userIdList.length) return "No assigned users";
+        if (!userData || !userData.users) return null;
+        if (!userIdList || !userIdList.length) return null;
         return userIdList.map(id => {
           const user = userData.users.find(x => x.id === id);
           if (user) return user.name;
           return "Anonymous";
-        }).join(" | ");
+        });
       }
+
+      const toUnsign = (node_id, user_id) =>
+        updateLanguageMetadata({
+          variables: {
+            id: node_id,
+            metadata: {},
+            del_user_id: user_id
+          }
+        }).then(() => {
+          updateLanguageTree({del_user_id: user_id, language_id: node_id});
+          window.logger.suc(getTranslation("Unsigned successfully."));
+        });
 
       const langAttUsr = node.additional_metadata.attached_users;
       const landInhUsr = node.additional_metadata.inherited_users;
@@ -203,7 +215,18 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
         <Popup
           trigger={
             <div title={getTranslation("Own assigned users")}>
-              {attUsrName}
+              {attUsrName
+               ? attUsrName.map((name, i) => <Button
+                   color='black'
+                   compact
+                   basic
+                   icon='delete'
+                   content={name}
+                   style={{fontSize: "0.9em"}}
+                   onClick={() => toUnsign(node.id, langAttUsr[i])}
+                   disabled={user.id !== 1}
+                 />)
+               : getTranslation("No assigned users")}
             </div>
           }
           hideOnScroll={true}
@@ -211,29 +234,23 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
         >
           <Popup.Header>{getTranslation("Own and inherited users")}</Popup.Header>
           <Popup.Content>
-            {allUsrName}
+            <ul>
+              {allUsrName
+               ? allUsrName.map(name => <li>{name}</li>)
+               : getTranslation("No assigned users")}
+            </ul>
           </Popup.Content>
         </Popup>
       );
 
       if (user.id === 1) {
         buttons.push(
-          <ButtonGroup style={{marginRight: "0.25rem"}}>
-            <Button
-              color='white'
-              icon='add'
-              title={getTranslation("Add assigned user")}
-              onClick={() => setModalInfo({ kind: "sign", node })}
-            />
-            { langAttUsr && langAttUsr.length &&
-              <Button
-                color='white'
-                icon='minus'
-                title={getTranslation("Delete assigned user")}
-                onClick={() => setModalInfo({ kind: "unsign", node })}
-              />
-            }
-          </ButtonGroup>
+          <Button
+            color='white'
+            icon='add'
+            title={getTranslation("Add assigned user")}
+            onClick={() => setModalInfo({ kind: "sign", node })}
+          />
         );
       }
       if (onSelect) {
@@ -395,13 +412,6 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
         close={() => setModalInfo({})}
         success={info => updateLanguageTree(info)}
         kind="sign"
-      />}
-      {modalInfo.kind === "unsign" && <SelectUserModal
-        language={modalInfo.node}
-        close={() => setModalInfo({})}
-        success={info => updateLanguageTree(info)}
-        kind="unsign"
-        filter_by={modalInfo.node.additional_metadata.attached_users}
       />}
     </div>
   );

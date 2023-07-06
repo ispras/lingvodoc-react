@@ -37,7 +37,6 @@ const SelectUserModal = ({ language, kind, close, success, filter_by}) => {
 
   const use = kind === 'roles'  ? "Add roles"
             : kind === 'sign'   ? "Add sign"
-            : kind === 'unsign' ? "Delete sign"
             : "Select user";
 
   const onSelectUser = (userId) => {
@@ -49,6 +48,7 @@ const SelectUserModal = ({ language, kind, close, success, filter_by}) => {
     });
 
     if (kind === 'sign')
+
       addSign({
         variables: {
           id: language.id,
@@ -59,19 +59,6 @@ const SelectUserModal = ({ language, kind, close, success, filter_by}) => {
       close();
       success({add_user_id: userId, language_id: language.id});
       window.logger.suc(getTranslation("Signed successfully."));
-    });
-
-    if (kind === 'unsign')
-      addSign({
-        variables: {
-          id: language.id,
-          metadata: {},
-          del_user_id: userId
-        }
-    }).then(() => {
-      close();
-      success({del_user_id: userId, language_id: language.id});
-      window.logger.suc(getTranslation("Unsigned successfully."));
     });
   }
 
@@ -86,11 +73,7 @@ const SelectUserModal = ({ language, kind, close, success, filter_by}) => {
           value: u.id,
           text: `${u.name} (${u.intl_name !== u.login ? `${u.intl_name}, ` : ""}${u.login})`
         }))
-        .filter(u => u.value !== 1)
-        .filter(u => {
-          if (!filter_by) return true;
-          return filter_by.indexOf(u.value) >= 0;
-        }), [data]);
+        .filter(u => u.value !== 1), [data]);
 
   const asModal = (content) => (
     <Modal className="lingvo-modal2" dimmer open size="small" closeIcon onClose={close}>
@@ -161,8 +144,7 @@ SelectUserModal.propTypes = {
   language: PropTypes.object.isRequired,
   kind: PropTypes.string.isRequired,
   close: PropTypes.func.isRequired,
-  success: PropTypes.func,
-  filter_by: PropTypes.array
+  success: PropTypes.func
 };
 
 export default SelectUserModal;
