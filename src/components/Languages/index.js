@@ -24,10 +24,13 @@ import TranslationContext from "Layout/TranslationContext";
 import { buildLanguageTree, uniqSum } from "pages/Search/treeBuilder";
 import { compositeIdToString } from "utils/compositeId";
 import { queryUsers } from "components/BanModal";
+import { openModal as openConfirmModal } from "ducks/confirm";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
 
 const getNodeKey = ({ node, treeIndex }) => (node.id ? node.id.toString() : treeIndex);
 
-const Languages = ({ height, selected, onSelect, expanded = true, inverted = true, updatableTOC }) => {
+const Languages = ({ actions, height, selected, onSelect, expanded = true, inverted = true, updatableTOC }) => {
   const getTranslation = useContext(TranslationContext);
 
   const user = useSelector(state => state.user.user);
@@ -95,7 +98,7 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
   const updateLanguageTree = ({add_user_id, del_user_id, language_id}) => {
     let isFound = false;
     const innerUpdate = (node, toChange) => {
-      let langAttUsr = node.additional_metadata.attached_users;
+      let langAttUsr = node.additional_metadata.attached_users || [];
 
       if (node.id.toString() === language_id.toString()) {
         if (add_user_id) langAttUsr = uniqSum(langAttUsr, [add_user_id]);
@@ -214,19 +217,33 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
       nodeProps.subtitle = (
         <Popup
           trigger={
-            <div title={getTranslation("Own assigned users")}>
+            <div>
               {attUsrName
-               ? attUsrName.map((name, i) => <Button
-                   color='black'
-                   compact
-                   basic
-                   icon='delete'
-                   content={name}
-                   style={{fontSize: "0.9em"}}
-                   onClick={() => toUnsign(node.id, langAttUsr[i])}
-                   disabled={user.id !== 1}
-                 />)
-               : getTranslation("No assigned users")}
+                ? attUsrName.map((name, i) => <Button
+                  color='black'
+                  compact
+                  basic
+                  content={name}
+                  icon={user.id === 1 && 'delete'}
+                  style={{fontSize: "0.9em"}}
+                  title={getTranslation("Detach the user")}
+                  onClick={() => actions.openConfirmModal(`${getTranslation("Detach the user")}?`,
+                                                          () => toUnsign(node.id, langAttUsr[i]))}
+                  disabled={user.id !== 1}
+                />)
+                : <span style={{marginRight: "4px"}}>
+                    {getTranslation("No assigned users")}
+                  </span>
+              }
+              {(user.id === 1) && <Button
+                color='black'
+                compact
+                basic
+                icon='add'
+                style={{fontSize: "0.9em"}}
+                title={getTranslation("Attach new user")}
+                onClick={() => setModalInfo({ kind: "sign", node })}
+              />}
             </div>
           }
           hideOnScroll={true}
@@ -426,4 +443,8 @@ Languages.propTypes = {
   updatableTOC: PropTypes.bool
 };
 
-export default Languages;
+const mapDispatchToProps = dispatch => ({
+  actions: bindActionCreators({ openConfirmModal }, dispatch)
+});
+
+export default connect(state => state, mapDispatchToProps)(Languages);
