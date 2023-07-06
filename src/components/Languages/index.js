@@ -260,6 +260,16 @@ const Languages = ({ actions, height, selected, onSelect, expanded = true, inver
         </Popup>
       );
 
+      if (user.id === 1) {
+        buttons.push(
+          <Button
+            color='white'
+            icon='add'
+            title={getTranslation("Add assigned user")}
+            onClick={() => setModalInfo({ kind: "sign", node })}
+          />
+        );
+      }
       if (onSelect) {
         buttons.push(<Button color="blue" content={getTranslation("Select")} onClick={() => onNodeSelected(node)} />);
       }
