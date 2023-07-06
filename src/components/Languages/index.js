@@ -224,6 +224,7 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
                    content={name}
                    style={{fontSize: "0.9em"}}
                    onClick={() => toUnsign(node.id, langAttUsr[i])}
+                   disabled={user.id !== 1}
                  />)
                : getTranslation("No assigned users")}
             </div>
