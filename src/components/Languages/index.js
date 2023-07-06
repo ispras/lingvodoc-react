@@ -240,22 +240,12 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
 
       if (user.id === 1) {
         buttons.push(
-          <ButtonGroup style={{marginRight: "0.25rem"}}>
-            <Button
-              color='white'
-              icon='add'
-              title={getTranslation("Add assigned user")}
-              onClick={() => setModalInfo({ kind: "sign", node })}
-            />
-            { langAttUsr && langAttUsr.length &&
-              <Button
-                color='white'
-                icon='minus'
-                title={getTranslation("Delete assigned user")}
-                onClick={() => setModalInfo({ kind: "unsign", node })}
-              />
-            }
-          </ButtonGroup>
+          <Button
+            color='white'
+            icon='add'
+            title={getTranslation("Add assigned user")}
+            onClick={() => setModalInfo({ kind: "sign", node })}
+          />
         );
       }
       if (onSelect) {
@@ -417,13 +407,6 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
         close={() => setModalInfo({})}
         success={info => updateLanguageTree(info)}
         kind="sign"
-      />}
-      {modalInfo.kind === "unsign" && <SelectUserModal
-        language={modalInfo.node}
-        close={() => setModalInfo({})}
-        success={info => updateLanguageTree(info)}
-        kind="unsign"
-        filter_by={modalInfo.node.additional_metadata.attached_users}
       />}
     </div>
   );
