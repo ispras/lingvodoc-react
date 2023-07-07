@@ -231,7 +231,7 @@ const Languages = ({ actions, height, selected, onSelect, expanded = true, inver
                                                           () => toUnsign(node.id, langAttUsr[i]))}
                   disabled={user.id !== 1}
                 />)
-                : <span style={{marginRight: "4px"}}>
+                : <span style={{marginRight: "4px", color: "gray"}}>
                     {getTranslation("No assigned users")}
                   </span>
               }
@@ -249,7 +249,7 @@ const Languages = ({ actions, height, selected, onSelect, expanded = true, inver
           hideOnScroll={true}
           position='top left'
         >
-          <Popup.Header>{getTranslation("Own and inherited users")}</Popup.Header>
+          <Popup.Header>{getTranslation("Own and inherited users:")}</Popup.Header>
           <Popup.Content>
             <ul>
               {allUsrName

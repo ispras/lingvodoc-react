@@ -48,7 +48,6 @@ const SelectUserModal = ({ language, kind, close, success, filter_by}) => {
     });
 
     if (kind === 'sign')
-
       addSign({
         variables: {
           id: language.id,
