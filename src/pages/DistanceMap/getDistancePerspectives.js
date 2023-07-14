@@ -25,7 +25,7 @@ const getDistance = async (dictionaries, allField, mainDictionary, computeDistan
       sourcePerspectiveId = el.id;
       groupFields = el.columns
         .map(column => fieldDict[id2str(column.field_id)])
-        .filter(field => field.data_type === "Grouping Tag");
+        .filter(field => (field && field.data_type && (field.data_type === "Grouping Tag")));
     }
   });
 
@@ -48,11 +48,11 @@ const getDistance = async (dictionaries, allField, mainDictionary, computeDistan
       perspective.columns.forEach(column => {
         const field = fieldDict[id2str(column.field_id)];
 
-        if (field.data_type === "Grouping Tag") {
+        if (field && field.data_type && (field.data_type === "Grouping Tag")) {
           pgroupFlag = true;
         }
 
-        if (field.data_type === "Text") {
+        if (field && field.data_type && (field.data_type === "Text")) {
           textFlag = true;
         }
       });
@@ -67,7 +67,7 @@ const getDistance = async (dictionaries, allField, mainDictionary, computeDistan
 
     textFields = perspective.columns
       .map(column => fieldDict[id2str(column.field_id)])
-      .filter(field => field.data_type === "Text");
+      .filter(field => (field && field.data_type && (field.data_type === "Text")));
 
     let transcriptionFieldIdStr = "";
     let translationFieldIdStr = "";
