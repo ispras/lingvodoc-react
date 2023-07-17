@@ -113,6 +113,7 @@ class FilterDictionaries extends React.Component {
   }
 
   render() {
+
     const { newProps } = this.props;
 
     const { mainGroupDictionaresAndLanguages, onLangsDictsChange, selectedLanguages } = newProps;
@@ -151,12 +152,12 @@ FilterDictionaries.propTypes = {
   }).isRequired
 };
 
-function SelectorLangGroup(props) {
+const SelectorLangGroup = ((props) => {
   const getTranslation = useContext(TranslationContext);
 
   const location = useLocation();
   const navigate = useNavigate();
-
+  
   /* Initializing here due to eact-hooks/rules-of-hooks, exact same hook order. */
 
   const { actions, dataForTree, client, mainGroupDictionaresAndLanguages, selected, user } = props;
@@ -172,6 +173,7 @@ function SelectorLangGroup(props) {
   }, [location, navigate]);
 
   try {
+
     if (!location.state) {
       navigate("/distance_map");
       return null;
@@ -186,19 +188,23 @@ function SelectorLangGroup(props) {
         </div>
       );
     }
-
+    
     const { mainPerspectives } = location.state;
     let selectedLanguagesChecken = [];
     let rootLanguage = {};
     const arrDictionariesGroup = [];
     const parentId = mainPerspectives[0].parent_id;
 
-    client
+    useEffect(() => {
+
+      client
       .query({
         query: dictionaryName,
         variables: { id: parentId }
       })
       .then(result => setMainDictionary(result.data.dictionary));
+
+    }, [mainDictionary]);
 
     if (mainGroupDictsAndLangs.dictionaries) {
       mainGroupDictsAndLangs.dictionaries.forEach(el =>
@@ -217,6 +223,7 @@ function SelectorLangGroup(props) {
         }
       });
     }
+
     if (selected.id !== dataForTree.idLocale) {
       client
         .query({
@@ -244,7 +251,7 @@ function SelectorLangGroup(props) {
       return <Placeholder />;
     }
 
-    function send() {
+    const send = () => {
       if (arrDictionariesGroup.length) {
         arrDictionariesGroup.push(mainDictionary);
         actions.setDictionariesGroup({ arrDictionariesGroup });
@@ -254,15 +261,15 @@ function SelectorLangGroup(props) {
         });
         actions.setCheckStateTreeFlat({ selectedLanguagesChecken });
       }
-    }
+    };
 
-    function selectedLanguages(e) {
+    const selectedLanguages = (e) => {
       selectedLanguagesChecken = e;
-    }
+    };
 
-    function onLangsDictsChange(list) {
+    const onLangsDictsChange = (list) => {
       setMainGroupDictsAndLangs(list);
-    }
+    };
 
     return (
       <div className="lingvodoc-page">
@@ -287,6 +294,7 @@ function SelectorLangGroup(props) {
               </Container>
             </div>
           )}
+
           <Container>
             <Button 
               style={{ margin: "24px 20px 0 0" }}
@@ -318,7 +326,7 @@ function SelectorLangGroup(props) {
     navigate("/distance_map");
     return null;
   }
-}
+});
 
 SelectorLangGroup.propTypes = {
   actions: PropTypes.object.isRequired,
