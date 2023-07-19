@@ -812,7 +812,7 @@ class MergeSettings extends React.Component {
 
               return (
                 <div key={i} className="lingvo-merge-group">
-                  <div className={!!this.state.error_message || attached || empty_flag && "lingvo-merge-header lingvo-merge-header_disabled" || "lingvo-merge-header"} style={{ marginBottom: "8px" }}>
+                  <div className={(!!this.state.error_message || attached || empty_flag) && "lingvo-merge-header lingvo-merge-header_disabled" || "lingvo-merge-header"} style={{ marginBottom: "8px" }}>
                     {`${this.context("Group")} #${index}, ${this.context("confidence")}: ${
                       group.confidence.toFixed(4).length < group.confidence.toString().length
                         ? group.confidence.toFixed(4)
