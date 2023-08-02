@@ -351,7 +351,7 @@ class ConvertEafModal extends React.Component {
   }
 
   convert() {
-    const { convertToNewDictionary, convertToExistingDictionary, markup, actions } = this.props;
+    const { convertToNewDictionary, convertToExistingDictionary, markup, morphology, actions } = this.props;
     const {
       mode,
       parentLanguage,
@@ -386,7 +386,8 @@ class ConvertEafModal extends React.Component {
           mergeByMeaning,
           mergeByMeaningAll,
           additionalEntries,
-          additionalEntriesAll
+          additionalEntriesAll,
+          morphology
         }
       }).then(
         () => {
@@ -440,6 +441,7 @@ class ConvertEafModal extends React.Component {
     const {
       visible,
       actions,
+      morphology,
       data: { loading, error, dictionaries }
     } = this.props;
 
@@ -468,81 +470,87 @@ class ConvertEafModal extends React.Component {
 
     return (
       <Modal closeIcon onClose={actions.closeConvert} open={visible} dimmer size="large" className="lingvo-modal2">
-        <Modal.Header>
-          <Checkbox
-            radio
-            label={this.context("Create dictionary")}
-            name="vowelsRadioGroup"
-            value="new"
-            checked={mode === "new"}
-            onChange={this.handleModeChange}
-          />
-          <Checkbox
-            style={{ marginLeft: "1em" }}
-            radio
-            label={this.context("Update dictionary")}
-            name="vowelsRadioGroup"
-            value="update"
-            checked={mode === "update"}
-            onChange={this.handleModeChange}
-          />
-        </Modal.Header>
+        {!morphology && (
+          <Modal.Header>
+            <Checkbox
+              radio
+              label={this.context("Create dictionary")}
+              name="vowelsRadioGroup"
+              value="new"
+              checked={mode === "new"}
+              onChange={this.handleModeChange}
+            />
+            <Checkbox
+              style={{ marginLeft: "1em" }}
+              radio
+              label={this.context("Update dictionary")}
+              name="vowelsRadioGroup"
+              value="update"
+              checked={mode === "update"}
+              onChange={this.handleModeChange}
+            />
+          </Modal.Header>
+        )}
         <Modal.Content>
           <div style={{ marginBottom: "1.75em" }}>
-            <div>
-              <Checkbox
-                checked={mergeByMeaning}
-                label={`${this.context("Merge lexical entries by meaning")}.`}
-                onChange={(e, { checked }) => this.setState({ mergeByMeaning: checked })}
-              />
-              {mergeByMeaning && (
-                <div style={{ marginLeft: "1em" }}>
-                  <div style={{ marginTop: "0.25em" }} key="empty">
-                    <Checkbox
-                      radio
-                      label={`${this.context("Only entries of paradigmatic annotated forms")}.`}
-                      checked={!mergeByMeaningAll}
-                      onChange={e => this.setState({ mergeByMeaningAll: false })}
-                    />
+            {!morphology && (
+              <div>
+                <Checkbox
+                  checked={mergeByMeaning}
+                  label={`${this.context("Merge lexical entries by meaning")}.`}
+                  onChange={(e, { checked }) => this.setState({ mergeByMeaning: checked })}
+                />
+                {mergeByMeaning && (
+                  <div style={{ marginLeft: "1em" }}>
+                    <div style={{ marginTop: "0.25em" }} key="empty">
+                      <Checkbox
+                        radio
+                        label={`${this.context("Only entries of paradigmatic annotated forms")}.`}
+                        checked={!mergeByMeaningAll}
+                        onChange={e => this.setState({ mergeByMeaningAll: false })}
+                      />
+                    </div>
+                    <div style={{ marginTop: "0.25em" }} key="all">
+                      <Checkbox
+                        radio
+                        label={`${this.context("All entries")}.`}
+                        checked={mergeByMeaningAll}
+                        onChange={e => this.setState({ mergeByMeaningAll: true })}
+                      />
+                    </div>
                   </div>
-                  <div style={{ marginTop: "0.25em" }} key="all">
-                    <Checkbox
-                      radio
-                      label={`${this.context("All entries")}.`}
-                      checked={mergeByMeaningAll}
-                      onChange={e => this.setState({ mergeByMeaningAll: true })}
-                    />
+                )}
+              </div>
+            )}
+            {!morphology && (
+              <div style={{ marginTop: "0.5em" }}>
+                <Checkbox
+                  checked={additionalEntries}
+                  label={`${this.context("Add words and transcriptions from paradigms to lexical entries")}.`}
+                  onChange={(e, { checked }) => this.setState({ additionalEntries: checked })}
+                />
+                {additionalEntries && (
+                  <div style={{ marginLeft: "1em" }}>
+                    <div style={{ marginTop: "0.25em" }} key="empty">
+                      <Checkbox
+                        radio
+                        label={`${this.context("Only to entries lacking words and transcriptions")}.`}
+                        checked={!additionalEntriesAll}
+                        onChange={e => this.setState({ additionalEntriesAll: false })}
+                      />
+                    </div>
+                    <div style={{ marginTop: "0.25em" }} key="all">
+                      <Checkbox
+                        radio
+                        label={`${this.context("To all entries")}.`}
+                        checked={additionalEntriesAll}
+                        onChange={e => this.setState({ additionalEntriesAll: true })}
+                      />
+                    </div>
                   </div>
-                </div>
-              )}
-            </div>
-            <div style={{ marginTop: "0.5em" }}>
-              <Checkbox
-                checked={additionalEntries}
-                label={`${this.context("Add words and transcriptions from paradigms to lexical entries")}.`}
-                onChange={(e, { checked }) => this.setState({ additionalEntries: checked })}
-              />
-              {additionalEntries && (
-                <div style={{ marginLeft: "1em" }}>
-                  <div style={{ marginTop: "0.25em" }} key="empty">
-                    <Checkbox
-                      radio
-                      label={`${this.context("Only to entries lacking words and transcriptions")}.`}
-                      checked={!additionalEntriesAll}
-                      onChange={e => this.setState({ additionalEntriesAll: false })}
-                    />
-                  </div>
-                  <div style={{ marginTop: "0.25em" }} key="all">
-                    <Checkbox
-                      radio
-                      label={`${this.context("To all entries")}.`}
-                      checked={additionalEntriesAll}
-                      onChange={e => this.setState({ additionalEntriesAll: true })}
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
+                )}
+              </div>
+            )}
             <div style={{ marginTop: "0.5em" }}>
               <Checkbox
                 checked={useAdditionalMarkup}
@@ -663,12 +671,13 @@ const mapDispatchToProps = dispatch => ({
 export default compose(
   connect(mapStateToProps, mapDispatchToProps),
   branch(({ convertVisible }) => !convertVisible, renderNothing),
-  withProps(({ convertVisible, data: { audio, markup, columns, allEntriesGenerator } }) => ({
+  withProps(({ convertVisible, data: { audio, markup, columns, allEntriesGenerator, morphology } }) => ({
     visible: convertVisible,
     audio,
     markup,
     columns,
-    allEntriesGenerator
+    allEntriesGenerator,
+    morphology
   })),
   graphql(dictionariesQuery, { options: { fetchPolicy: "cache-and-network" } }),
   graphql(convertToNewDictionaryMutation, { name: "convertToNewDictionary" }),
