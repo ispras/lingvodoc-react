@@ -408,7 +408,8 @@ class ConvertEafModal extends React.Component {
           mergeByMeaning,
           mergeByMeaningAll,
           additionalEntries,
-          additionalEntriesAll
+          additionalEntriesAll,
+          morphology
         }
       }).then(
         () => {
@@ -470,27 +471,25 @@ class ConvertEafModal extends React.Component {
 
     return (
       <Modal closeIcon onClose={actions.closeConvert} open={visible} dimmer size="large" className="lingvo-modal2">
-        {!morphology && (
-          <Modal.Header>
-            <Checkbox
-              radio
-              label={this.context("Create dictionary")}
-              name="vowelsRadioGroup"
-              value="new"
-              checked={mode === "new"}
-              onChange={this.handleModeChange}
-            />
-            <Checkbox
-              style={{ marginLeft: "1em" }}
-              radio
-              label={this.context("Update dictionary")}
-              name="vowelsRadioGroup"
-              value="update"
-              checked={mode === "update"}
-              onChange={this.handleModeChange}
-            />
-          </Modal.Header>
-        )}
+        <Modal.Header>
+          <Checkbox
+            radio
+            label={this.context("Create dictionary")}
+            name="vowelsRadioGroup"
+            value="new"
+            checked={mode === "new"}
+            onChange={this.handleModeChange}
+          />
+          <Checkbox
+            style={{ marginLeft: "1em" }}
+            radio
+            label={this.context("Update dictionary")}
+            name="vowelsRadioGroup"
+            value="update"
+            checked={mode === "update"}
+            onChange={this.handleModeChange}
+          />
+        </Modal.Header>
         <Modal.Content>
           <div style={{ marginBottom: "1.75em" }}>
             {!morphology && (
