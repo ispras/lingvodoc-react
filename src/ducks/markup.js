@@ -13,9 +13,9 @@ export const openViewer = (audio, markup, columns, allEntriesGenerator) => ({
 
 export const closeViewer = () => ({ type: CLOSE_VIEWER });
 
-export const openConvert = (audio, markup, columns, allEntriesGenerator) => ({
+export const openConvert = (audio, markup, columns, allEntriesGenerator, morphology) => ({
   type: OPEN_CONVERT,
-  payload: { audio, markup, columns, allEntriesGenerator }
+  payload: { audio, markup, columns, allEntriesGenerator, morphology }
 });
 
 export const closeConvert = () => ({ type: CLOSE_CONVERT });
@@ -31,7 +31,7 @@ const visible = (state = false, action) => {
   }
 };
 
-const data = (state = { audio: {}, markup: {}, columns: [], allEntriesGenerator: null }, action) => {
+const data = (state = { audio: {}, markup: {}, columns: [], allEntriesGenerator: null, morphology: false }, action) => {
   switch (action.type) {
     case OPEN_VIEWER:
     case OPEN_CONVERT:
