@@ -123,6 +123,7 @@ export const languagesQuery = gql`
       translation_gist_id
       additional_metadata {
         toc_mark
+        attached_users
       }
     }
   }
@@ -209,8 +210,8 @@ export const updateLanguageAtomMutation = gql`
 `;
 
 export const updateLanguageMetadataMutation = gql`
-  mutation UpdateLanguageMetadata($id: LingvodocID!, $metadata: ObjectVal!) {
-    update_language(id: $id, additional_metadata: $metadata) {
+  mutation UpdateLanguageMetadata($id: LingvodocID!, $metadata: ObjectVal!, $add_user_id: Int, $del_user_id: Int) {
+    update_language(id: $id, additional_metadata: $metadata, add_user_id: $add_user_id, del_user_id: $del_user_id) {
       triumph
     }
   }

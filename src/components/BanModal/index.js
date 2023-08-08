@@ -11,7 +11,7 @@ import { bindActionCreators } from "redux";
 import { closeModal } from "ducks/ban";
 import TranslationContext from "Layout/TranslationContext";
 
-const queryUsers = gql`
+export const queryUsers = gql`
   query Users {
     users {
       id

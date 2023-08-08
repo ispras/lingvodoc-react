@@ -71,8 +71,14 @@ const MarkupModal = props => {
       </Modal.Content>
       <Modal.Actions>
         <ConvertButton
+          content={getTranslation("Convert morphology concordance...")}
+          onClick={() => actions.openConvert(audio, data.markup, columns, allEntriesGenerator, true)}
+          id={data.markup.id}
+          className="lingvo-button-lite-violet"
+        />
+        <ConvertButton
           content={getTranslation("Convert to dictionary...")}
-          onClick={() => actions.openConvert(audio, data.markup, columns, allEntriesGenerator)}
+          onClick={() => actions.openConvert(audio, data.markup, columns, allEntriesGenerator, false)}
           id={data.markup.id}
           className="lingvo-button-violet"
         />

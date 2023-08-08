@@ -302,6 +302,7 @@ const prepareLanguage = async (client, baseLanguage) => {
     variables: { languageId: baseLanguage.id }
   });
 
+  baseLanguage.separateByCorpora = false;
   baseLanguage.perspectiveList = [];
 
   const languageMap = {};
@@ -533,6 +534,19 @@ const VerbCasesSelectionLanguage = ({ language, client, info, setSelectedLanguag
           />
         </div>
       ))}
+
+      {language.perspectiveList.length > 1 && (
+        <div className="lingvo-cognate-checkbox lingvo-cognate-checkbox_lang">
+          <Checkbox
+            className="lingvo-checkbox lingvo-checkbox_labeled"
+            defaultChecked={language.separateByCorpora}
+            onChange={(e, { checked }) => {
+              language.separateByCorpora = checked;
+            }}
+            label={getTranslation("Separate by corpora")}
+          />
+        </div>
+      )}
     </div>
   );
 };
@@ -821,7 +835,8 @@ const VerbCasesActionResult = ({ close, client, info }) => {
 
       .map(language => [
         language.id,
-        language.perspectiveList.filter(perspective => perspective.selected).map(perspective => perspective.id)
+        language.perspectiveList.filter(perspective => perspective.selected).map(perspective => perspective.id),
+        language.separateByCorpora
       ])
 
       .filter(item => item[1].length > 0);
@@ -959,6 +974,14 @@ const Tools = ({
                 {getTranslation(
                   published ? "Cognate suggestions" : "Cognate suggestions (disabled, perspective is not published)"
                 )}
+              </Dropdown.Item>
+
+              <Dropdown.Item onClick={() => openCognateAnalysisModal(id, "swadesh")}>
+                {getTranslation("Glottochronology")}
+              </Dropdown.Item>
+
+              <Dropdown.Item onClick={() => openCognateAnalysisModal(id, "multi_swadesh")}>
+                {getTranslation("Glottochronology multi-language")}
               </Dropdown.Item>
             </>
           )}

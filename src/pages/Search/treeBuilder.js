@@ -1,6 +1,10 @@
 import { is, List } from "immutable";
 
 const parentGrouper = x => x.get("parent_id");
+export const uniqSum = (list1, list2) => {
+  const onlyUnique = (value, index, array) => array.indexOf(value) === index;
+  return [...list1 || [], ...list2 || []].filter(onlyUnique);
+}
 
 export function buildLanguageTree(data) {
   if (!data) {
@@ -10,14 +14,23 @@ export function buildLanguageTree(data) {
   const byParentId = data.groupBy(parentGrouper);
   const innerBuild = (lang) => {
     const langId = lang.get("id");
-    return lang.set("type", "language").set("children", byParentId.get(langId, new List()).map(innerBuild));
+    const langAttUsr = lang.getIn(["additional_metadata", "attached_users"]);
+    const landInhUsr = lang.getIn(["additional_metadata", "inherited_users"]);
+    const langAllUsr = uniqSum(langAttUsr, landInhUsr);
+
+    return lang.set("type", "language")
+           .set("children", byParentId.get(langId, new List())
+           .map(x => x.setIn(["additional_metadata", "inherited_users"], langAllUsr))
+           .map(innerBuild));
   };
 
   if (byParentId.size <= 0) {
     return new List();
   }
 
-  return byParentId.get(null).map(innerBuild);
+  return byParentId.get(null)
+         .map(x => x.setIn(["additional_metadata", "inherited_users"], []))
+         .map(innerBuild);
 }
 
 export function buildDictTrees(data) {
