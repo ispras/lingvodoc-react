@@ -82,7 +82,7 @@ const EditLink = props => {
           e => isEqual(e.link_id, entry.id) && isEqual(e.field_id, column.field_id)
         );
         if (entity) {
-          remove(entity)
+          remove(entity);
         }
       },
       className: "lingvo-button-redder"
@@ -328,7 +328,7 @@ class LinkModalContent extends React.PureComponent {
     const cache = new InMemoryCache();
     remove({
       variables: { id: entity.id },
-      update(cache, { data: remove }) {
+      update(cache, { data: { remove } }) {
         //console.log(cache.identify(entity));
         const normalizedId = cache.identify(entity);
         cache.evict({ id: normalizedId });
