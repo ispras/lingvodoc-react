@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import { InMemoryCache } from '@apollo/client';
 import { Button, Checkbox, Dimmer, Header, Icon, Message, Modal, Segment, Tab } from "semantic-ui-react";
 import { graphql } from "@apollo/client/react/hoc";
 import { isEqual } from "lodash";
@@ -77,11 +78,19 @@ const EditLink = props => {
     {
       title: getTranslation("Remove"),
       action: entry => {
+        const cache = new InMemoryCache();
         const entity = lexicalEntry.entities.find(
           e => isEqual(e.link_id, entry.id) && isEqual(e.field_id, column.field_id)
         );
         if (entity) {
-          remove(entity);
+          remove({ variables: { id: entity.id },
+            update(cache) {
+              //console.log(cache.identify(entity));
+              const normalizedId = cache.identify(entity);
+              cache.evict({ id: normalizedId });
+              cache.gc();
+            },
+          });
         }
       },
       className: "lingvo-button-redder"
