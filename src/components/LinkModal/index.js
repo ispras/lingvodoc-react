@@ -78,19 +78,11 @@ const EditLink = props => {
     {
       title: getTranslation("Remove"),
       action: entry => {
-        const cache = new InMemoryCache();
         const entity = lexicalEntry.entities.find(
           e => isEqual(e.link_id, entry.id) && isEqual(e.field_id, column.field_id)
         );
         if (entity) {
-          remove({ variables: { id: entity.id },
-            update(cache) {
-              //console.log(cache.identify(entity));
-              const normalizedId = cache.identify(entity);
-              cache.evict({ id: normalizedId });
-              cache.gc();
-            },
-          });
+          remove(entity)
         }
       },
       className: "lingvo-button-redder"
@@ -333,8 +325,16 @@ class LinkModalContent extends React.PureComponent {
 
   removeEntity(entity) {
     const { remove, lexicalEntry, entitiesMode } = this.props;
+    const cache = new InMemoryCache();
     remove({
       variables: { id: entity.id },
+      update(cache, { data: remove }) {
+        //console.log(cache.identify(entity));
+        const normalizedId = cache.identify(entity);
+        cache.evict({ id: normalizedId });
+        cache.gc();
+      }
+      /*
       refetchQueries: [
         {
           // XXX: Expensive operation!
@@ -345,6 +345,7 @@ class LinkModalContent extends React.PureComponent {
           }
         }
       ]
+      */
     });
   }
 
