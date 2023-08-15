@@ -248,10 +248,8 @@ class LinkModalContent extends React.PureComponent {
     super(props);
 
     const entity = props.lexicalEntry.entities.find(e => isEqual(e.field_id, props.fieldId));
-    const [getEntity, { loadingEntity, dataEntity }] = useLazyQuery(entityQuery);
-    const [E, setE] = useState(null);
+    const [getEntity, { loading: loadingEntity, data: dataEntity }] = useLazyQuery(entityQuery);
     if (loadingEntity) return null;
-    if (dataEntity && dataEntity.entity) setE(dataEntity.entity)
 
     this.state = {
       entityPublish: entity && entity.published || false
@@ -338,7 +336,7 @@ class LinkModalContent extends React.PureComponent {
       fetchPolicy: 'cache-only',
     });
 
-    if (!E) return
+    if (!dataEntity || !dataEntity.entity) return null;
 
     remove({
       variables: { id: entity.id },
