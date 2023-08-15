@@ -13,14 +13,12 @@ import Tree from "components/GroupingTagModal/Tree";
 import { LexicalEntryByIds, queryLexicalEntries, queryPerspective } from "components/PerspectiveView";
 import TranslationContext from "Layout/TranslationContext";
 
-import { acceptMutation, createMutation, languageTreeSourceQuery, publishMutation, removeMutation } from "./graphql";
+import { acceptMutation, createMutation, languageTreeSourceQuery, publishMutation, removeMutation, entityQuery } from "./graphql";
 
 const ModalContentWrapper = styled("div")`
   min-height: 60vh;
   background-color: #fff;
 `;
-
-const [ rr, reRender ] = useState(null)
 
 function buildTree(lexicalEntry, column, allLanguages, allDictionaries, allPerspectives) {
   const entities = lexicalEntry.entities.filter(e => isEqual(e.field_id, column.field_id));
@@ -87,8 +85,7 @@ const EditLink = props => {
           remove(entity);
         }
       },
-      className: "lingvo-button-redder",
-      reRender: reRender
+      className: "lingvo-button-redder"
     }
   ];
 
@@ -327,13 +324,22 @@ class LinkModalContent extends React.PureComponent {
   }
 
   removeEntity(entity) {
-    const { remove, lexicalEntry, entitiesMode } = this.props;
+    const { get, remove, lexicalEntry, entitiesMode } = this.props;
     const cache = new InMemoryCache();
+
+    //Get the entity from local cache
+    //Check that it exists there
+    { data: entity } = get({
+      variables: { id: entity.id },
+      fetchPolicy: 'cache-only',
+    });
+
+    if (!entity) return
+
     remove({
       variables: { id: entity.id },
       update(cache, { data: { remove } }) {
-        const normalizedId = cache.identify(entity);
-        cache.evict({ id: normalizedId });
+        cache.evict({ id: cache.identify(entity) });
         cache.gc();
       }
       /*
@@ -404,6 +410,7 @@ class LinkModalContent extends React.PureComponent {
           remove={this.removeEntity}
           publish={this.changePublished}
           accept={this.changeAccepted}
+          get={this.props.get}
         />
       </ModalContentWrapper>
     );
@@ -426,7 +433,8 @@ LinkModalContent.propTypes = {
   create: PropTypes.func.isRequired,
   publish: PropTypes.func.isRequired,
   accept: PropTypes.func.isRequired,
-  remove: PropTypes.func.isRequired
+  remove: PropTypes.func.isRequired,
+  get: PropTypes.func.isRequired
 };
 
 const Content = compose(
@@ -434,7 +442,8 @@ const Content = compose(
   graphql(createMutation, { name: "create" }),
   graphql(publishMutation, { name: "publish" }),
   graphql(acceptMutation, { name: "accept" }),
-  graphql(removeMutation, { name: "remove" })
+  graphql(removeMutation, { name: "remove" }),
+  graphql(entityQuery, { name: "get" })
 )(LinkModalContent);
 
 const LinkModal = props => {

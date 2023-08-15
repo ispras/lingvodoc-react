@@ -105,7 +105,6 @@ const Row = ({
               content={action.title}
               onClick={() => {
                 action.action(entry);
-                reRender(null);
               }}
               className={action.className}
             />
