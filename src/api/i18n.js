@@ -197,6 +197,7 @@ export const stringsToTranslate = [
   "Conversion is in progress...",
   "Convert",
   "Convert additional markup",
+  "Convert morphology concordance...",
   "Convert to dictionary...",
   "Converted successfully",
   "Converting",
