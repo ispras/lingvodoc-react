@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { InMemoryCache } from '@apollo/client';
+import { InMemoryCache, useLazyQuery } from '@apollo/client';
 import { Button, Checkbox, Dimmer, Header, Icon, Message, Modal, Segment, Tab } from "semantic-ui-react";
 import { graphql } from "@apollo/client/react/hoc";
 import { isEqual } from "lodash";
@@ -248,6 +248,10 @@ class LinkModalContent extends React.PureComponent {
     super(props);
 
     const entity = props.lexicalEntry.entities.find(e => isEqual(e.field_id, props.fieldId));
+    const [getEntity, { loadingEntity, dataEntity }] = useLazyQuery(entityQuery);
+    const [E, setE] = useState(null);
+    if (loadingEntity) return null;
+    if (dataEntity && dataEntity.entity) setE(dataEntity.entity)
 
     this.state = {
       entityPublish: entity && entity.published || false
@@ -324,17 +328,17 @@ class LinkModalContent extends React.PureComponent {
   }
 
   removeEntity(entity) {
-    const { get, remove, lexicalEntry, entitiesMode } = this.props;
+    const { remove, lexicalEntry, entitiesMode } = this.props;
     const cache = new InMemoryCache();
 
-    //Get the entity from local cache
+    //Query the entity from local cache
     //Check that it exists there
-    { data: entity } = get({
+    getEntity({
       variables: { id: entity.id },
       fetchPolicy: 'cache-only',
     });
 
-    if (!entity) return
+    if (!E) return
 
     remove({
       variables: { id: entity.id },
@@ -410,7 +414,6 @@ class LinkModalContent extends React.PureComponent {
           remove={this.removeEntity}
           publish={this.changePublished}
           accept={this.changeAccepted}
-          get={this.props.get}
         />
       </ModalContentWrapper>
     );
@@ -434,7 +437,6 @@ LinkModalContent.propTypes = {
   publish: PropTypes.func.isRequired,
   accept: PropTypes.func.isRequired,
   remove: PropTypes.func.isRequired,
-  get: PropTypes.func.isRequired
 };
 
 const Content = compose(
@@ -442,8 +444,7 @@ const Content = compose(
   graphql(createMutation, { name: "create" }),
   graphql(publishMutation, { name: "publish" }),
   graphql(acceptMutation, { name: "accept" }),
-  graphql(removeMutation, { name: "remove" }),
-  graphql(entityQuery, { name: "get" })
+  graphql(removeMutation, { name: "remove" })
 )(LinkModalContent);
 
 const LinkModal = props => {

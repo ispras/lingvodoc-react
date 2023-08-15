@@ -103,9 +103,7 @@ const Row = ({
               disabled={disabled_flag}
               key={action.title} 
               content={action.title}
-              onClick={() => {
-                action.action(entry);
-              }}
+              onClick={() => action.action(entry)}
               className={action.className}
             />
           ))}
