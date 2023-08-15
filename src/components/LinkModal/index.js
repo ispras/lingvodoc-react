@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { InMemoryCache } from '@apollo/client';
 import { Button, Checkbox, Dimmer, Header, Icon, Message, Modal, Segment, Tab } from "semantic-ui-react";
 import { graphql } from "@apollo/client/react/hoc";
@@ -19,6 +19,8 @@ const ModalContentWrapper = styled("div")`
   min-height: 60vh;
   background-color: #fff;
 `;
+
+const [ rr, reRender ] = useState(null)
 
 function buildTree(lexicalEntry, column, allLanguages, allDictionaries, allPerspectives) {
   const entities = lexicalEntry.entities.filter(e => isEqual(e.field_id, column.field_id));
@@ -85,7 +87,8 @@ const EditLink = props => {
           remove(entity);
         }
       },
-      className: "lingvo-button-redder"
+      className: "lingvo-button-redder",
+      reRender: reRender
     }
   ];
 
@@ -329,7 +332,6 @@ class LinkModalContent extends React.PureComponent {
     remove({
       variables: { id: entity.id },
       update(cache, { data: { remove } }) {
-        //console.log(cache.identify(entity));
         const normalizedId = cache.identify(entity);
         cache.evict({ id: normalizedId });
         cache.gc();
