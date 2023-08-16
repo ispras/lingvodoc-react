@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button, Checkbox, Table } from "semantic-ui-react";
 import { isEmpty, isEqual, sortBy } from "lodash";
 import PropTypes from "prop-types";
@@ -41,6 +41,8 @@ const Row = ({
   const disabled_flag = disabledEntrySet && disabledEntrySet.hasOwnProperty(entry_id_str);
 
   const remove_selection_flag = removeSelectionEntrySet && removeSelectionEntrySet.hasOwnProperty(entry_id_str);
+
+  const [ _, reRender ] = useState(null);
 
   return (
     <Table.Row style={disabled_flag ? { opacity: "0.5" } : {}}>
@@ -103,7 +105,7 @@ const Row = ({
               disabled={disabled_flag || action.disabled(entry)}
               key={action.title} 
               content={action.title}
-              onClick={() => action.action(entry)}
+              onClick={() => { action.action(entry); reRender(null); }}
               className={action.className}
             />
           ))}
