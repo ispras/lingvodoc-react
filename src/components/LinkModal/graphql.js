@@ -79,7 +79,6 @@ export const languageTreeSourceQuery = gql`
 export const entityQuery = gql`
   query getEntity($id: LingvodocID!) {
     entity(id: $id) {
-      id
       marked_for_deletion
     }
   }

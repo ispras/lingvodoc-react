@@ -100,7 +100,7 @@ const Row = ({
         <Table.Cell>
           {actions.map(action => (
             <Button
-              disabled={disabled_flag}
+              disabled={disabled_flag || action.disabled(entry)}
               key={action.title} 
               content={action.title}
               onClick={() => action.action(entry)}

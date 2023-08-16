@@ -68,22 +68,44 @@ ViewLink.propTypes = {
 };
 
 const EditLink = props => {
-  const { lexicalEntry, column, allLanguages, allDictionaries, allPerspectives, create, remove } = props;
+  const { client, lexicalEntry, column, allLanguages, allDictionaries, allPerspectives, create, remove } = props;
 
   const getTranslation = useContext(TranslationContext);
 
   const tree = buildTree(lexicalEntry, column, allLanguages, allDictionaries, allPerspectives);
 
+  const get_link = async entry => {
+    const entity = lexicalEntry.entities.find(
+      e => isEqual(e.link_id, entry.id) && isEqual(e.field_id, column.field_id)
+    );
+
+    if (!entity) return null;
+
+    //Checking in db
+    const result = await client.query({
+      query: entityQuery,
+      variables: { id: entity.id },
+      fetchPolicy: 'cache-first'
+    });
+
+    if (!result.errors &&
+        result.data.entity &&
+        result.data.entity.marked_for_deletion === false) {
+      return entity;
+    }
+    return null;
+  }
+
   const actions = [
     {
       title: getTranslation("Remove"),
       action: entry => {
-        const entity = lexicalEntry.entities.find(
-          e => isEqual(e.link_id, entry.id) && isEqual(e.field_id, column.field_id)
-        );
-        if (entity) {
-          remove(entity);
-        }
+        get_link(entry).then(entity => {
+          if (entity) remove(entity)
+        });
+      },
+      disabled: entry => {
+        get_link(entry).then(entity => !entity)
       },
       className: "lingvo-button-redder"
     }
@@ -325,40 +347,28 @@ class LinkModalContent extends React.PureComponent {
     });
   }
 
-  async removeEntity(entity) {
-    const { client, remove, lexicalEntry, entitiesMode } = this.props;
+  removeEntity(entity) {
+    const { remove, lexicalEntry, entitiesMode } = this.props;
 
-    /* Query the entity from local cache
-       Check that it exists there */
-    const result = await client.query({
-      query: entityQuery,
+    remove({
       variables: { id: entity.id },
-      fetchPolicy: 'cache-only'
-    });
-
-    console.log('Found entity: ', result.data.entity)
-
-    if (!result.errors && result.data.entity.marked_for_deletion === false) {
-      remove({
-        variables: { id: entity.id },
-        update(cache) {
-          cache.evict({ id: cache.identify(entity) });
-          cache.gc();
-        }
-        /*
-        refetchQueries: [
-          {
-            // XXX: Expensive operation!
-            query: queryPerspective,
-            variables: {
-              id: lexicalEntry.parent_id,
-              entitiesMode
-            }
+      update(cache) {
+        cache.evict({ id: cache.identify(entity) });
+        cache.gc();
+      }
+      /*
+      refetchQueries: [
+        {
+          // XXX: Expensive operation!
+          query: queryPerspective,
+          variables: {
+            id: lexicalEntry.parent_id,
+            entitiesMode
           }
-        ]
-        */
-      });
-    }
+        }
+      ]
+      */
+    });
   }
 
   render() {
@@ -414,6 +424,7 @@ class LinkModalContent extends React.PureComponent {
           remove={this.removeEntity}
           publish={this.changePublished}
           accept={this.changeAccepted}
+          client={this.props.client}
         />
       </ModalContentWrapper>
     );
