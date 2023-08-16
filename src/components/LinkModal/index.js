@@ -1,7 +1,7 @@
-import React, { useContext, useState } from "react";
-import { InMemoryCache, useLazyQuery } from '@apollo/client';
+import React, { useContext, query } from "react";
+import { InMemoryCache } from '@apollo/client';
 import { Button, Checkbox, Dimmer, Header, Icon, Message, Modal, Segment, Tab } from "semantic-ui-react";
-import { graphql } from "@apollo/client/react/hoc";
+import { graphql, withApollo } from "@apollo/client/react/hoc";
 import { isEqual } from "lodash";
 import PropTypes from "prop-types";
 import { compose } from "recompose";
@@ -248,8 +248,8 @@ class LinkModalContent extends React.PureComponent {
     super(props);
 
     const entity = props.lexicalEntry.entities.find(e => isEqual(e.field_id, props.fieldId));
-    const [getEntity, { loading: loadingEntity, data: dataEntity }] = useLazyQuery(entityQuery);
-    if (loadingEntity) return null;
+    //const [getEntity, { loading: loadingEntity, data: dataEntity }] = useLazyQuery(entityQuery);
+    //if (loadingEntity) return null;
 
     this.state = {
       entityPublish: entity && entity.published || false
@@ -325,38 +325,40 @@ class LinkModalContent extends React.PureComponent {
     });
   }
 
-  removeEntity(entity) {
-    const { remove, lexicalEntry, entitiesMode } = this.props;
-    const cache = new InMemoryCache();
+  async removeEntity(entity) {
+    const { client, remove, lexicalEntry, entitiesMode } = this.props;
 
-    //Query the entity from local cache
-    //Check that it exists there
-    getEntity({
+    /* Query the entity from local cache
+       Check that it exists there */
+    const result = await client.query({
+      query: entityQuery,
       variables: { id: entity.id },
-      fetchPolicy: 'cache-only',
+      fetchPolicy: 'cache-only'
     });
 
-    if (!dataEntity || !dataEntity.entity) return null;
+    console.log('Found entity: ', result.data.entity)
 
-    remove({
-      variables: { id: entity.id },
-      update(cache, { data: { remove } }) {
-        cache.evict({ id: cache.identify(entity) });
-        cache.gc();
-      }
-      /*
-      refetchQueries: [
-        {
-          // XXX: Expensive operation!
-          query: queryPerspective,
-          variables: {
-            id: lexicalEntry.parent_id,
-            entitiesMode
-          }
+    if (!result.errors && result.data.entity.marked_for_deletion === false) {
+      remove({
+        variables: { id: entity.id },
+        update(cache) {
+          cache.evict({ id: cache.identify(entity) });
+          cache.gc();
         }
-      ]
-      */
-    });
+        /*
+        refetchQueries: [
+          {
+            // XXX: Expensive operation!
+            query: queryPerspective,
+            variables: {
+              id: lexicalEntry.parent_id,
+              entitiesMode
+            }
+          }
+        ]
+        */
+      });
+    }
   }
 
   render() {
@@ -434,7 +436,7 @@ LinkModalContent.propTypes = {
   create: PropTypes.func.isRequired,
   publish: PropTypes.func.isRequired,
   accept: PropTypes.func.isRequired,
-  remove: PropTypes.func.isRequired,
+  remove: PropTypes.func.isRequired
 };
 
 const Content = compose(
@@ -442,7 +444,8 @@ const Content = compose(
   graphql(createMutation, { name: "create" }),
   graphql(publishMutation, { name: "publish" }),
   graphql(acceptMutation, { name: "accept" }),
-  graphql(removeMutation, { name: "remove" })
+  graphql(removeMutation, { name: "remove" }),
+  withApollo
 )(LinkModalContent);
 
 const LinkModal = props => {
