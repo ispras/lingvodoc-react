@@ -214,7 +214,7 @@ const VerbCasesModal = ({ verbCases, setVerbCases, data, error, loading }) => {
   const [sentences, setSentences] = useState(false);
 
   return (
-    <Modal closeIcon onClose={() => setVerbCases(false)} open={verbCases} size="large">
+    <Modal closeIcon onClose={() => setVerbCases(false)} open={verbCases} dimmer centered size="large" className="lingvo-modal2">
       <Modal.Header>{getTranslation("Valency verb cases")}</Modal.Header>
       <Modal.Content>
         {loading && (
@@ -891,7 +891,7 @@ const VerbCasesExtendedModal = ({ verbCases, setVerbCases, perspectiveId }) => {
   const close = () => setVerbCases(false);
 
   return (
-    <Modal closeIcon onClose={close} open={verbCases} size="fullscreen" className="lingvo-modal2">
+    <Modal closeIcon onClose={close} open={verbCases} dimmer size="fullscreen" className="lingvo-modal2">
       <Modal.Header>{getTranslation("Valency verb cases (extended)")}</Modal.Header>
       <VerbCasesContent perspectiveId={perspectiveId} close={close} client={client} info={infoRef.current} />
       <VerbCasesActionResult close={close} client={client} info={infoRef.current} />

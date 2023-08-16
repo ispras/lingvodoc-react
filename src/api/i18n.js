@@ -771,6 +771,7 @@ export const stringsToTranslate = [
   "Selected by default",
   "selected by default",
   "Selected dictionary group doesn't have multiple dictionaries with selected cognate grouping field present, cognate analysis is impossible.",
+  "Separate by corpora",
   "Separate by paragraphs",
   "Service",
   "Set corpus name, translations and metadata",

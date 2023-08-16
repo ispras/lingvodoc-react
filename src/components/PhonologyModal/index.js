@@ -586,7 +586,7 @@ class PhonologyModal extends React.Component {
 
     return (
       <div>
-        <Modal closeIcon onClose={this.props.closeModal} dimmer open size="fullscreen" className="lingvo-modal2">
+        <Modal closeIcon onClose={this.props.closeModal} dimmer open centered size="large" className="lingvo-modal2">
           <Modal.Header>
             {this.context(
               this.props.mode === "statistical_distance" ? "Phonological statistical distance" : "Phonology"
