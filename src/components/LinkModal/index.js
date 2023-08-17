@@ -12,7 +12,6 @@ import SearchLexicalEntries from "components/GroupingTagModal/search";
 import Tree from "components/GroupingTagModal/Tree";
 import { LexicalEntryByIds, queryLexicalEntries, queryPerspective } from "components/PerspectiveView";
 import TranslationContext from "Layout/TranslationContext";
-import { queryLexicalEntries } from "components/PerspectiveView";
 
 import { acceptMutation, createMutation, languageTreeSourceQuery, publishMutation, removeMutation, entityQuery } from "./graphql";
 
@@ -365,6 +364,7 @@ class LinkModalContent extends React.PureComponent {
         cache.gc();
       },
       refetchQueries: [
+        /*
         {
           // XXX: Expensive operation!
           query: queryPerspective,
@@ -373,10 +373,11 @@ class LinkModalContent extends React.PureComponent {
             entitiesMode
           }
         },
+        */
         {
           query: queryLexicalEntries,
           variables: {
-            id: lexicalEntry.id,
+            id: lexicalEntry.parent_id,
             entitiesMode
           }
         },
