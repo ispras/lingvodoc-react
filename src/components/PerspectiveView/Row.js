@@ -104,7 +104,7 @@ const Row = ({
               disabled={disabled_flag || action.disabled(entry)}
               key={action.title} 
               content={action.title}
-              onClick={() => { action.action(entry); reRender; }}
+              onClick={() => { action.action(entry); reRender(); }}
               className={action.className}
             />
           ))}
@@ -150,7 +150,7 @@ Row.defaultProps = {
   resetCheckedRow: () => {},
   resetCheckedColumn: () => {},
   resetCheckedAll: () => {},
-  reRender: () => {}
+  reRender: () => console.debug('Wrong reRender')
 };
 
 export default onlyUpdateForKeys([

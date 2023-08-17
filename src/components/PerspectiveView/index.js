@@ -290,7 +290,7 @@ class P extends React.Component {
 
   reRender() {
     this.forceUpdate();
-    console.debug("Forcely updated 'P' component");
+    console.debug("Force updated 'P' component");
   }
 
   render() {
