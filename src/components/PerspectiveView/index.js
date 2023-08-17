@@ -226,8 +226,7 @@ class P extends React.Component {
     this.state = {
       checkedRow: null,
       checkedColumn: null,
-      checkedAll: null,
-      reRender: null
+      checkedAll: null
     };
 
     this.onCheckRow = this.onCheckRow.bind(this);
@@ -290,9 +289,8 @@ class P extends React.Component {
   }
 
   reRender() {
-    this.setState({
-      reRender: null
-    });
+    this.forceUpdate();
+    console.debug("Forcely updated 'P' component");
   }
 
   render() {
