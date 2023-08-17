@@ -31,7 +31,8 @@ TableBody.propTypes = {
   onCheckRow: PropTypes.func,
   resetCheckedRow: PropTypes.func,
   resetCheckedColumn: PropTypes.func,
-  resetCheckedAll: PropTypes.func
+  resetCheckedAll: PropTypes.func,
+  reRender: PropTypes.func
 };
 
 TableBody.defaultProps = {
@@ -47,7 +48,8 @@ TableBody.defaultProps = {
   onCheckRow: () => {},
   resetCheckedRow: () => {},
   resetCheckedColumn: () => {},
-  resetCheckedAll: () => {}
+  resetCheckedAll: () => {},
+  reRender: () => {}
 };
 
 export default onlyUpdateForKeys([

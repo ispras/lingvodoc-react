@@ -226,7 +226,8 @@ class P extends React.Component {
     this.state = {
       checkedRow: null,
       checkedColumn: null,
-      checkedAll: null
+      checkedAll: null,
+      reRender: null
     };
 
     this.onCheckRow = this.onCheckRow.bind(this);
@@ -235,6 +236,7 @@ class P extends React.Component {
     this.resetCheckedColumn = this.resetCheckedColumn.bind(this);
     this.onCheckAll = this.onCheckAll.bind(this);
     this.resetCheckedAll = this.resetCheckedAll.bind(this);
+    this.reRender = this.reRender.bind(this);
   }
 
   resetCheckedRow() {
@@ -284,6 +286,12 @@ class P extends React.Component {
       checkedAll: { checkedAll: checked },
       checkedRow: null,
       checkedColumn: null
+    });
+  }
+
+  reRender() {
+    this.setState({
+      reRender: null
     });
   }
 
@@ -686,6 +694,7 @@ class P extends React.Component {
               resetCheckedColumn={this.resetCheckedColumn}
               resetCheckedAll={this.resetCheckedAll}
               onEntrySelect={onEntrySelect}
+              reRender={this.reRender}
             />
           </Table>
         </div>

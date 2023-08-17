@@ -379,7 +379,8 @@ class LinkModalContent extends React.PureComponent {
           variables: {
             id: lexicalEntry.parent_id,
             entitiesMode
-          }
+          },
+          fetchPolicy: 'network-only'
         },
       ]
     });

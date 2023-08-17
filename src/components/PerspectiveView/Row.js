@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Button, Checkbox, Table } from "semantic-ui-react";
 import { isEmpty, isEqual, sortBy } from "lodash";
 import PropTypes from "prop-types";
@@ -28,6 +28,7 @@ const Row = ({
   resetCheckedRow,
   resetCheckedColumn,
   resetCheckedAll,
+  reRender,
   /* eslint-disable react/prop-types */
   showEntryId,
   selectDisabled,
@@ -41,9 +42,6 @@ const Row = ({
   const disabled_flag = disabledEntrySet && disabledEntrySet.hasOwnProperty(entry_id_str);
 
   const remove_selection_flag = removeSelectionEntrySet && removeSelectionEntrySet.hasOwnProperty(entry_id_str);
-
-  const [ _, setState ] = useState(null);
-  const reRender = () => setState(null);
 
   return (
     <Table.Row style={disabled_flag ? { opacity: "0.5" } : {}}>
@@ -134,7 +132,8 @@ Row.propTypes = {
   onCheckRow: PropTypes.func,
   resetCheckedRow: PropTypes.func,
   resetCheckedColumn: PropTypes.func,
-  resetCheckedAll: PropTypes.func
+  resetCheckedAll: PropTypes.func,
+  reRender: PropTypes.func
 };
 
 Row.defaultProps = {
@@ -150,7 +149,8 @@ Row.defaultProps = {
   onCheckRow: () => {},
   resetCheckedRow: () => {},
   resetCheckedColumn: () => {},
-  resetCheckedAll: () => {}
+  resetCheckedAll: () => {},
+  reRender: () => {}
 };
 
 export default onlyUpdateForKeys([
