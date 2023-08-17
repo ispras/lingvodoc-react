@@ -85,6 +85,7 @@ export const queryLexicalEntries = gql`
           content
           published
           accepted
+          marked_for_deletion
           additional_metadata {
             link_perspective_id
           }
