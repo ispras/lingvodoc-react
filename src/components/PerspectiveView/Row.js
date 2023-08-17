@@ -42,7 +42,8 @@ const Row = ({
 
   const remove_selection_flag = removeSelectionEntrySet && removeSelectionEntrySet.hasOwnProperty(entry_id_str);
 
-  const [ _, reRender ] = useState(null);
+  const [ _, setState ] = useState(null);
+  const reRender = () => setState(null);
 
   return (
     <Table.Row style={disabled_flag ? { opacity: "0.5" } : {}}>
@@ -105,7 +106,7 @@ const Row = ({
               disabled={disabled_flag || action.disabled(entry)}
               key={action.title} 
               content={action.title}
-              onClick={() => { action.action(entry); reRender(null); }}
+              onClick={() => { action.action(entry); reRender; }}
               className={action.className}
             />
           ))}

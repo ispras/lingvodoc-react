@@ -12,6 +12,7 @@ import SearchLexicalEntries from "components/GroupingTagModal/search";
 import Tree from "components/GroupingTagModal/Tree";
 import { LexicalEntryByIds, queryLexicalEntries, queryPerspective } from "components/PerspectiveView";
 import TranslationContext from "Layout/TranslationContext";
+import { lexicalEntryQuery } from "components/LexicalEntry";
 
 import { acceptMutation, createMutation, languageTreeSourceQuery, publishMutation, removeMutation, entityQuery } from "./graphql";
 
@@ -74,13 +75,15 @@ const EditLink = props => {
 
   const tree = buildTree(lexicalEntry, column, allLanguages, allDictionaries, allPerspectives);
 
-  const [ _, reRender ] = useState(null);
+  const [ _, setState ] = useState(null);
+  const reRender = () => setState(null);
 
   const get_link = async entry => {
     const entity = lexicalEntry.entities.find(
       e => isEqual(e.link_id, entry.id) && isEqual(e.field_id, column.field_id)
     );
 
+    console.log('Found entity.marked_for_deletion: ', entity.marked_for_deletion)
     if (!entity) return null;
 
     //Checking in db
@@ -105,7 +108,7 @@ const EditLink = props => {
         get_link(entry).then(entity => {
           if (entity) {
             remove(entity);
-            reRender(null);
+            reRender;
           }
         });
       },
@@ -360,8 +363,7 @@ class LinkModalContent extends React.PureComponent {
       update(cache) {
         cache.evict({ id: cache.identify(entity) });
         cache.gc();
-      }
-      /*
+      },
       refetchQueries: [
         {
           // XXX: Expensive operation!
@@ -370,9 +372,15 @@ class LinkModalContent extends React.PureComponent {
             id: lexicalEntry.parent_id,
             entitiesMode
           }
-        }
+        },
+        {
+          query: lexicalEntryQuery,
+          variables: {
+            id: lexicalEntry.id,
+            entitiesMode
+          }
+        },
       ]
-      */
     });
   }
 

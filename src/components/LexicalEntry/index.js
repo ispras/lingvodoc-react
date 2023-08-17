@@ -70,7 +70,7 @@ const updateEntityMutation = gql`
   }
 `;
 
-const lexicalEntryQuery = gql`
+export const lexicalEntryQuery = gql`
   query LexicalEntryQuery($id: LingvodocID!, $entitiesMode: String!) {
     lexicalentry(id: $id) {
       id
@@ -88,6 +88,7 @@ const lexicalEntryQuery = gql`
         content
         published
         accepted
+        marked_for_deletion
         additional_metadata {
           link_perspective_id
         }
