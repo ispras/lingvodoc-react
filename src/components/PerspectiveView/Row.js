@@ -150,7 +150,7 @@ Row.defaultProps = {
   resetCheckedRow: () => {},
   resetCheckedColumn: () => {},
   resetCheckedAll: () => {},
-  reRender: () => console.debug('Fake reRender')
+  reRender: () => console.debug('Fake refetch')
 };
 
 export default onlyUpdateForKeys([

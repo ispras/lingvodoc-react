@@ -82,7 +82,7 @@ const EditLink = props => {
       e => isEqual(e.link_id, entry.id) && isEqual(e.field_id, column.field_id)
     );
 
-    console.log('Found entity.marked_for_deletion: ', entity.marked_for_deletion)
+    //console.log('Found entity.marked_for_deletion: ', entity.marked_for_deletion)
     if (!entity) return null;
 
     //Checking in db
