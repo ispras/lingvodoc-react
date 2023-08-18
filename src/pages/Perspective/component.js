@@ -146,7 +146,7 @@ function renderData(getTranslation, data, sentences, setSentences, filter, setFi
 
   return (
     <>
-      <div>
+      <div className="lingvo-perspective-component-text" style={{ paddingTop: "6px", paddingBottom: "6px" }}>
         <a href={xlsx_url}>{getTranslation("XLSX-exported data")}</a>
       </div>
 
@@ -154,7 +154,7 @@ function renderData(getTranslation, data, sentences, setSentences, filter, setFi
         <SentenceCheckbox sentences={sentences} setSentences={setSentences} />
       </div>
 
-      <div style={{ marginTop: "0.75em" }}>
+      <div style={{ marginTop: "1em" }}>
         <Input
           placeholder={`${getTranslation("Verb lexeme/translation filter")}...`}
           onChange={(e, { value }) => {
@@ -166,10 +166,11 @@ function renderData(getTranslation, data, sentences, setSentences, filter, setFi
             }
           }}
           icon={<Icon name="filter" link onClick={() => setFilter(filterValue)} />}
+          className="lingvo-input-normal lingvo-input-normal_verbfilter"
         />
       </div>
 
-      <div style={{ marginTop: "0.75em" }}>{`${final_list.length} ${getTranslation("verbs")}`}</div>
+      <div style={{ marginTop: "1em" }}>{`${final_list.length} ${getTranslation("verbs")}`}</div>
 
       <div style={{ marginTop: "1em" }}>
         <List>
@@ -698,6 +699,7 @@ const SentenceCheckbox = ({ sentences, setSentences }) => {
       disabled={pending[0]}
       checked={sentences}
       onChange={(e, { checked }) => setPending([true, checked])}
+      className="lingvo-checkbox lingvo-checkbox_labeled"
     />
   );
 };
@@ -741,7 +743,7 @@ const VerbCasesResult = ({ valency_verb_cases }) => {
 
   return (
     <Modal.Content>
-      <div>
+      <div className="lingvo-perspective-component-text" style={{ paddingTop: "6px", paddingBottom: "6px" }}>
         <a href={xlsx_url}>{getTranslation("XLSX-exported data")}</a>
       </div>
 
@@ -749,7 +751,7 @@ const VerbCasesResult = ({ valency_verb_cases }) => {
         <SentenceCheckbox sentences={sentences} setSentences={setSentences} />
       </div>
 
-      <div style={{ marginTop: "0.75em" }}>
+      <div style={{ marginTop: "1em" }}>
         <Input
           placeholder={`${getTranslation("Verb lexeme/translation filter")}...`}
           onChange={(e, { value }) => {
@@ -761,10 +763,11 @@ const VerbCasesResult = ({ valency_verb_cases }) => {
             }
           }}
           icon={<Icon name="filter" link onClick={() => setFilter(filterValue)} />}
+          className="lingvo-input-normal lingvo-input-normal_verbfilter"
         />
       </div>
 
-      <div style={{ marginTop: "0.75em" }}>{`${verbDataList.length} ${getTranslation("verbs")}`}</div>
+      <div style={{ marginTop: "1em" }}>{`${verbDataList.length} ${getTranslation("verbs")}`}</div>
 
       <div style={{ marginTop: "1em" }}>
         <List>

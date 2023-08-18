@@ -3652,6 +3652,45 @@ body {
 }
 /* /lingvo input */
 
+/* lingvo input normal */
+.lingvo-input-normal {
+  background: #fff !important;
+  border-radius: 10px !important;
+  padding: 11px 20px !important;
+  font-family: Rubik, Arial, sans-serif !important;
+  font-size: 16px !important;
+  line-height: 18px !important;
+
+  &.input {
+    padding: 0 !important;
+
+    & > input {
+      border-radius: 10px !important;
+      padding: 11px 20px !important;
+      font-size: 16px !important;
+      line-height: 18px !important;
+      font-family: Rubik, Arial, sans-serif !important;
+      min-height: 42px !important;
+
+      &:focus {
+        border: 1px solid #5d54cd !important;
+      }
+    }
+  }
+
+  &_verbfilter.input {
+    & > input {
+      width: 295px !important;
+
+      @media only screen and (max-device-width: 500px), only screen and (max-width: 500px) {
+        padding-left: 11px !important;
+        width: 280px !important;
+      }
+    }
+  }
+}
+/* /lingvo input normal */
+
 /* lingvo form header */
 .lingvo-form-header {
   font-family: Mulish, Arial, sans-serif;

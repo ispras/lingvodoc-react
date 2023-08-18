@@ -594,3 +594,27 @@
   }
 }
 /* /lingvo cognate language header */
+
+/* lingvo perspective component text */
+.lingvo-perspective-component-text {
+  margin: 0;
+  font-family: Rubik, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+
+  & a {
+    color: #5d54cd;
+
+    &:hover {
+      color: #5d54cd;
+      text-decoration: underline;
+    }
+
+    &:active {
+      color: #372f9d;
+    }
+  }
+
+}
+/* /lingvo perspective component text */
