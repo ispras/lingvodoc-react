@@ -148,6 +148,7 @@ const TableComponent = ({
   selectEntries,
   selectedEntries,
   onEntrySelect,
+  reRender,
   /* eslint-disable react/prop-types */
   selectAllEntries,
   selectAllIndeterminate,
@@ -163,7 +164,6 @@ const TableComponent = ({
   actions
 }) => {
 
-  const [ _, reRender ] = useState(null);
   console.log("Rendered 'TableComponent'");
 
   return (
@@ -200,7 +200,7 @@ const TableComponent = ({
           selectDisabledIndeterminate={selectDisabledIndeterminate}
           disabledEntrySet={disabledEntrySet}
           removeSelectionEntrySet={removeSelectionEntrySet}
-          reRender={() => reRender(null)}
+          reRender={reRender}
         />
       </Table>
     </div>
@@ -216,14 +216,16 @@ TableComponent.propTypes = {
   selectEntries: PropTypes.bool,
   selectedEntries: PropTypes.array,
   onEntrySelect: PropTypes.func,
-  actions: PropTypes.array
+  actions: PropTypes.array,
+  reRender: PropTypes.func
 };
 
 TableComponent.defaultProps = {
   actions: [],
   selectEntries: false,
   selectedEntries: [],
-  onEntrySelect: () => {}
+  onEntrySelect: () => {},
+  reRender: () => console.log('Fake refetch')
 };
 
 class P extends React.Component {
@@ -980,6 +982,11 @@ const LexicalEntryViewBaseByIds = ({ perspectiveId, mode, entitiesMode, data, ac
     };
   });
 
+  reRender() {
+    data.refetch();
+    console.log("Refetched 'queryLexicalEntriesByIds'");
+  }
+
   return (
     <TableComponent
       perspectiveId={perspectiveId}
@@ -988,6 +995,7 @@ const LexicalEntryViewBaseByIds = ({ perspectiveId, mode, entitiesMode, data, ac
       columns={fields}
       mode={mode}
       actions={actions}
+      reRender={reRender}
     />
   );
 };
