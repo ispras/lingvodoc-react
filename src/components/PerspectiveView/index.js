@@ -289,8 +289,8 @@ class P extends React.Component {
   }
 
   reRender() {
-    this.forceUpdate();
-    console.debug("Force updated 'P' component");
+    this.props.data.refetch();
+    console.log("Refetched 'queryLexicalEntries'");
   }
 
   render() {
@@ -602,6 +602,8 @@ class P extends React.Component {
       yield* newEntries;
       yield* entries;
     }
+
+    console.log("Rendered 'P' component")
 
     return (
       <div

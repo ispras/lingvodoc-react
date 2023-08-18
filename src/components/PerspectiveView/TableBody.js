@@ -49,7 +49,7 @@ TableBody.defaultProps = {
   resetCheckedRow: () => {},
   resetCheckedColumn: () => {},
   resetCheckedAll: () => {},
-  reRender: () => console.debug('Wrong reRender')
+  reRender: () => console.log('Fake reRender')
 };
 
 export default onlyUpdateForKeys([
@@ -60,5 +60,6 @@ export default onlyUpdateForKeys([
   "selectedRows",
   "checkedRow",
   "checkedColumn",
-  "checkedAll"
+  "checkedAll",
+  "reRender"
 ])(TableBody);
