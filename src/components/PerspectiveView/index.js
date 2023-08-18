@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { connect } from "react-redux";
 import { Button, Dimmer, Header, Icon, Table } from "semantic-ui-react";
 import { gql } from "@apollo/client";
@@ -161,44 +161,51 @@ const TableComponent = ({
   removeSelectionEntrySet,
   /*  eslint-enable react/prop-types */
   actions
-}) => (
-  <div style={{ overflowY: "auto" }}>
-    <Table celled padded className="lingvo-perspective-table">
-      <TableHeader
-        columns={columns}
-        entries={entries}
-        selectEntries={selectEntries}
-        selectedEntries={selectedEntries}
-        onEntrySelect={onEntrySelect}
-        selectAllEntries={selectAllEntries}
-        selectAllIndeterminate={selectAllIndeterminate}
-        selectAllChecked={selectAllChecked}
-        onAllEntriesSelect={onAllEntriesSelect}
-        showEntryId={showEntryId}
-        selectDisabled={selectDisabled}
-        selectDisabledIndeterminate={selectDisabledIndeterminate}
-        disabled={disabledHeader}
-        actions={actions}
-      />
-      <TableBody
-        perspectiveId={perspectiveId}
-        entitiesMode={entitiesMode}
-        entries={entries}
-        columns={columns}
-        mode={mode}
-        actions={actions}
-        selectEntries={selectEntries}
-        selectedEntries={selectedEntries}
-        onEntrySelect={onEntrySelect}
-        showEntryId={showEntryId}
-        selectDisabled={selectDisabled}
-        selectDisabledIndeterminate={selectDisabledIndeterminate}
-        disabledEntrySet={disabledEntrySet}
-        removeSelectionEntrySet={removeSelectionEntrySet}
-      />
-    </Table>
-  </div>
-);
+}) => {
+
+  const [ _, reRender ] = useState(null);
+  console.log("Rendered 'TableComponent'");
+
+  return (
+    <div style={{ overflowY: "auto" }}>
+      <Table celled padded className="lingvo-perspective-table">
+        <TableHeader
+          columns={columns}
+          entries={entries}
+          selectEntries={selectEntries}
+          selectedEntries={selectedEntries}
+          onEntrySelect={onEntrySelect}
+          selectAllEntries={selectAllEntries}
+          selectAllIndeterminate={selectAllIndeterminate}
+          selectAllChecked={selectAllChecked}
+          onAllEntriesSelect={onAllEntriesSelect}
+          showEntryId={showEntryId}
+          selectDisabled={selectDisabled}
+          selectDisabledIndeterminate={selectDisabledIndeterminate}
+          disabled={disabledHeader}
+          actions={actions}
+        />
+        <TableBody
+          perspectiveId={perspectiveId}
+          entitiesMode={entitiesMode}
+          entries={entries}
+          columns={columns}
+          mode={mode}
+          actions={actions}
+          selectEntries={selectEntries}
+          selectedEntries={selectedEntries}
+          onEntrySelect={onEntrySelect}
+          showEntryId={showEntryId}
+          selectDisabled={selectDisabled}
+          selectDisabledIndeterminate={selectDisabledIndeterminate}
+          disabledEntrySet={disabledEntrySet}
+          removeSelectionEntrySet={removeSelectionEntrySet}
+          reRender={() => reRender(null)}
+        />
+      </Table>
+    </div>
+  );
+}
 
 TableComponent.propTypes = {
   columns: PropTypes.array.isRequired,

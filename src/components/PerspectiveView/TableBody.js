@@ -60,6 +60,5 @@ export default onlyUpdateForKeys([
   "selectedRows",
   "checkedRow",
   "checkedColumn",
-  "checkedAll",
-  "reRender"
+  "checkedAll"
 ])(TableBody);
