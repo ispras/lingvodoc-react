@@ -29,7 +29,6 @@ const Row = ({
   resetCheckedColumn,
   resetCheckedAll,
   reRender,
-  reRender1,
   /* eslint-disable react/prop-types */
   showEntryId,
   selectDisabled,
@@ -43,6 +42,8 @@ const Row = ({
   const disabled_flag = disabledEntrySet && disabledEntrySet.hasOwnProperty(entry_id_str);
 
   const remove_selection_flag = removeSelectionEntrySet && removeSelectionEntrySet.hasOwnProperty(entry_id_str);
+
+  const [ disabled, setDisabled ] = useState(false);
 
   return (
     <Table.Row style={disabled_flag ? { opacity: "0.5" } : {}}>
@@ -100,15 +101,18 @@ const Row = ({
 
       {!isEmpty(actions) && (
         <Table.Cell>
-          {actions.map(action => (
-            <Button
-              disabled={disabled_flag || action.disabled(entry)}
-              key={action.title} 
-              content={action.title}
-              onClick={() => { action.action(entry); reRender(); }}
-              className={action.className}
-            />
-          ))}
+          {actions.map(action => {
+            action.enabled(entry).then(value => setDisabled(!value));
+            return(
+              <Button
+                disabled={disabled_flag || disabled}
+                key={action.title}
+                content={action.title}
+                onClick={() => { action.action(entry); reRender(); }}
+                className={action.className}
+              />
+            );
+          })}
         </Table.Cell>
       )}
     </Table.Row>
@@ -134,8 +138,7 @@ Row.propTypes = {
   resetCheckedRow: PropTypes.func,
   resetCheckedColumn: PropTypes.func,
   resetCheckedAll: PropTypes.func,
-  reRender: PropTypes.func,
-  reRender1: PropTypes.func
+  reRender: PropTypes.func
 };
 
 Row.defaultProps = {

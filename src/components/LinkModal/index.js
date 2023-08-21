@@ -74,17 +74,13 @@ const EditLink = props => {
 
   const tree = buildTree(lexicalEntry, column, allLanguages, allDictionaries, allPerspectives);
 
-  const [ _, setState ] = useState(null);
-  const reRender = () => setState(null);
 
   const get_link = async entry => {
     const entity = lexicalEntry.entities.find(
       e => isEqual(e.link_id, entry.id) && isEqual(e.field_id, column.field_id) && isEqual(e.marked_for_deletion, false)
     );
 
-    //console.log('All entities: ', lexicalEntry.entities);
-    //console.log('Found entity: ', entity.id);
-    return entity;
+    if (!entity) return null;
 
     //Checking in db
     const result = await client.query({
@@ -108,12 +104,10 @@ const EditLink = props => {
         get_link(entry).then(entity => {
           if (entity) {
             remove(entity);
-            reRender;
           }
         });
       },
-      disabled: entry => false,
-        //get_link(entry).then(entity => !entity);
+      enabled: entry => get_link(entry),
       className: "lingvo-button-redder"
     }
   ];
