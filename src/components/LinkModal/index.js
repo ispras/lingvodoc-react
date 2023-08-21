@@ -79,11 +79,12 @@ const EditLink = props => {
 
   const get_link = async entry => {
     const entity = lexicalEntry.entities.find(
-      e => isEqual(e.link_id, entry.id) && isEqual(e.field_id, column.field_id)
+      e => isEqual(e.link_id, entry.id) && isEqual(e.field_id, column.field_id) && isEqual(e.marked_for_deletion, false)
     );
 
-    //console.log('Found entity.marked_for_deletion: ', entity.marked_for_deletion)
-    if (!entity) return null;
+    //console.log('All entities: ', lexicalEntry.entities);
+    //console.log('Found entity: ', entity.id);
+    return entity;
 
     //Checking in db
     const result = await client.query({
@@ -111,9 +112,8 @@ const EditLink = props => {
           }
         });
       },
-      disabled: entry => {
-        get_link(entry).then(entity => !entity);
-      },
+      disabled: entry => false,
+        //get_link(entry).then(entity => !entity);
       className: "lingvo-button-redder"
     }
   ];

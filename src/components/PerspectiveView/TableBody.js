@@ -32,7 +32,8 @@ TableBody.propTypes = {
   resetCheckedRow: PropTypes.func,
   resetCheckedColumn: PropTypes.func,
   resetCheckedAll: PropTypes.func,
-  reRender: PropTypes.func
+  reRender: PropTypes.func,
+  reRender1: PropTypes.func
 };
 
 TableBody.defaultProps = {

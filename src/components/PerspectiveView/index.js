@@ -613,6 +613,7 @@ class P extends React.Component {
     }
 
     console.log("Rendered 'P' component")
+    console.log("The input entry: ", items)
 
     return (
       <div
@@ -703,7 +704,7 @@ class P extends React.Component {
               resetCheckedColumn={this.resetCheckedColumn}
               resetCheckedAll={this.resetCheckedAll}
               onEntrySelect={onEntrySelect}
-              reRender={this.reRender}
+              reRender1={this.reRender}
             />
           </Table>
         </div>
@@ -985,6 +986,7 @@ const LexicalEntryViewBaseByIds = ({ perspectiveId, mode, entitiesMode, data, ac
   const reRender = () => {
     data.refetch();
     console.log("Refetched 'queryLexicalEntriesByIds'");
+    console.log("Output entries: ", entries)
   }
 
   return (
@@ -1023,7 +1025,8 @@ export const LexicalEntryView = graphql(queryLexicalEntry, {
 
 export const LexicalEntryByIds = compose(
   graphql(queryLexicalEntriesByIds, {
-    options: { notifyOnNetworkStatusChange: true }
+    options: { notifyOnNetworkStatusChange: true },
+    fetchPolicy: 'network-only'
   })
 )(LexicalEntryViewBaseByIds);
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button, Checkbox, Table } from "semantic-ui-react";
 import { isEmpty, isEqual, sortBy } from "lodash";
 import PropTypes from "prop-types";
@@ -29,6 +29,7 @@ const Row = ({
   resetCheckedColumn,
   resetCheckedAll,
   reRender,
+  reRender1,
   /* eslint-disable react/prop-types */
   showEntryId,
   selectDisabled,
@@ -133,7 +134,8 @@ Row.propTypes = {
   resetCheckedRow: PropTypes.func,
   resetCheckedColumn: PropTypes.func,
   resetCheckedAll: PropTypes.func,
-  reRender: PropTypes.func
+  reRender: PropTypes.func,
+  reRender1: PropTypes.func
 };
 
 Row.defaultProps = {
