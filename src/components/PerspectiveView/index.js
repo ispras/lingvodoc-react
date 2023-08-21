@@ -85,7 +85,6 @@ export const queryLexicalEntries = gql`
           content
           published
           accepted
-          marked_for_deletion
           additional_metadata {
             link_perspective_id
           }
@@ -613,7 +612,6 @@ class P extends React.Component {
     }
 
     console.log("Rendered 'P' component")
-    console.log("The input entry: ", items)
 
     return (
       <div
@@ -704,7 +702,7 @@ class P extends React.Component {
               resetCheckedColumn={this.resetCheckedColumn}
               resetCheckedAll={this.resetCheckedAll}
               onEntrySelect={onEntrySelect}
-              reRender1={this.reRender}
+              reRender={this.reRender}
             />
           </Table>
         </div>
@@ -1025,8 +1023,7 @@ export const LexicalEntryView = graphql(queryLexicalEntry, {
 
 export const LexicalEntryByIds = compose(
   graphql(queryLexicalEntriesByIds, {
-    options: { notifyOnNetworkStatusChange: true },
-    fetchPolicy: 'network-only'
+    options: { notifyOnNetworkStatusChange: true }
   })
 )(LexicalEntryViewBaseByIds);
 

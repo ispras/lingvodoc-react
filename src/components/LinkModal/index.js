@@ -77,7 +77,7 @@ const EditLink = props => {
 
   const get_link = async entry => {
     const entity = lexicalEntry.entities.find(
-      e => isEqual(e.link_id, entry.id) && isEqual(e.field_id, column.field_id) && isEqual(e.marked_for_deletion, false)
+      e => isEqual(e.link_id, entry.id) && isEqual(e.field_id, column.field_id)
     );
 
     if (!entity) return null;
@@ -271,8 +271,6 @@ class LinkModalContent extends React.PureComponent {
     super(props);
 
     const entity = props.lexicalEntry.entities.find(e => isEqual(e.field_id, props.fieldId));
-    //const [getEntity, { loading: loadingEntity, data: dataEntity }] = useLazyQuery(entityQuery);
-    //if (loadingEntity) return null;
 
     this.state = {
       entityPublish: entity && entity.published || false
