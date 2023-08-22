@@ -984,7 +984,6 @@ const LexicalEntryViewBaseByIds = ({ perspectiveId, mode, entitiesMode, data, ac
   const reRender = () => {
     data.refetch();
     console.log("Refetched 'queryLexicalEntriesByIds'");
-    console.log("Output entries: ", entries)
   }
 
   return (

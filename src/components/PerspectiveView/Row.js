@@ -39,11 +39,11 @@ const Row = ({
 }) => {
   const entry_id_str = id2str(entry.id);
 
-  const disabled_flag = disabledEntrySet && disabledEntrySet.hasOwnProperty(entry_id_str);
+  const [ disabled, setDisabled ] = useState(false);
+
+  const disabled_flag = disabledEntrySet && disabledEntrySet.hasOwnProperty(entry_id_str) || disabled;
 
   const remove_selection_flag = removeSelectionEntrySet && removeSelectionEntrySet.hasOwnProperty(entry_id_str);
-
-  const [ disabled, setDisabled ] = useState(false);
 
   return (
     <Table.Row style={disabled_flag ? { opacity: "0.5" } : {}}>
@@ -102,10 +102,11 @@ const Row = ({
       {!isEmpty(actions) && (
         <Table.Cell>
           {actions.map(action => {
-            action.enabled(entry).then(value => setDisabled(!value));
+            if (action.enabled)
+              action.enabled(entry).then(value => setDisabled(!value));
             return(
               <Button
-                disabled={disabled_flag || disabled}
+                disabled={disabled_flag}
                 key={action.title}
                 content={action.title}
                 onClick={() => { action.action(entry); reRender(); }}

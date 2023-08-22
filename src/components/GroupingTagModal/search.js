@@ -1,4 +1,5 @@
 import React from "react";
+import { isEqual } from "lodash";
 import { Dimmer, Header, Icon, Input, Segment } from "semantic-ui-react";
 import { withApollo } from "@apollo/client/react/hoc";
 import PropTypes from "prop-types";
@@ -68,8 +69,40 @@ class SearchLexicalEntries extends React.Component {
   }
 
   render() {
-    const { joinGroup } = this.props;
-    const actions = [{ title: this.context("Connect"), className: "lingvo-button-greenest", action: entry => joinGroup(entry) }];
+    const { lexicalEntry, fieldId, joinGroup } = this.props;
+
+    const is_connectable = async entry => {
+      const entity = lexicalEntry.entities.find(
+        e => isEqual(e.link_id, entry.id) && isEqual(e.field_id, fieldId)
+      );
+
+      return !entity;
+
+      /*
+      //Checking in db
+      const result = await client.query({
+        query: entityQuery,
+        variables: { id: entity.id },
+        fetchPolicy: 'network-only'
+      });
+
+      if (!result.errors &&
+          result.data.entity &&
+          result.data.entity.marked_for_deletion === false) {
+        return entity;
+      }
+      return null;
+      */
+    }
+
+    const actions = [
+      {
+        title: this.context("Connect"),
+        className: "lingvo-button-greenest",
+        action: entry => joinGroup(entry),
+        enabled: entry => is_connectable(entry)
+      }
+    ];
     return (
       <div>
         <Segment className="lingvo-segment-grouptag-search">
