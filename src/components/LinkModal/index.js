@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import { InMemoryCache } from '@apollo/client';
 import { Button, Checkbox, Dimmer, Header, Icon, Message, Modal, Segment, Tab } from "semantic-ui-react";
 import { graphql, withApollo } from "@apollo/client/react/hoc";
@@ -74,7 +74,6 @@ const EditLink = props => {
 
   const tree = buildTree(lexicalEntry, column, allLanguages, allDictionaries, allPerspectives);
 
-
   const get_link = async entry => {
     const entity = lexicalEntry.entities.find(
       e => isEqual(e.link_id, entry.id) && isEqual(e.field_id, column.field_id)
@@ -104,6 +103,7 @@ const EditLink = props => {
         get_link(entry).then(entity => {
           if (entity) {
             remove(entity);
+            console.log("Query result: ", lexicalEntry.entities);
           }
         });
       },
@@ -280,7 +280,13 @@ class LinkModalContent extends React.PureComponent {
     this.changePublished = this.changePublished.bind(this);
     this.changeAccepted = this.changeAccepted.bind(this);
     this.removeEntity = this.removeEntity.bind(this);
+    //this.reRender = this.reRender.bind(this);
   }
+
+  //reRender() {
+  //  this.props.data.refetch();
+  //  console.log("Refetched 'languageTreeSourceQuery");
+  //}
 
   createEntity(targetLexicalEntry) {
     const { create, lexicalEntry, entitiesMode, fieldId } = this.props;
@@ -347,7 +353,7 @@ class LinkModalContent extends React.PureComponent {
   }
 
   removeEntity(entity) {
-    const { remove, lexicalEntry, entitiesMode } = this.props;
+    const { reRender, remove, lexicalEntry, entitiesMode } = this.props;
 
     remove({
       variables: { id: entity.id },
@@ -355,8 +361,8 @@ class LinkModalContent extends React.PureComponent {
         cache.evict({ id: cache.identify(entity) });
         cache.gc();
       },
+      /*
       refetchQueries: [
-        /*
         {
           // XXX: Expensive operation!
           query: queryPerspective,
@@ -365,7 +371,6 @@ class LinkModalContent extends React.PureComponent {
             entitiesMode
           }
         },
-        */
         {
           query: queryLexicalEntries,
           variables: {
@@ -375,7 +380,9 @@ class LinkModalContent extends React.PureComponent {
           fetchPolicy: 'network-only'
         },
       ]
+      */
     });
+    reRender();
   }
 
   render() {
@@ -454,7 +461,8 @@ LinkModalContent.propTypes = {
   create: PropTypes.func.isRequired,
   publish: PropTypes.func.isRequired,
   accept: PropTypes.func.isRequired,
-  remove: PropTypes.func.isRequired
+  remove: PropTypes.func.isRequired,
+  reRender: PropTypes.func
 };
 
 const Content = compose(
@@ -494,7 +502,8 @@ LinkModal.propTypes = {
   fieldId: PropTypes.array,
   mode: PropTypes.string.isRequired,
   entitiesMode: PropTypes.string.isRequired,
-  onClose: PropTypes.func.isRequired
+  onClose: PropTypes.func.isRequired,
+  reRender: PropTypes.func
 };
 
 LinkModal.defaultProps = {

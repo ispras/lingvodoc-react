@@ -243,8 +243,13 @@ class P extends React.Component {
     this.resetCheckedColumn = this.resetCheckedColumn.bind(this);
     this.onCheckAll = this.onCheckAll.bind(this);
     this.resetCheckedAll = this.resetCheckedAll.bind(this);
-    this.reRender = this.reRender.bind(this);
+    //this.reRender = this.reRender.bind(this);
   }
+
+  //reRender() {
+  //  this.props.data.refetch();
+  //  console.log("Refetched 'queryLexicalEntries'");
+  //}
 
   resetCheckedRow() {
     this.setState({
@@ -296,11 +301,6 @@ class P extends React.Component {
     });
   }
 
-  reRender() {
-    this.props.data.refetch();
-    console.log("Refetched 'queryLexicalEntries'");
-  }
-
   render() {
     const {
       id,
@@ -323,7 +323,8 @@ class P extends React.Component {
       openModal: openNewModal,
       createdEntries,
       selectedEntries,
-      user
+      user,
+      reRender
     } = this.props;
 
     const { loading, error } = data;
@@ -611,7 +612,7 @@ class P extends React.Component {
       yield* entries;
     }
 
-    console.log("Rendered 'P' component")
+    console.log("Rendered 'P' component");
 
     return (
       <div
@@ -702,7 +703,7 @@ class P extends React.Component {
               resetCheckedColumn={this.resetCheckedColumn}
               resetCheckedAll={this.resetCheckedAll}
               onEntrySelect={onEntrySelect}
-              reRender={this.reRender}
+              reRender={reRender}
             />
           </Table>
         </div>
@@ -750,7 +751,8 @@ P.propTypes = {
   openModal: PropTypes.func.isRequired,
   createdEntries: PropTypes.array.isRequired,
   selectedEntries: PropTypes.array.isRequired,
-  user: PropTypes.object.isRequired
+  user: PropTypes.object.isRequired,
+  reRender: PropTypes.func
 };
 
 P.defaultProps = {
@@ -1049,6 +1051,11 @@ const PerspectiveViewWrapper = ({ id, className, mode, entitiesMode, page, data,
     perspective: { columns }
   } = data;
 
+  const reRender = () => {
+    data.refetch();
+    console.log("Refetched 'queryPerspective'")
+  }
+
   return (
     <PerspectiveView
       id={id}
@@ -1059,6 +1066,7 @@ const PerspectiveViewWrapper = ({ id, className, mode, entitiesMode, page, data,
       filter={filter}
       sortByField={sortByField}
       columns={columns}
+      reRender={reRender}
     />
   );
 };

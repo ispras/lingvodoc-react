@@ -96,6 +96,7 @@ const Row = ({
           mode={mode}
           entitiesMode={entitiesMode}
           disabled={disabled_flag}
+          reRender={reRender}
         />
       ))}
 

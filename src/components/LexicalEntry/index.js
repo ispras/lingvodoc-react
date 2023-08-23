@@ -480,7 +480,8 @@ Entities.propTypes = {
   updateEntity: PropTypes.func.isRequired,
   resetCheckedRow: PropTypes.func,
   resetCheckedColumn: PropTypes.func,
-  resetCheckedAll: PropTypes.func
+  resetCheckedAll: PropTypes.func,
+  reRender: PropTypes.func
 };
 
 Entities.defaultProps = {
