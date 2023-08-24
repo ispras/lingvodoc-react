@@ -105,12 +105,19 @@ const Row = ({
           {actions.map(action => {
             if (action.enabled)
               action.enabled(entry).then(value => setDisabled(!value));
+              const reRenderWrapper = reRender;
+            else
+              const reRenderWrapper = () => setDisabled(true);
+
             return(
               <Button
                 disabled={disabled_flag}
                 key={action.title}
                 content={action.title}
-                onClick={() => { action.action(entry); reRender(); }}
+                onClick={() => {
+                  action.action(entry);
+                  reRenderWrapper();
+                }}
                 className={action.className}
               />
             );

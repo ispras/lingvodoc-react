@@ -280,13 +280,7 @@ class LinkModalContent extends React.PureComponent {
     this.changePublished = this.changePublished.bind(this);
     this.changeAccepted = this.changeAccepted.bind(this);
     this.removeEntity = this.removeEntity.bind(this);
-    //this.reRender = this.reRender.bind(this);
   }
-
-  //reRender() {
-  //  this.props.data.refetch();
-  //  console.log("Refetched 'languageTreeSourceQuery");
-  //}
 
   createEntity(targetLexicalEntry) {
     const { create, lexicalEntry, entitiesMode, fieldId } = this.props;
@@ -361,7 +355,6 @@ class LinkModalContent extends React.PureComponent {
         cache.evict({ id: cache.identify(entity) });
         cache.gc();
       },
-      /*
       refetchQueries: [
         {
           // XXX: Expensive operation!
@@ -371,18 +364,11 @@ class LinkModalContent extends React.PureComponent {
             entitiesMode
           }
         },
-        {
-          query: queryLexicalEntries,
-          variables: {
-            id: lexicalEntry.parent_id,
-            entitiesMode
-          },
-          fetchPolicy: 'network-only'
-        },
       ]
-      */
     });
-    reRender();
+
+    // Refetching queryPerspective directly in PerspectiveView component
+    // reRender();
   }
 
   render() {
