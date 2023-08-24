@@ -363,7 +363,7 @@ class LinkModalContent extends React.PureComponent {
             id: lexicalEntry.parent_id,
             entitiesMode
           }
-        },
+        }
       ]
     });
 

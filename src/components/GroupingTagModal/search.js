@@ -1,5 +1,4 @@
 import React from "react";
-import { isEqual } from "lodash";
 import { Dimmer, Header, Icon, Input, Segment } from "semantic-ui-react";
 import { withApollo } from "@apollo/client/react/hoc";
 import PropTypes from "prop-types";
