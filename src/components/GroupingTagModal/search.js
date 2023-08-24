@@ -69,7 +69,14 @@ class SearchLexicalEntries extends React.Component {
 
   render() {
     const { joinGroup } = this.props;
-    const actions = [{ title: this.context("Connect"), className: "lingvo-button-greenest", action: entry => joinGroup(entry) }];
+
+    const actions = [
+      {
+        title: this.context("Connect"),
+        className: "lingvo-button-greenest",
+        action: entry => joinGroup(entry)
+      }
+    ];
     return (
       <div>
         <Segment className="lingvo-segment-grouptag-search">

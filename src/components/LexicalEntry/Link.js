@@ -11,7 +11,7 @@ import LinkModal from "components/LinkModal";
 import { openModal } from "ducks/modals";
 
 const DirectedLink = props => {
-  const { entry, column, mode, entitiesMode, as: Component = "div", openModal, disabled } = props;
+  const { reRender, entry, column, mode, entitiesMode, as: Component = "div", openModal, disabled } = props;
 
   const count = entry.entities.filter(e => isEqual(e.field_id, column.id)).length;
   const content = `${T(column.translations)} (${count})`;
@@ -32,7 +32,8 @@ const DirectedLink = props => {
             lexicalEntry: entry,
             fieldId: column.id,
             mode,
-            entitiesMode
+            entitiesMode,
+            reRender
           })
         }
       />
@@ -46,7 +47,8 @@ DirectedLink.propTypes = {
   mode: PropTypes.string.isRequired,
   entitiesMode: PropTypes.string.isRequired,
   as: PropTypes.string,
-  openModal: PropTypes.func.isRequired
+  openModal: PropTypes.func.isRequired,
+  reRender: PropTypes.func
 };
 
 DirectedLink.defaultProps = {
