@@ -103,11 +103,13 @@ const Row = ({
       {!isEmpty(actions) && (
         <Table.Cell>
           {actions.map(action => {
-            if (action.enabled)
+            let reRenderWrapper;
+            if (action.enabled) {
               action.enabled(entry).then(value => setDisabled(!value));
-              const reRenderWrapper = reRender;
-            else
-              const reRenderWrapper = () => setDisabled(true);
+              reRenderWrapper = reRender;
+            } else {
+              reRenderWrapper = () => setDisabled(true);
+            }
 
             return(
               <Button
