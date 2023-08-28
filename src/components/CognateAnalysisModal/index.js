@@ -292,6 +292,8 @@ class SLPerspectiveSelection extends React.Component {
       translationFieldIdStrList
     } = this.props;
 
+    const xcr_label = (mode === "morphology") ? "affix" : "transcription"
+    const xln_label = (mode === "morphology") ? "meaning" : "translation"
 
     return (
       <div className="lingvo-cognate-sub-language" key={`perspective${index}`}>
@@ -320,13 +322,13 @@ class SLPerspectiveSelection extends React.Component {
         {perspectiveSelectionList[index] && (
           <div className="lingvo-cognate-grid" key="selection">
             <div className="lingvo-cognate-grid__name">
-              {this.context("Source transcription field")}:
+              {this.context("Source ", xcr_label, " field")}:
             </div>
             <div className="lingvo-cognate-grid__select">
               <Select
                 disabled={!perspectiveSelectionList[index]}
                 defaultValue={transcriptionFieldIdStrList[index]}
-                placeholder={this.context("Source transcription field selection")}
+                placeholder={this.context("Source ", xcr_label, " field selection")}
                 options={textFieldsOptions}
                 onChange={(e, { value }) => {
                   transcriptionFieldIdStrList[index] = value;
@@ -336,12 +338,12 @@ class SLPerspectiveSelection extends React.Component {
                 className="lingvo-dropdown-select lingvo-dropdown-select_cognate"
               />
             </div>
-            <div className="lingvo-cognate-grid__name">{this.context("Source translation field")}:</div>
+            <div className="lingvo-cognate-grid__name">{this.context("Source ", xln_label, " field")}:</div>
             <div className="lingvo-cognate-grid__select">
               <Select
                 disabled={!perspectiveSelectionList[index]}
                 defaultValue={translationFieldIdStrList[index]}
-                placeholder={this.context("Source translation field selection")}
+                placeholder={this.context("Source ", xln_label, " field selection")}
                 options={textFieldsOptions}
                 onChange={(e, { value }) => {
                   translationFieldIdStrList[index] = value;
@@ -1632,7 +1634,7 @@ class CognateAnalysisModal extends React.Component {
       for (const field of textFields) {
         const check_str = field.english_translation.toLowerCase();
 
-        if (!transcriptionFieldIdStr && check_str.includes("transcription")) {
+        if (!transcriptionFieldIdStr && (check_str.includes("transcription") || check_str.includes("affix"))) {
           transcriptionFieldIdStr = id2str(field.id);
         }
 
