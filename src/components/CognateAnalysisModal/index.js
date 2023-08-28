@@ -212,6 +212,30 @@ const computeSwadeshAnalysisMutation = gql`
   }
 `;
 
+const computeMorphCognateAnalysisMutation = gql`
+  mutation computeMorphCognateAnalysis(
+    $sourcePerspectiveId: LingvodocID!
+    $baseLanguageId: LingvodocID!
+    $groupFieldId: LingvodocID!
+    $perspectiveInfoList: [[LingvodocID]]!
+  ) {
+    morph_cognate_analysis(
+      source_perspective_id: $sourcePerspectiveId
+      base_language_id: $baseLanguageId
+      group_field_id: $groupFieldId
+      perspective_info_list: $perspectiveInfoList
+    ) {
+      triumph
+      result
+      xlsx_url
+      minimum_spanning_tree
+      embedding_2d
+      embedding_3d
+      perspective_name_list
+    }
+  }
+`;
+
 const SUGGESTIONS_PER_PAGE = 50;
 
 function equalIds(id_a, id_b) {
@@ -1272,7 +1296,8 @@ class CognateAnalysisModal extends React.Component {
       this.props.mode === "multi_analysis" ||
       this.props.mode === "multi_reconstruction" ||
       this.props.mode === "multi_suggestions" ||
-      this.props.mode === "multi_swadesh";
+      this.props.mode === "multi_swadesh" ||
+      this.props.mode === "multi_morphology";
 
     (multi ? this.initialize_multi : this.initialize_single)();
   }
@@ -1686,7 +1711,8 @@ class CognateAnalysisModal extends React.Component {
       this.props.mode === "multi_analysis" ||
       this.props.mode === "multi_reconstruction" ||
       this.props.mode === "multi_suggestions" ||
-      this.props.mode === "multi_swadesh"
+      this.props.mode === "multi_swadesh" ||
+      this.props.mode === "multi_morphology"
     ) {
       this.state.groupFieldIdStr = value;
 
@@ -1876,6 +1902,16 @@ class CognateAnalysisModal extends React.Component {
     });
   }
 
+  handleMorphologyResult({ data: { morph_cognate_analysis }})
+  {
+    this.setState({
+      ...morph_cognate_analysis,
+      /* Calculate plotly data */
+      ...this.handleResult(morph_cognate_analysis),
+      computing: false
+    });
+  }
+
   handleCognateResult({ data: { cognate_analysis }})
   {
     /* Initializing suggestions data, if required. */
@@ -1987,7 +2023,8 @@ class CognateAnalysisModal extends React.Component {
       this.props.mode === "multi_analysis" ||
       this.props.mode === "multi_reconstruction" ||
       this.props.mode === "multi_suggestions" ||
-      this.props.mode === "multi_swadesh"
+      this.props.mode === "multi_swadesh" ||
+      this.props.mode === "multi_morphology"
     ) {
       for (const language of this.state.language_list) {
         let p_count = 0;
@@ -2054,7 +2091,7 @@ class CognateAnalysisModal extends React.Component {
           window.logger.err(this.context("Failed to launch cognate acoustic analysis!"));
         }
       );
-    } else if (this.props.mode === "swadesh") {
+    } else if (this.props.mode === "swadesh") || (this.props.mode === "multi_swadesh") {
       this.setState({ computing: true });
       computeSwadeshAnalysis({
         variables: {
@@ -2067,9 +2104,9 @@ class CognateAnalysisModal extends React.Component {
         data => this.handleSwadeshResult(data),
         error_data => this.handleError(error_data)
       );
-    } else if (this.props.mode === "multi_swadesh") {
+    } else if (this.props.mode === "morphology") || (this.props.mode === "multi_morphology") {
       this.setState({ computing: true });
-      computeSwadeshAnalysis({
+      computeMorphCognateAnalysis({
         variables: {
           sourcePerspectiveId: perspectiveId,
           baseLanguageId: this.baseLanguageId,
@@ -2077,7 +2114,7 @@ class CognateAnalysisModal extends React.Component {
           perspectiveInfoList: perspectiveInfoList,
         }
       }).then(
-        data => this.handleSwadeshResult(data),
+        data => this.handleMorphologyResult(data),
         error_data => this.handleError(error_data)
       );
     } else {
@@ -3023,6 +3060,7 @@ export default compose(
   branch(({ visible }) => !visible, renderNothing),
   graphql(computeCognateAnalysisMutation, { name: "computeCognateAnalysis" }),
   graphql(computeSwadeshAnalysisMutation, { name: "computeSwadeshAnalysis" }),
+  graphql(computeMorphCognateAnalysisMutation, { name: "computeMorphCognateAnalysis" }),
   graphql(connectMutation, { name: "connectGroup" }),
   withApollo
 )(CognateAnalysisModal);
