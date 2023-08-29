@@ -102,6 +102,9 @@ const toolsQuery = gql`
     perspective(id: $id) {
       id
       english_status: status(locale_id: 2)
+      translations {
+        '2'
+      }
       created_by {
         id
       }
@@ -928,10 +931,12 @@ const Tools = ({
     perspective: {
       english_status,
       created_by: { id: author_id },
-      edit_check
+      edit_check,
+      translations: { '2': perspective_title }
     }
   } = data;
 
+  const glottMode = perspective_title === "Morphology" ? "morphology" : "swadesh"
   const published = english_status === "Published" || english_status === "Limited access";
 
   return (
@@ -979,12 +984,12 @@ const Tools = ({
                 )}
               </Dropdown.Item>
 
-              <Dropdown.Item onClick={() => openCognateAnalysisModal(id, "swadesh")}>
-                {getTranslation("Glottochronology")}
+              <Dropdown.Item onClick={() => openCognateAnalysisModal(id, glottMode)}>
+                {getTranslation("Glottochronology (" + glottMode + ")")}
               </Dropdown.Item>
 
-              <Dropdown.Item onClick={() => openCognateAnalysisModal(id, "multi_swadesh")}>
-                {getTranslation("Glottochronology multi-language")}
+              <Dropdown.Item onClick={() => openCognateAnalysisModal(id, "multi_" + glottMode)}>
+                {getTranslation("Glottochronology multi-language (" + glottMode + ")")}
               </Dropdown.Item>
             </>
           )}

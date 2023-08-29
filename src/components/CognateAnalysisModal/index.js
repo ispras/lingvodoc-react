@@ -2700,7 +2700,8 @@ class CognateAnalysisModal extends React.Component {
       mode === "multi_analysis" ||
       mode === "multi_reconstruction" ||
       mode === "multi_suggestions" ||
-      mode === "multi_swadesh";
+      mode === "multi_swadesh" ||
+      mode === "multi_morphology";
 
     const { language_list, perspectiveSelectionCountMap } = this.state;
 
@@ -2720,9 +2721,9 @@ class CognateAnalysisModal extends React.Component {
               ? this.context("Cognate reconstruction")
               : mode === "suggestions"
               ? this.context("Cognate suggestions")
-              : mode === "swadesh"
+              : mode === "swadesh" || mode === "morphology"
               ? this.context("Glottochronology")
-              : mode === "multi_swadesh"
+              : mode === "multi_swadesh" || mode === "multi_morphology"
               ? this.context("Glottochronology multi-language")
               : this.context("Cognate analysis")}
           </Modal.Header>
