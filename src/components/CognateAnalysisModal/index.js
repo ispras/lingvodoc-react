@@ -2091,7 +2091,7 @@ class CognateAnalysisModal extends React.Component {
           window.logger.err(this.context("Failed to launch cognate acoustic analysis!"));
         }
       );
-    } else if (this.props.mode === "swadesh") || (this.props.mode === "multi_swadesh") {
+    } else if (this.props.mode === "swadesh" || this.props.mode === "multi_swadesh") {
       this.setState({ computing: true });
       computeSwadeshAnalysis({
         variables: {
@@ -2104,7 +2104,7 @@ class CognateAnalysisModal extends React.Component {
         data => this.handleSwadeshResult(data),
         error_data => this.handleError(error_data)
       );
-    } else if (this.props.mode === "morphology") || (this.props.mode === "multi_morphology") {
+    } else if (this.props.mode === "morphology" || this.props.mode === "multi_morphology") {
       this.setState({ computing: true });
       computeMorphCognateAnalysis({
         variables: {

@@ -102,9 +102,7 @@ const toolsQuery = gql`
     perspective(id: $id) {
       id
       english_status: status(locale_id: 2)
-      translations {
-        '2'
-      }
+      translations
       created_by {
         id
       }
@@ -932,11 +930,11 @@ const Tools = ({
       english_status,
       created_by: { id: author_id },
       edit_check,
-      translations: { '2': perspective_title }
+      translations: { 2: perspective_title }
     }
   } = data;
 
-  const glottMode = perspective_title === "Morphology" ? "morphology" : "swadesh"
+  const glottMode = perspective_title.includes("Morpholog") ? "morphology" : "swadesh"
   const published = english_status === "Published" || english_status === "Limited access";
 
   return (
