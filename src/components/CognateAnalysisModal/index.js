@@ -2010,7 +2010,7 @@ class CognateAnalysisModal extends React.Component {
   }
 
   handleCreate() {
-    const { perspectiveId, computeCognateAnalysis, computeSwadeshAnalysis } = this.props;
+    const { perspectiveId, computeCognateAnalysis, computeSwadeshAnalysis, computeMorphCognateAnalysis } = this.props;
 
     const groupField = this.fieldDict[this.state.groupFieldIdStr];
 
@@ -3030,7 +3030,7 @@ class CognateAnalysisModal extends React.Component {
                   </div>
                 </div>
               )}
-              {! /swadesh$/.test(mode) && (
+              {! /swadesh$/.test(mode) && ! /morphology$/.test(mode) && (
                 <div><pre>{this.state.result}</pre></div>
               ) || (
                 <div dangerouslySetInnerHTML={{ __html: this.state.result }}></div>
