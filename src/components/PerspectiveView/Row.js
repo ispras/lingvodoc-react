@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button, Checkbox, Table } from "semantic-ui-react";
 import { isEmpty, isEqual, sortBy } from "lodash";
 import PropTypes from "prop-types";
@@ -28,6 +28,7 @@ const Row = ({
   resetCheckedRow,
   resetCheckedColumn,
   resetCheckedAll,
+  reRender,
   /* eslint-disable react/prop-types */
   showEntryId,
   selectDisabled,
@@ -38,7 +39,9 @@ const Row = ({
 }) => {
   const entry_id_str = id2str(entry.id);
 
-  const disabled_flag = disabledEntrySet && disabledEntrySet.hasOwnProperty(entry_id_str);
+  const [ disabled, setDisabled ] = useState(false);
+
+  const disabled_flag = disabledEntrySet && disabledEntrySet.hasOwnProperty(entry_id_str) || disabled;
 
   const remove_selection_flag = removeSelectionEntrySet && removeSelectionEntrySet.hasOwnProperty(entry_id_str);
 
@@ -93,20 +96,34 @@ const Row = ({
           mode={mode}
           entitiesMode={entitiesMode}
           disabled={disabled_flag}
+          reRender={reRender}
         />
       ))}
 
       {!isEmpty(actions) && (
         <Table.Cell>
-          {actions.map(action => (
-            <Button
-              disabled={disabled_flag}
-              key={action.title} 
-              content={action.title}
-              onClick={() => action.action(entry)}
-              className={action.className}
-            />
-          ))}
+          {actions.map(action => {
+            let reRenderWrapper;
+            if (action.enabled) {
+              action.enabled(entry).then(value => setDisabled(!value));
+              reRenderWrapper = reRender;
+            } else {
+              reRenderWrapper = () => setDisabled(true);
+            }
+
+            return(
+              <Button
+                disabled={disabled_flag}
+                key={action.title}
+                content={action.title}
+                onClick={() => {
+                  action.action(entry);
+                  reRenderWrapper();
+                }}
+                className={action.className}
+              />
+            );
+          })}
         </Table.Cell>
       )}
     </Table.Row>
@@ -131,7 +148,8 @@ Row.propTypes = {
   onCheckRow: PropTypes.func,
   resetCheckedRow: PropTypes.func,
   resetCheckedColumn: PropTypes.func,
-  resetCheckedAll: PropTypes.func
+  resetCheckedAll: PropTypes.func,
+  reRender: PropTypes.func
 };
 
 Row.defaultProps = {
@@ -147,7 +165,8 @@ Row.defaultProps = {
   onCheckRow: () => {},
   resetCheckedRow: () => {},
   resetCheckedColumn: () => {},
-  resetCheckedAll: () => {}
+  resetCheckedAll: () => {},
+  reRender: () => console.debug('Fake refetch')
 };
 
 export default onlyUpdateForKeys([
