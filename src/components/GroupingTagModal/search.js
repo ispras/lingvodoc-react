@@ -9,13 +9,19 @@ import TranslationContext from "Layout/TranslationContext";
 import { searchQuery } from "./graphql";
 import buildPartialLanguageTree from "./partialTree";
 import Tree from "./Tree";
+import { isEqual } from "lodash";
 
 class SearchLexicalEntries extends React.Component {
   constructor(props) {
     super(props);
 
     const { lexicalEntry } = props;
-    const entity = lexicalEntry.entities.find(e => e.content && e.content.length >= 2 && e.content.length < 8);
+    // field_id for 'Affix Meaning' is hardcoded here
+    // May be better to look for the field name and field id in cache
+    const aff_meaning_field_id = [66, 2042];
+    const aff_meaning = lexicalEntry.entities.find(e => e.content && isEqual(e.field_id, aff_meaning_field_id));
+    const some_entity = lexicalEntry.entities.find(e => e.content && e.content.length >= 2 && e.content.length < 8);
+    const entity = aff_meaning ? aff_meaning : some_entity;
 
     this.state = {
       searchString: entity ? entity.content.trim() : "",
