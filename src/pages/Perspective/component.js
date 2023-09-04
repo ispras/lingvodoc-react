@@ -294,7 +294,6 @@ const verbLanguagesDataQuery = gql`
 const prepareLanguage = async (client, baseLanguage) => {
   /* Getting all perspectives of the base language with verb data, including recursively perspectives of
    * sub-languages. */
-
   const {
     data: {
       language_tree: { tree: languageTree, languages }
@@ -342,41 +341,9 @@ const prepareLanguage = async (client, baseLanguage) => {
   f(languageTree, baseLanguage.treePath.slice(0, -1));
 };
 
-/* Loads base language/corpora selection data for verb valency cases analysis. */
-const getVerbSelectionData = async (perspectiveId, client, handler) => {
-  const {
-    data: { perspective }
-  } = await client.query({
-    query: verbPerpsectiveDataQuery,
-    variables: { perspectiveId }
-  });
-
-  /* Starting by finding the root language of the language group we are to analyze verb valency cases. */
-
-  const tree = perspective.tree;
-
-  const baseLanguage = {
-    ...tree[tree.length - 1],
-    treePath: tree.slice(tree.length - 1, tree.length).reverse()
-  };
-
-  for (let i = 0; i < tree.length; i++) {
-    if (tree[i].in_toc) {
-      Object.assign(baseLanguage, tree[i]);
-      baseLanguage.treePath = tree.slice(i, tree.length).reverse();
-      break;
-    }
-  }
-
-  baseLanguage.treePathStr = baseLanguage.treePath.map(e => T(e.translations)).join(" \u203a ");
-
-  await prepareLanguage(client, baseLanguage);
-
-  handler(baseLanguage, baseLanguage.perspectiveList.length);
-};
-
 /* Loads language data for verb valency cases analysis. */
 const getVerbSelectionLanguageData = async (client, initialLanguage, handler) => {
+
   const {
     data: { languages }
   } = await client.query({
@@ -560,7 +527,42 @@ const VerbCasesContent = ({ perspectiveId, close, client, info }) => {
   const [availableLanguageList, setAvailableLanguageList] = useState(undefined);
 
   useEffect(
-    () =>
+    () => {
+
+      /* Loads base language/corpora selection data for verb valency cases analysis. */
+      const getVerbSelectionData = async (perspectiveId, client, handler) => {
+
+        const {
+          data: { perspective }
+        } = await client.query({
+          query: verbPerpsectiveDataQuery,
+          variables: { perspectiveId }
+        });
+      
+        /* Starting by finding the root language of the language group we are to analyze verb valency cases.*/
+      
+        const tree = perspective.tree;
+      
+        const baseLanguage = {
+          ...tree[tree.length - 1],
+          treePath: tree.slice(tree.length - 1, tree.length).reverse()
+        };
+      
+        for (let i = 0; i < tree.length; i++) {
+          if (tree[i].in_toc) {
+            Object.assign(baseLanguage, tree[i]);
+            baseLanguage.treePath = tree.slice(i, tree.length).reverse();
+            break;
+          }
+        }
+      
+        baseLanguage.treePathStr = baseLanguage.treePath.map(e => T(e.translations)).join(" \u203a ");
+      
+        await prepareLanguage(client, baseLanguage);
+
+        handler(baseLanguage, baseLanguage.perspectiveList.length);
+      };
+      
       getVerbSelectionData(perspectiveId, client, (initialLanguage, selectedCount) => {
         /* Finishing first phase of initialization, with the base language. */
 
@@ -580,11 +582,12 @@ const VerbCasesContent = ({ perspectiveId, close, client, info }) => {
 
         getVerbSelectionLanguageData(client, initialLanguage, (baseLanguageList, baseLanguageMap) => {
           /* Finishing second phase of initialization, got list of languages to select. */
-
+          
           setAvailableLanguageList(baseLanguageList);
           info.baseLanguageMap = baseLanguageMap;
         });
-      }),
+      });
+    },
     [perspectiveId, client, info]
   );
 
