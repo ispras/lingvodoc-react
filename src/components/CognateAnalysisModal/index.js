@@ -316,8 +316,9 @@ class SLPerspectiveSelection extends React.Component {
       translationFieldIdStrList
     } = this.props;
 
-    const xcr_label = mode.includes("morphology") ? "affix" : "transcription"
-    const xln_label = mode.includes("morphology") ? "meaning" : "translation"
+
+    const xcr_label = mode.includes("morphology") ? "affix" : "transcription";
+    const xln_label = mode.includes("morphology") ? "meaning" : "translation";
 
     return (
       <div className="lingvo-cognate-sub-language" key={`perspective${index}`}>
