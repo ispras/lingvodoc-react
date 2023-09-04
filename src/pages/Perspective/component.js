@@ -930,11 +930,12 @@ const Tools = ({
       english_status,
       created_by: { id: author_id },
       edit_check,
-      translations: { 2: perspective_title }
+      translations
     }
   } = data;
 
-  const glottMode = perspective_title.includes("Morpholog") ? "morphology" : "swadesh";
+  const titles = Object.values(translations)
+  const glottMode = titles.some(t => t.includes("Morpholog")) ? "morphology" : "swadesh";
   const published = english_status === "Published" || english_status === "Limited access";
 
   return (
