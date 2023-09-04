@@ -934,7 +934,7 @@ const Tools = ({
     }
   } = data;
 
-  const glottMode = perspective_title.includes("Morpholog") ? "morphology" : "swadesh"
+  const glottMode = perspective_title.includes("Morpholog") ? "morphology" : "swadesh";
   const published = english_status === "Published" || english_status === "Limited access";
 
   return (
