@@ -515,6 +515,7 @@ export const stringsToTranslate = [
   "Merge task created successfully",
   "Merged successfully",
   "Merges are disabled due to an error, please contact developers.",
+  "Merging...",
   "Merging selected on current page...",
   "Message",
   "Metadata",
