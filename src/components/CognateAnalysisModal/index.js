@@ -1580,7 +1580,7 @@ class CognateAnalysisModal extends React.Component {
 
   /* Recursively initializes data of perspectives available for the cognate analysis dialog. */
   async initPerspectiveData(languageId, treePathList) {
-    const { client } = this.props;
+    const { client, mode } = this.props;
 
     const {
       data: {
@@ -1603,6 +1603,9 @@ class CognateAnalysisModal extends React.Component {
       for (const perspective of dictionary.perspectives) {
         let group_flag = false;
         let text_flag = false;
+        const morphology = mode.includes("morphology");
+        let affix_flag = !morphology;
+        let meaning_flag = !morphology;
 
         for (const column of perspective.columns) {
           const field = this.fieldDict[id2str(column.field_id)];
@@ -1614,9 +1617,17 @@ class CognateAnalysisModal extends React.Component {
           if (field.data_type === "Text") {
             text_flag = true;
           }
+
+          if (field.english_translation === "Affix") {
+            affix_flag = morphology;
+          }
+
+          if (field.english_translation === "Meaning of affix") {
+            meaning_flag = morphology;
+          }
         }
 
-        if (group_flag && text_flag) {
+        if (group_flag && text_flag && affix_flag && meaning_flag) {
           this.available_list.push([treePathList.concat([dictionary, perspective]), perspective]);
         }
       }
