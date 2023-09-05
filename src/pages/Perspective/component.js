@@ -102,11 +102,15 @@ const toolsQuery = gql`
     perspective(id: $id) {
       id
       english_status: status(locale_id: 2)
-      translations
       created_by {
         id
       }
       edit_check: role_check(subject: "perspective", action: "edit")
+      columns {
+        field {
+          english_translation: translation(locale_id: 2)
+        }
+      }
     }
   }
 `;
@@ -933,12 +937,13 @@ const Tools = ({
       english_status,
       created_by: { id: author_id },
       edit_check,
-      translations
+      columns
     }
   } = data;
 
-  const titles = Object.values(translations)
-  const glottMode = titles.some(t => t.includes("Morpholog")) ? "morphology" : "swadesh";
+  const isMorphology = ({field: {english_translation: field_name}}) =>
+    field_name.toLowerCase().includes("affix");
+  const glottMode = columns.some(isMorphology) ? "morphology" : "swadesh";
   const published = english_status === "Published" || english_status === "Limited access";
 
   return (
