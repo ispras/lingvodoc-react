@@ -126,7 +126,7 @@ SearchLexicalEntries.propTypes = {
 };
 
 export default compose(
-  graphql(perspectiveFieldsQuery, { options: props => ({ variables: { perspectiveId: props.lexicalEntry.parent_id }}) }),
+  graphql(perspectiveFieldsQuery, { options: ({lexicalEntry}) => ({ variables: { perspectiveId: lexicalEntry.parent_id }}) }),
   branch(({ data: { loading } }) => loading, renderComponent(Placeholder)),
   branch(({ data: { error } }) => !!error, renderNothing),
   withApollo,
