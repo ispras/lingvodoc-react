@@ -18,10 +18,9 @@ class SearchLexicalEntries extends React.Component {
     const { data: {perspective: {columns}}, lexicalEntry } = props;
     let aff_meaning_field_id = null;
 
-    for (column in columns) {
+    for (const column of columns) {
       const { field: { id: field_id, english_translation: field_name }} = column;
       if (field_name === "Meaning of affix") {
-        console.log('Field id: ', field_id);
         aff_meaning_field_id = field_id;
         break;
       }
@@ -127,10 +126,7 @@ SearchLexicalEntries.propTypes = {
 };
 
 export default compose(
-  graphql(perspectiveFieldsQuery, { options: props => {
-    console.log('perspectiveId: ', props.perspectiveId);
-    return ({ variables: { perspectiveId: props.perspectiveId }});
-  }}),
+  graphql(perspectiveFieldsQuery, { options: props => ({ variables: { perspectiveId: props.lexicalEntry.parent_id }}) }),
   branch(({ data: { loading } }) => loading, renderComponent(Placeholder)),
   branch(({ data: { error } }) => !!error, renderNothing),
   withApollo,
