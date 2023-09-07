@@ -319,6 +319,7 @@ Info.propTypes = {
   setLicense: PropTypes.func.isRequired
 };
 
+
 export default compose(
   connect(mapStateToProps, mapDispatchToProps),
   graphql(fieldsQuery, { options: { fetchPolicy: "network-only" } }),
