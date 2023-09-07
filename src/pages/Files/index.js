@@ -136,6 +136,9 @@ class Files extends React.Component {
       case "starling/csv":
         mimeType = ".csv,.txt";
         break;
+      case "txt":
+        mimeType = ".txt";
+        break;
       case "image":
         mimeType = "image/*";
         break;
@@ -238,6 +241,11 @@ class Files extends React.Component {
       {
         text: this.context("Starling/CSV"),
         value: "starling/csv",
+        icon: "conversation"
+      },
+      {
+        text: this.context("Txt"),
+        value: "txt",
         icon: "conversation"
       },
       {
