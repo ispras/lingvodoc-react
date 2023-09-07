@@ -10,6 +10,7 @@ import DashboardRoute from "pages/DashboardRoute";
 import Desktop from "pages/Desktop";
 import DialeqtImport from "pages/DialeqtImport";
 import DictImport from "pages/DictImport";
+import CorpImport from "pages/CorpImport";
 import DictionariesAll from "pages/DictionariesAll";
 import DistanceMap from "pages/DistanceMap";
 import MapSelectedLanguages from "pages/DistanceMap/map";
@@ -56,6 +57,7 @@ const AppRoutes = () => (
     <Route path="/distance_map/selected_languages" element={<SelectedLanguages />} />
     <Route path="/distance_map" element={<DistanceMap />} />
     <Route path="/import_csv" element={<DictImport />} />
+    <Route path="/import_corpora" element={<CorpImport />} />
     <Route path="/import_dialeqt" element={<DialeqtImport />} />
     <Route path="/dictionary/:pcid/:poid/perspective/:cid/:oid/*" element={<Perspective />} />
     <Route path="/files" element={<Files />} />

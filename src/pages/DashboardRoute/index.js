@@ -47,6 +47,10 @@ function DashboardRoute() {
               <label className="card-item__label">{getTranslation("Import Excel and Starling dictionaries")}</label>
               <img className="card-item__img card-item__img_import" src={imageImport} />
             </Link>
+            <Link className="card-item" to="/import_corpora">
+              <label className="card-item__label">{getTranslation("Import parallel corpora")}</label>
+              <img className="card-item__img card-item__img_import" src={imageImport} />
+            </Link>
           </div>
         </div>
       </div>

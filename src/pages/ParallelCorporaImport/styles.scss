@@ -1,0 +1,84 @@
+.linker,
+.column-mapper,
+.language-selection {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  .main-select {
+    width: 200px;
+  }
+
+  .blob {
+    display: grid;
+    padding: 0.5em 0;
+    width: 100%;
+    grid-template-columns: 200px 1fr 20px;
+    grid-template-rows: auto;
+
+    grid-template-areas: "name columns checkbox";
+
+    border-bottom: 1px solid gray;
+    margin-bottom: 0.5em;
+
+    .blob-name {
+      width: 200px;
+      text-align: center;
+      grid-area: name;
+    }
+
+    .blob-columns {
+      display: flex;
+      grid-area: columns;
+      overflow: auto;
+
+      .column-field-type {
+        display: flex;
+        flex-direction: column;
+        margin: 0 0.2em;
+      }
+    }
+
+    .blob-checkbox {
+      grid-area: checkbox;
+    }
+  }
+}
+
+.popup-field-type {
+  display: flex;
+  flex-wrap: wrap;
+  width: 400px;
+  max-width: 400px;
+  max-height: 35vh;
+  overflow: auto;
+
+  & > button {
+    margin: 0.2em !important;
+  }
+
+  @media only screen and (max-device-width: 1440px), only screen and (max-width: 1440px) {
+    width: 30vw;
+    max-width: 400px;
+  }
+
+  @media only screen and (max-device-width: 660px), only screen and (max-width: 660px) {
+    width: auto;
+    max-width: none;
+
+    & .ui.button {
+      word-break: break-all;
+      word-break: break-word;
+    }
+  }
+}
+
+.lingvo-column-mapper-select {
+  word-break: break-all;
+  word-break: break-word;
+}
+
+.lingvo-column-mapper-selected {
+  word-break: break-all;
+  word-break: break-word;
+}
