@@ -2738,9 +2738,9 @@ class CognateAnalysisModal extends React.Component {
               : mode === "multi_swadesh"
               ? this.context("Glottochronology multi-language")
               : mode === "morphology"
-              ? this.context("Glottochronology (morphology)")
+              ? this.context("Morphology distance")
               : mode === "multi_morphology"
-              ? this.context("Glottochronology multi-language (morphology)")
+              ? this.context("Morphology distance multi-language")
               : this.context("Cognate analysis")}
           </Modal.Header>
 
