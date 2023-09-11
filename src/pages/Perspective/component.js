@@ -944,6 +944,7 @@ const Tools = ({
   const isMorphology = ({field: {english_translation: field_name}}) =>
     field_name.toLowerCase().includes("affix");
   const glottMode = columns.some(isMorphology) ? "morphology" : "swadesh";
+  const glottMenu = columns.some(isMorphology) ? "Morphology distance" : "Glottochronology (Swadesh-Starostin)";
   const published = english_status === "Published" || english_status === "Limited access";
 
   return (
@@ -992,11 +993,11 @@ const Tools = ({
               </Dropdown.Item>
 
               <Dropdown.Item onClick={() => openCognateAnalysisModal(id, glottMode)}>
-                {getTranslation("Glottochronology (" + glottMode + ")")}
+                {getTranslation(glottMenu)}
               </Dropdown.Item>
 
               <Dropdown.Item onClick={() => openCognateAnalysisModal(id, "multi_" + glottMode)}>
-                {getTranslation("Glottochronology multi-language (" + glottMode + ")")}
+                {getTranslation(glottMenu + " multi-language")}
               </Dropdown.Item>
             </>
           )}
