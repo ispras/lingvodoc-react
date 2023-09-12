@@ -102,6 +102,7 @@ const createLexicalEntryMutation = gql`
         id
         parent_id
         created_at
+        marked_for_deletion
         entities(mode: $entitiesMode) {
           id
           parent_id
@@ -116,6 +117,7 @@ const createLexicalEntryMutation = gql`
           additional_metadata {
             link_perspective_id
           }
+          is_subject_for_parsing
         }
       }
     }
@@ -347,15 +349,19 @@ class P extends React.Component {
           id,
           entitiesMode
         },
-        refetchQueries: [
-          {
-            query: queryLexicalEntries,
-            variables: {
-              id,
-              entitiesMode
-            }
-          }
-        ]
+        update: (cache, { data: { create_lexicalentry: { lexicalentry }}}) => {
+          cache.updateQuery({
+              query: queryLexicalEntries,
+              variables: {id, entitiesMode}
+            },
+            (data) => ({
+              perspective:
+                { ...data.perspective,
+                  lexical_entries: [lexicalentry, ...data.perspective.lexical_entries]
+                }
+            })
+          );
+        },
       }).then(({ data: d }) => {
         if (!d.loading || !d.error) {
           const {
@@ -785,7 +791,7 @@ const PerspectiveView = compose(
   graphql(mergeLexicalEntriesMutation, { name: "mergeLexicalEntries" }),
   graphql(removeLexicalEntriesMutation, { name: "removeLexicalEntries" }),
   graphql(queryLexicalEntries, {
-    options: { notifyOnNetworkStatusChange: true }
+    options: { notifyOnNetworkStatusChange: true, nextFetchPolicy: 'cache-only' }
   })
 )(P);
 

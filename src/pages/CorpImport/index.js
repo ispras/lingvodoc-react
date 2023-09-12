@@ -38,7 +38,7 @@ export const fieldsQuery = gql`
       data_type
       data_type_translation_gist_id
     }
-    user_blobs(data_type: "starling/csv") {
+    user_blobs(data_type: "txt") {
       id
       data_type
       name
@@ -102,7 +102,7 @@ class Info extends React.Component {
       data: { loading, error, user_blobs: blobs }
     } = this.props;
     if (!loading && !error) {
-      const newBlobs = fromJS(blobs.filter(b => b.data_type === "starling/csv")).map(v => v.set("values", new Map()));
+      const newBlobs = fromJS(blobs.filter(b => b.data_type === "txt")).map(v => v.set("values", new Map()));
       // XXX: Ugly workaround
       if (JSON.stringify(this.props.blobs) !== JSON.stringify(newBlobs)) {
         this.props.setBlobs(newBlobs);
