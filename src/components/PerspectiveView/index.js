@@ -135,7 +135,7 @@ const mergeLexicalEntriesMutation = gql`
 const removeLexicalEntriesMutation = gql`
   mutation removeLexicalEntries($ids: [LingvodocID]!) {
     bulk_delete_lexicalentry(ids: $ids) {
-      lexical_entries {
+      deleted_entries {
         id
       }
       triumph
@@ -167,8 +167,6 @@ const TableComponent = ({
   /*  eslint-enable react/prop-types */
   actions
 }) => {
-
-  console.log("Rendered 'TableComponent'");
 
   return (
     <div style={{ overflowY: "auto" }}>
@@ -250,11 +248,6 @@ class P extends React.Component {
     this.resetCheckedAll = this.resetCheckedAll.bind(this);
     //this.reRender = this.reRender.bind(this);
   }
-
-  //reRender() {
-  //  this.props.data.refetch();
-  //  console.log("Refetched 'queryLexicalEntries'");
-  //}
 
   resetCheckedRow() {
     this.setState({
@@ -366,7 +359,7 @@ class P extends React.Component {
           );
         },
       }).then(({ data: d }) => {
-        if (!d.loading || !d.error) {
+        if (!d.loading && !d.error) {
           const {
             create_lexicalentry: { lexicalentry }
           } = d;
@@ -400,7 +393,9 @@ class P extends React.Component {
         variables: {
           ids: selectedEntries
         },
-        update: (cache, { data: { bulk_delete_lexicalentry: { lexical_entries: deleted_entries }}}) => {
+        update: (cache, { data }) => {
+          if (data.loading || data.error) return;
+          const { bulk_delete_lexicalentry: { deleted_entries }} = data;
           cache.updateQuery({
               query: queryLexicalEntries,
               variables: {id, entitiesMode}
@@ -625,8 +620,6 @@ class P extends React.Component {
       yield* newEntries;
       yield* entries;
     }
-
-    console.log("Rendered 'P' component");
 
     return (
       <div
@@ -999,7 +992,7 @@ const LexicalEntryViewBaseByIds = ({ perspectiveId, mode, entitiesMode, data, ac
 
   const reRender = () => {
     data.refetch();
-    console.log("Refetched 'queryLexicalEntriesByIds'");
+    //console.log("Refetched 'queryLexicalEntriesByIds'");
   }
 
   return (
@@ -1067,7 +1060,7 @@ const PerspectiveViewWrapper = ({ id, className, mode, entitiesMode, page, data,
 
   const reRender = () => {
     data.refetch();
-    console.log("Refetched 'queryPerspective'")
+    //console.log("Refetched 'queryPerspective'")
   }
 
   return (
