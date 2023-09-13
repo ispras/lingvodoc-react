@@ -135,6 +135,9 @@ const mergeLexicalEntriesMutation = gql`
 const removeLexicalEntriesMutation = gql`
   mutation removeLexicalEntries($ids: [LingvodocID]!) {
     bulk_delete_lexicalentry(ids: $ids) {
+      lexical_entries {
+        id
+      }
       triumph
     }
   }
@@ -397,15 +400,20 @@ class P extends React.Component {
         variables: {
           ids: selectedEntries
         },
-        refetchQueries: [
-          {
-            query: queryLexicalEntries,
-            variables: {
-              id,
-              entitiesMode
-            }
-          }
-        ]
+        update: (cache, { data: { bulk_delete_lexicalentry: { lexical_entries: deleted_entries }}}) => {
+          cache.updateQuery({
+              query: queryLexicalEntries,
+              variables: {id, entitiesMode}
+            },
+            (data) => ({
+              perspective:
+                { ...data.perspective,
+                  lexical_entries: data.perspective.lexical_entries.filter(
+                    le => !deleted_entries.some(de => isEqual(le.id, de.id)))
+                }
+            })
+          );
+        },
       }).then(() => {
         resetSelection();
       });
