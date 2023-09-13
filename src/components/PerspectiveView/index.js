@@ -792,7 +792,7 @@ const PerspectiveView = compose(
   graphql(mergeLexicalEntriesMutation, { name: "mergeLexicalEntries" }),
   graphql(removeLexicalEntriesMutation, { name: "removeLexicalEntries" }),
   graphql(queryLexicalEntries, {
-    options: { notifyOnNetworkStatusChange: true, nextFetchPolicy: 'cache-only' }
+    options: { notifyOnNetworkStatusChange: true, fetchPolicy: 'cache-first' }
   })
 )(P);
 
