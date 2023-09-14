@@ -69,6 +69,14 @@ export const queryLexicalEntries = gql`
     perspective(id: $id) {
       id
       translations
+      /*
+      columns {
+        field {
+          id
+          english_translation: translation(locale_id: 2)
+        }
+      }
+      */
       lexical_entries(mode: $entitiesMode) {
         id
         parent_id
@@ -96,13 +104,8 @@ export const queryLexicalEntries = gql`
 `;
 
 const createLexicalEntryMutation = gql`
-  mutation createLexicalEntry($id: LingvodocID!,
-                              $id_before: LingvodocID,
-                              $id_after: LingvodocID,
-                              $entitiesMode: String!) {
-    create_lexicalentry(perspective_id: $id,
-                        id_before: $id_before,
-                        id_after: $id_after) {
+  mutation createLexicalEntry($id: LingvodocID!, $entitiesMode: String!) {
+    create_lexicalentry(perspective_id: $id) {
       lexicalentry {
         id
         parent_id
@@ -328,8 +331,9 @@ class P extends React.Component {
       selectedEntries,
       user,
       reRender,
-      id_before,
-      id_after
+      lexentry_id,
+      lexentry_id_before,
+      lexentry_id_after
     } = this.props;
 
     const { loading, error } = data;
@@ -345,13 +349,48 @@ class P extends React.Component {
     }
 
     const lexicalEntries = !error ? data.perspective.lexical_entries : [];
+    const order_field_id = !error ? columns.find(col => col.field.english_translation === "Order").field.id : null;
+
+    const get_lexgraph_entity = lexentry_id => {
+      const lexentry = lexentry_id ? lexicalEntries.find(le => isEqual(le.id, lexentry_id)) : null;
+      return lexentry ? lexentry.entities.find(e => isEqual(e.field_id, order_field_id)) : null;
+    }
+
+    const get_lexgraph_marker = lexentry_id => {
+      const lexgraph_entity = get_lexgraph_entity(lexentry_id);
+      return lexgraph_entity ? lexgraph_entity.content : '';
+    }
+
+    const changeEntryPosition = () => {
+      if (order_field_id) {
+        entity_to_delete = get_lexgraph_entity(lexentry_id);
+        lexgraph_before = get_lexgraph_marker(lexentry_id_before);
+        lexgraph_after = get_lexgraph_marker(lexentry_id_after);
+
+        changeLexgraphMarker({
+          variables: {
+            lexentry_id,
+            entity_to_delete,
+            lexgraph_before,
+            lexgraph_after
+          },
+          refetchQueries: [
+            {
+              query: queryLexicalEntries,
+              variables: {
+                id,
+                entitiesMode
+              }
+            }
+          ]
+        }).then();
+      }
+    };
 
     const addEntry = () => {
       createLexicalEntry({
         variables: {
           id,
-          id_before,
-          id_after,
           entitiesMode
         },
         update: (cache, { data: { create_lexicalentry: { lexicalentry }}}) => {
