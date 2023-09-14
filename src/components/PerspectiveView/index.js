@@ -341,11 +341,12 @@ class P extends React.Component {
     }
 
     const lexicalEntries = !error ? data.perspective.lexical_entries : [];
-    const order_field_id = !error ? columns.find(col => col.field.english_translation === "Order").field.id : null;
+    const lexgraph_column = !error ? columns.find(col => col.field.english_translation === "Order") : null;
+    const lexgraph_field_id = lexgraph_column ? lexgraph_column.field_id : null;
 
     const get_lexgraph_entity = lexentry_id => {
       const lexentry = lexentry_id ? lexicalEntries.find(le => isEqual(le.id, lexentry_id)) : null;
-      return lexentry ? lexentry.entities.find(e => isEqual(e.field_id, order_field_id)) : null;
+      return lexentry ? lexentry.entities.find(e => isEqual(e.field_id, lexgraph_field_id)) : null;
     }
 
     const get_lexgraph_marker = lexentry_id => {
@@ -354,7 +355,7 @@ class P extends React.Component {
     }
 
     const changeEntryPosition = () => {
-      if (order_field_id) {
+      if (lexgraph_field_id) {
         entity_to_delete = get_lexgraph_entity(lexentry_id);
         lexgraph_before = get_lexgraph_marker(lexentry_id_before);
         lexgraph_after = get_lexgraph_marker(lexentry_id_after);
