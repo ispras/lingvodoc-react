@@ -96,8 +96,13 @@ export const queryLexicalEntries = gql`
 `;
 
 const createLexicalEntryMutation = gql`
-  mutation createLexicalEntry($id: LingvodocID!, $entitiesMode: String!) {
-    create_lexicalentry(perspective_id: $id) {
+  mutation createLexicalEntry($id: LingvodocID!,
+                              $id_before: LingvodocID,
+                              $id_after: LingvodocID,
+                              $entitiesMode: String!) {
+    create_lexicalentry(perspective_id: $id,
+                        id_before: $id_before,
+                        id_after: $id_after) {
       lexicalentry {
         id
         parent_id
@@ -322,7 +327,9 @@ class P extends React.Component {
       createdEntries,
       selectedEntries,
       user,
-      reRender
+      reRender,
+      id_before,
+      id_after
     } = this.props;
 
     const { loading, error } = data;
@@ -343,6 +350,8 @@ class P extends React.Component {
       createLexicalEntry({
         variables: {
           id,
+          id_before,
+          id_after,
           entitiesMode
         },
         update: (cache, { data: { create_lexicalentry: { lexicalentry }}}) => {
@@ -633,8 +642,8 @@ class P extends React.Component {
               <Button 
                 icon={<i className="lingvo-icon lingvo-icon_add" />}
                 content={this.context("Add lexical entry")} 
-                onClick={addEntry} 
-                className="lingvo-button-green lingvo-perspective-button" 
+                onClick={addEntry}
+                className="lingvo-button-green lingvo-perspective-button"
               />
             )}
             {mode === "edit" && (
