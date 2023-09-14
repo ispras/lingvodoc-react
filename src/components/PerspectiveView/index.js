@@ -69,14 +69,6 @@ export const queryLexicalEntries = gql`
     perspective(id: $id) {
       id
       translations
-      /*
-      columns {
-        field {
-          id
-          english_translation: translation(locale_id: 2)
-        }
-      }
-      */
       lexical_entries(mode: $entitiesMode) {
         id
         parent_id
