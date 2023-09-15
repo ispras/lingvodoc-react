@@ -95,6 +95,30 @@ export const queryLexicalEntries = gql`
   }
 `;
 
+const updateLexgraphMutation = gql`
+  mutation updateLexgraph($id: LingvodocID!,
+                          $lexgraph_before: String!,
+                          $lexgraph_after: String!) {
+    update_entity_content(id: $id,
+                          lexgraph_before: $lexgraph_before,
+                          lexgraph_after: $lexgraph_after) {
+      entity
+      triumph
+    }
+  }
+`;
+
+const updateEntityParentMutation = gql`
+  mutation updateEntityParent($id: LingvodocID!,
+                              $new_parent_id: LingvodocID!) {
+    update_entity(id: $id,
+                  new_parent_id: $new_parent_id) {
+      entity
+      triumph
+    }
+  }
+`;
+
 const createLexicalEntryMutation = gql`
   mutation createLexicalEntry($id: LingvodocID!, $entitiesMode: String!) {
     create_lexicalentry(perspective_id: $id) {
@@ -323,9 +347,12 @@ class P extends React.Component {
       selectedEntries,
       user,
       reRender,
+      //for moving lexentries
       lexentry_id_source,
       lexentry_id_before,
       lexentry_id_after,
+      //for moving entities
+      entity_id_dragged,
       lexentry_id_target
     } = this.props;
 
@@ -355,17 +382,33 @@ class P extends React.Component {
       return lexgraph_entity ? lexgraph_entity.content : '';
     }
 
-    const updateEntity = () => {
+    const dragAndDrop = () => {
+      if (entity_id_dragged && lexentry_id_target) {
+        updateEntityParentMutation({
+          variables: {
+            id: entity_id_dragged,
+            new_parent_id: lexentry_id_target
+          },
+          refetchQueries: [
+            {
+              query: queryLexicalEntries,
+              variables: {
+                id,
+                entitiesMode
+              }
+            }
+          ]
+        }).then();
+      }
+
       if (lexgraph_field_id) {
-        entity_to_change = get_lexgraph_entity(lexentry_id_source).id;
-        new_parent_id = lexentry_id_target;
+        entity_id_change = get_lexgraph_entity(lexentry_id_source).id;
         lexgraph_before = get_lexgraph_marker(lexentry_id_before);
         lexgraph_after = get_lexgraph_marker(lexentry_id_after);
 
-        changeLexgraphMarker({
+        updateLexgraphMutation({
           variables: {
-            id: entity_to_change,
-            new_parent_id,
+            id: entity_id_change,
             lexgraph_before,
             lexgraph_after
           },
