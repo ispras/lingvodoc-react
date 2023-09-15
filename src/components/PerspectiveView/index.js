@@ -261,7 +261,8 @@ class P extends React.Component {
     this.state = {
       checkedRow: null,
       checkedColumn: null,
-      checkedAll: null
+      checkedAll: null,
+      mutation: { loading: false }
     };
 
     this.onCheckRow = this.onCheckRow.bind(this);
@@ -357,8 +358,9 @@ class P extends React.Component {
     } = this.props;
 
     const { loading, error } = data;
+    const { loading: changing } = this.state.mutation;
 
-    if (loading || (!loading && !error && !data.perspective)) {
+    if (loading || changing || (!loading && !error && !data.perspective)) {
       return (
         <Dimmer active style={{ minHeight: "600px", background: "none" }}>
           <Header as="h2" icon>
@@ -383,6 +385,7 @@ class P extends React.Component {
     }
 
     const dragAndDrop = () => {
+      // Moving entity to another lexentry
       if (entity_id_dragged && lexentry_id_target) {
         updateEntityParentMutation({
           variables: {
@@ -398,10 +401,13 @@ class P extends React.Component {
               }
             }
           ]
-        }).then();
+        }).then(({data: mutation}) => this.setState({mutation}));
       }
 
-      if (lexgraph_field_id) {
+      // Moving lexentry between certain ones
+      if (lexgraph_field_id &&
+          lexentry_id_source &&
+          (lexentry_id_before || lexentry_id_after)) {
         entity_id_change = get_lexgraph_entity(lexentry_id_source).id;
         lexgraph_before = get_lexgraph_marker(lexentry_id_before);
         lexgraph_after = get_lexgraph_marker(lexentry_id_after);
@@ -421,7 +427,7 @@ class P extends React.Component {
               }
             }
           ]
-        }).then();
+        }).then(({data: mutation}) => this.setState({mutation}));
       }
     };
 
