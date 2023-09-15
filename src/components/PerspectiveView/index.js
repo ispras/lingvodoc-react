@@ -323,9 +323,10 @@ class P extends React.Component {
       selectedEntries,
       user,
       reRender,
-      lexentry_id,
+      lexentry_id_source,
       lexentry_id_before,
-      lexentry_id_after
+      lexentry_id_after,
+      lexentry_id_target
     } = this.props;
 
     const { loading, error } = data;
@@ -344,26 +345,27 @@ class P extends React.Component {
     const lexgraph_column = !error ? columns.find(col => col.field.english_translation === "Order") : null;
     const lexgraph_field_id = lexgraph_column ? lexgraph_column.field_id : null;
 
-    const get_lexgraph_entity = lexentry_id => {
-      const lexentry = lexentry_id ? lexicalEntries.find(le => isEqual(le.id, lexentry_id)) : null;
+    const get_lexgraph_entity = lexentry_id_source => {
+      const lexentry = lexentry_id_source ? lexicalEntries.find(le => isEqual(le.id, lexentry_id_source)) : null;
       return lexentry ? lexentry.entities.find(e => isEqual(e.field_id, lexgraph_field_id)) : null;
     }
 
-    const get_lexgraph_marker = lexentry_id => {
-      const lexgraph_entity = get_lexgraph_entity(lexentry_id);
+    const get_lexgraph_marker = lexentry_id_source => {
+      const lexgraph_entity = get_lexgraph_entity(lexentry_id_source);
       return lexgraph_entity ? lexgraph_entity.content : '';
     }
 
-    const changeEntryPosition = () => {
+    const updateEntity = () => {
       if (lexgraph_field_id) {
-        entity_to_delete = get_lexgraph_entity(lexentry_id);
+        entity_to_change = get_lexgraph_entity(lexentry_id_source).id;
+        new_parent_id = lexentry_id_target;
         lexgraph_before = get_lexgraph_marker(lexentry_id_before);
         lexgraph_after = get_lexgraph_marker(lexentry_id_after);
 
         changeLexgraphMarker({
           variables: {
-            lexentry_id,
-            entity_to_delete,
+            id: entity_to_change,
+            new_parent_id,
             lexgraph_before,
             lexgraph_after
           },
