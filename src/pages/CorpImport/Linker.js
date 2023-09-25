@@ -5,15 +5,11 @@ import { pure } from "recompose";
 import TranslationContext from "Layout/TranslationContext";
 
 function valueColor(value) {
-  if (value === "keep") {
+  if (value === "base") {
     return "green";
   }
 
-  if (value === "spread") {
-    return "red";
-  }
-
-  if (value && value.includes("/")) {
+  if (value === "secondary") {
     return "purple";
   }
 
@@ -29,10 +25,6 @@ function Column({ spread, idStr, name, linkOptions, value, onChange }) {
     </Button>
   );
 
-  if (spread) {
-    return React.cloneElement(trigger, { inverted: true, color: "red", disabled: true });
-  }
-
   const selectValue = value && value.includes("/") ? value : null;
 
   return (
@@ -40,28 +32,10 @@ function Column({ spread, idStr, name, linkOptions, value, onChange }) {
       <Grid centered divided columns={3}>
         <Grid.Column textAlign="center">
           <Button
-            color={value === "keep" ? "green" : null}
-            onClick={() => onChange(idStr, value === "keep" ? null : "keep", value)}
+            color={value === "base" ? "green" : null}
+            onClick={() => onChange(idStr, value === "base" ? null : "base", value)}
           >
-            {getTranslation("Keep")}
-          </Button>
-        </Grid.Column>
-        <Grid.Column textAlign="center">
-          <Dropdown
-            button
-            placeholder={getTranslation("Link")}
-            icon={false}
-            options={linkOptions}
-            value={selectValue}
-            onChange={(e, data) => onChange(idStr, data.value, value)}
-          />
-        </Grid.Column>
-        <Grid.Column textAlign="center">
-          <Button
-            color={value === "spread" ? "red" : null}
-            onClick={() => onChange(idStr, value === "spread" ? null : "spread", value)}
-          >
-            {getTranslation("Spread")}
+            {value === "base" ? getTranslation("Base") : getTranslation("Secondary")}
           </Button>
         </Grid.Column>
       </Grid>

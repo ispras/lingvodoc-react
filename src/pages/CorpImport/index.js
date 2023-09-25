@@ -43,16 +43,13 @@ export const fieldsQuery = gql`
       data_type
       name
       created_at
-      additional_metadata {
-        starling_fields
-      }
     }
   }
 `;
 
 const convertMutation = gql`
-  mutation convertMutation($starling_dictionaries: [StarlingDictionary]!) {
-    convert_starling(starling_dictionaries: $starling_dictionaries) {
+  mutation convertMutation($corpora_inf: [CorpusInf]!) {
+    convert_plain_text(corpora_inf: $corpora_inf) {
       triumph
     }
   }
@@ -154,7 +151,7 @@ class Info extends React.Component {
     const { convert } = this.props;
     const params = buildExport(this.props);
     convert({
-      variables: { starling_dictionaries: params }
+      variables: { corpora_inf: params }
     }).then(() => this.props.goToStep("FINISH"));
   }
 
@@ -171,10 +168,10 @@ class Info extends React.Component {
     return (
       <div className="background-content">
         <Step.Group widths={4}>
-          <Step link active={step === "LINKING"} onClick={this.onStepClick("LINKING")}>
+          <Step link active={step === "ROLES"} onClick={this.onStepClick("ROLES")}>
             <Step.Content>
-              <Step.Title>{this.context("Linking")}</Step.Title>
-              <Step.Description>{this.context("Link columns from files with each other")}</Step.Description>
+              <Step.Title>{this.context("Roles")}</Step.Title>
+              <Step.Description>{this.context("Assign base and subordinate columns")}</Step.Description>
             </Step.Content>
           </Step>
 
@@ -200,7 +197,7 @@ class Info extends React.Component {
         </Step.Group>
 
         <div style={{ minHeight: "400px", background: "white" }}>
-          {step === "LINKING" && (
+          {step === "ROLES" && (
             <Linker
               blobs={blobs}
               state={linking}
@@ -268,7 +265,7 @@ class Info extends React.Component {
           >
             {this.context("Next Step")}
           </Button>
-        ) : step === "LINKING" ? (
+        ) : step === "ROLES" ? (
           <Message style={{ margin: 0, textAlign: "center" }}>
             <Message.Content>{this.context("Please use at least one Starling column.")}</Message.Content>
           </Message>

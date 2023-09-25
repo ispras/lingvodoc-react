@@ -10,15 +10,11 @@ import { openCreateFieldModal } from "ducks/fields";
 import TranslationContext from "Layout/TranslationContext";
 
 function valueColor(value) {
-  if (value === "keep") {
+  if (value === "base") {
     return "green";
   }
 
-  if (value === "spread") {
-    return "red";
-  }
-
-  if (value && value.includes("/")) {
+  if (value === "secondary") {
     return "purple";
   }
 
@@ -31,17 +27,9 @@ function FieldButton({ text, onClick, isSelected }) {
   return <Button onClick={onClick} content={text} {...color} />;
 }
 
-function Column({ spread, name, value, fieldOptions, type, onSetColumnType, actions }) {
+function Column({ name, value, fieldOptions, type, onSetColumnType, actions }) {
   const getTranslation = useContext(TranslationContext);
-
-  const isLink = value && value.includes("/");
-
   let columnButton = <Button className="column-button" color={valueColor(value)} content={name} />;
-
-  if (spread) {
-    columnButton = React.cloneElement(columnButton, { inverted: true, color: "red", disabled: true });
-  }
-
   const selectedField = fieldOptions.find(x => is(x.id, type));
   const triggerColor = selectedField ? { color: "blue" } : {};
 
@@ -54,40 +42,29 @@ function Column({ spread, name, value, fieldOptions, type, onSetColumnType, acti
 
   let inner;
 
-  if (spread) {
-    inner = <Button disabled content={triggerText} {...triggerColor} />;
-  }
-
-  if (isLink) {
-    inner = <Button disabled content={getTranslation("Relation")} />;
-  }
-
-  if (!spread && !isLink) {
-    const trigger = <Button content={triggerText} {...triggerColor} className="lingvo-column-mapper-selected" />;
-
-    inner = (
-      <Popup trigger={trigger} position="bottom center" on="click" className="lingvo-column-mapper-popup">
-        <Popup.Header>
-          <Button basic content={getTranslation("Create a new field")} onClick={actions.openCreateFieldModal} />
-        </Popup.Header>
-        <Dropdown
-          style={{ marginTop: "0.5em", marginBottom: "0.25em" }}
-          className="main-select lingvo-column-mapper-select"
-          search
-          selection
-          placeholder={`${getTranslation("Field selection")}...`}
-          options={fieldOptions}
-          value={selectedField && selectedField.value}
-          onChange={(e, { value }) => onSetColumnType(fieldOptions[value])}
-        />
-        <Popup.Content className="popup-field-type">
-          {fieldOptions.map(f => (
-            <FieldButton key={f.key} onClick={() => onSetColumnType(f.id)} text={f.text} isSelected={is(type, f.id)} />
-          ))}
-        </Popup.Content>
-      </Popup>
-    );
-  }
+  const trigger = <Button content={triggerText} {...triggerColor} className="lingvo-column-mapper-selected" />;
+  inner = (
+    <Popup trigger={trigger} position="bottom center" on="click" className="lingvo-column-mapper-popup">
+      <Popup.Header>
+        <Button basic content={getTranslation("Create a new field")} onClick={actions.openCreateFieldModal} />
+      </Popup.Header>
+      <Dropdown
+        style={{ marginTop: "0.5em", marginBottom: "0.25em" }}
+        className="main-select lingvo-column-mapper-select"
+        search
+        selection
+        placeholder={`${getTranslation("Field selection")}...`}
+        options={fieldOptions}
+        value={selectedField && selectedField.value}
+        onChange={(e, { value }) => onSetColumnType(fieldOptions[value])}
+      />
+      <Popup.Content className="popup-field-type">
+        {fieldOptions.map(f => (
+          <FieldButton key={f.key} onClick={() => onSetColumnType(f.id)} text={f.text} isSelected={is(type, f.id)} />
+        ))}
+      </Popup.Content>
+    </Popup>
+  );
 
   return (
     <div className="column-field-type">
@@ -105,49 +82,35 @@ const ColumnWithData = compose(
   }))
 )(Column);
 
-function Columns({ blob, spreads, fieldOptions, columnTypes, onSetColumnType }) {
+function Columns({ blob, index, fieldOptions, columnTypes, onSetColumnType }) {
   const blobId = blob.get("id");
-  const columns = blob.getIn(["additional_metadata", "starling_fields"]);
   const values = blob.get("values");
+  const columnIdStr = `${index}:sentence`;
+  const value = values.get(columnIdStr);
 
   return (
     <div className="blob">
       <b className="blob-name">{blob.get("name")}</b>
       <div className="blob-columns">
-        {columns.reduce((columnList, column, index) => {
-          const columnIdStr = `${index}:${column}`;
-          const value = values.get(columnIdStr);
-
-          if (value != null) {
-            columnList.push(
-              <ColumnWithData
-                key={columnIdStr}
-                name={columnIdStr.slice(columnIdStr.indexOf(":") + 1)}
-                value={value}
-                type={columnTypes.getIn([blobId, columnIdStr])}
-                onSetColumnType={onSetColumnType(columnIdStr)}
-                fieldOptions={fieldOptions}
-              />
-            );
-          }
-
-          return columnList;
-        }, [])}
-        {spreads.map(spread => (
-          <ColumnWithData
-            spread
-            key={spread.get("from").join(spread.get("column"))}
-            name={spread.get("column")}
-            type={columnTypes.getIn([spread.get("from"), spread.get("column")])}
-            fieldOptions={fieldOptions}
-          />
-        ))}
+        if (value != null) {
+          columnList.push(
+            <ColumnWithData
+              key={columnIdStr}
+              name={columnIdStr.slice(columnIdStr.indexOf(":") + 1)}
+              value={value}
+              type={columnTypes.getIn([blobId, columnIdStr])}
+              onSetColumnType={onSetColumnType(columnIdStr)}
+              fieldOptions={fieldOptions}
+            />
+          );
+        }
+        return columnList;
       </div>
     </div>
   );
 }
 
-function ColumnMapper({ state, spreads, types, columnTypes, onSetColumnType }) {
+function ColumnMapper({ state, types, columnTypes, onSetColumnType }) {
   const typesSortedFiltered = types
     .sortBy(type => T(type.get("translations").toJS()))
     .filter(type => T(type.get("translations").toJS()).trim() != "");
@@ -176,7 +139,6 @@ function ColumnMapper({ state, spreads, types, columnTypes, onSetColumnType }) {
             key={id.join("/")}
             blob={v}
             fieldOptions={fieldOptions}
-            spreads={spreads.get(id, [])}
             columnTypes={columnTypes}
             onSetColumnType={onSetColumnType(id)}
           />
