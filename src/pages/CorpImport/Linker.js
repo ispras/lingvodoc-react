@@ -16,7 +16,7 @@ function valueColor(value) {
   return null;
 }
 
-function Column({ spread, idStr, name, linkOptions, value, onChange }) {
+function Column({ idStr, name, linkOptions, value, onChange }) {
   const getTranslation = useContext(TranslationContext);
 
   const trigger = (
@@ -43,8 +43,7 @@ function Column({ spread, idStr, name, linkOptions, value, onChange }) {
   );
 }
 
-function Columns({ blob, spreads, linkOptions, onUpdateColumn, onToggleColumn, onDelete }) {
-  const columns = blob.getIn(["additional_metadata", "starling_fields"]);
+function Columns({ blob, index, linkOptions, onUpdateColumn, onToggleColumn, onDelete }) {
   const values = blob.get("values");
 
   return (
@@ -52,29 +51,24 @@ function Columns({ blob, spreads, linkOptions, onUpdateColumn, onToggleColumn, o
       <Button negative icon="trash" size="tiny" onClick={() => onDelete(blob.get("id"))} />
       <b className="blob-name">{blob.get("name")}</b>
       <div className="blob-columns">
-        {columns.map((column, index) => {
-          const idStr = `${index}:${column}`;
-          return (
-            <Column
-              key={idStr}
-              idStr={idStr}
-              name={column}
-              linkOptions={linkOptions.filter(x => x.key !== blob.get("id").join("/"))}
-              onChange={onUpdateColumn}
-              value={values.get(idStr)}
-            />
-          );
-        })}
-        {spreads.map(spread => (
-          <Column spread key={spread.get("from").join(spread.get("column"))} name={spread.get("column")} />
-        ))}
+        const idStr = `${index}:sentence`;
+        return (
+          <Column
+            key={idStr}
+            idStr={idStr}
+            name={column}
+            linkOptions={linkOptions.filter(x => x.key !== blob.get("id").join("/"))}
+            onChange={onUpdateColumn}
+            value={values.get(idStr)}
+          />
+        );
       </div>
       <Checkbox className="blob-checkbox" onClick={onToggleColumn} checked={blob.get("add")} />
     </div>
   );
 }
 
-function Linker({ blobs, state, spreads, onSelect, onDelete, onUpdateColumn, onToggleColumn }) {
+function Linker({ blobs, state, onSelect, onDelete, onUpdateColumn, onToggleColumn }) {
   const getTranslation = useContext(TranslationContext);
 
   const stateOptions = blobs.reduce(
@@ -114,7 +108,6 @@ function Linker({ blobs, state, spreads, onSelect, onDelete, onUpdateColumn, onT
             key={id.join("/")}
             blob={v}
             linkOptions={stateOptions}
-            spreads={spreads.get(id, [])}
             onUpdateColumn={onUpdateColumn(id)}
             onToggleColumn={onToggleColumn(id)}
             onDelete={onDelete}

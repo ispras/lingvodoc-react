@@ -62,7 +62,6 @@ class Info extends React.Component {
     isNextStep: PropTypes.bool.isRequired,
     blobs: PropTypes.any.isRequired,
     linking: PropTypes.any.isRequired,
-    spreads: PropTypes.any.isRequired,
     columnTypes: PropTypes.any.isRequired,
     languages: PropTypes.any.isRequired,
     locales: PropTypes.array.isRequired,
@@ -156,7 +155,7 @@ class Info extends React.Component {
   }
 
   render() {
-    const { step, isNextStep, blobs, linking, spreads, columnTypes, languages, licenses, locales, data } = this.props;
+    const { step, isNextStep, blobs, linking, columnTypes, languages, licenses, locales, data } = this.props;
 
     if (data.loading || data.error) {
       return null;
@@ -201,7 +200,6 @@ class Info extends React.Component {
             <Linker
               blobs={blobs}
               state={linking}
-              spreads={spreads}
               onSelect={this.onSelect}
               onDelete={this.onDelete}
               onUpdateColumn={this.onUpdateColumn}
@@ -211,7 +209,6 @@ class Info extends React.Component {
           {step === "COLUMNS" && (
             <ColumnMapper
               state={linking}
-              spreads={spreads}
               columnTypes={columnTypes}
               types={fieldTypes}
               onSetColumnType={this.onSetColumnType}
@@ -287,7 +284,6 @@ function mapStateToProps(state) {
     isNextStep: selectors.getNextStep(state),
     blobs: selectors.getBlobs(state),
     linking: selectors.getLinking(state),
-    spreads: selectors.getSpreads(state),
     columnTypes: selectors.getColumnTypes(state),
     languages: selectors.getLanguages(state),
     licenses: selectors.getLicenses(state),
