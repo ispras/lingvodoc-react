@@ -14,7 +14,7 @@ import { bindActionCreators } from "redux";
 import styled from "styled-components";
 
 import ApproveModal from "components/ApproveModal";
-import Pagination from "components/Pagination";
+/*import Pagination from "components/Pagination";*/
 import Placeholder from "components/Placeholder";
 import { openModal } from "ducks/modals";
 import {
@@ -26,12 +26,14 @@ import {
 } from "ducks/perspective";
 import TranslationContext from "Layout/TranslationContext";
 import { compositeIdToString as id2str } from "utils/compositeId";
-import smoothScroll from "utils/smoothscroll";
 
+/*import smoothScroll from "utils/smoothscroll";*/
 import TableBody from "./TableBody";
 import TableHeader from "./TableHeader";
 
-const ROWS_PER_PAGE = 20;
+/* new!!!!!! */
+/*const ROWS_PER_PAGE = 20;*/
+/* /new!!!!!! */
 
 const ModalContentWrapper = styled("div")`
   min-height: 15vh;
@@ -331,6 +333,9 @@ class P extends React.Component {
       reRender
     } = this.props;
 
+    /*console.log('page======');
+    console.log(page);*/
+
     const { loading, error } = data;
 
     if (loading || (!loading && !error && !data.perspective)) {
@@ -477,9 +482,16 @@ class P extends React.Component {
 
     const entries = processEntries(lexicalEntries.slice());
 
+    /* new!!!!!! */
+    /*
     const pageEntries =
       entries.length > ROWS_PER_PAGE ? take(drop(entries, ROWS_PER_PAGE * (page - 1)), ROWS_PER_PAGE) : entries;
+    */
 
+    const pageEntries = entries;
+    /* /new!!!!!! */
+
+      
     // Put newly created entries at the top of page.
     const e = [
       ...newEntries,
@@ -717,6 +729,8 @@ class P extends React.Component {
           </DndProvider>
           {/* /new!!!!! */}
         </div>
+        {/* new!!!!! */}
+        {/*
         <Pagination
           urlBased
           activePage={page}
@@ -732,7 +746,8 @@ class P extends React.Component {
             }
           }}
           className="lingvo-pagination-block_perspective"
-        />
+        />*/}
+        {/* /new!!!!! */}
       </div>
     );
   }
