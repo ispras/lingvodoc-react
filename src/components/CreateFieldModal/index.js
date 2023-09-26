@@ -13,6 +13,7 @@ import Translations from "components/Translation";
 import { closeCreateFieldModal } from "ducks/fields";
 import TranslationContext from "Layout/TranslationContext";
 import { fieldsQuery } from "pages/DictImport";
+import { fieldsQuery as fieldsQueryParallel } from "pages/CorpImport";
 import { compositeIdToString } from "utils/compositeId";
 
 class CreateFieldModal extends React.Component {
@@ -59,7 +60,10 @@ class CreateFieldModal extends React.Component {
         refetchQueries: [
           {
             query: fieldsQuery
-          }
+          },
+          {
+            query: fieldsQueryParallel
+          },
         ]
       }).then(({ data }) => {
         if (callback != null) {
