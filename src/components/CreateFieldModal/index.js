@@ -48,7 +48,7 @@ class CreateFieldModal extends React.Component {
       data: { error, loading, all_data_types: dataTypes },
       createField,
       actions,
-      callback: { callback, parallel}
+      callback: { callback, parallel }
     } = this.props;
 
     const translationAtoms = this.state.translations.map(t => ({ locale_id: t.localeId, content: t.content }));
@@ -82,7 +82,8 @@ class CreateFieldModal extends React.Component {
 
     const {
       data: { error, loading, all_data_types: dataTypes },
-      actions
+      actions,
+      callback: { parallel }
     } = this.props;
     if (error || loading) {
       return null;
@@ -90,6 +91,7 @@ class CreateFieldModal extends React.Component {
 
     const options = dataTypes
       .filter(dataType => !dataType.marked_for_deletion)
+      .filter(dataType => !parallel || dataType.english_translation === "Text")
       .map(dataType => ({
         key: compositeIdToString(dataType.id),
         text: T(dataType.translations),
@@ -140,8 +142,7 @@ CreateFieldModal.propTypes = {
     all_data_types: PropTypes.array
   }),
   visible: PropTypes.bool.isRequired,
-  createField: PropTypes.func.isRequired,
-  parallel: PropTypes.bool
+  createField: PropTypes.func.isRequired
 };
 
 const mapDispatchToProps = dispatch => ({
@@ -156,6 +157,7 @@ export default compose(
         all_data_types {
           id
           translations
+          english_translation: translation(locale_id: 2)
           marked_for_deletion
         }
       }

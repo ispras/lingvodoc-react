@@ -68,7 +68,7 @@ function Column({ spread, name, value, fieldOptions, type, onSetColumnType, acti
     inner = (
       <Popup trigger={trigger} position="bottom center" on="click" className="lingvo-column-mapper-popup">
         <Popup.Header>
-          <Button basic content={getTranslation("Create a new field")} onClick={actions.openCreateFieldModal} />
+          <Button basic content={getTranslation("Create a new field")} onClick={ () => actions.openCreateFieldModal(null, false) } />
         </Popup.Header>
         <Dropdown
           style={{ marginTop: "0.5em", marginBottom: "0.25em" }}
