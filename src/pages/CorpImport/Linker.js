@@ -45,23 +45,21 @@ function Column({ idStr, name, linkOptions, value, onChange }) {
 
 function Columns({ blob, index, linkOptions, onUpdateColumn, onToggleColumn, onDelete }) {
   const values = blob.get("values");
+  const idStr = `${index}:sentence`;
 
   return (
     <div className="blob">
       <Button negative icon="trash" size="tiny" onClick={() => onDelete(blob.get("id"))} />
       <b className="blob-name">{blob.get("name")}</b>
       <div className="blob-columns">
-        const idStr = `${index}:sentence`;
-        return (
-          <Column
-            key={idStr}
-            idStr={idStr}
-            name={column}
-            linkOptions={linkOptions.filter(x => x.key !== blob.get("id").join("/"))}
-            onChange={onUpdateColumn}
-            value={values.get(idStr)}
-          />
-        );
+        <Column
+          key={idStr}
+          idStr={idStr}
+          name={'sentence'}
+          linkOptions={linkOptions.filter(x => x.key !== blob.get("id").join("/"))}
+          onChange={onUpdateColumn}
+          value={values.get(idStr)}
+        />
       </div>
       <Checkbox className="blob-checkbox" onClick={onToggleColumn} checked={blob.get("add")} />
     </div>

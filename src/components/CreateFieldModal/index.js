@@ -136,7 +136,8 @@ CreateFieldModal.propTypes = {
     all_data_types: PropTypes.array
   }),
   visible: PropTypes.bool.isRequired,
-  createField: PropTypes.func.isRequired
+  createField: PropTypes.func.isRequired,
+  parallel: PropTypes.bool
 };
 
 const mapDispatchToProps = dispatch => ({
@@ -159,8 +160,8 @@ export default compose(
   ),
   graphql(
     gql`
-      mutation createField($data_type_id: LingvodocID!, $translationAtoms: [ObjectVal]!) {
-        create_field(data_type_translation_gist_id: $data_type_id, translation_atoms: $translationAtoms) {
+      mutation createField($data_type_id: LingvodocID!, $translationAtoms: [ObjectVal]!, $parallel: Boolean) {
+        create_field(data_type_translation_gist_id: $data_type_id, translation_atoms: $translationAtoms, parallel: $parallel) {
           field {
             id
           }

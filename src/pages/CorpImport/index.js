@@ -23,12 +23,12 @@ import {
 } from "ducks/dictImport";
 import TranslationContext from "Layout/TranslationContext";
 
-import { buildExport } from "./api";
-import ColumnMapper from "./ColumnMapper";
-import LanguageSelection from "./LanguageSelection";
-import Linker from "./Linker";
 
-import "./styles.scss";
+import "pages/DictImport/styles.scss";
+import { buildExport } from "pages/DictImport/api";
+import LanguageSelection from "pages/DictImport/LanguageSelection";
+import ColumnMapper from "./ColumnMapper";
+import Linker from "./Linker";
 
 export const fieldsQuery = gql`
   query field {
