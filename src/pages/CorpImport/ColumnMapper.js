@@ -46,7 +46,7 @@ function Column({ name, value, fieldOptions, type, onSetColumnType, actions }) {
   inner = (
     <Popup trigger={trigger} position="bottom center" on="click" className="lingvo-column-mapper-popup">
       <Popup.Header>
-        <Button basic content={getTranslation("Create a new field")} onClick={actions.openCreateFieldModal} />
+        <Button basic content={getTranslation("Create a new field")} onClick={() => actions.openCreateFieldModal(null, true)} />
       </Popup.Header>
       <Dropdown
         style={{ marginTop: "0.5em", marginBottom: "0.25em" }}
@@ -92,19 +92,16 @@ function Columns({ blob, index, fieldOptions, columnTypes, onSetColumnType }) {
     <div className="blob">
       <b className="blob-name">{blob.get("name")}</b>
       <div className="blob-columns">
-        if (value != null) {
-          columnList.push(
-            <ColumnWithData
-              key={columnIdStr}
-              name={columnIdStr.slice(columnIdStr.indexOf(":") + 1)}
-              value={value}
-              type={columnTypes.getIn([blobId, columnIdStr])}
-              onSetColumnType={onSetColumnType(columnIdStr)}
-              fieldOptions={fieldOptions}
-            />
-          );
-        }
-        return columnList;
+        { value != null && (
+          <ColumnWithData
+            key={columnIdStr}
+            name={columnIdStr.slice(columnIdStr.indexOf(":") + 1)}
+            value={value}
+            type={columnTypes.getIn([blobId, columnIdStr])}
+            onSetColumnType={onSetColumnType(columnIdStr)}
+            fieldOptions={fieldOptions}
+          />
+        )}
       </div>
     </div>
   );

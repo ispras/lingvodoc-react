@@ -47,7 +47,7 @@ class CreateFieldModal extends React.Component {
       data: { error, loading, all_data_types: dataTypes },
       createField,
       actions,
-      callback
+      callback: { callback, parallel}
     } = this.props;
 
     const translationAtoms = this.state.translations.map(t => ({ locale_id: t.localeId, content: t.content }));
