@@ -55,7 +55,7 @@ class CreateFieldModal extends React.Component {
 
     if (!(error || loading) && dataType) {
       createField({
-        variables: { data_type_id: dataType.id, translationAtoms },
+        variables: { data_type_id: dataType.id, translationAtoms, parallel: parallel },
         refetchQueries: [
           {
             query: fieldsQuery
