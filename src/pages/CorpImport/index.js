@@ -32,7 +32,7 @@ import Linker from "./Linker";
 
 export const fieldsQuery = gql`
   query field {
-    all_fields {
+    all_fields(parallel: true) {
       id
       translations
       data_type
