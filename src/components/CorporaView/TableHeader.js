@@ -31,13 +31,19 @@ const TableHeader = ({
   sortByField,
   /* eslint-enable react/prop-types */
   onSortModeChange,
-  onSortModeReset
+  onSortModeReset,
+  mode /* new!!!!!!! */
 }) => {
   const getTranslation = useContext(TranslationContext);
 
   return (
     <Table.Header style={disabled ? { opacity: "0.5" } : {}}>
       <Table.Row>
+        {/* new!!!!! */}
+        <Table.HeaderCell className="entityHeader" style={(mode === "edit") ? {} : { display: "none" }}>
+          &nbsp;
+        </Table.HeaderCell>
+        {/* /new!!!!! */}
         {selectEntries && (
           <Table.HeaderCell className="entityHeader">
             {selectAllEntries && (
@@ -97,7 +103,8 @@ TableHeader.propTypes = {
   selectedRows: PropTypes.array,
   selectedColumns: PropTypes.array,
   onCheckColumn: PropTypes.func,
-  onCheckAll: PropTypes.func
+  onCheckAll: PropTypes.func,
+  mode: PropTypes.string.isRequired /* new!!!!!! */
 };
 
 TableHeader.defaultProps = {
@@ -112,4 +119,4 @@ TableHeader.defaultProps = {
   onCheckAll: () => {}
 };
 
-export default onlyUpdateForKeys(["columns", "entries", "selectedRows", "selectedColumns"])(TableHeader);
+export default onlyUpdateForKeys(["columns", "entries", "selectedRows", "selectedColumns", "mode" /* new!!!!! */])(TableHeader);

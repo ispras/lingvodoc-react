@@ -32,7 +32,7 @@ const TableBody = ({ entries, ...rest }) => {
 
   console.log("CorporaView/TableBody.js: entries=======");
   console.log(entries);
-
+  
   return (
     <Table.Body>
       {/*{pets.map((entry, index) => (*/}

@@ -144,11 +144,13 @@ const Row = ({
   const remove_selection_flag = removeSelectionEntrySet && removeSelectionEntrySet.hasOwnProperty(entry_id_str);
 
   return (
-    <tr style={isDragging ? { opacity: "0" } : (disabled_flag ? { opacity: "0.5" } : {})} ref={preview} /*ref={ref}*/ /*data-handler-id={handlerId}*/>
+    <tr style={isDragging ? { opacity: "0" } : (disabled_flag ? { opacity: "0.5" } : {})} ref={preview} data-handler-id={handlerId}>
     {/*<Table.Row style={isDragging ? { opacity: "0" } : (disabled_flag ? { opacity: "0.5" } : {})} ref={dragDropRef}>*/}
-      <Table.Cell>
+      {/* new!!!!! */}
+      <Table.Cell style={(mode === "edit") ? {} : { display: "none" }}>
         <div ref={dragDropRef} style={handleStyle} />
       </Table.Cell>
+      {/* /new!!!!! */}
       {selectEntries && (
         <Table.Cell>
           {!remove_selection_flag && (

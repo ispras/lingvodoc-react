@@ -169,7 +169,7 @@ const TableComponent = ({
   actions
 }) => {
 
-  console.log("Rendered 'TableComponent'");
+  console.log("Rendered 'TableComponent'!!!!!!!");
 
   return (
     <div style={{ overflowY: "auto" }}>
@@ -189,6 +189,7 @@ const TableComponent = ({
           selectDisabledIndeterminate={selectDisabledIndeterminate}
           disabled={disabledHeader}
           actions={actions}
+          mode={mode} /* new!!!!! */
         />
         <TableBody
           perspectiveId={perspectiveId}
@@ -335,6 +336,9 @@ class P extends React.Component {
 
     /*console.log('page======');
     console.log(page);*/
+
+    /*console.log('mode======');
+    console.log(mode);*/
 
     const { loading, error } = data;
 
@@ -702,6 +706,7 @@ class P extends React.Component {
                 selectedColumns={selectedColumns}
                 onCheckColumn={this.onCheckColumn}
                 onCheckAll={this.onCheckAll}
+                mode={mode} /* new!!!!! */
               />
               <TableBody
                 perspectiveId={id}
