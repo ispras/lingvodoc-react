@@ -5,61 +5,26 @@ import { pure } from "recompose";
 import TranslationContext from "Layout/TranslationContext";
 
 function valueColor(value) {
-  if (value === "base") {
+  if (value === "base")
     return "green";
-  }
-
-  if (value === "secondary") {
-    return "purple";
-  }
-
-  return null;
+  else
+    return "yellow";
 }
 
-function Column({ idStr, name, linkOptions, value, onChange }) {
+function Columns({ blob, value, onUpdateColumn, onToggleColumn, onDelete }) {
   const getTranslation = useContext(TranslationContext);
+  const name = (value === "base") ?  getTranslation("base sentence") :  getTranslation("sentence");
 
-  const trigger = (
-    <Button size="tiny" className="column-button" color={valueColor(value)}>
-      {name}
-    </Button>
-  );
-
-  const selectValue = value && value.includes("/") ? value : null;
-
-  return (
-    <Popup className="column-popup" trigger={trigger} position="bottom center" on="click" style={{}} flowing hoverable>
-      <Grid centered divided columns={3}>
-        <Grid.Column textAlign="center">
-          <Button
-            color={value === "base" ? "green" : null}
-            onClick={() => onChange(idStr, value === "base" ? null : "base", value)}
-          >
-            {value === "base" ? getTranslation("Base") : getTranslation("Secondary")}
-          </Button>
-        </Grid.Column>
-      </Grid>
-    </Popup>
-  );
-}
-
-function Columns({ blob, index, linkOptions, onUpdateColumn, onToggleColumn, onDelete }) {
-  const values = blob.get("values");
-  const idStr = `${index}:sentence`;
+  onUpdateColumn("sentence", value, null);
 
   return (
     <div className="blob">
       <Button negative icon="trash" size="tiny" onClick={() => onDelete(blob.get("id"))} />
       <b className="blob-name">{blob.get("name")}</b>
       <div className="blob-columns">
-        <Column
-          key={idStr}
-          idStr={idStr}
-          name={'sentence'}
-          linkOptions={linkOptions.filter(x => x.key !== blob.get("id").join("/"))}
-          onChange={onUpdateColumn}
-          value={values.get(idStr)}
-        />
+        <Button size="tiny" className="column-button" color={valueColor(value)}>
+          {name}
+        </Button>
       </div>
       <Checkbox className="blob-checkbox" onClick={onToggleColumn} checked={blob.get("add")} />
     </div>
@@ -82,12 +47,13 @@ function Linker({ blobs, state, onSelect, onDelete, onUpdateColumn, onToggleColu
   );
 
   const first = state.first();
-
   const selected = first ? first.get("id").join("/") : null;
 
   function onChange(event, data) {
     onSelect(data.value.split("/").map(x => parseInt(x, 10)));
   }
+
+  let i = 0;
 
   return (
     <div className="linker">
@@ -105,7 +71,7 @@ function Linker({ blobs, state, onSelect, onDelete, onUpdateColumn, onToggleColu
           <Columns
             key={id.join("/")}
             blob={v}
-            linkOptions={stateOptions}
+            value={ (i++) ? "secondary" : "base" }
             onUpdateColumn={onUpdateColumn(id)}
             onToggleColumn={onToggleColumn(id)}
             onDelete={onDelete}
