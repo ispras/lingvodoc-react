@@ -177,14 +177,14 @@ class Info extends React.Component {
           <Step link active={step === "COLUMNS"} onClick={this.onStepClick("COLUMNS")}>
             <Step.Content>
               <Step.Title>{this.context("Columns Mapping")}</Step.Title>
-              <Step.Description>{this.context("Map linked columns to LingvoDoc types")}</Step.Description>
+              <Step.Description>{this.context("Map columns to LingvoDoc types")}</Step.Description>
             </Step.Content>
           </Step>
 
           <Step link active={step === "LANGUAGES"} onClick={this.onStepClick("LANGUAGES")}>
             <Step.Content>
               <Step.Title>{this.context("Language Selection")}</Step.Title>
-              <Step.Description>{this.context("Map dictionaries to LingvoDoc languages")}</Step.Description>
+              <Step.Description>{this.context("Map dictionary to LingvoDoc language")}</Step.Description>
             </Step.Content>
           </Step>
 
@@ -230,7 +230,7 @@ class Info extends React.Component {
               <Message.Header>{this.context("Conversion is in progress...")}</Message.Header>
               <Message.Content>
                 {this.context(
-                  "Your dictionaries are scheduled for conversion. Please, check tasks tab for conversion status."
+                  "Your dictionary is scheduled for conversion. Please, check tasks tab for conversion status."
                 )}
               </Message.Content>
             </Message>
@@ -249,7 +249,7 @@ class Info extends React.Component {
             <Message style={{ margin: 0, textAlign: "center" }}>
               <Message.Content>
                 {this.context(
-                  "Please select parent language and specify at least one translation for each Starling dictionary."
+                  "Please select parent language and specify at least one translation for the dictionary."
                 )}
               </Message.Content>
             </Message>
@@ -264,11 +264,11 @@ class Info extends React.Component {
           </Button>
         ) : step === "ROLES" ? (
           <Message style={{ margin: 0, textAlign: "center" }}>
-            <Message.Content>{this.context("Please use at least one Starling column.")}</Message.Content>
+            <Message.Content>{this.context("Choose at least two parent corpora.")}</Message.Content>
           </Message>
         ) : step === "COLUMNS" ? (
           <Message style={{ margin: 0, textAlign: "center" }}>
-            <Message.Content>{this.context("Please map all Starling columns to Lingvodoc types.")}</Message.Content>
+            <Message.Content>{this.context("Please map all the columns to Lingvodoc types.")}</Message.Content>
           </Message>
         ) : null}
       </div>

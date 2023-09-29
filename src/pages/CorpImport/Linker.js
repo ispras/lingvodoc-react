@@ -17,7 +17,7 @@ function Columns({ blob, index, onUpdateColumn, onToggleColumn, onDelete }) {
   const column = index ? "sentence" : "base sentence";
   const idStr = `${index}:${column}`;
 
-  useEffect(() => { onUpdateColumn(idStr, value, null); }, []);
+  useEffect(() => { onUpdateColumn(idStr, value, null); }, [idStr]);
 
   return (
     <div className="blob">

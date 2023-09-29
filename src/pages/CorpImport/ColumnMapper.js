@@ -10,15 +10,10 @@ import { openCreateFieldModal } from "ducks/fields";
 import TranslationContext from "Layout/TranslationContext";
 
 function valueColor(value) {
-  if (value === "base") {
+  if (value === "base")
     return "green";
-  }
-
-  if (value === "secondary") {
+  else
     return "yellow";
-  }
-
-  return null;
 }
 
 function FieldButton({ text, onClick, isSelected }) {
