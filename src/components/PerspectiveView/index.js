@@ -162,9 +162,6 @@ const TableComponent = ({
   /*  eslint-enable react/prop-types */
   actions
 }) => {
-
-  console.log("Rendered 'TableComponent'");
-
   return (
     <div style={{ overflowY: "auto" }}>
       <Table celled padded className="lingvo-perspective-table">
@@ -204,7 +201,7 @@ const TableComponent = ({
       </Table>
     </div>
   );
-}
+};
 
 TableComponent.propTypes = {
   columns: PropTypes.array.isRequired,
@@ -224,7 +221,7 @@ TableComponent.defaultProps = {
   selectEntries: false,
   selectedEntries: [],
   onEntrySelect: () => {},
-  reRender: () => console.log('Fake refetch')
+  reRender: () => console.log("Fake refetch")
 };
 
 class P extends React.Component {
@@ -612,22 +609,21 @@ class P extends React.Component {
       yield* entries;
     }
 
-    console.log("Rendered 'P' component");
-
     return (
       <div
         style={{ overflowY: "auto" }}
         className={(mode === "edit" && "lingvo-scrolling-tab lingvo-scrolling-tab_edit") || "lingvo-scrolling-tab"}
       >
-        
-        {((mode === "edit") || (mode === "publish" && isAuthenticated) || (mode === "contributions" && isAuthenticated)) && (
+        {(mode === "edit" ||
+          (mode === "publish" && isAuthenticated) ||
+          (mode === "contributions" && isAuthenticated)) && (
           <div className="lingvo-perspective-buttons">
             {mode === "edit" && (
-              <Button 
+              <Button
                 icon={<i className="lingvo-icon lingvo-icon_add" />}
-                content={this.context("Add lexical entry")} 
-                onClick={addEntry} 
-                className="lingvo-button-green lingvo-perspective-button" 
+                content={this.context("Add lexical entry")}
+                onClick={addEntry}
+                className="lingvo-button-green lingvo-perspective-button"
               />
             )}
             {mode === "edit" && (
@@ -986,7 +982,7 @@ const LexicalEntryViewBaseByIds = ({ perspectiveId, mode, entitiesMode, data, ac
   const reRender = () => {
     data.refetch();
     console.log("Refetched 'queryLexicalEntriesByIds'");
-  }
+  };
 
   return (
     <TableComponent
@@ -1053,8 +1049,8 @@ const PerspectiveViewWrapper = ({ id, className, mode, entitiesMode, page, data,
 
   const reRender = () => {
     data.refetch();
-    console.log("Refetched 'queryPerspective'")
-  }
+    console.log("Refetched 'queryPerspective'");
+  };
 
   return (
     <PerspectiveView

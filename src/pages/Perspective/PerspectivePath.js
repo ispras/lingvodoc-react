@@ -59,8 +59,17 @@ const license_dict_translator = getTranslation => ({
 class PerspectivePath extends React.Component {
   render() {
     /* eslint-disable no-shadow */
-    const { id, dictionary_id, queryPerspectivePath, queryAvailablePerspectives, mode, className, actions, user, performRedirect } =
-      this.props;
+    const {
+      id,
+      dictionary_id,
+      queryPerspectivePath,
+      queryAvailablePerspectives,
+      mode,
+      className,
+      actions,
+      user,
+      performRedirect
+    } = this.props;
     /* eslint-enable no-shadow */
     if (
       queryPerspectivePath.loading ||
@@ -112,7 +121,11 @@ class PerspectivePath extends React.Component {
               content:
                 // eslint-disable-next-line no-nested-ternary
                 index === tree.length - 1 ? (
-                  <Dropdown className="lingvo-dropdown-inline lingvo-dropdown-inline_perspective" text={T(e.translations)} icon={<i className="lingvo-icon lingvo-icon_arrow" />}>
+                  <Dropdown
+                    className="lingvo-dropdown-inline lingvo-dropdown-inline_perspective"
+                    text={T(e.translations)}
+                    icon={<i className="lingvo-icon lingvo-icon_arrow" />}
+                  >
                     <Dropdown.Menu>
                       {perspectives.length > 1 && [
                         perspectives
@@ -160,7 +173,11 @@ class PerspectivePath extends React.Component {
                     </Dropdown.Menu>
                   </Dropdown>
                 ) : index === tree.length - 2 ? (
-                  <Dropdown className="lingvo-dropdown-inline lingvo-dropdown-inline_perspective" text={T(e.translations)} icon={<i className="lingvo-icon lingvo-icon_arrow" />}>
+                  <Dropdown
+                    className="lingvo-dropdown-inline lingvo-dropdown-inline_perspective"
+                    text={T(e.translations)}
+                    icon={<i className="lingvo-icon lingvo-icon_arrow" />}
+                  >
                     <Dropdown.Menu>
                       {user.id !== undefined && [
                         <Dropdown.Item
@@ -221,7 +238,22 @@ class PerspectivePath extends React.Component {
                     </Dropdown.Menu>
                   </Dropdown>
                 ) : (
-                  T(e.translations)
+                  <Dropdown
+                    className="lingvo-dropdown-inline lingvo-dropdown-inline_perspective"
+                    text={T(e.translations)}
+                    icon={<i className="lingvo-icon lingvo-icon_arrow" />}
+                  >
+                    <Dropdown.Menu>
+                      <Dropdown.Item
+                        key="statistics"
+                        icon={<i className="lingvo-icon lingvo-icon_stats" />}
+                        text={this.context("Statistics")}
+                        onClick={() =>
+                          actions.openStatistics(e.id, "language", `'${T(e.translations)}' ${statistics_str}`)
+                        }
+                      />
+                    </Dropdown.Menu>
+                  </Dropdown>
                 ),
 
               link: false
