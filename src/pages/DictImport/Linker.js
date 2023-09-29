@@ -117,7 +117,7 @@ function Linker({ blobs, state, spreads, onSelect, onDelete, onUpdateColumn, onT
 
   const first = state.first();
 
-  const selected = first ? first.get("id").join("/") : null;
+  const selected = first && first.get("id") ? first.get("id").join("/") : null;
 
   function onChange(event, data) {
     onSelect(data.value.split("/").map(x => parseInt(x, 10)));
