@@ -186,14 +186,14 @@ export const selectors = {
   getStep(state) {
     return state.dictImport.get("step");
   },
-  getNextStep(state) {
+  getNextStep(state, minimum=0) {
     switch (state.dictImport.get("step")) {
       case "LINKING":
         return (
           state.dictImport
             .get("linking")
             .toArray()
-            .reduce((count, info) => count + info.get("values").filter(value => value).size, 0) > 0
+            .reduce((count, info) => count + info.get("values").filter(value => value).size, 0) > minimum
         );
 
       case "COLUMNS":

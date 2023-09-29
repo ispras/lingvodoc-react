@@ -167,7 +167,7 @@ class Info extends React.Component {
     return (
       <div className="background-content">
         <Step.Group widths={4}>
-          <Step link active={step === "ROLES"} onClick={this.onStepClick("ROLES")}>
+          <Step link active={step === "LINKING"} onClick={this.onStepClick("LINKING")}>
             <Step.Content>
               <Step.Title>{this.context("Roles")}</Step.Title>
               <Step.Description>{this.context("Assign base and subordinate columns")}</Step.Description>
@@ -196,7 +196,7 @@ class Info extends React.Component {
         </Step.Group>
 
         <div style={{ minHeight: "400px", background: "white" }}>
-          {step === "ROLES" && (
+          {step === "LINKING" && (
             <Linker
               blobs={blobs}
               state={linking}
@@ -262,7 +262,7 @@ class Info extends React.Component {
           >
             {this.context("Next Step")}
           </Button>
-        ) : step === "ROLES" ? (
+        ) : step === "LINKING" ? (
           <Message style={{ margin: 0, textAlign: "center" }}>
             <Message.Content>{this.context("Choose at least two parent corpora.")}</Message.Content>
           </Message>
@@ -281,7 +281,7 @@ Info.contextType = TranslationContext;
 function mapStateToProps(state) {
   return {
     step: selectors.getStep(state),
-    isNextStep: selectors.getNextStep(state),
+    isNextStep: selectors.getNextStep(state, 1),
     blobs: selectors.getBlobs(state),
     linking: selectors.getLinking(state),
     columnTypes: selectors.getColumnTypes(state),
