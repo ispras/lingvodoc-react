@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { Button, Checkbox, Dropdown, Grid, Icon, Popup } from "semantic-ui-react";
 import { pure } from "recompose";
 
@@ -11,11 +11,13 @@ function valueColor(value) {
     return "yellow";
 }
 
-function Columns({ blob, value, onUpdateColumn, onToggleColumn, onDelete }) {
+function Columns({ blob, index, onUpdateColumn, onToggleColumn, onDelete }) {
   const getTranslation = useContext(TranslationContext);
-  const name = (value === "base") ?  getTranslation("base sentence") :  getTranslation("sentence");
+  const value = index ? "secondary" : "base";
+  const column = index ? "sentence" : "base sentence";
+  const idStr = `${index}:${column}`;
 
-  onUpdateColumn("sentence", value, null);
+  useEffect(() => { onUpdateColumn(idStr, value, null); }, []);
 
   return (
     <div className="blob">
@@ -23,7 +25,7 @@ function Columns({ blob, value, onUpdateColumn, onToggleColumn, onDelete }) {
       <b className="blob-name">{blob.get("name")}</b>
       <div className="blob-columns">
         <Button size="tiny" className="column-button" color={valueColor(value)}>
-          {name}
+          {getTranslation(column)}
         </Button>
       </div>
       <Checkbox className="blob-checkbox" onClick={onToggleColumn} checked={blob.get("add")} />
@@ -71,7 +73,7 @@ function Linker({ blobs, state, onSelect, onDelete, onUpdateColumn, onToggleColu
           <Columns
             key={id.join("/")}
             blob={v}
-            value={ (i++) ? "secondary" : "base" }
+            index={i++}
             onUpdateColumn={onUpdateColumn(id)}
             onToggleColumn={onToggleColumn(id)}
             onDelete={onDelete}

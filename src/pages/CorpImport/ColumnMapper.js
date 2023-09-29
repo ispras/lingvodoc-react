@@ -15,7 +15,7 @@ function valueColor(value) {
   }
 
   if (value === "secondary") {
-    return "purple";
+    return "yellow";
   }
 
   return null;
@@ -83,9 +83,11 @@ const ColumnWithData = compose(
 )(Column);
 
 function Columns({ blob, index, fieldOptions, columnTypes, onSetColumnType }) {
+  const getTranslation = useContext(TranslationContext);
   const blobId = blob.get("id");
   const values = blob.get("values");
-  const columnIdStr = `${index}:sentence`;
+  const column = index ? "sentence" : "base sentence";
+  const columnIdStr = `${index}:${column}`;
   const value = values.get(columnIdStr);
 
   return (
@@ -95,7 +97,7 @@ function Columns({ blob, index, fieldOptions, columnTypes, onSetColumnType }) {
         { value != null && (
           <ColumnWithData
             key={columnIdStr}
-            name={columnIdStr.slice(columnIdStr.indexOf(":") + 1)}
+            name={getTranslation(column)}
             value={value}
             type={columnTypes.getIn([blobId, columnIdStr])}
             onSetColumnType={onSetColumnType(columnIdStr)}
@@ -128,6 +130,8 @@ function ColumnMapper({ state, types, columnTypes, onSetColumnType }) {
     fieldOptions[idStr] = id;
   }
 
+  let i = 0;
+
   return (
     <div className="column-mapper">
       {state
@@ -135,6 +139,7 @@ function ColumnMapper({ state, types, columnTypes, onSetColumnType }) {
           <Columns
             key={id.join("/")}
             blob={v}
+            index={i++}
             fieldOptions={fieldOptions}
             columnTypes={columnTypes}
             onSetColumnType={onSetColumnType(id)}
