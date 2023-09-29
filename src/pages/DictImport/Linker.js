@@ -73,6 +73,8 @@ function Columns({ blob, spreads, linkOptions, onUpdateColumn, onToggleColumn, o
   const columns = blob.getIn(["additional_metadata", "starling_fields"]);
   const values = blob.get("values");
 
+  if (!column) return null;
+
   return (
     <div className="blob">
       <Button negative icon="trash" size="tiny" onClick={() => onDelete(blob.get("id"))} />
