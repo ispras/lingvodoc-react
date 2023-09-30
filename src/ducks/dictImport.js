@@ -220,7 +220,9 @@ export const selectors = {
     return state.dictImport.get("blobs");
   },
   getLinking(state) {
-    return state.dictImport.get("linking");
+    return state
+             .dictImport.get("linking")
+             .filter(v => v.get("id"));
   },
   getSpreads(state) {
     return state.dictImport.get("spreads");
