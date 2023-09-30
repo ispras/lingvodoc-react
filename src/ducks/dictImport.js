@@ -213,9 +213,10 @@ export const selectors = {
         result &&= linking
                    .toArray()
                    .reduce((count, info) => count + info.get("values").filter(value => value).size, 0) > minimum;
+        return result;
 
       default:
-        return result;
+        return false;
     }
   },
   getBlobs(state) {
