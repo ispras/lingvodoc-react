@@ -110,6 +110,8 @@ function Columns({ blob, spreads, fieldOptions, columnTypes, onSetColumnType }) 
   const columns = blob.getIn(["additional_metadata", "starling_fields"]);
   const values = blob.get("values");
 
+  if (!columns) return null;
+
   return (
     <div className="blob">
       <b className="blob-name">{blob.get("name")}</b>
