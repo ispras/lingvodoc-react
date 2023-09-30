@@ -81,7 +81,7 @@ function updateSingleSpread(result, blob) {
 }
 
 function updateSpread(state) {
-  const extractedSpreads = state.get("linking").reduce((acc, blob) => updateSingleSpread(acc, blob), new Map());
+  const extractedSpreads = f(state.get("linking")).reduce((acc, blob) => updateSingleSpread(acc, blob), new Map());
   return state.set("spreads", extractedSpreads);
 }
 
@@ -95,7 +95,7 @@ function updateNextStep(step) {
 }
 
 function updateColumnTypes(state) {
-  const blobs = state.get("linking");
+  const blobs = f(state.get("linking"));
   const columnTypes = state.get("columnTypes");
 
   return state.withMutations(map => {
@@ -182,6 +182,10 @@ export default function (state = initial, { type, payload }) {
 }
 
 // Selectors
+
+// Checking for true blobs to avoid side-effect due to code reusing
+const f = linking => linking.filter(v => v.get("id"));
+
 export const selectors = {
   getStep(state) {
     return state.dictImport.get("step");
@@ -190,14 +194,14 @@ export const selectors = {
     switch (state.dictImport.get("step")) {
       case "LINKING":
         return (
-          state.dictImport
-            .get("linking")
+          f(state.dictImport
+            .get("linking"))
             .toArray()
             .reduce((count, info) => count + info.get("values").filter(value => value).size, 0) > minimum
         );
 
       case "COLUMNS":
-        const linking = state.dictImport.get("linking");
+        const linking = f(state.dictImport.get("linking"));
 
         return state.dictImport.get("columnTypes").every((field_map, blob_id) => {
           const linking_map = linking.getIn([blob_id, "values"]);
@@ -208,8 +212,8 @@ export const selectors = {
       case "LANGUAGES":
         const languages = state.dictImport.get("languages");
 
-        return state.dictImport
-          .get("linking")
+        return f(state.dictImport
+          .get("linking"))
           .every((item, blob_id) => languages.has(blob_id) && item.get("translation").size > 0);
 
       default:
@@ -220,9 +224,7 @@ export const selectors = {
     return state.dictImport.get("blobs");
   },
   getLinking(state) {
-    return state
-             .dictImport.get("linking")
-             .filter(v => v.get("id"));
+    return f(state.dictImport.get("linking"));
   },
   getSpreads(state) {
     return state.dictImport.get("spreads");
