@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { Button, Message, Step } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
-import { fromJS, Map } from "immutable";
+import { fromJS, Map, OrderedMap } from "immutable";
 import PropTypes from "prop-types";
 import { compose } from "recompose";
 
@@ -163,7 +163,7 @@ class Info extends React.Component {
 
     const { all_fields: fields } = data;
     const fieldTypes = fromJS(fields).filter(field => field.get("data_type") === "Text");
-
+    let i = 0;
     return (
       <div className="background-content">
         <Step.Group widths={4}>
@@ -181,7 +181,7 @@ class Info extends React.Component {
             </Step.Content>
           </Step>
 
-          <Step link active={step === "LANGUAGES"} onClick={this.onStepClick("LANGUAGES")}>
+          <Step link active={step === "LANGUAGE"} onClick={this.onStepClick("LANGUAGE")}>
             <Step.Content>
               <Step.Title>{this.context("Language Selection")}</Step.Title>
               <Step.Description>{this.context("Map dictionary to LingvoDoc language")}</Step.Description>
@@ -214,9 +214,9 @@ class Info extends React.Component {
               onSetColumnType={this.onSetColumnType}
             />
           )}
-          {step === "LANGUAGES" && (
+          {step === "LANGUAGE" && (
             <LanguageSelection
-              state={linking}
+              state={linking.filter(() => !i++)}
               languages={languages}
               licenses={licenses}
               locales={locales}
@@ -236,7 +236,7 @@ class Info extends React.Component {
             </Message>
           )}
         </div>
-        {step === "LANGUAGES" ? (
+        {step === "LANGUAGE" ? (
           isNextStep ? (
             <Button
               fluid
