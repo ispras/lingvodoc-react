@@ -169,8 +169,8 @@ class Info extends React.Component {
         <Step.Group widths={4}>
           <Step link active={step === "LINKING"} onClick={this.onStepClick("LINKING")}>
             <Step.Content>
-              <Step.Title>{this.context("Roles")}</Step.Title>
-              <Step.Description>{this.context("Assign base and subordinate columns")}</Step.Description>
+              <Step.Title>{this.context("Parent Corpora")}</Step.Title>
+              <Step.Description>{this.context("Choose parallel corpora")}</Step.Description>
             </Step.Content>
           </Step>
 
@@ -249,7 +249,7 @@ class Info extends React.Component {
             <Message style={{ margin: 0, textAlign: "center" }}>
               <Message.Content>
                 {this.context(
-                  "Please select parent language and specify at least one translation for the dictionary."
+                  "Please select parent language and specify at least one translation to name the dictionary. Meet the previous terms."
                 )}
               </Message.Content>
             </Message>
@@ -268,7 +268,7 @@ class Info extends React.Component {
           </Message>
         ) : step === "COLUMNS" ? (
           <Message style={{ margin: 0, textAlign: "center" }}>
-            <Message.Content>{this.context("Please map all the columns to Lingvodoc types.")}</Message.Content>
+            <Message.Content>{this.context("Please map all the columns to Lingvodoc types. Meet the previous terms.")}</Message.Content>
           </Message>
         ) : null}
       </div>
