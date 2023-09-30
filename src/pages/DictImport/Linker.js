@@ -73,8 +73,6 @@ function Columns({ blob, spreads, linkOptions, onUpdateColumn, onToggleColumn, o
   const columns = blob.getIn(["additional_metadata", "starling_fields"]);
   const values = blob.get("values");
 
-  if (!columns) return null;
-
   return (
     <div className="blob">
       <Button negative icon="trash" size="tiny" onClick={() => onDelete(blob.get("id"))} />
@@ -119,7 +117,7 @@ function Linker({ blobs, state, spreads, onSelect, onDelete, onUpdateColumn, onT
 
   const first = state.first();
 
-  const selected = first && first.get("id") ? first.get("id").join("/") : null;
+  const selected = first ? first.get("id").join("/") : null;
 
   function onChange(event, data) {
     onSelect(data.value.split("/").map(x => parseInt(x, 10)));
