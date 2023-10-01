@@ -203,14 +203,14 @@ export const selectors = {
           : linking
             .every((item, blob_id) => languages.has(blob_id) && item.get("translation").size > 0);
 
-      case "COLUMNS" || "LANGUAGES":
+      case "COLUMNS":
         result &&= state.dictImport.get("columnTypes").every((field_map, blob_id) => {
           const linking_map = linking.getIn([blob_id, "values"]);
 
           return field_map.every((field_id, field_name) => field_id !== null || !linking_map.get(field_name));
         });
 
-      case "LINKING" || "COLUMNS" || "LANGUAGES":
+      case "LINKING":
         result &&= linking
                    .toArray()
                    .reduce((count, info) => count + info.get("values").filter(value => value).size, 0) > minimum;
