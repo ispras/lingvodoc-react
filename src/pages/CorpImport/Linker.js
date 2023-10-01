@@ -11,13 +11,21 @@ function valueColor(value) {
     return "yellow";
 }
 
-function Columns({ blob, index, onUpdateColumn, onToggleColumn, onDelete }) {
+function Columns({ blob, index, total, onUpdateColumn, onToggleColumn, onDelete }) {
   const getTranslation = useContext(TranslationContext);
   const value = index ? "secondary" : "base";
   const column = index ? "sentence" : "base sentence";
-  const idStr = `${index}:${column}`;
+  const idStr = `${index}:sentence`;
 
-  useEffect(() => { onUpdateColumn(idStr, value, null); }, [idStr]);
+  /* Clean other values and set a fresh one.
+  /* In the interface after a blob removing another blobs change their index numbers,
+  /* but they still store old values with old index numbers. So it's needed to clean
+  /* old values at first and then set a new one. */
+  useEffect(() => {
+    for (let i=0; i<=total; i++)
+      onUpdateColumn(`${i}:sentence`, null, null);
+    onUpdateColumn(idStr, value, null);
+  }, [idStr]);
 
   return (
     <div className="blob">
@@ -74,6 +82,7 @@ function Linker({ blobs, state, onSelect, onDelete, onUpdateColumn, onToggleColu
             key={id.join("/")}
             blob={v}
             index={i++}
+            total={state.size}
             onUpdateColumn={onUpdateColumn(id)}
             onToggleColumn={onToggleColumn(id)}
             onDelete={onDelete}

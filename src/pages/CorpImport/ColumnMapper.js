@@ -82,7 +82,7 @@ function Columns({ blob, index, fieldOptions, columnTypes, onSetColumnType }) {
   const blobId = blob.get("id");
   const values = blob.get("values");
   const column = index ? "sentence" : "base sentence";
-  const columnIdStr = `${index}:${column}`;
+  const columnIdStr = `${index}:sentence`;
   const value = values.get(columnIdStr);
 
   return (
