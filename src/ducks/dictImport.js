@@ -186,7 +186,6 @@ export default function (state = initial, { type, payload }) {
 }
 
 // Selectors
-
 export const selectors = {
   getStep(state) {
     return state.dictImport.get("step");
