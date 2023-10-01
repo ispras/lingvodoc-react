@@ -191,28 +191,27 @@ export const selectors = {
   getStep(state) {
     return state.dictImport.get("step");
   },
-  getNextStep(state, minimum=0) {
+  getNextStep(state, minimum=0, first=false) {
     const linking = _getLinking(state.dictImport);
     const languages = state.dictImport.get("languages");
     let result = true;
 
     switch (state.dictImport.get("step")) {
       case "LANGUAGES":
-        result &&= linking
-          .every((item, blob_id) => languages.has(blob_id) && item.get("translation").size > 0);
+        result &&= first
+          ? linking
+            .some((item, blob_id) => languages.has(blob_id) && item.get("translation").size > 0)
+          : linking
+            .every((item, blob_id) => languages.has(blob_id) && item.get("translation").size > 0);
 
-      case "LANGUAGE":
-        result &&= linking
-          .some((item, blob_id) => languages.has(blob_id) && item.get("translation").size > 0);
-
-      case "COLUMNS" || "LANGUAGE" || "LANGUAGES":
+      case "COLUMNS" || "LANGUAGES":
         result &&= state.dictImport.get("columnTypes").every((field_map, blob_id) => {
           const linking_map = linking.getIn([blob_id, "values"]);
 
           return field_map.every((field_id, field_name) => field_id !== null || !linking_map.get(field_name));
         });
 
-      case "LINKING" || "COLUMNS" || "LANGUAGE" || "LANGUAGES":
+      case "LINKING" || "COLUMNS" || "LANGUAGES":
         result &&= linking
                    .toArray()
                    .reduce((count, info) => count + info.get("values").filter(value => value).size, 0) > minimum;

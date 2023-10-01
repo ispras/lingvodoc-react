@@ -181,7 +181,7 @@ class Info extends React.Component {
             </Step.Content>
           </Step>
 
-          <Step link active={step === "LANGUAGE"} onClick={this.onStepClick("LANGUAGE")}>
+          <Step link active={step === "LANGUAGES"} onClick={this.onStepClick("LANGUAGES")}>
             <Step.Content>
               <Step.Title>{this.context("Language Selection")}</Step.Title>
               <Step.Description>{this.context("Map dictionary to LingvoDoc language")}</Step.Description>
@@ -214,7 +214,7 @@ class Info extends React.Component {
               onSetColumnType={this.onSetColumnType}
             />
           )}
-          {step === "LANGUAGE" && (
+          {step === "LANGUAGES" && (
             <LanguageSelection
               state={linking.filter(() => !i++)}
               languages={languages}
@@ -236,7 +236,7 @@ class Info extends React.Component {
             </Message>
           )}
         </div>
-        {step === "LANGUAGE" ? (
+        {step === "LANGUAGES" ? (
           isNextStep ? (
             <Button
               fluid
@@ -281,7 +281,7 @@ Info.contextType = TranslationContext;
 function mapStateToProps(state) {
   return {
     step: selectors.getStep(state),
-    isNextStep: selectors.getNextStep(state, 1),
+    isNextStep: selectors.getNextStep(state, 1, true),
     blobs: selectors.getBlobs(state),
     linking: selectors.getLinking(state),
     columnTypes: selectors.getColumnTypes(state),
