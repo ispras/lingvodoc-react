@@ -17,16 +17,6 @@ function Columns({ blob, index, total, onUpdateColumn, onToggleColumn, onDelete 
   const column = index ? "sentence" : "base sentence";
   const idStr = `${index}:sentence`;
 
-  /* Clean other values and set a fresh one.
-  /* In the interface after a blob removing another blobs change their index numbers,
-  /* but they still store old values with old index numbers. So it's needed to clean
-  /* old values at first and then set a new one. */
-  useEffect(() => {
-    for (let i=0; i<=total; i++)
-      onUpdateColumn(`${i}:sentence`, null, null);
-    onUpdateColumn(idStr, value, null);
-  }, [idStr]);
-
   return (
     <div className="blob">
       <Button negative icon="trash" size="tiny" onClick={() => onDelete(blob.get("id"))} />

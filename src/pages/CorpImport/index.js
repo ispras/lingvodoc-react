@@ -25,7 +25,7 @@ import TranslationContext from "Layout/TranslationContext";
 
 
 import "pages/DictImport/styles.scss";
-import { buildExport } from "pages/DictImport/api";
+import { buildExport } from "./api";
 import LanguageSelection from "pages/DictImport/LanguageSelection";
 import ColumnMapper from "./ColumnMapper";
 import Linker from "./Linker";
@@ -281,7 +281,7 @@ Info.contextType = TranslationContext;
 function mapStateToProps(state) {
   return {
     step: selectors.getStep(state),
-    isNextStep: selectors.getNextStep(state, 1, true),
+    isNextStep: selectors.getNextStep(state, true),
     blobs: selectors.getBlobs(state),
     linking: selectors.getLinking(state),
     columnTypes: selectors.getColumnTypes(state),

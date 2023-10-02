@@ -190,14 +190,14 @@ export const selectors = {
   getStep(state) {
     return state.dictImport.get("step");
   },
-  getNextStep(state, minimum=0, first=false) {
+  getNextStep(state, parallel=false) {
     const linking = _getLinking(state.dictImport);
     const languages = state.dictImport.get("languages");
     let result = true;
 
     switch (state.dictImport.get("step")) {
       case "LANGUAGES":
-        result &&= first
+        result &&= parallel
           ? linking
             .some((item, blob_id) => languages.has(blob_id) && item.get("translation").size > 0)
           : linking
@@ -211,9 +211,11 @@ export const selectors = {
         });
 
       case "LINKING":
-        result &&= linking
-                   .toArray()
-                   .reduce((count, info) => count + info.get("values").filter(value => value).size, 0) > minimum;
+        result &&= parallel
+          ? linking.size > 1
+          : linking
+            .toArray()
+            .reduce((count, info) => count + info.get("values").filter(value => value).size, 0) > 0;
         return result;
 
       default:

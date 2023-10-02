@@ -9,22 +9,30 @@ import { chooseTranslation as T } from "api/i18n";
 import { openCreateFieldModal } from "ducks/fields";
 import TranslationContext from "Layout/TranslationContext";
 
-function valueColor(value) {
-  if (value === "base")
-    return "green";
-  else
-    return "yellow";
-}
-
 function FieldButton({ text, onClick, isSelected }) {
   const color = isSelected ? { color: "blue" } : {};
 
   return <Button onClick={onClick} content={text} {...color} />;
 }
 
-function Column({ name, value, fieldOptions, type, onSetColumnType, actions }) {
+
+
+  /* Clean other values and set a fresh one.
+  /* In the interface after a blob removing another blobs change their index numbers,
+  /* but they still store old values with old index numbers. So it's needed to clean
+  /* old values at first and then set a new one. */
+  /* useEffect(() => {
+    for (let i=0; i<=total; i++)
+      onUpdateColumn(`${i}:sentence`, null, null);
+    onUpdateColumn(idStr, value, null);
+  }, [idStr]); */
+
+
+function Column({ index, fieldOptions, type, onSetColumnType, actions }) {
   const getTranslation = useContext(TranslationContext);
-  let columnButton = <Button className="column-button" color={valueColor(value)} content={name} />;
+  const name = index ? "sentence" : "base sentence";
+  const color = index ? "yellow" : "green";
+  const columnButton = <Button className="column-button" color={color} content={getTranslation(name)} />;
   const selectedField = fieldOptions.find(x => is(x.id, type));
   const triggerColor = selectedField ? { color: "blue" } : {};
 
@@ -80,25 +88,19 @@ const ColumnWithData = compose(
 function Columns({ blob, index, fieldOptions, columnTypes, onSetColumnType }) {
   const getTranslation = useContext(TranslationContext);
   const blobId = blob.get("id");
-  const values = blob.get("values");
-  const column = index ? "sentence" : "base sentence";
   const columnIdStr = `${index}:sentence`;
-  const value = values.get(columnIdStr);
 
   return (
     <div className="blob">
       <b className="blob-name">{blob.get("name")}</b>
       <div className="blob-columns">
-        { value != null && (
-          <ColumnWithData
-            key={columnIdStr}
-            name={getTranslation(column)}
-            value={value}
-            type={columnTypes.getIn([blobId, columnIdStr])}
-            onSetColumnType={onSetColumnType(columnIdStr)}
-            fieldOptions={fieldOptions}
-          />
-        )}
+        <ColumnWithData
+          key={columnIdStr}
+          index={index}
+          type={columnTypes.getIn([blobId, columnIdStr])}
+          onSetColumnType={onSetColumnType(columnIdStr)}
+          fieldOptions={fieldOptions}
+        />
       </div>
     </div>
   );
