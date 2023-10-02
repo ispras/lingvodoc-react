@@ -1,37 +1,28 @@
-import React, { useContext, useEffect } from "react";
-import { Button, Checkbox, Dropdown, Grid, Icon, Popup } from "semantic-ui-react";
+import React, { useContext } from "react";
+import { Button, Dropdown } from "semantic-ui-react";
 import { pure } from "recompose";
 
 import TranslationContext from "Layout/TranslationContext";
 
-function valueColor(value) {
-  if (value === "base")
-    return "green";
-  else
-    return "yellow";
-}
-
-function Columns({ blob, index, total, onUpdateColumn, onToggleColumn, onDelete }) {
+function Columns({ blob, index, onDelete }) {
   const getTranslation = useContext(TranslationContext);
-  const value = index ? "secondary" : "base";
-  const column = index ? "sentence" : "base sentence";
-  const idStr = `${index}:sentence`;
+  const color = index ? "yellow" : "green";
+  const name = index ? "sentence" : "base sentence";
 
   return (
     <div className="blob">
       <Button negative icon="trash" size="tiny" onClick={() => onDelete(blob.get("id"))} />
       <b className="blob-name">{blob.get("name")}</b>
       <div className="blob-columns">
-        <Button size="tiny" className="column-button" color={valueColor(value)}>
-          {getTranslation(column)}
+        <Button size="tiny" className="column-button" color={color}>
+          {getTranslation(name)}
         </Button>
       </div>
-      <Checkbox className="blob-checkbox" onClick={onToggleColumn} checked={blob.get("add")} />
     </div>
   );
 }
 
-function Linker({ blobs, state, onSelect, onDelete, onUpdateColumn, onToggleColumn }) {
+function Linker({ blobs, state, onSelect, onDelete }) {
   const getTranslation = useContext(TranslationContext);
 
   const stateOptions = blobs.reduce(
@@ -72,9 +63,6 @@ function Linker({ blobs, state, onSelect, onDelete, onUpdateColumn, onToggleColu
             key={id.join("/")}
             blob={v}
             index={i++}
-            total={state.size}
-            onUpdateColumn={onUpdateColumn(id)}
-            onToggleColumn={onToggleColumn(id)}
             onDelete={onDelete}
           />
         ))

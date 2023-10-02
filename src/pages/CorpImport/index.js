@@ -84,7 +84,6 @@ class Info extends React.Component {
     this.onDelete = this.onDelete.bind(this);
     this.onNextClick = this.onNextClick.bind(this);
     this.onStepClick = this.onStepClick.bind(this);
-    this.onUpdateColumn = this.onUpdateColumn.bind(this);
     this.onToggleColumn = this.onToggleColumn.bind(this);
     this.onSetColumnType = this.onSetColumnType.bind(this);
     this.onSetLanguage = this.onSetLanguage.bind(this);
@@ -122,16 +121,15 @@ class Info extends React.Component {
     return () => this.props.goToStep(name);
   }
 
-  onUpdateColumn(id) {
-    return (column, value, oldValue) => this.props.updateColumn(id, column, value, oldValue);
-  }
-
   onToggleColumn(id) {
     return () => this.props.toggleAddColumn(id);
   }
 
   onSetColumnType(id) {
-    return column => field => this.props.setColumnType(id, column, field);
+    return column => (field, name) => {
+      this.props.setColumnType(id, column, field);
+      this.props.updateColumn(id, column, name, null);
+    }
   }
 
   onSetLanguage(id) {
@@ -202,8 +200,6 @@ class Info extends React.Component {
               state={linking}
               onSelect={this.onSelect}
               onDelete={this.onDelete}
-              onUpdateColumn={this.onUpdateColumn}
-              onToggleColumn={this.onToggleColumn}
             />
           )}
           {step === "COLUMNS" && (

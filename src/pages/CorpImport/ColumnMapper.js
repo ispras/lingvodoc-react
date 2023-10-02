@@ -15,19 +15,6 @@ function FieldButton({ text, onClick, isSelected }) {
   return <Button onClick={onClick} content={text} {...color} />;
 }
 
-
-
-  /* Clean other values and set a fresh one.
-  /* In the interface after a blob removing another blobs change their index numbers,
-  /* but they still store old values with old index numbers. So it's needed to clean
-  /* old values at first and then set a new one. */
-  /* useEffect(() => {
-    for (let i=0; i<=total; i++)
-      onUpdateColumn(`${i}:sentence`, null, null);
-    onUpdateColumn(idStr, value, null);
-  }, [idStr]); */
-
-
 function Column({ index, fieldOptions, type, onSetColumnType, actions }) {
   const getTranslation = useContext(TranslationContext);
   const name = index ? "sentence" : "base sentence";
@@ -59,11 +46,13 @@ function Column({ index, fieldOptions, type, onSetColumnType, actions }) {
         placeholder={`${getTranslation("Field selection")}...`}
         options={fieldOptions}
         value={selectedField && selectedField.value}
-        onChange={(e, { value }) => onSetColumnType(fieldOptions[value])}
+        onChange={(e, { value }) => {
+          onSetColumnType(fieldOptions[value], selectedField.name);
+        }}
       />
       <Popup.Content className="popup-field-type">
         {fieldOptions.map(f => (
-          <FieldButton key={f.key} onClick={() => onSetColumnType(f.id)} text={f.text} isSelected={is(type, f.id)} />
+          <FieldButton key={f.key} onClick={() => onSetColumnType(f.id, f.name)} text={f.text} isSelected={is(type, f.id)} />
         ))}
       </Popup.Content>
     </Popup>
@@ -88,17 +77,16 @@ const ColumnWithData = compose(
 function Columns({ blob, index, fieldOptions, columnTypes, onSetColumnType }) {
   const getTranslation = useContext(TranslationContext);
   const blobId = blob.get("id");
-  const columnIdStr = `${index}:sentence`;
 
   return (
     <div className="blob">
       <b className="blob-name">{blob.get("name")}</b>
       <div className="blob-columns">
         <ColumnWithData
-          key={columnIdStr}
+          key={index}
           index={index}
-          type={columnTypes.getIn([blobId, columnIdStr])}
-          onSetColumnType={onSetColumnType(columnIdStr)}
+          type={columnTypes.getIn([blobId, "sentence"])}
+          onSetColumnType={onSetColumnType("sentence")}
           fieldOptions={fieldOptions}
         />
       </div>
@@ -121,7 +109,8 @@ function ColumnMapper({ state, types, columnTypes, onSetColumnType }) {
       key: idStr,
       value: idStr,
       id: id,
-      text: `${T(type.get("translations").toJS())} (${type.get("data_type")})`
+      text: `${T(type.get("translations").toJS())} (${type.get("data_type")})`,
+      name: T(type.get("translations").toJS())
     });
 
     fieldOptions[idStr] = id;
