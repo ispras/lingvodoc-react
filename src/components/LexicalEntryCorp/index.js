@@ -101,6 +101,31 @@ const lexicalEntryQuery = gql`
   }
 `;
 
+/* new!!!!!! */
+function getSelectionStart(o) {
+  if (o.createTextRange) {
+    const r = document.selection.createRange().duplicate();
+    r.moveEnd('character', o.value.length);
+    if (r.text === '') {
+      return o.value.length;
+    }
+    return o.value.lastIndexOf(r.text);
+  } else {
+    return o.selectionStart;
+  }
+}
+
+function getSelectionEnd(o) {
+  if (o.createTextRange) {
+    const r = document.selection.createRange().duplicate();
+    r.moveStart('character', -o.value.length);
+    return r.text.length;
+  } else {
+    return o.selectionEnd;
+  }
+}
+/* /new!!!!!! */
+
 const getComponent = dataType =>
   ({
     Text,
@@ -341,14 +366,12 @@ const Entities = ({
 
   const remove = useCallback((entity/*, isBasket*/) => {
 
-    console.log('remove!!!!!!!!!!');
+    /*console.log('remove!!!!!!!!!!');*/
 
     //if (isBasket) {setBasket(entity);}
 
-    console.log('entity===');
+    console.log('Remove: entity===');
     console.log(entity);
-
-
 
     const entity_id_str = id2str(entity.id);
 
@@ -380,7 +403,7 @@ const Entities = ({
 
       delete remove_set2[entity_id_str];
       setRemoveSet(remove_set2);
-      console.log('after remove!!!!!');
+      /*console.log('after remove!!!!!');*/
       
       /*if (isBasket) {
         setBasket(entity);
@@ -426,6 +449,62 @@ const Entities = ({
       update_check();
     });
   }, [update_set]);
+
+  /* new!!!!!!! */
+  /* Shortcut "ctrl+Enter" */
+  const breakdown = useCallback((event, parentEntity, entity) => {
+
+    console.log('Breakdown!!!!!!');
+    console.log('Breakdown: event.target======');
+    console.log(event.target);
+    
+    if (event.ctrlKey && event.code === "Enter") {
+        event.preventDefault();
+        console.log("Breakdown: ShortCut !!!!!!!!!!!");
+
+        const eventTarget = event.target;
+        const targetValue = eventTarget.value; 
+
+        console.log('Breakdown: event.target.value======');
+        console.log(targetValue);
+
+        const s = getSelectionStart(eventTarget);
+        const e = getSelectionEnd(eventTarget);
+
+        console.log('Breakdown: s======');
+        console.log(s);
+
+        console.log('Breakdown: e======');
+        console.log(e);
+
+        if (s === 0 && e === 0) {
+          console.log('Длина === нулю!!!!!');
+          return;
+        }
+
+        console.log('Длина больше нуля!!!!!');
+
+        //  Если курсор вконце строки - не создавать вторую строку с пробелом!!!
+
+        const beforeCaret = targetValue.substring(0, s).replace(/ /g, '\xa0') || '\xa0';
+
+        const afterCaret = targetValue.substring(s).replace(/ /g, '\xa0') || '\xa0';
+
+        console.log('Breakdown: beforeCaret=====');
+        console.log(beforeCaret);
+
+        console.log('Breakdown: afterCaret=====');
+        console.log(afterCaret);
+
+        // удалить старое предложение, создать 2 новых!
+        if (entity) {
+          remove(entity);
+        }
+        create(beforeCaret, parentEntity === null ? null : parentEntity.id);
+        create(afterCaret, parentEntity === null ? null : parentEntity.id);
+     }
+  }, []);
+   /* /new!!!!!!! */
 
   /*render() {
     const {
@@ -497,10 +576,10 @@ const Entities = ({
             entitiesMode={entitiesMode}
             parentEntity={parentEntity}
             publish={publish}
-            create={create} /* new!!!!!! */
             remove={remove}
             accept={accept}
             update={update}
+            breakdown={breakdown} /* new!!!!!!! */
             className={mode != "edit" && entities.indexOf(entity) == entities.length - 1 ? "last" : ""}
             disabled={disabled}
             is_being_removed={remove_set.hasOwnProperty(id2str(entity.id))}
@@ -531,6 +610,8 @@ const Entities = ({
                 is_being_created={is_being_created}
                 onSave={content => create(content, parentEntity == null ? null : parentEntity.id)}
                 onCancel={() => setEdit(false)}
+                parentEntity={parentEntity} /* new!!!!!!! */
+                breakdown={breakdown} /* new!!!!!!! */
               />
             )}
           </li>

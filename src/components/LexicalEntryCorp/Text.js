@@ -21,10 +21,10 @@ const TextEntityContent = ({
   mode,
   parentEntity, /* new!!!!!! */
   publish,
-  create, /* new!!!!! */
   column,
   accept,
   remove,
+  breakdown, /* new!!!!!!! */
   is_being_removed,
   is_being_updated,
   checkEntries,
@@ -47,10 +47,10 @@ const TextEntityContent = ({
   /* new!!!!!! */
   const [dropped, setDropped] = useState(null);
 
-  function isDropped() {
-    /*return (dropped && (dropped.content === entity.content) && (dropped.id === entity.id));*/
+  /*function isDropped() {
+    //return (dropped && (dropped.content === entity.content) && (dropped.id === entity.id));
     return dropped;
-  }
+  }*/
   /* /new!!!!!! */
 
   const onEdit = useCallback(() => {
@@ -64,59 +64,10 @@ const TextEntityContent = ({
 
   /* new!!!!! */
 
-  function getSelectionStart(o) {
-    if (o.createTextRange) {
-      const r = document.selection.createRange().duplicate();
-      r.moveEnd('character', o.value.length);
-      if (r.text === '') {
-        return o.value.length;
-      }
-      return o.value.lastIndexOf(r.text);
-    } else {
-      return o.selectionStart;
-    }
-  }
-  
-  function getSelectionEnd(o) {
-    if (o.createTextRange) {
-      const r = document.selection.createRange().duplicate();
-      r.moveStart('character', -o.value.length);
-      return r.text.length;
-    } else {
-      return o.selectionEnd;
-    }
-  }
-
   const onKeyDown = useCallback((event) => {
-    console.log(event);
-    console.log(event.target);
-    if (event.ctrlKey && event.code === "Enter") {
-        event.preventDefault();
-        console.log("onKeyDown: ShortCut !!!!!!!!!!!");
-
-        const o = event.target;
-        const t = o.value; 
-        const s = getSelectionStart(o);
-        const e = getSelectionEnd(o);
-
-        if (s === 0 && e === 0) {return;}
-
-        const beforeCaret = t.substring(0, s).replace(/ /g, '\xa0') || '\xa0';
-
-        const afterCaret = t.substring(s).replace(/ /g, '\xa0') || '\xa0';
-
-        console.log(t);
-
-        console.log(beforeCaret);
-
-        console.log(afterCaret);
-
-        // удалить старое предложение, создать 2 новых!
-        remove(entity);
-        create(beforeCaret, parentEntity == null ? null : parentEntity.id);
-        create(afterCaret, parentEntity == null ? null : parentEntity.id);
-     }
+    breakdown(event, parentEntity, entity);
    }, []);
+
   /* /new!!!!! */
 
   // useDrag - the list item is draggable
@@ -127,9 +78,9 @@ const TextEntityContent = ({
       isDragging: monitor.isDragging()
     }),
     end: (item, monitor) => {
-      console.log('useDrag end: item=====');
+      /*console.log('useDrag end: item=====');
       console.log(item);
-      console.log(monitor.didDrop());
+      console.log(monitor.didDrop());*/
       if (monitor.didDrop()) {
         setDropped(item);
       }
@@ -180,7 +131,7 @@ const TextEntityContent = ({
 
   switch (mode) {
     case "edit":
-      return !isDropped() ? (
+      return !dropped ? (
         <div className="lingvo-input-buttons-group" ref={preview} id={id}>
           <div ref={dragRef} style={handleStyle} />
           {!(is_being_updated || edit) && (
@@ -191,7 +142,6 @@ const TextEntityContent = ({
               className="lingvo-input-action"
               onChange={(event, target) => setContent(target.value)}
               /* new!!!! */
-              /*onKeyPress={onKeyPress}*/
               onKeyDown={onKeyDown}
               /* /new!!!! */
               value={content}
@@ -305,10 +255,10 @@ const Text = onlyUpdateForKeys([
     as: Component,
     className,
     publish,
-    create, /* new!!!! */
     accept,
     remove,
     update,
+    breakdown, /* new!!!!!!! */
     is_being_removed,
     is_being_updated,
     draggable, /* new!!!!!! */
@@ -332,11 +282,11 @@ const Text = onlyUpdateForKeys([
         mode={mode}
         parentEntity={parentEntity} /* new!!!!! */
         publish={publish}
-        create={create} /* new!!!!!! */
         column={column}
         accept={accept}
         remove={remove}
         update={update}
+        breakdown={breakdown} /* new!!!!!!! */
         is_being_removed={is_being_removed}
         is_being_updated={is_being_updated}
         id={id} /* new!!!!!! */
@@ -355,11 +305,11 @@ const Text = onlyUpdateForKeys([
           mode={mode}
           parentEntity={parentEntity} /* new!!!!! */
           publish={publish}
-          create={create} /* new!!!!!! */
           column={column}
           accept={accept}
           remove={remove}
           update={update}
+          breakdown={breakdown} /* new!!!!!!! */
           is_being_removed={is_being_removed}
           is_being_updated={is_being_updated}
           id={id} /* new!!!!!! */
@@ -400,10 +350,10 @@ Text.propTypes = {
   as: PropTypes.string,
   className: PropTypes.string,
   publish: PropTypes.func,
-  create: PropTypes.func, /* new!!!! */
   accept: PropTypes.func,
   remove: PropTypes.func,
   update: PropTypes.func,
+  breakdown: PropTypes.func, /* new!!!!! */
   resetCheckedRow: PropTypes.func,
   resetCheckedColumn: PropTypes.func,
   resetCheckedAll: PropTypes.func,
@@ -416,76 +366,90 @@ Text.defaultProps = {
   className: ""
 };
 
-class Edit extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      content: ""
-    };
-    this.onChange = this.onChange.bind(this);
-    this.onKeyPress = this.onKeyPress.bind(this);
-    this.onKeyDown = this.onKeyDown.bind(this);
-    this.onBlur = this.onBlur.bind(this);
-  }
+const Edit = ({
+  onSave, 
+  onCancel, 
+  is_being_created,
+  parentEntity, /* new!!!!!! */
+  breakdown /* new!!!!! */
+  }) => {
 
-  onChange(event, target) {
-    this.setState({ content: target.value });
-  }
+  const [content, setContent] = useState("");
 
-  onKeyPress(e) {
-    const { onSave } = this.props;
+  const onChange = useCallback((event, target) => {
+
+    console.log('func onChange!!!!!!');
+
+    /*
+    console.log('target.value=====');
+    console.log(target.value);*/
+
+    setContent(target.value);
+
+  }, [content]);
+
+  const onKeyPress = useCallback((e) => {
+
+    console.log('func onKeyPress!!!!!!');
+
+    /*
+    console.log('content====');
+    console.log(content);*/
+
     if (e.key === "Enter") {
-      if (this.state.content) {
-        onSave(this.state.content);
+      if (content) {
+        onSave(content);
       }
     }
+  
+  }, [content]);
 
-    console.log('onKeyPress!!!!!!');
-  }
+  const onKeyDown = useCallback((e) => {
 
-  onKeyDown(e) {
-    const { onCancel } = this.props;
+    console.log('func onKeyDown!!!!!!');
+
+    breakdown(e, parentEntity);
+
     if (e.keyCode === 27) {
       onCancel();
     }
+  }, []);
 
-    console.log('onKeyDown!!!!!!');
-  }
+  const onBlur = useCallback(() => {
 
-  onBlur() {
-    const { onSave } = this.props;
-    if (this.state.content) {
-      onSave(this.state.content);
+    console.log('func onBlur!!!!!!');
+    
+    if (content) {
+      onSave(content);
     }
-  }
+  }, [content]);
+  
+  return (
+    <Input
+      className="lingvo-input-action"
+      onChange={onChange}
+      onKeyPress={onKeyPress}
+      onKeyDown={onKeyDown}
+      onBlur={onBlur}
+      action={
+        <Button.Group basic className="lingvo-buttons-group">
+          <Button icon={is_being_created ? <i className="lingvo-icon lingvo-icon_spinner" /> : <i className="lingvo-icon lingvo-icon_save2" />} 
+            disabled={is_being_created || !content}
+            className={is_being_created ? "lingvo-button-spinner" : ""}
+          />
+          <Button icon={<i className="lingvo-icon lingvo-icon_delete2" />} onClick={onCancel} />
+        </Button.Group>
+      }
+    />
+  );
 
-  render() {
-    const { onSave, onCancel, is_being_created } = this.props;
-    return (
-      <Input
-        className="lingvo-input-action"
-        onChange={this.onChange}
-        /* !!!!! нужно добавить ctrl+Enter !!!!! */
-        onKeyPress={this.onKeyPress}
-        onKeyDown={this.onKeyDown}
-        onBlur={this.onBlur}
-        action={
-          <Button.Group basic className="lingvo-buttons-group">
-            <Button icon={is_being_created ? <i className="lingvo-icon lingvo-icon_spinner" /> : <i className="lingvo-icon lingvo-icon_save2" />} 
-              disabled={is_being_created || !this.state.content}
-              className={is_being_created ? "lingvo-button-spinner" : ""}
-            />
-            <Button icon={<i className="lingvo-icon lingvo-icon_delete2" />} onClick={onCancel} />
-          </Button.Group>
-        }
-      />
-    );
-  }
-}
+};
 
 Edit.propTypes = {
   onSave: PropTypes.func,
-  onCancel: PropTypes.func
+  onCancel: PropTypes.func,
+  parentEntity: PropTypes.object, /* new!!!!!! */
+  breakdown: PropTypes.func /* new!!!!! */
 };
 
 Edit.defaultProps = {
