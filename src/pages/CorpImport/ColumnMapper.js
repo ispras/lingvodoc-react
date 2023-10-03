@@ -47,7 +47,7 @@ function Column({ index, fieldOptions, type, onSetColumnType, actions }) {
         options={fieldOptions}
         value={selectedField && selectedField.value}
         onChange={(e, { value }) => {
-          onSetColumnType(fieldOptions[value], selectedField.name);
+          onSetColumnType(fieldOptions[value].id, fieldOptions[value].name);
         }}
       />
       <Popup.Content className="popup-field-type">
@@ -104,16 +104,16 @@ function ColumnMapper({ state, types, columnTypes, onSetColumnType }) {
   for (const type of typesSortedFiltered) {
     const id = type.get("id");
     const idStr = id.join("/");
+    const name = T(type.get("translations").toJS());
 
     fieldOptions.push({
       key: idStr,
       value: idStr,
-      id: id,
       text: `${T(type.get("translations").toJS())} (${type.get("data_type")})`,
-      name: T(type.get("translations").toJS())
+      id, name
     });
 
-    fieldOptions[idStr] = id;
+    fieldOptions[idStr] = { id, name };
   }
 
   let i = 0;
