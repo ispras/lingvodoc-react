@@ -24,7 +24,7 @@ import TranslationContext from "Layout/TranslationContext";
 
 
 import "pages/DictImport/styles.scss";
-import { buildExport } from "./api";
+import { corpusInfo, columnsInfo } from "./api";
 import LanguageSelection from "pages/DictImport/LanguageSelection";
 import ColumnMapper from "./ColumnMapper";
 import Linker from "./Linker";
@@ -47,8 +47,8 @@ export const fieldsQuery = gql`
 `;
 
 const convertMutation = gql`
-  mutation convertMutation($corpora_inf: [CorpusInf]!) {
-    convert_plain_text(corpora_inf: $corpora_inf) {
+  mutation convertMutation($corpus_inf: CorpusInf!, $columns_inf: [ColumnInf]!) {
+    convert_plain_text(corpus_inf: $corpus_inf, columns_inf: $columns_inf) {
       triumph
     }
   }
@@ -139,9 +139,10 @@ class Info extends React.Component {
 
   onSubmit() {
     const { convert } = this.props;
-    const params = buildExport(this.props);
+    const corpus_inf = corpusInfo(this.props);
+    const columns_inf = columnsInfo(this.props);
     convert({
-      variables: { corpora_inf: params }
+      variables: { corpus_inf, columns_inf }
     }).then(() => this.props.goToStep("FINISH"));
   }
 

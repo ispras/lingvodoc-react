@@ -1,6 +1,11 @@
 import { Map } from "immutable";
 
-function baseInfo(baseBlob, language, license) {
+export function corpusInfo({ linking, languages, licenses }) {
+  const baseBlob = linking.first();
+  const baseId = baseBlob.get("id");
+  const language = languages.get(baseId);
+  const license = licenses.get(baseId));
+
   const translation_atoms = baseBlob
     .get("translation", new Map())
     .filter(content => content && content.trim() !== "")
@@ -16,13 +21,13 @@ function baseInfo(baseBlob, language, license) {
   };
 }
 
-function blobExport(blob, columnTypes) {
+function blobExport(blob, columnType) {
   const blob_id = blob.get("id").toArray();
   const values = blob.get("values", new Map());
 
   const field_map = {
     column_name: values.get("sentence", "Sentence in transliteration"),
-    field_id: columnTypes.get("sentence", new Map()).toArray()
+    field_id: columnType.get("sentence", new Map()).toArray()
   };
 
   return {
@@ -31,16 +36,9 @@ function blobExport(blob, columnTypes) {
   };
 }
 
-export function buildExport({ linking, columnTypes, languages, licenses }) {
-  const baseBlob = linking.first();
-  const baseId = baseBlob.get("id");
-
-  const result = baseInfo(baseBlob, languages.get(baseId), licenses.get(baseId));
-
-  result.columns = linking.reduce(
+export function columnsInfo({ linking, columnTypes }) {
+  return linking.reduce(
     (acc, blob, id) => [...acc, blobExport(blob, columnTypes.get(id))],
     []
   );
-
-  return result;
 }
