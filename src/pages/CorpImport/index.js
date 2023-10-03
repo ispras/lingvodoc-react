@@ -18,7 +18,6 @@ import {
   setLanguage,
   setLicense,
   setTranslation,
-  toggleAddColumn,
   updateColumn
 } from "ducks/dictImport";
 import TranslationContext from "Layout/TranslationContext";
@@ -71,7 +70,6 @@ class Info extends React.Component {
     linkingAdd: PropTypes.func.isRequired,
     linkingDelete: PropTypes.func.isRequired,
     updateColumn: PropTypes.func.isRequired,
-    toggleAddColumn: PropTypes.func.isRequired,
     setColumnType: PropTypes.func.isRequired,
     setLanguage: PropTypes.func.isRequired,
     setTranslation: PropTypes.func.isRequired
@@ -84,7 +82,6 @@ class Info extends React.Component {
     this.onDelete = this.onDelete.bind(this);
     this.onNextClick = this.onNextClick.bind(this);
     this.onStepClick = this.onStepClick.bind(this);
-    this.onToggleColumn = this.onToggleColumn.bind(this);
     this.onSetColumnType = this.onSetColumnType.bind(this);
     this.onSetLanguage = this.onSetLanguage.bind(this);
     this.onSetLicense = this.onSetLicense.bind(this);
@@ -119,10 +116,6 @@ class Info extends React.Component {
 
   onStepClick(name) {
     return () => this.props.goToStep(name);
-  }
-
-  onToggleColumn(id) {
-    return () => this.props.toggleAddColumn(id);
   }
 
   onSetColumnType(id) {
@@ -294,7 +287,6 @@ const mapDispatchToProps = {
   linkingAdd,
   linkingDelete,
   updateColumn,
-  toggleAddColumn,
   setColumnType,
   setLanguage,
   setTranslation,
