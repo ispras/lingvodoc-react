@@ -4,7 +4,7 @@ export function corpusInfo({ linking, languages, licenses }) {
   const baseBlob = linking.first();
   const baseId = baseBlob.get("id");
   const language = languages.get(baseId);
-  const license = licenses.get(baseId));
+  const license = licenses.get(baseId);
 
   const translation_atoms = baseBlob
     .get("translation", new Map())
