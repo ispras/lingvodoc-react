@@ -35,28 +35,41 @@ import "./style.scss";
  */
 
 const perspectiveStatisticsQuery = gql`
-  query statisticsPerspective($id: LingvodocID!, $start: Int!, $end: Int!) {
+  query statisticsPerspective($id: LingvodocID!, $start: Int!, $end: Int!, $disambiguation: Boolean) {
     perspective(id: $id) {
       id
-      statistic(starting_time: $start, ending_time: $end)
+      statistic(starting_time: $start, ending_time: $end, disambiguation_flag: $disambiguation)
     }
   }
 `;
 
 const dictionaryStatisticsQuery = gql`
-  query statisticsDictionary($id: LingvodocID!, $start: Int!, $end: Int!) {
+  query statisticsDictionary($id: LingvodocID!, $start: Int!, $end: Int!, $disambiguation: Boolean) {
     dictionary(id: $id) {
       id
-      statistic(starting_time: $start, ending_time: $end)
+      statistic(starting_time: $start, ending_time: $end, disambiguation_flag: $disambiguation)
     }
   }
 `;
 
 const languageStatisticsQuery = gql`
-  query statisticsLanguage($id: LingvodocID!, $start: Int!, $end: Int!, $dictionaries: Boolean, $corpora: Boolean) {
+  query statisticsLanguage(
+    $id: LingvodocID!
+    $start: Int!
+    $end: Int!
+    $disambiguation: Boolean
+    $dictionaries: Boolean
+    $corpora: Boolean
+  ) {
     language(id: $id) {
       id
-      statistic(starting_time: $start, ending_time: $end, dictionaries: $dictionaries, corpora: $corpora)
+      statistic(
+        starting_time: $start
+        ending_time: $end
+        disambiguation_flag: $disambiguation
+        dictionaries: $dictionaries
+        corpora: $corpora
+      )
     }
   }
 `;
@@ -283,6 +296,26 @@ const Statistics = ({ statistics, mode }) => {
                   <EntitiesComponent entities={user.entities} />
                 </div>
               )}
+              {user.disambiguation && (
+                <div>
+                  <h3 className="lingvo-stat-title-table">{getTranslation("Disambiguation")}</h3>
+                  <Table celled structured className="lingvo-stat-table">
+                    <Table.Header>
+                      <Table.Row>
+                        <Table.HeaderCell>{getTranslation("Total tokens")}</Table.HeaderCell>
+                        <Table.HeaderCell>{getTranslation("Disambiguated tokens")}</Table.HeaderCell>
+                      </Table.Row>
+                    </Table.Header>
+
+                    <Table.Body>
+                      <Table.Row>
+                        <Table.Cell>{user.disambiguation[0]}</Table.Cell>
+                        <Table.Cell>{user.disambiguation[1]}</Table.Cell>
+                      </Table.Row>
+                    </Table.Body>
+                  </Table>
+                </div>
+              )}
             </div>
           )
       )}
@@ -301,6 +334,7 @@ class StatisticsModal extends React.Component {
     this.state = {
       startDate: moment("2012", "YYYY"),
       endDate: moment(),
+      disambiguation: false,
       languageDictionaries: true,
       languageCorpora: true,
       loading: false,
@@ -315,7 +349,7 @@ class StatisticsModal extends React.Component {
 
   getStatistics() {
     const { client, id, mode } = this.props;
-    const { startDate, endDate, languageDictionaries, languageCorpora } = this.state;
+    const { startDate, endDate, disambiguation, languageDictionaries, languageCorpora } = this.state;
     const query =
       mode === "language"
         ? languageStatisticsQuery
@@ -332,6 +366,7 @@ class StatisticsModal extends React.Component {
           id,
           start: startDate.unix(),
           end: endDate.unix(),
+          disambiguation: disambiguation,
           dictionaries: languageDictionaries,
           corpora: languageCorpora
         }
@@ -399,16 +434,18 @@ class StatisticsModal extends React.Component {
       );
   }
 
-  handleChange(date, mode) {
+  handleChange(value, key) {
     const u = {};
-    u[mode] = date;
+    u[key] = value;
     u.showStatistics = false;
     this.setState(u);
   }
 
   render() {
     const { mode, title, locales } = this.props;
-    const { startDate, endDate, languageDictionaries, languageCorpora, loading, error, statistics } = this.state;
+
+    const { startDate, endDate, disambiguation, languageDictionaries, languageCorpora, loading, error, statistics } =
+      this.state;
 
     const currentLocaleId = locale.get();
     const localesDatePicker = [];
@@ -456,6 +493,15 @@ class StatisticsModal extends React.Component {
                 locale={localesDatePicker.find(item => item.id === currentLocaleId)["shortcut"] || "en"}
               />
             </div>
+            <div className="lingvo-statistics-block">
+              <Checkbox
+                label={this.context(
+                  "Disambiguation statistics (not restricted by time interval, may take quite a lot of time to compute)"
+                )}
+                checked={disambiguation}
+                onChange={(e, { checked }) => this.handleChange(checked, "disambiguation")}
+              />
+            </div>
             {mode === "language" && (
               <div className="lingvo-statistics-block">
                 <List>
@@ -463,14 +509,14 @@ class StatisticsModal extends React.Component {
                     <Checkbox
                       label={this.context("Dictionaries")}
                       checked={languageDictionaries}
-                      onChange={(e, { checked }) => this.setState({ languageDictionaries: checked })}
+                      onChange={(e, { checked }) => this.handleChange(checked, "languageDictionaries")}
                     />
                   </List.Item>
                   <List.Item>
                     <Checkbox
                       label={this.context("Corpora")}
                       checked={languageCorpora}
-                      onChange={(e, { checked }) => this.setState({ languageCorpora: checked })}
+                      onChange={(e, { checked }) => this.handleChange(checked, "languageCorpora")}
                     />
                   </List.Item>
                 </List>
