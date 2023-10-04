@@ -632,8 +632,6 @@ class P extends React.Component {
       yield* entries;
     }
 
-    console.log("Rendered 'P' component");
-
     return (
       <div
         style={{ overflowY: "auto" }}
