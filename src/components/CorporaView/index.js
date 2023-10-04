@@ -169,8 +169,6 @@ const TableComponent = ({
   actions
 }) => {
 
-  console.log("Rendered 'TableComponent'!!!!!!!");
-
   return (
     <div style={{ overflowY: "auto" }}>
       <Table celled padded className="lingvo-perspective-table">
@@ -231,7 +229,7 @@ TableComponent.defaultProps = {
   selectEntries: false,
   selectedEntries: [],
   onEntrySelect: () => {},
-  reRender: () => console.log('Fake refetch')
+  reRender: () => console.log("Fake refetch")
 };
 
 class P extends React.Component {
@@ -643,9 +641,9 @@ class P extends React.Component {
             {mode === "edit" && (
               <Button 
                 icon={<i className="lingvo-icon lingvo-icon_add" />}
-                content={this.context("Add lexical entry")} 
-                onClick={addEntry} 
-                className="lingvo-button-green lingvo-perspective-button" 
+                content={this.context("Add lexical entry")}
+                onClick={addEntry}
+                className="lingvo-button-green lingvo-perspective-button"
               />
             )}
             {mode === "edit" && (
