@@ -10,7 +10,7 @@ function Columns({ blob, index, onDelete }) {
   const name = index ? "sentence" : "base sentence";
 
   return (
-    <div className="blob">
+    <div className="blob blob_corp">
       <Button negative icon="trash" size="tiny" onClick={() => onDelete(blob.get("id"))} />
       <b className="blob-name">{blob.get("name")}</b>
       <div className="blob-columns">

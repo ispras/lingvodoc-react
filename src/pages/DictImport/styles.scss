@@ -21,6 +21,11 @@
     border-bottom: 1px solid gray;
     margin-bottom: 0.5em;
 
+    &_corp {
+      grid-template-columns: 200px 1fr;
+      grid-template-areas: "name columns";
+    }
+
     .blob-name {
       width: 200px;
       text-align: center;
