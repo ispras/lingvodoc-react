@@ -95,6 +95,30 @@ export const queryLexicalEntries = gql`
   }
 `;
 
+const updateLexgraphMutation = gql`
+  mutation updateLexgraph($id: LingvodocID!,
+                          $lexgraph_before: String!,
+                          $lexgraph_after: String!) {
+    update_entity_content(id: $id,
+                          lexgraph_before: $lexgraph_before,
+                          lexgraph_after: $lexgraph_after) {
+      entity
+      triumph
+    }
+  }
+`;
+
+const updateEntityParentMutation = gql`
+  mutation updateEntityParent($id: LingvodocID!,
+                              $new_parent_id: LingvodocID!) {
+    update_entity(id: $id,
+                  new_parent_id: $new_parent_id) {
+      entity
+      triumph
+    }
+  }
+`;
+
 const createLexicalEntryMutation = gql`
   mutation createLexicalEntry($id: LingvodocID!, $entitiesMode: String!) {
     create_lexicalentry(perspective_id: $id) {
@@ -102,6 +126,7 @@ const createLexicalEntryMutation = gql`
         id
         parent_id
         created_at
+        marked_for_deletion
         entities(mode: $entitiesMode) {
           id
           parent_id
@@ -116,6 +141,7 @@ const createLexicalEntryMutation = gql`
           additional_metadata {
             link_perspective_id
           }
+          is_subject_for_parsing
         }
       }
     }
@@ -133,6 +159,9 @@ const mergeLexicalEntriesMutation = gql`
 const removeLexicalEntriesMutation = gql`
   mutation removeLexicalEntries($ids: [LingvodocID]!) {
     bulk_delete_lexicalentry(ids: $ids) {
+      deleted_entries {
+        id
+      }
       triumph
     }
   }
@@ -162,8 +191,6 @@ const TableComponent = ({
   /*  eslint-enable react/prop-types */
   actions
 }) => {
-
-  console.log("Rendered 'TableComponent'");
 
   return (
     <div style={{ overflowY: "auto" }}>
@@ -234,7 +261,8 @@ class P extends React.Component {
     this.state = {
       checkedRow: null,
       checkedColumn: null,
-      checkedAll: null
+      checkedAll: null,
+      mutation: { loading: false }
     };
 
     this.onCheckRow = this.onCheckRow.bind(this);
@@ -245,11 +273,6 @@ class P extends React.Component {
     this.resetCheckedAll = this.resetCheckedAll.bind(this);
     //this.reRender = this.reRender.bind(this);
   }
-
-  //reRender() {
-  //  this.props.data.refetch();
-  //  console.log("Refetched 'queryLexicalEntries'");
-  //}
 
   resetCheckedRow() {
     this.setState({
@@ -324,12 +347,20 @@ class P extends React.Component {
       createdEntries,
       selectedEntries,
       user,
-      reRender
+      reRender,
+      //for moving lexentries
+      lexentry_id_source,
+      lexentry_id_before,
+      lexentry_id_after,
+      //for moving entities
+      entity_id_dragged,
+      lexentry_id_target
     } = this.props;
 
     const { loading, error } = data;
+    const { loading: changing } = this.state.mutation;
 
-    if (loading || (!loading && !error && !data.perspective)) {
+    if (loading || changing || (!loading && !error && !data.perspective)) {
       return (
         <Dimmer active style={{ minHeight: "600px", background: "none" }}>
           <Header as="h2" icon>
@@ -340,6 +371,65 @@ class P extends React.Component {
     }
 
     const lexicalEntries = !error ? data.perspective.lexical_entries : [];
+    const lexgraph_column = !error ? columns.find(col => col.field.english_translation === "Order") : null;
+    const lexgraph_field_id = lexgraph_column ? lexgraph_column.field_id : null;
+
+    const get_lexgraph_entity = lexentry_id_source => {
+      const lexentry = lexentry_id_source ? lexicalEntries.find(le => isEqual(le.id, lexentry_id_source)) : null;
+      return lexentry ? lexentry.entities.find(e => isEqual(e.field_id, lexgraph_field_id)) : null;
+    }
+
+    const get_lexgraph_marker = lexentry_id_source => {
+      const lexgraph_entity = get_lexgraph_entity(lexentry_id_source);
+      return lexgraph_entity ? lexgraph_entity.content : '';
+    }
+
+    const dragAndDrop = () => {
+      // Moving entity to another lexentry
+      if (entity_id_dragged && lexentry_id_target) {
+        updateEntityParentMutation({
+          variables: {
+            id: entity_id_dragged,
+            new_parent_id: lexentry_id_target
+          },
+          refetchQueries: [
+            {
+              query: queryLexicalEntries,
+              variables: {
+                id,
+                entitiesMode
+              }
+            }
+          ]
+        }).then(({data: mutation}) => this.setState({mutation}));
+      }
+
+      // Moving lexentry between certain ones
+      if (lexgraph_field_id &&
+          lexentry_id_source &&
+          (lexentry_id_before || lexentry_id_after)) {
+        entity_id_change = get_lexgraph_entity(lexentry_id_source).id;
+        lexgraph_before = get_lexgraph_marker(lexentry_id_before);
+        lexgraph_after = get_lexgraph_marker(lexentry_id_after);
+
+        updateLexgraphMutation({
+          variables: {
+            id: entity_id_change,
+            lexgraph_before,
+            lexgraph_after
+          },
+          refetchQueries: [
+            {
+              query: queryLexicalEntries,
+              variables: {
+                id,
+                entitiesMode
+              }
+            }
+          ]
+        }).then(({data: mutation}) => this.setState({mutation}));
+      }
+    };
 
     const addEntry = () => {
       createLexicalEntry({
@@ -347,17 +437,21 @@ class P extends React.Component {
           id,
           entitiesMode
         },
-        refetchQueries: [
-          {
-            query: queryLexicalEntries,
-            variables: {
-              id,
-              entitiesMode
-            }
-          }
-        ]
+        update: (cache, { data: { create_lexicalentry: { lexicalentry }}}) => {
+          cache.updateQuery({
+              query: queryLexicalEntries,
+              variables: {id, entitiesMode}
+            },
+            (data) => ({
+              perspective:
+                { ...data.perspective,
+                  lexical_entries: [lexicalentry, ...data.perspective.lexical_entries]
+                }
+            })
+          );
+        },
       }).then(({ data: d }) => {
-        if (!d.loading || !d.error) {
+        if (!d.loading && !d.error) {
           const {
             create_lexicalentry: { lexicalentry }
           } = d;
@@ -391,15 +485,22 @@ class P extends React.Component {
         variables: {
           ids: selectedEntries
         },
-        refetchQueries: [
-          {
-            query: queryLexicalEntries,
-            variables: {
-              id,
-              entitiesMode
-            }
-          }
-        ]
+        update: (cache, { data }) => {
+          if (data.loading || data.error) return;
+          const { bulk_delete_lexicalentry: { deleted_entries }} = data;
+          cache.updateQuery({
+              query: queryLexicalEntries,
+              variables: {id, entitiesMode}
+            },
+            (data) => ({
+              perspective:
+                { ...data.perspective,
+                  lexical_entries: data.perspective.lexical_entries.filter(
+                    le => !deleted_entries.some(de => isEqual(le.id, de.id)))
+                }
+            })
+          );
+        },
       }).then(() => {
         resetSelection();
       });
@@ -612,8 +713,6 @@ class P extends React.Component {
       yield* entries;
     }
 
-    console.log("Rendered 'P' component");
-
     return (
       <div
         style={{ overflowY: "auto" }}
@@ -626,8 +725,8 @@ class P extends React.Component {
               <Button 
                 icon={<i className="lingvo-icon lingvo-icon_add" />}
                 content={this.context("Add lexical entry")} 
-                onClick={addEntry} 
-                className="lingvo-button-green lingvo-perspective-button" 
+                onClick={addEntry}
+                className="lingvo-button-green lingvo-perspective-button"
               />
             )}
             {mode === "edit" && (
@@ -785,7 +884,7 @@ const PerspectiveView = compose(
   graphql(mergeLexicalEntriesMutation, { name: "mergeLexicalEntries" }),
   graphql(removeLexicalEntriesMutation, { name: "removeLexicalEntries" }),
   graphql(queryLexicalEntries, {
-    options: { notifyOnNetworkStatusChange: true }
+    options: { notifyOnNetworkStatusChange: true, fetchPolicy: 'cache-first' }
   })
 )(P);
 
@@ -985,7 +1084,7 @@ const LexicalEntryViewBaseByIds = ({ perspectiveId, mode, entitiesMode, data, ac
 
   const reRender = () => {
     data.refetch();
-    console.log("Refetched 'queryLexicalEntriesByIds'");
+    //console.log("Refetched 'queryLexicalEntriesByIds'");
   }
 
   return (
@@ -1053,7 +1152,7 @@ const PerspectiveViewWrapper = ({ id, className, mode, entitiesMode, page, data,
 
   const reRender = () => {
     data.refetch();
-    console.log("Refetched 'queryPerspective'")
+    //console.log("Refetched 'queryPerspective'")
   }
 
   return (

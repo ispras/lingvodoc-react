@@ -18,41 +18,37 @@ import {
   setLanguage,
   setLicense,
   setTranslation,
-  toggleAddColumn,
   updateColumn
 } from "ducks/dictImport";
 import TranslationContext from "Layout/TranslationContext";
 
-import { buildExport } from "./api";
-import ColumnMapper from "./ColumnMapper";
-import LanguageSelection from "./LanguageSelection";
-import Linker from "./Linker";
 
-import "./styles.scss";
+import "pages/DictImport/styles.scss";
+import { corpusInfo, columnsInfo } from "./api";
+import LanguageSelection from "pages/DictImport/LanguageSelection";
+import ColumnMapper from "./ColumnMapper";
+import Linker from "./Linker";
 
 export const fieldsQuery = gql`
   query field {
-    all_fields {
+    all_fields(parallel: true) {
       id
       translations
       data_type
       data_type_translation_gist_id
     }
-    user_blobs(data_type: "starling/csv") {
+    user_blobs(data_type: "txt") {
       id
       data_type
       name
       created_at
-      additional_metadata {
-        starling_fields
-      }
     }
   }
 `;
 
 const convertMutation = gql`
-  mutation convertMutation($starling_dictionaries: [StarlingDictionary]!) {
-    convert_starling(starling_dictionaries: $starling_dictionaries) {
+  mutation convertMutation($corpus_inf: CorpusInf!, $columns_inf: [ColumnInf]!) {
+    convert_plain_text(corpus_inf: $corpus_inf, columns_inf: $columns_inf) {
       triumph
     }
   }
@@ -65,7 +61,6 @@ class Info extends React.Component {
     isNextStep: PropTypes.bool.isRequired,
     blobs: PropTypes.any.isRequired,
     linking: PropTypes.any.isRequired,
-    spreads: PropTypes.any.isRequired,
     columnTypes: PropTypes.any.isRequired,
     languages: PropTypes.any.isRequired,
     locales: PropTypes.array.isRequired,
@@ -75,7 +70,6 @@ class Info extends React.Component {
     linkingAdd: PropTypes.func.isRequired,
     linkingDelete: PropTypes.func.isRequired,
     updateColumn: PropTypes.func.isRequired,
-    toggleAddColumn: PropTypes.func.isRequired,
     setColumnType: PropTypes.func.isRequired,
     setLanguage: PropTypes.func.isRequired,
     setTranslation: PropTypes.func.isRequired
@@ -88,8 +82,6 @@ class Info extends React.Component {
     this.onDelete = this.onDelete.bind(this);
     this.onNextClick = this.onNextClick.bind(this);
     this.onStepClick = this.onStepClick.bind(this);
-    this.onUpdateColumn = this.onUpdateColumn.bind(this);
-    this.onToggleColumn = this.onToggleColumn.bind(this);
     this.onSetColumnType = this.onSetColumnType.bind(this);
     this.onSetLanguage = this.onSetLanguage.bind(this);
     this.onSetLicense = this.onSetLicense.bind(this);
@@ -102,7 +94,7 @@ class Info extends React.Component {
       data: { loading, error, user_blobs: blobs }
     } = this.props;
     if (!loading && !error) {
-      const newBlobs = fromJS(blobs.filter(b => b.data_type === "starling/csv")).map(v => v.set("values", new Map()));
+      const newBlobs = fromJS(blobs.filter(b => b.data_type === "txt")).map(v => v.set("values", new Map()));
       // XXX: Ugly workaround
       if (JSON.stringify(this.props.blobs) !== JSON.stringify(newBlobs)) {
         this.props.setBlobs(newBlobs);
@@ -126,16 +118,11 @@ class Info extends React.Component {
     return () => this.props.goToStep(name);
   }
 
-  onUpdateColumn(id) {
-    return (column, value, oldValue) => this.props.updateColumn(id, column, value, oldValue);
-  }
-
-  onToggleColumn(id) {
-    return () => this.props.toggleAddColumn(id);
-  }
-
   onSetColumnType(id) {
-    return column => field => this.props.setColumnType(id, column, field);
+    return column => (field, name) => {
+      this.props.setColumnType(id, column, field);
+      this.props.updateColumn(id, column, name, null);
+    }
   }
 
   onSetLanguage(id) {
@@ -152,14 +139,15 @@ class Info extends React.Component {
 
   onSubmit() {
     const { convert } = this.props;
-    const params = buildExport(this.props);
+    const corpus_inf = corpusInfo(this.props);
+    const columns_inf = columnsInfo(this.props);
     convert({
-      variables: { starling_dictionaries: params }
+      variables: { corpus_inf, columns_inf }
     }).then(() => this.props.goToStep("FINISH"));
   }
 
   render() {
-    const { step, isNextStep, blobs, linking, spreads, columnTypes, languages, licenses, locales, data } = this.props;
+    const { step, isNextStep, blobs, linking, columnTypes, languages, licenses, locales, data } = this.props;
 
     if (data.loading || data.error) {
       return null;
@@ -167,28 +155,28 @@ class Info extends React.Component {
 
     const { all_fields: fields } = data;
     const fieldTypes = fromJS(fields).filter(field => field.get("data_type") === "Text");
-
+    let i = 0;
     return (
       <div className="background-content">
         <Step.Group widths={4}>
           <Step link active={step === "LINKING"} onClick={this.onStepClick("LINKING")}>
             <Step.Content>
-              <Step.Title>{this.context("Linking")}</Step.Title>
-              <Step.Description>{this.context("Link columns from files with each other")}</Step.Description>
+              <Step.Title>{this.context("Parent Corpora")}</Step.Title>
+              <Step.Description>{this.context("Choose parallel corpora")}</Step.Description>
             </Step.Content>
           </Step>
 
           <Step link active={step === "COLUMNS"} onClick={this.onStepClick("COLUMNS")}>
             <Step.Content>
               <Step.Title>{this.context("Columns Mapping")}</Step.Title>
-              <Step.Description>{this.context("Map linked columns to LingvoDoc types")}</Step.Description>
+              <Step.Description>{this.context("Map columns to LingvoDoc types")}</Step.Description>
             </Step.Content>
           </Step>
 
           <Step link active={step === "LANGUAGES"} onClick={this.onStepClick("LANGUAGES")}>
             <Step.Content>
               <Step.Title>{this.context("Language Selection")}</Step.Title>
-              <Step.Description>{this.context("Map dictionaries to LingvoDoc languages")}</Step.Description>
+              <Step.Description>{this.context("Map dictionary to LingvoDoc language")}</Step.Description>
             </Step.Content>
           </Step>
 
@@ -204,17 +192,13 @@ class Info extends React.Component {
             <Linker
               blobs={blobs}
               state={linking}
-              spreads={spreads}
               onSelect={this.onSelect}
               onDelete={this.onDelete}
-              onUpdateColumn={this.onUpdateColumn}
-              onToggleColumn={this.onToggleColumn}
             />
           )}
           {step === "COLUMNS" && (
             <ColumnMapper
               state={linking}
-              spreads={spreads}
               columnTypes={columnTypes}
               types={fieldTypes}
               onSetColumnType={this.onSetColumnType}
@@ -222,7 +206,7 @@ class Info extends React.Component {
           )}
           {step === "LANGUAGES" && (
             <LanguageSelection
-              state={linking}
+              state={linking.filter(() => !i++)}
               languages={languages}
               licenses={licenses}
               locales={locales}
@@ -236,7 +220,7 @@ class Info extends React.Component {
               <Message.Header>{this.context("Conversion is in progress...")}</Message.Header>
               <Message.Content>
                 {this.context(
-                  "Your dictionaries are scheduled for conversion. Please, check tasks tab for conversion status."
+                  "Your dictionary is scheduled for conversion. Please, check tasks tab for conversion status."
                 )}
               </Message.Content>
             </Message>
@@ -255,7 +239,7 @@ class Info extends React.Component {
             <Message style={{ margin: 0, textAlign: "center" }}>
               <Message.Content>
                 {this.context(
-                  "Please select parent language and specify at least one translation for each Starling dictionary."
+                  "Please select parent language and specify at least one translation to name the dictionary. Meet the previous terms."
                 )}
               </Message.Content>
             </Message>
@@ -270,11 +254,11 @@ class Info extends React.Component {
           </Button>
         ) : step === "LINKING" ? (
           <Message style={{ margin: 0, textAlign: "center" }}>
-            <Message.Content>{this.context("Please use at least one Starling column.")}</Message.Content>
+            <Message.Content>{this.context("Choose at least two parent corpora.")}</Message.Content>
           </Message>
         ) : step === "COLUMNS" ? (
           <Message style={{ margin: 0, textAlign: "center" }}>
-            <Message.Content>{this.context("Please map all Starling columns to Lingvodoc types.")}</Message.Content>
+            <Message.Content>{this.context("Please map all the columns to Lingvodoc types. Meet the previous terms.")}</Message.Content>
           </Message>
         ) : null}
       </div>
@@ -287,10 +271,9 @@ Info.contextType = TranslationContext;
 function mapStateToProps(state) {
   return {
     step: selectors.getStep(state),
-    isNextStep: selectors.getNextStep(state),
+    isNextStep: selectors.getNextStep(state, true),
     blobs: selectors.getBlobs(state),
     linking: selectors.getLinking(state),
-    spreads: selectors.getSpreads(state),
     columnTypes: selectors.getColumnTypes(state),
     languages: selectors.getLanguages(state),
     licenses: selectors.getLicenses(state),
@@ -305,7 +288,6 @@ const mapDispatchToProps = {
   linkingAdd,
   linkingDelete,
   updateColumn,
-  toggleAddColumn,
   setColumnType,
   setLanguage,
   setTranslation,

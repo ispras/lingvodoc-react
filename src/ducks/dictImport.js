@@ -15,6 +15,10 @@ const LANGUAGE_SET = "@import/LANGUAGE_SET";
 const LICENSE_SET = "@import/LICENSE_SET";
 const LOCALE_SET = "@import/LOCALE_SET";
 
+function _getLinking(state) {
+  return state.get("linking").filter(v => v.get("id"));
+}
+
 // Reducers
 function meta(blob) {
   return blob.set("translation", new Map());
@@ -81,7 +85,7 @@ function updateSingleSpread(result, blob) {
 }
 
 function updateSpread(state) {
-  const extractedSpreads = state.get("linking").reduce((acc, blob) => updateSingleSpread(acc, blob), new Map());
+  const extractedSpreads = _getLinking(state).reduce((acc, blob) => updateSingleSpread(acc, blob), new Map());
   return state.set("spreads", extractedSpreads);
 }
 
@@ -95,7 +99,7 @@ function updateNextStep(step) {
 }
 
 function updateColumnTypes(state) {
-  const blobs = state.get("linking");
+  const blobs = _getLinking(state);
   const columnTypes = state.get("columnTypes");
 
   return state.withMutations(map => {
@@ -186,31 +190,33 @@ export const selectors = {
   getStep(state) {
     return state.dictImport.get("step");
   },
-  getNextStep(state) {
+  getNextStep(state, parallel=false) {
+    const linking = _getLinking(state.dictImport);
+    const languages = state.dictImport.get("languages");
+    let result = true;
+
     switch (state.dictImport.get("step")) {
-      case "LINKING":
-        return (
-          state.dictImport
-            .get("linking")
-            .toArray()
-            .reduce((count, info) => count + info.get("values").filter(value => value).size, 0) > 0
-        );
+      case "LANGUAGES":
+        result &&= parallel
+          ? linking
+            .some((item, blob_id) => languages.has(blob_id) && item.get("translation").size > 0)
+          : linking
+            .every((item, blob_id) => languages.has(blob_id) && item.get("translation").size > 0);
 
       case "COLUMNS":
-        const linking = state.dictImport.get("linking");
-
-        return state.dictImport.get("columnTypes").every((field_map, blob_id) => {
+        result &&= state.dictImport.get("columnTypes").every((field_map, blob_id) => {
           const linking_map = linking.getIn([blob_id, "values"]);
 
           return field_map.every((field_id, field_name) => field_id !== null || !linking_map.get(field_name));
         });
 
-      case "LANGUAGES":
-        const languages = state.dictImport.get("languages");
-
-        return state.dictImport
-          .get("linking")
-          .every((item, blob_id) => languages.has(blob_id) && item.get("translation").size > 0);
+      case "LINKING":
+        result &&= parallel
+          ? linking.size > 1
+          : linking
+            .toArray()
+            .reduce((count, info) => count + info.get("values").filter(value => value).size, 0) > 0;
+        return result;
 
       default:
         return false;
@@ -220,7 +226,7 @@ export const selectors = {
     return state.dictImport.get("blobs");
   },
   getLinking(state) {
-    return state.dictImport.get("linking");
+    return _getLinking(state.dictImport);
   },
   getSpreads(state) {
     return state.dictImport.get("spreads");
