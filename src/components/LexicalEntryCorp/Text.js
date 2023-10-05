@@ -46,11 +46,6 @@ const TextEntityContent = ({
 
   /* new!!!!!! */
   const [dropped, setDropped] = useState(null);
-
-  /*function isDropped() {
-    //return (dropped && (dropped.content === entity.content) && (dropped.id === entity.id));
-    return dropped;
-  }*/
   /* /new!!!!!! */
 
   const onEdit = useCallback(() => {

@@ -102,7 +102,7 @@ const lexicalEntryQuery = gql`
 `;
 
 /* new!!!!!! */
-function getSelectionStart(o) {
+const getSelectionStart = (o) => {
   if (o.createTextRange) {
     const r = document.selection.createRange().duplicate();
     r.moveEnd('character', o.value.length);
@@ -113,9 +113,9 @@ function getSelectionStart(o) {
   } else {
     return o.selectionStart;
   }
-}
+};
 
-function getSelectionEnd(o) {
+const getSelectionEnd = (o) => {
   if (o.createTextRange) {
     const r = document.selection.createRange().duplicate();
     r.moveStart('character', -o.value.length);
@@ -123,7 +123,7 @@ function getSelectionEnd(o) {
   } else {
     return o.selectionEnd;
   }
-}
+};
 /* /new!!!!!! */
 
 const getComponent = dataType =>
@@ -175,20 +175,14 @@ const Entities = ({
   const [update_set, setUpdateSet] = useState({});
 
   /* new!!!!! */
-  /*const [basket, setBasket] = useState(null);*/
-
   const [{ isOver }, dropRef] = useDrop({
       accept: 'entity',
       drop: (item) => {
         /*console.log('useDrop: item====');
         console.log(item);*/
-        /*remove(item, true);*/
         remove(item);
-        /*create(item.content, parentEntity == null ? null : parentEntity.id, true);*/
         create(item.content, parentEntity == null ? null : parentEntity.id);
       },
-      /*drop: (item) => setBasket((basket) => 
-        !basket.includes(item) ? [...basket, item] : basket),*/
       collect: (monitor) => ({
           isOver: monitor.isOver()
       })
@@ -364,11 +358,7 @@ const Entities = ({
     }).then(() => update_check());
   }, []);
 
-  const remove = useCallback((entity/*, isBasket*/) => {
-
-    /*console.log('remove!!!!!!!!!!');*/
-
-    //if (isBasket) {setBasket(entity);}
+  const remove = useCallback((entity) => {
 
     console.log('Remove: entity===');
     console.log(entity);
@@ -405,13 +395,9 @@ const Entities = ({
       setRemoveSet(remove_set2);
       /*console.log('after remove!!!!!');*/
       
-      /*if (isBasket) {
-        setBasket(entity);
-      }*/
-
       update_check();
     });
-  }, [remove_set/*, basket*/]);
+  }, [remove_set]);
 
   const update = useCallback((entity, content) => {
 
@@ -454,47 +440,53 @@ const Entities = ({
   /* Shortcut "ctrl+Enter" */
   const breakdown = useCallback((event, parentEntity, entity) => {
 
-    console.log('Breakdown!!!!!!');
+    /*console.log('Breakdown!!!!!!');
     console.log('Breakdown: event.target======');
-    console.log(event.target);
+    console.log(event.target);*/
     
     if (event.ctrlKey && event.code === "Enter") {
         event.preventDefault();
-        console.log("Breakdown: ShortCut !!!!!!!!!!!");
+        //console.log("Breakdown: ShortCut !!!!!!!!!!!");
 
         const eventTarget = event.target;
         const targetValue = eventTarget.value; 
 
-        console.log('Breakdown: event.target.value======');
+        /*console.log('Breakdown: event.target.value======');
         console.log(targetValue);
 
-        const s = getSelectionStart(eventTarget);
-        const e = getSelectionEnd(eventTarget);
+        console.log('Breakdown: targetValue.length====');
+        console.log(targetValue.length);*/
 
-        console.log('Breakdown: s======');
-        console.log(s);
+        const selectionStart = getSelectionStart(eventTarget);
+        const selectionEnd = getSelectionEnd(eventTarget);
 
-        console.log('Breakdown: e======');
-        console.log(e);
+        /*console.log('Breakdown: selectionStart======');
+        console.log(selectionStart);
 
-        if (s === 0 && e === 0) {
-          console.log('Длина === нулю!!!!!');
+        console.log('Breakdown: selectionEnd======');
+        console.log(selectionEnd);*/
+
+        if (selectionStart === 0 && selectionEnd === 0) {
+          //console.log('Длина === нулю!!!!!');
           return;
         }
 
-        console.log('Длина больше нуля!!!!!');
+        if (selectionStart === targetValue.length && selectionEnd === targetValue.length) {
+          //console.log('Длина === длине строки!!!!!');
+          return;
+        }
 
-        //  Если курсор вконце строки - не создавать вторую строку с пробелом!!!
+        //console.log('Длина больше нуля!!!!!');
 
-        const beforeCaret = targetValue.substring(0, s).replace(/ /g, '\xa0') || '\xa0';
+        const beforeCaret = targetValue.substring(0, selectionStart).replace(/ /g, '\xa0') || '\xa0';
 
-        const afterCaret = targetValue.substring(s).replace(/ /g, '\xa0') || '\xa0';
+        const afterCaret = targetValue.substring(selectionStart).replace(/ /g, '\xa0') || '\xa0';
 
-        console.log('Breakdown: beforeCaret=====');
+        /*console.log('Breakdown: beforeCaret=====');
         console.log(beforeCaret);
 
         console.log('Breakdown: afterCaret=====');
-        console.log(afterCaret);
+        console.log(afterCaret);*/
 
         // удалить старое предложение, создать 2 новых!
         if (entity) {
@@ -506,118 +498,96 @@ const Entities = ({
   }, []);
    /* /new!!!!!!! */
 
-  /*render() {
-    const {
-      perspectiveId,
-      entry,
-      allEntriesGenerator,
-      column,
-      columns,
-      mode,
-      entitiesMode,
-      parentEntity,
-      disabled,
-      checkEntries,
-      checkedRow,
-      resetCheckedRow,
-      checkedColumn,
-      resetCheckedColumn,
-      checkedAll,
-      resetCheckedAll,
-    } = this.props;*/
+  const props = {
+    perspectiveId,
+    entry,
+    allEntriesGenerator,
+    column,
+    columns,
+    mode,
+    entitiesMode,
+    parentEntity,
+    disabled,
+    checkEntries,
+    checkedRow,
+    resetCheckedRow,
+    checkedColumn,
+    resetCheckedColumn,
+    checkedAll,
+    resetCheckedAll,
+  };
 
-    /* ??????  */
-    const props = {
-      perspectiveId,
-      entry,
-      allEntriesGenerator,
-      column,
-      columns,
-      mode,
-      entitiesMode,
-      parentEntity,
-      disabled,
-      checkEntries,
-      checkedRow,
-      resetCheckedRow,
-      checkedColumn,
-      resetCheckedColumn,
-      checkedAll,
-      resetCheckedAll,
-    };
+  const Component = getComponent(column.data_type);
 
-    const Component = getComponent(column.data_type);
+  if (column.data_type === "Link" || column.data_type === "Grouping Tag" || column.data_type === "Directed Link") {
+    return <Component {...props} />;
+  }
 
-    if (column.data_type === "Link" || column.data_type === "Grouping Tag" || column.data_type === "Directed Link") {
-      /*return <Component {...this.props} />;*/
-      return <Component {...props} />;
-    }
+  return (
+    <ul>
+      {entities.map(entity => (
+        <Component
+          key={compositeIdToString(entity.id)}
+          perspectiveId={perspectiveId}
+          as="li"
+          column={column}
+          columns={columns}
+          checkEntries={checkEntries}
+          checkedRow={checkedRow}
+          resetCheckedRow={resetCheckedRow}
+          checkedColumn={checkedColumn}
+          resetCheckedColumn={resetCheckedColumn}
+          checkedAll={checkedAll}
+          resetCheckedAll={resetCheckedAll}
+          entry={entry}
+          allEntriesGenerator={allEntriesGenerator}
+          entity={entity}
+          mode={mode}
+          entitiesMode={entitiesMode}
+          parentEntity={parentEntity}
+          publish={publish}
+          remove={remove}
+          accept={accept}
+          update={update}
+          breakdown={breakdown} /* new!!!!!!! */
+          className={mode != "edit" && entities.indexOf(entity) == entities.length - 1 ? "last" : ""}
+          disabled={disabled}
+          is_being_removed={remove_set.hasOwnProperty(id2str(entity.id))}
+          is_being_updated={update_set.hasOwnProperty(id2str(entity.id))}
+          draggable={true} /* new!!!!! */
+          id={entity.id} /* new!!!!! */
+        />
+      ))}
+      {mode === "edit" && (
+        <li className="last">
+          {!edit && (
+            <div ref={dropRef} /* new!!!! */>
+              {/* new!!!!! */}
+              {isOver && <div>Drop Here!</div>}
+              {/* /new!!!!! */}
 
-    return (
-      <ul>
-        {entities.map(entity => (
-          <Component
-            key={compositeIdToString(entity.id)}
-            perspectiveId={perspectiveId}
-            as="li"
-            column={column}
-            columns={columns}
-            checkEntries={checkEntries}
-            checkedRow={checkedRow}
-            resetCheckedRow={resetCheckedRow}
-            checkedColumn={checkedColumn}
-            resetCheckedColumn={resetCheckedColumn}
-            checkedAll={checkedAll}
-            resetCheckedAll={resetCheckedAll}
-            entry={entry}
-            allEntriesGenerator={allEntriesGenerator}
-            entity={entity}
-            mode={mode}
-            entitiesMode={entitiesMode}
-            parentEntity={parentEntity}
-            publish={publish}
-            remove={remove}
-            accept={accept}
-            update={update}
-            breakdown={breakdown} /* new!!!!!!! */
-            className={mode != "edit" && entities.indexOf(entity) == entities.length - 1 ? "last" : ""}
-            disabled={disabled}
-            is_being_removed={remove_set.hasOwnProperty(id2str(entity.id))}
-            is_being_updated={update_set.hasOwnProperty(id2str(entity.id))}
-            draggable={true} /* new!!!!! */
-            id={entity.id} /* new!!!!! */
-          />
-        ))}
-        {mode === "edit" && (
-          <li className="last">
-            {!edit && (
-              <div ref={dropRef} /* new!!!! */>
-                {/* new!!!!! */}
-                {isOver && <div>Drop Here!</div>}
-                {/* /new!!!!! */}
+              <Button.Group basic className="lingvo-buttons-group">
+                <Button icon={<i className="lingvo-icon lingvo-icon_plus" />}
+                  onClick={() => setEdit(true)} 
+                />
+              </Button.Group>
+              
+            </div>
+          )}
 
-                <Button.Group basic className="lingvo-buttons-group">
-                  <Button icon={<i className="lingvo-icon lingvo-icon_plus" />}
-                    onClick={() => setEdit(true)} 
-                  />
-                </Button.Group>
-                
-              </div>
-            )}
-
-            {edit && (
-              <Component.Edit
-                is_being_created={is_being_created}
-                onSave={content => create(content, parentEntity == null ? null : parentEntity.id)}
-                onCancel={() => setEdit(false)}
-                parentEntity={parentEntity} /* new!!!!!!! */
-                breakdown={breakdown} /* new!!!!!!! */
-              />
-            )}
-          </li>
-        )}
-      </ul>
-    );
+          {edit && (
+            <Component.Edit
+              is_being_created={is_being_created}
+              onSave={content => create(content, parentEntity == null ? null : parentEntity.id)}
+              onCancel={() => setEdit(false)}
+              parentEntity={parentEntity} /* new!!!!!!! */
+              breakdown={breakdown} /* new!!!!!!! */
+            />
+          )}
+        </li>
+      )}
+    </ul>
+  );
 };
 
 Entities.propTypes = {
