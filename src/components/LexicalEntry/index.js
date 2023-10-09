@@ -18,13 +18,14 @@ import Sound from "./Sound";
 import Text from "./Text";
 import Unknown from "./Unknown";
 
-const createEntityMutation = gql`
+export const createEntityMutation = gql`
   mutation createEntity(
     $parent_id: LingvodocID!
     $field_id: LingvodocID!
     $self_id: LingvodocID
     $content: String
     $file_content: Upload
+    $lexgraph_after: String
   ) {
     create_entity(
       parent_id: $parent_id
@@ -32,6 +33,7 @@ const createEntityMutation = gql`
       self_id: $self_id
       content: $content
       file_content: $file_content
+      lexgraph_after: $lexgraph_after
     ) {
       triumph
     }

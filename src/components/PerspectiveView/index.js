@@ -20,6 +20,7 @@ import {
   selectLexicalEntry,
   setSortByField
 } from "ducks/perspective";
+import createEntityMutation from "components/LexicalEntry"
 import TranslationContext from "Layout/TranslationContext";
 import { compositeIdToString as id2str } from "utils/compositeId";
 import smoothScroll from "utils/smoothscroll";
@@ -337,6 +338,7 @@ class P extends React.Component {
       columns,
       setSortByField: setSort,
       resetSortByField: resetSort,
+      createEntity,
       createLexicalEntry,
       mergeLexicalEntries,
       removeLexicalEntries,
@@ -431,7 +433,7 @@ class P extends React.Component {
       }
     };
 
-    const addEntry = () => {
+    const addEntry = (first_lexgraph) => {
       createLexicalEntry({
         variables: {
           id,
@@ -456,6 +458,17 @@ class P extends React.Component {
             create_lexicalentry: { lexicalentry }
           } = d;
           addCreatedEntry(lexicalentry);
+
+          if (lexgraph_field_id && first_lexgraph) {
+            console.log("First lexgraph: ", first_lexgraph)
+            createEntity({
+              variables: {
+                parent_id: lexicalentry.id,
+                field_id: lexgraph_field_id,
+                lexgraph_after: first_lexgraph
+              },
+            });
+          }
         }
       });
     };
@@ -573,6 +586,13 @@ class P extends React.Component {
     );
 
     const entries = processEntries(lexicalEntries.slice());
+
+    const first_lexgraph =
+      lexgraph_field_id && entries.length
+      ? get_lexgraph_marker(entries[0].id)
+      : lexgraph_field_id
+      ? '1'
+      : null;
 
     const _ROWS_PER_PAGE = columns.some(({field}) => field.english_translation === "Order") ? entries.length : ROWS_PER_PAGE;
 
@@ -727,7 +747,7 @@ class P extends React.Component {
               <Button 
                 icon={<i className="lingvo-icon lingvo-icon_add" />}
                 content={this.context("Add lexical entry")} 
-                onClick={addEntry}
+                onClick={addEntry(first_lexgraph)}
                 className="lingvo-button-green lingvo-perspective-button"
               />
             )}
@@ -844,6 +864,7 @@ P.propTypes = {
   setSortByField: PropTypes.func.isRequired,
   resetSortByField: PropTypes.func.isRequired,
   addLexicalEntry: PropTypes.func.isRequired,
+  createEntity: PropTypes.func.isRequired,
   createLexicalEntry: PropTypes.func.isRequired,
   mergeLexicalEntries: PropTypes.func.isRequired,
   removeLexicalEntries: PropTypes.func.isRequired,
@@ -882,6 +903,7 @@ const PerspectiveView = compose(
         dispatch
       )
   ),
+  graphql(createEntityMutation, {name: "createEntity"}),
   graphql(createLexicalEntryMutation, { name: "createLexicalEntry" }),
   graphql(mergeLexicalEntriesMutation, { name: "mergeLexicalEntries" }),
   graphql(removeLexicalEntriesMutation, { name: "removeLexicalEntries" }),
