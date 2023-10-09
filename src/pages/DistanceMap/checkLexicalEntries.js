@@ -1,15 +1,6 @@
 function checkLexicalEntries(word) {
-  switch (word.toLowerCase().replace(/\s+/g, "").trim()) {
-    case "lexicalentries":
-      return true;
-    case "лексическиевходы":
-      return true;
-    case "leksikaalinenmerkinnät":
-      return true;
-    case "lexikalischeeinträge":
-      return true;
-    default:
-      return false;
-  }
+  return /lexicalentries|лексическиевходы|leksikaalinenmerkinnät|lexikalischeeinträge/.test(
+    word.toLowerCase().replace(/\s+/g, "").trim()
+  );
 }
 export default checkLexicalEntries;
