@@ -20,7 +20,6 @@ import {
   selectLexicalEntry,
   setSortByField
 } from "ducks/perspective";
-import createEntityMutation from "components/LexicalEntry"
 import TranslationContext from "Layout/TranslationContext";
 import { compositeIdToString as id2str } from "utils/compositeId";
 import smoothScroll from "utils/smoothscroll";
@@ -145,6 +144,22 @@ const createLexicalEntryMutation = gql`
           is_subject_for_parsing
         }
       }
+    }
+  }
+`;
+
+const createEntityMutation = gql`
+  mutation createEntity(
+    $parent_id: LingvodocID!
+    $field_id: LingvodocID!
+    $lexgraph_after: String
+  ) {
+    create_entity(
+      parent_id: $parent_id
+      field_id: $field_id
+      lexgraph_after: $lexgraph_after
+    ) {
+      triumph
     }
   }
 `;
@@ -747,7 +762,7 @@ class P extends React.Component {
               <Button 
                 icon={<i className="lingvo-icon lingvo-icon_add" />}
                 content={this.context("Add lexical entry")} 
-                onClick={addEntry(first_lexgraph)}
+                onClick={() => addEntry(first_lexgraph)}
                 className="lingvo-button-green lingvo-perspective-button"
               />
             )}
