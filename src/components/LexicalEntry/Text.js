@@ -10,9 +10,11 @@ class TextEntityContent extends React.Component {
   constructor(props) {
     super(props);
 
+    const order = (props.number && props.column.english_translation === "Order");
+
     this.state = {
       edit: false,
-      content: props.entity.content
+      content: order ? props.number : props.entity.content
     };
 
     this.onEdit = this.onEdit.bind(this);
@@ -213,7 +215,8 @@ const Text = onlyUpdateForKeys([
     remove,
     update,
     is_being_removed,
-    is_being_updated
+    is_being_updated,
+    number
   } = props;
 
   const subColumn = find(columns, c => isEqual(c.self_id, column.column_id));
@@ -237,6 +240,7 @@ const Text = onlyUpdateForKeys([
         update={update}
         is_being_removed={is_being_removed}
         is_being_updated={is_being_updated}
+        number={number}
       />
       {subColumn && (
         <Entities
@@ -277,7 +281,8 @@ Text.propTypes = {
   update: PropTypes.func,
   resetCheckedRow: PropTypes.func,
   resetCheckedColumn: PropTypes.func,
-  resetCheckedAll: PropTypes.func
+  resetCheckedAll: PropTypes.func,
+  number: PropTypes.number
 };
 
 Text.defaultProps = {

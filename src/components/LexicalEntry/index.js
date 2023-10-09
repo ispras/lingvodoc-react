@@ -390,7 +390,8 @@ class Entities extends React.Component {
       checkedColumn,
       resetCheckedColumn,
       checkedAll,
-      resetCheckedAll
+      resetCheckedAll,
+      number
     } = this.props;
 
     const Component = getComponent(column.data_type);
@@ -435,6 +436,7 @@ class Entities extends React.Component {
             disabled={disabled}
             is_being_removed={this.state.remove_set.hasOwnProperty(id2str(entity.id))}
             is_being_updated={this.state.update_set.hasOwnProperty(id2str(entity.id))}
+            number={number}
           />
         ))}
         {mode === "edit" && (
@@ -481,7 +483,8 @@ Entities.propTypes = {
   resetCheckedRow: PropTypes.func,
   resetCheckedColumn: PropTypes.func,
   resetCheckedAll: PropTypes.func,
-  reRender: PropTypes.func
+  reRender: PropTypes.func,
+  number: PropTypes.number
 };
 
 Entities.defaultProps = {
