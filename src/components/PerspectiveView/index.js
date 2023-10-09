@@ -574,7 +574,7 @@ class P extends React.Component {
 
     const entries = processEntries(lexicalEntries.slice());
 
-    const _ROWS_PER_PAGE = columns.some({field} => field.english_translation === "Order") ? entries.length : ROWS_PER_PAGE;
+    const _ROWS_PER_PAGE = columns.some(({field}) => field.english_translation === "Order") ? entries.length : ROWS_PER_PAGE;
 
     const pageEntries =
       entries.length > _ROWS_PER_PAGE ? take(drop(entries, _ROWS_PER_PAGE * (page - 1)), _ROWS_PER_PAGE) : entries;
