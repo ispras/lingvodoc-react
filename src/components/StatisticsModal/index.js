@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import DatePicker, { registerLocale } from "react-datepicker";
 import { connect } from "react-redux";
-import { Button, Container, Modal, Table } from "semantic-ui-react";
+import { Button, Checkbox, Container, Icon, List, Message, Modal, Table } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { withApollo } from "@apollo/client/react/hoc";
 import { de, enGB, fi, fr, ru } from "date-fns/locale";
@@ -35,19 +35,41 @@ import "./style.scss";
  */
 
 const perspectiveStatisticsQuery = gql`
-  query statisticsPerspective($id: LingvodocID!, $start: Int!, $end: Int!) {
+  query statisticsPerspective($id: LingvodocID!, $start: Int!, $end: Int!, $disambiguation: Boolean) {
     perspective(id: $id) {
       id
-      statistic(starting_time: $start, ending_time: $end)
+      statistic(starting_time: $start, ending_time: $end, disambiguation_flag: $disambiguation)
     }
   }
 `;
 
 const dictionaryStatisticsQuery = gql`
-  query statisticsDictionary($id: LingvodocID!, $start: Int!, $end: Int!) {
+  query statisticsDictionary($id: LingvodocID!, $start: Int!, $end: Int!, $disambiguation: Boolean) {
     dictionary(id: $id) {
       id
-      statistic(starting_time: $start, ending_time: $end)
+      statistic(starting_time: $start, ending_time: $end, disambiguation_flag: $disambiguation)
+    }
+  }
+`;
+
+const languageStatisticsQuery = gql`
+  query statisticsLanguage(
+    $id: LingvodocID!
+    $start: Int!
+    $end: Int!
+    $disambiguation: Boolean
+    $dictionaries: Boolean
+    $corpora: Boolean
+  ) {
+    language(id: $id) {
+      id
+      statistic(
+        starting_time: $start
+        ending_time: $end
+        disambiguation_flag: $disambiguation
+        dictionaries: $dictionaries
+        corpora: $corpora
+      )
     }
   }
 `;
@@ -249,8 +271,9 @@ PerspectiveEntities.propTypes = {
 };
 
 const Statistics = ({ statistics, mode }) => {
-  const LexicalEntriesComponent = mode === "dictionary" ? DictionaryLexicalEntries : PerspectiveLexicalEntries;
-  const EntitiesComponent = mode === "dictionary" ? DictionaryEntities : PerspectiveEntities;
+  const as_dictionary = mode === "dictionary" || mode === "language";
+  const LexicalEntriesComponent = as_dictionary ? DictionaryLexicalEntries : PerspectiveLexicalEntries;
+  const EntitiesComponent = as_dictionary ? DictionaryEntities : PerspectiveEntities;
 
   const getTranslation = useContext(TranslationContext);
 
@@ -260,7 +283,7 @@ const Statistics = ({ statistics, mode }) => {
         user =>
           (user.lexical_entries || user.entities) && (
             <div key={user.name}>
-              <h2 className="lingvo-stat-username">{user.name}</h2>
+              <h2 className="lingvo-stat-username">{user.name === null ? getTranslation("total") : user.name}</h2>
               {user.lexical_entries && (
                 <div>
                   <h3 className="lingvo-stat-title-table">{getTranslation("Lexical entries")}</h3>
@@ -271,6 +294,26 @@ const Statistics = ({ statistics, mode }) => {
                 <div>
                   <h3 className="lingvo-stat-title-table">{getTranslation("Entities")}</h3>
                   <EntitiesComponent entities={user.entities} />
+                </div>
+              )}
+              {user.disambiguation && (
+                <div>
+                  <h3 className="lingvo-stat-title-table">{getTranslation("Disambiguation")}</h3>
+                  <Table celled structured className="lingvo-stat-table">
+                    <Table.Header>
+                      <Table.Row>
+                        <Table.HeaderCell>{getTranslation("Total tokens")}</Table.HeaderCell>
+                        <Table.HeaderCell>{getTranslation("Disambiguated tokens")}</Table.HeaderCell>
+                      </Table.Row>
+                    </Table.Header>
+
+                    <Table.Body>
+                      <Table.Row>
+                        <Table.Cell>{user.disambiguation[0]}</Table.Cell>
+                        <Table.Cell>{user.disambiguation[1]}</Table.Cell>
+                      </Table.Row>
+                    </Table.Body>
+                  </Table>
                 </div>
               )}
             </div>
@@ -289,8 +332,13 @@ class StatisticsModal extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      startDate: moment().subtract(5, "years"),
+      startDate: moment("2012", "YYYY"),
       endDate: moment(),
+      disambiguation: false,
+      languageDictionaries: true,
+      languageCorpora: true,
+      loading: false,
+      error: false,
       statistics: [],
       emptyStatistics: false,
       showStatistics: false
@@ -299,63 +347,105 @@ class StatisticsModal extends React.Component {
     this.getStatistics = this.getStatistics.bind(this);
   }
 
-  async getStatistics() {
+  getStatistics() {
     const { client, id, mode } = this.props;
-    const { startDate, endDate } = this.state;
-    const query = mode === "dictionary" ? dictionaryStatisticsQuery : perspectiveStatisticsQuery;
-    const { data } = await client.query({
-      query,
-      variables: {
-        id,
-        start: startDate.unix(),
-        end: endDate.unix()
-      }
-    });
+    const { startDate, endDate, disambiguation, languageDictionaries, languageCorpora } = this.state;
+    const query =
+      mode === "language"
+        ? languageStatisticsQuery
+        : mode === "dictionary"
+        ? dictionaryStatisticsQuery
+        : perspectiveStatisticsQuery;
 
-    const { perspective } = data;
-    const { dictionary } = data;
+    this.setState({ loading: true });
 
-    if (perspective) {
-      if (!perspective.statistic.length) {
-        this.setState({
-          emptyStatistics: true,
-          showStatistics: true
-        });
-      } else {
-        this.setState({
-          statistics: perspective.statistic,
-          emptyStatistics: false,
-          showStatistics: true
-        });
-      }
-    }
+    client
+      .query({
+        query,
+        variables: {
+          id,
+          start: startDate.unix(),
+          end: endDate.unix(),
+          disambiguation: disambiguation,
+          dictionaries: languageDictionaries,
+          corpora: languageCorpora
+        }
+      })
+      .then(
+        ({ data }) => {
+          const { perspective } = data;
+          const { dictionary } = data;
+          const { language } = data;
 
-    if (dictionary) {
-      if (!dictionary.statistic.length) {
-        this.setState({
-          emptyStatistics: true,
-          showStatistics: true
-        });
-      } else {
-        this.setState({
-          statistics: dictionary.statistic,
-          emptyStatistics: false,
-          showStatistics: true
-        });
-      }
-    }
+          if (perspective) {
+            if (!perspective.statistic.length) {
+              this.setState({
+                loading: false,
+                emptyStatistics: true,
+                showStatistics: true
+              });
+            } else {
+              this.setState({
+                loading: false,
+                statistics: perspective.statistic,
+                emptyStatistics: false,
+                showStatistics: true
+              });
+            }
+          }
+
+          if (dictionary) {
+            if (!dictionary.statistic.length) {
+              this.setState({
+                loading: false,
+                emptyStatistics: true,
+                showStatistics: true
+              });
+            } else {
+              this.setState({
+                loading: false,
+                statistics: dictionary.statistic,
+                emptyStatistics: false,
+                showStatistics: true
+              });
+            }
+          }
+
+          if (language) {
+            if (!language.statistic.length) {
+              this.setState({
+                loading: false,
+                emptyStatistics: true,
+                showStatistics: true
+              });
+            } else {
+              this.setState({
+                loading: false,
+                statistics: language.statistic,
+                emptyStatistics: false,
+                showStatistics: true
+              });
+            }
+          }
+        },
+        error_data => {
+          this.setState({ loading: false, error: true });
+        }
+      );
   }
 
-  handleChange(date, mode) {
+  handleChange(value, key) {
     const u = {};
-    u[mode] = date;
+    u[key] = value;
     u.showStatistics = false;
     this.setState(u);
   }
 
   render() {
     const { mode, title, locales } = this.props;
-    const { startDate, endDate, statistics } = this.state;
+
+    const { startDate, endDate, disambiguation, languageDictionaries, languageCorpora, loading, error, statistics } =
+      this.state;
 
     const currentLocaleId = locale.get();
     const localesDatePicker = [];
@@ -403,18 +493,68 @@ class StatisticsModal extends React.Component {
                 locale={localesDatePicker.find(item => item.id === currentLocaleId)["shortcut"] || "en"}
               />
             </div>
+            <div className="lingvo-statistics-block">
+              <Checkbox
+                label={this.context(
+                  "Disambiguation statistics (not restricted by time interval, may take quite a lot of time to compute)"
+                )}
+                checked={disambiguation}
+                onChange={(e, { checked }) => this.handleChange(checked, "disambiguation")}
+              />
+            </div>
+            {mode === "language" && (
+              <div className="lingvo-statistics-block">
+                <List>
+                  <List.Item>
+                    <Checkbox
+                      label={this.context("Dictionaries")}
+                      checked={languageDictionaries}
+                      onChange={(e, { checked }) => this.handleChange(checked, "languageDictionaries")}
+                    />
+                  </List.Item>
+                  <List.Item>
+                    <Checkbox
+                      label={this.context("Corpora")}
+                      checked={languageCorpora}
+                      onChange={(e, { checked }) => this.handleChange(checked, "languageCorpora")}
+                    />
+                  </List.Item>
+                </List>
+              </div>
+            )}
           </div>
           <Container textAlign="center">
             <Button
-              content={this.context("Show statistics")}
+              content={
+                loading ? (
+                  <span>
+                    {this.context("Loading")}... <Icon name="spinner" loading />
+                  </span>
+                ) : (
+                  this.context("Show statistics")
+                )
+              }
               onClick={this.getStatistics}
               className="lingvo-button-violet"
-              disabled={this.state.showStatistics}
+              disabled={loading || error || this.state.showStatistics}
             />
           </Container>
           <div className="lingvo-statistics-view">
-            {this.state.emptyStatistics ? (
-              <div className="lingvo-message lingvo-message_warning" style={{ marginBottom: "6px" }}>{this.context("No statistics for the selected period")}</div>
+            {error ? (
+              <div style={{ margin: "auto", width: "fit-content" }}>
+                <Message negative compact>
+                  <Message.Header>{this.context("Statistics error")}</Message.Header>
+                  <div style={{ marginTop: "0.25em" }}>
+                    {this.context(
+                      "Try closing the dialog and opening it again; if the error persists, please contact administrators."
+                    )}
+                  </div>
+                </Message>
+              </div>
+            ) : this.state.emptyStatistics ? (
+              <div className="lingvo-message lingvo-message_warning" style={{ marginBottom: "6px" }}>
+                {this.context("No statistics for the selected period")}
+              </div>
             ) : (
               <Statistics statistics={statistics} mode={mode} />
             )}
