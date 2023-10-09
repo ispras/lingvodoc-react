@@ -478,9 +478,11 @@ const Entities = ({
 
         //console.log('Длина больше нуля!!!!!');
 
-        const beforeCaret = targetValue.substring(0, selectionStart).replace(/ /g, '\xa0') || '\xa0';
+        /*const beforeCaret = targetValue.substring(0, selectionStart).replace(/ /g, '\xa0') || '\xa0';*/
+        const beforeCaret = targetValue.substring(0, selectionStart).replace(/ /g, '\x20') || '\x20';
 
-        const afterCaret = targetValue.substring(selectionStart).replace(/ /g, '\xa0') || '\xa0';
+        /*const afterCaret = targetValue.substring(selectionStart).replace(/ /g, '\xa0') || '\xa0';*/
+        const afterCaret = targetValue.substring(selectionStart).replace(/ /g, '\x20') || '\x20';
 
         /*console.log('Breakdown: beforeCaret=====');
         console.log(beforeCaret);
