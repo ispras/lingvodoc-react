@@ -405,6 +405,7 @@ class Entities extends React.Component {
       ens => (!parentEntity ? ens : ens.filter(e => isEqual(e.self_id, parentEntity.id)))
     ];
     const entities = flow(filters)(entry.entities);
+    const is_order_column = column.english_translation === "Order";
 
     return (
       <ul>
@@ -439,12 +440,12 @@ class Entities extends React.Component {
             number={number}
           />
         ))}
-        {mode === "edit" && (
+        {mode === "edit" && !is_order_column && (
           <li className="last">
             {!this.state.edit && (
               <Button.Group basic className="lingvo-buttons-group">
                 <Button icon={<i className="lingvo-icon lingvo-icon_plus" />}
-                  onClick={() => this.setState({ edit: true })} 
+                  onClick={() => this.setState({ edit: true })}
                 />
               </Button.Group>
             )}
