@@ -574,8 +574,10 @@ class P extends React.Component {
 
     const entries = processEntries(lexicalEntries.slice());
 
+    const _ROWS_PER_PAGE = columns.some({field} => field.english_translation === "Order") ? entries.length : ROWS_PER_PAGE;
+
     const pageEntries =
-      entries.length > ROWS_PER_PAGE ? take(drop(entries, ROWS_PER_PAGE * (page - 1)), ROWS_PER_PAGE) : entries;
+      entries.length > _ROWS_PER_PAGE ? take(drop(entries, _ROWS_PER_PAGE * (page - 1)), _ROWS_PER_PAGE) : entries;
 
     // Put newly created entries at the top of page.
     const e = [
@@ -809,7 +811,7 @@ class P extends React.Component {
         <Pagination
           urlBased
           activePage={page}
-          pageSize={ROWS_PER_PAGE}
+          pageSize={_ROWS_PER_PAGE}
           totalItems={entries.length}
           showTotal
           onPageChanged={() => {
