@@ -448,7 +448,7 @@ class P extends React.Component {
       }
     };
 
-    const addEntry = (first_lexgraph) => {
+    const addEntry = (lexgraph_min) => {
       createLexicalEntry({
         variables: {
           id,
@@ -474,12 +474,12 @@ class P extends React.Component {
           } = d;
           addCreatedEntry(lexicalentry);
 
-          if (lexgraph_field_id && first_lexgraph) {
+          if (lexgraph_field_id && lexgraph_min) {
             createEntity({
               variables: {
                 parent_id: lexicalentry.id,
                 field_id: lexgraph_field_id,
-                lexgraph_after: first_lexgraph
+                lexgraph_after: lexgraph_min
               },
             });
           }
@@ -601,15 +601,18 @@ class P extends React.Component {
 
     const entries = processEntries(lexicalEntries.slice());
 
-    const first_lexgraph = () => {
+    const lexgraph_min = () => {
       if (!lexgraph_field_id)
         return null;
+
+      let min_res = '1';
       for (let i=0; i<entries.length; i++) {
         const result = get_lexgraph_marker(entries[i].id);
-        if (result)
-          return result;
+        if (result < min_res)
+          min_res = result;
       }
-      return '1';
+
+      return min_res;
     }
 
     const _ROWS_PER_PAGE = columns.some(({field}) => field.english_translation === "Order") ? entries.length : ROWS_PER_PAGE;
@@ -765,7 +768,7 @@ class P extends React.Component {
               <Button 
                 icon={<i className="lingvo-icon lingvo-icon_add" />}
                 content={this.context("Add lexical entry")} 
-                onClick={() => addEntry(first_lexgraph())}
+                onClick={() => addEntry(lexgraph_min())}
                 className="lingvo-button-green lingvo-perspective-button"
               />
             )}
