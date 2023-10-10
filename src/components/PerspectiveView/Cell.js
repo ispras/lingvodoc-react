@@ -69,7 +69,7 @@ Cell.propTypes = {
   resetCheckedColumn: PropTypes.func,
   resetCheckedAll: PropTypes.func,
   reRender: PropTypes.func,
-  number: PropTypes.number
+  number: PropTypes.string
 };
 
 Cell.defaultProps = {
@@ -84,5 +84,6 @@ export default onlyUpdateForKeys([
   "column",
   "checkedRow",
   "checkedColumn",
-  "checkedAll"
+  "checkedAll",
+  "number"
 ])(Cell);

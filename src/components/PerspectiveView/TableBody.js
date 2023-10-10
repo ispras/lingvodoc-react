@@ -8,7 +8,7 @@ import Row from "./Row";
 const TableBody = ({ entries, ...rest }) => (
   <Table.Body>
     {entries.map((entry, index) => (
-      <Row key={entry.id} entry={entry} number={index + 1} {...rest} />
+      <Row key={entry.id} entry={entry} number={(index + 1).toString()} {...rest} />
     ))}
   </Table.Body>
 );

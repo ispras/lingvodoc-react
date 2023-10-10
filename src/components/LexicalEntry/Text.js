@@ -193,7 +193,8 @@ const Text = onlyUpdateForKeys([
   "is_being_updated",
   "checkedRow",
   "checkedColumn",
-  "checkedAll"
+  "checkedAll",
+  "number"
 ])(props => {
   const {
     perspectiveId,
@@ -285,7 +286,7 @@ Text.propTypes = {
   resetCheckedRow: PropTypes.func,
   resetCheckedColumn: PropTypes.func,
   resetCheckedAll: PropTypes.func,
-  number: PropTypes.number
+  number: PropTypes.string
 };
 
 Text.defaultProps = {
