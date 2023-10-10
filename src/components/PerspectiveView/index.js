@@ -575,7 +575,22 @@ class P extends React.Component {
       return result ? result : str_a.localeCompare(str_b, undefined, { numeric: true });
     };
 
-    const entitySortKeys = new Map();
+    const orderEntries = es => {
+      if (!lexgraph_field_id)
+        return es;
+
+      const entitySortKeys = new Map();
+      for (const entry of es) {
+        const entities = entry.entities.filter(entity => isEqual(entity.field_id, lexgraph_field_id));
+        entitySortKeys.set(
+          entry,
+          entities.length > 0 && entities[0].content ? entities[0].content : `${entities.length}`
+        );
+      }
+      es.sort((ea, eb) => entitySortKeys.get(ea).localeCompare(entitySortKeys.get(eb)));
+      return es;
+    };
+
     const processEntries = flow([
       // remove empty lexical entries, if not in edit mode
       es => (mode !== "edit" ? es.filter(e => e.entities.length > 0) : es),
@@ -593,9 +608,15 @@ class P extends React.Component {
       es => {
         // no sorting required
         if (!sortByField) {
-          return es;
+          return orderEntries(es);
         }
         const { field, order } = sortByField;
+
+        if (isEqual(lexgraph_field_id, field)) {
+            return order === "a" ? orderEntries(es) : reverse(orderEntries(es));
+        }
+
+        const entitySortKeys = new Map();
 
         /* Getting a sort key for each entry. */
 
@@ -647,7 +668,7 @@ class P extends React.Component {
       return min_res;
     }
 
-    const _ROWS_PER_PAGE = columns.some(({field}) => field.english_translation === "Order") ? entries.length : ROWS_PER_PAGE;
+    const _ROWS_PER_PAGE = lexgraph_field_id ? entries.length : ROWS_PER_PAGE;
 
     const pageEntries =
       entries.length > _ROWS_PER_PAGE ? take(drop(entries, _ROWS_PER_PAGE * (page - 1)), _ROWS_PER_PAGE) : entries;
