@@ -613,7 +613,7 @@ class P extends React.Component {
         const { field, order } = sortByField;
 
         if (isEqual(lexgraph_field_id, field)) {
-            return order === "a" ? orderEntries(es) : reverse(orderEntries(es));
+            return orderEntries(es);
         }
 
         const entitySortKeys = new Map();
