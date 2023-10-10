@@ -159,7 +159,22 @@ const createEntityMutation = gql`
       field_id: $field_id
       lexgraph_after: $lexgraph_after
     ) {
-      triumph
+      entity {
+        id
+        parent_id
+        field_id
+        link_id
+        self_id
+        created_at
+        locale_id
+        content
+        published
+        accepted
+        additional_metadata {
+          link_perspective_id
+        }
+        is_subject_for_parsing
+      }
     }
   }
 `;
@@ -460,10 +475,10 @@ class P extends React.Component {
               variables: {id, entitiesMode}
             },
             (data) => ({
-              perspective:
-                { ...data.perspective,
-                  lexical_entries: [lexicalentry, ...data.perspective.lexical_entries]
-                }
+              perspective: {
+                ...data.perspective,
+                lexical_entries: [lexicalentry, ...data.perspective.lexical_entries]
+              }
             })
           );
         },
@@ -480,6 +495,23 @@ class P extends React.Component {
                 parent_id: lexicalentry.id,
                 field_id: lexgraph_field_id,
                 lexgraph_after: lexgraph_min
+              },
+              update: (cache, { data: { create_entity: { entity }}}) => {
+                cache.updateQuery({
+                    query: queryLexicalEntries,
+                    variables: {id, entitiesMode}
+                  },
+                  (data) => {
+                    const lexical_entries = data.perspective.lexical_entries.filter(le => !isEqual(le.id, lexicalentry.id));
+                    const lexicalentry_updated = {...lexicalentry, entities:[...lexicalentry.entities, entity]};
+                    return {
+                      perspective: {
+                        ...data.perspective,
+                        lexical_entries: [...lexical_entries, lexicalentry_updated]
+                      }
+                    }
+                  }
+                );
               },
             });
           }
@@ -608,7 +640,7 @@ class P extends React.Component {
       let min_res = '1';
       for (let i=0; i<entries.length; i++) {
         const result = get_lexgraph_marker(entries[i].id);
-        if (result < min_res)
+        if (result && result < min_res)
           min_res = result;
       }
 

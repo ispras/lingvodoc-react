@@ -15,7 +15,8 @@ class TextEntityContent extends React.Component {
     this.state = {
       edit: false,
       read_only: is_order_column,
-      content: is_order_column ? props.number : props.entity.content
+      content: props.entity.content
+      //content: is_order_column ? props.number : props.entity.content
     };
 
     this.onEdit = this.onEdit.bind(this);
