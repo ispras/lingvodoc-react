@@ -509,7 +509,7 @@ class P extends React.Component {
                         ...data.perspective,
                         lexical_entries: [...lexical_entries, lexicalentry_updated]
                       }
-                    }
+                    };
                   }
                 );
               },
