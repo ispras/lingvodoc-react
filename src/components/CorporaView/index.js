@@ -1,16 +1,20 @@
 import React, { useState } from "react";
+/* new!!!!! */
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
+/* /new!!!!! */
 import { connect } from "react-redux";
 import { Button, Dimmer, Header, Icon, Table } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
-import { drop, flow, isEqual, reverse, take, sortBy } from "lodash";
+import { drop, flow, isEqual, reverse, take } from "lodash";
 import PropTypes from "prop-types";
 import { branch, compose, renderComponent } from "recompose";
 import { bindActionCreators } from "redux";
 import styled from "styled-components";
 
 import ApproveModal from "components/ApproveModal";
-import Pagination from "components/Pagination";
+/*import Pagination from "components/Pagination";*/
 import Placeholder from "components/Placeholder";
 import { openModal } from "ducks/modals";
 import {
@@ -22,12 +26,14 @@ import {
 } from "ducks/perspective";
 import TranslationContext from "Layout/TranslationContext";
 import { compositeIdToString as id2str } from "utils/compositeId";
-import smoothScroll from "utils/smoothscroll";
 
+/*import smoothScroll from "utils/smoothscroll";*/
 import TableBody from "./TableBody";
 import TableHeader from "./TableHeader";
 
-const ROWS_PER_PAGE = 20;
+/* new!!!!!! */
+/*const ROWS_PER_PAGE = 20;*/
+/* /new!!!!!! */
 
 const ModalContentWrapper = styled("div")`
   min-height: 15vh;
@@ -95,30 +101,6 @@ export const queryLexicalEntries = gql`
   }
 `;
 
-const updateLexgraphMutation = gql`
-  mutation updateLexgraph($id: LingvodocID!,
-                          $lexgraph_before: String!,
-                          $lexgraph_after: String!) {
-    update_entity_content(id: $id,
-                          lexgraph_before: $lexgraph_before,
-                          lexgraph_after: $lexgraph_after) {
-      entity
-      triumph
-    }
-  }
-`;
-
-const updateEntityParentMutation = gql`
-  mutation updateEntityParent($id: LingvodocID!,
-                              $new_parent_id: LingvodocID!) {
-    update_entity(id: $id,
-                  new_parent_id: $new_parent_id) {
-      entity
-      triumph
-    }
-  }
-`;
-
 const createLexicalEntryMutation = gql`
   mutation createLexicalEntry($id: LingvodocID!, $entitiesMode: String!) {
     create_lexicalentry(perspective_id: $id) {
@@ -126,7 +108,6 @@ const createLexicalEntryMutation = gql`
         id
         parent_id
         created_at
-        marked_for_deletion
         entities(mode: $entitiesMode) {
           id
           parent_id
@@ -141,39 +122,7 @@ const createLexicalEntryMutation = gql`
           additional_metadata {
             link_perspective_id
           }
-          is_subject_for_parsing
         }
-      }
-    }
-  }
-`;
-
-const createEntityMutation = gql`
-  mutation createEntity(
-    $parent_id: LingvodocID!
-    $field_id: LingvodocID!
-    $lexgraph_after: String
-  ) {
-    create_entity(
-      parent_id: $parent_id
-      field_id: $field_id
-      lexgraph_after: $lexgraph_after
-    ) {
-      entity {
-        id
-        parent_id
-        field_id
-        link_id
-        self_id
-        created_at
-        locale_id
-        content
-        published
-        accepted
-        additional_metadata {
-          link_perspective_id
-        }
-        is_subject_for_parsing
       }
     }
   }
@@ -190,9 +139,6 @@ const mergeLexicalEntriesMutation = gql`
 const removeLexicalEntriesMutation = gql`
   mutation removeLexicalEntries($ids: [LingvodocID]!) {
     bulk_delete_lexicalentry(ids: $ids) {
-      deleted_entries {
-        id
-      }
       triumph
     }
   }
@@ -241,6 +187,7 @@ const TableComponent = ({
           selectDisabledIndeterminate={selectDisabledIndeterminate}
           disabled={disabledHeader}
           actions={actions}
+          mode={mode} /* new!!!!! */
         />
         <TableBody
           perspectiveId={perspectiveId}
@@ -262,7 +209,7 @@ const TableComponent = ({
       </Table>
     </div>
   );
-}
+};
 
 TableComponent.propTypes = {
   columns: PropTypes.array.isRequired,
@@ -282,7 +229,7 @@ TableComponent.defaultProps = {
   selectEntries: false,
   selectedEntries: [],
   onEntrySelect: () => {},
-  reRender: () => console.log('Fake refetch')
+  reRender: () => console.log("Fake refetch")
 };
 
 class P extends React.Component {
@@ -292,8 +239,7 @@ class P extends React.Component {
     this.state = {
       checkedRow: null,
       checkedColumn: null,
-      checkedAll: null,
-      mutation: { loading: false }
+      checkedAll: null
     };
 
     this.onCheckRow = this.onCheckRow.bind(this);
@@ -304,6 +250,11 @@ class P extends React.Component {
     this.resetCheckedAll = this.resetCheckedAll.bind(this);
     //this.reRender = this.reRender.bind(this);
   }
+
+  //reRender() {
+  //  this.props.data.refetch();
+  //  console.log("Refetched 'queryLexicalEntries'");
+  //}
 
   resetCheckedRow() {
     this.setState({
@@ -368,7 +319,6 @@ class P extends React.Component {
       columns,
       setSortByField: setSort,
       resetSortByField: resetSort,
-      createEntity,
       createLexicalEntry,
       mergeLexicalEntries,
       removeLexicalEntries,
@@ -379,20 +329,18 @@ class P extends React.Component {
       createdEntries,
       selectedEntries,
       user,
-      reRender,
-      //for moving lexentries
-      lexentry_id_source,
-      lexentry_id_before,
-      lexentry_id_after,
-      //for moving entities
-      entity_id_dragged,
-      lexentry_id_target
+      reRender
     } = this.props;
 
-    const { loading, error } = data;
-    const { loading: changing } = this.state.mutation;
+    /*console.log('page======');
+    console.log(page);*/
 
-    if (loading || changing || (!loading && !error && !data.perspective)) {
+    /*console.log('mode======');
+    console.log(mode);*/
+
+    const { loading, error } = data;
+
+    if (loading || (!loading && !error && !data.perspective)) {
       return (
         <Dimmer active style={{ minHeight: "600px", background: "none" }}>
           <Header as="h2" icon>
@@ -403,118 +351,28 @@ class P extends React.Component {
     }
 
     const lexicalEntries = !error ? data.perspective.lexical_entries : [];
-    const lexgraph_column = !error ? columns.find(col => col.field.english_translation === "Order") : null;
-    const lexgraph_field_id = lexgraph_column ? lexgraph_column.field_id : null;
 
-    const get_lexgraph_entity = lexentry_id_source => {
-      const lexentry = lexentry_id_source ? lexicalEntries.find(le => isEqual(le.id, lexentry_id_source)) : null;
-      return lexentry ? lexentry.entities.find(e => isEqual(e.field_id, lexgraph_field_id)) : null;
-    }
-
-    const get_lexgraph_marker = lexentry_id_source => {
-      const lexgraph_entity = get_lexgraph_entity(lexentry_id_source);
-      return lexgraph_entity ? lexgraph_entity.content : '';
-    }
-
-    const dragAndDrop = () => {
-      // Moving entity to another lexentry
-      if (entity_id_dragged && lexentry_id_target) {
-        updateEntityParentMutation({
-          variables: {
-            id: entity_id_dragged,
-            new_parent_id: lexentry_id_target
-          },
-          refetchQueries: [
-            {
-              query: queryLexicalEntries,
-              variables: {
-                id,
-                entitiesMode
-              }
-            }
-          ]
-        }).then(({data: mutation}) => this.setState({mutation}));
-      }
-
-      // Moving lexentry between certain ones
-      if (lexgraph_field_id &&
-          lexentry_id_source &&
-          (lexentry_id_before || lexentry_id_after)) {
-        entity_id_change = get_lexgraph_entity(lexentry_id_source).id;
-        lexgraph_before = get_lexgraph_marker(lexentry_id_before);
-        lexgraph_after = get_lexgraph_marker(lexentry_id_after);
-
-        updateLexgraphMutation({
-          variables: {
-            id: entity_id_change,
-            lexgraph_before,
-            lexgraph_after
-          },
-          refetchQueries: [
-            {
-              query: queryLexicalEntries,
-              variables: {
-                id,
-                entitiesMode
-              }
-            }
-          ]
-        }).then(({data: mutation}) => this.setState({mutation}));
-      }
-    };
-
-    const addEntry = (lexgraph_min) => {
+    const addEntry = () => {
       createLexicalEntry({
         variables: {
           id,
           entitiesMode
         },
-        update: (cache, { data: { create_lexicalentry: { lexicalentry }}}) => {
-          cache.updateQuery({
-              query: queryLexicalEntries,
-              variables: {id, entitiesMode}
-            },
-            (data) => ({
-              perspective: {
-                ...data.perspective,
-                lexical_entries: [lexicalentry, ...data.perspective.lexical_entries]
-              }
-            })
-          );
-        },
+        refetchQueries: [
+          {
+            query: queryLexicalEntries,
+            variables: {
+              id,
+              entitiesMode
+            }
+          }
+        ]
       }).then(({ data: d }) => {
-        if (!d.loading && !d.error) {
+        if (!d.loading || !d.error) {
           const {
             create_lexicalentry: { lexicalentry }
           } = d;
           addCreatedEntry(lexicalentry);
-
-          if (lexgraph_field_id && lexgraph_min) {
-            createEntity({
-              variables: {
-                parent_id: lexicalentry.id,
-                field_id: lexgraph_field_id,
-                lexgraph_after: lexgraph_min
-              },
-              update: (cache, { data: { create_entity: { entity }}}) => {
-                cache.updateQuery({
-                    query: queryLexicalEntries,
-                    variables: {id, entitiesMode}
-                  },
-                  (data) => {
-                    const lexical_entries = data.perspective.lexical_entries.filter(le => !isEqual(le.id, lexicalentry.id));
-                    const lexicalentry_updated = {...lexicalentry, entities:[...lexicalentry.entities, entity]};
-                    return {
-                      perspective: {
-                        ...data.perspective,
-                        lexical_entries: [...lexical_entries, lexicalentry_updated]
-                      }
-                    };
-                  }
-                );
-              },
-            });
-          }
         }
       });
     };
@@ -544,22 +402,15 @@ class P extends React.Component {
         variables: {
           ids: selectedEntries
         },
-        update: (cache, { data }) => {
-          if (data.loading || data.error) return;
-          const { bulk_delete_lexicalentry: { deleted_entries }} = data;
-          cache.updateQuery({
-              query: queryLexicalEntries,
-              variables: {id, entitiesMode}
-            },
-            (data) => ({
-              perspective:
-                { ...data.perspective,
-                  lexical_entries: data.perspective.lexical_entries.filter(
-                    le => !deleted_entries.some(de => isEqual(le.id, de.id)))
-                }
-            })
-          );
-        },
+        refetchQueries: [
+          {
+            query: queryLexicalEntries,
+            variables: {
+              id,
+              entitiesMode
+            }
+          }
+        ]
       }).then(() => {
         resetSelection();
       });
@@ -575,21 +426,7 @@ class P extends React.Component {
       return result ? result : str_a.localeCompare(str_b, undefined, { numeric: true });
     };
 
-    const orderEntries = es => {
-      if (!lexgraph_field_id)
-        return es;
-
-      const sortedEntries = sortBy(es, e => {
-        const entities = e.entities.filter(entity => isEqual(entity.field_id, lexgraph_field_id));
-        if (entities.length > 0) {
-          return entities[0].content;
-        }
-        return "";
-      });
-
-      return sortedEntries;
-    };
-
+    const entitySortKeys = new Map();
     const processEntries = flow([
       // remove empty lexical entries, if not in edit mode
       es => (mode !== "edit" ? es.filter(e => e.entities.length > 0) : es),
@@ -605,27 +442,11 @@ class P extends React.Component {
           : es,
       // apply sorting
       es => {
-        // init
-        let [ field, order ] = [null, "a"];
-
-        // sort by 'Order' column or no sorting required
+        // no sorting required
         if (!sortByField) {
-          if (lexgraph_field_id)
-            [ field, order ] = [ lexgraph_field_id, "a" ];
-          else
-            return es;
+          return es;
         }
-        else ({ field, order } = sortByField);
-
-        if (!field) {
-          field = lexgraph_field_id ? lexgraph_field_id : [66, 10];
-        }
-
-        if (isEqual(lexgraph_field_id, field)) {
-          return orderEntries(es);
-        }
-
-        const entitySortKeys = new Map();
+        const { field, order } = sortByField;
 
         /* Getting a sort key for each entry. */
 
@@ -663,25 +484,16 @@ class P extends React.Component {
 
     const entries = processEntries(lexicalEntries.slice());
 
-    const lexgraph_min = () => {
-      if (!lexgraph_field_id)
-        return null;
-
-      let min_res = '1';
-      for (let i=0; i<entries.length; i++) {
-        const result = get_lexgraph_marker(entries[i].id);
-        if (result && result < min_res)
-          min_res = result;
-      }
-
-      return min_res;
-    }
-
-    const _ROWS_PER_PAGE = lexgraph_field_id ? entries.length : ROWS_PER_PAGE;
-
+    /* new!!!!!! */
+    /*
     const pageEntries =
-      entries.length > _ROWS_PER_PAGE ? take(drop(entries, _ROWS_PER_PAGE * (page - 1)), _ROWS_PER_PAGE) : entries;
+      entries.length > ROWS_PER_PAGE ? take(drop(entries, ROWS_PER_PAGE * (page - 1)), ROWS_PER_PAGE) : entries;
+    */
 
+    const pageEntries = entries;
+    /* /new!!!!!! */
+
+      
     // Put newly created entries at the top of page.
     const e = [
       ...newEntries,
@@ -829,8 +641,8 @@ class P extends React.Component {
             {mode === "edit" && (
               <Button 
                 icon={<i className="lingvo-icon lingvo-icon_add" />}
-                content={this.context("Add lexical entry")} 
-                onClick={() => addEntry(lexgraph_min())}
+                content={this.context("Add lexical entry")}
+                onClick={addEntry}
                 className="lingvo-button-green lingvo-perspective-button"
               />
             )}
@@ -874,47 +686,56 @@ class P extends React.Component {
         )}
 
         <div className="lingvo-scrolling-tab__table">
-          <Table celled padded className={`${className} lingvo-perspective-table`}>
-            <TableHeader
-              columns={fields}
-              sortByField={sortByField}
-              onSortModeChange={(fieldId, order) => setSort(fieldId, order)}
-              onSortModeReset={() => resetSort()}
-              selectEntries={mode === "edit"}
-              entries={items}
-              checkEntries={isTableLanguagesPublish}
-              selectedRows={selectedRows}
-              selectedColumns={selectedColumns}
-              onCheckColumn={this.onCheckColumn}
-              onCheckAll={this.onCheckAll}
-            />
-            <TableBody
-              perspectiveId={id}
-              entitiesMode={entitiesMode}
-              entries={items}
-              allEntriesGenerator={allEntriesGenerator}
-              columns={fields}
-              mode={mode}
-              selectEntries={mode === "edit"}
-              checkEntries={isTableLanguagesPublish}
-              selectedEntries={selectedEntries}
-              selectedRows={selectedRows}
-              checkedRow={checkedRow}
-              checkedColumn={checkedColumn}
-              checkedAll={checkedAll}
-              onCheckRow={this.onCheckRow}
-              resetCheckedRow={this.resetCheckedRow}
-              resetCheckedColumn={this.resetCheckedColumn}
-              resetCheckedAll={this.resetCheckedAll}
-              onEntrySelect={onEntrySelect}
-              reRender={reRender}
-            />
-          </Table>
+          {/* new!!!!! */}
+          <DndProvider backend={HTML5Backend}>
+          {/* /new!!!!! */}
+            <Table celled padded className={`${className} lingvo-perspective-table`}>
+              <TableHeader
+                columns={fields}
+                sortByField={sortByField}
+                onSortModeChange={(fieldId, order) => setSort(fieldId, order)}
+                onSortModeReset={() => resetSort()}
+                selectEntries={mode === "edit"}
+                entries={items}
+                checkEntries={isTableLanguagesPublish}
+                selectedRows={selectedRows}
+                selectedColumns={selectedColumns}
+                onCheckColumn={this.onCheckColumn}
+                onCheckAll={this.onCheckAll}
+                mode={mode} /* new!!!!! */
+              />
+              <TableBody
+                perspectiveId={id}
+                entitiesMode={entitiesMode}
+                entries={items}
+                allEntriesGenerator={allEntriesGenerator}
+                columns={fields}
+                mode={mode}
+                selectEntries={mode === "edit"}
+                checkEntries={isTableLanguagesPublish}
+                selectedEntries={selectedEntries}
+                selectedRows={selectedRows}
+                checkedRow={checkedRow}
+                checkedColumn={checkedColumn}
+                checkedAll={checkedAll}
+                onCheckRow={this.onCheckRow}
+                resetCheckedRow={this.resetCheckedRow}
+                resetCheckedColumn={this.resetCheckedColumn}
+                resetCheckedAll={this.resetCheckedAll}
+                onEntrySelect={onEntrySelect}
+                reRender={reRender}
+              />
+            </Table>
+          {/* new!!!!! */}
+          </DndProvider>
+          {/* /new!!!!! */}
         </div>
+        {/* new!!!!! */}
+        {/*
         <Pagination
           urlBased
           activePage={page}
-          pageSize={_ROWS_PER_PAGE}
+          pageSize={ROWS_PER_PAGE}
           totalItems={entries.length}
           showTotal
           onPageChanged={() => {
@@ -926,7 +747,8 @@ class P extends React.Component {
             }
           }}
           className="lingvo-pagination-block_perspective"
-        />
+        />*/}
+        {/* /new!!!!! */}
       </div>
     );
   }
@@ -947,7 +769,6 @@ P.propTypes = {
   setSortByField: PropTypes.func.isRequired,
   resetSortByField: PropTypes.func.isRequired,
   addLexicalEntry: PropTypes.func.isRequired,
-  createEntity: PropTypes.func.isRequired,
   createLexicalEntry: PropTypes.func.isRequired,
   mergeLexicalEntries: PropTypes.func.isRequired,
   removeLexicalEntries: PropTypes.func.isRequired,
@@ -986,12 +807,11 @@ const PerspectiveView = compose(
         dispatch
       )
   ),
-  graphql(createEntityMutation, {name: "createEntity"}),
   graphql(createLexicalEntryMutation, { name: "createLexicalEntry" }),
   graphql(mergeLexicalEntriesMutation, { name: "mergeLexicalEntries" }),
   graphql(removeLexicalEntriesMutation, { name: "removeLexicalEntries" }),
   graphql(queryLexicalEntries, {
-    options: { notifyOnNetworkStatusChange: true, fetchPolicy: 'cache-first' }
+    options: { notifyOnNetworkStatusChange: true }
   })
 )(P);
 
@@ -1191,8 +1011,8 @@ const LexicalEntryViewBaseByIds = ({ perspectiveId, mode, entitiesMode, data, ac
 
   const reRender = () => {
     data.refetch();
-    //console.log("Refetched 'queryLexicalEntriesByIds'");
-  }
+    console.log("Refetched 'queryLexicalEntriesByIds'");
+  };
 
   return (
     <TableComponent
@@ -1259,8 +1079,8 @@ const PerspectiveViewWrapper = ({ id, className, mode, entitiesMode, page, data,
 
   const reRender = () => {
     data.refetch();
-    //console.log("Refetched 'queryPerspective'")
-  }
+    console.log("Refetched 'queryPerspective'");
+  };
 
   return (
     <PerspectiveView

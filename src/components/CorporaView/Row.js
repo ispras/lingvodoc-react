@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
+import { useDrag, useDrop } from "react-dnd";
 import { Button, Checkbox, Table } from "semantic-ui-react";
 import { isEmpty, isEqual, sortBy } from "lodash";
 import PropTypes from "prop-types";
@@ -7,6 +8,15 @@ import { onlyUpdateForKeys } from "recompose";
 import { compositeIdToString as id2str } from "utils/compositeId";
 
 import Cell from "./Cell";
+
+const handleStyle = {
+  backgroundColor: '#ff00ff',
+  width: '1rem',
+  height: '1rem',
+  display: 'inline-block',
+  marginRight: '0.75rem',
+  cursor: 'move',
+};
 
 const Row = ({
   perspectiveId,
@@ -29,15 +39,102 @@ const Row = ({
   resetCheckedColumn,
   resetCheckedAll,
   reRender,
-  number,
   /* eslint-disable react/prop-types */
   showEntryId,
   selectDisabled,
   selectDisabledIndeterminate,
   disabledEntrySet,
-  removeSelectionEntrySet
+  removeSelectionEntrySet,
+  index, /* new!!!!! */
+  id, /* new!!!!! */
+  moveListItem, /* new!!!!! */
+  entries /* new!!!!! */
   /* eslint-enable react/prop-types */
 }) => {
+
+  /* new!!!!!! */
+
+  const ref = useRef(null);
+
+  // useDrag - the list item is draggable
+  const [{ isDragging }, dragRef, preview] = useDrag({
+    type: 'entry',
+    item: () => {
+      return { id, index };
+    },
+    collect: (monitor) => ({
+        isDragging: monitor.isDragging(),
+    })
+  });
+
+  // useDrop - the list item is also a drop area
+  const [{ handlerId }, dropRef] = useDrop({
+    accept: 'entry',
+    collect(monitor) {
+      return {
+        handlerId: monitor.getHandlerId(),
+      };
+    },
+    hover: (item, monitor) => {
+      if (!ref.current) {
+        return;
+      }
+      const dragIndex = item.index;
+      const hoverIndex = index;
+      // Don't replace items with themselves
+      if (dragIndex === hoverIndex) {
+        return;
+      }
+      // Determine rectangle on screen
+      const hoverBoundingRect = ref.current?.getBoundingClientRect();
+      // Get vertical middle
+      const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+      // Determine mouse position
+      const clientOffset = monitor.getClientOffset();
+      // Get pixels to the top
+      const hoverClientY = clientOffset.y - hoverBoundingRect.top;
+      // Only perform the move when the mouse has crossed half of the items height
+      // When dragging downwards, only move when the cursor is below 50%
+      // When dragging upwards, only move when the cursor is above 50%
+      // Dragging downwards
+      if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
+        return;
+      }
+      // Dragging upwards
+      if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
+        return;
+      }
+      // Time to actually perform the action
+      moveListItem(dragIndex, hoverIndex);
+      // Note: we're mutating the monitor item here!
+      // Generally it's better to avoid mutations,
+      // but it's good here for the sake of performance
+      // to avoid expensive index searches.
+      item.index = hoverIndex;
+
+      /*
+        const dragIndex = item.index;
+        const hoverIndex = index;
+        const hoverBoundingRect = ref.current?.getBoundingClientRect();
+        const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+        const hoverActualY = monitor.getClientOffset().y - hoverBoundingRect.top;
+
+        // if dragging down, continue only when hover is smaller than middle Y
+        if (dragIndex < hoverIndex && hoverActualY < hoverMiddleY) {return;};
+        // if dragging up, continue only when hover is bigger than middle Y
+        if (dragIndex > hoverIndex && hoverActualY > hoverMiddleY) {return;};
+
+        moveListItem(dragIndex, hoverIndex);
+        item.index = hoverIndex;*/
+    },
+  });
+
+  const dragDropRef = dragRef(dropRef(ref));
+
+  /*const opacity = isDragging ? 0 : 1;*/
+
+  /* /new!!!!!! */
+
   const entry_id_str = id2str(entry.id);
 
   const [ disabled, setDisabled ] = useState(false);
@@ -47,7 +144,13 @@ const Row = ({
   const remove_selection_flag = removeSelectionEntrySet && removeSelectionEntrySet.hasOwnProperty(entry_id_str);
 
   return (
-    <Table.Row style={disabled_flag ? { opacity: "0.5" } : {}}>
+    <tr style={isDragging ? { opacity: "0" } : (disabled_flag ? { opacity: "0.5" } : {})} ref={preview} data-handler-id={handlerId}>
+    {/*<Table.Row style={isDragging ? { opacity: "0" } : (disabled_flag ? { opacity: "0.5" } : {})} ref={dragDropRef}>*/}
+      {/* new!!!!! */}
+      <Table.Cell style={(mode === "edit") ? {} : { display: "none" }}>
+        <div ref={dragDropRef} style={handleStyle} />
+      </Table.Cell>
+      {/* /new!!!!! */}
       {selectEntries && (
         <Table.Cell>
           {!remove_selection_flag && (
@@ -98,7 +201,7 @@ const Row = ({
           entitiesMode={entitiesMode}
           disabled={disabled_flag}
           reRender={reRender}
-          number={number}
+          /*index={index}*/ /* new!!!!! */
         />
       ))}
 
@@ -128,7 +231,8 @@ const Row = ({
           })}
         </Table.Cell>
       )}
-    </Table.Row>
+    {/*</Table.Row>*/}
+    </tr>
   );
 };
 
@@ -152,7 +256,10 @@ Row.propTypes = {
   resetCheckedColumn: PropTypes.func,
   resetCheckedAll: PropTypes.func,
   reRender: PropTypes.func,
-  number: PropTypes.string
+  id: PropTypes.array, /*  ????? new!!!!! */
+  index: PropTypes.number, /*  ????? new!!!!! */
+  moveListItem: PropTypes.func, /* new!!!!! */
+  entries: PropTypes.array, /* new!!!!! */
 };
 
 Row.defaultProps = {
@@ -182,5 +289,8 @@ export default onlyUpdateForKeys([
   "checkedColumn",
   "checkedAll",
   "columns",
-  "number"
+  "id", /*  ????? new!!!!! */
+  "index", /*  ????? new!!!!! */
+  "moveListItem", /* new!!!!! */
+  "entries" /* new!!!!! */
 ])(Row);

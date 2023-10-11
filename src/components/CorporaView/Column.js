@@ -19,8 +19,6 @@ const Column = ({
   onSortModeChange,
   onSortModeReset
 }) => {
-  const be_sorted = field.english_translation === "Order" ? false : true;
-
   const subFields = fields.filter(f => isEqual(f.self_id, field.column_id));
 
   const sort_flag = field && sortByField && id2str(field.id) == id2str(sortByField.field);
@@ -53,7 +51,7 @@ const Column = ({
             ) : (
               <label>{T(field.translations)}</label>
             )}
-            {onSortModeChange && be_sorted &&
+            {onSortModeChange &&
               (sort_flag ? (
                 <span className="lingvo-perspective-sort">
                   {sortByField.order == "a" ? (
@@ -84,8 +82,7 @@ const Column = ({
                     onClick={e => (e.stopPropagation(), onSortModeChange(field.id, "d"))}
                   />
                 </span>
-            ))}
-
+              ))}
             <ul>
               {subFields.map((subField, index) => {
                 const cls = index + 1 === subFields.length ? { className: "last" } : {};

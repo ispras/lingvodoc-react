@@ -213,6 +213,8 @@ const P = ({
   }
 
   const lexicalEntries = !error ? data.perspective.lexical_entries : [];
+  const lexgraph_column = !error ? columns.find(col => col.field.english_translation === "Order") : null;
+  const lexgraph_field_id = lexgraph_column ? lexgraph_column.field_id : null;
 
   const addEntry = () => {
     createLexicalEntry({
@@ -309,11 +311,22 @@ const P = ({
         : es,
     // apply sorting
     es => {
-      // no sorting required
+      // init
+      let [ field, order ] = [null, "a"];
+
+      // sort by 'Order' column or no sorting required
       if (!sortByField) {
-        return es;
+        if (lexgraph_field_id)
+          [ field, order ] = [ lexgraph_field_id, "a" ];
+        else
+          return es;
       }
-      const { field, order } = sortByField;
+      else ({ field, order } = sortByField);
+
+      if (!field) {
+        field = lexgraph_field_id ? lexgraph_field_id : [66, 10];
+      }
+
       // XXX: sorts by first entity only
       const sortedEntries = sortBy(es, e => {
         const entities = e.entities.filter(entity => isEqual(entity.field_id, field));

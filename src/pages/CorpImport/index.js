@@ -21,13 +21,13 @@ import {
   updateColumn
 } from "ducks/dictImport";
 import TranslationContext from "Layout/TranslationContext";
-
-
-import "pages/DictImport/styles.scss";
-import { corpusInfo, columnsInfo } from "./api";
 import LanguageSelection from "pages/DictImport/LanguageSelection";
+
+import { columnsInfo, corpusInfo } from "./api";
 import ColumnMapper from "./ColumnMapper";
 import Linker from "./Linker";
+
+import "pages/DictImport/styles.scss";
 
 export const fieldsQuery = gql`
   query field {
@@ -122,7 +122,7 @@ class Info extends React.Component {
     return column => (field, name) => {
       this.props.setColumnType(id, column, field);
       this.props.updateColumn(id, column, name, null);
-    }
+    };
   }
 
   onSetLanguage(id) {
