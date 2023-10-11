@@ -24,7 +24,8 @@ const Cell = ({
   mode,
   entitiesMode,
   disabled,
-  reRender
+  reRender,
+  number
   // eslint-disable-next-line arrow-body-style
 }) => {
   return (
@@ -46,6 +47,7 @@ const Cell = ({
         entitiesMode={entitiesMode}
         disabled={disabled}
         reRender={reRender}
+        number={number}
       />
     </Table.Cell>
   );
@@ -66,7 +68,8 @@ Cell.propTypes = {
   resetCheckedRow: PropTypes.func,
   resetCheckedColumn: PropTypes.func,
   resetCheckedAll: PropTypes.func,
-  reRender: PropTypes.func
+  reRender: PropTypes.func,
+  number: PropTypes.number
 };
 
 Cell.defaultProps = {

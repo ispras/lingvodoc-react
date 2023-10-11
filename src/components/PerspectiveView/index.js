@@ -148,6 +148,37 @@ const createLexicalEntryMutation = gql`
   }
 `;
 
+const createEntityMutation = gql`
+  mutation createEntity(
+    $parent_id: LingvodocID!
+    $field_id: LingvodocID!
+    $lexgraph_after: String
+  ) {
+    create_entity(
+      parent_id: $parent_id
+      field_id: $field_id
+      lexgraph_after: $lexgraph_after
+    ) {
+      entity {
+        id
+        parent_id
+        field_id
+        link_id
+        self_id
+        created_at
+        locale_id
+        content
+        published
+        accepted
+        additional_metadata {
+          link_perspective_id
+        }
+        is_subject_for_parsing
+      }
+    }
+  }
+`;
+
 const mergeLexicalEntriesMutation = gql`
   mutation mergeEntries($groupList: [[LingvodocID]]!) {
     merge_bulk(group_list: $groupList, publish_any: false, async_execution: false) {
@@ -337,6 +368,7 @@ class P extends React.Component {
       columns,
       setSortByField: setSort,
       resetSortByField: resetSort,
+      createEntity,
       createLexicalEntry,
       mergeLexicalEntries,
       removeLexicalEntries,
@@ -431,7 +463,7 @@ class P extends React.Component {
       }
     };
 
-    const addEntry = () => {
+    const addEntry = (lexgraph_min) => {
       createLexicalEntry({
         variables: {
           id,
@@ -443,10 +475,10 @@ class P extends React.Component {
               variables: {id, entitiesMode}
             },
             (data) => ({
-              perspective:
-                { ...data.perspective,
-                  lexical_entries: [lexicalentry, ...data.perspective.lexical_entries]
-                }
+              perspective: {
+                ...data.perspective,
+                lexical_entries: [lexicalentry, ...data.perspective.lexical_entries]
+              }
             })
           );
         },
@@ -456,6 +488,33 @@ class P extends React.Component {
             create_lexicalentry: { lexicalentry }
           } = d;
           addCreatedEntry(lexicalentry);
+
+          if (lexgraph_field_id && lexgraph_min) {
+            createEntity({
+              variables: {
+                parent_id: lexicalentry.id,
+                field_id: lexgraph_field_id,
+                lexgraph_after: lexgraph_min
+              },
+              update: (cache, { data: { create_entity: { entity }}}) => {
+                cache.updateQuery({
+                    query: queryLexicalEntries,
+                    variables: {id, entitiesMode}
+                  },
+                  (data) => {
+                    const lexical_entries = data.perspective.lexical_entries.filter(le => !isEqual(le.id, lexicalentry.id));
+                    const lexicalentry_updated = {...lexicalentry, entities:[...lexicalentry.entities, entity]};
+                    return {
+                      perspective: {
+                        ...data.perspective,
+                        lexical_entries: [...lexical_entries, lexicalentry_updated]
+                      }
+                    }
+                  }
+                );
+              },
+            });
+          }
         }
       });
     };
@@ -516,7 +575,22 @@ class P extends React.Component {
       return result ? result : str_a.localeCompare(str_b, undefined, { numeric: true });
     };
 
-    const entitySortKeys = new Map();
+    const orderEntries = es => {
+      if (!lexgraph_field_id)
+        return es;
+
+      const entitySortKeys = new Map();
+      for (const entry of es) {
+        const entities = entry.entities.filter(entity => isEqual(entity.field_id, lexgraph_field_id));
+        entitySortKeys.set(
+          entry,
+          entities.length > 0 && entities[0].content ? entities[0].content : `${entities.length}`
+        );
+      }
+      es.sort((ea, eb) => entitySortKeys.get(ea).localeCompare(entitySortKeys.get(eb)));
+      return es;
+    };
+
     const processEntries = flow([
       // remove empty lexical entries, if not in edit mode
       es => (mode !== "edit" ? es.filter(e => e.entities.length > 0) : es),
@@ -534,9 +608,15 @@ class P extends React.Component {
       es => {
         // no sorting required
         if (!sortByField) {
-          return es;
+          return orderEntries(es);
         }
         const { field, order } = sortByField;
+
+        if (isEqual(lexgraph_field_id, field)) {
+            return order === "a" ? orderEntries(es) : reverse(orderEntries(es));
+        }
+
+        const entitySortKeys = new Map();
 
         /* Getting a sort key for each entry. */
 
@@ -574,8 +654,24 @@ class P extends React.Component {
 
     const entries = processEntries(lexicalEntries.slice());
 
+    const lexgraph_min = () => {
+      if (!lexgraph_field_id)
+        return null;
+
+      let min_res = '1';
+      for (let i=0; i<entries.length; i++) {
+        const result = get_lexgraph_marker(entries[i].id);
+        if (result && result < min_res)
+          min_res = result;
+      }
+
+      return min_res;
+    }
+
+    const _ROWS_PER_PAGE = lexgraph_field_id ? entries.length : ROWS_PER_PAGE;
+
     const pageEntries =
-      entries.length > ROWS_PER_PAGE ? take(drop(entries, ROWS_PER_PAGE * (page - 1)), ROWS_PER_PAGE) : entries;
+      entries.length > _ROWS_PER_PAGE ? take(drop(entries, _ROWS_PER_PAGE * (page - 1)), _ROWS_PER_PAGE) : entries;
 
     // Put newly created entries at the top of page.
     const e = [
@@ -725,7 +821,7 @@ class P extends React.Component {
               <Button 
                 icon={<i className="lingvo-icon lingvo-icon_add" />}
                 content={this.context("Add lexical entry")} 
-                onClick={addEntry}
+                onClick={() => addEntry(lexgraph_min())}
                 className="lingvo-button-green lingvo-perspective-button"
               />
             )}
@@ -809,7 +905,7 @@ class P extends React.Component {
         <Pagination
           urlBased
           activePage={page}
-          pageSize={ROWS_PER_PAGE}
+          pageSize={_ROWS_PER_PAGE}
           totalItems={entries.length}
           showTotal
           onPageChanged={() => {
@@ -842,6 +938,7 @@ P.propTypes = {
   setSortByField: PropTypes.func.isRequired,
   resetSortByField: PropTypes.func.isRequired,
   addLexicalEntry: PropTypes.func.isRequired,
+  createEntity: PropTypes.func.isRequired,
   createLexicalEntry: PropTypes.func.isRequired,
   mergeLexicalEntries: PropTypes.func.isRequired,
   removeLexicalEntries: PropTypes.func.isRequired,
@@ -880,6 +977,7 @@ const PerspectiveView = compose(
         dispatch
       )
   ),
+  graphql(createEntityMutation, {name: "createEntity"}),
   graphql(createLexicalEntryMutation, { name: "createLexicalEntry" }),
   graphql(mergeLexicalEntriesMutation, { name: "mergeLexicalEntries" }),
   graphql(removeLexicalEntriesMutation, { name: "removeLexicalEntries" }),
