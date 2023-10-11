@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { Button, Dimmer, Header, Icon, Table } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
-import { drop, flow, isEqual, reverse, take } from "lodash";
+import { drop, flow, isEqual, reverse, take, sortBy } from "lodash";
 import PropTypes from "prop-types";
 import { branch, compose, renderComponent } from "recompose";
 import { bindActionCreators } from "redux";
@@ -579,16 +579,15 @@ class P extends React.Component {
       if (!lexgraph_field_id)
         return es;
 
-      const entitySortKeys = new Map();
-      for (const entry of es) {
-        const entities = entry.entities.filter(entity => isEqual(entity.field_id, lexgraph_field_id));
-        entitySortKeys.set(
-          entry,
-          entities.length > 0 && entities[0].content ? entities[0].content : `${entities.length}`
-        );
-      }
-      es.sort((ea, eb) => entitySortKeys.get(ea).localeCompare(entitySortKeys.get(eb)));
-      return es;
+      const sortedEntries = sortBy(es, e => {
+        const entities = e.entities.filter(entity => isEqual(entity.field_id, lexgraph_field_id));
+        if (entities.length > 0) {
+          return entities[0].content;
+        }
+        return "";
+      });
+
+      return sortedEntries;
     };
 
     const processEntries = flow([
@@ -606,14 +605,24 @@ class P extends React.Component {
           : es,
       // apply sorting
       es => {
-        // no sorting required
+        // init
+        let [ field, order ] = [null, "a"];
+
+        // sort by 'Order' column or no sorting required
         if (!sortByField) {
-          return orderEntries(es);
+          if (lexgraph_field_id)
+            [ field, order ] = [ lexgraph_field_id, "a" ];
+          else
+            return es;
         }
-        const { field, order } = sortByField;
+        else ({ field, order } = sortByField);
+
+        if (!field) {
+          field = lexgraph_field_id ? lexgraph_field_id : [66, 10];
+        }
 
         if (isEqual(lexgraph_field_id, field)) {
-            return orderEntries(es);
+          return orderEntries(es);
         }
 
         const entitySortKeys = new Map();
