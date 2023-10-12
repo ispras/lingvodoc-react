@@ -26,9 +26,11 @@ const Column = ({
   const sort_flag = field && sortByField && id2str(field.id) == id2str(sortByField.field);
 
   const sort_f = () =>
-    !sort_flag
+    !be_sorted
+      ? onSortModeReset()
+    : !sort_flag
       ? onSortModeChange(field.id, "a")
-      : sortByField.order == "a"
+    : sortByField.order == "a"
       ? onSortModeChange(field.id, "d")
       : onSortModeReset();
 

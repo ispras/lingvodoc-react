@@ -102,7 +102,6 @@ const updateLexgraphMutation = gql`
     update_entity_content(id: $id,
                           lexgraph_before: $lexgraph_before,
                           lexgraph_after: $lexgraph_after) {
-      entity
       triumph
     }
   }
@@ -293,7 +292,8 @@ class P extends React.Component {
       checkedRow: null,
       checkedColumn: null,
       checkedAll: null,
-      mutation: { loading: false }
+      mutation: { loading: false },
+      dnd_enabled: true
     };
 
     this.onCheckRow = this.onCheckRow.bind(this);
@@ -366,8 +366,8 @@ class P extends React.Component {
       filter,
       sortByField,
       columns,
-      setSortByField: setSort,
-      resetSortByField: resetSort,
+      setSortByField,
+      resetSortByField,
       createEntity,
       createLexicalEntry,
       mergeLexicalEntries,
@@ -414,6 +414,20 @@ class P extends React.Component {
     const get_lexgraph_marker = lexentry_id_source => {
       const lexgraph_entity = get_lexgraph_entity(lexentry_id_source);
       return lexgraph_entity ? lexgraph_entity.content : '';
+    }
+
+    const setSort = (field, order) => {
+      setSortByField(field, order);
+      this.setState(
+        {dnd_enabled: false},
+        () => console.log("dnd_enabled: ", this.state.dnd_enabled));
+    }
+
+    const resetSort = () => {
+      resetSortByField();
+      this.setState(
+        {dnd_enabled: true},
+        () => console.log("dnd_enabled: ", this.state.dnd_enabled));
     }
 
     const dragAndDrop = () => {
