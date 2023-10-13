@@ -72,30 +72,17 @@ const Row = ({
       console.log('monitor.didDrop()===');
       console.log(monitor.didDrop());
 
-      /*console.log('ref=====');
-      console.log(ref);
-
-      console.log('ref.current.parentElement.parentElement=====');
-      console.log(ref.current.parentElement.parentElement);*/
-
       const prev = ref.current.parentElement.parentElement.previousElementSibling || null;
       const idPrev = prev && prev.id.split(',').map(entry => parseInt(entry)) || null;
-      
-      /*console.log('idPrev=====');
-      console.log(idPrev);*/
 
       const next = ref.current.parentElement.parentElement.nextElementSibling || null;
       const idNext = next && next.id.split(',').map(entry => parseInt(entry)) || null;
       
-      /*console.log('idNext=====');
-      console.log(idNext);*/
-
       dragAndDropEntries(id, idPrev, idNext);
 
       if (monitor.didDrop()) {
         //setDropped(item);
         console.log('monitor.didDrop() === true !!!!!!!');
-        //dragAndDropEntries(id, idPrev, idNext);
       }
     }
   });
@@ -112,10 +99,7 @@ const Row = ({
       if (!ref.current) {
         return;
       }
-
-      //console.log('useDrop hover: item.id======');
-      //console.log(item.id);
-
+      
       const dragIndex = item.index;
       const hoverIndex = index;
       // Don't replace items with themselves
