@@ -32,10 +32,6 @@ import smoothScroll from "utils/smoothscroll";
 import TableBody from "./TableBody";
 import TableHeader from "./TableHeader";
 
-/* new!!!!!! */
-/*const ROWS_PER_PAGE = 20;*/
-/* /new!!!!!! */
-
 const ROWS_PER_PAGE = 20;
 
 const ModalContentWrapper = styled("div")`
@@ -316,13 +312,7 @@ class P extends React.Component {
     this.resetCheckedColumn = this.resetCheckedColumn.bind(this);
     this.onCheckAll = this.onCheckAll.bind(this);
     this.resetCheckedAll = this.resetCheckedAll.bind(this);
-    //this.reRender = this.reRender.bind(this);
   }
-
-  //reRender() {
-  //  this.props.data.refetch();
-  //  console.log("Refetched 'queryLexicalEntries'");
-  //}
 
   resetCheckedRow() {
     this.setState({
@@ -405,24 +395,9 @@ class P extends React.Component {
       /*lexentry_id_before,*/ /* new2!!!!! */
       /*lexentry_id_after,*/ /* new2!!!!! */
       //for moving entities
-      entity_id_dragged, /* new2!!!!! */
-      lexentry_id_target /* new2!!!!! */
+      /*entity_id_dragged,*/ /* new2!!!!! */
+      /*lexentry_id_target*/ /* new2!!!!! */
     } = this.props;
-
-    /*console.log(lexentry_id_source);
-    console.log('lexentry_id_source====');
-
-    console.log(lexentry_id_before);
-    console.log('lexentry_id_before====');
-
-    console.log(lexentry_id_after);
-    console.log('lexentry_id_after====');*/
-
-    /*console.log('page======');
-    console.log(page);*/
-
-    /*console.log('mode======');
-    console.log(mode);*/
 
     console.log('REnder index!!!!!!!!!!!!');
 
@@ -455,6 +430,7 @@ class P extends React.Component {
       return lexgraph_entity ? lexgraph_entity.content : '';
     };
 
+    /*
     const dragAndDrop = () => {
       // Moving entity to another lexentry
       if (entity_id_dragged && lexentry_id_target) {
@@ -501,6 +477,7 @@ class P extends React.Component {
         }).then(({data: mutation}) => this.setState({mutation}));
       }
     };
+    */
     /* /new2!!!!!! */
 
     /* new!!!!!! */
@@ -784,16 +761,6 @@ class P extends React.Component {
     };
     /* /new2!!!!!! */
 
-    /* new!!!!!! */
-    /*
-    const pageEntries =
-      entries.length > ROWS_PER_PAGE ? take(drop(entries, ROWS_PER_PAGE * (page - 1)), ROWS_PER_PAGE) : entries;
-    */
-
-    /* !!!!!!! */
-    // const pageEntries = entries;
-    /* /new!!!!!! */
-
     /* new2!!!!!! */
     const _ROWS_PER_PAGE = lexgraph_field_id ? entries.length : ROWS_PER_PAGE;
 
@@ -946,10 +913,9 @@ class P extends React.Component {
           ],
         })
       });
-
-      console.log('this.state.cards======');
-      console.log(this.state.cards);
-      /*);*/
+      
+      /*console.log('this.state.cards======');
+      console.log(this.state.cards);*/
     };
     /* /new!!!!!! */
 
