@@ -3,6 +3,7 @@ import { Button, Checkbox, Input } from "semantic-ui-react";
 import { find, isEqual } from "lodash";
 import PropTypes from "prop-types";
 import { onlyUpdateForKeys } from "recompose";
+import { RegExpMarker } from "react-mark.js";
 
 import Entities from "./index";
 
@@ -96,12 +97,18 @@ class TextEntityContent extends React.Component {
       }
     }
 
+    const pg_ln = /\[\d+[ab]:\d+\]/;
+    const pg = /\[\d+[ab]?\]/;
+    const ln = /\(\d+\)/;
+    // TODO: change 'number' to something meaningful
+    const metatext = number ? new RegExp(pg_ln.source + "|" + pg.source + "|" + ln.source) : new RegExp();
+
     switch (mode) {
       case "edit":
         return (
           <div className="lingvo-input-buttons-group">
             {!(is_being_updated || this.state.edit) && (
-              <span className="lingvo-input-buttons-group__name">{text}</span>
+              <span className="lingvo-input-buttons-group__name"><RegExpMarker mark={metatext}>{text}</RegExpMarker></span>
             )}
             {(is_being_updated || this.state.edit) && (
               <Input
@@ -142,7 +149,7 @@ class TextEntityContent extends React.Component {
                 </a>
               </span>
             ) : (
-              <span className="lingvo-entry-content">{text}</span>
+              <span className="lingvo-entry-content"><RegExpMarker mark={metatext}>{text}</RegExpMarker></span>
             )}
             <Checkbox
               className="lingvo-checkbox lingvo-entry-text__checkbox" 
@@ -168,11 +175,11 @@ class TextEntityContent extends React.Component {
 
       case "view":
         return (
-          <span className="lingvo-entry-content">{text}</span>
+          <span className="lingvo-entry-content"><RegExpMarker mark={metatext}>{text}</RegExpMarker></span>
         );
       case "contributions":
         return entity.accepted ? (
-          <span className="lingvo-entry-content">{text}</span>
+          <span className="lingvo-entry-content"><RegExpMarker mark={metatext}>{text}</RegExpMarker></span>
         ) : (
           <Button.Group basic icon className="lingvo-buttons-group">
             <Button content={text} className="lingvo-buttons-group__text" />
