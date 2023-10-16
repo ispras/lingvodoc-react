@@ -49,6 +49,7 @@ const Row = ({
   id, /* new!!!!! */
   moveListItem, /* new!!!!! */
   dragAndDropEntries, /* new!!!!! */
+
   entries /* new!!!!! */
   /* eslint-enable react/prop-types */
 }) => {
@@ -85,6 +86,7 @@ const Row = ({
         console.log('monitor.didDrop() === true !!!!!!!');
       }
     }
+
   });
 
   // useDrop - the list item is also a drop area
@@ -99,7 +101,7 @@ const Row = ({
       if (!ref.current) {
         return;
       }
-      
+
       const dragIndex = item.index;
       const hoverIndex = index;
       // Don't replace items with themselves
