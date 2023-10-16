@@ -68,28 +68,6 @@ const TextEntityContent = ({
     breakdown(event, parentEntity, entity);
   }, []);
 
-  const onFocusTextArea = useCallback((event) => {
-    //const width = Math.min(window.screen.width, window.innerWidth);
-    const el = event.target;
-
-    /*if (width <= 767) {*/
-      el.classList.remove('lingvo-gist-elem_textarea_fix');
-
-    /*  setTimeout(() => {
-        el.setSelectionRange(el.value.length, el.value.length);
-      }, 0);
-    }*/
-  }, []);
-
-  const onBlurTextArea = useCallback((event) => {
-    //const width = Math.min(window.screen.width, window.innerWidth);
-    const el = event.target;
-
-    /*if (width <= 767) {*/
-      el.classList.add('lingvo-gist-elem_textarea_fix'); 
-    /*}*/
-  }, []);
-
   /* /new!!!!! */
 
   // useDrag - the list item is draggable
@@ -160,22 +138,12 @@ const TextEntityContent = ({
             <span className="lingvo-input-buttons-group__name">{content} {isDragging && 'Oops'}</span>
           )}
           {(is_being_updated || edit) && (
-            /*<Input
-              className="lingvo-input-action"
-              onChange={(event, target) => setContent(target.value)}
-              // new!!!! 
-              onKeyDown={onKeyDown}
-              // /new!!!!
-              value={content}
-            />*/
             /* new!!!!!! */
             <TextareaAutosize 
               defaultValue={content}
-              /*onFocus={onFocusTextArea}*/
-              /*onBlur={onBlurTextArea}*/
               onChange={(event) => setContent(event.target.value)}
               onKeyDown={onKeyDown}
-              className="lingvo-input-action lingvo-gist-elem lingvo-gist-elem_textarea /*lingvo-gist-elem_textarea_fix*/" 
+              className="lingvo-input-action lingvo-input-action_textarea" 
             />
             /* /new!!!!!! */
           )}
@@ -408,7 +376,8 @@ const Edit = ({
 
   const [content, setContent] = useState("");
 
-  const onChange = useCallback((event, target) => {
+  /*const onChange = useCallback((event, target) => {*/
+  const onChange = useCallback((event) => {
 
     console.log('func onChange!!!!!!');
 
@@ -416,7 +385,8 @@ const Edit = ({
     console.log('target.value=====');
     console.log(target.value);*/
 
-    setContent(target.value);
+    /*setContent(target.value);*/
+    setContent(event.target.value);
 
   }, [content]);
 
@@ -461,7 +431,7 @@ const Edit = ({
   }, [content]);
   
   return (
-    <Input
+    /*<Input
       className="lingvo-input-action"
       onChange={onChange}
       onKeyPress={onKeyPress}
@@ -476,7 +446,23 @@ const Edit = ({
           <Button icon={<i className="lingvo-icon lingvo-icon_delete2" />} onClick={onCancel} />
         </Button.Group>
       }
-    />
+    />*/
+    <div className="lingvo-input-buttons-group">
+      <TextareaAutosize 
+        onChange={onChange}
+        onKeyPress={onKeyPress}
+        onKeyDown={onKeyDown}
+        onBlur={onBlur}
+        className="lingvo-input-action lingvo-input-action_textarea" 
+      />
+      <Button.Group basic className="lingvo-buttons-group">
+        <Button icon={is_being_created ? <i className="lingvo-icon lingvo-icon_spinner" /> : <i className="lingvo-icon lingvo-icon_save2" />} 
+          disabled={is_being_created || !content}
+          className={is_being_created ? "lingvo-button-spinner" : ""}
+        />
+        <Button icon={<i className="lingvo-icon lingvo-icon_delete2" />} onClick={onCancel} />
+      </Button.Group>
+    </div>
   );
 
 };
