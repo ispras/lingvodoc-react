@@ -48,6 +48,8 @@ const Row = ({
   index, /* new!!!!! */
   id, /* new!!!!! */
   moveListItem, /* new!!!!! */
+  dragAndDropEntries, /* new!!!!! */
+
   entries /* new!!!!! */
   /* eslint-enable react/prop-types */
 }) => {
@@ -63,8 +65,28 @@ const Row = ({
       return { id, index };
     },
     collect: (monitor) => ({
-        isDragging: monitor.isDragging(),
-    })
+      isDragging: monitor.isDragging(),
+    }),
+    end: (item, monitor) => {
+      console.log('useDrag end: item=====');
+      console.log(item);
+      console.log('monitor.didDrop()===');
+      console.log(monitor.didDrop());
+
+      const prev = ref.current.parentElement.parentElement.previousElementSibling || null;
+      const idPrev = prev && prev.id.split(',').map(entry => parseInt(entry)) || null;
+
+      const next = ref.current.parentElement.parentElement.nextElementSibling || null;
+      const idNext = next && next.id.split(',').map(entry => parseInt(entry)) || null;
+      
+      dragAndDropEntries(id, idPrev, idNext);
+
+      if (monitor.didDrop()) {
+        //setDropped(item);
+        console.log('monitor.didDrop() === true !!!!!!!');
+      }
+    }
+
   });
 
   // useDrop - the list item is also a drop area
@@ -79,6 +101,7 @@ const Row = ({
       if (!ref.current) {
         return;
       }
+
       const dragIndex = item.index;
       const hoverIndex = index;
       // Don't replace items with themselves
@@ -86,7 +109,8 @@ const Row = ({
         return;
       }
       // Determine rectangle on screen
-      const hoverBoundingRect = ref.current?.getBoundingClientRect();
+      //const hoverBoundingRect = ref.current?.getBoundingClientRect();
+      const hoverBoundingRect = ref.current.parentElement.parentElement?.getBoundingClientRect(); // fix!!!!! 
       // Get vertical middle
       const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
       // Determine mouse position
@@ -105,28 +129,19 @@ const Row = ({
         return;
       }
       // Time to actually perform the action
-      moveListItem(dragIndex, hoverIndex);
+      //moveListItem(dragIndex, hoverIndex);
+      moveListItem(dragIndex, hoverIndex, entries); // !!!!!!!
       // Note: we're mutating the monitor item here!
       // Generally it's better to avoid mutations,
       // but it's good here for the sake of performance
       // to avoid expensive index searches.
       item.index = hoverIndex;
 
-      /*
-        const dragIndex = item.index;
-        const hoverIndex = index;
-        const hoverBoundingRect = ref.current?.getBoundingClientRect();
-        const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
-        const hoverActualY = monitor.getClientOffset().y - hoverBoundingRect.top;
-
-        // if dragging down, continue only when hover is smaller than middle Y
-        if (dragIndex < hoverIndex && hoverActualY < hoverMiddleY) {return;};
-        // if dragging up, continue only when hover is bigger than middle Y
-        if (dragIndex > hoverIndex && hoverActualY > hoverMiddleY) {return;};
-
-        moveListItem(dragIndex, hoverIndex);
-        item.index = hoverIndex;*/
-    },
+    }/*,
+    drop: (item) => {
+      console.log('useDrop drop!!!!!!: item====');
+      console.log(item);
+    },*/
   });
 
   const dragDropRef = dragRef(dropRef(ref));
@@ -144,7 +159,7 @@ const Row = ({
   const remove_selection_flag = removeSelectionEntrySet && removeSelectionEntrySet.hasOwnProperty(entry_id_str);
 
   return (
-    <tr style={isDragging ? { opacity: "0" } : (disabled_flag ? { opacity: "0.5" } : {})} ref={preview} data-handler-id={handlerId}>
+    <tr style={isDragging ? { opacity: "0" } : (disabled_flag ? { opacity: "0.5" } : {})} ref={preview} id={id} data-handler-id={handlerId}>
     {/*<Table.Row style={isDragging ? { opacity: "0" } : (disabled_flag ? { opacity: "0.5" } : {})} ref={dragDropRef}>*/}
       {/* new!!!!! */}
       <Table.Cell style={(mode === "edit") ? {} : { display: "none" }}>
@@ -259,6 +274,7 @@ Row.propTypes = {
   id: PropTypes.array, /*  ????? new!!!!! */
   index: PropTypes.number, /*  ????? new!!!!! */
   moveListItem: PropTypes.func, /* new!!!!! */
+  dragAndDropEntries: PropTypes.func, /* new!!!!! */
   entries: PropTypes.array, /* new!!!!! */
 };
 

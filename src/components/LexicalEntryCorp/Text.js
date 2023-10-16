@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { useDrag } from "react-dnd";
+import TextareaAutosize from 'react-textarea-autosize';
 import { Button, Checkbox, Input } from "semantic-ui-react";
 import { find, isEqual } from "lodash";
 import PropTypes from "prop-types";
@@ -60,8 +61,34 @@ const TextEntityContent = ({
   /* new!!!!! */
 
   const onKeyDown = useCallback((event) => {
+
+    console.log('event=====');
+    console.log(event);
+
     breakdown(event, parentEntity, entity);
-   }, []);
+  }, []);
+
+  const onFocusTextArea = useCallback((event) => {
+    //const width = Math.min(window.screen.width, window.innerWidth);
+    const el = event.target;
+
+    /*if (width <= 767) {*/
+      el.classList.remove('lingvo-gist-elem_textarea_fix');
+
+    /*  setTimeout(() => {
+        el.setSelectionRange(el.value.length, el.value.length);
+      }, 0);
+    }*/
+  }, []);
+
+  const onBlurTextArea = useCallback((event) => {
+    //const width = Math.min(window.screen.width, window.innerWidth);
+    const el = event.target;
+
+    /*if (width <= 767) {*/
+      el.classList.add('lingvo-gist-elem_textarea_fix'); 
+    /*}*/
+  }, []);
 
   /* /new!!!!! */
 
@@ -133,14 +160,24 @@ const TextEntityContent = ({
             <span className="lingvo-input-buttons-group__name">{content} {isDragging && 'Oops'}</span>
           )}
           {(is_being_updated || edit) && (
-            <Input
+            /*<Input
               className="lingvo-input-action"
               onChange={(event, target) => setContent(target.value)}
-              /* new!!!! */
+              // new!!!! 
               onKeyDown={onKeyDown}
-              /* /new!!!! */
+              // /new!!!!
               value={content}
+            />*/
+            /* new!!!!!! */
+            <TextareaAutosize 
+              defaultValue={content}
+              /*onFocus={onFocusTextArea}*/
+              /*onBlur={onBlurTextArea}*/
+              onChange={(event) => setContent(event.target.value)}
+              onKeyDown={onKeyDown}
+              className="lingvo-input-action lingvo-gist-elem lingvo-gist-elem_textarea /*lingvo-gist-elem_textarea_fix*/" 
             />
+            /* /new!!!!!! */
           )}
           <Button.Group basic icon className="lingvo-buttons-group">
             <Button icon={is_being_updated ? <i className="lingvo-icon lingvo-icon_spinner" /> : edit ? <i className="lingvo-icon lingvo-icon_save2" /> : <i className="lingvo-icon lingvo-icon_edit2" />}
@@ -402,6 +439,10 @@ const Edit = ({
   const onKeyDown = useCallback((e) => {
 
     console.log('func onKeyDown!!!!!!');
+
+    console.log('e=====');
+
+    console.log(e);
 
     breakdown(e, parentEntity);
 
