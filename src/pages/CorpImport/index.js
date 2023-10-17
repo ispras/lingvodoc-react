@@ -258,7 +258,7 @@ class Info extends React.Component {
           </Message>
         ) : step === "COLUMNS" ? (
           <Message style={{ margin: 0, textAlign: "center" }}>
-            <Message.Content>{this.context("Please map all the columns to Lingvodoc types. Meet the previous terms.")}</Message.Content>
+            <Message.Content>{this.context("Please map all the columns to different Lingvodoc types. Meet the previous terms.")}</Message.Content>
           </Message>
         ) : null}
       </div>
