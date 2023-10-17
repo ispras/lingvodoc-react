@@ -3,6 +3,7 @@ import { Button, Checkbox, Input } from "semantic-ui-react";
 import { find, isEqual } from "lodash";
 import PropTypes from "prop-types";
 import { onlyUpdateForKeys } from "recompose";
+import { RegExpMarker } from "react-mark.js";
 
 import Entities from "./index";
 
@@ -15,7 +16,7 @@ class TextEntityContent extends React.Component {
     this.state = {
       edit: false,
       read_only: is_order_column,
-      content: is_order_column ? props.number : props.entity.content
+      is_number: is_order_column
     };
 
     this.onEdit = this.onEdit.bind(this);
@@ -48,8 +49,11 @@ class TextEntityContent extends React.Component {
       checkedColumn,
       resetCheckedColumn,
       checkedAll,
-      resetCheckedAll
+      resetCheckedAll,
+      number
     } = this.props;
+
+    const text = this.state.is_number ? number : entity.content;
 
     if (checkEntries) {
       if (checkedAll) {
@@ -93,25 +97,31 @@ class TextEntityContent extends React.Component {
       }
     }
 
+    const pg_ln = /\[\d+[ab]:\d+\]/;
+    const pg = /\[\d+[ab]?\]/;
+    const ln = /\(\d+\)/;
+    // TODO: change 'number' to something meaningful
+    const metatext = number ? new RegExp(pg_ln.source + "|" + pg.source + "|" + ln.source) : new RegExp();
+
     switch (mode) {
       case "edit":
         return (
           <div className="lingvo-input-buttons-group">
             {!(is_being_updated || this.state.edit) && (
-              <span className="lingvo-input-buttons-group__name">{this.state.content}</span>
+              <span className="lingvo-input-buttons-group__name"><RegExpMarker mark={metatext}>{text}</RegExpMarker></span>
             )}
             {(is_being_updated || this.state.edit) && (
               <Input
                 className="lingvo-input-action"
                 onChange={(event, target) => this.setState({ content: target.value })}
-                value={this.state.content}
+                value={text}
               />
             )}
             { this.state.read_only || (
               <Button.Group basic icon className="lingvo-buttons-group">
                 <Button icon={is_being_updated ? <i className="lingvo-icon lingvo-icon_spinner" /> : this.state.edit ? <i className="lingvo-icon lingvo-icon_save2" /> : <i className="lingvo-icon lingvo-icon_edit2" />}
                   onClick={this.onEdit}
-                  disabled={is_being_updated || !this.state.content}
+                  disabled={is_being_updated || !text}
                   className={is_being_updated ? "lingvo-button-spinner" : ""}
                 />
                 {is_being_removed ? (
@@ -135,11 +145,11 @@ class TextEntityContent extends React.Component {
                   href={`/dictionary/${entity.parent_id[0]}/${entity.parent_id[1]}/perspective/${entity.id[0]}/${entity.id[1]}/edit`}
                   className="lingvo-languages-link"
                 >
-                  {this.state.content}
+                  {text}
                 </a>
               </span>
             ) : (
-              <span className="lingvo-entry-content">{this.state.content}</span>
+              <span className="lingvo-entry-content"><RegExpMarker mark={metatext}>{text}</RegExpMarker></span>
             )}
             <Checkbox
               className="lingvo-checkbox lingvo-entry-text__checkbox" 
@@ -165,14 +175,14 @@ class TextEntityContent extends React.Component {
 
       case "view":
         return (
-          <span className="lingvo-entry-content">{this.state.content}</span>
+          <span className="lingvo-entry-content"><RegExpMarker mark={metatext}>{text}</RegExpMarker></span>
         );
       case "contributions":
         return entity.accepted ? (
-          <span className="lingvo-entry-content">{this.state.content}</span>
+          <span className="lingvo-entry-content"><RegExpMarker mark={metatext}>{text}</RegExpMarker></span>
         ) : (
           <Button.Group basic icon className="lingvo-buttons-group">
-            <Button content={this.state.content} className="lingvo-buttons-group__text" />
+            <Button content={text} className="lingvo-buttons-group__text" />
             <Button 
               icon={<i className="lingvo-icon lingvo-icon_check2" />} 
               onClick={() => accept(entity, true)} 
@@ -193,7 +203,8 @@ const Text = onlyUpdateForKeys([
   "is_being_updated",
   "checkedRow",
   "checkedColumn",
-  "checkedAll"
+  "checkedAll",
+  "number"
 ])(props => {
   const {
     perspectiveId,
@@ -285,7 +296,7 @@ Text.propTypes = {
   resetCheckedRow: PropTypes.func,
   resetCheckedColumn: PropTypes.func,
   resetCheckedAll: PropTypes.func,
-  number: PropTypes.number
+  number: PropTypes.string
 };
 
 Text.defaultProps = {

@@ -152,7 +152,7 @@ Row.propTypes = {
   resetCheckedColumn: PropTypes.func,
   resetCheckedAll: PropTypes.func,
   reRender: PropTypes.func,
-  number: PropTypes.number
+  number: PropTypes.string
 };
 
 Row.defaultProps = {
@@ -181,5 +181,6 @@ export default onlyUpdateForKeys([
   "checkedRow",
   "checkedColumn",
   "checkedAll",
-  "columns"
+  "columns",
+  "number"
 ])(Row);
