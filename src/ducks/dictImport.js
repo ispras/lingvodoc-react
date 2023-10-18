@@ -1,5 +1,6 @@
 import { fromJS, is, List, Map, OrderedMap, Set } from "immutable";
 import { compose } from "redux";
+import { isEqual } from "lodash";
 
 // Actions
 const SET_BLOBS = "@import/SET_BLOBS";
@@ -204,11 +205,22 @@ export const selectors = {
             .every((item, blob_id) => languages.has(blob_id) && item.get("translation").size > 0);
 
       case "COLUMNS":
-        result &&= state.dictImport.get("columnTypes").every((field_map, blob_id) => {
-          const linking_map = linking.getIn([blob_id, "values"]);
-
-          return field_map.every((field_id, field_name) => field_id !== null || !linking_map.get(field_name));
-        });
+        const all_fields = state.dictImport.get("columnTypes").reduce((acc, field_map) => [...acc, ...field_map.values()], []);
+        //console.log(all_fields);
+        result &&= parallel
+          ? all_fields.reduce((acc, value, index, arr) =>
+            acc && value && arr.findIndex(v => isEqual(v, value)) === index, true)
+          : state.dictImport.get("columnTypes").every((field_map, blob_id) => {
+            const linking_map = linking.getIn([blob_id, "values"]);
+            /*
+            for (let [field_name, field_id] of field_map) {
+              const value = linking_map.get(field_name);
+              console.log("id for '%s' is '%s'", field_name, field_id);
+              console.log("value for '%s' is '%s'", field_name, value);
+            }
+            */
+            return field_map.every((field_id, field_name) => field_id !== null || !linking_map.get(field_name));
+          });
 
       case "LINKING":
         result &&= parallel

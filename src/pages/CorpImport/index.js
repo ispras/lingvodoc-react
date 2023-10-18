@@ -82,6 +82,7 @@ class Info extends React.Component {
     this.onDelete = this.onDelete.bind(this);
     this.onNextClick = this.onNextClick.bind(this);
     this.onStepClick = this.onStepClick.bind(this);
+    this.onUpdateColumn = this.onUpdateColumn.bind(this);
     this.onSetColumnType = this.onSetColumnType.bind(this);
     this.onSetLanguage = this.onSetLanguage.bind(this);
     this.onSetLicense = this.onSetLicense.bind(this);
@@ -123,6 +124,10 @@ class Info extends React.Component {
       this.props.setColumnType(id, column, field);
       this.props.updateColumn(id, column, name, null);
     };
+  }
+
+  onUpdateColumn(id) {
+    return (column, value, oldValue) => this.props.updateColumn(id, column, value, oldValue);
   }
 
   onSetLanguage(id) {
@@ -194,6 +199,7 @@ class Info extends React.Component {
               state={linking}
               onSelect={this.onSelect}
               onDelete={this.onDelete}
+              onUpdateColumn={this.onUpdateColumn}
             />
           )}
           {step === "COLUMNS" && (
