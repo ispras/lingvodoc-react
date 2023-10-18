@@ -451,44 +451,19 @@ const Entities = ({
         const eventTarget = event.target;
         const targetValue = eventTarget.value; 
 
-        /*console.log('Breakdown: event.target.value======');
-        console.log(targetValue);
-
-        console.log('Breakdown: targetValue.length====');
-        console.log(targetValue.length);*/
-
         const selectionStart = getSelectionStart(eventTarget);
         const selectionEnd = getSelectionEnd(eventTarget);
 
-        /*console.log('Breakdown: selectionStart======');
-        console.log(selectionStart);
-
-        console.log('Breakdown: selectionEnd======');
-        console.log(selectionEnd);*/
-
         if (selectionStart === 0 && selectionEnd === 0) {
-          //console.log('Длина === нулю!!!!!');
           return;
         }
 
         if (selectionStart === targetValue.length && selectionEnd === targetValue.length) {
-          //console.log('Длина === длине строки!!!!!');
           return;
         }
 
-        //console.log('Длина больше нуля!!!!!');
-
-        /*const beforeCaret = targetValue.substring(0, selectionStart).replace(/ /g, '\xa0') || '\xa0';*/
         const beforeCaret = targetValue.substring(0, selectionStart).replace(/ /g, '\x20') || '\x20';
-
-        /*const afterCaret = targetValue.substring(selectionStart).replace(/ /g, '\xa0') || '\xa0';*/
         const afterCaret = targetValue.substring(selectionStart).replace(/ /g, '\x20') || '\x20';
-
-        /*console.log('Breakdown: beforeCaret=====');
-        console.log(beforeCaret);
-
-        console.log('Breakdown: afterCaret=====');
-        console.log(afterCaret);*/
 
         // удалить старое предложение, создать 2 новых!
         if (entity) {
