@@ -9,15 +9,6 @@ import { compositeIdToString as id2str } from "utils/compositeId";
 
 import Cell from "./Cell";
 
-const handleStyle = {
-  backgroundColor: '#ff00ff',
-  width: '1rem',
-  height: '1rem',
-  display: 'inline-block',
-  marginRight: '0.75rem',
-  cursor: 'move',
-};
-
 const Row = ({
   perspectiveId,
   entry,
@@ -160,10 +151,11 @@ const Row = ({
 
   return (
     <tr style={isDragging ? { opacity: "0" } : (disabled_flag ? { opacity: "0.5" } : {})} ref={preview} id={id} data-handler-id={handlerId}>
-    {/*<Table.Row style={isDragging ? { opacity: "0" } : (disabled_flag ? { opacity: "0.5" } : {})} ref={dragDropRef}>*/}
       {/* new!!!!! */}
       <Table.Cell style={(mode === "edit") ? {} : { display: "none" }}>
-        <div ref={dragDropRef} style={handleStyle} />
+        <div ref={dragDropRef}>
+          <Button icon={<i className="lingvo-icon lingvo-icon_dnd" />} />
+        </div>
       </Table.Cell>
       {/* /new!!!!! */}
       {selectEntries && (
@@ -246,7 +238,6 @@ const Row = ({
           })}
         </Table.Cell>
       )}
-    {/*</Table.Row>*/}
     </tr>
   );
 };

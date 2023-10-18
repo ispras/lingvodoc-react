@@ -2306,6 +2306,14 @@ body {
     height: 18px;
     background-color: #999ca0;
   }
+
+  &_dnd {
+    -webkit-mask-image: url("../images/icon_dnd.svg");
+    mask-image: url("../images/icon_dnd.svg");
+    width: 18px;
+    height: 18px;
+    background-color: #999ca0;
+  }
 }
 /* /icon */
 

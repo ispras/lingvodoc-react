@@ -8,15 +8,6 @@ import { onlyUpdateForKeys } from "recompose";
 
 import Entities from "./index";
 
-const handleStyle = {
-  backgroundColor: 'green',
-  width: '1rem',
-  height: '1rem',
-  display: 'inline-block',
-  marginRight: '0.75rem',
-  cursor: 'move',
-};
-
 const TextEntityContent = ({
   entity,
   mode,
@@ -40,7 +31,7 @@ const TextEntityContent = ({
   id /* new!!!!!! */
 }) => {
 
-  console.log('render TextEntityContent!!!!!');
+  /*console.log('render TextEntityContent!!!!!');*/
 
   const [edit, setEdit] = useState(false);
   const [content, setContent] = useState(entity.content);
@@ -78,9 +69,6 @@ const TextEntityContent = ({
       isDragging: monitor.isDragging()
     }),
     end: (item, monitor) => {
-      /*console.log('useDrag end: item=====');
-      console.log(item);
-      console.log(monitor.didDrop());*/
       if (monitor.didDrop()) {
         setDropped(item);
       }
@@ -133,7 +121,6 @@ const TextEntityContent = ({
     case "edit":
       return !dropped ? (
         <div className="lingvo-input-buttons-group" ref={preview} id={id}>
-          <div ref={dragRef} style={handleStyle} />
           {!(is_being_updated || edit) && (
             <span className="lingvo-input-buttons-group__name">{content} {isDragging && 'Oops'}</span>
           )}
@@ -148,6 +135,12 @@ const TextEntityContent = ({
             /* /new!!!!!! */
           )}
           <Button.Group basic icon className="lingvo-buttons-group">
+            {/* new!!!!! */}
+            <div ref={dragRef}>
+              <Button icon={<i className="lingvo-icon lingvo-icon_dnd" />}
+            />
+            </div>
+            {/* new!!!!! */}
             <Button icon={is_being_updated ? <i className="lingvo-icon lingvo-icon_spinner" /> : edit ? <i className="lingvo-icon lingvo-icon_save2" /> : <i className="lingvo-icon lingvo-icon_edit2" />}
               onClick={onEdit}
               disabled={is_being_updated || !content} 
@@ -376,7 +369,6 @@ const Edit = ({
 
   const [content, setContent] = useState("");
 
-  /*const onChange = useCallback((event, target) => {*/
   const onChange = useCallback((event) => {
 
     console.log('func onChange!!!!!!');
@@ -385,41 +377,30 @@ const Edit = ({
     console.log('target.value=====');
     console.log(target.value);*/
 
-    /*setContent(target.value);*/
     setContent(event.target.value);
 
   }, [content]);
 
-  const onKeyPress = useCallback((e) => {
+  const onKeyDown = useCallback((event) => {
 
-    console.log('func onKeyPress!!!!!!');
+    console.log('func onKeyDown!!!!!!');
 
-    /*
-    console.log('content====');
-    console.log(content);*/
+    console.log('event=====');
 
-    if (e.key === "Enter") {
+    console.log(event);
+
+    if (event.code === "Enter") {
       if (content) {
         onSave(content);
       }
     }
-  
-  }, [content]);
 
-  const onKeyDown = useCallback((e) => {
+    breakdown(event, parentEntity);
 
-    console.log('func onKeyDown!!!!!!');
-
-    console.log('e=====');
-
-    console.log(e);
-
-    breakdown(e, parentEntity);
-
-    if (e.keyCode === 27) {
+    if (event.keyCode === 27) {
       onCancel();
     }
-  }, []);
+  }, [content]);
 
   const onBlur = useCallback(() => {
 
@@ -431,26 +412,9 @@ const Edit = ({
   }, [content]);
   
   return (
-    /*<Input
-      className="lingvo-input-action"
-      onChange={onChange}
-      onKeyPress={onKeyPress}
-      onKeyDown={onKeyDown}
-      onBlur={onBlur}
-      action={
-        <Button.Group basic className="lingvo-buttons-group">
-          <Button icon={is_being_created ? <i className="lingvo-icon lingvo-icon_spinner" /> : <i className="lingvo-icon lingvo-icon_save2" />} 
-            disabled={is_being_created || !content}
-            className={is_being_created ? "lingvo-button-spinner" : ""}
-          />
-          <Button icon={<i className="lingvo-icon lingvo-icon_delete2" />} onClick={onCancel} />
-        </Button.Group>
-      }
-    />*/
     <div className="lingvo-input-buttons-group">
       <TextareaAutosize 
         onChange={onChange}
-        onKeyPress={onKeyPress}
         onKeyDown={onKeyDown}
         onBlur={onBlur}
         className="lingvo-input-action lingvo-input-action_textarea" 
