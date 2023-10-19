@@ -1,13 +1,14 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { Button, Dropdown } from "semantic-ui-react";
 import { pure } from "recompose";
 
 import TranslationContext from "Layout/TranslationContext";
 
-function Columns({ blob, index, onDelete }) {
+function Columns({ blob, index, onDelete, onUpdateColumn }) {
   const getTranslation = useContext(TranslationContext);
   const color = index ? "yellow" : "green";
   const name = index ? "sentence" : "base sentence";
+  useEffect(() => { onUpdateColumn("sentence", "noname") }, [blob]);
 
   return (
     <div className="blob blob_corp">
@@ -22,7 +23,7 @@ function Columns({ blob, index, onDelete }) {
   );
 }
 
-function Linker({ blobs, state, onSelect, onDelete }) {
+function Linker({ blobs, state, onSelect, onDelete, onUpdateColumn }) {
   const getTranslation = useContext(TranslationContext);
 
   const stateOptions = blobs.reduce(
@@ -64,6 +65,7 @@ function Linker({ blobs, state, onSelect, onDelete }) {
             blob={v}
             index={i++}
             onDelete={onDelete}
+            onUpdateColumn={onUpdateColumn(id)}
           />
         ))
         .toArray()}
