@@ -443,10 +443,6 @@ const Entities = ({
   /* Shortcut "ctrl+Enter" */
   const breakdown = useCallback((event, parentEntity, entity) => {
 
-    /*console.log('Breakdown!!!!!!');
-    console.log('Breakdown: event.target======');
-    console.log(event.target);*/
-    
     if (event.ctrlKey && event.code === "Enter") {
         event.preventDefault();
         //console.log("Breakdown: ShortCut !!!!!!!!!!!");
