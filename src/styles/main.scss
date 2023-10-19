@@ -3928,8 +3928,21 @@ body {
           }
         }
       }
+
     }
 
+  }
+
+  &.ui.basic.buttons &__drag:first-child .button {
+    max-height: 34px !important;
+
+    &:hover,
+    &:active,
+    &:focus {
+      -webkit-box-shadow: none !important;
+      box-shadow: none !important;
+      border-radius: 10px 0 0 10px !important;
+    }
   }
 
   &__text.button {
@@ -4032,6 +4045,14 @@ body {
 
 }
 /* /lingvo input action */
+
+/* new!!!!!! */
+.lingvo-drop-here {
+  font-size: 14px !important;
+  color: #5d54cd;
+  padding: 0 0 2px 6px;
+}
+/* /new!!!!!! */
 
 /* lingvo input buttons group */
 .lingvo-input-buttons-group {

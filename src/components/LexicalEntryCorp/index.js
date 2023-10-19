@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from "react";
+import React, {useCallback, useContext, useState} from "react";
 import { useDrop } from "react-dnd";
 import { Button } from "semantic-ui-react";
 import { gql } from "@apollo/client";
@@ -11,6 +11,7 @@ import { queryCounter } from "backend";
 /* new!!!!! */
 /*import { queryLexicalEntries } from "components/PerspectiveView";*/
 import { queryLexicalEntries } from "components/CorporaView";
+import TranslationContext from "Layout/TranslationContext";
 /* /new!!!!! */
 import { compositeIdToString, compositeIdToString as id2str } from "utils/compositeId";
 
@@ -173,6 +174,8 @@ const Entities = ({
   const [is_being_created, setIsBeingCreated] = useState(false);
   const [remove_set, setRemoveSet] = useState({});
   const [update_set, setUpdateSet] = useState({});
+
+  const getTranslation = useContext(TranslationContext);
 
   /* new!!!!! */
   const [{ isOver }, dropRef] = useDrop({
@@ -540,7 +543,7 @@ const Entities = ({
           {!edit && (
             <div ref={dropRef} /* new!!!! */>
               {/* new!!!!! */}
-              {isOver && <div>Drop Here!</div>}
+              {isOver && <div className="lingvo-drop-here">{getTranslation("Drop Here!")}</div>}
               {/* /new!!!!! */}
 
               <Button.Group basic className="lingvo-buttons-group">
@@ -548,7 +551,6 @@ const Entities = ({
                   onClick={() => setEdit(true)} 
                 />
               </Button.Group>
-              
             </div>
           )}
 
