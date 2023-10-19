@@ -136,9 +136,8 @@ const TextEntityContent = ({
           )}
           <Button.Group basic icon className="lingvo-buttons-group">
             {/* new!!!!! */}
-            <div ref={dragRef}>
-              <Button icon={<i className="lingvo-icon lingvo-icon_dnd" />}
-            />
+            <div ref={dragRef} className="lingvo-buttons-group__drag">
+              <Button icon={<i className="lingvo-icon lingvo-icon_dnd" />} />
             </div>
             {/* new!!!!! */}
             <Button icon={is_being_updated ? <i className="lingvo-icon lingvo-icon_spinner" /> : edit ? <i className="lingvo-icon lingvo-icon_save2" /> : <i className="lingvo-icon lingvo-icon_edit2" />}

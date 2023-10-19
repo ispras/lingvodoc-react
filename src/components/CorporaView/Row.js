@@ -154,7 +154,9 @@ const Row = ({
       {/* new!!!!! */}
       <Table.Cell style={(mode === "edit") ? {} : { display: "none" }}>
         <div ref={dragDropRef}>
-          <Button icon={<i className="lingvo-icon lingvo-icon_dnd" />} />
+          <Button.Group basic className="lingvo-buttons-group">
+            <Button icon={<i className="lingvo-icon lingvo-icon_dnd" />} />
+          </Button.Group>
         </div>
       </Table.Cell>
       {/* /new!!!!! */}
