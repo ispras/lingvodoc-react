@@ -4046,13 +4046,13 @@ body {
 }
 /* /lingvo input action */
 
-/* new!!!!!! */
+/* lingvo-drop-here */
 .lingvo-drop-here {
   font-size: 14px !important;
   color: #5d54cd;
   padding: 0 0 2px 6px;
 }
-/* /new!!!!!! */
+/* /lingvo-drop-here */
 
 /* lingvo input buttons group */
 .lingvo-input-buttons-group {
@@ -4080,6 +4080,11 @@ body {
       }
     }
   }
+
+  &_drag {
+    opacity: 0.3 !important;
+  }
+
 }
 /* /lingvo input buttons group */
 

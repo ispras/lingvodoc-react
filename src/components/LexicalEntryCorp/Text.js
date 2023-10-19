@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
 import { useDrag } from "react-dnd";
 import TextareaAutosize from 'react-textarea-autosize';
-import { Button, Checkbox, Input } from "semantic-ui-react";
+import { Button, Checkbox } from "semantic-ui-react";
 import { find, isEqual } from "lodash";
 import PropTypes from "prop-types";
 import { onlyUpdateForKeys } from "recompose";
@@ -59,8 +59,6 @@ const TextEntityContent = ({
     breakdown(event, parentEntity, entity);
   }, []);
 
-  /* /new!!!!! */
-
   // useDrag - the list item is draggable
   const [{ isDragging}, dragRef, preview] = useDrag({
     type: 'entity',
@@ -74,6 +72,8 @@ const TextEntityContent = ({
       }
     }
   });
+
+  /* /new!!!!! */
 
   if (checkEntries) {
     if (checkedAll) {
@@ -120,9 +120,9 @@ const TextEntityContent = ({
   switch (mode) {
     case "edit":
       return !dropped ? (
-        <div className="lingvo-input-buttons-group" ref={preview} id={id}>
+        <div /* new!!!! */ className={isDragging && "lingvo-input-buttons-group lingvo-input-buttons-group_drag" || "lingvo-input-buttons-group"} ref={preview} id={id}>
           {!(is_being_updated || edit) && (
-            <span className="lingvo-input-buttons-group__name">{content} {isDragging && 'Oops'}</span>
+            <span className="lingvo-input-buttons-group__name">{content}</span>
           )}
           {(is_being_updated || edit) && (
             /* new!!!!!! */
@@ -371,10 +371,6 @@ const Edit = ({
   const onChange = useCallback((event) => {
 
     console.log('func onChange!!!!!!');
-
-    /*
-    console.log('target.value=====');
-    console.log(target.value);*/
 
     setContent(event.target.value);
 
