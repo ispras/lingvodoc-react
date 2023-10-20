@@ -40,7 +40,6 @@ const Row = ({
   id, /* new!!!!! */
   moveListItem, /* new!!!!! */
   dragAndDropEntries, /* new!!!!! */
-
   entries /* new!!!!! */
   /* eslint-enable react/prop-types */
 }) => {
@@ -100,8 +99,9 @@ const Row = ({
         return;
       }
       // Determine rectangle on screen
-      //const hoverBoundingRect = ref.current?.getBoundingClientRect();
-      const hoverBoundingRect = ref.current.parentElement.parentElement?.getBoundingClientRect(); // fix!!!!! 
+      const hoverBoundingRect = ref.current?.getBoundingClientRect();
+      //const hoverBoundingRect = ref.current.parentElement.parentElement?.getBoundingClientRect(); // fix!!!!! 
+
       // Get vertical middle
       const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
       // Determine mouse position
@@ -136,8 +136,6 @@ const Row = ({
   });
 
   const dragDropRef = dragRef(dropRef(ref));
-
-  /*const opacity = isDragging ? 0 : 1;*/
 
   /* /new!!!!!! */
 
@@ -300,6 +298,6 @@ export default onlyUpdateForKeys([
   "columns",
   "id", /*  ????? new!!!!! */
   "index", /*  ????? new!!!!! */
-  "moveListItem", /* new!!!!! */
+  /*"moveListItem",*/ /* new!!!!! */
   "entries" /* new!!!!! */
 ])(Row);
