@@ -32,6 +32,8 @@ import smoothScroll from "utils/smoothscroll";
 import TableBody from "./TableBody";
 import TableHeader from "./TableHeader";
 
+import "./styles.scss";
+
 const ROWS_PER_PAGE = 20;
 
 const ModalContentWrapper = styled("div")`
@@ -992,7 +994,8 @@ class P extends React.Component {
                 onSortModeChange={(fieldId, order) => setSort(fieldId, order)}
                 onSortModeReset={() => resetSort()}
                 selectEntries={mode === "edit"}
-                entries={items}
+                /*entries={items}*/
+                entries={this.state.cards.length && this.state.cards || items} /* new!!!!! */
                 checkEntries={isTableLanguagesPublish}
                 selectedRows={selectedRows}
                 selectedColumns={selectedColumns}
