@@ -375,8 +375,6 @@ const Edit = ({
     breakdown(event, parentEntity);
 
     if (event.code === "Enter" && !event.ctrlKey) {
-
-      console.log('Enter3!!!!!!!!!');
       if (content) {
         onSave(content);
       }
