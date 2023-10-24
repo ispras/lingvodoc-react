@@ -22,7 +22,7 @@ function Columns({ blob, index, onDelete, onUpdateColumn }) {
       </div>
       { !index && (
         <Checkbox className="blob-checkbox"
-          label='Hide dashes'
+          label={getTranslation("Hide dashes")}
           onClick={() => onUpdateColumn("sentence", value === "dash" ? "dedash" : "dash", value)}
           checked={value === "dedash"} />
       ) || <div className="blob-checkbox" />}
