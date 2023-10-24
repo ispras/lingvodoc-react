@@ -120,10 +120,7 @@ class Info extends React.Component {
   }
 
   onSetColumnType(id) {
-    return column => (field, name) => {
-      this.props.setColumnType(id, column, field);
-      this.props.updateColumn(id, column, name, null);
-    };
+    return column => field => this.props.setColumnType(id, column, field);
   }
 
   onUpdateColumn(id) {

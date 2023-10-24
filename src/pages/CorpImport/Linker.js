@@ -8,10 +8,14 @@ function Columns({ blob, index, onDelete, onUpdateColumn }) {
   const getTranslation = useContext(TranslationContext);
   const color = index ? "yellow" : "green";
   const name = index ? "sentence" : "base sentence";
-  useEffect(() => { onUpdateColumn("sentence", "noname") }, [blob]);
+  useEffect(() => { onUpdateColumn("dedash", false) }, []);
+  dedash = blob.getIn(["values", "dedash"]);
 
   return (
     <div className="blob blob_corp">
+      { !index && (
+        <Checkbox className="blob-checkbox" onClick={onUpdateColumn("dedash", !dedash)} checked={dedash} />
+      )}
       <Button negative icon="trash" size="tiny" onClick={() => onDelete(blob.get("id"))} />
       <b className="blob-name">{blob.get("name")}</b>
       <div className="blob-columns">

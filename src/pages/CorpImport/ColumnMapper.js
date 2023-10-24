@@ -46,13 +46,11 @@ function Column({ index, fieldOptions, type, onSetColumnType, actions }) {
         placeholder={`${getTranslation("Field selection")}...`}
         options={fieldOptions}
         value={selectedField && selectedField.value}
-        onChange={(e, { value }) => {
-          onSetColumnType(fieldOptions[value].id, fieldOptions[value].name);
-        }}
+        onChange={(e, { value }) => onSetColumnType(fieldOptions[value])}
       />
       <Popup.Content className="popup-field-type">
         {fieldOptions.map(f => (
-          <FieldButton key={f.key} onClick={() => onSetColumnType(f.id, f.name)} text={f.text} isSelected={is(type, f.id)} />
+          <FieldButton key={f.key} onClick={() => onSetColumnType(f.id)} text={f.text} isSelected={is(type, f.id)} />
         ))}
       </Popup.Content>
     </Popup>
@@ -104,16 +102,15 @@ function ColumnMapper({ state, types, columnTypes, onSetColumnType }) {
   for (const type of typesSortedFiltered) {
     const id = type.get("id");
     const idStr = id.join("/");
-    const name = T(type.get("translations").toJS());
 
     fieldOptions.push({
       key: idStr,
       value: idStr,
       text: `${T(type.get("translations").toJS())} (${type.get("data_type")})`,
-      id, name
+      id
     });
 
-    fieldOptions[idStr] = { id, name };
+    fieldOptions[idStr] = id;
   }
 
   let i = 0;
