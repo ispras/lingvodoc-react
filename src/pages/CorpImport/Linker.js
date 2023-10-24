@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from "react";
-import { Button, Dropdown } from "semantic-ui-react";
+import { Button, Dropdown, Checkbox } from "semantic-ui-react";
 import { pure } from "recompose";
 
 import TranslationContext from "Layout/TranslationContext";
@@ -8,13 +8,15 @@ function Columns({ blob, index, onDelete, onUpdateColumn }) {
   const getTranslation = useContext(TranslationContext);
   const color = index ? "yellow" : "green";
   const name = index ? "sentence" : "base sentence";
-  useEffect(() => { onUpdateColumn("dedash", false) }, []);
-  dedash = blob.getIn(["values", "dedash"]);
+  useEffect(() => { onUpdateColumn("sentence", "dash") }, []);
+  const value = blob.getIn(["values", "sentence"], "dash");
 
   return (
     <div className="blob blob_corp">
       { !index && (
-        <Checkbox className="blob-checkbox" onClick={onUpdateColumn("dedash", !dedash)} checked={dedash} />
+        <Checkbox className="blob-checkbox"
+          onClick={() => onUpdateColumn("sentence", value === "dash" ? "dedash" : "dash", value)}
+          checked={value === "dedash"} />
       )}
       <Button negative icon="trash" size="tiny" onClick={() => onDelete(blob.get("id"))} />
       <b className="blob-name">{blob.get("name")}</b>
