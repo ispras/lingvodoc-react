@@ -8,16 +8,11 @@ function Columns({ blob, index, onDelete, onUpdateColumn }) {
   const getTranslation = useContext(TranslationContext);
   const color = index ? "yellow" : "green";
   const name = index ? "sentence" : "base sentence";
-  useEffect(() => { onUpdateColumn("sentence", "dash") }, []);
   const value = blob.getIn(["values", "sentence"], "dash");
+  useEffect(() => { onUpdateColumn("sentence", value) }, []);
 
   return (
     <div className="blob blob_corp">
-      { !index && (
-        <Checkbox className="blob-checkbox"
-          onClick={() => onUpdateColumn("sentence", value === "dash" ? "dedash" : "dash", value)}
-          checked={value === "dedash"} />
-      )}
       <Button negative icon="trash" size="tiny" onClick={() => onDelete(blob.get("id"))} />
       <b className="blob-name">{blob.get("name")}</b>
       <div className="blob-columns">
@@ -25,6 +20,12 @@ function Columns({ blob, index, onDelete, onUpdateColumn }) {
           {getTranslation(name)}
         </Button>
       </div>
+      { !index && (
+        <Checkbox className="blob-checkbox"
+          label='Hide dashes'
+          onClick={() => onUpdateColumn("sentence", value === "dash" ? "dedash" : "dash", value)}
+          checked={value === "dedash"} />
+      ) || <div className="blob-checkbox" />}
     </div>
   );
 }
