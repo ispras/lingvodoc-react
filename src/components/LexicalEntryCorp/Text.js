@@ -31,8 +31,6 @@ const TextEntityContent = ({
   id /* new!!!!!! */
 }) => {
 
-  /*console.log('render TextEntityContent!!!!!');*/
-
   const [edit, setEdit] = useState(false);
   const [content, setContent] = useState(entity.content);
 
@@ -53,10 +51,8 @@ const TextEntityContent = ({
 
   const onKeyDown = useCallback((event) => {
 
-    console.log('event=====');
-    console.log(event);
-
     breakdown(event, parentEntity, entity);
+
   }, []);
 
   // useDrag - the list item is draggable
@@ -370,40 +366,33 @@ const Edit = ({
 
   const onChange = useCallback((event) => {
 
-    console.log('func onChange!!!!!!');
-
     setContent(event.target.value);
 
   }, [content]);
 
   const onKeyDown = useCallback((event) => {
 
-    console.log('func onKeyDown!!!!!!');
+    breakdown(event, parentEntity);
 
-    console.log('event=====');
+    if (event.code === "Enter" && !event.ctrlKey) {
 
-    console.log(event);
-
-    if (event.code === "Enter") {
+      console.log('Enter3!!!!!!!!!');
       if (content) {
         onSave(content);
       }
     }
-
-    breakdown(event, parentEntity);
 
     if (event.keyCode === 27) {
       onCancel();
     }
   }, [content]);
 
-  const onBlur = useCallback(() => {
+  const onHandlerSave = useCallback((event) => {
 
-    console.log('func onBlur!!!!!!');
-    
     if (content) {
       onSave(content);
     }
+
   }, [content]);
   
   return (
@@ -411,11 +400,13 @@ const Edit = ({
       <TextareaAutosize 
         onChange={onChange}
         onKeyDown={onKeyDown}
-        onBlur={onBlur}
+        /*onBlur={onBlur}*/
         className="lingvo-input-action lingvo-input-action_textarea" 
       />
       <Button.Group basic className="lingvo-buttons-group">
-        <Button icon={is_being_created ? <i className="lingvo-icon lingvo-icon_spinner" /> : <i className="lingvo-icon lingvo-icon_save2" />} 
+        <Button 
+          icon={is_being_created ? <i className="lingvo-icon lingvo-icon_spinner" /> : <i className="lingvo-icon lingvo-icon_save2" />} 
+          onClick={onHandlerSave} /* new!!!!! */
           disabled={is_being_created || !content}
           className={is_being_created ? "lingvo-button-spinner" : ""}
         />
