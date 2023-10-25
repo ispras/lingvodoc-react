@@ -127,6 +127,10 @@ class Info extends React.Component {
     return (column, value, oldValue) => this.props.updateColumn(id, column, value, oldValue);
   }
 
+  onUpdateColumn(id) {
+    return (column, value, oldValue) => this.props.updateColumn(id, column, value, oldValue);
+  }
+
   onSetLanguage(id) {
     return language => this.props.setLanguage(id, language);
   }
