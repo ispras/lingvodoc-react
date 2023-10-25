@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
 import { useDrag } from "react-dnd";
 import TextareaAutosize from 'react-textarea-autosize';
-import { Button, Checkbox, Input } from "semantic-ui-react";
+import { Button, Checkbox } from "semantic-ui-react";
 import { find, isEqual } from "lodash";
 import PropTypes from "prop-types";
 import { onlyUpdateForKeys } from "recompose";
@@ -31,8 +31,6 @@ const TextEntityContent = ({
   id /* new!!!!!! */
 }) => {
 
-  /*console.log('render TextEntityContent!!!!!');*/
-
   const [edit, setEdit] = useState(false);
   const [content, setContent] = useState(entity.content);
 
@@ -53,13 +51,9 @@ const TextEntityContent = ({
 
   const onKeyDown = useCallback((event) => {
 
-    console.log('event=====');
-    console.log(event);
-
     breakdown(event, parentEntity, entity);
-  }, []);
 
-  /* /new!!!!! */
+  }, []);
 
   // useDrag - the list item is draggable
   const [{ isDragging}, dragRef, preview] = useDrag({
@@ -74,6 +68,8 @@ const TextEntityContent = ({
       }
     }
   });
+
+  /* /new!!!!! */
 
   if (checkEntries) {
     if (checkedAll) {
@@ -120,9 +116,9 @@ const TextEntityContent = ({
   switch (mode) {
     case "edit":
       return !dropped ? (
-        <div className="lingvo-input-buttons-group" ref={preview} id={id}>
+        <div /* new!!!! */ className={isDragging && "lingvo-input-buttons-group lingvo-input-buttons-group_drag" || "lingvo-input-buttons-group"} ref={preview} id={id}>
           {!(is_being_updated || edit) && (
-            <span className="lingvo-input-buttons-group__name">{content} {isDragging && 'Oops'}</span>
+            <span className="lingvo-input-buttons-group__name">{content}</span>
           )}
           {(is_being_updated || edit) && (
             /* new!!!!!! */
@@ -136,9 +132,8 @@ const TextEntityContent = ({
           )}
           <Button.Group basic icon className="lingvo-buttons-group">
             {/* new!!!!! */}
-            <div ref={dragRef}>
-              <Button icon={<i className="lingvo-icon lingvo-icon_dnd" />}
-            />
+            <div ref={dragRef} className="lingvo-buttons-group__drag">
+              <Button icon={<i className="lingvo-icon lingvo-icon_dnd" />} />
             </div>
             {/* new!!!!! */}
             <Button icon={is_being_updated ? <i className="lingvo-icon lingvo-icon_spinner" /> : edit ? <i className="lingvo-icon lingvo-icon_save2" /> : <i className="lingvo-icon lingvo-icon_edit2" />}
@@ -371,44 +366,32 @@ const Edit = ({
 
   const onChange = useCallback((event) => {
 
-    console.log('func onChange!!!!!!');
-
-    /*
-    console.log('target.value=====');
-    console.log(target.value);*/
-
     setContent(event.target.value);
 
   }, [content]);
 
   const onKeyDown = useCallback((event) => {
 
-    console.log('func onKeyDown!!!!!!');
+    breakdown(event, parentEntity);
 
-    console.log('event=====');
+    if (event.code === "Enter" && !event.ctrlKey) {
 
-    console.log(event);
-
-    if (event.code === "Enter") {
       if (content) {
         onSave(content);
       }
     }
-
-    breakdown(event, parentEntity);
 
     if (event.keyCode === 27) {
       onCancel();
     }
   }, [content]);
 
-  const onBlur = useCallback(() => {
+  const onHandlerSave = useCallback((event) => {
 
-    console.log('func onBlur!!!!!!');
-    
     if (content) {
       onSave(content);
     }
+
   }, [content]);
   
   return (
@@ -416,11 +399,13 @@ const Edit = ({
       <TextareaAutosize 
         onChange={onChange}
         onKeyDown={onKeyDown}
-        onBlur={onBlur}
+        /*onBlur={onBlur}*/
         className="lingvo-input-action lingvo-input-action_textarea" 
       />
       <Button.Group basic className="lingvo-buttons-group">
-        <Button icon={is_being_created ? <i className="lingvo-icon lingvo-icon_spinner" /> : <i className="lingvo-icon lingvo-icon_save2" />} 
+        <Button 
+          icon={is_being_created ? <i className="lingvo-icon lingvo-icon_spinner" /> : <i className="lingvo-icon lingvo-icon_save2" />} 
+          onClick={onHandlerSave} /* new!!!!! */
           disabled={is_being_created || !content}
           className={is_being_created ? "lingvo-button-spinner" : ""}
         />

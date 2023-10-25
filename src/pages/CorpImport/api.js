@@ -23,16 +23,13 @@ export function corpusInfo({ linking, languages, licenses }) {
 
 function blobExport(blob, columnType) {
   const blob_id = blob.get("id").toArray();
-  const values = blob.get("values", new Map());
-
-  const field_map = {
-    column_name: values.get("sentence", "Sentence in transliteration"),
-    field_id: columnType.get("sentence", new Map()).toArray()
-  };
+  const dedash = (blob.getIn(["values", "sentence"], "dash") === "dedash");
+  const field_id =  columnType.get("sentence", new Map()).toArray();
 
   return {
     blob_id,
-    field_map
+    field_id,
+    dedash
   };
 }
 
