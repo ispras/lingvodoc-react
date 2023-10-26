@@ -53,7 +53,11 @@ const TextEntityContent = ({
 
     breakdown(event, parentEntity, entity);
 
-  }, []);
+    if (event.code === "Enter" && !event.ctrlKey) {
+      onEdit();
+    }
+
+  }, [edit, content]);
 
   // useDrag - the list item is draggable
   const [{ isDragging}, dragRef, preview] = useDrag({
