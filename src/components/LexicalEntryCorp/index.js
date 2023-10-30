@@ -161,6 +161,7 @@ const Entities = ({
   removeEntity,
   updateEntity,
   client,
+  number
   }) => {
 
   const filters = [
@@ -491,6 +492,7 @@ const Entities = ({
     resetCheckedColumn,
     checkedAll,
     resetCheckedAll,
+    number
   };
 
   const Component = getComponent(column.data_type);
@@ -498,6 +500,8 @@ const Entities = ({
   if (column.data_type === "Link" || column.data_type === "Grouping Tag" || column.data_type === "Directed Link") {
     return <Component {...props} />;
   }
+
+  const is_order_column = column.english_translation === "Order";
 
   return (
     <ul>
@@ -530,11 +534,12 @@ const Entities = ({
           disabled={disabled}
           is_being_removed={remove_set.hasOwnProperty(id2str(entity.id))}
           is_being_updated={update_set.hasOwnProperty(id2str(entity.id))}
+          number={number}
           draggable={true} /* new!!!!! */
           id={entity.id} /* new!!!!! */
         />
       ))}
-      {mode === "edit" && (
+      {mode === "edit" && !is_order_column && (
         <li className="last">
           {!edit && (
             <div ref={dropRef} /* new!!!! */>
@@ -586,6 +591,7 @@ Entities.propTypes = {
   resetCheckedColumn: PropTypes.func,
   resetCheckedAll: PropTypes.func,
   reRender: PropTypes.func,
+  number: PropTypes.string
 };
 
 Entities.defaultProps = {
