@@ -516,6 +516,9 @@ class P extends React.Component {
           this.setState({
             cards: []
           });
+        },
+        (error) => {
+          //window.logger.err(`GraphQL error: ${this.context(error.message)}`);
         });
       /*}*/
     };
