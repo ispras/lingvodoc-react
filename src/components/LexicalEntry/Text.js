@@ -100,8 +100,18 @@ class TextEntityContent extends React.Component {
     const pg_ln = /\[\d+[ab]:\d+\]/;
     const pg = /\[\d+[ab]?\]/;
     const ln = /\(\d+\)/;
+    const snt = /\/{2}/;
+    const missed = /[/]missed text[/]/;
     // TODO: change 'number' to something meaningful
-    const metatext = number ? new RegExp(pg_ln.source + "|" + pg.source + "|" + ln.source) : new RegExp();
+    const metatext = number
+      ? new RegExp(
+          pg_ln.source + "|" +
+          pg.source + "|" +
+          ln.source + "|" +
+          snt.source + "|" +
+          missed.source
+          )
+      : new RegExp();
 
     switch (mode) {
       case "edit":

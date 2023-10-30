@@ -1,13 +1,15 @@
-import React, { useContext } from "react";
-import { Button, Dropdown } from "semantic-ui-react";
+import React, { useContext, useEffect } from "react";
+import { Button, Dropdown, Checkbox } from "semantic-ui-react";
 import { pure } from "recompose";
 
 import TranslationContext from "Layout/TranslationContext";
 
-function Columns({ blob, index, onDelete }) {
+function Columns({ blob, index, onDelete, onUpdateColumn }) {
   const getTranslation = useContext(TranslationContext);
   const color = index ? "yellow" : "green";
   const name = index ? "sentence" : "base sentence";
+  const value = blob.getIn(["values", "sentence"], "dash");
+  useEffect(() => { onUpdateColumn("sentence", value) }, []);
 
   return (
     <div className="blob blob_corp">
@@ -18,11 +20,17 @@ function Columns({ blob, index, onDelete }) {
           {getTranslation(name)}
         </Button>
       </div>
+      { !index && (
+        <Checkbox className="blob-checkbox"
+          label={getTranslation("Hide dashes")}
+          onClick={() => onUpdateColumn("sentence", value === "dash" ? "dedash" : "dash", value)}
+          checked={value === "dedash"} />
+      ) || <div className="blob-checkbox" />}
     </div>
   );
 }
 
-function Linker({ blobs, state, onSelect, onDelete }) {
+function Linker({ blobs, state, onSelect, onDelete, onUpdateColumn }) {
   const getTranslation = useContext(TranslationContext);
 
   const stateOptions = blobs.reduce(
@@ -64,6 +72,7 @@ function Linker({ blobs, state, onSelect, onDelete }) {
             blob={v}
             index={i++}
             onDelete={onDelete}
+            onUpdateColumn={onUpdateColumn(id)}
           />
         ))
         .toArray()}

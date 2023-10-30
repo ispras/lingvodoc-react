@@ -82,6 +82,7 @@ class Info extends React.Component {
     this.onDelete = this.onDelete.bind(this);
     this.onNextClick = this.onNextClick.bind(this);
     this.onStepClick = this.onStepClick.bind(this);
+    this.onUpdateColumn = this.onUpdateColumn.bind(this);
     this.onSetColumnType = this.onSetColumnType.bind(this);
     this.onSetLanguage = this.onSetLanguage.bind(this);
     this.onSetLicense = this.onSetLicense.bind(this);
@@ -119,10 +120,15 @@ class Info extends React.Component {
   }
 
   onSetColumnType(id) {
-    return column => (field, name) => {
-      this.props.setColumnType(id, column, field);
-      this.props.updateColumn(id, column, name, null);
-    };
+    return column => field => this.props.setColumnType(id, column, field);
+  }
+
+  onUpdateColumn(id) {
+    return (column, value, oldValue) => this.props.updateColumn(id, column, value, oldValue);
+  }
+
+  onUpdateColumn(id) {
+    return (column, value, oldValue) => this.props.updateColumn(id, column, value, oldValue);
   }
 
   onSetLanguage(id) {
@@ -194,6 +200,7 @@ class Info extends React.Component {
               state={linking}
               onSelect={this.onSelect}
               onDelete={this.onDelete}
+              onUpdateColumn={this.onUpdateColumn}
             />
           )}
           {step === "COLUMNS" && (
@@ -258,7 +265,7 @@ class Info extends React.Component {
           </Message>
         ) : step === "COLUMNS" ? (
           <Message style={{ margin: 0, textAlign: "center" }}>
-            <Message.Content>{this.context("Please map all the columns to Lingvodoc types. Meet the previous terms.")}</Message.Content>
+            <Message.Content>{this.context("Please map all the columns to different Lingvodoc types. Meet the previous terms.")}</Message.Content>
           </Message>
         ) : null}
       </div>
