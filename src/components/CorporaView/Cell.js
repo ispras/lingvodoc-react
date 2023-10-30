@@ -28,6 +28,7 @@ const Cell = ({
   entitiesMode,
   disabled,
   reRender,
+  number,
   /*index,*/ /*  new!!!!! */
   /*moveListItem*/ /* new!!!!! */
   // eslint-disable-next-line arrow-body-style
@@ -51,6 +52,7 @@ const Cell = ({
         entitiesMode={entitiesMode}
         disabled={disabled}
         reRender={reRender}
+        number={number}
         /*index={index}*/ /* new!!!!! */
         /*moveListItem={moveListItem}*/ /* new!!!!! */
       />
@@ -74,6 +76,7 @@ Cell.propTypes = {
   resetCheckedColumn: PropTypes.func,
   resetCheckedAll: PropTypes.func,
   reRender: PropTypes.func,
+  number: PropTypes.string,
   /*index: PropTypes.number,*/ /*  ????? new!!!!! */
   /*moveListItem: PropTypes.func*/ /* new!!!!! */
 };
@@ -90,5 +93,6 @@ export default onlyUpdateForKeys([
   "column",
   "checkedRow",
   "checkedColumn",
-  "checkedAll"
+  "checkedAll",
+  "number"
 ])(Cell);

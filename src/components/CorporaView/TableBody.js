@@ -30,7 +30,17 @@ const TableBody = ({ entries, ...rest }) => {
     <Table.Body>
       {entries.map((entry, index) => (
       /*{cards.map((entry, index) => (*/
-        <Row entries={entries}/*entries={cards}*/ key={entry.id} index={index} id={entry.id} entry={entry} /*moveListItem={moveListItem}*/ {...rest} />
+        <Row
+          entries={entries}
+          /*entries={cards}*/
+          key={entry.id}
+          index={index}
+          id={entry.id}
+          entry={entry}
+          number={(index + 1).toString()}
+          /*moveListItem={moveListItem}*/
+          {...rest}
+        />
       ))}
     </Table.Body>
   );

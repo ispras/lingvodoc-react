@@ -30,6 +30,7 @@ const Row = ({
   resetCheckedColumn,
   resetCheckedAll,
   reRender,
+  number,
   /* eslint-disable react/prop-types */
   showEntryId,
   selectDisabled,
@@ -208,6 +209,7 @@ const Row = ({
           entitiesMode={entitiesMode}
           disabled={disabled_flag}
           reRender={reRender}
+          number={number}
           /*index={index}*/ /* new!!!!! */
         />
       ))}
@@ -262,6 +264,7 @@ Row.propTypes = {
   resetCheckedColumn: PropTypes.func,
   resetCheckedAll: PropTypes.func,
   reRender: PropTypes.func,
+  number: PropTypes.string,
   id: PropTypes.array, /*  ????? new!!!!! */
   index: PropTypes.number, /*  ????? new!!!!! */
   moveListItem: PropTypes.func, /* new!!!!! */
@@ -296,6 +299,7 @@ export default onlyUpdateForKeys([
   "checkedColumn",
   "checkedAll",
   "columns",
+  "number",
   "id", /*  ????? new!!!!! */
   "index", /*  ????? new!!!!! */
   /*"moveListItem",*/ /* new!!!!! */
