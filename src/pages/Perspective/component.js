@@ -26,8 +26,8 @@ import { branch, compose, onlyUpdateForKeys, renderNothing, withHandlers, withSt
 import { chooseTranslation as T } from "api/i18n";
 import { queryCounter } from "backend";
 import Merge from "components/Merge";
-/*import PerspectiveView from "components/PerspectiveView";*/
-import PerspectiveView from "components/CorporaView";
+import PerspectiveView from "components/PerspectiveView";
+import CorporaView from "components/CorporaView";
 import { useMutation } from "hooks";
 import TranslationContext from "Layout/TranslationContext";
 import NotFound from "pages/NotFound";
@@ -44,6 +44,10 @@ export const perspectiveIsHiddenOrDeletedQuery = gql`
       id
       is_hidden_for_client
       marked_for_deletion
+      additional_metadata
+      {
+        parallel
+      }
       tree {
         id
         marked_for_deletion
@@ -1260,6 +1264,8 @@ const Perspective = ({
     );
   }
   const isDeleted = p.marked_for_deletion || p.tree.some(entity => entity.marked_for_deletion);
+  const parallelCorpora = p.additional_metadata.parallel;
+  const Viewer = parallelCorpora ? CorporaView : PerspectiveView;
 
   const modes = {};
   if (user.id !== undefined) {
@@ -1267,12 +1273,12 @@ const Perspective = ({
       edit: {
         entitiesMode: "all",
         text: getTranslation("Edit"),
-        component: PerspectiveView
+        component: Viewer
       },
       publish: {
         entitiesMode: "all",
         text: getTranslation("Publish"),
-        component: PerspectiveView
+        component: Viewer
       }
     });
   }
@@ -1280,12 +1286,12 @@ const Perspective = ({
     view: {
       entitiesMode: "published",
       text: getTranslation("View published"),
-      component: PerspectiveView
+      component: Viewer
     },
     contributions: {
       entitiesMode: "not_accepted",
       text: getTranslation("View contributions"),
-      component: PerspectiveView
+      component: Viewer
     },
     merge: {
       entitiesMode: "all",
