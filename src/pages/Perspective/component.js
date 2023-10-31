@@ -26,7 +26,8 @@ import { branch, compose, onlyUpdateForKeys, renderNothing, withHandlers, withSt
 import { chooseTranslation as T } from "api/i18n";
 import { queryCounter } from "backend";
 import Merge from "components/Merge";
-import PerspectiveView from "components/PerspectiveView";
+/*import PerspectiveView from "components/PerspectiveView";*/
+import PerspectiveView from "components/CorporaView";
 import { useMutation } from "hooks";
 import TranslationContext from "Layout/TranslationContext";
 import NotFound from "pages/NotFound";

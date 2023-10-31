@@ -8,7 +8,7 @@ import { Button, Dimmer, Header, Icon, Table } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
 import update from 'immutability-helper';
-import { drop, flow, isEqual, reverse, take } from "lodash";
+import { drop, flow, isEqual, reverse, take, sortBy } from "lodash";
 import PropTypes from "prop-types";
 import { branch, compose, renderComponent } from "recompose";
 import { bindActionCreators } from "redux";
@@ -305,7 +305,8 @@ class P extends React.Component {
       checkedColumn: null,
       checkedAll: null,
       cards: [], /* new!!!!!! */
-      mutation: { loading: false } /* new2!!!!!! */
+      mutation: { loading: false }, /* new2!!!!!! */
+      dnd_enabled: true
     };
 
     this.onCheckRow = this.onCheckRow.bind(this);
@@ -377,8 +378,8 @@ class P extends React.Component {
       filter,
       sortByField,
       columns,
-      setSortByField: setSort,
-      resetSortByField: resetSort,
+      setSortByField,
+      resetSortByField,
       createEntity, /* new2!!!!!! */
       createLexicalEntry,
       mergeLexicalEntries,
@@ -430,6 +431,20 @@ class P extends React.Component {
     const get_lexgraph_marker = lexentry_id_source => {
       const lexgraph_entity = get_lexgraph_entity(lexentry_id_source);
       return lexgraph_entity ? lexgraph_entity.content : '';
+    };
+
+    const setSort = (field, order) => {
+      setSortByField(field, order);
+      this.setState(
+        {dnd_enabled: false},
+        () => console.log("dnd_enabled: ", this.state.dnd_enabled));
+    };
+
+    const resetSort = () => {
+      resetSortByField();
+      this.setState(
+        {dnd_enabled: true},
+        () => console.log("dnd_enabled: ", this.state.dnd_enabled));
     };
 
     /*
@@ -512,7 +527,7 @@ class P extends React.Component {
           ]
         }).then(({data: mutation}) => {
           //this.setState({mutation});
-          console.log('!!!!! dragAndDropEntries sucess!!!!!');
+          console.log('!!!!! dragAndDropEntries success!!!!!');
           this.setState({
             cards: []
           });
@@ -669,16 +684,15 @@ class P extends React.Component {
       if (!lexgraph_field_id)
         {return es;}
 
-      const entitySortKeys = new Map();
-      for (const entry of es) {
-        const entities = entry.entities.filter(entity => isEqual(entity.field_id, lexgraph_field_id));
-        entitySortKeys.set(
-          entry,
-          entities.length > 0 && entities[0].content ? entities[0].content : `${entities.length}`
-        );
-      }
-      es.sort((ea, eb) => entitySortKeys.get(ea).localeCompare(entitySortKeys.get(eb)));
-      return es;
+      const sortedEntries = sortBy(es, e => {
+        const entities = e.entities.filter(entity => isEqual(entity.field_id, lexgraph_field_id));
+        if (entities.length > 0) {
+          return entities[0].content;
+        }
+        return "";
+      });
+
+      return sortedEntries;
     };
     /* /new2!!!!!! */
 
@@ -697,14 +711,21 @@ class P extends React.Component {
           : es,
       // apply sorting
       es => {
-        // no sorting required
+        // init
+        let [ field, order ] = [null, "a"];
+
+        // sort by 'Order' column or no sorting required
         if (!sortByField) {
-          /* new2!!!!! */
-          /*return es;*/
-          return orderEntries(es);
-          /* /new2!!!!! */
+          if (lexgraph_field_id)
+            [ field, order ] = [ lexgraph_field_id, "a" ];
+          else
+            return es;
         }
-        const { field, order } = sortByField;
+        else ({ field, order } = sortByField);
+
+        if (!field) {
+          field = lexgraph_field_id ? lexgraph_field_id : [66, 10];
+        }
 
         /* new2!!!!!! */
         if (isEqual(lexgraph_field_id, field)) {
