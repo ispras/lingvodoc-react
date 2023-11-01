@@ -41,6 +41,7 @@ const Row = ({
   id, /* new!!!!! */
   moveListItem, /* new!!!!! */
   dragAndDropEntries, /* new!!!!! */
+  dnd_enabled, /* new!!!!!! */
   entries /* new!!!!! */
   /* eslint-enable react/prop-types */
 }) => {
@@ -151,7 +152,7 @@ const Row = ({
   return (
     <tr style={isDragging ? { opacity: "0" } : (disabled_flag ? { opacity: "0.5" } : {})} ref={preview} id={id} data-handler-id={handlerId}>
       {/* new!!!!! */}
-      <Table.Cell style={(mode === "edit") ? {} : { display: "none" }}>
+      <Table.Cell style={(dnd_enabled && (mode === "edit")) ? {} : { display: "none" }}>
         <div ref={dragDropRef}>
           <Button.Group basic className="lingvo-buttons-group">
             <Button icon={<i className="lingvo-icon lingvo-icon_dnd" />} />
@@ -269,6 +270,7 @@ Row.propTypes = {
   index: PropTypes.number, /*  ????? new!!!!! */
   moveListItem: PropTypes.func, /* new!!!!! */
   dragAndDropEntries: PropTypes.func, /* new!!!!! */
+  dnd_enabled: PropTypes.bool, /* new!!!!! */
   entries: PropTypes.array, /* new!!!!! */
 };
 
@@ -302,6 +304,7 @@ export default onlyUpdateForKeys([
   "number",
   "id", /*  ????? new!!!!! */
   "index", /*  ????? new!!!!! */
+  "dnd_enabled", /* ???????? new!!!!! */
   /*"moveListItem",*/ /* new!!!!! */
   "entries" /* new!!!!! */
 ])(Row);
