@@ -305,6 +305,7 @@ export default onlyUpdateForKeys([
   "id", /*  ????? new!!!!! */
   "index", /*  ????? new!!!!! */
   "dnd_enabled", /* ???????? new!!!!! */
+
   /*"moveListItem",*/ /* new!!!!! */
   "entries" /* new!!!!! */
 ])(Row);
