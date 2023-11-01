@@ -32,6 +32,7 @@ const TableHeader = ({
   /* eslint-enable react/prop-types */
   onSortModeChange,
   onSortModeReset,
+  dnd_enabled, /* new!!!!!! */
   mode /* new!!!!!!! */
 }) => {
   const getTranslation = useContext(TranslationContext);
@@ -40,7 +41,7 @@ const TableHeader = ({
     <Table.Header style={disabled ? { opacity: "0.5" } : {}}>
       <Table.Row>
         {/* new!!!!! */}
-        <Table.HeaderCell className="entityHeader" style={(mode === "edit") ? {} : { display: "none" }}>
+        <Table.HeaderCell className="entityHeader" style={(dnd_enabled && mode === "edit") ? {} : { display: "none" }}>
           &nbsp;
         </Table.HeaderCell>
         {/* /new!!!!! */}
@@ -104,6 +105,7 @@ TableHeader.propTypes = {
   selectedColumns: PropTypes.array,
   onCheckColumn: PropTypes.func,
   onCheckAll: PropTypes.func,
+  dnd_enabled: PropTypes.bool,
   mode: PropTypes.string.isRequired /* new!!!!!! */
 };
 
@@ -119,4 +121,4 @@ TableHeader.defaultProps = {
   onCheckAll: () => {}
 };
 
-export default onlyUpdateForKeys(["columns", "entries", "selectedRows", "selectedColumns", "mode" /* new!!!!! */])(TableHeader);
+export default onlyUpdateForKeys(["columns", "entries", "selectedRows", "selectedColumns", "dnd_enabled", /* ???????? new!!!!! */ "mode" /* new!!!!! */])(TableHeader);

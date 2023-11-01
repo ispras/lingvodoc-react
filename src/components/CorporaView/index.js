@@ -8,7 +8,7 @@ import { Button, Dimmer, Header, Icon, Table } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
 import update from 'immutability-helper';
-import { drop, flow, isEqual, reverse, take, sortBy } from "lodash";
+import { drop, flow, isEqual, reverse, sortBy, take } from "lodash";
 import PropTypes from "prop-types";
 import { branch, compose, renderComponent } from "recompose";
 import { bindActionCreators } from "redux";
@@ -717,11 +717,11 @@ class P extends React.Component {
         // sort by 'Order' column or no sorting required
         if (!sortByField) {
           if (lexgraph_field_id)
-            [ field, order ] = [ lexgraph_field_id, "a" ];
+            {[ field, order ] = [ lexgraph_field_id, "a" ];}
           else
-            return es;
+            {return es;}
         }
-        else ({ field, order } = sortByField);
+        else {({ field, order } = sortByField);}
 
         if (!field) {
           field = lexgraph_field_id ? lexgraph_field_id : [66, 10];
@@ -1026,6 +1026,7 @@ class P extends React.Component {
                 onCheckColumn={this.onCheckColumn}
                 onCheckAll={this.onCheckAll}
                 mode={mode} /* new!!!!! */
+                dnd_enabled={this.state.dnd_enabled} /* new!!!!! */
               />
               <TableBody
                 perspectiveId={id}
@@ -1050,6 +1051,7 @@ class P extends React.Component {
                 reRender={reRender}
                 moveListItem={moveListItem} /* new!!!!!! */
                 dragAndDropEntries={dragAndDropEntries} /* new!!!!! */
+                dnd_enabled={this.state.dnd_enabled} /* new!!!!! */
               />
             </Table>
           {/* new!!!!! */}
