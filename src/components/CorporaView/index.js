@@ -156,7 +156,6 @@ const createLexicalEntryMutation = gql`
   }
 `;
 
-/* new2!!!!!!! */
 const createEntityMutation = gql`
   mutation createEntity(
     $parent_id: LingvodocID!
@@ -187,7 +186,6 @@ const createEntityMutation = gql`
     }
   }
 `;
-/* /new2!!!!!!! */
 
 const mergeLexicalEntriesMutation = gql`
   mutation mergeEntries($groupList: [[LingvodocID]]!) {
@@ -380,7 +378,7 @@ class P extends React.Component {
       columns,
       setSortByField,
       resetSortByField,
-      createEntity, /* new2!!!!!! */
+      createEntity, 
       createLexicalEntry,
       mergeLexicalEntries,
       removeLexicalEntries,
@@ -393,13 +391,6 @@ class P extends React.Component {
       selectedEntries,
       user,
       reRender,
-      //for moving lexentries
-      /*lexentry_id_source,*/ /* new2!!!!! */
-      /*lexentry_id_before,*/ /* new2!!!!! */
-      /*lexentry_id_after,*/ /* new2!!!!! */
-      //for moving entities
-      /*entity_id_dragged,*/ /* new2!!!!! */
-      /*lexentry_id_target*/ /* new2!!!!! */
     } = this.props;
 
     console.log('REnder index!!!!!!!!!!!!');
@@ -534,28 +525,20 @@ class P extends React.Component {
         },
         (error) => {
           //window.logger.err(`GraphQL error: ${this.context(error.message)}`);
+          this.setState({
+            cards: []
+          });
         });
       /*}*/
     };
     /* /new!!!!!! */
 
-    /*const addEntry = () => {*/
-    const addEntry = (lexgraph_min) => { /* new2!!!! */
+    const addEntry = (lexgraph_min) => {
       createLexicalEntry({
         variables: {
           id,
           entitiesMode
         },
-        /* new2!!!!! */
-        /*refetchQueries: [
-          {
-            query: queryLexicalEntries,
-            variables: {
-              id,
-              entitiesMode
-            }
-          }
-        ]*/
         update: (cache, { data: { create_lexicalentry: { lexicalentry }}}) => {
           cache.updateQuery({
               query: queryLexicalEntries,
@@ -569,16 +552,13 @@ class P extends React.Component {
             })
           );
         },
-        /* /new2!!!!! */
       }).then(({ data: d }) => {
-        if (!d.loading && !d.error) { /* new2!!!!! */
-        /*if (!d.loading || !d.error) {*/
+        if (!d.loading && !d.error) {
           const {
             create_lexicalentry: { lexicalentry }
           } = d;
           addCreatedEntry(lexicalentry);
 
-          /* new2!!!!! */
           if (lexgraph_field_id && lexgraph_min) {
             createEntity({
               variables: {
@@ -605,7 +585,6 @@ class P extends React.Component {
               },
             });
           }
-          /* /new2!!!!! */
         }
       });
     };
@@ -635,17 +614,6 @@ class P extends React.Component {
         variables: {
           ids: selectedEntries
         },
-        /* new2!!!!! */
-        /*
-        refetchQueries: [
-          {
-            query: queryLexicalEntries,
-            variables: {
-              id,
-              entitiesMode
-            }
-          }
-        ]*/
         update: (cache, { data }) => {
           if (data.loading || data.error) {return;}
           const { bulk_delete_lexicalentry: { deleted_entries }} = data;
@@ -662,7 +630,6 @@ class P extends React.Component {
             })
           );
         },
-        /* /new2!!!!! */
       }).then(() => {
         resetSelection();
       });
@@ -678,8 +645,6 @@ class P extends React.Component {
       return result ? result : str_a.localeCompare(str_b, undefined, { numeric: true });
     };
 
-    /* new2!!!!!! */
-    /*const entitySortKeys = new Map();*/
     const orderEntries = es => {
       if (!lexgraph_field_id)
         {return es;}
@@ -694,7 +659,6 @@ class P extends React.Component {
 
       return sortedEntries;
     };
-    /* /new2!!!!!! */
 
     const processEntries = flow([
       // remove empty lexical entries, if not in edit mode
@@ -727,13 +691,11 @@ class P extends React.Component {
           field = lexgraph_field_id ? lexgraph_field_id : [66, 10];
         }
 
-        /* new2!!!!!! */
         if (isEqual(lexgraph_field_id, field)) {
           return orderEntries(es);
         }
 
         const entitySortKeys = new Map();
-        /* /new2!!!!!! */
 
         /* Getting a sort key for each entry. */
 
@@ -771,7 +733,6 @@ class P extends React.Component {
 
     const entries = processEntries(lexicalEntries.slice());
 
-    /* new2!!!!!! */
     const lexgraph_min = () => {
       if (!lexgraph_field_id)
         {return null;}
@@ -785,15 +746,12 @@ class P extends React.Component {
 
       return min_res;
     };
-    /* /new2!!!!!! */
 
-    /* new2!!!!!! */
     const _ROWS_PER_PAGE = lexgraph_field_id ? entries.length : ROWS_PER_PAGE;
 
     const pageEntries =
       entries.length > _ROWS_PER_PAGE ? take(drop(entries, _ROWS_PER_PAGE * (page - 1)), _ROWS_PER_PAGE) : entries;
 
-    /* /new2!!!!!! */
       
     // Put newly created entries at the top of page.
     const e = [
@@ -963,8 +921,7 @@ class P extends React.Component {
               <Button 
                 icon={<i className="lingvo-icon lingvo-icon_add" />}
                 content={this.context("Add lexical entry")}
-                /*onClick={addEntry}*/
-                onClick={() => addEntry(lexgraph_min())} /* new2!!!!! */
+                onClick={() => addEntry(lexgraph_min())}
                 className="lingvo-button-green lingvo-perspective-button"
               />
             )}
@@ -1053,17 +1010,16 @@ class P extends React.Component {
                 dragAndDropEntries={dragAndDropEntries} /* new!!!!! */
                 dnd_enabled={this.state.dnd_enabled} /* new!!!!! */
               />
-            </Table>
+            </Table>            
           {/* new!!!!! */}
           </DndProvider>
           {/* /new!!!!! */}
         </div>
-        {/* new!!!!! */}
+        
         <Pagination
           urlBased
           activePage={page}
-          /*pageSize={ROWS_PER_PAGE}*/ 
-          pageSize={_ROWS_PER_PAGE} /* new2!!!!! */
+          pageSize={_ROWS_PER_PAGE}
           totalItems={entries.length}
           showTotal
           onPageChanged={() => {
@@ -1076,7 +1032,7 @@ class P extends React.Component {
           }}
           className="lingvo-pagination-block_perspective"
         />
-        {/* /new!!!!! */}
+
       </div>
     );
   }
@@ -1097,7 +1053,7 @@ P.propTypes = {
   setSortByField: PropTypes.func.isRequired,
   resetSortByField: PropTypes.func.isRequired,
   addLexicalEntry: PropTypes.func.isRequired,
-  createEntity: PropTypes.func.isRequired, /* new2!!!!! */
+  createEntity: PropTypes.func.isRequired,
   createLexicalEntry: PropTypes.func.isRequired,
   mergeLexicalEntries: PropTypes.func.isRequired,
   removeLexicalEntries: PropTypes.func.isRequired,
@@ -1137,7 +1093,7 @@ const PerspectiveView = compose(
         dispatch
       )
   ),
-  graphql(createEntityMutation, {name: "createEntity"}), /* new2!!!!! */
+  graphql(createEntityMutation, {name: "createEntity"}),
   graphql(createLexicalEntryMutation, { name: "createLexicalEntry" }),
   graphql(mergeLexicalEntriesMutation, { name: "mergeLexicalEntries" }),
   graphql(removeLexicalEntriesMutation, { name: "removeLexicalEntries" }),

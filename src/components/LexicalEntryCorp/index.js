@@ -8,11 +8,8 @@ import PropTypes from "prop-types";
 import { compose, pure } from "recompose";
 
 import { queryCounter } from "backend";
-/* new!!!!! */
-/*import { queryLexicalEntries } from "components/PerspectiveView";*/
 import { queryLexicalEntries } from "components/CorporaView";
 import TranslationContext from "Layout/TranslationContext";
-/* /new!!!!! */
 import { compositeIdToString, compositeIdToString as id2str } from "utils/compositeId";
 
 import GroupingTag from "./GroupingTag";
@@ -440,13 +437,11 @@ const Entities = ({
     });
   }, [update_set]);
 
-  /* new!!!!!!! */
   /* Shortcut "ctrl+Enter" */
   const breakdown = useCallback((event, parentEntity, entity) => {
 
     if (event.ctrlKey && event.code === "Enter") {
         event.preventDefault();
-        //console.log("Breakdown: ShortCut !!!!!!!!!!!");
 
         const eventTarget = event.target;
         const targetValue = eventTarget.value; 
@@ -464,8 +459,7 @@ const Entities = ({
 
         const beforeCaret = targetValue.substring(0, selectionStart).replace(/ /g, '\x20') || '\x20';
         const afterCaret = targetValue.substring(selectionStart).replace(/ /g, '\x20') || '\x20';
-
-        // удалить старое предложение, создать 2 новых!
+        
         if (entity) {
           remove(entity);
         }
@@ -473,7 +467,6 @@ const Entities = ({
         create(afterCaret, parentEntity === null ? null : parentEntity.id);
      }
   }, []);
-   /* /new!!!!!!! */
 
   const props = {
     perspectiveId,
@@ -542,10 +535,8 @@ const Entities = ({
       {mode === "edit" && !is_order_column && (
         <li className="last">
           {!edit && (
-            <div ref={dropRef} /* new!!!! */>
-              {/* new!!!!! */}
+            <div ref={dropRef}>
               {isOver && <div className="lingvo-drop-here">{getTranslation("Drop Here!")}</div>}
-              {/* /new!!!!! */}
 
               <Button.Group basic className="lingvo-buttons-group">
                 <Button icon={<i className="lingvo-icon lingvo-icon_plus" />}
