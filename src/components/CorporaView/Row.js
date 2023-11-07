@@ -199,7 +199,7 @@ const Row = ({
   return (
     <tr style={isDragging ? { opacity: "0" } : (disabled_flag ? { opacity: "0.5" } : {})} ref={preview} id={id} data-handler-id={handlerId}>
       {/* new!!!!! */}
-      <Table.Cell style={(dnd_enabled && (mode === "edit")) ? {} : { display: "none" }} className="lingvo-dnd-column">
+      <Table.Cell className={(dnd_enabled && (mode === "edit")) ? "lingvo-dnd-column" : "lingvo-dnd-column lingvo-dnd-column_hidden"}>
         <div ref={dragDropRef}>
           <Button.Group basic className="lingvo-buttons-group">
             <Button icon={<i className="lingvo-icon lingvo-icon_dnd" />} />
