@@ -40,11 +40,9 @@ const TableHeader = ({
   return (
     <Table.Header style={disabled ? { opacity: "0.5" } : {}}>
       <Table.Row>
-        {/* new!!!!! */}
-        <Table.HeaderCell className="entityHeader" style={(dnd_enabled && mode === "edit") ? {} : { display: "none" }}>
+        <Table.HeaderCell className={(dnd_enabled && mode === "edit") ? "entityHeader lingvo-dnd-headercell" : "entityHeader lingvo-dnd-headercell lingvo-dnd-headercell_hidden"}>
           &nbsp;
         </Table.HeaderCell>
-        {/* /new!!!!! */}
         {selectEntries && (
           <Table.HeaderCell className="entityHeader">
             {selectAllEntries && (
