@@ -430,6 +430,10 @@
     }
   }
 
+  & tr td {
+    background: #fff !important;
+  }
+
   & tr:nth-child(2n) {
     & td {
       background: #fafafa !important;
@@ -483,6 +487,10 @@
           content: none;
         }
       }
+    }
+
+    &.lingvo-dnd-column {
+      vertical-align: top !important;
     }
   }
 
