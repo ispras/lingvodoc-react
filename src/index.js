@@ -1,4 +1,6 @@
 import React from "react";
+/*import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";*/
 import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
 import { createRoot } from 'react-dom/client';
@@ -43,6 +45,16 @@ window.logger = bindActionCreators(
 window.dispatch = store.dispatch;
 
 const root = createRoot(document.getElementById("root"));
+
+/*root.render(<DndProvider backend={HTML5Backend}>
+  <Provider store={store}>
+  <ApolloProvider client={apollo}>
+    <BrowserRouter>
+      <Layout />
+    </BrowserRouter>
+  </ApolloProvider>
+</Provider>
+</DndProvider>);*/
 
 root.render(<Provider store={store}>
   <ApolloProvider client={apollo}>

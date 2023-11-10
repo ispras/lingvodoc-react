@@ -365,6 +365,30 @@ class P extends React.Component {
     });
   }
 
+  shouldComponentUpdate(nextProps, nextState) {
+
+    /*console.log('this.props====');
+    console.log(this.props);
+
+    console.log('nextProps====');
+    console.log(nextProps);
+
+    console.log('this.state====');
+    console.log(this.state);
+
+    console.log('nextState====');
+    console.log(nextState);*/
+
+    /*if (this.props.color !== nextProps.color) {
+      return true;
+    }
+    if (this.state.count !== nextState.count) {
+      return true;
+    }
+    return false;*/
+    return true;
+  }
+
   render() {
     const {
       id,
@@ -391,6 +415,7 @@ class P extends React.Component {
       selectedEntries,
       user,
       reRender,
+      activeDndProvider, /* new!!!!!!! */
     } = this.props;
 
     console.log('REnder index!!!!!!!!!!!!');
@@ -410,6 +435,9 @@ class P extends React.Component {
     }
 
     const lexicalEntries = !error ? data.perspective.lexical_entries : [];
+
+    /*console.log('lexicalEntries======');
+    console.log(lexicalEntries);*/
     /* new2!!!!!! */
     const lexgraph_column = !error ? columns.find(col => col.field.english_translation === "Order") : null;
     const lexgraph_field_id = lexgraph_column ? lexgraph_column.field_id : null;
@@ -522,6 +550,7 @@ class P extends React.Component {
           this.setState({
             cards: []
           });
+          this.setState({mutation});
         },
         (error) => {
           //window.logger.err(`GraphQL error: ${this.context(error.message)}`);
@@ -753,6 +782,9 @@ class P extends React.Component {
       entries.length > _ROWS_PER_PAGE ? take(drop(entries, _ROWS_PER_PAGE * (page - 1)), _ROWS_PER_PAGE) : entries;
 
       
+    /*console.log('entries=====');
+    console.log(entries);*/
+
     // Put newly created entries at the top of page.
     const e = [
       ...newEntries,
@@ -797,6 +829,9 @@ class P extends React.Component {
     const selectedColumns = [];
 
     const items = e;
+
+    /*console.log('items=====');
+    console.log(items);*/
 
     const checkedRow = this.state.checkedRow;
     const checkedColumn = this.state.checkedColumn;
@@ -966,6 +1001,7 @@ class P extends React.Component {
 
         <div className="lingvo-scrolling-tab__table">
           {/* new!!!!! */}
+          {activeDndProvider && 
           <DndProvider backend={HTML5Backend}>
           {/* /new!!!!! */}
             <Table celled padded className={`${className} lingvo-perspective-table`}>
@@ -975,21 +1011,21 @@ class P extends React.Component {
                 onSortModeChange={(fieldId, order) => setSort(fieldId, order)}
                 onSortModeReset={() => resetSort()}
                 selectEntries={mode === "edit"}
-                /*entries={items}*/
-                entries={this.state.cards.length && this.state.cards || items} /* new!!!!! */
+                //entries={items}
+                entries={this.state.cards.length && this.state.cards || items} // new!!!!! 
                 checkEntries={isTableLanguagesPublish}
                 selectedRows={selectedRows}
                 selectedColumns={selectedColumns}
                 onCheckColumn={this.onCheckColumn}
                 onCheckAll={this.onCheckAll}
-                mode={mode} /* new!!!!! */
-                dnd_enabled={this.state.dnd_enabled} /* new!!!!! */
+                mode={mode} // new!!!!! 
+                dnd_enabled={this.state.dnd_enabled} // new!!!!! 
               />
               <TableBody
                 perspectiveId={id}
                 entitiesMode={entitiesMode}
-                /*entries={items}*/
-                entries={this.state.cards.length && this.state.cards || items} /* new!!!!! */
+                //entries={items}
+                entries={this.state.cards.length && this.state.cards || items} // new!!!!!
                 allEntriesGenerator={allEntriesGenerator}
                 columns={fields}
                 mode={mode}
@@ -1006,13 +1042,14 @@ class P extends React.Component {
                 resetCheckedAll={this.resetCheckedAll}
                 onEntrySelect={onEntrySelect}
                 reRender={reRender}
-                moveListItem={moveListItem} /* new!!!!!! */
-                dragAndDropEntries={dragAndDropEntries} /* new!!!!! */
-                dnd_enabled={this.state.dnd_enabled} /* new!!!!! */
+                moveListItem={moveListItem} // new!!!!!!
+                dragAndDropEntries={dragAndDropEntries} // new!!!!! 
+                dnd_enabled={this.state.dnd_enabled} // new!!!!!
               />
-            </Table>            
+            </Table>       
           {/* new!!!!! */}
           </DndProvider>
+          }
           {/* /new!!!!! */}
         </div>
         
@@ -1064,7 +1101,8 @@ P.propTypes = {
   createdEntries: PropTypes.array.isRequired,
   selectedEntries: PropTypes.array.isRequired,
   user: PropTypes.object.isRequired,
-  reRender: PropTypes.func
+  reRender: PropTypes.func,
+  activeDndProvider: PropTypes.bool /* new!!!!!!! */
 };
 
 P.defaultProps = {
@@ -1343,7 +1381,7 @@ export const LexicalEntryByIds = compose(
   })
 )(LexicalEntryViewBaseByIds);
 
-const PerspectiveViewWrapper = ({ id, className, mode, entitiesMode, page, data, filter, sortByField }) => {
+const PerspectiveViewWrapper = ({ id, className, mode, entitiesMode, page, data, filter, sortByField, activeDndProvider /* new!!!! */ }) => {
   if (data.error) {
     return null;
   }
@@ -1382,6 +1420,7 @@ const PerspectiveViewWrapper = ({ id, className, mode, entitiesMode, page, data,
       sortByField={sortByField}
       columns={columns}
       reRender={reRender}
+      activeDndProvider={activeDndProvider} /* new!!!!! */
     />
   );
 };
@@ -1394,7 +1433,8 @@ PerspectiveViewWrapper.propTypes = {
   entitiesMode: PropTypes.string.isRequired,
   filter: PropTypes.string,
   data: PropTypes.object.isRequired,
-  sortByField: PropTypes.object
+  sortByField: PropTypes.object,
+  activeDndProvider: PropTypes.bool, /* new!!!!!! */
 };
 
 PerspectiveViewWrapper.defaultProps = {

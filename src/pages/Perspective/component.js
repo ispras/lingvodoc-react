@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { connect } from "react-redux";
 import { Link, Navigate, Route, Routes } from "react-router-dom";
 import {
@@ -25,9 +25,11 @@ import { branch, compose, onlyUpdateForKeys, renderNothing, withHandlers, withSt
 
 import { chooseTranslation as T } from "api/i18n";
 import { queryCounter } from "backend";
+import CorporaView from "components/CorporaView";
+/* new!!!!!! */
+import DictionaryProperties from "components/DictionaryPropertiesModal";
 import Merge from "components/Merge";
 import PerspectiveView from "components/PerspectiveView";
-import CorporaView from "components/CorporaView";
 import { useMutation } from "hooks";
 import TranslationContext from "Layout/TranslationContext";
 import NotFound from "pages/NotFound";
@@ -35,6 +37,7 @@ import { compositeIdToString as id2str } from "utils/compositeId";
 
 import PerspectivePath from "./PerspectivePath";
 
+/* /new!!!!!! */
 import "../../components/CognateAnalysisModal/style.scss";
 import "./style.scss";
 
@@ -997,11 +1000,11 @@ const Tools = ({
               </Dropdown.Item>
 
               <Dropdown.Item onClick={() => openCognateAnalysisModal(id, glottMode)}>
-                {getTranslation("Glottochronology (" + glottMode + ")")}
+                {getTranslation(`Glottochronology (${ glottMode })`)}
               </Dropdown.Item>
 
-              <Dropdown.Item onClick={() => openCognateAnalysisModal(id, "multi_" + glottMode)}>
-                {getTranslation("Glottochronology multi-language (" + glottMode + ")")}
+              <Dropdown.Item onClick={() => openCognateAnalysisModal(id, `multi_${ glottMode}`)}>
+                {getTranslation(`Glottochronology multi-language (${ glottMode })`)}
               </Dropdown.Item>
             </>
           )}
@@ -1246,6 +1249,18 @@ const Perspective = ({
     init({ location });
   }, [init, location]);
 
+  /* new!!!!!! */
+  const [dndProvider, setDndProvider] = useState(true);
+
+  const disableDNDProvider = useCallback(() => {
+    setDndProvider(false);
+  }, [dndProvider]);
+
+  const enableDNDProvider = useCallback(() => {
+    setDndProvider(true);
+  }, [dndProvider]);
+  /* /new!!!!!! */
+
   const { id, parent_id, mode, page, baseUrl } = perspective.params;
   if (!baseUrl || location.pathname.indexOf(baseUrl) === -1) {
     return null;
@@ -1317,7 +1332,10 @@ const Perspective = ({
             {getTranslation("This entity was deleted")}
           </div>
         )}
-        {!isDeleted && <PerspectivePath id={id} dictionary_id={parent_id} mode={mode} performRedirect />}
+        {/* new!!!!!! */}
+        {/*{!isDeleted && <PerspectivePath id={id} dictionary_id={parent_id} mode={mode} performRedirect />}*/}
+        {!isDeleted && <PerspectivePath id={id} dictionary_id={parent_id} mode={mode} performRedirect disableDNDProvider={disableDNDProvider} />}
+        {/* /new!!!!!! */}
         {!isDeleted && (
           <ModeSelector
             mode={mode}
@@ -1347,6 +1365,7 @@ const Perspective = ({
                     page={page}
                     filter={perspective.filter}
                     className="content"
+                    activeDndProvider={dndProvider} /* new!!!!!! */
                   />
                 }
               />
@@ -1354,6 +1373,10 @@ const Perspective = ({
             <Route component={NotFound} />
           </Routes>
         )}
+
+        {/* new!!!!!!! */}
+        <DictionaryProperties enableDNDProvider={enableDNDProvider} />
+        {/* /new!!!!!! */}
       </Container>
     </div>
   );

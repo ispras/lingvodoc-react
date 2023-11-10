@@ -303,9 +303,11 @@ class Properties extends React.Component {
   }
 
   render() {
+    
     const {
       actions,
       title,
+      enableDNDProvider, /* new!!!!!! */
       data: { loading, error }
     } = this.props;
 
@@ -323,7 +325,12 @@ class Properties extends React.Component {
           open
           closeOnDimmerClick={false}
           closeIcon
-          onClose={actions.closeDictionaryPropertiesModal}
+          /*onClose={actions.closeDictionaryPropertiesModal}*/
+          onClose={() => {
+              actions.closeDictionaryPropertiesModal();
+              enableDNDProvider();
+            }
+          } /* new!!!!!!!! */
           className="lingvo-modal2"
         >
           <Modal.Header>{title}</Modal.Header>
@@ -362,7 +369,12 @@ class Properties extends React.Component {
         size="fullscreen"
         closeOnDimmerClick={false}
         closeIcon
-        onClose={actions.closeDictionaryPropertiesModal}
+        /*onClose={actions.closeDictionaryPropertiesModal}*/
+        onClose={() => {
+            actions.closeDictionaryPropertiesModal();
+            enableDNDProvider();
+          }
+        } /* new!!!!!!!! */
         className="lingvo-modal2"
       >
         <Modal.Header>{title}</Modal.Header>
@@ -466,7 +478,12 @@ class Properties extends React.Component {
         <Modal.Actions>
           <Button
             content={this.context("Close")}
-            onClick={actions.closeDictionaryPropertiesModal}
+            /*onClick={actions.closeDictionaryPropertiesModal}*/
+            onClick={() => {
+                actions.closeDictionaryPropertiesModal();
+                enableDNDProvider();
+              }
+            } /* new!!!!!!!! */
             className="lingvo-button-basic-black"
           />
         </Modal.Actions>
@@ -486,8 +503,15 @@ Properties.propTypes = {
   update: PropTypes.func.isRequired,
   actions: PropTypes.shape({
     closeDictionaryPropertiesModal: PropTypes.func.isRequired
-  }).isRequired
+  }).isRequired,
+  enableDNDProvider: PropTypes.func, /* new!!!!!!! */
 };
+
+/* new!!!!! */
+Properties.defaultProps = {
+  enableDNDProvider: () => {},
+};
+/* /new!!!!! */
 
 export default compose(
   connect(

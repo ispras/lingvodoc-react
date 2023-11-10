@@ -59,7 +59,7 @@ const license_dict_translator = getTranslation => ({
 class PerspectivePath extends React.Component {
   render() {
     /* eslint-disable no-shadow */
-    const { id, dictionary_id, queryPerspectivePath, queryAvailablePerspectives, mode, className, actions, user, performRedirect } =
+    const { id, dictionary_id, queryPerspectivePath, queryAvailablePerspectives, mode, className, actions, user, performRedirect, disableDNDProvider /*new!!!!! */ } =
       this.props;
     /* eslint-enable no-shadow */
     if (
@@ -176,12 +176,22 @@ class PerspectivePath extends React.Component {
                           key="properties"
                           icon={<i className="lingvo-icon lingvo-icon_properties" />}
                           text={this.context("Properties")}
-                          onClick={() =>
+                          /* new!!!!! */
+                          /*onClick={() =>
                             actions.openDictionaryPropertiesModal(
                               dictionary_id,
                               `${this.context("Dictionary")} '${T(e.translations)}' ${properties_str}`
                             )
+                          }*/
+                          onClick={() => {
+                            actions.openDictionaryPropertiesModal(
+                              dictionary_id,
+                              `${this.context("Dictionary")} '${T(e.translations)}' ${properties_str}`
+                            );
+                            disableDNDProvider();
+                            }
                           }
+                          /* /new!!!!! */
                         />,
 
                         <Dropdown.Item
@@ -255,11 +265,13 @@ PerspectivePath.propTypes = {
   className: PropTypes.string,
   actions: PropTypes.object.isRequired,
   user: PropTypes.object.isRequired,
-  performRedirect: PropTypes.bool
+  performRedirect: PropTypes.bool,
+  disableDNDProvider: PropTypes.func, /* new!!!!! */
 };
 
 PerspectivePath.defaultProps = {
-  className: "white"
+  className: "white",
+  disableDNDProvider: () => {}, /* new!!!!!! */
 };
 
 export default compose(
