@@ -26,7 +26,6 @@ import { branch, compose, onlyUpdateForKeys, renderNothing, withHandlers, withSt
 import { chooseTranslation as T } from "api/i18n";
 import { queryCounter } from "backend";
 import CorporaView from "components/CorporaView";
-/* new!!!!!! */
 import DictionaryProperties from "components/DictionaryPropertiesModal";
 import Merge from "components/Merge";
 import PerspectiveView from "components/PerspectiveView";
@@ -37,7 +36,6 @@ import { compositeIdToString as id2str } from "utils/compositeId";
 
 import PerspectivePath from "./PerspectivePath";
 
-/* /new!!!!!! */
 import "../../components/CognateAnalysisModal/style.scss";
 import "./style.scss";
 
@@ -1249,7 +1247,6 @@ const Perspective = ({
     init({ location });
   }, [init, location]);
 
-  /* new!!!!!! */
   const [dndProvider, setDndProvider] = useState(true);
 
   const disableDNDProvider = useCallback(() => {
@@ -1259,7 +1256,6 @@ const Perspective = ({
   const enableDNDProvider = useCallback(() => {
     setDndProvider(true);
   }, [dndProvider]);
-  /* /new!!!!!! */
 
   const { id, parent_id, mode, page, baseUrl } = perspective.params;
   if (!baseUrl || location.pathname.indexOf(baseUrl) === -1) {
@@ -1332,10 +1328,7 @@ const Perspective = ({
             {getTranslation("This entity was deleted")}
           </div>
         )}
-        {/* new!!!!!! */}
-        {/*{!isDeleted && <PerspectivePath id={id} dictionary_id={parent_id} mode={mode} performRedirect />}*/}
         {!isDeleted && <PerspectivePath id={id} dictionary_id={parent_id} mode={mode} performRedirect disableDNDProvider={disableDNDProvider} />}
-        {/* /new!!!!!! */}
         {!isDeleted && (
           <ModeSelector
             mode={mode}
@@ -1365,7 +1358,7 @@ const Perspective = ({
                     page={page}
                     filter={perspective.filter}
                     className="content"
-                    activeDndProvider={dndProvider} /* new!!!!!! */
+                    activeDndProvider={dndProvider} 
                   />
                 }
               />
@@ -1374,9 +1367,7 @@ const Perspective = ({
           </Routes>
         )}
 
-        {/* new!!!!!!! */}
         <DictionaryProperties enableDNDProvider={enableDNDProvider} />
-        {/* /new!!!!!! */}
       </Container>
     </div>
   );

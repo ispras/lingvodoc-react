@@ -546,9 +546,7 @@ const DictionaryDashboard = () => {
   return (
     <div className="background-content">
       <Tab className="inverted lingvo-tab" panes={DICTIONARIES_TABS(getTranslation)} renderActiveOnly />
-      {/* new!!!!!!! */}
       <DictionaryProperties />
-      {/* /new!!!!!! */}
     </div>
   );
 };
@@ -558,9 +556,7 @@ const CorpusDashboard = () => {
   return (
     <div className="background-content">
       <Tab className="inverted lingvo-tab" panes={CORPORA_TABS(getTranslation)} renderActiveOnly />
-      {/* new!!!!!!! */}
       <DictionaryProperties />
-      {/* /new!!!!!! */}
     </div>
   );
 };
