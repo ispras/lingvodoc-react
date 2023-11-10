@@ -12,7 +12,7 @@ import CreateFieldModal from "components/CreateFieldModal";
 import CreateOrganizationModal from "components/CreateOrganizationModal";
 import CreatePerspectiveModal from "components/CreatePerspectiveModal";
 import DictionaryOrganizationsModal from "components/DictionaryOrganizationsModal";
-import DictionaryProperties from "components/DictionaryPropertiesModal";
+/*import DictionaryProperties from "components/DictionaryPropertiesModal";*/
 import MarkupModal from "components/MarkupModal";
 import Modals from "components/Modals";
 import PerspectiveProperties from "components/PerspectivePropertiesModal";
@@ -67,7 +67,7 @@ class Layout extends React.Component {
           <Modals />
           <PlayerModal />
           <MarkupModal />
-          <DictionaryProperties />
+          {/*<DictionaryProperties />*/}
           <SaveDictionary />
           <PerspectiveProperties />
           <PhonemicAnalysisModal />

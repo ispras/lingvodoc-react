@@ -9,6 +9,7 @@ import { branch, compose, onlyUpdateForKeys, renderNothing } from "recompose";
 import { bindActionCreators } from "redux";
 
 import { chooseTranslation as T } from "api/i18n";
+import DictionaryProperties from "components/DictionaryPropertiesModal";
 import { openModal as openDictionaryOrganizationsModal } from "ducks/dictionaryOrganizations";
 import { openDictionaryPropertiesModal } from "ducks/dictionaryProperties";
 import { openPerspectivePropertiesModal } from "ducks/perspectiveProperties";
@@ -545,6 +546,9 @@ const DictionaryDashboard = () => {
   return (
     <div className="background-content">
       <Tab className="inverted lingvo-tab" panes={DICTIONARIES_TABS(getTranslation)} renderActiveOnly />
+      {/* new!!!!!!! */}
+      <DictionaryProperties />
+      {/* /new!!!!!! */}
     </div>
   );
 };
@@ -554,6 +558,9 @@ const CorpusDashboard = () => {
   return (
     <div className="background-content">
       <Tab className="inverted lingvo-tab" panes={CORPORA_TABS(getTranslation)} renderActiveOnly />
+      {/* new!!!!!!! */}
+      <DictionaryProperties />
+      {/* /new!!!!!! */}
     </div>
   );
 };
