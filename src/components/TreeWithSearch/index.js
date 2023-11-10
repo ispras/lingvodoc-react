@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-/*import { DndContext } from "react-dnd";*/
 import SortableTree from "react-sortable-tree";
 import { Button, Input } from "semantic-ui-react";
 import PropTypes from "prop-types";
@@ -50,11 +49,8 @@ const TreeWithSearch = ({ inverted, ...props }) => {
           </>
         )}
       </div>
-      {/*<DndContext.Consumer>
-        {({ dragDropManager }) =>*/}
       <SortableTree
         {...props}
-        /*dragDropManager={dragDropManager} // new!!!!! */
         searchQuery={searchString}
         searchMethod={({ node, searchQuery }) => {
           const langName = chooseTranslation(node.translations);
@@ -63,8 +59,6 @@ const TreeWithSearch = ({ inverted, ...props }) => {
         searchFocusOffset={currentMatch - 1}
         searchFinishCallback={matches => setTotalMatches(matches.length)}
       />
-      {/*}
-      </DndContext.Consumer>*/}
     </div>
   );
 };

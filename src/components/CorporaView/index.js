@@ -1,8 +1,6 @@
 import React, { useState } from "react";
-/* new!!!!! */
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-/* /new!!!!! */
 import { connect } from "react-redux";
 import { Button, Dimmer, Header, Icon, Table } from "semantic-ui-react";
 import { gql } from "@apollo/client";
@@ -415,7 +413,7 @@ class P extends React.Component {
       selectedEntries,
       user,
       reRender,
-      activeDndProvider, /* new!!!!!!! */
+      activeDndProvider,
     } = this.props;
 
     console.log('REnder index!!!!!!!!!!!!');
@@ -550,7 +548,7 @@ class P extends React.Component {
           this.setState({
             cards: []
           });
-          this.setState({mutation});
+          /*this.setState({mutation});*/
         },
         (error) => {
           //window.logger.err(`GraphQL error: ${this.context(error.message)}`);
@@ -1000,10 +998,8 @@ class P extends React.Component {
         )}
 
         <div className="lingvo-scrolling-tab__table">
-          {/* new!!!!! */}
           {activeDndProvider && 
           <DndProvider backend={HTML5Backend}>
-          {/* /new!!!!! */}
             <Table celled padded className={`${className} lingvo-perspective-table`}>
               <TableHeader
                 columns={fields}
@@ -1046,11 +1042,9 @@ class P extends React.Component {
                 dragAndDropEntries={dragAndDropEntries} // new!!!!! 
                 dnd_enabled={this.state.dnd_enabled} // new!!!!!
               />
-            </Table>       
-          {/* new!!!!! */}
+            </Table>
           </DndProvider>
           }
-          {/* /new!!!!! */}
         </div>
         
         <Pagination
@@ -1102,7 +1096,7 @@ P.propTypes = {
   selectedEntries: PropTypes.array.isRequired,
   user: PropTypes.object.isRequired,
   reRender: PropTypes.func,
-  activeDndProvider: PropTypes.bool /* new!!!!!!! */
+  activeDndProvider: PropTypes.bool
 };
 
 P.defaultProps = {
@@ -1381,7 +1375,7 @@ export const LexicalEntryByIds = compose(
   })
 )(LexicalEntryViewBaseByIds);
 
-const PerspectiveViewWrapper = ({ id, className, mode, entitiesMode, page, data, filter, sortByField, activeDndProvider /* new!!!! */ }) => {
+const PerspectiveViewWrapper = ({ id, className, mode, entitiesMode, page, data, filter, sortByField, activeDndProvider }) => {
   if (data.error) {
     return null;
   }
@@ -1420,7 +1414,7 @@ const PerspectiveViewWrapper = ({ id, className, mode, entitiesMode, page, data,
       sortByField={sortByField}
       columns={columns}
       reRender={reRender}
-      activeDndProvider={activeDndProvider} /* new!!!!! */
+      activeDndProvider={activeDndProvider}
     />
   );
 };
@@ -1434,7 +1428,7 @@ PerspectiveViewWrapper.propTypes = {
   filter: PropTypes.string,
   data: PropTypes.object.isRequired,
   sortByField: PropTypes.object,
-  activeDndProvider: PropTypes.bool, /* new!!!!!! */
+  activeDndProvider: PropTypes.bool,
 };
 
 PerspectiveViewWrapper.defaultProps = {
