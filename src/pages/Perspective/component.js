@@ -1312,7 +1312,7 @@ const Perspective = ({
   });
 
   return (
-    <div className="background-content lingvo-scrolling-content">
+    <div className={parallelCorpora && "background-content lingvo-scrolling-content lingvo-scrolling-content_corpora" || "background-content lingvo-scrolling-content"}>
       <Container fluid className="perspective inverted lingvo-scrolling-content__container">
         {isDeleted && (
           <div

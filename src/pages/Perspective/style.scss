@@ -185,6 +185,18 @@
     }
   }
 
+  /* parallel corpora */
+  &_corpora {
+    padding-bottom: 20px !important;
+
+    & .lingvo-scrolling-tab {
+      @media only screen and (max-device-width: 1000px), only screen and (max-width: 1000px) {
+        margin-bottom: 0 !important;
+      }
+    }
+  }
+  /* /parallel corpora */
+
   & .pagination {
     left: 20px;
     z-index: 100;

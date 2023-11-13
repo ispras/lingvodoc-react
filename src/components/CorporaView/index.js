@@ -30,8 +30,6 @@ import smoothScroll from "utils/smoothscroll";
 import TableBody from "./TableBody";
 import TableHeader from "./TableHeader";
 
-import "./styles.scss";
-
 const ROWS_PER_PAGE = 20;
 
 const ModalContentWrapper = styled("div")`
@@ -778,8 +776,7 @@ class P extends React.Component {
 
     const pageEntries =
       entries.length > _ROWS_PER_PAGE ? take(drop(entries, _ROWS_PER_PAGE * (page - 1)), _ROWS_PER_PAGE) : entries;
-
-      
+           
     /*console.log('entries=====');
     console.log(entries);*/
 
@@ -1047,6 +1044,7 @@ class P extends React.Component {
           }
         </div>
         
+        {!!_ROWS_PER_PAGE &&
         <Pagination
           urlBased
           activePage={page}
@@ -1062,7 +1060,7 @@ class P extends React.Component {
             }
           }}
           className="lingvo-pagination-block_perspective"
-        />
+        />}
 
       </div>
     );
