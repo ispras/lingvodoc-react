@@ -28,7 +28,7 @@ class Dictionary extends React.Component {
         <b className="blob-name">{blob.get("name")}</b>
         <div className="blob-lang">
           <Modal
-            dimmer="blurring"
+            dimmer
             open={this.state.open}
             closeIcon
             onClose={this.toggle}
