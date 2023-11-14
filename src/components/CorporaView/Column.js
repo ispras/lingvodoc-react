@@ -58,7 +58,7 @@ const Column = ({
             {onSortModeChange && be_sorted &&
               (sort_flag ? (
                 <span className="lingvo-perspective-sort">
-                  {sortByField.order == "a" ? (
+                  {sortByField.order === "a" ? (
                     <i className="lingvo-icon lingvo-icon_sort_up lingvo-icon_sort_up_active" 
                       onClick={e => (e.stopPropagation(), onSortModeReset())}
                     />
@@ -67,7 +67,7 @@ const Column = ({
                       onClick={e => (e.stopPropagation(), onSortModeChange(field.id, "a"))}
                     />
                   )}
-                  {sortByField.order == "d" ? (
+                  {sortByField.order === "d" ? (
                     <i className="lingvo-icon lingvo-icon_sort_down lingvo-icon_sort_down_active" 
                       onClick={e => (e.stopPropagation(), onSortModeReset())}
                     />

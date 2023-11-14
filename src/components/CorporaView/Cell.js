@@ -4,11 +4,8 @@ import { Table } from "semantic-ui-react";
 import PropTypes from "prop-types";
 import { onlyUpdateForKeys, pure } from "recompose";
 
-/* new!!!! */
-/*import Entities from "components/LexicalEntry";*/
 import Entities from "components/LexicalEntryCorp";
 
-/* /new!!!! */
 import "styles/main.scss";
 
 const Cell = ({
@@ -29,8 +26,6 @@ const Cell = ({
   disabled,
   reRender,
   number,
-  /*index,*/ /*  new!!!!! */
-  /*moveListItem*/ /* new!!!!! */
   // eslint-disable-next-line arrow-body-style
 }) => {
   return (
@@ -53,8 +48,6 @@ const Cell = ({
         disabled={disabled}
         reRender={reRender}
         number={number}
-        /*index={index}*/ /* new!!!!! */
-        /*moveListItem={moveListItem}*/ /* new!!!!! */
       />
     </Table.Cell>
   );
@@ -77,8 +70,6 @@ Cell.propTypes = {
   resetCheckedAll: PropTypes.func,
   reRender: PropTypes.func,
   number: PropTypes.string,
-  /*index: PropTypes.number,*/ /*  ????? new!!!!! */
-  /*moveListItem: PropTypes.func*/ /* new!!!!! */
 };
 
 Cell.defaultProps = {
