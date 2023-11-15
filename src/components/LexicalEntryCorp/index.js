@@ -515,7 +515,7 @@ const Entities = ({
           remove={remove}
           accept={accept}
           update={update}
-          breakdown={breakdown} /* new!!!!!!! */
+          breakdown={breakdown}
           className={mode != "edit" && entities.indexOf(entity) == entities.length - 1 ? "last" : ""}
           disabled={disabled}
           is_being_removed={remove_set.hasOwnProperty(id2str(entity.id))}
@@ -544,8 +544,8 @@ const Entities = ({
               is_being_created={is_being_created}
               onSave={content => create(content, parentEntity == null ? null : parentEntity.id)}
               onCancel={() => setEdit(false)}
-              parentEntity={parentEntity} /* new!!!!!!! */
-              breakdown={breakdown} /* new!!!!!!! */
+              parentEntity={parentEntity} 
+              breakdown={breakdown} 
             />
           )}
         </li>

@@ -12,12 +12,12 @@ import Entities from "./index";
 const TextEntityContent = ({
   entity,
   mode,
-  parentEntity, /* new!!!!!! */
+  parentEntity,
   publish,
   column,
   accept,
   remove,
-  breakdown, /* new!!!!!!! */
+  breakdown,
   is_being_removed,
   is_being_updated,
   checkEntries,
@@ -28,7 +28,7 @@ const TextEntityContent = ({
   checkedAll,
   resetCheckedAll,
   number,
-  update, /* new!!!!!! */
+  update,
   /*draggable*/ /* new!!!!!! */
   id /* new!!!!!! */
 }) => {
@@ -257,14 +257,14 @@ const Text = onlyUpdateForKeys([
     entity,
     mode,
     entitiesMode,
-    parentEntity, /* new!!!! */
+    parentEntity,
     as: Component,
     className,
     publish,
     accept,
     remove,
     update,
-    breakdown, /* new!!!!!!! */
+    breakdown,
     is_being_removed,
     is_being_updated,
     number,
@@ -287,13 +287,13 @@ const Text = onlyUpdateForKeys([
         checkedAll={checkedAll}
         resetCheckedAll={resetCheckedAll}
         mode={mode}
-        parentEntity={parentEntity} /* new!!!!! */
+        parentEntity={parentEntity} 
         publish={publish}
         column={column}
         accept={accept}
         remove={remove}
         update={update}
-        breakdown={breakdown} /* new!!!!!!! */
+        breakdown={breakdown} 
         is_being_removed={is_being_removed}
         is_being_updated={is_being_updated}
         number={number}
@@ -311,13 +311,13 @@ const Text = onlyUpdateForKeys([
           checkedAll={checkedAll}
           resetCheckedAll={resetCheckedAll}
           mode={mode}
-          parentEntity={parentEntity} /* new!!!!! */
+          parentEntity={parentEntity} 
           publish={publish}
           column={column}
           accept={accept}
           remove={remove}
           update={update}
-          breakdown={breakdown} /* new!!!!!!! */
+          breakdown={breakdown} 
           is_being_removed={is_being_removed}
           is_being_updated={is_being_updated}
           number={number}
@@ -354,7 +354,7 @@ Text.propTypes = {
   entry: PropTypes.object.isRequired,
   entity: PropTypes.object.isRequired,
   mode: PropTypes.string.isRequired,
-  parentEntity: PropTypes.object, /* new!!!!!! */
+  parentEntity: PropTypes.object,
   entitiesMode: PropTypes.string.isRequired,
   as: PropTypes.string,
   className: PropTypes.string,
@@ -362,7 +362,7 @@ Text.propTypes = {
   accept: PropTypes.func,
   remove: PropTypes.func,
   update: PropTypes.func,
-  breakdown: PropTypes.func, /* new!!!!! */
+  breakdown: PropTypes.func,
   resetCheckedRow: PropTypes.func,
   resetCheckedColumn: PropTypes.func,
   resetCheckedAll: PropTypes.func,
