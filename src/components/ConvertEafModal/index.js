@@ -163,7 +163,8 @@ class ConvertEafModal extends React.Component {
       additionalEntries: true,
       additionalEntriesAll: true,
       useAdditionalMarkup: false,
-      additionalMarkupInfo: null
+      additionalMarkupInfo: null,
+      preview: {}
     };
     this.convert = this.convert.bind(this);
     this.handleModeChange = this.handleModeChange.bind(this);
@@ -337,7 +338,8 @@ class ConvertEafModal extends React.Component {
               selection_count,
               total_count,
               markup_entity_id_list
-            }
+            },
+            preview: is_valid_list[0]
           });
         },
         error => {
@@ -455,7 +457,8 @@ class ConvertEafModal extends React.Component {
       additionalEntries,
       additionalEntriesAll,
       useAdditionalMarkup,
-      additionalMarkupInfo
+      additionalMarkupInfo,
+      preview
     } = this.state;
 
     const dictMap = {};
@@ -578,6 +581,14 @@ class ConvertEafModal extends React.Component {
           </div>
           {mode === "new" && (
             <div style={{ minHeight: "500px" }}>
+              <div style={{ width: "80%", marginBottom: "2em" }}>
+                { [ 'text', 'transcription', 'word', 'other text' ].map(tier => (
+                  <span hidden = {!(tier in preview)}>
+                    <label style={{ float: "left", width: "100px", fontWeight: "bold" }}>{tier}</label>
+                    {preview[tier]}<br/>
+                  </span>
+                ))}
+              </div>
               <div>
                 <Header>{this.context("Add one or more translations")}</Header>
                 <Translations
