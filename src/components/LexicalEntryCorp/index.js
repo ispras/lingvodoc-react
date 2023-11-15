@@ -99,7 +99,6 @@ const lexicalEntryQuery = gql`
   }
 `;
 
-/* new!!!!!! */
 const getSelectionStart = (o) => {
   if (o.createTextRange) {
     const r = document.selection.createRange().duplicate();
@@ -122,7 +121,6 @@ const getSelectionEnd = (o) => {
     return o.selectionEnd;
   }
 };
-/* /new!!!!!! */
 
 const getComponent = dataType =>
   ({
@@ -175,12 +173,9 @@ const Entities = ({
 
   const getTranslation = useContext(TranslationContext);
 
-  /* new!!!!! */
   const [{ isOver }, dropRef] = useDrop({
       accept: 'entity',
       drop: (item) => {
-        /*console.log('useDrop: item====');
-        console.log(item);*/
         remove(item);
         create(item.content, parentEntity == null ? null : parentEntity.id);
       },
@@ -188,7 +183,6 @@ const Entities = ({
           isOver: monitor.isOver()
       })
   });
-  /* /new!!!!! */
 
   const update_check = useCallback(() => {
     /* Checking if we need to manually update perspective data. */
@@ -394,7 +388,6 @@ const Entities = ({
 
       delete remove_set2[entity_id_str];
       setRemoveSet(remove_set2);
-      /*console.log('after remove!!!!!');*/
       
       update_check();
     });
