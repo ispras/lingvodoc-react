@@ -46,8 +46,6 @@ const Row = ({
   /* eslint-enable react/prop-types */
 }) => {
 
-  /* new!!!!!! */
-
   const ref = useRef(null);
 
   // useDrag - the list item is draggable
@@ -186,8 +184,6 @@ const Row = ({
 
   const dragDropRef = dragRef(dropRef(ref));
 
-  /* /new!!!!!! */
-
   const entry_id_str = id2str(entry.id);
 
   const [ disabled, setDisabled ] = useState(false);
@@ -198,7 +194,6 @@ const Row = ({
 
   return (
     <tr style={isDragging ? { opacity: "0" } : (disabled_flag ? { opacity: "0.5" } : {})} ref={preview} id={id} data-handler-id={handlerId}>
-      {/* new!!!!! */}
       <Table.Cell className={(dnd_enabled && (mode === "edit")) ? "lingvo-dnd-column" : "lingvo-dnd-column lingvo-dnd-column_hidden"}>
         <div ref={dragDropRef}>
           <Button.Group basic className="lingvo-buttons-group">
@@ -206,7 +201,6 @@ const Row = ({
           </Button.Group>
         </div>
       </Table.Cell>
-      {/* /new!!!!! */}
       {selectEntries && (
         <Table.Cell>
           {!remove_selection_flag && (
@@ -258,7 +252,6 @@ const Row = ({
           disabled={disabled_flag}
           reRender={reRender}
           number={number}
-          /*index={index}*/ /* new!!!!! */
         />
       ))}
 
@@ -352,6 +345,5 @@ export default onlyUpdateForKeys([
   "id", /*  ????? new!!!!! */
   "index", /*  ????? new!!!!! */
   "dnd_enabled", /* ???????? new!!!!! */
-  /*"moveListItem",*/ /* new!!!!! */
   "entries" /* new!!!!! */
 ])(Row);

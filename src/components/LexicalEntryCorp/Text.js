@@ -40,9 +40,7 @@ const TextEntityContent = ({
   const [read_only, setReadOnly] = useState(is_order_column);
   const [is_number, setIsNumber] = useState(is_order_column);
 
-  /* new!!!!!! */
   const [dropped, setDropped] = useState(null);
-  /* /new!!!!!! */
 
   const onEdit = useCallback(() => {
     if (!edit) {
@@ -52,8 +50,6 @@ const TextEntityContent = ({
       setEdit(false);
     }
   }, [edit, content]);
-
-  /* new!!!!! */
 
   const onKeyDown = useCallback((event) => {
 
@@ -79,7 +75,6 @@ const TextEntityContent = ({
     }
   });
 
-  /* /new!!!!! */
   const text = is_number ? number : entity.content;
 
   if (checkEntries) {
@@ -385,8 +380,8 @@ const Edit = ({
   onSave, 
   onCancel, 
   is_being_created,
-  parentEntity, /* new!!!!!! */
-  breakdown /* new!!!!! */
+  parentEntity,
+  breakdown
   }) => {
 
   const [content, setContent] = useState("");
@@ -445,8 +440,8 @@ const Edit = ({
 Edit.propTypes = {
   onSave: PropTypes.func,
   onCancel: PropTypes.func,
-  parentEntity: PropTypes.object, /* new!!!!!! */
-  breakdown: PropTypes.func /* new!!!!! */
+  parentEntity: PropTypes.object,
+  breakdown: PropTypes.func
 };
 
 Edit.defaultProps = {

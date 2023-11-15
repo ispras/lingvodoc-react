@@ -1,6 +1,5 @@
-import React, { useCallback, useState } from "react";
+import React from "react";
 import { Table } from "semantic-ui-react";
-/*import update from 'immutability-helper';*/
 import PropTypes from "prop-types";
 import { onlyUpdateForKeys } from "recompose";
 
@@ -10,35 +9,16 @@ const TableBody = ({ entries, ...rest }) => {
 
   console.log('Render Entries!!!');
 
-  /*
-  const [cards, setCards] = useState(entries);
-
-  const moveListItem = useCallback((dragIndex, hoverIndex) => {
-    console.log('!!!!!!!!!!!!moveListItem!!!!!!!!!!!!!!');
-    setCards((prevCards) =>
-      update(prevCards, {
-        $splice: [
-          [dragIndex, 1],
-          [hoverIndex, 0, prevCards[dragIndex]],
-        ],
-      }),
-    );
-  }, []);
-  */
- 
   return (
     <Table.Body>
       {entries.map((entry, index) => (
-      /*{cards.map((entry, index) => (*/
         <Row
           entries={entries}
-          /*entries={cards}*/
           key={entry.id}
           index={index}
           id={entry.id}
           entry={entry}
           number={(index + 1).toString()}
-          /*moveListItem={moveListItem}*/
           {...rest}
         />
       ))}
@@ -66,7 +46,6 @@ TableBody.propTypes = {
   resetCheckedColumn: PropTypes.func,
   resetCheckedAll: PropTypes.func,
   reRender: PropTypes.func,
-  /*dragAndDropEntries: PropTypes.func*/ /* new!!!!! */
 };
 
 TableBody.defaultProps = {

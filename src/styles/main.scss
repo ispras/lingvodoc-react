@@ -4009,7 +4009,7 @@ body {
     }
   }
 
-  /* new!!!!! */
+  /* textarea */
   &_textarea {
     border-radius: 10px !important;
     font-family: Rubik, Arial, sans-serif !important;
@@ -4028,7 +4028,7 @@ body {
     outline: none !important;
     box-shadow: none !important;
 
-    overflow: hidden !important; /* ???????? */
+    overflow: hidden !important;
 
     &:focus {
       border: 1px solid #5d54cd !important;
@@ -4041,7 +4041,7 @@ body {
     }
 
   }
-  /* /new!!!!! */
+  /* /textarea */
 
 }
 /* /lingvo input action */
