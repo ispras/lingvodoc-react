@@ -591,8 +591,8 @@ class ConvertEafModal extends React.Component {
             <div style={{ minHeight: "500px" }}>
               <div style={{ width: "50%", marginBottom: "2em" }}>
                 <Header>{this.context("Match columns to tiers")}</Header>
-                { [ 'text', 'transcription', 'word', 'other text' ].map(tier => (
-                  <div hidden={!(tier in preview)} style={{ margin: "2em" }}>
+                { [ 'word', 'text', 'transcription', 'other text' ].map(tier => (
+                  <div hidden={!(tier in preview)} style={{ marginTop: "1.5em" }}>
                     <table>
                       <tbody>
                         <tr>
