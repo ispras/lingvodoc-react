@@ -30,7 +30,7 @@ const Column = ({
       ? onSortModeReset()
     : !sort_flag
       ? onSortModeChange(field.id, "a")
-    : sortByField.order == "a"
+    : sortByField.order === "a"
       ? onSortModeChange(field.id, "d")
       : onSortModeReset();
 
