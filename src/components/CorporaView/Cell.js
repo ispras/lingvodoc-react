@@ -2,7 +2,7 @@
 import React from "react";
 import { Table } from "semantic-ui-react";
 import PropTypes from "prop-types";
-import { onlyUpdateForKeys, pure } from "recompose";
+import { onlyUpdateForKeys } from "recompose";
 
 import Entities from "components/LexicalEntryCorp";
 
