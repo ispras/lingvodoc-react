@@ -98,7 +98,6 @@ export const queryLexicalEntries = gql`
   }
 `;
 
-/* new2!!!!!! */
 const updateLexgraphMutation = gql`
   mutation updateLexgraph($id: LingvodocID!,
                           $lexgraph_before: String!,
@@ -111,6 +110,7 @@ const updateLexgraphMutation = gql`
   }
 `;
 
+/* new2!!!!!! */
 const updateEntityParentMutation = gql`
   mutation updateEntityParent($id: LingvodocID!,
                               $new_parent_id: LingvodocID!) {
@@ -245,7 +245,7 @@ const TableComponent = ({
           selectDisabledIndeterminate={selectDisabledIndeterminate}
           disabled={disabledHeader}
           actions={actions}
-          mode={mode} /* new!!!!! */
+          mode={mode} 
         />
         <TableBody
           perspectiveId={perspectiveId}
@@ -361,30 +361,6 @@ class P extends React.Component {
     });
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-
-    /*console.log('this.props====');
-    console.log(this.props);
-
-    console.log('nextProps====');
-    console.log(nextProps);
-
-    console.log('this.state====');
-    console.log(this.state);
-
-    console.log('nextState====');
-    console.log(nextState);*/
-
-    /*if (this.props.color !== nextProps.color) {
-      return true;
-    }
-    if (this.state.count !== nextState.count) {
-      return true;
-    }
-    return false;*/
-    return true;
-  }
-
   render() {
     const {
       id,
@@ -402,7 +378,7 @@ class P extends React.Component {
       createLexicalEntry,
       mergeLexicalEntries,
       removeLexicalEntries,
-      updateLexgraph, /* new!!!!! */
+      updateLexgraph,
       addLexicalEntry: addCreatedEntry,
       selectLexicalEntry: onEntrySelect,
       resetEntriesSelection: resetSelection,
@@ -512,7 +488,6 @@ class P extends React.Component {
     */
     /* /new2!!!!!! */
 
-    /* new!!!!!! */
     const dragAndDropEntries = (lexentry_id_source, lexentry_id_before, lexentry_id_after) => {
       
       /*if (lexgraph_field_id &&
@@ -533,15 +508,16 @@ class P extends React.Component {
           },
           refetchQueries: [
             {
-              query: queryLexicalEntries,
+              query: queryLexicalEntries, 
               variables: {
                 id,
                 entitiesMode
               }
             }
-          ]
+          ],
+          awaitRefetchQueries: true
         }).then(({data: mutation}) => {
-          //this.setState({mutation});
+
           console.log('!!!!! dragAndDropEntries success!!!!!');
           this.setState({
             cards: []
@@ -556,7 +532,6 @@ class P extends React.Component {
         });
       /*}*/
     };
-    /* /new!!!!!! */
 
     const addEntry = (lexgraph_min) => {
       createLexicalEntry({
@@ -825,8 +800,8 @@ class P extends React.Component {
 
     const items = e;
 
-    /*console.log('items=====');
-    console.log(items);*/
+    console.log('items=====');
+    console.log(items);
 
     const checkedRow = this.state.checkedRow;
     const checkedColumn = this.state.checkedColumn;
@@ -914,8 +889,6 @@ class P extends React.Component {
     }
     /* /isTableLanguagesPublish */
 
-
-    /* new!!!!!!! */
     const moveListItem = (dragIndex, hoverIndex, prevCards) => {
       console.log('!!!!!!!!!!!!moveListItem!!!!!!!!!!!!!!');
 
@@ -931,8 +904,6 @@ class P extends React.Component {
       /*console.log('this.state.cards======');
       console.log(this.state.cards);*/
     };
-    /* /new!!!!!! */
-
 
     function* allEntriesGenerator() {
       yield* newEntries;
@@ -1004,20 +975,18 @@ class P extends React.Component {
                 onSortModeChange={(fieldId, order) => setSort(fieldId, order)}
                 onSortModeReset={() => resetSort()}
                 selectEntries={mode === "edit"}
-                //entries={items}
                 entries={this.state.cards.length && this.state.cards || items} // new!!!!! 
                 checkEntries={isTableLanguagesPublish}
                 selectedRows={selectedRows}
                 selectedColumns={selectedColumns}
                 onCheckColumn={this.onCheckColumn}
                 onCheckAll={this.onCheckAll}
-                mode={mode} // new!!!!! 
-                dnd_enabled={this.state.dnd_enabled} // new!!!!! 
+                mode={mode} 
+                dnd_enabled={this.state.dnd_enabled} 
               />
               <TableBody
                 perspectiveId={id}
-                entitiesMode={entitiesMode}
-                //entries={items}
+                entitiesMode={entitiesMode} 
                 entries={this.state.cards.length && this.state.cards || items} // new!!!!!
                 allEntriesGenerator={allEntriesGenerator}
                 columns={fields}
@@ -1086,7 +1055,7 @@ P.propTypes = {
   createLexicalEntry: PropTypes.func.isRequired,
   mergeLexicalEntries: PropTypes.func.isRequired,
   removeLexicalEntries: PropTypes.func.isRequired,
-  updateLexgraph: PropTypes.func.isRequired, /* new!!!!! */
+  updateLexgraph: PropTypes.func.isRequired, 
   selectLexicalEntry: PropTypes.func.isRequired,
   resetEntriesSelection: PropTypes.func.isRequired,
   openModal: PropTypes.func.isRequired,
@@ -1127,10 +1096,11 @@ const PerspectiveView = compose(
   graphql(createLexicalEntryMutation, { name: "createLexicalEntry" }),
   graphql(mergeLexicalEntriesMutation, { name: "mergeLexicalEntries" }),
   graphql(removeLexicalEntriesMutation, { name: "removeLexicalEntries" }),
-  graphql(updateLexgraphMutation, { name: "updateLexgraph" }), /* new!!!!!! */
+  graphql(updateLexgraphMutation, { name: "updateLexgraph" }),
   graphql(queryLexicalEntries, {
     /*options: { notifyOnNetworkStatusChange: true }*/
-    options: { notifyOnNetworkStatusChange: true/*, fetchPolicy: 'cache-first'*/ } /* new2!!!!!! */
+    /*options: { notifyOnNetworkStatusChange: true, fetchPolicy: 'cache-first' }*/ /* new2!!!!!! */
+    options: { notifyOnNetworkStatusChange: true/*, fetchPolicy: 'network-only'*/ } /* new!!!!!! */
   })
 )(P);
 
