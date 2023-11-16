@@ -164,7 +164,10 @@ class ConvertEafModal extends React.Component {
       additionalEntriesAll: true,
       useAdditionalMarkup: false,
       additionalMarkupInfo: null,
-      preview: {}
+      preview: {},
+      custom_eaf_tiers:
+        {'word': 'Word of Paradigmatic forms',
+         'text': 'Transcription of Paradigmatic forms'}
     };
     this.convert = this.convert.bind(this);
     this.handleModeChange = this.handleModeChange.bind(this);
@@ -458,7 +461,8 @@ class ConvertEafModal extends React.Component {
       additionalEntriesAll,
       useAdditionalMarkup,
       additionalMarkupInfo,
-      preview
+      preview,
+      custom_eaf_tiers
     } = this.state;
 
     const dictMap = {};
@@ -471,6 +475,10 @@ class ConvertEafModal extends React.Component {
         dictOptions.push({ key: id, value: id, text: T(d.translations) });
       }
     }
+
+    const pa_columns = [{ key: 0, value: null, text: '<no one>' },
+                        { key: 1, value: 'Word of Paradigmatic forms', text: 'Paradigmatic forms and contexts' },
+                        { key: 2, value: 'Transcription of Paradigmatic forms', text: 'Transcription of paradigmatic forms' }];
 
     return (
       <Modal closeIcon onClose={actions.closeConvert} open={visible} dimmer size="large" className="lingvo-modal2">
@@ -581,12 +589,35 @@ class ConvertEafModal extends React.Component {
           </div>
           {mode === "new" && (
             <div style={{ minHeight: "500px" }}>
-              <div style={{ width: "80%", marginBottom: "2em" }}>
+              <div style={{ width: "50%", marginBottom: "2em" }}>
+                <Header>{this.context("Match columns to tiers")}</Header>
                 { [ 'text', 'transcription', 'word', 'other text' ].map(tier => (
-                  <span hidden = {!(tier in preview)}>
-                    <label style={{ float: "left", width: "100px", fontWeight: "bold" }}>{tier}</label>
-                    {preview[tier]}<br/>
-                  </span>
+                  <div hidden={!(tier in preview)} style={{ margin: "1em" }}>
+                    <table>
+                      <tbody>
+                        <tr>
+                          <td>
+                            <label style={{ float: "left", width: "100px", fontWeight: "bold", marginLeft: "1em" }}>
+                              {tier}
+                            </label>
+                          </td>
+                          <td>
+                            {preview[tier]}
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <Dropdown
+                      style={{ width: "100%", marginTop: "1em" }}
+                      placeholder={this.context("Choose column")}
+                      fluid
+                      selection
+                      value={custom_eaf_tiers[tier]}
+                      onChange={(e, { value: column }) => { custom_eaf_tiers[tier] = column; this.setState({ custom_eaf_tiers }); }}
+                      options={ pa_columns.filter(({ value: column }) => (
+                        column && !Object.values(custom_eaf_tiers).includes(column) || column === custom_eaf_tiers[tier] || !column ))}
+                    />
+                  </div>
                 ))}
               </div>
               <div>
