@@ -476,8 +476,7 @@ class ConvertEafModal extends React.Component {
       }
     }
 
-    const pa_columns = [{ key: 0, value: null, text: '<no one>' },
-                        { key: 1, value: 'Word of Paradigmatic forms', text: 'Paradigmatic forms and contexts' },
+    const pa_columns = [{ key: 1, value: 'Word of Paradigmatic forms', text: 'Paradigmatic forms and contexts' },
                         { key: 2, value: 'Transcription of Paradigmatic forms', text: 'Transcription of paradigmatic forms' }];
 
     return (
@@ -613,9 +612,16 @@ class ConvertEafModal extends React.Component {
                       fluid
                       selection
                       value={custom_eaf_tiers[tier]}
-                      onChange={(e, { value: column }) => { custom_eaf_tiers[tier] = column; this.setState({ custom_eaf_tiers }); }}
-                      options={ pa_columns.filter(({ value: column }) => (
-                        column && !Object.values(custom_eaf_tiers).includes(column) || column === custom_eaf_tiers[tier] || !column ))}
+                      onChange={(e, { value: column }) => {
+                        for (let [tr, cl] of Object.entries(custom_eaf_tiers)) {
+                          if (cl === column) {
+                            custom_eaf_tiers[tr] = null;
+                          }
+                        }
+                        custom_eaf_tiers[tier] = column;
+                        this.setState({ custom_eaf_tiers });
+                      }}
+                      options={pa_columns}
                     />
                   </div>
                 ))}
