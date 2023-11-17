@@ -563,7 +563,7 @@ class ConvertEafModal extends React.Component {
             <div style={{ marginTop: "0.5em" }}>
               <Checkbox
                 checked={useAdditionalMarkup}
-                label={this.context("Convert additional markup") + (useAdditionalMarkup ? ":" : ".")}
+                label={this.context("Additional markup settings") + (useAdditionalMarkup ? ":" : ".")}
                 onChange={(e, { checked }) => this.useAdditionalMarkupChange(checked)}
               />
               {useAdditionalMarkup && (
@@ -580,7 +580,47 @@ class ConvertEafModal extends React.Component {
                       </div>
                     </Message>
                   ) : (
-                    <AdditionalMarkup info={additionalMarkupInfo} />
+                    <>
+                      <AdditionalMarkup info={additionalMarkupInfo} />
+                      <div style={{ width: "50%", marginTop: "2em" }}>
+                        <Header>{this.context("Match columns to tiers")}</Header>
+                        { [ 'word', 'text', 'transcription', 'other text' ].map(tier => (
+                          <div hidden={!(tier in preview)} style={{ marginTop: "1.5em" }}>
+                            <table>
+                              <tbody>
+                                <tr>
+                                  <td>
+                                    <label style={{ float: "left", width: "100px", fontWeight: "bold", marginLeft: "1em" }}>
+                                      {tier}
+                                    </label>
+                                  </td>
+                                  <td>
+                                    {preview[tier]}
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                            <Dropdown
+                              style={{ width: "100%", marginTop: "1em" }}
+                              placeholder={this.context("No assigned column")}
+                              fluid
+                              selection
+                              value={custom_eaf_tiers[tier]}
+                              onChange={(e, { value: column }) => {
+                                for (let [tr, cl] of Object.entries(custom_eaf_tiers)) {
+                                  if (cl === column) {
+                                    custom_eaf_tiers[tr] = null;
+                                  }
+                                }
+                                custom_eaf_tiers[tier] = column;
+                                this.setState({ custom_eaf_tiers });
+                              }}
+                              options={pa_columns}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </>
                   )}
                 </div>
               )}
@@ -588,44 +628,6 @@ class ConvertEafModal extends React.Component {
           </div>
           {mode === "new" && (
             <div style={{ minHeight: "500px" }}>
-              <div style={{ width: "50%", marginBottom: "2em" }}>
-                <Header>{this.context("Match columns to tiers")}</Header>
-                { [ 'word', 'text', 'transcription', 'other text' ].map(tier => (
-                  <div hidden={!(tier in preview)} style={{ marginTop: "1.5em" }}>
-                    <table>
-                      <tbody>
-                        <tr>
-                          <td>
-                            <label style={{ float: "left", width: "100px", fontWeight: "bold", marginLeft: "1em" }}>
-                              {tier}
-                            </label>
-                          </td>
-                          <td>
-                            {preview[tier]}
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                    <Dropdown
-                      style={{ width: "100%", marginTop: "1em" }}
-                      placeholder={this.context("Choose column")}
-                      fluid
-                      selection
-                      value={custom_eaf_tiers[tier]}
-                      onChange={(e, { value: column }) => {
-                        for (let [tr, cl] of Object.entries(custom_eaf_tiers)) {
-                          if (cl === column) {
-                            custom_eaf_tiers[tr] = null;
-                          }
-                        }
-                        custom_eaf_tiers[tier] = column;
-                        this.setState({ custom_eaf_tiers });
-                      }}
-                      options={pa_columns}
-                    />
-                  </div>
-                ))}
-              </div>
               <div>
                 <Header>{this.context("Add one or more translations")}</Header>
                 <Translations
