@@ -3,7 +3,6 @@ import { Button, Checkbox, Input } from "semantic-ui-react";
 import { find, isEqual } from "lodash";
 import PropTypes from "prop-types";
 import { onlyUpdateForKeys } from "recompose";
-import { RegExpMarker } from "react-mark.js";
 
 import Entities from "./index";
 
@@ -11,12 +10,9 @@ class TextEntityContent extends React.Component {
   constructor(props) {
     super(props);
 
-    const is_order_column = (props.number && props.column.english_translation === "Order");
-
     this.state = {
       edit: false,
-      read_only: is_order_column,
-      is_number: is_order_column
+      content: props.entity.content
     };
 
     this.onEdit = this.onEdit.bind(this);
@@ -49,11 +45,8 @@ class TextEntityContent extends React.Component {
       checkedColumn,
       resetCheckedColumn,
       checkedAll,
-      resetCheckedAll,
-      number
+      resetCheckedAll
     } = this.props;
-
-    const text = this.state.is_number ? number : entity.content;
 
     if (checkEntries) {
       if (checkedAll) {
@@ -97,50 +90,32 @@ class TextEntityContent extends React.Component {
       }
     }
 
-    const pg_ln = /\[\d+[ab]:\d+\]/;
-    const pg = /\[\d+[ab]?\]/;
-    const ln = /\(\d+\)/;
-    const snt = /\/{2}/;
-    const missed = /[/]missed text[/]/;
-    // TODO: change 'number' to something meaningful
-    const metatext = number
-      ? new RegExp(
-          pg_ln.source + "|" +
-          pg.source + "|" +
-          ln.source + "|" +
-          snt.source + "|" +
-          missed.source
-          )
-      : new RegExp();
-
     switch (mode) {
       case "edit":
         return (
           <div className="lingvo-input-buttons-group">
             {!(is_being_updated || this.state.edit) && (
-              <span className="lingvo-input-buttons-group__name"><RegExpMarker mark={metatext}>{text}</RegExpMarker></span>
+              <span className="lingvo-input-buttons-group__name">{this.state.content}</span>
             )}
             {(is_being_updated || this.state.edit) && (
               <Input
                 className="lingvo-input-action"
                 onChange={(event, target) => this.setState({ content: target.value })}
-                value={text}
+                value={this.state.content}
               />
             )}
-            { this.state.read_only || (
-              <Button.Group basic icon className="lingvo-buttons-group">
-                <Button icon={is_being_updated ? <i className="lingvo-icon lingvo-icon_spinner" /> : this.state.edit ? <i className="lingvo-icon lingvo-icon_save2" /> : <i className="lingvo-icon lingvo-icon_edit2" />}
-                  onClick={this.onEdit}
-                  disabled={is_being_updated || !text}
-                  className={is_being_updated ? "lingvo-button-spinner" : ""}
-                />
-                {is_being_removed ? (
-                  <Button icon={<i className="lingvo-icon lingvo-icon_spinner" />} disabled className="lingvo-button-spinner" />
-                ) : (
-                  <Button icon={<i className="lingvo-icon lingvo-icon_delete2" />} onClick={() => remove(entity)} />
-                )}
-              </Button.Group>
-            )}
+            <Button.Group basic icon className="lingvo-buttons-group">
+              <Button icon={is_being_updated ? <i className="lingvo-icon lingvo-icon_spinner" /> : this.state.edit ? <i className="lingvo-icon lingvo-icon_save2" /> : <i className="lingvo-icon lingvo-icon_edit2" />}
+                onClick={this.onEdit}
+                disabled={is_being_updated || !this.state.content} 
+                className={is_being_updated ? "lingvo-button-spinner" : ""}
+              />
+              {is_being_removed ? (
+                <Button icon={<i className="lingvo-icon lingvo-icon_spinner" />} disabled className="lingvo-button-spinner" />
+              ) : (
+                <Button icon={<i className="lingvo-icon lingvo-icon_delete2" />} onClick={() => remove(entity)} />
+              )}
+            </Button.Group>
           </div>
         );
       case "publish":
@@ -155,11 +130,11 @@ class TextEntityContent extends React.Component {
                   href={`/dictionary/${entity.parent_id[0]}/${entity.parent_id[1]}/perspective/${entity.id[0]}/${entity.id[1]}/edit`}
                   className="lingvo-languages-link"
                 >
-                  {text}
+                  {entity.content}
                 </a>
               </span>
             ) : (
-              <span className="lingvo-entry-content"><RegExpMarker mark={metatext}>{text}</RegExpMarker></span>
+              <span className="lingvo-entry-content">{entity.content}</span>
             )}
             <Checkbox
               className="lingvo-checkbox lingvo-entry-text__checkbox" 
@@ -185,14 +160,14 @@ class TextEntityContent extends React.Component {
 
       case "view":
         return (
-          <span className="lingvo-entry-content"><RegExpMarker mark={metatext}>{text}</RegExpMarker></span>
+          <span className="lingvo-entry-content">{entity.content}</span>
         );
       case "contributions":
         return entity.accepted ? (
-          <span className="lingvo-entry-content"><RegExpMarker mark={metatext}>{text}</RegExpMarker></span>
+          <span className="lingvo-entry-content">{entity.content}</span>
         ) : (
           <Button.Group basic icon className="lingvo-buttons-group">
-            <Button content={text} className="lingvo-buttons-group__text" />
+            <Button content={entity.content} className="lingvo-buttons-group__text" />
             <Button 
               icon={<i className="lingvo-icon lingvo-icon_check2" />} 
               onClick={() => accept(entity, true)} 
@@ -213,8 +188,7 @@ const Text = onlyUpdateForKeys([
   "is_being_updated",
   "checkedRow",
   "checkedColumn",
-  "checkedAll",
-  "number"
+  "checkedAll"
 ])(props => {
   const {
     perspectiveId,
@@ -239,8 +213,7 @@ const Text = onlyUpdateForKeys([
     remove,
     update,
     is_being_removed,
-    is_being_updated,
-    number
+    is_being_updated
   } = props;
 
   const subColumn = find(columns, c => isEqual(c.self_id, column.column_id));
@@ -264,7 +237,6 @@ const Text = onlyUpdateForKeys([
         update={update}
         is_being_removed={is_being_removed}
         is_being_updated={is_being_updated}
-        number={number}
       />
       {subColumn && (
         <Entities
@@ -305,8 +277,7 @@ Text.propTypes = {
   update: PropTypes.func,
   resetCheckedRow: PropTypes.func,
   resetCheckedColumn: PropTypes.func,
-  resetCheckedAll: PropTypes.func,
-  number: PropTypes.string
+  resetCheckedAll: PropTypes.func
 };
 
 Text.defaultProps = {
