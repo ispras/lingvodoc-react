@@ -367,7 +367,8 @@ class ConvertEafModal extends React.Component {
       additionalEntries,
       additionalEntriesAll,
       useAdditionalMarkup,
-      additionalMarkupInfo
+      additionalMarkupInfo,
+      custom_eaf_tiers
     } = this.state;
 
     const markupIdList = [markup.id];
@@ -392,7 +393,8 @@ class ConvertEafModal extends React.Component {
           mergeByMeaningAll,
           additionalEntries,
           additionalEntriesAll,
-          morphology
+          morphology,
+          custom_eaf_tiers
         }
       }).then(
         () => {
@@ -414,7 +416,8 @@ class ConvertEafModal extends React.Component {
           mergeByMeaningAll,
           additionalEntries,
           additionalEntriesAll,
-          morphology
+          morphology,
+          custom_eaf_tiers
         }
       }).then(
         () => {
