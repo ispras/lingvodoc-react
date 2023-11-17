@@ -606,6 +606,13 @@
       }
     }
   }
+
+  /* mark */
+  & .entity ul li mark {
+    display: inline-block;
+    line-height: 17px;
+  }
+  /* /mark */
 }
 /* /perspective table */
 
