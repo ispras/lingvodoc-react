@@ -209,14 +209,14 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
           break;
 
         case "grant":
-          if (!forCorpora) {
+          if (!forCorpora && !forParallelCorpora) {
             mode = "grant";
             id = value;
           }
           break;
 
         case "organization":
-          if (!forCorpora) {
+          if (!forCorpora && !forParallelCorpora) {
             mode = "organization";
             id = value || "";
           }
@@ -312,7 +312,7 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
   const queryDictId = {};
   const queryDictAll = {};
 
-  const sortModeList = forCorpora ? ["language"] : ["language", "grant", "organization"];
+  const sortModeList = forCorpora || forParallelCorpora ? ["language"] : ["language", "grant", "organization"];
 
   for (const aSortMode of sortModeList) {
     const variablesId = { ...variables };
