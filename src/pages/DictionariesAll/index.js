@@ -184,7 +184,7 @@ const Wrapper = ({ tree, ...rest }) => {
 };
 
 /** Dashboard dictionaries page */
-const DictionariesAll = ({ forCorpora = false }) => {
+const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => {
   const { getTranslation } = useTranslations();
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -227,7 +227,12 @@ const DictionariesAll = ({ forCorpora = false }) => {
     return [mode, tab, id];
   }, [searchParams]);
 
-  const category = forCorpora ? 1 : 0;
+  const category = (
+    forCorpora
+    ? 1
+    : forParallelCorpora
+    ? 2
+    : 0);
 
   const entityIdValue = useMemo(() => {
     let entityIdValue = null;
@@ -521,7 +526,11 @@ const DictionariesAll = ({ forCorpora = false }) => {
               )
             },
             {
-              menuItem: getTranslation(forCorpora ? "Corpora" : "Dictionaries"),
+              menuItem: getTranslation(forCorpora
+                ? "Corpora"
+                : forParallelCorpora
+                ? "Parallel corpora"
+                : "Dictionaries"),
               render: () => (
                 <Tab.Pane>
                   <Wrapper tree={treeAll} sortMode={sortMode} entityId={entityId} />

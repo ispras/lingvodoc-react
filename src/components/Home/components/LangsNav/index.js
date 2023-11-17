@@ -24,6 +24,8 @@ const prepareData = (resultData, language) => {
           resultDictsCount.dicts += 1;
         } else if (item.category === 1) {
           resultDictsCount.corps += 1;
+        } else if (item.category === 2) {
+          resultDictsCount.dicts += 1;
         }
       } else if (item.type === "language") {
         const itemDictsCount = prepareData(resultData, item);

@@ -396,10 +396,10 @@ class Properties extends React.Component {
             <Header as="h3">{this.context("Translations")}</Header>
             <TranslationGist id={gistId} objectId={dictionary.id} editable updateAtomMutation={updateAtomMutation} />
           </Segment>
-          {category === 0 ? (
-            <EditDictionaryMetadata mode="edit" metadata={dictionary.additional_metadata} onSave={this.saveMeta} />
-          ) : (
+          {category === 1 ? (
             <EditCorpusMetadata mode="edit" metadata={dictionary.additional_metadata} onSave={this.saveMeta} />
+          ) : (
+            <EditDictionaryMetadata mode="edit" metadata={dictionary.additional_metadata} onSave={this.saveMeta} />
           )}
           <MarginForm>
             <Segment>
