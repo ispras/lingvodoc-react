@@ -544,7 +544,7 @@ const CORPORA_TABS = getTranslation => {
 const PARALLEL_CORPORA_TABS = getTranslation => {
   return [
     {
-      menuItem: getTranslation("My dictionaries"),
+      menuItem: getTranslation("My parallel corpora"),
       render: () => (
         <Tab.Pane className="lingvo-tab__pane">
           <Dictionaries category={2} mode={0} />
@@ -552,7 +552,7 @@ const PARALLEL_CORPORA_TABS = getTranslation => {
       )
     },
     {
-      menuItem: getTranslation("Available dictionaries"),
+      menuItem: getTranslation("Available parallel corpora"),
       render: () => (
         <Tab.Pane className="lingvo-tab__pane">
           <Dictionaries category={2} mode={1} />
