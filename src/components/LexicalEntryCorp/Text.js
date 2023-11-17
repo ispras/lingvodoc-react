@@ -238,6 +238,8 @@ const Text = onlyUpdateForKeys([
   "checkedColumn",
   "checkedAll",
   "number",
+  "entitiesMode", // new!!!!!
+  "parentEntity", // new!!!!
   "draggable", // new!!!!!! 
   "id", // new!!!!!!
 ])(props => {

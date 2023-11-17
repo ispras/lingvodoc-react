@@ -299,6 +299,7 @@ class P extends React.Component {
       checkedColumn: null,
       checkedAll: null,
       cards: [], /* new!!!!!! */
+      move: false, /* new!!!!!! */
       mutation: { loading: false }, /* new2!!!!!! */
       dnd_enabled: true
     };
@@ -408,9 +409,6 @@ class P extends React.Component {
 
     const lexicalEntries = !error ? data.perspective.lexical_entries : [];
 
-    /*console.log('lexicalEntries======');
-    console.log(lexicalEntries);*/
-    /* new2!!!!!! */
     const lexgraph_column = !error ? columns.find(col => col.field.english_translation === "Order") : null;
     const lexgraph_field_id = lexgraph_column ? lexgraph_column.field_id : null;
 
@@ -486,7 +484,6 @@ class P extends React.Component {
       }
     };
     */
-    /* /new2!!!!!! */
 
     const dragAndDropEntries = (lexentry_id_source, lexentry_id_before, lexentry_id_after) => {
       
@@ -559,6 +556,7 @@ class P extends React.Component {
           } = d;
           addCreatedEntry(lexicalentry);
 
+
           if (lexgraph_field_id && lexgraph_min) {
             createEntity({
               variables: {
@@ -585,6 +583,7 @@ class P extends React.Component {
               },
             });
           }
+
         }
       });
     };
@@ -731,6 +730,9 @@ class P extends React.Component {
       lexicalEntries.filter(e => Object.prototype.hasOwnProperty.call(created_id_str_set, id2str(e.id)))
     );
 
+    console.log('newEntries=====');
+    console.log(newEntries);
+
     const entries = processEntries(lexicalEntries.slice());
 
     const lexgraph_min = () => {
@@ -751,9 +753,6 @@ class P extends React.Component {
 
     const pageEntries =
       entries.length > _ROWS_PER_PAGE ? take(drop(entries, _ROWS_PER_PAGE * (page - 1)), _ROWS_PER_PAGE) : entries;
-           
-    /*console.log('entries=====');
-    console.log(entries);*/
 
     // Put newly created entries at the top of page.
     const e = [
@@ -798,9 +797,12 @@ class P extends React.Component {
     const selectedRows = [];
     const selectedColumns = [];
 
-    const items = e;
+    /* new!!!!!! */
+    //const items = e;
+    const items = this.state.move && pageEntries || e;
+    /* /new!!!!!! */
 
-    console.log('items=====');
+    console.log('Move: items=====');
     console.log(items);
 
     const checkedRow = this.state.checkedRow;
@@ -891,6 +893,12 @@ class P extends React.Component {
 
     const moveListItem = (dragIndex, hoverIndex, prevCards) => {
       console.log('!!!!!!!!!!!!moveListItem!!!!!!!!!!!!!!');
+      console.log('dragIndex======');
+      console.log(dragIndex);
+      console.log('hoverIndex======');
+      console.log(hoverIndex);
+      console.log('prevCards======');
+      console.log(prevCards);
 
       this.setState({
         cards: update(prevCards, {
@@ -900,9 +908,13 @@ class P extends React.Component {
           ],
         })
       });
+
+      /* new!!!!!!!! */
+      this.setState({move: true});
+      /* /new!!!!!!!! */
       
-      /*console.log('this.state.cards======');
-      console.log(this.state.cards);*/
+      console.log('this.state.cards======');
+      console.log(this.state.cards);
     };
 
     function* allEntriesGenerator() {
@@ -1098,9 +1110,8 @@ const PerspectiveView = compose(
   graphql(removeLexicalEntriesMutation, { name: "removeLexicalEntries" }),
   graphql(updateLexgraphMutation, { name: "updateLexgraph" }),
   graphql(queryLexicalEntries, {
-    /*options: { notifyOnNetworkStatusChange: true }*/
+    options: { notifyOnNetworkStatusChange: true }
     /*options: { notifyOnNetworkStatusChange: true, fetchPolicy: 'cache-first' }*/ /* new2!!!!!! */
-    options: { notifyOnNetworkStatusChange: true/*, fetchPolicy: 'network-only'*/ } /* new!!!!!! */
   })
 )(P);
 

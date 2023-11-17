@@ -95,80 +95,38 @@ const Row = ({
       const dragIndex = item.index;
       const hoverIndex = index;
 
-      /*console.log('dragIndex=======');
-      console.log(dragIndex);
-
-      console.log('hoverIndex=======');
-      console.log(hoverIndex);*/
-
       // Don't replace items with themselves
       if (dragIndex === hoverIndex) {
         return;
       }
 
-      /*console.log('item=====');
-      console.log(item);
-
-      console.log('ref.current=====');
-      console.log(ref.current);*/
-
       // Determine rectangle on screen
       const hoverBoundingRect = ref.current?.getBoundingClientRect();
-
-      /*console.log('ref.current?.getBoundingClientRect()====');
-      console.log(hoverBoundingRect);*/
-
-      //const hoverBoundingRect2 = ref.current.parentElement.parentElement?.getBoundingClientRect(); // fix!!!!! 
-
-      /*console.log('ref.current.parentElement.parentElement?.getBoundingClientRect()====');
-      console.log(hoverBoundingRect2);*/
 
       // Get vertical middle
       //const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
       const hoverMiddleY = (hoverBoundingRect.height) / 2;
 
-      /*console.log('hoverMiddleY=====');
-      console.log(hoverMiddleY);*/
-
-      //const hoverMiddleY2 = (hoverBoundingRect2.bottom - hoverBoundingRect2.top) / 2;
-      //const hoverMiddleY2 = (hoverBoundingRect2.height) / 2;
-
-      /*console.log('hoverMiddleY2=====');
-      console.log(hoverMiddleY2);*/
-
       // Determine mouse position
       const clientOffset = monitor.getClientOffset();
-
-      /*console.log('clientOffset=====');
-      console.log(clientOffset);*/
 
       // Get pixels to the top
       const hoverClientY = clientOffset.y - hoverBoundingRect.top;
 
-      /*console.log('hoverClientY=====');
-      console.log(hoverClientY);*/
-
-      //const hoverClientY2 = clientOffset.y - hoverBoundingRect2.top;
-
-      /*console.log('hoverClientY2=====');
-      console.log(hoverClientY2);*/
-      
       // Only perform the move when the mouse has crossed half of the items height
       // When dragging downwards, only move when the cursor is below 50%
       // When dragging upwards, only move when the cursor is above 50%
       // Dragging downwards
       if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
-      /*if (dragIndex < hoverIndex && hoverClientY2 < hoverMiddleY2) {*/
         return;
       }
       // Dragging upwards
       if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
-      /*if (dragIndex > hoverIndex && hoverClientY2 > hoverMiddleY2) {*/
         return;
       }
       // Time to actually perform the action
       //moveListItem(dragIndex, hoverIndex);
-      moveListItem(dragIndex, hoverIndex, entries); // !!!!!!!
+      moveListItem(dragIndex, hoverIndex, entries);
       // Note: we're mutating the monitor item here!
       // Generally it's better to avoid mutations,
       // but it's good here for the sake of performance
@@ -342,8 +300,8 @@ export default onlyUpdateForKeys([
   "checkedAll",
   "columns",
   "number",
-  "id", /*  ????? new!!!!! */
-  "index", /*  ????? new!!!!! */
-  "dnd_enabled", /* ???????? new!!!!! */
-  "entries" /* new!!!!! */
+  "id", //  ????? new!!!!!
+  "index", // ????? new!!!!!
+  "dnd_enabled", // ???????? new!!!!!
+  "entries" // new!!!!! 
 ])(Row);

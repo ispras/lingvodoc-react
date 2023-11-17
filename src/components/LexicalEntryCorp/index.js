@@ -354,7 +354,7 @@ const Entities = ({
   }, []);
 
   const remove = useCallback((entity) => {
-    
+
     const entity_id_str = id2str(entity.id);
 
     const remove_set2 = remove_set;
