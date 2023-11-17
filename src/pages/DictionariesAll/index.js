@@ -483,6 +483,12 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
             <h2 className="page-title">{getTranslation("Language corpora")}</h2>
           </Container>
         </div>
+      ) : forParallelCorpora ? (
+        <div className="background-header">
+          <Container className="published">
+            <h2 className="page-title">{getTranslation("Parallel corpora")}</h2>
+          </Container>
+        </div>
       ) : (
         <SortModeSelector
           onChange={() => {
