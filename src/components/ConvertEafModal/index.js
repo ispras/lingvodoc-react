@@ -165,11 +165,7 @@ class ConvertEafModal extends React.Component {
       useAdditionalMarkup: false,
       additionalMarkupInfo: null,
       preview: {},
-      custom_eaf_tiers:
-        {'synthetic word': 'Word of Paradigmatic forms',
-         'text': 'Transcription of Paradigmatic forms',
-         'synthetic transcription': null,
-         'other text': null}
+      custom_eaf_tiers: {}
     };
     this.convert = this.convert.bind(this);
     this.handleModeChange = this.handleModeChange.bind(this);
@@ -332,6 +328,25 @@ class ConvertEafModal extends React.Component {
             field_type_dict[id2str(column.id)] = column.data_type;
           }
 
+          const preview: is_valid_list[0];
+
+          if (len(review) < 6) {
+            const custom_eaf_tiers = {
+              'synthetic word': 'Word of Paradigmatic forms',
+              'text': 'Transcription of Paradigmatic forms',
+              'synthetic transcription': null,
+              'other text': null
+            };
+          }
+          else {
+            const custom_eaf_tiers = {
+              'synthetic word': null,
+              'text': 'Word of Paradigmatic forms',
+              'synthetic transcription': 'Transcription of Paradigmatic forms',
+              'other text': null
+            };
+          }
+
           this.setState({
             useAdditionalMarkup: true,
             additionalMarkupInfo: {
@@ -344,7 +359,8 @@ class ConvertEafModal extends React.Component {
               total_count,
               markup_entity_id_list
             },
-            preview: is_valid_list[0]
+            preview,
+            custom_eaf_tiers
           });
         },
         error => {
@@ -596,7 +612,7 @@ class ConvertEafModal extends React.Component {
                                 <tbody>
                                   <tr>
                                     <td>
-                                      <label style={{ float: "left", width: "100px", fontWeight: "bold", marginLeft: "1em" }}>
+                                      <label style={{ float: "left", width: "170px", fontWeight: "bold", marginLeft: "1em" }}>
                                         {tier}
                                       </label>
                                     </td>
