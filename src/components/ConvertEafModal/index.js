@@ -328,9 +328,9 @@ class ConvertEafModal extends React.Component {
             field_type_dict[id2str(column.id)] = column.data_type;
           }
 
-          const preview: is_valid_list[0];
+          const preview = is_valid_list[0];
 
-          if (len(review) < 6) {
+          if (Object.keys(preview).length < 6) {
             const custom_eaf_tiers = {
               'synthetic word': 'Word of Paradigmatic forms',
               'text': 'Transcription of Paradigmatic forms',
