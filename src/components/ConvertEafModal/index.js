@@ -329,9 +329,10 @@ class ConvertEafModal extends React.Component {
           }
 
           const preview = is_valid_list[0];
+          let custom_eaf_tiers = {};
 
           if (Object.keys(preview).length < 6) {
-            const custom_eaf_tiers = {
+            custom_eaf_tiers = {
               'synthetic word': 'Word of Paradigmatic forms',
               'text': 'Transcription of Paradigmatic forms',
               'synthetic transcription': null,
@@ -339,7 +340,7 @@ class ConvertEafModal extends React.Component {
             };
           }
           else {
-            const custom_eaf_tiers = {
+            custom_eaf_tiers = {
               'synthetic word': null,
               'text': 'Word of Paradigmatic forms',
               'synthetic transcription': 'Transcription of Paradigmatic forms',
