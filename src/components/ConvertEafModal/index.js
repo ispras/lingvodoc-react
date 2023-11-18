@@ -166,7 +166,7 @@ class ConvertEafModal extends React.Component {
       additionalMarkupInfo: null,
       preview: {},
       custom_eaf_tiers:
-        {'word': 'Word of Paradigmatic forms',
+        {'synthetic word': 'Word of Paradigmatic forms',
          'text': 'Transcription of Paradigmatic forms'}
     };
     this.convert = this.convert.bind(this);
@@ -588,7 +588,7 @@ class ConvertEafModal extends React.Component {
                       { preview && (
                         <div style={{ width: "50%", marginTop: "2em" }}>
                           <Header>{this.context("Match columns to tiers")}</Header>
-                          { [ 'word', 'text', 'transcription', 'other text' ].map(tier => (
+                          { [ 'synthetic word', 'text', 'synthetic transcription', 'other text' ].map(tier => (
                             <div hidden={!(tier in preview)} style={{ marginTop: "1.5em" }}>
                               <table>
                                 <tbody>
