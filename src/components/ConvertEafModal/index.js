@@ -167,7 +167,9 @@ class ConvertEafModal extends React.Component {
       preview: {},
       custom_eaf_tiers:
         {'synthetic word': 'Word of Paradigmatic forms',
-         'text': 'Transcription of Paradigmatic forms'}
+         'text': 'Transcription of Paradigmatic forms',
+         'synthetic transcription': null,
+         'other text': null}
     };
     this.convert = this.convert.bind(this);
     this.handleModeChange = this.handleModeChange.bind(this);
