@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { connect } from "react-redux";
-import { Button, Checkbox, Dropdown, Header, Icon, List, Message, Modal } from "semantic-ui-react";
+import { Button, Checkbox, Dropdown, Header, Icon, List, Message, Modal, Label } from "semantic-ui-react";
 import { graphql, withApollo } from "@apollo/client/react/hoc";
 import { isEqual } from "lodash";
 import PropTypes from "prop-types";
@@ -576,12 +576,12 @@ class ConvertEafModal extends React.Component {
               </div>
             )}
             {preview && !morphology && (
-              <div style={{ width: "50%", marginBottom: "1.5em", marginTop: "2em" }}>
+              <div style={{ width: "50%", marginTop: "2em" }}>
                 <Header>{this.context("Paradigm sentence column source tiers")}</Header>
                 <Label tag>{pa_columns[0].text}</Label>
-                <div style={{ marginLeft: "1em" }}>
+                <div style={{ marginLeft: "1em", marginBottom: "1.5em" }}>
                   { [ 'synthetic word', 'text' ].map(tier => (
-                    <div hidden={!(tier in preview)} style={{ marginTop: "0.25em" }} key=tier>
+                    <div hidden={!(tier in preview)} style={{ marginTop: "0.25em" }} key={tier}>
                       <Checkbox
                         radio
                         label={`${this.context(tier)}: ${preview[tier]}`}
@@ -593,11 +593,11 @@ class ConvertEafModal extends React.Component {
                       />
                     </div>
                   ))}
-                <div>
+                </div>
                 <Label tag>{pa_columns[1].text}</Label>
-                <div style={{ marginLeft: "1em" }}>
+                <div style={{ marginLeft: "1em", marginBottom: "1.5em" }}>
                   { [ 'text', 'synthetic transcription', 'other text' ].map(tier => (
-                    <div hidden={!(tier in preview)} style={{ marginTop: "0.25em" }} key=tier>
+                    <div hidden={!(tier in preview)} style={{ marginTop: "0.25em" }} key={tier}>
                       <Checkbox
                         radio
                         label={`${this.context(tier)}: ${preview[tier]}`}
@@ -609,7 +609,7 @@ class ConvertEafModal extends React.Component {
                       />
                     </div>
                   ))}
-                <div>
+                </div>
               </div>
             )}
             <div style={{ marginTop: "0.5em" }}>
