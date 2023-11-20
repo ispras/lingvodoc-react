@@ -58,11 +58,16 @@ const MarkupModal = props => {
 
   const getTranslation = useContext(TranslationContext);
 
-  const { loading, error, data: { convert_five_tiers_validate: isValidList }} = useQuery(validateQuery, {
+  const { loading, error, data: validateQueryData } = useQuery(validateQuery, {
     variables: {
-      idList: [props.id]
+      idList: [ id ]
     }
   });
+
+  let preview = false;
+  if (!loading && !error) {
+    preview = validateQueryData.convert_five_tiers_validate[0];
+  }
 
   return (
     <Modal closeIcon onClose={actions.closeViewer} open={visible} dimmer size="large" className="lingvo-modal2">
@@ -72,19 +77,19 @@ const MarkupModal = props => {
       <Modal.Actions>
         { (loading || error) && (
           <span>
-            {this.context("Loading markup data")}... <Icon name="spinner" loading />
+            {getTranslation("Loading markup data")}... <Icon name="spinner" loading />
           </span>
-        ) || isValidList[0] && (
+        ) || preview && (
           <>
             <Button
               content={getTranslation("Convert morphology concordance...")}
-              onClick={() => actions.openConvert(audio, data.markup, columns, allEntriesGenerator, morphology=true, preview=isValidList[0])}
+              onClick={() => actions.openConvert(audio, data.markup, columns, allEntriesGenerator, true, preview)}
               id={data.markup.id}
               className="lingvo-button-lite-violet"
             />
             <Button
               content={getTranslation("Convert to dictionary...")}
-              onClick={() => actions.openConvert(audio, data.markup, columns, allEntriesGenerator, morphology=false, preview=isValidList[0])}
+              onClick={() => actions.openConvert(audio, data.markup, columns, allEntriesGenerator, false, preview)}
               id={data.markup.id}
               className="lingvo-button-violet"
             />
