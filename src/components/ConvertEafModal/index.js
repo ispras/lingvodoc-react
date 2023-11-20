@@ -153,6 +153,26 @@ const AdditionalMarkup = ({ info }) => {
 class ConvertEafModal extends React.Component {
   constructor(props) {
     super(props);
+
+    let custom_eaf_tiers = {};
+
+    if (Object.keys(props.preview).length < 6) {
+      custom_eaf_tiers = {
+        'synthetic word': 'Word of Paradigmatic forms',
+        'text': 'Transcription of Paradigmatic forms',
+        'synthetic transcription': null,
+        'other text': null
+      };
+    }
+    else {
+      custom_eaf_tiers = {
+        'synthetic word': null,
+        'text': 'Word of Paradigmatic forms',
+        'synthetic transcription': null,
+        'other text': 'Transcription of Paradigmatic forms'
+      };
+    }
+
     this.state = {
       mode: "new",
       parentLanguage: null,
@@ -164,8 +184,7 @@ class ConvertEafModal extends React.Component {
       additionalEntriesAll: true,
       useAdditionalMarkup: false,
       additionalMarkupInfo: null,
-      preview: {},
-      custom_eaf_tiers: {}
+      custom_eaf_tiers
     };
     this.convert = this.convert.bind(this);
     this.handleModeChange = this.handleModeChange.bind(this);
@@ -328,26 +347,6 @@ class ConvertEafModal extends React.Component {
             field_type_dict[id2str(column.id)] = column.data_type;
           }
 
-          const preview = is_valid_list[0];
-          let custom_eaf_tiers = {};
-
-          if (Object.keys(preview).length < 6) {
-            custom_eaf_tiers = {
-              'synthetic word': 'Word of Paradigmatic forms',
-              'text': 'Transcription of Paradigmatic forms',
-              'synthetic transcription': null,
-              'other text': null
-            };
-          }
-          else {
-            custom_eaf_tiers = {
-              'synthetic word': null,
-              'text': 'Word of Paradigmatic forms',
-              'synthetic transcription': null,
-              'other text': 'Transcription of Paradigmatic forms'
-            };
-          }
-
           this.setState({
             useAdditionalMarkup: true,
             additionalMarkupInfo: {
@@ -359,9 +358,7 @@ class ConvertEafModal extends React.Component {
               selection_count,
               total_count,
               markup_entity_id_list
-            },
-            preview,
-            custom_eaf_tiers
+            }
           });
         },
         error => {
@@ -470,6 +467,7 @@ class ConvertEafModal extends React.Component {
       visible,
       actions,
       morphology,
+      preview,
       data: { loading, error, dictionaries }
     } = this.props;
 
@@ -483,7 +481,6 @@ class ConvertEafModal extends React.Component {
       additionalEntriesAll,
       useAdditionalMarkup,
       additionalMarkupInfo,
-      preview,
       custom_eaf_tiers
     } = this.state;
 
@@ -582,6 +579,46 @@ class ConvertEafModal extends React.Component {
                 )}
               </div>
             )}
+            { preview && (
+              <div style={{ width: "50%", marginTop: "2em" }}>
+                <Header>{this.context("Paradigm sentence column source tiers")}</Header>
+                { [ 'synthetic word', 'text', 'synthetic transcription', 'other text' ].map(tier => (
+                  <div hidden={!(tier in preview)} style={{ marginTop: "1.5em" }}>
+                    <table>
+                      <tbody>
+                        <tr>
+                          <td>
+                            <label style={{ float: "left", width: "170px", fontWeight: "bold", marginLeft: "1em" }}>
+                              {tier}
+                            </label>
+                          </td>
+                          <td>
+                            {preview[tier]}
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <Dropdown
+                      style={{ width: "100%", marginTop: "1em" }}
+                      placeholder={this.context("No assigned column")}
+                      fluid
+                      selection
+                      value={custom_eaf_tiers[tier]}
+                      onChange={(e, { value: column }) => {
+                        for (let [tr, cl] of Object.entries(custom_eaf_tiers)) {
+                          if (cl === column) {
+                            custom_eaf_tiers[tr] = null;
+                          }
+                        }
+                        custom_eaf_tiers[tier] = column;
+                        this.setState({ custom_eaf_tiers });
+                      }}
+                      options={pa_columns}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
             <div style={{ marginTop: "0.5em" }}>
               <Checkbox
                 checked={useAdditionalMarkup}
@@ -602,49 +639,7 @@ class ConvertEafModal extends React.Component {
                       </div>
                     </Message>
                   ) : (
-                    <>
-                      <AdditionalMarkup info={additionalMarkupInfo} />
-                      { preview && (
-                        <div style={{ width: "50%", marginTop: "2em" }}>
-                          <Header>{this.context("Paradigm sentence column source tiers")}</Header>
-                          { [ 'synthetic word', 'text', 'synthetic transcription', 'other text' ].map(tier => (
-                            <div hidden={!(tier in preview)} style={{ marginTop: "1.5em" }}>
-                              <table>
-                                <tbody>
-                                  <tr>
-                                    <td>
-                                      <label style={{ float: "left", width: "170px", fontWeight: "bold", marginLeft: "1em" }}>
-                                        {tier}
-                                      </label>
-                                    </td>
-                                    <td>
-                                      {preview[tier]}
-                                    </td>
-                                  </tr>
-                                </tbody>
-                              </table>
-                              <Dropdown
-                                style={{ width: "100%", marginTop: "1em" }}
-                                placeholder={this.context("No assigned column")}
-                                fluid
-                                selection
-                                value={custom_eaf_tiers[tier]}
-                                onChange={(e, { value: column }) => {
-                                  for (let [tr, cl] of Object.entries(custom_eaf_tiers)) {
-                                    if (cl === column) {
-                                      custom_eaf_tiers[tr] = null;
-                                    }
-                                  }
-                                  custom_eaf_tiers[tier] = column;
-                                  this.setState({ custom_eaf_tiers });
-                                }}
-                                options={pa_columns}
-                              />
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </>
+                    <AdditionalMarkup info={additionalMarkupInfo} />
                   )}
                 </div>
               )}
@@ -744,13 +739,14 @@ const mapDispatchToProps = dispatch => ({
 export default compose(
   connect(mapStateToProps, mapDispatchToProps),
   branch(({ convertVisible }) => !convertVisible, renderNothing),
-  withProps(({ convertVisible, data: { audio, markup, columns, allEntriesGenerator, morphology } }) => ({
+  withProps(({ convertVisible, data: { audio, markup, columns, allEntriesGenerator, morphology, preview } }) => ({
     visible: convertVisible,
     audio,
     markup,
     columns,
     allEntriesGenerator,
-    morphology
+    morphology,
+    preview
   })),
   graphql(dictionariesQuery, { options: { fetchPolicy: "cache-and-network" } }),
   graphql(convertToNewDictionaryMutation, { name: "convertToNewDictionary" }),
