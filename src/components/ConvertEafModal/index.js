@@ -158,18 +158,14 @@ class ConvertEafModal extends React.Component {
 
     if (Object.keys(props.preview).length < 6) {
       custom_eaf_tiers = {
-        'synthetic word': 'Word of Paradigmatic forms',
-        'text': 'Transcription of Paradigmatic forms',
-        'synthetic transcription': null,
-        'other text': null
+        'Word of Paradigmatic forms': 'synthetic word',
+        'Transcription of Paradigmatic forms': 'text'
       };
     }
     else {
       custom_eaf_tiers = {
-        'synthetic word': null,
-        'text': 'Word of Paradigmatic forms',
-        'synthetic transcription': null,
-        'other text': 'Transcription of Paradigmatic forms'
+        'Word of Paradigmatic forms': 'text',
+        'Transcription of Paradigmatic forms': 'other text'
       };
     }
 
@@ -580,43 +576,40 @@ class ConvertEafModal extends React.Component {
               </div>
             )}
             {preview && !morphology && (
-              <div style={{ width: "50%", marginBottom: "1.5em" marginTop: "2em" }}>
+              <div style={{ width: "50%", marginBottom: "1.5em", marginTop: "2em" }}>
                 <Header>{this.context("Paradigm sentence column source tiers")}</Header>
-                { [ 'synthetic word', 'text', 'synthetic transcription', 'other text' ].map(tier => (
-                  <div hidden={!(tier in preview)} style={{ marginTop: "1.5em" }}>
-                    <table>
-                      <tbody>
-                        <tr>
-                          <td>
-                            <label style={{ float: "left", width: "170px", fontWeight: "bold", marginLeft: "1em" }}>
-                              {tier}
-                            </label>
-                          </td>
-                          <td>
-                            {preview[tier]}
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                    <Dropdown
-                      style={{ width: "100%", marginTop: "1em" }}
-                      placeholder={this.context("No assigned column")}
-                      fluid
-                      selection
-                      value={custom_eaf_tiers[tier]}
-                      onChange={(e, { value: column }) => {
-                        for (let [tr, cl] of Object.entries(custom_eaf_tiers)) {
-                          if (cl === column) {
-                            custom_eaf_tiers[tr] = null;
-                          }
-                        }
-                        custom_eaf_tiers[tier] = column;
-                        this.setState({ custom_eaf_tiers });
-                      }}
-                      options={pa_columns}
-                    />
-                  </div>
-                ))}
+                <Label tag>{pa_columns[0].text}</Label>
+                <div style={{ marginLeft: "1em" }}>
+                  { [ 'synthetic word', 'text' ].map(tier => (
+                    <div hidden={!(tier in preview)} style={{ marginTop: "0.25em" }} key=tier>
+                      <Checkbox
+                        radio
+                        label={`${this.context(tier)}: ${preview[tier]}`}
+                        checked={custom_eaf_tiers[pa_columns[0].value] === tier}
+                        onChange={e => {
+                          custom_eaf_tiers[pa_columns[0].value] = tier;
+                          this.setState({ custom_eaf_tiers });
+                        }}
+                      />
+                    </div>
+                  ))}
+                <div>
+                <Label tag>{pa_columns[1].text}</Label>
+                <div style={{ marginLeft: "1em" }}>
+                  { [ 'text', 'synthetic transcription', 'other text' ].map(tier => (
+                    <div hidden={!(tier in preview)} style={{ marginTop: "0.25em" }} key=tier>
+                      <Checkbox
+                        radio
+                        label={`${this.context(tier)}: ${preview[tier]}`}
+                        checked={custom_eaf_tiers[pa_columns[1].value] === tier}
+                        onChange={e => {
+                          custom_eaf_tiers[pa_columns[1].value] = tier;
+                          this.setState({ custom_eaf_tiers });
+                        }}
+                      />
+                    </div>
+                  ))}
+                <div>
               </div>
             )}
             <div style={{ marginTop: "0.5em" }}>
