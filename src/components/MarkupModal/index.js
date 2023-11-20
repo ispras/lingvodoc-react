@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { connect } from "react-redux";
 import { Button, Icon, Message, Modal } from "semantic-ui-react";
-import { gql } from "@apollo/client";
+import { gql, useQuery } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
 import PropTypes from "prop-types";
 import { branch, compose, renderNothing } from "recompose";
@@ -58,7 +58,7 @@ const MarkupModal = props => {
 
   const getTranslation = useContext(TranslationContext);
 
-  const { loading, error, data: { convert_five_tiers_validate: isValidList } = useQuery(validateQuery, {
+  const { loading, error, data: { convert_five_tiers_validate: isValidList }} = useQuery(validateQuery, {
     variables: {
       idList: [props.id]
     }
@@ -74,17 +74,17 @@ const MarkupModal = props => {
           <span>
             {this.context("Loading markup data")}... <Icon name="spinner" loading />
           </span>
-        ) || const preview=isValidList[0] && (
+        ) || isValidList[0] && (
           <>
             <Button
               content={getTranslation("Convert morphology concordance...")}
-              onClick={() => actions.openConvert(audio, data.markup, columns, allEntriesGenerator, true, preview)}
+              onClick={() => actions.openConvert(audio, data.markup, columns, allEntriesGenerator, morphology=true, preview=isValidList[0])}
               id={data.markup.id}
               className="lingvo-button-lite-violet"
             />
             <Button
               content={getTranslation("Convert to dictionary...")}
-              onClick={() => actions.openConvert(audio, data.markup, columns, allEntriesGenerator, false, preview)}
+              onClick={() => actions.openConvert(audio, data.markup, columns, allEntriesGenerator, morphology=false, preview=isValidList[0])}
               id={data.markup.id}
               className="lingvo-button-violet"
             />

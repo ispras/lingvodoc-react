@@ -622,7 +622,7 @@ class ConvertEafModal extends React.Component {
             <div style={{ marginTop: "0.5em" }}>
               <Checkbox
                 checked={useAdditionalMarkup}
-                label={this.context("Additional markup settings") + (useAdditionalMarkup ? ":" : ".")}
+                label={this.context("Convert additional markup") + (useAdditionalMarkup ? ":" : ".")}
                 onChange={(e, { checked }) => this.useAdditionalMarkupChange(checked)}
               />
               {useAdditionalMarkup && (
