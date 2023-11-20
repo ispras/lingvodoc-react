@@ -581,32 +581,34 @@ class ConvertEafModal extends React.Component {
                 <Label tag>{pa_columns[0].text}</Label>
                 <div style={{ marginLeft: "1em", marginBottom: "1.5em" }}>
                   { [ 'synthetic word', 'text' ].map(tier => (
-                    <div hidden={!(tier in preview)} style={{ marginTop: "0.25em" }} key={tier}>
+                    <div hidden={!(tier in preview)} style={{ marginTop: "0.5em" }} key={tier}>
                       <Checkbox
                         radio
-                        label={`${this.context(tier)}: ${preview[tier]}`}
+                        label={this.context(tier)}
                         checked={custom_eaf_tiers[pa_columns[0].value] === tier}
                         onChange={e => {
                           custom_eaf_tiers[pa_columns[0].value] = tier;
                           this.setState({ custom_eaf_tiers });
                         }}
-                      />
+                      /><br/>
+                      <label>{preview[tier]}</label>
                     </div>
                   ))}
                 </div>
                 <Label tag>{pa_columns[1].text}</Label>
                 <div style={{ marginLeft: "1em", marginBottom: "1.5em" }}>
                   { [ 'text', 'synthetic transcription', 'other text' ].map(tier => (
-                    <div hidden={!(tier in preview)} style={{ marginTop: "0.25em" }} key={tier}>
+                    <div hidden={!(tier in preview)} style={{ marginTop: "0.5em" }} key={tier}>
                       <Checkbox
                         radio
-                        label={`${this.context(tier)}: ${preview[tier]}`}
+                        label={this.context(tier)}
                         checked={custom_eaf_tiers[pa_columns[1].value] === tier}
                         onChange={e => {
                           custom_eaf_tiers[pa_columns[1].value] = tier;
                           this.setState({ custom_eaf_tiers });
                         }}
-                      />
+                      /><br/>
+                      <label>{preview[tier]}</label>
                     </div>
                   ))}
                 </div>
