@@ -581,7 +581,7 @@ class ConvertEafModal extends React.Component {
                 <Label tag>{pa_columns[0].text}</Label>
                 <div style={{ marginLeft: "1em", marginBottom: "1.5em" }}>
                   { [ 'synthetic word', 'text' ].map(tier => (
-                    <div hidden={!(tier in preview)} style={{ marginTop: "0.5em" }} key={tier}>
+                    <div hidden={!(tier in preview)} style={{ marginTop: "0.75em" }} key={tier}>
                       <Checkbox
                         radio
                         label={this.context(tier)}
@@ -598,7 +598,7 @@ class ConvertEafModal extends React.Component {
                 <Label tag>{pa_columns[1].text}</Label>
                 <div style={{ marginLeft: "1em", marginBottom: "1.5em" }}>
                   { [ 'text', 'synthetic transcription', 'other text' ].map(tier => (
-                    <div hidden={!(tier in preview)} style={{ marginTop: "0.5em" }} key={tier}>
+                    <div hidden={!(tier in preview)} style={{ marginTop: "0.75em" }} key={tier}>
                       <Checkbox
                         radio
                         label={this.context(tier)}
