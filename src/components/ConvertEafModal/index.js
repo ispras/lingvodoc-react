@@ -579,8 +579,8 @@ class ConvertEafModal extends React.Component {
                 )}
               </div>
             )}
-            { preview && (
-              <div style={{ width: "50%", marginTop: "2em" }}>
+            {preview && !morphology && (
+              <div style={{ width: "50%", marginBottom: "1.5em" marginTop: "2em" }}>
                 <Header>{this.context("Paradigm sentence column source tiers")}</Header>
                 { [ 'synthetic word', 'text', 'synthetic transcription', 'other text' ].map(tier => (
                   <div hidden={!(tier in preview)} style={{ marginTop: "1.5em" }}>
