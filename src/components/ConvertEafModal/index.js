@@ -343,8 +343,8 @@ class ConvertEafModal extends React.Component {
             custom_eaf_tiers = {
               'synthetic word': null,
               'text': 'Word of Paradigmatic forms',
-              'synthetic transcription': 'Transcription of Paradigmatic forms',
-              'other text': null
+              'synthetic transcription': null,
+              'other text': 'Transcription of Paradigmatic forms'
             };
           }
 
@@ -606,7 +606,7 @@ class ConvertEafModal extends React.Component {
                       <AdditionalMarkup info={additionalMarkupInfo} />
                       { preview && (
                         <div style={{ width: "50%", marginTop: "2em" }}>
-                          <Header>{this.context("Match columns to tiers")}</Header>
+                          <Header>{this.context("Paradigm sentence column source tiers")}</Header>
                           { [ 'synthetic word', 'text', 'synthetic transcription', 'other text' ].map(tier => (
                             <div hidden={!(tier in preview)} style={{ marginTop: "1.5em" }}>
                               <table>
