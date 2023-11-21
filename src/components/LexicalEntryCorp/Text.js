@@ -10,6 +10,7 @@ import { onlyUpdateForKeys } from "recompose";
 import Entities from "./index";
 
 const TextEntityContent = ({
+  entry,
   entity,
   mode,
   parentEntity,
@@ -30,7 +31,7 @@ const TextEntityContent = ({
   number,
   update,
   /*draggable*/ /* new!!!!!! */
-  id /* new!!!!!! */
+  id
 }) => {
 
   const is_order_column = (number && column.english_translation === "Order");
@@ -71,6 +72,11 @@ const TextEntityContent = ({
     end: (item, monitor) => {
       if (monitor.didDrop()) {
         setDropped(item);
+        /*console.log('useDrag: entry=====');
+        console.log(entry);
+        console.log('useDrag: entity.parent_id=====');
+        console.log(entity.parent_id);*/
+        remove(item, entry.id);
       }
     }
   });
@@ -238,10 +244,10 @@ const Text = onlyUpdateForKeys([
   "checkedColumn",
   "checkedAll",
   "number",
-  "entitiesMode", // new!!!!!
-  "parentEntity", // new!!!!
+  "entitiesMode", // new!!!!! ????? 
+  "parentEntity", // new!!!! ???????
   "draggable", // new!!!!!! 
-  "id", // new!!!!!!
+  "id",
 ])(props => {
   const {
     perspectiveId,
@@ -271,7 +277,7 @@ const Text = onlyUpdateForKeys([
     is_being_updated,
     number,
     draggable, /* new!!!!!! */
-    id, /* new!!!!!! */
+    id,
   } = props;
 
   const subColumn = find(columns, c => isEqual(c.self_id, column.column_id));
@@ -280,6 +286,7 @@ const Text = onlyUpdateForKeys([
     <Component className={className}>
       {draggable && (
       <TextEntityContent
+        entry={entry} 
         entity={entity}
         checkEntries={checkEntries}
         checkedRow={checkedRow}
@@ -299,11 +306,12 @@ const Text = onlyUpdateForKeys([
         is_being_removed={is_being_removed}
         is_being_updated={is_being_updated}
         number={number}
-        id={id} /* new!!!!!! */
+        id={id} 
         draggable /* new!!!!!! */
       />
       ) || (
         <TextEntityContent
+          entry={entry} 
           entity={entity}
           checkEntries={checkEntries}
           checkedRow={checkedRow}
@@ -323,7 +331,7 @@ const Text = onlyUpdateForKeys([
           is_being_removed={is_being_removed}
           is_being_updated={is_being_updated}
           number={number}
-          id={id} /* new!!!!!! */
+          id={id} 
         />
       )}
       {subColumn && (
@@ -370,7 +378,7 @@ Text.propTypes = {
   resetCheckedAll: PropTypes.func,
   number: PropTypes.string,
   draggable: PropTypes.bool, /* new!!!!! */
-  id: PropTypes.array.isRequired, /* new!!!!! */
+  id: PropTypes.array.isRequired,
 };
 
 Text.defaultProps = {
