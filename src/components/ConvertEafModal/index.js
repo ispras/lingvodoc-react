@@ -584,14 +584,16 @@ class ConvertEafModal extends React.Component {
                     <div hidden={!(tier in preview)} style={{ marginTop: "0.75em" }} key={tier}>
                       <Checkbox
                         radio
+                        id={`${tier}0`}
                         label={this.context(tier)}
+                        disabled={custom_eaf_tiers[pa_columns[1].value] === tier}
                         checked={custom_eaf_tiers[pa_columns[0].value] === tier}
                         onChange={e => {
                           custom_eaf_tiers[pa_columns[0].value] = tier;
                           this.setState({ custom_eaf_tiers });
                         }}
                       /><br/>
-                      <label>{preview[tier]}</label>
+                      <label for={`${tier}0`}>{preview[tier]}</label>
                     </div>
                   ))}
                 </div>
@@ -601,14 +603,16 @@ class ConvertEafModal extends React.Component {
                     <div hidden={!(tier in preview)} style={{ marginTop: "0.75em" }} key={tier}>
                       <Checkbox
                         radio
+                        id={`${tier}1`}
                         label={this.context(tier)}
+                        disabled={custom_eaf_tiers[pa_columns[0].value] === tier}
                         checked={custom_eaf_tiers[pa_columns[1].value] === tier}
                         onChange={e => {
                           custom_eaf_tiers[pa_columns[1].value] = tier;
                           this.setState({ custom_eaf_tiers });
                         }}
                       /><br/>
-                      <label>{preview[tier]}</label>
+                      <label for={`${tier}1`}>{preview[tier]}</label>
                     </div>
                   ))}
                 </div>
