@@ -491,8 +491,8 @@ class ConvertEafModal extends React.Component {
       }
     }
 
-    const pa_columns = [{ key: 1, value: 'Word of Paradigmatic forms', text: 'Paradigmatic forms and contexts' },
-                        { key: 2, value: 'Transcription of Paradigmatic forms', text: 'Transcription of paradigmatic forms' }];
+    const pa_columns = [{ value: 'Word of Paradigmatic forms', text: this.context('Paradigmatic forms and contexts') },
+                        { value: 'Transcription of Paradigmatic forms', text: this.context('Transcription of paradigmatic forms') }];
 
     return (
       <Modal closeIcon onClose={actions.closeConvert} open={visible} dimmer size="large" className="lingvo-modal2">
