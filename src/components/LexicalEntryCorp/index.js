@@ -5,7 +5,7 @@ import { gql } from "@apollo/client";
 import { graphql, withApollo } from "@apollo/client/react/hoc";
 import { flow, isEqual } from "lodash";
 import PropTypes from "prop-types";
-import { compose, pure } from "recompose";
+import { compose } from "recompose";
 
 import { queryCounter } from "backend";
 import { queryLexicalEntries } from "components/CorporaView";
@@ -163,7 +163,7 @@ const Entities = ({
     ens => ens.filter(entity => isEqual(entity.field_id, column.id)),
     ens => (!parentEntity ? ens : ens.filter(e => isEqual(e.self_id, parentEntity.id)))
   ];
-
+  
   const entities = flow(filters)(entry.entities);
 
   const [edit, setEdit] = useState(false);
@@ -176,11 +176,10 @@ const Entities = ({
   const [{ isOver }, dropRef] = useDrop({
       accept: 'entity',
       drop: (item) => {
-        remove(item);
         create(item.content, parentEntity == null ? null : parentEntity.id);
       },
       collect: (monitor) => ({
-          isOver: monitor.isOver()
+        isOver: monitor.isOver()
       })
   });
 
@@ -258,6 +257,12 @@ const Entities = ({
   }, [edit]);
 
   const create = useCallback((content, self_id) => {
+
+    console.log('Create: entry.id==========');
+    console.log(entry.id);
+
+    console.log('Create: self_id==========');
+    console.log(self_id);
 
     setIsBeingCreated(true);
 
@@ -353,7 +358,10 @@ const Entities = ({
     }).then(() => update_check());
   }, []);
 
-  const remove = useCallback((entity) => {
+  const remove = useCallback((entity, entryId) => {
+
+    console.log('Remove: entryId==========');
+    console.log(entryId);
 
     const entity_id_str = id2str(entity.id);
 
@@ -367,14 +375,14 @@ const Entities = ({
         {
           query: lexicalEntryQuery,
           variables: {
-            id: entry.id,
+            id: entryId || entry.id,
             entitiesMode: "all"
           }
         },
         {
           query: lexicalEntryQuery,
           variables: {
-            id: entry.id,
+            id: entryId || entry.id,
             entitiesMode: "published"
           }
         }
@@ -585,6 +593,5 @@ export default compose(
   graphql(createEntityMutation, { name: "createEntity" }),
   graphql(removeEntityMutation, { name: "removeEntity" }),
   graphql(updateEntityMutation, { name: "updateEntity" }),
-  withApollo,
-  pure
+  withApollo
 )(Entities);
