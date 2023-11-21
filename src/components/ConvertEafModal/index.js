@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { connect } from "react-redux";
-import { Button, Checkbox, Dropdown, Header, Icon, List, Message, Modal } from "semantic-ui-react";
+import { Button, Checkbox, Dropdown, Header, Icon, List, Message, Modal, Label } from "semantic-ui-react";
 import { graphql, withApollo } from "@apollo/client/react/hoc";
 import { isEqual } from "lodash";
 import PropTypes from "prop-types";
@@ -153,6 +153,22 @@ const AdditionalMarkup = ({ info }) => {
 class ConvertEafModal extends React.Component {
   constructor(props) {
     super(props);
+
+    let custom_eaf_tiers = {};
+
+    if (Object.keys(props.preview).length < 6) {
+      custom_eaf_tiers = {
+        'Word of Paradigmatic forms': 'synthetic word',
+        'Transcription of Paradigmatic forms': 'text'
+      };
+    }
+    else {
+      custom_eaf_tiers = {
+        'Word of Paradigmatic forms': 'text',
+        'Transcription of Paradigmatic forms': 'other text'
+      };
+    }
+
     this.state = {
       mode: "new",
       parentLanguage: null,
@@ -163,7 +179,8 @@ class ConvertEafModal extends React.Component {
       additionalEntries: true,
       additionalEntriesAll: true,
       useAdditionalMarkup: false,
-      additionalMarkupInfo: null
+      additionalMarkupInfo: null,
+      custom_eaf_tiers
     };
     this.convert = this.convert.bind(this);
     this.handleModeChange = this.handleModeChange.bind(this);
@@ -362,7 +379,8 @@ class ConvertEafModal extends React.Component {
       additionalEntries,
       additionalEntriesAll,
       useAdditionalMarkup,
-      additionalMarkupInfo
+      additionalMarkupInfo,
+      custom_eaf_tiers
     } = this.state;
 
     const markupIdList = [markup.id];
@@ -387,7 +405,8 @@ class ConvertEafModal extends React.Component {
           mergeByMeaningAll,
           additionalEntries,
           additionalEntriesAll,
-          morphology
+          morphology,
+          custom_eaf_tiers
         }
       }).then(
         () => {
@@ -409,7 +428,8 @@ class ConvertEafModal extends React.Component {
           mergeByMeaningAll,
           additionalEntries,
           additionalEntriesAll,
-          morphology
+          morphology,
+          custom_eaf_tiers
         }
       }).then(
         () => {
@@ -443,6 +463,7 @@ class ConvertEafModal extends React.Component {
       visible,
       actions,
       morphology,
+      preview,
       data: { loading, error, dictionaries }
     } = this.props;
 
@@ -455,7 +476,8 @@ class ConvertEafModal extends React.Component {
       additionalEntries,
       additionalEntriesAll,
       useAdditionalMarkup,
-      additionalMarkupInfo
+      additionalMarkupInfo,
+      custom_eaf_tiers
     } = this.state;
 
     const dictMap = {};
@@ -468,6 +490,9 @@ class ConvertEafModal extends React.Component {
         dictOptions.push({ key: id, value: id, text: T(d.translations) });
       }
     }
+
+    const pa_columns = [{ value: 'Word of Paradigmatic forms', text: this.context('Paradigmatic forms and contexts') },
+                        { value: 'Transcription of Paradigmatic forms', text: this.context('Transcription of paradigmatic forms') }];
 
     return (
       <Modal closeIcon onClose={actions.closeConvert} open={visible} dimmer size="large" className="lingvo-modal2">
@@ -548,6 +573,49 @@ class ConvertEafModal extends React.Component {
                     </div>
                   </div>
                 )}
+              </div>
+            )}
+            {preview && !morphology && (
+              <div style={{ width: "50%", marginTop: "2em" }}>
+                <Header>{this.context("Paradigm sentence column source tiers")}</Header>
+                <Label tag>{pa_columns[0].text}</Label>
+                <div style={{ marginLeft: "1em", marginBottom: "1.5em" }}>
+                  { [ 'synthetic word', 'text' ].map(tier => (
+                    <div hidden={!(tier in preview)} style={{ marginTop: "0.75em" }} key={tier}>
+                      <Checkbox
+                        radio
+                        id={`${tier}0`}
+                        label={this.context(tier)}
+                        disabled={custom_eaf_tiers[pa_columns[1].value] === tier}
+                        checked={custom_eaf_tiers[pa_columns[0].value] === tier}
+                        onChange={e => {
+                          custom_eaf_tiers[pa_columns[0].value] = tier;
+                          this.setState({ custom_eaf_tiers });
+                        }}
+                      /><br/>
+                      <label for={`${tier}0`}>{preview[tier]}</label>
+                    </div>
+                  ))}
+                </div>
+                <Label tag>{pa_columns[1].text}</Label>
+                <div style={{ marginLeft: "1em", marginBottom: "1.5em" }}>
+                  { [ 'text', 'synthetic transcription', 'other text' ].map(tier => (
+                    <div hidden={!(tier in preview)} style={{ marginTop: "0.75em" }} key={tier}>
+                      <Checkbox
+                        radio
+                        id={`${tier}1`}
+                        label={this.context(tier)}
+                        disabled={custom_eaf_tiers[pa_columns[0].value] === tier}
+                        checked={custom_eaf_tiers[pa_columns[1].value] === tier}
+                        onChange={e => {
+                          custom_eaf_tiers[pa_columns[1].value] = tier;
+                          this.setState({ custom_eaf_tiers });
+                        }}
+                      /><br/>
+                      <label for={`${tier}1`}>{preview[tier]}</label>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
             <div style={{ marginTop: "0.5em" }}>
@@ -670,13 +738,14 @@ const mapDispatchToProps = dispatch => ({
 export default compose(
   connect(mapStateToProps, mapDispatchToProps),
   branch(({ convertVisible }) => !convertVisible, renderNothing),
-  withProps(({ convertVisible, data: { audio, markup, columns, allEntriesGenerator, morphology } }) => ({
+  withProps(({ convertVisible, data: { audio, markup, columns, allEntriesGenerator, morphology, preview } }) => ({
     visible: convertVisible,
     audio,
     markup,
     columns,
     allEntriesGenerator,
-    morphology
+    morphology,
+    preview
   })),
   graphql(dictionariesQuery, { options: { fetchPolicy: "cache-and-network" } }),
   graphql(convertToNewDictionaryMutation, { name: "convertToNewDictionary" }),
