@@ -525,9 +525,8 @@ const Entities = ({
           disabled={disabled}
           is_being_removed={remove_set.hasOwnProperty(id2str(entity.id))}
           is_being_updated={update_set.hasOwnProperty(id2str(entity.id))}
-          number={number}
-          draggable={true} /* new!!!!! */
-          id={entity.id} /* new!!!!! */
+          number={number} 
+          id={entity.id} 
         />
       ))}
       {mode === "edit" && !is_order_column && (
