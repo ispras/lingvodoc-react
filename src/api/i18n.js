@@ -619,6 +619,7 @@ export const stringsToTranslate = [
   "Own and inherited users:",
   "Owners",
   "Page",
+  "Parallel corpora",
   "Parent Corpora",
   "Parent language",
   "Parser execution",
