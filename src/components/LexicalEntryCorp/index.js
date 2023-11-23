@@ -258,12 +258,6 @@ const Entities = ({
 
   const create = useCallback((content, self_id) => {
 
-    console.log('Create: entry.id==========');
-    console.log(entry.id);
-
-    console.log('Create: self_id==========');
-    console.log(self_id);
-
     setIsBeingCreated(true);
 
     const variables = { parent_id: entry.id, field_id: column.id };
@@ -359,10 +353,7 @@ const Entities = ({
   }, []);
 
   const remove = useCallback((entity, entryId) => {
-
-    console.log('Remove: entryId==========');
-    console.log(entryId);
-
+    
     const entity_id_str = id2str(entity.id);
 
     const remove_set2 = remove_set;

@@ -389,8 +389,6 @@ class P extends React.Component {
       activeDndProvider,
     } = this.props;
 
-    console.log('REnder index!!!!!!!!!!!!');
-
     const { loading, error } = data;
     const { loading: changing } = this.state.mutation;
 
@@ -435,13 +433,9 @@ class P extends React.Component {
 
     const dragAndDropEntries = (lexentry_id_source, lexentry_id_before, lexentry_id_after) => {
       
-      /*if (lexgraph_field_id &&
-          lexentry_id_source &&
-          (lexentry_id_before || lexentry_id_after)) {*/
+      if (lexentry_id_source && (lexentry_id_before || lexentry_id_after)) {
         const entity_id_change = get_lexgraph_entity(lexentry_id_source).id;
 
-        console.log('dragAndDropEntries!!!!!: entity_id_change======');
-        console.log(entity_id_change);
         const lexgraph_before = get_lexgraph_marker(lexentry_id_before);
         const lexgraph_after = get_lexgraph_marker(lexentry_id_after);
 
@@ -463,7 +457,6 @@ class P extends React.Component {
           awaitRefetchQueries: true
         }).then(({data: mutation}) => {
 
-          console.log('!!!!! dragAndDropEntries success!!!!!');
           this.setState({
             cards: []
           });
@@ -475,7 +468,7 @@ class P extends React.Component {
             cards: []
           });
         });
-      /*}*/
+      }
     };
 
     const addEntry = (lexgraph_min) => {
@@ -678,9 +671,6 @@ class P extends React.Component {
       lexicalEntries.filter(e => Object.prototype.hasOwnProperty.call(created_id_str_set, id2str(e.id)))
     );
 
-    /*console.log('newEntries=====');
-    console.log(newEntries);*/
-
     const entries = processEntries(lexicalEntries.slice());
 
     const lexgraph_min = () => {
@@ -746,9 +736,6 @@ class P extends React.Component {
     const selectedColumns = [];
 
     const items = this.state.move && pageEntries || e;
-
-    /*console.log('Move: items=====');
-    console.log(items);*/
 
     const checkedRow = this.state.checkedRow;
     const checkedColumn = this.state.checkedColumn;
@@ -837,7 +824,6 @@ class P extends React.Component {
     /* /isTableLanguagesPublish */
 
     const moveListItem = (dragIndex, hoverIndex, prevCards) => {
-      console.log('!!!!!!!!!!!!moveListItem!!!!!!!!!!!!!!');
 
       this.setState({
         cards: update(prevCards, {
