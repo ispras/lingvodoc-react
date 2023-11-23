@@ -6,6 +6,7 @@ import { useTranslations } from "hooks";
 
 import imageDictionares from "../../images/bookshelves.svg";
 import imageCorpora from "../../images/file_bundle.svg";
+import imageParallelCorpora from "../../images/file_bundle3.svg";
 
 import "./styles.scss";
 
@@ -29,7 +30,7 @@ function TreeRoute() {
             </Link>
             <Link className="card-item" to="/parallel_corpora_all">
               <label className="card-item__label">{getTranslation("Parallel corpora")}</label>
-              <img className="card-item__img card-item__img_corpora" src={imageCorpora} />
+              <img className="card-item__img card-item__img_parallel-corpora" src={imageParallelCorpora} />
             </Link>
           </div>
         </div>

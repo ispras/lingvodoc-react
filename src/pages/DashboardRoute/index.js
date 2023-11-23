@@ -8,8 +8,10 @@ import imageDictionaries from "../../images/books1.svg";
 import imageCreate from "../../images/books2.svg";
 import imageDialeqt from "../../images/cloud_files.svg";
 import imageImport from "../../images/cloud_files2.svg";
+import imageImportParallel from "../../images/cloud_files3.svg";
 import imageCreateCorpus from "../../images/file_bundle1.svg";
 import imageCorpora from "../../images/file_bundle2.svg";
+import imageParallelCorpora from "../../images/selected_options.svg";
 
 import "./styles.scss";
 
@@ -41,11 +43,11 @@ function DashboardRoute() {
             </Link>
             <Link className="card-item" to="/parallel_corpora">
               <label className="card-item__label">{getTranslation("Parallel corpora")}</label>
-              <img className="card-item__img" src={imageCorpora} />
+              <img className="card-item__img card-item__img_parallel-corpora" src={imageParallelCorpora} />
             </Link>
             <Link className="card-item" to="/import_corpora">
               <label className="card-item__label">{getTranslation("Import parallel corpora")}</label>
-              <img className="card-item__img card-item__img_import" src={imageImport} />
+              <img className="card-item__img card-item__img_import" src={imageImportParallel} />
             </Link>
             <Link className="card-item" to="/import_dialeqt">
               <label className="card-item__label">{getTranslation("Import Dialeqt dictionary")}</label>
