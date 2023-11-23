@@ -58,11 +58,6 @@ const Row = ({
       isDragging: monitor.isDragging(),
     }),
     end: (item, monitor) => {
-      console.log('useDrag end: item=====');
-      console.log(item);
-      console.log('monitor.didDrop()===');
-      console.log(monitor.didDrop());
-
       const prev = ref.current.parentElement.parentElement.previousElementSibling || null;
       const idPrev = prev && prev.id.split(',').map(entry => parseInt(entry)) || null;
 
@@ -71,10 +66,9 @@ const Row = ({
       
       dragAndDropEntries(id, idPrev, idNext);
 
-      if (monitor.didDrop()) {
-        //setDropped(item);
-        console.log('monitor.didDrop() === true !!!!!!!');
-      }
+      /*if (monitor.didDrop()) {
+        console.log('monitor.didDrop() === true');
+      }*/
     }
 
   });
@@ -133,11 +127,7 @@ const Row = ({
       // to avoid expensive index searches.
       item.index = hoverIndex;
 
-    }/*,
-    drop: (item) => {
-      console.log('useDrop drop!!!!!!: item====');
-      console.log(item);
-    },*/
+    }
   });
 
   const dragDropRef = dragRef(dropRef(ref));
@@ -300,8 +290,8 @@ export default onlyUpdateForKeys([
   "checkedAll",
   "columns",
   "number",
-  "id", //  ????? new!!!!!
-  "index", // ????? new!!!!!
-  "dnd_enabled", // ???????? new!!!!!
+  "id",
+  "index",
+  "dnd_enabled",
   "entries"
 ])(Row);

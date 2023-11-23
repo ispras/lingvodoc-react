@@ -6,12 +6,7 @@ import { onlyUpdateForKeys } from "recompose";
 import Row from "./Row";
 
 const TableBody = ({ entries, ...rest }) => {
-
-  console.log('Render Entries!!!');
-
-  console.log('TableBody: entries=============');
-  console.log(entries);
-
+  
   return (
     <Table.Body>
       {entries.map((entry, index) => (
