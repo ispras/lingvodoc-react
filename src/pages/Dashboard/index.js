@@ -541,6 +541,27 @@ const CORPORA_TABS = getTranslation => {
   ];
 };
 
+const PARALLEL_CORPORA_TABS = getTranslation => {
+  return [
+    {
+      menuItem: getTranslation("My parallel corpora"),
+      render: () => (
+        <Tab.Pane className="lingvo-tab__pane">
+          <Dictionaries category={2} mode={0} />
+        </Tab.Pane>
+      )
+    },
+    {
+      menuItem: getTranslation("Available parallel corpora"),
+      render: () => (
+        <Tab.Pane className="lingvo-tab__pane">
+          <Dictionaries category={2} mode={1} />
+        </Tab.Pane>
+      )
+    }
+  ];
+};
+
 const DictionaryDashboard = () => {
   const getTranslation = useContext(TranslationContext);
   return (
@@ -561,4 +582,15 @@ const CorpusDashboard = () => {
   );
 };
 
-export { DictionaryDashboard, CorpusDashboard };
+const ParallelCorporaDashboard = () => {
+  const getTranslation = useContext(TranslationContext);
+  return (
+    <div className="background-content">
+      <Tab className="inverted lingvo-tab" panes={PARALLEL_CORPORA_TABS(getTranslation)} renderActiveOnly />
+      <DictionaryProperties />
+    </div>
+  );
+};
+
+
+export { DictionaryDashboard, CorpusDashboard, ParallelCorporaDashboard };

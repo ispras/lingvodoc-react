@@ -27,6 +27,10 @@ function TreeRoute() {
               <label className="card-item__label">{getTranslation("Language corpora")}</label>
               <img className="card-item__img card-item__img_corpora" src={imageCorpora} />
             </Link>
+            <Link className="card-item" to="/parallel_corpora_all">
+              <label className="card-item__label">{getTranslation("Parallel corpora")}</label>
+              <img className="card-item__img card-item__img_corpora" src={imageCorpora} />
+            </Link>
           </div>
         </div>
       </div>
