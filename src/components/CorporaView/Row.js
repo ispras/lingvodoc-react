@@ -37,12 +37,12 @@ const Row = ({
   selectDisabledIndeterminate,
   disabledEntrySet,
   removeSelectionEntrySet,
-  index, /* new!!!!! */
-  id, /* new!!!!! */
-  moveListItem, /* new!!!!! */
-  dragAndDropEntries, /* new!!!!! */
-  dnd_enabled, /* new!!!!!! */
-  entries /* new!!!!! */
+  index,
+  id,
+  moveListItem,
+  dragAndDropEntries,
+  dnd_enabled,
+  entries
   /* eslint-enable react/prop-types */
 }) => {
 
@@ -264,12 +264,12 @@ Row.propTypes = {
   resetCheckedAll: PropTypes.func,
   reRender: PropTypes.func,
   number: PropTypes.string,
-  id: PropTypes.array, /*  ????? new!!!!! */
-  index: PropTypes.number, /*  ????? new!!!!! */
-  moveListItem: PropTypes.func, /* new!!!!! */
-  dragAndDropEntries: PropTypes.func, /* new!!!!! */
-  dnd_enabled: PropTypes.bool, /* new!!!!! */
-  entries: PropTypes.array, /* new!!!!! */
+  id: PropTypes.array,
+  index: PropTypes.number,
+  moveListItem: PropTypes.func,
+  dragAndDropEntries: PropTypes.func,
+  dnd_enabled: PropTypes.bool,
+  entries: PropTypes.array,
 };
 
 Row.defaultProps = {
@@ -303,5 +303,5 @@ export default onlyUpdateForKeys([
   "id", //  ????? new!!!!!
   "index", // ????? new!!!!!
   "dnd_enabled", // ???????? new!!!!!
-  "entries" // new!!!!! 
+  "entries"
 ])(Row);

@@ -110,7 +110,6 @@ const updateLexgraphMutation = gql`
   }
 `;
 
-/* new2!!!!!! */
 const updateEntityParentMutation = gql`
   mutation updateEntityParent($id: LingvodocID!,
                               $new_parent_id: LingvodocID!) {
@@ -121,7 +120,6 @@ const updateEntityParentMutation = gql`
     }
   }
 `;
-/* /new2!!!!!! */
 
 const createLexicalEntryMutation = gql`
   mutation createLexicalEntry($id: LingvodocID!, $entitiesMode: String!) {
@@ -298,9 +296,9 @@ class P extends React.Component {
       checkedRow: null,
       checkedColumn: null,
       checkedAll: null,
-      cards: [], /* new!!!!!! */
-      move: false, /* new!!!!!! */
-      mutation: { loading: false }, /* new2!!!!!! */
+      cards: [],
+      move: false,
+      mutation: { loading: false },
       dnd_enabled: true
     };
 
@@ -394,10 +392,9 @@ class P extends React.Component {
     console.log('REnder index!!!!!!!!!!!!');
 
     const { loading, error } = data;
-    const { loading: changing } = this.state.mutation; /* new2!!!!!! */
+    const { loading: changing } = this.state.mutation;
 
-    /*if (loading || (!loading && !error && !data.perspective)) {*/
-    if (loading || changing || (!loading && !error && !data.perspective)) { /* new2!!!!! */
+    if (loading || changing || (!loading && !error && !data.perspective)) {
       return (
         <Dimmer active style={{ minHeight: "600px", background: "none" }}>
           <Header as="h2" icon>
@@ -435,55 +432,6 @@ class P extends React.Component {
         {dnd_enabled: true},
         () => console.log("dnd_enabled: ", this.state.dnd_enabled));
     };
-
-    /*
-    const dragAndDrop = () => {
-      // Moving entity to another lexentry
-      if (entity_id_dragged && lexentry_id_target) {
-        updateEntityParentMutation({
-          variables: {
-            id: entity_id_dragged,
-            new_parent_id: lexentry_id_target
-          },
-          refetchQueries: [
-            {
-              query: queryLexicalEntries,
-              variables: {
-                id,
-                entitiesMode
-              }
-            }
-          ]
-        }).then(({data: mutation}) => this.setState({mutation}));
-      }
-
-      // Moving lexentry between certain ones
-      if (lexgraph_field_id &&
-          lexentry_id_source &&
-          (lexentry_id_before || lexentry_id_after)) {
-        entity_id_change = get_lexgraph_entity(lexentry_id_source).id;
-        lexgraph_before = get_lexgraph_marker(lexentry_id_before);
-        lexgraph_after = get_lexgraph_marker(lexentry_id_after);
-
-        updateLexgraphMutation({
-          variables: {
-            id: entity_id_change,
-            lexgraph_before,
-            lexgraph_after
-          },
-          refetchQueries: [
-            {
-              query: queryLexicalEntries,
-              variables: {
-                id,
-                entitiesMode
-              }
-            }
-          ]
-        }).then(({data: mutation}) => this.setState({mutation}));
-      }
-    };
-    */
 
     const dragAndDropEntries = (lexentry_id_source, lexentry_id_before, lexentry_id_after) => {
       
@@ -730,8 +678,8 @@ class P extends React.Component {
       lexicalEntries.filter(e => Object.prototype.hasOwnProperty.call(created_id_str_set, id2str(e.id)))
     );
 
-    console.log('newEntries=====');
-    console.log(newEntries);
+    /*console.log('newEntries=====');
+    console.log(newEntries);*/
 
     const entries = processEntries(lexicalEntries.slice());
 
@@ -797,13 +745,10 @@ class P extends React.Component {
     const selectedRows = [];
     const selectedColumns = [];
 
-    /* new!!!!!! */
-    //const items = e;
     const items = this.state.move && pageEntries || e;
-    /* /new!!!!!! */
 
-    console.log('Move: items=====');
-    console.log(items);
+    /*console.log('Move: items=====');
+    console.log(items);*/
 
     const checkedRow = this.state.checkedRow;
     const checkedColumn = this.state.checkedColumn;
@@ -893,12 +838,6 @@ class P extends React.Component {
 
     const moveListItem = (dragIndex, hoverIndex, prevCards) => {
       console.log('!!!!!!!!!!!!moveListItem!!!!!!!!!!!!!!');
-      console.log('dragIndex======');
-      console.log(dragIndex);
-      console.log('hoverIndex======');
-      console.log(hoverIndex);
-      console.log('prevCards======');
-      console.log(prevCards);
 
       this.setState({
         cards: update(prevCards, {
@@ -909,12 +848,8 @@ class P extends React.Component {
         })
       });
 
-      /* new!!!!!!!! */
       this.setState({move: true});
-      /* /new!!!!!!!! */
-      
-      console.log('this.state.cards======');
-      console.log(this.state.cards);
+     
     };
 
     function* allEntriesGenerator() {
@@ -987,7 +922,7 @@ class P extends React.Component {
                 onSortModeChange={(fieldId, order) => setSort(fieldId, order)}
                 onSortModeReset={() => resetSort()}
                 selectEntries={mode === "edit"}
-                entries={this.state.cards.length && this.state.cards || items} // new!!!!! 
+                entries={this.state.cards.length && this.state.cards || items} 
                 checkEntries={isTableLanguagesPublish}
                 selectedRows={selectedRows}
                 selectedColumns={selectedColumns}
@@ -999,7 +934,7 @@ class P extends React.Component {
               <TableBody
                 perspectiveId={id}
                 entitiesMode={entitiesMode} 
-                entries={this.state.cards.length && this.state.cards || items} // new!!!!!
+                entries={this.state.cards.length && this.state.cards || items} 
                 allEntriesGenerator={allEntriesGenerator}
                 columns={fields}
                 mode={mode}
@@ -1016,9 +951,9 @@ class P extends React.Component {
                 resetCheckedAll={this.resetCheckedAll}
                 onEntrySelect={onEntrySelect}
                 reRender={reRender}
-                moveListItem={moveListItem} // new!!!!!!
-                dragAndDropEntries={dragAndDropEntries} // new!!!!! 
-                dnd_enabled={this.state.dnd_enabled} // new!!!!!
+                moveListItem={moveListItem} 
+                dragAndDropEntries={dragAndDropEntries} 
+                dnd_enabled={this.state.dnd_enabled} 
               />
             </Table>
           </DndProvider>
@@ -1111,7 +1046,6 @@ const PerspectiveView = compose(
   graphql(updateLexgraphMutation, { name: "updateLexgraph" }),
   graphql(queryLexicalEntries, {
     options: { notifyOnNetworkStatusChange: true }
-    /*options: { notifyOnNetworkStatusChange: true, fetchPolicy: 'cache-first' }*/ /* new2!!!!!! */
   })
 )(P);
 

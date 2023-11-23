@@ -30,7 +30,6 @@ const TextEntityContent = ({
   resetCheckedAll,
   number,
   update,
-  /*draggable*/ /* new!!!!!! */
   id
 }) => {
 
@@ -72,10 +71,6 @@ const TextEntityContent = ({
     end: (item, monitor) => {
       if (monitor.didDrop()) {
         setDropped(item);
-        /*console.log('useDrag: entry=====');
-        console.log(entry);
-        console.log('useDrag: entity.parent_id=====');
-        console.log(entity.parent_id);*/
         remove(item, entry.id);
       }
     }
@@ -246,7 +241,6 @@ const Text = onlyUpdateForKeys([
   "number",
   "entitiesMode", // new!!!!! ????? 
   "parentEntity", // new!!!! ???????
-  "draggable", // new!!!!!! 
   "id",
 ])(props => {
   const {
@@ -276,7 +270,6 @@ const Text = onlyUpdateForKeys([
     is_being_removed,
     is_being_updated,
     number,
-    draggable, /* new!!!!!! */
     id,
   } = props;
 
@@ -284,7 +277,6 @@ const Text = onlyUpdateForKeys([
 
   return (
     <Component className={className}>
-      {draggable && (
       <TextEntityContent
         entry={entry} 
         entity={entity}
@@ -307,33 +299,7 @@ const Text = onlyUpdateForKeys([
         is_being_updated={is_being_updated}
         number={number}
         id={id} 
-        draggable /* new!!!!!! */
       />
-      ) || (
-        <TextEntityContent
-          entry={entry} 
-          entity={entity}
-          checkEntries={checkEntries}
-          checkedRow={checkedRow}
-          resetCheckedRow={resetCheckedRow}
-          checkedColumn={checkedColumn}
-          resetCheckedColumn={resetCheckedColumn}
-          checkedAll={checkedAll}
-          resetCheckedAll={resetCheckedAll}
-          mode={mode}
-          parentEntity={parentEntity} 
-          publish={publish}
-          column={column}
-          accept={accept}
-          remove={remove}
-          update={update}
-          breakdown={breakdown} 
-          is_being_removed={is_being_removed}
-          is_being_updated={is_being_updated}
-          number={number}
-          id={id} 
-        />
-      )}
       {subColumn && (
         <Entities
           perspectiveId={perspectiveId}
@@ -377,7 +343,6 @@ Text.propTypes = {
   resetCheckedColumn: PropTypes.func,
   resetCheckedAll: PropTypes.func,
   number: PropTypes.string,
-  draggable: PropTypes.bool, /* new!!!!! */
   id: PropTypes.array.isRequired,
 };
 
