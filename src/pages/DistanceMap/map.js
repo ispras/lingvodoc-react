@@ -109,6 +109,8 @@ class MapAreas extends PureComponent {
     this.returnToTree = this.returnToTree.bind(this);
     this.back = this.back.bind(this);
     this.newDict = [];
+
+    this.map = null;
   }
 
   componentDidMount() {
@@ -159,10 +161,14 @@ class MapAreas extends PureComponent {
 
     this.setState({ statusMap: true });
     this.map = initMap(this.mapContainer);
-
+    
     this.dictionariesWithColors = normolizeMethod(this.dictionariesWithColors, 255);
 
     const data = this.dictionariesWithColors.map(el => {
+      if (!el.additional_metadata.location) {
+        return null;
+      }
+
       const lat = Number(el.additional_metadata.location.lat);
       const lng = Number(el.additional_metadata.location.lng);
       const { translations, distanceDict, normolizeDistanceNumber } = el;
@@ -176,7 +182,13 @@ class MapAreas extends PureComponent {
       return { lat, lng, count: normolizeDistanceNumber };
     });
 
-    return heatmapLayer.setData({ data, max: maxCount });
+    const dataFilter = data.filter(function(item) {
+      if (item) {
+        return item;
+      }
+    });
+
+    return heatmapLayer.setData({ data: dataFilter, max: maxCount });
   }
 
   back() {
@@ -226,18 +238,18 @@ class MapAreas extends PureComponent {
               </div>
             )}
             {this.state.statusMap === false && this.state.statusRequest && <Placeholder />}
-            {this.state.statusMap && this.state.statusRequest && (
-              <Segment>
-                <div className="leaflet">
-                  <div
-                    ref={ref => {
-                      this.mapContainer = ref;
-                    }}
-                    className="leaflet__map"
-                  />
-                </div>
-              </Segment>
-            )}
+            
+            <Segment className={(this.state.statusMap && this.state.statusRequest) ? "lingvo-segment-maps" : "lingvo-segment-maps lingvo-segment-maps_hidden"}>
+              <div className="leaflet">
+                <div
+                  ref={ref => {
+                    this.mapContainer = ref;
+                  }}
+                  className="leaflet__map"
+                />
+              </div>
+            </Segment>
+            
             {(this.state.statusMap || !this.state.statusRequest) && (
               <div>
                 <Button 
