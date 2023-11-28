@@ -1604,6 +1604,7 @@ class CognateAnalysisModal extends React.Component {
         let group_flag = false;
         let text_flag = false;
         const morphology = mode.includes("morphology");
+        const suggestions = mode.includes("suggestions");
         let affix_flag = !morphology;
         let meaning_flag = !morphology;
 
@@ -1619,11 +1620,11 @@ class CognateAnalysisModal extends React.Component {
           }
 
           if (field.english_translation === "Affix") {
-            affix_flag = morphology;
+            affix_flag = morphology || suggestions;
           }
 
           if (field.english_translation === "Meaning of affix") {
-            meaning_flag = morphology;
+            meaning_flag = morphology || suggestions;
           }
         }
 

@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { connect } from "react-redux";
 import { Button, Icon, Message, Modal } from "semantic-ui-react";
-import { gql } from "@apollo/client";
+import { gql, useQuery } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
 import PropTypes from "prop-types";
 import { branch, compose, renderNothing } from "recompose";
@@ -22,12 +22,6 @@ export const validateQuery = gql`
     convert_five_tiers_validate(markup_id_list: $idList)
   }
 `;
-
-const ConvertButton = compose(
-  graphql(validateQuery, { options: props => ({ variables: { idList: [props.id] } }) }),
-  branch(({ data }) => data.loading || data.error, renderNothing),
-  branch(({ data: { convert_five_tiers_validate: isValidList } }) => !isValidList[0], renderNothing)
-)(props => <Button {...props} />);
 
 const MarkupEntity = graphql(q)(props => {
   const getTranslation = useContext(TranslationContext);
@@ -64,24 +58,43 @@ const MarkupModal = props => {
 
   const getTranslation = useContext(TranslationContext);
 
+  const { loading, error, data: validateQueryData } = useQuery(validateQuery, {
+    variables: {
+      idList: [ id ]
+    }
+  });
+
+  let preview = false;
+  if (!loading && !error) {
+    preview = validateQueryData.convert_five_tiers_validate[0];
+  }
+
   return (
     <Modal closeIcon onClose={actions.closeViewer} open={visible} dimmer size="large" className="lingvo-modal2">
       <Modal.Content>
         <MarkupEntity file={audioUrl} id={id} />
       </Modal.Content>
       <Modal.Actions>
-        <ConvertButton
-          content={getTranslation("Convert morphology concordance...")}
-          onClick={() => actions.openConvert(audio, data.markup, columns, allEntriesGenerator, true)}
-          id={data.markup.id}
-          className="lingvo-button-lite-violet"
-        />
-        <ConvertButton
-          content={getTranslation("Convert to dictionary...")}
-          onClick={() => actions.openConvert(audio, data.markup, columns, allEntriesGenerator, false)}
-          id={data.markup.id}
-          className="lingvo-button-violet"
-        />
+        { (loading || error) && (
+          <span>
+            {getTranslation("Loading markup data")}... <Icon name="spinner" loading />
+          </span>
+        ) || preview && (
+          <>
+            <Button
+              content={getTranslation("Convert morphology concordance...")}
+              onClick={() => actions.openConvert(audio, data.markup, columns, allEntriesGenerator, true, preview)}
+              id={data.markup.id}
+              className="lingvo-button-lite-violet"
+            />
+            <Button
+              content={getTranslation("Convert to dictionary...")}
+              onClick={() => actions.openConvert(audio, data.markup, columns, allEntriesGenerator, false, preview)}
+              id={data.markup.id}
+              className="lingvo-button-violet"
+            />
+          </>
+        )}
         <Button content={getTranslation("Close")} onClick={actions.closeViewer} className="lingvo-button-basic-black" />
       </Modal.Actions>
     </Modal>

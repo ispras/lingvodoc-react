@@ -18,6 +18,7 @@ export const convertToNewDictionaryMutation = gql`
     $additionalEntries: Boolean
     $additionalEntriesAll: Boolean
     $morphology: Boolean
+    $custom_eaf_tiers: ObjectVal
   ) {
     convert_corpus(
       markup_id_list: $markupIdList
@@ -28,6 +29,7 @@ export const convertToNewDictionaryMutation = gql`
       additional_entries: $additionalEntries
       additional_entries_all: $additionalEntriesAll
       morphology: $morphology
+      custom_eaf_tiers: $custom_eaf_tiers
     ) {
       triumph
     }
@@ -43,6 +45,7 @@ export const convertToExistingDictionaryMutation = gql`
     $additionalEntries: Boolean
     $additionalEntriesAll: Boolean
     $morphology: Boolean
+    $custom_eaf_tiers: ObjectVal
   ) {
     convert_corpus(
       markup_id_list: $markupIdList
@@ -52,6 +55,7 @@ export const convertToExistingDictionaryMutation = gql`
       additional_entries: $additionalEntries
       additional_entries_all: $additionalEntriesAll
       morphology: $morphology
+      custom_eaf_tiers: $custom_eaf_tiers
     ) {
       triumph
     }

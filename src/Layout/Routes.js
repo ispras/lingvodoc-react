@@ -15,6 +15,7 @@ import DistanceMap from "pages/DistanceMap";
 import MapSelectedLanguages from "pages/DistanceMap/map";
 import SelectedLanguages from "pages/DistanceMap/selectorLangGroup";
 import Docx2Eaf from "pages/Docx2Eaf";
+import Docx2Xlsx from "pages/Docx2Xlsx";
 import EditTranslations from "pages/EditTranslations";
 import Files from "pages/Files";
 import Grants from "pages/Grants";
@@ -70,6 +71,7 @@ const AppRoutes = () => (
     <Route path="/authors" element={<AuthorsRoute />} />
     <Route path="/version" element={<VersionRoute />} />
     <Route path="/docx2eaf" element={<Docx2Eaf />} />
+    <Route path="/docx2xlsx" element={<Docx2Xlsx />} />
     <Route path="/valency" element={<Valency />} />
     <Route element={<NotFound />} />
   </Routes>
