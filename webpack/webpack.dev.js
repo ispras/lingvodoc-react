@@ -54,7 +54,8 @@ base.plugins.push(
   }),
   new webpack.DefinePlugin({
     "process.env.NODE_ENV": JSON.stringify("development"),
-    __VERSION__: JSON.stringify(_.versionString)
+    __VERSION__: JSON.stringify(_.versionString),
+    __BUILD_YEAR__: JSON.stringify(_.buildYear)
   }),
   new webpack.HotModuleReplacementPlugin(),
   new ReactRefreshWebpackPlugin(),
