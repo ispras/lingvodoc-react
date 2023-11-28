@@ -1,8 +1,7 @@
 import React from "react";
 import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
-import ReactDOM from "react-dom";
-/*import { createRoot } from 'react-dom/client';*/
+import { createRoot } from 'react-dom/client';
 import { ApolloProvider } from "@apollo/client";
 import { applyMiddleware, bindActionCreators, compose, createStore } from "redux";
 import createSagaMiddleware from "redux-saga";
@@ -43,18 +42,6 @@ window.logger = bindActionCreators(
 
 window.dispatch = store.dispatch;
 
-ReactDOM.render(
-  <Provider store={store}>
-    <ApolloProvider client={apollo}>
-      <BrowserRouter>
-        <Layout />
-      </BrowserRouter>
-    </ApolloProvider>
-  </Provider>,
-  document.getElementById("root")
-);
-
-/*
 const root = createRoot(document.getElementById("root"));
 
 root.render(<Provider store={store}>
@@ -64,4 +51,3 @@ root.render(<Provider store={store}>
     </BrowserRouter>
   </ApolloProvider>
 </Provider>);
-*/
