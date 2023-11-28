@@ -63,6 +63,14 @@ if ("LINGVODOC_BUILD_TYPE" in process.env) {
   versionString += process.env.LINGVODOC_BUILD_TYPE;
 }
 
+/* Constructing current year. */
+
+var buildYear = "";
+
+try {
+  buildYear = new Date().getFullYear().toString();
+} catch (error) {}
+
 module.exports = {
   cwd(file) {
     return path.join(process.cwd(), file || "");
@@ -80,5 +88,6 @@ module.exports = {
       }
     };
   },
-  versionString
+  versionString,
+  buildYear
 };

@@ -64,7 +64,8 @@ base.plugins.push(
   new MiniCssExtractPlugin({ filename: "[name].[contenthash:8].css", chunkFilename: "[id].[contenthash:8].css" }),
   new webpack.DefinePlugin({
     "process.env.NODE_ENV": JSON.stringify("production"),
-    __VERSION__: JSON.stringify(_.versionString)
+    __VERSION__: JSON.stringify(_.versionString),
+    __BUILD_YEAR__: JSON.stringify(_.buildYear)
   })
 );
 
