@@ -1,7 +1,7 @@
 import React, { PureComponent } from "react";
 import { connect } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Button, Container, Label, Segment } from "semantic-ui-react";
+import { Button, Container, Segment, Message } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql, withApollo } from "@apollo/client/react/hoc";
 import L from "leaflet";
@@ -202,7 +202,7 @@ class MapAreas extends PureComponent {
   }
 
   render() {
-    const { location, user } = this.props;
+    const { location, user, loading } = this.props;
 
     const { mainDictionary } = location.state;
 
@@ -210,12 +210,17 @@ class MapAreas extends PureComponent {
       return null;
     }
 
-    if (!user || user.id !== 1) {
+    if (loading) {
+      return <Placeholder />;
+    }
+
+    if (!user || !user.id) {
       return (
-        <div style={{ marginTop: "1em" }}>
-          <Label>
-            {this.context("For the time being Distance Map functionality is available only for the administrator.")}
-          </Label>
+        <div className="background-content">
+          <Message compact>
+            <Message.Header>{this.context("Please sign in")}</Message.Header>
+            <p>{this.context("Only registered users can work with distance map.")}</p>
+          </Message>
         </div>
       );
     }

@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from "react";
 import { connect } from "react-redux";
-import { Label } from "semantic-ui-react";
+import { Message } from "semantic-ui-react";
 import { graphql } from "@apollo/client/react/hoc";
 import PropTypes from "prop-types";
 import { compose } from "recompose";
@@ -117,15 +117,20 @@ const DistanceMapC = compose(
   graphql(allFieldQuery, { name: "allField" })
 )(DistanceMap);
 
-const Wrapper = ({ user }) => {
+const Wrapper = ({ user, loading }) => {
   const getTranslation = useContext(TranslationContext);
 
-  if (!user || user.id !== 1) {
+  if (loading) {
+    return <Placeholder />;
+  }
+
+  if (!user || !user.id) {
     return (
-      <div style={{ marginTop: "1em" }}>
-        <Label>
-          {getTranslation("For the time being Distance Map functionality is available only for the administrator.")}
-        </Label>
+      <div className="background-content">
+        <Message compact>
+          <Message.Header>{getTranslation("Please sign in")}</Message.Header>
+          <p>{getTranslation("Only registered users can work with distance map.")}</p>
+        </Message>
       </div>
     );
   }

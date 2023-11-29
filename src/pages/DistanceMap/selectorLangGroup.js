@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Button, Container, Label } from "semantic-ui-react";
+import { Button, Container, Message } from "semantic-ui-react";
 import { withApollo } from "@apollo/client/react/hoc";
 import { fromJS } from "immutable";
 import PropTypes from "prop-types";
@@ -160,7 +160,7 @@ const SelectorLangGroup = ((props) => {
   
   /* Initializing here due to eact-hooks/rules-of-hooks, exact same hook order. */
 
-  const { actions, dataForTree, client, mainGroupDictionaresAndLanguages, selected, user } = props;
+  const { actions, dataForTree, client, mainGroupDictionaresAndLanguages, selected, user, loading } = props;
 
   const [mainGroupDictsAndLangs, setMainGroupDictsAndLangs] = useState(mainGroupDictionaresAndLanguages);
   const [mainDictionary, setMainDictionary] = useState(null);
@@ -179,16 +179,21 @@ const SelectorLangGroup = ((props) => {
       return null;
     }
 
-    if (!user || user.id !== 1) {
+    if (loading) {
+      return <Placeholder />;
+    }
+
+    if (!user || !user.id) {
       return (
-        <div style={{ marginTop: "1em" }}>
-          <Label>
-            {getTranslation("For the time being Distance Map functionality is available only for the administrator.")}
-          </Label>
+        <div className="background-content">
+          <Message compact>
+            <Message.Header>{getTranslation("Please sign in")}</Message.Header>
+            <p>{getTranslation("Only registered users can work with distance map.")}</p>
+          </Message>
         </div>
       );
     }
-    
+
     const { mainPerspectives } = location.state;
     let selectedLanguagesChecken = [];
     let rootLanguage = {};
