@@ -168,7 +168,7 @@ const SelectorLangGroup = ((props) => {
   useEffect(() => {
     if (!location.state) {
       navigate("/distance_map");
-      return null;
+      return;
     }
   }, [location, navigate]);
 

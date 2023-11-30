@@ -204,11 +204,11 @@ class MapAreas extends PureComponent {
   render() {
     const { location, user, loading } = this.props;
 
-    const { mainDictionary } = location.state;
-
     if (!location.state) {
       return null;
     }
+
+    const { mainDictionary } = location.state;
 
     if (loading) {
       return <Placeholder />;
