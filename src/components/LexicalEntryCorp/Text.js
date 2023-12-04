@@ -123,7 +123,7 @@ const TextEntityContent = ({
   const pg_ln = /\[\d+[ab]?:\d+\]/;
   const pg = /\[\d+[ab]?\]/;
   const ln = /\(\d+\)/;
-  const snt = /\/{2}/;
+  const snt = /\u2260/;
   const missed = /[/]missed text[/]/;
   const metatext = new RegExp(
     `${pg_ln.source }|${ 
