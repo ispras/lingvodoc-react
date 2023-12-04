@@ -961,6 +961,7 @@ export const stringsToTranslate = [
   "Your dictionaries are scheduled for conversion. Please, check tasks tab for conversion status.",
   "Your dictionary is created, click",
   "Your dictionary is created, clickRequests",
+  "Your dictionary is scheduled for conversion. Please, check tasks tab for conversion status.",
   "Zharov Andrey Anatolievich"
 ];
 
