@@ -10,7 +10,7 @@ const filter_out_error_set = {
 };
 
 export const globalErrorHandler = ({ networkError = {}, graphQLErrors = [] }) => {
-  if (networkError.statusCode === 500) {
+  if (networkError && networkError.statusCode === 500) {
     window.logger.err("Internal server error");
   }
 
