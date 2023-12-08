@@ -21,8 +21,8 @@ const query = gql`
 `;
 
 const saveDictionaryMutation = gql`
-  mutation SaveDictionary($id: LingvodocID!, $mode: String!, $soundFlag: Boolean, $markupFlag: Boolean) {
-    save_dictionary(id: $id, mode: $mode, sound_flag: $soundFlag, markup_flag: $markupFlag) {
+  mutation SaveDictionary($id: LingvodocID!, $mode: String!, $soundFlag: Boolean, $markupFlag: Boolean, $fType: String) {
+    save_dictionary(id: $id, mode: $mode, sound_flag: $soundFlag, markup_flag: $markupFlag, f_type: $fType) {
       triumph
     }
   }
@@ -34,7 +34,8 @@ class Properties extends React.Component {
     this.state = {
       mode: "all",
       save_sound: false,
-      save_markup: false
+      save_markup: false,
+      f_type: 'xlsx'
     };
 
     this.onChangeMode = this.onChangeMode.bind(this);
@@ -59,7 +60,8 @@ class Properties extends React.Component {
         id,
         mode,
         soundFlag: this.state.save_sound,
-        markupFlag: this.state.save_markup
+        markupFlag: this.state.save_markup,
+        fType: this.state.f_type
       }
     }).then(
       () => {
@@ -101,6 +103,26 @@ class Properties extends React.Component {
               checked={this.state.save_markup}
               onChange={(e, { checked }) => this.setState({ save_markup: checked })}
               className="lingvo-checkbox"
+            />
+          </div>
+          <div>
+            <Checkbox
+              style={{ margin: "0 0 10px 4px" }}
+              radio
+              label={this.context("Excel file type")}
+              name="fTypesRadioGroup"
+              value="xlsx"
+              checked={this.state.f_type === value}
+              onChange={(e, { checked }) => this.setState({ f_type: value })}
+            />
+            <Checkbox
+              style={{ margin: "0 0 10px 4px" }}
+              radio
+              label={this.context("Word file type")}
+              name="fTypesRadioGroup"
+              value="docx"
+              checked={this.state.f_type === value}
+              onChange={(e, { checked }) => this.setState({ f_type: value })}
             />
           </div>
         </Modal.Content>
