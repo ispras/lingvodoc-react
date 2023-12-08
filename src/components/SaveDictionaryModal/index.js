@@ -91,38 +91,36 @@ class Properties extends React.Component {
           </div>
           <div style={{ marginBottom: "25px" }}>
             <Checkbox
-              style={{ margin: "0 50px 10px 4px" }}
+              style={{ margin: "0.5em 2em 0.5em 0.5em" }}
               label={this.context("Save sound recordings")}
               checked={this.state.save_sound}
               onChange={(e, { checked }) => this.setState({ save_sound: checked })}
               className="lingvo-checkbox"
             />
             <Checkbox
-              style={{ margin: "0 0 10px 4px" }}
+              style={{ margin: "0.5em 0 0.5em 0.5em" }}
               label={this.context("Save markup")}
               checked={this.state.save_markup}
               onChange={(e, { checked }) => this.setState({ save_markup: checked })}
               className="lingvo-checkbox"
             />
           </div>
-          <div>
+          <div style={{ margin: "0 0 0.5em 0.5em" }} key="xlsx">
             <Checkbox
-              style={{ margin: "0 0 10px 4px" }}
               radio
               label={this.context("Excel file type")}
-              name="fTypesRadioGroup"
               value="xlsx"
-              checked={this.state.f_type === value}
-              onChange={(e, { checked }) => this.setState({ f_type: value })}
+              checked={this.state.f_type === 'xlsx'}
+              onChange={(e, { value }) => this.setState({ f_type: value })}
             />
+          </div>
+          <div style={{ margin: "0 0 0.5em 0.5em" }} key="docx">
             <Checkbox
-              style={{ margin: "0 0 10px 4px" }}
               radio
               label={this.context("Word file type")}
-              name="fTypesRadioGroup"
               value="docx"
-              checked={this.state.f_type === value}
-              onChange={(e, { checked }) => this.setState({ f_type: value })}
+              checked={this.state.f_type === 'docx'}
+              onChange={(e, { value }) => this.setState({ f_type: value })}
             />
           </div>
         </Modal.Content>
