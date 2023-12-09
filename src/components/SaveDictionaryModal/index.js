@@ -108,7 +108,7 @@ class Properties extends React.Component {
           <div style={{ margin: "0 0 0.5em 0.5em" }} key="xlsx">
             <Checkbox
               radio
-              label={this.context("Excel file type")}
+              label={this.context("Excel file")}
               value="xlsx"
               checked={this.state.f_type === 'xlsx'}
               onChange={(e, { value }) => this.setState({ f_type: value })}
@@ -117,7 +117,7 @@ class Properties extends React.Component {
           <div style={{ margin: "0 0 0.5em 0.5em" }} key="docx">
             <Checkbox
               radio
-              label={this.context("Word file type")}
+              label={this.context("Word file")}
               value="docx"
               checked={this.state.f_type === 'docx'}
               onChange={(e, { value }) => this.setState({ f_type: value })}
