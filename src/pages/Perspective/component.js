@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { connect } from "react-redux";
 import { Link, Navigate, Route, Routes } from "react-router-dom";
 import {
@@ -25,6 +25,8 @@ import { branch, compose, onlyUpdateForKeys, renderNothing, withHandlers, withSt
 
 import { chooseTranslation as T } from "api/i18n";
 import { queryCounter } from "backend";
+import CorporaView from "components/CorporaView";
+import DictionaryProperties from "components/DictionaryPropertiesModal";
 import Merge from "components/Merge";
 import PerspectiveView from "components/PerspectiveView";
 import { useMutation } from "hooks";
@@ -43,6 +45,9 @@ export const perspectiveIsHiddenOrDeletedQuery = gql`
       id
       is_hidden_for_client
       marked_for_deletion
+      additional_metadata {
+        parallel
+      }
       tree {
         id
         marked_for_deletion
@@ -220,7 +225,15 @@ const VerbCasesModal = ({ verbCases, setVerbCases, data, error, loading }) => {
   const [sentences, setSentences] = useState(false);
 
   return (
-    <Modal closeIcon onClose={() => setVerbCases(false)} open={verbCases} dimmer centered size="large" className="lingvo-modal2">
+    <Modal
+      closeIcon
+      onClose={() => setVerbCases(false)}
+      open={verbCases}
+      dimmer
+      centered
+      size="large"
+      className="lingvo-modal2"
+    >
       <Modal.Header>{getTranslation("Valency verb cases")}</Modal.Header>
       <Modal.Content>
         {loading && (
@@ -347,7 +360,6 @@ const prepareLanguage = async (client, baseLanguage) => {
 
 /* Loads language data for verb valency cases analysis. */
 const getVerbSelectionLanguageData = async (client, initialLanguage, handler) => {
-
   const {
     data: { languages }
   } = await client.query({
@@ -530,70 +542,65 @@ const VerbCasesContent = ({ perspectiveId, close, client, info }) => {
   const [selectedLanguageList, setSelectedLanguageList] = useState(undefined);
   const [availableLanguageList, setAvailableLanguageList] = useState(undefined);
 
-  useEffect(
-    () => {
-
-      /* Loads base language/corpora selection data for verb valency cases analysis. */
-      const getVerbSelectionData = async (perspectiveId, client, handler) => {
-
-        const {
-          data: { perspective }
-        } = await client.query({
-          query: verbPerpsectiveDataQuery,
-          variables: { perspectiveId }
-        });
-      
-        /* Starting by finding the root language of the language group we are to analyze verb valency cases.*/
-      
-        const tree = perspective.tree;
-      
-        const baseLanguage = {
-          ...tree[tree.length - 1],
-          treePath: tree.slice(tree.length - 1, tree.length).reverse()
-        };
-      
-        for (let i = 0; i < tree.length; i++) {
-          if (tree[i].in_toc) {
-            Object.assign(baseLanguage, tree[i]);
-            baseLanguage.treePath = tree.slice(i, tree.length).reverse();
-            break;
-          }
-        }
-      
-        baseLanguage.treePathStr = baseLanguage.treePath.map(e => T(e.translations)).join(" \u203a ");
-      
-        await prepareLanguage(client, baseLanguage);
-
-        handler(baseLanguage, baseLanguage.perspectiveList.length);
-      };
-      
-      getVerbSelectionData(perspectiveId, client, (initialLanguage, selectedCount) => {
-        /* Finishing first phase of initialization, with the base language. */
-
-        info.initialLanguage = initialLanguage;
-
-        info.selectedLanguageList = [initialLanguage];
-        info.selectedLanguageIdSet = new Set([id2str(initialLanguage.id)]);
-        info.selectedCount = selectedCount;
-
-        setSelectedLanguageList(info.selectedLanguageList);
-
-        info.canComputeFlag = selectedCount > 0;
-
-        if (info.setCanComputeFlag) {
-          info.setCanComputeFlag(info.canComputeFlag);
-        }
-
-        getVerbSelectionLanguageData(client, initialLanguage, (baseLanguageList, baseLanguageMap) => {
-          /* Finishing second phase of initialization, got list of languages to select. */
-          
-          setAvailableLanguageList(baseLanguageList);
-          info.baseLanguageMap = baseLanguageMap;
-        });
+  useEffect(() => {
+    /* Loads base language/corpora selection data for verb valency cases analysis. */
+    const getVerbSelectionData = async (perspectiveId, client, handler) => {
+      const {
+        data: { perspective }
+      } = await client.query({
+        query: verbPerpsectiveDataQuery,
+        variables: { perspectiveId }
       });
-    },
-    [perspectiveId, client, info]
-  );
+
+      /* Starting by finding the root language of the language group we are to analyze verb valency cases.*/
+
+      const tree = perspective.tree;
+
+      const baseLanguage = {
+        ...tree[tree.length - 1],
+        treePath: tree.slice(tree.length - 1, tree.length).reverse()
+      };
+
+      for (let i = 0; i < tree.length; i++) {
+        if (tree[i].in_toc) {
+          Object.assign(baseLanguage, tree[i]);
+          baseLanguage.treePath = tree.slice(i, tree.length).reverse();
+          break;
+        }
+      }
+
+      baseLanguage.treePathStr = baseLanguage.treePath.map(e => T(e.translations)).join(" \u203a ");
+
+      await prepareLanguage(client, baseLanguage);
+
+      handler(baseLanguage, baseLanguage.perspectiveList.length);
+    };
+
+    getVerbSelectionData(perspectiveId, client, (initialLanguage, selectedCount) => {
+      /* Finishing first phase of initialization, with the base language. */
+
+      info.initialLanguage = initialLanguage;
+
+      info.selectedLanguageList = [initialLanguage];
+      info.selectedLanguageIdSet = new Set([id2str(initialLanguage.id)]);
+      info.selectedCount = selectedCount;
+
+      setSelectedLanguageList(info.selectedLanguageList);
+
+      info.canComputeFlag = selectedCount > 0;
+
+      if (info.setCanComputeFlag) {
+        info.setCanComputeFlag(info.canComputeFlag);
+      }
+
+      getVerbSelectionLanguageData(client, initialLanguage, (baseLanguageList, baseLanguageMap) => {
+        /* Finishing second phase of initialization, got list of languages to select. */
+
+        setAvailableLanguageList(baseLanguageList);
+        info.baseLanguageMap = baseLanguageMap;
+      });
+    });
+  }, [perspectiveId, client, info]);
 
   if (!selectedLanguageList) {
     return (
@@ -941,8 +948,7 @@ const Tools = ({
     }
   } = data;
 
-  const isMorphology = ({field: {english_translation: field_name}}) =>
-    field_name.toLowerCase().includes("affix");
+  const isMorphology = ({ field: { english_translation: field_name } }) => field_name.toLowerCase().includes("affix");
   const glottMode = columns.some(isMorphology) ? "morphology" : "swadesh";
   const glottMenu = columns.some(isMorphology) ? "Morphology distance" : "Glottochronology (Swadesh-Starostin)";
   const published = english_status === "Published" || english_status === "Limited access";
@@ -996,8 +1002,8 @@ const Tools = ({
                 {getTranslation(glottMenu)}
               </Dropdown.Item>
 
-              <Dropdown.Item onClick={() => openCognateAnalysisModal(id, "multi_" + glottMode)}>
-                {getTranslation(glottMenu + " multi-language")}
+              <Dropdown.Item onClick={() => openCognateAnalysisModal(id, `multi_${glottMode}`)}>
+                {getTranslation(`${glottMenu} multi-language`)}
               </Dropdown.Item>
             </>
           )}
@@ -1242,6 +1248,16 @@ const Perspective = ({
     init({ location });
   }, [init, location]);
 
+  const [dndProvider, setDndProvider] = useState(true);
+
+  const disableDNDProvider = useCallback(() => {
+    setDndProvider(false);
+  }, [dndProvider]);
+
+  const enableDNDProvider = useCallback(() => {
+    setDndProvider(true);
+  }, [dndProvider]);
+
   const { id, parent_id, mode, page, baseUrl } = perspective.params;
   if (!baseUrl || location.pathname.indexOf(baseUrl) === -1) {
     return null;
@@ -1260,6 +1276,8 @@ const Perspective = ({
     );
   }
   const isDeleted = p.marked_for_deletion || p.tree.some(entity => entity.marked_for_deletion);
+  const parallelCorpora = p.additional_metadata.parallel;
+  const Viewer = parallelCorpora ? CorporaView : PerspectiveView;
 
   const modes = {};
   if (user.id !== undefined) {
@@ -1267,12 +1285,12 @@ const Perspective = ({
       edit: {
         entitiesMode: "all",
         text: getTranslation("Edit"),
-        component: PerspectiveView
+        component: Viewer
       },
       publish: {
         entitiesMode: "all",
         text: getTranslation("Publish"),
-        component: PerspectiveView
+        component: Viewer
       }
     });
   }
@@ -1280,12 +1298,12 @@ const Perspective = ({
     view: {
       entitiesMode: "published",
       text: getTranslation("View published"),
-      component: PerspectiveView
+      component: Viewer
     },
     contributions: {
       entitiesMode: "not_accepted",
       text: getTranslation("View contributions"),
-      component: PerspectiveView
+      component: Viewer
     },
     merge: {
       entitiesMode: "all",
@@ -1295,7 +1313,12 @@ const Perspective = ({
   });
 
   return (
-    <div className="background-content lingvo-scrolling-content">
+    <div
+      className={
+        (parallelCorpora && "background-content lingvo-scrolling-content lingvo-scrolling-content_corpora") ||
+        "background-content lingvo-scrolling-content"
+      }
+    >
       <Container fluid className="perspective inverted lingvo-scrolling-content__container">
         {isDeleted && (
           <div
@@ -1311,7 +1334,15 @@ const Perspective = ({
             {getTranslation("This entity was deleted")}
           </div>
         )}
-        {!isDeleted && <PerspectivePath id={id} dictionary_id={parent_id} mode={mode} performRedirect />}
+        {!isDeleted && (
+          <PerspectivePath
+            id={id}
+            dictionary_id={parent_id}
+            mode={mode}
+            performRedirect
+            disableDNDProvider={disableDNDProvider}
+          />
+        )}
         {!isDeleted && (
           <ModeSelector
             mode={mode}
@@ -1341,6 +1372,7 @@ const Perspective = ({
                     page={page}
                     filter={perspective.filter}
                     className="content"
+                    activeDndProvider={dndProvider}
                   />
                 }
               />
@@ -1348,6 +1380,8 @@ const Perspective = ({
             <Route component={NotFound} />
           </Routes>
         )}
+
+        <DictionaryProperties enableDNDProvider={enableDNDProvider} />
       </Container>
     </div>
   );

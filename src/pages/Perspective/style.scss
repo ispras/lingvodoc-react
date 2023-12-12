@@ -185,6 +185,18 @@
     }
   }
 
+  /* parallel corpora */
+  &_corpora {
+    padding-bottom: 20px !important;
+
+    & .lingvo-scrolling-tab {
+      @media only screen and (max-device-width: 1000px), only screen and (max-width: 1000px) {
+        margin-bottom: 0 !important;
+      }
+    }
+  }
+  /* /parallel corpora */
+
   & .pagination {
     left: 20px;
     z-index: 100;
@@ -401,6 +413,12 @@
       }
     }
 
+    &.lingvo-dnd-headercell {
+      &_hidden {
+        display: none !important;
+      }
+    }
+
     &.entityHeader ul li.last {
       background-color: #f5f5f5 !important;
     }
@@ -409,12 +427,21 @@
       border-radius: 8px 0 0 8px !important;
     }
 
+    &.lingvo-dnd-headercell_hidden:first-child + th {
+      border-radius: 8px 0 0 8px !important;
+    }
+
     &:last-child {
       border-radius: 0 8px 8px 0 !important;
     }
 
     @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+
       &:first-child {
+        border-radius: 8px 8px 0 0 !important;
+      }
+
+      &.lingvo-dnd-headercell_hidden:first-child + th {
         border-radius: 8px 8px 0 0 !important;
       }
 
@@ -430,6 +457,10 @@
     }
   }
 
+  & tr td {
+    background: #fff !important;
+  }
+
   & tr:nth-child(2n) {
     & td {
       background: #fafafa !important;
@@ -443,12 +474,20 @@
       border-radius: 8px 0 0 8px !important;
     }
 
+    & td.lingvo-dnd-column_hidden:first-child + td {
+      border-radius: 8px 0 0 8px !important;
+    }
+
     & td:last-child {
       border-radius: 0 8px 8px 0 !important;
     }
 
     @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
       & td:first-child {
+        border-radius: 8px 8px 0 0 !important;
+      }
+
+      & td.lingvo-dnd-column_hidden:first-child + td {
         border-radius: 8px 8px 0 0 !important;
       }
 
@@ -482,6 +521,14 @@
         &::after {
           content: none;
         }
+      }
+    }
+
+    &.lingvo-dnd-column {
+      vertical-align: top !important;
+
+      &_hidden {
+        display: none !important;
       }
     }
   }
@@ -519,7 +566,17 @@
         box-shadow: none !important;
       }
 
+      & td.lingvo-dnd-column {
+        &_hidden {
+          display: none !important;
+        }
+      }
+
       & td:first-child {
+        padding-top: 18px !important;
+      }
+
+      & td.lingvo-dnd-column_hidden:first-child + td {
         padding-top: 18px !important;
       }
 
@@ -529,7 +586,18 @@
     }
 
     &.ui.table thead tr {
+
+      & th.lingvo-dnd-headercell {
+        &_hidden {
+          display: none !important;
+        }
+      }
+
       & th:first-child {
+        padding-top: 18px !important;
+      }
+
+      & th.lingvo-dnd-headercell_hidden:first-child + th {
         padding-top: 18px !important;
       }
 
@@ -538,6 +606,13 @@
       }
     }
   }
+
+  /* mark */
+  & .entity ul li mark {
+    display: inline-block;
+    line-height: 17px;
+  }
+  /* /mark */
 }
 /* /perspective table */
 

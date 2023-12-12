@@ -119,7 +119,7 @@ class CreatePerspectiveModal extends React.Component {
           </h4>
           
           <Fields
-            mode={category == 0 ? "dictionary" : "corpus"}
+            mode={category == 1 ? "corpus" : "dictionary"}
             perspectives={perspective_info_list}
             onChange={f =>
               this.setState({

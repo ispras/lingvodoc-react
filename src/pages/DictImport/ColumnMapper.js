@@ -68,7 +68,7 @@ function Column({ spread, name, value, fieldOptions, type, onSetColumnType, acti
     inner = (
       <Popup trigger={trigger} position="bottom center" on="click" className="lingvo-column-mapper-popup">
         <Popup.Header>
-          <Button basic content={getTranslation("Create a new field")} onClick={actions.openCreateFieldModal} />
+          <Button basic content={getTranslation("Create a new field")} onClick={ () => actions.openCreateFieldModal(null, false) } />
         </Popup.Header>
         <Dropdown
           style={{ marginTop: "0.5em", marginBottom: "0.25em" }}
@@ -109,6 +109,8 @@ function Columns({ blob, spreads, fieldOptions, columnTypes, onSetColumnType }) 
   const blobId = blob.get("id");
   const columns = blob.getIn(["additional_metadata", "starling_fields"]);
   const values = blob.get("values");
+
+  if (!columns) return null;
 
   return (
     <div className="blob">

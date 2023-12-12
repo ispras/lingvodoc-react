@@ -21,8 +21,8 @@ const query = gql`
 `;
 
 const saveDictionaryMutation = gql`
-  mutation SaveDictionary($id: LingvodocID!, $mode: String!, $soundFlag: Boolean, $markupFlag: Boolean) {
-    save_dictionary(id: $id, mode: $mode, sound_flag: $soundFlag, markup_flag: $markupFlag) {
+  mutation SaveDictionary($id: LingvodocID!, $mode: String!, $soundFlag: Boolean, $markupFlag: Boolean, $fType: String) {
+    save_dictionary(id: $id, mode: $mode, sound_flag: $soundFlag, markup_flag: $markupFlag, f_type: $fType) {
       triumph
     }
   }
@@ -34,7 +34,8 @@ class Properties extends React.Component {
     this.state = {
       mode: "all",
       save_sound: false,
-      save_markup: false
+      save_markup: false,
+      f_type: 'xlsx'
     };
 
     this.onChangeMode = this.onChangeMode.bind(this);
@@ -59,7 +60,8 @@ class Properties extends React.Component {
         id,
         mode,
         soundFlag: this.state.save_sound,
-        markupFlag: this.state.save_markup
+        markupFlag: this.state.save_markup,
+        fType: this.state.f_type
       }
     }).then(
       () => {
@@ -89,18 +91,36 @@ class Properties extends React.Component {
           </div>
           <div style={{ marginBottom: "25px" }}>
             <Checkbox
-              style={{ margin: "0 50px 10px 4px" }}
+              style={{ margin: "0.5em 2em 0.5em 0.5em" }}
               label={this.context("Save sound recordings")}
               checked={this.state.save_sound}
               onChange={(e, { checked }) => this.setState({ save_sound: checked })}
               className="lingvo-checkbox"
             />
             <Checkbox
-              style={{ margin: "0 0 10px 4px" }}
+              style={{ margin: "0.5em 0 0.5em 0.5em" }}
               label={this.context("Save markup")}
               checked={this.state.save_markup}
               onChange={(e, { checked }) => this.setState({ save_markup: checked })}
               className="lingvo-checkbox"
+            />
+          </div>
+          <div style={{ margin: "0 0 0.5em 0.5em" }} key="xlsx">
+            <Checkbox
+              radio
+              label={this.context("Excel file")}
+              value="xlsx"
+              checked={this.state.f_type === 'xlsx'}
+              onChange={(e, { value }) => this.setState({ f_type: value })}
+            />
+          </div>
+          <div style={{ margin: "0 0 0.5em 0.5em" }} key="docx">
+            <Checkbox
+              radio
+              label={this.context("Word file")}
+              value="docx"
+              checked={this.state.f_type === 'docx'}
+              onChange={(e, { value }) => this.setState({ f_type: value })}
             />
           </div>
         </Modal.Content>

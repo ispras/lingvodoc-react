@@ -303,9 +303,11 @@ class Properties extends React.Component {
   }
 
   render() {
+
     const {
       actions,
       title,
+      enableDNDProvider,
       data: { loading, error }
     } = this.props;
 
@@ -322,8 +324,12 @@ class Properties extends React.Component {
         <Modal
           open
           closeOnDimmerClick={false}
-          closeIcon
-          onClose={actions.closeDictionaryPropertiesModal}
+          closeIcon 
+          onClose={() => {
+              actions.closeDictionaryPropertiesModal();
+              enableDNDProvider();
+            }
+          } 
           className="lingvo-modal2"
         >
           <Modal.Header>{title}</Modal.Header>
@@ -361,8 +367,12 @@ class Properties extends React.Component {
         dimmer
         size="fullscreen"
         closeOnDimmerClick={false}
-        closeIcon
-        onClose={actions.closeDictionaryPropertiesModal}
+        closeIcon 
+        onClose={() => {
+            actions.closeDictionaryPropertiesModal();
+            enableDNDProvider();
+          }
+        } 
         className="lingvo-modal2"
       >
         <Modal.Header>{title}</Modal.Header>
@@ -386,10 +396,10 @@ class Properties extends React.Component {
             <Header as="h3">{this.context("Translations")}</Header>
             <TranslationGist id={gistId} objectId={dictionary.id} editable updateAtomMutation={updateAtomMutation} />
           </Segment>
-          {category === 0 ? (
-            <EditDictionaryMetadata mode="edit" metadata={dictionary.additional_metadata} onSave={this.saveMeta} />
-          ) : (
+          {category === 1 ? (
             <EditCorpusMetadata mode="edit" metadata={dictionary.additional_metadata} onSave={this.saveMeta} />
+          ) : (
+            <EditDictionaryMetadata mode="edit" metadata={dictionary.additional_metadata} onSave={this.saveMeta} />
           )}
           <MarginForm>
             <Segment>
@@ -465,8 +475,12 @@ class Properties extends React.Component {
         </Modal.Content>
         <Modal.Actions>
           <Button
-            content={this.context("Close")}
-            onClick={actions.closeDictionaryPropertiesModal}
+            content={this.context("Close")} 
+            onClick={() => {
+                actions.closeDictionaryPropertiesModal();
+                enableDNDProvider();
+              }
+            } 
             className="lingvo-button-basic-black"
           />
         </Modal.Actions>
@@ -486,7 +500,12 @@ Properties.propTypes = {
   update: PropTypes.func.isRequired,
   actions: PropTypes.shape({
     closeDictionaryPropertiesModal: PropTypes.func.isRequired
-  }).isRequired
+  }).isRequired,
+  enableDNDProvider: PropTypes.func,
+};
+
+Properties.defaultProps = {
+  enableDNDProvider: () => {},
 };
 
 export default compose(

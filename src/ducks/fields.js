@@ -4,9 +4,9 @@ import { combineReducers } from "redux";
 export const OPEN_CREATE_MODAL = "@fields/OPEN_CREATE_MODAL";
 export const CLOSE_CREATE_MODAL = "@fields/CLOSE_CREATE_MODAL";
 
-export const openCreateFieldModal = (callback = null) => ({
+export const openCreateFieldModal = (callback = null, parallel = false) => ({
   type: OPEN_CREATE_MODAL,
-  payload: callback
+  payload: { callback, parallel }
 });
 
 export const closeCreateFieldModal = () => ({ type: CLOSE_CREATE_MODAL });
