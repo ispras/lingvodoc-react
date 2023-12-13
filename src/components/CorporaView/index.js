@@ -19,9 +19,9 @@ import { openModal } from "ducks/modals";
 import {
   addLexicalEntry,
   resetEntriesSelection,
-  resetSortByField,
+  resetOrderedSortByField,
   selectLexicalEntry,
-  setSortByField
+  setOrderedSortByField
 } from "ducks/perspective";
 import TranslationContext from "Layout/TranslationContext";
 import { compositeIdToString as id2str } from "utils/compositeId";
@@ -1006,9 +1006,9 @@ P.defaultProps = {
 
 const PerspectiveView = compose(
   connect(
-    ({ user, perspective: { sortByField, createdEntries, selectedEntries } }) => ({
+    ({ user, perspective: { orderedSortByField, createdEntries, selectedEntries } }) => ({
       user,
-      sortByField,
+      sortByField: orderedSortByField,
       createdEntries,
       selectedEntries
     }),
@@ -1016,8 +1016,8 @@ const PerspectiveView = compose(
       bindActionCreators(
         {
           addLexicalEntry,
-          setSortByField,
-          resetSortByField,
+          setSortByField: setOrderedSortByField,
+          resetSortByField: resetOrderedSortByField,
           selectLexicalEntry,
           resetEntriesSelection,
           openModal
