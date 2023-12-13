@@ -68,7 +68,8 @@ class PerspectivePath extends React.Component {
       className,
       actions,
       user,
-      performRedirect
+      performRedirect,
+      disableDNDProvider
     } = this.props;
     /* eslint-enable no-shadow */
     if (
@@ -193,12 +194,13 @@ class PerspectivePath extends React.Component {
                           key="properties"
                           icon={<i className="lingvo-icon lingvo-icon_properties" />}
                           text={this.context("Properties")}
-                          onClick={() =>
+                          onClick={() => {
                             actions.openDictionaryPropertiesModal(
                               dictionary_id,
                               `${this.context("Dictionary")} '${T(e.translations)}' ${properties_str}`
-                            )
-                          }
+                            );
+                            disableDNDProvider();
+                          }}
                         />,
 
                         <Dropdown.Item
@@ -287,11 +289,13 @@ PerspectivePath.propTypes = {
   className: PropTypes.string,
   actions: PropTypes.object.isRequired,
   user: PropTypes.object.isRequired,
-  performRedirect: PropTypes.bool
+  performRedirect: PropTypes.bool,
+  disableDNDProvider: PropTypes.func
 };
 
 PerspectivePath.defaultProps = {
-  className: "white"
+  className: "white",
+  disableDNDProvider: () => {}
 };
 
 export default compose(

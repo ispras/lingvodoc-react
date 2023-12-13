@@ -42,7 +42,7 @@ function ToolsRoute(props) {
               <label className="card-item__label">{getTranslation("Library of linguistic maps")}</label>
               <img className="card-item__img" src={imageStorage} />
             </a>
-            {props.user && props.user.id == 1 && (
+            {props.user && props.user.id && (
               <Link className="card-item" to="/distance_map">
                 <label className="card-item__label">{getTranslation("Language genetic proximity map")}</label>
                 <img className="card-item__img card-item__img_distance-map" src={imageDistanceMap} />

@@ -16,14 +16,4 @@ export function useTranslations() {
   return result;
 }
 
-export function useMutation(mutation, { onError, ...options } = {}) {
-  return useApolloMutation(mutation, {
-    onError: onError
-      ? error => {
-          globalErrorHandler(error);
-          onError(error);
-        }
-      : globalErrorHandler,
-    ...options
-  });
-}
+export const useMutation = useApolloMutation;

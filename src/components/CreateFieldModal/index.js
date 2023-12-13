@@ -13,6 +13,7 @@ import Translations from "components/Translation";
 import { closeCreateFieldModal } from "ducks/fields";
 import TranslationContext from "Layout/TranslationContext";
 import { fieldsQuery } from "pages/DictImport";
+import { fieldsQuery as fieldsQueryParallel } from "pages/CorpImport";
 import { compositeIdToString } from "utils/compositeId";
 
 class CreateFieldModal extends React.Component {
@@ -47,7 +48,7 @@ class CreateFieldModal extends React.Component {
       data: { error, loading, all_data_types: dataTypes },
       createField,
       actions,
-      callback
+      callback: { callback, parallel }
     } = this.props;
 
     const translationAtoms = this.state.translations.map(t => ({ locale_id: t.localeId, content: t.content }));
@@ -55,11 +56,14 @@ class CreateFieldModal extends React.Component {
 
     if (!(error || loading) && dataType) {
       createField({
-        variables: { data_type_id: dataType.id, translationAtoms },
+        variables: { data_type_id: dataType.id, translationAtoms, parallel: parallel },
         refetchQueries: [
           {
             query: fieldsQuery
-          }
+          },
+          {
+            query: fieldsQueryParallel
+          },
         ]
       }).then(({ data }) => {
         if (callback != null) {
@@ -78,7 +82,8 @@ class CreateFieldModal extends React.Component {
 
     const {
       data: { error, loading, all_data_types: dataTypes },
-      actions
+      actions,
+      callback: { parallel }
     } = this.props;
     if (error || loading) {
       return null;
@@ -86,6 +91,7 @@ class CreateFieldModal extends React.Component {
 
     const options = dataTypes
       .filter(dataType => !dataType.marked_for_deletion)
+      .filter(dataType => !parallel || dataType.english_translation === "Text")
       .map(dataType => ({
         key: compositeIdToString(dataType.id),
         text: T(dataType.translations),
@@ -151,6 +157,7 @@ export default compose(
         all_data_types {
           id
           translations
+          english_translation: translation(locale_id: 2)
           marked_for_deletion
         }
       }
@@ -159,8 +166,8 @@ export default compose(
   ),
   graphql(
     gql`
-      mutation createField($data_type_id: LingvodocID!, $translationAtoms: [ObjectVal]!) {
-        create_field(data_type_translation_gist_id: $data_type_id, translation_atoms: $translationAtoms) {
+      mutation createField($data_type_id: LingvodocID!, $translationAtoms: [ObjectVal]!, $parallel: Boolean) {
+        create_field(data_type_translation_gist_id: $data_type_id, translation_atoms: $translationAtoms, parallel: $parallel) {
           field {
             id
           }

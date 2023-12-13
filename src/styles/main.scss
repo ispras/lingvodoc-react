@@ -665,6 +665,11 @@ body {
       margin-bottom: 43px;
     }
 
+    &_parallel-corpora {
+      height: 100px;
+      margin-bottom: 23px;
+    }
+
     &_map {
       height: 101px;
       margin-bottom: 22px;
@@ -2306,6 +2311,14 @@ body {
     height: 18px;
     background-color: #999ca0;
   }
+
+  &_dnd {
+    -webkit-mask-image: url("../images/icon_dnd.svg");
+    mask-image: url("../images/icon_dnd.svg");
+    width: 18px;
+    height: 18px;
+    background-color: #999ca0;
+  }
 }
 /* /icon */
 
@@ -3920,8 +3933,21 @@ body {
           }
         }
       }
+
     }
 
+  }
+
+  &.ui.basic.buttons &__drag:first-child .button {
+    max-height: 34px !important;
+
+    &:hover,
+    &:active,
+    &:focus {
+      -webkit-box-shadow: none !important;
+      box-shadow: none !important;
+      border-radius: 10px 0 0 10px !important;
+    }
   }
 
   &__text.button {
@@ -3988,8 +4014,50 @@ body {
     }
   }
 
+  /* textarea */
+  &_textarea {
+    border-radius: 10px !important;
+    font-family: Rubik, Arial, sans-serif !important;
+    font-size: 16px !important;
+    line-height: 20px !important;
+    padding: 7px 12px !important;
+    /*width: 143px !important;*/
+    min-height: 36px !important;
+
+    width: 100% !important;
+    min-width: 143px !important;
+    box-sizing: border-box !important;
+    vertical-align: top !important;
+
+    border: 1px solid #dcdcdc !important;
+    outline: none !important;
+    box-shadow: none !important;
+
+    overflow: hidden !important;
+
+    &:focus {
+      border: 1px solid #5d54cd !important;
+      outline: none !important;
+    }
+
+    @media only screen and (max-device-width: 350px), only screen and (max-width: 350px) {
+      /*width: 118px !important;*/
+      min-width: 118px !important;
+    }
+
+  }
+  /* /textarea */
+
 }
 /* /lingvo input action */
+
+/* lingvo-drop-here */
+.lingvo-drop-here {
+  font-size: 14px !important;
+  color: #5d54cd;
+  padding: 0 0 2px 6px;
+}
+/* /lingvo-drop-here */
 
 /* lingvo input buttons group */
 .lingvo-input-buttons-group {
@@ -4017,6 +4085,11 @@ body {
       }
     }
   }
+
+  &_drag {
+    opacity: 0.3 !important;
+  }
+
 }
 /* /lingvo input buttons group */
 
