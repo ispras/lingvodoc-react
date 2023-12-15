@@ -7,6 +7,8 @@ export const SET = "@data/perspective/SET";
 export const SET_FILTER = "@data/perspective/SET_FILTER";
 export const SET_SORT_MODE = "@data/perspective/SET_SORT_MODE";
 export const RESET_SORT_MODE = "@data/perspective/RESET_SORT_MODE";
+export const SET_ORDERED_SORT_MODE = "@data/perspective/SET_ORDERED_SORT_MODE";
+export const RESET_ORDERED_SORT_MODE = "@data/perspective/RESET_ORDERED_SORT_MODE";
 export const ADD_LEXICAL_ENTRY = "@data/perspective/ADD_LEXICAL_ENTRY";
 export const SELECT_LEXICAL_ENTRY = "@data/perspective/SELECT_LEXICAL_ENTRY";
 export const RESET_ENTRIES_SELECTION = "@data/perspective/RESET_ENTRIES_SELECTION";
@@ -30,11 +32,22 @@ function filter(state = "", action = {}) {
   }
 }
 
-function sortByField(state = { field: null, order: "a" }, { type, payload }) {
+function sortByField(state = { field: [66, 10], order: "a" }, { type, payload }) {
   switch (type) {
     case SET_SORT_MODE:
       return payload;
     case RESET_SORT_MODE:
+      return null;
+    default:
+      return state;
+  }
+}
+
+function orderedSortByField(state = { field: null, order: "a" }, { type, payload }) {
+  switch (type) {
+    case SET_ORDERED_SORT_MODE:
+      return payload;
+    case RESET_ORDERED_SORT_MODE:
       return null;
     default:
       return state;
@@ -65,6 +78,7 @@ export default combineReducers({
   params,
   filter,
   sortByField,
+  orderedSortByField,
   createdEntries,
   selectedEntries
 });
@@ -95,6 +109,14 @@ export function setSortByField(field, order) {
 
 export function resetSortByField() {
   return { type: RESET_SORT_MODE, payload: null };
+}
+
+export function setOrderedSortByField(field, order) {
+  return { type: SET_ORDERED_SORT_MODE, payload: { field, order } };
+}
+
+export function resetOrderedSortByField() {
+  return { type: RESET_ORDERED_SORT_MODE, payload: null };
 }
 
 export function addLexicalEntry(entry) {
