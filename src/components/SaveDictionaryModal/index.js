@@ -123,6 +123,15 @@ class Properties extends React.Component {
               onChange={(e, { value }) => this.setState({ f_type: value })}
             />
           </div>
+          <div style={{ margin: "0 0 0.5em 0.5em" }} key="rtf">
+            <Checkbox
+              radio
+              label={this.context("RichText file")}
+              value="rtf"
+              checked={this.state.f_type === 'rtf'}
+              onChange={(e, { value }) => this.setState({ f_type: value })}
+            />
+          </div>
         </Modal.Content>
 
         <Modal.Actions>
