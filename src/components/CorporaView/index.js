@@ -414,7 +414,7 @@ class P extends React.Component {
 
     const get_lexgraph_marker = lexentry_id_source => {
       const lexgraph_entity = get_lexgraph_entity(lexentry_id_source);
-      return lexgraph_entity ? lexgraph_entity.content : '';
+      return lexgraph_entity ? lexgraph_entity.content || '' : '';
     };
 
     const setSort = (field, order) => {
@@ -431,47 +431,22 @@ class P extends React.Component {
         () => console.log("dnd_enabled: ", this.state.dnd_enabled));
     };
 
-    const dragAndDropEntries = (lexentry_id_source, lexentry_id_before, lexentry_id_after) => {
-      
-      if (lexentry_id_source && (lexentry_id_before || lexentry_id_after)) {
-        const entity_id_change = get_lexgraph_entity(lexentry_id_source).id;
-
-        const lexgraph_before = get_lexgraph_marker(lexentry_id_before);
-        const lexgraph_after = get_lexgraph_marker(lexentry_id_after);
-
-        updateLexgraph({
-          variables: {
-            id: entity_id_change,
-            lexgraph_before,
-            lexgraph_after
-          },
-          refetchQueries: [
-            {
-              query: queryLexicalEntries, 
-              variables: {
-                id,
-                entitiesMode
-              }
-            }
-          ],
-          awaitRefetchQueries: true
-        }).then(({data: mutation}) => {
-
-          this.setState({
-            cards: []
-          });
-          /*this.setState({mutation});*/
-        },
-        (error) => {
-          //window.logger.err(`GraphQL error: ${this.context(error.message)}`);
-          this.setState({
-            cards: []
-          });
-        });
-      }
-    };
-
     const addEntry = (lexgraph_min) => {
+
+      /* Will need a valid ordering field and a valid minimal ordering marker. */
+
+      if (!lexgraph_field_id)
+      {
+        window.logger.err(`Invalid ordering field id ${lexgraph_field_id}.`);
+        return;
+      }
+
+      if (!lexgraph_min && lexgraph_min !== "")
+      {
+        window.logger.err(`Invalid minimal ordering marker ${lexgraph_min}.`);
+        return;
+      }
+
       createLexicalEntry({
         variables: {
           id,
@@ -497,34 +472,30 @@ class P extends React.Component {
           } = d;
           addCreatedEntry(lexicalentry);
 
-
-          if (lexgraph_field_id && lexgraph_min) {
-            createEntity({
-              variables: {
-                parent_id: lexicalentry.id,
-                field_id: lexgraph_field_id,
-                lexgraph_after: lexgraph_min
-              },
-              update: (cache, { data: { create_entity: { entity }}}) => {
-                cache.updateQuery({
-                    query: queryLexicalEntries,
-                    variables: {id, entitiesMode}
-                  },
-                  (data) => {
-                    const lexical_entries = data.perspective.lexical_entries.filter(le => !isEqual(le.id, lexicalentry.id));
-                    const lexicalentry_updated = {...lexicalentry, entities: [...lexicalentry.entities, entity]};
-                    return {
-                      perspective: {
-                        ...data.perspective,
-                        lexical_entries: [...lexical_entries, lexicalentry_updated]
-                      }
-                    };
-                  }
-                );
-              },
-            });
-          }
-
+          createEntity({
+            variables: {
+              parent_id: lexicalentry.id,
+              field_id: lexgraph_field_id,
+              lexgraph_after: lexgraph_min
+            },
+            update: (cache, { data: { create_entity: { entity }}}) => {
+              cache.updateQuery({
+                  query: queryLexicalEntries,
+                  variables: {id, entitiesMode}
+                },
+                (data) => {
+                  const lexical_entries = data.perspective.lexical_entries.filter(le => !isEqual(le.id, lexicalentry.id));
+                  const lexicalentry_updated = {...lexicalentry, entities: [...lexicalentry.entities, entity]};
+                  return {
+                    perspective: {
+                      ...data.perspective,
+                      lexical_entries: [...lexical_entries, lexicalentry_updated]
+                    }
+                  };
+                }
+              );
+            },
+          });
         }
       });
     };
@@ -592,7 +563,7 @@ class P extends React.Component {
       const sortedEntries = sortBy(es, e => {
         const entities = e.entities.filter(entity => isEqual(entity.field_id, lexgraph_field_id));
         if (entities.length > 0) {
-          return entities[0].content;
+          return entities[0].content || "";
         }
         return "";
       });
@@ -677,14 +648,131 @@ class P extends React.Component {
       if (!lexgraph_field_id)
         {return null;}
 
-      let min_res = '1';
+      let min_res = '';
       for (let i=0; i<entries.length; i++) {
         const result = get_lexgraph_marker(entries[i].id);
-        if (result && result < min_res)
+        if (result && (!min_res || result < min_res))
           {min_res = result;}
       }
 
       return min_res;
+    };
+
+    const dragAndDropEntries = (lexentry_id_source, lexentry_id_before, lexentry_id_after) => {
+
+      /* Need a valid source lexical entry and at least one of preceeding/succeeding entries. */
+      
+      if (!lexentry_id_source || (!lexentry_id_before && !lexentry_id_after))
+      {
+        this.setState({
+          cards: []
+        });
+
+        return;
+      }
+
+      /* Will need a valid ordering field. */
+
+      if (!lexgraph_field_id)
+      {
+        window.logger.err(`Invalid ordering field id ${lexgraph_field_id}.`);
+
+        this.setState({
+          cards: []
+        });
+
+        return;
+      }
+
+      const entity = get_lexgraph_entity(lexentry_id_source);
+
+      let lexgraph_before = get_lexgraph_marker(lexentry_id_before);
+      let lexgraph_after = get_lexgraph_marker(lexentry_id_after);
+
+      /* In case we somehow are drag-and-dropping between two entries without ordering markers. */
+
+      const current_lexgraph_min = lexgraph_min();
+
+      if (!current_lexgraph_min && current_lexgraph_min !== '')
+      {
+        window.logger.err(`Invalid minimal ordering marker "${current_lexgraph_min}".`);
+
+        this.setState({
+          cards: []
+        });
+
+        return;
+      }
+
+      if (lexgraph_after < current_lexgraph_min)
+        lexgraph_after = current_lexgraph_min;
+
+      /* If for some reason the entry being moved does not have an ordering marker, we create one. */
+
+      if (!entity)
+      {
+        createEntity({
+          variables: {
+            parent_id: lexentry_id_source,
+            field_id: lexgraph_field_id,
+            lexgraph_after
+          },
+          update: (cache, { data: { create_entity: { entity }}}) => {
+            cache.updateQuery({
+                query: queryLexicalEntries,
+                variables: {id, entitiesMode}
+              },
+              (data) => {
+                const lexical_entries = data.perspective.lexical_entries.filter(le => !isEqual(le.id, lexicalentry.id));
+                const lexicalentry_updated = {...lexicalentry, entities: [...lexicalentry.entities, entity]};
+                return {
+                  perspective: {
+                    ...data.perspective,
+                    lexical_entries: [...lexical_entries, lexicalentry_updated]
+                  }
+                };
+              }
+            );
+          },
+        });
+
+        this.setState({
+          cards: []
+        });
+
+        return;
+      }
+
+      /* Standard lexical entry ordering move. */
+
+      updateLexgraph({
+        variables: {
+          id: entity.id,
+          lexgraph_before,
+          lexgraph_after
+        },
+        refetchQueries: [
+          {
+            query: queryLexicalEntries, 
+            variables: {
+              id,
+              entitiesMode
+            }
+          }
+        ],
+        awaitRefetchQueries: true
+      }).then(
+        (data) => {
+          this.setState({
+            cards: []
+          });
+        },
+        (error) => {
+          this.setState({
+            cards: []
+          });
+        }
+      );
     };
 
     const _ROWS_PER_PAGE = lexgraph_field_id ? entries.length : ROWS_PER_PAGE;
