@@ -129,6 +129,7 @@ const getComponent = dataType =>
     Markup,
     Link,
     Image,
+    Ordering: Text,
     "Grouping Tag": GroupingTag,
     "Directed Link": Link
   }[dataType] || Unknown);
