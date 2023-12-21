@@ -18,6 +18,7 @@ import Link from "./Link";
 import Markup from "./Markup";
 import Sound from "./Sound";
 import Text from "./Text";
+import Ordering from "./Ordering";
 import Unknown from "./Unknown";
 
 const createEntityMutation = gql`
@@ -129,6 +130,7 @@ const getComponent = dataType =>
     Markup,
     Link,
     Image,
+    Ordering,
     "Grouping Tag": GroupingTag,
     "Directed Link": Link
   }[dataType] || Unknown);
