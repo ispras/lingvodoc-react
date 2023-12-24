@@ -30,7 +30,7 @@ const devServerConf = {
   }
 };
 
-// Setup API proxy
+// Setup API and objects proxy
 if (process.env.PROD) {
   const { createProxyMiddleware } = require("http-proxy-middleware");
 
@@ -39,6 +39,14 @@ if (process.env.PROD) {
     createProxyMiddleware({
       target: process.env.PROD,
       pathRewrite: { "^/api": "" },
+      changeOrigin: true
+    })
+  );
+
+  app.use(
+    "/objects",
+    createProxyMiddleware({
+      target: process.env.PROD,
       changeOrigin: true
     })
   );
@@ -62,4 +70,31 @@ app.get("*", (req, res) => {
   });
 });
 
-app.listen(port);
+if (process.env.HTTPS_CRT)
+{
+  const fs = require('fs');
+
+  const cert = fs.readFileSync(process.env.HTTPS_CRT, 'utf8');
+  const key  = fs.readFileSync(process.env.HTTPS_KEY, 'utf8');
+
+  const http = require('http');
+  const https = require('https');
+
+  const url = require('url');
+
+  (http
+    .createServer((req, res) => {
+      const u = new url.URL('http://' + req.headers['host'] + req.url);
+      u.protocol = 'https:';
+      u.port = port + 1;
+      res.writeHead(301, {"Location": u.toString()});
+      res.end();
+    })
+    .listen(port));
+
+  (https
+    .createServer({key, cert}, app)
+    .listen(port + 1));
+}
+else
+  app.listen(port);
