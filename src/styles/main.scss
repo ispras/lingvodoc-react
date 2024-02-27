@@ -78,46 +78,22 @@ body {
     width: 100%;
 
     height: 200px;
-    /*background: url("../images/rectangle1.svg") 0 -110px no-repeat, url("../images/rectangle2.svg") 100% 60px no-repeat;*/
-    background: url("../images/snow.svg") 50% 50% repeat, url("../images/ny_toys.png") 60px 0 no-repeat, url("../images/ny_toys.png") calc(100% - 60px) 0 no-repeat, url("../images/rectangle1.svg") 0 -110px no-repeat, url("../images/rectangle2.svg") 100% 60px no-repeat;
+    background: url("../images/rectangle1.svg") 0 -110px no-repeat, url("../images/rectangle2.svg") 100% 60px no-repeat;
     background-color: #372f9d;
-
-    /* for newyear style */
-    @media only screen and (max-device-width: 1150px), only screen and (max-width: 1150px) {
-      background: url("../images/snow.svg") 50% 50% repeat, url("../images/ny_toys.png") 10px 0 no-repeat, url("../images/ny_toys.png") calc(100% - 5px) 0 no-repeat, url("../images/rectangle1.svg") 0 -110px no-repeat, url("../images/rectangle2.svg") 100% 60px no-repeat;
-      background-color: #372f9d;
-    }
-    /* /for newyear style */
-
-    /* for newyear style */
-    @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
-      background: url("../images/ny_toys_small.png") 21px -9px no-repeat, url("../images/ny_toys_small.png") calc(100% - 21px) -9px no-repeat, url("../images/snow_small.svg") 50% 50% repeat, url("../images/rectangle1.svg") 0 -110px no-repeat, url("../images/rectangle2.svg") 100% 60px no-repeat;
-      background-color: #372f9d;
-    }
-    /* /for newyear style */
   }
 }
 
 .background-header {
-  /*background: url("../images/rectangle1.svg") 0 -185px no-repeat, url("../images/rectangle2.svg") 100% 35px no-repeat;*/
-  background: url("../images/snow.svg") 50% 50% repeat, url("../images/rectangle1.svg") 0 -185px no-repeat, url("../images/rectangle2.svg") 100% 35px no-repeat;
+  background: url("../images/rectangle1.svg") 0 -185px no-repeat, url("../images/rectangle2.svg") 100% 35px no-repeat;
   background-color: #372f9d;
 
   padding: 26px 0;
   margin: 0 0 26px 0;
-
-  /* for newyear style */
-  @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
-    background: url("../images/snow_small.svg") 50% 50% repeat, url("../images/rectangle1.svg") 0 -185px no-repeat, url("../images/rectangle2.svg") 100% 35px no-repeat;
-    background-color: #372f9d;
-  }
-  /* /for newyear style */
 }
 
 .background-main-page {
-  /*background: url("../images/rectangle1.svg") 0 -110px no-repeat,
-    url("../images/rectangle2.svg") calc(100% + 30px) calc(100% + 75px) no-repeat;*/
-  background: url("../images/snowtree.svg") calc(100% - 70px) 100% no-repeat, url("../images/snow.svg") 50% 50% repeat, url("../images/ny_toys.png") 60px 0 no-repeat, url("../images/ny_toys.png") calc(100% - 60px) 0 no-repeat, url("../images/rectangle1.svg") 0 -110px no-repeat, url("../images/rectangle2.svg") calc(100% + 30px) calc(100% + 75px) no-repeat;
+  background: url("../images/rectangle1.svg") 0 -110px no-repeat,
+    url("../images/rectangle2.svg") calc(100% + 30px) calc(100% + 75px) no-repeat;
   background-color: #372f9d;
 
   padding: 0 0 24px 0;
@@ -132,18 +108,10 @@ body {
     }
   }
 
-  /* for newyear style */
-  @media only screen and (max-device-width: 1150px), only screen and (max-width: 1150px) {
-    background: url("../images/snowtree.svg") calc(100% - 20px) 100% no-repeat, url("../images/snow.svg") 50% 50% repeat, url("../images/ny_toys.png") 10px 0 no-repeat, url("../images/ny_toys.png") calc(100% - 5px) 0 no-repeat, url("../images/rectangle1.svg") 0 -110px no-repeat, url("../images/rectangle2.svg") calc(100% + 30px) calc(100% + 75px) no-repeat;
-    background-color: #372f9d;
-  }
-  /* /for newyear style */
-
   @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
     padding-bottom: 20px;
-    /*background: url("../images/rectangle1.svg") -70px -170px no-repeat,
-      url("../images/rectangle2.svg") calc(100% + 30px) calc(100% + 275px) no-repeat;*/
-    background: url("../images/snowtree_small.svg") calc(100% - 18px) 100% no-repeat, url("../images/ny_toys_small.png") 21px -9px no-repeat, url("../images/ny_toys_small.png") calc(100% - 21px) -9px no-repeat, url("../images/snow_small.svg") 50% 50% repeat, url("../images/rectangle1.svg") -70px -170px no-repeat, url("../images/rectangle2.svg") calc(100% + 30px) calc(100% + 275px) no-repeat;
+    background: url("../images/rectangle1.svg") -70px -170px no-repeat,
+      url("../images/rectangle2.svg") calc(100% + 30px) calc(100% + 275px) no-repeat;
     background-color: #372f9d;
   }
 }
@@ -159,8 +127,7 @@ body {
 }
 
 .background-content {
-  /*background: url("../images/rectangle1.svg") 0 -80px no-repeat, url("../images/rectangle2.svg") 100% 110px no-repeat;*/
-  background: url("../images/snow.svg") 50% 50% repeat, url("../images/rectangle1.svg") 0 -80px no-repeat, url("../images/rectangle2.svg") 100% 110px no-repeat;
+  background: url("../images/rectangle1.svg") 0 -80px no-repeat, url("../images/rectangle2.svg") 100% 110px no-repeat;
   background-color: #372f9d;
 
   padding: 26px 20px 70px 20px;
@@ -170,13 +137,6 @@ body {
   &_fix-height {
     height: 100%;
   }
-
-  /* for newyear style */
-  @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
-    background: url("../images/snow_small.svg") 50% 50% repeat, url("../images/rectangle1.svg") 0 -80px no-repeat, url("../images/rectangle2.svg") 100% 110px no-repeat;
-    background-color: #372f9d;
-  }
-  /* /for newyear style */
 }
 
 .gentium {
