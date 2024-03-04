@@ -31,7 +31,7 @@
   .unverified {
     background-color: #ffdce5;
     cursor: pointer;
-    & .broken {
+    &.broken {
       background-color: #f7f7c4 !important;
     }
   }
