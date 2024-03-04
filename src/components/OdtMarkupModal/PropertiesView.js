@@ -53,6 +53,11 @@ class PropertiesView extends React.Component {
     const selectedElem = document.getElementById(selection);
 
     document.getElementById(elemToDelete).remove();
+
+    if (!selectedElem.getElementsByClassName("result broken").length) {
+      selectedElem.classList.remove("broken");
+    }
+
     if (!selectedElem.getElementsByClassName("result approved").length) {
       selectedElem.classList.remove("verified");
       selectedElem.classList.add("unverified");
