@@ -69,7 +69,7 @@
     "immutable": "^3.8.2",
     "js-cookie": "^3.0.1",
     "leaflet": "1.7.1",
-    "leaflet-geosearch": "^2.7.0",
+    "leaflet-geosearch": "^3.1.0",
     "leaflet-heatmap": "^1.0.0",
     "leaflet-path-drag": "^1.1.0",
     "leaflet.markercluster": "^1.4.1",
