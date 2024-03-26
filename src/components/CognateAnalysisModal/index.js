@@ -1626,10 +1626,8 @@ class CognateAnalysisModal extends React.Component {
           }
 
           if (Object.values(field.translations).some(t =>
-              t.toLowerCase() === "meaning" ||
-              t.toLowerCase() === "значение" ||
-              t.toLowerCase() === "meaning of affix" ||
-              t.toLowerCase() === "значение аффикса")) {
+              t.toLowerCase().includes("meaning") ||
+              t.toLowerCase().includes("значение"))) {
             meaning_flag = morphology || suggestions;
           }
         }
