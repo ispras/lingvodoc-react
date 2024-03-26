@@ -1623,7 +1623,8 @@ class CognateAnalysisModal extends React.Component {
             affix_flag = morphology || suggestions;
           }
 
-          if (field.english_translation === "Meaning of affix") {
+          if (field.english_translation === "Meaning" ||
+              field.english_translation === "Meaning of affix") {
             meaning_flag = morphology || suggestions;
           }
         }
