@@ -113,7 +113,7 @@ const toolsQuery = gql`
       edit_check: role_check(subject: "perspective", action: "edit")
       columns {
         field {
-          english_translation: translation(locale_id: 2)
+          translations
         }
       }
     }
@@ -948,7 +948,8 @@ const Tools = ({
     }
   } = data;
 
-  const isMorphology = ({ field: { english_translation: field_name } }) => field_name.toLowerCase().includes("affix");
+  const isMorphology = ({ field: { translations: tt } }) =>
+    Object.values(tt).some(t => t.toLowerCase().includes("affix") || t.toLowerCase().includes("аффикс"));
   const glottMode = columns.some(isMorphology) ? "morphology" : "swadesh";
   const glottMenu = columns.some(isMorphology) ? "Morphology distance" : "Glottochronology (Swadesh-Starostin)";
   const published = english_status === "Published" || english_status === "Limited access";
