@@ -1623,13 +1623,16 @@ class CognateAnalysisModal extends React.Component {
               t.toLowerCase() === "affix" ||
               t.toLowerCase() === "аффикс" )) {
             affix_flag = morphology || suggestions;
+            meaning_flag = morphology || suggestions;
           }
 
+          /*
           if (Object.values(field.translations).some(t =>
               t.toLowerCase().includes("meaning") ||
               t.toLowerCase().includes("значение"))) {
             meaning_flag = morphology || suggestions;
           }
+          */
         }
 
         if (group_flag && text_flag && affix_flag && meaning_flag) {
