@@ -81,6 +81,7 @@ class OdtMarkupModal extends React.Component {
     this.parseElement = this.parseElement.bind(this);
     this.save = this.save.bind(this);
     this.onClose = this.onClose.bind(this);
+    this.get_by_id = this.get_by_id.bind(this);
   }
 
   onKeyDown = event => {
@@ -504,6 +505,31 @@ class OdtMarkupModal extends React.Component {
     return body_tag;
   }
 
+  get_by_id(id) {
+    if (!this.json) {
+      return null;
+    }
+    for (const prg of this.json) {
+      for (const wrd of prg) {
+
+        if (wrd.id == id) {
+          return wrd;
+        }
+
+        if (typeof wrd !== 'object') {
+          continue;
+        }
+
+        for (const res of wrd.results ?? []) {
+          if (res.id == id) {
+            return res;
+          }
+        }
+      }
+    }
+    return null;
+  }
+
   render() {
     const { data, mode } = this.props;
     const { loading, error } = this.props.data;
@@ -527,9 +553,10 @@ class OdtMarkupModal extends React.Component {
 
     if (!this.content) {
       const content = data.parser_result.content;
+      this.json = JSON.parse(content);
 
       if (this.format === 'json') {
-        this.content = this.jsonToHtml(JSON.parse(content));
+        this.content = this.jsonToHtml(this.json);
       } else {
         const doc = new DOMParser().parseFromString(content, "text/html");
         const bodies = doc.getElementsByTagName("body");
