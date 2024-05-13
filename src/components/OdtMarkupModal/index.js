@@ -29,6 +29,8 @@ const getParserResultContentQuery = gql`
     parser_result(id: $id) {
       id
       content
+      arguments
+      additional_metadata
     }
   }
 `;
