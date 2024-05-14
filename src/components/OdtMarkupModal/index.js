@@ -30,7 +30,6 @@ const getParserResultContentQuery = gql`
       id
       content
       arguments
-      additional_metadata
     }
   }
 `;
