@@ -482,7 +482,28 @@ class OdtMarkupModal extends React.Component {
 
     const { selection, browserSelection, dirty, saving, confirmation, movingElem, copiedElem } = this.state;
     const selectedElem = selection === null ? null : document.getElementById(selection);
+    const p_tag = document.createElement("p");
+    const w_span_tag = document.createElement("span");
+    const r_span_tag = document.createElement("span");
 
+    for (prg in this.content) {
+      for (wrd in prg) {
+        if (typeof wrd === "object") {
+          for (res in wrd.results) {
+            r_span_tag.setAttribute('id', res.id);
+            r_span_tag.setAttribute('class', res.state);
+            let {id, state, ...r_span_tag.innerText} = res;
+            w_span_tag.append(r_span_tag);
+          }
+          w_span_tag.setAttribute('id', wrd.id);
+          w_span_tag.setAttribute('class', wrd.status);
+          w_span_tag.innerText = wrd.text;
+        } else {
+          w_span_tag.innerText = wrd;
+        }
+        p_tag.append(w_span_tag);
+      }
+    }
     return (
       <Modal
         open
@@ -506,30 +527,7 @@ class OdtMarkupModal extends React.Component {
             //dangerouslySetInnerHTML={{ __html: this.content }}
             style={{ padding: "10px" }}
           >
-            { const markup_content = document.getElementById("markup-content");
-              const p_tag = document.createElement("p");
-              const w_span_tag = document.createElement("span");
-              const r_span_tag = document.createElement("span");
-              for (prg in this.content) {
-                for (wrd in prg) {
-                  if (typeof wrd === "object") {
-                    for (res in wrd.results) {
-                      r_span_tag.setAttribute('id', res.id);
-                      r_span_tag.setAttribute('class', res.state);
-                      {id, class, ...r_span_tag.innerText} = res;
-                      w_span_tag.append(r_span_tag);
-                    }
-                    w_span_tag.setAttribute('id', wrd.id);
-                    w_span_tag.setAttribute('class', wrd.status);
-                    w_span_tag.innerText = wrd.text;
-                  } else {
-                    w_span_tag.innerText = wrd;
-                  }
-                  p_tag.append(w_span_tag);
-                }
-              }
-              markup_content.append(p_tag);
-            }
+            { document.getElementById("markup-content").append(p_tag); }
           </Modal.Content>
         </div>
         <Modal.Actions>
