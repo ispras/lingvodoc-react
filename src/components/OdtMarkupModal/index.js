@@ -471,13 +471,13 @@ class OdtMarkupModal extends React.Component {
     }
 
     if (!this.content) {
-      const doc = new DOMParser().parseFromString(data.parser_result.content, "text/html");
-      const bodies = doc.getElementsByTagName("body");
-      if (!bodies.length) {
+      const doc = JSON.parse(data.parser_result.content);
+      //const bodies = doc.getElementsByTagName("body");
+      if (!doc.length) {
         return null;
       }
       this.docToSave = doc;
-      this.content = bodies[0].innerHTML;
+      this.content = doc;
     }
 
     const { selection, browserSelection, dirty, saving, confirmation, movingElem, copiedElem } = this.state;
@@ -503,9 +503,34 @@ class OdtMarkupModal extends React.Component {
           <Modal.Content
             id="markup-content"
             scrolling
-            dangerouslySetInnerHTML={{ __html: this.content }}
+            //dangerouslySetInnerHTML={{ __html: this.content }}
             style={{ padding: "10px" }}
-          />
+          >
+            { const markup_content = document.getElementById("markup-content");
+              const p_tag = document.createElement("p");
+              const w_span_tag = document.createElement("span");
+              const r_span_tag = document.createElement("span");
+              for (prg in this.content) {
+                for (wrd in prg) {
+                  if (typeof wrd === "object") {
+                    for (res in wrd.results) {
+                      r_span_tag.setAttribute('id', res.id);
+                      r_span_tag.setAttribute('class', res.state);
+                      {id, class, ...r_span_tag.innerText} = res;
+                      w_span_tag.append(r_span_tag);
+                    }
+                    w_span_tag.setAttribute('id', wrd.id);
+                    w_span_tag.setAttribute('class', wrd.status);
+                    w_span_tag.innerText = wrd.text;
+                  } else {
+                    w_span_tag.innerText = wrd;
+                  }
+                  p_tag.append(w_span_tag);
+                }
+              }
+              markup_content.append(p_tag);
+            }
+          </Modal.Content>
         </div>
         <Modal.Actions>
           {!saving && !movingElem && browserSelection !== null && (
