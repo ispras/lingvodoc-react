@@ -57,6 +57,7 @@ class OdtMarkupModal extends React.Component {
 
     this.initialized = false;
     this.availableId = 0;
+    this.format = null;
     this.content = null;
     this.docToSave = null;
 
@@ -470,35 +471,37 @@ class OdtMarkupModal extends React.Component {
       );
     }
 
-    const format = data.parser_result.arguments.format;
-    const div_tag = document.createElement("div");
+    const { selection, browserSelection, dirty, saving, confirmation, movingElem, copiedElem } = this.state;
+    const selectedElem = selection === null ? null : document.getElementById(selection);
+    this.format = data.parser_result.arguments.format;
 
     if (!this.content) {
       const content = data.parser_result.content;
-      if (format === 'json') {
+      if (this.format === 'json') {
         const doc = JSON.parse(content);
-        for (let prg in doc) {
+        const div_tag = document.createElement("div");
+        for (const prg of doc) {
           let p_tag = document.createElement("p");
-          for (let wrd in prg) {
+          for (const wrd of prg) {
             if (typeof wrd === "object") {
               let w_span_tag = document.createElement("span");
-              for (let res in wrd.results) {
+              for (const res of wrd.results) {
                 let r_span_tag = document.createElement("span");
                 let {id, state, ...data} = res;
                 r_span_tag.setAttribute('id', id);
                 r_span_tag.setAttribute('class', state);
                 r_span_tag.innerText = data;
-                w_span_tag.append(r_span_tag);
+                w_span_tag.appendChild(r_span_tag);
               }
               w_span_tag.setAttribute('id', wrd.id);
               w_span_tag.setAttribute('class', wrd.status);
               w_span_tag.innerText = wrd.text;
-              p_tag.append(w_span_tag);
+              p_tag.appendChild(w_span_tag);
             } else {
               p_tag.innerText += wrd;
             }
           }
-          div_tag.append(p_tag);
+          div_tag.appendChild(p_tag);
         }
         this.content = div_tag;
         this.docToSave = doc;
@@ -512,9 +515,6 @@ class OdtMarkupModal extends React.Component {
         this.docToSave = doc;
       }
     }
-
-    const { selection, browserSelection, dirty, saving, confirmation, movingElem, copiedElem } = this.state;
-    const selectedElem = selection === null ? null : document.getElementById(selection);
 
     return (
       <Modal
@@ -533,7 +533,7 @@ class OdtMarkupModal extends React.Component {
             mode={saving ? "view" : mode}
             setDirty={() => this.setState({ dirty: true })}
           />
-          { format !== 'json' ? (
+          { this.format !== 'json' ? (
             <Modal.Content
             id="markup-content"
             scrolling
@@ -544,7 +544,7 @@ class OdtMarkupModal extends React.Component {
             id="markup-content"
             scrolling
             style={{ padding: "10px" }}>
-              <div ref={this.content} />
+              {this.content.outerHTML}
             </Modal.Content>
           )}
         </div>
