@@ -470,40 +470,52 @@ class OdtMarkupModal extends React.Component {
       );
     }
 
+    const format = data.parser_result.arguments.format;
+
     if (!this.content) {
-      const doc = JSON.parse(data.parser_result.content);
-      //const bodies = doc.getElementsByTagName("body");
-      if (!doc.length) {
-        return null;
+      const content = data.parser_result.content;
+      if (format === 'json') {
+        const doc = JSON.parse(content);
+        this.content = doc;
+      } else {
+        const doc = new DOMParser().parseFromString(content, "text/html");
+        const bodies = doc.getElementsByTagName("body");
+        if (!bodies.length) {
+          return null;
+        }
+        this.content = bodies[0].innerHTML;
       }
       this.docToSave = doc;
-      this.content = doc;
     }
 
     const { selection, browserSelection, dirty, saving, confirmation, movingElem, copiedElem } = this.state;
     const selectedElem = selection === null ? null : document.getElementById(selection);
     const p_tag = document.createElement("p");
-    const w_span_tag = document.createElement("span");
-    const r_span_tag = document.createElement("span");
 
-    for (prg in this.content) {
-      for (wrd in prg) {
-        if (typeof wrd === "object") {
-          for (res in wrd.results) {
-            r_span_tag.setAttribute('id', res.id);
-            r_span_tag.setAttribute('class', res.state);
-            let {id, state, ...r_span_tag.innerText} = res;
-            w_span_tag.append(r_span_tag);
+    if (format === 'json') {
+      const w_span_tag = document.createElement("span");
+      const r_span_tag = document.createElement("span");
+      for (let prg in this.content) {
+        for (let wrd in prg) {
+          if (typeof wrd === "object") {
+            for (let res in wrd.results) {
+              let {id, state, ...data} = res;
+              r_span_tag.setAttribute('id', id);
+              r_span_tag.setAttribute('class', state);
+              r_span_tag.innerText = data;
+              w_span_tag.append(r_span_tag);
+            }
+            w_span_tag.setAttribute('id', wrd.id);
+            w_span_tag.setAttribute('class', wrd.status);
+            w_span_tag.innerText = wrd.text;
+          } else {
+            w_span_tag.innerText = wrd; //here should be p_tag?
           }
-          w_span_tag.setAttribute('id', wrd.id);
-          w_span_tag.setAttribute('class', wrd.status);
-          w_span_tag.innerText = wrd.text;
-        } else {
-          w_span_tag.innerText = wrd;
+          p_tag.append(w_span_tag);
         }
-        p_tag.append(w_span_tag);
       }
     }
+
     return (
       <Modal
         open
@@ -521,14 +533,20 @@ class OdtMarkupModal extends React.Component {
             mode={saving ? "view" : mode}
             setDirty={() => this.setState({ dirty: true })}
           />
-          <Modal.Content
+          { format !== 'json' ? (
+            <Modal.Content
             id="markup-content"
             scrolling
-            //dangerouslySetInnerHTML={{ __html: this.content }}
-            style={{ padding: "10px" }}
-          >
-            { document.getElementById("markup-content").append(p_tag); }
-          </Modal.Content>
+            dangerouslySetInnerHTML={{ __html: this.content }}
+            style={{ padding: "10px" }}/>
+          ) : (
+            <Modal.Content
+            id="markup-content"
+            scrolling
+            style={{ padding: "10px" }}>
+              {p_tag}
+            </Modal.Content>
+          )}
         </div>
         <Modal.Actions>
           {!saving && !movingElem && browserSelection !== null && (
