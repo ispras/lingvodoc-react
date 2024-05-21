@@ -490,18 +490,18 @@ class OdtMarkupModal extends React.Component {
                 let {id, state, ...data} = res;
                 r_span_tag.setAttribute('id', id);
                 r_span_tag.setAttribute('class', state);
-                r_span_tag.innerText = data;
-                w_span_tag.appendChild(r_span_tag);
+                r_span_tag.append(JSON.stringify(data));
+                w_span_tag.append(r_span_tag);
               }
               w_span_tag.setAttribute('id', wrd.id);
               w_span_tag.setAttribute('class', wrd.status);
-              w_span_tag.innerText = wrd.text;
-              p_tag.appendChild(w_span_tag);
+              w_span_tag.append(wrd.text);
+              p_tag.append(w_span_tag);
             } else {
-              p_tag.innerText += wrd;
+              p_tag.append(wrd);
             }
           }
-          div_tag.appendChild(p_tag);
+          div_tag.append(p_tag);
         }
         this.content = div_tag;
         this.docToSave = doc;
@@ -544,7 +544,7 @@ class OdtMarkupModal extends React.Component {
             id="markup-content"
             scrolling
             style={{ padding: "10px" }}>
-              {this.content.outerHTML}
+              <div src={this.content}/>
             </Modal.Content>
           )}
         </div>
