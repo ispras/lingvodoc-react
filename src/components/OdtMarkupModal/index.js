@@ -198,6 +198,10 @@ class OdtMarkupModal extends React.Component {
       return;
     }
 
+    if (this.format === 'json' && this.content) {
+      root.append(this.content);
+    }
+
     Array.from(root.getElementsByTagName("span")).forEach(elem => {
       if (elem.id !== undefined) {
         const numId = Number.parseInt(elem.id);
@@ -543,9 +547,7 @@ class OdtMarkupModal extends React.Component {
             <Modal.Content
             id="markup-content"
             scrolling
-            style={{ padding: "10px" }}>
-              <div src={this.content}/>
-            </Modal.Content>
+            style={{ padding: "10px" }}/>
           )}
         </div>
         <Modal.Actions>
