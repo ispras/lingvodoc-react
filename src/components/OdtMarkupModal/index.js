@@ -458,6 +458,50 @@ class OdtMarkupModal extends React.Component {
     }
   }
 
+  jsonToHtml(doc) {
+    const div_tag = document.createElement("div");
+    for (const prg of doc) {
+      let p_tag = document.createElement("p");
+      for (const wrd of prg) {
+
+        // if word has some attributes
+        if (typeof wrd === "object") {
+          let w_span_tag = document.createElement("span");
+          w_span_tag.setAttribute('id', wrd.id ?? null);
+          w_span_tag.setAttribute('class', wrd.status ?? []);
+
+          // iterate by result spans
+          for (const res of wrd.results ?? []) {
+            let r_span_tag = document.createElement("span");
+            let {id, state, ...data} = res;
+            r_span_tag.setAttribute('id', id);
+            r_span_tag.setAttribute('class', state);
+            r_span_tag.append(JSON.stringify(data));
+            w_span_tag.append(r_span_tag);
+          }
+
+          // check if prefix exists,
+          // add text to the word tag
+          let text_node = wrd.text;
+          if (wrd.prefix) {
+            // now we process only first prefix
+            text_node = document.createElement(wrd.prefix[0]);
+            text_node.append(wrd.text);
+          }
+          w_span_tag.append(text_node);
+
+          // append word to paragraph
+          p_tag.append(w_span_tag);
+
+        } else {
+          p_tag.append(wrd);
+        }
+      }
+      div_tag.append(p_tag);
+    }
+    return div_tag;
+  }
+
   render() {
     const { data, mode } = this.props;
     const { loading, error } = this.props.data;
@@ -483,31 +527,7 @@ class OdtMarkupModal extends React.Component {
       const content = data.parser_result.content;
       if (this.format === 'json') {
         const doc = JSON.parse(content);
-        const div_tag = document.createElement("div");
-        for (const prg of doc) {
-          let p_tag = document.createElement("p");
-          for (const wrd of prg) {
-            if (typeof wrd === "object") {
-              let w_span_tag = document.createElement("span");
-              for (const res of wrd.results) {
-                let r_span_tag = document.createElement("span");
-                let {id, state, ...data} = res;
-                r_span_tag.setAttribute('id', id);
-                r_span_tag.setAttribute('class', state);
-                r_span_tag.append(JSON.stringify(data));
-                w_span_tag.append(r_span_tag);
-              }
-              w_span_tag.setAttribute('id', wrd.id);
-              w_span_tag.setAttribute('class', wrd.status);
-              w_span_tag.append(wrd.text);
-              p_tag.append(w_span_tag);
-            } else {
-              p_tag.append(wrd);
-            }
-          }
-          div_tag.append(p_tag);
-        }
-        this.content = div_tag;
+        this.content = this.jsonToHtml(doc);
         this.docToSave = doc;
       } else {
         const doc = new DOMParser().parseFromString(content, "text/html");
@@ -537,18 +557,12 @@ class OdtMarkupModal extends React.Component {
             mode={saving ? "view" : mode}
             setDirty={() => this.setState({ dirty: true })}
           />
-          { this.format !== 'json' ? (
-            <Modal.Content
+          <Modal.Content
             id="markup-content"
             scrolling
-            dangerouslySetInnerHTML={{ __html: this.content }}
-            style={{ padding: "10px" }}/>
-          ) : (
-            <Modal.Content
-            id="markup-content"
-            scrolling
-            style={{ padding: "10px" }}/>
-          )}
+            dangerouslySetInnerHTML={this.format !== 'json' ? { __html: this.content } : null}
+            style={{ padding: "10px" }}
+          />
         </div>
         <Modal.Actions>
           {!saving && !movingElem && browserSelection !== null && (
