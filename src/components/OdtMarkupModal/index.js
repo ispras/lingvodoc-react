@@ -59,7 +59,7 @@ class OdtMarkupModal extends React.Component {
     this.availableId = 0;
     this.format = null;
     this.content = null;
-    this.docToSave = null;
+    //this.docToSave = null;
 
     this.state = {
       selection: null,
@@ -399,9 +399,9 @@ class OdtMarkupModal extends React.Component {
       document.getElementById(selection).classList.remove("selected");
     }
     this.setState({ saving: true });
-    this.docToSave.getElementsByTagName("body")[0].innerHTML = document.getElementById("markup-content").innerHTML;
+    const root = document.getElementById("markup-content");
     updateParserResult({ variables: {
-      id: resultId, content: new XMLSerializer().serializeToString(this.docToSave), to_json: (this.format === 'json')} })
+      id: resultId, content: new XMLSerializer().serializeToString(root), to_json: (this.format === 'json')} })
       .then(() => {
         if (selection) {
           document.getElementById(selection).classList.add("selected");
@@ -422,8 +422,8 @@ class OdtMarkupModal extends React.Component {
     let content = "";
     document.getElementById(selection).classList.remove("selected");
     if (dirty) {
-      this.docToSave.getElementsByTagName("body")[0].innerHTML = document.getElementById("markup-content").innerHTML;
-      content = new XMLSerializer().serializeToString(this.docToSave);
+      const root = document.getElementById("markup-content");
+      content = new XMLSerializer().serializeToString(root);
     }
     this.setState({ updating: true, selection: null });
     updateParserResultForElement({ variables:
@@ -461,7 +461,6 @@ class OdtMarkupModal extends React.Component {
   }
 
   jsonToHtml(doc) {
-    const html_tag = document.createElement("html");
     const body_tag = document.createElement("body");
     for (const prg of doc) {
       let p_tag = document.createElement("p");
@@ -483,15 +482,16 @@ class OdtMarkupModal extends React.Component {
             w_span_tag.append(r_span_tag);
           }
 
-          // check if prefix exists,
-          // add text to the word tag
-          let text_node = wrd.text;
+          w_span_tag.append(wrd.text);
+
+          // wrap w_span_tag in prefix tags if any
           if (wrd.prefix) {
-            // now we process only first prefix
-            text_node = document.createElement(wrd.prefix[0]);
-            text_node.append(wrd.text);
+            for (const prefix of wrd.prefix) {
+              const pref_tag = document.createElement(prefix);
+              pref_tag.append(w_span_tag);
+              w_span_tag = pref_tag;
+            }
           }
-          w_span_tag.append(text_node);
 
           // append word to paragraph
           p_tag.append(w_span_tag);
@@ -502,8 +502,7 @@ class OdtMarkupModal extends React.Component {
       }
       body_tag.append(p_tag);
     }
-    html_tag.append(body_tag);
-    return html_tag;
+    return body_tag;
   }
 
   render() {
@@ -530,18 +529,16 @@ class OdtMarkupModal extends React.Component {
     if (!this.content) {
       const content = data.parser_result.content;
 
-      let doc;
       if (this.format === 'json') {
-        doc = this.jsonToHtml(JSON.parse(content));
+        this.content = this.jsonToHtml(JSON.parse(content));
       } else {
-        doc = new DOMParser().parseFromString(content, "text/html");
+        const doc = new DOMParser().parseFromString(content, "text/html");
+        const bodies = doc.getElementsByTagName("body");
+        if (!bodies.length) {
+          return null;
+        }
+        this.content = bodies[0];
       }
-      const bodies = doc.getElementsByTagName("body");
-      if (!bodies.length) {
-        return null;
-      }
-      this.content = bodies[0];
-      this.docToSave = doc;
     }
 
     return (
