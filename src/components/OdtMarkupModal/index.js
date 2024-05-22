@@ -528,7 +528,7 @@ class OdtMarkupModal extends React.Component {
       if (this.format === 'json') {
         const doc = JSON.parse(content);
         this.content = this.jsonToHtml(doc);
-        this.docToSave = doc;
+        //this.docToSave = doc;
       } else {
         const doc = new DOMParser().parseFromString(content, "text/html");
         const bodies = doc.getElementsByTagName("body");
@@ -560,7 +560,8 @@ class OdtMarkupModal extends React.Component {
           <Modal.Content
             id="markup-content"
             scrolling
-            dangerouslySetInnerHTML={this.format !== 'json' ? { __html: this.content } : null}
+            dangerouslySetInnerHTML={this.format !== 'json' ? { __html: this.content } : null
+            /* for json content look at componentDidUpdate() function */}
             style={{ padding: "10px" }}
           />
         </div>
