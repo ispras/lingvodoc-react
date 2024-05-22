@@ -35,16 +35,16 @@ const getParserResultContentQuery = gql`
 `;
 
 const updateParserResultMutation = gql`
-  mutation updateParserResultMutation($id: LingvodocID!, $content: String!) {
-    update_parser_result(id: $id, content: $content) {
+  mutation updateParserResultMutation($id: LingvodocID!, $content: String!, $to_json: Boolean) {
+    update_parser_result(id: $id, content: $content, to_json: $to_json) {
       triumph
     }
   }
 `;
 
 const updateParserResultForElementMutation = gql`
-  mutation updateParserResultForElementMutation($id: LingvodocID!, $content: String!, $element_id: String!) {
-    update_parser_result(id: $id, content: $content, element_id: $element_id) {
+  mutation updateParserResultForElementMutation($id: LingvodocID!, $content: String!, $element_id: String!, $to_json: Boolean) {
+    update_parser_result(id: $id, content: $content, element_id: $element_id, to_json: $to_json) {
       triumph
     }
   }
@@ -400,7 +400,8 @@ class OdtMarkupModal extends React.Component {
     }
     this.setState({ saving: true });
     this.docToSave.getElementsByTagName("body")[0].innerHTML = document.getElementById("markup-content").innerHTML;
-    updateParserResult({ variables: { id: resultId, content: new XMLSerializer().serializeToString(this.docToSave) } })
+    updateParserResult({ variables: {
+      id: resultId, content: new XMLSerializer().serializeToString(this.docToSave), to_json: (this.format === 'json')} })
       .then(() => {
         if (selection) {
           document.getElementById(selection).classList.add("selected");
@@ -425,7 +426,8 @@ class OdtMarkupModal extends React.Component {
       content = new XMLSerializer().serializeToString(this.docToSave);
     }
     this.setState({ updating: true, selection: null });
-    updateParserResultForElement({ variables: { id: resultId, content: content, element_id: selection } })
+    updateParserResultForElement({ variables:
+      { id: resultId, content: content, element_id: selection, to_json: (this.format === 'json') } })
       .then(() => {
         this.content = null;
         this.initialized = false;
@@ -459,7 +461,8 @@ class OdtMarkupModal extends React.Component {
   }
 
   jsonToHtml(doc) {
-    const div_tag = document.createElement("div");
+    const html_tag = document.createElement("html");
+    const body_tag = document.createElement("body");
     for (const prg of doc) {
       let p_tag = document.createElement("p");
       for (const wrd of prg) {
@@ -497,9 +500,10 @@ class OdtMarkupModal extends React.Component {
           p_tag.append(wrd);
         }
       }
-      div_tag.append(p_tag);
+      body_tag.append(p_tag);
     }
-    return div_tag;
+    html_tag.append(body_tag);
+    return html_tag;
   }
 
   render() {
@@ -525,19 +529,19 @@ class OdtMarkupModal extends React.Component {
 
     if (!this.content) {
       const content = data.parser_result.content;
+
+      let doc;
       if (this.format === 'json') {
-        const doc = JSON.parse(content);
-        this.content = this.jsonToHtml(doc);
-        //this.docToSave = doc;
+        doc = this.jsonToHtml(JSON.parse(content));
       } else {
-        const doc = new DOMParser().parseFromString(content, "text/html");
-        const bodies = doc.getElementsByTagName("body");
-        if (!bodies.length) {
-          return null;
-        }
-        this.content = bodies[0].innerHTML;
-        this.docToSave = doc;
+        doc = new DOMParser().parseFromString(content, "text/html");
       }
+      const bodies = doc.getElementsByTagName("body");
+      if (!bodies.length) {
+        return null;
+      }
+      this.content = bodies[0];
+      this.docToSave = doc;
     }
 
     return (
@@ -560,7 +564,7 @@ class OdtMarkupModal extends React.Component {
           <Modal.Content
             id="markup-content"
             scrolling
-            dangerouslySetInnerHTML={this.format !== 'json' ? { __html: this.content } : null
+            dangerouslySetInnerHTML={this.format !== 'json' ? { __html: this.content.innerHTML } : null
             /* for json content look at componentDidUpdate() function */}
             style={{ padding: "10px" }}
           />
