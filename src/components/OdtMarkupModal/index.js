@@ -59,7 +59,6 @@ class OdtMarkupModal extends React.Component {
     this.availableId = 0;
     this.format = null;
     this.content = null;
-    //this.docToSave = null;
 
     this.state = {
       selection: null,
