@@ -197,7 +197,7 @@ class OdtMarkupModal extends React.Component {
       return;
     }
 
-    if (this.format === 'json' && this.content) {
+    if (this.content) {
       root.append(this.content);
     }
 
@@ -560,8 +560,6 @@ class OdtMarkupModal extends React.Component {
           <Modal.Content
             id="markup-content"
             scrolling
-            dangerouslySetInnerHTML={this.format !== 'json' ? { __html: this.content.innerHTML } : null
-            /* for json content look at componentDidUpdate() function */}
             style={{ padding: "10px" }}
           />
         </div>
