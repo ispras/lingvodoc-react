@@ -29,22 +29,21 @@ const getParserResultContentQuery = gql`
     parser_result(id: $id) {
       id
       content
-      arguments
     }
   }
 `;
 
 const updateParserResultMutation = gql`
-  mutation updateParserResultMutation($id: LingvodocID!, $content: String!, $to_json: Boolean) {
-    update_parser_result(id: $id, content: $content, to_json: $to_json) {
+  mutation updateParserResultMutation($id: LingvodocID!, $content: String!) {
+    update_parser_result(id: $id, content: $content) {
       triumph
     }
   }
 `;
 
 const updateParserResultForElementMutation = gql`
-  mutation updateParserResultForElementMutation($id: LingvodocID!, $content: String!, $element_id: String!, $to_json: Boolean) {
-    update_parser_result(id: $id, content: $content, element_id: $element_id, to_json: $to_json) {
+  mutation updateParserResultForElementMutation($id: LingvodocID!, $content: String!, $element_id: String!) {
+    update_parser_result(id: $id, content: $content, element_id: $element_id) {
       triumph
     }
   }
@@ -57,8 +56,8 @@ class OdtMarkupModal extends React.Component {
 
     this.initialized = false;
     this.availableId = 0;
-    this.format = null;
     this.content = null;
+    this.docToSave = null;
 
     this.state = {
       selection: null,
@@ -81,7 +80,6 @@ class OdtMarkupModal extends React.Component {
     this.parseElement = this.parseElement.bind(this);
     this.save = this.save.bind(this);
     this.onClose = this.onClose.bind(this);
-    this.get_by_id = this.get_by_id.bind(this);
   }
 
   onKeyDown = event => {
@@ -196,10 +194,6 @@ class OdtMarkupModal extends React.Component {
     const root = document.getElementById("markup-content");
     if (!root) {
       return;
-    }
-
-    if (this.content) {
-      root.append(this.content);
     }
 
     Array.from(root.getElementsByTagName("span")).forEach(elem => {
@@ -399,9 +393,8 @@ class OdtMarkupModal extends React.Component {
       document.getElementById(selection).classList.remove("selected");
     }
     this.setState({ saving: true });
-    const root = document.getElementById("markup-content");
-    updateParserResult({ variables: {
-      id: resultId, content: new XMLSerializer().serializeToString(root), to_json: (this.format === 'json')} })
+    this.docToSave.getElementsByTagName("body")[0].innerHTML = document.getElementById("markup-content").innerHTML;
+    updateParserResult({ variables: { id: resultId, content: new XMLSerializer().serializeToString(this.docToSave) } })
       .then(() => {
         if (selection) {
           document.getElementById(selection).classList.add("selected");
@@ -422,12 +415,11 @@ class OdtMarkupModal extends React.Component {
     let content = "";
     document.getElementById(selection).classList.remove("selected");
     if (dirty) {
-      const root = document.getElementById("markup-content");
-      content = new XMLSerializer().serializeToString(root);
+      this.docToSave.getElementsByTagName("body")[0].innerHTML = document.getElementById("markup-content").innerHTML;
+      content = new XMLSerializer().serializeToString(this.docToSave);
     }
     this.setState({ updating: true, selection: null });
-    updateParserResultForElement({ variables:
-      { id: resultId, content: content, element_id: selection, to_json: (this.format === 'json') } })
+    updateParserResultForElement({ variables: { id: resultId, content: content, element_id: selection } })
       .then(() => {
         this.content = null;
         this.initialized = false;
@@ -460,76 +452,6 @@ class OdtMarkupModal extends React.Component {
     }
   }
 
-  jsonToHtml(doc) {
-    const body_tag = document.createElement("body");
-    for (const prg of doc) {
-      let p_tag = document.createElement("p");
-      for (const wrd of prg) {
-
-        // if word has some attributes
-        if (typeof wrd === "object") {
-          let w_span_tag = document.createElement("span");
-          w_span_tag.setAttribute('id', wrd.id ?? null);
-          w_span_tag.setAttribute('class', wrd.status ?? []);
-
-          // iterate by result spans
-          for (const res of wrd.results ?? []) {
-            let r_span_tag = document.createElement("span");
-            let {id, state, ...data} = res;
-            r_span_tag.setAttribute('id', id);
-            r_span_tag.setAttribute('class', state);
-            r_span_tag.append(JSON.stringify(data));
-            w_span_tag.append(r_span_tag);
-          }
-
-          w_span_tag.append(wrd.text);
-
-          // wrap w_span_tag in prefix tags if any
-          if (wrd.prefix) {
-            for (const prefix of wrd.prefix) {
-              const pref_tag = document.createElement(prefix);
-              pref_tag.append(w_span_tag);
-              w_span_tag = pref_tag;
-            }
-          }
-
-          // append word to paragraph
-          p_tag.append(w_span_tag);
-
-        } else {
-          p_tag.append(wrd);
-        }
-      }
-      body_tag.append(p_tag);
-    }
-    return body_tag;
-  }
-
-  get_by_id(id) {
-    if (!this.json) {
-      return null;
-    }
-    for (const prg of this.json) {
-      for (const wrd of prg) {
-
-        if (wrd.id == id) {
-          return wrd;
-        }
-
-        if (typeof wrd !== 'object') {
-          continue;
-        }
-
-        for (const res of wrd.results ?? []) {
-          if (res.id == id) {
-            return res;
-          }
-        }
-      }
-    }
-    return null;
-  }
-
   render() {
     const { data, mode } = this.props;
     const { loading, error } = this.props.data;
@@ -547,25 +469,18 @@ class OdtMarkupModal extends React.Component {
       );
     }
 
+    if (!this.content) {
+      const doc = new DOMParser().parseFromString(data.parser_result.content, "text/html");
+      const bodies = doc.getElementsByTagName("body");
+      if (!bodies.length) {
+        return null;
+      }
+      this.docToSave = doc;
+      this.content = bodies[0].innerHTML;
+    }
+
     const { selection, browserSelection, dirty, saving, confirmation, movingElem, copiedElem } = this.state;
     const selectedElem = selection === null ? null : document.getElementById(selection);
-    this.format = data.parser_result.arguments.format;
-
-    if (!this.content) {
-      const content = data.parser_result.content;
-      this.json = JSON.parse(content);
-
-      if (this.format === 'json') {
-        this.content = this.jsonToHtml(this.json);
-      } else {
-        const doc = new DOMParser().parseFromString(content, "text/html");
-        const bodies = doc.getElementsByTagName("body");
-        if (!bodies.length) {
-          return null;
-        }
-        this.content = bodies[0];
-      }
-    }
 
     return (
       <Modal
@@ -587,6 +502,7 @@ class OdtMarkupModal extends React.Component {
           <Modal.Content
             id="markup-content"
             scrolling
+            dangerouslySetInnerHTML={{ __html: this.content }}
             style={{ padding: "10px" }}
           />
         </div>
