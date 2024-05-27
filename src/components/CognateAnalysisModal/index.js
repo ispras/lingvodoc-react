@@ -481,7 +481,8 @@ class MLPerspectiveSelection extends React.Component {
     this.state = {
       perspectiveSelectionMap: props.perspectiveSelectionMap,
       transcriptionFieldIdStrMap: props.transcriptionFieldIdStrMap,
-      translationFieldIdStrMap: props.translationFieldIdStrMap
+      translationFieldIdStrMap: props.translationFieldIdStrMap,
+      lexemeFieldIdStrMap: props.lexemeFieldIdStrMap
     };
 
     this.onChangeSelect = this.onChangeSelect.bind(this);
@@ -941,6 +942,7 @@ class MLSelection extends React.Component {
                               perspectiveSelectionMap={perspectiveSelectionMap}
                               transcriptionFieldIdStrMap={transcriptionFieldIdStrMap}
                               translationFieldIdStrMap={translationFieldIdStrMap}
+                              lexemeFieldIdStrMap={lexemeFieldIdStrMap}
                               perspectiveSelectionCountMap={perspectiveSelectionCountMap}
                               language_id_str={language_id_str}
                               onChangeSelectAll={() => this.setState({ perspectiveSelectionCountMap })}
@@ -1359,11 +1361,12 @@ class CognateAnalysisModal extends React.Component {
      * analysis. */
 
     if (this.state.groupFieldIdStr) {
-      const { transcriptionFieldIdStrList, translationFieldIdStrList, perspectiveSelectionList } =
+      const { transcriptionFieldIdStrList, translationFieldIdStrList, lexemeFieldIdStrList, perspectiveSelectionList } =
         this.initPerspectiveList(this.state.groupFieldIdStr);
 
       this.state.transcriptionFieldIdStrList = transcriptionFieldIdStrList;
       this.state.translationFieldIdStrList = translationFieldIdStrList;
+      this.state.lexemeFieldIdStrList = lexemeFieldIdStrList;
       this.state.perspectiveSelectionList = perspectiveSelectionList;
     }
   }
@@ -1649,6 +1652,7 @@ class CognateAnalysisModal extends React.Component {
 
     const transcriptionFieldIdStrList = [];
     const translationFieldIdStrList = [];
+    const lexemeFieldIdStrList = [];
 
     const perspectiveSelectionList = [];
 
@@ -1671,10 +1675,11 @@ class CognateAnalysisModal extends React.Component {
         textFieldsOptions
       });
 
-      /* Selecting text fields with 'transcription' and 'translation' in their names, if we have them. */
+      /* Selecting text fields with 'transcription', 'translation', 'word' in their names, if we have them. */
 
       let transcriptionFieldIdStr = "";
       let translationFieldIdStr = "";
+      let lexemeFieldIdStr = "";
 
       for (const field of textFields) {
         const check_str = field.english_translation.toLowerCase();
@@ -1685,6 +1690,10 @@ class CognateAnalysisModal extends React.Component {
 
         if (!translationFieldIdStr && (check_str.includes("translation") || check_str.includes("meaning"))) {
           translationFieldIdStr = id2str(field.id);
+        }
+
+        if (!lexemeFieldIdStr && check_str === "word") {
+          lexemeFieldIdStr = id2str(field.id);
         }
       }
 
@@ -1698,10 +1707,15 @@ class CognateAnalysisModal extends React.Component {
         if (!translationFieldIdStr) {
           translationFieldIdStr = id2str(textFields[0].id);
         }
+
+        if (!lexemeFieldIdStr) {
+          lexemeFieldIdStr = id2str(textFields[0].id);
+        }
       }
 
       transcriptionFieldIdStrList.push(transcriptionFieldIdStr);
       translationFieldIdStrList.push(translationFieldIdStr);
+      lexemeFieldIdStrList.push(lexemeFieldIdStr);
 
       perspectiveSelectionList.push(true);
     }
@@ -1710,12 +1724,14 @@ class CognateAnalysisModal extends React.Component {
 
     this.state.transcriptionFieldIdStrList = transcriptionFieldIdStrList;
     this.state.translationFieldIdStrList = translationFieldIdStrList;
+    this.state.lexemeFieldIdStrList = lexemeFieldIdStrList;
 
     this.state.perspectiveSelectionList = perspectiveSelectionList;
 
     return {
       transcriptionFieldIdStrList,
       translationFieldIdStrList,
+      lexemeFieldIdStrList,
       perspectiveSelectionList
     };
   }
@@ -2056,7 +2072,8 @@ class CognateAnalysisModal extends React.Component {
             perspectiveInfoList.push([
               perspective.id,
               this.fieldDict[this.state.transcriptionFieldIdStrMap[p_key]].id,
-              this.fieldDict[this.state.translationFieldIdStrMap[p_key]].id
+              this.fieldDict[this.state.translationFieldIdStrMap[p_key]].id,
+              this.fieldDict[this.state.lexemeFieldIdStrMap[p_key]].id  // << here
             ]);
 
             p_count++;
@@ -2066,12 +2083,13 @@ class CognateAnalysisModal extends React.Component {
         multiList.push([language.id, p_count]);
       }
     } else {
-      perspectiveInfoList = this.perspective_list
+      perspectiveInfoList = this.perspective_list  // << and here
 
         .map(({ perspective }, index) => [
           perspective.id,
           this.fieldDict[this.state.transcriptionFieldIdStrList[index]].id,
-          this.fieldDict[this.state.translationFieldIdStrList[index]].id
+          this.fieldDict[this.state.translationFieldIdStrList[index]].id,
+          this.fieldDict[this.state.lexemeFieldIdStrList[index]].id
         ])
 
         .filter((perspective_info, index) => this.state.perspectiveSelectionList[index]);
@@ -2403,6 +2421,7 @@ class CognateAnalysisModal extends React.Component {
           languageSelectionMap={this.state.languageSelectionMap}
           transcriptionFieldIdStrMap={this.state.transcriptionFieldIdStrMap}
           translationFieldIdStrMap={this.state.translationFieldIdStrMap}
+          lexemeFieldIdStrMap={this.state.lexemeFieldIdStrMap}
           perspectiveSelectionCountMap={this.state.perspectiveSelectionCountMap}
           language_id_set={this.state.language_id_set}
           available_language_list={this.language_list}
