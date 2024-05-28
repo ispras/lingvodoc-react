@@ -837,6 +837,8 @@ export const stringsToTranslate = [
   "Source transcription field selection",
   "Source translation field",
   "Source translation field selection",
+  "Source lexeme field (optional)",
+  "Source lexeme field selection",
   "Speech genre",
   "Split contents of the field on punctuation before matching",
   "Split contents of the field on whitespace before matching",
