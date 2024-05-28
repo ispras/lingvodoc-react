@@ -55,8 +55,7 @@ const Word = ({text, prefix}) => {
     const prefix_tag = prefix[0];
     return <prefix_tag>{text}</prefix_tag>;
   } else {
-    console.log(typeof text);
-    return {text};
+    return <span>{text}</span>;
   }
 }
 
@@ -70,7 +69,7 @@ const Annotation = ({id, text, status, prefix}) => {
 }
 
 const Sentence = ({json_sentence}) => {
-  return json_sentence.map((json_word, index) => {
+  return <p>{json_sentence.map((json_word, index) => {
     if (typeof json_word === 'object') {
       if (json_word.id !== null) {
         return (
@@ -78,7 +77,7 @@ const Sentence = ({json_sentence}) => {
             key={index}
             id={json_word.id}
             text={json_word.text}
-            status={json_word.status.join(' ')}
+            status={json_word.status}
             prefix={json_word.prefix}
           />
         );
@@ -99,7 +98,7 @@ const Sentence = ({json_sentence}) => {
         />
       );
     }
-  });
+  })}</p>;
 }
 
 const Content = ({json_content}) => {
