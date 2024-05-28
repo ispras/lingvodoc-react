@@ -50,6 +50,69 @@ const updateParserResultForElementMutation = gql`
   }
 `;
 
+const Word = ({text, prefix}) => {
+  if (prefix) {
+    const prefix_tag = prefix[0];
+    return <prefix_tag>{text}</prefix_tag>;
+  } else {
+    console.log(typeof text);
+    return {text};
+  }
+}
+
+const Annotation = ({id, text, status, prefix}) => {
+  if (prefix) {
+    const prefix_tag = prefix[0];
+    return <prefix_tag><span id={id} class={status}>{text}</span></prefix_tag>;
+  } else {
+    return <span id={id} class={status}>{text}</span>;
+  }
+}
+
+const Sentence = ({json_sentence}) => {
+  return json_sentence.map((json_word, index) => {
+    if (typeof json_word === 'object') {
+      if (json_word.id !== null) {
+        return (
+          <Annotation
+            key={index}
+            id={json_word.id}
+            text={json_word.text}
+            status={json_word.status.join(' ')}
+            prefix={json_word.prefix}
+          />
+        );
+      } else {
+        return (
+          <Word
+            key={index}
+            text={json_word.text}
+            prefix={json_word.prefix}
+          />
+        );
+      }
+    } else {
+      return (
+        <Word
+          key={index}
+          text={json_word}
+        />
+      );
+    }
+  });
+}
+
+const Content = ({json_content}) => {
+  return json_content.map((json_sentence, index) => {
+    return (
+      <Sentence
+        key={index}
+        json_sentence={json_sentence}
+      />
+    );
+  });
+}
+
 /** Modal dialog for corpus markup */
 class OdtMarkupModal extends React.Component {
   constructor(props) {
@@ -198,9 +261,11 @@ class OdtMarkupModal extends React.Component {
       return;
     }
 
+    /*
     if (this.content) {
       root.append(this.content);
     }
+    */
 
     Array.from(root.getElementsByTagName("span")).forEach(elem => {
       if (elem.id !== undefined) {
@@ -589,6 +654,7 @@ class OdtMarkupModal extends React.Component {
             scrolling
             style={{ padding: "10px" }}
           />
+          <Content json_content={this.json}/>
         </div>
         <Modal.Actions>
           {!saving && !movingElem && browserSelection !== null && (
