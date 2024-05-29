@@ -52,6 +52,7 @@ const updateParserResultForElementMutation = gql`
 
 const Word = ({children, prefix}) => {
   if (prefix && prefix.length) {
+    // e.g. <b></b>
     const PrefixTag = prefix[0];
     return (
       <PrefixTag>
@@ -67,13 +68,14 @@ const Word = ({children, prefix}) => {
   }
 }
 
-const Annotation = ({id, text, status, prefix, saving}) => {
+const Annotation = ({id, text, status, prefix, saving, selection, setSelection}) => {
   const [selected, setSelected] = useState(false);
 
   const onClick = () => {
     if (saving || !document.getSelection().isCollapsed) {
       return;
     }
+    setSelection(selected ? null : id);
     setSelected(!selected);
   }
 
@@ -83,7 +85,8 @@ const Annotation = ({id, text, status, prefix, saving}) => {
     >
       <span
         id={id}
-        className={status + (selected ? ' selected' : '') }
+        className={status + (selected && selection === id ? ' selected' : '') }
+        onClick={onClick}
       >
         {text}
       </span>
@@ -91,7 +94,7 @@ const Annotation = ({id, text, status, prefix, saving}) => {
   );
 }
 
-const Sentence = ({json_sentence, saving}) => {
+const Sentence = ({json_sentence, saving, selection, setSelection}) => {
   return json_sentence.map((json_word, index) => {
     if (typeof json_word === 'object' && json_word.id !== null) {
       return (
@@ -102,6 +105,8 @@ const Sentence = ({json_sentence, saving}) => {
           status={json_word.status}
           prefix={json_word.prefix}
           saving={saving}
+          selection={selection}
+          setSelection={setSelection}
         />
       );
     } else {
@@ -118,6 +123,9 @@ const Sentence = ({json_sentence, saving}) => {
 }
 
 const Content = ({json_content, saving}) => {
+  const [selection, setSelection] = useState(null);
+  console.log(selection);
+
   return json_content.map((json_sentence, index) => {
     return (
       <p>
@@ -125,6 +133,8 @@ const Content = ({json_content, saving}) => {
           key={index}
           json_sentence={json_sentence}
           saving={saving}
+          selection={selection}
+          setSelection={setSelection}
         />
       </p>
     );
@@ -293,8 +303,8 @@ class OdtMarkupModal extends React.Component {
         }
       }
     });
-    this.addClickHandlers(root.getElementsByClassName("unverified"));
-    this.addClickHandlers(root.getElementsByClassName("verified"));
+    //this.addClickHandlers(root.getElementsByClassName("unverified"));
+    //this.addClickHandlers(root.getElementsByClassName("verified"));
     if (this.props.mode === "edit") {
       document.addEventListener("selectionchange", this.onBrowserSelection);
     }
@@ -309,6 +319,15 @@ class OdtMarkupModal extends React.Component {
   componentWillUnmount() {
     document.removeEventListener("selectionchange", this.onBrowserSelection);
     document.removeEventListener("keydown", this.onKeyDown);
+  }
+
+  setSelection(id) {
+    if (this.state.selection === id) {
+      this.setState({ selection: null });
+    } else {
+      this.setState({ selection: id });
+    }
+    console.log(id);
   }
 
   addClickHandlers(elems) {
@@ -377,7 +396,7 @@ class OdtMarkupModal extends React.Component {
     span.id = this.availableId;
     span.classList.add("unverified", "user");
     span.innerText = browserSelection.toString();
-    this.addClickHandlers([span]);
+    //this.addClickHandlers([span]);
     parentNode.insertBefore(span, textNode);
     str = text.substring(browserSelection.endOffset);
     if (str !== "") {
@@ -457,7 +476,7 @@ class OdtMarkupModal extends React.Component {
     }
     const copiedElem = this.state.copiedElem;
     copiedElem.lastChild.nodeValue = browserSelection.toString();
-    this.addClickHandlers([copiedElem]);
+    //this.addClickHandlers([copiedElem]);
     parentNode.insertBefore(copiedElem, textNode);
     str = text.substring(browserSelection.endOffset);
     if (str !== "") {
@@ -674,7 +693,7 @@ class OdtMarkupModal extends React.Component {
           >
             <Content
               json_content={this.json}
-              saving={this.state.saving}
+              saving={saving}
             />
           </Modal.Content>
         </div>
