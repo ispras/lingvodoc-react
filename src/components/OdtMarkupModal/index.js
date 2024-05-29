@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import { Button, Confirm, Dimmer, Header, Icon, Modal } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
@@ -50,64 +50,83 @@ const updateParserResultForElementMutation = gql`
   }
 `;
 
-const Word = ({text, prefix}) => {
-  if (prefix) {
-    const prefix_tag = prefix[0];
-    return <prefix_tag>{text}</prefix_tag>;
+const Word = ({children, prefix}) => {
+  if (prefix && prefix.length) {
+    const PrefixTag = prefix[0];
+    return (
+      <PrefixTag>
+        <Word
+          prefix={prefix.slice(1)}
+        >
+          {children}
+        </Word>
+      </PrefixTag>
+    );
   } else {
-    return <span>{text}</span>;
+    return children;
   }
 }
 
-const Annotation = ({id, text, status, prefix}) => {
-  if (prefix) {
-    const prefix_tag = prefix[0];
-    return <prefix_tag><span id={id} class={status}>{text}</span></prefix_tag>;
-  } else {
-    return <span id={id} class={status}>{text}</span>;
+const Annotation = ({id, text, status, prefix, saving}) => {
+  const [selected, setSelected] = useState(false);
+
+  const onClick = () => {
+    if (saving || !document.getSelection().isCollapsed) {
+      return;
+    }
+    setSelected(!selected);
   }
+
+  return (
+    <Word
+      prefix={prefix}
+    >
+      <span
+        id={id}
+        className={status + (selected ? ' selected' : '') }
+      >
+        {text}
+      </span>
+    </Word>
+  );
 }
 
-const Sentence = ({json_sentence}) => {
-  return <p>{json_sentence.map((json_word, index) => {
-    if (typeof json_word === 'object') {
-      if (json_word.id !== null) {
-        return (
-          <Annotation
-            key={index}
-            id={json_word.id}
-            text={json_word.text}
-            status={json_word.status}
-            prefix={json_word.prefix}
-          />
-        );
-      } else {
-        return (
-          <Word
-            key={index}
-            text={json_word.text}
-            prefix={json_word.prefix}
-          />
-        );
-      }
+const Sentence = ({json_sentence, saving}) => {
+  return json_sentence.map((json_word, index) => {
+    if (typeof json_word === 'object' && json_word.id !== null) {
+      return (
+        <Annotation
+          key={index}
+          id={json_word.id}
+          text={json_word.text}
+          status={json_word.status}
+          prefix={json_word.prefix}
+          saving={saving}
+        />
+      );
     } else {
       return (
         <Word
           key={index}
-          text={json_word}
-        />
+          prefix={typeof json_word === 'object' ? json_word.prefix : null}
+        >
+          {typeof json_word === 'object' ? json_word.text : json_word}
+        </Word>
       );
     }
-  })}</p>;
+  });
 }
 
-const Content = ({json_content}) => {
+const Content = ({json_content, saving}) => {
   return json_content.map((json_sentence, index) => {
     return (
-      <Sentence
-        key={index}
-        json_sentence={json_sentence}
-      />
+      <p>
+        <Sentence
+          key={index}
+          json_sentence={json_sentence}
+          saving={saving}
+        />
+      </p>
     );
   });
 }
@@ -652,8 +671,12 @@ class OdtMarkupModal extends React.Component {
             id="markup-content"
             scrolling
             style={{ padding: "10px" }}
-          />
-          <Content json_content={this.json}/>
+          >
+            <Content
+              json_content={this.json}
+              saving={this.state.saving}
+            />
+          </Modal.Content>
         </div>
         <Modal.Actions>
           {!saving && !movingElem && browserSelection !== null && (
