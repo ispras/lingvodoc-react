@@ -122,9 +122,12 @@ const Sentence = ({json_sentence, saving, selection, setSelection}) => {
   });
 }
 
-const Content = ({json_content, saving}) => {
+const Content = ({json_content, saving, setSelectionOld}) => {
   const [selection, setSelection] = useState(null);
-  console.log(selection);
+  const setSelectionBoth = (id) => {
+    setSelection(id);
+    setSelectionOld(id);
+  }
 
   return json_content.map((json_sentence, index) => {
     return (
@@ -134,7 +137,7 @@ const Content = ({json_content, saving}) => {
           json_sentence={json_sentence}
           saving={saving}
           selection={selection}
-          setSelection={setSelection}
+          setSelection={setSelectionBoth}
         />
       </p>
     );
@@ -173,6 +176,7 @@ class OdtMarkupModal extends React.Component {
     this.save = this.save.bind(this);
     this.onClose = this.onClose.bind(this);
     this.get_by_id = this.get_by_id.bind(this);
+    this.setSelection = this.setSelection.bind(this);
   }
 
   onKeyDown = event => {
@@ -289,12 +293,6 @@ class OdtMarkupModal extends React.Component {
       return;
     }
 
-    /*
-    if (this.content) {
-      root.append(this.content);
-    }
-    */
-
     Array.from(root.getElementsByTagName("span")).forEach(elem => {
       if (elem.id !== undefined) {
         const numId = Number.parseInt(elem.id);
@@ -328,27 +326,6 @@ class OdtMarkupModal extends React.Component {
       this.setState({ selection: id });
     }
     console.log(id);
-  }
-
-  addClickHandlers(elems) {
-    Array.from(elems).forEach(elem => {
-      elem.onclick = () => {
-        const { selection, saving } = this.state;
-        if (saving || !document.getSelection().isCollapsed) {
-          return;
-        }
-
-        if (selection !== null) {
-          document.getElementById(selection).classList.remove("selected");
-        }
-        if (this.state.selection === elem.id) {
-          this.setState({ selection: null });
-        } else {
-          elem.classList.add("selected");
-          this.setState({ selection: elem.id });
-        }
-      };
-    });
   }
 
   onBrowserSelection() {
@@ -694,6 +671,7 @@ class OdtMarkupModal extends React.Component {
             <Content
               json_content={this.json}
               saving={saving}
+              setSelectionOld={this.setSelection}
             />
           </Modal.Content>
         </div>
