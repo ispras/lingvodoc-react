@@ -69,14 +69,12 @@ const Word = ({children, prefix}) => {
 }
 
 const Annotation = ({id, text, status, prefix, saving, selection, setSelection}) => {
-  const [selected, setSelected] = useState(false);
 
   const onClick = () => {
     if (saving || !document.getSelection().isCollapsed) {
       return;
     }
-    setSelection(selected ? null : id);
-    setSelected(!selected);
+    setSelection(selection === id ? null : id);
   }
 
   return (
@@ -85,7 +83,7 @@ const Annotation = ({id, text, status, prefix, saving, selection, setSelection})
     >
       <span
         id={id}
-        className={status + (selected && selection === id ? ' selected' : '') }
+        className={status + (selection === id ? ' selected' : '') }
         onClick={onClick}
       >
         {text}
@@ -119,28 +117,6 @@ const Sentence = ({json_sentence, saving, selection, setSelection}) => {
         </Word>
       );
     }
-  });
-}
-
-const Content = ({json_content, saving, setSelectionOld}) => {
-  const [selection, setSelection] = useState(null);
-  const setSelectionBoth = (id) => {
-    setSelection(id);
-    setSelectionOld(id);
-  }
-
-  return json_content.map((json_sentence, index) => {
-    return (
-      <p>
-        <Sentence
-          key={index}
-          json_sentence={json_sentence}
-          saving={saving}
-          selection={selection}
-          setSelection={setSelectionBoth}
-        />
-      </p>
-    );
   });
 }
 
@@ -201,7 +177,8 @@ class OdtMarkupModal extends React.Component {
 
     if (!elem) {
       if (event.key === "ArrowRight" && elems.length > 0) {
-        elems[0].click();
+        //elems[0].click();
+        setSelection(elems[0].id);
       }
       return;
     }
@@ -232,14 +209,16 @@ class OdtMarkupModal extends React.Component {
         }
         if (iter === number) {
           if (child.classList.contains("result")) {
-            child.classList.add("approved");
+            //child.classList.add("approved");
+            get_by_id(child.id).state += " approved";
             success = true;
             break;
           }
         }
       }
       if (success) {
-        elem.classList.replace("unverified", "verified");
+        //elem.classList.replace("unverified", "verified");
+        get_by_id(elem.id).state.replace("/\bunverified\b/", "verified");
         this.setState({ dirty: true });
         if (i + 1 < elems.length) {
           scrollIntoViewIfNeeded(elems[i + 1]);
@@ -269,16 +248,18 @@ class OdtMarkupModal extends React.Component {
       let success = false;
       for (const child of children) {
         if (child.classList !== undefined && child.classList.contains("approved")) {
-          child.classList.remove("approved");
+          //child.classList.remove("approved");
+          get_by_id(child.id).state.replace("/\bapproved\b/", "");
           success = true;
         }
       }
       this.state.selection = null;
-      elem.classList.replace("verified", "unverified");
+      //elem.classList.replace("verified", "unverified");
+      get_by_id(elem.id).state.replace("/\bverified\b/", "unverified");
       if (success) {
         this.setState({ dirty: true });
       }
-      elem.click();
+      elem.click();  // << change ??
       return;
     }
   };
@@ -352,10 +333,12 @@ class OdtMarkupModal extends React.Component {
       return;
     }
 
+    /*
     const { selection } = this.state;
     if (selection !== null) {
       document.getElementById(selection).classList.remove("selected");
     }
+    */
     this.setState({ selection: null, browserSelection: range });
   }
 
@@ -499,21 +482,26 @@ class OdtMarkupModal extends React.Component {
     const { resultId, updateParserResultForElement } = this.props;
     const { selection, dirty } = this.state;
     let content = "";
-    document.getElementById(selection).classList.remove("selected");
+
+    //document.getElementById(selection).classList.remove("selected");
+    this.setState({ selection: null })
+
     if (dirty) {
-      const root = document.getElementById("markup-content");
-      content = new XMLSerializer().serializeToString(root);
+      //const root = document.getElementById("markup-content");
+      //content = new XMLSerializer().serializeToString(root);
+      content = this.state.json;
     }
+
     this.setState({ updating: true, selection: null });
     updateParserResultForElement({ variables:
-      { id: resultId, content: content, element_id: selection, to_json: (this.format === 'json') } })
+      { id: resultId, content: content, element_id: selection, to_json: true } })
       .then(() => {
         this.content = null;
         this.initialized = false;
         this.setState({ updating: false, dirty: false });
         if (document.getElementById(selection)) {
           this.setState({ selection: selection });
-          document.getElementById(selection).classList.add("selected");
+          //document.getElementById(selection).classList.add("selected");
         }
       })
       .catch(() => {
@@ -539,6 +527,7 @@ class OdtMarkupModal extends React.Component {
     }
   }
 
+  /*
   jsonToHtml(doc) {
     const body_tag = document.createElement("body");
     for (const prg of doc) {
@@ -583,22 +572,20 @@ class OdtMarkupModal extends React.Component {
     }
     return body_tag;
   }
+  */
 
   get_by_id(id) {
-    if (!this.json) {
+    if (!this.state.json) {
       return null;
     }
-    for (const prg of this.json) {
+    for (const prg of this.state.json) {
       for (const wrd of prg) {
-
         if (wrd.id == id) {
           return wrd;
         }
-
         if (typeof wrd !== 'object') {
           continue;
         }
-
         for (const res of wrd.results ?? []) {
           if (res.id == id) {
             return res;
@@ -632,10 +619,10 @@ class OdtMarkupModal extends React.Component {
 
     if (!this.content) {
       const content = data.parser_result.content;
-      this.json = JSON.parse(content);
+      this.setState({ json: JSON.parse(content) });
 
       if (this.format === 'json') {
-        this.content = this.jsonToHtml(this.json);
+        this.content = this.jsonToHtml(this.state.json);
       } else {
         const doc = new DOMParser().parseFromString(content, "text/html");
         const bodies = doc.getElementsByTagName("body");
@@ -668,11 +655,20 @@ class OdtMarkupModal extends React.Component {
             scrolling
             style={{ padding: "10px" }}
           >
-            <Content
-              json_content={this.json}
-              saving={saving}
-              setSelectionOld={this.setSelection}
-            />
+            { this.state.json.map((json_sentence, index) => {
+                return (
+                  <p>
+                    <Sentence
+                      key={index}
+                      json_sentence={json_sentence}
+                      saving={saving}
+                      selection={selection}
+                      setSelection={setSelection}
+                    />
+                  </p>
+                );
+              });
+            }
           </Modal.Content>
         </div>
         <Modal.Actions>
