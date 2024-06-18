@@ -52,7 +52,8 @@ const updateParserResultForElementMutation = gql`
 
 const Word = ({children, prefix}) => {
   if (prefix && prefix.length) {
-    // e.g. <b></b>
+    // recursively use all the prefixes
+    // e.g. <b><i>text</i></b>
     const PrefixTag = prefix[0];
     return (
       <PrefixTag>
@@ -120,7 +121,7 @@ const Sentence = ({json_sentence, saving, selection, setSelection}) => {
       return (
         <Word
           key={index}
-          prefix={typeof json_word === 'object' ? json_word.prefix : null}
+          prefix={typeof json_word === 'object' ? json_word.prefix : []}
         >
           {typeof json_word === 'object' ? json_word.text : json_word}
         </Word>
@@ -173,14 +174,10 @@ class OdtMarkupModal extends React.Component {
     }
     //changing this.content
     switch (state) {
-      case 'toggle_approved':
-        if (elem.state.includes("approved")) {
-          this.setElemState(id, 'unapproved');
-        } else {
-          this.setElemState(id, 'approved');
-        }
-        return;
       case 'approved':
+        if (/\bapproved\b/.test(elem.state)) {
+          return;
+        }
         elem.state = elem.state.trim() + " approved";
         break;
       case 'unapproved':
@@ -192,6 +189,13 @@ class OdtMarkupModal extends React.Component {
       case 'unverified':
         elem.state = elem.state.replace(/\bverified\b/, "unverified");
         break;
+      case 'toggle_approved':
+        if (elem.state.includes("approved")) {
+          this.setElemState(id, 'unapproved');
+        } else {
+          this.setElemState(id, 'approved');
+        }
+        return;
       case 'toggle_unverified':
         if (elem.results &&
            !elem.results.some((res) => res.state === "result approved")) {
