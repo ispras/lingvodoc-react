@@ -68,7 +68,7 @@ const Word = ({children, prefix}) => {
   }
 }
 
-const Annotation = ({id, text, status, prefix, saving, selection, setSelection}) => {
+const Annotation = ({id, text, state, prefix, saving, selection, setSelection}) => {
 
   const onClick = () => {
     if (saving || !document.getSelection().isCollapsed) {
@@ -83,7 +83,7 @@ const Annotation = ({id, text, status, prefix, saving, selection, setSelection})
     >
       <span
         id={id}
-        className={status + (selection === id ? ' selected' : '') }
+        className={state + (selection === id ? ' selected' : '') }
         onClick={onClick}
       >
         {text}
@@ -100,7 +100,8 @@ const Sentence = ({json_sentence, saving, selection, setSelection}) => {
           key={index}
           id={json_word.id}
           text={json_word.text}
-          status={json_word.status}
+          state={json_word.state}
+          results={json_word.results}
           prefix={json_word.prefix}
           saving={saving}
           selection={selection}
@@ -131,6 +132,7 @@ class OdtMarkupModal extends React.Component {
     this.content = null;
 
     this.state = {
+      json: null,
       selection: null,
       browserSelection: null,
       dirty: false,
@@ -141,7 +143,7 @@ class OdtMarkupModal extends React.Component {
       updating: false
     };
 
-    this.addClickHandlers = this.addClickHandlers.bind(this);
+    //this.addClickHandlers = this.addClickHandlers.bind(this);
     this.onBrowserSelection = this.onBrowserSelection.bind(this);
     this.onKeyDown = this.onKeyDown.bind(this);
     this.addToMarkup = this.addToMarkup.bind(this);
@@ -178,7 +180,7 @@ class OdtMarkupModal extends React.Component {
     if (!elem) {
       if (event.key === "ArrowRight" && elems.length > 0) {
         //elems[0].click();
-        setSelection(elems[0].id);
+        this.setSelection(elems[0].id);
       }
       return;
     }
@@ -347,6 +349,15 @@ class OdtMarkupModal extends React.Component {
     const textNode = browserSelection.startContainer;
     const parentNode = textNode.parentElement;
     const text = textNode.textContent;
+
+    while (parentNode.tagName !== 'P') {
+      if (parentNode.id ===  "markup-content") {
+        return;
+      }
+      parentNode = parentNode.parentElement;
+    }
+
+    previousId = parentNode.previousSibling();
 
     let str = text.substring(0, browserSelection.startOffset);
     if (str !== "") {
@@ -618,19 +629,21 @@ class OdtMarkupModal extends React.Component {
     this.format = data.parser_result.arguments.format;
 
     if (!this.content) {
-      const content = data.parser_result.content;
-      this.setState({ json: JSON.parse(content) });
-
       if (this.format === 'json') {
-        this.content = this.jsonToHtml(this.state.json);
+        this.content = JSON.parse(data.parser_result.content);
+        this.setState({ json: this.content });
       } else {
-        const doc = new DOMParser().parseFromString(content, "text/html");
+        const doc = new DOMParser().parseFromString(data.parser_result.content, "text/html");
         const bodies = doc.getElementsByTagName("body");
         if (!bodies.length) {
           return null;
         }
         this.content = bodies[0];
       }
+    }
+
+    if (this.format === 'json' && !this.state.json) {
+      return null;
     }
 
     return (
@@ -663,11 +676,11 @@ class OdtMarkupModal extends React.Component {
                       json_sentence={json_sentence}
                       saving={saving}
                       selection={selection}
-                      setSelection={setSelection}
+                      setSelection={this.setSelection}
                     />
                   </p>
                 );
-              });
+              })
             }
           </Modal.Content>
         </div>
