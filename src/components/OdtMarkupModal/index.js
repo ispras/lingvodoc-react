@@ -174,24 +174,30 @@ class OdtMarkupModal extends React.Component {
     //changing this.content
     switch (state) {
       case 'toggle_approved':
-        if ("/\bapproved\b/" in elem.state) {
+        if (elem.state.includes("approved")) {
           this.setElemState(id, 'unapproved');
         } else {
           this.setElemState(id, 'approved');
         }
         return;
       case 'approved':
-        elem.state += " approved";
+        elem.state = elem.state.trim() + " approved";
         break;
       case 'unapproved':
-        elem.state.replace("/\bapproved\b/", "");
+        elem.state = elem.state.replace(/\bapproved\b/, "");
         break;
       case 'verified':
-        elem.state.replace("/\bunverified\b/", "verified");
+        elem.state = elem.state.replace(/\bunverified\b/, "verified");
         break;
       case 'unverified':
-        elem.state.replace("/\bverified\b/", "unverified");
+        elem.state = elem.state.replace(/\bverified\b/, "unverified");
         break;
+      case 'toggle_unverified':
+        if (elem.results &&
+           !elem.results.some((res) => res.state === "result approved")) {
+          this.setElemState(id, 'unverified');
+        }
+        return;
     }
     this.setState({ json: this.content });
   }

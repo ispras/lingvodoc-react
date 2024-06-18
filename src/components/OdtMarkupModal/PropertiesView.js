@@ -24,22 +24,14 @@ class PropertiesView extends React.Component {
   }
 
   onToggleVariant(variant, checked) {
-    const { selection, setDirty } = this.props;
+    const { selection, setDirty, setElemState } = this.props;
     const { result } = variant;
 
-    //document.getElementById(result.id).classList.toggle("approved");
     setElemState(result.id, 'toggle_approved');
     if (checked) {
-      //selectedElem.classList.remove("unverified");
-      //selectedElem.classList.add("verified");
       setElemState(selection, 'verified');
     } else {
-      const selectedElem = document.getElementById(selection);
-      if (!selectedElem.getElementsByClassName("result approved").length) {
-        //selectedElem.classList.remove("verified");
-        //selectedElem.classList.add("unverified");
-        setElemState(selection, 'unverified');
-      }
+      setElemState(selection, 'toggle_unverified');
     }
     setDirty();
   }
