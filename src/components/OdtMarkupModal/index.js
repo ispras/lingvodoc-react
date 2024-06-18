@@ -161,8 +161,39 @@ class OdtMarkupModal extends React.Component {
     this.parseElement = this.parseElement.bind(this);
     this.save = this.save.bind(this);
     this.onClose = this.onClose.bind(this);
-    this.get_by_id = this.get_by_id.bind(this);
+    this.getById = this.getById.bind(this);
+    this.setElemState = this.setElemState.bind(this);
     this.setSelection = this.setSelection.bind(this);
+  }
+
+  setElemState = (id, state) => {
+    const elem = this.getById(id);
+    if (!elem) {
+      return;
+    }
+    //changing this.content
+    switch (state) {
+      case 'toggle_approved':
+        if ("/\bapproved\b/" in elem.state) {
+          this.setElemState(id, 'unapproved');
+        } else {
+          this.setElemState(id, 'approved');
+        }
+        return;
+      case 'approved':
+        elem.state += " approved";
+        break;
+      case 'unapproved':
+        elem.state.replace("/\bapproved\b/", "");
+        break;
+      case 'verified':
+        elem.state.replace("/\bunverified\b/", "verified");
+        break;
+      case 'unverified':
+        elem.state.replace("/\bverified\b/", "unverified");
+        break;
+    }
+    this.setState({ json: this.content });
   }
 
   onKeyDown = event => {
@@ -220,7 +251,7 @@ class OdtMarkupModal extends React.Component {
         if (iter === number) {
           if (child.classList.contains("result")) {
             //child.classList.add("approved");
-            get_by_id(child.id).state += " approved";
+            this.setElemState(child.id, 'approved');
             success = true;
             break;
           }
@@ -228,7 +259,7 @@ class OdtMarkupModal extends React.Component {
       }
       if (success) {
         //elem.classList.replace("unverified", "verified");
-        get_by_id(elem.id).state.replace("/\bunverified\b/", "verified");
+        this.setElemState(elem.id, 'verified');
         this.setState({ dirty: true });
         if (i + 1 < elems.length) {
           scrollIntoViewIfNeeded(elems[i + 1]);
@@ -259,13 +290,13 @@ class OdtMarkupModal extends React.Component {
       for (const child of children) {
         if (child.classList !== undefined && child.classList.contains("approved")) {
           //child.classList.remove("approved");
-          get_by_id(child.id).state.replace("/\bapproved\b/", "");
+          this.setElemState(child.id, 'unapproved');
           success = true;
         }
       }
       this.state.selection = null;
       //elem.classList.replace("verified", "unverified");
-      get_by_id(elem.id).state.replace("/\bverified\b/", "unverified");
+      this.setElemState(elem.id, 'unverified');
       if (success) {
         this.setState({ dirty: true });
       }
@@ -593,11 +624,11 @@ class OdtMarkupModal extends React.Component {
   }
   */
 
-  get_by_id(id) {
-    if (!this.state.json) {
+  getById(id) {
+    if (!this.content) {
       return null;
     }
-    for (const prg of this.state.json) {
+    for (const prg of this.content) {
       for (const wrd of prg) {
         if (wrd.id == id) {
           return wrd;
@@ -670,6 +701,7 @@ class OdtMarkupModal extends React.Component {
             selection={selection}
             mode={saving ? "view" : mode}
             setDirty={() => this.setState({ dirty: true })}
+            setElemState={this.setElemState}
           />
           <Modal.Content
             id="markup-content"

@@ -26,16 +26,19 @@ class PropertiesView extends React.Component {
   onToggleVariant(variant, checked) {
     const { selection, setDirty } = this.props;
     const { result } = variant;
-    const selectedElem = document.getElementById(selection);
 
-    document.getElementById(result.id).classList.toggle("approved");
+    //document.getElementById(result.id).classList.toggle("approved");
+    setElemState(result.id, 'toggle_approved');
     if (checked) {
-      selectedElem.classList.remove("unverified");
-      selectedElem.classList.add("verified");
+      //selectedElem.classList.remove("unverified");
+      //selectedElem.classList.add("verified");
+      setElemState(selection, 'verified');
     } else {
+      const selectedElem = document.getElementById(selection);
       if (!selectedElem.getElementsByClassName("result approved").length) {
-        selectedElem.classList.remove("verified");
-        selectedElem.classList.add("unverified");
+        //selectedElem.classList.remove("verified");
+        //selectedElem.classList.add("unverified");
+        setElemState(selection, 'unverified');
       }
     }
     setDirty();
@@ -169,7 +172,8 @@ PropertiesView.contextType = TranslationContext;
 PropertiesView.propTypes = {
   selection: PropTypes.string,
   mode: PropTypes.string.isRequired,
-  setDirty: PropTypes.func.isRequired
+  setDirty: PropTypes.func.isRequired,
+  setElemState: PropTypes.func.isRequired
 };
 
 export default connect(null, dispatch => bindActionCreators({ openModal }, dispatch))(PropertiesView);
