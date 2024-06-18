@@ -68,7 +68,7 @@ const Word = ({children, prefix}) => {
   }
 }
 
-const Annotation = ({id, text, state, prefix, saving, selection, setSelection}) => {
+const Annotation = ({id, text, state, results, prefix, saving, selection, setSelection}) => {
 
   const onClick = () => {
     if (saving || !document.getSelection().isCollapsed) {
@@ -86,6 +86,14 @@ const Annotation = ({id, text, state, prefix, saving, selection, setSelection}) 
         className={state + (selection === id ? ' selected' : '') }
         onClick={onClick}
       >
+        {results.map(({id, state, ...data}) => (
+          <span
+            id={id}
+            className={state}
+          >
+            {JSON.stringify(data)}
+          </span>
+        ))}
         {text}
       </span>
     </Word>
@@ -101,8 +109,8 @@ const Sentence = ({json_sentence, saving, selection, setSelection}) => {
           id={json_word.id}
           text={json_word.text}
           state={json_word.state}
-          results={json_word.results}
-          prefix={json_word.prefix}
+          results={json_word.results ?? []}
+          prefix={json_word.prefix ?? []}
           saving={saving}
           selection={selection}
           setSelection={setSelection}
