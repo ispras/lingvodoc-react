@@ -228,7 +228,6 @@ class OdtMarkupModal extends React.Component {
 
     if (!elem) {
       if (event.key === "ArrowRight" && elems.length > 0) {
-        //elems[0].click();
         this.setSelection(elems[0].id);
       }
       return;
@@ -260,7 +259,6 @@ class OdtMarkupModal extends React.Component {
         }
         if (iter === number) {
           if (child.classList.contains("result")) {
-            //child.classList.add("approved");
             this.setElemState(child.id, 'approved');
             success = true;
             break;
@@ -268,12 +266,11 @@ class OdtMarkupModal extends React.Component {
         }
       }
       if (success) {
-        //elem.classList.replace("unverified", "verified");
         this.setElemState(elem.id, 'verified');
         this.setState({ dirty: true });
         if (i + 1 < elems.length) {
           scrollIntoViewIfNeeded(elems[i + 1]);
-          elems[i + 1].click();
+          this.setSelection(elems[i + 1].id);
         }
       }
       return;
@@ -282,7 +279,7 @@ class OdtMarkupModal extends React.Component {
     if (event.key === "ArrowRight") {
       if (i + 1 < elems.length) {
         scrollIntoViewIfNeeded(elems[i + 1]);
-        elems[i + 1].click();
+        this.setSelection(elems[i + 1].id);
       }
       return;
     }
@@ -290,7 +287,7 @@ class OdtMarkupModal extends React.Component {
     if (event.key === "ArrowLeft") {
       if (i - 1 >= 0) {
         scrollIntoViewIfNeeded(elems[i - 1]);
-        elems[i - 1].click();
+        this.setSelection(elems[i - 1].id);
       }
       return;
     }
@@ -299,18 +296,16 @@ class OdtMarkupModal extends React.Component {
       let success = false;
       for (const child of children) {
         if (child.classList !== undefined && child.classList.contains("approved")) {
-          //child.classList.remove("approved");
           this.setElemState(child.id, 'unapproved');
           success = true;
         }
       }
       this.state.selection = null;
-      //elem.classList.replace("verified", "unverified");
       this.setElemState(elem.id, 'unverified');
       if (success) {
         this.setState({ dirty: true });
       }
-      elem.click();  // << change ??
+      this.setSelection(elem.id);
       return;
     }
   };
