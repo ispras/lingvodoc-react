@@ -135,6 +135,7 @@ class OdtMarkupModal extends React.Component {
 
     this.initialized = false;
     this.availableId = 0;
+    this.availableSpecialId = 0;
     this.format = null;
     this.content = null;
 
@@ -320,8 +321,11 @@ class OdtMarkupModal extends React.Component {
     Array.from(root.getElementsByTagName("span")).forEach(elem => {
       if (elem.id !== undefined) {
         const numId = Number.parseInt(elem.id);
-        if (numId !== NaN && this.availableId <= numId) {
+        if (numId !== NaN && numId > 0 && numId >= this.availableId) {
           this.availableId = numId + 1;
+        }
+        if (numId !== NaN && numId < 0 && numId <= this.availableSpecialId) {
+          this.availableSpecialId = numId - 1;
         }
       }
     });
@@ -631,8 +635,8 @@ class OdtMarkupModal extends React.Component {
   */
 
   getById(id) {
-    if (!this.content) {
-      return [null];
+    if (!this.content || !id) {
+      return [null, null, null];
     }
     let prg_num = 0;
     for (const prg of this.content) {
@@ -653,7 +657,39 @@ class OdtMarkupModal extends React.Component {
       }
       prg_num++;
     }
-    return [null];
+    return [null, null, null];
+  }
+
+  changeJson({selfId,
+             previousId,
+             nextId,
+             selfText,
+             previousText,
+             nextText,
+             prefix,
+             to_delete}) {
+
+    const selfJsonData = getById(selfId);
+    const previousJsonData = getById(previousId);
+    const nextJsonData = getById(nextId);
+
+    prg_num = previousJsonData[1] || selfJsonData[1] || nextJsonData[1];
+
+    const new_elements = [];
+    if (selfJsonData[0]) {
+      if (previousText) new_elements.push(previousText);
+      new_elements.push({
+        id: this.availableId++,
+        state: "unverified",
+        prefix: prefix,
+        results: [],
+        text: selfText
+      });
+      if (nextText) new_elements.push(nextText);
+      this.content[selfJsonData[1]].slice(selfJsonData[2], 1, new_elements);
+    } else if (previousJsonData)
+
+
   }
 
   render() {
