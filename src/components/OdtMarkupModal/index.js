@@ -382,47 +382,70 @@ class OdtMarkupModal extends React.Component {
     let textNode = browserSelection.startContainer;
     let parentNode = textNode.parentElement;
     const text = textNode.textContent;
+    const prefix = [];
+    const newElements = [];
 
     // going out from prefix tags
     while (parentNode && parentNode.tagName !== 'P') {
       if (parentNode.id === "markup-content") {
         return;
       }
+      prefix.push(parentNode.localName);
       textNode = parentNode;
       parentNode = parentNode.parentElement;
     }
+    if (!parentNode || !parentNode.parentElement) {
+      return;
+    }
+    const prgNum = [...parentNode.parentElement.children].indexOf(parentNode);
+    const wrdNum = [...parentNode.childNodes].indexOf(textNode);
+    console.log(prgNum + ':' + wrdNum + ", " + prefix);
 
-    let previousId = null;
-    if (textNode.previousSibling) {
-      previousId = textNode.previousSibling.id;
+    function addNewElement({id, state, prefix, text}) {
+      if (text !== "") {
+        let elem = {};
+        if (id && state) {
+          elem.id = id;
+          elem.state = state;
+          elem.text = text
+        }
+        if (prefix.length) {
+          elem.prefix = prefix;
+          elem.text = text;
+        }
+        if (!Object.keys(elem).length) {
+          elem = text;
+        }
+        newElements.push(elem);
+      }
     }
 
-    let nextId = null;
-    if (textNode.nextSibling) {
-      nextId = textNode.nextSibling.id;
-    }
-
-    let str = text.substring(0, browserSelection.startOffset);
-    if (str !== "") {
-      parentNode.insertBefore(document.createTextNode(str), textNode);
-    }
-    const span = document.createElement("span");
-    span.id = this.availableId;
-    span.classList.add("unverified", "user");
-    span.innerText = browserSelection.toString();
-    //this.addClickHandlers([span]);
-    parentNode.insertBefore(span, textNode);
-    str = text.substring(browserSelection.endOffset);
-    if (str !== "") {
-      parentNode.insertBefore(document.createTextNode(str), textNode);
-    }
-    parentNode.removeChild(textNode);
-    this.setState({
-      browserSelection: null,
-      dirty: true
+    addNewElement({
+      prefix: prefix,
+      text: text.substring(0, browserSelection.startOffset)
     });
+    addNewElement({
+      id: this.availableId,
+      state: "unverified user",
+      prefix: prefix,
+      text: browserSelection.toString()
+    });
+    addNewElement({
+      prefix: prefix,
+      text: text.substring(browserSelection.endOffset)
+    });
+
+    // add new elements instead of old one
+    this.content[prgNum].splice(wrdNum, 1, ...newElements);
+
+    this.setState({
+      json: this.content,
+      browserSelection: null,
+      dirty: true,
+      //selection: this.availableId
+    });
+
     this.availableId++;
-    span.click();
   }
 
   removeFromMarkup() {
