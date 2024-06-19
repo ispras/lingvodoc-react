@@ -79,31 +79,29 @@ const Annotation = ({id, text, state, results, prefix, saving, selection, setSel
   }
 
   return (
-    <Word
-      prefix={prefix}
+    <span
+      id={id}
+      className={state + (selection === id ? ' selected' : '') }
+      onClick={onClick}
     >
-      <span
-        id={id}
-        className={state + (selection === id ? ' selected' : '') }
-        onClick={onClick}
-      >
-        {results.map(({id, state, ...data}) => (
-          <span
-            id={id}
-            className={state}
-          >
-            {JSON.stringify(data)}
-          </span>
-        ))}
-        {text}
-      </span>
-    </Word>
+
+      {results.map(({id, state, ...data}) => (
+        <span
+          id={id}
+          className={state}
+        >
+          {JSON.stringify(data)}
+        </span>
+      ))}
+
+      <Word prefix={prefix}> {text} </Word>
+    </span>
   );
 }
 
 const Sentence = ({json_sentence, saving, selection, setSelection}) => {
   return json_sentence.map((json_word, index) => {
-    if (typeof json_word === 'object' && json_word.id !== null) {
+    if (typeof json_word === 'object' && json_word.id) {
       return (
         <Annotation
           key={index}
@@ -152,7 +150,6 @@ class OdtMarkupModal extends React.Component {
       updating: false
     };
 
-    //this.addClickHandlers = this.addClickHandlers.bind(this);
     this.onBrowserSelection = this.onBrowserSelection.bind(this);
     this.onKeyDown = this.onKeyDown.bind(this);
     this.addToMarkup = this.addToMarkup.bind(this);
@@ -328,8 +325,6 @@ class OdtMarkupModal extends React.Component {
         }
       }
     });
-    //this.addClickHandlers(root.getElementsByClassName("unverified"));
-    //this.addClickHandlers(root.getElementsByClassName("verified"));
     if (this.props.mode === "edit") {
       document.addEventListener("selectionchange", this.onBrowserSelection);
     }
@@ -352,7 +347,7 @@ class OdtMarkupModal extends React.Component {
     } else {
       this.setState({ selection: id });
     }
-    console.log(id);
+    //console.log(id);
   }
 
   onBrowserSelection() {
@@ -379,29 +374,33 @@ class OdtMarkupModal extends React.Component {
       return;
     }
 
-    /*
-    const { selection } = this.state;
-    if (selection !== null) {
-      document.getElementById(selection).classList.remove("selected");
-    }
-    */
     this.setState({ selection: null, browserSelection: range });
   }
 
   addToMarkup() {
     const { browserSelection } = this.state;
-    const textNode = browserSelection.startContainer;
-    const parentNode = textNode.parentElement;
+    let textNode = browserSelection.startContainer;
+    let parentNode = textNode.parentElement;
     const text = textNode.textContent;
 
-    while (parentNode.tagName !== 'P') {
-      if (parentNode.id ===  "markup-content") {
+    // going out from prefix tags
+    while (parentNode && parentNode.tagName !== 'P') {
+      if (parentNode.id === "markup-content") {
         return;
       }
+      textNode = parentNode;
       parentNode = parentNode.parentElement;
     }
 
-    previousId = parentNode.previousSibling();
+    let previousId = null;
+    if (textNode.previousSibling) {
+      previousId = textNode.previousSibling.id;
+    }
+
+    let nextId = null;
+    if (textNode.nextSibling) {
+      nextId = textNode.nextSibling.id;
+    }
 
     let str = text.substring(0, browserSelection.startOffset);
     if (str !== "") {
