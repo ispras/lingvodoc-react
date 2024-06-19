@@ -642,12 +642,11 @@ class OdtMarkupModal extends React.Component {
           console.log(prg_num + ':' + wrd_num);
           return [wrd, prg_num, wrd_num];
         }
-        if (typeof wrd !== 'object') {
-          continue;
-        }
-        for (const res of wrd.results ?? []) {
-          if (res.id == id) {
-            return [res, prg_num, wrd_num];
+        if (typeof wrd === 'object') {
+          for (const res of wrd.results ?? []) {
+            if (res.id == id) {
+              return [res, prg_num, wrd_num];
+            }
           }
         }
         wrd_num++;
