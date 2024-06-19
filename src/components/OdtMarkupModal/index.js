@@ -72,7 +72,7 @@ const Word = ({children, prefix}) => {
 const Annotation = ({id, text, state, results, prefix, saving, selection, setSelection}) => {
 
   const onClick = () => {
-    if (saving || !document.getSelection().isCollapsed) {
+    if (saving || !document.getSelection().isCollapsed || id < 0) {
       return;
     }
     setSelection(selection === id ? null : id);
@@ -165,7 +165,7 @@ class OdtMarkupModal extends React.Component {
   }
 
   setElemState = (id, state) => {
-    const elem = this.getById(id);
+    const elem = this.getById(id)[0];
     if (!elem) {
       return;
     }
@@ -392,14 +392,16 @@ class OdtMarkupModal extends React.Component {
       parentNode = parentNode.parentElement;
     }
 
+    const selfId = textNode.id;
+
     let previousId = null;
-    if (textNode.previousSibling) {
-      previousId = textNode.previousSibling.id;
+    if (textNode.previousElementSibling) {
+      previousId = textNode.previousElementSibling.id;
     }
 
     let nextId = null;
-    if (textNode.nextSibling) {
-      nextId = textNode.nextSibling.id;
+    if (textNode.nextElementSibling) {
+      nextId = textNode.nextElementSibling.id;
     }
 
     let str = text.substring(0, browserSelection.startOffset);
@@ -629,25 +631,30 @@ class OdtMarkupModal extends React.Component {
   */
 
   getById(id) {
+    let prg_num = 0;
+    let wrd_num = 0;
     if (!this.content) {
-      return null;
+      return [null];
     }
     for (const prg of this.content) {
       for (const wrd of prg) {
         if (wrd.id == id) {
-          return wrd;
+          console.log(prg_num + ':' + wrd_num);
+          return [wrd, prg_num, wrd_num];
         }
         if (typeof wrd !== 'object') {
           continue;
         }
         for (const res of wrd.results ?? []) {
           if (res.id == id) {
-            return res;
+            return [res, prg_num, wrd_num];
           }
         }
+        wrd_num++;
       }
+      prg_num++;
     }
-    return null;
+    return [null];
   }
 
   render() {
