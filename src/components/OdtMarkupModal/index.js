@@ -631,12 +631,12 @@ class OdtMarkupModal extends React.Component {
   */
 
   getById(id) {
-    let prg_num = 0;
-    let wrd_num = 0;
     if (!this.content) {
       return [null];
     }
+    let prg_num = 0;
     for (const prg of this.content) {
+      let wrd_num = 0;
       for (const wrd of prg) {
         if (wrd.id == id) {
           console.log(prg_num + ':' + wrd_num);
