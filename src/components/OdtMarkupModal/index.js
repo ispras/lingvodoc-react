@@ -164,6 +164,28 @@ class OdtMarkupModal extends React.Component {
     this.setSelection = this.setSelection.bind(this);
   }
 
+  getById(id) {
+    if (!this.content || !id) {
+      return null;
+    }
+    for (const prg of this.content) {
+      for (const wrd of prg) {
+        if (wrd.id == id) {
+          return wrd;
+        }
+        if (typeof wrd !== 'object') {
+          continue;
+        }
+        for (const res of wrd.results ?? []) {
+          if (res.id == id) {
+            return res;
+          }
+        }
+      }
+    }
+    return null;
+  }
+
   setElemState = (id, state) => {
     const elem = this.getById(id);
     if (!elem) {
@@ -201,6 +223,15 @@ class OdtMarkupModal extends React.Component {
         return;
     }
     this.setState({ json: this.content });
+  }
+
+  setSelection(id) {
+    if (this.state.selection === id) {
+      this.setState({ selection: null });
+    } else {
+      this.setState({ selection: id });
+    }
+    //console.log(id);
   }
 
   onKeyDown = event => {
@@ -297,7 +328,7 @@ class OdtMarkupModal extends React.Component {
           success = true;
         }
       }
-      this.state.selection = null;
+      //this.state.selection = null; // << ??
       this.setElemState(elem.id, 'unverified');
       if (success) {
         this.setState({ dirty: true });
@@ -339,15 +370,6 @@ class OdtMarkupModal extends React.Component {
   componentWillUnmount() {
     document.removeEventListener("selectionchange", this.onBrowserSelection);
     document.removeEventListener("keydown", this.onKeyDown);
-  }
-
-  setSelection(id) {
-    if (this.state.selection === id) {
-      this.setState({ selection: null });
-    } else {
-      this.setState({ selection: id });
-    }
-    //console.log(id);
   }
 
   onBrowserSelection() {
@@ -397,6 +419,8 @@ class OdtMarkupModal extends React.Component {
     if (!parentNode || !parentNode.parentElement) {
       return;
     }
+
+    // getting paragraph number and word number
     const prgNum = [...parentNode.parentElement.children].indexOf(parentNode);
     const wrdNum = [...parentNode.childNodes].indexOf(textNode);
     console.log(prgNum + ':' + wrdNum + ", " + prefix);
@@ -435,7 +459,7 @@ class OdtMarkupModal extends React.Component {
       text: text.substring(browserSelection.endOffset)
     });
 
-    // add new elements instead of old one
+    // add new elements instead of old one into this.content
     this.content[prgNum].splice(wrdNum, 1, ...newElements);
 
     this.setState({
@@ -602,75 +626,6 @@ class OdtMarkupModal extends React.Component {
     } else {
       this.props.onClose();
     }
-  }
-
-  /*
-  jsonToHtml(doc) {
-    const body_tag = document.createElement("body");
-    for (const prg of doc) {
-      let p_tag = document.createElement("p");
-      for (const wrd of prg) {
-
-        // if word has some attributes
-        if (typeof wrd === "object") {
-          let w_span_tag = document.createElement("span");
-          w_span_tag.setAttribute('id', wrd.id ?? null);
-          w_span_tag.setAttribute('class', wrd.status ?? []);
-
-          // iterate by result spans
-          for (const res of wrd.results ?? []) {
-            let r_span_tag = document.createElement("span");
-            let {id, state, ...data} = res;
-            r_span_tag.setAttribute('id', id);
-            r_span_tag.setAttribute('class', state);
-            r_span_tag.append(JSON.stringify(data));
-            w_span_tag.append(r_span_tag);
-          }
-
-          w_span_tag.append(wrd.text);
-
-          // wrap w_span_tag in prefix tags if any
-          if (wrd.prefix) {
-            for (const prefix of wrd.prefix) {
-              const pref_tag = document.createElement(prefix);
-              pref_tag.append(w_span_tag);
-              w_span_tag = pref_tag;
-            }
-          }
-
-          // append word to paragraph
-          p_tag.append(w_span_tag);
-
-        } else {
-          p_tag.append(wrd);
-        }
-      }
-      body_tag.append(p_tag);
-    }
-    return body_tag;
-  }
-  */
-
-  getById(id) {
-    if (!this.content) {
-      return null;
-    }
-    for (const prg of this.content) {
-      for (const wrd of prg) {
-        if (wrd.id == id) {
-          return wrd;
-        }
-        if (typeof wrd !== 'object') {
-          continue;
-        }
-        for (const res of wrd.results ?? []) {
-          if (res.id == id) {
-            return res;
-          }
-        }
-      }
-    }
-    return null;
   }
 
   render() {
