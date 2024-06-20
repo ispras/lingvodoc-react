@@ -574,25 +574,19 @@ class OdtMarkupModal extends React.Component {
 
   save() {
     const { resultId, updateParserResult } = this.props;
-    const { selection } = this.state;
+    const { json, selection } = this.state;
 
-    if (selection) {
-      document.getElementById(selection).classList.remove("selected");
-    }
+    this.setSelection(null);
     this.setState({ saving: true });
-    const root = document.getElementById("markup-content");
+
     updateParserResult({ variables: {
-      id: resultId, content: new XMLSerializer().serializeToString(root), to_json: (this.format === 'json')} })
+      id: resultId, content: JSON.stringify(json) } })
       .then(() => {
-        if (selection) {
-          document.getElementById(selection).classList.add("selected");
-        }
+        this.setSelection(selection);
         this.setState({ dirty: false, saving: false });
       })
       .catch(() => {
-        if (selection) {
-          document.getElementById(selection).classList.add("selected");
-        }
+        this.setSelection(selection);
         this.setState({ saving: false });
       });
   }
