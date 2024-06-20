@@ -30,7 +30,6 @@ const getParserResultContentQuery = gql`
     parser_result(id: $id) {
       id
       content
-      arguments
     }
   }
 `;
@@ -139,7 +138,6 @@ class OdtMarkupModal extends React.Component {
 
     this.initialized = false;
     this.availableId = 0;
-    this.format = null;
     this.content = null;
 
     this.state = {
@@ -334,12 +332,12 @@ class OdtMarkupModal extends React.Component {
           success = true;
         }
       }
-      //this.state.selection = null; // << ??
+      this.setState({ selection: null });
       this.setElemState(elem.id, 'unverified');
       if (success) {
         this.setState({ dirty: true });
       }
-      this.setSelection(elem.id);
+      this.setState({ selection: elem.id });
       return;
     }
   };
@@ -576,20 +574,17 @@ class OdtMarkupModal extends React.Component {
     const { resultId, updateParserResult } = this.props;
     const { json, selection } = this.state;
 
-    this.setSelection(null);
-    this.setState({ saving: true });
+    this.setState({ saving: true, selection: null });
 
     updateParserResult({ variables: {
       id: resultId, content: JSON.stringify(json) } })
 
     .then(() => {
-      this.setSelection(selection);
-      this.setState({ dirty: false, saving: false });
+      this.setState({ dirty: false, saving: false, selection: selection });
     })
 
     .catch(() => {
-      this.setSelection(selection);
-      this.setState({ saving: false });
+      this.setState({ saving: false, selection: selection });
     });
   }
 
@@ -603,6 +598,7 @@ class OdtMarkupModal extends React.Component {
     }
 
     this.setState({ updating: true, selection: null });
+
     updateParserResultForElement({ variables:
       { id: resultId, content: content, element_id: selection } })
 
@@ -650,7 +646,6 @@ class OdtMarkupModal extends React.Component {
 
     const { selection, browserSelection, dirty, saving, confirmation, movingElem, copiedElem } = this.state;
     const selectedElem = this.getById(selection);
-    this.format = data.parser_result.arguments.format;
 
     if (!this.content) {
       this.content = JSON.parse(data.parser_result.content);
