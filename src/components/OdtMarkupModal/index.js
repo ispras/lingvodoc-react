@@ -4,6 +4,7 @@ import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
 import PropTypes from "prop-types";
 import { compose } from "recompose";
+import _isEqual from "lodash-es/isEqual";
 
 import TranslationContext from "Layout/TranslationContext";
 import scrollParent from "utils/scrollParent";
@@ -403,7 +404,6 @@ class OdtMarkupModal extends React.Component {
   }
 
   getNodeIndex(textNode) {
-    const prefix = [];
     let parentNode = textNode.parentElement;
 
     // going out from prefix tags
@@ -411,7 +411,6 @@ class OdtMarkupModal extends React.Component {
       if (parentNode.id === "markup-content") {
         return null;
       }
-      prefix.push(parentNode.localName);
       textNode = parentNode;
       parentNode = parentNode.parentElement;
     }
@@ -422,9 +421,9 @@ class OdtMarkupModal extends React.Component {
     // getting paragraph number and word number
     const prgNum = [...parentNode.parentElement.children].indexOf(parentNode);
     const wrdNum = [...parentNode.childNodes].indexOf(textNode);
-    console.log(prgNum + ':' + wrdNum + ", " + prefix);
+    console.log(prgNum + ':' + wrdNum);
 
-    return {prgNum, wrdNum, prefix};
+    return {prgNum, wrdNum};
   }
 
   addToMarkup() {
@@ -433,7 +432,8 @@ class OdtMarkupModal extends React.Component {
     const text = textNode.textContent;
     const index = this.getNodeIndex(textNode);
     if (!index) return;
-    const {prgNum, wrdNum, prefix} = index;
+    const {prgNum, wrdNum} = index;
+    const prefix = this.content[prgNum][wrdNum].prefix;
     const newElements = [];
 
     function addNewElement({id, state, prefix, text}) {
@@ -481,26 +481,50 @@ class OdtMarkupModal extends React.Component {
   }
 
   removeFromMarkup() {
-    const elem = document.getElementById(this.state.selection);
+
+    function isSuitable(elem, prefix) {
+      if (elem.id !== undefined) {
+        return false;
+      }
+      return _isEqual(new Set(elem.prefix), new Set(prefix));
+    }
 
     this.setState({
       confirmation: {
         content: this.context("Are you sure you want to remove selected element from markup?"),
         func: () => {
-          const prev = elem.previousSibling;
-          let content = "";
-          if (prev && prev.nodeType === Node.TEXT_NODE) {
-            content += prev.textContent;
-            prev.remove();
+          const elem = document.getElementById(this.state.selection);
+          const index = this.getNodeIndex(elem);
+          if (!index) return;
+          const {prgNum, wrdNum} = index;
+          const prg = this.content[prgNum];
+          const prefix = prg[wrdNum].prefix;
+          let [toStart, toDelete, text] = [wrdNum, 1, ""];
+
+          // get text from previous element
+          if (wrdNum > 0 && isSuitable(prg[wrdNum - 1], prefix)) {
+            text += prg[wrdNum - 1].text ?? prg[wrdNum - 1];
+            [toStart, toDelete] = [toStart - 1, toDelete + 1];
           }
-          content += elem.innerText;
-          const next = elem.nextSibling;
-          if (next && next.nodeType === Node.TEXT_NODE) {
-            content += next.textContent;
-            next.remove();
+
+          // get text from selected element
+          text += prg[wrdNum].text;
+
+          // get text from next element
+          if (wrdNum < prg.length - 1 && isSuitable(prg[wrdNum + 1], prefix)) {
+            text += prg[wrdNum + 1].text ?? prg[wrdNum + 1];
+            [toStart, toDelete] = [toStart, toDelete + 1];
           }
-          elem.parentElement.replaceChild(document.createTextNode(content), elem);
-          this.setState({ selection: null, dirty: true, confirmation: null });
+
+          // if prefix is not empty then newElement is object
+          let newElement = text;
+          if (prefix && prefix.length) {
+            newElement = {prefix, text};
+          }
+
+          // changing this.content and this.state
+          prg.splice(toStart, toDelete, newElement);
+          this.setState({ json: this.content, selection: null, dirty: true, confirmation: null });
         }
       }
     });
