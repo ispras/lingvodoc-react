@@ -94,7 +94,10 @@ const Annotation = ({id, text, state, results, prefix, saving, selection, setSel
         </span>
       ))}
 
-      <Word prefix={prefix}> {text} </Word>
+      <Word prefix={prefix}>
+        {text}
+      </Word>
+
     </span>
   );
 }
@@ -399,25 +402,21 @@ class OdtMarkupModal extends React.Component {
     this.setState({ selection: null, browserSelection: range });
   }
 
-  addToMarkup() {
-    const { browserSelection } = this.state;
-    let textNode = browserSelection.startContainer;
-    let parentNode = textNode.parentElement;
-    const text = textNode.textContent;
+  getNodeIndex(textNode) {
     const prefix = [];
-    const newElements = [];
+    let parentNode = textNode.parentElement;
 
     // going out from prefix tags
     while (parentNode && parentNode.tagName !== 'P') {
       if (parentNode.id === "markup-content") {
-        return;
+        return null;
       }
       prefix.push(parentNode.localName);
       textNode = parentNode;
       parentNode = parentNode.parentElement;
     }
     if (!parentNode || !parentNode.parentElement) {
-      return;
+      return null;
     }
 
     // getting paragraph number and word number
@@ -425,17 +424,26 @@ class OdtMarkupModal extends React.Component {
     const wrdNum = [...parentNode.childNodes].indexOf(textNode);
     console.log(prgNum + ':' + wrdNum + ", " + prefix);
 
+    return {prgNum, wrdNum, prefix};
+  }
+
+  addToMarkup() {
+    const { browserSelection } = this.state;
+    const textNode = browserSelection.startContainer;
+    const text = textNode.textContent;
+    const index = this.getNodeIndex(textNode);
+    if (!index) return;
+    const {prgNum, wrdNum, prefix} = index;
+    const newElements = [];
+
     function addNewElement({id, state, prefix, text}) {
       if (text !== "") {
         let elem = {};
         if (id && state) {
-          elem.id = id;
-          elem.state = state;
-          elem.text = text
+          Object.assign(elem, {id, state, text});
         }
         if (prefix.length) {
-          elem.prefix = prefix;
-          elem.text = text;
+          Object.assign(elem, {prefix, text});
         }
         if (!Object.keys(elem).length) {
           elem = text;
@@ -445,17 +453,17 @@ class OdtMarkupModal extends React.Component {
     }
 
     addNewElement({
-      prefix: prefix,
+      prefix,
       text: text.substring(0, browserSelection.startOffset)
     });
     addNewElement({
       id: this.availableId,
       state: "unverified user",
-      prefix: prefix,
+      prefix,
       text: browserSelection.toString()
     });
     addNewElement({
-      prefix: prefix,
+      prefix,
       text: text.substring(browserSelection.endOffset)
     });
 
