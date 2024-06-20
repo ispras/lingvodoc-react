@@ -581,50 +581,41 @@ class OdtMarkupModal extends React.Component {
 
     updateParserResult({ variables: {
       id: resultId, content: JSON.stringify(json) } })
-      .then(() => {
-        this.setSelection(selection);
-        this.setState({ dirty: false, saving: false });
-      })
-      .catch(() => {
-        this.setSelection(selection);
-        this.setState({ saving: false });
-      });
+
+    .then(() => {
+      this.setSelection(selection);
+      this.setState({ dirty: false, saving: false });
+    })
+
+    .catch(() => {
+      this.setSelection(selection);
+      this.setState({ saving: false });
+    });
   }
 
   parseElement() {
     const { resultId, updateParserResultForElement } = this.props;
-    const { selection, dirty } = this.state;
+    const { json, selection, dirty } = this.state;
     let content = "";
 
-    //document.getElementById(selection).classList.remove("selected");
-    this.setState({ selection: null })
-
     if (dirty) {
-      //const root = document.getElementById("markup-content");
-      //content = new XMLSerializer().serializeToString(root);
-      content = this.state.json;
+      content = JSON.stringify(json);
     }
 
     this.setState({ updating: true, selection: null });
     updateParserResultForElement({ variables:
-      { id: resultId, content: content, element_id: selection, to_json: true } })
-      .then(() => {
-        this.content = null;
-        this.initialized = false;
-        this.setState({ updating: false, dirty: false });
-        if (document.getElementById(selection)) {
-          this.setState({ selection: selection });
-          //document.getElementById(selection).classList.add("selected");
-        }
-      })
-      .catch(() => {
-        this.initialized = false;
-        this.setState({ updating: false });
-        if (document.getElementById(selection)) {
-          this.setState({ selection: selection });
-          document.getElementById(selection).classList.add("selected");
-        }
-      });
+      { id: resultId, content: content, element_id: selection } })
+
+    .then(() => {
+      this.content = null;
+      this.initialized = false;
+      this.setState({ updating: false, dirty: false, selection: selection });
+    })
+
+    .catch(() => {
+      this.initialized = false;
+      this.setState({ updating: false, selection: selection });
+    });
   }
 
   onClose() {
@@ -658,25 +649,12 @@ class OdtMarkupModal extends React.Component {
     }
 
     const { selection, browserSelection, dirty, saving, confirmation, movingElem, copiedElem } = this.state;
-    const selectedElem = selection === null ? null : document.getElementById(selection);
+    const selectedElem = this.getById(selection);
     this.format = data.parser_result.arguments.format;
 
     if (!this.content) {
-      if (this.format === 'json') {
-        this.content = JSON.parse(data.parser_result.content);
-        this.setState({ json: this.content });
-      } else {
-        const doc = new DOMParser().parseFromString(data.parser_result.content, "text/html");
-        const bodies = doc.getElementsByTagName("body");
-        if (!bodies.length) {
-          return null;
-        }
-        this.content = bodies[0];
-      }
-    }
-
-    if (this.format === 'json' && !this.state.json) {
-      return null;
+      this.content = JSON.parse(data.parser_result.content);
+      this.setState({ json: this.content });
     }
 
     return (
@@ -702,7 +680,7 @@ class OdtMarkupModal extends React.Component {
             scrolling
             style={{ padding: "10px" }}
           >
-            { this.state.json.map((json_sentence, index) => {
+            { this.content.map((json_sentence, index) => {
                 return (
                   <p>
                     <Sentence
@@ -733,19 +711,19 @@ class OdtMarkupModal extends React.Component {
               <Button
                 color="orange"
                 icon="minus"
-                content={`${this.context("Remove from markup")} '${selectedElem.innerText}'`}
+                content={`${this.context("Remove from markup")} '${selectedElem.text}'`}
                 onClick={this.removeFromMarkup}
               />
               <Button
                 color="blue"
                 icon="minus"
-                content={`${this.context("Move markup element")} '${selectedElem.innerText}'`}
+                content={`${this.context("Move markup element")} '${selectedElem.text}'`}
                 onClick={this.moveMarkup}
               />
               <Button
                 color="green"
                 icon="plus"
-                content={`${this.context("Parse element")} '${selectedElem.innerText}'`}
+                content={`${this.context("Parse element")} '${selectedElem.text}'`}
                 onClick={this.parseElement}
               />
             </div>
