@@ -164,6 +164,7 @@ class OdtMarkupModal extends React.Component {
     this.save = this.save.bind(this);
     this.onClose = this.onClose.bind(this);
     this.getById = this.getById.bind(this);
+    this.pasteMarkup = this.pasteMarkup.bind(this);
     this.setElemState = this.setElemState.bind(this);
     this.setSelection = this.setSelection.bind(this);
     this.joinNeighbours = this.joinNeighbours.bind(this);
@@ -427,7 +428,7 @@ class OdtMarkupModal extends React.Component {
     return {prgNum, wrdNum};
   }
 
-  addToMarkup() {
+  pasteMarkup(markup) {
     const { browserSelection } = this.state;
     const textNode = browserSelection.startContainer;
     const text = textNode.textContent;
@@ -457,12 +458,14 @@ class OdtMarkupModal extends React.Component {
       prefix,
       text: text.substring(0, browserSelection.startOffset)
     });
-    addNewElement({
+
+    addNewElement(markup ? markup : {
       id: this.availableId,
       state: "unverified user",
       prefix,
       text: browserSelection.toString()
     });
+
     addNewElement({
       prefix,
       text: text.substring(browserSelection.endOffset)
@@ -475,10 +478,14 @@ class OdtMarkupModal extends React.Component {
       json: this.content,
       browserSelection: null,
       dirty: true,
-      //selection: this.availableId
+      //selection: markup ? markup.id : this.availableId
     });
 
-    this.availableId++;
+    if (!markup) this.availableId++;
+  }
+
+  addToMarkup() {
+    this.pasteMarkup(null);
   }
 
   joinNeighbours() {
@@ -552,32 +559,14 @@ class OdtMarkupModal extends React.Component {
   }
 
   addCopiedMarkup() {
-    const { browserSelection } = this.state;
-    const textNode = browserSelection.startContainer;
-    const parentNode = textNode.parentElement;
-    const text = textNode.textContent;
-
-    let str = text.substring(0, browserSelection.startOffset);
-    if (str !== "") {
-      parentNode.insertBefore(document.createTextNode(str), textNode);
-    }
     const copiedElem = this.state.copiedElem;
-    copiedElem.lastChild.nodeValue = browserSelection.toString();
-    //this.addClickHandlers([copiedElem]);
-    parentNode.insertBefore(copiedElem, textNode);
-    str = text.substring(browserSelection.endOffset);
-    if (str !== "") {
-      parentNode.insertBefore(document.createTextNode(str), textNode);
-    }
-    parentNode.removeChild(textNode);
+    copiedElem.text = this.state.browserSelection.toString();
+    this.pasteMarkup(copiedElem);
     this.setState({
-      browserSelection: null,
-      dirty: true,
       copiedElem: null,
-      movingElem: false
+      movingElem: false,
+      //selection: copiedElem.id
     });
-    this.availableId++;
-    copiedElem.click();
   }
 
   save() {
@@ -768,14 +757,14 @@ class OdtMarkupModal extends React.Component {
             <Button
               color="violet"
               icon="plus"
-              content={`${this.context("Move copied markup element")} '${copiedElem.lastChild.nodeValue}'`}
+              content={`${this.context("Move copied markup element")} '${copiedElem.text}'`}
               onClick={this.addCopiedMarkup}
               style={{ float: "left" }}
             />
           )}
           {movingElem && browserSelection == null && (
             <div style={{ float: "left" }}>
-              {this.context("Select a new position for a markup element")} {copiedElem.lastChild.nodeValue}
+              {this.context("Select a new position for a markup element")} {copiedElem.text}
             </div>
           )}
           {mode === "edit" && (
