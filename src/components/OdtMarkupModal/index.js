@@ -438,11 +438,14 @@ class OdtMarkupModal extends React.Component {
     const prefix = this.content[prgNum][wrdNum].prefix;
     const newElements = [];
 
-    function addNewElement({id, state, prefix, text}) {
+    function addNewElement({id, state, results, prefix, text}) {
       if (text !== "") {
         let elem = {};
         if (id && state) {
           Object.assign(elem, {id, state, text});
+          if (results && results.length) {
+            Object.assign(elem, {results});
+          }
         }
         if (prefix && prefix.length) {
           Object.assign(elem, {prefix, text});
@@ -459,7 +462,7 @@ class OdtMarkupModal extends React.Component {
       text: text.substring(0, browserSelection.startOffset)
     });
 
-    addNewElement(markup ? markup : {
+    addNewElement(markup ? {...markup, prefix} : {
       id: this.availableId,
       state: "unverified user",
       prefix,
