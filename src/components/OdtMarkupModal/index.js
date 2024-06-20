@@ -166,6 +166,7 @@ class OdtMarkupModal extends React.Component {
     this.getById = this.getById.bind(this);
     this.setElemState = this.setElemState.bind(this);
     this.setSelection = this.setSelection.bind(this);
+    this.joinNeighbours = this.joinNeighbours.bind(this);
   }
 
   getById(id) {
@@ -442,7 +443,7 @@ class OdtMarkupModal extends React.Component {
         if (id && state) {
           Object.assign(elem, {id, state, text});
         }
-        if (prefix.length) {
+        if (prefix && prefix.length) {
           Object.assign(elem, {prefix, text});
         }
         if (!Object.keys(elem).length) {
@@ -480,50 +481,57 @@ class OdtMarkupModal extends React.Component {
     this.availableId++;
   }
 
-  removeFromMarkup() {
-
+  joinNeighbours() {
     function isSuitable(elem, prefix) {
+      // if element has annotation
       if (elem.id !== undefined) {
         return false;
       }
       return _isEqual(new Set(elem.prefix), new Set(prefix));
     }
 
+    const elem = document.getElementById(this.state.selection);
+    const index = this.getNodeIndex(elem);
+    if (!index) return;
+    const {prgNum, wrdNum} = index;
+    const prg = this.content[prgNum];
+    const wrd = prg[wrdNum];
+    const prefix = wrd.prefix;
+    let [toStart, toDelete, text] = [wrdNum, 1, ""];
+
+    // get text from previous element
+    if (wrdNum > 0 && isSuitable(prg[wrdNum - 1], prefix)) {
+      text += prg[wrdNum - 1].text ?? prg[wrdNum - 1];
+      [toStart, toDelete] = [toStart - 1, toDelete + 1];
+    }
+
+    // get text from selected element
+    text += wrd.text;
+
+    // get text from next element
+    if (wrdNum < prg.length - 1 && isSuitable(prg[wrdNum + 1], prefix)) {
+      text += prg[wrdNum + 1].text ?? prg[wrdNum + 1];
+      [toStart, toDelete] = [toStart, toDelete + 1];
+    }
+
+    // if prefix is not empty then newElement is object
+    let newElement = text;
+    if (prefix && prefix.length) {
+      newElement = {prefix, text};
+    }
+
+    // changing this.content
+    prg.splice(toStart, toDelete, newElement);
+
+    return wrd;
+  }
+
+  removeFromMarkup() {
     this.setState({
       confirmation: {
         content: this.context("Are you sure you want to remove selected element from markup?"),
         func: () => {
-          const elem = document.getElementById(this.state.selection);
-          const index = this.getNodeIndex(elem);
-          if (!index) return;
-          const {prgNum, wrdNum} = index;
-          const prg = this.content[prgNum];
-          const prefix = prg[wrdNum].prefix;
-          let [toStart, toDelete, text] = [wrdNum, 1, ""];
-
-          // get text from previous element
-          if (wrdNum > 0 && isSuitable(prg[wrdNum - 1], prefix)) {
-            text += prg[wrdNum - 1].text ?? prg[wrdNum - 1];
-            [toStart, toDelete] = [toStart - 1, toDelete + 1];
-          }
-
-          // get text from selected element
-          text += prg[wrdNum].text;
-
-          // get text from next element
-          if (wrdNum < prg.length - 1 && isSuitable(prg[wrdNum + 1], prefix)) {
-            text += prg[wrdNum + 1].text ?? prg[wrdNum + 1];
-            [toStart, toDelete] = [toStart, toDelete + 1];
-          }
-
-          // if prefix is not empty then newElement is object
-          let newElement = text;
-          if (prefix && prefix.length) {
-            newElement = {prefix, text};
-          }
-
-          // changing this.content and this.state
-          prg.splice(toStart, toDelete, newElement);
+          this.joinNeighbours();
           this.setState({ json: this.content, selection: null, dirty: true, confirmation: null });
         }
       }
@@ -531,27 +539,13 @@ class OdtMarkupModal extends React.Component {
   }
 
   moveMarkup() {
-    const elem = document.getElementById(this.state.selection);
-
     this.setState({
       confirmation: {
         content: this.context("Are you sure you want to move selected element?"),
         func: () => {
-          const prev = elem.previousSibling;
-          const copiedElem = elem;
-          let content = "";
-          if (prev && prev.nodeType === Node.TEXT_NODE) {
-            content += prev.textContent;
-            prev.remove();
-          }
-          content += elem.innerText;
-          const next = elem.nextSibling;
-          if (next && next.nodeType === Node.TEXT_NODE) {
-            content += next.textContent;
-            next.remove();
-          }
-          elem.parentElement.replaceChild(document.createTextNode(content), elem);
-          this.setState({ selection: null, dirty: true, confirmation: null, copiedElem: copiedElem, movingElem: true });
+          const copiedElem = this.joinNeighbours();
+          this.setState({ json: this.content, selection: null, dirty: true, confirmation: null,
+            copiedElem: copiedElem, movingElem: true });
         }
       }
     });
