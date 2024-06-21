@@ -162,10 +162,15 @@ class OdtMarkupModal extends React.Component {
     this.save = this.save.bind(this);
     this.onClose = this.onClose.bind(this);
     this.getById = this.getById.bind(this);
+    this.updateJson = this.updateJson.bind(this);
     this.pasteMarkup = this.pasteMarkup.bind(this);
     this.setElemState = this.setElemState.bind(this);
     this.setSelection = this.setSelection.bind(this);
     this.joinNeighbours = this.joinNeighbours.bind(this);
+  }
+
+  updateJson() {
+    this.setState({ json: this.content, dirty: true });
   }
 
   getById(id) {
@@ -219,14 +224,20 @@ class OdtMarkupModal extends React.Component {
           this.setElemState(id, 'approved');
         }
         return;
-      case 'toggle_unverified':
+      case 'toggle_verified':
         if (elem.results &&
-           !elem.results.some((res) => res.state === "result approved")) {
+           !elem.results.some((res) => /\bapproved\b/.test(res.state))) {
           this.setElemState(id, 'unverified');
         }
         return;
+      case 'toggle_broken':
+        if (elem.results &&
+           !elem.results.some((res) => /\bbroken\b/.test(res.state))) {
+          elem.state = elem.state.replace(/\bbroken\b/, "");
+          break;
+        }
+        return;
     }
-    this.setState({ json: this.content });
   }
 
   setSelection(id) {
@@ -299,7 +310,7 @@ class OdtMarkupModal extends React.Component {
       }
       if (success) {
         this.setElemState(elem.id, 'verified');
-        this.setState({ dirty: true });
+        this.updateJson();
         if (i + 1 < elems.length) {
           scrollIntoViewIfNeeded(elems[i + 1]);
           this.setSelection(elems[i + 1].id);
@@ -335,7 +346,7 @@ class OdtMarkupModal extends React.Component {
       this.setState({ selection: null });
       this.setElemState(elem.id, 'unverified');
       if (success) {
-        this.setState({ dirty: true });
+        this.updateJson();
       }
       this.setState({ selection: elem.id });
       return;
@@ -440,13 +451,13 @@ class OdtMarkupModal extends React.Component {
       if (text !== "") {
         let elem = {};
         if (id && state) {
-          Object.assign(elem, {id, state, text});
+          elem = {...elem, id, state, text};
           if (results && results.length) {
-            Object.assign(elem, {results});
+            elem = {...elem, results};
           }
         }
         if (prefix && prefix.length) {
-          Object.assign(elem, {prefix, text});
+          elem = {...elem, prefix, text};
         }
         if (!Object.keys(elem).length) {
           elem = text;
@@ -479,7 +490,7 @@ class OdtMarkupModal extends React.Component {
       json: this.content,
       browserSelection: null,
       dirty: true,
-      //selection: markup ? markup.id : this.availableId
+      selection: markup ? markup.id : this.availableId
     });
 
     if (!markup) this.availableId++;
@@ -566,7 +577,7 @@ class OdtMarkupModal extends React.Component {
     this.setState({
       copiedElem: null,
       movingElem: false,
-      //selection: copiedElem.id
+      selection: copiedElem.id
     });
   }
 
@@ -667,8 +678,9 @@ class OdtMarkupModal extends React.Component {
           <PropertiesView
             selection={selection}
             mode={saving ? "view" : mode}
-            setDirty={() => this.setState({ dirty: true })}
+            updateJson={this.updateJson}
             setElemState={this.setElemState}
+            getById={this.getById}
           />
           <Modal.Content
             id="markup-content"

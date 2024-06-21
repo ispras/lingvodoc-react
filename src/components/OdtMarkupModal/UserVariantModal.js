@@ -9,22 +9,22 @@ class UserVariantModal extends React.Component {
   constructor(props) {
     super(props);
 
-    const { variant } = props;
+    const { result } = props;
     this.state = {
-      lex: variant ? variant.lex : "",
-      parts: variant ? variant.parts : "",
-      gloss: variant ? variant.gloss : "",
-      gr: variant ? variant.gr : "",
-      trans_ru: variant ? variant.trans_ru : ""
+      lex: result ? result.lex : "",
+      parts: result ? result.parts : "",
+      gloss: result ? result.gloss : "",
+      gr: result ? result.gr : "",
+      trans_ru: result ? result.trans_ru : ""
     };
 
     this.save = this.save.bind(this);
   }
 
   save() {
-    const { parent, variant, onSubmit, onClose } = this.props;
-    if (variant) {
-      variant.result.innerHTML = JSON.stringify(this.state);
+    const { parent, result, onSubmit, onClose } = this.props;
+    if (result) {
+      result.innerHTML = JSON.stringify(this.state);
     } else {
       const elem = document.createElement("span");
       elem.classList.add("result");
@@ -38,7 +38,7 @@ class UserVariantModal extends React.Component {
   }
 
   render() {
-    const { variant, onClose } = this.props;
+    const { result, onClose } = this.props;
     const { lex, parts, gloss, gr, trans_ru } = this.state;
     const isValid =
       lex.trim() !== "" && parts.trim() !== "" && gloss.trim() !== "" && gr.trim() !== "" && trans_ru.trim() !== "";
@@ -73,7 +73,7 @@ class UserVariantModal extends React.Component {
         <Modal.Actions>
           <Button
             disabled={!isValid}
-            content={this.context(variant ? "Save" : "Create")}
+            content={this.context(result ? "Save" : "Create")}
             onClick={this.save}
             className="lingvo-button-violet"
           />
@@ -88,7 +88,7 @@ UserVariantModal.contextType = TranslationContext;
 
 UserVariantModal.propTypes = {
   parent: PropTypes.object,
-  variant: PropTypes.object,
+  result: PropTypes.object,
   onSubmit: PropTypes.func.isRequired,
   onClose: PropTypes.func.isRequired
 };
