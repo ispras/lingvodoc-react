@@ -163,7 +163,6 @@ class OdtMarkupModal extends React.Component {
     this.onClose = this.onClose.bind(this);
     this.getById = this.getById.bind(this);
     this.updateJson = this.updateJson.bind(this);
-    this.pasteMarkup = this.pasteMarkup.bind(this);
     this.setElemState = this.setElemState.bind(this);
     this.setSelection = this.setSelection.bind(this);
     this.joinNeighbours = this.joinNeighbours.bind(this);
@@ -437,7 +436,7 @@ class OdtMarkupModal extends React.Component {
     return {prgNum, wrdNum};
   }
 
-  pasteMarkup(markup) {
+  addToMarkup(markup) {
     const { browserSelection } = this.state;
     const textNode = browserSelection.startContainer;
     const text = textNode.textContent;
@@ -494,10 +493,6 @@ class OdtMarkupModal extends React.Component {
     });
 
     if (!markup) this.availableId++;
-  }
-
-  addToMarkup() {
-    this.pasteMarkup(null);
   }
 
   joinNeighbours() {
@@ -573,7 +568,7 @@ class OdtMarkupModal extends React.Component {
   addCopiedMarkup() {
     const copiedElem = this.state.copiedElem;
     copiedElem.text = this.state.browserSelection.toString();
-    this.pasteMarkup(copiedElem);
+    this.addToMarkup(copiedElem);
     this.setState({
       copiedElem: null,
       movingElem: false,
@@ -681,6 +676,7 @@ class OdtMarkupModal extends React.Component {
             updateJson={this.updateJson}
             setElemState={this.setElemState}
             getById={this.getById}
+            getAvailableId={() => this.availableId++}
           />
           <Modal.Content
             id="markup-content"
@@ -709,7 +705,7 @@ class OdtMarkupModal extends React.Component {
               color="violet"
               icon="plus"
               content={`${this.context("Add to markup")} '${browserSelection.toString()}'`}
-              onClick={this.addToMarkup}
+              onClick={() => this.addToMarkup(null)}
               style={{ float: "left" }}
             />
           )}

@@ -60,7 +60,7 @@ class PropertiesView extends React.Component {
   }
 
   render() {
-    const { selection, openModal, getById } = this.props;
+    const { selection, openModal, getById, getAvailableId } = this.props;
     const { elemToDeleteId } = this.state;
     const isEdit = this.props.mode === "edit";
     const selectedElem = getById(selection);
@@ -139,7 +139,7 @@ class PropertiesView extends React.Component {
                     icon="plus"
                     content={this.context("Add variant")}
                     onClick={() =>
-                      openModal(UserVariantModal, { parent: selectedElem, onSubmit: this.onVariantsChanged })
+                      openModal(UserVariantModal, { parent: results, onSubmit: this.onVariantsChanged, getAvailableId })
                     }
                   />
                 </List.Item>
@@ -166,7 +166,8 @@ PropertiesView.propTypes = {
   selection: PropTypes.string,
   mode: PropTypes.string.isRequired,
   updateJson: PropTypes.func.isRequired,
-  setElemState: PropTypes.func.isRequired
+  setElemState: PropTypes.func.isRequired,
+  getAvailableId: PropTypes.func.isRequired
 };
 
 export default connect(null, dispatch => bindActionCreators({ openModal }, dispatch))(PropertiesView);

@@ -11,6 +11,8 @@ class UserVariantModal extends React.Component {
 
     const { result } = props;
     this.state = {
+      id: result ? result.id : null,
+      state: result ? result.state : "result user",
       lex: result ? result.lex : "",
       parts: result ? result.parts : "",
       gloss: result ? result.gloss : "",
@@ -22,16 +24,11 @@ class UserVariantModal extends React.Component {
   }
 
   save() {
-    const { parent, result, onSubmit, onClose } = this.props;
+    const { parent, result, onSubmit, onClose, getAvailableId } = this.props;
     if (result) {
-      result.innerHTML = JSON.stringify(this.state);
+      Object.assign(result, this.state);
     } else {
-      const elem = document.createElement("span");
-      elem.classList.add("result");
-      elem.classList.add("user");
-      elem.innerHTML = JSON.stringify(this.state);
-      parent.append(elem);
-      elem.id = `${elem.previousElementSibling ? elem.previousElementSibling.id : parent.id}!`;
+      parent.push({...this.state, id: getAvailableId()});
     }
     onSubmit();
     onClose();
