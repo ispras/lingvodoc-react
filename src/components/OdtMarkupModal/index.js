@@ -139,6 +139,7 @@ class OdtMarkupModal extends React.Component {
     this.availableId = 0;
     this.content = null;
     this.index = null;
+    this.true_selection = null;
 
     this.state = {
       json: null,
@@ -342,12 +343,12 @@ class OdtMarkupModal extends React.Component {
           success = true;
         }
       }
-      this.setState({ selection: null });
       this.setElemState(elem.id, 'unverified');
       if (success) {
         this.updateJson();
       }
-      this.setState({ selection: elem.id });
+      this.setState({ selection: null });
+      this.true_selection = elem.id;
       return;
     }
   };
@@ -665,6 +666,12 @@ class OdtMarkupModal extends React.Component {
       const {prgNum, wrdNum} = this.index;
       this.setState({ selection: this.content[prgNum][wrdNum].id });
       this.index = null;
+    }
+
+    // to rerender PropertiesView
+    if (this.true_selection) {
+        this.setState({ selection: this.true_selection });
+        this.true_selection = null;
     }
 
     return (
