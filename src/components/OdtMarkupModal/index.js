@@ -138,6 +138,7 @@ class OdtMarkupModal extends React.Component {
     this.initialized = false;
     this.availableId = 0;
     this.content = null;
+    this.index = null;
 
     this.state = {
       json: null,
@@ -597,6 +598,8 @@ class OdtMarkupModal extends React.Component {
   parseElement() {
     const { resultId, updateParserResultForElement } = this.props;
     const { json, selection, dirty } = this.state;
+    const elem = document.getElementsByClassName("selected")[0];
+    this.index = this.getNodeIndex(elem);
     let content = "";
 
     if (dirty) {
@@ -611,7 +614,7 @@ class OdtMarkupModal extends React.Component {
     .then(() => {
       this.content = null;
       this.initialized = false;
-      this.setState({ updating: false, dirty: false, selection: selection });
+      this.setState({ updating: false, dirty: false });
     })
 
     .catch(() => {
@@ -656,6 +659,12 @@ class OdtMarkupModal extends React.Component {
     if (!this.content) {
       this.content = JSON.parse(data.parser_result.content);
       this.setState({ json: this.content });
+    }
+
+    if (this.index && !selection) {
+      const {prgNum, wrdNum} = this.index;
+      this.setState({ selection: this.content[prgNum][wrdNum].id });
+      this.index = null;
     }
 
     return (
