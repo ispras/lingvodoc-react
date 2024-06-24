@@ -79,26 +79,25 @@ const Annotation = ({id, text, state, results, prefix, saving, selection, setSel
   }
 
   return (
-    <span
-      id={id}
-      className={state + (selection === id ? ' selected' : '') }
-      onClick={onClick}
-    >
+    <Word prefix={prefix}>
+      <span
+        id={id}
+        className={state + (selection === id ? ' selected' : '') }
+        onClick={onClick}
+      >
 
-      {results.map(({id, state, ...data}) => (
-        <span
-          id={id}
-          className={state}
-        >
-          {JSON.stringify(data)}
-        </span>
-      ))}
+        {results.map(({id, state, ...data}) => (
+          <span
+            id={id}
+            className={state}
+          >
+            {JSON.stringify(data)}
+          </span>
+        ))}
 
-      <Word prefix={prefix}>
         {text}
-      </Word>
-
-    </span>
+      </span>
+    </Word>
   );
 }
 

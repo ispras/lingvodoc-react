@@ -84,7 +84,7 @@ class UserVariantModal extends React.Component {
 UserVariantModal.contextType = TranslationContext;
 
 UserVariantModal.propTypes = {
-  parent: PropTypes.object,
+  parent: PropTypes.array,
   result: PropTypes.object,
   onSubmit: PropTypes.func.isRequired,
   onClose: PropTypes.func.isRequired

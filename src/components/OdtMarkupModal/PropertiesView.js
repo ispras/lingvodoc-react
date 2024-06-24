@@ -66,7 +66,7 @@ class PropertiesView extends React.Component {
     const selectedElem = getById(selection);
     let results = [];
     if (selectedElem) {
-      results = selectedElem.results ?? [];
+      results = selectedElem.results;
       if (!isEdit && /\bverified\b/.test(selectedElem.state)) {
         results = results.filter(res => /\bapproved\b/.test(res.state));
       }
