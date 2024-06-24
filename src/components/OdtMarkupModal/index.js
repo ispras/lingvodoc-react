@@ -27,7 +27,7 @@ const scrollIntoViewIfNeeded = elem => {
 
 const getParserResultContentQuery = gql`
   query getParserResultContentQuery($id: LingvodocID!) {
-    parser_result(id: $id) {
+    parser_result(id: $id, exact_fmt: "json") {
       id
       content
     }
@@ -35,16 +35,16 @@ const getParserResultContentQuery = gql`
 `;
 
 const updateParserResultMutation = gql`
-  mutation updateParserResultMutation($id: LingvodocID!, $content: String!, $to_json: Boolean) {
-    update_parser_result(id: $id, content: $content, to_json: $to_json) {
+  mutation updateParserResultMutation($id: LingvodocID!, $content: String!) {
+    update_parser_result(id: $id, content: $content, content_fmt: "json") {
       triumph
     }
   }
 `;
 
 const updateParserResultForElementMutation = gql`
-  mutation updateParserResultForElementMutation($id: LingvodocID!, $content: String!, $element_id: String!, $to_json: Boolean) {
-    update_parser_result(id: $id, content: $content, element_id: $element_id, to_json: $to_json) {
+  mutation updateParserResultForElementMutation($id: LingvodocID!, $content: String!, $element_id: String!) {
+    update_parser_result(id: $id, content: $content, element_id: $element_id, content_fmt: "json") {
       triumph
     }
   }
