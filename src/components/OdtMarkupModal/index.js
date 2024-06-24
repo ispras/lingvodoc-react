@@ -450,7 +450,7 @@ class OdtMarkupModal extends React.Component {
         let elem = {};
         if (id && state) {
           elem = {...elem, id, state, text};
-          if (results && results.length) {
+          if (results) {
             elem = {...elem, results};
           }
         }
@@ -472,6 +472,7 @@ class OdtMarkupModal extends React.Component {
     addNewElement(markup ? {...markup, prefix} : {
       id: this.availableId,
       state: "unverified user",
+      results: [],
       prefix,
       text: browserSelection.toString()
     });
