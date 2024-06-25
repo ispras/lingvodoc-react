@@ -86,8 +86,9 @@ const Annotation = ({id, text, state, results, prefix, saving, selection, setSel
         onClick={onClick}
       >
 
-        {results.map(({id, state, ...data}) => (
+        {results.map(({id, state, ...data}, index) => (
           <span
+            key={index}
             id={id}
             className={state}
           >
@@ -139,7 +140,7 @@ class OdtMarkupModal extends React.Component {
     this.availableId = 0;
     this.content = null;
     this.index = null;
-    this.true_selection = null;
+    this.reselection = null;
 
     this.state = {
       json: null,
@@ -240,11 +241,14 @@ class OdtMarkupModal extends React.Component {
     }
   }
 
-  setSelection(id) {
+  setSelection(id, reselect=null) {
     if (this.state.selection === id) {
       this.setState({ selection: null });
     } else {
       this.setState({ selection: id });
+    }
+    if (reselect) {
+      this.reselection = reselect;
     }
     //console.log(id);
   }
@@ -314,6 +318,8 @@ class OdtMarkupModal extends React.Component {
         if (i + 1 < elems.length) {
           scrollIntoViewIfNeeded(elems[i + 1]);
           this.setSelection(elems[i + 1].id);
+        } else {
+          this.setSelection(null, elem.id);
         }
       }
       return;
@@ -347,13 +353,26 @@ class OdtMarkupModal extends React.Component {
       if (success) {
         this.updateJson();
       }
-      this.setState({ selection: null });
-      this.true_selection = elem.id;
+      this.setSelection(null, elem.id);
       return;
     }
   };
 
   componentDidUpdate() {
+
+    // to select element by order in text
+    if (this.index && !this.state.selection) {
+      const {prgNum, wrdNum} = this.index;
+      this.setState({ selection: this.content[prgNum][wrdNum].id });
+      this.index = null;
+    }
+
+    // to re-render PropertiesView
+    if (this.reselection) {
+      this.setState({ selection: this.reselection });
+      this.reselection = null;
+    }
+
     if (this.initialized) {
       return;
     }
@@ -659,19 +678,6 @@ class OdtMarkupModal extends React.Component {
 
     if (!this.content) {
       this.content = JSON.parse(data.parser_result.content);
-      this.setState({ json: this.content });
-    }
-
-    if (this.index && !selection) {
-      const {prgNum, wrdNum} = this.index;
-      this.setState({ selection: this.content[prgNum][wrdNum].id });
-      this.index = null;
-    }
-
-    // to rerender PropertiesView
-    if (this.true_selection) {
-        this.setState({ selection: this.true_selection });
-        this.true_selection = null;
     }
 
     return (
@@ -687,7 +693,7 @@ class OdtMarkupModal extends React.Component {
         <Modal.Header>{this.context("Text markup")}</Modal.Header>
         <div style={{ display: "flex", flexDirection: "row" }}>
           <PropertiesView
-            selection={selection}
+            selection={selection ? selection.toString() : null}
             mode={saving ? "view" : mode}
             updateJson={this.updateJson}
             setElemState={this.setElemState}
@@ -701,7 +707,7 @@ class OdtMarkupModal extends React.Component {
           >
             { this.content.map((json_sentence, index) => {
                 return (
-                  <p>
+                  <p key={index}>
                     <Sentence
                       key={index}
                       json_sentence={json_sentence}
