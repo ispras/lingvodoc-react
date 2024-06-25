@@ -86,8 +86,9 @@ const Annotation = ({id, text, state, results, prefix, saving, selection, setSel
         onClick={onClick}
       >
 
-        {results.map(({id, state, ...data}) => (
+        {results.map(({id, state, ...data}, index) => (
           <span
+            key={index}
             id={id}
             className={state}
           >
@@ -139,7 +140,7 @@ class OdtMarkupModal extends React.Component {
     this.availableId = 0;
     this.content = null;
     this.index = null;
-    this.true_selection = null;
+    this.reselection = null;
 
     this.state = {
       json: null,
@@ -348,7 +349,7 @@ class OdtMarkupModal extends React.Component {
         this.updateJson();
       }
       this.setState({ selection: null });
-      this.true_selection = elem.id;
+      this.reselection = elem.id;
       return;
     }
   };
@@ -669,9 +670,9 @@ class OdtMarkupModal extends React.Component {
     }
 
     // to rerender PropertiesView
-    if (this.true_selection) {
-        this.setState({ selection: this.true_selection });
-        this.true_selection = null;
+    if (this.reselection) {
+        this.setState({ selection: this.reselection });
+        this.reselection = null;
     }
 
     return (
@@ -701,7 +702,7 @@ class OdtMarkupModal extends React.Component {
           >
             { this.content.map((json_sentence, index) => {
                 return (
-                  <p>
+                  <p key={index}>
                     <Sentence
                       key={index}
                       json_sentence={json_sentence}
