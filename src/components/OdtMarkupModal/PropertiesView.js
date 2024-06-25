@@ -163,7 +163,7 @@ class PropertiesView extends React.Component {
 PropertiesView.contextType = TranslationContext;
 
 PropertiesView.propTypes = {
-  selection: PropTypes.number,
+  selection: PropTypes.string,
   mode: PropTypes.string.isRequired,
   updateJson: PropTypes.func.isRequired,
   setElemState: PropTypes.func.isRequired,

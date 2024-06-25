@@ -355,6 +355,20 @@ class OdtMarkupModal extends React.Component {
   };
 
   componentDidUpdate() {
+
+    // to select element by order in text
+    if (this.index && !this.state.selection) {
+      const {prgNum, wrdNum} = this.index;
+      this.setState({ selection: this.content[prgNum][wrdNum].id });
+      this.index = null;
+    }
+
+    // to re-render PropertiesView
+    if (this.reselection) {
+      this.setState({ selection: this.reselection });
+      this.reselection = null;
+    }
+
     if (this.initialized) {
       return;
     }
@@ -660,19 +674,6 @@ class OdtMarkupModal extends React.Component {
 
     if (!this.content) {
       this.content = JSON.parse(data.parser_result.content);
-      this.setState({ json: this.content });
-    }
-
-    if (this.index && !selection) {
-      const {prgNum, wrdNum} = this.index;
-      this.setState({ selection: this.content[prgNum][wrdNum].id });
-      this.index = null;
-    }
-
-    // to rerender PropertiesView
-    if (this.reselection) {
-        this.setState({ selection: this.reselection });
-        this.reselection = null;
     }
 
     return (
@@ -688,7 +689,7 @@ class OdtMarkupModal extends React.Component {
         <Modal.Header>{this.context("Text markup")}</Modal.Header>
         <div style={{ display: "flex", flexDirection: "row" }}>
           <PropertiesView
-            selection={selection}
+            selection={selection ? selection.toString() : null}
             mode={saving ? "view" : mode}
             updateJson={this.updateJson}
             setElemState={this.setElemState}
