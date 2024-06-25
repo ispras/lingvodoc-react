@@ -241,11 +241,14 @@ class OdtMarkupModal extends React.Component {
     }
   }
 
-  setSelection(id) {
+  setSelection(id, reselect=null) {
     if (this.state.selection === id) {
       this.setState({ selection: null });
     } else {
       this.setState({ selection: id });
+    }
+    if (reselect) {
+      this.reselection = reselect;
     }
     //console.log(id);
   }
@@ -315,6 +318,8 @@ class OdtMarkupModal extends React.Component {
         if (i + 1 < elems.length) {
           scrollIntoViewIfNeeded(elems[i + 1]);
           this.setSelection(elems[i + 1].id);
+        } else {
+          this.setSelection(null, elem.id);
         }
       }
       return;
@@ -348,8 +353,7 @@ class OdtMarkupModal extends React.Component {
       if (success) {
         this.updateJson();
       }
-      this.setState({ selection: null });
-      this.reselection = elem.id;
+      this.setSelection(null, elem.id);
       return;
     }
   };
