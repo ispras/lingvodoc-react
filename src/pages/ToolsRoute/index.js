@@ -64,6 +64,12 @@ function ToolsRoute(props) {
                 <img className="card-item__img card-item__img_verb-valency" src={imageValency} />
               </Link>
             )}
+            {props.user.id !== undefined && (
+              <Link className="card-item" to="/adverb">
+                <label className="card-item__label">{getTranslation("Adverb specificity")}</label>
+                <img className="card-item__img card-item__img_verb-valency" src={imageValency} />
+              </Link>
+            )}
           </div>
         </div>
       </div>
