@@ -1,10 +1,10 @@
 import React, { useCallback, useContext, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { getFlatDataFromTree, getNodeAtPath, map } from "react-sortable-tree";
-import { Button, Icon } from "semantic-ui-react";
+import { Button, ButtonGroup, Icon, Popup } from "semantic-ui-react";
 import { useQuery } from "@apollo/client";
 import Immutable from "immutable";
-import { findIndex, isEqual } from "lodash";
+import { findIndex, isEqual, cloneDeep } from "lodash";
 import PropTypes from "prop-types";
 
 import { chooseTranslation } from "api/i18n";
@@ -17,16 +17,20 @@ import {
 } from "backend";
 import CreateLanguageModal from "components/CreateLanguageModal";
 import EditLanguageModal from "components/EditLanguageModal";
-import { checkLanguageId } from "components/Home/components/LangsNav";
+import SelectUserModal from "components/LanguageUserRoleModal";
 import TreeWithSearch from "components/TreeWithSearch";
 import { useMutation } from "hooks";
 import TranslationContext from "Layout/TranslationContext";
-import { buildLanguageTree } from "pages/Search/treeBuilder";
+import { buildLanguageTree, uniqSum } from "pages/Search/treeBuilder";
 import { compositeIdToString } from "utils/compositeId";
+import { queryUsers } from "components/BanModal";
+import { openModal as openConfirmModal } from "ducks/confirm";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
 
 const getNodeKey = ({ node, treeIndex }) => (node.id ? node.id.toString() : treeIndex);
 
-const Languages = ({ height, selected, onSelect, expanded = true, inverted = true, updatableTOC }) => {
+const Languages = ({ actions, height, selected, onSelect, expanded = true, inverted = true, updatableTOC }) => {
   const getTranslation = useContext(TranslationContext);
 
   const user = useSelector(state => state.user.user);
@@ -36,6 +40,8 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
   const [selection, setSelection] = useState(selected);
   const [modifyingTocs, setModifyingTocs] = useState([]);
   const [modalInfo, setModalInfo] = useState({});
+
+  const { loading: userLoading, data: userData } = useQuery(queryUsers);
 
   const { loading: dictionariesLoading, data: dictionariesData } = useQuery(dictionariesInfoQuery);
   const languageStats = useMemo(() => {
@@ -62,10 +68,12 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
   }, [dictionariesData]);
 
   const setTreeDataFromQuery = useCallback(
-    tree => {
+    (tree, readyData) => {
       setTreeData(
         map({
-          treeData: buildLanguageTree(Immutable.fromJS(tree)).toJS(),
+          treeData: readyData
+                    ? readyData
+                    : buildLanguageTree(Immutable.fromJS(tree)).toJS(),
           callback: ({ node, path }) => {
             // Preserve expanded state of nodes from the previous state
             const displayedNode = treeData ? getNodeAtPath({ treeData, path, getNodeKey }) : undefined;
@@ -84,8 +92,39 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
     data: languagesData,
     refetch
   } = useQuery(languagesQuery, {
-    onCompleted: data => setTreeDataFromQuery(data.languages)
+    onCompleted: data => setTreeDataFromQuery(data.languages, null)
   });
+
+  const updateLanguageTree = ({add_user_id, del_user_id, language_id}) => {
+    let isFound = false;
+    const innerUpdate = (node, toChange) => {
+      let langAttUsr = node.additional_metadata.attached_users || [];
+
+      if (node.id.toString() === language_id.toString()) {
+        if (add_user_id) langAttUsr = uniqSum(langAttUsr, [add_user_id]);
+        if (del_user_id) langAttUsr = langAttUsr.filter(x => x !== del_user_id)
+        node.additional_metadata.attached_users = langAttUsr;
+        isFound = true;
+        toChange = true;
+      }
+
+      if (isFound && toChange) {
+        const landInhUsr = node.additional_metadata.inherited_users;
+        const langAllUsr = uniqSum(langAttUsr, landInhUsr);
+        node.children.forEach(x =>
+          x.additional_metadata.inherited_users = langAllUsr);
+      }
+
+      //stop search if result is found in another branch of recursion
+      if (isFound && !toChange)
+        return null;
+
+      return node.children.forEach(n => innerUpdate(n, toChange));
+    }
+    const readyData = cloneDeep(treeData);
+    readyData.forEach(n => innerUpdate(n, false));
+    setTreeDataFromQuery(null, readyData);
+  }
 
   const [deleteLanguage] = useMutation(deleteLanguageMutation, { onCompleted: () => refetch() });
   const [moveLanguage] = useMutation(moveLanguageMutation, { onCompleted: () => refetch() });
@@ -145,8 +184,82 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
       if (!canEdit) {
         return { title: chooseTranslation(node.translations) };
       }
-
       const buttons = [];
+      const nodeProps = { buttons };
+
+      const toName = (userIdList) => {
+        if (!userData || !userData.users) return null;
+        if (!userIdList || !userIdList.length) return null;
+        return userIdList.map(id => {
+          const user = userData.users.find(x => x.id === id);
+          if (user) return user.name;
+          return "Anonymous";
+        });
+      }
+
+      const toUnsign = (node_id, user_id) =>
+        updateLanguageMetadata({
+          variables: {
+            id: node_id,
+            metadata: {},
+            del_user_id: user_id
+          }
+        }).then(() => {
+          updateLanguageTree({del_user_id: user_id, language_id: node_id});
+          window.logger.suc(getTranslation("Unsigned successfully."));
+        });
+
+      const langAttUsr = node.additional_metadata.attached_users;
+      const landInhUsr = node.additional_metadata.inherited_users;
+      const langAllUsr = uniqSum(langAttUsr, landInhUsr);
+      const attUsrName = toName(langAttUsr);
+      const allUsrName = toName(langAllUsr);
+      nodeProps.subtitle = (
+        <Popup
+          trigger={
+            <div>
+              {attUsrName
+                ? attUsrName.map((name, i) => <Button
+                  color='black'
+                  compact
+                  basic
+                  content={name}
+                  icon={user.id === 1 && 'delete'}
+                  style={{fontSize: "0.9em"}}
+                  title={getTranslation("Detach the user")}
+                  onClick={() => actions.openConfirmModal(`${getTranslation("Detach the user")}?`,
+                                                          () => toUnsign(node.id, langAttUsr[i]))}
+                  disabled={user.id !== 1}
+                />)
+                : <span style={{marginRight: "4px", color: "gray"}}>
+                    {getTranslation("No assigned users")}
+                  </span>
+              }
+              {(user.id === 1) && <Button
+                color='black'
+                compact
+                basic
+                icon='add'
+                style={{fontSize: "0.9em"}}
+                title={getTranslation("Attach new user")}
+                onClick={() => setModalInfo({ kind: "sign", node })}
+              />}
+            </div>
+          }
+          hideOnScroll={true}
+          position='top left'
+        >
+          <Popup.Header>{getTranslation("Own and inherited users:")}</Popup.Header>
+          <Popup.Content>
+            <ul>
+              {allUsrName
+               ? allUsrName.map(name => <li>{name}</li>)
+               : getTranslation("No assigned users")}
+            </ul>
+          </Popup.Content>
+        </Popup>
+      );
+
       if (onSelect) {
         buttons.push(<Button color="blue" content={getTranslation("Select")} onClick={() => onNodeSelected(node)} />);
       }
@@ -160,7 +273,6 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
           onClick={() => setModalInfo({ kind: "create", node })}
         />
       );
-      const nodeProps = { buttons };
       if (!onSelect && user.id === 1) {
         const stats = languageStats[node.id.toString()];
         const dictionariesCount = stats ? stats.dictionariesCount : 0;
@@ -185,8 +297,7 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
       }
       if (updatableTOC && user.id === 1) {
         const modifying = modifyingTocs.includes(compositeIdToString(node.id));
-        const staticCheck = checkLanguageId(node.id);
-        const tocMark = staticCheck || (node.additional_metadata && node.additional_metadata.toc_mark);
+        const tocMark = node.additional_metadata && node.additional_metadata.toc_mark;
 
         nodeProps.buttons.push(
           <Button
@@ -195,8 +306,18 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
                 ? `${getTranslation(tocMark ? "Removing" : "Adding")}...`
                 : getTranslation(tocMark ? "Remove from TOC" : "Add to TOC")
             }
-            disabled={staticCheck || modifying}
+            disabled={modifying}
             onClick={() => onToggleTOC(node)}
+          />
+        );
+      }
+      if (user.id === 1) {
+        nodeProps.buttons.push(
+          <Button
+            color="violet"
+            title={getTranslation("Subscribe all the existing dictionaries and corpora related to this language and its sublanguages")}
+            content={getTranslation("Add roles")}
+            onClick={() => setModalInfo({ kind: "roles", node })}
           />
         );
       }
@@ -213,7 +334,8 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
       onToggleTOC,
       selection,
       updatableTOC,
-      user
+      user,
+      userData
     ]
   );
 
@@ -245,7 +367,7 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
     [moveLanguage]
   );
 
-  if (dictionariesLoading || languagesLoading) {
+  if (dictionariesLoading || languagesLoading || userLoading) {
     return (
       <span
         style={{
@@ -259,7 +381,7 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
     );
   }
 
-  if (!dictionariesData || !languagesData || !treeData) {
+  if (!dictionariesData || !languagesData || !treeData || !userData) {
     return null;
   }
 
@@ -287,6 +409,17 @@ const Languages = ({ height, selected, onSelect, expanded = true, inverted = tru
         />
       )}
       {modalInfo.kind === "edit" && <EditLanguageModal language={modalInfo.node} close={() => setModalInfo({})} />}
+      {modalInfo.kind === "roles" && <SelectUserModal
+        language={modalInfo.node}
+        close={() => setModalInfo({})}
+        kind="roles"
+      />}
+      {modalInfo.kind === "sign" && <SelectUserModal
+        language={modalInfo.node}
+        close={() => setModalInfo({})}
+        success={info => updateLanguageTree(info)}
+        kind="sign"
+      />}
     </div>
   );
 };
@@ -300,4 +433,8 @@ Languages.propTypes = {
   updatableTOC: PropTypes.bool
 };
 
-export default Languages;
+const mapDispatchToProps = dispatch => ({
+  actions: bindActionCreators({ openConfirmModal }, dispatch)
+});
+
+export default connect(state => state, mapDispatchToProps)(Languages);

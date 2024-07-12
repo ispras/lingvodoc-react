@@ -1,14 +1,14 @@
-import React, { PureComponent } from "react";
+import React from "react";
 import { Checkbox } from "semantic-ui-react";
-import { memoize } from "lodash";
 import PropTypes from "prop-types";
 
 import TranslationContext from "Layout/TranslationContext";
 
 import AreaGroupsSelect from "./AreaGroupsSelect";
 
-class AreasMode extends PureComponent {
-  getAreaGroups = memoize(rawAreaGroups =>
+class AreasMode extends React.PureComponent {
+  
+  getAreaGroups = (rawAreaGroups =>
     Object.values(rawAreaGroups.toJS()).reduce((acc, current) => {
       acc[current.text] = current;
       return acc;

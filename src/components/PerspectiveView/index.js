@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { connect } from "react-redux";
 import { Button, Dimmer, Header, Icon, Table } from "semantic-ui-react";
 import { gql } from "@apollo/client";
@@ -147,6 +147,7 @@ const TableComponent = ({
   selectEntries,
   selectedEntries,
   onEntrySelect,
+  reRender,
   /* eslint-disable react/prop-types */
   selectAllEntries,
   selectAllIndeterminate,
@@ -160,44 +161,47 @@ const TableComponent = ({
   removeSelectionEntrySet,
   /*  eslint-enable react/prop-types */
   actions
-}) => (
-  <div style={{ overflowY: "auto" }}>
-    <Table celled padded className="lingvo-perspective-table">
-      <TableHeader
-        columns={columns}
-        entries={entries}
-        selectEntries={selectEntries}
-        selectedEntries={selectedEntries}
-        onEntrySelect={onEntrySelect}
-        selectAllEntries={selectAllEntries}
-        selectAllIndeterminate={selectAllIndeterminate}
-        selectAllChecked={selectAllChecked}
-        onAllEntriesSelect={onAllEntriesSelect}
-        showEntryId={showEntryId}
-        selectDisabled={selectDisabled}
-        selectDisabledIndeterminate={selectDisabledIndeterminate}
-        disabled={disabledHeader}
-        actions={actions}
-      />
-      <TableBody
-        perspectiveId={perspectiveId}
-        entitiesMode={entitiesMode}
-        entries={entries}
-        columns={columns}
-        mode={mode}
-        actions={actions}
-        selectEntries={selectEntries}
-        selectedEntries={selectedEntries}
-        onEntrySelect={onEntrySelect}
-        showEntryId={showEntryId}
-        selectDisabled={selectDisabled}
-        selectDisabledIndeterminate={selectDisabledIndeterminate}
-        disabledEntrySet={disabledEntrySet}
-        removeSelectionEntrySet={removeSelectionEntrySet}
-      />
-    </Table>
-  </div>
-);
+}) => {
+  return (
+    <div style={{ overflowY: "auto" }}>
+      <Table celled padded className="lingvo-perspective-table">
+        <TableHeader
+          columns={columns}
+          entries={entries}
+          selectEntries={selectEntries}
+          selectedEntries={selectedEntries}
+          onEntrySelect={onEntrySelect}
+          selectAllEntries={selectAllEntries}
+          selectAllIndeterminate={selectAllIndeterminate}
+          selectAllChecked={selectAllChecked}
+          onAllEntriesSelect={onAllEntriesSelect}
+          showEntryId={showEntryId}
+          selectDisabled={selectDisabled}
+          selectDisabledIndeterminate={selectDisabledIndeterminate}
+          disabled={disabledHeader}
+          actions={actions}
+        />
+        <TableBody
+          perspectiveId={perspectiveId}
+          entitiesMode={entitiesMode}
+          entries={entries}
+          columns={columns}
+          mode={mode}
+          actions={actions}
+          selectEntries={selectEntries}
+          selectedEntries={selectedEntries}
+          onEntrySelect={onEntrySelect}
+          showEntryId={showEntryId}
+          selectDisabled={selectDisabled}
+          selectDisabledIndeterminate={selectDisabledIndeterminate}
+          disabledEntrySet={disabledEntrySet}
+          removeSelectionEntrySet={removeSelectionEntrySet}
+          reRender={reRender}
+        />
+      </Table>
+    </div>
+  );
+};
 
 TableComponent.propTypes = {
   columns: PropTypes.array.isRequired,
@@ -208,14 +212,16 @@ TableComponent.propTypes = {
   selectEntries: PropTypes.bool,
   selectedEntries: PropTypes.array,
   onEntrySelect: PropTypes.func,
-  actions: PropTypes.array
+  actions: PropTypes.array,
+  reRender: PropTypes.func
 };
 
 TableComponent.defaultProps = {
   actions: [],
   selectEntries: false,
   selectedEntries: [],
-  onEntrySelect: () => {}
+  onEntrySelect: () => {},
+  reRender: () => console.log("Fake refetch")
 };
 
 class P extends React.Component {
@@ -234,7 +240,13 @@ class P extends React.Component {
     this.resetCheckedColumn = this.resetCheckedColumn.bind(this);
     this.onCheckAll = this.onCheckAll.bind(this);
     this.resetCheckedAll = this.resetCheckedAll.bind(this);
+    //this.reRender = this.reRender.bind(this);
   }
+
+  //reRender() {
+  //  this.props.data.refetch();
+  //  console.log("Refetched 'queryLexicalEntries'");
+  //}
 
   resetCheckedRow() {
     this.setState({
@@ -308,7 +320,8 @@ class P extends React.Component {
       openModal: openNewModal,
       createdEntries,
       selectedEntries,
-      user
+      user,
+      reRender
     } = this.props;
 
     const { loading, error } = data;
@@ -601,15 +614,16 @@ class P extends React.Component {
         style={{ overflowY: "auto" }}
         className={(mode === "edit" && "lingvo-scrolling-tab lingvo-scrolling-tab_edit") || "lingvo-scrolling-tab"}
       >
-        
-        {((mode === "edit") || (mode === "publish" && isAuthenticated) || (mode === "contributions" && isAuthenticated)) && (
+        {(mode === "edit" ||
+          (mode === "publish" && isAuthenticated) ||
+          (mode === "contributions" && isAuthenticated)) && (
           <div className="lingvo-perspective-buttons">
             {mode === "edit" && (
-              <Button 
+              <Button
                 icon={<i className="lingvo-icon lingvo-icon_add" />}
-                content={this.context("Add lexical entry")} 
-                onClick={addEntry} 
-                className="lingvo-button-green lingvo-perspective-button" 
+                content={this.context("Add lexical entry")}
+                onClick={addEntry}
+                className="lingvo-button-green lingvo-perspective-button"
               />
             )}
             {mode === "edit" && (
@@ -685,6 +699,7 @@ class P extends React.Component {
               resetCheckedColumn={this.resetCheckedColumn}
               resetCheckedAll={this.resetCheckedAll}
               onEntrySelect={onEntrySelect}
+              reRender={reRender}
             />
           </Table>
         </div>
@@ -732,7 +747,8 @@ P.propTypes = {
   openModal: PropTypes.func.isRequired,
   createdEntries: PropTypes.array.isRequired,
   selectedEntries: PropTypes.array.isRequired,
-  user: PropTypes.object.isRequired
+  user: PropTypes.object.isRequired,
+  reRender: PropTypes.func
 };
 
 P.defaultProps = {
@@ -963,6 +979,11 @@ const LexicalEntryViewBaseByIds = ({ perspectiveId, mode, entitiesMode, data, ac
     };
   });
 
+  const reRender = () => {
+    data.refetch();
+    console.log("Refetched 'queryLexicalEntriesByIds'");
+  };
+
   return (
     <TableComponent
       perspectiveId={perspectiveId}
@@ -971,6 +992,7 @@ const LexicalEntryViewBaseByIds = ({ perspectiveId, mode, entitiesMode, data, ac
       columns={fields}
       mode={mode}
       actions={actions}
+      reRender={reRender}
     />
   );
 };
@@ -1025,6 +1047,11 @@ const PerspectiveViewWrapper = ({ id, className, mode, entitiesMode, page, data,
     perspective: { columns }
   } = data;
 
+  const reRender = () => {
+    data.refetch();
+    console.log("Refetched 'queryPerspective'");
+  };
+
   return (
     <PerspectiveView
       id={id}
@@ -1035,6 +1062,7 @@ const PerspectiveViewWrapper = ({ id, className, mode, entitiesMode, page, data,
       filter={filter}
       sortByField={sortByField}
       columns={columns}
+      reRender={reRender}
     />
   );
 };

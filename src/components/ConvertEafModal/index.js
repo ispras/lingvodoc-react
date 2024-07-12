@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { connect } from "react-redux";
-import { Button, Checkbox, Dropdown, Header, Icon, List, Message, Modal } from "semantic-ui-react";
+import { Button, Checkbox, Dropdown, Header, Icon, List, Message, Modal, Label } from "semantic-ui-react";
 import { graphql, withApollo } from "@apollo/client/react/hoc";
 import { isEqual } from "lodash";
 import PropTypes from "prop-types";
@@ -153,6 +153,22 @@ const AdditionalMarkup = ({ info }) => {
 class ConvertEafModal extends React.Component {
   constructor(props) {
     super(props);
+
+    let custom_eaf_tiers = {};
+
+    if (Object.keys(props.preview).length < 6) {
+      custom_eaf_tiers = {
+        'Word of Paradigmatic forms': 'synthetic word',
+        'Transcription of Paradigmatic forms': 'text'
+      };
+    }
+    else {
+      custom_eaf_tiers = {
+        'Word of Paradigmatic forms': 'text',
+        'Transcription of Paradigmatic forms': 'other text'
+      };
+    }
+
     this.state = {
       mode: "new",
       parentLanguage: null,
@@ -163,7 +179,8 @@ class ConvertEafModal extends React.Component {
       additionalEntries: true,
       additionalEntriesAll: true,
       useAdditionalMarkup: false,
-      additionalMarkupInfo: null
+      additionalMarkupInfo: null,
+      custom_eaf_tiers
     };
     this.convert = this.convert.bind(this);
     this.handleModeChange = this.handleModeChange.bind(this);
@@ -351,7 +368,7 @@ class ConvertEafModal extends React.Component {
   }
 
   convert() {
-    const { convertToNewDictionary, convertToExistingDictionary, markup, actions } = this.props;
+    const { convertToNewDictionary, convertToExistingDictionary, markup, morphology, actions } = this.props;
     const {
       mode,
       parentLanguage,
@@ -362,7 +379,8 @@ class ConvertEafModal extends React.Component {
       additionalEntries,
       additionalEntriesAll,
       useAdditionalMarkup,
-      additionalMarkupInfo
+      additionalMarkupInfo,
+      custom_eaf_tiers
     } = this.state;
 
     const markupIdList = [markup.id];
@@ -386,7 +404,9 @@ class ConvertEafModal extends React.Component {
           mergeByMeaning,
           mergeByMeaningAll,
           additionalEntries,
-          additionalEntriesAll
+          additionalEntriesAll,
+          morphology,
+          custom_eaf_tiers
         }
       }).then(
         () => {
@@ -407,7 +427,9 @@ class ConvertEafModal extends React.Component {
           mergeByMeaning,
           mergeByMeaningAll,
           additionalEntries,
-          additionalEntriesAll
+          additionalEntriesAll,
+          morphology,
+          custom_eaf_tiers
         }
       }).then(
         () => {
@@ -440,6 +462,8 @@ class ConvertEafModal extends React.Component {
     const {
       visible,
       actions,
+      morphology,
+      preview,
       data: { loading, error, dictionaries }
     } = this.props;
 
@@ -452,7 +476,8 @@ class ConvertEafModal extends React.Component {
       additionalEntries,
       additionalEntriesAll,
       useAdditionalMarkup,
-      additionalMarkupInfo
+      additionalMarkupInfo,
+      custom_eaf_tiers
     } = this.state;
 
     const dictMap = {};
@@ -465,6 +490,9 @@ class ConvertEafModal extends React.Component {
         dictOptions.push({ key: id, value: id, text: T(d.translations) });
       }
     }
+
+    const pa_columns = [{ value: 'Word of Paradigmatic forms', text: this.context('Paradigmatic forms and contexts') },
+                        { value: 'Transcription of Paradigmatic forms', text: this.context('Transcription of paradigmatic forms') }];
 
     return (
       <Modal closeIcon onClose={actions.closeConvert} open={visible} dimmer size="large" className="lingvo-modal2">
@@ -489,60 +517,107 @@ class ConvertEafModal extends React.Component {
         </Modal.Header>
         <Modal.Content>
           <div style={{ marginBottom: "1.75em" }}>
-            <div>
-              <Checkbox
-                checked={mergeByMeaning}
-                label={`${this.context("Merge lexical entries by meaning")}.`}
-                onChange={(e, { checked }) => this.setState({ mergeByMeaning: checked })}
-              />
-              {mergeByMeaning && (
-                <div style={{ marginLeft: "1em" }}>
-                  <div style={{ marginTop: "0.25em" }} key="empty">
-                    <Checkbox
-                      radio
-                      label={`${this.context("Only entries of paradigmatic annotated forms")}.`}
-                      checked={!mergeByMeaningAll}
-                      onChange={e => this.setState({ mergeByMeaningAll: false })}
-                    />
+            {!morphology && (
+              <div>
+                <Checkbox
+                  checked={mergeByMeaning}
+                  label={`${this.context("Merge lexical entries by meaning")}.`}
+                  onChange={(e, { checked }) => this.setState({ mergeByMeaning: checked })}
+                />
+                {mergeByMeaning && (
+                  <div style={{ marginLeft: "1em" }}>
+                    <div style={{ marginTop: "0.25em" }} key="empty">
+                      <Checkbox
+                        radio
+                        label={`${this.context("Only entries of paradigmatic annotated forms")}.`}
+                        checked={!mergeByMeaningAll}
+                        onChange={e => this.setState({ mergeByMeaningAll: false })}
+                      />
+                    </div>
+                    <div style={{ marginTop: "0.25em" }} key="all">
+                      <Checkbox
+                        radio
+                        label={`${this.context("All entries")}.`}
+                        checked={mergeByMeaningAll}
+                        onChange={e => this.setState({ mergeByMeaningAll: true })}
+                      />
+                    </div>
                   </div>
-                  <div style={{ marginTop: "0.25em" }} key="all">
-                    <Checkbox
-                      radio
-                      label={`${this.context("All entries")}.`}
-                      checked={mergeByMeaningAll}
-                      onChange={e => this.setState({ mergeByMeaningAll: true })}
-                    />
+                )}
+              </div>
+            )}
+            {!morphology && (
+              <div style={{ marginTop: "0.5em" }}>
+                <Checkbox
+                  checked={additionalEntries}
+                  label={`${this.context("Add words and transcriptions from paradigms to lexical entries")}.`}
+                  onChange={(e, { checked }) => this.setState({ additionalEntries: checked })}
+                />
+                {additionalEntries && (
+                  <div style={{ marginLeft: "1em" }}>
+                    <div style={{ marginTop: "0.25em" }} key="empty">
+                      <Checkbox
+                        radio
+                        label={`${this.context("Only to entries lacking words and transcriptions")}.`}
+                        checked={!additionalEntriesAll}
+                        onChange={e => this.setState({ additionalEntriesAll: false })}
+                      />
+                    </div>
+                    <div style={{ marginTop: "0.25em" }} key="all">
+                      <Checkbox
+                        radio
+                        label={`${this.context("To all entries")}.`}
+                        checked={additionalEntriesAll}
+                        onChange={e => this.setState({ additionalEntriesAll: true })}
+                      />
+                    </div>
                   </div>
+                )}
+              </div>
+            )}
+            {preview && !morphology && (
+              <div style={{ width: "50%", marginTop: "2em" }}>
+                <Header>{this.context("Paradigm sentence column source tiers")}</Header>
+                <Label tag>{pa_columns[0].text}</Label>
+                <div style={{ marginLeft: "1em", marginBottom: "1.5em" }}>
+                  { [ 'synthetic word', 'text' ].map(tier => (
+                    <div hidden={!(tier in preview)} style={{ marginTop: "0.75em" }} key={tier}>
+                      <Checkbox
+                        radio
+                        id={`${tier}0`}
+                        label={this.context(tier)}
+                        disabled={custom_eaf_tiers[pa_columns[1].value] === tier}
+                        checked={custom_eaf_tiers[pa_columns[0].value] === tier}
+                        onChange={e => {
+                          custom_eaf_tiers[pa_columns[0].value] = tier;
+                          this.setState({ custom_eaf_tiers });
+                        }}
+                      /><br/>
+                      <label for={`${tier}0`}>{preview[tier]}</label>
+                    </div>
+                  ))}
                 </div>
-              )}
-            </div>
-            <div style={{ marginTop: "0.5em" }}>
-              <Checkbox
-                checked={additionalEntries}
-                label={`${this.context("Add words and transcriptions from paradigms to lexical entries")}.`}
-                onChange={(e, { checked }) => this.setState({ additionalEntries: checked })}
-              />
-              {additionalEntries && (
-                <div style={{ marginLeft: "1em" }}>
-                  <div style={{ marginTop: "0.25em" }} key="empty">
-                    <Checkbox
-                      radio
-                      label={`${this.context("Only to entries lacking words and transcriptions")}.`}
-                      checked={!additionalEntriesAll}
-                      onChange={e => this.setState({ additionalEntriesAll: false })}
-                    />
-                  </div>
-                  <div style={{ marginTop: "0.25em" }} key="all">
-                    <Checkbox
-                      radio
-                      label={`${this.context("To all entries")}.`}
-                      checked={additionalEntriesAll}
-                      onChange={e => this.setState({ additionalEntriesAll: true })}
-                    />
-                  </div>
+                <Label tag>{pa_columns[1].text}</Label>
+                <div style={{ marginLeft: "1em", marginBottom: "1.5em" }}>
+                  { [ 'text', 'synthetic transcription', 'other text' ].map(tier => (
+                    <div hidden={!(tier in preview)} style={{ marginTop: "0.75em" }} key={tier}>
+                      <Checkbox
+                        radio
+                        id={`${tier}1`}
+                        label={this.context(tier)}
+                        disabled={custom_eaf_tiers[pa_columns[0].value] === tier}
+                        checked={custom_eaf_tiers[pa_columns[1].value] === tier}
+                        onChange={e => {
+                          custom_eaf_tiers[pa_columns[1].value] = tier;
+                          this.setState({ custom_eaf_tiers });
+                        }}
+                      /><br/>
+                      <label for={`${tier}1`}>{preview[tier]}</label>
+                    </div>
+                  ))}
                 </div>
-              )}
-            </div>
+              </div>
+            )}
             <div style={{ marginTop: "0.5em" }}>
               <Checkbox
                 checked={useAdditionalMarkup}
@@ -663,12 +738,14 @@ const mapDispatchToProps = dispatch => ({
 export default compose(
   connect(mapStateToProps, mapDispatchToProps),
   branch(({ convertVisible }) => !convertVisible, renderNothing),
-  withProps(({ convertVisible, data: { audio, markup, columns, allEntriesGenerator } }) => ({
+  withProps(({ convertVisible, data: { audio, markup, columns, allEntriesGenerator, morphology, preview } }) => ({
     visible: convertVisible,
     audio,
     markup,
     columns,
-    allEntriesGenerator
+    allEntriesGenerator,
+    morphology,
+    preview
   })),
   graphql(dictionariesQuery, { options: { fetchPolicy: "cache-and-network" } }),
   graphql(convertToNewDictionaryMutation, { name: "convertToNewDictionary" }),

@@ -184,7 +184,7 @@ const Wrapper = ({ tree, ...rest }) => {
 };
 
 /** Dashboard dictionaries page */
-const DictionariesAll = ({ forCorpora = false }) => {
+const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => {
   const { getTranslation } = useTranslations();
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -209,14 +209,14 @@ const DictionariesAll = ({ forCorpora = false }) => {
           break;
 
         case "grant":
-          if (!forCorpora) {
+          if (!forCorpora && !forParallelCorpora) {
             mode = "grant";
             id = value;
           }
           break;
 
         case "organization":
-          if (!forCorpora) {
+          if (!forCorpora && !forParallelCorpora) {
             mode = "organization";
             id = value || "";
           }
@@ -227,7 +227,12 @@ const DictionariesAll = ({ forCorpora = false }) => {
     return [mode, tab, id];
   }, [searchParams]);
 
-  const category = forCorpora ? 1 : 0;
+  const category = (
+    forCorpora
+    ? 1
+    : forParallelCorpora
+    ? 2
+    : 0);
 
   const entityIdValue = useMemo(() => {
     let entityIdValue = null;
@@ -307,7 +312,7 @@ const DictionariesAll = ({ forCorpora = false }) => {
   const queryDictId = {};
   const queryDictAll = {};
 
-  const sortModeList = forCorpora ? ["language"] : ["language", "grant", "organization"];
+  const sortModeList = forCorpora || forParallelCorpora ? ["language"] : ["language", "grant", "organization"];
 
   for (const aSortMode of sortModeList) {
     const variablesId = { ...variables };
@@ -478,6 +483,12 @@ const DictionariesAll = ({ forCorpora = false }) => {
             <h2 className="page-title">{getTranslation("Language corpora")}</h2>
           </Container>
         </div>
+      ) : forParallelCorpora ? (
+        <div className="background-header">
+          <Container className="published">
+            <h2 className="page-title">{getTranslation("Parallel corpora")}</h2>
+          </Container>
+        </div>
       ) : (
         <SortModeSelector
           onChange={() => {
@@ -521,7 +532,11 @@ const DictionariesAll = ({ forCorpora = false }) => {
               )
             },
             {
-              menuItem: getTranslation(forCorpora ? "Corpora" : "Dictionaries"),
+              menuItem: getTranslation(forCorpora
+                ? "Corpora"
+                : forParallelCorpora
+                ? "Parallel corpora"
+                : "Dictionaries"),
               render: () => (
                 <Tab.Pane>
                   <Wrapper tree={treeAll} sortMode={sortMode} entityId={entityId} />

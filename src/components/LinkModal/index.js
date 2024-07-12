@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
+import { InMemoryCache } from '@apollo/client';
 import { Button, Checkbox, Dimmer, Header, Icon, Message, Modal, Segment, Tab } from "semantic-ui-react";
-import { graphql } from "@apollo/client/react/hoc";
+import { graphql, withApollo } from "@apollo/client/react/hoc";
 import { isEqual } from "lodash";
 import PropTypes from "prop-types";
 import { compose } from "recompose";
@@ -12,7 +13,7 @@ import Tree from "components/GroupingTagModal/Tree";
 import { LexicalEntryByIds, queryLexicalEntries, queryPerspective } from "components/PerspectiveView";
 import TranslationContext from "Layout/TranslationContext";
 
-import { acceptMutation, createMutation, languageTreeSourceQuery, publishMutation, removeMutation } from "./graphql";
+import { acceptMutation, createMutation, languageTreeSourceQuery, publishMutation, removeMutation, entityQuery } from "./graphql";
 
 const ModalContentWrapper = styled("div")`
   min-height: 60vh;
@@ -67,23 +68,46 @@ ViewLink.propTypes = {
 };
 
 const EditLink = props => {
-  const { lexicalEntry, column, allLanguages, allDictionaries, allPerspectives, create, remove } = props;
+  const { client, lexicalEntry, column, allLanguages, allDictionaries, allPerspectives, create, remove } = props;
 
   const getTranslation = useContext(TranslationContext);
 
   const tree = buildTree(lexicalEntry, column, allLanguages, allDictionaries, allPerspectives);
 
+  const get_link = async entry => {
+    const entity = lexicalEntry.entities.find(
+      e => isEqual(e.link_id, entry.id) && isEqual(e.field_id, column.field_id)
+    );
+
+    if (!entity) return null;
+
+    //Checking in db
+    const result = await client.query({
+      query: entityQuery,
+      variables: { id: entity.id },
+      fetchPolicy: 'network-only'
+    });
+
+    if (!result.errors &&
+        result.data.entity &&
+        result.data.entity.marked_for_deletion === false) {
+      return entity;
+    }
+    return null;
+  }
+
   const actions = [
     {
       title: getTranslation("Remove"),
       action: entry => {
-        const entity = lexicalEntry.entities.find(
-          e => isEqual(e.link_id, entry.id) && isEqual(e.field_id, column.field_id)
-        );
-        if (entity) {
-          remove(entity);
-        }
+        get_link(entry).then(entity => {
+          if (entity) {
+            remove(entity);
+            console.log("Query result: ", lexicalEntry.entities);
+          }
+        });
       },
+      enabled: entry => get_link(entry),
       className: "lingvo-button-redder"
     }
   ];
@@ -323,9 +347,14 @@ class LinkModalContent extends React.PureComponent {
   }
 
   removeEntity(entity) {
-    const { remove, lexicalEntry, entitiesMode } = this.props;
+    const { reRender, remove, lexicalEntry, entitiesMode } = this.props;
+
     remove({
       variables: { id: entity.id },
+      update(cache) {
+        cache.evict({ id: cache.identify(entity) });
+        cache.gc();
+      },
       refetchQueries: [
         {
           // XXX: Expensive operation!
@@ -337,6 +366,9 @@ class LinkModalContent extends React.PureComponent {
         }
       ]
     });
+
+    // Refetching queryPerspective directly in PerspectiveView component
+    // reRender();
   }
 
   render() {
@@ -392,6 +424,7 @@ class LinkModalContent extends React.PureComponent {
           remove={this.removeEntity}
           publish={this.changePublished}
           accept={this.changeAccepted}
+          client={this.props.client}
         />
       </ModalContentWrapper>
     );
@@ -414,7 +447,8 @@ LinkModalContent.propTypes = {
   create: PropTypes.func.isRequired,
   publish: PropTypes.func.isRequired,
   accept: PropTypes.func.isRequired,
-  remove: PropTypes.func.isRequired
+  remove: PropTypes.func.isRequired,
+  reRender: PropTypes.func
 };
 
 const Content = compose(
@@ -422,7 +456,8 @@ const Content = compose(
   graphql(createMutation, { name: "create" }),
   graphql(publishMutation, { name: "publish" }),
   graphql(acceptMutation, { name: "accept" }),
-  graphql(removeMutation, { name: "remove" })
+  graphql(removeMutation, { name: "remove" }),
+  withApollo
 )(LinkModalContent);
 
 const LinkModal = props => {
@@ -453,7 +488,8 @@ LinkModal.propTypes = {
   fieldId: PropTypes.array,
   mode: PropTypes.string.isRequired,
   entitiesMode: PropTypes.string.isRequired,
-  onClose: PropTypes.func.isRequired
+  onClose: PropTypes.func.isRequired,
+  reRender: PropTypes.func
 };
 
 LinkModal.defaultProps = {

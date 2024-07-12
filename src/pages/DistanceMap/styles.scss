@@ -7,3 +7,19 @@
 .distanceMapPage {
   padding-bottom: 70px;
 }
+
+.lingvo-segment-maps {
+  opacity: 1;
+
+  &_hidden {
+    opacity: 0;
+    margin: 0 !important;
+    padding: 0 !important;
+
+    & .leaflet {
+      position: absolute !important;
+      top: -600px !important;
+      z-index: -1 !important;
+    }
+  }
+}

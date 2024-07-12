@@ -521,6 +521,7 @@ body {
   &_education {
     background: #fafafa;
     position: relative;
+    min-height: 150px;
 
     & .langs-nav-list {
       position: relative;
@@ -539,6 +540,7 @@ body {
     @media only screen and (max-device-width: 1000px), only screen and (max-width: 1000px) {
       & {
         padding-bottom: 150px;
+        min-height: auto;
       }
     }
   }
@@ -661,6 +663,11 @@ body {
     &_corpora {
       height: 80px;
       margin-bottom: 43px;
+    }
+
+    &_parallel-corpora {
+      height: 100px;
+      margin-bottom: 23px;
     }
 
     &_map {
@@ -2304,6 +2311,14 @@ body {
     height: 18px;
     background-color: #999ca0;
   }
+
+  &_dnd {
+    -webkit-mask-image: url("../images/icon_dnd.svg");
+    mask-image: url("../images/icon_dnd.svg");
+    width: 18px;
+    height: 18px;
+    background-color: #999ca0;
+  }
 }
 /* /icon */
 
@@ -3650,6 +3665,45 @@ body {
 }
 /* /lingvo input */
 
+/* lingvo input normal */
+.lingvo-input-normal {
+  background: #fff !important;
+  border-radius: 10px !important;
+  padding: 11px 20px !important;
+  font-family: Rubik, Arial, sans-serif !important;
+  font-size: 16px !important;
+  line-height: 18px !important;
+
+  &.input {
+    padding: 0 !important;
+
+    & > input {
+      border-radius: 10px !important;
+      padding: 11px 20px !important;
+      font-size: 16px !important;
+      line-height: 18px !important;
+      font-family: Rubik, Arial, sans-serif !important;
+      min-height: 42px !important;
+
+      &:focus {
+        border: 1px solid #5d54cd !important;
+      }
+    }
+  }
+
+  &_verbfilter.input {
+    & > input {
+      width: 295px !important;
+
+      @media only screen and (max-device-width: 500px), only screen and (max-width: 500px) {
+        padding-left: 11px !important;
+        width: 280px !important;
+      }
+    }
+  }
+}
+/* /lingvo input normal */
+
 /* lingvo form header */
 .lingvo-form-header {
   font-family: Mulish, Arial, sans-serif;
@@ -3879,8 +3933,21 @@ body {
           }
         }
       }
+
     }
 
+  }
+
+  &.ui.basic.buttons &__drag:first-child .button {
+    max-height: 34px !important;
+
+    &:hover,
+    &:active,
+    &:focus {
+      -webkit-box-shadow: none !important;
+      box-shadow: none !important;
+      border-radius: 10px 0 0 10px !important;
+    }
   }
 
   &__text.button {
@@ -3947,8 +4014,50 @@ body {
     }
   }
 
+  /* textarea */
+  &_textarea {
+    border-radius: 10px !important;
+    font-family: Rubik, Arial, sans-serif !important;
+    font-size: 16px !important;
+    line-height: 20px !important;
+    padding: 7px 12px !important;
+    /*width: 143px !important;*/
+    min-height: 36px !important;
+
+    width: 100% !important;
+    min-width: 143px !important;
+    box-sizing: border-box !important;
+    vertical-align: top !important;
+
+    border: 1px solid #dcdcdc !important;
+    outline: none !important;
+    box-shadow: none !important;
+
+    overflow: hidden !important;
+
+    &:focus {
+      border: 1px solid #5d54cd !important;
+      outline: none !important;
+    }
+
+    @media only screen and (max-device-width: 350px), only screen and (max-width: 350px) {
+      /*width: 118px !important;*/
+      min-width: 118px !important;
+    }
+
+  }
+  /* /textarea */
+
 }
 /* /lingvo input action */
+
+/* lingvo-drop-here */
+.lingvo-drop-here {
+  font-size: 14px !important;
+  color: #5d54cd;
+  padding: 0 0 2px 6px;
+}
+/* /lingvo-drop-here */
 
 /* lingvo input buttons group */
 .lingvo-input-buttons-group {
@@ -3976,6 +4085,11 @@ body {
       }
     }
   }
+
+  &_drag {
+    opacity: 0.3 !important;
+  }
+
 }
 /* /lingvo input buttons group */
 
@@ -4296,3 +4410,8 @@ body {
 }
 
 /* /lingvo search input */
+
+/*
+.leaflet .leaflet-attribution-flag {
+  display: none !important;
+}*/

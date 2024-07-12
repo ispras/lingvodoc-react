@@ -221,6 +221,7 @@ const dictionaryWithPerspectivesQuery = gql`
       parent_id
       translations
       created_at
+      in_toc
     }
     is_authenticated
   }
@@ -259,6 +260,7 @@ const dictionaryWithPerspectivesProxyQuery = gql`
       parent_id
       translations
       created_at
+      in_toc
     }
     is_authenticated
   }

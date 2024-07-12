@@ -1,7 +1,9 @@
 import React from "react";
 import { connect } from "react-redux";
 import SortableTree, { map } from "react-sortable-tree";
+import { isEqual } from "lodash";
 import PropTypes from "prop-types";
+import { pure } from "recompose";
 import { bindActionCreators } from "redux";
 import styled from "styled-components";
 
@@ -55,22 +57,6 @@ const PerspectiveLink = ({ node }) => {
 };
 
 class LanguageTree extends React.Component {
-  static generateNodePropsWithEntries({ node }) {
-    const { translations } = node;
-    const defaultTitle = translations ? T(translations) : "None";
-
-    const title = node.type === "perspective" ? <LexicalEntryLink node={node} /> : defaultTitle;
-    return { title };
-  }
-
-  static generateNodePropsOnlyPerspectives({ node }) {
-    const { translations } = node;
-    const defaultTitle = translations ? T(translations) : "None";
-
-    const title = node.type === "perspective" ? <PerspectiveLink node={node} /> : defaultTitle;
-    return { title };
-  }
-
   constructor(props) {
     super(props);
 
@@ -84,8 +70,55 @@ class LanguageTree extends React.Component {
     };
 
     this.generateNodeProps = this.props.onlyPerspectives
-      ? LanguageTree.generateNodePropsOnlyPerspectives
-      : LanguageTree.generateNodePropsWithEntries;
+      ? this.generateNodePropsOnlyPerspectives.bind(this)
+      : this.generateNodePropsWithEntries.bind(this);
+  }
+
+  generateNodePropsWithEntries({ node }) {
+    const { translations } = node;
+    const defaultTitle = translations ? T(translations) : "None";
+
+    const title = node.type === "perspective" ? <LexicalEntryLink node={node} /> : defaultTitle;
+    return { title };
+  }
+
+  generateNodePropsOnlyPerspectives({ node }) {
+    const { translations } = node;
+    const defaultTitle = translations ? T(translations) : "None";
+
+    const title = node.type === "perspective" ? <PerspectiveLink node={node} /> : defaultTitle;
+    return { title };
+  }
+
+  componentDidUpdate(prevProps) {
+    if (
+      !isEqual(prevProps.searchResultsTree, this.props.searchResultsTree) ||
+      !isEqual(prevProps.expanded, this.props.expanded)
+    ) {
+      this.setState(
+        {treeData: map({
+          treeData: this.props.searchResultsTree.toJS(),
+          callback: ({ node }) => ({ ...node, expanded: !!this.props.expanded }),
+          getNodeKey: ({ treeIndex }) => treeIndex,
+          ignoreCollapsed: false
+        })
+      });
+    }
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    if (
+      !isEqual(nextProps.searchResultsTree, this.props.searchResultsTree) ||
+      !isEqual(nextProps.expanded, this.props.expanded)
+    ) {
+      return true;
+    }
+
+    if (!isEqual(this.state.treeData, nextState.treeData)) {
+      return true;
+    }
+
+    return false;
   }
 
   render() {
@@ -93,11 +126,12 @@ class LanguageTree extends React.Component {
       <div style={{ height: 600 }}>
         <SortableTree
           canDrag={false}
-          rowHeight={42}
-          scaffoldBlockPxWidth={32}
+          rowHeight={52}
+          scaffoldBlockPxWidth={64}
           treeData={this.state.treeData}
           generateNodeProps={this.generateNodeProps}
           onChange={treeData => this.setState({ treeData })}
+          className="lingvo-rst-tree"
         />
       </div>
     );
@@ -115,4 +149,4 @@ LanguageTree.defaultProps = {
   expanded: false
 };
 
-export default LanguageTree;
+export default pure(LanguageTree);

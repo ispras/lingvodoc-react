@@ -50,11 +50,19 @@ base.plugins.push(
   new HtmlWebpackPlugin({
     template: path.resolve(__dirname, "../src/index.dev.html"),
     favicon: path.resolve(__dirname, "../src/favicon.ico"),
-    filename: _.outputIndexPath
+    filename: _.outputIndexPath,
+    meta: {
+      "Content-Security-Policy": {
+        "http-equiv": "Content-Security-Policy",
+        "content": "upgrade-insecure-requests"
+      }
+    }
   }),
   new webpack.DefinePlugin({
     "process.env.NODE_ENV": JSON.stringify("development"),
-    __VERSION__: JSON.stringify(_.versionString)
+    __VERSION__: JSON.stringify(_.versionString),
+    __BUILD_YEAR__: JSON.stringify(_.buildYear),
+    __POLLING_INTERVAL__: JSON.stringify(process.env.POLLING_INTERVAL)
   }),
   new webpack.HotModuleReplacementPlugin(),
   new ReactRefreshWebpackPlugin(),

@@ -1,21 +1,34 @@
 import React from "react";
 import { Dimmer, Header, Icon, Input, Segment } from "semantic-ui-react";
-import { withApollo } from "@apollo/client/react/hoc";
+import { graphql, withApollo } from "@apollo/client/react/hoc";
 import PropTypes from "prop-types";
-import { compose, pure } from "recompose";
-
+import { branch, compose, pure, renderComponent, renderNothing } from "recompose";
+import Placeholder from "components/Placeholder";
 import TranslationContext from "Layout/TranslationContext";
 
-import { searchQuery } from "./graphql";
+import { searchQuery, perspectiveFieldsQuery } from "./graphql";
 import buildPartialLanguageTree from "./partialTree";
 import Tree from "./Tree";
+import { isEqual } from "lodash";
 
 class SearchLexicalEntries extends React.Component {
   constructor(props) {
     super(props);
 
-    const { lexicalEntry } = props;
-    const entity = lexicalEntry.entities.find(e => e.content && e.content.length >= 2 && e.content.length < 8);
+    const { data: {perspective: {columns}}, lexicalEntry } = props;
+    let aff_meaning_field_id = null;
+
+    for (const column of columns) {
+      const { field: { id: field_id, english_translation: field_name }} = column;
+      if (field_name === "Meaning of affix") {
+        aff_meaning_field_id = field_id;
+        break;
+      }
+    }
+
+    const aff_meaning = lexicalEntry.entities.find(e => e.content && isEqual(e.field_id, aff_meaning_field_id));
+    const some_entity = lexicalEntry.entities.find(e => e.content && e.content.length >= 2 && e.content.length < 8);
+    const entity = aff_meaning ? aff_meaning : some_entity;
 
     this.state = {
       searchString: entity ? entity.content.trim() : "",
@@ -69,7 +82,14 @@ class SearchLexicalEntries extends React.Component {
 
   render() {
     const { joinGroup } = this.props;
-    const actions = [{ title: this.context("Connect"), className: "lingvo-button-greenest", action: entry => joinGroup(entry) }];
+
+    const actions = [
+      {
+        title: this.context("Connect"),
+        className: "lingvo-button-greenest",
+        action: entry => joinGroup(entry)
+      }
+    ];
     return (
       <div>
         <Segment className="lingvo-segment-grouptag-search">
@@ -105,4 +125,10 @@ SearchLexicalEntries.propTypes = {
   connectedWords: PropTypes.object
 };
 
-export default compose(withApollo, pure)(SearchLexicalEntries);
+export default compose(
+  graphql(perspectiveFieldsQuery, { options: ({lexicalEntry}) => ({ variables: { perspectiveId: lexicalEntry.parent_id }}) }),
+  branch(({ data: { loading } }) => loading, renderComponent(Placeholder)),
+  branch(({ data: { error } }) => !!error, renderNothing),
+  withApollo,
+  pure
+)(SearchLexicalEntries);

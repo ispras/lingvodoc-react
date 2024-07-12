@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Button, Container, Label } from "semantic-ui-react";
+import { Button, Container, Message } from "semantic-ui-react";
 import { withApollo } from "@apollo/client/react/hoc";
 import { fromJS } from "immutable";
 import PropTypes from "prop-types";
@@ -113,6 +113,7 @@ class FilterDictionaries extends React.Component {
   }
 
   render() {
+
     const { newProps } = this.props;
 
     const { mainGroupDictionaresAndLanguages, onLangsDictsChange, selectedLanguages } = newProps;
@@ -151,15 +152,15 @@ FilterDictionaries.propTypes = {
   }).isRequired
 };
 
-function SelectorLangGroup(props) {
+const SelectorLangGroup = ((props) => {
   const getTranslation = useContext(TranslationContext);
 
   const location = useLocation();
   const navigate = useNavigate();
-
+  
   /* Initializing here due to eact-hooks/rules-of-hooks, exact same hook order. */
 
-  const { actions, dataForTree, client, mainGroupDictionaresAndLanguages, selected, user } = props;
+  const { actions, dataForTree, client, mainGroupDictionaresAndLanguages, selected, user, loading } = props;
 
   const [mainGroupDictsAndLangs, setMainGroupDictsAndLangs] = useState(mainGroupDictionaresAndLanguages);
   const [mainDictionary, setMainDictionary] = useState(null);
@@ -167,22 +168,28 @@ function SelectorLangGroup(props) {
   useEffect(() => {
     if (!location.state) {
       navigate("/distance_map");
-      return null;
+      return;
     }
   }, [location, navigate]);
 
   try {
+
     if (!location.state) {
       navigate("/distance_map");
       return null;
     }
 
-    if (!user || user.id !== 1) {
+    if (loading) {
+      return <Placeholder />;
+    }
+
+    if (!user || !user.id) {
       return (
-        <div style={{ marginTop: "1em" }}>
-          <Label>
-            {getTranslation("For the time being Distance Map functionality is available only for the administrator.")}
-          </Label>
+        <div className="background-content">
+          <Message compact>
+            <Message.Header>{getTranslation("Please sign in")}</Message.Header>
+            <p>{getTranslation("Only registered users can work with distance map.")}</p>
+          </Message>
         </div>
       );
     }
@@ -193,12 +200,16 @@ function SelectorLangGroup(props) {
     const arrDictionariesGroup = [];
     const parentId = mainPerspectives[0].parent_id;
 
-    client
+    useEffect(() => {
+
+      client
       .query({
         query: dictionaryName,
         variables: { id: parentId }
       })
       .then(result => setMainDictionary(result.data.dictionary));
+
+    }, [mainDictionary]);
 
     if (mainGroupDictsAndLangs.dictionaries) {
       mainGroupDictsAndLangs.dictionaries.forEach(el =>
@@ -217,6 +228,7 @@ function SelectorLangGroup(props) {
         }
       });
     }
+
     if (selected.id !== dataForTree.idLocale) {
       client
         .query({
@@ -244,7 +256,7 @@ function SelectorLangGroup(props) {
       return <Placeholder />;
     }
 
-    function send() {
+    const send = () => {
       if (arrDictionariesGroup.length) {
         arrDictionariesGroup.push(mainDictionary);
         actions.setDictionariesGroup({ arrDictionariesGroup });
@@ -254,15 +266,15 @@ function SelectorLangGroup(props) {
         });
         actions.setCheckStateTreeFlat({ selectedLanguagesChecken });
       }
-    }
+    };
 
-    function selectedLanguages(e) {
+    const selectedLanguages = (e) => {
       selectedLanguagesChecken = e;
-    }
+    };
 
-    function onLangsDictsChange(list) {
+    const onLangsDictsChange = (list) => {
       setMainGroupDictsAndLangs(list);
-    }
+    };
 
     return (
       <div className="lingvodoc-page">
@@ -287,6 +299,7 @@ function SelectorLangGroup(props) {
               </Container>
             </div>
           )}
+
           <Container>
             <Button 
               style={{ margin: "24px 20px 0 0" }}
@@ -318,7 +331,7 @@ function SelectorLangGroup(props) {
     navigate("/distance_map");
     return null;
   }
-}
+});
 
 SelectorLangGroup.propTypes = {
   actions: PropTypes.object.isRequired,

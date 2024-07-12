@@ -5,8 +5,7 @@
 	(c) 2015, Adam Ratcliffe, GeoSmart Maps Limited
 	@preserve
 */
-
-function initializeContextMenu(L) {
+const initializeContextMenu = (L) => {
   if (L.Mixin.ContextMenu) {
     return;
   }
@@ -28,7 +27,7 @@ function initializeContextMenu(L) {
       this._items = [];
       this._visible = false;
 
-      var container = (this._container = L.DomUtil.create("div", L.Map.ContextMenu.BASE_CLS, map._container));
+      let container = (this._container = L.DomUtil.create("div", L.Map.ContextMenu.BASE_CLS, map._container));
       container.style.zIndex = 10000;
       container.style.position = "absolute";
 
@@ -45,7 +44,7 @@ function initializeContextMenu(L) {
     },
 
     addHooks: function () {
-      var container = this._map.getContainer();
+      let container = this._map.getContainer();
 
       L.DomEvent.on(container, "mouseleave", this._hide, this).on(document, "keydown", this._onKeyDown, this);
 
@@ -65,7 +64,7 @@ function initializeContextMenu(L) {
     },
 
     removeHooks: function () {
-      var container = this._map.getContainer();
+      let container = this._map.getContainer();
 
       L.DomEvent.off(container, "mouseleave", this._hide, this).off(document, "keydown", this._onKeyDown, this);
 
@@ -115,7 +114,7 @@ function initializeContextMenu(L) {
         parent = this._container;
       }
 
-      var item = this._createItem(parent, options, index, isItemEmptyParent);
+      const item = this._createItem(parent, options, index, isItemEmptyParent);
 
       this._items.push(item);
 
@@ -148,7 +147,7 @@ function initializeContextMenu(L) {
     },
 
     removeAllItems: function () {
-      var items = this._items.map(item => item.el),
+      let items = this._items.map(item => item.el),
         item;
 
       while (items.length) {
@@ -159,7 +158,7 @@ function initializeContextMenu(L) {
     },
 
     hideAllItems: function () {
-      var item, i, l;
+      let item, i, l;
 
       for (i = 0, l = this._items.length; i < l; i++) {
         item = this._items[i];
@@ -168,7 +167,7 @@ function initializeContextMenu(L) {
     },
 
     showAllItems: function () {
-      var item, i, l;
+      let item, i, l;
 
       for (i = 0, l = this._items.length; i < l; i++) {
         item = this._items[i];
@@ -177,7 +176,7 @@ function initializeContextMenu(L) {
     },
 
     setDisabled: function (item, disabled) {
-      var container = this._container,
+      let container = this._container,
         itemCls = L.Map.ContextMenu.BASE_CLS + "-item";
 
       if (!isNaN(item)) {
@@ -225,7 +224,7 @@ function initializeContextMenu(L) {
         return this._createSeparator(container, index);
       }
 
-      var isParent = !!options.contextmenuItems,
+      let isParent = !!options.contextmenuItems,
         parentClassName = isParent ? L.Map.ContextMenu.BASE_CLS + "-item_parent" : "";
 
       if (isItemEmptyParent) {
@@ -238,7 +237,7 @@ function initializeContextMenu(L) {
           "-item-disabled";
       }
 
-      var itemCls = L.Map.ContextMenu.BASE_CLS + "-item " + parentClassName,
+      let itemCls = L.Map.ContextMenu.BASE_CLS + "-item " + parentClassName,
         cls = options.disabled ? itemCls + " " + itemCls + "-disabled" : itemCls,
         el = this._insertElementAt("a", cls, container, index),
         icon = this._getIcon(options),
@@ -284,7 +283,7 @@ function initializeContextMenu(L) {
     },
 
     _removeItem: function (id) {
-      var item, el, i, l, callback;
+      let item, el, i, l, callback;
 
       for (i = 0, l = this._items.length; i < l; i++) {
         item = this._items[i];
@@ -324,7 +323,7 @@ function initializeContextMenu(L) {
     },
 
     _createSeparator: function (container, index) {
-      var el = this._insertElementAt("div", L.Map.ContextMenu.BASE_CLS + "-separator", container, index);
+      let el = this._insertElementAt("div", L.Map.ContextMenu.BASE_CLS + "-separator", container, index);
 
       return {
         id: L.Util.stamp(el),
@@ -333,7 +332,7 @@ function initializeContextMenu(L) {
     },
 
     _createEventHandler: function (el, func, context, hideOnSelect) {
-      var me = this,
+      let me = this,
         map = this._map,
         disabledCls = L.Map.ContextMenu.BASE_CLS + "-item-disabled",
         _hideOnSelect = hideOnSelect !== undefined ? hideOnSelect : true;
@@ -359,7 +358,7 @@ function initializeContextMenu(L) {
     },
 
     _insertElementAt: function (tagName, className, container, index) {
-      var refEl,
+      let refEl,
         el = document.createElement(tagName);
 
       el.className = className;
@@ -383,7 +382,7 @@ function initializeContextMenu(L) {
 
     _showAtPoint: function (pt, data) {
       if (this._items.length) {
-        var map = this._map,
+        let map = this._map,
           layerPoint = map.containerPointToLayerPoint(pt),
           latlng = map.layerPointToLatLng(layerPoint),
           event = L.extend(data || {}, { contextmenu: this });
@@ -426,7 +425,7 @@ function initializeContextMenu(L) {
     },
 
     _setPosition: function (pt) {
-      var mapSize = this._map.getSize(),
+      let mapSize = this._map.getSize(),
         container = this._container,
         containerSize = this._getElementSize(container),
         anchor;
@@ -461,7 +460,7 @@ function initializeContextMenu(L) {
     },
 
     _getElementSize: function (el) {
-      var size = this._size,
+      let size = this._size,
         initialDisplay = el.style.display;
 
       if (!size || this._sizeChanged) {
@@ -484,7 +483,7 @@ function initializeContextMenu(L) {
     },
 
     _onKeyDown: function (e) {
-      var key = e.keyCode;
+      const key = e.keyCode;
 
       // If ESC pressed and context menu is visible hide it
       if (key === 27) {
@@ -521,13 +520,13 @@ function initializeContextMenu(L) {
     },
 
     removeContextMenuItemWithIndex: function (index) {
-      var items = [];
-      for (var i = 0; i < this.options.contextmenuItems.length; i++) {
+      let items = [];
+      for (let i = 0; i < this.options.contextmenuItems.length; i++) {
         if (this.options.contextmenuItems[i].index == index) {
           items.push(i);
         }
       }
-      var elem = items.pop();
+      let elem = items.pop();
       while (elem !== undefined) {
         this.options.contextmenuItems.splice(elem, 1);
         elem = items.pop();
@@ -565,7 +564,7 @@ function initializeContextMenu(L) {
       // var itemOptions,
       //   data, pt, i, l;
 
-      var data, pt;
+      let data, pt;
 
       if (this._map.contextmenu) {
         data = L.extend({ relatedTarget: this }, e);
@@ -585,7 +584,7 @@ function initializeContextMenu(L) {
     },
 
     _hideContextMenu: function () {
-      var i, l;
+      let i, l;
 
       for (i = 0, l = this._items.length; i < l; i++) {
         this._map.contextmenu.removeItem(this._items[i]);
@@ -598,7 +597,7 @@ function initializeContextMenu(L) {
     }
   };
 
-  var classes = [L.Marker, L.Path],
+  let classes = [L.Marker, L.Path],
     defaultOptions = {
       contextmenu: false,
       contextmenuItems: [],
@@ -629,6 +628,6 @@ function initializeContextMenu(L) {
   }
 
   return L.Map.ContextMenu;
-}
+};
 
 export default initializeContextMenu;

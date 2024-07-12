@@ -99,11 +99,11 @@ class Map extends React.Component {
     }).addTo(this.leaflet);
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentDidUpdate(prevProps) {
     const {
       actions,
       data: { loading, dictionaries, blobs: allBlobs }
-    } = nextProps;
+    } = this.props;
 
     if (!loading && dictionaries) {
       const markersGroup = L.markerClusterGroup({ maxClusterRadius: 70, showCoverageOnHover: false });

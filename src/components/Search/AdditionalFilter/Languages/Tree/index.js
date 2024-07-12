@@ -1,4 +1,4 @@
-import React, { PureComponent } from "react";
+import React from "react";
 import { connect } from "react-redux";
 import { Checkbox, Segment } from "semantic-ui-react";
 import isEqual from "lodash/isEqual";
@@ -27,7 +27,7 @@ const classNames = {
 /**
  * Represents tree of languages and dictionaries with selecting functionality.
  */
-class Tree extends PureComponent {
+class Tree extends React.PureComponent {
   static propTypes = {
     nodes: PropTypes.array.isRequired,
     checked: PropTypes.array.isRequired,
@@ -59,7 +59,7 @@ class Tree extends PureComponent {
 
     return false;
   }
-
+  
   /**
    * Checks if flat node has defined checkState
    * @param {Object} flatNode - flat node
@@ -85,9 +85,11 @@ class Tree extends PureComponent {
     }
 
     this.updateNodesWithChecked(props.checked, props.filterMode);
+
+    const isAllChecked = this.constructor.isAllNodesChecked(Object.keys(this.flatNodes).length, props.checked);
     
     this.state = {
-      checkAll: false,
+      checkAll: isAllChecked || false,
       expanded:
         Object.values(this.flatNodes)
           .filter(item => item.expanded)
@@ -103,6 +105,7 @@ class Tree extends PureComponent {
     this.onCheck = this.onCheck.bind(this);
     this.onExpand = this.onExpand.bind(this);
     this.actionCheckAll = this.actionCheckAll.bind(this);
+
   }
 
   /**
@@ -453,6 +456,7 @@ class Tree extends PureComponent {
    * @param {Array} checkedLists - list of checked tree nodes
    */
   updateNodesWithChecked(checkedLists, filterMode) {
+
     const flatNodes = this.getFlatNodes();
     const isAllChecked = this.constructor.isAllNodesChecked(Object.keys(flatNodes).length, checkedLists);
 
@@ -517,6 +521,7 @@ class Tree extends PureComponent {
    * @return {TreeNode} - object represents all tree nodes for rendering
    */
   renderTreeNodes(nodes, parent = {}) {
+
     const { checkStateTreeFlat } = this.props;
 
     let flatNode = null;

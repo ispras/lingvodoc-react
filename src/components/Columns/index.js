@@ -414,7 +414,7 @@ class Columns extends React.Component {
     // calculate next position
     const pos =
       columns
-        .filter(c => !c.self_id)
+        //.filter(c => !c.self_id)
         .map(c => c.position)
         .reduce((x, y) => (x > y ? x : y), 1) + 1;
 

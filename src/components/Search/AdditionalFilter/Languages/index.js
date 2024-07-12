@@ -1,4 +1,4 @@
-import React, { PureComponent } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 
 import Tree from "./Tree";
@@ -13,7 +13,7 @@ const classNames = {
 /**
  * Component for selecting languages and dictionaries.
  */
-class Languages extends PureComponent {
+class Languages extends React.PureComponent {
   static propTypes = {
     langsChecked: PropTypes.array.isRequired,
     dictsChecked: PropTypes.array.isRequired,
@@ -30,12 +30,22 @@ class Languages extends PureComponent {
     filterMode: false
   };
 
+  constructor() {
+    super();
+
+    this.getListInExternalFormat = this.getListInExternalFormat.bind(this);
+    this.getListInInternalFormat = this.getListInInternalFormat.bind(this);
+    this.onFilterLangsChange = this.onFilterLangsChange.bind(this);
+    this.getDataInInternalFormat = this.getDataInInternalFormat.bind(this);
+    this.getDataInExternalFormat = this.getDataInExternalFormat.bind(this);
+  }
+
   /**
    * Creates a list of ids from the internal format to the external format.
    * @param {Array} list - input list in internal format ["1,2", "3,4" ...] (array of strings)
    * @returns {Array} - output list in external format "[[1,2], [3,4]]" (array of arrays of integers)
    */
-  static getListInExternalFormat(list) {
+  getListInExternalFormat(list) {
     return list.map(item => item.split(",")).map(item => item.map(idPart => parseInt(idPart, 10)));
   }
 
@@ -44,14 +54,8 @@ class Languages extends PureComponent {
    * @param {Array} list - input list in external format "[[1,2], [3,4]]" (array of arrays of integers)
    * @returns {Array} - output list in internal format ["1,2", "3,4" ...] (array of strings)
    */
-  static getListInInternalFormat(list) {
+  getListInInternalFormat(list) {
     return list.map(item => item.join(","));
-  }
-
-  constructor() {
-    super();
-
-    this.onFilterLangsChange = this.onFilterLangsChange.bind(this);
   }
 
   /**
@@ -72,11 +76,11 @@ class Languages extends PureComponent {
     return [
       {
         type: "language",
-        checked: this.constructor.getListInInternalFormat(languagesChecked)
+        checked: this.getListInInternalFormat(languagesChecked)
       },
       {
         type: "dictionary",
-        checked: this.constructor.getListInInternalFormat(dictionariesChecked)
+        checked: this.getListInInternalFormat(dictionariesChecked)
       }
     ];
   }
@@ -94,8 +98,8 @@ class Languages extends PureComponent {
       };
     } else {
       result = {
-        languages: this.constructor.getListInExternalFormat(data[0].checked),
-        dictionaries: this.constructor.getListInExternalFormat(data[1].checked)
+        languages: this.getListInExternalFormat(data[0].checked),
+        dictionaries: this.getListInExternalFormat(data[1].checked)
       };
     }
 

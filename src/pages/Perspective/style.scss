@@ -74,7 +74,7 @@
     &__table {
       overflow-y: auto;
       position: absolute;
-      
+
       left: 20px;
       width: calc(100% - 20px);
       top: 24px;
@@ -161,7 +161,7 @@
         & thead th {
           position: static;
         }
-        
+
         & td.lingvo-sticky-checkbox-column {
           position: static !important;
           left: auto;
@@ -185,6 +185,18 @@
     }
   }
 
+  /* parallel corpora */
+  &_corpora {
+    padding-bottom: 20px !important;
+
+    & .lingvo-scrolling-tab {
+      @media only screen and (max-device-width: 1000px), only screen and (max-width: 1000px) {
+        margin-bottom: 0 !important;
+      }
+    }
+  }
+  /* /parallel corpora */
+
   & .pagination {
     left: 20px;
     z-index: 100;
@@ -194,7 +206,6 @@
     }
   }
 
-  
   & .lingvo-pagination-block {
     position: fixed;
     left: 20px;
@@ -312,12 +323,12 @@
 
     & .active.item {
       border-radius: 8px 8px 0 0 !important;
-      background: #F4F6F8 !important;
+      background: #f4f6f8 !important;
       border: none !important;
-      color: #5D54CD !important;
-  
+      color: #5d54cd !important;
+
       & .lingvo-icon_arrow {
-        background-color: #5D54CD !important;
+        background-color: #5d54cd !important;
       }
     }
   }
@@ -380,7 +391,7 @@
   font-size: 16px !important;
   line-height: 22px !important;
   border-collapse: collapse !important;
-  
+
   & thead th {
     border: 0 !important;
     background: #f5f5f5 !important;
@@ -402,6 +413,12 @@
       }
     }
 
+    &.lingvo-dnd-headercell {
+      &_hidden {
+        display: none !important;
+      }
+    }
+
     &.entityHeader ul li.last {
       background-color: #f5f5f5 !important;
     }
@@ -410,12 +427,21 @@
       border-radius: 8px 0 0 8px !important;
     }
 
+    &.lingvo-dnd-headercell_hidden:first-child + th {
+      border-radius: 8px 0 0 8px !important;
+    }
+
     &:last-child {
       border-radius: 0 8px 8px 0 !important;
     }
 
     @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+
       &:first-child {
+        border-radius: 8px 8px 0 0 !important;
+      }
+
+      &.lingvo-dnd-headercell_hidden:first-child + th {
         border-radius: 8px 8px 0 0 !important;
       }
 
@@ -431,6 +457,10 @@
     }
   }
 
+  & tr td {
+    background: #fff !important;
+  }
+
   & tr:nth-child(2n) {
     & td {
       background: #fafafa !important;
@@ -444,12 +474,20 @@
       border-radius: 8px 0 0 8px !important;
     }
 
+    & td.lingvo-dnd-column_hidden:first-child + td {
+      border-radius: 8px 0 0 8px !important;
+    }
+
     & td:last-child {
       border-radius: 0 8px 8px 0 !important;
     }
 
     @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
       & td:first-child {
+        border-radius: 8px 8px 0 0 !important;
+      }
+
+      & td.lingvo-dnd-column_hidden:first-child + td {
         border-radius: 8px 8px 0 0 !important;
       }
 
@@ -484,9 +522,15 @@
           content: none;
         }
       }
-
     }
 
+    &.lingvo-dnd-column {
+      vertical-align: top !important;
+
+      &_hidden {
+        display: none !important;
+      }
+    }
   }
 
   & .entity {
@@ -522,7 +566,17 @@
         box-shadow: none !important;
       }
 
+      & td.lingvo-dnd-column {
+        &_hidden {
+          display: none !important;
+        }
+      }
+
       & td:first-child {
+        padding-top: 18px !important;
+      }
+
+      & td.lingvo-dnd-column_hidden:first-child + td {
         padding-top: 18px !important;
       }
 
@@ -532,7 +586,18 @@
     }
 
     &.ui.table thead tr {
+
+      & th.lingvo-dnd-headercell {
+        &_hidden {
+          display: none !important;
+        }
+      }
+
       & th:first-child {
+        padding-top: 18px !important;
+      }
+
+      & th.lingvo-dnd-headercell_hidden:first-child + th {
         padding-top: 18px !important;
       }
 
@@ -542,6 +607,12 @@
     }
   }
 
+  /* mark */
+  & .entity ul li mark {
+    display: inline-block;
+    line-height: 17px;
+  }
+  /* /mark */
 }
 /* /perspective table */
 
@@ -562,3 +633,63 @@
 }
 /* /perspective sort */
 
+/* lingvo verb case language header */
+.lingvo-verb-case-language-header {
+  display: block !important;
+  margin: 0 !important;
+  padding: 10px 14px 10px 14px !important;
+  font-size: 18px !important;
+  line-height: 24px !important;
+  position: relative !important;
+  cursor: pointer !important;
+
+  & .ui.breadcrumb {
+    font-family: Mulish, Arial, sans-serif !important;
+    font-size: 18px !important;
+    line-height: 24px !important;
+    font-weight: 700 !important;
+    color: #5d54cd !important;
+
+    & .divider {
+      color: #5d54cd !important;
+      opacity: 1 !important;
+      font-size: 17px !important;
+    }
+  }
+
+  & .lingvo-icon_trash {
+    cursor: pointer;
+    transition: 0.2s;
+    margin: 0 0 0 17px;
+    vertical-align: middle;
+
+    &:hover {
+      background-color: #db4e4e;
+    }
+  }
+}
+/* /lingvo cognate language header */
+
+/* lingvo perspective component text */
+.lingvo-perspective-component-text {
+  margin: 0;
+  font-family: Rubik, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+
+  & a {
+    color: #5d54cd;
+
+    &:hover {
+      color: #5d54cd;
+      text-decoration: underline;
+    }
+
+    &:active {
+      color: #372f9d;
+    }
+  }
+
+}
+/* /lingvo perspective component text */

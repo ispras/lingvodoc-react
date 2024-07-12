@@ -1,9 +1,10 @@
-import React from "react";
+import React, {useState} from "react";
 import { Button, Confirm, Dimmer, Header, Icon, Modal } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
 import PropTypes from "prop-types";
 import { compose } from "recompose";
+import _isEqual from "lodash-es/isEqual";
 
 import TranslationContext from "Layout/TranslationContext";
 import scrollParent from "utils/scrollParent";
@@ -26,7 +27,7 @@ const scrollIntoViewIfNeeded = elem => {
 
 const getParserResultContentQuery = gql`
   query getParserResultContentQuery($id: LingvodocID!) {
-    parser_result(id: $id) {
+    parser_result(id: $id, exact_fmt: "json") {
       id
       content
     }
@@ -35,7 +36,7 @@ const getParserResultContentQuery = gql`
 
 const updateParserResultMutation = gql`
   mutation updateParserResultMutation($id: LingvodocID!, $content: String!) {
-    update_parser_result(id: $id, content: $content) {
+    update_parser_result(id: $id, content: $content, content_fmt: "json") {
       triumph
     }
   }
@@ -43,11 +44,92 @@ const updateParserResultMutation = gql`
 
 const updateParserResultForElementMutation = gql`
   mutation updateParserResultForElementMutation($id: LingvodocID!, $content: String!, $element_id: String!) {
-    update_parser_result(id: $id, content: $content, element_id: $element_id) {
+    update_parser_result(id: $id, content: $content, element_id: $element_id, content_fmt: "json") {
       triumph
     }
   }
 `;
+
+const Word = ({children, prefix}) => {
+  if (prefix && prefix.length) {
+    // recursively use all the prefixes
+    // e.g. <b><i>text</i></b>
+    const PrefixTag = prefix[0];
+    return (
+      <PrefixTag>
+        <Word
+          prefix={prefix.slice(1)}
+        >
+          {children}
+        </Word>
+      </PrefixTag>
+    );
+  } else {
+    return children;
+  }
+}
+
+const Annotation = ({id, text, state, results, prefix, saving, selection, setSelection}) => {
+
+  const onClick = () => {
+    if (saving || !document.getSelection().isCollapsed) {
+      return;
+    }
+    setSelection(selection === id ? null : id);
+  }
+
+  return (
+    <Word prefix={prefix}>
+      <span
+        id={id}
+        className={state + (selection === id ? ' selected' : '') }
+        onClick={onClick}
+      >
+
+        {results.map(({id, state, ...data}, index) => (
+          <span
+            key={index}
+            id={id}
+            className={state}
+          >
+            {JSON.stringify(data)}
+          </span>
+        ))}
+
+        {text}
+      </span>
+    </Word>
+  );
+}
+
+const Sentence = ({json_sentence, saving, selection, setSelection}) => {
+  return json_sentence.map((json_word, index) => {
+    if (typeof json_word === 'object' && json_word.id) {
+      return (
+        <Annotation
+          key={index}
+          id={json_word.id}
+          text={json_word.text}
+          state={json_word.state}
+          results={json_word.results ?? []}
+          prefix={json_word.prefix ?? []}
+          saving={saving}
+          selection={selection}
+          setSelection={setSelection}
+        />
+      );
+    } else {
+      return (
+        <Word
+          key={index}
+          prefix={typeof json_word === 'object' ? json_word.prefix : []}
+        >
+          {typeof json_word === 'object' ? json_word.text : json_word}
+        </Word>
+      );
+    }
+  });
+}
 
 /** Modal dialog for corpus markup */
 class OdtMarkupModal extends React.Component {
@@ -57,9 +139,11 @@ class OdtMarkupModal extends React.Component {
     this.initialized = false;
     this.availableId = 0;
     this.content = null;
-    this.docToSave = null;
+    this.index = null;
+    this.reselection = null;
 
     this.state = {
+      json: null,
       selection: null,
       browserSelection: null,
       dirty: false,
@@ -70,7 +154,6 @@ class OdtMarkupModal extends React.Component {
       updating: false
     };
 
-    this.addClickHandlers = this.addClickHandlers.bind(this);
     this.onBrowserSelection = this.onBrowserSelection.bind(this);
     this.onKeyDown = this.onKeyDown.bind(this);
     this.addToMarkup = this.addToMarkup.bind(this);
@@ -80,6 +163,94 @@ class OdtMarkupModal extends React.Component {
     this.parseElement = this.parseElement.bind(this);
     this.save = this.save.bind(this);
     this.onClose = this.onClose.bind(this);
+    this.getById = this.getById.bind(this);
+    this.updateJson = this.updateJson.bind(this);
+    this.setElemState = this.setElemState.bind(this);
+    this.setSelection = this.setSelection.bind(this);
+    this.joinNeighbours = this.joinNeighbours.bind(this);
+  }
+
+  updateJson() {
+    this.setState({ json: this.content, dirty: true });
+  }
+
+  getById(id) {
+    if (!this.content || !id) {
+      return null;
+    }
+    for (const prg of this.content) {
+      for (const wrd of prg) {
+        if (wrd.id == id) {
+          return wrd;
+        }
+        if (typeof wrd !== 'object') {
+          continue;
+        }
+        for (const res of wrd.results ?? []) {
+          if (res.id == id) {
+            return res;
+          }
+        }
+      }
+    }
+    return null;
+  }
+
+  setElemState = (id, state) => {
+    const elem = this.getById(id);
+    if (!elem) {
+      return;
+    }
+    //changing this.content
+    switch (state) {
+      case 'approved':
+        if (/\bapproved\b/.test(elem.state)) {
+          return;
+        }
+        elem.state = elem.state.trim() + " approved";
+        break;
+      case 'unapproved':
+        elem.state = elem.state.replace(/\bapproved\b/, "");
+        break;
+      case 'verified':
+        elem.state = elem.state.replace(/\bunverified\b/, "verified");
+        break;
+      case 'unverified':
+        elem.state = elem.state.replace(/\bverified\b/, "unverified");
+        break;
+      case 'toggle_approved':
+        if (elem.state.includes("approved")) {
+          this.setElemState(id, 'unapproved');
+        } else {
+          this.setElemState(id, 'approved');
+        }
+        return;
+      case 'toggle_verified':
+        if (elem.results &&
+           !elem.results.some((res) => /\bapproved\b/.test(res.state))) {
+          this.setElemState(id, 'unverified');
+        }
+        return;
+      case 'toggle_broken':
+        if (elem.results &&
+           !elem.results.some((res) => /\bbroken\b/.test(res.state))) {
+          elem.state = elem.state.replace(/\bbroken\b/, "");
+          break;
+        }
+        return;
+    }
+  }
+
+  setSelection(id, reselect=null) {
+    if (this.state.selection === id) {
+      this.setState({ selection: null });
+    } else {
+      this.setState({ selection: id });
+    }
+    if (reselect) {
+      this.reselection = reselect;
+    }
+    //console.log(id);
   }
 
   onKeyDown = event => {
@@ -104,7 +275,7 @@ class OdtMarkupModal extends React.Component {
 
     if (!elem) {
       if (event.key === "ArrowRight" && elems.length > 0) {
-        elems[0].click();
+        this.setSelection(elems[0].id);
       }
       return;
     }
@@ -135,18 +306,20 @@ class OdtMarkupModal extends React.Component {
         }
         if (iter === number) {
           if (child.classList.contains("result")) {
-            child.classList.add("approved");
+            this.setElemState(child.id, 'approved');
             success = true;
             break;
           }
         }
       }
       if (success) {
-        elem.classList.replace("unverified", "verified");
-        this.setState({ dirty: true });
+        this.setElemState(elem.id, 'verified');
+        this.updateJson();
         if (i + 1 < elems.length) {
           scrollIntoViewIfNeeded(elems[i + 1]);
-          elems[i + 1].click();
+          this.setSelection(elems[i + 1].id);
+        } else {
+          this.setSelection(null, elem.id);
         }
       }
       return;
@@ -155,7 +328,7 @@ class OdtMarkupModal extends React.Component {
     if (event.key === "ArrowRight") {
       if (i + 1 < elems.length) {
         scrollIntoViewIfNeeded(elems[i + 1]);
-        elems[i + 1].click();
+        this.setSelection(elems[i + 1].id);
       }
       return;
     }
@@ -163,7 +336,7 @@ class OdtMarkupModal extends React.Component {
     if (event.key === "ArrowLeft") {
       if (i - 1 >= 0) {
         scrollIntoViewIfNeeded(elems[i - 1]);
-        elems[i - 1].click();
+        this.setSelection(elems[i - 1].id);
       }
       return;
     }
@@ -172,21 +345,34 @@ class OdtMarkupModal extends React.Component {
       let success = false;
       for (const child of children) {
         if (child.classList !== undefined && child.classList.contains("approved")) {
-          child.classList.remove("approved");
+          this.setElemState(child.id, 'unapproved');
           success = true;
         }
       }
-      this.state.selection = null;
-      elem.classList.replace("verified", "unverified");
+      this.setElemState(elem.id, 'unverified');
       if (success) {
-        this.setState({ dirty: true });
+        this.updateJson();
       }
-      elem.click();
+      this.setSelection(null, elem.id);
       return;
     }
   };
 
   componentDidUpdate() {
+
+    // to select element by order in text
+    if (this.index && !this.state.selection) {
+      const {prgNum, wrdNum} = this.index;
+      this.setState({ selection: this.content[prgNum][wrdNum].id });
+      this.index = null;
+    }
+
+    // to re-render PropertiesView
+    if (this.reselection) {
+      this.setState({ selection: this.reselection });
+      this.reselection = null;
+    }
+
     if (this.initialized) {
       return;
     }
@@ -204,8 +390,6 @@ class OdtMarkupModal extends React.Component {
         }
       }
     });
-    this.addClickHandlers(root.getElementsByClassName("unverified"));
-    this.addClickHandlers(root.getElementsByClassName("verified"));
     if (this.props.mode === "edit") {
       document.addEventListener("selectionchange", this.onBrowserSelection);
     }
@@ -220,27 +404,6 @@ class OdtMarkupModal extends React.Component {
   componentWillUnmount() {
     document.removeEventListener("selectionchange", this.onBrowserSelection);
     document.removeEventListener("keydown", this.onKeyDown);
-  }
-
-  addClickHandlers(elems) {
-    Array.from(elems).forEach(elem => {
-      elem.onclick = () => {
-        const { selection, saving } = this.state;
-        if (saving || !document.getSelection().isCollapsed) {
-          return;
-        }
-
-        if (selection !== null) {
-          document.getElementById(selection).classList.remove("selected");
-        }
-        if (this.state.selection === elem.id) {
-          this.setState({ selection: null });
-        } else {
-          elem.classList.add("selected");
-          this.setState({ selection: elem.id });
-        }
-      };
-    });
   }
 
   onBrowserSelection() {
@@ -267,176 +430,217 @@ class OdtMarkupModal extends React.Component {
       return;
     }
 
-    const { selection } = this.state;
-    if (selection !== null) {
-      document.getElementById(selection).classList.remove("selected");
-    }
     this.setState({ selection: null, browserSelection: range });
   }
 
-  addToMarkup() {
+  getNodeIndex(textNode) {
+    let parentNode = textNode.parentElement;
+
+    // going out from prefix tags
+    while (parentNode && parentNode.tagName !== 'P') {
+      if (parentNode.id === "markup-content") {
+        return null;
+      }
+      textNode = parentNode;
+      parentNode = parentNode.parentElement;
+    }
+    if (!parentNode || !parentNode.parentElement) {
+      return null;
+    }
+
+    // getting paragraph number and word number
+    const prgNum = [...parentNode.parentElement.children].indexOf(parentNode);
+    const wrdNum = [...parentNode.childNodes].indexOf(textNode);
+    console.log(prgNum + ':' + wrdNum);
+
+    return {prgNum, wrdNum};
+  }
+
+  addToMarkup(markup) {
     const { browserSelection } = this.state;
     const textNode = browserSelection.startContainer;
-    const parentNode = textNode.parentElement;
     const text = textNode.textContent;
+    const index = this.getNodeIndex(textNode);
+    if (!index) return;
+    const {prgNum, wrdNum} = index;
+    const prefix = this.content[prgNum][wrdNum].prefix;
+    const newElements = [];
 
-    let str = text.substring(0, browserSelection.startOffset);
-    if (str !== "") {
-      parentNode.insertBefore(document.createTextNode(str), textNode);
+    function addNewElement({id, state, results, prefix, text}) {
+      if (text !== "") {
+        let elem = {};
+        if (id && state) {
+          elem = {...elem, id, state, text};
+          if (results) {
+            elem = {...elem, results};
+          }
+        }
+        if (prefix && prefix.length) {
+          elem = {...elem, prefix, text};
+        }
+        if (!Object.keys(elem).length) {
+          elem = text;
+        }
+        newElements.push(elem);
+      }
     }
-    const span = document.createElement("span");
-    span.id = this.availableId;
-    span.classList.add("unverified", "user");
-    span.innerText = browserSelection.toString();
-    this.addClickHandlers([span]);
-    parentNode.insertBefore(span, textNode);
-    str = text.substring(browserSelection.endOffset);
-    if (str !== "") {
-      parentNode.insertBefore(document.createTextNode(str), textNode);
-    }
-    parentNode.removeChild(textNode);
-    this.setState({
-      browserSelection: null,
-      dirty: true
+
+    addNewElement({
+      prefix,
+      text: text.substring(0, browserSelection.startOffset)
     });
-    this.availableId++;
-    span.click();
+
+    addNewElement(markup ? {...markup, prefix} : {
+      id: this.availableId,
+      state: "unverified user",
+      results: [],
+      prefix,
+      text: browserSelection.toString()
+    });
+
+    addNewElement({
+      prefix,
+      text: text.substring(browserSelection.endOffset)
+    });
+
+    // add new elements instead of old one into this.content
+    this.content[prgNum].splice(wrdNum, 1, ...newElements);
+
+    this.setState({
+      json: this.content,
+      browserSelection: null,
+      dirty: true,
+      selection: markup ? markup.id : this.availableId
+    });
+
+    if (!markup) this.availableId++;
+  }
+
+  joinNeighbours() {
+    function isSuitable(elem, prefix) {
+      // if element has annotation
+      if (elem.id !== undefined) {
+        return false;
+      }
+      return _isEqual(new Set(elem.prefix), new Set(prefix));
+    }
+
+    const elem = document.getElementById(this.state.selection);
+    const index = this.getNodeIndex(elem);
+    if (!index) return;
+    const {prgNum, wrdNum} = index;
+    const prg = this.content[prgNum];
+    const wrd = prg[wrdNum];
+    const prefix = wrd.prefix;
+    let [toStart, toDelete, text] = [wrdNum, 1, ""];
+
+    // get text from previous element
+    if (wrdNum > 0 && isSuitable(prg[wrdNum - 1], prefix)) {
+      text += prg[wrdNum - 1].text ?? prg[wrdNum - 1];
+      [toStart, toDelete] = [toStart - 1, toDelete + 1];
+    }
+
+    // get text from selected element
+    text += wrd.text;
+
+    // get text from next element
+    if (wrdNum < prg.length - 1 && isSuitable(prg[wrdNum + 1], prefix)) {
+      text += prg[wrdNum + 1].text ?? prg[wrdNum + 1];
+      [toStart, toDelete] = [toStart, toDelete + 1];
+    }
+
+    // if prefix is not empty then newElement is object
+    let newElement = text;
+    if (prefix && prefix.length) {
+      newElement = {prefix, text};
+    }
+
+    // changing this.content
+    prg.splice(toStart, toDelete, newElement);
+
+    return wrd;
   }
 
   removeFromMarkup() {
-    const elem = document.getElementById(this.state.selection);
-
     this.setState({
       confirmation: {
         content: this.context("Are you sure you want to remove selected element from markup?"),
         func: () => {
-          const prev = elem.previousSibling;
-          let content = "";
-          if (prev && prev.nodeType === Node.TEXT_NODE) {
-            content += prev.textContent;
-            prev.remove();
-          }
-          content += elem.innerText;
-          const next = elem.nextSibling;
-          if (next && next.nodeType === Node.TEXT_NODE) {
-            content += next.textContent;
-            next.remove();
-          }
-          elem.parentElement.replaceChild(document.createTextNode(content), elem);
-          this.setState({ selection: null, dirty: true, confirmation: null });
+          this.joinNeighbours();
+          this.setState({ json: this.content, selection: null, dirty: true, confirmation: null });
         }
       }
     });
   }
 
   moveMarkup() {
-    const elem = document.getElementById(this.state.selection);
-
     this.setState({
       confirmation: {
         content: this.context("Are you sure you want to move selected element?"),
         func: () => {
-          const prev = elem.previousSibling;
-          const copiedElem = elem;
-          let content = "";
-          if (prev && prev.nodeType === Node.TEXT_NODE) {
-            content += prev.textContent;
-            prev.remove();
-          }
-          content += elem.innerText;
-          const next = elem.nextSibling;
-          if (next && next.nodeType === Node.TEXT_NODE) {
-            content += next.textContent;
-            next.remove();
-          }
-          elem.parentElement.replaceChild(document.createTextNode(content), elem);
-          this.setState({ selection: null, dirty: true, confirmation: null, copiedElem: copiedElem, movingElem: true });
+          const copiedElem = this.joinNeighbours();
+          this.setState({ json: this.content, selection: null, dirty: true, confirmation: null,
+            copiedElem: copiedElem, movingElem: true });
         }
       }
     });
   }
 
   addCopiedMarkup() {
-    const { browserSelection } = this.state;
-    const textNode = browserSelection.startContainer;
-    const parentNode = textNode.parentElement;
-    const text = textNode.textContent;
-
-    let str = text.substring(0, browserSelection.startOffset);
-    if (str !== "") {
-      parentNode.insertBefore(document.createTextNode(str), textNode);
-    }
     const copiedElem = this.state.copiedElem;
-    copiedElem.lastChild.nodeValue = browserSelection.toString();
-    this.addClickHandlers([copiedElem]);
-    parentNode.insertBefore(copiedElem, textNode);
-    str = text.substring(browserSelection.endOffset);
-    if (str !== "") {
-      parentNode.insertBefore(document.createTextNode(str), textNode);
-    }
-    parentNode.removeChild(textNode);
+    copiedElem.text = this.state.browserSelection.toString();
+    this.addToMarkup(copiedElem);
     this.setState({
-      browserSelection: null,
-      dirty: true,
       copiedElem: null,
-      movingElem: false
+      movingElem: false,
+      selection: copiedElem.id
     });
-    this.availableId++;
-    copiedElem.click();
   }
 
   save() {
     const { resultId, updateParserResult } = this.props;
-    const { selection } = this.state;
+    const { json, selection } = this.state;
 
-    if (selection) {
-      document.getElementById(selection).classList.remove("selected");
-    }
-    this.setState({ saving: true });
-    this.docToSave.getElementsByTagName("body")[0].innerHTML = document.getElementById("markup-content").innerHTML;
-    updateParserResult({ variables: { id: resultId, content: new XMLSerializer().serializeToString(this.docToSave) } })
-      .then(() => {
-        if (selection) {
-          document.getElementById(selection).classList.add("selected");
-        }
-        this.setState({ dirty: false, saving: false });
-      })
-      .catch(() => {
-        if (selection) {
-          document.getElementById(selection).classList.add("selected");
-        }
-        this.setState({ saving: false });
-      });
+    this.setState({ saving: true, selection: null });
+
+    updateParserResult({ variables: {
+      id: resultId, content: JSON.stringify(json) } })
+
+    .then(() => {
+      this.setState({ dirty: false, saving: false, selection: selection });
+    })
+
+    .catch(() => {
+      this.setState({ saving: false, selection: selection });
+    });
   }
 
   parseElement() {
     const { resultId, updateParserResultForElement } = this.props;
-    const { selection, dirty } = this.state;
+    const { json, selection, dirty } = this.state;
+    const elem = document.getElementsByClassName("selected")[0];
+    this.index = this.getNodeIndex(elem);
     let content = "";
-    document.getElementById(selection).classList.remove("selected");
+
     if (dirty) {
-      this.docToSave.getElementsByTagName("body")[0].innerHTML = document.getElementById("markup-content").innerHTML;
-      content = new XMLSerializer().serializeToString(this.docToSave);
+      content = JSON.stringify(json);
     }
+
     this.setState({ updating: true, selection: null });
-    updateParserResultForElement({ variables: { id: resultId, content: content, element_id: selection } })
-      .then(() => {
-        this.content = null;
-        this.initialized = false;
-        this.setState({ updating: false, dirty: false });
-        if (document.getElementById(selection)) {
-          this.setState({ selection: selection });
-          document.getElementById(selection).classList.add("selected");
-        }
-      })
-      .catch(() => {
-        this.initialized = false;
-        this.setState({ updating: false });
-        if (document.getElementById(selection)) {
-          this.setState({ selection: selection });
-          document.getElementById(selection).classList.add("selected");
-        }
-      });
+
+    updateParserResultForElement({ variables:
+      { id: resultId, content: content, element_id: selection } })
+
+    .then(() => {
+      this.content = null;
+      this.initialized = false;
+      this.setState({ updating: false, dirty: false });
+    })
+
+    .catch(() => {
+      this.initialized = false;
+      this.setState({ updating: false, selection: selection });
+    });
   }
 
   onClose() {
@@ -469,18 +673,12 @@ class OdtMarkupModal extends React.Component {
       );
     }
 
-    if (!this.content) {
-      const doc = new DOMParser().parseFromString(data.parser_result.content, "text/html");
-      const bodies = doc.getElementsByTagName("body");
-      if (!bodies.length) {
-        return null;
-      }
-      this.docToSave = doc;
-      this.content = bodies[0].innerHTML;
-    }
-
     const { selection, browserSelection, dirty, saving, confirmation, movingElem, copiedElem } = this.state;
-    const selectedElem = selection === null ? null : document.getElementById(selection);
+    const selectedElem = this.getById(selection);
+
+    if (!this.content) {
+      this.content = JSON.parse(data.parser_result.content);
+    }
 
     return (
       <Modal
@@ -495,16 +693,33 @@ class OdtMarkupModal extends React.Component {
         <Modal.Header>{this.context("Text markup")}</Modal.Header>
         <div style={{ display: "flex", flexDirection: "row" }}>
           <PropertiesView
-            selection={selection}
+            selection={selection ? selection.toString() : null}
             mode={saving ? "view" : mode}
-            setDirty={() => this.setState({ dirty: true })}
+            updateJson={this.updateJson}
+            setElemState={this.setElemState}
+            getById={this.getById}
+            getAvailableId={() => this.availableId++}
           />
           <Modal.Content
             id="markup-content"
             scrolling
-            dangerouslySetInnerHTML={{ __html: this.content }}
             style={{ padding: "10px" }}
-          />
+          >
+            { this.content.map((json_sentence, index) => {
+                return (
+                  <p key={index}>
+                    <Sentence
+                      key={index}
+                      json_sentence={json_sentence}
+                      saving={saving}
+                      selection={selection}
+                      setSelection={this.setSelection}
+                    />
+                  </p>
+                );
+              })
+            }
+          </Modal.Content>
         </div>
         <Modal.Actions>
           {!saving && !movingElem && browserSelection !== null && (
@@ -512,7 +727,7 @@ class OdtMarkupModal extends React.Component {
               color="violet"
               icon="plus"
               content={`${this.context("Add to markup")} '${browserSelection.toString()}'`}
-              onClick={this.addToMarkup}
+              onClick={() => this.addToMarkup(null)}
               style={{ float: "left" }}
             />
           )}
@@ -521,19 +736,19 @@ class OdtMarkupModal extends React.Component {
               <Button
                 color="orange"
                 icon="minus"
-                content={`${this.context("Remove from markup")} '${selectedElem.innerText}'`}
+                content={`${this.context("Remove from markup")} '${selectedElem.text}'`}
                 onClick={this.removeFromMarkup}
               />
               <Button
                 color="blue"
                 icon="minus"
-                content={`${this.context("Move markup element")} '${selectedElem.innerText}'`}
+                content={`${this.context("Move markup element")} '${selectedElem.text}'`}
                 onClick={this.moveMarkup}
               />
               <Button
                 color="green"
                 icon="plus"
-                content={`${this.context("Parse element")} '${selectedElem.innerText}'`}
+                content={`${this.context("Parse element")} '${selectedElem.text}'`}
                 onClick={this.parseElement}
               />
             </div>
@@ -542,14 +757,14 @@ class OdtMarkupModal extends React.Component {
             <Button
               color="violet"
               icon="plus"
-              content={`${this.context("Move copied markup element")} '${copiedElem.lastChild.nodeValue}'`}
+              content={`${this.context("Move copied markup element")} '${copiedElem.text}'`}
               onClick={this.addCopiedMarkup}
               style={{ float: "left" }}
             />
           )}
           {movingElem && browserSelection == null && (
             <div style={{ float: "left" }}>
-              {this.context("Select a new position for a markup element")} {copiedElem.lastChild.nodeValue}
+              {this.context("Select a new position for a markup element")} {copiedElem.text}
             </div>
           )}
           {mode === "edit" && (

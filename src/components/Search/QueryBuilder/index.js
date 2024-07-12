@@ -117,10 +117,15 @@ const fieldsQuery = gql`
 
 const regexpCheckSet = new Set(["", ".*", ".+", ".", "..*", ".*.", "..+", ".+.", "..", "...", "...."]);
 
-export function queryCheck(query) {
+export function queryCheck(query, subBlocksMode) {
   const result = { check: true, empty: true };
 
   for (const block of query) {
+    if (block.length <= 0) {
+      result.check = false;
+      result.emptyBlock = true;
+    }
+
     for (const condition of block) {
       result.empty = false;
 
@@ -172,7 +177,7 @@ export function additionalParamsCheck(langs, dicts, searchMetadata) {
   return false;
 }
 
-function Query({ data, query, onFieldChange, onDelete, setSearch }) {
+const Query = ({ data, query, onFieldChange, onDelete, setSearch }) => {
   const getTranslation = useContext(TranslationContext);
 
   const fieldId = query.get("field_id", null);
@@ -259,11 +264,11 @@ function Query({ data, query, onFieldChange, onDelete, setSearch }) {
       <Button compact basic color="red" icon="delete" onClick={onDelete} />
     </QueryInput>
   );
-}
+};
 
 const QueryWithData = graphql(fieldsQuery)(Query);
 
-function SearchBlock({
+const SearchBlock = ({
   data,
   subBlocksMode,
   onFieldChange,
@@ -271,7 +276,7 @@ function SearchBlock({
   onDeleteInnerSearchBlock,
   onDeleteSearchBlock,
   setSearch
-}) {
+}) => {
   const getTranslation = useContext(TranslationContext);
   const subBlocksModeText = subBlocksMode.toUpperCase();
   return (
@@ -297,7 +302,7 @@ function SearchBlock({
       <Button className="delete-and" compact basic icon="delete" onClick={onDeleteSearchBlock} />
     </OrWrapper>
   );
-}
+};
 
 class QueryBuilder extends React.Component {
   constructor(props) {
@@ -566,7 +571,7 @@ class QueryBuilder extends React.Component {
     const subBlocksMode = this.getSubBlocksMode();
 
     const query = this.addGrammaticalSigns(this.state.data.toJS());
-    const checkInfo = queryCheck(query);
+    const checkInfo = queryCheck(query, subBlocksMode);
 
     const {
       languages: langsToFilter,
@@ -742,13 +747,20 @@ class QueryBuilder extends React.Component {
               )}
               {checkInfo.substring && <p>{`${this.context("Empty substrings are not allowed")}.`}</p>}
               {checkInfo.regexp && <p>{`${this.context("Too broad regular expressions are not allowed")}.`}</p>}
-              {(checkInfo.substring || checkInfo.regexp) && (
+              {checkInfo.emptyBlock && (
+                <p>{`${this.context(
+                  this.state.mode.blocks === "or"
+                    ? "Empty AND blocks in OR mode are not allowed"
+                    : "Empty OR blocks in AND mode are not allowed"
+                )}.`}</p>
+              )}
+              {(checkInfo.substring || checkInfo.regexp || checkInfo.emptyBlock) && (
                 <>
                   <p>{`${this.context(
                     "Please either narrow down search conditions or add grammatical signs conditions"
                   )}.`}</p>
                   <p>{`${this.context(
-                    "Or, if you would like to search just for dictionaries and perspective based on metadata, delete all search conditions"
+                    "Or, if you would like to search just for dictionaries and perspective based on metadata, use OR mode and delete all search conditions"
                   )}.`}</p>
                 </>
               )}

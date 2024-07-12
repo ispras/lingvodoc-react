@@ -9,6 +9,7 @@ import { branch, compose, onlyUpdateForKeys, renderNothing } from "recompose";
 import { bindActionCreators } from "redux";
 
 import { chooseTranslation as T } from "api/i18n";
+import DictionaryProperties from "components/DictionaryPropertiesModal";
 import { openModal as openDictionaryOrganizationsModal } from "ducks/dictionaryOrganizations";
 import { openDictionaryPropertiesModal } from "ducks/dictionaryProperties";
 import { openPerspectivePropertiesModal } from "ducks/perspectiveProperties";
@@ -540,11 +541,33 @@ const CORPORA_TABS = getTranslation => {
   ];
 };
 
+const PARALLEL_CORPORA_TABS = getTranslation => {
+  return [
+    {
+      menuItem: getTranslation("My parallel corpora"),
+      render: () => (
+        <Tab.Pane className="lingvo-tab__pane">
+          <Dictionaries category={2} mode={0} />
+        </Tab.Pane>
+      )
+    },
+    {
+      menuItem: getTranslation("Available parallel corpora"),
+      render: () => (
+        <Tab.Pane className="lingvo-tab__pane">
+          <Dictionaries category={2} mode={1} />
+        </Tab.Pane>
+      )
+    }
+  ];
+};
+
 const DictionaryDashboard = () => {
   const getTranslation = useContext(TranslationContext);
   return (
     <div className="background-content">
       <Tab className="inverted lingvo-tab" panes={DICTIONARIES_TABS(getTranslation)} renderActiveOnly />
+      <DictionaryProperties />
     </div>
   );
 };
@@ -554,8 +577,20 @@ const CorpusDashboard = () => {
   return (
     <div className="background-content">
       <Tab className="inverted lingvo-tab" panes={CORPORA_TABS(getTranslation)} renderActiveOnly />
+      <DictionaryProperties />
     </div>
   );
 };
 
-export { DictionaryDashboard, CorpusDashboard };
+const ParallelCorporaDashboard = () => {
+  const getTranslation = useContext(TranslationContext);
+  return (
+    <div className="background-content">
+      <Tab className="inverted lingvo-tab" panes={PARALLEL_CORPORA_TABS(getTranslation)} renderActiveOnly />
+      <DictionaryProperties />
+    </div>
+  );
+};
+
+
+export { DictionaryDashboard, CorpusDashboard, ParallelCorporaDashboard };

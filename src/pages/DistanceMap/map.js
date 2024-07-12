@@ -1,7 +1,7 @@
 import React, { PureComponent } from "react";
 import { connect } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Button, Container, Label, Segment } from "semantic-ui-react";
+import { Button, Container, Segment, Message } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql, withApollo } from "@apollo/client/react/hoc";
 import L from "leaflet";
@@ -109,6 +109,8 @@ class MapAreas extends PureComponent {
     this.returnToTree = this.returnToTree.bind(this);
     this.back = this.back.bind(this);
     this.newDict = [];
+
+    this.map = null;
   }
 
   componentDidMount() {
@@ -159,10 +161,14 @@ class MapAreas extends PureComponent {
 
     this.setState({ statusMap: true });
     this.map = initMap(this.mapContainer);
-
+    
     this.dictionariesWithColors = normolizeMethod(this.dictionariesWithColors, 255);
 
     const data = this.dictionariesWithColors.map(el => {
+      if (!el.additional_metadata.location) {
+        return null;
+      }
+
       const lat = Number(el.additional_metadata.location.lat);
       const lng = Number(el.additional_metadata.location.lng);
       const { translations, distanceDict, normolizeDistanceNumber } = el;
@@ -176,7 +182,13 @@ class MapAreas extends PureComponent {
       return { lat, lng, count: normolizeDistanceNumber };
     });
 
-    return heatmapLayer.setData({ data, max: maxCount });
+    const dataFilter = data.filter(function(item) {
+      if (item) {
+        return item;
+      }
+    });
+
+    return heatmapLayer.setData({ data: dataFilter, max: maxCount });
   }
 
   back() {
@@ -190,20 +202,25 @@ class MapAreas extends PureComponent {
   }
 
   render() {
-    const { location, user } = this.props;
-
-    const { mainDictionary } = location.state;
+    const { location, user, loading } = this.props;
 
     if (!location.state) {
       return null;
     }
 
-    if (!user || user.id !== 1) {
+    const { mainDictionary } = location.state;
+
+    if (loading) {
+      return <Placeholder />;
+    }
+
+    if (!user || !user.id) {
       return (
-        <div style={{ marginTop: "1em" }}>
-          <Label>
-            {this.context("For the time being Distance Map functionality is available only for the administrator.")}
-          </Label>
+        <div className="background-content">
+          <Message compact>
+            <Message.Header>{this.context("Please sign in")}</Message.Header>
+            <p>{this.context("Only registered users can work with distance map.")}</p>
+          </Message>
         </div>
       );
     }
@@ -226,18 +243,18 @@ class MapAreas extends PureComponent {
               </div>
             )}
             {this.state.statusMap === false && this.state.statusRequest && <Placeholder />}
-            {this.state.statusMap && this.state.statusRequest && (
-              <Segment>
-                <div className="leaflet">
-                  <div
-                    ref={ref => {
-                      this.mapContainer = ref;
-                    }}
-                    className="leaflet__map"
-                  />
-                </div>
-              </Segment>
-            )}
+            
+            <Segment className={(this.state.statusMap && this.state.statusRequest) ? "lingvo-segment-maps" : "lingvo-segment-maps lingvo-segment-maps_hidden"}>
+              <div className="leaflet">
+                <div
+                  ref={ref => {
+                    this.mapContainer = ref;
+                  }}
+                  className="leaflet__map"
+                />
+              </div>
+            </Segment>
+            
             {(this.state.statusMap || !this.state.statusRequest) && (
               <div>
                 <Button 

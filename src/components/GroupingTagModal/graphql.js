@@ -79,3 +79,16 @@ export const languageTreeSourceQuery = gql`
     }
   }
 `;
+
+export const perspectiveFieldsQuery = gql`
+  query perspectiveFields($perspectiveId: LingvodocID!) {
+    perspective(id: $perspectiveId) {
+      columns {
+        field {
+          id
+          english_translation: translation(locale_id: 2)
+        }
+      }
+    }
+  }
+`;

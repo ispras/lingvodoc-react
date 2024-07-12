@@ -9,36 +9,33 @@ class UserVariantModal extends React.Component {
   constructor(props) {
     super(props);
 
-    const { variant } = props;
+    const { result } = props;
     this.state = {
-      lex: variant ? variant.lex : "",
-      parts: variant ? variant.parts : "",
-      gloss: variant ? variant.gloss : "",
-      gr: variant ? variant.gr : "",
-      trans_ru: variant ? variant.trans_ru : ""
+      id: result ? result.id : null,
+      state: result ? result.state : "result user",
+      lex: result ? result.lex : "",
+      parts: result ? result.parts : "",
+      gloss: result ? result.gloss : "",
+      gr: result ? result.gr : "",
+      trans_ru: result ? result.trans_ru : ""
     };
 
     this.save = this.save.bind(this);
   }
 
   save() {
-    const { parent, variant, onSubmit, onClose } = this.props;
-    if (variant) {
-      variant.result.innerHTML = JSON.stringify(this.state);
+    const { parent, result, onSubmit, onClose, getAvailableId } = this.props;
+    if (result) {
+      Object.assign(result, this.state);
     } else {
-      const elem = document.createElement("span");
-      elem.classList.add("result");
-      elem.classList.add("user");
-      elem.innerHTML = JSON.stringify(this.state);
-      parent.append(elem);
-      elem.id = `${elem.previousElementSibling ? elem.previousElementSibling.id : parent.id}!`;
+      parent.push({...this.state, id: getAvailableId()});
     }
     onSubmit();
     onClose();
   }
 
   render() {
-    const { variant, onClose } = this.props;
+    const { result, onClose } = this.props;
     const { lex, parts, gloss, gr, trans_ru } = this.state;
     const isValid =
       lex.trim() !== "" && parts.trim() !== "" && gloss.trim() !== "" && gr.trim() !== "" && trans_ru.trim() !== "";
@@ -73,7 +70,7 @@ class UserVariantModal extends React.Component {
         <Modal.Actions>
           <Button
             disabled={!isValid}
-            content={this.context(variant ? "Save" : "Create")}
+            content={this.context(result ? "Save" : "Create")}
             onClick={this.save}
             className="lingvo-button-violet"
           />
@@ -87,8 +84,8 @@ class UserVariantModal extends React.Component {
 UserVariantModal.contextType = TranslationContext;
 
 UserVariantModal.propTypes = {
-  parent: PropTypes.object,
-  variant: PropTypes.object,
+  parent: PropTypes.array,
+  result: PropTypes.object,
   onSubmit: PropTypes.func.isRequired,
   onClose: PropTypes.func.isRequired
 };
