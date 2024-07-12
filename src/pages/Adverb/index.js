@@ -74,24 +74,24 @@ export const adverbDataQuery = gql`
 `;
 
 const createAdverbDataMutation = gql`
-  mutation createAdverbData($perspectiveId: LingvodocID!) {
-    create_adverb_data(perspective_id: $perspectiveId) {
+  mutation createAdverbData($perspectiveId: LingvodocID!, $valencyKind: String!) {
+    create_adverb_data(perspective_id: $perspectiveId, valency_kind: $valencyKind) {
       triumph
     }
   }
 `;
 
 const setAdverbAnnotationMutation = gql`
-  mutation setAdverbAnnotation($annotationList: [AdverbInstanceAnnotation]!) {
-    set_adverb_annotation(annotation_list: $annotationList) {
+  mutation setAdverbAnnotation($annotationList: [ValencyInstanceAnnotation]!, $valencyKind: String!) {
+    set_adverb_annotation(annotation_list: $annotationList, valency_kind: $valencyKind) {
       triumph
     }
   }
 `;
 
 const saveAdverbDataMutation = gql`
-  mutation saveAdverbData($perspectiveId: LingvodocID!) {
-    save_adverb_data(perspective_id: $perspectiveId) {
+  mutation saveAdverbData($perspectiveId: LingvodocID!, $valencyKind: String!) {
+    save_adverb_data(perspective_id: $perspectiveId, valency_kind: $valencyKind) {
       triumph
       data_url
     }
@@ -738,7 +738,8 @@ class Adverb extends React.Component {
     this.props
       .createAdverbData({
         variables: {
-          perspectiveId: this.state.perspective.id
+          perspectiveId: this.state.perspective.id,
+          valencyKind: 'adverb'
         }
       })
       .then(
@@ -811,7 +812,8 @@ class Adverb extends React.Component {
     this.props
       .saveAdverbData({
         variables: {
-          perspectiveId: this.state.perspective.id
+          perspectiveId: this.state.perspective.id,
+          valencyKind: 'adverb'
         }
       })
       .then(
@@ -841,7 +843,8 @@ class Adverb extends React.Component {
     this.props
       .setAdverbAnnotation({
         variables: {
-          annotationList: annotation_list
+          annotationList: annotation_list,
+          valencyKind: 'adverb'
         }
       })
       .then(
