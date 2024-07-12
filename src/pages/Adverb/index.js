@@ -75,7 +75,7 @@ export const adverbDataQuery = gql`
 
 const createAdverbDataMutation = gql`
   mutation createAdverbData($perspectiveId: LingvodocID!, $valencyKind: String!) {
-    create_adverb_data(perspective_id: $perspectiveId, valency_kind: $valencyKind) {
+    create_valency_data(perspective_id: $perspectiveId, valency_kind: $valencyKind) {
       triumph
     }
   }
@@ -83,7 +83,7 @@ const createAdverbDataMutation = gql`
 
 const setAdverbAnnotationMutation = gql`
   mutation setAdverbAnnotation($annotationList: [ValencyInstanceAnnotation]!, $valencyKind: String!) {
-    set_adverb_annotation(annotation_list: $annotationList, valency_kind: $valencyKind) {
+    set_valency_annotation(annotation_list: $annotationList, valency_kind: $valencyKind) {
       triumph
     }
   }
@@ -91,7 +91,7 @@ const setAdverbAnnotationMutation = gql`
 
 const saveAdverbDataMutation = gql`
   mutation saveAdverbData($perspectiveId: LingvodocID!, $valencyKind: String!) {
-    save_adverb_data(perspective_id: $perspectiveId, valency_kind: $valencyKind) {
+    save_valency_data(perspective_id: $perspectiveId, valency_kind: $valencyKind) {
       triumph
       data_url
     }
