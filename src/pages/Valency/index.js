@@ -72,16 +72,16 @@ export const valencyDataQuery = gql`
 `;
 
 const createValencyDataMutation = gql`
-  mutation createValencyData($perspectiveId: LingvodocID!) {
-    create_valency_data(perspective_id: $perspectiveId) {
+  mutation createValencyData($perspectiveId: LingvodocID!, $valencyKind: String!) {
+    create_valency_data(perspective_id: $perspectiveId, valency_kind: $valencyKind) {
       triumph
     }
   }
 `;
 
 const saveValencyDataMutation = gql`
-  mutation saveValencyData($perspectiveId: LingvodocID!) {
-    save_valency_data(perspective_id: $perspectiveId) {
+  mutation saveValencyData($perspectiveId: LingvodocID!, $valencyKind: String!) {
+    save_valency_data(perspective_id: $perspectiveId, valency_kind: $valencyKind) {
       triumph
       data_url
     }
@@ -89,8 +89,8 @@ const saveValencyDataMutation = gql`
 `;
 
 const setValencyAnnotationMutation = gql`
-  mutation setValencyAnnotation($annotationList: [ValencyInstanceAnnotation]!) {
-    set_valency_annotation(annotation_list: $annotationList) {
+  mutation setValencyAnnotation($annotationList: [ValencyInstanceAnnotation]!, $valencyKind: String!) {
+    set_valency_annotation(annotation_list: $annotationList, valency_kind: $valencyKind) {
       triumph
     }
   }
@@ -706,7 +706,8 @@ class Valency extends React.Component {
     this.props
       .createValencyData({
         variables: {
-          perspectiveId: this.state.perspective.id
+          perspectiveId: this.state.perspective.id,
+          valencyKind: 'verb'
         }
       })
       .then(
@@ -779,7 +780,8 @@ class Valency extends React.Component {
     this.props
       .saveValencyData({
         variables: {
-          perspectiveId: this.state.perspective.id
+          perspectiveId: this.state.perspective.id,
+          valencyKind: 'verb'
         }
       })
       .then(
@@ -809,7 +811,8 @@ class Valency extends React.Component {
     this.props
       .setValencyAnnotation({
         variables: {
-          annotationList: annotation_list
+          annotationList: annotation_list,
+          valencyKind: 'verb'
         }
       })
       .then(
