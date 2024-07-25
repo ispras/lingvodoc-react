@@ -65,11 +65,11 @@ export const queryPerspective = gql`
  * src/components/GroupingTagModal/graphql.js accordingly, see comment there.
  */
 export const queryLexicalEntries = gql`
-  query queryPerspective2($id: LingvodocID!, $entitiesMode: String!) {
+  query queryPerspective2($id: LingvodocID!, $entitiesMode: String!, $offset: Int, $limit: Int) {
     perspective(id: $id) {
       id
       translations
-      lexical_entries(mode: $entitiesMode) {
+      lexical_entries(mode: $entitiesMode, offset: $offset, limit: $limit) {
         id
         parent_id
         created_at
@@ -458,26 +458,30 @@ class P extends React.Component {
       }
     ]);
 
+    /*
     const created_id_str_set = {};
 
     for (const entry of createdEntries) {
       created_id_str_set[id2str(entry.id)] = null;
     }
+    */
 
     const newEntries = processEntries(
-      lexicalEntries.filter(e => Object.prototype.hasOwnProperty.call(created_id_str_set, id2str(e.id)))
+      lexicalEntries.filter(e => createdEntries.map(ce => id2str(ce.id)).includes(id2str(e.id)))
     );
 
-    const entries = processEntries(lexicalEntries.slice());
+    const processedEntries = processEntries(lexicalEntries.slice());
 
-    const pageEntries =
-      entries.length > ROWS_PER_PAGE ? take(drop(entries, ROWS_PER_PAGE * (page - 1)), ROWS_PER_PAGE) : entries;
+    const rawPageEntries =
+      processedEntries.length > ROWS_PER_PAGE
+      ? take(drop(processedEntries, ROWS_PER_PAGE * (page - 1)), ROWS_PER_PAGE)
+      : processedEntries;
 
     // Put newly created entries at the top of page.
-    const e = [
+    const pageEntries = [
       ...newEntries,
-      ...pageEntries.filter(
-        pageEntry => !Object.prototype.hasOwnProperty.call(created_id_str_set, id2str(pageEntry.id))
+      ...rawPageEntries.filter(
+        pe => !createdEntries.map(ce => id2str(ce.id)).includes(id2str(pe.id)))
       )
     ];
 
@@ -516,11 +520,7 @@ class P extends React.Component {
     const selectedRows = [];
     const selectedColumns = [];
 
-    const items = e;
-
-    const checkedRow = this.state.checkedRow;
-    const checkedColumn = this.state.checkedColumn;
-    const checkedAll = this.state.checkedAll;
+    const { checkedRow, checkedColumn, checkedAll } = this.state;
 
     /* isTableLanguagesPublish */
     if (isTableLanguagesPublish) {
@@ -529,16 +529,16 @@ class P extends React.Component {
 
       if (checkedAll) {
         if (checkedAll.checkedAll) {
-          items.forEach(item => {
+          pageEntries.forEach(item => {
             selectedRowsSet.add(item.id);
           });
         } else {
-          items.forEach(item => {
+          pageEntries.forEach(item => {
             selectedRowsSet.delete(item.id);
           });
         }
       } else {
-        items.forEach(item => {
+        pageEntries.forEach(item => {
           const allRowsSelected = item.entities.every(i => {
             return i.published;
           });
@@ -566,7 +566,7 @@ class P extends React.Component {
       fields.forEach(column => {
         const elems = [];
 
-        items.forEach(item => {
+        pageEntries.forEach(item => {
           const columnEntities = item.entities.filter(i => {
             return JSON.stringify(i.field_id) === JSON.stringify(column.id);
           });
@@ -606,7 +606,7 @@ class P extends React.Component {
 
     function* allEntriesGenerator() {
       yield* newEntries;
-      yield* entries;
+      yield* processedEntries;
     }
 
     return (
@@ -648,7 +648,7 @@ class P extends React.Component {
               <Button
                 icon={<i className="lingvo-icon lingvo-icon_check" />}
                 content={this.context("Publish Entities")}
-                disabled={approveDisableCondition(entries)}
+                disabled={approveDisableCondition(processedEntries)}
                 onClick={onApprove}
                 className="lingvo-button-green lingvo-perspective-button"
               />
@@ -657,7 +657,7 @@ class P extends React.Component {
               <Button
                 icon={<i className="lingvo-icon lingvo-icon_check" />}
                 content={this.context("Accept Contributions")}
-                disabled={approveDisableCondition(entries)}
+                disabled={approveDisableCondition(processedEntries)}
                 onClick={onApprove}
                 className="lingvo-button-green lingvo-perspective-button"
               />
@@ -673,7 +673,7 @@ class P extends React.Component {
               onSortModeChange={(fieldId, order) => setSort(fieldId, order)}
               onSortModeReset={() => resetSort()}
               selectEntries={mode === "edit"}
-              entries={items}
+              entries={pageEntries}
               checkEntries={isTableLanguagesPublish}
               selectedRows={selectedRows}
               selectedColumns={selectedColumns}
@@ -683,7 +683,7 @@ class P extends React.Component {
             <TableBody
               perspectiveId={id}
               entitiesMode={entitiesMode}
-              entries={items}
+              entries={pageEntries}
               allEntriesGenerator={allEntriesGenerator}
               columns={fields}
               mode={mode}
@@ -707,7 +707,7 @@ class P extends React.Component {
           urlBased
           activePage={page}
           pageSize={ROWS_PER_PAGE}
-          totalItems={entries.length}
+          totalItems={processedEntries.length}
           showTotal
           onPageChanged={() => {
             const scrollContainer = document.querySelector(".lingvo-scrolling-tab__table");
