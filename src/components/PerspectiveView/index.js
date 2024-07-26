@@ -324,6 +324,9 @@ class P extends React.Component {
       reRender
     } = this.props;
 
+    const limit = ROWS_PER_PAGE;
+    const offset = limit * (page - 1);
+
     const { loading, error } = data;
 
     if (loading || (!loading && !error && !data.perspective)) {
@@ -349,7 +352,9 @@ class P extends React.Component {
             query: queryLexicalEntries,
             variables: {
               id,
-              entitiesMode
+              entitiesMode,
+              offset,
+              limit
             }
           }
         ]
@@ -374,7 +379,9 @@ class P extends React.Component {
             query: queryLexicalEntries,
             variables: {
               id,
-              entitiesMode
+              entitiesMode,
+              offset,
+              limit
             }
           }
         ]
@@ -393,7 +400,9 @@ class P extends React.Component {
             query: queryLexicalEntries,
             variables: {
               id,
-              entitiesMode
+              entitiesMode,
+              offset,
+              limit
             }
           }
         ]
@@ -481,7 +490,7 @@ class P extends React.Component {
     const pageEntries = [
       ...newEntries,
       ...rawPageEntries.filter(
-        pe => !createdEntries.map(ce => id2str(ce.id)).includes(id2str(pe.id)))
+        pe => !createdEntries.map(ce => id2str(ce.id)).includes(id2str(pe.id))
       )
     ];
 
@@ -1059,6 +1068,8 @@ const PerspectiveViewWrapper = ({ id, className, mode, entitiesMode, page, data,
       mode={mode}
       entitiesMode={entitiesMode}
       page={page}
+      limit={ROWS_PER_PAGE}
+      offset={ROWS_PER_PAGE * (page - 1)}
       filter={filter}
       sortByField={sortByField}
       columns={columns}
