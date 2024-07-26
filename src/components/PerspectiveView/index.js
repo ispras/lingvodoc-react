@@ -69,27 +69,30 @@ export const queryLexicalEntries = gql`
     perspective(id: $id) {
       id
       translations
-      lexical_entries(mode: $entitiesMode, offset: $offset, limit: $limit) {
-        id
-        parent_id
-        created_at
-        marked_for_deletion
-        entities(mode: $entitiesMode) {
+      perspective_page(mode: $entitiesMode, offset: $offset, limit: $limit) {
+        entries_page() {
           id
           parent_id
-          field_id
-          link_id
-          self_id
           created_at
-          locale_id
-          content
-          published
-          accepted
-          additional_metadata {
-            link_perspective_id
+          marked_for_deletion
+          entities(mode: $entitiesMode) {
+            id
+            parent_id
+            field_id
+            link_id
+            self_id
+            created_at
+            locale_id
+            content
+            published
+            accepted
+            additional_metadata {
+              link_perspective_id
+            }
+            is_subject_for_parsing
           }
-          is_subject_for_parsing
         }
+        entries_total()
       }
     }
   }
@@ -339,7 +342,7 @@ class P extends React.Component {
       );
     }
 
-    const lexicalEntries = !error ? data.perspective.lexical_entries : [];
+    const lexicalEntries = !error ? data.perspective.perspective_page.entries_page : [];
 
     const addEntry = () => {
       createLexicalEntry({
