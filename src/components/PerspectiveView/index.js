@@ -65,12 +65,32 @@ export const queryPerspective = gql`
  * src/components/GroupingTagModal/graphql.js accordingly, see comment there.
  */
 export const queryLexicalEntries = gql`
-  query queryPerspective2($id: LingvodocID!, $entitiesMode: String!, $offset: Int, $limit: Int) {
+  query queryPerspective2(
+    $id: LingvodocID!,
+    $entitiesMode: String!,
+    $filter: String,
+    $sort_by_field: LingvodocID,
+    $is_edit_mode: Boolean,
+    $is_case_sens: Boolean,
+    $is_ascending: Boolean,
+    $offset: Int,
+    $limit: Int) {
+
     perspective(id: $id) {
       id
       translations
-      perspective_page(mode: $entitiesMode, offset: $offset, limit: $limit) {
-        entries_page() {
+      perspective_page(
+        mode: $entitiesMode,
+        filter: $filter,
+        sort_by_field: $sort_by_field,
+        is_edit_mode: $is_edit_mode,
+        is_case_sens: $is_case_sens,
+        is_ascending: $is_ascending,
+        offset: $offset,
+        limit: $limit) {
+
+        entries_total
+        entries_page {
           id
           parent_id
           created_at
@@ -92,7 +112,6 @@ export const queryLexicalEntries = gql`
             is_subject_for_parsing
           }
         }
-        entries_total()
       }
     }
   }
@@ -343,6 +362,7 @@ class P extends React.Component {
     }
 
     const lexicalEntries = !error ? data.perspective.perspective_page.entries_page : [];
+    const entriesTotal = !error ? data.perspective.perspective_page.entries_total : 0;
 
     const addEntry = () => {
       createLexicalEntry({
@@ -719,7 +739,7 @@ class P extends React.Component {
           urlBased
           activePage={page}
           pageSize={ROWS_PER_PAGE}
-          totalItems={processedEntries.length}
+          totalItems={entriesTotal}
           showTotal
           onPageChanged={() => {
             const scrollContainer = document.querySelector(".lingvo-scrolling-tab__table");
@@ -1069,6 +1089,7 @@ const PerspectiveViewWrapper = ({ id, className, mode, entitiesMode, page, data,
       id={id}
       className={className}
       mode={mode}
+      is_edit_mode={mode === "edit"}
       entitiesMode={entitiesMode}
       page={page}
       limit={ROWS_PER_PAGE}
