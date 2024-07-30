@@ -90,7 +90,7 @@ export const queryLexicalEntries = gql`
         limit: $limit) {
 
         entries_total
-        entries_page {
+        lexical_entries {
           id
           parent_id
           created_at
@@ -361,7 +361,7 @@ class P extends React.Component {
       );
     }
 
-    const lexicalEntries = !error ? data.perspective.perspective_page.entries_page : [];
+    const lexicalEntries = !error ? data.perspective.perspective_page.lexical_entries : [];
     const entriesTotal = !error ? data.perspective.perspective_page.entries_total : 0;
 
     const addEntry = () => {
@@ -1089,13 +1089,15 @@ const PerspectiveViewWrapper = ({ id, className, mode, entitiesMode, page, data,
       id={id}
       className={className}
       mode={mode}
-      is_edit_mode={mode === "edit"}
       entitiesMode={entitiesMode}
       page={page}
       limit={ROWS_PER_PAGE}
       offset={ROWS_PER_PAGE * (page - 1)}
       filter={filter}
-      sortByField={sortByField}
+      sort_by_field={sortByField?.field}
+      is_ascending={sortByField?.order === 'a'}
+      is_edit_mode={mode === "edit"}
+      is_case_sens={true}
       columns={columns}
       reRender={reRender}
     />
