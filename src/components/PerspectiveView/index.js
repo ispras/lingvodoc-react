@@ -445,6 +445,9 @@ class P extends React.Component {
     };
 
     const entitySortKeys = new Map();
+    // Debug
+    const processEntries = es => es;
+    /*
     const processEntries = flow([
       // remove empty lexical entries, if not in edit mode
       es => (mode !== "edit" ? es.filter(e => e.entities.length > 0) : es),
@@ -466,7 +469,7 @@ class P extends React.Component {
         }
         const { field, order } = sortByField;
 
-        /* Getting a sort key for each entry. */
+        // Getting a sort key for each entry.
 
         for (const entry of es) {
           const entities = entry.entities.filter(entity => isEqual(entity.field_id, field));
@@ -490,7 +493,6 @@ class P extends React.Component {
       }
     ]);
 
-    /*
     const created_id_str_set = {};
 
     for (const entry of createdEntries) {
