@@ -469,85 +469,13 @@ class P extends React.Component {
       openNewModal(ApproveModal, { perspectiveId: id, mode });
     };
 
-    /* Basic case-insensitive, case-sensitive compare. */
-    const ci_cs_compare = (str_a, str_b) => {
-      const result = str_a.toLowerCase().localeCompare(str_b.toLowerCase(), undefined, { numeric: true });
-      return result ? result : str_a.localeCompare(str_b, undefined, { numeric: true });
-    };
-
-    const entitySortKeys = new Map();
-    // Debug
-    const processEntries = es => es;
-    /*
-    const processEntries = flow([
-      // remove empty lexical entries, if not in edit mode
-      es => (mode !== "edit" ? es.filter(e => e.entities.length > 0) : es),
-      // apply filtering
-      es =>
-        !!filter && filter.length > 0
-          ? es.filter(
-              entry =>
-                !!entry.entities.find(
-                  entity => typeof entity.content === "string" && entity.content.indexOf(filter) >= 0
-                )
-            )
-          : es,
-      // apply sorting
-      es => {
-        // no sorting required
-        if (!sortByField) {
-          return es;
-        }
-        const { field, order } = sortByField;
-
-        // Getting a sort key for each entry.
-
-        for (const entry of es) {
-          const entities = entry.entities.filter(entity => isEqual(entity.field_id, field));
-
-          entities.sort(
-            (ea, eb) => ci_cs_compare(ea.content || "", eb.content || "") || ea.id[0] - eb.id[0] || ea.id[1] - eb.id[1]
-          );
-
-          entitySortKeys.set(
-            entry,
-            entities.length > 0 && entities[0].content ? entities[0].content : `${entities.length}`
-          );
-        }
-
-        es.sort(
-          (ea, eb) =>
-            ci_cs_compare(entitySortKeys.get(ea), entitySortKeys.get(eb)) || ea.id[0] - eb.id[0] || ea.id[1] - eb.id[1]
-        );
-
-        return order === "a" ? es : reverse(es);
-      }
-    ]);
-
-    const created_id_str_set = {};
-
-    for (const entry of createdEntries) {
-      created_id_str_set[id2str(entry.id)] = null;
-    }
-    */
-
-    const newEntries = processEntries(
-      lexicalEntries.filter(e => createdEntries.map(ce => id2str(ce.id)).includes(id2str(e.id)))
-    );
-
-    const processedEntries = processEntries(lexicalEntries.slice());
-
-    const rawPageEntries =
-      processedEntries.length > ROWS_PER_PAGE
-      ? take(drop(processedEntries, ROWS_PER_PAGE * (page - 1)), ROWS_PER_PAGE)
-      : processedEntries;
+    const newEntries = lexicalEntries.filter(e => createdEntries.map(ce => id2str(ce.id)).includes(id2str(e.id)));
+    const oldEntries = lexicalEntries.filter(e => !createdEntries.map(ce => id2str(ce.id)).includes(id2str(e.id)));
 
     // Put newly created entries at the top of page.
     const pageEntries = [
       ...newEntries,
-      ...rawPageEntries.filter(
-        pe => !createdEntries.map(ce => id2str(ce.id)).includes(id2str(pe.id))
-      )
+      ...oldEntries
     ];
 
     // join fields and columns
@@ -671,7 +599,7 @@ class P extends React.Component {
 
     function* allEntriesGenerator() {
       yield* newEntries;
-      yield* processedEntries;
+      yield* lexicalEntries;
     }
 
     return (
@@ -713,7 +641,7 @@ class P extends React.Component {
               <Button
                 icon={<i className="lingvo-icon lingvo-icon_check" />}
                 content={this.context("Publish Entities")}
-                disabled={approveDisableCondition(processedEntries)}
+                disabled={approveDisableCondition(lexicalEntries)}
                 onClick={onApprove}
                 className="lingvo-button-green lingvo-perspective-button"
               />
@@ -722,7 +650,7 @@ class P extends React.Component {
               <Button
                 icon={<i className="lingvo-icon lingvo-icon_check" />}
                 content={this.context("Accept Contributions")}
-                disabled={approveDisableCondition(processedEntries)}
+                disabled={approveDisableCondition(lexicalEntries)}
                 onClick={onApprove}
                 className="lingvo-button-green lingvo-perspective-button"
               />
