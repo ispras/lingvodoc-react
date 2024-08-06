@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { connect } from "react-redux";
 import { Button, Dimmer, Header, Icon, Table } from "semantic-ui-react";
 import { gql } from "@apollo/client";
-import { graphql } from "@apollo/client/react/hoc";
+import { graphql, withApollo } from "@apollo/client/react/hoc";
 import { drop, flow, isEqual, reverse, take } from "lodash";
 import PropTypes from "prop-types";
 import { branch, compose, renderComponent } from "recompose";
@@ -116,6 +116,20 @@ export const queryLexicalEntries = gql`
     }
   }
 `;
+
+export const fragmentPerspectivePageVariables = {
+  id: 'PerspectivePageVariables:',
+  fragment: gql`
+    fragment current on PerspectivePageVariables {
+      filter
+      is_ascending
+      is_case_sens
+      is_edit_mode
+      sort_by_field
+      limit
+      offset
+    }`
+};
 
 const createLexicalEntryMutation = gql`
   mutation createLexicalEntry($id: LingvodocID!, $entitiesMode: String!) {
@@ -343,11 +357,28 @@ class P extends React.Component {
       createdEntries,
       selectedEntries,
       user,
-      reRender
+      reRender,
+      client,
+      is_edit_mode,
+      is_ascending,
+      is_case_sens,
+      sort_by_field,
+      limit,
+      offset
     } = this.props;
 
-    const limit = ROWS_PER_PAGE;
-    const offset = limit * (page - 1);
+    client.writeFragment({
+      ...fragmentPerspectivePageVariables,
+      data: {
+        filter,
+        is_edit_mode,
+        is_ascending,
+        is_case_sens,
+        sort_by_field,
+        limit,
+        offset
+      }
+    });
 
     const { loading, error } = data;
 
@@ -816,7 +847,8 @@ const PerspectiveView = compose(
   graphql(removeLexicalEntriesMutation, { name: "removeLexicalEntries" }),
   graphql(queryLexicalEntries, {
     options: { notifyOnNetworkStatusChange: true }
-  })
+  }),
+  withApollo
 )(P);
 
 export const queryLexicalEntry = gql`
