@@ -73,6 +73,7 @@ export const queryLexicalEntries = gql`
     $is_edit_mode: Boolean,
     $is_case_sens: Boolean,
     $is_ascending: Boolean,
+    $is_regexp: Boolean,
     $offset: Int,
     $limit: Int) {
 
@@ -86,6 +87,7 @@ export const queryLexicalEntries = gql`
         is_edit_mode: $is_edit_mode,
         is_case_sens: $is_case_sens,
         is_ascending: $is_ascending,
+        is_regexp: $is_regexp,
         offset: $offset,
         limit: $limit) {
 
@@ -121,10 +123,13 @@ export const fragmentPerspectivePageVariables = {
   id: 'PerspectivePageVariables:',
   fragment: gql`
     fragment current on PerspectivePageVariables {
+      id
+      entitiesMode
       filter
-      is_ascending
+      is_regexp
       is_case_sens
       is_edit_mode
+      is_ascending
       sort_by_field
       limit
       offset
@@ -360,24 +365,31 @@ class P extends React.Component {
       reRender,
       client,
       is_edit_mode,
-      is_ascending,
       is_case_sens,
+      is_regexp,
+      is_ascending,
       sort_by_field,
       limit,
       offset
     } = this.props;
 
+    const query_args = {
+      id,
+      entitiesMode,
+      filter,
+      is_edit_mode,
+      is_case_sens,
+      is_regexp,
+      is_ascending,
+      sort_by_field,
+      limit,
+      offset
+    }
+
+    // TODO: doesn't work yet
     client.writeFragment({
       ...fragmentPerspectivePageVariables,
-      data: {
-        filter,
-        is_edit_mode,
-        is_ascending,
-        is_case_sens,
-        sort_by_field,
-        limit,
-        offset
-      }
+      data: query_args
     });
 
     const { loading, error } = data;
@@ -404,12 +416,7 @@ class P extends React.Component {
         refetchQueries: [
           {
             query: queryLexicalEntries,
-            variables: {
-              id,
-              entitiesMode,
-              offset,
-              limit
-            }
+            variables: query_args
           }
         ]
       }).then(({ data: d }) => {
@@ -431,12 +438,7 @@ class P extends React.Component {
         refetchQueries: [
           {
             query: queryLexicalEntries,
-            variables: {
-              id,
-              entitiesMode,
-              offset,
-              limit
-            }
+            variables: query_args
           }
         ]
       }).then(() => {
@@ -452,12 +454,7 @@ class P extends React.Component {
         refetchQueries: [
           {
             query: queryLexicalEntries,
-            variables: {
-              id,
-              entitiesMode,
-              offset,
-              limit
-            }
+            variables: query_args
           }
         ]
       }).then(() => {
@@ -755,7 +752,9 @@ const PerspectiveView = compose(
       user,
       sortByField,
       createdEntries,
-      selectedEntries
+      selectedEntries,
+      sort_by_field: sortByField?.field,
+      is_ascending: (sortByField?.order === 'a')
     }),
     dispatch =>
       bindActionCreators(
@@ -1056,10 +1055,9 @@ const PerspectiveViewWrapper = ({ id, className, mode, entitiesMode, page, data,
       limit={ROWS_PER_PAGE}
       offset={ROWS_PER_PAGE * (page - 1)}
       filter={filter}
-      sort_by_field={sortByField?.field}
-      is_ascending={sortByField?.order === 'a'}
       is_edit_mode={mode === "edit"}
       is_case_sens={true}
+      is_regexp={false}
       columns={columns}
       reRender={reRender}
     />
