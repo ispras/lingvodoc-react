@@ -7,7 +7,7 @@ import PropTypes from "prop-types";
 import { compose, pure } from "recompose";
 
 import { queryCounter } from "backend";
-import { queryLexicalEntries } from "components/PerspectiveView";
+import { queryLexicalEntries, fragmentPerspectivePageVariables } from "components/PerspectiveView";
 import { compositeIdToString, compositeIdToString as id2str } from "utils/compositeId";
 
 import GroupingTag from "./GroupingTag";
@@ -138,17 +138,23 @@ class Entities extends React.Component {
       }
     });
 
+    // Current variables for queryLexicalEntries are stored as fragment
+    let data_perspective_variables = client.readFragment(fragmentPerspectivePageVariables);
+    if (!data_perspective_variables) {
+      data_perspective_variables = { id: perspectiveId, entitiesMode };
+    }
+
     const data_perspective = client.readQuery({
       query: queryLexicalEntries,
-      variables: {
-        id: perspectiveId,
-        entitiesMode
-      }
+      variables: data_perspective_variables
     });
 
     const {
-      perspective: { lexical_entries }
-    } = data_perspective;
+      perspective: { perspective_page: { lexical_entries } }
+    } = data_perspective ? data_perspective : {
+      // TODO: here is a dirty workaround, readQuery above should have
+      // full set of variables and work correctly
+      perspective: { perspective_page: { lexical_entries: [] } } };
 
     const entry_id_str = id2str(entry.id);
 
