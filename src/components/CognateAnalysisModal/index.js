@@ -202,6 +202,10 @@ const computeSwadeshAnalysisMutation = gql`
       perspective_info_list: $perspectiveInfoList
     ) {
       triumph
+      dictionary_count
+      group_count
+      not_enough_count
+      transcription_count
       result
       xlsx_url
       minimum_spanning_tree
@@ -226,6 +230,10 @@ const computeMorphCognateAnalysisMutation = gql`
       perspective_info_list: $perspectiveInfoList
     ) {
       triumph
+      dictionary_count
+      group_count
+      not_enough_count
+      transcription_count
       result
       xlsx_url
       minimum_spanning_tree
