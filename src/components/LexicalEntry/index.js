@@ -139,26 +139,11 @@ class Entities extends React.Component {
     });
 
     // Current variables for queryLexicalEntries are stored as fragment
-    let data_perspective_variables = client.readFragment(fragmentPerspectivePageVariables);
-    if (!data_perspective_variables || _.isEmpty(data_perspective_variables)) {
-      data_perspective_variables = {
-        id: perspectiveId,
-        entitiesMode,
-        /*
-        filter: "",
-        is_ascending: false,
-        is_case_sens: true,
-        is_edit_mode: true,
-        limit: 20,
-        offset: 0,
-        sort_by_field: undefined
-        */
-      };
-    }
+    const data_perspective_variables = client.readFragment(fragmentPerspectivePageVariables);
 
     const data_perspective = client.readQuery({
       query: queryLexicalEntries,
-      variables: data_perspective_variables
+      variables: data_perspective_variables ?? {}
     });
 
     const {
@@ -202,10 +187,7 @@ class Entities extends React.Component {
 
           client.writeQuery({
             query: queryLexicalEntries,
-            variables: {
-              id: perspectiveId,
-              entitiesMode
-            },
+            variables: data_perspective_variables ?? {},
             data: data_perspective
           });
         }

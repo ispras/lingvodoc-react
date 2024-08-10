@@ -69,11 +69,11 @@ export const queryLexicalEntries = gql`
     $id: LingvodocID!,
     $entitiesMode: String!,
     $filter: String,
-    $sort_by_field: LingvodocID,
-    $is_edit_mode: Boolean,
-    $is_case_sens: Boolean,
-    $is_ascending: Boolean,
-    $is_regexp: Boolean,
+    $sortingField: LingvodocID,
+    $isEditMode: Boolean,
+    $isCaseSens: Boolean,
+    $isAscending: Boolean,
+    $isRegexp: Boolean,
     $offset: Int,
     $limit: Int) {
 
@@ -83,11 +83,11 @@ export const queryLexicalEntries = gql`
       perspective_page(
         mode: $entitiesMode,
         filter: $filter,
-        sort_by_field: $sort_by_field,
-        is_edit_mode: $is_edit_mode,
-        is_case_sens: $is_case_sens,
-        is_ascending: $is_ascending,
-        is_regexp: $is_regexp,
+        sort_by_field: $sortingField,
+        is_edit_mode: $isEditMode,
+        is_case_sens: $isCaseSens,
+        is_ascending: $isAscending,
+        is_regexp: $isRegexp,
         offset: $offset,
         limit: $limit) {
 
@@ -126,11 +126,11 @@ export const fragmentPerspectivePageVariables = {
       id
       entitiesMode
       filter
-      is_regexp
-      is_case_sens
-      is_edit_mode
-      is_ascending
-      sort_by_field
+      isRegexp
+      isCaseSens
+      isEditMode
+      isAscending
+      sortingField
       limit
       offset
     }`
@@ -364,26 +364,28 @@ class P extends React.Component {
       user,
       reRender,
       client,
-      is_edit_mode,
-      is_case_sens,
-      is_regexp,
-      is_ascending,
-      sort_by_field,
+      isEditMode,
+      isCaseSens,
+      isRegexp,
+      isAscending,
+      sortingField,
       limit,
-      offset
+      offset,
+      //createdEntries
     } = this.props;
 
     const query_args = {
       id,
       entitiesMode,
       filter,
-      is_edit_mode,
-      is_case_sens,
-      is_regexp,
-      is_ascending,
-      sort_by_field,
+      isEditMode,
+      isCaseSens,
+      isRegexp,
+      isAscending,
+      sortingField,
       limit,
-      offset
+      offset,
+      //createdEntries
     }
 
     // TODO: doesn't work yet
@@ -753,8 +755,9 @@ const PerspectiveView = compose(
       sortByField,
       createdEntries,
       selectedEntries,
-      sort_by_field: sortByField?.field,
-      is_ascending: (sortByField?.order === 'a')
+      //createdEntries: createdEntries.map(lex => lex.id),
+      sortingField: sortByField?.field,
+      isAscending: (sortByField?.order === 'a')
     }),
     dispatch =>
       bindActionCreators(
@@ -773,7 +776,7 @@ const PerspectiveView = compose(
   graphql(mergeLexicalEntriesMutation, { name: "mergeLexicalEntries" }),
   graphql(removeLexicalEntriesMutation, { name: "removeLexicalEntries" }),
   graphql(queryLexicalEntries, {
-    options: { notifyOnNetworkStatusChange: true }
+    options: { notifyOnNetworkStatusChange: true } // fetchPolicy: "network-only"
   }),
   withApollo
 )(P);
@@ -1055,9 +1058,9 @@ const PerspectiveViewWrapper = ({ id, className, mode, entitiesMode, page, data,
       limit={ROWS_PER_PAGE}
       offset={ROWS_PER_PAGE * (page - 1)}
       filter={filter}
-      is_edit_mode={mode === "edit"}
-      is_case_sens={true}
-      is_regexp={false}
+      isEditMode={mode === "edit"}
+      isCaseSens={true}
+      isRegexp={false}
       columns={columns}
       reRender={reRender}
     />
