@@ -75,7 +75,8 @@ export const queryLexicalEntries = gql`
     $isAscending: Boolean,
     $isRegexp: Boolean,
     $offset: Int,
-    $limit: Int) {
+    $limit: Int,
+    $createdEntries: [LingvodocID]) {
 
     perspective(id: $id) {
       id
@@ -89,7 +90,8 @@ export const queryLexicalEntries = gql`
         is_ascending: $isAscending,
         is_regexp: $isRegexp,
         offset: $offset,
-        limit: $limit) {
+        limit: $limit,
+        created_entries: $createdEntries) {
 
         entries_total
         lexical_entries {
@@ -370,8 +372,7 @@ class P extends React.Component {
       isAscending,
       sortingField,
       limit,
-      offset,
-      //createdEntries
+      offset
     } = this.props;
 
     const query_args = {
@@ -385,7 +386,7 @@ class P extends React.Component {
       sortingField,
       limit,
       offset,
-      //createdEntries
+      createdEntries
     }
 
     // TODO: doesn't work yet
@@ -468,15 +469,6 @@ class P extends React.Component {
       openNewModal(ApproveModal, { perspectiveId: id, mode });
     };
 
-    const newEntries = lexicalEntries.filter(e => createdEntries.map(ce => id2str(ce.id)).includes(id2str(e.id)));
-    const oldEntries = lexicalEntries.filter(e => !createdEntries.map(ce => id2str(ce.id)).includes(id2str(e.id)));
-
-    // Put newly created entries at the top of page.
-    const pageEntries = [
-      ...newEntries,
-      ...oldEntries
-    ];
-
     // join fields and columns
     // {
     //   column_id = column.id
@@ -521,16 +513,16 @@ class P extends React.Component {
 
       if (checkedAll) {
         if (checkedAll.checkedAll) {
-          pageEntries.forEach(item => {
+          lexicalEntries.forEach(item => {
             selectedRowsSet.add(item.id);
           });
         } else {
-          pageEntries.forEach(item => {
+          lexicalEntries.forEach(item => {
             selectedRowsSet.delete(item.id);
           });
         }
       } else {
-        pageEntries.forEach(item => {
+        lexicalEntries.forEach(item => {
           const allRowsSelected = item.entities.every(i => {
             return i.published;
           });
@@ -558,7 +550,7 @@ class P extends React.Component {
       fields.forEach(column => {
         const elems = [];
 
-        pageEntries.forEach(item => {
+        lexicalEntries.forEach(item => {
           const columnEntities = item.entities.filter(i => {
             return JSON.stringify(i.field_id) === JSON.stringify(column.id);
           });
@@ -597,7 +589,6 @@ class P extends React.Component {
     /* /isTableLanguagesPublish */
 
     function* allEntriesGenerator() {
-      yield* newEntries;
       yield* lexicalEntries;
     }
 
@@ -665,7 +656,7 @@ class P extends React.Component {
               onSortModeChange={(fieldId, order) => setSort(fieldId, order)}
               onSortModeReset={() => resetSort()}
               selectEntries={mode === "edit"}
-              entries={pageEntries}
+              entries={lexicalEntries}
               checkEntries={isTableLanguagesPublish}
               selectedRows={selectedRows}
               selectedColumns={selectedColumns}
@@ -675,7 +666,7 @@ class P extends React.Component {
             <TableBody
               perspectiveId={id}
               entitiesMode={entitiesMode}
-              entries={pageEntries}
+              entries={lexicalEntries}
               allEntriesGenerator={allEntriesGenerator}
               columns={fields}
               mode={mode}
@@ -753,9 +744,8 @@ const PerspectiveView = compose(
     ({ user, perspective: { sortByField, createdEntries, selectedEntries } }) => ({
       user,
       sortByField,
-      createdEntries,
       selectedEntries,
-      //createdEntries: createdEntries.map(lex => lex.id),
+      createdEntries: createdEntries.map(lex => lex.id),
       sortingField: sortByField?.field,
       isAscending: (sortByField?.order === 'a')
     }),
