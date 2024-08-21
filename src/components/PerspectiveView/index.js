@@ -1010,7 +1010,8 @@ export const LexicalEntryByIds = compose(
   })
 )(LexicalEntryViewBaseByIds);
 
-const PerspectiveViewWrapper = ({ id, className, mode, entitiesMode, page, data, filter, sortByField }) => {
+const PerspectiveViewWrapper = ({ id, className, mode, entitiesMode, page, data,
+                                  filter, sortByField, isCaseSens, isRegexp }) => {
   if (data.error) {
     return null;
   }
@@ -1049,8 +1050,8 @@ const PerspectiveViewWrapper = ({ id, className, mode, entitiesMode, page, data,
       offset={ROWS_PER_PAGE * (page - 1)}
       filter={filter}
       isEditMode={mode === "edit"}
-      isCaseSens={true}
-      isRegexp={false}
+      isCaseSens={isCaseSens}
+      isRegexp={isRegexp}
       columns={columns}
       reRender={reRender}
     />
@@ -1064,12 +1065,16 @@ PerspectiveViewWrapper.propTypes = {
   mode: PropTypes.string.isRequired,
   entitiesMode: PropTypes.string.isRequired,
   filter: PropTypes.string,
+  isCaseSens: PropTypes.bool,
+  isRegexp: PropTypes.bool,
   data: PropTypes.object.isRequired,
   sortByField: PropTypes.object
 };
 
 PerspectiveViewWrapper.defaultProps = {
   filter: "",
+  isCaseSens: true,
+  isRegexp: false,
   sortByField: null
 };
 
