@@ -695,16 +695,23 @@
 /* /lingvo perspective component text */
 
 /* lingvo searching options */
-.lingvo-search-entities__checkboxes .lingvo-checkbox_labeled {
-  padding: 0.2em 0 0.2em 1.5em;
+.lingvo-search-entities__checkboxes {
+  margin-left: 1.5em;
+  border: gray solid;
+  border-radius: 30px;
 
-  & label {
-    color: white !important;
-    font-size: 1.2em !important;
-    padding-right: 0.2em;
+  .lingvo-checkbox_labeled {
+    margin-right: 0.5em;
+    padding: 0.5em;
 
-    &:hover {
-      text-decoration: underline;
+    & label {
+      color: white !important;
+      font-size: 1.2em !important;
+      font-weight: bold;
+
+      &:hover {
+        text-decoration: underline;
+      }
     }
   }
 }
