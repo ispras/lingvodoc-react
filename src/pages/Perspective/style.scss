@@ -693,3 +693,19 @@
 
 }
 /* /lingvo perspective component text */
+
+/* lingvo searching options */
+.lingvo-search-entities__checkboxes .lingvo-checkbox_labeled {
+  padding: 0.2em 0 0.2em 1.5em;
+
+  & label {
+    color: white !important;
+    font-size: 1.2em !important;
+    padding-right: 0.2em;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+/* /lingvo searching options */
