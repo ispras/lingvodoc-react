@@ -1061,9 +1061,9 @@ const Tools = ({
 };
 
 const handlers = compose(
-  withState("value", "updateValue", props => props.filter),
-  withState("isCaseSens", "setCaseSens", props => props.isCaseSens),
-  withState("isRegexp", "setRegexp", props => props.isRegexp),
+  withState("value", "updateValue", props => props.filter.value),
+  withState("isCaseSens", "setCaseSens", props => props.filter.isCaseSens),
+  withState("isRegexp", "setRegexp", props => props.filter.isRegexp),
   withHandlers({
     onChange(props) {
       return event => props.updateValue(event.target.value);
@@ -1376,7 +1376,9 @@ const Perspective = ({
             mode={mode}
             id={id}
             baseUrl={baseUrl}
-            filter={perspective.filter}
+            filter={perspective.filter.value}
+            isCaseSens={perspective.filter.isCaseSens}
+            isRegexp={perspective.filter.isRegexp}
             submitFilter={submitFilter}
             openCognateAnalysisModal={openCognateAnalysisModal}
             openPhonemicAnalysisModal={openPhonemicAnalysisModal}
@@ -1398,7 +1400,9 @@ const Perspective = ({
                     mode={mode}
                     entitiesMode={info.entitiesMode}
                     page={page}
-                    filter={perspective.filter}
+                    filter={perspective.filter.value}
+                    isCaseSens={perspective.filter.isCaseSens}
+                    isRegexp={perspective.filter.isRegexp}
                     className="content"
                     activeDndProvider={dndProvider}
                   />

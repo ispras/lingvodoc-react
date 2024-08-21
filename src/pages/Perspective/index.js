@@ -17,7 +17,7 @@ function init({ location }) {
 }
 
 function submitFilter(value, isCaseSens, isRegexp) {
-  return setFilter(value, isCaseSens, isRegexp);
+  return setFilter({value, isCaseSens, isRegexp});
 }
 
 function openCognateAnalysisModal(perspectiveId, mode = "") {

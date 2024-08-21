@@ -23,10 +23,10 @@ function params(state = {}, action = {}) {
   }
 }
 
-function filter(state = "", action = {}) {
-  switch (action.type) {
+function filter(state = { value: "", isCaseSens: true, isRegexp: false }, { type, payload }) {
+  switch (type) {
     case SET_FILTER:
-      return action.payload;
+      return payload;
     default:
       return state;
   }
