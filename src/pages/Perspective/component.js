@@ -1062,8 +1062,8 @@ const Tools = ({
 
 const handlers = compose(
   withState("value", "updateValue", props => props.filter.value),
-  withState("isCaseSens", "setCaseSens", props => props.filter.isCaseSens),
-  withState("isRegexp", "setRegexp", props => props.filter.isRegexp),
+  withState("isCaseSens", "setCaseSens", true),
+  withState("isRegexp", "setRegexp", false),
   withHandlers({
     onChange(props) {
       return event => props.updateValue(event.target.value);
@@ -1095,13 +1095,13 @@ const Filter = handlers(({ value, onChange, onSubmit, isCaseSens, onToggleCaseSe
         </button>
         <div className="lingvo-search-entities__checkboxes">
           <Checkbox
-            label={getTranslation("A≠a")}
+            label={getTranslation("A ≠ a")}
             checked={isCaseSens}
             onChange={onToggleCaseSens}
             className="lingvo-checkbox_labeled"
           />
           <Checkbox
-            label={getTranslation(".*")}
+            label={getTranslation("a .*")}
             checked={isRegexp}
             onChange={onToggleRegexp}
             className="lingvo-checkbox_labeled"
@@ -1217,8 +1217,6 @@ const ModeSelector = compose(
         <Menu.Menu position="right">
           <Filter
             filter={filter}
-            isCaseSens={true}
-            isRegexp={false}
             submitFilter={submitFilter}
           />
         </Menu.Menu>
