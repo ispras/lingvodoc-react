@@ -698,11 +698,12 @@
 .lingvo-search-entities__checkboxes {
   margin-left: 1.5em;
   border: gray solid;
-  border-radius: 30px;
+  border-radius: 15px;
+  padding: 0.25em;
 
   .lingvo-checkbox_labeled {
-    margin-right: 0.5em;
-    padding: 0.5em;
+    margin-right: 1.5em;
+    padding: 0.25em;
 
     & label {
       color: white !important;
