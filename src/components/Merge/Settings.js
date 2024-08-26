@@ -99,7 +99,7 @@ class MergeSettings extends React.Component {
 
     const {
       dataLexicalEntries: {
-        perspective: { lexical_entries: entries }
+        perspective: { perspective_page: { lexical_entries: entries }}
       }
     } = this.props;
 
