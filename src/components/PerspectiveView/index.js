@@ -121,23 +121,6 @@ export const queryLexicalEntries = gql`
   }
 `;
 
-export const fragmentPerspectivePageVariables = {
-  id: 'PerspectivePageVariables:',
-  fragment: gql`
-    fragment current on PerspectivePageVariables {
-      id
-      entitiesMode
-      filter
-      isRegexp
-      isCaseSens
-      isEditMode
-      isAscending
-      sortingField
-      limit
-      offset
-    }`
-};
-
 const createLexicalEntryMutation = gql`
   mutation createLexicalEntry($id: LingvodocID!, $entitiesMode: String!) {
     create_lexicalentry(perspective_id: $id) {
@@ -388,12 +371,6 @@ class P extends React.Component {
       offset,
       createdEntries
     }
-
-    // TODO: doesn't work yet
-    client.writeFragment({
-      ...fragmentPerspectivePageVariables,
-      data: query_args
-    });
 
     const { loading, error } = data;
 
@@ -683,6 +660,7 @@ class P extends React.Component {
               resetCheckedAll={this.resetCheckedAll}
               onEntrySelect={onEntrySelect}
               reRender={reRender}
+              queryArgs={query_args}
             />
           </Table>
         </div>

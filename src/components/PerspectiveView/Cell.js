@@ -24,7 +24,8 @@ const Cell = ({
   mode,
   entitiesMode,
   disabled,
-  reRender
+  reRender,
+  queryArgs
   // eslint-disable-next-line arrow-body-style
 }) => {
   return (
@@ -46,6 +47,7 @@ const Cell = ({
         entitiesMode={entitiesMode}
         disabled={disabled}
         reRender={reRender}
+        queryArgs={queryArgs}
       />
     </Table.Cell>
   );
@@ -66,11 +68,13 @@ Cell.propTypes = {
   resetCheckedRow: PropTypes.func,
   resetCheckedColumn: PropTypes.func,
   resetCheckedAll: PropTypes.func,
-  reRender: PropTypes.func
+  reRender: PropTypes.func,
+  queryArgs: PropTypes.object
 };
 
 Cell.defaultProps = {
-  disabled: undefined
+  disabled: undefined,
+  queryArgs: null
 };
 
 export default onlyUpdateForKeys([
@@ -81,5 +85,6 @@ export default onlyUpdateForKeys([
   "column",
   "checkedRow",
   "checkedColumn",
-  "checkedAll"
+  "checkedAll",
+  "queryArgs"
 ])(Cell);

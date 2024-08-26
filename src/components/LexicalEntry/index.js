@@ -7,7 +7,7 @@ import PropTypes from "prop-types";
 import { compose, pure } from "recompose";
 
 import { queryCounter } from "backend";
-import { queryLexicalEntries, fragmentPerspectivePageVariables } from "components/PerspectiveView";
+import { queryLexicalEntries } from "components/PerspectiveView";
 import { compositeIdToString, compositeIdToString as id2str } from "utils/compositeId";
 
 import GroupingTag from "./GroupingTag";
@@ -128,7 +128,7 @@ class Entities extends React.Component {
   update_check() {
     /* Checking if we need to manually update perspective data. */
 
-    const { entry, client, perspectiveId, entitiesMode } = this.props;
+    const { entry, client, perspectiveId, entitiesMode, queryArgs } = this.props;
 
     const data_entities = client.readQuery({
       query: lexicalEntryQuery,
@@ -138,20 +138,16 @@ class Entities extends React.Component {
       }
     });
 
-    // Current variables for queryLexicalEntries are stored as fragment
-    const data_perspective_variables = client.readFragment(fragmentPerspectivePageVariables);
-
-    const data_perspective = client.readQuery({
+    const data_perspective = queryArgs
+    ? client.readQuery({
       query: queryLexicalEntries,
-      variables: data_perspective_variables ?? {}
-    });
+      variables: queryArgs
+    })
+    : { perspective: { perspective_page: { lexical_entries: [] }}};
 
     const {
       perspective: { perspective_page: { lexical_entries } }
-    } = data_perspective ? data_perspective : {
-      // TODO: here is a dirty workaround, readQuery above should have
-      // full set of variables and work correctly
-      perspective: { perspective_page: { lexical_entries: [] } } };
+    } = data_perspective;
 
     const entry_id_str = id2str(entry.id);
 
@@ -182,12 +178,12 @@ class Entities extends React.Component {
         /* If for some reason queryLexicalEntries failed to update (e.g. when there are several thousand
          * entries and Apollo GraphQL cache glitches), we update it manually. */
 
-        if (change_flag) {
+        if (change_flag && queryArgs) {
           lexical_entry.entities = data_entities.lexicalentry.entities;
 
           client.writeQuery({
             query: queryLexicalEntries,
-            variables: data_perspective_variables ?? {},
+            variables: queryArgs,
             data: data_perspective
           });
         }
@@ -481,11 +477,13 @@ Entities.propTypes = {
   resetCheckedRow: PropTypes.func,
   resetCheckedColumn: PropTypes.func,
   resetCheckedAll: PropTypes.func,
-  reRender: PropTypes.func
+  reRender: PropTypes.func,
+  queryArgs: PropTypes.object
 };
 
 Entities.defaultProps = {
-  parentEntity: null
+  parentEntity: null,
+  queryArgs: null
 };
 
 export default compose(
