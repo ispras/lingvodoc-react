@@ -18,29 +18,20 @@ const perspectivesTreeQuery = gql`
       id
       parent_id
       translations
-      created_at
       dictionaries(deleted: false, published: true) {
         id
-        parent_id
         translations
-        category
-        additional_metadata {
-          authors
-          location
-        }
         perspectives {
           id
           translations
-          columns {
-            field_id
+          lexical_entries(mode: "published") {
+            entities(mode: "published", xfields: true) {
+              content
+            }
           }
         }
       }
-      additional_metadata {
-        speakersAmount
-      }
     }
-    is_authenticated
   }
 `;
 
