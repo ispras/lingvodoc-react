@@ -99,6 +99,7 @@ const ListCognates = ({user}) => {
         { called && data && !error && (
           <Message positive>
             <Message.Header>{getTranslation("Scanned successfully")}</Message.Header>
+            <p> {data.languages.length} </p>
             <p> {JSON.stringify(data.languages)} </p>
           </Message>
         )}
