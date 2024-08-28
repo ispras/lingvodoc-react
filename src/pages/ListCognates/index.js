@@ -1,7 +1,6 @@
 import { connect } from "react-redux";
 import { Button, Checkbox, Dimmer, Icon, Input, Label, List, Loader, Message, Segment } from "semantic-ui-react";
-import { gql } from "@apollo/client";
-import { graphql } from "@apollo/client/react/hoc";
+import { gql, useLazyQuery } from "@apollo/client";
 import { compose } from "recompose";
 import React, { useContext, useState } from "react";
 
@@ -45,34 +44,11 @@ const perspectivesTreeQuery = gql`
   }
 `;
 
-const ListCognates = ({user, loading, perspectivesTree}) => {
+const ListCognates = ({user}) => {
 
   const [onlyInToc, setOnlyInToc] = useState(false);
-  const [convertingFlag, setConvertingFlag] = useState(false);
-  const [result, setResult] = useState(null);
-  const [errorMessage, setErrorMessage] = useState(null);
-
   const getTranslation = useContext(TranslationContext);
-
-  const onConvert = () => {
-    perspectivesTree({
-      variables: {
-        onlyInToc
-      }
-    })
-
-    .then(
-      ({ data: { languages } }) => {
-        setConvertingFlag(false);
-        setResult(languages);
-      },
-
-      error_data => {
-        setConvertingFlag(false);
-        setErrorMessage(error_data.message);
-      }
-    );
-  };
+  const [getPerspectives, { loading, data, error, called }] = useLazyQuery(perspectivesTreeQuery);
 
   return (
     <div className="background-content">
@@ -94,22 +70,18 @@ const ListCognates = ({user, loading, perspectivesTree}) => {
             <Checkbox
               label={getTranslation("Only high-order languages")}
               checked={onlyInToc}
-              onChange={(e, { checked }) => {
-                setOnlyInToc(checked);
-                setErrorMessage(null);
-                setResult(null);
-              }}
+              onChange={(e, { checked }) => setOnlyInToc(checked) }
             />
           </List.Item>
           <List.Item>
             <Button
               color="green"
               content={getTranslation("Get languages tree")}
-              onClick={onConvert}
+              onClick={ () => getPerspectives({ variables: { onlyInToc } }) }
             />
           </List.Item>
         </List>
-        {errorMessage && (
+        { error && (
           <Message negative>
             <Message.Header>{getTranslation("Request error")}</Message.Header>
             <p>
@@ -121,30 +93,13 @@ const ListCognates = ({user, loading, perspectivesTree}) => {
               <a href="https://github.com/ispras/lingvodoc-react/issues">{getTranslation("Lingvodoc Github")}</a>
               <span>.</span>
             </p>
-            <p>{getTranslation(errorMessage)}</p>
+            <p> {error.message} </p>
           </Message>
         )}
-        {convertingFlag && (
-          <Dimmer active inverted>
-            <Loader inverted indeterminate>
-              {getTranslation("Scanning")}...
-            </Loader>
-          </Dimmer>
-        )}
-        {result && !result.triumph && (
-          <Message>
-            <Message.Header>{getTranslation("Request failed")}</Message.Header>
-            <p>{getTranslation(result.message)}</p>
-          </Message>
-        )}
-        {result && result.triumph && (
+        { called && data && !error && (
           <Message positive>
             <Message.Header>{getTranslation("Scanned successfully")}</Message.Header>
-            <List>
-              <List.Item>
-                <a href={result.json_url}>{getTranslation(".json file")}</a>
-              </List.Item>
-            </List>
+            <p> {JSON.stringify(data.languages)} </p>
           </Message>
         )}
       </Segment>
@@ -156,6 +111,5 @@ const ListCognates = ({user, loading, perspectivesTree}) => {
 ListCognates.contextType = TranslationContext;
 
 export default compose(
-  connect(state => state.user),
-  graphql(perspectivesTreeQuery, { name: "perspectivesTree" })
+  connect(state => state.user)
 )(ListCognates);
