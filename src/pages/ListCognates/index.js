@@ -2,7 +2,7 @@ import { connect } from "react-redux";
 import { Button, Checkbox, Dimmer, Icon, Input, Label, List, Loader, Message, Segment } from "semantic-ui-react";
 import { gql, useLazyQuery } from "@apollo/client";
 import { compose } from "recompose";
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 
 import TranslationContext from "Layout/TranslationContext";
 
@@ -38,8 +38,10 @@ const perspectivesTreeQuery = gql`
 const ListCognates = ({user}) => {
 
   const [onlyInToc, setOnlyInToc] = useState(false);
+  const [cleanResult, setCleanResult] = useState(false);
   const getTranslation = useContext(TranslationContext);
-  const [getPerspectives, { loading, data, error, called }] = useLazyQuery(perspectivesTreeQuery);
+  const [getPerspectives, { loading, data, error }] = useLazyQuery(perspectivesTreeQuery);
+  useEffect(() => setCleanResult(false), [loading, data]);
 
   return (
     <div className="background-content">
@@ -61,18 +63,24 @@ const ListCognates = ({user}) => {
             <Checkbox
               label={getTranslation("Only high-order languages")}
               checked={onlyInToc}
-              onChange={(e, { checked }) => setOnlyInToc(checked) }
+              onChange={(e, { checked }) => {
+                setOnlyInToc(checked);
+                setCleanResult(true);
+              }}
             />
           </List.Item>
           <List.Item>
             <Button
               color="green"
               content={getTranslation("Get languages tree")}
-              onClick={ () => getPerspectives({ variables: { onlyInToc } }) }
+              onClick={ () => {
+                getPerspectives({ variables: { onlyInToc } });
+                setCleanResult(true);
+              }}
             />
           </List.Item>
         </List>
-        { error && (
+        { error && !cleanResult(
           <Message negative>
             <Message.Header>{getTranslation("Request error")}</Message.Header>
             <p>
@@ -87,7 +95,7 @@ const ListCognates = ({user}) => {
             <p> {error.message} </p>
           </Message>
         )}
-        { called && data && !error && (
+        { data && !error && !cleanResult (
           <Message positive>
             <Message.Header>{getTranslation("Scanned successfully")}</Message.Header>
             <p> {data.languages.length} </p>
