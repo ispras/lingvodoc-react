@@ -9,27 +9,10 @@ import TranslationContext from "Layout/TranslationContext";
 const perspectivesTreeQuery = gql`
   query PerspectivesTree (
     $onlyInToc: Boolean!
-    ) {
-    languages(
-      only_in_toc: $onlyInToc
-      only_with_dictionaries_recursive: true
-      in_tree_order: true
-    ) {
-      id
-      parent_id
-      translations
-      dictionaries(deleted: false, published: true) {
-        id
-        translations
-        perspectives {
-          id
-          translations
-          lexical_entries(mode: "published") {
-            entities(mode: "published", xfields: true) {
-              content
-            }
-          }
-        }
+  ) {
+    lexicalentry {
+      entities(mode: "published", xfields: true, only_in_toc: $onlyInToc) {
+        content
       }
     }
   }
@@ -80,7 +63,7 @@ const ListCognates = ({user}) => {
             />
           </List.Item>
         </List>
-        { error && !cleanResult(
+        { error && !cleanResult && (
           <Message negative>
             <Message.Header>{getTranslation("Request error")}</Message.Header>
             <p>
@@ -95,11 +78,11 @@ const ListCognates = ({user}) => {
             <p> {error.message} </p>
           </Message>
         )}
-        { data && !error && !cleanResult (
+        { data && !error && !cleanResult && (
           <Message positive>
             <Message.Header>{getTranslation("Scanned successfully")}</Message.Header>
-            <p> {data.languages.length} </p>
-            <p> {JSON.stringify(data.languages)} </p>
+            <p> {data.entities.length} </p>
+            <p> {JSON.stringify(data.entities)} </p>
           </Message>
         )}
       </Segment>
