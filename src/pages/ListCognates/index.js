@@ -120,9 +120,12 @@ const ListCognates = ({user}) => {
         { data && !error && !cleanResult && (
           <Message positive>
             <Message.Header>{getTranslation("Scanned successfully")}</Message.Header>
-            <a href={data.cognates_summary.json_url}> Result JSON <a>
-            <p> List of processed languages: </p>
-            <p> {JSON.stringify(data.cognates_summary.language_list)} </p>
+            <p/>
+            <a href={data.cognates_summary.json_url}> Result JSON </a>
+            <h4> List of processed languages: </h4>
+            { data.cognates_summary.language_list.map(lang =>
+              <p> {lang} </p>
+            )}
           </Message>
         )}
       </Segment>
