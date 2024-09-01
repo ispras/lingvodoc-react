@@ -37,7 +37,7 @@ const ListCognates = ({user}) => {
   useEffect(() => setCleanResult(false), [loading, data]);
   const getTranslation = useContext(TranslationContext);
 
-  const debugFlag = true;
+  const debugFlag = false;
 
   return (
     <div className="background-content">
