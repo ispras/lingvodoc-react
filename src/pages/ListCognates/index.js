@@ -11,11 +11,13 @@ const cognatesSummaryMutation = gql`
     $onlyInToc: Boolean!
     $languageOffset: Int
     $languageLimit: Int
+    $debugFlag: Boolean
   ) {
     cognates_summary(
-      only_in_toc: $onlyInToc,
-      offset: $languageOffset,
+      only_in_toc: $onlyInToc
+      offset: $languageOffset
       limit: $languageLimit
+      debug_flag: $debugFlag
     ) {
       json_url
       language_list
@@ -34,6 +36,8 @@ const ListCognates = ({user}) => {
 
   useEffect(() => setCleanResult(false), [loading, data]);
   const getTranslation = useContext(TranslationContext);
+
+  const debugFlag = true;
 
   return (
     <div className="background-content">
@@ -92,7 +96,7 @@ const ListCognates = ({user}) => {
               color="green"
               content={getTranslation("Get cognates summary")}
               onClick={ () => {
-                getCognatesSummary({ variables: { onlyInToc, languageOffset, languageLimit } });
+                getCognatesSummary({ variables: { onlyInToc, languageOffset, languageLimit, debugFlag } });
                 setCleanResult(true);
               }}
             />
