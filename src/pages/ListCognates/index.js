@@ -6,13 +6,20 @@ import React, { useContext, useState, useEffect } from "react";
 
 import TranslationContext from "Layout/TranslationContext";
 
-const perspectivesTreeQuery = gql`
-  query PerspectivesTree (
+const cognatesSummaryMutation = gql`
+  mutation cognatesSummary (
     $onlyInToc: Boolean!
+    $languageOffset: Int
+    $languageLimit: Int
   ) {
-    lexicalentry {
-      entities(mode: "published", xfields: true, only_in_toc: $onlyInToc) {
-        content
+    cognates_summary(
+      only_in_toc: $onlyInToc,
+      offset: $languageOffset,
+      limit: $languageLimit
+    ) {
+      json_url
+      languages_list
+      triumph
       }
     }
   }
@@ -22,9 +29,12 @@ const ListCognates = ({user}) => {
 
   const [onlyInToc, setOnlyInToc] = useState(false);
   const [cleanResult, setCleanResult] = useState(false);
-  const getTranslation = useContext(TranslationContext);
-  const [getPerspectives, { loading, data, error }] = useLazyQuery(perspectivesTreeQuery);
+  const [languageOffset, setLanguageOffset] = useState(0);
+  const [languageLimit, setLanguageLimit] = useState(50);
+  const [getCognatesSummary, { data, error, loading, isError }] = useMutation(cognatesSummaryMutation);
+
   useEffect(() => setCleanResult(false), [loading, data]);
+  const getTranslation = useContext(TranslationContext);
 
   return (
     <div className="background-content">
@@ -48,16 +58,40 @@ const ListCognates = ({user}) => {
               checked={onlyInToc}
               onChange={(e, { checked }) => {
                 setOnlyInToc(checked);
-                setCleanResult(true);
+                setCleanResult(isError);
               }}
+            />
+          </List.Item>
+          <List.Item>
+            <Input
+              label{getTranslation("Languages offset")}
+              type='number'
+              value={languageOffset}
+              onChange={(e, { value }) => {
+                setLanguageOffset(value);
+                setCleanResult(isError);
+              }}
+              className="lingvo-labeled-input"
+            />
+          </List.Item>
+          <List.Item>
+            <Input
+              label{getTranslation("Languages limit")}
+              type='number'
+              value={languageLimit}
+              onChange={(e, { value }) => {
+                setLanguageLimit(value);
+                setCleanResult(isError);
+              }}
+              className="lingvo-labeled-input"
             />
           </List.Item>
           <List.Item>
             <Button
               color="green"
-              content={getTranslation("Get languages tree")}
+              content={getTranslation("Get cognates summary")}
               onClick={ () => {
-                getPerspectives({ variables: { onlyInToc } });
+                getCognatesSummary({ variables: { onlyInToc, languageOffset, languageLimit } });
                 setCleanResult(true);
               }}
             />
