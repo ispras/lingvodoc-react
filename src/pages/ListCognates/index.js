@@ -1,6 +1,6 @@
 import { connect } from "react-redux";
 import { Button, Checkbox, Dimmer, Icon, Input, Label, List, Loader, Message, Segment } from "semantic-ui-react";
-import { gql, useLazyQuery } from "@apollo/client";
+import { gql, useMutation } from "@apollo/client";
 import { compose } from "recompose";
 import React, { useContext, useState, useEffect } from "react";
 
@@ -20,7 +20,6 @@ const cognatesSummaryMutation = gql`
       json_url
       languages_list
       triumph
-      }
     }
   }
 `;
@@ -64,8 +63,9 @@ const ListCognates = ({user}) => {
           </List.Item>
           <List.Item>
             <Input
-              label{getTranslation("Languages offset")}
+              label={getTranslation("Languages offset")}
               type='number'
+              min='0'
               value={languageOffset}
               onChange={(e, { value }) => {
                 setLanguageOffset(value);
@@ -76,8 +76,9 @@ const ListCognates = ({user}) => {
           </List.Item>
           <List.Item>
             <Input
-              label{getTranslation("Languages limit")}
+              label={getTranslation("Languages limit")}
               type='number'
+              min='1'
               value={languageLimit}
               onChange={(e, { value }) => {
                 setLanguageLimit(value);
