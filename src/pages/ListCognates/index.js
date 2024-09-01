@@ -32,7 +32,7 @@ const ListCognates = ({user}) => {
   const [cleanResult, setCleanResult] = useState(false);
   const [languageOffset, setLanguageOffset] = useState(0);
   const [languageLimit, setLanguageLimit] = useState(10);
-  const [getCognatesSummary, { data, error, loading, isError }] = useMutation(cognatesSummaryMutation);
+  const [getCognatesSummary, { data, error, loading }] = useMutation(cognatesSummaryMutation);
 
   useEffect(() => setCleanResult(false), [loading, data]);
   const getTranslation = useContext(TranslationContext);
@@ -61,7 +61,7 @@ const ListCognates = ({user}) => {
               checked={onlyInToc}
               onChange={(e, { checked }) => {
                 setOnlyInToc(checked);
-                setCleanResult(isError);
+                setCleanResult(!data);
               }}
             />
           </List.Item>
@@ -73,7 +73,7 @@ const ListCognates = ({user}) => {
               value={languageOffset}
               onChange={(e, { value }) => {
                 setLanguageOffset(value);
-                setCleanResult(isError);
+                setCleanResult(!data);
               }}
               className="lingvo-labeled-input"
             />
@@ -86,7 +86,7 @@ const ListCognates = ({user}) => {
               value={languageLimit}
               onChange={(e, { value }) => {
                 setLanguageLimit(value);
-                setCleanResult(isError);
+                setCleanResult(!data);
               }}
               className="lingvo-labeled-input"
             />
