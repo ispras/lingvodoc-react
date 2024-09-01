@@ -18,7 +18,7 @@ const cognatesSummaryMutation = gql`
       limit: $languageLimit
     ) {
       json_url
-      languages_list
+      language_list
       triumph
     }
   }
@@ -29,7 +29,7 @@ const ListCognates = ({user}) => {
   const [onlyInToc, setOnlyInToc] = useState(false);
   const [cleanResult, setCleanResult] = useState(false);
   const [languageOffset, setLanguageOffset] = useState(0);
-  const [languageLimit, setLanguageLimit] = useState(50);
+  const [languageLimit, setLanguageLimit] = useState(10);
   const [getCognatesSummary, { data, error, loading, isError }] = useMutation(cognatesSummaryMutation);
 
   useEffect(() => setCleanResult(false), [loading, data]);
@@ -116,8 +116,9 @@ const ListCognates = ({user}) => {
         { data && !error && !cleanResult && (
           <Message positive>
             <Message.Header>{getTranslation("Scanned successfully")}</Message.Header>
-            <p> {data.entities.length} </p>
-            <p> {JSON.stringify(data.entities)} </p>
+            <p> Result json href: {data.cognates_summary.json_url} </p>
+            <p> List of processed languages: </p>
+            <p> {JSON.stringify(data.cognates_summary.language_list)} </p>
           </Message>
         )}
       </Segment>
