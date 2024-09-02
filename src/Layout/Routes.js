@@ -17,6 +17,7 @@ import MapSelectedLanguages from "pages/DistanceMap/map";
 import SelectedLanguages from "pages/DistanceMap/selectorLangGroup";
 import Docx2Eaf from "pages/Docx2Eaf";
 import Docx2Xlsx from "pages/Docx2Xlsx";
+import ListCognates from "pages/ListCognates";
 import EditTranslations from "pages/EditTranslations";
 import Files from "pages/Files";
 import Grants from "pages/Grants";
@@ -79,6 +80,7 @@ const AppRoutes = () => (
     <Route path="/docx2xlsx" element={<Docx2Xlsx />} />
     <Route path="/valency" element={<Valency />} />
     <Route path="/adverb" element={<Adverb />} />
+    <Route path="/list_cognates" element={<ListCognates />} />
     <Route element={<NotFound />} />
   </Routes>
 );
