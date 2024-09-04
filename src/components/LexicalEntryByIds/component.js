@@ -144,7 +144,7 @@ class Perspective extends PureComponent {
           mode={mode}
           id={id}
           entriesIds={entriesIds}
-          filter={perspective.filter}
+          filter={perspective.filter.value}
           submitFilter={submitFilter}
           toggleMode={this.toggleMode}
         />
@@ -154,7 +154,7 @@ class Perspective extends PureComponent {
           entitiesMode={entitiesMode}
           entriesIds={entriesIds}
           page={page}
-          filter={perspective.filter}
+          filter={perspective.filter.value}
           className="content"
           changePage={this.changePage}
         />

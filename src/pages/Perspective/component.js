@@ -1061,7 +1061,9 @@ const Tools = ({
 };
 
 const handlers = compose(
-  withState("value", "updateValue", props => props.filter),
+  withState("value", "updateValue", props => props.filter.value),
+  withState("isCaseSens", "setCaseSens", true),
+  withState("isRegexp", "setRegexp", false),
   withHandlers({
     onChange(props) {
       return event => props.updateValue(event.target.value);
@@ -1069,13 +1071,19 @@ const handlers = compose(
     onSubmit(props) {
       return event => {
         event.preventDefault();
-        props.submitFilter(props.value);
+        props.submitFilter(props.value, props.isCaseSens, props.isRegexp);
       };
+    },
+    onToggleCaseSens(props) {
+      return (e, { checked }) => props.setCaseSens(checked);
+    },
+    onToggleRegexp(props) {
+      return (e, { checked }) => props.setRegexp(checked);
     }
   })
 );
 
-const Filter = handlers(({ value, onChange, onSubmit }) => {
+const Filter = handlers(({ value, onChange, onSubmit, isCaseSens, onToggleCaseSens, isRegexp, onToggleRegexp }) => {
   const getTranslation = useContext(TranslationContext);
 
   return (
@@ -1085,6 +1093,20 @@ const Filter = handlers(({ value, onChange, onSubmit }) => {
         <button type="submit" className="white">
           <i className="search link icon" />
         </button>
+        <div className="lingvo-search-entities__checkboxes">
+          <Checkbox
+            label={getTranslation("A ≠ a")}
+            checked={isCaseSens}
+            onChange={onToggleCaseSens}
+            className="lingvo-checkbox_labeled"
+          />
+          <Checkbox
+            label={getTranslation("a .*")}
+            checked={isRegexp}
+            onChange={onToggleRegexp}
+            className="lingvo-checkbox_labeled"
+          />
+        </div>
       </form>
     </div>
   );
@@ -1193,7 +1215,10 @@ const ModeSelector = compose(
           launchValency={launchValency}
         />
         <Menu.Menu position="right">
-          <Filter filter={filter} submitFilter={submitFilter} />
+          <Filter
+            filter={filter}
+            submitFilter={submitFilter}
+          />
         </Menu.Menu>
       </Menu>
     );
@@ -1349,7 +1374,9 @@ const Perspective = ({
             mode={mode}
             id={id}
             baseUrl={baseUrl}
-            filter={perspective.filter}
+            filter={perspective.filter.value}
+            isCaseSens={perspective.filter.isCaseSens}
+            isRegexp={perspective.filter.isRegexp}
             submitFilter={submitFilter}
             openCognateAnalysisModal={openCognateAnalysisModal}
             openPhonemicAnalysisModal={openPhonemicAnalysisModal}
@@ -1371,7 +1398,9 @@ const Perspective = ({
                     mode={mode}
                     entitiesMode={info.entitiesMode}
                     page={page}
-                    filter={perspective.filter}
+                    filter={perspective.filter.value}
+                    isCaseSens={perspective.filter.isCaseSens}
+                    isRegexp={perspective.filter.isRegexp}
                     className="content"
                     activeDndProvider={dndProvider}
                   />

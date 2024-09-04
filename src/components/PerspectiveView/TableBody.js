@@ -32,7 +32,8 @@ TableBody.propTypes = {
   resetCheckedRow: PropTypes.func,
   resetCheckedColumn: PropTypes.func,
   resetCheckedAll: PropTypes.func,
-  reRender: PropTypes.func
+  reRender: PropTypes.func,
+  queryArgs: PropTypes.object
 };
 
 TableBody.defaultProps = {
@@ -49,7 +50,8 @@ TableBody.defaultProps = {
   resetCheckedRow: () => {},
   resetCheckedColumn: () => {},
   resetCheckedAll: () => {},
-  reRender: () => console.log('Fake refetch')
+  reRender: () => console.log('Fake refetch'),
+  queryArgs: null
 };
 
 export default onlyUpdateForKeys([
@@ -60,5 +62,6 @@ export default onlyUpdateForKeys([
   "selectedRows",
   "checkedRow",
   "checkedColumn",
-  "checkedAll"
+  "checkedAll",
+  "queryArgs"
 ])(TableBody);
