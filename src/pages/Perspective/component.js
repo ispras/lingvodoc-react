@@ -1095,13 +1095,13 @@ const Filter = handlers(({ value, onChange, onSubmit, isCaseSens, onToggleCaseSe
         </button>
         <div className="lingvo-search-entities__checkboxes">
           <Checkbox
-            label={getTranslation("A ≠ a")}
+            label={getTranslation("A≠a")}
             checked={isCaseSens}
             onChange={onToggleCaseSens}
             className="lingvo-checkbox_labeled"
           />
           <Checkbox
-            label={getTranslation("a .*")}
+            label={getTranslation("a.*")}
             checked={isRegexp}
             onChange={onToggleRegexp}
             className="lingvo-checkbox_labeled"
