@@ -2863,30 +2863,28 @@ class CognateAnalysisModal extends React.Component {
           {(/swadesh$/.test(mode) || this.state.library_present
             ) && this.state.result !== null && (
             <Modal.Content style={{ maxWidth: "100%", overflowX: "auto" }}>
-              {! /swadesh$/.test(mode) && (<>
-                <h3 className="lingvo-cognate-header-results">{this.context("Analysis results")}:</h3>
+              <h3 className="lingvo-cognate-header-results">{this.context("Analysis results")}:</h3>
 
-                <div className="lingvo-cognate-results">
-                  <div className="lingvo-cognate-results__item">
-                    <div className="lingvo-cognate-results__number">{this.state.dictionary_count}</div>
-                    <div className="lingvo-cognate-results__text">{this.context("dictionaries")}</div>
-                  </div>
-                  <div className="lingvo-cognate-results__item">
-                    <div className="lingvo-cognate-results__number">{this.state.group_count}</div>
-                    <div className="lingvo-cognate-results__text">{this.context("cognate groups")}</div>
-                  </div>
-                  <div className="lingvo-cognate-results__item">
-                    <div className="lingvo-cognate-results__number">{this.state.transcription_count}</div>
-                    <div className="lingvo-cognate-results__text">{this.context("transcriptions analysed")}</div>
-                  </div>
-
-                  <div className="lingvo-cognate-text" style={{ paddingTop: "6px", paddingBottom: "3px" }}>
-                    {`${this.state.not_enough_count} ${this.context(
-                      "cognate groups were excluded from the analysis due to not having lexical entries in at least two selected dictionaries"
-                    )}.`}
-                  </div>
+              <div className="lingvo-cognate-results">
+                <div className="lingvo-cognate-results__item">
+                  <div className="lingvo-cognate-results__number">{this.state.dictionary_count}</div>
+                  <div className="lingvo-cognate-results__text">{this.context("dictionaries")}</div>
                 </div>
-              </>)}
+                <div className="lingvo-cognate-results__item">
+                  <div className="lingvo-cognate-results__number">{this.state.group_count}</div>
+                  <div className="lingvo-cognate-results__text">{this.context("cognate groups")}</div>
+                </div>
+                <div className="lingvo-cognate-results__item">
+                  <div className="lingvo-cognate-results__number">{this.state.transcription_count}</div>
+                  <div className="lingvo-cognate-results__text">{this.context("transcriptions analysed")}</div>
+                </div>
+
+                <div className="lingvo-cognate-text" style={{ paddingTop: "6px", paddingBottom: "3px" }}>
+                  {`${this.state.not_enough_count} ${this.context(
+                    "cognate groups were excluded from the analysis due to not having lexical entries in at least two selected dictionaries"
+                  )}.`}
+                </div>
+              </div>
 
               <div className="lingvo-cognate-results">
                 {this.state.result.length > 0 && mode !== "suggestions" && mode !== "multi_suggestions" && (
