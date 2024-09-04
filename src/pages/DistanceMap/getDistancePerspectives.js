@@ -102,7 +102,8 @@ const getDistance = async (dictionaries, allField, mainDictionary, computeDistan
     .map(({ perspective }, index) => [
       perspective.id,
       fieldDict[transcriptionFieldIdStrList[index]].id,
-      fieldDict[translationFieldIdStrList[index]].id
+      fieldDict[translationFieldIdStrList[index]].id,
+      null
     ])
     .filter((_perspectiveInfo, index) => perspectiveSelectionList[index]);
   let responseMutanion = null;
