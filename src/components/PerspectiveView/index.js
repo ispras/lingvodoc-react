@@ -257,7 +257,8 @@ class P extends React.Component {
     this.state = {
       checkedRow: null,
       checkedColumn: null,
-      checkedAll: null
+      checkedAll: null,
+      entriesTotal: null
     };
 
     this.onCheckRow = this.onCheckRow.bind(this);
@@ -267,6 +268,16 @@ class P extends React.Component {
     this.onCheckAll = this.onCheckAll.bind(this);
     this.resetCheckedAll = this.resetCheckedAll.bind(this);
     //this.reRender = this.reRender.bind(this);
+  }
+
+  componentDidUpdate() {
+    const { data } = this.props;
+    if (!data.perspective) {
+      return;
+    }
+    if (this.state.entriesTotal === null) {
+      this.setState({ entriesTotal: !data.error ? data.perspective.perspective_page.entries_total : 0 });
+    }
   }
 
   //reRender() {
@@ -385,7 +396,7 @@ class P extends React.Component {
     }
 
     const lexicalEntries = !error ? data.perspective.perspective_page.lexical_entries : [];
-    const entriesTotal = !error ? data.perspective.perspective_page.entries_total : 0;
+    const { entriesTotal } = this.state;
 
     const addEntry = () => {
       createLexicalEntry({
@@ -405,6 +416,7 @@ class P extends React.Component {
             create_lexicalentry: { lexicalentry }
           } = d;
           addCreatedEntry(lexicalentry);
+          this.setState({entriesTotal: entriesTotal + 1});
         }
       });
     };
@@ -423,6 +435,7 @@ class P extends React.Component {
         ]
       }).then(() => {
         resetSelection();
+        this.setState({entriesTotal: entriesTotal - selectedEntries.length + 1});
       });
     };
 
@@ -439,6 +452,7 @@ class P extends React.Component {
         ]
       }).then(() => {
         resetSelection();
+        this.setState({entriesTotal: entriesTotal - 1});
       });
     };
 
