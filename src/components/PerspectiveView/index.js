@@ -258,7 +258,7 @@ class P extends React.Component {
       checkedRow: null,
       checkedColumn: null,
       checkedAll: null,
-      entriesTotal: null
+      entriesTotal: 0
     };
 
     this.onCheckRow = this.onCheckRow.bind(this);
@@ -270,12 +270,12 @@ class P extends React.Component {
     //this.reRender = this.reRender.bind(this);
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps) {
     const { data } = this.props;
     if (!data.perspective) {
       return;
     }
-    if (this.state.entriesTotal === null) {
+    if (data !== prevProps.data) {
       this.setState({ entriesTotal: !data.error ? data.perspective.perspective_page.entries_total : 0 });
     }
   }
