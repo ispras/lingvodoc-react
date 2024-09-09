@@ -1274,6 +1274,9 @@ const Perspective = ({
     init({ location });
   }, [init, location]);
 
+  // Renewing filter on every opened perspective
+  useEffect(() => { submitFilter("", true, false) }, []);
+
   const [dndProvider, setDndProvider] = useState(true);
 
   const disableDNDProvider = useCallback(() => {
