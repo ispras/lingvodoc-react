@@ -73,7 +73,7 @@ const ListCognates = ({user}) => {
           </List.Item>
           <List.Item>
             <Input
-              label={getTranslation("Language group name")}
+              label={getTranslation("Language(s) group name")}
               type='text'
               value={languageGroup}
               placeholder={getTranslation("Set group name or leave empty")}
@@ -86,7 +86,7 @@ const ListCognates = ({user}) => {
           </List.Item>
           <List.Item>
             <Input
-              label={getTranslation("Language sub-group or title")}
+              label={getTranslation("Language(s) sub-group or title")}
               type='text'
               value={languageTitle}
               placeholder={getTranslation("Set title or leave empty")}
@@ -99,7 +99,7 @@ const ListCognates = ({user}) => {
           </List.Item>
           <List.Item>
             <Input
-              label={getTranslation("Languages offset")}
+              label={getTranslation("Language(s) offset")}
               type='number'
               min='0'
               value={languageOffset}
@@ -112,7 +112,7 @@ const ListCognates = ({user}) => {
           </List.Item>
           <List.Item>
             <Input
-              label={getTranslation("Languages limit")}
+              label={getTranslation("Language(s) limit")}
               type='number'
               min='1'
               value={languageLimit}
