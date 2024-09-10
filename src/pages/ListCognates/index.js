@@ -9,12 +9,16 @@ import TranslationContext from "Layout/TranslationContext";
 const cognatesSummaryMutation = gql`
   mutation cognatesSummary (
     $onlyInToc: Boolean!
+    $languageGroup: String
+    $languageTitle: String
     $languageOffset: Int
     $languageLimit: Int
     $debugFlag: Boolean
   ) {
     cognates_summary(
       only_in_toc: $onlyInToc
+      group: $languageGroup
+      title: $languageTitle
       offset: $languageOffset
       limit: $languageLimit
       debug_flag: $debugFlag
@@ -30,6 +34,8 @@ const ListCognates = ({user}) => {
 
   const [onlyInToc, setOnlyInToc] = useState(false);
   const [cleanResult, setCleanResult] = useState(false);
+  const [languageGroup, setLanguageGroup] = useState(null);
+  const [languageTitle, setLanguageTitle] = useState(null);
   const [languageOffset, setLanguageOffset] = useState(0);
   const [languageLimit, setLanguageLimit] = useState(10);
   const [getCognatesSummary, { data, error, loading }] = useMutation(cognatesSummaryMutation);
@@ -67,6 +73,32 @@ const ListCognates = ({user}) => {
           </List.Item>
           <List.Item>
             <Input
+              label={getTranslation("Language group name")}
+              type='text'
+              value={languageGroup}
+              placeholder={getTranslation("Set group name or leave empty")}
+              onChange={(e, { value }) => {
+                setLanguageGroup(value);
+                setCleanResult(!data);
+              }}
+              className="lingvo-labeled-input"
+            />
+          </List.Item>
+          <List.Item>
+            <Input
+              label={getTranslation("Language sub-group or title")}
+              type='text'
+              value={languageTitle}
+              placeholder={getTranslation("Set title or leave empty")}
+              onChange={(e, { value }) => {
+                setLanguageTitle(value);
+                setCleanResult(!data);
+              }}
+              className="lingvo-labeled-input"
+            />
+          </List.Item>
+          <List.Item>
+            <Input
               label={getTranslation("Languages offset")}
               type='number'
               min='0'
@@ -96,7 +128,18 @@ const ListCognates = ({user}) => {
               color="green"
               content={getTranslation("Get cognates summary")}
               onClick={ () => {
-                getCognatesSummary({ variables: { onlyInToc, languageOffset, languageLimit, debugFlag } });
+                getCognatesSummary(
+                  { variables:
+                    {
+                      onlyInToc,
+                      languageGroup,
+                      languageTitle,
+                      languageOffset,
+                      languageLimit,
+                      debugFlag
+                    }
+                  }
+                );
                 setCleanResult(true);
               }}
             />
