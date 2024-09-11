@@ -1,7 +1,6 @@
 import { connect } from "react-redux";
-import { Button, Checkbox, Dimmer, Icon, Input, Label, List, Loader, Message, Segment } from "semantic-ui-react";
+import { Button, Checkbox, Dimmer, Icon, Input, Label, Loader, Message, Segment } from "semantic-ui-react";
 import { gql, useMutation } from "@apollo/client";
-import { compose } from "recompose";
 import React, { useContext, useState, useEffect } from "react";
 
 import TranslationContext from "Layout/TranslationContext";
@@ -9,29 +8,38 @@ import TranslationContext from "Layout/TranslationContext";
 const cognatesSummaryMutation = gql`
   mutation cognatesSummary (
     $onlyInToc: Boolean!
-    $languageOffset: Int
-    $languageLimit: Int
+    $languageGroup: String
+    $languageTitle: String
+    $perspectiveOffset: Int
+    $perspectiveLimit: Int
     $debugFlag: Boolean
   ) {
     cognates_summary(
       only_in_toc: $onlyInToc
-      offset: $languageOffset
-      limit: $languageLimit
+      group: $languageGroup
+      title: $languageTitle
+      offset: $perspectiveOffset
+      limit: $perspectiveLimit
       debug_flag: $debugFlag
     ) {
       json_url
       language_list
+      message
       triumph
     }
   }
 `;
 
-const ListCognates = ({user}) => {
+const ListCognates = connect(state => state.user)(({user}) => {
 
   const [onlyInToc, setOnlyInToc] = useState(false);
   const [cleanResult, setCleanResult] = useState(false);
-  const [languageOffset, setLanguageOffset] = useState(0);
-  const [languageLimit, setLanguageLimit] = useState(10);
+  const [languageGroup, setLanguageGroup] = useState(null);
+  const [languageTitle, setLanguageTitle] = useState(null);
+  const [perspectiveOffset, setPerspectiveOffset] = useState(0);
+  const [perspectiveLimit, setPerspectiveLimit] = useState(10);
+  const [shownParentGroup, showParentGroup] = useState(false);
+  const [shownLanguagePosition, showLanguagePosition] = useState(false);
   const [getCognatesSummary, { data, error, loading }] = useMutation(cognatesSummaryMutation);
 
   useEffect(() => setCleanResult(false), [loading, data]);
@@ -39,12 +47,29 @@ const ListCognates = ({user}) => {
 
   const debugFlag = false;
 
+  const runMutation = () => {
+    getCognatesSummary(
+      { variables:
+        {
+          onlyInToc,
+          languageGroup,
+          languageTitle,
+          perspectiveOffset,
+          perspectiveLimit,
+          debugFlag
+        }
+      }
+    );
+  }
+
+  const fail = !data || !data.cognates_summary.triumph;
+
   return (
     <div className="background-content">
-    {(user.id === undefined || user.id !== 1) && !loading ? (
+    {(user.id === undefined) && !loading ? (
       <Message>
         <Message.Header>{getTranslation("Please sign in")}</Message.Header>
-        <p>{getTranslation("This page is available for administrator only")}</p>
+        <p>{getTranslation("This page is available for registered users only")}</p>
       </Message>
     ) : loading ? (
       <Segment>
@@ -53,55 +78,98 @@ const ListCognates = ({user}) => {
         </Loader>
       </Segment>
     ) : (
-      <Segment>
-        <List>
-          <List.Item>
+      <Segment onKeyDown = {(e) => { if (e.key === 'Enter') runMutation(); }} tabIndex="0">
+        <Checkbox
+          label={getTranslation("Set parent group as well")}
+          checked={shownParentGroup}
+          onChange={(e, { checked }) => {
+            showParentGroup(checked);
+            setCleanResult(fail);
+          }}
+        />
+        <p/>
+        { shownParentGroup && (
+          <Input
+            label={getTranslation("Language(s) closest parent group")}
+            type='text'
+            value={languageGroup}
+            placeholder={getTranslation("Set group name or leave empty")}
+            onChange={(e, { value }) => {
+              setLanguageGroup(value);
+              setCleanResult(fail);
+            }}
+            //className="lingvo-labeled-input"
+            style={{ width: 500, maxWidth: "80%" }}
+          />
+        )}
+        <p/>
+        <Input
+          label={getTranslation("Language(s) group or title")}
+          type='text'
+          value={languageTitle}
+          placeholder={getTranslation("Set title or leave empty")}
+          onChange={(e, { value }) => {
+            setLanguageTitle(value);
+            setCleanResult(fail);
+          }}
+          //className="lingvo-labeled-input"
+          style={{ width: 500, maxWidth: "80%" }}
+        />
+        <p/>
+        <Checkbox
+          label={getTranslation("Adjust perspectives set")}
+          checked={shownLanguagePosition}
+          onChange={(e, { checked }) => {
+            showLanguagePosition(checked);
+            setCleanResult(fail);
+          }}
+        />
+        <p/>
+        { shownLanguagePosition && (
+          <div style={{ border: "gray solid", borderRadius: 15, width: 250, padding: 10, maxWidth: "80%" }}>
             <Checkbox
               label={getTranslation("Only high-order languages")}
               checked={onlyInToc}
               onChange={(e, { checked }) => {
                 setOnlyInToc(checked);
-                setCleanResult(!data);
+                setCleanResult(fail);
               }}
             />
-          </List.Item>
-          <List.Item>
+            <p/>
             <Input
-              label={getTranslation("Languages offset")}
+              label={getTranslation("Perspectives offset")}
               type='number'
               min='0'
-              value={languageOffset}
+              value={perspectiveOffset}
               onChange={(e, { value }) => {
-                setLanguageOffset(value);
-                setCleanResult(!data);
+                setPerspectiveOffset(value);
+                setCleanResult(fail);
               }}
-              className="lingvo-labeled-input"
+              //className="lingvo-labeled-input"
+              style={{ width: 80, maxWidth: "40%" }}
             />
-          </List.Item>
-          <List.Item>
+            <p/>
             <Input
-              label={getTranslation("Languages limit")}
+              label={getTranslation("Perspectives limit")}
               type='number'
               min='1'
-              value={languageLimit}
+              value={perspectiveLimit}
               onChange={(e, { value }) => {
-                setLanguageLimit(value);
-                setCleanResult(!data);
+                setPerspectiveLimit(value);
+                setCleanResult(fail);
               }}
-              className="lingvo-labeled-input"
+              //className="lingvo-labeled-input"
+              style={{ width: 80, maxWidth: "40%" }}
             />
-          </List.Item>
-          <List.Item>
-            <Button
-              color="green"
-              content={getTranslation("Get cognates summary")}
-              onClick={ () => {
-                getCognatesSummary({ variables: { onlyInToc, languageOffset, languageLimit, debugFlag } });
-                setCleanResult(true);
-              }}
-            />
-          </List.Item>
-        </List>
+            <p/>
+          </div>
+        )}
+        <p/>
+        <Button
+          color="green"
+          content={getTranslation("Get cognates summary")}
+          onClick={runMutation}
+        />
         { error && !cleanResult && (
           <Message negative>
             <Message.Header>{getTranslation("Request error")}</Message.Header>
@@ -117,7 +185,13 @@ const ListCognates = ({user}) => {
             <p> {error.message} </p>
           </Message>
         )}
-        { data && !error && !cleanResult && (
+        { data && !data.cognates_summary.triumph && !error && !cleanResult && (
+          <Message negative>
+            <Message.Header>{getTranslation("Request error")}</Message.Header>
+            <p> {data.cognates_summary.message} </p>
+          </Message>
+        )}
+        { data && data.cognates_summary.triumph && !error && (
           <Message positive>
             <Message.Header>{getTranslation("Scanned successfully")}</Message.Header>
             <p/>
@@ -132,10 +206,8 @@ const ListCognates = ({user}) => {
     )}
     </div>
   );
-}
+})
 
 ListCognates.contextType = TranslationContext;
 
-export default compose(
-  connect(state => state.user)
-)(ListCognates);
+export default ListCognates;
