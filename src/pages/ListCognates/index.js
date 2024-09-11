@@ -106,7 +106,7 @@ const ListCognates = connect(state => state.user)(({user}) => {
               setCleanResult(!data);
             }}
             //className="lingvo-labeled-input"
-            style={{width: "30%"}}
+            style={{width: "30%", minWidth: 200}}
           />
         )}
         <p/>
@@ -120,7 +120,7 @@ const ListCognates = connect(state => state.user)(({user}) => {
             setCleanResult(!data);
           }}
           //className="lingvo-labeled-input"
-          style={{width: "30%"}}
+          style={{width: "30%", minWidth: 200}}
         />
         <p/>
         <Checkbox
@@ -144,7 +144,7 @@ const ListCognates = connect(state => state.user)(({user}) => {
                 setCleanResult(!data);
               }}
               //className="lingvo-labeled-input"
-              style={{width: "5%"}}
+              style={{width: "5%", minWidth: 80}}
             />
             <p/>
             <Input
@@ -157,7 +157,7 @@ const ListCognates = connect(state => state.user)(({user}) => {
                 setCleanResult(!data);
               }}
               //className="lingvo-labeled-input"
-              style={{width: "5%"}}
+              style={{width: "5%", minWidth: 80}}
             />
             <p/>
           </span>
