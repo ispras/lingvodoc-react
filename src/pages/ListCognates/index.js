@@ -144,7 +144,7 @@ const ListCognates = connect(state => state.user)(({user}) => {
                 setCleanResult(!data);
               }}
               //className="lingvo-labeled-input"
-              style={{ width: 100, maxWidth: "40%" }}
+              style={{ width: 80, maxWidth: "40%" }}
             />
             <p/>
             <Input
@@ -157,7 +157,7 @@ const ListCognates = connect(state => state.user)(({user}) => {
                 setCleanResult(!data);
               }}
               //className="lingvo-labeled-input"
-              style={{ width: 100, maxWidth: "40%" }}
+              style={{ width: 80, maxWidth: "40%" }}
             />
             <p/>
           </div>
