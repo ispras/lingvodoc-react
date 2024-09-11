@@ -24,6 +24,7 @@ const cognatesSummaryMutation = gql`
     ) {
       json_url
       language_list
+      message
       triumph
     }
   }
@@ -59,7 +60,6 @@ const ListCognates = connect(state => state.user)(({user}) => {
         }
       }
     );
-    setCleanResult(true);
   }
 
   return (
