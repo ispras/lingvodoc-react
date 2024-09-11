@@ -97,7 +97,7 @@ const ListCognates = connect(state => state.user)(({user}) => {
               setCleanResult(!data);
             }}
             //className="lingvo-labeled-input"
-            style={{ width: 400, maxWidth: "70%" }}
+            style={{ width: 500, maxWidth: "80%" }}
           />
         )}
         <p/>
@@ -111,7 +111,7 @@ const ListCognates = connect(state => state.user)(({user}) => {
             setCleanResult(!data);
           }}
           //className="lingvo-labeled-input"
-          style={{ width: 400, maxWidth: "70%" }}
+          style={{ width: 500, maxWidth: "80%" }}
         />
         <p/>
         <Checkbox
@@ -124,7 +124,7 @@ const ListCognates = connect(state => state.user)(({user}) => {
         />
         <p/>
         { shownLanguagePosition && (
-          <div style={{ border: "gray solid", borderRadius: 15, width: 200, padding: 10, maxWidth: "70%" }}>
+          <div style={{ border: "gray solid", borderRadius: 15, width: 250, padding: 10, maxWidth: "80%" }}>
             <Checkbox
               label={getTranslation("Only high-order languages")}
               checked={onlyInToc}
@@ -144,7 +144,7 @@ const ListCognates = connect(state => state.user)(({user}) => {
                 setCleanResult(!data);
               }}
               //className="lingvo-labeled-input"
-              style={{ width: "60%" }}
+              style={{ width: 100, maxWidth: "40%" }}
             />
             <p/>
             <Input
@@ -157,7 +157,7 @@ const ListCognates = connect(state => state.user)(({user}) => {
                 setCleanResult(!data);
               }}
               //className="lingvo-labeled-input"
-              style={{ width: "60%" }}
+              style={{ width: 100, maxWidth: "40%" }}
             />
             <p/>
           </div>
