@@ -10,16 +10,16 @@ const cognatesSummaryMutation = gql`
     $onlyInToc: Boolean!
     $languageGroup: String
     $languageTitle: String
-    $languageOffset: Int
-    $languageLimit: Int
+    $perspectiveOffset: Int
+    $perspectiveLimit: Int
     $debugFlag: Boolean
   ) {
     cognates_summary(
       only_in_toc: $onlyInToc
       group: $languageGroup
       title: $languageTitle
-      offset: $languageOffset
-      limit: $languageLimit
+      offset: $perspectiveOffset
+      limit: $perspectiveLimit
       debug_flag: $debugFlag
     ) {
       json_url
@@ -36,8 +36,8 @@ const ListCognates = connect(state => state.user)(({user}) => {
   const [cleanResult, setCleanResult] = useState(false);
   const [languageGroup, setLanguageGroup] = useState(null);
   const [languageTitle, setLanguageTitle] = useState(null);
-  const [languageOffset, setLanguageOffset] = useState(0);
-  const [languageLimit, setLanguageLimit] = useState(10);
+  const [perspectiveOffset, setPerspectiveOffset] = useState(0);
+  const [perspectiveLimit, setPerspectiveLimit] = useState(10);
   const [shownParentGroup, showParentGroup] = useState(false);
   const [shownLanguagePosition, showLanguagePosition] = useState(false);
   const [getCognatesSummary, { data, error, loading }] = useMutation(cognatesSummaryMutation);
@@ -54,8 +54,8 @@ const ListCognates = connect(state => state.user)(({user}) => {
           onlyInToc,
           languageGroup,
           languageTitle,
-          languageOffset,
-          languageLimit,
+          perspectiveOffset,
+          perspectiveLimit,
           debugFlag
         }
       }
@@ -115,7 +115,7 @@ const ListCognates = connect(state => state.user)(({user}) => {
         />
         <p/>
         <Checkbox
-          label={getTranslation("Adjust languages set")}
+          label={getTranslation("Adjust perspectives set")}
           checked={shownLanguagePosition}
           onChange={(e, { checked }) => {
             showLanguagePosition(checked);
@@ -124,7 +124,7 @@ const ListCognates = connect(state => state.user)(({user}) => {
         />
         <p/>
         { shownLanguagePosition && (
-          <div style={{ border: "gray solid", borderRadius: 15, width: 250, padding: 10, maxWidth: "80%" }}>
+          <div style={{ border: "gray solid", borderRadius: 15, width: 300, padding: 10, maxWidth: "80%" }}>
             <Checkbox
               label={getTranslation("Only high-order languages")}
               checked={onlyInToc}
@@ -135,29 +135,29 @@ const ListCognates = connect(state => state.user)(({user}) => {
             />
             <p/>
             <Input
-              label={getTranslation("Offset")}
+              label={getTranslation("Perspectives offset")}
               type='number'
               min='0'
-              value={languageOffset}
+              value={perspectiveOffset}
               onChange={(e, { value }) => {
-                setLanguageOffset(value);
+                setPerspectiveOffset(value);
                 setCleanResult(!data);
               }}
               //className="lingvo-labeled-input"
-              style={{ width: 80, maxWidth: "40%" }}
+              style={{ width: 150, maxWidth: "40%" }}
             />
             <p/>
             <Input
-              label={getTranslation("Limit")}
+              label={getTranslation("Perspectives limit")}
               type='number'
               min='1'
-              value={languageLimit}
+              value={perspectiveLimit}
               onChange={(e, { value }) => {
-                setLanguageLimit(value);
+                setPerspectiveLimit(value);
                 setCleanResult(!data);
               }}
               //className="lingvo-labeled-input"
-              style={{ width: 80, maxWidth: "40%" }}
+              style={{ width: 150, maxWidth: "40%" }}
             />
             <p/>
           </div>
