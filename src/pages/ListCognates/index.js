@@ -78,15 +78,6 @@ const ListCognates = connect(state => state.user)(({user}) => {
     ) : (
       <Segment onKeyDown = {(e) => { if (e.key === 'Enter') runMutation(); }} tabIndex="0">
         <Checkbox
-          label={getTranslation("Only high-order languages")}
-          checked={onlyInToc}
-          onChange={(e, { checked }) => {
-            setOnlyInToc(checked);
-            setCleanResult(!data);
-          }}
-        />
-        <p/>
-        <Checkbox
           label={getTranslation("Set parent group as well")}
           checked={shownParentGroup}
           onChange={(e, { checked }) => {
@@ -106,7 +97,7 @@ const ListCognates = connect(state => state.user)(({user}) => {
               setCleanResult(!data);
             }}
             //className="lingvo-labeled-input"
-            style={{width: "30%", minWidth: 200}}
+            style={{ width: 400, maxWidth: "70%" }}
           />
         )}
         <p/>
@@ -120,11 +111,11 @@ const ListCognates = connect(state => state.user)(({user}) => {
             setCleanResult(!data);
           }}
           //className="lingvo-labeled-input"
-          style={{width: "30%", minWidth: 200}}
+          style={{ width: 400, maxWidth: "70%" }}
         />
         <p/>
         <Checkbox
-          label={getTranslation("Set offset and limit for languages")}
+          label={getTranslation("Adjust languages set")}
           checked={shownLanguagePosition}
           onChange={(e, { checked }) => {
             showLanguagePosition(checked);
@@ -133,9 +124,18 @@ const ListCognates = connect(state => state.user)(({user}) => {
         />
         <p/>
         { shownLanguagePosition && (
-          <span>
+          <div style={{ border: "gray solid", borderRadius: 15, width: 200, padding: 10, maxWidth: "70%" }}>
+            <Checkbox
+              label={getTranslation("Only high-order languages")}
+              checked={onlyInToc}
+              onChange={(e, { checked }) => {
+                setOnlyInToc(checked);
+                setCleanResult(!data);
+              }}
+            />
+            <p/>
             <Input
-              label={getTranslation("Language(s) offset")}
+              label={getTranslation("Offset")}
               type='number'
               min='0'
               value={languageOffset}
@@ -144,11 +144,11 @@ const ListCognates = connect(state => state.user)(({user}) => {
                 setCleanResult(!data);
               }}
               //className="lingvo-labeled-input"
-              style={{width: "5%", minWidth: 80}}
+              style={{ width: "60%" }}
             />
             <p/>
             <Input
-              label={getTranslation("Language(s) limit")}
+              label={getTranslation("Limit")}
               type='number'
               min='1'
               value={languageLimit}
@@ -157,10 +157,10 @@ const ListCognates = connect(state => state.user)(({user}) => {
                 setCleanResult(!data);
               }}
               //className="lingvo-labeled-input"
-              style={{width: "5%", minWidth: 80}}
+              style={{ width: "60%" }}
             />
             <p/>
-          </span>
+          </div>
         )}
         <p/>
         <Button
