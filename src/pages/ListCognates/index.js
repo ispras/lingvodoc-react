@@ -62,6 +62,8 @@ const ListCognates = connect(state => state.user)(({user}) => {
     );
   }
 
+  const fail = !data || !data.cognates_summary.triumph;
+
   return (
     <div className="background-content">
     {(user.id === undefined) && !loading ? (
@@ -82,7 +84,7 @@ const ListCognates = connect(state => state.user)(({user}) => {
           checked={shownParentGroup}
           onChange={(e, { checked }) => {
             showParentGroup(checked);
-            setCleanResult(!data);
+            setCleanResult(fail);
           }}
         />
         <p/>
@@ -94,7 +96,7 @@ const ListCognates = connect(state => state.user)(({user}) => {
             placeholder={getTranslation("Set group name or leave empty")}
             onChange={(e, { value }) => {
               setLanguageGroup(value);
-              setCleanResult(!data);
+              setCleanResult(fail);
             }}
             //className="lingvo-labeled-input"
             style={{ width: 500, maxWidth: "80%" }}
@@ -108,7 +110,7 @@ const ListCognates = connect(state => state.user)(({user}) => {
           placeholder={getTranslation("Set title or leave empty")}
           onChange={(e, { value }) => {
             setLanguageTitle(value);
-            setCleanResult(!data);
+            setCleanResult(fail);
           }}
           //className="lingvo-labeled-input"
           style={{ width: 500, maxWidth: "80%" }}
@@ -119,7 +121,7 @@ const ListCognates = connect(state => state.user)(({user}) => {
           checked={shownLanguagePosition}
           onChange={(e, { checked }) => {
             showLanguagePosition(checked);
-            setCleanResult(!data);
+            setCleanResult(fail);
           }}
         />
         <p/>
@@ -130,7 +132,7 @@ const ListCognates = connect(state => state.user)(({user}) => {
               checked={onlyInToc}
               onChange={(e, { checked }) => {
                 setOnlyInToc(checked);
-                setCleanResult(!data);
+                setCleanResult(fail);
               }}
             />
             <p/>
@@ -141,7 +143,7 @@ const ListCognates = connect(state => state.user)(({user}) => {
               value={perspectiveOffset}
               onChange={(e, { value }) => {
                 setPerspectiveOffset(value);
-                setCleanResult(!data);
+                setCleanResult(fail);
               }}
               //className="lingvo-labeled-input"
               style={{ width: 80, maxWidth: "40%" }}
@@ -154,7 +156,7 @@ const ListCognates = connect(state => state.user)(({user}) => {
               value={perspectiveLimit}
               onChange={(e, { value }) => {
                 setPerspectiveLimit(value);
-                setCleanResult(!data);
+                setCleanResult(fail);
               }}
               //className="lingvo-labeled-input"
               style={{ width: 80, maxWidth: "40%" }}
@@ -183,7 +185,13 @@ const ListCognates = connect(state => state.user)(({user}) => {
             <p> {error.message} </p>
           </Message>
         )}
-        { data && !error && !cleanResult && (
+        { data && !data.cognates_summary.triumph && !error && !cleanResult && (
+          <Message negative>
+            <Message.Header>{getTranslation("Request error")}</Message.Header>
+            <p> {data.cognates_summary.message} </p>
+          </Message>
+        )}
+        { data && data.cognates_summary.triumph && !error && (
           <Message positive>
             <Message.Header>{getTranslation("Scanned successfully")}</Message.Header>
             <p/>
