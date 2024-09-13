@@ -12,6 +12,7 @@ const cognatesSummaryMutation = gql`
     $languageTitle: String
     $perspectiveOffset: Int
     $perspectiveLimit: Int
+    $perspectiveId: LingvodocID
     $debugFlag: Boolean
   ) {
     cognates_summary(
@@ -20,6 +21,7 @@ const cognatesSummaryMutation = gql`
       title: $languageTitle
       offset: $perspectiveOffset
       limit: $perspectiveLimit
+      p_id: $perspectiveId
       debug_flag: $debugFlag
     ) {
       json_url
@@ -38,6 +40,7 @@ const ListCognates = connect(state => state.user)(({user}) => {
   const [languageTitle, setLanguageTitle] = useState(null);
   const [perspectiveOffset, setPerspectiveOffset] = useState(0);
   const [perspectiveLimit, setPerspectiveLimit] = useState(10);
+  const [perspectiveId, setPerspectiveId] = useState(null);
   const [shownParentGroup, showParentGroup] = useState(false);
   const [shownLanguagePosition, showLanguagePosition] = useState(false);
   const [getCognatesSummary, { data, error, loading }] = useMutation(cognatesSummaryMutation);
@@ -56,6 +59,7 @@ const ListCognates = connect(state => state.user)(({user}) => {
           languageTitle,
           perspectiveOffset,
           perspectiveLimit,
+          perspectiveId,
           debugFlag
         }
       }
@@ -156,6 +160,18 @@ const ListCognates = connect(state => state.user)(({user}) => {
               value={perspectiveLimit}
               onChange={(e, { value }) => {
                 setPerspectiveLimit(value);
+                setCleanResult(fail);
+              }}
+              //className="lingvo-labeled-input"
+              style={{ width: 80, maxWidth: "40%" }}
+            />
+            <p/>
+            <Input
+              label={getTranslation("Perspective Id")}
+              type='text'
+              value={perspectiveId}
+              onChange={(e, { value }) => {
+                setPerspectiveId(JSON.parse("[" + value + "]"));
                 setCleanResult(fail);
               }}
               //className="lingvo-labeled-input"
