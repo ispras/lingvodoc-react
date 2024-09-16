@@ -22,10 +22,8 @@ const cognatesSummaryMutation = gql`
       limit: $perspectiveLimit
       debug_flag: $debugFlag
     ) {
-      json_url
-      language_list
-      message
       triumph
+      message
     }
   }
 `;
@@ -45,7 +43,7 @@ const ListCognates = connect(state => state.user)(({user}) => {
   useEffect(() => setCleanResult(false), [loading, data]);
   const getTranslation = useContext(TranslationContext);
 
-  const debugFlag = false;
+  const debugFlag = true;
 
   const runMutation = () => {
     getCognatesSummary(
@@ -193,13 +191,8 @@ const ListCognates = connect(state => state.user)(({user}) => {
         )}
         { data && data.cognates_summary.triumph && !error && (
           <Message positive>
-            <Message.Header>{getTranslation("Scanned successfully")}</Message.Header>
+            <Message.Header>{getTranslation("Computation is going. Please see the sidebar with tasks.")}</Message.Header>
             <p/>
-            <a href={data.cognates_summary.json_url}> Result JSON </a>
-            <h4> List of processed languages: </h4>
-            { data.cognates_summary.language_list.map(lang =>
-              <p> {lang} </p>
-            )}
           </Message>
         )}
       </Segment>
