@@ -22,10 +22,8 @@ const cognatesSummaryMutation = gql`
       limit: $perspectiveLimit
       debug_flag: $debugFlag
     ) {
-      json_url
-      language_list
-      message
       triumph
+      message
     }
   }
 `;
@@ -84,7 +82,7 @@ const ListCognates = connect(state => state.user)(({user}) => {
           checked={shownParentGroup}
           onChange={(e, { checked }) => {
             showParentGroup(checked);
-            setCleanResult(fail);
+            setCleanResult(true);
             if (!checked) {
               setLanguageGroup(null);
             }
@@ -99,7 +97,7 @@ const ListCognates = connect(state => state.user)(({user}) => {
             placeholder={getTranslation("Set group name or leave empty")}
             onChange={(e, { value }) => {
               setLanguageGroup(value);
-              setCleanResult(fail);
+              setCleanResult(true);
             }}
             //className="lingvo-labeled-input"
             style={{ width: 500, maxWidth: "80%" }}
@@ -113,7 +111,7 @@ const ListCognates = connect(state => state.user)(({user}) => {
           placeholder={getTranslation("Set title or leave empty")}
           onChange={(e, { value }) => {
             setLanguageTitle(value);
-            setCleanResult(fail);
+            setCleanResult(true);
           }}
           //className="lingvo-labeled-input"
           style={{ width: 500, maxWidth: "80%" }}
@@ -124,7 +122,7 @@ const ListCognates = connect(state => state.user)(({user}) => {
           checked={shownLanguagePosition}
           onChange={(e, { checked }) => {
             showLanguagePosition(checked);
-            setCleanResult(fail);
+            setCleanResult(true);
             if (!checked) {
               setOnlyInToc(false);
               setPerspectiveOffset(0);
@@ -140,7 +138,7 @@ const ListCognates = connect(state => state.user)(({user}) => {
               checked={onlyInToc}
               onChange={(e, { checked }) => {
                 setOnlyInToc(checked);
-                setCleanResult(fail);
+                setCleanResult(true);
               }}
             />
             <p/>
@@ -151,7 +149,7 @@ const ListCognates = connect(state => state.user)(({user}) => {
               value={perspectiveOffset}
               onChange={(e, { value }) => {
                 setPerspectiveOffset(value);
-                setCleanResult(fail);
+                setCleanResult(true);
               }}
               //className="lingvo-labeled-input"
               style={{ width: 80, maxWidth: "40%" }}
@@ -164,7 +162,7 @@ const ListCognates = connect(state => state.user)(({user}) => {
               value={perspectiveLimit}
               onChange={(e, { value }) => {
                 setPerspectiveLimit(value);
-                setCleanResult(fail);
+                setCleanResult(true);
               }}
               //className="lingvo-labeled-input"
               style={{ width: 80, maxWidth: "40%" }}
@@ -199,15 +197,10 @@ const ListCognates = connect(state => state.user)(({user}) => {
             <p> {data.cognates_summary.message} </p>
           </Message>
         )}
-        { data && data.cognates_summary.triumph && !error && (
+        { data && data.cognates_summary.triumph && !error && !cleanResult && (
           <Message positive>
-            <Message.Header>{getTranslation("Scanned successfully")}</Message.Header>
+            <Message.Header>{getTranslation("Computation is going. Please see the sidebar with tasks.")}</Message.Header>
             <p/>
-            <a href={data.cognates_summary.json_url}> Result JSON </a>
-            <h4> List of processed languages: </h4>
-            { data.cognates_summary.language_list.map(lang =>
-              <p> {lang} </p>
-            )}
           </Message>
         )}
       </Segment>
