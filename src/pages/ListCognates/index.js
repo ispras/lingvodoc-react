@@ -83,6 +83,9 @@ const ListCognates = connect(state => state.user)(({user}) => {
           onChange={(e, { checked }) => {
             showParentGroup(checked);
             setCleanResult(true);
+            if (!checked) {
+              setLanguageGroup(null);
+            }
           }}
         />
         <p/>
@@ -120,6 +123,11 @@ const ListCognates = connect(state => state.user)(({user}) => {
           onChange={(e, { checked }) => {
             showLanguagePosition(checked);
             setCleanResult(true);
+            if (!checked) {
+              setOnlyInToc(false);
+              setPerspectiveOffset(0);
+              setPerspectiveLimit(10);
+            }
           }}
         />
         <p/>
