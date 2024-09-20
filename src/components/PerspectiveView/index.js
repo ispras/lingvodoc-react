@@ -366,7 +366,8 @@ class P extends React.Component {
       isAscending,
       sortingField,
       limit,
-      offset
+      offset,
+      changePage
     } = this.props;
 
     const query_args = {
@@ -679,17 +680,20 @@ class P extends React.Component {
           </Table>
         </div>
         <Pagination
-          urlBased
+          urlBased={!filter.length}
           activePage={page}
           pageSize={ROWS_PER_PAGE}
           totalItems={entriesTotal}
           showTotal
-          onPageChanged={() => {
+          onPageChanged={(newPage) => {
             const scrollContainer = document.querySelector(".lingvo-scrolling-tab__table");
             smoothScroll(0, 0, null, scrollContainer);
             if (isTableLanguagesPublish) {
               this.resetCheckedColumn();
               this.resetCheckedAll();
+            }
+            if (changePage) {
+              changePage(newPage);
             }
           }}
           className="lingvo-pagination-block_perspective"
@@ -723,7 +727,8 @@ P.propTypes = {
   createdEntries: PropTypes.array.isRequired,
   selectedEntries: PropTypes.array.isRequired,
   user: PropTypes.object.isRequired,
-  reRender: PropTypes.func
+  reRender: PropTypes.func,
+  changePage: PropTypes.func
 };
 
 P.defaultProps = {
@@ -1003,7 +1008,7 @@ export const LexicalEntryByIds = compose(
 )(LexicalEntryViewBaseByIds);
 
 const PerspectiveViewWrapper = ({ id, className, mode, entitiesMode, page, data,
-                                  filter, sortByField, isCaseSens, isRegexp }) => {
+                                  filter, sortByField, isCaseSens, isRegexp, changePage }) => {
   if (data.error) {
     return null;
   }
@@ -1047,6 +1052,7 @@ const PerspectiveViewWrapper = ({ id, className, mode, entitiesMode, page, data,
       isRegexp={isRegexp}
       columns={columns}
       reRender={reRender}
+      changePage={changePage}
     />
   );
 };
@@ -1061,7 +1067,8 @@ PerspectiveViewWrapper.propTypes = {
   isCaseSens: PropTypes.bool,
   isRegexp: PropTypes.bool,
   data: PropTypes.object.isRequired,
-  sortByField: PropTypes.object
+  sortByField: PropTypes.object,
+  changePage: PropTypes.func
 };
 
 PerspectiveViewWrapper.defaultProps = {

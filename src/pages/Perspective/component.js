@@ -38,6 +38,7 @@ import PerspectivePath from "./PerspectivePath";
 
 import "../../components/CognateAnalysisModal/style.scss";
 import "./style.scss";
+import { useSearchParams } from "react-router-dom";
 
 export const perspectiveIsHiddenOrDeletedQuery = gql`
   query perspectiveIsHiddenOrDeleted($id: LingvodocID!) {
@@ -1288,6 +1289,15 @@ const Perspective = ({
   }, [dndProvider]);
 
   const { id, parent_id, mode, page, baseUrl } = perspective.params;
+  const { value: filter } = perspective.filter;
+
+  const [searchParams, _] = useSearchParams();
+  const urlPageParam = parseInt(searchParams.get("page"));
+  const urlPage = isNaN(urlPageParam) ? 1 : urlPageParam;
+
+  const [activePage, setActivePage] = useState(page);
+  useEffect(() => setActivePage(page), [page, filter]);
+
   if (!baseUrl || location.pathname.indexOf(baseUrl) === -1) {
     return null;
   }
@@ -1377,7 +1387,7 @@ const Perspective = ({
             mode={mode}
             id={id}
             baseUrl={baseUrl}
-            filter={perspective.filter.value}
+            filter={filter}
             isCaseSens={perspective.filter.isCaseSens}
             isRegexp={perspective.filter.isRegexp}
             submitFilter={submitFilter}
@@ -1400,12 +1410,13 @@ const Perspective = ({
                     id={id}
                     mode={mode}
                     entitiesMode={info.entitiesMode}
-                    page={page}
-                    filter={perspective.filter.value}
+                    page={filter.length ? activePage : urlPage}
+                    filter={filter}
                     isCaseSens={perspective.filter.isCaseSens}
                     isRegexp={perspective.filter.isRegexp}
                     className="content"
                     activeDndProvider={dndProvider}
+                    changePage={newPage => setActivePage(newPage)}
                   />
                 }
               />
