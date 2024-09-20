@@ -1026,6 +1026,7 @@ const PerspectiveViewWrapper = ({ id, className, mode, entitiesMode, page, data,
     perspective: { columns }
   } = data;
 
+  //TODO: this needs optimization
   const reRender = () => {
     data.refetch();
     console.log("Refetched 'queryPerspective'");
