@@ -686,14 +686,14 @@ class P extends React.Component {
           totalItems={entriesTotal}
           showTotal
           onPageChanged={(newPage) => {
+            if (changePage) {
+              changePage(newPage);
+            }
             const scrollContainer = document.querySelector(".lingvo-scrolling-tab__table");
             smoothScroll(0, 0, null, scrollContainer);
             if (isTableLanguagesPublish) {
               this.resetCheckedColumn();
               this.resetCheckedAll();
-            }
-            if (changePage) {
-              changePage(newPage);
             }
           }}
           className="lingvo-pagination-block_perspective"
