@@ -208,6 +208,7 @@ const computeSwadeshAnalysisMutation = gql`
       transcription_count
       result
       xlsx_url
+      json_url
       minimum_spanning_tree
       embedding_2d
       embedding_3d
@@ -236,6 +237,7 @@ const computeMorphCognateAnalysisMutation = gql`
       transcription_count
       result
       xlsx_url
+      json_url
       minimum_spanning_tree
       embedding_2d
       embedding_3d
@@ -1260,6 +1262,7 @@ class CognateAnalysisModal extends React.Component {
 
       result: null,
       xlsx_url: "",
+      json_url: "",
       figure_url: "",
 
       minimum_spanning_tree: [],
@@ -2890,6 +2893,8 @@ class CognateAnalysisModal extends React.Component {
                 {this.state.result.length > 0 && mode !== "suggestions" && mode !== "multi_suggestions" && (
                   <div className="lingvo-cognate-text" style={{ paddingTop: "6px", paddingBottom: "3px" }}>
                     <a href={this.state.xlsx_url}>{this.context("XLSX-exported analysis results")}</a>
+                    <p/>
+                    <a href={this.state.json_url}>{this.context("JSON-exported analysis results")}</a>
                   </div>
                 )}
 
