@@ -176,6 +176,7 @@ const computeCognateAnalysisMutation = gql`
       translation_count
       result
       xlsx_url
+      json_url
       figure_url
       minimum_spanning_tree
       embedding_2d
@@ -2801,9 +2802,28 @@ class CognateAnalysisModal extends React.Component {
 
     const { language_list, perspectiveSelectionCountMap } = this.state;
 
+    const disabledCompute = (
+      (!multi && (this.perspective_list.length <= 1 ||
+        !this.state.perspectiveSelectionList.some(enabled => enabled))) ||
+      (multi &&
+        (language_list.length <= 0 ||
+          (mode === "multi_reconstruction" &&
+            language_list.filter(language => perspectiveSelectionCountMap[id2str(language.id)] > 0).length <=
+              1) ||
+          perspectiveSelectionCountMap[""] <= 0)) ||
+      this.state.computing
+    )
+
     return (
       <div>
-        <Modal closeIcon onClose={this.props.closeModal} dimmer open size="fullscreen" className="lingvo-modal2">
+        <Modal
+          onKeyDown = { e => {
+            if (e.key === 'Enter' && !disabledCompute) this.handleCreate(); }}
+          tabIndex = "0"
+          closeIcon
+          onClose={this.props.closeModal}
+          dimmer open
+          size="fullscreen" className="lingvo-modal2">
           <Modal.Header>
             {mode === "acoustic"
               ? this.context("Cognate acoustic analysis")
@@ -2842,18 +2862,7 @@ class CognateAnalysisModal extends React.Component {
                 )
               }
               onClick={this.handleCreate}
-              disabled={
-                (!multi &&
-                  (this.perspective_list.length <= 1 ||
-                    !this.state.perspectiveSelectionList.some(enabled => enabled))) ||
-                (multi &&
-                  (language_list.length <= 0 ||
-                    (mode === "multi_reconstruction" &&
-                      language_list.filter(language => perspectiveSelectionCountMap[id2str(language.id)] > 0).length <=
-                        1) ||
-                    perspectiveSelectionCountMap[""] <= 0)) ||
-                this.state.computing
-              }
+              disabled={disabledCompute}
               className="lingvo-button-violet"
             />
             <Button
