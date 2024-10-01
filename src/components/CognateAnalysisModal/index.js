@@ -2122,7 +2122,7 @@ class CognateAnalysisModal extends React.Component {
       for (const language of this.state.language_list) {
         let p_count = 0;
 
-        for (const { perspective, treePathList: [subLanguage,,] } of language.perspective_list) {
+        for (const { perspective, treePathList: [subLanguage,] } of language.perspective_list) {
           const p_key = id2str(perspective.id);
 
           if (this.state.perspectiveSelectionMap[p_key]) {
@@ -2143,7 +2143,7 @@ class CognateAnalysisModal extends React.Component {
     } else {
       perspectiveInfoList = this.perspective_list
 
-        .map(({ perspective, treePathList: [subLanguage,,] }, index) => [
+        .map(({ perspective, treePathList: [subLanguage,] }, index) => [
           subLanguage.__typename === "Language" ? subLanguage.id : this.baseLanguageId,
           perspective.id,
           this.fieldDict[this.state.transcriptionFieldIdStrList[index]].id,
