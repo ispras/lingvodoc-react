@@ -10,6 +10,7 @@ import DashboardRoute from "pages/DashboardRoute";
 import Desktop from "pages/Desktop";
 import DialeqtImport from "pages/DialeqtImport";
 import DictImport from "pages/DictImport";
+import ComplexDistance from "pages/ComplexDistance";
 import CorpImport from "pages/CorpImport";
 import DictionariesAll from "pages/DictionariesAll";
 import DistanceMap from "pages/DistanceMap";
@@ -17,7 +18,6 @@ import MapSelectedLanguages from "pages/DistanceMap/map";
 import SelectedLanguages from "pages/DistanceMap/selectorLangGroup";
 import Docx2Eaf from "pages/Docx2Eaf";
 import Docx2Xlsx from "pages/Docx2Xlsx";
-import ListCognates from "pages/ListCognates";
 import EditTranslations from "pages/EditTranslations";
 import Files from "pages/Files";
 import Grants from "pages/Grants";
@@ -25,6 +25,7 @@ import GrantsRoute from "pages/GrantsRoute";
 import Info from "pages/Info";
 import Languages from "pages/Languages";
 import LanguagesDatabasesRoute from "pages/LanguagesDatabasesRoute";
+import ListCognates from "pages/ListCognates";
 import Map from "pages/Map";
 import NotFound from "pages/NotFound";
 import Organizations from "pages/Organizations";
@@ -81,6 +82,7 @@ const AppRoutes = () => (
     <Route path="/valency" element={<Valency />} />
     <Route path="/adverb" element={<Adverb />} />
     <Route path="/list_cognates" element={<ListCognates />} />
+    <Route path="/complex_distance" element={<ComplexDistance />} />
     <Route element={<NotFound />} />
   </Routes>
 );
