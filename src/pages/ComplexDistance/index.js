@@ -41,23 +41,24 @@ const ComplexDistance = connect(state => state.user)(({user}) => {
     if (loading)
       return;
 
-    const resultPool = [];
+    const resultPool = new Array(fileSuite.length);
 
-    for (const file of fileSuite) {
+    for (const [index, file] of fileSuite.entries()) {
       const reader = new FileReader();
-      reader.onload = () => { resultPool.push(JSON.parse(reader.result)); }
-      reader.readAsText(file);
-    };
-
-    if (resultPool.length > 0) {
-      getComplexDistance(
-        { variables:
-          {
-            resultPool,
-            debugFlag
-          }
+      reader.onload = () => {
+        resultPool[index] = JSON.parse(reader.result);
+        if ((index + 1) == fileSuite.length) {
+          getComplexDistance(
+            { variables:
+              {
+                resultPool,
+                debugFlag
+              }
+            }
+          );
         }
-      );
+      };
+      reader.readAsText(file);
     }
   }
 
@@ -77,7 +78,7 @@ const ComplexDistance = connect(state => state.user)(({user}) => {
         </Loader>
       </Segment>
     ) : (
-      <Segment onKeyDown = {(e) => { if (e.key === 'Enter') runMutation(); }} tabIndex="0">
+      <Segment onKeyDown = {(e) => { if (e.key === 'Enter') document.getElementById("get-result").click(); }} tabIndex="0">
         <span>
           { getTranslation(
               fileSuite ? "Json file(s) for complex result:" : "Please select result file(s) for calculating."
@@ -105,6 +106,7 @@ const ComplexDistance = connect(state => state.user)(({user}) => {
         <p/>
         <Button
           color={fileSuite ? "green" : "gray"}
+          id="get-result"
           disabled={!fileSuite}
           content={getTranslation("Get complex distance")}
           onClick={runMutation}
