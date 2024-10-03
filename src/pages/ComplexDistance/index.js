@@ -3,6 +3,8 @@ import { Button, Dimmer, Icon, Input, Label, Loader, Message, Segment } from "se
 import { gql, useMutation } from "@apollo/client";
 import React, { useContext, useState, useEffect } from "react";
 
+import "./style.scss";
+
 import TranslationContext from "Layout/TranslationContext";
 
 const complexDistanceMutation = gql`
@@ -62,8 +64,6 @@ const ComplexDistance = connect(state => state.user)(({user}) => {
     }
   }
 
-  const fail = !data || !data.complex_distance.triumph;
-
   return (
     <div className="background-content">
     {(user.id === undefined) && !loading ? (
@@ -86,7 +86,7 @@ const ComplexDistance = connect(state => state.user)(({user}) => {
         </span>
 
         { fileSuite && fileSuite.map(({ name: fileName }) => (
-          <Label style={{ marginLeft: "0.5em" }}>
+          <Label style={{ margin: "0.5em" }}>
             <Icon name="file outline" />
               { fileName }
           </Label>
