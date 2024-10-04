@@ -2862,8 +2862,8 @@ class CognateAnalysisModal extends React.Component {
         <span className="lingvo-cognate-result-tit">
           { this.context(
             fileSuite
-            ? "Json file(s) for complex result:"
-            : "Please choose result files for merging (use <Ctrl> button for multiselect)"
+            ? "Json file(s) for composite result:"
+            : "Please choose analyses results for merging (use <Ctrl> button for multiselect)"
           )}
         </span>
 
@@ -2949,7 +2949,7 @@ class CognateAnalysisModal extends React.Component {
               : mode === "multi_morphology"
               ? this.context("Morphology distance multi-language")
               : mode === "complex_distance"
-              ? this.context("Complex distance")
+              ? this.context("Composite distance")
               : this.context("Cognate analysis")}
           </Modal.Header>
 
