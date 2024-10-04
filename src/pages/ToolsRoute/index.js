@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
-
+import { Button } from "semantic-ui-react";
 import Footer from "components/Footer";
 import TranslationContext from "Layout/TranslationContext";
 
@@ -12,6 +12,8 @@ import imageDistanceMap from "../../images/distance_map.svg";
 import imageSearch from "../../images/location_search.svg";
 import imageTranslations from "../../images/text_field.svg";
 import imageValency from "../../images/verb_valency.svg";
+
+import { openModal as cognateAnalysisOpenModal } from "ducks/cognateAnalysis";
 
 import "./styles.scss";
 
@@ -77,10 +79,10 @@ function ToolsRoute(props) {
               </Link>
             )}
             {props.user.id !== undefined && (
-              <Link className="card-item" to="/complex_distance">
+              <Button className="card-item" onClick={() => cognateAnalysisOpenModal(null, "complex_distance")}>
                 <label className="card-item__label">{getTranslation("Get complex distance between languages")}</label>
                 <img className="card-item__img card-item__img_map" src={imageMap} />
-              </Link>
+              </Button>
             )}
           </div>
         </div>

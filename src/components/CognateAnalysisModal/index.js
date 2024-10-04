@@ -247,6 +247,26 @@ const computeMorphCognateAnalysisMutation = gql`
   }
 `;
 
+const computeComplexDistanceMutation = gql`
+  mutation complexDistance (
+    $resultPool: [ObjectVal]!
+    $debugFlag: Boolean
+  ) {
+    complex_distance(
+      result_pool: $resultPool
+      debug_flag: $debugFlag
+    ) {
+      result
+      minimum_spanning_tree
+      embedding_2d
+      embedding_3d
+      language_name_list
+      message
+      triumph
+    }
+  }
+`;
+
 const SUGGESTIONS_PER_PAGE = 50;
 
 function equalIds(id_a, id_b) {
@@ -1265,6 +1285,7 @@ class CognateAnalysisModal extends React.Component {
       xlsx_url: "",
       json_url: "",
       figure_url: "",
+      fileSuite: null,
 
       minimum_spanning_tree: [],
       embedding_2d: [],
@@ -1340,6 +1361,7 @@ class CognateAnalysisModal extends React.Component {
     this.admin_section_render = this.admin_section_render.bind(this);
 
     this.suggestions_render = this.suggestions_render.bind(this);
+    this.brose_files_render = this.brose_files_render.bind(this);
 
     this.sg_connect = this.sg_connect.bind(this);
   }
@@ -1985,6 +2007,16 @@ class CognateAnalysisModal extends React.Component {
     }
   }
 
+  handleComplexDistanceResult({ data: { complex_distance }})
+  {
+    this.setState({
+      ...complex_distance,
+      /* Calculate plotly data */
+      ...this.handleResult(complex_distance),
+      computing: false
+    });
+  }
+
   handleSwadeshResult({ data: { swadesh_analysis }})
   {
     this.setState({
@@ -2103,7 +2135,13 @@ class CognateAnalysisModal extends React.Component {
   }
 
   handleCreate() {
-    const { perspectiveId, computeCognateAnalysis, computeSwadeshAnalysis, computeMorphCognateAnalysis } = this.props;
+    const {
+      perspectiveId,
+      computeCognateAnalysis,
+      computeSwadeshAnalysis,
+      computeMorphCognateAnalysis,
+      computeComplexDistance
+    } = this.props;
 
     const groupField = this.fieldDict[this.state.groupFieldIdStr];
 
@@ -2214,6 +2252,30 @@ class CognateAnalysisModal extends React.Component {
         data => this.handleMorphologyResult(data),
         error_data => this.handleError(error_data)
       );
+    } else if (this.props.mode === "complex_distance") {
+      this.setState({ computing: true });
+
+      const { fileSuite, debugFlag } = this.state;
+      const resultPool = new Array(fileSuite.length);
+
+      for (const [index, file] of fileSuite.entries()) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          resultPool[index] = JSON.parse(reader.result);
+          if ((index + 1) == fileSuite.length) {
+            computeComplexDistance({
+              variables: {
+                resultPool,
+                debugFlag
+              }
+            }).then(
+              data => this.handleComplexDistanceResult(data),
+              error_data => this.handleError(error_data)
+            );
+          }
+        };
+        reader.readAsText(file);
+      }
     } else {
       /* Otherwise we will launch it as usual and then will wait for results to display them. */
       this.setState({
@@ -2784,6 +2846,40 @@ class CognateAnalysisModal extends React.Component {
     );
   }
 
+  brose_files_render() {
+
+    const { fileSuite } = this.state;
+
+    return (
+      <div className="lingvo-cognate-result-block">
+        <span>
+          { getTranslation(
+              fileSuite ? "Json file(s) for complex result:" : "Please select result file(s) for calculating."
+          )}
+        </span>
+
+        { fileSuite && fileSuite.map(({ name: fileName }) => (
+          <Label style={{ margin: "0.5em" }}>
+            <Icon name="file outline" />
+              { fileName }
+          </Label>
+        ))}
+
+        <Button style={{ marginLeft: "1em" }} onClick={() => document.getElementById("file-select").click()}>
+          {`${getTranslation("Browse")}...`}
+        </Button>
+
+        <Input
+          id="file-select"
+          type="file"
+          multiple
+          style={{ display: "none" }}
+          onChange={e => this.setState({ fileSuite: Array.from(e.target.files) })}
+        />
+      </div>
+    )
+  }
+
   render() {
     if (!this.state.initialized) {
       return (
@@ -3141,7 +3237,7 @@ class CognateAnalysisModal extends React.Component {
                   </div>
                 </div>
               )}
-              {! /swadesh$/.test(mode) && ! /morphology$/.test(mode) && (
+              {! /swadesh$/.test(mode) && ! /morphology$/.test(mode) && ! /complex_distance$/.test(mode) && (
                 <div><pre>{this.state.result}</pre></div>
               ) || (
                 <div dangerouslySetInnerHTML={{ __html: this.state.result }}></div>
@@ -3160,7 +3256,9 @@ CognateAnalysisModal.propTypes = {
   perspectiveId: PropTypes.array.isRequired,
   closeModal: PropTypes.func.isRequired,
   computeCognateAnalysis: PropTypes.func.isRequired,
-  computeSwadeshAnalysis: PropTypes.func.isRequired
+  computeSwadeshAnalysis: PropTypes.func.isRequired,
+  computeMorphCognateAnalysis: PropTypes.func.isRequired,
+  computeComplexDistance: PropTypes.func.isRequired
 };
 
 export default compose(
@@ -3173,6 +3271,7 @@ export default compose(
   graphql(computeCognateAnalysisMutation, { name: "computeCognateAnalysis" }),
   graphql(computeSwadeshAnalysisMutation, { name: "computeSwadeshAnalysis" }),
   graphql(computeMorphCognateAnalysisMutation, { name: "computeMorphCognateAnalysis" }),
+  graphql(computeComplexDistanceMutation, { name: "computeComplexDistance" }),
   graphql(connectMutation, { name: "connectGroup" }),
   withApollo
 )(CognateAnalysisModal);
