@@ -76,6 +76,12 @@ function ToolsRoute(props) {
                 <img className="card-item__img" src={imageStorage} />
               </Link>
             )}
+            {props.user.id !== undefined && (
+              <Link className="card-item" to="/complex_distance">
+                <label className="card-item__label">{getTranslation("Get complex distance between languages")}</label>
+                <img className="card-item__img card-item__img_map" src={imageMap} />
+              </Link>
+            )}
           </div>
         </div>
       </div>

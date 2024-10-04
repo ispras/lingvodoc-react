@@ -176,6 +176,7 @@ const computeCognateAnalysisMutation = gql`
       translation_count
       result
       xlsx_url
+      json_url
       figure_url
       minimum_spanning_tree
       embedding_2d
@@ -208,6 +209,7 @@ const computeSwadeshAnalysisMutation = gql`
       transcription_count
       result
       xlsx_url
+      json_url
       minimum_spanning_tree
       embedding_2d
       embedding_3d
@@ -236,6 +238,7 @@ const computeMorphCognateAnalysisMutation = gql`
       transcription_count
       result
       xlsx_url
+      json_url
       minimum_spanning_tree
       embedding_2d
       embedding_3d
@@ -1260,6 +1263,7 @@ class CognateAnalysisModal extends React.Component {
 
       result: null,
       xlsx_url: "",
+      json_url: "",
       figure_url: "",
 
       minimum_spanning_tree: [],
@@ -2118,11 +2122,12 @@ class CognateAnalysisModal extends React.Component {
       for (const language of this.state.language_list) {
         let p_count = 0;
 
-        for (const { perspective } of language.perspective_list) {
+        for (const { perspective, treePathList: [subLanguage,] } of language.perspective_list) {
           const p_key = id2str(perspective.id);
 
           if (this.state.perspectiveSelectionMap[p_key]) {
             perspectiveInfoList.push([
+              subLanguage.__typename === "Language" ? subLanguage.id : this.baseLanguageId,
               perspective.id,
               this.fieldDict[this.state.transcriptionFieldIdStrMap[p_key]].id,
               this.fieldDict[this.state.translationFieldIdStrMap[p_key]].id,
@@ -2138,7 +2143,8 @@ class CognateAnalysisModal extends React.Component {
     } else {
       perspectiveInfoList = this.perspective_list
 
-        .map(({ perspective }, index) => [
+        .map(({ perspective, treePathList: [subLanguage,] }, index) => [
+          subLanguage.__typename === "Language" ? subLanguage.id : this.baseLanguageId,
           perspective.id,
           this.fieldDict[this.state.transcriptionFieldIdStrList[index]].id,
           this.fieldDict[this.state.translationFieldIdStrList[index]].id,
@@ -2798,9 +2804,28 @@ class CognateAnalysisModal extends React.Component {
 
     const { language_list, perspectiveSelectionCountMap } = this.state;
 
+    const disabledCompute = (
+      (!multi && (this.perspective_list.length <= 1 ||
+        !this.state.perspectiveSelectionList.some(enabled => enabled))) ||
+      (multi &&
+        (language_list.length <= 0 ||
+          (mode === "multi_reconstruction" &&
+            language_list.filter(language => perspectiveSelectionCountMap[id2str(language.id)] > 0).length <=
+              1) ||
+          perspectiveSelectionCountMap[""] <= 0)) ||
+      this.state.computing
+    )
+
     return (
       <div>
-        <Modal closeIcon onClose={this.props.closeModal} dimmer open size="fullscreen" className="lingvo-modal2">
+        <Modal
+          onKeyDown = { e => {
+            if (e.key === 'Enter' && !disabledCompute) this.handleCreate(); }}
+          tabIndex = "0"
+          closeIcon
+          onClose={this.props.closeModal}
+          dimmer open
+          size="fullscreen" className="lingvo-modal2">
           <Modal.Header>
             {mode === "acoustic"
               ? this.context("Cognate acoustic analysis")
@@ -2839,18 +2864,7 @@ class CognateAnalysisModal extends React.Component {
                 )
               }
               onClick={this.handleCreate}
-              disabled={
-                (!multi &&
-                  (this.perspective_list.length <= 1 ||
-                    !this.state.perspectiveSelectionList.some(enabled => enabled))) ||
-                (multi &&
-                  (language_list.length <= 0 ||
-                    (mode === "multi_reconstruction" &&
-                      language_list.filter(language => perspectiveSelectionCountMap[id2str(language.id)] > 0).length <=
-                        1) ||
-                    perspectiveSelectionCountMap[""] <= 0)) ||
-                this.state.computing
-              }
+              disabled={disabledCompute}
               className="lingvo-button-violet"
             />
             <Button
@@ -2890,6 +2904,8 @@ class CognateAnalysisModal extends React.Component {
                 {this.state.result.length > 0 && mode !== "suggestions" && mode !== "multi_suggestions" && (
                   <div className="lingvo-cognate-text" style={{ paddingTop: "6px", paddingBottom: "3px" }}>
                     <a href={this.state.xlsx_url}>{this.context("XLSX-exported analysis results")}</a>
+                    <p/>
+                    <a href={this.state.json_url}>{this.context("JSON-exported analysis results")}</a>
                   </div>
                 )}
 

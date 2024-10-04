@@ -100,6 +100,7 @@ const getDistance = async (dictionaries, allField, mainDictionary, computeDistan
 
   const perspectiveInfoList = perspectiveList
     .map(({ perspective }, index) => [
+      null,
       perspective.id,
       fieldDict[transcriptionFieldIdStrList[index]].id,
       fieldDict[translationFieldIdStrList[index]].id,
