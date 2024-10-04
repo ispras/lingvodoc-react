@@ -4,14 +4,14 @@ import { Route, Routes } from "react-router-dom";
 // eslint-disable-next-line import/no-unresolved
 import config from "config";
 import AuthorsRoute from "pages/AuthorsRoute";
+import ComplexDistance from "pages/ComplexDistance";
+import CorpImport from "pages/CorpImport";
 import { CreateCorpus, CreateDictionary } from "pages/CreateDictionary";
 import { CorpusDashboard, DictionaryDashboard, ParallelCorporaDashboard } from "pages/Dashboard";
 import DashboardRoute from "pages/DashboardRoute";
 import Desktop from "pages/Desktop";
 import DialeqtImport from "pages/DialeqtImport";
 import DictImport from "pages/DictImport";
-import ComplexDistance from "pages/ComplexDistance";
-import CorpImport from "pages/CorpImport";
 import DictionariesAll from "pages/DictionariesAll";
 import DistanceMap from "pages/DistanceMap";
 import MapSelectedLanguages from "pages/DistanceMap/map";
