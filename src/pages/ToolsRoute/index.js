@@ -1,7 +1,8 @@
 import React, { useContext } from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
-
+import { bindActionCreators } from "redux";
+import { Button } from "semantic-ui-react";
 import Footer from "components/Footer";
 import TranslationContext from "Layout/TranslationContext";
 
@@ -13,9 +14,11 @@ import imageSearch from "../../images/location_search.svg";
 import imageTranslations from "../../images/text_field.svg";
 import imageValency from "../../images/verb_valency.svg";
 
+import { openModal as cognateAnalysisOpenModal } from "ducks/cognateAnalysis";
+
 import "./styles.scss";
 
-function ToolsRoute(props) {
+function ToolsRoute({ user, actions }) {
   const getTranslation = useContext(TranslationContext);
 
   return (
@@ -42,7 +45,7 @@ function ToolsRoute(props) {
               <label className="card-item__label">{getTranslation("Library of linguistic maps")}</label>
               <img className="card-item__img" src={imageStorage} />
             </a>
-            {props.user && props.user.id && (
+            {user && user.id && (
               <Link className="card-item" to="/distance_map">
                 <label className="card-item__label">{getTranslation("Language genetic proximity map")}</label>
                 <img className="card-item__img card-item__img_distance-map" src={imageDistanceMap} />
@@ -52,35 +55,35 @@ function ToolsRoute(props) {
               <label className="card-item__label">{getTranslation("Edit of the dialects classification")}</label>
               <img className="card-item__img" src={imageLanguages} />
             </Link>
-            {props.user && props.user.id == 1 && (
+            {user && user.id == 1 && (
               <Link className="card-item" to="/edit_translations">
                 <label className="card-item__label">{getTranslation("Edit translations")}</label>
                 <img className="card-item__img" src={imageTranslations} />
               </Link>
             )}
-            {props.user.id !== undefined && (
+            {user.id !== undefined && (
               <Link className="card-item" to="/valency">
                 <label className="card-item__label">{getTranslation("Verb valency")}</label>
                 <img className="card-item__img card-item__img_verb-valency" src={imageValency} />
               </Link>
             )}
-            {props.user.id !== undefined && (
+            {user.id !== undefined && (
               <Link className="card-item" to="/adverb">
                 <label className="card-item__label">{getTranslation("Adverb specificity")}</label>
                 <img className="card-item__img card-item__img_verb-valency" src={imageValency} />
               </Link>
             )}
-            {props.user.id !== undefined && (
+            {user.id !== undefined && (
               <Link className="card-item" to="/list_cognates">
                 <label className="card-item__label">{getTranslation("Cognates summary")}</label>
                 <img className="card-item__img" src={imageStorage} />
               </Link>
             )}
-            {props.user.id !== undefined && (
-              <Link className="card-item" to="/complex_distance">
+            {user.id !== undefined && (
+              <Button className="card-item" onClick={() => actions.cognateAnalysisOpenModal(null, "complex_distance")}>
                 <label className="card-item__label">{getTranslation("Get complex distance between languages")}</label>
                 <img className="card-item__img card-item__img_map" src={imageMap} />
-              </Link>
+              </Button>
             )}
           </div>
         </div>
@@ -90,4 +93,13 @@ function ToolsRoute(props) {
   );
 }
 
-export default connect(state => state.user)(ToolsRoute);
+export default connect(
+  state => state.user,
+  dispatch => ({
+    actions: bindActionCreators({
+      cognateAnalysisOpenModal,
+    },
+    dispatch)
+  })
+)(
+ToolsRoute);
