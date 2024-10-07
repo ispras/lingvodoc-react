@@ -12,7 +12,9 @@ import {
   Loader,
   Modal,
   Pagination,
-  Select
+  Select,
+  Input,
+  Label
 } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql, withApollo } from "@apollo/client/react/hoc";
@@ -260,7 +262,7 @@ const computeComplexDistanceMutation = gql`
       minimum_spanning_tree
       embedding_2d
       embedding_3d
-      language_name_list
+      perspective_name_list: language_name_list
       message
       triumph
     }
@@ -1286,6 +1288,8 @@ class CognateAnalysisModal extends React.Component {
       json_url: "",
       figure_url: "",
       fileSuite: null,
+      lang_mode: null,
+      clearResult: false,
 
       minimum_spanning_tree: [],
       embedding_2d: [],
@@ -1361,12 +1365,18 @@ class CognateAnalysisModal extends React.Component {
     this.admin_section_render = this.admin_section_render.bind(this);
 
     this.suggestions_render = this.suggestions_render.bind(this);
-    this.brose_files_render = this.brose_files_render.bind(this);
+    this.browse_files_render = this.browse_files_render.bind(this);
 
     this.sg_connect = this.sg_connect.bind(this);
   }
 
   componentDidMount() {
+
+    if (this.props.mode === "complex_distance") {
+      this.setState({ lang_mode: "none", initialized: true });
+      return;
+    }
+
     const multi =
       this.props.mode === "multi_analysis" ||
       this.props.mode === "multi_reconstruction" ||
@@ -1375,6 +1385,7 @@ class CognateAnalysisModal extends React.Component {
       this.props.mode === "multi_morphology";
 
     (multi ? this.initialize_multi : this.initialize_single)();
+    this.setState({ lang_mode: multi ? "multi" : "single" });
   }
 
   initialize_common(allFields, columns, tree, english_status) {
@@ -1822,13 +1833,7 @@ class CognateAnalysisModal extends React.Component {
 
     /* Selecting grouping field for many languages. */
 
-    if (
-      this.props.mode === "multi_analysis" ||
-      this.props.mode === "multi_reconstruction" ||
-      this.props.mode === "multi_suggestions" ||
-      this.props.mode === "multi_swadesh" ||
-      this.props.mode === "multi_morphology"
-    ) {
+    if (this.state.lang_mode === "multi") {
       this.state.groupFieldIdStr = value;
 
       const { perspectiveSelectionMap, perspectiveSelectionCountMap } = this.state;
@@ -1867,7 +1872,7 @@ class CognateAnalysisModal extends React.Component {
       this.setState({
         groupFieldIdStr: value
       });
-    } else {
+    } else if (this.state.lang_mode === "single") {
       /* Selecting grouping field for a single language. */
       this.setState({
         groupFieldIdStr: value,
@@ -2143,62 +2148,57 @@ class CognateAnalysisModal extends React.Component {
       computeComplexDistance
     } = this.props;
 
-    const groupField = this.fieldDict[this.state.groupFieldIdStr];
+    if (this.state.lang_mode === "single" || this.state.lang_mode === "multi") {
+      const groupField = this.fieldDict[this.state.groupFieldIdStr];
 
-    /* Gathering info of perspectives we are to analyze. */
+      /* Gathering info of perspectives we are to analyze. */
+      let perspectiveInfoList = [];
+      const multiList = [];
 
-    let perspectiveInfoList = [];
-    const multiList = [];
+      if (this.state.lang_mode === "multi") {
+        for (const language of this.state.language_list) {
+          let p_count = 0;
 
-    if (
-      this.props.mode === "multi_analysis" ||
-      this.props.mode === "multi_reconstruction" ||
-      this.props.mode === "multi_suggestions" ||
-      this.props.mode === "multi_swadesh" ||
-      this.props.mode === "multi_morphology"
-    ) {
-      for (const language of this.state.language_list) {
-        let p_count = 0;
+          for (const { perspective, treePathList: [subLanguage,] } of language.perspective_list) {
+            const p_key = id2str(perspective.id);
 
-        for (const { perspective, treePathList: [subLanguage,] } of language.perspective_list) {
-          const p_key = id2str(perspective.id);
+            if (this.state.perspectiveSelectionMap[p_key]) {
+              perspectiveInfoList.push([
+                subLanguage.__typename === "Language" ? subLanguage.id : this.baseLanguageId,
+                perspective.id,
+                this.fieldDict[this.state.transcriptionFieldIdStrMap[p_key]].id,
+                this.fieldDict[this.state.translationFieldIdStrMap[p_key]].id,
+                this.fieldDict[this.state.lexemeFieldIdStrMap[p_key]].id
+              ]);
 
-          if (this.state.perspectiveSelectionMap[p_key]) {
-            perspectiveInfoList.push([
-              subLanguage.__typename === "Language" ? subLanguage.id : this.baseLanguageId,
-              perspective.id,
-              this.fieldDict[this.state.transcriptionFieldIdStrMap[p_key]].id,
-              this.fieldDict[this.state.translationFieldIdStrMap[p_key]].id,
-              this.fieldDict[this.state.lexemeFieldIdStrMap[p_key]].id
-            ]);
-
-            p_count++;
+              p_count++;
+            }
           }
+
+          multiList.push([language.id, p_count]);
         }
+      } else {
+        perspectiveInfoList = this.perspective_list
 
-        multiList.push([language.id, p_count]);
+          .map(({ perspective, treePathList: [subLanguage,] }, index) => [
+            subLanguage.__typename === "Language" ? subLanguage.id : this.baseLanguageId,
+            perspective.id,
+            this.fieldDict[this.state.transcriptionFieldIdStrList[index]].id,
+            this.fieldDict[this.state.translationFieldIdStrList[index]].id,
+            this.fieldDict[this.state.lexemeFieldIdStrList[index]].id
+          ])
+
+          .filter((perspective_info, index) => this.state.perspectiveSelectionList[index]);
       }
-    } else {
-      perspectiveInfoList = this.perspective_list
 
-        .map(({ perspective, treePathList: [subLanguage,] }, index) => [
-          subLanguage.__typename === "Language" ? subLanguage.id : this.baseLanguageId,
-          perspective.id,
-          this.fieldDict[this.state.transcriptionFieldIdStrList[index]].id,
-          this.fieldDict[this.state.translationFieldIdStrList[index]].id,
-          this.fieldDict[this.state.lexemeFieldIdStrList[index]].id
-        ])
+      /* Match translations parameter for suggestions. */
 
-        .filter((perspective_info, index) => this.state.perspectiveSelectionList[index]);
+      const matchTranslationsValue = this.state.matchTranslationsFlag
+        ? this.state.matchTranslationsValue === "first_three"
+          ? 1
+          : 2
+        : 0;
     }
-
-    /* Match translations parameter for suggestions. */
-
-    const matchTranslationsValue = this.state.matchTranslationsFlag
-      ? this.state.matchTranslationsValue === "first_three"
-        ? 1
-        : 2
-      : 0;
 
     /* If we are to perform acoustic analysis, we will try to launch it in the background. */
 
@@ -2227,7 +2227,7 @@ class CognateAnalysisModal extends React.Component {
         }
       );
     } else if (this.props.mode === "swadesh" || this.props.mode === "multi_swadesh") {
-      this.setState({ computing: true });
+      this.setState({ computing: true, clearResult: false });
       computeSwadeshAnalysis({
         variables: {
           sourcePerspectiveId: perspectiveId,
@@ -2240,7 +2240,7 @@ class CognateAnalysisModal extends React.Component {
         error_data => this.handleError(error_data)
       );
     } else if (this.props.mode === "morphology" || this.props.mode === "multi_morphology") {
-      this.setState({ computing: true });
+      this.setState({ computing: true, clearResult: false });
       computeMorphCognateAnalysis({
         variables: {
           sourcePerspectiveId: perspectiveId,
@@ -2253,7 +2253,7 @@ class CognateAnalysisModal extends React.Component {
         error_data => this.handleError(error_data)
       );
     } else if (this.props.mode === "complex_distance") {
-      this.setState({ computing: true });
+      this.setState({ computing: true, clearResult: false });
 
       const { fileSuite, debugFlag } = this.state;
       const resultPool = new Array(fileSuite.length);
@@ -2278,9 +2278,7 @@ class CognateAnalysisModal extends React.Component {
       }
     } else {
       /* Otherwise we will launch it as usual and then will wait for results to display them. */
-      this.setState({
-        computing: true
-      });
+      this.setState({ computing: true, clearResult: false });
 
       const backend_mode =
           this.props.mode === "multi_analysis"
@@ -2846,27 +2844,29 @@ class CognateAnalysisModal extends React.Component {
     );
   }
 
-  brose_files_render() {
+  browse_files_render() {
 
     const { fileSuite } = this.state;
 
     return (
-      <div className="lingvo-cognate-result-block">
-        <span>
-          { getTranslation(
-              fileSuite ? "Json file(s) for complex result:" : "Please select result file(s) for calculating."
+      <div className="lingvo-cognate-result-segment" style={{ margin: "0.5em" }}>
+        <span className="lingvo-cognate-result-tit">
+          { this.context(
+            fileSuite
+            ? "Json file(s) for complex result:"
+            : "Please choose result files for merging (use Ctrl button for multiselect)"
           )}
         </span>
 
         { fileSuite && fileSuite.map(({ name: fileName }) => (
-          <Label style={{ margin: "0.5em" }}>
+          <Label style={{ margin: "1em" }}>
             <Icon name="file outline" />
               { fileName }
           </Label>
         ))}
 
-        <Button style={{ marginLeft: "1em" }} onClick={() => document.getElementById("file-select").click()}>
-          {`${getTranslation("Browse")}...`}
+        <Button style={{ margin: "1em" }} onClick={() => document.getElementById("file-select").click()}>
+          {`${this.context("Browse")}...`}
         </Button>
 
         <Input
@@ -2874,7 +2874,7 @@ class CognateAnalysisModal extends React.Component {
           type="file"
           multiple
           style={{ display: "none" }}
-          onChange={e => this.setState({ fileSuite: Array.from(e.target.files) })}
+          onChange={e => this.setState({ clearResult: true, fileSuite: Array.from(e.target.files) })}
         />
       </div>
     )
@@ -2891,19 +2891,13 @@ class CognateAnalysisModal extends React.Component {
 
     const { mode } = this.props;
 
-    const multi =
-      mode === "multi_analysis" ||
-      mode === "multi_reconstruction" ||
-      mode === "multi_suggestions" ||
-      mode === "multi_swadesh" ||
-      mode === "multi_morphology";
-
-    const { language_list, perspectiveSelectionCountMap } = this.state;
+    const { language_list, perspectiveSelectionCountMap, lang_mode, fileSuite } = this.state;
 
     const disabledCompute = (
-      (!multi && (this.perspective_list.length <= 1 ||
+      (lang_mode === "none" && !fileSuite) ||
+      (lang_mode === "single" && (this.perspective_list.length <= 1 ||
         !this.state.perspectiveSelectionList.some(enabled => enabled))) ||
-      (multi &&
+      (lang_mode === "multi" &&
         (language_list.length <= 0 ||
           (mode === "multi_reconstruction" &&
             language_list.filter(language => perspectiveSelectionCountMap[id2str(language.id)] > 0).length <=
@@ -2943,10 +2937,12 @@ class CognateAnalysisModal extends React.Component {
               ? this.context("Morphology distance")
               : mode === "multi_morphology"
               ? this.context("Morphology distance multi-language")
+              : mode === "complex_distance"
+              ? this.context("Complex distance")
               : this.context("Cognate analysis")}
           </Modal.Header>
 
-          {this.language_render(multi)}
+          { lang_mode === "none" ? this.browse_files_render() : this.language_render(lang_mode === "multi") }
 
           <Modal.Actions>
             <Button
@@ -2970,80 +2966,85 @@ class CognateAnalysisModal extends React.Component {
             />
           </Modal.Actions>
 
-          {(/swadesh$/.test(mode) || this.state.library_present
-            ) && this.state.result !== null && (
+          { (/swadesh$/.test(mode) || /morphology$/.test(mode) || this.state.library_present
+            ) && this.state.result !== null && ! this.state.clearResult && (
             <Modal.Content style={{ maxWidth: "100%", overflowX: "auto" }}>
-              <h3 className="lingvo-cognate-header-results">{this.context("Analysis results")}:</h3>
 
-              <div className="lingvo-cognate-results">
-                <div className="lingvo-cognate-results__item">
-                  <div className="lingvo-cognate-results__number">{this.state.dictionary_count}</div>
-                  <div className="lingvo-cognate-results__text">{this.context("dictionaries")}</div>
-                </div>
-                <div className="lingvo-cognate-results__item">
-                  <div className="lingvo-cognate-results__number">{this.state.group_count}</div>
-                  <div className="lingvo-cognate-results__text">{this.context("cognate groups")}</div>
-                </div>
-                <div className="lingvo-cognate-results__item">
-                  <div className="lingvo-cognate-results__number">{this.state.transcription_count}</div>
-                  <div className="lingvo-cognate-results__text">{this.context("transcriptions analysed")}</div>
-                </div>
+              { ! /complex_distance$/.test(mode) && (
+                <>
+                  <h3 className="lingvo-cognate-header-results">{this.context("Analysis results")}:</h3>
 
-                <div className="lingvo-cognate-text" style={{ paddingTop: "6px", paddingBottom: "3px" }}>
-                  {`${this.state.not_enough_count} ${this.context(
-                    "cognate groups were excluded from the analysis due to not having lexical entries in at least two selected dictionaries"
-                  )}.`}
-                </div>
-              </div>
+                  <div className="lingvo-cognate-results">
+                    <div className="lingvo-cognate-results__item">
+                      <div className="lingvo-cognate-results__number">{this.state.dictionary_count}</div>
+                      <div className="lingvo-cognate-results__text">{this.context("dictionaries")}</div>
+                    </div>
+                    <div className="lingvo-cognate-results__item">
+                      <div className="lingvo-cognate-results__number">{this.state.group_count}</div>
+                      <div className="lingvo-cognate-results__text">{this.context("cognate groups")}</div>
+                    </div>
+                    <div className="lingvo-cognate-results__item">
+                      <div className="lingvo-cognate-results__number">{this.state.transcription_count}</div>
+                      <div className="lingvo-cognate-results__text">{this.context("transcriptions analysed")}</div>
+                    </div>
 
-              <div className="lingvo-cognate-results">
-                {this.state.result.length > 0 && mode !== "suggestions" && mode !== "multi_suggestions" && (
-                  <div className="lingvo-cognate-text" style={{ paddingTop: "6px", paddingBottom: "3px" }}>
-                    <a href={this.state.xlsx_url}>{this.context("XLSX-exported analysis results")}</a>
-                    <p/>
-                    <a href={this.state.json_url}>{this.context("JSON-exported analysis results")}</a>
+                    <div className="lingvo-cognate-text" style={{ paddingTop: "6px", paddingBottom: "3px" }}>
+                      {`${this.state.not_enough_count} ${this.context(
+                        "cognate groups were excluded from the analysis due to not having lexical entries in at least two selected dictionaries"
+                      )}.`}
+                    </div>
                   </div>
-                )}
 
-                {this.state.result.length > 0 && this.state.intermediate_url_list && (
-                  <div className="lingvo-cognate-text">
-                    <span className="lingvo-cognate-text__title">{this.context("Intermediate data")}:</span>
-                    <div className="lingvo-cognate-text__list">
-                      {map(this.state.intermediate_url_list, intermediate_url => (
-                        <div className="lingvo-cognate-text__item" key={intermediate_url}>
-                          <a href={intermediate_url}>{intermediate_url}</a>
+                  <div className="lingvo-cognate-results">
+                    {this.state.result.length > 0 && mode !== "suggestions" && mode !== "multi_suggestions" && (
+                      <div className="lingvo-cognate-text" style={{ paddingTop: "6px", paddingBottom: "3px" }}>
+                        <a href={this.state.xlsx_url}>{this.context("XLSX-exported analysis results")}</a>
+                        <p/>
+                        <a href={this.state.json_url}>{this.context("JSON-exported analysis results")}</a>
+                      </div>
+                    )}
+
+                    {this.state.result.length > 0 && this.state.intermediate_url_list && (
+                      <div className="lingvo-cognate-text">
+                        <span className="lingvo-cognate-text__title">{this.context("Intermediate data")}:</span>
+                        <div className="lingvo-cognate-text__list">
+                          {map(this.state.intermediate_url_list, intermediate_url => (
+                            <div className="lingvo-cognate-text__item" key={intermediate_url}>
+                              <a href={intermediate_url}>{intermediate_url}</a>
+                            </div>
+                          ))}
                         </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {this.state.result.length <= 0 && (
-                <div className="lingvo-cognate-text" style={{ paddingTop: "6px", paddingBottom: "3px" }}>
-                  {this.context("No data for cognate analysis")}.
-                </div>
-              )}
-
-              {this.state.suggestion_list && (
-                <div>
-                  <div className="lingvo-cognate-header-suggestions">
-                    {this.state.suggestion_list.length} {this.context("suggestions")}:
+                      </div>
+                    )}
                   </div>
 
-                  {this.props.user.id === undefined ? (
-                    <div className="lingvo-message lingvo-message_error">
-                      {this.context("Unauthorized user")}
-                      <p>
-                        {this.context(
-                          "Only authorized users can create new cognate connections based on cognate suggestions."
-                        )}
-                      </p>
+                  {this.state.result.length <= 0 && (
+                    <div className="lingvo-cognate-text" style={{ paddingTop: "6px", paddingBottom: "3px" }}>
+                      {this.context("No data for cognate analysis")}.
                     </div>
-                  ) : (
-                    <div>{this.suggestions_render()}</div>
                   )}
-                </div>
+
+                  {this.state.suggestion_list && (
+                    <div>
+                      <div className="lingvo-cognate-header-suggestions">
+                        {this.state.suggestion_list.length} {this.context("suggestions")}:
+                      </div>
+
+                      {this.props.user.id === undefined ? (
+                        <div className="lingvo-message lingvo-message_error">
+                          {this.context("Unauthorized user")}
+                          <p>
+                            {this.context(
+                              "Only authorized users can create new cognate connections based on cognate suggestions."
+                            )}
+                          </p>
+                        </div>
+                      ) : (
+                        <div>{this.suggestions_render()}</div>
+                      )}
+                    </div>
+                  )}
+                </>
               )}
 
               {this.state.plotly_data.length > 0 && (
