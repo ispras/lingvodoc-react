@@ -4,7 +4,6 @@ import { Route, Routes } from "react-router-dom";
 // eslint-disable-next-line import/no-unresolved
 import config from "config";
 import AuthorsRoute from "pages/AuthorsRoute";
-import ComplexDistance from "pages/ComplexDistance";
 import CorpImport from "pages/CorpImport";
 import { CreateCorpus, CreateDictionary } from "pages/CreateDictionary";
 import { CorpusDashboard, DictionaryDashboard, ParallelCorporaDashboard } from "pages/Dashboard";
@@ -82,7 +81,6 @@ const AppRoutes = () => (
     <Route path="/valency" element={<Valency />} />
     <Route path="/adverb" element={<Adverb />} />
     <Route path="/list_cognates" element={<ListCognates />} />
-    <Route path="/complex_distance" element={<ComplexDistance />} />
     <Route element={<NotFound />} />
   </Routes>
 );
