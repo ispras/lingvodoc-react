@@ -1289,7 +1289,7 @@ class CognateAnalysisModal extends React.Component {
       figure_url: "",
       fileSuite: null,
       lang_mode: null,
-      clearResult: false,
+      cleanResult: false,
 
       minimum_spanning_tree: [],
       embedding_2d: [],
@@ -2018,7 +2018,8 @@ class CognateAnalysisModal extends React.Component {
       ...complex_distance,
       /* Calculate plotly data */
       ...this.handleResult(complex_distance),
-      computing: false
+      computing: false,
+      cleanResult: false
     });
   }
 
@@ -2028,7 +2029,8 @@ class CognateAnalysisModal extends React.Component {
       ...swadesh_analysis,
       /* Calculate plotly data */
       ...this.handleResult(swadesh_analysis),
-      computing: false
+      computing: false,
+      cleanResult: false
     });
   }
 
@@ -2038,7 +2040,8 @@ class CognateAnalysisModal extends React.Component {
       ...morph_cognate_analysis,
       /* Calculate plotly data */
       ...this.handleResult(morph_cognate_analysis),
-      computing: false
+      computing: false,
+      cleanResult: false
     });
   }
 
@@ -2101,6 +2104,7 @@ class CognateAnalysisModal extends React.Component {
       ...this.handleResult(cognate_analysis),
       library_present: true,
       computing: false,
+      cleanResult: false,
       sg_select_list,
       sg_state_list,
       sg_count,
@@ -2227,7 +2231,7 @@ class CognateAnalysisModal extends React.Component {
         }
       );
     } else if (this.props.mode === "swadesh" || this.props.mode === "multi_swadesh") {
-      this.setState({ computing: true, clearResult: false });
+      this.setState({ computing: true });
       computeSwadeshAnalysis({
         variables: {
           sourcePerspectiveId: perspectiveId,
@@ -2240,7 +2244,7 @@ class CognateAnalysisModal extends React.Component {
         error_data => this.handleError(error_data)
       );
     } else if (this.props.mode === "morphology" || this.props.mode === "multi_morphology") {
-      this.setState({ computing: true, clearResult: false });
+      this.setState({ computing: true });
       computeMorphCognateAnalysis({
         variables: {
           sourcePerspectiveId: perspectiveId,
@@ -2253,7 +2257,7 @@ class CognateAnalysisModal extends React.Component {
         error_data => this.handleError(error_data)
       );
     } else if (this.props.mode === "complex_distance") {
-      this.setState({ computing: true, clearResult: false });
+      this.setState({ computing: true });
 
       const { fileSuite, debugFlag } = this.state;
       const resultPool = new Array(fileSuite.length);
@@ -2261,24 +2265,29 @@ class CognateAnalysisModal extends React.Component {
       for (const [index, file] of fileSuite.entries()) {
         const reader = new FileReader();
         reader.onload = () => {
-          resultPool[index] = JSON.parse(reader.result);
-          if ((index + 1) == fileSuite.length) {
-            computeComplexDistance({
-              variables: {
-                resultPool,
-                debugFlag
-              }
-            }).then(
-              data => this.handleComplexDistanceResult(data),
-              error_data => this.handleError(error_data)
-            );
+          try {
+            resultPool[index] = JSON.parse(reader.result);
+
+            if ((index + 1) == fileSuite.length) {
+              computeComplexDistance({
+                variables: {
+                  resultPool,
+                  debugFlag
+                }
+              }).then(
+                data => this.handleComplexDistanceResult(data),
+                error_data => this.handleError(error_data)
+              );
+            }
+          } catch(error_data) {
+            this.handleError(error_data)
           }
         };
         reader.readAsText(file);
       }
     } else {
       /* Otherwise we will launch it as usual and then will wait for results to display them. */
-      this.setState({ computing: true, clearResult: false });
+      this.setState({ computing: true });
 
       const backend_mode =
           this.props.mode === "multi_analysis"
@@ -2849,32 +2858,34 @@ class CognateAnalysisModal extends React.Component {
     const { fileSuite } = this.state;
 
     return (
-      <div className="lingvo-cognate-result-segment" style={{ margin: "0.5em" }}>
+      <div className="lingvo-cognate-result-segment" style={{ margin: "1em" }}>
         <span className="lingvo-cognate-result-tit">
           { this.context(
             fileSuite
             ? "Json file(s) for complex result:"
-            : "Please choose result files for merging (use Ctrl button for multiselect)"
+            : "Please choose result files for merging (use <Ctrl> button for multiselect)"
           )}
         </span>
 
         { fileSuite && fileSuite.map(({ name: fileName }) => (
-          <Label style={{ margin: "1em" }}>
+          <Label style={{ margin: "0.5em" }}>
             <Icon name="file outline" />
               { fileName }
           </Label>
         ))}
 
-        <Button style={{ margin: "1em" }} onClick={() => document.getElementById("file-select").click()}>
-          {`${this.context("Browse")}...`}
-        </Button>
+        <Button
+          style={{ margin: "0.5em" }}
+          onClick={() => document.getElementById("file-select").click()}
+          color="green"
+        > {`${this.context("Browse")}...`} </Button>
 
         <Input
           id="file-select"
           type="file"
           multiple
           style={{ display: "none" }}
-          onChange={e => this.setState({ clearResult: true, fileSuite: Array.from(e.target.files) })}
+          onChange={e => this.setState({ cleanResult: true, fileSuite: Array.from(e.target.files) })}
         />
       </div>
     )
@@ -2967,7 +2978,7 @@ class CognateAnalysisModal extends React.Component {
           </Modal.Actions>
 
           { (/swadesh$/.test(mode) || /morphology$/.test(mode) || this.state.library_present
-            ) && this.state.result !== null && ! this.state.clearResult && (
+            ) && this.state.result !== null && ! this.state.cleanResult && (
             <Modal.Content style={{ maxWidth: "100%", overflowX: "auto" }}>
 
               { ! /complex_distance$/.test(mode) && (
