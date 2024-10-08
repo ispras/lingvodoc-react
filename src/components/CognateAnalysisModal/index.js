@@ -2152,57 +2152,55 @@ class CognateAnalysisModal extends React.Component {
       computeComplexDistance
     } = this.props;
 
-    if (this.state.lang_mode === "single" || this.state.lang_mode === "multi") {
-      const groupField = this.fieldDict[this.state.groupFieldIdStr];
+    const groupField = this.fieldDict[this.state.groupFieldIdStr];
 
-      /* Gathering info of perspectives we are to analyze. */
-      let perspectiveInfoList = [];
-      const multiList = [];
+    /* Gathering info of perspectives we are to analyze. */
+    let perspectiveInfoList = [];
+    const multiList = [];
 
-      if (this.state.lang_mode === "multi") {
-        for (const language of this.state.language_list) {
-          let p_count = 0;
+    if (this.state.lang_mode === "multi") {
+      for (const language of this.state.language_list) {
+        let p_count = 0;
 
-          for (const { perspective, treePathList: [subLanguage,] } of language.perspective_list) {
-            const p_key = id2str(perspective.id);
+        for (const { perspective, treePathList: [subLanguage,] } of language.perspective_list) {
+          const p_key = id2str(perspective.id);
 
-            if (this.state.perspectiveSelectionMap[p_key]) {
-              perspectiveInfoList.push([
-                subLanguage.__typename === "Language" ? subLanguage.id : this.baseLanguageId,
-                perspective.id,
-                this.fieldDict[this.state.transcriptionFieldIdStrMap[p_key]].id,
-                this.fieldDict[this.state.translationFieldIdStrMap[p_key]].id,
-                this.fieldDict[this.state.lexemeFieldIdStrMap[p_key]].id
-              ]);
+          if (this.state.perspectiveSelectionMap[p_key]) {
+            perspectiveInfoList.push([
+              subLanguage.__typename === "Language" ? subLanguage.id : this.baseLanguageId,
+              perspective.id,
+              this.fieldDict[this.state.transcriptionFieldIdStrMap[p_key]].id,
+              this.fieldDict[this.state.translationFieldIdStrMap[p_key]].id,
+              this.fieldDict[this.state.lexemeFieldIdStrMap[p_key]].id
+            ]);
 
-              p_count++;
-            }
+            p_count++;
           }
-
-          multiList.push([language.id, p_count]);
         }
-      } else {
-        perspectiveInfoList = this.perspective_list
 
-          .map(({ perspective, treePathList: [subLanguage,] }, index) => [
-            subLanguage.__typename === "Language" ? subLanguage.id : this.baseLanguageId,
-            perspective.id,
-            this.fieldDict[this.state.transcriptionFieldIdStrList[index]].id,
-            this.fieldDict[this.state.translationFieldIdStrList[index]].id,
-            this.fieldDict[this.state.lexemeFieldIdStrList[index]].id
-          ])
-
-          .filter((perspective_info, index) => this.state.perspectiveSelectionList[index]);
+        multiList.push([language.id, p_count]);
       }
+    } else if (this.state.lang_mode === "single") {
+      perspectiveInfoList = this.perspective_list
 
-      /* Match translations parameter for suggestions. */
+        .map(({ perspective, treePathList: [subLanguage,] }, index) => [
+          subLanguage.__typename === "Language" ? subLanguage.id : this.baseLanguageId,
+          perspective.id,
+          this.fieldDict[this.state.transcriptionFieldIdStrList[index]].id,
+          this.fieldDict[this.state.translationFieldIdStrList[index]].id,
+          this.fieldDict[this.state.lexemeFieldIdStrList[index]].id
+        ])
 
-      const matchTranslationsValue = this.state.matchTranslationsFlag
-        ? this.state.matchTranslationsValue === "first_three"
-          ? 1
-          : 2
-        : 0;
+        .filter((perspective_info, index) => this.state.perspectiveSelectionList[index]);
     }
+
+    /* Match translations parameter for suggestions. */
+
+    const matchTranslationsValue = this.state.matchTranslationsFlag
+      ? this.state.matchTranslationsValue === "first_three"
+        ? 1
+        : 2
+      : 0;
 
     /* If we are to perform acoustic analysis, we will try to launch it in the background. */
 
