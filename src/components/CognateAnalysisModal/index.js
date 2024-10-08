@@ -2152,7 +2152,7 @@ class CognateAnalysisModal extends React.Component {
       computeComplexDistance
     } = this.props;
 
-    const groupField = this.fieldDict[this.state.groupFieldIdStr];
+    const groupField = this.fieldDict ? this.fieldDict[this.state.groupFieldIdStr] : {};
 
     /* Gathering info of perspectives we are to analyze. */
     let perspectiveInfoList = [];
