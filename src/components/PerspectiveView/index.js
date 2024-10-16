@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { Button, Dimmer, Header, Icon, Table } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql, withApollo } from "@apollo/client/react/hoc";
-import { drop, flow, isEqual, reverse, take } from "lodash";
+import { drop, flow, isEqual, reverse, take, cloneDeep } from "lodash";
 import PropTypes from "prop-types";
 import { branch, compose, renderComponent } from "recompose";
 import { bindActionCreators } from "redux";
@@ -98,7 +98,6 @@ export const queryLexicalEntries = gql`
           id
           parent_id
           created_at
-          marked_for_deletion
           entities(mode: $entitiesMode) {
             id
             parent_id
@@ -246,7 +245,7 @@ TableComponent.defaultProps = {
   actions: [],
   selectEntries: false,
   selectedEntries: [],
-  onEntrySelect: () => {},
+  onEntrySelect: () => { },
   reRender: () => console.log("Fake refetch")
 };
 
@@ -280,10 +279,10 @@ class P extends React.Component {
     }
   }
 
-  //reRender() {
-  //  this.props.data.refetch();
-  //  console.log("Refetched 'queryLexicalEntries'");
-  //}
+  reRender() {
+    //this.props.data.refetch();
+    console.log("Refetched 'queryLexicalEntries'");
+  }
 
   resetCheckedRow() {
     this.setState({
@@ -400,60 +399,88 @@ class P extends React.Component {
     const { entriesTotal } = this.state;
 
     const addEntry = () => {
+  
       createLexicalEntry({
-        variables: {
-          id,
-          entitiesMode
-        },
-        refetchQueries: [
-          {
-            query: queryLexicalEntries,
-            variables: query_args
+        variables: {id, entitiesMode},
+  
+        update: (cache, { data: d }) => {
+          if (!d.loading && !d.error) {
+            const {
+              create_lexicalentry: { lexicalentry }
+            } = d;
+
+            cache.updateQuery(
+              {
+                query: queryLexicalEntries,
+                variables: query_args
+              },
+
+              (data) => {
+                if (!loading && !error) {
+                  const result = cloneDeep(data);
+                  result.perspective.perspective_page.lexical_entries.unshift(lexicalentry);
+                  return result;
+                }
+                return undefined;
+              }
+            );
+            addCreatedEntry(lexicalentry);
+            this.setState({ entriesTotal: entriesTotal + 1 });
           }
-        ]
-      }).then(({ data: d }) => {
-        if (!d.loading || !d.error) {
-          const {
-            create_lexicalentry: { lexicalentry }
-          } = d;
-          addCreatedEntry(lexicalentry);
-          this.setState({entriesTotal: entriesTotal + 1});
         }
       });
     };
 
     const mergeEntries = () => {
       const groupList = [selectedEntries];
+
       mergeLexicalEntries({
-        variables: {
-          groupList
-        },
+        variables: { groupList },
+
         refetchQueries: [
           {
             query: queryLexicalEntries,
             variables: query_args
           }
         ]
+        
       }).then(() => {
         resetSelection();
-        this.setState({entriesTotal: entriesTotal - selectedEntries.length + 1});
+        this.setState({ entriesTotal: entriesTotal - selectedEntries.length + 1 });
       });
     };
 
     const removeEntries = () => {
+        
       removeLexicalEntries({
-        variables: {
-          ids: selectedEntries
-        },
-        refetchQueries: [
-          {
-            query: queryLexicalEntries,
-            variables: query_args
+        variables: { ids: selectedEntries },
+
+        update: (cache, { data: d }) => {
+          if (!d.loading && !d.error) {
+
+            cache.updateQuery(
+              {
+                query: queryLexicalEntries,
+                variables: query_args
+              },
+              (data) => {
+                if (!loading && !error) {
+                  const result = cloneDeep(data);
+                  const current_entries = result.perspective.perspective_page.lexical_entries;
+                  const selectedEntriesStr = selectedEntries.map(id => id.toString());
+                
+                  result.perspective.perspective_page.lexical_entries = (
+                    current_entries.filter(({id}) => !selectedEntriesStr.includes(id.toString())));
+                          
+                  return result;
+                }
+                return undefined;
+              }
+            );
+            resetSelection();
+            this.setState({ entriesTotal: entriesTotal - 1 });
           }
-        ]
-      }).then(() => {
-        resetSelection();
-        this.setState({entriesTotal: entriesTotal - 1});
+        }
       });
     };
 
@@ -592,53 +619,53 @@ class P extends React.Component {
         {(mode === "edit" ||
           (mode === "publish" && isAuthenticated) ||
           (mode === "contributions" && isAuthenticated)) && (
-          <div className="lingvo-perspective-buttons">
-            {mode === "edit" && (
-              <Button
-                icon={<i className="lingvo-icon lingvo-icon_add" />}
-                content={this.context("Add lexical entry")}
-                onClick={addEntry}
-                className="lingvo-button-green lingvo-perspective-button"
-              />
-            )}
-            {mode === "edit" && (
-              <Button
-                icon={<i className="lingvo-icon lingvo-icon_delete" />}
-                content={this.context("Remove lexical entries")}
-                onClick={removeEntries}
-                disabled={selectedEntries.length < 1}
-                className="lingvo-button-red lingvo-perspective-button"
-              />
-            )}
-            {mode === "edit" && (
-              <Button
-                icon={<i className="lingvo-icon lingvo-icon_add" />}
-                content={this.context("Merge lexical entries")}
-                onClick={mergeEntries}
-                disabled={selectedEntries.length < 2}
-                className="lingvo-button-green lingvo-perspective-button"
-              />
-            )}
-            {mode === "publish" && isAuthenticated && (
-              <Button
-                icon={<i className="lingvo-icon lingvo-icon_check" />}
-                content={this.context("Publish Entities")}
-                disabled={approveDisableCondition(lexicalEntries)}
-                onClick={onApprove}
-                className="lingvo-button-green lingvo-perspective-button"
-              />
-            )}
-            {mode === "contributions" && isAuthenticated && (
-              <Button
-                icon={<i className="lingvo-icon lingvo-icon_check" />}
-                content={this.context("Accept Contributions")}
-                disabled={approveDisableCondition(lexicalEntries)}
-                onClick={onApprove}
-                className="lingvo-button-green lingvo-perspective-button"
-              />
-            )}
-          </div>
-        )}
+            <div className="lingvo-perspective-buttons">
+              {mode === "edit" && (
+                <Button
+                  icon={<i className="lingvo-icon lingvo-icon_add" />}
+                  content={this.context("Add lexical entry")}
+                  onClick={addEntry}
+                  className="lingvo-button-green lingvo-perspective-button"
+                />
+              )}
+              {mode === "edit" && (
+                <Button
+                  icon={<i className="lingvo-icon lingvo-icon_delete" />}
+                  content={this.context("Remove lexical entries")}
+                  onClick={removeEntries}
+                  disabled={selectedEntries.length < 1}
+                  className="lingvo-button-red lingvo-perspective-button"
+                />
+              )}
+              {mode === "edit" && (
+                <Button
+                  icon={<i className="lingvo-icon lingvo-icon_add" />}
+                  content={this.context("Merge lexical entries")}
+                  onClick={mergeEntries}
+                  disabled={selectedEntries.length < 2}
+                  className="lingvo-button-green lingvo-perspective-button"
+                />
+              )}
+              {mode === "publish" && isAuthenticated && (
+                <Button
+                  icon={<i className="lingvo-icon lingvo-icon_check" />}
+                  content={this.context("Publish Entities")}
+                  disabled={approveDisableCondition(lexicalEntries)}
+                  onClick={onApprove}
+                  className="lingvo-button-green lingvo-perspective-button"
+                />
+              )}
+              {mode === "contributions" && isAuthenticated && (
+                <Button
+                  icon={<i className="lingvo-icon lingvo-icon_check" />}
+                  content={this.context("Accept Contributions")}
+                  disabled={approveDisableCondition(lexicalEntries)}
+                  onClick={onApprove}
+                  className="lingvo-button-green lingvo-perspective-button"
+                />
+              )}
+            </div>
+          )}
 
         <div className="lingvo-scrolling-tab__table">
           <Table celled padded className={`${className} lingvo-perspective-table`}>
@@ -763,7 +790,7 @@ const PerspectiveView = compose(
   graphql(mergeLexicalEntriesMutation, { name: "mergeLexicalEntries" }),
   graphql(removeLexicalEntriesMutation, { name: "removeLexicalEntries" }),
   graphql(queryLexicalEntries, {
-    options: { notifyOnNetworkStatusChange: true } // fetchPolicy: "network-only"
+    options: { notifyOnNetworkStatusChange: true }
   }),
   withApollo
 )(P);
@@ -884,7 +911,7 @@ LexicalEntryViewBase.defaultProps = {
   actions: [],
   selectEntries: false,
   selectedEntries: [],
-  onEntrySelect: () => {}
+  onEntrySelect: () => { }
 };
 
 export const queryLexicalEntriesByIds = gql`
@@ -963,7 +990,7 @@ const LexicalEntryViewBaseByIds = ({ perspectiveId, mode, entitiesMode, data, ac
   });
 
   const reRender = () => {
-    data.refetch();
+    //data.refetch();
     console.log("Refetched 'queryLexicalEntriesByIds'");
   };
 
@@ -1008,7 +1035,7 @@ export const LexicalEntryByIds = compose(
 )(LexicalEntryViewBaseByIds);
 
 const PerspectiveViewWrapper = ({ id, className, mode, entitiesMode, page, data,
-                                  filter, sortByField, isCaseSens, isRegexp, changePage }) => {
+  filter, sortByField, isCaseSens, isRegexp, changePage }) => {
   if (data.error) {
     return null;
   }
@@ -1033,7 +1060,7 @@ const PerspectiveViewWrapper = ({ id, className, mode, entitiesMode, page, data,
 
   //TODO: this needs optimization
   const reRender = () => {
-    data.refetch();
+    //data.refetch();
     console.log("Refetched 'queryPerspective'");
   };
 
