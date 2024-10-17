@@ -15,6 +15,7 @@ import Placeholder from "components/Placeholder";
 import { openModal } from "ducks/modals";
 import {
   addLexicalEntry,
+  resetAddedLexes,
   resetEntriesSelection,
   resetSortByField,
   selectLexicalEntry,
@@ -267,6 +268,10 @@ class P extends React.Component {
     this.onCheckAll = this.onCheckAll.bind(this);
     this.resetCheckedAll = this.resetCheckedAll.bind(this);
     //this.reRender = this.reRender.bind(this);
+  }
+
+  componentDidMount() {
+    this.props.resetAddedLexes();
   }
 
   componentDidUpdate(prevProps) {
@@ -745,6 +750,7 @@ P.propTypes = {
   setSortByField: PropTypes.func.isRequired,
   resetSortByField: PropTypes.func.isRequired,
   addLexicalEntry: PropTypes.func.isRequired,
+  resetAddedLexes: PropTypes.func.isRequired,
   createLexicalEntry: PropTypes.func.isRequired,
   mergeLexicalEntries: PropTypes.func.isRequired,
   removeLexicalEntries: PropTypes.func.isRequired,
@@ -777,6 +783,7 @@ const PerspectiveView = compose(
       bindActionCreators(
         {
           addLexicalEntry,
+          resetAddedLexes,
           setSortByField,
           resetSortByField,
           selectLexicalEntry,

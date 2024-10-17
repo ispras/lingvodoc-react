@@ -10,6 +10,7 @@ export const RESET_SORT_MODE = "@data/perspective/RESET_SORT_MODE";
 export const SET_ORDERED_SORT_MODE = "@data/perspective/SET_ORDERED_SORT_MODE";
 export const RESET_ORDERED_SORT_MODE = "@data/perspective/RESET_ORDERED_SORT_MODE";
 export const ADD_LEXICAL_ENTRY = "@data/perspective/ADD_LEXICAL_ENTRY";
+export const RESET_ADDED_LEXES = "@data/perspective/RESET_ADDED_LEXES";
 export const SELECT_LEXICAL_ENTRY = "@data/perspective/SELECT_LEXICAL_ENTRY";
 export const RESET_ENTRIES_SELECTION = "@data/perspective/RESET_ENTRIES_SELECTION";
 
@@ -58,6 +59,8 @@ function createdEntries(state = [], { type, payload }) {
   switch (type) {
     case ADD_LEXICAL_ENTRY:
       return [payload, ...state];
+    case RESET_ADDED_LEXES:
+      return [];
     default:
       return state;
   }
@@ -121,6 +124,10 @@ export function resetOrderedSortByField() {
 
 export function addLexicalEntry(entry) {
   return { type: ADD_LEXICAL_ENTRY, payload: entry };
+}
+
+export function resetAddedLexes(entry) {
+  return { type: RESET_ADDED_LEXES, payload: null };
 }
 
 export function selectLexicalEntry(id, checked) {
