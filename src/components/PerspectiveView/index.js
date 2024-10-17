@@ -16,6 +16,7 @@ import { openModal } from "ducks/modals";
 import {
   addLexicalEntry,
   resetAddedLexes,
+  removeAddedLexes,
   resetEntriesSelection,
   resetSortByField,
   selectLexicalEntry,
@@ -356,6 +357,7 @@ class P extends React.Component {
       mergeLexicalEntries,
       removeLexicalEntries,
       addLexicalEntry: addCreatedEntry,
+      removeAddedLexes: removeCreatedLexes,
       selectLexicalEntry: onEntrySelect,
       resetEntriesSelection: resetSelection,
       openModal: openNewModal,
@@ -473,7 +475,7 @@ class P extends React.Component {
                   const result = cloneDeep(data);
                   const current_entries = result.perspective.perspective_page.lexical_entries;
                   const selectedEntriesStr = selectedEntries.map(id => id.toString());
-                
+
                   result.perspective.perspective_page.lexical_entries = (
                     current_entries.filter(({id}) => !selectedEntriesStr.includes(id.toString())));
                           
@@ -482,6 +484,7 @@ class P extends React.Component {
                 return undefined;
               }
             );
+            removeCreatedLexes(selectedEntries);
             resetSelection();
             this.setState({ entriesTotal: entriesTotal - 1 });
           }
@@ -751,6 +754,7 @@ P.propTypes = {
   resetSortByField: PropTypes.func.isRequired,
   addLexicalEntry: PropTypes.func.isRequired,
   resetAddedLexes: PropTypes.func.isRequired,
+  removeAddedLexes: PropTypes.func.isRequired,
   createLexicalEntry: PropTypes.func.isRequired,
   mergeLexicalEntries: PropTypes.func.isRequired,
   removeLexicalEntries: PropTypes.func.isRequired,
@@ -784,6 +788,7 @@ const PerspectiveView = compose(
         {
           addLexicalEntry,
           resetAddedLexes,
+          removeAddedLexes,
           setSortByField,
           resetSortByField,
           selectLexicalEntry,
