@@ -49,11 +49,11 @@ export const queryPerspective = gql`
 `;
 
 export const queryLexicalEntries = gql`
-  query queryPerspective2($id: LingvodocID!, $entitiesMode: String!) {
+  query queryPerspective2($id: LingvodocID!, $entitiesMode: String!, $entriesIds: [LingvodocID]) {
     perspective(id: $id) {
       id
       translations
-      lexical_entries(mode: $entitiesMode) {
+      lexical_entries(mode: $entitiesMode, ids: $entriesIds) {
         id
         parent_id
         created_at
