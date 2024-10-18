@@ -473,12 +473,10 @@ class P extends React.Component {
               (data) => {
                 if (!loading && !error) {
                   const result = cloneDeep(data);
-                  const current_entries = result.perspective.perspective_page.lexical_entries;
-                  const selectedEntriesStr = selectedEntries.map(id => id.toString());
+                  const perspective_page = result.perspective.perspective_page;
+                  perspective_page.lexical_entries = (
+                    perspective_page.lexical_entries.filter(c => !selectedEntries.find(s_id => isEqual(c.id, s_id))));
 
-                  result.perspective.perspective_page.lexical_entries = (
-                    current_entries.filter(({id}) => !selectedEntriesStr.includes(id.toString())));
-                          
                   return result;
                 }
                 return undefined;

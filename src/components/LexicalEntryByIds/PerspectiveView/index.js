@@ -49,11 +49,11 @@ export const queryPerspective = gql`
 `;
 
 export const queryLexicalEntries = gql`
-  query queryPerspective2($id: LingvodocID!, $entitiesMode: String!) {
+  query queryPerspective2($id: LingvodocID!, $entitiesMode: String!, $entriesIds: [LingvodocID]!) {
     perspective(id: $id) {
       id
       translations
-      lexical_entries(mode: $entitiesMode) {
+      lexical_entries(mode: $entitiesMode, ids: $entriesIds) {
         id
         parent_id
         created_at
@@ -186,7 +186,7 @@ const P = ({
   columns,
   setSortByField: setSort,
   changePage,
-  entriesIds,
+  //entriesIds,
   createLexicalEntry,
   // mergeLexicalEntries,
   removeLexicalEntries,
@@ -340,7 +340,7 @@ const P = ({
   ]);
 
   const newEntries = processEntries(lexicalEntries.filter(e => !!createdEntries.find(c => isEqual(e.id, c.id))));
-  const entries = processEntries(lexicalEntries.filter(e => !!entriesIds.find(entryId => isEqual(e.id, entryId))));
+  const entries = processEntries(lexicalEntries);
 
   const pageEntries =
     entries.length > ROWS_PER_PAGE ? take(drop(entries, ROWS_PER_PAGE * (page - 1)), ROWS_PER_PAGE) : entries;
@@ -446,6 +446,7 @@ P.propTypes = {
   className: PropTypes.string.isRequired,
   page: PropTypes.number.isRequired,
   mode: PropTypes.string.isRequired,
+  entriesIds: PropTypes.array.isRequired,
   entitiesMode: PropTypes.string.isRequired,
   filter: PropTypes.string,
   data: PropTypes.object.isRequired,
@@ -576,6 +577,7 @@ PerspectiveViewWrapper.propTypes = {
   className: PropTypes.string.isRequired,
   page: PropTypes.number.isRequired,
   mode: PropTypes.string.isRequired,
+  entriesIds: PropTypes.array.isRequired,
   entitiesMode: PropTypes.string.isRequired,
   filter: PropTypes.string,
   data: PropTypes.object.isRequired,

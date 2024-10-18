@@ -61,8 +61,7 @@ function createdEntries(state = [], { type, payload }) {
     case ADD_LEXICAL_ENTRY:
       return [payload, ...state];
     case REMOVE_ADDED_LEXES:
-      const selected = payload.map(id => id.toString());
-      return state.filter(({id}) => !selected.includes(id.toString()));
+      return state.filter(s => !payload.find(p_id => isEqual(s.id, p_id)));
     case RESET_ADDED_LEXES:
       return [];
     default:
