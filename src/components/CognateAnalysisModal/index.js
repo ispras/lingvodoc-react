@@ -2260,10 +2260,10 @@ class CognateAnalysisModal extends React.Component {
       const { fileSuite, debugFlag } = this.state;
       const resultPool = new Array(fileSuite.length);
 
-      for (const [index, file] of fileSuite.entries()) {
-        const reader = new FileReader();
-        reader.onload = () => {
-          try {
+      try {
+        for (const [index, file] of fileSuite.entries()) {
+          const reader = new FileReader();
+          reader.onload = () => {
             resultPool[index] = JSON.parse(reader.result);
 
             if ((index + 1) == fileSuite.length) {
@@ -2277,11 +2277,11 @@ class CognateAnalysisModal extends React.Component {
                 error_data => this.handleError(error_data)
               );
             }
-          } catch(error_data) {
-            this.handleError(error_data)
-          }
-        };
-        reader.readAsText(file);
+          };
+          reader.readAsText(file);
+        }
+      } catch(error_data) {
+        this.handleError(error_data);
       }
     } else {
       /* Otherwise we will launch it as usual and then will wait for results to display them. */
