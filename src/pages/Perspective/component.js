@@ -1113,30 +1113,24 @@ const Filter = handlers(({ value, onChange, onSubmit, isCaseSens, onToggleCaseSe
   );
 });
 
-const tsakorpusIdStrSet = {
-  "3796,6": null,
-  "4222,7": null,
-  "3235,7": null,
-  "4083,7": null,
-  "3421,8": null,
-  "3648,8": null,
-  "3814,9": null,
-  "3872,9": null,
-  "5180,9": null,
-  "3428,9": null,
-  "4448,9": null,
-  "4830,11": null,
-  "5039,22": null,
-  "4830,27": null,
-  "4473,32": null,
-  "4443,37": null,
-  "5124,45": null,
-  "4447,99": null,
-  "4447,130": null,
-  "3539,769": null,
-  "3391,9437": null,
-  "4084,86722": null
-};
+const getUploadDate = gql`
+  query getUploadDate($id: LingvodocID!) {
+    perspective(id: $id) {
+      id
+      additional_metadata {
+        uploaded_at
+      }
+    }
+  }
+`;
+
+const uploadPerspective = gql`
+  mutation uploadPerspective($id: LingvodocID!, $debugFlag: Boolean) {
+    tsakorpus(perspective_id: $id, debug_flag: $debugFlag) {
+      triumph
+    }
+  }
+`;
 
 const ModeSelector = compose(
   connect(state => state.user),
@@ -1156,6 +1150,24 @@ const ModeSelector = compose(
     user
   }) => {
     const getTranslation = useContext(TranslationContext);
+
+    const {data: dateData, error: dateError, loading: dateLoading, refetch} = (
+      useQuery(getUploadDate, { variables: { id }, fetchPolicy: "network-only" }));
+
+    const [runUploadPerspective, {data, error, loading}] = (
+      useMutation(uploadPerspective, { variables: { id }, onCompleted: refetch }));
+
+    if (dateLoading || dateError) {
+      return null;
+    }
+
+    const {
+      perspective: { additional_metadata: { uploaded_at }}
+    } = dateData;
+
+    if (!uploaded_at && !loading && !error && !data) {
+      runUploadPerspective();
+    }
 
     const modes = {};
     if (user.id !== undefined) {
@@ -1190,8 +1202,6 @@ const ModeSelector = compose(
       }
     });
 
-    const tsakorpusFlag = tsakorpusIdStrSet.hasOwnProperty(id2str(id));
-
     return (
       <Menu tabular className="lingvo-perspective-menu">
         {map(modes, (info, stub) => (
@@ -1200,10 +1210,19 @@ const ModeSelector = compose(
             {info.component === PerspectiveView ? <Counter id={id} mode={info.entitiesMode} /> : null}
           </Menu.Item>
         ))}
-        {tsakorpusFlag && (
-          <Menu.Item key="corpus_search" href={`http://83.149.198.78/${id[0]}_${id[1]}/search`}>
-            {getTranslation("Corpus search")}
-          </Menu.Item>
+        { (uploaded_at || loading) && (
+          <Menu.Item
+            key="corpus_search"
+            onClick={() => uploaded_at && window.open(`http://83.149.198.78/${id[0]}_${id[1]}/search`, "_blank")}
+            content={
+              loading ? (
+                <span>
+                  {getTranslation("Uploading")}... <Icon name="spinner" loading />
+                </span>
+              ) : (
+                getTranslation("Corpus search")
+            )}
+          />
         )}
         <Tools
           id={id}
