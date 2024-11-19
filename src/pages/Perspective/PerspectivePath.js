@@ -49,8 +49,8 @@ export const queryAvailablePerspectives = gql`
 `;
 
 const uploadPerspective = gql`
-  mutation uploadPerspective($id: LingvodocID!, $debugFlag: Boolean) {
-    tsakorpus(perspective_id: $id, debug_flag: $debugFlag) {
+  mutation uploadPerspective($id: LingvodocID!, $force: Boolean, $debugFlag: Boolean) {
+    tsakorpus(perspective_id: $id, force: $force, debug_flag: $debugFlag) {
       triumph
     }
   }
@@ -83,7 +83,7 @@ class PerspectivePath extends React.Component {
     this.setState({ uploading: true });
 
     uploadPerspective({
-      variables: { id }
+      variables: { id, force: true }
     }).then(
       ({ data }) => {
         this.setState({ uploading: false });

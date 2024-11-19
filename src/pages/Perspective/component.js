@@ -1165,7 +1165,7 @@ const ModeSelector = compose(
       perspective: { additional_metadata: { uploaded_at }}
     } = dateData;
 
-    if (!uploaded_at && !loading && !error && !data) {
+    if (!loading && !error && !data) {
       runUploadPerspective();
     }
 
