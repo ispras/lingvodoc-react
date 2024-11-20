@@ -1113,17 +1113,6 @@ const Filter = handlers(({ value, onChange, onSubmit, isCaseSens, onToggleCaseSe
   );
 });
 
-const getUploadDate = gql`
-  query getUploadDate($id: LingvodocID!) {
-    perspective(id: $id) {
-      id
-      additional_metadata {
-        uploaded_at
-      }
-    }
-  }
-`;
-
 const uploadPerspective = gql`
   mutation uploadPerspective($id: LingvodocID!, $debugFlag: Boolean) {
     tsakorpus(perspective_id: $id, debug_flag: $debugFlag) {
@@ -1151,23 +1140,10 @@ const ModeSelector = compose(
   }) => {
     const getTranslation = useContext(TranslationContext);
 
-    const {data: dateData, error: dateError, loading: dateLoading, refetch} = (
-      useQuery(getUploadDate, { variables: { id }, fetchPolicy: "network-only" }));
-
     const [runUploadPerspective, {data, error, loading}] = (
-      useMutation(uploadPerspective, { variables: { id }, onCompleted: refetch }));
+      useMutation(uploadPerspective, { variables: { id } }));
 
-    if (dateLoading || dateError) {
-      return null;
-    }
-
-    const {
-      perspective: { additional_metadata: { uploaded_at }}
-    } = dateData;
-
-    if (!loading && !error && !data) {
-      runUploadPerspective();
-    }
+    useEffect(() => { runUploadPerspective(); }, []);
 
     const modes = {};
     if (user.id !== undefined) {
@@ -1210,10 +1186,10 @@ const ModeSelector = compose(
             {info.component === PerspectiveView ? <Counter id={id} mode={info.entitiesMode} /> : null}
           </Menu.Item>
         ))}
-        { (uploaded_at || loading) && (
+        { (loading || (!error && data && data.tsakorpus.triumph)) && (
           <Menu.Item
             key="corpus_search"
-            onClick={() => uploaded_at && window.open(`http://83.149.198.78/${id[0]}_${id[1]}/search`, "_blank")}
+            onClick={() => !loading && window.open(`http://83.149.198.78/${id[0]}_${id[1]}/search`, "_blank")}
             content={
               loading ? (
                 <span>
