@@ -66,7 +66,7 @@ const Upload = props => {
           {getTranslation("Uploaded at")}
           {": "}
           { uploaded_at
-            ? new Date(uploaded_at).toLocaleString()
+            ? new Date(uploaded_at * 1000).toLocaleString()
             : "<never>"
           }
           { user.id == 1 && (
