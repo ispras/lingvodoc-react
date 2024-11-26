@@ -403,11 +403,10 @@ class SearchTabs extends React.Component {
 
         actions.setSearches(searches);
 
-        let preload_count = entry_list.length;
+        const value_list = [];
 
         for (const [key, value] of entry_list) {
           if (value.subQuery) {
-            preload_count--;
             continue;
           }
 
@@ -417,10 +416,15 @@ class SearchTabs extends React.Component {
           const additionalParamsFlag = additionalParamsCheck(value.langs, value.dicts, value.searchMetadata);
 
           if (!checkInfo.check || (checkInfo.empty && !additionalParamsFlag)) {
-            preload_count--;
             continue;
           }
 
+          value_list.push([value, checkInfo]);
+        }
+
+        this.setState({ preload_count: value_list.length });
+
+        for (const [value, checkInfo] of value_list) {
           client
             .query({
               query: searchQuery,
@@ -440,7 +444,7 @@ class SearchTabs extends React.Component {
             })
             .then(
               ({ data: { advanced_search } }) => {
-                this.setState({ preload_count: preload_count - 1 });
+                this.setState(({ preload_count }) => ({ preload_count: preload_count - 1 }));
 
                 if (this.is_mounted) {
                   actions.storeSearchResult(value.id, advanced_search);
@@ -449,7 +453,7 @@ class SearchTabs extends React.Component {
               error_data => {
                 window.logger.err(this.context("Failed search query!"));
                 console.log(error_data);
-                this.setState({ preload_count: preload_count - 1 });
+                this.setState(({ preload_count }) => ({ preload_count: preload_count - 1 }));
               }
             );
         }
