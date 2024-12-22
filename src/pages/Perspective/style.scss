@@ -435,8 +435,11 @@
       border-radius: 0 8px 8px 0 !important;
     }
 
-    @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+    &:only-child {
+      border-radius: 8px !important;
+    }
 
+    @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
       &:first-child {
         border-radius: 8px 8px 0 0 !important;
       }
@@ -447,6 +450,10 @@
 
       &:last-child {
         border-radius: 0 0 8px 8px !important;
+      }
+
+      &:only-child {
+        border-radius: 8px !important;
       }
 
       &:not(:last-child) {
@@ -482,6 +489,10 @@
       border-radius: 0 8px 8px 0 !important;
     }
 
+    & td:only-child {
+      border-radius: 8px !important;
+    }
+
     @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
       & td:first-child {
         border-radius: 8px 8px 0 0 !important;
@@ -493,6 +504,10 @@
 
       & td:last-child {
         border-radius: 0 0 8px 8px !important;
+      }
+
+      & td:only-child {
+        border-radius: 8px !important;
       }
     }
   }
@@ -586,7 +601,6 @@
     }
 
     &.ui.table thead tr {
-
       & th.lingvo-dnd-headercell {
         &_hidden {
           display: none !important;
@@ -690,7 +704,6 @@
       color: #372f9d;
     }
   }
-
 }
 /* /lingvo perspective component text */
 
