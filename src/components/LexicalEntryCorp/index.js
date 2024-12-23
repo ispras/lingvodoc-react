@@ -469,7 +469,7 @@ const Entities = ({
         if (startOffset < endOffset &&
             /\w/.test(content.slice(startOffset, endOffset))) {
           markups.push([[startOffset, endOffset], ...groupIds]);
-          window.logger.suc(getTranslation("Markup was moved"));
+          window.logger.suc(getTranslation("Markup was edited or moved"));
 
         } else if (groupIds.length > 0) {
           deleteMarkupGroup({ variables: { groupIds, perspectiveId } });
