@@ -4400,9 +4400,15 @@ body {
 /* Markup button */
 .lingvo-button-markup {
   font-weight: 900 !important;
-  width: 40px !important;
+  width: 38px !important;
+
   font-size: 14px !important;
   color: #999ca0 !important;
+
+  .ui.basic.buttons &.button {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
 
   .ui.basic.buttons &_create.button {
     color: #57b894 !important;
