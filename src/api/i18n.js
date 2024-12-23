@@ -539,6 +539,7 @@ export const stringsToTranslate = [
   "Markup data loading error",
   "Markup was created",
   "Markup was deleted",
+  "Markup was edited or moved",
   "Markup(s) with related groups were removed",
   "masculine",
   "Match",
