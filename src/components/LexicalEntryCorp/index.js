@@ -431,14 +431,14 @@ const Entities = ({
     update_set2[entity_id_str] = null;
     setUpdateSet(update_set2);
 
-    const markups = ready_markups || [[]];
+    const current_markups = entity.additional_metadata?.markups;
+    let markups = ready_markups || current_markups;
 
-    if (!ready_markups &&
-        content !== entity.content &&
-        entity.additional_metadata?.markups &&
-        entity.additional_metadata.markups.length > 1) {
+    if (!ready_markups && content !== entity.content &&
+        current_markups && current_markups.length > 1) {
 
       const diff = patienceDiff(entity.content, content).lines;
+      markups = [[]];
 
       for (const markup of entity.additional_metadata.markups) {
         if (!markup.length || markup[0].length !== 2) {
