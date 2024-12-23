@@ -274,7 +274,7 @@ const JoinMarkupsModal = ({ perspectiveId, onClose }) => {
     "Neologism",
     "Semi-calque",
     "Lexico-grammatical replacement",
-    "Antonymous",
+    "Antonymous translation",
     "Compensation"
   ].sort().map((t, k) => ({
     key: k,
@@ -359,7 +359,7 @@ const JoinMarkupsModal = ({ perspectiveId, onClose }) => {
                 <div className="block-add-relation__actions">
                   <Select
                     fluid
-                    placeholder={getTranslation("Please select type...")}
+                    placeholder={getTranslation("Please select type") + "..."}
                     value={typeRelation}
                     search
                     options={group_type_list}
@@ -440,7 +440,7 @@ const JoinMarkupsModal = ({ perspectiveId, onClose }) => {
           style={{ float: "left" }}
         />
         <Button
-          content={getTranslation("Save to xlsx")}
+          content={getTranslation("Save to XLSX")}
           onClick={onSaveXlsx}
           className="lingvo-button-greenest"
           disabled={!groupTotal}
