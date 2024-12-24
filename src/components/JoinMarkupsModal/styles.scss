@@ -92,14 +92,20 @@
 
   &__actions {
     flex: 0 1 auto;
-    min-width: 197px;
+    min-width: 330px;
+    max-width: 330px;
     display: flex;
     flex-direction: column;
     padding: 10px;
     padding-right: 0;
 
     & .ui.button {
-      margin-top: 10px !important;
+      margin-top: 20px !important;
+    }
+
+    @media only screen and (max-device-width: 1230px), only screen and (max-width: 1230px) {
+      min-width: 250px;
+      max-width: 250px;
     }
 
     @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
