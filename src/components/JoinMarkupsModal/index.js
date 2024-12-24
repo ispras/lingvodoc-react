@@ -63,7 +63,6 @@ const saveMarkupGroupsMutation = gql`
   }
 `;
 
-
 export const refetchLexicalEntries = (entry_ids, client) =>
   entry_ids.forEach(le_id =>
     client.query({
@@ -106,7 +105,7 @@ const JoinMarkupsModal = ({ perspectiveId, onClose }) => {
   });
 
   const [saveMarkupGroups] = useMutation(saveMarkupGroupsMutation, {
-    onCompleted: ({save_markup_groups: result}) => {
+    onCompleted: ({ save_markup_groups: result }) => {
       if (result.triumph) {
         setSuccessMessage(
           `${getTranslation("Markup groups were saved into xlsx file.")}
@@ -240,18 +239,19 @@ const JoinMarkupsModal = ({ perspectiveId, onClose }) => {
 
   const onSaveXlsx = useCallback(() => {
     const groupList = [];
-    const fieldList =
-      Object.keys(markupDict).map(id => id.split("_")[1]).concat([getTranslation('Type'), getTranslation('Author')]);
+    const fieldList = Object.keys(markupDict)
+      .map(id => id.split("_")[1])
+      .concat([getTranslation("Type"), getTranslation("Author")]);
 
     for (const group of Object.values(groupDict)) {
       groupList.push({
         text: group.markups.map(m => m.text),
         type: getTranslation(group.type),
-        author: group.author_name,
+        author: group.author_name
       });
     }
 
-    saveMarkupGroups({variables: {perspectiveId, fieldList, groupList}});
+    saveMarkupGroups({ variables: { perspectiveId, fieldList, groupList } });
   }, [markupDict, groupDict]);
 
   if (Object.keys(markupDict) < 2) {
@@ -276,11 +276,13 @@ const JoinMarkupsModal = ({ perspectiveId, onClose }) => {
     "Lexico-grammatical replacement",
     "Antonymous",
     "Compensation"
-  ].sort().map((t, k) => ({
-    key: k,
-    value: t,
-    text: getTranslation(t)
-  }));
+  ]
+    .sort()
+    .map((t, k) => ({
+      key: k,
+      value: t,
+      text: getTranslation(t)
+    }));
 
   return (
     <Modal className="lingvo-modal2" dimmer open closeIcon onClose={onClose} size="fullscreen">
@@ -367,8 +369,8 @@ const JoinMarkupsModal = ({ perspectiveId, onClose }) => {
                       setTypeRelation(value);
                       resetMessages();
                     }}
+                    className="lingvo-dropdown-select"
                   />
-                  <p/>
                   <Button
                     content={getTranslation("Join markups")}
                     onClick={onAddRelation}
