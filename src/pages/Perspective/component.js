@@ -1065,7 +1065,7 @@ const Tools = ({
 };
 
 const handlers = compose(
-  withState("value", "updateValue", props => props.filter.value),
+  withState("value", "updateValue", props => props.filter.value ?? ""),
   withState("isCaseSens", "setCaseSens", true),
   withState("isRegexp", "setRegexp", false),
   withHandlers({

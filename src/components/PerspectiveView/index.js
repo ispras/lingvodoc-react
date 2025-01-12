@@ -276,12 +276,16 @@ class P extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { data } = this.props;
+    const { data, createdEntries, page, filter } = this.props;
     if (!data.perspective) {
       return;
     }
     if (data !== prevProps.data) {
       this.setState({ entriesTotal: !data.error ? data.perspective.perspective_page.entries_total : 0 });
+    }
+    // We clear createdEntries if page was switched, no filter was used and it was not changed
+    if (createdEntries.length && page !== prevProps.page && !filter && filter === prevProps.filter) {
+      this.props.resetAddedLexes();
     }
   }
 
@@ -416,14 +420,18 @@ class P extends React.Component {
               create_lexicalentry: { lexicalentry }
             } = d;
 
+            /*
+            /* We'll update cache for very first page to move createdEntries there after page switching
+            */
+
             cache.updateQuery(
               {
                 query: queryLexicalEntries,
-                variables: query_args
+                variables: {...query_args, offset: 0, createdEntries: []}
               },
 
               (data) => {
-                if (!loading && !error) {
+                if (!loading && !error && data) {
                   const result = cloneDeep(data);
                   result.perspective.perspective_page.lexical_entries.unshift(lexicalentry);
                   return result;
