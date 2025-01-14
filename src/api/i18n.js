@@ -846,6 +846,8 @@ export const stringsToTranslate = [
   "Show only the first translation of each word",
   "Show sentences",
   "Show statistics",
+  "Show All",
+  "Show Unpublished Only",
   "Showing sentences",
   "Sign In",
   "Sign out",

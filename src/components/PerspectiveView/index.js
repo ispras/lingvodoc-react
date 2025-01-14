@@ -377,7 +377,8 @@ class P extends React.Component {
       sortingField,
       limit,
       offset,
-      changePage
+      changePage,
+      onUnpublishedOnly
     } = this.props;
 
     const query_args = {
@@ -661,13 +662,21 @@ class P extends React.Component {
                 />
               )}
               {mode === "publish" && isAuthenticated && (
-                <Button
-                  icon={<i className="lingvo-icon lingvo-icon_check" />}
-                  content={this.context("Publish Entities")}
-                  disabled={approveDisableCondition(lexicalEntries)}
-                  onClick={onApprove}
-                  className="lingvo-button-green lingvo-perspective-button"
-                />
+                <>
+                  <Button
+                    icon={<i className="lingvo-icon lingvo-icon_check" />}
+                    content={this.context("Publish Entities")}
+                    disabled={approveDisableCondition(lexicalEntries)}
+                    onClick={onApprove}
+                    className="lingvo-button-green lingvo-perspective-button"
+                  />
+                  <Button
+                    content={entitiesMode !== "unpublished" ? this.context("Show Unpublished Only") : this.context("Show All")}
+                    disabled={!entriesTotal}
+                    onClick={onUnpublishedOnly}
+                    className="lingvo-button-lite-violet lingvo-perspective-button"
+                  />
+                </>
               )}
               {mode === "contributions" && isAuthenticated && (
                 <Button
@@ -1054,6 +1063,9 @@ export const LexicalEntryByIds = compose(
 
 const PerspectiveViewWrapper = ({ id, className, mode, entitiesMode, page, data,
   filter, sortByField, isCaseSens, isRegexp, changePage }) => {
+
+  const [unpublishedOnly, setUnpublishedOnly] = useState(false);
+
   if (data.error) {
     return null;
   }
@@ -1087,7 +1099,7 @@ const PerspectiveViewWrapper = ({ id, className, mode, entitiesMode, page, data,
       id={id}
       className={className}
       mode={mode}
-      entitiesMode={entitiesMode}
+      entitiesMode={mode==="publish" && unpublishedOnly ? "unpublished" : entitiesMode}
       page={page}
       limit={ROWS_PER_PAGE}
       offset={ROWS_PER_PAGE * (page - 1)}
@@ -1098,6 +1110,7 @@ const PerspectiveViewWrapper = ({ id, className, mode, entitiesMode, page, data,
       columns={columns}
       reRender={reRender}
       changePage={changePage}
+      onUnpublishedOnly={() => setUnpublishedOnly(!unpublishedOnly)}
     />
   );
 };
