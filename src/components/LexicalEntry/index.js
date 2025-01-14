@@ -259,10 +259,24 @@ class Entities extends React.Component {
           }
         },
         {
+          query: lexicalEntryQuery,
+          variables: {
+            id: entry.id,
+            entitiesMode: "unpublished"
+          }
+        },
+        {
           query: queryCounter,
           variables: {
             id: perspectiveId,
             mode: "published"
+          }
+        },
+        {
+          query: queryCounter,
+          variables: {
+            id: perspectiveId,
+            mode: "unpublished"
           }
         }
       ],
