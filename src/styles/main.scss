@@ -2116,6 +2116,26 @@ body {
     }
   }
 
+  &_star {
+
+    &_empty {
+      -webkit-mask-image: url("../images/icon_star_empty.svg");
+      mask-image: url("../images/icon_star_empty.svg");
+    }
+
+    &_yellow {
+      -webkit-mask-image: url("../images/icon_star_filled.svg");
+      mask-image: url("../images/icon_star_filled.svg");
+      background-color: #ffd966;
+    }
+
+    &_red {
+      -webkit-mask-image: url("../images/icon_star_filled.svg");
+      mask-image: url("../images/icon_star_filled.svg");
+      background-color: #f44336;
+    }
+  }
+
   &_sort_up {
     -webkit-mask-image: url("../images/icon_arrow2.svg");
     mask-image: url("../images/icon_arrow2.svg");
