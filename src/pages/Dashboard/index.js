@@ -386,6 +386,13 @@ class D extends React.Component {
             category
           }
         },
+        {
+          query,
+          variables: {
+            mode: 2,
+            category
+          }
+        },
         //{ query: dictionaryQuery }
       ],
       awaitRefetchQueries: true
