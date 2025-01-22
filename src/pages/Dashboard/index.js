@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { connect } from "react-redux";
 import { Confirm, Dimmer, Dropdown, Header, Icon, List, Popup, Tab, Button } from "semantic-ui-react";
 import { gql } from "@apollo/client";
@@ -553,8 +553,13 @@ const Dictionary = compose(
   onlyUpdateForKeys(["translations", "status_translations", "perspectives", "additional_metadata"])
 )(D);
 
-const Dashboard = ({ data, mode, category }) => {
+const Dashboard = ({ data, mode, category, setShowFavorite }) => {
   const { loading, dictionaries, all_statuses: statuses } = data;
+
+  if (!loading && !dictionaries.length && setShowFavorite) {
+    setShowFavorite(false);
+  }
+
   return (
     <div className="lingvo-dashboard">
       <Dimmer.Dimmable dimmed={loading} style={dimmerStyle}>
@@ -593,8 +598,22 @@ const Dictionaries = compose(
   branch(({ data }) => !!data.error, renderNothing)
 )(Dashboard);
 
-const DICTIONARIES_TABS = getTranslation => {
-  return [
+const DICTIONARIES_TABS = ({getTranslation, showFavorite, setShowFavorite}) => {
+
+  const result = [];
+
+  if (showFavorite) {
+    result.push({
+      menuItem: getTranslation("Favorite dictionaries"),
+      render: () => (
+        <Tab.Pane className="lingvo-tab__pane">
+          <Dictionaries category={0} mode={2} setShowFavorite={setShowFavorite} />
+        </Tab.Pane>
+      )
+    });
+  }
+
+  result.push(
     {
       menuItem: getTranslation("My dictionaries"),
       render: () => (
@@ -611,11 +630,27 @@ const DICTIONARIES_TABS = getTranslation => {
         </Tab.Pane>
       )
     }
-  ];
+  );
+
+  return result;
 };
 
-const CORPORA_TABS = getTranslation => {
-  return [
+const CORPORA_TABS = ({getTranslation, showFavorite, setShowFavorite}) => {
+
+  const result = [];
+
+  if (showFavorite) {
+    result.push({
+      menuItem: getTranslation("Favorite corpora"),
+      render: () => (
+        <Tab.Pane className="lingvo-tab__pane">
+          <Dictionaries category={1} mode={2} setShowFavorite={setShowFavorite} />
+        </Tab.Pane>
+      )
+    });
+  }
+
+  result.push(
     {
       menuItem: getTranslation("My corpora"),
       render: () => (
@@ -632,7 +667,9 @@ const CORPORA_TABS = getTranslation => {
         </Tab.Pane>
       )
     }
-  ];
+  );
+
+  return result;
 };
 
 const PARALLEL_CORPORA_TABS = getTranslation => {
@@ -658,9 +695,11 @@ const PARALLEL_CORPORA_TABS = getTranslation => {
 
 const DictionaryDashboard = () => {
   const getTranslation = useContext(TranslationContext);
+  const [showFavorite, setShowFavorite] = useState(true);
+
   return (
     <div className="background-content">
-      <Tab className="inverted lingvo-tab" panes={DICTIONARIES_TABS(getTranslation)} renderActiveOnly />
+      <Tab className="inverted lingvo-tab" panes={DICTIONARIES_TABS({getTranslation, showFavorite, setShowFavorite})} renderActiveOnly />
       <DictionaryProperties />
     </div>
   );
@@ -668,9 +707,11 @@ const DictionaryDashboard = () => {
 
 const CorpusDashboard = () => {
   const getTranslation = useContext(TranslationContext);
+  const [showFavorite, setShowFavorite] = useState(true);
+
   return (
     <div className="background-content">
-      <Tab className="inverted lingvo-tab" panes={CORPORA_TABS(getTranslation)} renderActiveOnly />
+      <Tab className="inverted lingvo-tab" panes={CORPORA_TABS({getTranslation, showFavorite, setShowFavorite})} renderActiveOnly />
       <DictionaryProperties />
     </div>
   );

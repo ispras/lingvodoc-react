@@ -357,6 +357,8 @@ export const stringsToTranslate = [
   "Failed to start convertion to a new dictionary!",
   "Failed to start dictionary update!",
   "Failure",
+  "Favorite corpora",
+  "Favorite dictionaries",
   "Fast Track formant extraction",
   "feminine",
   "Field",

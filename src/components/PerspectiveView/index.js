@@ -1130,6 +1130,7 @@ PerspectiveViewWrapper.propTypes = {
 };
 
 PerspectiveViewWrapper.defaultProps = {
+  page: 1,
   filter: "",
   isCaseSens: true,
   isRegexp: false,
