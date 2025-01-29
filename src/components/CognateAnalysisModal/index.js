@@ -252,23 +252,18 @@ const computeMorphCognateAnalysisMutation = gql`
 const computeNeuroCognateAnalysisMutation = gql`
   mutation computeNeuroCognateAnalysis(
     $sourcePerspectiveId: LingvodocID!
-    $baseLanguageId: LingvodocID!
-    $groupFieldId: LingvodocID!
     $perspectiveInfoList: [[LingvodocID]]!
+    $baseLanguageId: LingvodocID
   ) {
     neuro_cognate_analysis(
       source_perspective_id: $sourcePerspectiveId
-      base_language_id: $baseLanguageId
-      group_field_id: $groupFieldId
       perspective_info_list: $perspectiveInfoList
+      base_language_id: $baseLanguageId
     ) {
       triumph
-      dictionary_count
-      group_count
-      not_enough_count
-      transcription_count
       result
-      perspective_name_list
+      dictionary_count
+      transcription_count
     }
   }
 `;
@@ -2330,7 +2325,6 @@ class CognateAnalysisModal extends React.Component {
         variables: {
           sourcePerspectiveId: perspectiveId,
           baseLanguageId: this.baseLanguageId,
-          groupFieldId: groupField.id,
           perspectiveInfoList: perspectiveInfoList,
         }
       }).then(
