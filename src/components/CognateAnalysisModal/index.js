@@ -262,6 +262,7 @@ const computeNeuroCognateAnalysisMutation = gql`
     ) {
       triumph
       result
+      message
       dictionary_count
       transcription_count
     }
@@ -2073,11 +2074,15 @@ class CognateAnalysisModal extends React.Component {
 
   handleNeuroResult({ data: { neuro_cognate_analysis }})
   {
-    this.setState({
-      ...neuro_cognate_analysis,
-      computing: false,
-      cleanResult: false
-    });
+    if (neuro_cognate_analysis.triumph) {
+      this.setState({
+        ...neuro_cognate_analysis,
+        computing: false,
+        cleanResult: false
+      });
+    } else {
+      window.logger.err(neuro_cognate_analysis.message);
+    }
   }
 
   handleCognateResult({ data: { cognate_analysis }})
@@ -2579,7 +2584,10 @@ class CognateAnalysisModal extends React.Component {
           </div>
         )}
 
-        {!error_flag && this.props.mode === "suggestions" && this.match_translations_render()}
+        { !error_flag &&
+          (this.props.mode === "suggestions" || this.props.mode === "neuro_suggestions") &&
+          this.match_translations_render()
+        }
 
         {!error_flag && this.props.user.id == 1 && this.admin_section_render()}
       </Modal.Content>
