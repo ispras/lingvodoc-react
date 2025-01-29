@@ -249,6 +249,30 @@ const computeMorphCognateAnalysisMutation = gql`
   }
 `;
 
+const computeNeuroCognateAnalysisMutation = gql`
+  mutation computeNeuroCognateAnalysis(
+    $sourcePerspectiveId: LingvodocID!
+    $baseLanguageId: LingvodocID!
+    $groupFieldId: LingvodocID!
+    $perspectiveInfoList: [[LingvodocID]]!
+  ) {
+    neuro_cognate_analysis(
+      source_perspective_id: $sourcePerspectiveId
+      base_language_id: $baseLanguageId
+      group_field_id: $groupFieldId
+      perspective_info_list: $perspectiveInfoList
+    ) {
+      triumph
+      dictionary_count
+      group_count
+      not_enough_count
+      transcription_count
+      result
+      perspective_name_list
+    }
+  }
+`;
+
 const computeComplexDistanceMutation = gql`
   mutation complexDistance (
     $resultPool: [ObjectVal]!
@@ -414,21 +438,25 @@ class SLPerspectiveSelection extends React.Component {
                 className="lingvo-dropdown-select lingvo-dropdown-select_cognate"
               />
             </div>
-            <div className="lingvo-cognate-grid__name">{this.context("Source lexeme field (optional)")}:</div>
-            <div className="lingvo-cognate-grid__select">
-              <Select
-                disabled={!perspectiveSelectionList[index]}
-                defaultValue={lexemeFieldIdStrList[index]}
-                placeholder={this.context("Source lexeme field selection")}
-                options={textFieldsOptions}
-                onChange={(e, { value }) => {
-                  lexemeFieldIdStrList[index] = value;
-                  this.setState({ lexemeFieldIdStrList });
-                }}
-                icon={<i className="lingvo-icon lingvo-icon_arrow" />}
-                className="lingvo-dropdown-select lingvo-dropdown-select_cognate"
-              />
-            </div>
+            { mode !== "neuro_suggestions" && (
+              <>
+                <div className="lingvo-cognate-grid__name">{this.context("Source lexeme field (optional)")}:</div>
+                <div className="lingvo-cognate-grid__select">
+                  <Select
+                    disabled={!perspectiveSelectionList[index]}
+                    defaultValue={lexemeFieldIdStrList[index]}
+                    placeholder={this.context("Source lexeme field selection")}
+                    options={textFieldsOptions}
+                    onChange={(e, { value }) => {
+                      lexemeFieldIdStrList[index] = value;
+                      this.setState({ lexemeFieldIdStrList });
+                    }}
+                    icon={<i className="lingvo-icon lingvo-icon_arrow" />}
+                    className="lingvo-dropdown-select lingvo-dropdown-select_cognate"
+                  />
+                </div>
+              </>
+            )}
           </div>
         )}
       </div>
@@ -2048,6 +2076,15 @@ class CognateAnalysisModal extends React.Component {
     });
   }
 
+  handleNeuroResult({ data: { neuro_cognate_analysis }})
+  {
+    this.setState({
+      ...neuro_cognate_analysis,
+      computing: false,
+      cleanResult: false
+    });
+  }
+
   handleCognateResult({ data: { cognate_analysis }})
   {
     /* Initializing suggestions data, if required. */
@@ -2152,7 +2189,8 @@ class CognateAnalysisModal extends React.Component {
       computeCognateAnalysis,
       computeSwadeshAnalysis,
       computeMorphCognateAnalysis,
-      computeComplexDistance
+      computeComplexDistance,
+      computeNeuroCognateAnalysis
     } = this.props;
 
     const groupField = this.fieldDict ? this.fieldDict[this.state.groupFieldIdStr] : {};
@@ -2286,6 +2324,19 @@ class CognateAnalysisModal extends React.Component {
       } catch(error_data) {
         this.handleError(error_data);
       }
+    } else if (this.props.mode === "neuro_suggestions") {
+      this.setState({ computing: true });
+      computeNeuroCognateAnalysis({
+        variables: {
+          sourcePerspectiveId: perspectiveId,
+          baseLanguageId: this.baseLanguageId,
+          groupFieldId: groupField.id,
+          perspectiveInfoList: perspectiveInfoList,
+        }
+      }).then(
+        data => this.handleNeuroResult(data),
+        error_data => this.handleError(error_data)
+      );
     } else {
       /* Otherwise we will launch it as usual and then will wait for results to display them. */
       this.setState({ computing: true });
@@ -2481,6 +2532,13 @@ class CognateAnalysisModal extends React.Component {
    */
   single_language_render() {
     const error_flag = this.perspective_list.length <= 1 || !this.state.library_present;
+    const {
+      perspectiveSelectionList,
+      transcriptionFieldIdStrList,
+      translationFieldIdStrList,
+      lexemeFieldIdStrList,
+      perspectiveSelectionCountMap
+    } = this.state;
 
     return (
       <Modal.Content>
@@ -2502,11 +2560,11 @@ class CognateAnalysisModal extends React.Component {
             <SLSelection
               mode={this.props.mode}
               perspective_list={this.perspective_list}
-              perspectiveSelectionList={this.state.perspectiveSelectionList}
-              transcriptionFieldIdStrList={this.state.transcriptionFieldIdStrList}
-              translationFieldIdStrList={this.state.translationFieldIdStrList}
-              lexemeFieldIdStrList={this.state.lexemeFieldIdStrList}
-              perspectiveSelectionCountMap={this.state.perspectiveSelectionCountMap}
+              perspectiveSelectionList={perspectiveSelectionList}
+              transcriptionFieldIdStrList={transcriptionFieldIdStrList}
+              translationFieldIdStrList={translationFieldIdStrList}
+              lexemeFieldIdStrList={lexemeFieldIdStrList}
+              perspectiveSelectionCountMap={perspectiveSelectionCountMap}
               onModalStateChange={() => this.setState({})}
             />
           )}
@@ -2951,6 +3009,8 @@ class CognateAnalysisModal extends React.Component {
               ? this.context("Morphology distance multi-language")
               : mode === "complex_distance"
               ? this.context("Composite distance")
+              : mode === "neuro_suggestions"
+              ? this.context("Neuro cognate suggestions")
               : this.context("Cognate analysis")}
           </Modal.Header>
 
@@ -3279,6 +3339,7 @@ CognateAnalysisModal.propTypes = {
   computeCognateAnalysis: PropTypes.func.isRequired,
   computeSwadeshAnalysis: PropTypes.func.isRequired,
   computeMorphCognateAnalysis: PropTypes.func.isRequired,
+  computeNeuroCognateAnalysis: PropTypes.func.isRequired,
   computeComplexDistance: PropTypes.func.isRequired
 };
 
@@ -3293,6 +3354,7 @@ export default compose(
   graphql(computeSwadeshAnalysisMutation, { name: "computeSwadeshAnalysis" }),
   graphql(computeMorphCognateAnalysisMutation, { name: "computeMorphCognateAnalysis" }),
   graphql(computeComplexDistanceMutation, { name: "computeComplexDistance" }),
+  graphql(computeNeuroCognateAnalysisMutation, { name: "computeNeuroCognateAnalysis" }),
   graphql(connectMutation, { name: "connectGroup" }),
   withApollo
 )(CognateAnalysisModal);
