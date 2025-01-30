@@ -2097,7 +2097,7 @@ class CognateAnalysisModal extends React.Component {
     }
 
     if (triumph && result.length) {
-      console.log(result.toString());
+      console.log(JSON.stringify(result));
     }
 
     this.setState({
