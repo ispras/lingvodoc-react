@@ -18,7 +18,7 @@ import {
 } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql, withApollo } from "@apollo/client/react/hoc";
-import { cloneDeep, map } from "lodash";
+import { cloneDeep, map, isEqual } from "lodash";
 import PropTypes from "prop-types";
 import { branch, compose, renderNothing } from "recompose";
 import { bindActionCreators } from "redux";
@@ -143,6 +143,20 @@ const languageQuery = gql`
   }
 `;
 
+const wordsQuery = gql`
+  query words(
+    $perspectiveId: LingvodocID!
+    $xcriptFldId: LingvodocID!
+    $xlatFldId: LingvodocID!
+  ) {
+    words(
+      perspective_id: $perspectiveId
+      xcript_fid: $xcriptFldId
+      xlat_fid: $xlatFldId
+    )
+  }
+`;
+
 const computeCognateAnalysisMutation = gql`
   mutation computeCognateAnalysis(
     $sourcePerspectiveId: LingvodocID!
@@ -254,11 +268,13 @@ const computeNeuroCognateAnalysisMutation = gql`
     $sourcePerspectiveId: LingvodocID!
     $perspectiveInfoList: [[LingvodocID]]!
     $baseLanguageId: LingvodocID
+    $inputPairs: ObjectVal
   ) {
     neuro_cognate_analysis(
       source_perspective_id: $sourcePerspectiveId
       perspective_info_list: $perspectiveInfoList
       base_language_id: $baseLanguageId
+      input_pairs: $inputPairs
     ) {
       triumph
       result
@@ -2074,15 +2090,21 @@ class CognateAnalysisModal extends React.Component {
 
   handleNeuroResult({ data: { neuro_cognate_analysis }})
   {
-    if (neuro_cognate_analysis.triumph) {
-      this.setState({
-        ...neuro_cognate_analysis,
-        computing: false,
-        cleanResult: false
-      });
-    } else {
-      window.logger.err(neuro_cognate_analysis.message);
+    const {triumph, message, result} = neuro_cognate_analysis;
+
+    if (!triumph && message.length) {
+      window.logger.err(message);
     }
+
+    if (result.length) {
+      console.log(result);
+    }
+
+    this.setState({
+      ...neuro_cognate_analysis,
+      computing: false,
+      cleanResult: false
+    });
   }
 
   handleCognateResult({ data: { cognate_analysis }})
@@ -2325,17 +2347,38 @@ class CognateAnalysisModal extends React.Component {
         this.handleError(error_data);
       }
     } else if (this.props.mode === "neuro_suggestions") {
-      this.setState({ computing: true });
-      computeNeuroCognateAnalysis({
-        variables: {
-          sourcePerspectiveId: perspectiveId,
-          baseLanguageId: this.baseLanguageId,
-          perspectiveInfoList: perspectiveInfoList,
-        }
-      }).then(
-        data => this.handleNeuroResult(data),
-        error_data => this.handleError(error_data)
-      );
+
+      const info = perspectiveInfoList.find(inf => isEqual(inf[1], perspectiveId));
+
+      if (info && info.length > 3) {
+        this.props.client.query({
+          query: wordsQuery,
+          variables: {
+            perspectiveId,
+            xcriptFldId: info[2],
+            xlatFldId: info[3]
+          }
+        }).then(
+          ({ data: { words }}) => words.map(pair => {
+            this.setState({ computing: true });
+            computeNeuroCognateAnalysis({
+              variables: {
+                inputPairs: [pair],
+                sourcePerspectiveId: perspectiveId,
+                baseLanguageId: this.baseLanguageId,
+                perspectiveInfoList
+              }
+            }).then(
+              data => this.handleNeuroResult(data),
+              error_data => this.handleError(error_data)
+            )
+          })
+        );
+      } else {
+        window.logger.err("No source perspective is selected!");
+        this.setState({ computing: false });
+      }
+
     } else {
       /* Otherwise we will launch it as usual and then will wait for results to display them. */
       this.setState({ computing: true });
