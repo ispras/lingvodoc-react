@@ -1369,6 +1369,8 @@ class CognateAnalysisModal extends React.Component {
       intermediateFlag: false,
 
       computing: false,
+      total: 'n/a',
+      done: 'n/a',
 
       /* Related to multi-language cognate analysis. */
 
@@ -2102,7 +2104,7 @@ class CognateAnalysisModal extends React.Component {
 
     this.setState({
       ...neuro_cognate_analysis,
-      computing: false,
+      //computing: false,
       cleanResult: false
     });
   }
@@ -2358,12 +2360,27 @@ class CognateAnalysisModal extends React.Component {
             xcriptFldId: info[2],
             xlatFldId: info[3]
           }
-        }).then(
-          ({ data: { words }}) => words.map(pair => {
-            this.setState({ computing: true });
-            computeNeuroCognateAnalysis({
+        }).then(async ({ data: { words }}) => {
+
+          // We are going to get predictions for a group at once
+          // So we don't have to wait for all the process completion,
+          // and we don't have to initialize prediction model for every single word
+
+          const groups = [];
+          const group_size = 4;
+
+          for (let i = 0; i < words.length; i += group_size) {
+            groups.push(words.slice(i, i + group_size));
+          }
+
+          this.setState({ computing: true, total: groups.length });
+
+          for (const [done, pairs] of groups.entries()) {
+            this.setState({ done });
+            //console.log("Running " + (done+1) + "th");
+            await computeNeuroCognateAnalysis({
               variables: {
-                inputPairs: [pair],
+                inputPairs: pairs,
                 sourcePerspectiveId: perspectiveId,
                 baseLanguageId: this.baseLanguageId,
                 perspectiveInfoList
@@ -2372,8 +2389,10 @@ class CognateAnalysisModal extends React.Component {
               data => this.handleNeuroResult(data),
               error_data => this.handleError(error_data)
             )
-          })
-        );
+            //console.log("Done " + (done+1) + "th\n");
+          }
+          this.setState({ computing: false });
+        });
       } else {
         window.logger.err("No source perspective is selected!");
         this.setState({ computing: false });
@@ -3066,7 +3085,7 @@ class CognateAnalysisModal extends React.Component {
               content={
                 this.state.computing ? (
                   <span>
-                    {this.context("Computing")}... <Icon name="spinner" loading />
+                    {this.context("Computing")}... {this.state.done}/{this.state.total} <Icon name="spinner" loading />
                   </span>
                 ) : (
                   this.context("Compute")
