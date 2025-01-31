@@ -2394,8 +2394,8 @@ class CognateAnalysisModal extends React.Component {
               error_data => this.handleError(error_data)
             )
 
-            const duration = Math.trunc(Date.now() - start);
-            const estimate = duration / 1000 / (done + 1) * total - duration;
+            const duration = (Date.now() - start) / 1000;
+            const estimate = duration / (done + 1) * total - duration;
             const days = Math.trunc(estimate / 86400);
             const hours = Math.trunc((estimate - days * 86400) / 3600);
             const minutes = Math.round((estimate - days * 86400 - hours * 3600) / 60);
