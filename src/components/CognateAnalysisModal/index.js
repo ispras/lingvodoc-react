@@ -1371,9 +1371,7 @@ class CognateAnalysisModal extends React.Component {
       computing: false,
       total: null,
       done: null,
-      days: null,
-      hours: null,
-      minutes: null,
+      estimate: null,
 
       /* Related to multi-language cognate analysis. */
 
@@ -2397,12 +2395,12 @@ class CognateAnalysisModal extends React.Component {
             )
 
             const duration = Math.trunc(Date.now() - start);
-            const estimate = duration / (done + 1) * total;
+            const estimate = duration / 1000 / (done + 1) * total - duration;
             const days = Math.trunc(estimate / 86400);
             const hours = Math.trunc((estimate - days * 86400) / 3600);
             const minutes = Math.round((estimate - days * 86400 - hours * 3600) / 60);
 
-            this.setState({ days, hours, minutes });
+            this.setState({ estimate: `${days}d:${hours}h:${minutes}m` });
 
             //console.log("Done " + (done+1) + "th\n");
           }
@@ -3049,9 +3047,7 @@ class CognateAnalysisModal extends React.Component {
       fileSuite,
       done,
       total,
-      days,
-      hours,
-      minutes
+      estimate
     } = this.state;
 
     const disabledCompute = (
@@ -3071,8 +3067,8 @@ class CognateAnalysisModal extends React.Component {
     if (done || total) {
       status += ` ${done}/${total}`;
     }
-    if (days || hours || minutes) {
-      status += ` (${days}:${hours}:${minutes} {this.context("estimate")})`;
+    if (estimate) {
+      status += ` (${estimate} ${this.context("left")})`;
     }
 
     return (
