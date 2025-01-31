@@ -1369,8 +1369,11 @@ class CognateAnalysisModal extends React.Component {
       intermediateFlag: false,
 
       computing: false,
-      total: 'n/a',
-      done: 'n/a',
+      total: null,
+      done: null,
+      days: null,
+      hours: null,
+      minutes: null,
 
       /* Related to multi-language cognate analysis. */
 
@@ -2373,7 +2376,10 @@ class CognateAnalysisModal extends React.Component {
             groups.push(words.slice(i, i + group_size));
           }
 
-          this.setState({ computing: true, total: groups.length });
+          const start = Date.now();
+          const total = groups.length;
+
+          this.setState({ computing: true, total });
 
           for (const [done, pairs] of groups.entries()) {
             this.setState({ done });
@@ -2389,6 +2395,15 @@ class CognateAnalysisModal extends React.Component {
               data => this.handleNeuroResult(data),
               error_data => this.handleError(error_data)
             )
+
+            const duration = Math.trunc(Date.now() - start);
+            const estimate = duration / (done + 1) * total;
+            const days = Math.trunc(estimate / 86400);
+            const hours = Math.trunc((estimate - days * 86400) / 3600);
+            const minutes = Math.round((estimate - days * 86400 - hours * 3600) / 60);
+
+            this.setState({ days, hours, minutes });
+
             //console.log("Done " + (done+1) + "th\n");
           }
           this.setState({ computing: false });
@@ -3025,20 +3040,40 @@ class CognateAnalysisModal extends React.Component {
 
     const { mode } = this.props;
 
-    const { language_list, perspectiveSelectionCountMap, lang_mode, fileSuite } = this.state;
+    const {
+      computing,
+      language_list,
+      perspectiveSelectionCountMap,
+      perspectiveSelectionList,
+      lang_mode,
+      fileSuite,
+      done,
+      total,
+      days,
+      hours,
+      minutes
+    } = this.state;
 
     const disabledCompute = (
       (lang_mode === "none" && !fileSuite) ||
       (lang_mode === "single" && (this.perspective_list.length <= 1 ||
-        !this.state.perspectiveSelectionList.some(enabled => enabled))) ||
+        !perspectiveSelectionList.some(enabled => enabled))) ||
       (lang_mode === "multi" &&
         (language_list.length <= 0 ||
           (mode === "multi_reconstruction" &&
             language_list.filter(language => perspectiveSelectionCountMap[id2str(language.id)] > 0).length <=
               1) ||
           perspectiveSelectionCountMap[""] <= 0)) ||
-      this.state.computing
+      computing
     )
+
+    var status = "";
+    if (done || total) {
+      status += ` ${done}/${total}`;
+    }
+    if (days || hours || minutes) {
+      status += ` (${days}:${hours}:${minutes} {this.context("estimate")})`;
+    }
 
     return (
       <div>
@@ -3083,9 +3118,9 @@ class CognateAnalysisModal extends React.Component {
           <Modal.Actions>
             <Button
               content={
-                this.state.computing ? (
+                computing ? (
                   <span>
-                    {this.context("Computing")}... {this.state.done}/{this.state.total} <Icon name="spinner" loading />
+                    {this.context("Computing")}{status}... <Icon name="spinner" loading />
                   </span>
                 ) : (
                   this.context("Compute")
