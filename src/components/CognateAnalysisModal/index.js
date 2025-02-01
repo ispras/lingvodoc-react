@@ -279,7 +279,7 @@ const computeNeuroCognateAnalysisMutation = gql`
       triumph
       result
       message
-      dictionary_count
+      perspective_name_list
       transcription_count
     }
   }
@@ -2368,7 +2368,7 @@ class CognateAnalysisModal extends React.Component {
           // and we don't have to initialize prediction model for every single word
 
           const groups = [];
-          const group_size = 4;
+          const group_size = 8;
 
           for (let i = 0; i < words.length; i += group_size) {
             groups.push(words.slice(i, i + group_size));
