@@ -999,7 +999,9 @@ const Tools = ({
 
               <Dropdown.Item onClick={() => openCognateAnalysisModal(id, "suggestions")} disabled={!published}>
                 {getTranslation(
-                  published ? "Cognate suggestions" : "Cognate suggestions (disabled, perspective is not published)"
+                  published
+                  ? "Cognate suggestions"
+                  : "Cognate suggestions (disabled, perspective is not published)"
                 )}
               </Dropdown.Item>
 
@@ -1009,6 +1011,14 @@ const Tools = ({
 
               <Dropdown.Item onClick={() => openCognateAnalysisModal(id, `multi_${glottMode}`)}>
                 {getTranslation(`${glottMenu} multi-language`)}
+              </Dropdown.Item>
+
+              <Dropdown.Item onClick={() => openCognateAnalysisModal(id, "neuro_suggestions")} disabled={!published}>
+                {getTranslation(
+                  published
+                  ? "Neuro cognate suggestions"
+                  : "Neuro cognate suggestions (disabled, perspective is not published)"
+                )}
               </Dropdown.Item>
             </>
           )}
