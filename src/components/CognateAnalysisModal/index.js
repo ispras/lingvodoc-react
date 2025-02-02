@@ -2144,7 +2144,7 @@ class CognateAnalysisModal extends React.Component {
         sg_state_list.push("left");
       }
 
-      sg_count.left = suggestion_list.length;
+      sg_count.left += suggestion_list.length;
     }
 
     return {
@@ -2426,7 +2426,7 @@ class CognateAnalysisModal extends React.Component {
 
             //console.log("Done " + (done+1) + "th\n");
           }
-          this.setState({ computing: false });
+          this.setState({ computing: false, estimate: null });
         });
       } else {
         window.logger.err("No source perspective is selected!");
