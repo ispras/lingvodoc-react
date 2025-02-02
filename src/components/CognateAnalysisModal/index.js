@@ -277,8 +277,8 @@ const computeNeuroCognateAnalysisMutation = gql`
       input_pairs: $inputPairs
     ) {
       triumph
-      result
       message
+      suggestion_list
       perspective_name_list
       transcription_count
     }
@@ -2091,29 +2091,8 @@ class CognateAnalysisModal extends React.Component {
     });
   }
 
-  handleNeuroResult({ data: { neuro_cognate_analysis }})
+  handleSuggestionResult(suggestion_list)
   {
-    const {triumph, message, result} = neuro_cognate_analysis;
-
-    if (!triumph && message.length) {
-      window.logger.err(message);
-    }
-
-    if (triumph && result.length) {
-      console.log(JSON.stringify(result));
-    }
-
-    this.setState({
-      ...neuro_cognate_analysis,
-      //computing: false,
-      cleanResult: false
-    });
-  }
-
-  handleCognateResult({ data: { cognate_analysis }})
-  {
-    /* Initializing suggestions data, if required. */
-    const {suggestion_list} = cognate_analysis
     const sg_select_list = [];
     const sg_state_list = [];
 
@@ -2127,6 +2106,7 @@ class CognateAnalysisModal extends React.Component {
 
     const sg_entry_map = {};
 
+    /* Initializing suggestions data, if required. */
     if (suggestion_list) {
       for (var i = 0; i < suggestion_list.length; i++) {
         const [perspective_index, word, word_entry_id, word_group, single_list, group_list] = suggestion_list[i];
@@ -2162,18 +2142,50 @@ class CognateAnalysisModal extends React.Component {
       sg_count.left = suggestion_list.length;
     }
 
+    return {
+      sg_select_list,
+      sg_state_list,
+      sg_count,
+      sg_entry_map
+    }
+  }
+
+  handleNeuroResult({ data: { neuro_cognate_analysis }})
+  {
+    const {triumph, message, suggestion_list} = neuro_cognate_analysis;
+    const current_suggestion_list = (this.state.suggestion_list ?? []).concat(suggestion_list);
+
+    if (!triumph && message.length) {
+      window.logger.err(message);
+    }
+
+    if (triumph && suggestion_list.length) {
+      console.log(JSON.stringify(suggestion_list));
+    }
+
+    this.setState({
+      ...neuro_cognate_analysis,
+      suggestion_list: current_suggestion_list, //overriding it
+      suggestion_field_id: this.state.groupFieldIdStr,
+      ...this.handleSuggestionResult(current_suggestion_list),
+      //computing: false,
+      cleanResult: false
+    });
+  }
+
+  handleCognateResult({ data: { cognate_analysis }})
+  {
+    const {suggestion_list} = cognate_analysis
+
     /* Updating state with computed analysis info. */
     this.setState({
       ...cognate_analysis,
        /* Calculate plotly data */
       ...this.handleResult(cognate_analysis),
+      ...this.handleSuggestionResult(suggestion_list),
       library_present: true,
       computing: false,
-      cleanResult: false,
-      sg_select_list,
-      sg_state_list,
-      sg_count,
-      sg_entry_map
+      cleanResult: false
     });
   }
 
@@ -3171,7 +3183,10 @@ class CognateAnalysisModal extends React.Component {
                   </div>
 
                   <div className="lingvo-cognate-results">
-                    {this.state.result.length > 0 && mode !== "suggestions" && mode !== "multi_suggestions" && (
+                    {this.state.result.length > 0 &&
+                     mode !== "suggestions" &&
+                     mode !== "multi_suggestions" &&
+                     mode !== "neuro_suggestions" && (
                       <div className="lingvo-cognate-text" style={{ paddingTop: "6px", paddingBottom: "3px" }}>
                         <a href={this.state.xlsx_url}>{this.context("XLSX-exported analysis results")}</a>
                         <p/>
