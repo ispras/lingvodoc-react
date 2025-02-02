@@ -2091,12 +2091,17 @@ class CognateAnalysisModal extends React.Component {
     });
   }
 
-  handleSuggestionResult(suggestion_list)
+  handleSuggestionResult({
+    suggestion_list,
+    sg_select_list: sg_select_list_cur,
+    sg_state_list: sg_state_list_cur,
+    sg_count: sg_count_cur,
+    sg_entry_map: sg_entry_map_cur })
   {
-    const sg_select_list = [];
-    const sg_state_list = [];
+    const sg_select_list = sg_select_list_cur ?? [];
+    const sg_state_list = sg_state_list_cur ?? [];
 
-    const sg_count = {
+    const sg_count = sg_count_cur ?? {
       left: 0,
       connecting: 0,
       connected: 0,
@@ -2104,7 +2109,7 @@ class CognateAnalysisModal extends React.Component {
       invalidated: 0
     };
 
-    const sg_entry_map = {};
+    const sg_entry_map = sg_entry_map_cur ?? {};
 
     /* Initializing suggestions data, if required. */
     if (suggestion_list) {
@@ -2152,8 +2157,10 @@ class CognateAnalysisModal extends React.Component {
 
   handleNeuroResult({ data: { neuro_cognate_analysis }})
   {
-    const {triumph, message, suggestion_list} = neuro_cognate_analysis;
-    const current_suggestion_list = (this.state.suggestion_list ?? []).concat(suggestion_list);
+    const { triumph, message, suggestion_list, perspective_name_list, transcription_count } = neuro_cognate_analysis;
+    const suggestion_list_cur = (this.state.suggestion_list ?? []).concat(suggestion_list);
+    const transcription_count_cur = this.state.transcription_count + transcription_count;
+    const { sg_select_list, sg_state_list, sg_count, sg_entry_map } = this.state;
 
     if (!triumph && message.length) {
       window.logger.err(message);
@@ -2165,11 +2172,14 @@ class CognateAnalysisModal extends React.Component {
 
     this.setState({
       ...neuro_cognate_analysis,
-      suggestion_list: current_suggestion_list, //overriding it
-      suggestion_field_id: this.state.groupFieldIdStr,
-      ...this.handleSuggestionResult(current_suggestion_list),
+      suggestion_list: suggestion_list_cur, //overriding
+      transcription_count: transcription_count_cur, //overriding
+      dictionary_count: perspective_name_list.length,
+      suggestion_field_id: this.state.groupFieldIdStr.split(','),
+      ...this.handleSuggestionResult({ suggestion_list, sg_select_list, sg_state_list, sg_count, sg_entry_map }),
       //computing: false,
-      cleanResult: false
+      cleanResult: false,
+      result: ""
     });
   }
 
@@ -2182,7 +2192,7 @@ class CognateAnalysisModal extends React.Component {
       ...cognate_analysis,
        /* Calculate plotly data */
       ...this.handleResult(cognate_analysis),
-      ...this.handleSuggestionResult(suggestion_list),
+      ...this.handleSuggestionResult({ suggestion_list }),
       library_present: true,
       computing: false,
       cleanResult: false
