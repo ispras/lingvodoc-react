@@ -267,12 +267,14 @@ const computeNeuroCognateAnalysisMutation = gql`
   mutation computeNeuroCognateAnalysis(
     $sourcePerspectiveId: LingvodocID!
     $perspectiveInfoList: [[LingvodocID]]!
+    $matchTranslations: Boolean
     $baseLanguageId: LingvodocID
     $inputPairs: ObjectVal
   ) {
     neuro_cognate_analysis(
       source_perspective_id: $sourcePerspectiveId
       perspective_info_list: $perspectiveInfoList
+      match_translations: $matchTranslations
       base_language_id: $baseLanguageId
       input_pairs: $inputPairs
     ) {
@@ -2407,6 +2409,7 @@ class CognateAnalysisModal extends React.Component {
             await computeNeuroCognateAnalysis({
               variables: {
                 inputPairs: pairs,
+                matchTranslations: this.state.matchTranslationsFlag,
                 sourcePerspectiveId: perspectiveId,
                 baseLanguageId: this.baseLanguageId,
                 perspectiveInfoList
@@ -2515,47 +2518,49 @@ class CognateAnalysisModal extends React.Component {
             className="lingvo-checkbox lingvo-checkbox_labeled"
           />
         </div>
+        { this.props.mode !== "neuro_suggestions" && (
+          <>
+            <div style={{ paddingLeft: "34px", paddingTop: "6px" }}>
+              <div className="lingvo-radio lingvo-radio_cognate">
+                <Checkbox
+                  radio
+                  disabled={!this.state.matchTranslationsFlag}
+                  label={this.context("Any three consecutive characters")}
+                  name="matchTranslationsRadioGroup"
+                  value="first_three"
+                  checked={this.state.matchTranslationsValue === "first_three"}
+                  onChange={(e, { value }) => {
+                    this.setState({ matchTranslationsValue: value });
+                  }}
+                />
+              </div>
+              <div className="lingvo-radio lingvo-radio_cognate">
+                <Checkbox
+                  radio
+                  disabled={!this.state.matchTranslationsFlag}
+                  label={this.context("All characters")}
+                  name="matchTranslationsRadioGroup"
+                  value="all"
+                  checked={this.state.matchTranslationsValue === "all"}
+                  onChange={(e, { value }) => {
+                    this.setState({ matchTranslationsValue: value });
+                  }}
+                />
+              </div>
+            </div>
 
-        <div style={{ paddingLeft: "34px", paddingTop: "6px" }}>
-          <div className="lingvo-radio lingvo-radio_cognate">
-            <Checkbox
-              radio
-              disabled={!this.state.matchTranslationsFlag}
-              label={this.context("Any three consecutive characters")}
-              name="matchTranslationsRadioGroup"
-              value="first_three"
-              checked={this.state.matchTranslationsValue === "first_three"}
-              onChange={(e, { value }) => {
-                this.setState({ matchTranslationsValue: value });
-              }}
-            />
-          </div>
-          <div className="lingvo-radio lingvo-radio_cognate">
-            <Checkbox
-              radio
-              disabled={!this.state.matchTranslationsFlag}
-              label={this.context("All characters")}
-              name="matchTranslationsRadioGroup"
-              value="all"
-              checked={this.state.matchTranslationsValue === "all"}
-              onChange={(e, { value }) => {
-                this.setState({ matchTranslationsValue: value });
-              }}
-            />
-          </div>
-        </div>
-
-        <div className="lingvo-cognate-checkbox">
-          <Checkbox
-            label={this.context("Only for orphans (words not included in existing etymology groups)")}
-            checked={this.state.onlyOrphansFlag}
-            onChange={(e, { checked }) => {
-              this.setState({ onlyOrphansFlag: checked });
-            }}
-            className="lingvo-checkbox lingvo-checkbox_labeled"
-          />
-        </div>
-
+            <div className="lingvo-cognate-checkbox">
+              <Checkbox
+                label={this.context("Only for orphans (words not included in existing etymology groups)")}
+                checked={this.state.onlyOrphansFlag}
+                onChange={(e, { checked }) => {
+                  this.setState({ onlyOrphansFlag: checked });
+                }}
+                className="lingvo-checkbox lingvo-checkbox_labeled"
+              />
+            </div>
+          </>
+        )}
         {!this.state.suggestion_list && this.props.user.id === undefined && (
           <div className="lingvo-message lingvo-message_error" style={{ marginTop: "14px", marginBottom: "14px" }}>
             {this.context("Unauthorized user")}
