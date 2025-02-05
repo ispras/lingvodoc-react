@@ -270,6 +270,8 @@ const computeNeuroCognateAnalysisMutation = gql`
     $matchTranslations: Boolean
     $baseLanguageId: LingvodocID
     $inputPairs: ObjectVal
+    $truthThreshold: Float
+    $stamp: Float
   ) {
     neuro_cognate_analysis(
       source_perspective_id: $sourcePerspectiveId
@@ -277,12 +279,27 @@ const computeNeuroCognateAnalysisMutation = gql`
       match_translations: $matchTranslations
       base_language_id: $baseLanguageId
       input_pairs: $inputPairs
+      truth_threshold: $truthThreshold
+      stamp: $stamp
     ) {
       triumph
       message
       suggestion_list
       perspective_name_list
       transcription_count
+      stamp
+    }
+  }
+`;
+
+const stopNeuroCognateAnalysisMutation = gql`
+  mutation stopNeuroCognateAnalysis (
+    $stamp: Float!
+  ) {
+    stop_mutation(
+      stamp: $stamp
+    ) {
+      triumph
     }
   }
 `;
@@ -659,6 +676,7 @@ class MLPerspectiveSelection extends React.Component {
 
   render() {
     const {
+      mode,
       treePathList,
       perspective,
       textFieldsOptions,
@@ -727,21 +745,25 @@ class MLPerspectiveSelection extends React.Component {
                 className="lingvo-dropdown-select lingvo-dropdown-select_cognate"
               />
             </div>
-            <div className="lingvo-cognate-grid__name">{this.context("Source lexeme field (optional)")}:</div>
-            <div className="lingvo-cognate-grid__select">
-              <Select
-                disabled={!perspectiveSelectionMap[p_key]}
-                defaultValue={lexemeFieldIdStrMap[p_key]}
-                placeholder={this.context("Source lexeme field selection")}
-                options={textFieldsOptions}
-                onChange={(e, { value }) => {
-                  lexemeFieldIdStrMap[p_key] = value;
-                  this.setState({ lexemeFieldIdStrMap });
-                }}
-                icon={<i className="lingvo-icon lingvo-icon_arrow" />}
-                className="lingvo-dropdown-select lingvo-dropdown-select_cognate"
-              />
-            </div>
+            { mode !== "multi_neuro_suggestions" && (
+              <>
+                <div className="lingvo-cognate-grid__name">{this.context("Source lexeme field (optional)")}:</div>
+                <div className="lingvo-cognate-grid__select">
+                  <Select
+                    disabled={!perspectiveSelectionMap[p_key]}
+                    defaultValue={lexemeFieldIdStrMap[p_key]}
+                    placeholder={this.context("Source lexeme field selection")}
+                    options={textFieldsOptions}
+                    onChange={(e, { value }) => {
+                      lexemeFieldIdStrMap[p_key] = value;
+                      this.setState({ lexemeFieldIdStrMap });
+                    }}
+                    icon={<i className="lingvo-icon lingvo-icon_arrow" />}
+                    className="lingvo-dropdown-select lingvo-dropdown-select_cognate"
+                  />
+                </div>
+              </>
+            )}
           </div>
         )}
       </div>
@@ -953,6 +975,7 @@ class MLSelection extends React.Component {
   render() {
     const {
       mode,
+      computing,
       language_list,
       perspectiveSelectionMap,
       transcriptionFieldIdStrMap,
@@ -1077,6 +1100,7 @@ class MLSelection extends React.Component {
             icon={<i className="lingvo-icon lingvo-icon_arrow" />}
             fluid
             placeholder={this.context("Add language")}
+            disabled={computing}
             search
             selection
             options={available_language_list
@@ -1393,7 +1417,9 @@ class CognateAnalysisModal extends React.Component {
       sg_count: null,
       sg_entry_map: null,
 
-      sg_current_page: 1
+      sg_current_page: 1,
+
+      truthThreshold: 0.97
     };
 
     this.initialize_single = this.initialize_single.bind(this);
@@ -1412,6 +1438,7 @@ class CognateAnalysisModal extends React.Component {
 
     this.suggestions_render = this.suggestions_render.bind(this);
     this.browse_files_render = this.browse_files_render.bind(this);
+    this.stopMutation = this.stopMutation.bind(this);
 
     this.sg_connect = this.sg_connect.bind(this);
   }
@@ -1428,7 +1455,8 @@ class CognateAnalysisModal extends React.Component {
       this.props.mode === "multi_reconstruction" ||
       this.props.mode === "multi_suggestions" ||
       this.props.mode === "multi_swadesh" ||
-      this.props.mode === "multi_morphology";
+      this.props.mode === "multi_morphology" ||
+      this.props.mode === "multi_neuro_suggestions";
 
     (multi ? this.initialize_multi : this.initialize_single)();
     this.setState({ lang_mode: multi ? "multi" : "single" });
@@ -1521,7 +1549,10 @@ class CognateAnalysisModal extends React.Component {
     /* If we are selecting perspectives for cognate suggestions, and the source perspective is not
      * published, we won't be able to proceed and therefore we need not bother with initialization. */
 
-    if (mode === "suggestions" && english_status !== "Published" && english_status !== "Limited access") {
+    if ((mode === "suggestions" || mode === "neuro_suggestions") &&
+        english_status !== "Published" &&
+        english_status !== "Limited access") {
+
       this.setState({ initialized: true });
       return;
     }
@@ -1586,7 +1617,9 @@ class CognateAnalysisModal extends React.Component {
     /* If we are selecting perspectives for cognate suggestions, and the source perspective is not
      * published, we won't be able to proceed and therefore we need not bother with initialization. */
 
-    if (mode === "multi_suggestions" && english_status !== "Published" && english_status !== "Limited access") {
+    if ((mode === "multi_suggestions" || mode === "multi_neuro_suggestions") &&
+        english_status !== "Published" && english_status !== "Limited access") {
+
       this.setState({ initialized: true });
       return;
     }
@@ -2157,7 +2190,7 @@ class CognateAnalysisModal extends React.Component {
     }
   }
 
-  handleNeuroResult({ data: { neuro_cognate_analysis }})
+  handleNeuroResult({ neuro_cognate_analysis })
   {
     const { triumph, message, suggestion_list, perspective_name_list, transcription_count } = neuro_cognate_analysis;
     const suggestion_list_cur = (this.state.suggestion_list ?? []).concat(suggestion_list);
@@ -2165,7 +2198,8 @@ class CognateAnalysisModal extends React.Component {
     const { sg_select_list, sg_state_list, sg_count, sg_entry_map } = this.state;
 
     if (!triumph && message.length) {
-      window.logger.err(message);
+      window.logger.err(this.context(message));
+      return false;
     }
 
     if (triumph && suggestion_list.length) {
@@ -2179,15 +2213,16 @@ class CognateAnalysisModal extends React.Component {
       dictionary_count: perspective_name_list.length,
       suggestion_field_id: this.state.groupFieldIdStr.split(','),
       ...this.handleSuggestionResult({ suggestion_list, sg_select_list, sg_state_list, sg_count, sg_entry_map }),
-      //computing: false,
       cleanResult: false,
       result: ""
     });
+
+    return true;
   }
 
   handleCognateResult({ data: { cognate_analysis }})
   {
-    const {suggestion_list} = cognate_analysis
+    const {suggestion_list} = cognate_analysis;
 
     /* Updating state with computed analysis info. */
     this.setState({
@@ -2373,70 +2408,114 @@ class CognateAnalysisModal extends React.Component {
       } catch(error_data) {
         this.handleError(error_data);
       }
-    } else if (this.props.mode === "neuro_suggestions") {
+    } else if (this.props.mode === "neuro_suggestions" || this.props.mode === "multi_neuro_suggestions") {
+
+      const truthThreshold = parseFloat(this.state.truthThreshold);
+
+      if (!truthThreshold || truthThreshold < 0.7 || truthThreshold > 0.999) {
+        window.logger.err(this.context("Truth threshold must be between 0,7 and 0,999"));
+        this.setState({ computing: false });
+        return;
+      }
 
       const info = perspectiveInfoList.find(inf => isEqual(inf[1], perspectiveId));
 
-      if (info && info.length > 3) {
-        this.props.client.query({
-          query: wordsQuery,
-          variables: {
-            perspectiveId,
-            xcriptFldId: info[2],
-            xlatFldId: info[3]
-          }
-        }).then(async ({ data: { words }}) => {
-
-          // We are going to get predictions for a group at once
-          // So we don't have to wait for all the process completion,
-          // and we don't have to initialize prediction model for every single word
-
-          const groups = [];
-          const group_size = 8;
-
-          for (let i = 0; i < words.length; i += group_size) {
-            groups.push(words.slice(i, i + group_size));
-          }
-
-          const start = Date.now();
-          const total = groups.length;
-
-          this.setState({ computing: true, total });
-
-          for (const [done, pairs] of groups.entries()) {
-            this.setState({ done });
-            //console.log("Running " + (done+1) + "th");
-            await computeNeuroCognateAnalysis({
-              variables: {
-                inputPairs: pairs,
-                matchTranslations: this.state.matchTranslationsFlag,
-                sourcePerspectiveId: perspectiveId,
-                baseLanguageId: this.baseLanguageId,
-                perspectiveInfoList
-              }
-            }).then(
-              data => this.handleNeuroResult(data),
-              error_data => this.handleError(error_data)
-            )
-
-            const duration = (Date.now() - start) / 1000;
-            const estimate = duration / (done + 1) * total - duration;
-            const days = Math.trunc(estimate / 86400);
-            const hours = Math.trunc((estimate - days * 86400) / 3600);
-            const minutes = Math.round((estimate - days * 86400 - hours * 3600) / 60);
-
-            this.setState({ estimate: `${days}d:${hours}h:${minutes}m` });
-
-            //console.log("Done " + (done+1) + "th\n");
-          }
-          this.setState({ computing: false, estimate: null });
-        });
-      } else {
-        window.logger.err("No source perspective is selected!");
+      if (perspectiveInfoList.length < 2 || !info || info.length < 4) {
+        window.logger.err(this.context("No source perspective and/or perspective(s) for comparing is selected"));
         this.setState({ computing: false });
+        return;
       }
 
+      this.props.client.query({
+        query: wordsQuery,
+        variables: {
+          perspectiveId,
+          xcriptFldId: info[2],
+          xlatFldId: info[3]
+        }
+      }).then(({ data: { words }}) => {
+
+        // We are going to get predictions for a group at once
+        // So we don't have to wait for all the process completion,
+        // and we don't have to initialize prediction model for every single word
+
+        const groups = [];
+        const group_size = 4;
+
+        for (let i = 0; i < words.length; i += group_size) {
+          groups.push(words.slice(i, i + group_size));
+        }
+
+        const start = Date.now();
+        const total = groups.length;
+
+        // Initialize states for new process
+        this.setState(
+          {
+            computing: start,
+            result: null,
+            estimate: null,
+            suggestion_list: null,
+            sg_select_list: null,
+            sg_state_list: null,
+            sg_count: null,
+            sg_entry_map: null,
+            dictionary_count: 0,
+            transcription_count: 0,
+            total
+          },
+          // Running after setstate
+          async () => {
+            for (const [done, pairs] of groups.entries()) {
+              this.setState({ done });
+
+              const { data, error } = await computeNeuroCognateAnalysis({
+                variables: {
+                  inputPairs: pairs,
+                  matchTranslations: this.state.matchTranslationsFlag,
+                  sourcePerspectiveId: perspectiveId,
+                  baseLanguageId: this.baseLanguageId,
+                  truthThreshold,
+                  perspectiveInfoList,
+                  stamp: start
+                }
+              });
+
+              console.log(data.neuro_cognate_analysis.stamp, this.state.computing);
+
+              // On Stop button click
+              if (!this.state.computing || data.neuro_cognate_analysis.stamp !== this.state.computing) {
+                console.log("Killed!");
+                return;
+              }
+
+              if (error) {
+                this.handleError(error);
+                return;
+              }
+
+              // If any troubles in response
+              if (!this.handleNeuroResult(data)) {
+                this.setState({ computing: false });
+                return;
+              }
+
+              const duration = (Date.now() - start) / 1000;
+              const estimate = duration / (done + 1) * total - duration;
+              const days = Math.trunc(estimate / 86400);
+              const hours = Math.trunc((estimate - days * 86400) / 3600);
+              const minutes = Math.round((estimate - days * 86400 - hours * 3600) / 60);
+
+              this.setState({ estimate: `${days}d:${hours}h:${minutes}m` });
+            }
+
+            this.setState({ computing: false });
+          }
+        );
+      });
+
     } else {
+
       /* Otherwise we will launch it as usual and then will wait for results to display them. */
       this.setState({ computing: true });
 
@@ -2508,17 +2587,34 @@ class CognateAnalysisModal extends React.Component {
   match_translations_render() {
     return (
       <>
+        {(this.props.mode === "neuro_suggestions" || this.props.mode === "multi_neuro_suggestions") && (
+          <Input
+            label={this.context("Truth threshold")}
+            disabled={this.state.computing}
+            type='number'
+            min='0.700'
+            max='0.999'
+            step='0.001'
+            value={this.state.truthThreshold}
+            onChange={(e, { value }) => {
+              this.setState({ truthThreshold: value });
+            }}
+            className="lingvo-labeled-input"
+            style={{ marginBottom: "1em" }}
+          />
+        )}
         <div className="lingvo-cognate-checkbox">
           <Checkbox
             label={this.context("Match translations")}
             checked={this.state.matchTranslationsFlag}
+            disabled={this.state.computing}
             onChange={(e, { checked }) => {
               this.setState({ matchTranslationsFlag: checked });
             }}
             className="lingvo-checkbox lingvo-checkbox_labeled"
           />
         </div>
-        { this.props.mode !== "neuro_suggestions" && (
+        { this.props.mode !== "neuro_suggestions" && this.props.mode !== "multi_neuro_suggestions" && (
           <>
             <div style={{ paddingLeft: "34px", paddingTop: "6px" }}>
               <div className="lingvo-radio lingvo-radio_cognate">
@@ -2583,6 +2679,7 @@ class CognateAnalysisModal extends React.Component {
           <Checkbox
             label={this.context("Debug flag")}
             checked={this.state.debugFlag}
+            disabled={this.state.computing}
             onChange={(e, { checked }) => {
               this.setState({ debugFlag: checked });
             }}
@@ -2593,6 +2690,7 @@ class CognateAnalysisModal extends React.Component {
           <Checkbox
             label={this.context("Save intermediate data")}
             checked={this.state.intermediateFlag}
+            disabled={this.state.computing}
             onChange={(e, { checked }) => {
               this.setState({ intermediateFlag: checked });
             }}
@@ -2708,6 +2806,7 @@ class CognateAnalysisModal extends React.Component {
 
         <MLSelection
           mode={this.props.mode}
+          computing={this.state.computing}
           language_list={this.state.language_list}
           perspectiveSelectionMap={this.state.perspectiveSelectionMap}
           languageSelectionMap={this.state.languageSelectionMap}
@@ -2748,7 +2847,9 @@ class CognateAnalysisModal extends React.Component {
           </List>
         )}
 
-        {!error_flag && this.props.mode === "multi_suggestions" && this.match_translations_render()}
+        {!error_flag &&
+         (this.props.mode === "multi_suggestions" || this.props.mode === "multi_neuro_suggestions") &&
+         this.match_translations_render()}
 
         {!error_flag && this.props.user.id == 1 && this.admin_section_render()}
 
@@ -2920,8 +3021,8 @@ class CognateAnalysisModal extends React.Component {
           />
         </div>
 
-        {map(
-          suggestion_list.slice(start_index, start_index + SUGGESTIONS_PER_PAGE),
+        { suggestion_list &&
+          map(suggestion_list.slice(start_index, start_index + SUGGESTIONS_PER_PAGE),
 
           (
             [perspective_index, word, word_entry_id, word_group, single_list, group_list],
@@ -3054,6 +3155,18 @@ class CognateAnalysisModal extends React.Component {
     )
   }
 
+  stopMutation() {
+    const { computing } = this.state;
+
+    if (typeof computing !== "boolean") {
+      this.props.stopNeuroCognateAnalysis({
+        variables: {
+          stamp: computing
+        }
+      });
+    }
+  }
+
   render() {
     if (!this.state.initialized) {
       return (
@@ -3095,7 +3208,7 @@ class CognateAnalysisModal extends React.Component {
       status += ` ${done}/${total}`;
     }
     if (estimate) {
-      status += ` (${estimate} ${this.context("left")})`;
+      status += ` (${estimate} ${this.context("left for now")})`;
     }
 
     return (
@@ -3105,7 +3218,10 @@ class CognateAnalysisModal extends React.Component {
             if (e.key === 'Enter' && !disabledCompute) this.handleCreate(); }}
           tabIndex = "0"
           closeIcon
-          onClose={this.props.closeModal}
+          onClose={ () => {
+            this.setState({ computing: false }, this.props.closeModal);
+            this.stopMutation();
+          }}
           dimmer open
           size="fullscreen" className="lingvo-modal2">
           <Modal.Header>
@@ -3133,12 +3249,24 @@ class CognateAnalysisModal extends React.Component {
               ? this.context("Composite distance")
               : mode === "neuro_suggestions"
               ? this.context("Neuro cognate suggestions")
+              : mode === "multi_neuro_suggestions"
+              ? this.context("Neuro cognate multi-language suggestions")
               : this.context("Cognate analysis")}
           </Modal.Header>
 
           { lang_mode === "none" ? this.browse_files_render() : this.language_render(lang_mode === "multi") }
 
           <Modal.Actions>
+            { (mode === "neuro_suggestions" || mode === "multi_neuro_suggestions") && computing && (
+              <Button
+                content={this.context("Stop")}
+                onClick={() => {
+                  this.setState({ computing: false });
+                  this.stopMutation();
+                }}
+                className="lingvo-button-red"
+              />
+            )}
             <Button
               content={
                 computing ? (
@@ -3155,7 +3283,10 @@ class CognateAnalysisModal extends React.Component {
             />
             <Button
               content={this.context("Close")}
-              onClick={this.props.closeModal}
+              onClick={ () => {
+                this.setState({ computing: false }, this.props.closeModal);
+                this.stopMutation();
+              }}
               className="lingvo-button-basic-black"
             />
           </Modal.Actions>
@@ -3201,7 +3332,8 @@ class CognateAnalysisModal extends React.Component {
                     {this.state.result.length > 0 &&
                      mode !== "suggestions" &&
                      mode !== "multi_suggestions" &&
-                     mode !== "neuro_suggestions" && (
+                     mode !== "neuro_suggestions" &&
+                     mode !== "multi_neuro_suggestions" && (
                       <div className="lingvo-cognate-text" style={{ paddingTop: "6px", paddingBottom: "3px" }}>
                         <a href={this.state.xlsx_url}>{this.context("XLSX-exported analysis results")}</a>
                         <p/>
@@ -3481,5 +3613,6 @@ export default compose(
   graphql(computeComplexDistanceMutation, { name: "computeComplexDistance" }),
   graphql(computeNeuroCognateAnalysisMutation, { name: "computeNeuroCognateAnalysis" }),
   graphql(connectMutation, { name: "connectGroup" }),
+  graphql(stopNeuroCognateAnalysisMutation, { name: "stopNeuroCognateAnalysis" }),
   withApollo
 )(CognateAnalysisModal);
