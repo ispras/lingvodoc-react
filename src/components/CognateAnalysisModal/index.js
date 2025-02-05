@@ -2404,14 +2404,14 @@ class CognateAnalysisModal extends React.Component {
             xcriptFldId: info[2],
             xlatFldId: info[3]
           }
-        }).then(async ({ data: { words }}) => {
+        }).then(({ data: { words }}) => {
 
           // We are going to get predictions for a group at once
           // So we don't have to wait for all the process completion,
           // and we don't have to initialize prediction model for every single word
 
           const groups = [];
-          const group_size = 8;
+          const group_size = 4;
 
           for (let i = 0; i < words.length; i += group_size) {
             groups.push(words.slice(i, i + group_size));
@@ -2421,60 +2421,71 @@ class CognateAnalysisModal extends React.Component {
           const total = groups.length;
 
           // Initialize states for new process
-          this.setState({
-            computing: true,
-            result: null,
-            estimate: null,
-            suggestion_list: null,
-            sg_select_list: null,
-            sg_state_list: null,
-            sg_count: null,
-            sg_entry_map: null,
-            dictionary_count: 0,
-            transcription_count: 0,
-            total
-          });
+          this.setState(
+            {
+              computing: true,
+              result: null,
+              estimate: null,
+              suggestion_list: null,
+              sg_select_list: null,
+              sg_state_list: null,
+              sg_count: null,
+              sg_entry_map: null,
+              dictionary_count: 0,
+              transcription_count: 0,
+              total
+            },
+            // Running after setstate
+            async () => {
+              for (const [done, pairs] of groups.entries()) {
+                this.setState({ done });
 
-          for (const [done, pairs] of groups.entries()) {
-            this.setState({ done });
+                const { data, error } = await computeNeuroCognateAnalysis({
+                  variables: {
+                    inputPairs: pairs,
+                    matchTranslations: this.state.matchTranslationsFlag,
+                    sourcePerspectiveId: perspectiveId,
+                    baseLanguageId: this.baseLanguageId,
+                    truthThreshold: this.state.truthThreshold,
+                    perspectiveInfoList
+                  }
+                });
 
-            const { data, error } = await computeNeuroCognateAnalysis({
-              variables: {
-                inputPairs: pairs,
-                matchTranslations: this.state.matchTranslationsFlag,
-                sourcePerspectiveId: perspectiveId,
-                baseLanguageId: this.baseLanguageId,
-                truthThreshold: this.state.truthThreshold,
-                perspectiveInfoList
+                // On Stop button click
+                if (!this.state.computing) {
+                  return;
+                }
+
+                if (error) {
+                  this.handleError(error);
+                  return;
+                }
+
+                // If any troubles in response
+                if (!this.handleNeuroResult(data)) {
+                  this.setState({ computing: false });
+                  return;
+                }
+
+                const duration = (Date.now() - start) / 1000;
+                const estimate = duration / (done + 1) * total - duration;
+                const days = Math.trunc(estimate / 86400);
+                const hours = Math.trunc((estimate - days * 86400) / 3600);
+                const minutes = Math.round((estimate - days * 86400 - hours * 3600) / 60);
+
+                this.setState({ estimate: `${days}d:${hours}h:${minutes}m` });
               }
-            });
 
-            if (error) {
-              this.handleError(error);
-              return;
-            }
-
-            if (!this.handleNeuroResult(data)) {
               this.setState({ computing: false });
-              return;
             }
-
-            const duration = (Date.now() - start) / 1000;
-            const estimate = duration / (done + 1) * total - duration;
-            const days = Math.trunc(estimate / 86400);
-            const hours = Math.trunc((estimate - days * 86400) / 3600);
-            const minutes = Math.round((estimate - days * 86400 - hours * 3600) / 60);
-
-            this.setState({ estimate: `${days}d:${hours}h:${minutes}m` });
-          }
+          );
         });
 
       } else {
 
         window.logger.err(this.context("No source perspective and/or perspective(s) for comparing is selected"));
+        this.setState({ computing: false });
       }
-
-      this.setState({ computing: false });
 
     } else {
 
@@ -3202,6 +3213,13 @@ class CognateAnalysisModal extends React.Component {
           { lang_mode === "none" ? this.browse_files_render() : this.language_render(lang_mode === "multi") }
 
           <Modal.Actions>
+            { (mode === "neuro_suggestions" || mode === "multi_neuro_suggestions") && computing && (
+              <Button
+                content={this.context("Stop")}
+                onClick={() => this.setState({ computing: false })}
+                className="lingvo-button-red"
+              />
+            )}
             <Button
               content={
                 computing ? (
