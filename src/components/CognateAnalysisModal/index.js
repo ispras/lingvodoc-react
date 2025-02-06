@@ -2455,8 +2455,11 @@ class CognateAnalysisModal extends React.Component {
                   }
                 });
 
+                console.log(data.neuro_cognate_analysis.stamp, this.state.computing);
+
                 // On Stop button click
                 if (!this.state.computing || data.neuro_cognate_analysis.stamp !== this.state.computing) {
+                  console.log("Killed!");
                   return;
                 }
 
@@ -3181,7 +3184,7 @@ class CognateAnalysisModal extends React.Component {
             if (e.key === 'Enter' && !disabledCompute) this.handleCreate(); }}
           tabIndex = "0"
           closeIcon
-          onClose={this.props.closeModal}
+          onClose={() => this.setState({ computing: false }, this.props.closeModal)}
           dimmer open
           size="fullscreen" className="lingvo-modal2">
           <Modal.Header>
@@ -3240,7 +3243,7 @@ class CognateAnalysisModal extends React.Component {
             />
             <Button
               content={this.context("Close")}
-              onClick={this.props.closeModal}
+              onClick={() => this.setState({ computing: false }, this.props.closeModal)}
               className="lingvo-button-basic-black"
             />
           </Modal.Actions>
