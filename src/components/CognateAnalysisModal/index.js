@@ -271,6 +271,7 @@ const computeNeuroCognateAnalysisMutation = gql`
     $baseLanguageId: LingvodocID
     $inputPairs: ObjectVal
     $truthThreshold: Float
+    $stamp: Float
   ) {
     neuro_cognate_analysis(
       source_perspective_id: $sourcePerspectiveId
@@ -279,12 +280,14 @@ const computeNeuroCognateAnalysisMutation = gql`
       base_language_id: $baseLanguageId
       input_pairs: $inputPairs
       truth_threshold: $truthThreshold
+      stamp: $stamp
     ) {
       triumph
       message
       suggestion_list
       perspective_name_list
       transcription_count
+      stamp
     }
   }
 `;
@@ -2423,7 +2426,7 @@ class CognateAnalysisModal extends React.Component {
           // Initialize states for new process
           this.setState(
             {
-              computing: true,
+              computing: start,
               result: null,
               estimate: null,
               suggestion_list: null,
@@ -2447,12 +2450,13 @@ class CognateAnalysisModal extends React.Component {
                     sourcePerspectiveId: perspectiveId,
                     baseLanguageId: this.baseLanguageId,
                     truthThreshold: this.state.truthThreshold,
-                    perspectiveInfoList
+                    perspectiveInfoList,
+                    stamp: start
                   }
                 });
 
                 // On Stop button click
-                if (!this.state.computing) {
+                if (!this.state.computing || data.neuro_cognate_analysis.stamp !== this.state.computing) {
                   return;
                 }
 
