@@ -2410,9 +2410,9 @@ class CognateAnalysisModal extends React.Component {
       }
     } else if (this.props.mode === "neuro_suggestions" || this.props.mode === "multi_neuro_suggestions") {
 
-      const { truth_threshold } = this.state;
+      const truthThreshold = parseFloat(this.state.truthThreshold);
 
-      if (typeof truth_threshold !== 'number' || truth_threshold < 0.7 || truth_threshold > 0.999) {
+      if (!truthThreshold || truthThreshold < 0.7 || truthThreshold > 0.999) {
         window.logger.err(this.context("Truth threshold must be between 0,7 and 0,999"));
         this.setState({ computing: false });
         return;
@@ -2475,7 +2475,7 @@ class CognateAnalysisModal extends React.Component {
                   matchTranslations: this.state.matchTranslationsFlag,
                   sourcePerspectiveId: perspectiveId,
                   baseLanguageId: this.baseLanguageId,
-                  truthThreshold: this.state.truthThreshold,
+                  truthThreshold,
                   perspectiveInfoList,
                   stamp: start
                 }
