@@ -292,6 +292,18 @@ const computeNeuroCognateAnalysisMutation = gql`
   }
 `;
 
+const stopNeuroCognateAnalysisMutation = gql`
+  mutation stopNeuroCognateAnalysis (
+    $stamp: Float!
+  ) {
+    stop_mutation(
+      stamp: $stamp
+    ) {
+      triumph
+    }
+  }
+`;
+
 const computeComplexDistanceMutation = gql`
   mutation complexDistance (
     $resultPool: [ObjectVal]!
@@ -1426,6 +1438,7 @@ class CognateAnalysisModal extends React.Component {
 
     this.suggestions_render = this.suggestions_render.bind(this);
     this.browse_files_render = this.browse_files_render.bind(this);
+    this.stopMutation = this.stopMutation.bind(this);
 
     this.sg_connect = this.sg_connect.bind(this);
   }
@@ -2397,102 +2410,109 @@ class CognateAnalysisModal extends React.Component {
       }
     } else if (this.props.mode === "neuro_suggestions" || this.props.mode === "multi_neuro_suggestions") {
 
+      const { truth_threshold } = this.state;
+
+      if (typeof truth_threshold !== 'number' || truth_threshold < 0.7 || truth_threshold > 0.999) {
+        window.logger.err(this.context("Truth threshold must be between 0,7 and 0,999"));
+        this.setState({ computing: false });
+        return;
+      }
+
       const info = perspectiveInfoList.find(inf => isEqual(inf[1], perspectiveId));
 
-      if (perspectiveInfoList.length > 1 && info && info.length > 3) {
-        this.props.client.query({
-          query: wordsQuery,
-          variables: {
-            perspectiveId,
-            xcriptFldId: info[2],
-            xlatFldId: info[3]
-          }
-        }).then(({ data: { words }}) => {
-
-          // We are going to get predictions for a group at once
-          // So we don't have to wait for all the process completion,
-          // and we don't have to initialize prediction model for every single word
-
-          const groups = [];
-          const group_size = 4;
-
-          for (let i = 0; i < words.length; i += group_size) {
-            groups.push(words.slice(i, i + group_size));
-          }
-
-          const start = Date.now();
-          const total = groups.length;
-
-          // Initialize states for new process
-          this.setState(
-            {
-              computing: start,
-              result: null,
-              estimate: null,
-              suggestion_list: null,
-              sg_select_list: null,
-              sg_state_list: null,
-              sg_count: null,
-              sg_entry_map: null,
-              dictionary_count: 0,
-              transcription_count: 0,
-              total
-            },
-            // Running after setstate
-            async () => {
-              for (const [done, pairs] of groups.entries()) {
-                this.setState({ done });
-
-                const { data, error } = await computeNeuroCognateAnalysis({
-                  variables: {
-                    inputPairs: pairs,
-                    matchTranslations: this.state.matchTranslationsFlag,
-                    sourcePerspectiveId: perspectiveId,
-                    baseLanguageId: this.baseLanguageId,
-                    truthThreshold: this.state.truthThreshold,
-                    perspectiveInfoList,
-                    stamp: start
-                  }
-                });
-
-                console.log(data.neuro_cognate_analysis.stamp, this.state.computing);
-
-                // On Stop button click
-                if (!this.state.computing || data.neuro_cognate_analysis.stamp !== this.state.computing) {
-                  console.log("Killed!");
-                  return;
-                }
-
-                if (error) {
-                  this.handleError(error);
-                  return;
-                }
-
-                // If any troubles in response
-                if (!this.handleNeuroResult(data)) {
-                  this.setState({ computing: false });
-                  return;
-                }
-
-                const duration = (Date.now() - start) / 1000;
-                const estimate = duration / (done + 1) * total - duration;
-                const days = Math.trunc(estimate / 86400);
-                const hours = Math.trunc((estimate - days * 86400) / 3600);
-                const minutes = Math.round((estimate - days * 86400 - hours * 3600) / 60);
-
-                this.setState({ estimate: `${days}d:${hours}h:${minutes}m` });
-              }
-
-              this.setState({ computing: false });
-            }
-          );
-        });
-
-      } else {
-
+      if (perspectiveInfoList.length < 2 || !info || info.length < 4) {
         window.logger.err(this.context("No source perspective and/or perspective(s) for comparing is selected"));
         this.setState({ computing: false });
+        return;
       }
+
+      this.props.client.query({
+        query: wordsQuery,
+        variables: {
+          perspectiveId,
+          xcriptFldId: info[2],
+          xlatFldId: info[3]
+        }
+      }).then(({ data: { words }}) => {
+
+        // We are going to get predictions for a group at once
+        // So we don't have to wait for all the process completion,
+        // and we don't have to initialize prediction model for every single word
+
+        const groups = [];
+        const group_size = 4;
+
+        for (let i = 0; i < words.length; i += group_size) {
+          groups.push(words.slice(i, i + group_size));
+        }
+
+        const start = Date.now();
+        const total = groups.length;
+
+        // Initialize states for new process
+        this.setState(
+          {
+            computing: start,
+            result: null,
+            estimate: null,
+            suggestion_list: null,
+            sg_select_list: null,
+            sg_state_list: null,
+            sg_count: null,
+            sg_entry_map: null,
+            dictionary_count: 0,
+            transcription_count: 0,
+            total
+          },
+          // Running after setstate
+          async () => {
+            for (const [done, pairs] of groups.entries()) {
+              this.setState({ done });
+
+              const { data, error } = await computeNeuroCognateAnalysis({
+                variables: {
+                  inputPairs: pairs,
+                  matchTranslations: this.state.matchTranslationsFlag,
+                  sourcePerspectiveId: perspectiveId,
+                  baseLanguageId: this.baseLanguageId,
+                  truthThreshold: this.state.truthThreshold,
+                  perspectiveInfoList,
+                  stamp: start
+                }
+              });
+
+              console.log(data.neuro_cognate_analysis.stamp, this.state.computing);
+
+              // On Stop button click
+              if (!this.state.computing || data.neuro_cognate_analysis.stamp !== this.state.computing) {
+                console.log("Killed!");
+                return;
+              }
+
+              if (error) {
+                this.handleError(error);
+                return;
+              }
+
+              // If any troubles in response
+              if (!this.handleNeuroResult(data)) {
+                this.setState({ computing: false });
+                return;
+              }
+
+              const duration = (Date.now() - start) / 1000;
+              const estimate = duration / (done + 1) * total - duration;
+              const days = Math.trunc(estimate / 86400);
+              const hours = Math.trunc((estimate - days * 86400) / 3600);
+              const minutes = Math.round((estimate - days * 86400 - hours * 3600) / 60);
+
+              this.setState({ estimate: `${days}d:${hours}h:${minutes}m` });
+            }
+
+            this.setState({ computing: false });
+          }
+        );
+      });
 
     } else {
 
@@ -2567,20 +2587,22 @@ class CognateAnalysisModal extends React.Component {
   match_translations_render() {
     return (
       <>
-        <Input
-          label={this.context("Truth threshold")}
-          disabled={this.state.computing}
-          type='number'
-          min='0.700'
-          max='0.999'
-          step='0.001'
-          value={this.state.truthThreshold}
-          onChange={(e, { value }) => {
-            this.setState({ truthThreshold: value });
-          }}
-          className="lingvo-labeled-input"
-          style={{ marginBottom: "1em" }}
-        />
+        {(this.props.mode === "neuro_suggestions" || this.props.mode === "multi_neuro_suggestions") && (
+          <Input
+            label={this.context("Truth threshold")}
+            disabled={this.state.computing}
+            type='number'
+            min='0.700'
+            max='0.999'
+            step='0.001'
+            value={this.state.truthThreshold}
+            onChange={(e, { value }) => {
+              this.setState({ truthThreshold: value });
+            }}
+            className="lingvo-labeled-input"
+            style={{ marginBottom: "1em" }}
+          />
+        )}
         <div className="lingvo-cognate-checkbox">
           <Checkbox
             label={this.context("Match translations")}
@@ -3133,6 +3155,18 @@ class CognateAnalysisModal extends React.Component {
     )
   }
 
+  stopMutation() {
+    const { computing } = this.state;
+
+    if (typeof computing !== "boolean") {
+      this.props.stopNeuroCognateAnalysis({
+        variables: {
+          stamp: computing
+        }
+      });
+    }
+  }
+
   render() {
     if (!this.state.initialized) {
       return (
@@ -3184,7 +3218,10 @@ class CognateAnalysisModal extends React.Component {
             if (e.key === 'Enter' && !disabledCompute) this.handleCreate(); }}
           tabIndex = "0"
           closeIcon
-          onClose={() => this.setState({ computing: false }, this.props.closeModal)}
+          onClose={ () => {
+            this.setState({ computing: false }, this.props.closeModal);
+            this.stopMutation();
+          }}
           dimmer open
           size="fullscreen" className="lingvo-modal2">
           <Modal.Header>
@@ -3223,7 +3260,10 @@ class CognateAnalysisModal extends React.Component {
             { (mode === "neuro_suggestions" || mode === "multi_neuro_suggestions") && computing && (
               <Button
                 content={this.context("Stop")}
-                onClick={() => this.setState({ computing: false })}
+                onClick={() => {
+                  this.setState({ computing: false });
+                  this.stopMutation();
+                }}
                 className="lingvo-button-red"
               />
             )}
@@ -3243,7 +3283,10 @@ class CognateAnalysisModal extends React.Component {
             />
             <Button
               content={this.context("Close")}
-              onClick={() => this.setState({ computing: false }, this.props.closeModal)}
+              onClick={ () => {
+                this.setState({ computing: false }, this.props.closeModal);
+                this.stopMutation();
+              }}
               className="lingvo-button-basic-black"
             />
           </Modal.Actions>
@@ -3570,5 +3613,6 @@ export default compose(
   graphql(computeComplexDistanceMutation, { name: "computeComplexDistance" }),
   graphql(computeNeuroCognateAnalysisMutation, { name: "computeNeuroCognateAnalysis" }),
   graphql(connectMutation, { name: "connectGroup" }),
+  graphql(stopNeuroCognateAnalysisMutation, { name: "stopNeuroCognateAnalysis" }),
   withApollo
 )(CognateAnalysisModal);
