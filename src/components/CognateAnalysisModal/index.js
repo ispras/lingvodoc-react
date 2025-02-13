@@ -157,6 +157,20 @@ const wordsQuery = gql`
   }
 `;
 
+const resultSuggestionsQuery = gql`
+  query resultSuggestions(
+    $resultFile: Float!
+  ) {
+    result_suggestions (
+      result_file: $resultFile
+    ) {
+      suggestion_list
+      perspective_name_list
+      transcription_count
+    }
+  }
+`;
+
 const computeCognateAnalysisMutation = gql`
   mutation computeCognateAnalysis(
     $sourcePerspectiveId: LingvodocID!
@@ -1439,6 +1453,7 @@ class CognateAnalysisModal extends React.Component {
     this.suggestions_render = this.suggestions_render.bind(this);
     this.browse_files_render = this.browse_files_render.bind(this);
     this.stopMutation = this.stopMutation.bind(this);
+    this.getResultData = this.getResultData.bind(this);
 
     this.sg_connect = this.sg_connect.bind(this);
   }
@@ -2440,7 +2455,7 @@ class CognateAnalysisModal extends React.Component {
         // and we don't have to initialize prediction model for every single word
 
         const groups = [];
-        const group_size = 4;
+        const group_size = 8; //words.length //4
 
         for (let i = 0; i < words.length; i += group_size) {
           groups.push(words.slice(i, i + group_size));
@@ -3167,6 +3182,31 @@ class CognateAnalysisModal extends React.Component {
     }
   }
 
+  async getResultData() {
+    const {
+      data: {
+        suggestion_list,
+        perspective_name_list,
+        transcription_count
+      }
+    } = await client.query({
+      query: getResultSuggestions,
+      variables: { resultFile: this.props.resultFile }
+    });
+
+    this.setState({
+      suggestion_list,
+      perspective_name_list,
+      transcription_count,
+      dictionary_count: perspective_name_list.length,
+      suggestion_field_id: this.state.groupFieldIdStr.split(','),
+      ...this.handleSuggestionResult({ suggestion_list }),
+      cleanResult: false,
+      computing: false,
+      result: ""
+    });
+  }
+
   render() {
     if (!this.state.initialized) {
       return (
@@ -3176,7 +3216,12 @@ class CognateAnalysisModal extends React.Component {
       );
     }
 
-    const { mode } = this.props;
+    const { mode, resultFile } = this.props;
+    const viewMode = (mode === "view_suggestions");
+
+    if (viewMode && resultFile) {
+      getResultData();
+    }
 
     const {
       computing,
@@ -3215,7 +3260,7 @@ class CognateAnalysisModal extends React.Component {
       <div>
         <Modal
           onKeyDown = { e => {
-            if (e.key === 'Enter' && !disabledCompute) this.handleCreate(); }}
+            if (e.key === 'Enter' && !disabledCompute && !viewMode) this.handleCreate(); }}
           tabIndex = "0"
           closeIcon
           onClose={ () => {
@@ -3251,45 +3296,51 @@ class CognateAnalysisModal extends React.Component {
               ? this.context("Neuro cognate suggestions")
               : mode === "multi_neuro_suggestions"
               ? this.context("Neuro cognate multi-language suggestions")
+              : mode === "view_suggestions"
+              ? this.context("View cognate suggestions")
               : this.context("Cognate analysis")}
           </Modal.Header>
 
-          { lang_mode === "none" ? this.browse_files_render() : this.language_render(lang_mode === "multi") }
+          { !viewMode && (
+            <>
+              { lang_mode === "none" ? this.browse_files_render() : this.language_render(lang_mode === "multi") }
 
-          <Modal.Actions>
-            { (mode === "neuro_suggestions" || mode === "multi_neuro_suggestions") && computing && (
-              <Button
-                content={this.context("Stop")}
-                onClick={() => {
-                  this.setState({ computing: false });
-                  this.stopMutation();
-                }}
-                className="lingvo-button-red"
-              />
-            )}
-            <Button
-              content={
-                computing ? (
-                  <span>
-                    {this.context("Computing")}{status}... <Icon name="spinner" loading />
-                  </span>
-                ) : (
-                  this.context("Compute")
-                )
-              }
-              onClick={this.handleCreate}
-              disabled={disabledCompute}
-              className="lingvo-button-violet"
-            />
-            <Button
-              content={this.context("Close")}
-              onClick={ () => {
-                this.setState({ computing: false }, this.props.closeModal);
-                this.stopMutation();
-              }}
-              className="lingvo-button-basic-black"
-            />
-          </Modal.Actions>
+              <Modal.Actions>
+                { (mode === "neuro_suggestions" || mode === "multi_neuro_suggestions") && computing && (
+                  <Button
+                    content={this.context("Stop")}
+                    onClick={() => {
+                      this.setState({ computing: false });
+                      this.stopMutation();
+                    }}
+                    className="lingvo-button-red"
+                  />
+                )}
+                <Button
+                  content={
+                    computing ? (
+                      <span>
+                        {this.context("Computing")}{status}... <Icon name="spinner" loading />
+                      </span>
+                    ) : (
+                      this.context("Compute")
+                    )
+                  }
+                  onClick={this.handleCreate}
+                  disabled={disabledCompute}
+                  className="lingvo-button-violet"
+                />
+                <Button
+                  content={this.context("Close")}
+                  onClick={ () => {
+                    this.setState({ computing: false }, this.props.closeModal);
+                    this.stopMutation();
+                  }}
+                  className="lingvo-button-basic-black"
+                />
+              </Modal.Actions>
+            </>
+          )}
 
           { (/swadesh$/.test(mode) || /morphology$/.test(mode) || this.state.library_present
             ) && this.state.result !== null && ! this.state.cleanResult && (
@@ -3593,6 +3644,7 @@ CognateAnalysisModal.contextType = TranslationContext;
 CognateAnalysisModal.propTypes = {
   perspectiveId: PropTypes.array.isRequired,
   closeModal: PropTypes.func.isRequired,
+  resultFile: PropTypes.string,
   computeCognateAnalysis: PropTypes.func.isRequired,
   computeSwadeshAnalysis: PropTypes.func.isRequired,
   computeMorphCognateAnalysis: PropTypes.func.isRequired,

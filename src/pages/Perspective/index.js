@@ -20,8 +20,8 @@ function submitFilter(value, isCaseSens, isRegexp) {
   return setFilter({value, isCaseSens, isRegexp});
 }
 
-function openCognateAnalysisModal(perspectiveId, mode = "") {
-  return cognateAnalysisOpenModal(perspectiveId, mode);
+function openCognateAnalysisModal(perspectiveId, mode = "", resultFile = null) {
+  return cognateAnalysisOpenModal(perspectiveId, mode, resultFile);
 }
 
 function openPhonemicAnalysisModal(perspectiveId) {
