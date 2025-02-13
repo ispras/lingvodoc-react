@@ -19,7 +19,7 @@ const Wrapper = styled.div`
 
 const onClearTasks = (tasks, remove) => {
   tasks.forEach(task => {
-    if (task.current_stage == task.total_stages && task.progress === 100) {
+    if (task.current_stage == task.total_stages && task.progress === 100 || task.progress < 0) {
       remove(task.id);
     }
   });
@@ -60,7 +60,7 @@ const TasksSidebar = ({ visible, tasks, toggle, remove, set, err }) => {
         {(tasks && tasks.length && (
           <Button
             onClick={() => onClearTasks(tasks, remove)}
-            disabled={!tasks.some(task => task.current_stage == task.total_stages && task.progress === 100)}
+            disabled={!tasks.some(task => task.current_stage == task.total_stages && task.progress === 100 || task.progress < 0)}
             className="lingvo-button-violet-dashed"
           >
             {getTranslation("Clear completed")}

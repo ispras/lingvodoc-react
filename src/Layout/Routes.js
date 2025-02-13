@@ -31,6 +31,7 @@ import Organizations from "pages/Organizations";
 import Perspective from "pages/Perspective";
 import Requests from "pages/Requests";
 import Search from "pages/Search";
+import Suggestions from "pages/Suggestions";
 import SupportRoute from "pages/SupportRoute";
 import ToolsRoute from "pages/ToolsRoute";
 import TopSectionSelector from "pages/TopSectionSelector";
@@ -65,6 +66,7 @@ const AppRoutes = () => (
     <Route path="/import_corpora" element={<CorpImport />} />
     <Route path="/import_dialeqt" element={<DialeqtImport />} />
     <Route path="/dictionary/:pcid/:poid/perspective/:cid/:oid/*" element={<Perspective />} />
+    <Route path="/suggestions/:sugg" element={<Suggestions />} />
     <Route path="/files" element={<Files />} />
     <Route path="/edit_translations" element={<EditTranslations />} />
     <Route path="/organizations" element={<Organizations />} />
