@@ -2,29 +2,31 @@ import React from "react";
 import { useLocation } from "react-router-dom";
 import { openModal as cognateAnalysisOpenModal } from "ducks/cognateAnalysis";
 import { matchPath } from "react-router-dom";
-import { compose } from "recompose";
 import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
 
 function getSugg(location) {
   const match = matchPath(
     {
       path: "/suggestions/:sugg"
     },
-    location.path
+    location.pathname
   );
   return match && match.params && match.params.sugg;
 }
 
-const ViewSuggestions = ({ cognateAnalysisOpenModal }) => {
+const ViewSuggestions = ({ actions }) => {
   const location = useLocation();
-  cognateAnalysisOpenModal(null, "view_suggestions", getSugg(location));
+  actions.cognateAnalysisOpenModal(null, "view_suggestions", getSugg(location) || null);
   return null;
 };
 
-const ViewSuggestionsWrapper = compose(
-  connect(null, dispatch => ({
-    actions: bindActionCreators({ cognateAnalysisOpenModal }, dispatch)
-  }))
+export default connect(
+  null,
+  dispatch => ({
+    actions: bindActionCreators({
+      cognateAnalysisOpenModal,
+    },
+    dispatch)
+  })
 )(ViewSuggestions);
-
-export default ViewSuggestionsWrapper;

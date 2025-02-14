@@ -159,15 +159,11 @@ const wordsQuery = gql`
 
 const resultSuggestionsQuery = gql`
   query resultSuggestions(
-    $resultFile: Float!
+    $resultFile: String!
   ) {
     result_suggestions (
       result_file: $resultFile
-    ) {
-      suggestion_list
-      perspective_name_list
-      transcription_count
-    }
+    )
   }
 `;
 
@@ -285,7 +281,6 @@ const computeNeuroCognateAnalysisMutation = gql`
     $baseLanguageId: LingvodocID
     $inputPairs: ObjectVal
     $truthThreshold: Float
-    $stamp: Float
   ) {
     neuro_cognate_analysis(
       source_perspective_id: $sourcePerspectiveId
@@ -294,14 +289,12 @@ const computeNeuroCognateAnalysisMutation = gql`
       base_language_id: $baseLanguageId
       input_pairs: $inputPairs
       truth_threshold: $truthThreshold
-      stamp: $stamp
     ) {
       triumph
       message
       suggestion_list
       perspective_name_list
       transcription_count
-      stamp
     }
   }
 `;
@@ -1473,7 +1466,12 @@ class CognateAnalysisModal extends React.Component {
       this.props.mode === "multi_morphology" ||
       this.props.mode === "multi_neuro_suggestions";
 
-    (multi ? this.initialize_multi : this.initialize_single)();
+    const viewMode = (this.props.mode === "view_suggestions")
+
+    if (!viewMode) {
+      (multi ? this.initialize_multi : this.initialize_single)();
+    }
+
     this.setState({ lang_mode: multi ? "multi" : "single" });
   }
 
@@ -2491,15 +2489,12 @@ class CognateAnalysisModal extends React.Component {
                   sourcePerspectiveId: perspectiveId,
                   baseLanguageId: this.baseLanguageId,
                   truthThreshold,
-                  perspectiveInfoList,
-                  stamp: start
+                  perspectiveInfoList
                 }
               });
 
-              console.log(data.neuro_cognate_analysis.stamp, this.state.computing);
-
               // On Stop button click
-              if (!this.state.computing || data.neuro_cognate_analysis.stamp !== this.state.computing) {
+              if (!this.state.computing) {
                 console.log("Killed!");
                 return;
               }
@@ -3185,12 +3180,14 @@ class CognateAnalysisModal extends React.Component {
   async getResultData() {
     const {
       data: {
-        suggestion_list,
-        perspective_name_list,
-        transcription_count
+        result_suggestions: {
+          suggestion_list,
+          perspective_name_list,
+          transcription_count
+        }
       }
-    } = await client.query({
-      query: getResultSuggestions,
+    } = await this.props.client.query({
+      query: resultSuggestionsQuery,
       variables: { resultFile: this.props.resultFile }
     });
 
@@ -3220,7 +3217,7 @@ class CognateAnalysisModal extends React.Component {
     const viewMode = (mode === "view_suggestions");
 
     if (viewMode && resultFile) {
-      getResultData();
+      this.getResultData();
     }
 
     const {
