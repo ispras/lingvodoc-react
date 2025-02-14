@@ -2455,7 +2455,7 @@ class CognateAnalysisModal extends React.Component {
         // and we don't have to initialize prediction model for every single word
 
         const groups = [];
-        const group_size = 8; //words.length //4
+        const group_size = words.length; //4
 
         for (let i = 0; i < words.length; i += group_size) {
           groups.push(words.slice(i, i + group_size));
