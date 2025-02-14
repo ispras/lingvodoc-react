@@ -55,7 +55,7 @@ function Task(props) {
           <i className="lingvo-icon-close" />
         </Button>
         <div className="lingvo-task__content">
-          <div className="lingvo-task__details">{task_details}</div>
+          <div className="lingvo-task__details"><pre style={{ whiteSpace: "pre-wrap" }}>{task_details}</pre></div>
           <Progress
             percent={progress}
             progress="percent"
