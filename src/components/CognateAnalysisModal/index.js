@@ -1453,7 +1453,7 @@ class CognateAnalysisModal extends React.Component {
 
   componentDidMount() {
 
-    if (this.props.mode === "complex_distance") {
+    if (this.props.mode === "complex_distance" || this.props.mode === "view_suggestions") {
       this.setState({ lang_mode: "none", initialized: true });
       return;
     }
@@ -1466,11 +1466,7 @@ class CognateAnalysisModal extends React.Component {
       this.props.mode === "multi_morphology" ||
       this.props.mode === "multi_neuro_suggestions";
 
-    const viewMode = (this.props.mode === "view_suggestions")
-
-    if (!viewMode) {
-      (multi ? this.initialize_multi : this.initialize_single)();
-    }
+    (multi ? this.initialize_multi : this.initialize_single)();
 
     this.setState({ lang_mode: multi ? "multi" : "single" });
   }
