@@ -69,11 +69,14 @@ function Task(props) {
         <Button
           className="lingvo-task__delete"
           onClick={() => {
-            stopNeuroCognateAnalysis({
-              variables: {
-                stamp: id
-              }
-            });
+            // For special tasks
+            if (/\bneuro\b/i.test(task_family) && progress < 100) {
+              stopNeuroCognateAnalysis({
+                variables: {
+                  stamp: id
+                }
+              });
+            }
             remove(id);
           }}
         >
