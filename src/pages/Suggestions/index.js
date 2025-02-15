@@ -4,6 +4,7 @@ import { openModal as cognateAnalysisOpenModal } from "ducks/cognateAnalysis";
 import { matchPath } from "react-router-dom";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import TopSectionSelector from "pages/TopSectionSelector";
 
 function getSugg(location) {
   const match = matchPath(
@@ -18,7 +19,7 @@ function getSugg(location) {
 const ViewSuggestions = ({ actions }) => {
   const location = useLocation();
   actions.cognateAnalysisOpenModal(null, "view_suggestions", getSugg(location) || null);
-  return null;
+  return <TopSectionSelector />;
 };
 
 export default connect(
