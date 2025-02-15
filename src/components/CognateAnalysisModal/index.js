@@ -299,18 +299,6 @@ const computeNeuroCognateAnalysisMutation = gql`
   }
 `;
 
-const stopNeuroCognateAnalysisMutation = gql`
-  mutation stopNeuroCognateAnalysis (
-    $stamp: Float!
-  ) {
-    stop_mutation(
-      stamp: $stamp
-    ) {
-      triumph
-    }
-  }
-`;
-
 const computeComplexDistanceMutation = gql`
   mutation complexDistance (
     $resultPool: [ObjectVal]!
@@ -1445,7 +1433,6 @@ class CognateAnalysisModal extends React.Component {
 
     this.suggestions_render = this.suggestions_render.bind(this);
     this.browse_files_render = this.browse_files_render.bind(this);
-    this.stopMutation = this.stopMutation.bind(this);
     this.getResultData = this.getResultData.bind(this);
 
     this.sg_connect = this.sg_connect.bind(this);
@@ -3161,18 +3148,6 @@ class CognateAnalysisModal extends React.Component {
     )
   }
 
-  stopMutation() {
-    const { computing } = this.state;
-
-    if (typeof computing !== "boolean") {
-      this.props.stopNeuroCognateAnalysis({
-        variables: {
-          stamp: computing
-        }
-      });
-    }
-  }
-
   async getResultData() {
     const {
       data: {
@@ -3258,7 +3233,6 @@ class CognateAnalysisModal extends React.Component {
           closeIcon
           onClose={ () => {
             this.setState({ computing: false }, this.props.closeModal);
-            this.stopMutation();
           }}
           dimmer open
           size="fullscreen" className="lingvo-modal2">
@@ -3304,7 +3278,6 @@ class CognateAnalysisModal extends React.Component {
                     content={this.context("Stop")}
                     onClick={() => {
                       this.setState({ computing: false });
-                      this.stopMutation();
                     }}
                     className="lingvo-button-red"
                   />
@@ -3327,7 +3300,6 @@ class CognateAnalysisModal extends React.Component {
                   content={this.context("Close")}
                   onClick={ () => {
                     this.setState({ computing: false }, this.props.closeModal);
-                    this.stopMutation();
                   }}
                   className="lingvo-button-basic-black"
                 />
@@ -3658,6 +3630,5 @@ export default compose(
   graphql(computeComplexDistanceMutation, { name: "computeComplexDistance" }),
   graphql(computeNeuroCognateAnalysisMutation, { name: "computeNeuroCognateAnalysis" }),
   graphql(connectMutation, { name: "connectGroup" }),
-  graphql(stopNeuroCognateAnalysisMutation, { name: "stopNeuroCognateAnalysis" }),
   withApollo
 )(CognateAnalysisModal);
