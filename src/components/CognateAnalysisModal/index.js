@@ -3256,6 +3256,10 @@ class CognateAnalysisModal extends React.Component {
                 />
               </Modal.Actions>
             </>
+          ) || (
+            <Modal.Content>
+              {this.grouping_field_render()}
+            </Modal.Content>
           )}
 
           { (/swadesh$/.test(mode) || /morphology$/.test(mode) || this.state.library_present
