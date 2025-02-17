@@ -3224,7 +3224,7 @@ class CognateAnalysisModal extends React.Component {
               : mode === "multi_neuro_suggestions"
               ? this.context("Neuro cognate multi-language suggestions")
               : mode === "view_suggestions"
-              ? this.context("View cognate suggestions")
+              ? this.context("View suggestions")
               : this.context("Cognate analysis")}
           </Modal.Header>
 
