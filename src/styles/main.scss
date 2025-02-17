@@ -1638,6 +1638,18 @@ body {
         color: #57b894 !important;
       }
     }
+
+    &_failed {
+      background: #ffe3dd !important;
+
+      & .bar {
+        background: #db4e4e !important;
+      }
+
+      & .label {
+        color: #db4e4e !important;
+      }
+    }
   }
 
   &__label {
@@ -1653,6 +1665,10 @@ body {
 
     &_success {
       color: #57b894 !important;
+    }
+
+    &_failed {
+      color: #db4e4e !important;
     }
   }
 

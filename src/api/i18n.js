@@ -892,6 +892,8 @@ export const stringsToTranslate = [
   "Started dictionary update. Please check out tasks for details.",
   "Statistics",
   "Stop",
+  "Stopped manually",
+  "Stopping",
   "Storage",
   "Sub string",
   "Subject",

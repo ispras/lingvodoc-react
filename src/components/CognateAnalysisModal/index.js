@@ -3273,15 +3273,6 @@ class CognateAnalysisModal extends React.Component {
               { lang_mode === "none" ? this.browse_files_render() : this.language_render(lang_mode === "multi") }
 
               <Modal.Actions>
-                { (mode === "neuro_suggestions" || mode === "multi_neuro_suggestions") && computing && (
-                  <Button
-                    content={this.context("Stop")}
-                    onClick={() => {
-                      this.setState({ computing: false });
-                    }}
-                    className="lingvo-button-red"
-                  />
-                )}
                 <Button
                   content={
                     computing ? (

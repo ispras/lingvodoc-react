@@ -1,6 +1,6 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { connect } from "react-redux";
-import { Button, List, Progress } from "semantic-ui-react";
+import { Button, List, Progress, Icon } from "semantic-ui-react";
 import PropTypes from "prop-types";
 import { branch, compose, lifecycle, renderComponent } from "recompose";
 import { bindActionCreators } from "redux";
@@ -54,6 +54,10 @@ function Task(props) {
     stopNeuroCognateAnalysis
   } = props;
 
+  const getTranslation = useContext(TranslationContext);
+
+  const [ stopping, setStopping ] = useState(false);
+
   const links = result_link_list.map(link => (
     <div key={link} className="lingvo-task__link">
       <a href={link} key={link}>
@@ -70,7 +74,7 @@ function Task(props) {
           className="lingvo-task__delete"
           onClick={() => {
             // For special tasks
-            if (/\bneuro\b/i.test(task_family) && progress < 100) {
+            if (/\bneuro\b/i.test(task_family) && progress >= 0 && progress < 100) {
               stopNeuroCognateAnalysis({
                 variables: {
                   stamp: id
@@ -91,17 +95,42 @@ function Task(props) {
             className={
               progress && progress === 100
                 ? "lingvo-task__progress lingvo-task__progress_success"
+                : progress < 0
+                ? "lingvo-task__progress lingvo-task__progress_failed"
                 : "lingvo-task__progress"
             }
           />
           <div
             className={
-              progress && progress === 100 ? "lingvo-task__label lingvo-task__label_success" : "lingvo-task__label"
+              progress && progress === 100
+              ? "lingvo-task__label lingvo-task__label_success"
+              : progress < 0
+              ? "lingvo-task__label lingvo-task__label_failed"
+              : "lingvo-task__label"
             }
           >
             {`(${current_stage}/${total_stages}) ${status}`}
           </div>
           {links}
+          { /\bneuro\b/i.test(task_family) && progress >= 0 && progress < 100 && (
+            <Button
+              content={stopping
+                ? <span>{getTranslation("Stopping")}... <Icon name="spinner" loading /></span>
+                : getTranslation("Stop")
+              }
+              disabled={stopping}
+              onClick={() => {
+                setStopping(true);
+                stopNeuroCognateAnalysis({
+                  variables: {
+                    stamp: id
+                  }
+                });
+              }}
+              className="lingvo-button-red"
+              style={{ margin: "0 auto", display: "block", marginTop: "1em" }}
+            />
+          )}
         </div>
       </div>
 
