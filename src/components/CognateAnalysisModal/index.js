@@ -504,6 +504,7 @@ class SLSelection extends React.Component {
   render() {
     const {
       mode,
+      computing,
       perspective_list,
       perspectiveSelectionList,
       transcriptionFieldIdStrList,
@@ -517,7 +518,7 @@ class SLSelection extends React.Component {
     const p_max_count = perspectiveSelectionCountMap["_max"];
 
     return (
-      <div>
+      <div disabled={computing}>
         <div className="lingvo-cognate-checkbox lingvo-cognate-checkbox_all-langs">
           <Checkbox
             label={this.context("Select/deselect all dictionaries")}
@@ -988,7 +989,7 @@ class MLSelection extends React.Component {
     const p_max_count = perspectiveSelectionCountMap["_max"];
 
     return (
-      <div>
+      <div disabled={computing}>
         <div className="lingvo-cognate-checkbox lingvo-cognate-checkbox_all-langs">
           <Checkbox
             label={this.context("Select/deselect all dictionaries")}
@@ -1095,7 +1096,6 @@ class MLSelection extends React.Component {
             icon={<i className="lingvo-icon lingvo-icon_arrow" />}
             fluid
             placeholder={this.context("Add language")}
-            disabled={computing}
             search
             selection
             options={available_language_list
@@ -2686,12 +2686,13 @@ class CognateAnalysisModal extends React.Component {
           />
         </h2>
 
-        {this.grouping_field_render()}
+        {this.props.mode !== "neuro_suggestions" && this.grouping_field_render()}
 
         <div>
           {this.perspective_list.length > 1 && (
             <SLSelection
               mode={this.props.mode}
+              computing={this.state.computing}
               perspective_list={this.perspective_list}
               perspectiveSelectionList={perspectiveSelectionList}
               transcriptionFieldIdStrList={transcriptionFieldIdStrList}
@@ -2736,7 +2737,7 @@ class CognateAnalysisModal extends React.Component {
 
     return (
       <Modal.Content>
-        {this.grouping_field_render()}
+        {this.props.mode !== "multi_neuro_suggestions" && this.grouping_field_render()}
 
         <MLSelection
           mode={this.props.mode}
@@ -3542,7 +3543,7 @@ class CognateAnalysisModal extends React.Component {
 CognateAnalysisModal.contextType = TranslationContext;
 
 CognateAnalysisModal.propTypes = {
-  perspectiveId: PropTypes.array.isRequired,
+  perspectiveId: PropTypes.array,
   closeModal: PropTypes.func.isRequired,
   resultFile: PropTypes.string,
   computeCognateAnalysis: PropTypes.func.isRequired,

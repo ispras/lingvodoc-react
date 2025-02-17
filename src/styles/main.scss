@@ -59,6 +59,12 @@
   font-style: normal;
 }
 
+div[disabled]
+{
+  pointer-events: none;
+  opacity: 0.3;
+}
+
 body {
   font-family: Rubik, Arial, sans-serif;
   font-weight: normal;
