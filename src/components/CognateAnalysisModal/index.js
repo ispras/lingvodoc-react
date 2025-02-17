@@ -1476,20 +1476,21 @@ class CognateAnalysisModal extends React.Component {
 
     /* Selecting default grouping field with 'cognate' in its name, or the first field. */
 
-    let groupFieldIdStr = "";
+    let groupFieldId = null;
 
     for (const field of this.groupFields) {
       if (field.english_translation.toLowerCase().includes("cognate")) {
-        groupFieldIdStr = id2str(field.id);
+        groupFieldId = field.id;
         break;
       }
     }
 
-    if (!groupFieldIdStr && this.groupFields.length > 0) {
-      groupFieldIdStr = id2str(this.groupFields[0].id);
+    if (!groupFieldId && this.groupFields.length > 0) {
+      groupFieldId = this.groupFields[0].id;
     }
 
-    this.state.groupFieldIdStr = groupFieldIdStr;
+    this.state.groupFieldIdStr = id2str(groupFieldId);
+    this.state.suggestion_field_id = groupFieldId;
 
     /* Finding the root language of the language group we are to perform cognate analysis in. */
 
@@ -2186,6 +2187,7 @@ class CognateAnalysisModal extends React.Component {
     }
   }
 
+  /*
   handleNeuroResult({ neuro_cognate_analysis })
   {
     const { triumph, message, suggestion_list, perspective_name_list, transcription_count } = neuro_cognate_analysis;
@@ -2215,6 +2217,7 @@ class CognateAnalysisModal extends React.Component {
 
     return true;
   }
+  */
 
   handleCognateResult({ data: { cognate_analysis }})
   {
@@ -3091,28 +3094,41 @@ class CognateAnalysisModal extends React.Component {
   }
 
   async getResultData() {
+
+    const { client, resultFile } = this.props;
+
     const {
       data: {
         result_suggestions: {
           suggestion_list,
           perspective_name_list,
-          transcription_count
+          transcription_count,
+          source_perspective_id
         }
       }
-    } = await this.props.client.query({
+    } = await client.query({
       query: resultSuggestionsQuery,
-      variables: { resultFile: this.props.resultFile }
+      variables: { resultFile: resultFile }
     });
+
+    const {
+      data: {
+        all_fields: allFields,
+        perspective: { columns, tree, english_status }
+      }
+    } = await client.query({
+      query: cognateAnalysisDataQuery,
+      variables: { perspectiveId: source_perspective_id }
+    });
+
+    this.initialize_common(allFields, columns, tree, english_status);
 
     this.setState({
       suggestion_list,
       perspective_name_list,
       transcription_count,
       dictionary_count: perspective_name_list.length,
-      suggestion_field_id: this.state.groupFieldIdStr.split(','),
       ...this.handleSuggestionResult({ suggestion_list }),
-      cleanResult: false,
-      computing: false,
       result: ""
     });
   }
