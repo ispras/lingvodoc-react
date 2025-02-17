@@ -1440,8 +1440,13 @@ class CognateAnalysisModal extends React.Component {
 
   componentDidMount() {
 
-    if (this.props.mode === "complex_distance" || this.props.mode === "view_suggestions") {
+    if (this.props.mode === "complex_distance") {
       this.setState({ lang_mode: "none", initialized: true });
+      return;
+    }
+
+    if (this.props.mode === "view_suggestions") {
+      this.getResultData();
       return;
     }
 
@@ -3129,7 +3134,8 @@ class CognateAnalysisModal extends React.Component {
       transcription_count,
       dictionary_count: perspective_name_list.length,
       ...this.handleSuggestionResult({ suggestion_list }),
-      result: ""
+      result: "",
+      initialized: true
     });
   }
 
@@ -3142,12 +3148,8 @@ class CognateAnalysisModal extends React.Component {
       );
     }
 
-    const { mode, resultFile } = this.props;
+    const { mode } = this.props;
     const viewMode = (mode === "view_suggestions");
-
-    if (viewMode && resultFile) {
-      this.getResultData();
-    }
 
     const {
       computing,
