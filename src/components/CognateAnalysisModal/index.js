@@ -2422,90 +2422,31 @@ class CognateAnalysisModal extends React.Component {
         return;
       }
 
-      this.props.client.query({
-        query: wordsQuery,
+      this.setState({ computing: true })
+
+      computeNeuroCognateAnalysis({
         variables: {
-          perspectiveId,
-          xcriptFldId: info[2],
-          xlatFldId: info[3]
+          matchTranslations: this.state.matchTranslationsFlag,
+          sourcePerspectiveId: perspectiveId,
+          baseLanguageId: this.baseLanguageId,
+          truthThreshold,
+          perspectiveInfoList
         }
-      }).then(({ data: { words }}) => {
-
-        // We are going to get predictions for a group at once
-        // So we don't have to wait for all the process completion,
-        // and we don't have to initialize prediction model for every single word
-
-        const groups = [];
-        const group_size = words.length; //4
-
-        for (let i = 0; i < words.length; i += group_size) {
-          groups.push(words.slice(i, i + group_size));
-        }
-
-        const start = Date.now();
-        const total = groups.length;
-
-        // Initialize states for new process
-        this.setState(
-          {
-            computing: start,
-            result: null,
-            estimate: null,
-            suggestion_list: null,
-            sg_select_list: null,
-            sg_state_list: null,
-            sg_count: null,
-            sg_entry_map: null,
-            dictionary_count: 0,
-            transcription_count: 0,
-            total
-          },
-          // Running after setstate
-          async () => {
-            for (const [done, pairs] of groups.entries()) {
-              this.setState({ done });
-
-              const { data, error } = await computeNeuroCognateAnalysis({
-                variables: {
-                  inputPairs: pairs,
-                  matchTranslations: this.state.matchTranslationsFlag,
-                  sourcePerspectiveId: perspectiveId,
-                  baseLanguageId: this.baseLanguageId,
-                  truthThreshold,
-                  perspectiveInfoList
-                }
-              });
-
-              // On Stop button click
-              if (!this.state.computing) {
-                console.log("Killed!");
-                return;
-              }
-
-              if (error) {
-                this.handleError(error);
-                return;
-              }
-
-              // If any troubles in response
-              if (!this.handleNeuroResult(data)) {
-                this.setState({ computing: false });
-                return;
-              }
-
-              const duration = (Date.now() - start) / 1000;
-              const estimate = duration / (done + 1) * total - duration;
-              const days = Math.trunc(estimate / 86400);
-              const hours = Math.trunc((estimate - days * 86400) / 3600);
-              const minutes = Math.round((estimate - days * 86400 - hours * 3600) / 60);
-
-              this.setState({ estimate: `${days}d:${hours}h:${minutes}m` });
-            }
-
-            this.setState({ computing: false });
+      }).then(
+        ({ data: {neuro_cognate_analysis: {triumph, message} }}) => {
+          if (triumph) {
+            window.logger.suc(this.context("Neuro cognate analysis is launched. Please check out tasks for details."));
+            this.props.closeModal();
+          } else {
+            window.logger.err(message);
           }
-        );
-      });
+          this.setState({ computing: false });
+        },
+        () => {
+          window.logger.err(this.context("Failed to launch neuro cognate analysis!"));
+          this.setState({ computing: false });
+        }
+      );
 
     } else {
 
@@ -3320,19 +3261,22 @@ class CognateAnalysisModal extends React.Component {
                       <div className="lingvo-cognate-results__text">{this.context("dictionaries")}</div>
                     </div>
                     <div className="lingvo-cognate-results__item">
-                      <div className="lingvo-cognate-results__number">{this.state.group_count}</div>
-                      <div className="lingvo-cognate-results__text">{this.context("cognate groups")}</div>
-                    </div>
-                    <div className="lingvo-cognate-results__item">
                       <div className="lingvo-cognate-results__number">{this.state.transcription_count}</div>
                       <div className="lingvo-cognate-results__text">{this.context("transcriptions analysed")}</div>
                     </div>
-
-                    <div className="lingvo-cognate-text" style={{ paddingTop: "6px", paddingBottom: "3px" }}>
-                      {`${this.state.not_enough_count} ${this.context(
-                        "cognate groups were excluded from the analysis due to not having lexical entries in at least two selected dictionaries"
-                      )}.`}
-                    </div>
+                    { mode !== "view_suggestions" && (
+                      <>
+                        <div className="lingvo-cognate-results__item">
+                          <div className="lingvo-cognate-results__number">{this.state.group_count}</div>
+                          <div className="lingvo-cognate-results__text">{this.context("cognate groups")}</div>
+                        </div>
+                        <div className="lingvo-cognate-text" style={{ paddingTop: "6px", paddingBottom: "3px" }}>
+                          {`${this.state.not_enough_count} ${this.context(
+                            "cognate groups were excluded from the analysis due to not having lexical entries in at least two selected dictionaries"
+                          )}.`}
+                        </div>
+                      </>
+                    )}
                   </div>
 
                   <div className="lingvo-cognate-results">
@@ -3362,7 +3306,7 @@ class CognateAnalysisModal extends React.Component {
                     )}
                   </div>
 
-                  {this.state.result.length <= 0 && (
+                  {this.state.result.length <= 0 && mode !== "view_suggestions" &&(
                     <div className="lingvo-cognate-text" style={{ paddingTop: "6px", paddingBottom: "3px" }}>
                       {this.context("No data for cognate analysis")}.
                     </div>
