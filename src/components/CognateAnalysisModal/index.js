@@ -143,6 +143,7 @@ const languageQuery = gql`
   }
 `;
 
+/*
 const wordsQuery = gql`
   query words(
     $perspectiveId: LingvodocID!
@@ -156,6 +157,7 @@ const wordsQuery = gql`
     )
   }
 `;
+*/
 
 const resultSuggestionsQuery = gql`
   query resultSuggestions(
@@ -164,6 +166,22 @@ const resultSuggestionsQuery = gql`
     result_suggestions (
       result_file: $resultFile
     )
+  }
+`;
+
+const saveSuggestionsStateMutation = gql`
+  mutation saveSuggestionsState(
+    $resultFile: String!
+    $suggestionsState: ObjectVal
+    $debugFlag: Boolean
+  ) {
+    save_suggestions_state(
+      result_file: $resultFile
+      suggestions_state: $suggestionsState
+      debug_flag: $debugFlag
+    ) {
+      triumph
+    }
   }
 `;
 
@@ -281,6 +299,10 @@ const computeNeuroCognateAnalysisMutation = gql`
     $baseLanguageId: LingvodocID
     $inputPairs: ObjectVal
     $truthThreshold: Float
+    $onlyOrphansFlag: Boolean
+    $groupFieldId: LingvodocID
+    $debugFlag: Boolean
+    $intermediateFlag: Boolean
   ) {
     neuro_cognate_analysis(
       source_perspective_id: $sourcePerspectiveId
@@ -289,12 +311,13 @@ const computeNeuroCognateAnalysisMutation = gql`
       base_language_id: $baseLanguageId
       input_pairs: $inputPairs
       truth_threshold: $truthThreshold
+      only_orphans_flag: $onlyOrphansFlag
+      group_field_id: $groupFieldId
+      debug_flag: $debugFlag
+      intermediate_flag: $intermediateFlag
     ) {
       triumph
       message
-      suggestion_list
-      perspective_name_list
-      transcription_count
     }
   }
 `;
@@ -2135,10 +2158,8 @@ class CognateAnalysisModal extends React.Component {
     sg_count: sg_count_cur,
     sg_entry_map: sg_entry_map_cur })
   {
-    const sg_select_list = sg_select_list_cur ?? [];
-    const sg_state_list = sg_state_list_cur ?? [];
 
-    const sg_count = sg_count_cur ?? {
+    const sg_count_init = {
       left: 0,
       connecting: 0,
       connected: 0,
@@ -2146,7 +2167,20 @@ class CognateAnalysisModal extends React.Component {
       invalidated: 0
     };
 
-    const sg_entry_map = sg_entry_map_cur ?? {};
+    // Clean connecting states if is
+    const sg_count = { ...(sg_count_cur ?? sg_count_init), connecting: 0 };
+    sg_count.left = (
+      suggestion_list.length -
+      sg_count.connected -
+      sg_count.error -
+      sg_count.invalidated
+    );
+
+    const sg_state_list = (sg_state_list_cur ?? []).map(elem => (elem === "connecting") ? "left" : elem);
+
+    // Deep clone because of immutability
+    const sg_entry_map = cloneDeep(sg_entry_map_cur ?? {});
+    const sg_select_list = cloneDeep(sg_select_list_cur ?? []);
 
     /* Initializing suggestions data, if required. */
     if (suggestion_list) {
@@ -2180,8 +2214,6 @@ class CognateAnalysisModal extends React.Component {
         sg_select_list.push(sg_select_item);
         sg_state_list.push("left");
       }
-
-      sg_count.left += suggestion_list.length;
     }
 
     return {
@@ -2434,25 +2466,30 @@ class CognateAnalysisModal extends React.Component {
 
       computeNeuroCognateAnalysis({
         variables: {
-          matchTranslations: this.state.matchTranslationsFlag,
+          perspectiveInfoList,
           sourcePerspectiveId: perspectiveId,
-          baseLanguageId: this.baseLanguageId,
+          baseLanguageId: this.baseLanguageId, //really required?
           truthThreshold,
-          perspectiveInfoList
+          matchTranslations: this.state.matchTranslationsFlag,
+          onlyOrphansFlag: this.state.onlyOrphansFlag,
+          groupFieldId: groupField.id,
+          debugFlag: this.state.debugFlag,
+          intermediateFlag: this.state.intermediateFlag
         }
       }).then(
         ({ data: {neuro_cognate_analysis: {triumph, message} }}) => {
+          this.setState({ computing: false });
+
           if (triumph) {
-            window.logger.suc(this.context("Neuro cognate analysis is launched. Please check out tasks for details."));
             this.props.closeModal();
+            window.logger.suc(this.context("Neuro cognate analysis is launched. Please check out tasks for details."));
           } else {
             window.logger.err(message);
           }
-          this.setState({ computing: false });
         },
         () => {
-          window.logger.err(this.context("Failed to launch neuro cognate analysis!"));
           this.setState({ computing: false });
+          window.logger.err(this.context("Failed to launch neuro cognate analysis!"));
         }
       );
 
@@ -2528,11 +2565,10 @@ class CognateAnalysisModal extends React.Component {
    */
   match_translations_render() {
     return (
-      <>
+      <div disabled={this.state.computing}>
         {(this.props.mode === "neuro_suggestions" || this.props.mode === "multi_neuro_suggestions") && (
           <Input
             label={this.context("Truth threshold")}
-            disabled={this.state.computing}
             type='number'
             min='0.700'
             max='0.999'
@@ -2547,9 +2583,18 @@ class CognateAnalysisModal extends React.Component {
         )}
         <div className="lingvo-cognate-checkbox">
           <Checkbox
+            label={this.context("Only for orphans (words not included in existing etymology groups)")}
+            checked={this.state.onlyOrphansFlag}
+            onChange={(e, { checked }) => {
+              this.setState({ onlyOrphansFlag: checked });
+            }}
+            className="lingvo-checkbox lingvo-checkbox_labeled"
+          />
+        </div>
+        <div className="lingvo-cognate-checkbox">
+          <Checkbox
             label={this.context("Match translations")}
             checked={this.state.matchTranslationsFlag}
-            disabled={this.state.computing}
             onChange={(e, { checked }) => {
               this.setState({ matchTranslationsFlag: checked });
             }}
@@ -2586,17 +2631,6 @@ class CognateAnalysisModal extends React.Component {
                 />
               </div>
             </div>
-
-            <div className="lingvo-cognate-checkbox">
-              <Checkbox
-                label={this.context("Only for orphans (words not included in existing etymology groups)")}
-                checked={this.state.onlyOrphansFlag}
-                onChange={(e, { checked }) => {
-                  this.setState({ onlyOrphansFlag: checked });
-                }}
-                className="lingvo-checkbox lingvo-checkbox_labeled"
-              />
-            </div>
           </>
         )}
         {!this.state.suggestion_list && this.props.user.id === undefined && (
@@ -2607,7 +2641,7 @@ class CognateAnalysisModal extends React.Component {
             </p>
           </div>
         )}
-      </>
+      </div>
     );
   }
 
@@ -2616,12 +2650,11 @@ class CognateAnalysisModal extends React.Component {
    */
   admin_section_render() {
     return (
-      <>
+      <div disabled={this.state.computing}>
         <div className="lingvo-cognate-checkbox" hidden={/swadesh$/.test(this.props.mode)}>
           <Checkbox
             label={this.context("Debug flag")}
             checked={this.state.debugFlag}
-            disabled={this.state.computing}
             onChange={(e, { checked }) => {
               this.setState({ debugFlag: checked });
             }}
@@ -2632,14 +2665,13 @@ class CognateAnalysisModal extends React.Component {
           <Checkbox
             label={this.context("Save intermediate data")}
             checked={this.state.intermediateFlag}
-            disabled={this.state.computing}
             onChange={(e, { checked }) => {
               this.setState({ intermediateFlag: checked });
             }}
             className="lingvo-checkbox lingvo-checkbox_labeled"
           />
         </div>
-      </>
+      </div>
     );
   }
 
@@ -3102,38 +3134,29 @@ class CognateAnalysisModal extends React.Component {
 
     const { client, resultFile } = this.props;
 
-    const {
-      data: {
-        result_suggestions: {
-          suggestion_list,
-          perspective_name_list,
-          transcription_count,
-          source_perspective_id
-        }
-      }
-    } = await client.query({
+    const { data: { result_suggestions }} = await client.query({
       query: resultSuggestionsQuery,
-      variables: { resultFile: resultFile }
+      variables: { resultFile }
     });
+
+    const { source_perspective_id: perspectiveId, perspective_name_list } = result_suggestions;
 
     const {
       data: {
-        all_fields: allFields,
+        all_fields,
         perspective: { columns, tree, english_status }
       }
     } = await client.query({
       query: cognateAnalysisDataQuery,
-      variables: { perspectiveId: source_perspective_id }
+      variables: { perspectiveId }
     });
 
-    this.initialize_common(allFields, columns, tree, english_status);
+    this.initialize_common(all_fields, columns, tree, english_status);
 
     this.setState({
-      suggestion_list,
-      perspective_name_list,
-      transcription_count,
+      ...result_suggestions,
       dictionary_count: perspective_name_list.length,
-      ...this.handleSuggestionResult({ suggestion_list }),
+      ...this.handleSuggestionResult({ ...result_suggestions }), // override sg_<states>
       result: "",
       initialized: true
     });
@@ -3148,7 +3171,7 @@ class CognateAnalysisModal extends React.Component {
       );
     }
 
-    const { mode } = this.props;
+    const { mode, resultFile, saveSuggestionsState } = this.props;
     const viewMode = (mode === "view_suggestions");
 
     const {
@@ -3160,7 +3183,12 @@ class CognateAnalysisModal extends React.Component {
       fileSuite,
       done,
       total,
-      estimate
+      estimate,
+      sg_select_list,
+      sg_state_list,
+      sg_count,
+      sg_entry_map,
+      debugFlag
     } = this.state;
 
     const disabledCompute = (
@@ -3192,6 +3220,20 @@ class CognateAnalysisModal extends React.Component {
           tabIndex = "0"
           closeIcon
           onClose={ () => {
+            if (viewMode) {
+              saveSuggestionsState({
+                variables: {
+                  resultFile,
+                  suggestionsState: {
+                    sg_select_list,
+                    sg_state_list,
+                    sg_count,
+                    sg_entry_map
+                  },
+                  debugFlag
+                }
+              });
+            }
             this.setState({ computing: false }, this.props.closeModal);
           }}
           dimmer open
@@ -3287,18 +3329,16 @@ class CognateAnalysisModal extends React.Component {
                       <div className="lingvo-cognate-results__number">{this.state.transcription_count}</div>
                       <div className="lingvo-cognate-results__text">{this.context("transcriptions analysed")}</div>
                     </div>
+                    <div className="lingvo-cognate-results__item">
+                      <div className="lingvo-cognate-results__number">{this.state.group_count}</div>
+                      <div className="lingvo-cognate-results__text">{this.context("cognate groups")}</div>
+                    </div>
                     { mode !== "view_suggestions" && (
-                      <>
-                        <div className="lingvo-cognate-results__item">
-                          <div className="lingvo-cognate-results__number">{this.state.group_count}</div>
-                          <div className="lingvo-cognate-results__text">{this.context("cognate groups")}</div>
-                        </div>
-                        <div className="lingvo-cognate-text" style={{ paddingTop: "6px", paddingBottom: "3px" }}>
-                          {`${this.state.not_enough_count} ${this.context(
-                            "cognate groups were excluded from the analysis due to not having lexical entries in at least two selected dictionaries"
-                          )}.`}
-                        </div>
-                      </>
+                      <div className="lingvo-cognate-text" style={{ paddingTop: "6px", paddingBottom: "3px" }}>
+                        {`${this.state.not_enough_count} ${this.context(
+                          "cognate groups were excluded from the analysis due to not having lexical entries in at least two selected dictionaries"
+                        )}.`}
+                      </div>
                     )}
                   </div>
 
@@ -3572,7 +3612,8 @@ CognateAnalysisModal.propTypes = {
   computeSwadeshAnalysis: PropTypes.func.isRequired,
   computeMorphCognateAnalysis: PropTypes.func.isRequired,
   computeNeuroCognateAnalysis: PropTypes.func.isRequired,
-  computeComplexDistance: PropTypes.func.isRequired
+  computeComplexDistance: PropTypes.func.isRequired,
+  saveSuggestionsState: PropTypes.func.isRequired
 };
 
 export default compose(
@@ -3588,5 +3629,6 @@ export default compose(
   graphql(computeComplexDistanceMutation, { name: "computeComplexDistance" }),
   graphql(computeNeuroCognateAnalysisMutation, { name: "computeNeuroCognateAnalysis" }),
   graphql(connectMutation, { name: "connectGroup" }),
+  graphql(saveSuggestionsStateMutation, {name: "saveSuggestionsState"}),
   withApollo
 )(CognateAnalysisModal);
