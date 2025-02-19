@@ -281,6 +281,10 @@ const computeNeuroCognateAnalysisMutation = gql`
     $baseLanguageId: LingvodocID
     $inputPairs: ObjectVal
     $truthThreshold: Float
+    $onlyOrphansFlag: Boolean
+    $groupFieldId: LingvodocID
+    $debugFlag: Boolean
+    $intermediateFlag: Boolean
   ) {
     neuro_cognate_analysis(
       source_perspective_id: $sourcePerspectiveId
@@ -289,12 +293,13 @@ const computeNeuroCognateAnalysisMutation = gql`
       base_language_id: $baseLanguageId
       input_pairs: $inputPairs
       truth_threshold: $truthThreshold
+      only_orphans_flag: $onlyOrphansFlag
+      group_field_id: $groupFieldId
+      debug_flag: $debugFlag
+      intermediate_flag: $intermediateFlag
     ) {
       triumph
       message
-      suggestion_list
-      perspective_name_list
-      transcription_count
     }
   }
 `;
@@ -2434,25 +2439,30 @@ class CognateAnalysisModal extends React.Component {
 
       computeNeuroCognateAnalysis({
         variables: {
-          matchTranslations: this.state.matchTranslationsFlag,
+          perspectiveInfoList,
           sourcePerspectiveId: perspectiveId,
-          baseLanguageId: this.baseLanguageId,
+          baseLanguageId: this.baseLanguageId, //really required?
           truthThreshold,
-          perspectiveInfoList
+          matchTranslations: this.state.matchTranslationsFlag,
+          onlyOrphansFlag: this.state.onlyOrphansFlag,
+          groupFieldId: groupField.id,
+          debugFlag: this.state.debugFlag,
+          intermediateFlag: this.state.intermediateFlag
         }
       }).then(
         ({ data: {neuro_cognate_analysis: {triumph, message} }}) => {
+          this.setState({ computing: false });
+
           if (triumph) {
-            window.logger.suc(this.context("Neuro cognate analysis is launched. Please check out tasks for details."));
             this.props.closeModal();
+            window.logger.suc(this.context("Neuro cognate analysis is launched. Please check out tasks for details."));
           } else {
             window.logger.err(message);
           }
-          this.setState({ computing: false });
         },
         () => {
-          window.logger.err(this.context("Failed to launch neuro cognate analysis!"));
           this.setState({ computing: false });
+          window.logger.err(this.context("Failed to launch neuro cognate analysis!"));
         }
       );
 
@@ -2528,11 +2538,10 @@ class CognateAnalysisModal extends React.Component {
    */
   match_translations_render() {
     return (
-      <>
+      <div disabled={this.state.computing}>
         {(this.props.mode === "neuro_suggestions" || this.props.mode === "multi_neuro_suggestions") && (
           <Input
             label={this.context("Truth threshold")}
-            disabled={this.state.computing}
             type='number'
             min='0.700'
             max='0.999'
@@ -2547,9 +2556,18 @@ class CognateAnalysisModal extends React.Component {
         )}
         <div className="lingvo-cognate-checkbox">
           <Checkbox
+            label={this.context("Only for orphans (words not included in existing etymology groups)")}
+            checked={this.state.onlyOrphansFlag}
+            onChange={(e, { checked }) => {
+              this.setState({ onlyOrphansFlag: checked });
+            }}
+            className="lingvo-checkbox lingvo-checkbox_labeled"
+          />
+        </div>
+        <div className="lingvo-cognate-checkbox">
+          <Checkbox
             label={this.context("Match translations")}
             checked={this.state.matchTranslationsFlag}
-            disabled={this.state.computing}
             onChange={(e, { checked }) => {
               this.setState({ matchTranslationsFlag: checked });
             }}
@@ -2586,17 +2604,6 @@ class CognateAnalysisModal extends React.Component {
                 />
               </div>
             </div>
-
-            <div className="lingvo-cognate-checkbox">
-              <Checkbox
-                label={this.context("Only for orphans (words not included in existing etymology groups)")}
-                checked={this.state.onlyOrphansFlag}
-                onChange={(e, { checked }) => {
-                  this.setState({ onlyOrphansFlag: checked });
-                }}
-                className="lingvo-checkbox lingvo-checkbox_labeled"
-              />
-            </div>
           </>
         )}
         {!this.state.suggestion_list && this.props.user.id === undefined && (
@@ -2607,7 +2614,7 @@ class CognateAnalysisModal extends React.Component {
             </p>
           </div>
         )}
-      </>
+      </div>
     );
   }
 
@@ -2616,12 +2623,11 @@ class CognateAnalysisModal extends React.Component {
    */
   admin_section_render() {
     return (
-      <>
+      <div disabled={this.state.computing}>
         <div className="lingvo-cognate-checkbox" hidden={/swadesh$/.test(this.props.mode)}>
           <Checkbox
             label={this.context("Debug flag")}
             checked={this.state.debugFlag}
-            disabled={this.state.computing}
             onChange={(e, { checked }) => {
               this.setState({ debugFlag: checked });
             }}
@@ -2632,14 +2638,13 @@ class CognateAnalysisModal extends React.Component {
           <Checkbox
             label={this.context("Save intermediate data")}
             checked={this.state.intermediateFlag}
-            disabled={this.state.computing}
             onChange={(e, { checked }) => {
               this.setState({ intermediateFlag: checked });
             }}
             className="lingvo-checkbox lingvo-checkbox_labeled"
           />
         </div>
-      </>
+      </div>
     );
   }
 
@@ -3108,6 +3113,7 @@ class CognateAnalysisModal extends React.Component {
           suggestion_list,
           perspective_name_list,
           transcription_count,
+          group_count,
           source_perspective_id
         }
       }
@@ -3132,6 +3138,7 @@ class CognateAnalysisModal extends React.Component {
       suggestion_list,
       perspective_name_list,
       transcription_count,
+      group_count,
       dictionary_count: perspective_name_list.length,
       ...this.handleSuggestionResult({ suggestion_list }),
       result: "",
@@ -3287,18 +3294,16 @@ class CognateAnalysisModal extends React.Component {
                       <div className="lingvo-cognate-results__number">{this.state.transcription_count}</div>
                       <div className="lingvo-cognate-results__text">{this.context("transcriptions analysed")}</div>
                     </div>
+                    <div className="lingvo-cognate-results__item">
+                      <div className="lingvo-cognate-results__number">{this.state.group_count}</div>
+                      <div className="lingvo-cognate-results__text">{this.context("cognate groups")}</div>
+                    </div>
                     { mode !== "view_suggestions" && (
-                      <>
-                        <div className="lingvo-cognate-results__item">
-                          <div className="lingvo-cognate-results__number">{this.state.group_count}</div>
-                          <div className="lingvo-cognate-results__text">{this.context("cognate groups")}</div>
-                        </div>
-                        <div className="lingvo-cognate-text" style={{ paddingTop: "6px", paddingBottom: "3px" }}>
-                          {`${this.state.not_enough_count} ${this.context(
-                            "cognate groups were excluded from the analysis due to not having lexical entries in at least two selected dictionaries"
-                          )}.`}
-                        </div>
-                      </>
+                      <div className="lingvo-cognate-text" style={{ paddingTop: "6px", paddingBottom: "3px" }}>
+                        {`${this.state.not_enough_count} ${this.context(
+                          "cognate groups were excluded from the analysis due to not having lexical entries in at least two selected dictionaries"
+                        )}.`}
+                      </div>
                     )}
                   </div>
 
