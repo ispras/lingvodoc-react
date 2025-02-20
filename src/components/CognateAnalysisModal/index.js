@@ -143,6 +143,7 @@ const languageQuery = gql`
   }
 `;
 
+/*
 const wordsQuery = gql`
   query words(
     $perspectiveId: LingvodocID!
@@ -156,6 +157,7 @@ const wordsQuery = gql`
     )
   }
 `;
+*/
 
 const resultSuggestionsQuery = gql`
   query resultSuggestions(
@@ -164,6 +166,22 @@ const resultSuggestionsQuery = gql`
     result_suggestions (
       result_file: $resultFile
     )
+  }
+`;
+
+const saveSuggestionsStateMutation = gql`
+  mutation saveSuggestionsState(
+    $resultFile: String!
+    $suggestionsState: ObjectVal
+    $debugFlag: Boolean
+  ) {
+    save_suggestions_state(
+      result_file: $resultFile
+      suggestions_state: $suggestionsState
+      debug_flag: $debugFlag
+    ) {
+      triumph
+    }
   }
 `;
 
@@ -3107,40 +3125,29 @@ class CognateAnalysisModal extends React.Component {
 
     const { client, resultFile } = this.props;
 
-    const {
-      data: {
-        result_suggestions: {
-          suggestion_list,
-          perspective_name_list,
-          transcription_count,
-          group_count,
-          source_perspective_id
-        }
-      }
-    } = await client.query({
+    const { data: { result_suggestions }} = await client.query({
       query: resultSuggestionsQuery,
-      variables: { resultFile: resultFile }
+      variables: { resultFile }
     });
+
+    const { source_perspective_id: perspectiveId, perspective_name_list } = result_suggestions;
 
     const {
       data: {
-        all_fields: allFields,
+        all_fields,
         perspective: { columns, tree, english_status }
       }
     } = await client.query({
       query: cognateAnalysisDataQuery,
-      variables: { perspectiveId: source_perspective_id }
+      variables: { perspectiveId }
     });
 
-    this.initialize_common(allFields, columns, tree, english_status);
+    this.initialize_common(all_fields, columns, tree, english_status);
 
     this.setState({
-      suggestion_list,
-      perspective_name_list,
-      transcription_count,
-      group_count,
+      ...result_suggestions,
       dictionary_count: perspective_name_list.length,
-      ...this.handleSuggestionResult({ suggestion_list }),
+      ...this.handleSuggestionResult({ ...result_suggestions }), // override sg_<states>
       result: "",
       initialized: true
     });
@@ -3155,7 +3162,7 @@ class CognateAnalysisModal extends React.Component {
       );
     }
 
-    const { mode } = this.props;
+    const { mode, resultFile, saveSuggestionsState } = this.props;
     const viewMode = (mode === "view_suggestions");
 
     const {
@@ -3167,7 +3174,12 @@ class CognateAnalysisModal extends React.Component {
       fileSuite,
       done,
       total,
-      estimate
+      estimate,
+      sg_select_list,
+      sg_state_list,
+      sg_count,
+      sg_entry_map,
+      debugFlag
     } = this.state;
 
     const disabledCompute = (
@@ -3199,6 +3211,20 @@ class CognateAnalysisModal extends React.Component {
           tabIndex = "0"
           closeIcon
           onClose={ () => {
+            if (viewMode) {
+              saveSuggestionsState({
+                variables: {
+                  resultFile,
+                  suggestionsState: {
+                    sg_select_list,
+                    sg_state_list,
+                    sg_count,
+                    sg_entry_map
+                  },
+                  debugFlag
+                }
+              });
+            }
             this.setState({ computing: false }, this.props.closeModal);
           }}
           dimmer open
@@ -3577,7 +3603,8 @@ CognateAnalysisModal.propTypes = {
   computeSwadeshAnalysis: PropTypes.func.isRequired,
   computeMorphCognateAnalysis: PropTypes.func.isRequired,
   computeNeuroCognateAnalysis: PropTypes.func.isRequired,
-  computeComplexDistance: PropTypes.func.isRequired
+  computeComplexDistance: PropTypes.func.isRequired,
+  saveSuggestionsState: PropTypes.func.isRequired
 };
 
 export default compose(
@@ -3593,5 +3620,6 @@ export default compose(
   graphql(computeComplexDistanceMutation, { name: "computeComplexDistance" }),
   graphql(computeNeuroCognateAnalysisMutation, { name: "computeNeuroCognateAnalysis" }),
   graphql(connectMutation, { name: "connectGroup" }),
+  graphql(saveSuggestionsStateMutation, {name: "saveSuggestionsState"}),
   withApollo
 )(CognateAnalysisModal);
