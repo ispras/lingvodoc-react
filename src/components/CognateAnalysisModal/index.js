@@ -2158,10 +2158,8 @@ class CognateAnalysisModal extends React.Component {
     sg_count: sg_count_cur,
     sg_entry_map: sg_entry_map_cur })
   {
-    const sg_select_list = sg_select_list_cur ?? [];
-    const sg_state_list = sg_state_list_cur ?? [];
 
-    const sg_count = sg_count_cur ?? {
+    const sg_count_init = {
       left: 0,
       connecting: 0,
       connected: 0,
@@ -2169,7 +2167,20 @@ class CognateAnalysisModal extends React.Component {
       invalidated: 0
     };
 
-    const sg_entry_map = sg_entry_map_cur ?? {};
+    // Clean connecting states if is
+    const sg_count = { ...(sg_count_cur ?? sg_count_init), connecting: 0 };
+    sg_count.left = (
+      suggestion_list.length -
+      sg_count.connected -
+      sg_count.error -
+      sg_count.invalidated
+    );
+
+    const sg_state_list = (sg_state_list_cur ?? []).map(elem => (elem === "connecting") ? "left" : elem);
+
+    // Deep clone because of immutability
+    const sg_entry_map = cloneDeep(sg_entry_map_cur ?? {});
+    const sg_select_list = cloneDeep(sg_select_list_cur ?? []);
 
     /* Initializing suggestions data, if required. */
     if (suggestion_list) {
@@ -2203,8 +2214,6 @@ class CognateAnalysisModal extends React.Component {
         sg_select_list.push(sg_select_item);
         sg_state_list.push("left");
       }
-
-      sg_count.left += suggestion_list.length;
     }
 
     return {
