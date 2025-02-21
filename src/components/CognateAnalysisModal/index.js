@@ -2184,7 +2184,7 @@ class CognateAnalysisModal extends React.Component {
 
     /* Initializing suggestions data, if required. */
     if (suggestion_list) {
-      for (var i = 0; i < suggestion_list.length; i++) {
+      for (var i = sg_state_list.length; i < suggestion_list.length; i++) {
         const [perspective_index, word, word_entry_id, word_group, single_list, group_list] = suggestion_list[i];
 
         const sg_select_item = {};
@@ -2223,38 +2223,6 @@ class CognateAnalysisModal extends React.Component {
       sg_entry_map
     }
   }
-
-  /*
-  handleNeuroResult({ neuro_cognate_analysis })
-  {
-    const { triumph, message, suggestion_list, perspective_name_list, transcription_count } = neuro_cognate_analysis;
-    const suggestion_list_cur = (this.state.suggestion_list ?? []).concat(suggestion_list);
-    const transcription_count_cur = this.state.transcription_count + transcription_count;
-    const { sg_select_list, sg_state_list, sg_count, sg_entry_map } = this.state;
-
-    if (!triumph && message.length) {
-      window.logger.err(this.context(message));
-      return false;
-    }
-
-    if (triumph && suggestion_list.length) {
-      console.log(JSON.stringify(suggestion_list));
-    }
-
-    this.setState({
-      ...neuro_cognate_analysis,
-      suggestion_list: suggestion_list_cur, //overriding
-      transcription_count: transcription_count_cur, //overriding
-      dictionary_count: perspective_name_list.length,
-      suggestion_field_id: this.state.groupFieldIdStr.split(','),
-      ...this.handleSuggestionResult({ suggestion_list, sg_select_list, sg_state_list, sg_count, sg_entry_map }),
-      cleanResult: false,
-      result: ""
-    });
-
-    return true;
-  }
-  */
 
   handleCognateResult({ data: { cognate_analysis }})
   {
