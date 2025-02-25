@@ -1163,6 +1163,7 @@ class SuggestionSelection extends React.Component {
       index,
       sg_select_list,
       sg_state_list,
+      sg_entry_map,
       sg_connect
     } = this.props;
 
@@ -1249,7 +1250,7 @@ class SuggestionSelection extends React.Component {
                         label={`${transcription_str} ${translation_str}
                         (${this.state.perspective_name_list[perspective_index]})`}
                         checked={sg_select_list[index].hasOwnProperty(id2str(entry_id))}
-                        disabled={disabled_flag}
+                        disabled={disabled_flag || !sg_entry_map[id2str(entry_id)][index]}
                         onChange={(e, { checked }) => {
                           if (checked) {
                             sg_select_list[index][id2str(entry_id)] = null;
@@ -2198,7 +2199,7 @@ class CognateAnalysisModal extends React.Component {
             sg_entry_map[id_str] = {};
           }
 
-          sg_entry_map[id_str][i] = null;
+          sg_entry_map[id_str][i] = true;
         }
 
         f(word_entry_id);
@@ -2848,17 +2849,25 @@ class CognateAnalysisModal extends React.Component {
           for (const entry_id_str of entry_id_str_list) {
             for (const sg_index of Object.keys(sg_entry_map[entry_id_str])) {
               if (sg_state_list[sg_index] === "left") {
+
+                delete sg_select_list[sg_index][entry_id_str];
+                sg_entry_map[entry_id_str][sg_index] = false;
+
+                /*
                 sg_state_list[sg_index] = "invalidated";
 
                 sg_count.invalidated++;
                 sg_count.left--;
+                */
               }
             }
           }
 
           this.setState({
             sg_state_list,
-            sg_count
+            sg_count,
+            sg_select_list,
+            sg_entry_map
           });
         },
 
@@ -2880,6 +2889,7 @@ class CognateAnalysisModal extends React.Component {
     const {
       suggestion_list,
       suggestion_field_id,
+      perspective_name_list,
       sg_select_list,
       sg_state_list,
       sg_count,
@@ -2984,9 +2994,10 @@ class CognateAnalysisModal extends React.Component {
               single_list={single_list}
               group_list={group_list}
               index={start_index + in_page_index}
-              perspective_name_list={this.state.perspective_name_list}
-              sg_select_list={this.state.sg_select_list}
-              sg_state_list={this.state.sg_state_list}
+              perspective_name_list={perspective_name_list}
+              sg_select_list={sg_select_list}
+              sg_state_list={sg_state_list}
+              sg_entry_map={sg_entry_map}
               sg_connect={this.sg_connect}
             />
           )
@@ -3034,20 +3045,23 @@ class CognateAnalysisModal extends React.Component {
                * suggestions which would be invalidated if launched connections are successful. */
 
               const invalid_set = {};
+              const already_used_set = new Set();
 
               for (let i = 0; i < suggestion_list.length; i++) {
                 if (sg_state_list[i] !== "left" || invalid_set.hasOwnProperty(i)) {
                   continue;
                 }
 
-                const entry_id_str_list = Object.keys(sg_select_list[i]);
+                const entry_id_str_list = Object.keys(sg_select_list[i]).filter(
+                    id => !already_used_set.has(id));
 
                 if (entry_id_str_list.length <= 1) {
                   continue;
                 }
 
                 for (const entry_id_str of entry_id_str_list) {
-                  Object.assign(invalid_set, sg_entry_map[entry_id_str]);
+                  //Object.assign(invalid_set, sg_entry_map[entry_id_str]);
+                  already_used_set.add(entry_id_str);
                 }
 
                 this.sg_connect(i, false);
