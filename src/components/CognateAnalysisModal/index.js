@@ -2811,10 +2811,10 @@ class CognateAnalysisModal extends React.Component {
 
   /* Launches connection of suggestion specified by index. */
 
-  sg_connect(index, window_log_flag = true) {
+  async sg_connect(index, window_log_flag = true, entry_id_str_list_cur = null, sg_state_list_cur = null) {
     const { suggestion_field_id, sg_select_list, sg_state_list, sg_count, sg_entry_map } = this.state;
 
-    const entry_id_str_list = Object.keys(sg_select_list[index]);
+    const entry_id_str_list = entry_id_str_list_cur || Object.keys(sg_select_list[index]);
 
     const entry_id_list = entry_id_str_list.map(str2id);
 
@@ -2828,7 +2828,7 @@ class CognateAnalysisModal extends React.Component {
       sg_count
     });
 
-    this.props
+    await this.props
       .connectGroup({
         variables: {
           fieldId: suggestion_field_id,
@@ -2848,7 +2848,7 @@ class CognateAnalysisModal extends React.Component {
 
           for (const entry_id_str of entry_id_str_list) {
             for (const sg_index of Object.keys(sg_entry_map[entry_id_str])) {
-              if (sg_state_list[sg_index] === "left") {
+              if ((sg_state_list_cur ? sg_state_list_cur[sg_index] : sg_state_list[sg_index]) === "left") {
 
                 delete sg_select_list[sg_index][entry_id_str];
                 sg_entry_map[entry_id_str][sg_index] = false;
@@ -2894,7 +2894,8 @@ class CognateAnalysisModal extends React.Component {
       sg_state_list,
       sg_count,
       sg_entry_map,
-      sg_current_page
+      sg_current_page,
+      computing
     } = this.state;
 
     /* Shows current suggestion state counts. */
@@ -2985,21 +2986,23 @@ class CognateAnalysisModal extends React.Component {
             // Not so good hack in the name of performance,
             // we just give our state to be modified in the child compoment.
 
-            <SuggestionSelection
-              key={`suggestion${start_index + in_page_index}`}
-              perspective_index={perspective_index}
-              word={word}
-              word_entry_id={word_entry_id}
-              word_group={word_group}
-              single_list={single_list}
-              group_list={group_list}
-              index={start_index + in_page_index}
-              perspective_name_list={perspective_name_list}
-              sg_select_list={sg_select_list}
-              sg_state_list={sg_state_list}
-              sg_entry_map={sg_entry_map}
-              sg_connect={this.sg_connect}
-            />
+            <div disabled={computing}>
+              <SuggestionSelection
+                key={`suggestion${start_index + in_page_index}`}
+                perspective_index={perspective_index}
+                word={word}
+                word_entry_id={word_entry_id}
+                word_group={word_group}
+                single_list={single_list}
+                group_list={group_list}
+                index={start_index + in_page_index}
+                perspective_name_list={perspective_name_list}
+                sg_select_list={sg_select_list}
+                sg_state_list={sg_state_list}
+                sg_entry_map={sg_entry_map}
+                sg_connect={this.sg_connect}
+              />
+            </div>
           )
         )}
 
@@ -3038,7 +3041,13 @@ class CognateAnalysisModal extends React.Component {
 
         <div style={{ marginTop: "22px", paddingBottom: "14px" }}>
           <Button
-            content={this.context("Connect all selected")}
+            content={
+              computing ? (
+                <span>
+                  {this.context("Connecting")}... <Icon name="spinner" loading />
+                </span>
+              ) : this.context("Connect all selected")
+            }
             disabled={sg_count.left <= 0 || sg_count.connecting > 0}
             onClick={() => {
               /* Launching connections of all suggestions with enough selected lexical entries, skipping
@@ -3046,6 +3055,10 @@ class CognateAnalysisModal extends React.Component {
 
               const invalid_set = {};
               const already_used_set = new Set();
+              const sg_state_list_cur = [ ...sg_state_list ];
+              const promises = [];
+
+              this.setState({ computing: true });
 
               for (let i = 0; i < suggestion_list.length; i++) {
                 if (sg_state_list[i] !== "left" || invalid_set.hasOwnProperty(i)) {
@@ -3059,13 +3072,20 @@ class CognateAnalysisModal extends React.Component {
                   continue;
                 }
 
+                // States are changed asynchronously so we have to change and pass
+                // entry_id_str_list and sg_state_list_cur as arguments every iteration
+                promises.push(this.sg_connect(i, false, entry_id_str_list, sg_state_list_cur));
+
+                sg_state_list_cur[i] = "processed";
+
                 for (const entry_id_str of entry_id_str_list) {
                   //Object.assign(invalid_set, sg_entry_map[entry_id_str]);
                   already_used_set.add(entry_id_str);
                 }
-
-                this.sg_connect(i, false);
               }
+
+              Promise.all(promises).then(() => this.setState({ computing: false }));
+
             }}
             className="lingvo-button-greenest"
           />
