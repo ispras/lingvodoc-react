@@ -295,7 +295,7 @@ const computeNeuroCognateAnalysisMutation = gql`
   mutation computeNeuroCognateAnalysis(
     $sourcePerspectiveId: LingvodocID!
     $perspectiveInfoList: [[LingvodocID]]!
-    $matchTranslations: Boolean
+    $distilledModel: Boolean
     $baseLanguageId: LingvodocID
     $inputPairs: ObjectVal
     $truthThreshold: Float
@@ -307,7 +307,7 @@ const computeNeuroCognateAnalysisMutation = gql`
     neuro_cognate_analysis(
       source_perspective_id: $sourcePerspectiveId
       perspective_info_list: $perspectiveInfoList
-      match_translations: $matchTranslations
+      distilled_model: $distilledModel
       base_language_id: $baseLanguageId
       input_pairs: $inputPairs
       truth_threshold: $truthThreshold
@@ -2439,7 +2439,7 @@ class CognateAnalysisModal extends React.Component {
           sourcePerspectiveId: perspectiveId,
           baseLanguageId: this.baseLanguageId, //really required?
           truthThreshold,
-          matchTranslations: this.state.matchTranslationsFlag,
+          distilledModel: this.state.matchTranslationsFlag,
           onlyOrphansFlag: this.state.onlyOrphansFlag,
           groupFieldId: groupField.id,
           debugFlag: this.state.debugFlag,
@@ -2562,7 +2562,7 @@ class CognateAnalysisModal extends React.Component {
         </div>
         <div className="lingvo-cognate-checkbox">
           <Checkbox
-            label={this.context("Match translations")}
+            label={this.context("Better precision (but slower)")}
             checked={this.state.matchTranslationsFlag}
             onChange={(e, { checked }) => {
               this.setState({ matchTranslationsFlag: checked });
