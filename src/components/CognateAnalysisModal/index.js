@@ -1238,6 +1238,38 @@ class SuggestionSelection extends React.Component {
               </span>
 
               <div>
+                <div
+                  key={`sg${index}all`}
+                  className="lingvo-cognate-checkbox lingvo-cognate-checkbox_result"
+                  >
+                  <Checkbox
+                    className="lingvo-checkbox lingvo-checkbox_labeled"
+                    label={<label style={{ color: "green", fontStyle: "oblique" }}>{this.context("All")}</label>}
+                    disabled={disabled_flag}
+                    checked={
+                      single_list.every(([perspective_index, [transcription_str, translation_str], entry_id]) => {
+                        if (sg_entry_map[id2str(entry_id)][index] &&
+                            !sg_select_list[index].hasOwnProperty(id2str(entry_id))) {
+                          return false;
+                        }
+                        return true;
+                      })
+                    }
+                    onChange={(e, { checked }) => {
+                      map(single_list,
+                        ([perspective_index, [transcription_str, translation_str], entry_id]) => {
+                          if (sg_entry_map[id2str(entry_id)][index] && checked) {
+                            sg_select_list[index][id2str(entry_id)] = null;
+                          } else {
+                            delete sg_select_list[index][id2str(entry_id)];
+                          }
+                        }
+                      );
+                      this.setState({ sg_select_list });
+                    }}
+                  />
+                </div>
+
                 {map(
                   single_list,
 
