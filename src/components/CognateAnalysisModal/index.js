@@ -2203,7 +2203,7 @@ class CognateAnalysisModal extends React.Component {
     // Clean connecting states if is
     const sg_count = { ...(sg_count_cur ?? sg_count_init), connecting: 0 };
     sg_count.left = (
-      suggestion_list.length -
+      (suggestion_list || []).length -
       sg_count.connected -
       sg_count.error -
       sg_count.invalidated
