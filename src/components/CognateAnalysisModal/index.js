@@ -295,7 +295,6 @@ const computeNeuroCognateAnalysisMutation = gql`
   mutation computeNeuroCognateAnalysis(
     $sourcePerspectiveId: LingvodocID!
     $perspectiveInfoList: [[LingvodocID]]!
-    $matchTranslations: Boolean
     $baseLanguageId: LingvodocID
     $inputPairs: ObjectVal
     $truthThreshold: Float
@@ -307,7 +306,6 @@ const computeNeuroCognateAnalysisMutation = gql`
     neuro_cognate_analysis(
       source_perspective_id: $sourcePerspectiveId
       perspective_info_list: $perspectiveInfoList
-      match_translations: $matchTranslations
       base_language_id: $baseLanguageId
       input_pairs: $inputPairs
       truth_threshold: $truthThreshold
@@ -2471,7 +2469,6 @@ class CognateAnalysisModal extends React.Component {
           sourcePerspectiveId: perspectiveId,
           baseLanguageId: this.baseLanguageId, //really required?
           truthThreshold,
-          matchTranslations: this.state.matchTranslationsFlag,
           onlyOrphansFlag: this.state.onlyOrphansFlag,
           groupFieldId: groupField.id,
           debugFlag: this.state.debugFlag,
@@ -2592,18 +2589,18 @@ class CognateAnalysisModal extends React.Component {
             className="lingvo-checkbox lingvo-checkbox_labeled"
           />
         </div>
-        <div className="lingvo-cognate-checkbox">
-          <Checkbox
-            label={this.context("Match translations")}
-            checked={this.state.matchTranslationsFlag}
-            onChange={(e, { checked }) => {
-              this.setState({ matchTranslationsFlag: checked });
-            }}
-            className="lingvo-checkbox lingvo-checkbox_labeled"
-          />
-        </div>
         { this.props.mode !== "neuro_suggestions" && this.props.mode !== "multi_neuro_suggestions" && (
           <>
+            <div className="lingvo-cognate-checkbox">
+              <Checkbox
+                label={this.context("Match translations")}
+                checked={this.state.matchTranslationsFlag}
+                onChange={(e, { checked }) => {
+                  this.setState({ matchTranslationsFlag: checked });
+                }}
+                className="lingvo-checkbox lingvo-checkbox_labeled"
+              />
+            </div>
             <div style={{ paddingLeft: "34px", paddingTop: "6px" }}>
               <div className="lingvo-radio lingvo-radio_cognate">
                 <Checkbox
