@@ -37,7 +37,7 @@ export const fieldsQuery = gql`
       data_type
       data_type_translation_gist_id
     }
-    user_blobs(data_type: "txt") {
+    user_blobs(data_type: ["txt", "json"]) {
       id
       data_type
       name
@@ -46,7 +46,15 @@ export const fieldsQuery = gql`
   }
 `;
 
-const convertMutation = gql`
+const convertJsonMutation = gql`
+  mutation convertMutation($corpus_inf: CorpusInf!, $columns_inf: [ColumnInf]!) {
+    convert_parallel_json(corpus_inf: $corpus_inf, columns_inf: $columns_inf) {
+      triumph
+    }
+  }
+`;
+
+const convertTxtMutation = gql`
   mutation convertMutation($corpus_inf: CorpusInf!, $columns_inf: [ColumnInf]!) {
     convert_plain_text(corpus_inf: $corpus_inf, columns_inf: $columns_inf) {
       triumph
@@ -95,7 +103,7 @@ class Info extends React.Component {
       data: { loading, error, user_blobs: blobs }
     } = this.props;
     if (!loading && !error) {
-      const newBlobs = fromJS(blobs.filter(b => b.data_type === "txt")).map(v => v.set("values", new Map()));
+      const newBlobs = fromJS(blobs).map(v => v.set("values", new Map()));
       // XXX: Ugly workaround
       if (JSON.stringify(this.props.blobs) !== JSON.stringify(newBlobs)) {
         this.props.setBlobs(newBlobs);
@@ -127,10 +135,6 @@ class Info extends React.Component {
     return (column, value, oldValue) => this.props.updateColumn(id, column, value, oldValue);
   }
 
-  onUpdateColumn(id) {
-    return (column, value, oldValue) => this.props.updateColumn(id, column, value, oldValue);
-  }
-
   onSetLanguage(id) {
     return language => this.props.setLanguage(id, language);
   }
@@ -153,12 +157,13 @@ class Info extends React.Component {
   }
 
   render() {
-    const { step, isNextStep, blobs, linking, columnTypes, languages, licenses, locales, data } = this.props;
+    const { step, isNextStep, blobs, linking, mode, columnTypes, languages, licenses, locales, data } = this.props;
 
     if (data.loading || data.error) {
       return null;
     }
 
+    const mode_note = !!mode ? ` (${mode})` : "";
     const { all_fields: fields } = data;
     const fieldTypes = fromJS(fields).filter(field => field.get("data_type") === "Text");
     let i = 0;
@@ -167,7 +172,7 @@ class Info extends React.Component {
         <Step.Group widths={4}>
           <Step link active={step === "LINKING"} onClick={this.onStepClick("LINKING")}>
             <Step.Content>
-              <Step.Title>{this.context("Parent Corpora")}</Step.Title>
+              <Step.Title>{this.context("Parent Corpora") + mode_note.toUpperCase()}</Step.Title>
               <Step.Description>{this.context("Choose parallel corpora")}</Step.Description>
             </Step.Content>
           </Step>
@@ -261,7 +266,7 @@ class Info extends React.Component {
           </Button>
         ) : step === "LINKING" ? (
           <Message style={{ margin: 0, textAlign: "center" }}>
-            <Message.Content>{this.context("Choose at least two parent corpora.")}</Message.Content>
+            <Message.Content>{this.context("Choose at least two txt corpora or one json file.")}</Message.Content>
           </Message>
         ) : step === "COLUMNS" ? (
           <Message style={{ margin: 0, textAlign: "center" }}>
@@ -276,11 +281,16 @@ class Info extends React.Component {
 Info.contextType = TranslationContext;
 
 function mapStateToProps(state) {
+
+  const linking = selectors.getLinking(state);
+  const mode =  linking.first() ? linking.first().get("data_type") : null;
+
   return {
     step: selectors.getStep(state),
-    isNextStep: selectors.getNextStep(state, true),
+    isNextStep: selectors.getNextStep(state, mode),
     blobs: selectors.getBlobs(state),
-    linking: selectors.getLinking(state),
+    linking,
+    mode,
     columnTypes: selectors.getColumnTypes(state),
     languages: selectors.getLanguages(state),
     licenses: selectors.getLicenses(state),
@@ -303,7 +313,8 @@ const mapDispatchToProps = {
 
 Info.propTypes = {
   data: PropTypes.object,
-  convert: PropTypes.func.isRequired,
+  convertTxt: PropTypes.func.isRequired,
+  convertJson: PropTypes.func.isRequired,
   licenses: PropTypes.object.isRequired,
   setLicense: PropTypes.func.isRequired
 };
@@ -311,5 +322,6 @@ Info.propTypes = {
 export default compose(
   connect(mapStateToProps, mapDispatchToProps),
   graphql(fieldsQuery, { options: { fetchPolicy: "network-only" } }),
-  graphql(convertMutation, { name: "convert" })
+  graphql(convertTxtMutation, { name: "convertTxt" }),
+  graphql(convertJsonMutation, { name: "convertJson" })
 )(Info);

@@ -139,6 +139,9 @@ class Files extends React.Component {
       case "txt":
         mimeType = ".txt";
         break;
+      case "json":
+        mimeType = ".json";
+        break;
       case "image":
         mimeType = "image/*";
         break;
@@ -246,6 +249,11 @@ class Files extends React.Component {
       {
         text: this.context("Txt"),
         value: "txt",
+        icon: "conversation"
+      },
+      {
+        text: this.context("Json"),
+        value: "json",
         icon: "conversation"
       },
       {

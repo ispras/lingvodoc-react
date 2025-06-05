@@ -223,7 +223,7 @@ export const selectors = {
           });
 
       case "LINKING":
-        result &&= parallel
+        result &&= parallel === "txt"
           ? linking.size > 1
           : linking
             .toArray()
