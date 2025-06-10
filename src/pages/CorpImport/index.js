@@ -148,12 +148,18 @@ class Info extends React.Component {
   }
 
   onSubmit() {
-    const { convert } = this.props;
+    const { convertTxt, convertJson, mode } = this.props;
     const corpus_inf = corpusInfo(this.props);
     const columns_inf = columnsInfo(this.props);
-    convert({
-      variables: { corpus_inf, columns_inf }
-    }).then(() => this.props.goToStep("FINISH"));
+    if (mode === 'txt') {
+      convertTxt({
+        variables: { corpus_inf, columns_inf }
+      }).then(() => this.props.goToStep("FINISH"));
+    } else {
+      convertJson({
+        variables: { corpus_inf, columns_inf }
+      }).then(() => this.props.goToStep("FINISH"));
+    }
   }
 
   render() {
@@ -211,6 +217,7 @@ class Info extends React.Component {
           {step === "COLUMNS" && (
             <ColumnMapper
               state={linking}
+              mode={mode}
               columnTypes={columnTypes}
               types={fieldTypes}
               onSetColumnType={this.onSetColumnType}
@@ -218,7 +225,7 @@ class Info extends React.Component {
           )}
           {step === "LANGUAGES" && (
             <LanguageSelection
-              state={linking.filter(() => !i++)}
+              state={mode === 'json' ? linking : linking.filter(() => !i++)}
               languages={languages}
               licenses={licenses}
               locales={locales}

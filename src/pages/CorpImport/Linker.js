@@ -7,9 +7,17 @@ import TranslationContext from "Layout/TranslationContext";
 function Columns({ blob, index, mode, onDelete, onUpdateColumn }) {
   const getTranslation = useContext(TranslationContext);
   const color = (mode === 'json') ? "blue" : index ? "yellow" : "green";
-  const name = (mode === 'json') ? "both sentences" : index ? "sentence" : "base sentence";
+  const name = (mode === 'json') ? "both sides" : index ? "sentence" : "base sentence";
   const value = blob.getIn(["values", "sentence"], "dash");
-  useEffect(() => { onUpdateColumn("sentence", value) }, []);
+  useEffect(
+    () => {
+      onUpdateColumn("sentence", value);
+      if (mode === 'json') {
+         onUpdateColumn("to_sentence", "json");
+      }
+    },
+    []
+  );
 
   return (
     <div className="blob blob_corp">

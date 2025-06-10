@@ -207,7 +207,7 @@ export const selectors = {
       case "COLUMNS":
         const all_fields = state.dictImport.get("columnTypes").reduce((acc, field_map) => [...acc, ...field_map.values()], []);
         //console.log(all_fields);
-        result &&= parallel
+        result &&= parallel === 'txt'
           ? all_fields.reduce((acc, value, index, arr) =>
             acc && value && arr.findIndex(v => isEqual(v, value)) === index, true)
           : state.dictImport.get("columnTypes").every((field_map, blob_id) => {

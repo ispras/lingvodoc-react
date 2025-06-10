@@ -24,11 +24,12 @@ export function corpusInfo({ linking, languages, licenses }) {
 function blobExport(blob, columnType) {
   const blob_id = blob.get("id").toArray();
   const dedash = (blob.getIn(["values", "sentence"], "dash") === "dedash");
-  const field_id =  columnType.get("sentence", new Map()).toArray();
+  const field_ids = [columnType.get("sentence", new Map()).toArray(),
+                     columnType.get("to_sentence", new Map()).toArray()];
 
   return {
     blob_id,
-    field_id,
+    field_ids,
     dedash
   };
 }
