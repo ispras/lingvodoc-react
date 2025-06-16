@@ -198,7 +198,7 @@ export const selectors = {
 
     switch (state.dictImport.get("step")) {
       case "LANGUAGES":
-        result &&= parallel
+        result &&= parallel === 'txt'
           ? linking
             .some((item, blob_id) => languages.has(blob_id) && item.get("translation").size > 0)
           : linking
@@ -223,7 +223,7 @@ export const selectors = {
           });
 
       case "LINKING":
-        result &&= parallel === "txt"
+        result &&= parallel === 'txt'
           ? linking.size > 1
           : linking
             .toArray()
