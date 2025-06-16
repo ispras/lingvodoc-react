@@ -92,8 +92,8 @@ function Columns({ blob, index, mode, fieldOptions, columnTypes, onSetColumnType
           onSetColumnType={onSetColumnType("sentence")}
           fieldOptions={fieldOptions}
         />
-        // Using negative indexes for json case,
-        // so they are iterates and do not match with positive ones
+        { /* Using negative indexes for json case,
+          so they are iterates and do not match with positive ones */ }
         { mode === 'json' && (
           <ColumnWithData
             key={-(index+1)}

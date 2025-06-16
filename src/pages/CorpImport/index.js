@@ -23,7 +23,7 @@ import {
 import TranslationContext from "Layout/TranslationContext";
 import LanguageSelection from "pages/DictImport/LanguageSelection";
 
-import { columnsInfo, corpusInfo } from "./api";
+import { columnsInfo, corporaInfo } from "./api";
 import ColumnMapper from "./ColumnMapper";
 import Linker from "./Linker";
 
@@ -46,17 +46,9 @@ export const fieldsQuery = gql`
   }
 `;
 
-const convertJsonMutation = gql`
-  mutation convertMutation($corpus_inf: CorpusInf!, $columns_inf: [ColumnInf]!) {
-    convert_parallel_json(corpus_inf: $corpus_inf, columns_inf: $columns_inf) {
-      triumph
-    }
-  }
-`;
-
-const convertTxtMutation = gql`
-  mutation convertMutation($corpus_inf: CorpusInf!, $columns_inf: [ColumnInf]!) {
-    convert_plain_text(corpus_inf: $corpus_inf, columns_inf: $columns_inf) {
+const convertDataMutation = gql`
+  mutation convertMutation($corpora_inf: [CorpusInf]!, $columns_inf: [ColumnInf]!, $mode: String!) {
+    convert_plain_text(corpora_inf: $corpora_inf, columns_inf: $columns_inf, mode: $mode) {
       triumph
     }
   }
@@ -148,18 +140,12 @@ class Info extends React.Component {
   }
 
   onSubmit() {
-    const { convertTxt, convertJson, mode } = this.props;
-    const corpus_inf = corpusInfo(this.props);
+    const { convertData, mode } = this.props;
+    const corpora_inf = corporaInfo(this.props);
     const columns_inf = columnsInfo(this.props);
-    if (mode === 'txt') {
-      convertTxt({
-        variables: { corpus_inf, columns_inf }
-      }).then(() => this.props.goToStep("FINISH"));
-    } else {
-      convertJson({
-        variables: { corpus_inf, columns_inf }
-      }).then(() => this.props.goToStep("FINISH"));
-    }
+    convertData({
+      variables: { corpora_inf, columns_inf, mode }
+    }).then(() => this.props.goToStep("FINISH"));
   }
 
   render() {
@@ -320,8 +306,7 @@ const mapDispatchToProps = {
 
 Info.propTypes = {
   data: PropTypes.object,
-  convertTxt: PropTypes.func.isRequired,
-  convertJson: PropTypes.func.isRequired,
+  convertData: PropTypes.func.isRequired,
   licenses: PropTypes.object.isRequired,
   setLicense: PropTypes.func.isRequired
 };
@@ -329,6 +314,5 @@ Info.propTypes = {
 export default compose(
   connect(mapStateToProps, mapDispatchToProps),
   graphql(fieldsQuery, { options: { fetchPolicy: "network-only" } }),
-  graphql(convertTxtMutation, { name: "convertTxt" }),
-  graphql(convertJsonMutation, { name: "convertJson" })
+  graphql(convertDataMutation, { name: "convertData" })
 )(Info);

@@ -1,24 +1,34 @@
 import { Map } from "immutable";
 
-export function corpusInfo({ linking, languages, licenses }) {
-  const baseBlob = linking.first();
-  const baseId = baseBlob.get("id");
-  const language = languages.get(baseId);
-  const license = licenses.get(baseId);
+export function corporaInfo({ linking, languages, licenses, mode }) {
 
-  const translation_atoms = baseBlob
-    .get("translation", new Map())
-    .filter(content => content && content.trim() !== "")
-    .map((content, locale_id) => ({ content, locale_id }))
-    .toArray();
+  const result = [];
 
-  const parent_id = language.get("id", new Map()).toArray();
+  for (const baseBlob of linking.values()) {
+    const baseId = baseBlob.get("id");
+    const language = languages.get(baseId);
+    const license = licenses.get(baseId);
 
-  return {
-    translation_atoms,
-    parent_id,
-    license
-  };
+    const translation_atoms = baseBlob
+      .get("translation", new Map())
+      .filter(content => content && content.trim() !== "")
+      .map((content, locale_id) => ({ content, locale_id }))
+      .toArray();
+
+    const parent_id = language.get("id", new Map()).toArray();
+
+    result.push({
+      translation_atoms,
+      parent_id,
+      license
+    });
+
+    // Only one target language for txt mode
+    if (mode === 'txt') {
+      break
+    }
+  }
+  return result;
 }
 
 function blobExport(blob, columnType) {
