@@ -28,7 +28,7 @@ import "pages/DictImport/styles.scss";
 
 export const blobQuery = gql`
   query dialeqt_blobs {
-    user_blobs(data_type: "dialeqt_dictionary") {
+    user_blobs(data_type: ["dialeqt_dictionary"]) {
       id
       data_type
       name

@@ -15,10 +15,14 @@ function FieldButton({ text, onClick, isSelected }) {
   return <Button onClick={onClick} content={text} {...color} />;
 }
 
-function Column({ index, fieldOptions, type, onSetColumnType, actions }) {
+function Column({ index, mode, fieldOptions, type, onSetColumnType, actions }) {
   const getTranslation = useContext(TranslationContext);
-  const name = index ? "sentence" : "base sentence";
-  const color = index ? "yellow" : "green";
+  const name = (mode === 'txt')
+    ? (index > 0 ? "sentence" : "base sentence")
+    : (index < 0 ? "to sentence" : "from sentence");
+  const color = (mode === 'txt')
+    ? (index > 0 ? "yellow" : "green")
+    : (index < 0 ? "yellow" : "green");
   const columnButton = <Button className="column-button" color={color} content={getTranslation(name)} />;
   const selectedField = fieldOptions.find(x => is(x.id, type));
   const triggerColor = selectedField ? { color: "blue" } : {};
@@ -72,7 +76,7 @@ const ColumnWithData = compose(
   }))
 )(Column);
 
-function Columns({ blob, index, fieldOptions, columnTypes, onSetColumnType }) {
+function Columns({ blob, index, mode, fieldOptions, columnTypes, onSetColumnType }) {
   const getTranslation = useContext(TranslationContext);
   const blobId = blob.get("id");
 
@@ -83,16 +87,29 @@ function Columns({ blob, index, fieldOptions, columnTypes, onSetColumnType }) {
         <ColumnWithData
           key={index}
           index={index}
+          mode={mode}
           type={columnTypes.getIn([blobId, "sentence"])}
           onSetColumnType={onSetColumnType("sentence")}
           fieldOptions={fieldOptions}
         />
+        { /* Using negative indexes for json case,
+          so they are iterates and do not match with positive ones */ }
+        { mode === 'json' && (
+          <ColumnWithData
+            key={-(index+1)}
+            index={-(index+1)}
+            mode={mode}
+            type={columnTypes.getIn([blobId, "to_sentence"])}
+            onSetColumnType={onSetColumnType("to_sentence")}
+            fieldOptions={fieldOptions}
+          />
+        )}
       </div>
     </div>
   );
 }
 
-function ColumnMapper({ state, types, columnTypes, onSetColumnType }) {
+function ColumnMapper({ state, mode, types, columnTypes, onSetColumnType }) {
   const typesSortedFiltered = types
     .sortBy(type => T(type.get("translations").toJS()))
     .filter(type => T(type.get("translations").toJS()).trim() != "");
@@ -123,6 +140,7 @@ function ColumnMapper({ state, types, columnTypes, onSetColumnType }) {
             key={id.join("/")}
             blob={v}
             index={i++}
+            mode={mode}
             fieldOptions={fieldOptions}
             columnTypes={columnTypes}
             onSetColumnType={onSetColumnType(id)}
