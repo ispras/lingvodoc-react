@@ -16,7 +16,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import "./styles.scss";
 
 const perspectiveStatisticsQuery = gql`
-  query statisticsPerspective($id: LingvodocID!, $start: Int!, $end: Int!) {
+  query statisticsPerspective($id: LingvodocID!, $start: Int, $end: Int) {
     perspective(id: $id) {
       id
       statistic(starting_time: $start, ending_time: $end)
@@ -51,8 +51,10 @@ class ApproveModal extends React.Component {
     super(props);
 
     this.state = {
-      startDate: moment().subtract(5, "years"),
-      endDate: moment(),
+      startDate: null,
+      endDate: null,
+      minDate: null,
+      maxDate: null,
       user_id: null,
       approveMap: [],
       showStatistics: null
@@ -61,6 +63,63 @@ class ApproveModal extends React.Component {
     this.getStatistics = this.getStatistics.bind(this);
     this.handleUserSelected = this.handleUserSelected.bind(this);
     this.onApprove = this.onApprove.bind(this);
+  }
+
+  componentDidMount() {
+    // Force dates updating
+    this.setState({ endDate: moment() });
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const { loading, error, perspective } = this.props.data;
+
+    if (loading || error) {
+      return;
+    }
+
+    const { statistic: newStatistics } = perspective || { statistic: [] };
+    const { statistic: oldStatistics } = prevProps.data.perspective || { statistic: [] };
+
+    let { minDate, maxDate } = this.state;
+
+    if (!minDate || !maxDate || newStatistics !== oldStatistics) {
+
+      minDate = Math.min(...newStatistics.map(stat => stat.first_created_at));
+      maxDate = Math.max(...newStatistics.map(stat => stat.last_created_at));
+
+      if (minDate && maxDate) {
+
+        this.setState({ minDate, maxDate });
+
+      } else if (newStatistics !== oldStatistics) {
+
+        this.props.data.refetch({ id: this.props.perspectiveId, start: null, end: null }).then(
+          () => this.setState({ startDate: null, endDate: null, showStatistics: true }));
+        return;
+
+      }
+    }
+
+    const { user_id, startDate, endDate } = this.state;
+
+    if (!startDate || !endDate || user_id !== prevState.user_id) {
+
+      newStatistics.forEach(stat => {
+        if (user_id === stat.user_id) {
+          if (stat.first_created_at && stat.last_created_at) {
+            this.setState({ startDate: moment.unix(stat.first_created_at), endDate: moment.unix(stat.last_created_at) });
+
+          } else {
+
+            this.setState({
+              startDate: minDate ? moment.unix(minDate) : moment(),
+              endDate: maxDate ? moment.unix(maxDate) : moment()
+            });
+          }
+        }
+      });
+    }
+
   }
 
   getStatistics() {
@@ -181,22 +240,24 @@ class ApproveModal extends React.Component {
             <div className="lingvo-statistics-block">
               {this.context("From")}
               <DatePicker
-                selected={startDate.toDate()}
+                placeholderText="Minimal date"
+                selected={startDate?.toDate()}
                 showTimeSelect
                 timeFormat="HH:mm"
                 timeIntervals={15}
-                onChange={date => this.setState({ startDate: moment(date), showStatistics: false })}
+                onChange={date => this.setState({ startDate: date ? moment(date) : null, showStatistics: false })}
                 dateFormat="dd.MM.yyyy HH:mm"
               />
             </div>
             <div className="lingvo-statistics-block">
               {this.context("To")}
               <DatePicker
-                selected={endDate.toDate()}
+                placeholderText="Maximal date"
+                selected={endDate?.toDate()}
                 showTimeSelect
                 timeFormat="HH:mm"
                 timeIntervals={15}
-                onChange={date => this.setState({ endDate: moment(date), showStatistics: false })}
+                onChange={date => this.setState({ endDate: date ? moment(date) : null, showStatistics: false })}
                 dateFormat="dd.MM.yyyy HH:mm"
               />
             </div>
@@ -297,8 +358,6 @@ export default compose(
     options: props => ({
       variables: {
         id: props.perspectiveId,
-        start: moment().subtract(5, "years").unix(),
-        end: moment().unix()
       },
       notifyOnNetworkStatusChange: true
     })
