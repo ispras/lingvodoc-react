@@ -2137,6 +2137,7 @@ class CognateAnalysisModal extends React.Component {
     }
 
     return {
+      result,
       plotly_data,
       plotly_legend_data,
       plotly_3d_data,
