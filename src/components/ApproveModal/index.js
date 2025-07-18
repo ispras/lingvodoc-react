@@ -81,6 +81,7 @@ class ApproveModal extends React.Component {
     const { statistic: oldStatistics } = prevProps.data.perspective || { statistic: [] };
 
     let { minDate, maxDate } = this.state;
+    const { user_id, startDate, endDate } = this.state;
 
     if (!minDate || !maxDate || newStatistics !== oldStatistics) {
 
@@ -91,7 +92,7 @@ class ApproveModal extends React.Component {
 
         this.setState({ minDate, maxDate });
 
-      } else if (newStatistics !== oldStatistics) {
+      } else if (startDate?.valueOf() > endDate?.valueOf()) {
 
         this.props.data.refetch({ id: this.props.perspectiveId, start: null, end: null }).then(
           () => this.setState({ startDate: null, endDate: null, showStatistics: true }));
@@ -100,8 +101,6 @@ class ApproveModal extends React.Component {
       }
     }
 
-    const { user_id, startDate, endDate } = this.state;
-
     if (!startDate || !endDate || user_id !== prevState.user_id) {
 
       newStatistics.forEach(stat => {
@@ -109,10 +108,10 @@ class ApproveModal extends React.Component {
           if (stat.first_created_at && stat.last_created_at) {
             this.setState({ startDate: moment.unix(stat.first_created_at), endDate: moment.unix(stat.last_created_at) });
 
-          } else {
+          } else if (!startDate || !endDate) {
 
             this.setState({
-              startDate: minDate ? moment.unix(minDate) : moment(),
+              startDate: minDate ? moment.unix(minDate) : moment().substract(5, 'years'),
               endDate: maxDate ? moment.unix(maxDate) : moment()
             });
           }
@@ -359,6 +358,8 @@ export default compose(
       variables: {
         id: props.perspectiveId,
       },
+      fetchPolicy: 'network-only',
+      nextFetchPolicy: 'cache-first',
       notifyOnNetworkStatusChange: true
     })
   })
