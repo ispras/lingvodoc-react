@@ -957,6 +957,7 @@ const Tools = ({
   const glottMode = columns.some(isMorphology) ? "morphology" : "swadesh";
   const glottMenu = columns.some(isMorphology) ? "Morphology distance" : "Glottochronology (Swadesh-Starostin)";
   const published = english_status === "Published" || english_status === "Limited access";
+  const allowed_users = [1, 5, 180, 317];
 
   return (
     <>
@@ -1012,25 +1013,25 @@ const Tools = ({
               <Dropdown.Item onClick={() => openCognateAnalysisModal(id, `multi_${glottMode}`)}>
                 {getTranslation(`${glottMenu} multi-language`)}
               </Dropdown.Item>
-              { user_id === 1 && (
-                <>
-                  <Dropdown.Item onClick={() => openCognateAnalysisModal(id, "neuro_suggestions")} disabled={!published}>
-                    {getTranslation(
-                      published
-                      ? "Neuro cognate suggestions"
-                      : "Neuro cognate suggestions (disabled, perspective is not published)"
-                    )}
-                  </Dropdown.Item>
+            </>
+          )}
+          {allowed_users.includes(user_id) && (
+            <>
+              <Dropdown.Item onClick={() => openCognateAnalysisModal(id, "neuro_suggestions")} disabled={!published}>
+                {getTranslation(
+                  published
+                  ? "Neuro cognate suggestions"
+                  : "Neuro cognate suggestions (disabled, perspective is not published)"
+                )}
+              </Dropdown.Item>
 
-                  <Dropdown.Item onClick={() => openCognateAnalysisModal(id, "multi_neuro_suggestions")} disabled={!published}>
-                    {getTranslation(
-                      published
-                        ? "Neuro cognate multi-language suggestions"
-                        : "Neuro cognate multi-language suggestions (disabled, perspective is not published)"
-                    )}
-                  </Dropdown.Item>
-                </>
-              )}
+              <Dropdown.Item onClick={() => openCognateAnalysisModal(id, "multi_neuro_suggestions")} disabled={!published}>
+                {getTranslation(
+                  published
+                    ? "Neuro cognate multi-language suggestions"
+                    : "Neuro cognate multi-language suggestions (disabled, perspective is not published)"
+                )}
+              </Dropdown.Item>
             </>
           )}
 
