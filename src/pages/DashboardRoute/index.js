@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
+import { connect } from "react-redux";
 
 import Footer from "components/Footer";
 import TranslationContext from "Layout/TranslationContext";
@@ -15,9 +16,9 @@ import imageParallelCorpora from "../../images/selected_options.svg";
 
 import "./styles.scss";
 
-function DashboardRoute() {
+const DashboardRoute =  connect(state => state.user)(({user}) => {
   const getTranslation = useContext(TranslationContext);
-
+  const allowed_users = [1, 5, 180, 317];
   return (
     <div className="lingvodoc-page">
       <div className="background-cards lingvodoc-page__content">
@@ -45,6 +46,12 @@ function DashboardRoute() {
               <label className="card-item__label">{getTranslation("Parallel corpora")}</label>
               <img className="card-item__img card-item__img_parallel-corpora" src={imageParallelCorpora} />
             </Link>
+            {allowed_users.includes(user.id) && (
+              <Link className="card-item" to="/lingtrain_aligner">
+                <label className="card-item__label">{getTranslation("Lingtrain aligner")}</label>
+                <img className="card-item__img card-item__img_parallel-corpora" src={imageParallelCorpora} />
+              </Link>
+            )}
             <Link className="card-item" to="/import_corpora">
               <label className="card-item__label">{getTranslation("Import parallel corpora")}</label>
               <img className="card-item__img card-item__img_import" src={imageImportParallel} />
@@ -63,6 +70,6 @@ function DashboardRoute() {
       <Footer />
     </div>
   );
-}
+});
 
 export default DashboardRoute;

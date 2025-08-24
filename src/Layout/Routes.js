@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router-dom";
 
 // eslint-disable-next-line import/no-unresolved
 import config from "config";
+import Adverb from "pages/Adverb";
 import AuthorsRoute from "pages/AuthorsRoute";
 import CorpImport from "pages/CorpImport";
 import { CreateCorpus, CreateDictionary } from "pages/CreateDictionary";
@@ -13,8 +14,6 @@ import DialeqtImport from "pages/DialeqtImport";
 import DictImport from "pages/DictImport";
 import DictionariesAll from "pages/DictionariesAll";
 import DistanceMap from "pages/DistanceMap";
-import MapSelectedLanguages from "pages/DistanceMap/map";
-import SelectedLanguages from "pages/DistanceMap/selectorLangGroup";
 import Docx2Eaf from "pages/Docx2Eaf";
 import Docx2Xlsx from "pages/Docx2Xlsx";
 import EditTranslations from "pages/EditTranslations";
@@ -24,19 +23,21 @@ import GrantsRoute from "pages/GrantsRoute";
 import Info from "pages/Info";
 import Languages from "pages/Languages";
 import LanguagesDatabasesRoute from "pages/LanguagesDatabasesRoute";
+import LingtrainAligner from "pages/LingtrainAligner";
 import ListCognates from "pages/ListCognates";
 import Map from "pages/Map";
+import MapSelectedLanguages from "pages/DistanceMap/map";
 import NotFound from "pages/NotFound";
 import Organizations from "pages/Organizations";
 import Perspective from "pages/Perspective";
 import Requests from "pages/Requests";
 import Search from "pages/Search";
+import SelectedLanguages from "pages/DistanceMap/selectorLangGroup";
 import Suggestions from "pages/Suggestions";
 import SupportRoute from "pages/SupportRoute";
 import ToolsRoute from "pages/ToolsRoute";
 import TopSectionSelector from "pages/TopSectionSelector";
 import Valency from "pages/Valency";
-import Adverb from "pages/Adverb";
 import VersionRoute from "pages/VersionRoute";
 import WithoutGrants from "pages/WithoutGrants";
 
@@ -83,6 +84,7 @@ const AppRoutes = () => (
     <Route path="/valency" element={<Valency />} />
     <Route path="/adverb" element={<Adverb />} />
     <Route path="/list_cognates" element={<ListCognates />} />
+    <Route path="/lingtrain_aligner" element={<LingtrainAligner />} />
     <Route element={<NotFound />} />
   </Routes>
 );
