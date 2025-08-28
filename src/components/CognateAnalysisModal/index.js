@@ -1656,9 +1656,9 @@ class CognateAnalysisModal extends React.Component {
     });
 
     if (!tree[tree.length - 1].in_toc) {
-      const { data: language } = await client.query({
+      const { data: { language: language } } = await client.query({
         query: cognateAnalysisMultiBaseQuery,
-        variables: { id: tree[tree.length - 1] }
+        variables: { id: tree[tree.length - 1].id }
       });
 
       languages = languages.slice();
