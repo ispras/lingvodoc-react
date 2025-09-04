@@ -18,7 +18,7 @@ import "./styles.scss";
 
 const DashboardRoute =  connect(state => state.user)(({user}) => {
   const getTranslation = useContext(TranslationContext);
-  const allowed_users = [1, 5, 180, 317];
+  const allowed_users = [1, 5, 180, 317, 616];
   return (
     <div className="lingvodoc-page">
       <div className="background-cards lingvodoc-page__content">
