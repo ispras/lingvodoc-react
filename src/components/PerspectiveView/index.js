@@ -467,12 +467,36 @@ class P extends React.Component {
     };
 
     const removeEntries = () => {
+      const countEntries = selectedEntries.length;
         
       removeLexicalEntries({
         variables: { ids: selectedEntries },
 
         update: (cache, { data: d }) => {
           if (!d.loading && !d.error) {
+            let nextEntries = [];
+
+            if (offset + limit < entriesTotal) {
+              cache.updateQuery(
+                {
+                  query: queryLexicalEntries,
+                  variables: {...query_args, offset: offset + limit}
+                },
+                (data) => {
+                  if (!loading && !error && data) {
+                    const result = cloneDeep(data);
+                    const perspective_page = result.perspective.perspective_page;
+                    nextEntries = perspective_page.lexical_entries.slice(0, countEntries);
+                    perspective_page.lexical_entries = (
+                      perspective_page.lexical_entries.slice(countEntries)
+                    );
+
+                    return result;
+                  }
+                  return undefined;
+                }
+              );
+            }
 
             cache.updateQuery(
               {
@@ -483,19 +507,22 @@ class P extends React.Component {
                 if (!loading && !error) {
                   const result = cloneDeep(data);
                   const perspective_page = result.perspective.perspective_page;
-                  perspective_page.lexical_entries = (
-                    perspective_page.lexical_entries.filter(c => !selectedEntries.find(s_id => isEqual(c.id, s_id))));
+                  perspective_page.lexical_entries = [
+                    ...perspective_page.lexical_entries.filter(c => !selectedEntries.find(s_id => isEqual(c.id, s_id))),
+                    ...nextEntries
+                  ];
 
                   return result;
                 }
                 return undefined;
               }
             );
-            removeCreatedLexes(selectedEntries);
-            resetSelection();
-            this.setState({ entriesTotal: entriesTotal - 1 });
           }
         }
+      }).then(() => {
+        removeCreatedLexes(selectedEntries);
+        resetSelection();
+        this.setState({ entriesTotal: entriesTotal - countEntries });
       });
     };
 
