@@ -268,6 +268,7 @@ class P extends React.Component {
     this.resetCheckedColumn = this.resetCheckedColumn.bind(this);
     this.onCheckAll = this.onCheckAll.bind(this);
     this.resetCheckedAll = this.resetCheckedAll.bind(this);
+    this.removeEntries = this.removeEntries.bind(this);
     //this.reRender = this.reRender.bind(this);
   }
 
@@ -344,6 +345,117 @@ class P extends React.Component {
     });
   }
 
+  async removeEntries() {
+    const {
+      client,
+      data,
+      id,
+      entitiesMode,
+      filter,
+      isEditMode,
+      isCaseSens,
+      isRegexp,
+      isAscending,
+      sortingField,
+      createdEntries,
+      limit,
+      offset,
+      removeLexicalEntries,
+      selectedEntries,
+      removeAddedLexes: removeCreatedLexes,
+      resetEntriesSelection: resetSelection
+    } = this.props;
+
+    const query_args = {
+      id,
+      entitiesMode,
+      filter,
+      isEditMode,
+      isCaseSens,
+      isRegexp,
+      isAscending,
+      sortingField,
+      createdEntries,
+      limit,
+      offset
+    }
+
+    const { loading, error } = data;
+    const { entriesTotal } = this.state;
+    const countEntries = selectedEntries.length;
+    const updateNext =  (offset + limit < entriesTotal);
+
+    if (updateNext) {
+      await client.query({
+        query: queryLexicalEntries,
+        variables: {
+          ...query_args,
+          offset: offset + limit
+        },
+        fetchPolicy: 'cache-first',
+      });
+    }
+
+    removeLexicalEntries({
+      variables: { ids: selectedEntries },
+
+      update: (cache, { data: d }) => {
+        if (!d.loading && !d.error) {
+          let nextEntries = [];
+
+          if (updateNext) {
+            cache.updateQuery(
+              {
+                query: queryLexicalEntries,
+                variables: {
+                  ...query_args,
+                  offset: offset + limit
+                }
+              },
+              (data) => {
+                if (!loading && !error && data) {
+                  const result = cloneDeep(data);
+                  const perspective_page = result.perspective.perspective_page;
+                  nextEntries = perspective_page.lexical_entries.slice(0, countEntries);
+                  perspective_page.lexical_entries = (
+                    perspective_page.lexical_entries.slice(countEntries)
+                  );
+
+                  return result;
+                }
+                return undefined;
+              }
+            );
+          }
+
+          cache.updateQuery(
+            {
+              query: queryLexicalEntries,
+              variables: query_args
+            },
+            (data) => {
+              if (!loading && !error) {
+                const result = cloneDeep(data);
+                const perspective_page = result.perspective.perspective_page;
+                perspective_page.lexical_entries = [
+                  ...perspective_page.lexical_entries.filter(c => !selectedEntries.find(s_id => isEqual(c.id, s_id))),
+                  ...nextEntries
+                ];
+
+                return result;
+              }
+              return undefined;
+            }
+          );
+        }
+      }
+    }).then(() => {
+      removeCreatedLexes(selectedEntries);
+      resetSelection();
+      this.setState({ entriesTotal: entriesTotal - countEntries });
+    });
+  };
+
   render() {
     const {
       id,
@@ -361,7 +473,6 @@ class P extends React.Component {
       mergeLexicalEntries,
       removeLexicalEntries,
       addLexicalEntry: addCreatedEntry,
-      removeAddedLexes: removeCreatedLexes,
       selectLexicalEntry: onEntrySelect,
       resetEntriesSelection: resetSelection,
       openModal: openNewModal,
@@ -463,39 +574,6 @@ class P extends React.Component {
       }).then(() => {
         resetSelection();
         this.setState({ entriesTotal: entriesTotal - selectedEntries.length + 1 });
-      });
-    };
-
-    const removeEntries = () => {
-        
-      removeLexicalEntries({
-        variables: { ids: selectedEntries },
-
-        update: (cache, { data: d }) => {
-          if (!d.loading && !d.error) {
-
-            cache.updateQuery(
-              {
-                query: queryLexicalEntries,
-                variables: query_args
-              },
-              (data) => {
-                if (!loading && !error) {
-                  const result = cloneDeep(data);
-                  const perspective_page = result.perspective.perspective_page;
-                  perspective_page.lexical_entries = (
-                    perspective_page.lexical_entries.filter(c => !selectedEntries.find(s_id => isEqual(c.id, s_id))));
-
-                  return result;
-                }
-                return undefined;
-              }
-            );
-            removeCreatedLexes(selectedEntries);
-            resetSelection();
-            this.setState({ entriesTotal: entriesTotal - 1 });
-          }
-        }
       });
     };
 
@@ -647,7 +725,7 @@ class P extends React.Component {
                 <Button
                   icon={<i className="lingvo-icon lingvo-icon_delete" />}
                   content={this.context("Remove lexical entries")}
-                  onClick={removeEntries}
+                  onClick={this.removeEntries}
                   disabled={selectedEntries.length < 1}
                   className="lingvo-button-red lingvo-perspective-button"
                 />
