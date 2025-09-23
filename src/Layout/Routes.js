@@ -23,7 +23,6 @@ import GrantsRoute from "pages/GrantsRoute";
 import Info from "pages/Info";
 import Languages from "pages/Languages";
 import LanguagesDatabasesRoute from "pages/LanguagesDatabasesRoute";
-import LingtrainAligner from "pages/LingtrainAligner";
 import ListCognates from "pages/ListCognates";
 import Map from "pages/Map";
 import MapSelectedLanguages from "pages/DistanceMap/map";
@@ -84,7 +83,6 @@ const AppRoutes = () => (
     <Route path="/valency" element={<Valency />} />
     <Route path="/adverb" element={<Adverb />} />
     <Route path="/list_cognates" element={<ListCognates />} />
-    <Route path="/lingtrain_aligner" element={<LingtrainAligner />} />
     <Route element={<NotFound />} />
   </Routes>
 );
