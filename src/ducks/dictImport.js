@@ -198,7 +198,7 @@ export const selectors = {
 
     switch (state.dictImport.get("step")) {
       case "LANGUAGES":
-        result &&= parallel
+        result &&= parallel === 'txt'
           ? linking
             .some((item, blob_id) => languages.has(blob_id) && item.get("translation").size > 0)
           : linking
@@ -207,7 +207,7 @@ export const selectors = {
       case "COLUMNS":
         const all_fields = state.dictImport.get("columnTypes").reduce((acc, field_map) => [...acc, ...field_map.values()], []);
         //console.log(all_fields);
-        result &&= parallel
+        result &&= parallel === 'txt'
           ? all_fields.reduce((acc, value, index, arr) =>
             acc && value && arr.findIndex(v => isEqual(v, value)) === index, true)
           : state.dictImport.get("columnTypes").every((field_map, blob_id) => {
@@ -223,7 +223,7 @@ export const selectors = {
           });
 
       case "LINKING":
-        result &&= parallel
+        result &&= parallel === 'txt'
           ? linking.size > 1
           : linking
             .toArray()

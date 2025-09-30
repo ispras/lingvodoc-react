@@ -59,7 +59,7 @@ const dictionaryMapQuery = gql`
         location
       }
     }
-    blobs: user_blobs(data_type: "pdf", is_global: true) {
+    blobs: user_blobs(data_type: ["pdf"], is_global: true) {
       id
       data_type
       content

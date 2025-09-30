@@ -59,6 +59,12 @@
   font-style: normal;
 }
 
+div[disabled]
+{
+  pointer-events: none;
+  opacity: 0.3;
+}
+
 body {
   font-family: Rubik, Arial, sans-serif;
   font-weight: normal;
@@ -924,8 +930,10 @@ body {
   background-color: #fff !important;
   border: 1px solid #fff !important;
   box-shadow: none !important;
-  -webkit-transition: opacity .1s ease,background-color .1s ease,color .1s ease,background .1s ease,border-color .1s ease;
-  transition: opacity .1s ease,background-color .1s ease,color .1s ease,background .1s ease,border-color .1s ease !important;
+  -webkit-transition: opacity 0.1s ease, background-color 0.1s ease, color 0.1s ease, background 0.1s ease,
+    border-color 0.1s ease;
+  transition: opacity 0.1s ease, background-color 0.1s ease, color 0.1s ease, background 0.1s ease,
+    border-color 0.1s ease !important;
 
   & .lingvo-icon {
     background-color: #57b894;
@@ -955,7 +963,6 @@ body {
       background-color: #999ca0;
     }
   }
-
 }
 
 .lingvo-button-green2 {
@@ -970,8 +977,10 @@ body {
   background-color: transparent !important;
   border: 1px solid transparent !important;
   box-shadow: none !important;
-  -webkit-transition: opacity .1s ease,background-color .1s ease,color .1s ease,background .1s ease,border-color .1s ease;
-  transition: opacity .1s ease,background-color .1s ease,color .1s ease,background .1s ease,border-color .1s ease !important;
+  -webkit-transition: opacity 0.1s ease, background-color 0.1s ease, color 0.1s ease, background 0.1s ease,
+    border-color 0.1s ease;
+  transition: opacity 0.1s ease, background-color 0.1s ease, color 0.1s ease, background 0.1s ease,
+    border-color 0.1s ease !important;
 
   & .lingvo-icon {
     background-color: #57b894;
@@ -1001,7 +1010,6 @@ body {
       background-color: #999ca0;
     }
   }
-
 }
 
 .lingvo-button-red {
@@ -1016,8 +1024,10 @@ body {
   background-color: #fff !important;
   border: 1px solid #fff !important;
   box-shadow: none !important;
-  -webkit-transition: opacity .1s ease,background-color .1s ease,color .1s ease,background .1s ease,border-color .1s ease;
-  transition: opacity .1s ease,background-color .1s ease,color .1s ease,background .1s ease,border-color .1s ease !important;
+  -webkit-transition: opacity 0.1s ease, background-color 0.1s ease, color 0.1s ease, background 0.1s ease,
+    border-color 0.1s ease;
+  transition: opacity 0.1s ease, background-color 0.1s ease, color 0.1s ease, background 0.1s ease,
+    border-color 0.1s ease !important;
 
   & .lingvo-icon {
     background-color: #db4e4e;
@@ -1025,7 +1035,7 @@ body {
     margin-right: 4px;
     vertical-align: top;
   }
-  
+
   &:hover {
     background-color: #db4e4e !important;
     color: #fff !important;
@@ -1047,7 +1057,6 @@ body {
       background-color: #999ca0;
     }
   }
-
 }
 
 .lingvo-button-greenest {
@@ -1062,8 +1071,10 @@ body {
   color: #fff !important;
   border: 1px solid #57b894 !important;
   box-shadow: none !important;
-  -webkit-transition: opacity .1s ease,background-color .1s ease,color .1s ease,background .1s ease,border-color .1s ease;
-  transition: opacity .1s ease,background-color .1s ease,color .1s ease,background .1s ease,border-color .1s ease !important;
+  -webkit-transition: opacity 0.1s ease, background-color 0.1s ease, color 0.1s ease, background 0.1s ease,
+    border-color 0.1s ease;
+  transition: opacity 0.1s ease, background-color 0.1s ease, color 0.1s ease, background 0.1s ease,
+    border-color 0.1s ease !important;
 
   &:hover {
     background: #333 !important;
@@ -1073,11 +1084,10 @@ body {
   &.ui.button.disabled,
   &.ui.button:disabled {
     background-color: #fff !important;
-    border: 1px solid #999CA0 !important;
+    border: 1px solid #999ca0 !important;
     color: #999ca0 !important;
     opacity: 1 !important;
   }
-
 }
 
 .lingvo-button-redder {
@@ -1092,8 +1102,10 @@ body {
   color: #fff !important;
   border: 1px solid #db4e4e !important;
   box-shadow: none !important;
-  -webkit-transition: opacity .1s ease,background-color .1s ease,color .1s ease,background .1s ease,border-color .1s ease;
-  transition: opacity .1s ease,background-color .1s ease,color .1s ease,background .1s ease,border-color .1s ease !important;
+  -webkit-transition: opacity 0.1s ease, background-color 0.1s ease, color 0.1s ease, background 0.1s ease,
+    border-color 0.1s ease;
+  transition: opacity 0.1s ease, background-color 0.1s ease, color 0.1s ease, background 0.1s ease,
+    border-color 0.1s ease !important;
 
   &:hover {
     background: #333 !important;
@@ -1103,11 +1115,10 @@ body {
   &.ui.button.disabled,
   &.ui.button:disabled {
     background-color: #fff !important;
-    border: 1px solid #999CA0 !important;
+    border: 1px solid #999ca0 !important;
     color: #999ca0 !important;
     opacity: 1 !important;
   }
-
 }
 
 .lingvo-button-black {
@@ -1122,8 +1133,10 @@ body {
   border: 1px solid #333 !important;
   color: #fff !important;
   box-shadow: none !important;
-  -webkit-transition: opacity .1s ease,background-color .1s ease,color .1s ease,background .1s ease,border-color .1s ease;
-  transition: opacity .1s ease,background-color .1s ease,color .1s ease,background .1s ease,border-color .1s ease !important;
+  -webkit-transition: opacity 0.1s ease, background-color 0.1s ease, color 0.1s ease, background 0.1s ease,
+    border-color 0.1s ease;
+  transition: opacity 0.1s ease, background-color 0.1s ease, color 0.1s ease, background 0.1s ease,
+    border-color 0.1s ease !important;
 
   &:hover {
     background-color: #fff !important;
@@ -1134,11 +1147,10 @@ body {
   &.ui.button.disabled,
   &.ui.button:disabled {
     background-color: #fff !important;
-    border: 1px solid #999CA0 !important;
+    border: 1px solid #999ca0 !important;
     color: #999ca0 !important;
     opacity: 1 !important;
   }
-
 }
 
 /* confirm */
@@ -1632,6 +1644,18 @@ body {
         color: #57b894 !important;
       }
     }
+
+    &_failed {
+      background: #ffe3dd !important;
+
+      & .bar {
+        background: #db4e4e !important;
+      }
+
+      & .label {
+        color: #db4e4e !important;
+      }
+    }
   }
 
   &__label {
@@ -1647,6 +1671,10 @@ body {
 
     &_success {
       color: #57b894 !important;
+    }
+
+    &_failed {
+      color: #db4e4e !important;
     }
   }
 
@@ -2104,12 +2132,30 @@ body {
     }
 
     &_down {
-      
       &:hover {
         background-color: #5d54cd;
       }
     }
+  }
 
+  &_star {
+
+    &_empty {
+      -webkit-mask-image: url("../images/icon_star_empty.svg");
+      mask-image: url("../images/icon_star_empty.svg");
+    }
+
+    &_yellow {
+      -webkit-mask-image: url("../images/icon_star_filled.svg");
+      mask-image: url("../images/icon_star_filled.svg");
+      background-color: #ffd966;
+    }
+
+    &_red {
+      -webkit-mask-image: url("../images/icon_star_filled.svg");
+      mask-image: url("../images/icon_star_filled.svg");
+      background-color: #f44336;
+    }
   }
 
   &_sort_up {
@@ -2196,7 +2242,7 @@ body {
     mask-image: url("../images/icon_published.svg");
     width: 13px;
     height: 12px;
-    background-color: #57B894;
+    background-color: #57b894;
     cursor: pointer;
   }
 
@@ -2324,7 +2370,6 @@ body {
 
 /* popups */
 .lingvo-popup {
-
   &.popup {
     font-family: Rubik, Arial, sans-serif !important;
     border-radius: 4px !important;
@@ -2362,7 +2407,7 @@ body {
   &_published {
     &.top.left.popup {
       margin-left: -26px !important;
-  
+
       &::before {
         left: 24px !important;
       }
@@ -2370,13 +2415,12 @@ body {
 
     &.top.right.popup {
       margin-right: -26px !important;
-  
+
       &::before {
         right: 24px !important;
       }
     }
   }
-
 }
 
 .lingvo-popup-inverted {
@@ -2577,7 +2621,7 @@ body {
     font-family: Rubik, Arial, sans-serif !important;
   }
 
-  &.ui.fitted.checkbox .box, 
+  &.ui.fitted.checkbox .box,
   &.ui.fitted.checkbox label {
     padding-left: 0 !important;
   }
@@ -2779,14 +2823,14 @@ body {
     font-size: 10px !important;
   }
 
-  &.ui.checkbox input:not([type=radio]):indeterminate ~ .box:before, 
-  &.ui.checkbox input:not([type=radio]):indeterminate ~ label:before {
+  &.ui.checkbox input:not([type="radio"]):indeterminate ~ .box:before,
+  &.ui.checkbox input:not([type="radio"]):indeterminate ~ label:before {
     background: #4e46b4 !important;
     border: 1px solid #4e46b4 !important;
   }
 
-  &.ui.checkbox input:not([type=radio]):indeterminate ~ .box:after, 
-  &.ui.checkbox input:not([type=radio]):indeterminate ~ label:after {
+  &.ui.checkbox input:not([type="radio"]):indeterminate ~ .box:after,
+  &.ui.checkbox input:not([type="radio"]):indeterminate ~ label:after {
     color: #fff !important;
     top: 1px !important;
   }
@@ -2822,19 +2866,19 @@ body {
     background-color: #efeefa !important;
   }
 
-  & .ui.radio.checkbox .box:after, 
+  & .ui.radio.checkbox .box:after,
   & .ui.radio.checkbox label:after {
-    background-color: #5D54CD !important;
+    background-color: #5d54cd !important;
     top: 2px !important;
   }
 
-  & .ui.radio.checkbox input:checked ~ .box:after, 
+  & .ui.radio.checkbox input:checked ~ .box:after,
   & .ui.radio.checkbox input:checked ~ label:after {
-    background-color: #5D54CD !important;
+    background-color: #5d54cd !important;
   }
- 
+
   & .ui.radio.checkbox input:checked ~ label {
-    color: #5D54CD !important;
+    color: #5d54cd !important;
     font-weight: 500 !important;
   }
 
@@ -3021,7 +3065,7 @@ body {
 .lingvo-merge-group {
   padding: 6px 0 14px 0;
   margin: 0 0 14px 0;
-  border-bottom: 1px solid #DCDCDC;
+  border-bottom: 1px solid #dcdcdc;
 
   &:last-child {
     border-bottom: none;
@@ -3092,20 +3136,18 @@ body {
     flex-direction: column;
 
     & .ui.button {
-      margin: 0 0 10px 0; 
-  
+      margin: 0 0 10px 0;
+
       &:last-child {
         margin: 0;
       }
     }
   }
-
 }
 /* /lingvo merge buttons  */
 
 /* lingvo labeled input */
 .lingvo-labeled-input {
-
   &.ui.labeled.input > .label {
     font-family: Rubik, Arial, sans-serif !important;
     font-size: 16px !important;
@@ -3241,7 +3283,6 @@ body {
     }
 
     &.active {
-
       &.ui.selection {
         border-radius: 10px !important;
         border-color: #5d54cd !important;
@@ -3294,7 +3335,6 @@ body {
           color: #372f9d !important;
         }
       }
-
     }
 
     &.upward > .menu {
@@ -3445,7 +3485,6 @@ body {
 
 /* lingvo dropdown inline */
 .lingvo-dropdown-inline {
-
   &.dropdown {
     display: inline-block !important;
     position: relative !important;
@@ -3493,16 +3532,15 @@ body {
           vertical-align: top;
           background-color: #5d54cd;
           margin-right: 8px;
-  
+
           &_save,
-          &_table  {
+          &_table {
             background-color: #57b894;
           }
 
           &_create {
             background-color: #f3aa18;
           }
-  
         }
 
         &:hover {
@@ -3517,7 +3555,6 @@ body {
         height: 14px !important;
         border: none !important;
       }
-
     }
 
     &.upward > .menu {
@@ -3527,7 +3564,6 @@ body {
 
   &_perspective {
     &.ui.dropdown {
-
       & .menu {
         min-width: 374px !important;
 
@@ -3540,7 +3576,6 @@ body {
 
   &_perspectives {
     &.ui.dropdown {
-
       & .menu {
         min-width: 374px !important;
 
@@ -3550,13 +3585,11 @@ body {
       }
     }
   }
-
 }
 /* /lingvo dropdown inline */
 
 /* lingvo dropdown item */
 .lingvo-dropdown-item {
-
   .ui.menu &.ui.dropdown {
     position: relative !important;
 
@@ -3607,7 +3640,6 @@ body {
           color: #372f9d !important;
         }
       }
-
     }
 
     &.ui.active.upward > .menu {
@@ -3617,7 +3649,6 @@ body {
 
   &_tools {
     .ui.menu &.ui.dropdown {
-
       & .menu {
         min-width: 290px !important;
 
@@ -3627,7 +3658,6 @@ body {
       }
     }
   }
-
 }
 /* /lingvo dropdown item */
 
@@ -3933,9 +3963,7 @@ body {
           }
         }
       }
-
     }
-
   }
 
   &.ui.basic.buttons &__drag:first-child .button {
@@ -3996,7 +4024,7 @@ body {
         &.ui.basic.buttons {
           border-top-left-radius: 0 !important;
           border-bottom-left-radius: 0 !important;
-      
+
           & .button {
             &:first-child {
               border-top-left-radius: 0 !important;
@@ -4044,10 +4072,8 @@ body {
       /*width: 118px !important;*/
       min-width: 118px !important;
     }
-
   }
   /* /textarea */
-
 }
 /* /lingvo input action */
 
@@ -4065,11 +4091,10 @@ body {
   align-items: center;
 
   &__name {
-    padding: 0 6px; 
+    padding: 0 6px;
   }
 
   & .lingvo-input-action.ui.input {
-    
     & > input {
       border-top-right-radius: 0 !important;
       border-bottom-right-radius: 0 !important;
@@ -4089,13 +4114,11 @@ body {
   &_drag {
     opacity: 0.3 !important;
   }
-
 }
 /* /lingvo input buttons group */
 
 /* lingvo labeled button */
 .lingvo-labeled-button {
-
   &.ui.button {
     font-size: 16px !important;
     line-height: 20px !important;
@@ -4120,7 +4143,7 @@ body {
     position: relative !important;
 
     &::before {
-      content: '';
+      content: "";
       position: absolute;
       top: 0;
       left: 0;
@@ -4145,14 +4168,12 @@ body {
       }
     }
   }
-
 }
 /* /lingvo labeled button */
 
 /* lingvo button spinner */
 .lingvo-button-spinner {
-
-  &.ui.button:disabled, 
+  &.ui.button:disabled,
   .ui.buttons &.disabled.button {
     opacity: 1 !important;
   }
@@ -4163,7 +4184,7 @@ body {
 .lingvo-rst-tree {
   & .rst__lineHalfHorizontalRight::before,
   & .rst__lineFullVertical::after,
-  & .rst__lineHalfVerticalTop::after, 
+  & .rst__lineHalfVerticalTop::after,
   & .rst__lineHalfVerticalBottom::after {
     background-color: #dcdcdc !important;
   }
@@ -4194,7 +4215,7 @@ body {
 
     & .rst__rowLabel {
       padding-right: 0 !important;
-      
+
       & + .rst__rowToolbar:not(:empty) {
         padding-left: 20px !important;
       }
@@ -4261,10 +4282,14 @@ body {
       font-family: Mulish, Arial, sans-serif;
       line-height: 22px;
       padding: 10px 16px 11px 16px;
-      -webkit-transition: background-color .1s ease, color .1s ease, -webkit-box-shadow .1s ease, border-color .1s ease, font-weight .1s ease;
-      transition: background-color .1s ease, color .1s ease, -webkit-box-shadow .1s ease, border-color .1s ease, font-weight .1s ease;
-      transition: background-color .1s ease, box-shadow .1s ease, color .1s ease, border-color .1s ease, font-weight .1s ease;
-      transition: background-color .1s ease, box-shadow .1s ease, color .1s ease, border-color .1s ease, font-weight .1s ease;
+      -webkit-transition: background-color 0.1s ease, color 0.1s ease, -webkit-box-shadow 0.1s ease,
+        border-color 0.1s ease, font-weight 0.1s ease;
+      transition: background-color 0.1s ease, color 0.1s ease, -webkit-box-shadow 0.1s ease, border-color 0.1s ease,
+        font-weight 0.1s ease;
+      transition: background-color 0.1s ease, box-shadow 0.1s ease, color 0.1s ease, border-color 0.1s ease,
+        font-weight 0.1s ease;
+      transition: background-color 0.1s ease, box-shadow 0.1s ease, color 0.1s ease, border-color 0.1s ease,
+        font-weight 0.1s ease;
 
       &.active {
         color: #fff;
@@ -4320,7 +4345,6 @@ body {
       padding: 10px 10px 10px 0 !important;
     }
   }
-
 }
 /* /lingvo dictionaries tabs */
 
@@ -4406,7 +4430,6 @@ body {
       width: 100% !important;
     }
   }
-
 }
 
 /* /lingvo search input */
@@ -4415,3 +4438,56 @@ body {
 .leaflet .leaflet-attribution-flag {
   display: none !important;
 }*/
+
+/* Markup button */
+.lingvo-button-markup {
+  font-weight: 900 !important;
+  width: 38px !important;
+
+  font-size: 14px !important;
+  color: #999ca0 !important;
+
+  .ui.basic.buttons &.button {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  .ui.basic.buttons &_create.button {
+    color: #57b894 !important;
+
+    &:focus {
+      color: #57b894 !important;
+    }
+
+    &:hover {
+      background-color: #57b894 !important;
+      color: #fff !important;
+    }
+  }
+
+  .ui.basic.buttons &_delete.button {
+    color: #db4e4e !important;
+
+    &:focus {
+      color: #db4e4e !important;
+    }
+
+    &:hover {
+      background-color: #db4e4e !important;
+      color: #fff !important;
+    }
+  }
+}
+/* /Markup button */
+
+/* Markup markers */
+.lingvo-marker-markup {
+  //background-color: #ff0;
+  background-color: #90ee90;
+}
+
+.lingvo-marker {
+  //background-color: #f3aa18 !important;
+  background-color: #ffd700 !important;
+}
+/* /Markup markers */

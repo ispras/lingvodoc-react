@@ -58,7 +58,7 @@ const query = gql`
       }
       last_modified_at
     }
-    user_blobs(data_type: "pdf", is_global: true) {
+    user_blobs(data_type: ["pdf"], is_global: true) {
       id
       name
       data_type

@@ -1,7 +1,8 @@
 import React, {useCallback, useContext, useState} from "react";
 import { useDrop } from "react-dnd";
-import { Button } from "semantic-ui-react";
+import { Button, Confirm } from "semantic-ui-react";
 import { gql } from "@apollo/client";
+import { useMutation } from "hooks";
 import { graphql, withApollo } from "@apollo/client/react/hoc";
 import { flow, isEqual } from "lodash";
 import PropTypes from "prop-types";
@@ -9,7 +10,9 @@ import { compose } from "recompose";
 
 import { queryCounter } from "backend";
 import { queryLexicalEntries } from "components/CorporaView";
+import { deleteMarkupGroupMutation, refetchLexicalEntries } from "components/JoinMarkupsModal";
 import TranslationContext from "Layout/TranslationContext";
+import { patienceDiff } from "utils/patienceDiff";
 import { compositeIdToString, compositeIdToString as id2str } from "utils/compositeId";
 
 import GroupingTag from "./GroupingTag";
@@ -28,6 +31,7 @@ const createEntityMutation = gql`
     $self_id: LingvodocID
     $content: String
     $file_content: Upload
+    $metadata: ObjectVal
   ) {
     create_entity(
       parent_id: $parent_id
@@ -35,6 +39,7 @@ const createEntityMutation = gql`
       self_id: $self_id
       content: $content
       file_content: $file_content
+      additional_metadata: $metadata
     ) {
       triumph
     }
@@ -66,14 +71,14 @@ const removeEntityMutation = gql`
 `;
 
 const updateEntityMutation = gql`
-  mutation updateEntity($id: LingvodocID!, $content: String!) {
-    update_entity_content(id: $id, content: $content) {
+  mutation updateEntity($id: LingvodocID!, $content: String!, $markups: [ObjectVal]) {
+    update_entity_content(id: $id, content: $content, markups: $markups) {
       triumph
     }
   }
 `;
 
-const lexicalEntryQuery = gql`
+export const lexicalEntryQuery = gql`
   query LexicalEntryQuery($id: LingvodocID!, $entitiesMode: String!) {
     lexicalentry(id: $id) {
       id
@@ -92,7 +97,8 @@ const lexicalEntryQuery = gql`
         published
         accepted
         additional_metadata {
-          link_perspective_id
+          link_perspective_id,
+          markups
         }
         is_subject_for_parsing
       }
@@ -172,13 +178,21 @@ const Entities = ({
   const [is_being_created, setIsBeingCreated] = useState(false);
   const [remove_set, setRemoveSet] = useState({});
   const [update_set, setUpdateSet] = useState({});
+  const [confirmation, setConfirmation] = useState(null);
+
+  const [deleteMarkupGroup] = useMutation(deleteMarkupGroupMutation, {
+    onCompleted: data => {
+      refetchLexicalEntries(data.delete_markup_group.entry_ids, client);
+      window.logger.warn(getTranslation("Markup(s) with related groups were removed"));
+    }
+  });
 
   const getTranslation = useContext(TranslationContext);
 
   const [{ isOver }, dropRef] = useDrop({
       accept: 'entity',
       drop: (item) => {
-        create(item.content, parentEntity == null ? null : parentEntity.id);
+        create(item.content, parentEntity == null ? null : parentEntity.id, item.metadata);
       },
       collect: (monitor) => ({
         isOver: monitor.isOver()
@@ -258,11 +272,11 @@ const Entities = ({
 
   }, [edit]);
 
-  const create = useCallback((content, self_id) => {
+  const create = useCallback((content, self_id, metadata=null) => {
 
     setIsBeingCreated(true);
 
-    const variables = { parent_id: entry.id, field_id: column.id };
+    const variables = { parent_id: entry.id, field_id: column.id, metadata };
     if (content instanceof File) {
       variables.content = null;
       variables.file_content = content;
@@ -362,6 +376,24 @@ const Entities = ({
     remove_set2[entity_id_str] = null;
     setRemoveSet(remove_set2);
 
+    const groupsToDelete = [];
+
+    for (const markup of (entity.additional_metadata?.markups ?? [])) {
+      if (!markup.length) {
+        continue;
+      }
+
+      const [_, ...groupIds] = markup;
+
+      if (groupIds.length > 0) {
+        groupsToDelete.push(...groupIds);
+      }
+    }
+
+    if (groupsToDelete.length > 0) {
+      deleteMarkupGroup({ variables: { groupIds: groupsToDelete, perspectiveId }});
+    }
+
     removeEntity({
       variables: { id: entity.id },
       refetchQueries: [
@@ -391,7 +423,7 @@ const Entities = ({
     });
   }, [remove_set]);
 
-  const update = useCallback((entity, content) => {
+  const update = useCallback((entity, content = entity.content, ready_markups = null) => {
 
     const entity_id_str = id2str(entity.id);
 
@@ -399,8 +431,57 @@ const Entities = ({
     update_set2[entity_id_str] = null;
     setUpdateSet(update_set2);
 
+    const current_markups = entity.additional_metadata?.markups;
+    let markups = ready_markups || current_markups;
+
+    if (!ready_markups && content !== entity.content &&
+        current_markups && current_markups.length > 1) {
+
+      const diff = patienceDiff(entity.content, content).lines;
+      markups = [[]];
+
+      for (const markup of entity.additional_metadata.markups) {
+        if (!markup.length || markup[0].length !== 2) {
+          continue;
+        }
+
+        let [[startOffset, endOffset], ...groupIds] = markup;
+        const startIndex = diff.map(ch => ch.aIndex).indexOf(startOffset);
+        const endIndex = diff.map(ch => ch.aIndex).indexOf(endOffset);
+        const markupDiff = diff.slice(0, endIndex);
+
+        for (const [i, {aIndex, bIndex}] of markupDiff.entries()) {
+          if (aIndex === -1) {
+            if (i < startIndex) {
+              startOffset++;
+            }
+            endOffset++;
+          }
+          if (bIndex === -1) {
+            if (i < startIndex) {
+              startOffset--;
+            }
+            endOffset--;
+          }
+        }
+
+        // Markup must be not empty and have at least one letter char
+        if (startOffset < endOffset &&
+            /\w/.test(content.slice(startOffset, endOffset))) {
+          markups.push([[startOffset, endOffset], ...groupIds]);
+          window.logger.suc(getTranslation("Markup was edited or moved"));
+
+        } else if (groupIds.length > 0) {
+          deleteMarkupGroup({ variables: { groupIds, perspectiveId } });
+
+        } else {
+          window.logger.warn(getTranslation("Markup was deleted"));
+        }
+      }
+    }
+
     updateEntity({
-      variables: { id: entity.id, content },
+      variables: { id: entity.id, content, markups },
       refetchQueries: [
         {
           query: lexicalEntryQuery,
@@ -428,35 +509,104 @@ const Entities = ({
     });
   }, [update_set]);
 
+  const splitEntity = ({
+    entity,
+    parentEntity,
+    beforeCaret,
+    afterCaret,
+    metadata,
+    firstMarkups,
+    secondMarkups
+  }) => {
+
+    if (entity) {
+      remove(entity);
+    }
+
+    create(
+      beforeCaret,
+      parentEntity === null ? null : parentEntity.id,
+      metadata={...metadata, 'markups': firstMarkups}
+    );
+
+    create(
+      afterCaret,
+      parentEntity === null ? null : parentEntity.id,
+      metadata={...metadata, 'markups': secondMarkups}
+    );
+  };
+
   /* Shortcut "ctrl+Enter" */
   const breakdown = useCallback((event, parentEntity, entity) => {
 
     if (event.ctrlKey && event.code === "Enter") {
-        event.preventDefault();
+      event.preventDefault();
 
-        const eventTarget = event.target;
-        const targetValue = eventTarget.value; 
+      const eventTarget = event.target;
+      const targetValue = eventTarget.value;
 
-        const selectionStart = getSelectionStart(eventTarget);
-        const selectionEnd = getSelectionEnd(eventTarget);
+      const selectionStart = getSelectionStart(eventTarget);
+      const selectionEnd = getSelectionEnd(eventTarget);
 
-        if (selectionStart === 0 && selectionEnd === 0) {
-          return;
+      if (selectionStart === 0 && selectionEnd === 0) {
+        return;
+      }
+
+      if (selectionStart === targetValue.length && selectionEnd === targetValue.length) {
+        return;
+      }
+
+      const beforeCaret = targetValue.substring(0, selectionStart).replace(/ /g, '\x20') || '\x20';
+      const afterCaret = targetValue.substring(selectionStart).replace(/ /g, '\x20') || '\x20';
+      const metadata = entity.additional_metadata || {};
+      const markups = metadata.markups || [];
+      const brokenGroups = [];
+      let brokenMarkup = false;
+      const firstMarkups = [[]];
+      const secondMarkups = [[]];
+
+      for (const markup of markups) {
+        if (!markup.length || markup[0].length !== 2) {
+          continue;
         }
 
-        if (selectionStart === targetValue.length && selectionEnd === targetValue.length) {
-          return;
-        }
+        const [[startOffset, endOffset], ...groupIds] = markup;
 
-        const beforeCaret = targetValue.substring(0, selectionStart).replace(/ /g, '\x20') || '\x20';
-        const afterCaret = targetValue.substring(selectionStart).replace(/ /g, '\x20') || '\x20';
-        
-        if (entity) {
-          remove(entity);
+        if (startOffset < selectionStart && endOffset <= selectionStart) {
+          firstMarkups.push(markup);
+        } else if (startOffset >= selectionStart && endOffset > selectionStart) {
+          secondMarkups.push([[startOffset - selectionStart, endOffset - selectionStart], ...groupIds]);
+        } else {
+          brokenMarkup = true;
+          brokenGroups.push(...groupIds);
         }
-        create(beforeCaret, parentEntity === null ? null : parentEntity.id);
-        create(afterCaret, parentEntity === null ? null : parentEntity.id);
-     }
+      }
+
+      const variables = {
+        entity,
+        parentEntity,
+        beforeCaret,
+        afterCaret,
+        metadata,
+        firstMarkups,
+        secondMarkups
+      };
+
+      if (brokenMarkup) {
+        setConfirmation({
+          content: getTranslation("You are going to delete a markup and related groups? Are you sure?"),
+          func: () => {
+            setConfirmation(null);
+            splitEntity({...variables});
+            if (brokenGroups.length > 0) {
+              deleteMarkupGroup({ variables: { groupIds: brokenGroups, perspectiveId } });
+            }
+          }
+        });
+      } else {
+        splitEntity({...variables});
+      }
+    }
   }, []);
 
   const props = {
@@ -519,7 +669,7 @@ const Entities = ({
           is_being_removed={remove_set.hasOwnProperty(id2str(entity.id))}
           is_being_updated={update_set.hasOwnProperty(id2str(entity.id))}
           number={number} 
-          id={entity.id} 
+          id={entity.id}
         />
       ))}
       {mode === "edit" && !is_order_column && (
@@ -547,6 +697,14 @@ const Entities = ({
           )}
         </li>
       )}
+      <Confirm
+        open={confirmation !== null}
+        header={getTranslation("Confirmation")}
+        content={confirmation ? confirmation.content : null}
+        onConfirm={confirmation ? confirmation.func : null}
+        onCancel={() => setConfirmation(null)}
+        className="lingvo-confirm"
+      />
     </ul>
   );
 };

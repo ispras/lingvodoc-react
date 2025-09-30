@@ -268,6 +268,7 @@ class P extends React.Component {
     this.resetCheckedColumn = this.resetCheckedColumn.bind(this);
     this.onCheckAll = this.onCheckAll.bind(this);
     this.resetCheckedAll = this.resetCheckedAll.bind(this);
+    this.removeEntries = this.removeEntries.bind(this);
     //this.reRender = this.reRender.bind(this);
   }
 
@@ -276,12 +277,16 @@ class P extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { data } = this.props;
+    const { data, createdEntries, page, filter } = this.props;
     if (!data.perspective) {
       return;
     }
     if (data !== prevProps.data) {
       this.setState({ entriesTotal: !data.error ? data.perspective.perspective_page.entries_total : 0 });
+    }
+    // We clear createdEntries if page was switched, no filter was used and it was not changed
+    if (createdEntries.length && page !== prevProps.page && !filter && filter === prevProps.filter) {
+      this.props.resetAddedLexes();
     }
   }
 
@@ -340,6 +345,117 @@ class P extends React.Component {
     });
   }
 
+  async removeEntries() {
+    const {
+      client,
+      data,
+      id,
+      entitiesMode,
+      filter,
+      isEditMode,
+      isCaseSens,
+      isRegexp,
+      isAscending,
+      sortingField,
+      createdEntries,
+      limit,
+      offset,
+      removeLexicalEntries,
+      selectedEntries,
+      removeAddedLexes: removeCreatedLexes,
+      resetEntriesSelection: resetSelection
+    } = this.props;
+
+    const query_args = {
+      id,
+      entitiesMode,
+      filter,
+      isEditMode,
+      isCaseSens,
+      isRegexp,
+      isAscending,
+      sortingField,
+      createdEntries,
+      limit,
+      offset
+    }
+
+    const { loading, error } = data;
+    const { entriesTotal } = this.state;
+    const countEntries = selectedEntries.length;
+    const updateNext =  (offset + limit < entriesTotal);
+
+    if (updateNext) {
+      await client.query({
+        query: queryLexicalEntries,
+        variables: {
+          ...query_args,
+          offset: offset + limit
+        },
+        fetchPolicy: 'cache-first',
+      });
+    }
+
+    removeLexicalEntries({
+      variables: { ids: selectedEntries },
+
+      update: (cache, { data: d }) => {
+        if (!d.loading && !d.error) {
+          let nextEntries = [];
+
+          if (updateNext) {
+            cache.updateQuery(
+              {
+                query: queryLexicalEntries,
+                variables: {
+                  ...query_args,
+                  offset: offset + limit
+                }
+              },
+              (data) => {
+                if (!loading && !error && data) {
+                  const result = cloneDeep(data);
+                  const perspective_page = result.perspective.perspective_page;
+                  nextEntries = perspective_page.lexical_entries.slice(0, countEntries);
+                  perspective_page.lexical_entries = (
+                    perspective_page.lexical_entries.slice(countEntries)
+                  );
+
+                  return result;
+                }
+                return undefined;
+              }
+            );
+          }
+
+          cache.updateQuery(
+            {
+              query: queryLexicalEntries,
+              variables: query_args
+            },
+            (data) => {
+              if (!loading && !error) {
+                const result = cloneDeep(data);
+                const perspective_page = result.perspective.perspective_page;
+                perspective_page.lexical_entries = [
+                  ...perspective_page.lexical_entries.filter(c => !selectedEntries.find(s_id => isEqual(c.id, s_id))),
+                  ...nextEntries
+                ];
+
+                return result;
+              }
+              return undefined;
+            }
+          );
+        }
+      }
+    }).then(() => {
+      removeCreatedLexes(selectedEntries);
+      resetSelection();
+      this.setState({ entriesTotal: entriesTotal - countEntries });
+    });
+  };
+
   render() {
     const {
       id,
@@ -357,7 +473,6 @@ class P extends React.Component {
       mergeLexicalEntries,
       removeLexicalEntries,
       addLexicalEntry: addCreatedEntry,
-      removeAddedLexes: removeCreatedLexes,
       selectLexicalEntry: onEntrySelect,
       resetEntriesSelection: resetSelection,
       openModal: openNewModal,
@@ -373,7 +488,8 @@ class P extends React.Component {
       sortingField,
       limit,
       offset,
-      changePage
+      changePage,
+      onUnpublishedOnly
     } = this.props;
 
     const query_args = {
@@ -416,14 +532,18 @@ class P extends React.Component {
               create_lexicalentry: { lexicalentry }
             } = d;
 
+            /*
+            /* We'll update cache for very first page to move createdEntries there after page switching
+            */
+
             cache.updateQuery(
               {
                 query: queryLexicalEntries,
-                variables: query_args
+                variables: {...query_args, offset: 0, createdEntries: []}
               },
 
               (data) => {
-                if (!loading && !error) {
+                if (!loading && !error && data) {
                   const result = cloneDeep(data);
                   result.perspective.perspective_page.lexical_entries.unshift(lexicalentry);
                   return result;
@@ -454,39 +574,6 @@ class P extends React.Component {
       }).then(() => {
         resetSelection();
         this.setState({ entriesTotal: entriesTotal - selectedEntries.length + 1 });
-      });
-    };
-
-    const removeEntries = () => {
-        
-      removeLexicalEntries({
-        variables: { ids: selectedEntries },
-
-        update: (cache, { data: d }) => {
-          if (!d.loading && !d.error) {
-
-            cache.updateQuery(
-              {
-                query: queryLexicalEntries,
-                variables: query_args
-              },
-              (data) => {
-                if (!loading && !error) {
-                  const result = cloneDeep(data);
-                  const perspective_page = result.perspective.perspective_page;
-                  perspective_page.lexical_entries = (
-                    perspective_page.lexical_entries.filter(c => !selectedEntries.find(s_id => isEqual(c.id, s_id))));
-
-                  return result;
-                }
-                return undefined;
-              }
-            );
-            removeCreatedLexes(selectedEntries);
-            resetSelection();
-            this.setState({ entriesTotal: entriesTotal - 1 });
-          }
-        }
       });
     };
 
@@ -638,7 +725,7 @@ class P extends React.Component {
                 <Button
                   icon={<i className="lingvo-icon lingvo-icon_delete" />}
                   content={this.context("Remove lexical entries")}
-                  onClick={removeEntries}
+                  onClick={this.removeEntries}
                   disabled={selectedEntries.length < 1}
                   className="lingvo-button-red lingvo-perspective-button"
                 />
@@ -653,13 +740,21 @@ class P extends React.Component {
                 />
               )}
               {mode === "publish" && isAuthenticated && (
-                <Button
-                  icon={<i className="lingvo-icon lingvo-icon_check" />}
-                  content={this.context("Publish Entities")}
-                  disabled={approveDisableCondition(lexicalEntries)}
-                  onClick={onApprove}
-                  className="lingvo-button-green lingvo-perspective-button"
-                />
+                <>
+                  <Button
+                    icon={<i className="lingvo-icon lingvo-icon_check" />}
+                    content={this.context("Publish Entities")}
+                    disabled={approveDisableCondition(lexicalEntries)}
+                    onClick={onApprove}
+                    className="lingvo-button-green lingvo-perspective-button"
+                  />
+                  <Button
+                    content={entitiesMode !== "unpublished" ? this.context("Show Unpublished Only") : this.context("Show All")}
+                    disabled={!entriesTotal}
+                    onClick={onUnpublishedOnly}
+                    className="lingvo-button-lite-violet lingvo-perspective-button"
+                  />
+                </>
               )}
               {mode === "contributions" && isAuthenticated && (
                 <Button
@@ -1046,6 +1141,9 @@ export const LexicalEntryByIds = compose(
 
 const PerspectiveViewWrapper = ({ id, className, mode, entitiesMode, page, data,
   filter, sortByField, isCaseSens, isRegexp, changePage }) => {
+
+  const [unpublishedOnly, setUnpublishedOnly] = useState(false);
+
   if (data.error) {
     return null;
   }
@@ -1079,7 +1177,7 @@ const PerspectiveViewWrapper = ({ id, className, mode, entitiesMode, page, data,
       id={id}
       className={className}
       mode={mode}
-      entitiesMode={entitiesMode}
+      entitiesMode={mode==="publish" && unpublishedOnly ? "unpublished" : entitiesMode}
       page={page}
       limit={ROWS_PER_PAGE}
       offset={ROWS_PER_PAGE * (page - 1)}
@@ -1090,6 +1188,7 @@ const PerspectiveViewWrapper = ({ id, className, mode, entitiesMode, page, data,
       columns={columns}
       reRender={reRender}
       changePage={changePage}
+      onUnpublishedOnly={() => setUnpublishedOnly(!unpublishedOnly)}
     />
   );
 };
@@ -1109,6 +1208,7 @@ PerspectiveViewWrapper.propTypes = {
 };
 
 PerspectiveViewWrapper.defaultProps = {
+  page: 1,
   filter: "",
   isCaseSens: true,
   isRegexp: false,

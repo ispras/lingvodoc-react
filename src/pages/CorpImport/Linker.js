@@ -4,12 +4,20 @@ import { pure } from "recompose";
 
 import TranslationContext from "Layout/TranslationContext";
 
-function Columns({ blob, index, onDelete, onUpdateColumn }) {
+function Columns({ blob, index, mode, onDelete, onUpdateColumn }) {
   const getTranslation = useContext(TranslationContext);
-  const color = index ? "yellow" : "green";
-  const name = index ? "sentence" : "base sentence";
+  const color = (mode === 'json') ? "blue" : index ? "yellow" : "green";
+  const name = (mode === 'json') ? "both sides" : index ? "sentence" : "base sentence";
   const value = blob.getIn(["values", "sentence"], "dash");
-  useEffect(() => { onUpdateColumn("sentence", value) }, []);
+  useEffect(
+    () => {
+      onUpdateColumn("sentence", value);
+      if (mode === 'json') {
+         onUpdateColumn("to_sentence", "json");
+      }
+    },
+    []
+  );
 
   return (
     <div className="blob blob_corp">
@@ -20,7 +28,7 @@ function Columns({ blob, index, onDelete, onUpdateColumn }) {
           {getTranslation(name)}
         </Button>
       </div>
-      { !index && (
+      { !index && (mode === 'txt') && (
         <Checkbox className="blob-checkbox"
           label={getTranslation("Hide dashes")}
           onClick={() => onUpdateColumn("sentence", value === "dash" ? "dedash" : "dash", value)}
@@ -33,7 +41,12 @@ function Columns({ blob, index, onDelete, onUpdateColumn }) {
 function Linker({ blobs, state, onSelect, onDelete, onUpdateColumn }) {
   const getTranslation = useContext(TranslationContext);
 
-  const stateOptions = blobs.reduce(
+  const first = state.first();
+  const selected = first ? first.get("id").join("/") : null;
+  const mode = first ? first.get("data_type") : null;
+
+  const stateOptions = blobs.filter(
+    blob => (!mode || blob.get("data_type") === mode)).reduce(
     (acc, blob) => [
       ...acc,
       {
@@ -44,9 +57,6 @@ function Linker({ blobs, state, onSelect, onDelete, onUpdateColumn }) {
     ],
     []
   );
-
-  const first = state.first();
-  const selected = first ? first.get("id").join("/") : null;
 
   function onChange(event, data) {
     onSelect(data.value.split("/").map(x => parseInt(x, 10)));
@@ -71,6 +81,7 @@ function Linker({ blobs, state, onSelect, onDelete, onUpdateColumn }) {
             key={id.join("/")}
             blob={v}
             index={i++}
+            mode={mode}
             onDelete={onDelete}
             onUpdateColumn={onUpdateColumn(id)}
           />

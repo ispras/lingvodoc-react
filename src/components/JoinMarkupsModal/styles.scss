@@ -1,0 +1,116 @@
+.join-markups-content {
+  display: flex;
+  flex-direction: column;
+  height: 65vh;
+  min-height: 450px;
+
+  &__markups {
+    height: 50%;
+    padding-bottom: 20px;
+  }
+
+  &__relations {
+    height: 50%;
+    overflow-y: auto;
+
+    & .ui.table thead th {
+      position: relative;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+
+      @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+        position: static;
+      }
+
+      &.th-checkbox {
+        width: 50px;
+      }
+
+      &.th-markup {
+        width: 30%;
+      }
+    }
+  }
+}
+
+.block-add-relation {
+  display: flex;
+  height: 100%;
+
+  &__column {
+    flex: 1 1 33%;
+    //width: 33%;
+    overflow-y: auto;
+    margin: 0 0 0 10px;
+
+    & .ui.table thead th {
+      position: relative;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+
+      & .selected-markup {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 1;
+        overflow: hidden;
+        overflow-wrap: break-word;
+      }
+
+      & .selected-markup__text {
+        color: #4e46b4;
+      }
+    }
+
+    & .ui.table tr td {
+      border-radius: 8px !important;
+    }
+
+    & .ui.table .selected-text-relation {
+      background: #4e46b4 !important;
+      color: #fff !important;
+    }
+
+    &:first-of-type {
+      margin: 0 10px 0 0;
+    }
+
+    @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+      margin-left: 5px;
+
+      & .ui.table thead th {
+        position: static;
+      }
+
+      &:first-of-type {
+        margin-right: 5px;
+        margin-left: 0;
+      }
+    }
+  }
+
+  &__actions {
+    flex: 0 1 auto;
+    min-width: 330px;
+    max-width: 330px;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    padding-right: 0;
+
+    & .ui.button {
+      margin-top: 20px !important;
+    }
+
+    @media only screen and (max-device-width: 1230px), only screen and (max-width: 1230px) {
+      min-width: 250px;
+      max-width: 250px;
+    }
+
+    @media only screen and (max-device-width: 767px), only screen and (max-width: 767px) {
+      min-width: 130px;
+      max-width: 130px;
+    }
+  }
+}

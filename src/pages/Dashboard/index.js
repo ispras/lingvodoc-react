@@ -1,9 +1,9 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { connect } from "react-redux";
-import { Confirm, Dimmer, Dropdown, Header, Icon, List, Popup, Tab } from "semantic-ui-react";
+import { Confirm, Dimmer, Dropdown, Header, Icon, List, Popup, Tab, Button } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
-import { isEqual } from "lodash";
+import { isEqual, cloneDeep } from "lodash";
 import PropTypes from "prop-types";
 import { branch, compose, onlyUpdateForKeys, renderNothing } from "recompose";
 import { bindActionCreators } from "redux";
@@ -31,6 +31,9 @@ export const query = gql`
       translations
       status_translations
       state_translation_gist_id
+      additional_metadata {
+        stars
+      }
       perspectives {
         id
         parent_id
@@ -52,6 +55,14 @@ export const query = gql`
 const updateDictionaryStatusMutation = gql`
   mutation updateDictionaryStatus($id: LingvodocID!, $status_id: LingvodocID!) {
     update_dictionary_status(id: $id, state_translation_gist_id: $status_id) {
+      triumph
+    }
+  }
+`;
+
+const updateDictionaryMutation = gql`
+  mutation updateDictionary($id: LingvodocID!, $additionalMetadata: ObjectVal!) {
+    update_dictionary(id: $id, additional_metadata: $additionalMetadata) {
       triumph
     }
   }
@@ -309,10 +320,21 @@ const Perspective = compose(
 class D extends React.Component {
   constructor(props) {
     super(props);
+    const {user, additional_metadata: {stars}} = props;
+    let star = 0;
 
-    this.state = { confirmation: false };
+    if (stars && stars[user.id]) {
+      star = stars[user.id][0];
+    }
+
+    this.state = {
+      star,
+      starring: false,
+      confirmation: false
+    };
 
     this.onRemoveDictionary = this.onRemoveDictionary.bind(this);
+    this.onUpdateFavorite = this.onUpdateFavorite.bind(this);
   }
 
   onRemoveDictionary() {
@@ -336,6 +358,49 @@ class D extends React.Component {
     });
   }
 
+  onUpdateFavorite() {
+    const { user, id, mode, category, updateDictionary } = this.props;
+    const { additional_metadata: { stars: oldStars }} = this.props;
+    const { star } = this.state;
+
+    const stars = oldStars ? cloneDeep(oldStars) : {};
+
+    const currentStar = (user.id in stars)
+      ? [(stars[user.id][0] + 1) % 3, stars[user.id][1]]
+      : [1, ""];
+
+    stars[user.id] = currentStar;
+
+    this.setState({ star: currentStar[0], starring: true });
+
+    updateDictionary({
+      variables: {
+        id,
+        additionalMetadata: { stars }
+      },
+      refetchQueries: [
+        {
+          query,
+          variables: {
+            mode,
+            category
+          }
+        },
+        {
+          query,
+          variables: {
+            mode: 2,
+            category
+          }
+        },
+        //{ query: dictionaryQuery }
+      ],
+      awaitRefetchQueries: true
+    }).then(
+      () => this.setState({ starring: false })
+    );
+  }
+
   render() {
     const {
       id,
@@ -349,47 +414,78 @@ class D extends React.Component {
       category
     } = this.props;
 
-    const { confirmation } = this.state;
+    const { confirmation, star, starring } = this.state;
 
     return (
       <List.Item>
         <List.Content>
           <div className="lingvo-dashboard-block">
             <div className="lingvo-dashboard-block__big">
-              <Dropdown
-                text={T(translations)}
-                className="link item lingvo-dashboard-elem lingvo-dashboard-elem_main"
-                icon={<i className="lingvo-icon lingvo-icon_arrow" />}
-              >
-                <Dropdown.Menu>
-                  <Dropdown.Item onClick={() => actions.openRoles(id, "dictionary", this.context("Roles"))}>
-                    <i className="lingvo-icon lingvo-icon_roles" /> {this.context("Roles")}
-                  </Dropdown.Item>
-                  <Dropdown.Item
-                    onClick={() =>
-                      actions.openDictionaryPropertiesModal(
-                        id,
-                        `${this.context("Dictionary")} '${T(translations)}' ${this.context("Properties").toLowerCase()}`
-                      )
+              <div className="lingvo-dashboard-group-elems">
+                <Dropdown
+                  text={T(translations)}
+                  className="link item lingvo-dashboard-elem lingvo-dashboard-elem_main"
+                  icon={<i className="lingvo-icon lingvo-icon_arrow" />}
+                >
+                  <Dropdown.Menu>
+                    <Dropdown.Item onClick={() => actions.openRoles(id, "dictionary", this.context("Roles"))}>
+                      <i className="lingvo-icon lingvo-icon_roles" /> {this.context("Roles")}
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                      onClick={() =>
+                        actions.openDictionaryPropertiesModal(
+                          id,
+                          `${this.context("Dictionary")} '${T(translations)}' ${this.context("Properties").toLowerCase()}`
+                        )
+                      }
+                    >
+                      <i className="lingvo-icon lingvo-icon_properties" /> {this.context("Properties")}
+                    </Dropdown.Item>
+                    <Dropdown.Item onClick={() => actions.openDictionaryOrganizationsModal(id)}>
+                      <i className="lingvo-icon lingvo-icon_organizations" /> {this.context("Organizations")}
+                    </Dropdown.Item>
+                    <Dropdown.Item onClick={() => actions.openStatistics(id, "dictionary", this.context("Statistics"))}>
+                      <i className="lingvo-icon lingvo-icon_stats" /> {this.context("Statistics")}
+                    </Dropdown.Item>
+                    {/*<Dropdown.Item icon="circle" text={this.context("Create a new perspective...")} />*/}
+                    <Dropdown.Item onClick={() => actions.openSaveDictionaryModal(id)}>
+                      <i className="lingvo-icon lingvo-icon_save" /> {this.context("Save dictionary")}
+                    </Dropdown.Item>
+                    <Dropdown.Item onClick={() => this.setState({ confirmation: true })}>
+                      <i className="lingvo-icon lingvo-icon_delete" /> {this.context("Remove dictionary")}
+                    </Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
+
+                <div className="lingvo-dashboard-group-elems__block">
+                  <Popup
+                    trigger={
+                      <Button
+                        className="lingvo-dashboard-elem lingvo-dashboard-elem_button"
+                        onClick={this.onUpdateFavorite}
+                      >
+                        <i className={starring
+                          ? "lingvo-icon lingvo-icon_spinner"
+                          : star === 1
+                          ? "lingvo-icon lingvo-icon_star_yellow"
+                          : star === 2
+                          ? "lingvo-icon lingvo-icon_star_red"
+                          : "lingvo-icon lingvo-icon_star_empty"}
+                        />
+                      </Button>
                     }
-                  >
-                    <i className="lingvo-icon lingvo-icon_properties" /> {this.context("Properties")}
-                  </Dropdown.Item>
-                  <Dropdown.Item onClick={() => actions.openDictionaryOrganizationsModal(id)}>
-                    <i className="lingvo-icon lingvo-icon_organizations" /> {this.context("Organizations")}
-                  </Dropdown.Item>
-                  <Dropdown.Item onClick={() => actions.openStatistics(id, "dictionary", this.context("Statistics"))}>
-                    <i className="lingvo-icon lingvo-icon_stats" /> {this.context("Statistics")}
-                  </Dropdown.Item>
-                  {/*<Dropdown.Item icon="circle" text={this.context("Create a new perspective...")} />*/}
-                  <Dropdown.Item onClick={() => actions.openSaveDictionaryModal(id)}>
-                    <i className="lingvo-icon lingvo-icon_save" /> {this.context("Save dictionary")}
-                  </Dropdown.Item>
-                  <Dropdown.Item onClick={() => this.setState({ confirmation: true })}>
-                    <i className="lingvo-icon lingvo-icon_delete" /> {this.context("Remove dictionary")}
-                  </Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
+                    disabled={starring}
+                    content={star === 1
+                      ? this.context("Add red star")
+                      : star === 2
+                      ? this.context("Clean any star")
+                      : this.context("Add yellow star")
+                    }
+                    className="lingvo-popup-inverted"
+                    hideOnScroll={true}
+                  />
+                </div>
+              </div>
             </div>
 
             <div className="lingvo-dashboard-block__small">
@@ -444,24 +540,33 @@ D.propTypes = {
 };
 
 const Dictionary = compose(
-  connect(null, dispatch => ({
-    actions: bindActionCreators(
-      {
-        openRoles,
-        openDictionaryPropertiesModal,
-        openStatistics,
-        openSaveDictionaryModal,
-        openDictionaryOrganizationsModal
-      },
-      dispatch
-    )
-  })),
+  connect(
+    state => state.user,
+    dispatch => ({
+      actions: bindActionCreators(
+        {
+          openRoles,
+          openDictionaryPropertiesModal,
+          openStatistics,
+          openSaveDictionaryModal,
+          openDictionaryOrganizationsModal
+        },
+        dispatch
+      )
+    })
+  ),
+  graphql(updateDictionaryMutation, { name: "updateDictionary" }),
   graphql(removeDictionaryMutation, { name: "removeDictionary" }),
-  onlyUpdateForKeys(["translations", "status_translations", "perspectives"])
+  onlyUpdateForKeys(["translations", "status_translations", "perspectives", "additional_metadata"])
 )(D);
 
-const Dashboard = ({ data, mode, category }) => {
+const Dashboard = ({ data, mode, category, setShowFavorite }) => {
   const { loading, dictionaries, all_statuses: statuses } = data;
+
+  if (!loading && !dictionaries.length && setShowFavorite) {
+    setShowFavorite(false);
+  }
+
   return (
     <div className="lingvo-dashboard">
       <Dimmer.Dimmable dimmed={loading} style={dimmerStyle}>
@@ -500,8 +605,22 @@ const Dictionaries = compose(
   branch(({ data }) => !!data.error, renderNothing)
 )(Dashboard);
 
-const DICTIONARIES_TABS = getTranslation => {
-  return [
+const DICTIONARIES_TABS = ({getTranslation, showFavorite, setShowFavorite}) => {
+
+  const result = [];
+
+  if (showFavorite) {
+    result.push({
+      menuItem: getTranslation("Favorite dictionaries"),
+      render: () => (
+        <Tab.Pane className="lingvo-tab__pane">
+          <Dictionaries category={0} mode={2} setShowFavorite={setShowFavorite} />
+        </Tab.Pane>
+      )
+    });
+  }
+
+  result.push(
     {
       menuItem: getTranslation("My dictionaries"),
       render: () => (
@@ -518,11 +637,27 @@ const DICTIONARIES_TABS = getTranslation => {
         </Tab.Pane>
       )
     }
-  ];
+  );
+
+  return result;
 };
 
-const CORPORA_TABS = getTranslation => {
-  return [
+const CORPORA_TABS = ({getTranslation, showFavorite, setShowFavorite}) => {
+
+  const result = [];
+
+  if (showFavorite) {
+    result.push({
+      menuItem: getTranslation("Favorite corpora"),
+      render: () => (
+        <Tab.Pane className="lingvo-tab__pane">
+          <Dictionaries category={1} mode={2} setShowFavorite={setShowFavorite} />
+        </Tab.Pane>
+      )
+    });
+  }
+
+  result.push(
     {
       menuItem: getTranslation("My corpora"),
       render: () => (
@@ -539,7 +674,9 @@ const CORPORA_TABS = getTranslation => {
         </Tab.Pane>
       )
     }
-  ];
+  );
+
+  return result;
 };
 
 const PARALLEL_CORPORA_TABS = getTranslation => {
@@ -565,9 +702,11 @@ const PARALLEL_CORPORA_TABS = getTranslation => {
 
 const DictionaryDashboard = () => {
   const getTranslation = useContext(TranslationContext);
+  const [showFavorite, setShowFavorite] = useState(true);
+
   return (
     <div className="background-content">
-      <Tab className="inverted lingvo-tab" panes={DICTIONARIES_TABS(getTranslation)} renderActiveOnly />
+      <Tab className="inverted lingvo-tab" panes={DICTIONARIES_TABS({getTranslation, showFavorite, setShowFavorite})} renderActiveOnly />
       <DictionaryProperties />
     </div>
   );
@@ -575,9 +714,11 @@ const DictionaryDashboard = () => {
 
 const CorpusDashboard = () => {
   const getTranslation = useContext(TranslationContext);
+  const [showFavorite, setShowFavorite] = useState(true);
+
   return (
     <div className="background-content">
-      <Tab className="inverted lingvo-tab" panes={CORPORA_TABS(getTranslation)} renderActiveOnly />
+      <Tab className="inverted lingvo-tab" panes={CORPORA_TABS({getTranslation, showFavorite, setShowFavorite})} renderActiveOnly />
       <DictionaryProperties />
     </div>
   );
