@@ -17,10 +17,10 @@ function FieldButton({ text, onClick, isSelected }) {
 
 function Column({ index, mode, fieldOptions, type, onSetColumnType, actions }) {
   const getTranslation = useContext(TranslationContext);
-  const name = (mode === 'txt')
+  const name = (mode === 'txt' || mode === 'marked')
     ? (index > 0 ? "sentence" : "base sentence")
     : (index < 0 ? "to sentence" : "from sentence");
-  const color = (mode === 'txt')
+  const color = (mode === 'txt' || mode === 'marked')
     ? (index > 0 ? "yellow" : "green")
     : (index < 0 ? "yellow" : "green");
   const columnButton = <Button className="column-button" color={color} content={getTranslation(name)} />;
