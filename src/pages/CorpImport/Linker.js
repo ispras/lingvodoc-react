@@ -30,7 +30,7 @@ function Columns({ blob, index, mode, onDelete, onUpdateColumn }) {
         </Button>
       </div>
       { !index && (mode === 'txt' || mode === 'marked') && (
-        <Checkbox className="blob-checkbox"
+        <Checkbox className="blob-checkbox" style={{ marginLeft: '2em' }}
           label={getTranslation("Hide dashes")}
           onClick={() => onUpdateColumn("sentence", dedash ? mode : "dedash")}
           checked={dedash} />
