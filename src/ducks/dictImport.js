@@ -15,6 +15,7 @@ const COLUMN_SET_TYPE = "@import/COLUMN_SET_TYPE";
 const LANGUAGE_SET = "@import/LANGUAGE_SET";
 const LICENSE_SET = "@import/LICENSE_SET";
 const LOCALE_SET = "@import/LOCALE_SET";
+const MARKED_SET = "@import/MARKED_SET";
 
 function _getLinking(state) {
   return state.get("linking").filter(v => v.get("id"));
@@ -125,6 +126,23 @@ function updateColumnTypes(state) {
   });
 }
 
+function setMarkedTxt(state) {
+  const first = _getLinking(state).first();
+  const firstId = first.get("id");
+  const firstDataType = first.get("data_type");
+  const isTxt = (firstDataType === "txt");
+  const isMarked = (firstDataType === "marked");
+  const statePath = ["linking", firstId, "data_type"];
+
+  return (
+    isTxt
+    ? state.setIn(statePath, "marked")
+    : isMarked
+    ? state.setIn(statePath, "txt")
+    : state
+  )
+}
+
 const initial = new Map({
   step: "LINKING",
   blobs: new List(),
@@ -172,6 +190,9 @@ export default function (state = initial, { type, payload }) {
       break;
     case LICENSE_SET:
       newState = state.setIn(["licenses", payload.id], payload.license);
+      break;
+    case MARKED_SET:
+      newState = setMarkedTxt(state);
       break;
     case LOCALE_SET:
       if (payload.value) {
@@ -325,4 +346,8 @@ export function setTranslation(id, locale, value) {
     type: LOCALE_SET,
     payload: { id, locale, value }
   };
+}
+
+export function setMarked() {
+  return { type: MARKED_SET };
 }
