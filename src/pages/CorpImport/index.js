@@ -18,7 +18,8 @@ import {
   setLanguage,
   setLicense,
   setTranslation,
-  updateColumn
+  updateColumn,
+  setMarked
 } from "ducks/dictImport";
 import TranslationContext from "Layout/TranslationContext";
 import LanguageSelection from "pages/DictImport/LanguageSelection";
@@ -72,7 +73,8 @@ class Info extends React.Component {
     updateColumn: PropTypes.func.isRequired,
     setColumnType: PropTypes.func.isRequired,
     setLanguage: PropTypes.func.isRequired,
-    setTranslation: PropTypes.func.isRequired
+    setTranslation: PropTypes.func.isRequired,
+    setMarked: PropTypes.func.isRequired
   };
 
   constructor(props) {
@@ -88,6 +90,7 @@ class Info extends React.Component {
     this.onSetLicense = this.onSetLicense.bind(this);
     this.onSetTranslation = this.onSetTranslation.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
+    this.onSetMarked = this.onSetMarked.bind(this);
   }
 
   componentDidUpdate() {
@@ -105,6 +108,10 @@ class Info extends React.Component {
 
   onSelect(payload) {
     this.props.linkingAdd(payload);
+  }
+
+  onSetMarked() {
+    this.props.setMarked();
   }
 
   onDelete(payload) {
@@ -196,6 +203,7 @@ class Info extends React.Component {
               blobs={blobs}
               state={linking}
               onSelect={this.onSelect}
+              onSetMarked={this.onSetMarked}
               onDelete={this.onDelete}
               onUpdateColumn={this.onUpdateColumn}
             />
@@ -301,7 +309,8 @@ const mapDispatchToProps = {
   setColumnType,
   setLanguage,
   setTranslation,
-  setLicense
+  setLicense,
+  setMarked
 };
 
 Info.propTypes = {

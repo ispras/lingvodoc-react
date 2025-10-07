@@ -8,16 +8,16 @@ function Columns({ blob, index, mode, onDelete, onUpdateColumn }) {
   const getTranslation = useContext(TranslationContext);
   const color = (mode === 'json') ? "blue" : index ? "yellow" : "green";
   const name = (mode === 'json') ? "both sides" : index ? "sentence" : "base sentence";
-  const value = blob.getIn(["values", "sentence"], "dash");
-  useEffect(
-    () => {
-      onUpdateColumn("sentence", value);
-      if (mode === 'json') {
-         onUpdateColumn("to_sentence", "json");
-      }
-    },
-    []
-  );
+  // We store 'dedash' flag in 'sentence' value because its value has no matter anywhere else
+  const dedash = blob.getIn(["values", "sentence"], null) === "dedash";
+  useEffect(() => {
+    // On json format we have both sentences in one file,
+    // so to_sentence is already selected, we store a random value there
+    // to get 'Next Step' button active at once
+    if (mode === 'json') {
+      onUpdateColumn("to_sentence", "json_mode");
+    }
+  }, []);
 
   return (
     <div className="blob blob_corp">
@@ -28,34 +28,37 @@ function Columns({ blob, index, mode, onDelete, onUpdateColumn }) {
           {getTranslation(name)}
         </Button>
       </div>
-      { !index && (mode === 'txt') && (
+      { !index && (mode === 'txt' || mode === 'marker') && (
         <Checkbox className="blob-checkbox"
           label={getTranslation("Hide dashes")}
-          onClick={() => onUpdateColumn("sentence", value === "dash" ? "dedash" : "dash", value)}
-          checked={value === "dedash"} />
+          onClick={() => onUpdateColumn("sentence", dedash ? mode : "dedash")}
+          checked={dedash} />
       ) || <div className="blob-checkbox" />}
     </div>
   );
 }
 
-function Linker({ blobs, state, onSelect, onDelete, onUpdateColumn }) {
+function Linker({ blobs, state, onSelect, onSetMarked, onDelete, onUpdateColumn }) {
   const getTranslation = useContext(TranslationContext);
 
   const first = state.first();
-  const selected = first ? first.get("id").join("/") : null;
+  const firstId = first ? first.get("id") : null;
+  const selected = firstId ? firstId.join("/") : null;
   const mode = first ? first.get("data_type") : null;
+  const marked = (mode === 'marked');
 
-  const stateOptions = blobs.filter(
-    blob => (!mode || blob.get("data_type") === mode)).reduce(
-    (acc, blob) => [
-      ...acc,
+  // Filtering stored files by type on mode current value
+  // Note: 'marked' mode value means 'txt' files type
+  const stateOptions = (
+    blobs.filter(blob => !mode || blob.get("data_type") === (marked ? 'txt' : mode))
+  ).reduce((acc, blob) =>
+    [ ...acc,
       {
         key: blob.get("id").join("/"),
         value: blob.get("id").join("/"),
         text: blob.get("name")
       }
-    ],
-    []
+    ], []
   );
 
   function onChange(event, data) {
@@ -86,7 +89,17 @@ function Linker({ blobs, state, onSelect, onDelete, onUpdateColumn }) {
             onUpdateColumn={onUpdateColumn(id)}
           />
         ))
-        .toArray()}
+        .toArray()
+      }
+      { (mode === 'txt' || mode === 'marked') && (
+        <div className="container-gray">
+          <Checkbox className="blob-checkbox"
+            label={getTranslation("Pre-marked corpora")}
+            onClick={onSetMarked}
+            checked={marked}
+          />
+        </div>
+      )}
     </div>
   );
 }
