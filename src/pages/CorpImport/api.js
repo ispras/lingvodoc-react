@@ -24,7 +24,7 @@ export function corporaInfo({ linking, languages, licenses, mode }) {
     });
 
     // Only one target language for txt mode
-    if (mode === 'txt') {
+    if (mode === 'txt' || mode === 'marked') {
       break
     }
   }
@@ -33,7 +33,7 @@ export function corporaInfo({ linking, languages, licenses, mode }) {
 
 function blobExport(blob, columnType) {
   const blob_id = blob.get("id").toArray();
-  const dedash = (blob.getIn(["values", "sentence"], "dash") === "dedash");
+  const dedash = (blob.getIn(["values", "sentence"], null) === "dedash");
   const field_ids = [columnType.get("sentence", new Map()).toArray(),
                      columnType.get("to_sentence", new Map()).toArray()];
 

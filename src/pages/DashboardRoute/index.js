@@ -47,7 +47,7 @@ const DashboardRoute =  connect(state => state.user)(({user}) => {
               <img className="card-item__img card-item__img_parallel-corpora" src={imageParallelCorpora} />
             </Link>
             {allowed_users.includes(user.id) && (
-              <a className="card-item" href={window.location.origin + "/lingtrain_aligner/user/" + user.login}>
+              <a className="card-item" href={window.location.origin + "/lingtrain_aligner/user/" + user.login + "/"}>
                 <label className="card-item__label">{getTranslation("Lingtrain aligner")}</label>
                 <img className="card-item__img card-item__img_parallel-corpora" src={imageParallelCorpora} />
               </a>
