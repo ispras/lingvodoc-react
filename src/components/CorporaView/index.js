@@ -14,7 +14,7 @@ import styled from "styled-components";
 
 import ApproveModal from "components/ApproveModal";
 import JoinMarkupsModal from "components/JoinMarkupsModal";
-import CompareModal from "components/CompareModal"; // new!!!!!
+import CompareModal from "components/CompareModal";
 import Pagination from "components/Pagination";
 import Placeholder from "components/Placeholder";
 import { openModal, closeModal } from "ducks/modals";
@@ -560,11 +560,9 @@ class P extends React.Component {
       openNewModal(JoinMarkupsModal, { perspectiveId: id });
     };
 
-    /* new!!!!!! */
     const onCompare = () => {
       openNewModal(CompareModal, { perspectiveId: id, columns: fields, entries: entries });
     };
-    /* /new!!!!!! */
 
     /* Basic case-insensitive, case-sensitive compare. */
     const ci_cs_compare = (str_a, str_b) => {
@@ -961,7 +959,6 @@ class P extends React.Component {
           (mode === "publish" && isAuthenticated) ||
           (mode === "contributions" && isAuthenticated)) && (
           <div className="lingvo-perspective-buttons">
-            {/* new!!!!! */}
             {mode === "edit" && (
               <Button
                 icon={<i className="lingvo-icon lingvo-icon_check" />}
@@ -970,7 +967,6 @@ class P extends React.Component {
                 className="lingvo-button-green lingvo-perspective-button"
               />
             )}
-            {/* /new!!!!! */}
             {mode === "edit" && (
               <Button
                 icon={<i className="lingvo-icon lingvo-icon_check" />}
