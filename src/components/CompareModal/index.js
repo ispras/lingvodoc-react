@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
+import { useQuery, gql } from "@apollo/client";
 import { Button, Modal, Table } from "semantic-ui-react";
 import { RangesMarker } from "react-mark.js";
 import PropTypes from "prop-types";
@@ -7,6 +8,18 @@ import { chooseTranslation as T } from "api/i18n";
 import TranslationContext from "Layout/TranslationContext";
 
 import "./styles.scss";
+
+const getTwinsDiff = gql`
+  query twinsDiff(
+    $mainTranslation: [LingvodocID]!
+    $twinTranslation: [[LingvodocID]]!
+  ) {
+    twins_diff (
+      main_translation: $mainTranslation
+      twin_translation: $twinTranslation
+    ),
+  }
+`;
 
 const CompareModal = ({ columns, entries, onClose }) => {
   const getTranslation = useContext(TranslationContext);
@@ -33,6 +46,13 @@ const CompareModal = ({ columns, entries, onClose }) => {
     return entry;
   });
   /* /временно!!!!!! */
+
+  const { data, error, loading } = useQuery(getTwinsDiff, {
+    variables: {
+      mainTranslation: entries.map(le => le.entities[0]?.id),
+      twinTranslation: entries.map(le => le.entities.slice(1).map(e => e?.id)))
+    }
+  });
 
   let markedFalse = [];
   let markedTrue = [];
@@ -160,6 +180,9 @@ const CompareModal = ({ columns, entries, onClose }) => {
         .concat(markedDelAll[i] ? " marked-del-all" : "")
         .concat(markedReplaceAll[i] ? " marked-replace-all" : "");
   });
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error.message}</p>;
 
   return (
     <Modal className="lingvo-modal2" dimmer open closeIcon onClose={onClose} size="fullscreen">
