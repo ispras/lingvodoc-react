@@ -13,10 +13,12 @@ const getTwinsDiff = gql`
   query twinsDiff(
     $mainTranslation: [LingvodocID]!
     $twinTranslation: [[LingvodocID]]!
+    $entriesId: [LingvodocID]!
   ) {
     twins_diff (
       main_translation: $mainTranslation
       twin_translation: $twinTranslation
+      entries_id: $entriesId
     ),
   }
 `;
@@ -34,9 +36,9 @@ const CompareModal = ({ columns, entries, onClose }) => {
 
     const entities_temp = [
       entry_temp.entities[2],
-      entry_temp.entities[2],
-      entry_temp.entities[2],
-      entry_temp.entities[2]
+      entry_temp.entities.at(-1),
+      entry_temp.entities.at(-1),
+      entry_temp.entities.at(-1)
     ];
 
     entry_temp.entities = Object.assign([], entities_temp);
@@ -50,7 +52,8 @@ const CompareModal = ({ columns, entries, onClose }) => {
   const { data, error, loading } = useQuery(getTwinsDiff, {
     variables: {
       mainTranslation: entries.map(le => le.entities[0]?.id),
-      twinTranslation: entries.map(le => le.entities.slice(1).map(e => e?.id))
+      twinTranslation: entries.map(le => le.entities.slice(1).map(e => e?.id)),
+      entriesId: entries.map(le => le?.id)
     }
   });
 
@@ -115,27 +118,6 @@ const CompareModal = ({ columns, entries, onClose }) => {
     }
   };
 
-  const highlightsRed = [
-    {
-      start: 0,
-      length: 8
-    }
-  ];
-
-  const highlightsGreen = [
-    {
-      start: 9,
-      length: 5
-    }
-  ];
-
-  const highlightsYellow = [
-    {
-      start: 16,
-      length: 18
-    }
-  ];
-
   useEffect(() => {
     setTimeout(() => {
       columns.forEach((el, column) => {
@@ -183,6 +165,27 @@ const CompareModal = ({ columns, entries, onClose }) => {
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
+
+  const highlightsRed = [
+    {
+      start: 0,
+      length: 8
+    }
+  ];
+
+  const highlightsGreen = [
+    {
+      start: 9,
+      length: 5
+    }
+  ];
+
+  const highlightsYellow = [
+    {
+      start: 16,
+      length: 18
+    }
+  ];
 
   return (
     <Modal className="lingvo-modal2" dimmer open closeIcon onClose={onClose} size="fullscreen">
