@@ -50,7 +50,7 @@ const CompareModal = ({ columns, entries, onClose }) => {
   const { data, error, loading } = useQuery(getTwinsDiff, {
     variables: {
       mainTranslation: entries.map(le => le.entities[0]?.id),
-      twinTranslation: entries.map(le => le.entities.slice(1).map(e => e?.id)))
+      twinTranslation: entries.map(le => le.entities.slice(1).map(e => e?.id))
     }
   });
 
