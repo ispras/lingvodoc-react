@@ -13,12 +13,12 @@ const getTwinsDiff = gql`
   query twinsDiff(
     $mainTranslation: [LingvodocID]!
     $twinTranslation: [[LingvodocID]]!
-    $entriesId: [LingvodocID]!
+    $entryIds: [LingvodocID]!
   ) {
     twins_diff (
       main_translation: $mainTranslation
       twin_translation: $twinTranslation
-      entries_id: $entriesId
+      entry_ids: $entryIds
     ),
   }
 `;
@@ -49,11 +49,15 @@ const CompareModal = ({ columns, entries, onClose }) => {
   });
   /* /временно!!!!!! */
 
+  const mainIds = entries.map(le => le.entities[0]?.id);
+  const twinIds = entries.map(le => le.entities.slice(1).map(e => e?.id));
+  const entryIds = entries.map(le => le?.id);
+
   const { data, error, loading } = useQuery(getTwinsDiff, {
     variables: {
-      mainTranslation: entries.map(le => le.entities[0]?.id),
-      twinTranslation: entries.map(le => le.entities.slice(1).map(e => e?.id)),
-      entriesId: entries.map(le => le?.id)
+      mainTranslation: mainIds,
+      twinTranslation: twinIds,
+      entryIds
     }
   });
 
@@ -166,26 +170,48 @@ const CompareModal = ({ columns, entries, onClose }) => {
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
 
-  const highlightsRed = [
-    {
-      start: 0,
-      length: 8
-    }
-  ];
+  const highlights = {};
 
-  const highlightsGreen = [
-    {
-      start: 9,
-      length: 5
-    }
-  ];
+  for (const [entryId, value1] of Object.entries(data.twins_diff)) {
+    const red = {};
+    const green = {};
+    const yellow = {};
 
-  const highlightsYellow = [
-    {
-      start: 16,
-      length: 18
+    for (const [masterId, value2] of Object.entries(value1)) {
+      red[masterId] = [];
+      green[masterId] = [];
+      yellow[masterId] = [];
+
+      for (const [key, value3] of Object.entries(value2)) {
+        const [start, length] = key.split(",");
+
+        if (value3 === null) {
+
+          if (mainIds.includes(masterId)) {
+            red[masterId].push({start, length});
+          } else {
+            green[masterId].push({start, length});
+          }
+        } else {
+
+          for (const [twinId, value4] of Object.entries(value3)) {
+            const [twinStart, twinWord, twinDist, twinDiff] = value4;
+            yellow[masterId].push({
+              start,
+              length,
+              twinId,
+              twinStart,
+              twinWord,
+              twinDist,
+              twinDiff
+            });
+          }
+        }
+      }
     }
-  ];
+    // Here a condition can be
+    highlights[entryId] = {red, green, yellow};
+  }
 
   return (
     <Modal className="lingvo-modal2" dimmer open closeIcon onClose={onClose} size="fullscreen">
@@ -267,36 +293,33 @@ const CompareModal = ({ columns, entries, onClose }) => {
                 {entries.map(entry => {
                   return (
                     <Table.Row key={entry.id}>
-                      <Table.Cell>{entry.entities[0] && entry.entities[0].content}</Table.Cell>
-                      {entry.entities.map((column, i) => {
+                      {/*<Table.Cell>{entry.entities[0] && entry.entities[0].content}</Table.Cell>*/}
+                      {entry.entities.map((entity, i) => {
                         return (
-                          (i > 0 && (
-                            <Table.Cell className={className[i]} key={`${entry.id}column${i}`}>
+                          <Table.Cell className={className[i]} key={`${entry.id}column${i}`}>
+                            <RangesMarker
+                              mark={highlights[entry?.id]?.red[entity?.id] ?? []}
+                              options={{
+                                className: "lingvo-marker-red"
+                              }}
+                            >
                               <RangesMarker
-                                mark={highlightsRed}
+                                mark={highlights[entry?.id]?.green[entity?.id] ?? []}
                                 options={{
-                                  className: "lingvo-marker-red"
+                                  className: "lingvo-marker-green"
                                 }}
                               >
                                 <RangesMarker
-                                  mark={highlightsGreen}
+                                  mark={highlights[entry?.id]?.yellow[entity?.id] ?? []}
                                   options={{
-                                    className: "lingvo-marker-green"
+                                    className: "lingvo-marker-yellow"
                                   }}
                                 >
-                                  <RangesMarker
-                                    mark={highlightsYellow}
-                                    options={{
-                                      className: "lingvo-marker-yellow"
-                                    }}
-                                  >
-                                    {entry.entities[i] && entry.entities[i].content}
-                                  </RangesMarker>
+                                  {entity?.content}
                                 </RangesMarker>
                               </RangesMarker>
-                            </Table.Cell>
-                          )) ||
-                          null
+                            </RangesMarker>
+                          </Table.Cell>
                         );
                       })}
                     </Table.Row>
