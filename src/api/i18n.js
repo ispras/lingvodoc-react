@@ -729,6 +729,7 @@ export const stringsToTranslate = [
   "plural",
   "Possesiv",
   "posssesiv",
+  "Pre-marked corpora",
   "precative",
   "predicative",
   "prefix",
