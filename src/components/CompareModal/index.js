@@ -27,7 +27,12 @@ const CompareModal = ({ columns, entries, onClose }) => {
   const getTranslation = useContext(TranslationContext);
 
   /* временно!!!!!! */
-  const colums_temp = [columns[2], columns[2], columns[2], columns[2]];
+  const colums_temp = [
+    columns[2],
+    columns.at(-1),
+    columns.at(-1),
+    columns.at(-1)
+  ];
 
   columns = Object.assign([], colums_temp);
 
@@ -185,16 +190,14 @@ const CompareModal = ({ columns, entries, onClose }) => {
       for (const [key, value3] of Object.entries(value2)) {
         const [start, length] = key.split(",");
 
-        if (value3 === null) {
-
-          if (mainIds.includes(masterId)) {
-            red[masterId].push({start, length});
+        for (const [twinId, value4] of Object.entries(value3)) {
+          if (value4 === null) {
+            if (mainIds.includes(masterId)) {
+              red[masterId].push({start, length});
+            } else {
+              green[masterId].push({start, length});
+            }
           } else {
-            green[masterId].push({start, length});
-          }
-        } else {
-
-          for (const [twinId, value4] of Object.entries(value3)) {
             const [twinStart, twinWord, twinDist, twinDiff] = value4;
             yellow[masterId].push({
               start,
@@ -293,7 +296,6 @@ const CompareModal = ({ columns, entries, onClose }) => {
                 {entries.map(entry => {
                   return (
                     <Table.Row key={entry.id}>
-                      {/*<Table.Cell>{entry.entities[0] && entry.entities[0].content}</Table.Cell>*/}
                       {entry.entities.map((entity, i) => {
                         return (
                           <Table.Cell className={className[i]} key={`${entry.id}column${i}`}>
