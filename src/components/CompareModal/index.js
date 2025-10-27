@@ -69,10 +69,8 @@ const CompareModal = ({ columns, entries, onClose }) => {
   let markedFalse = [];
   let markedTrue = [];
   columns.forEach((el, i) => {
-    if (i > 0) {
-      markedFalse[i] = false;
-      markedTrue[i] = true;
-    }
+    markedFalse[i] = false;
+    markedTrue[i] = true;
   });
 
   const [markedAddAll, setMarkedAddAll] = useState(markedFalse);
@@ -192,7 +190,7 @@ const CompareModal = ({ columns, entries, onClose }) => {
 
         for (const [twinId, value4] of Object.entries(value3)) {
           if (value4 === null) {
-            if (mainIds.includes(masterId)) {
+            if (mainIds.map(id => id?.join(",")).includes(masterId)) {
               red[masterId].push({start, length});
             } else {
               green[masterId].push({start, length});
