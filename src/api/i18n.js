@@ -193,6 +193,7 @@ export const stringsToTranslate = [
   "comitative",
   "comparativ",
   "Compare",
+  "Compare data loading error",
   "Compensation",
   "Compute",
   "Computing",

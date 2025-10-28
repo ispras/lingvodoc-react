@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useQuery, gql } from "@apollo/client";
-import { Button, Modal, Table } from "semantic-ui-react";
+import { Button, Dimmer, Header, Icon, Message, Modal, Table } from "semantic-ui-react";
 import { RangesMarker } from "react-mark.js";
 import PropTypes from "prop-types";
 import { chooseTranslation as T } from "api/i18n";
@@ -10,16 +10,8 @@ import TranslationContext from "Layout/TranslationContext";
 import "./styles.scss";
 
 const getTwinsDiff = gql`
-  query twinsDiff(
-    $mainTranslation: [LingvodocID]!
-    $twinTranslation: [[LingvodocID]]!
-    $entryIds: [LingvodocID]!
-  ) {
-    twins_diff (
-      main_translation: $mainTranslation
-      twin_translation: $twinTranslation
-      entry_ids: $entryIds
-    ),
+  query twinsDiff($mainTranslation: [LingvodocID]!, $twinTranslation: [[LingvodocID]]!, $entryIds: [LingvodocID]!) {
+    twins_diff(main_translation: $mainTranslation, twin_translation: $twinTranslation, entry_ids: $entryIds)
   }
 `;
 
@@ -29,9 +21,12 @@ const CompareModal = ({ columns, entries, onClose }) => {
   /* временно!!!!!! */
   const colums_temp = [
     columns[2],
+    /*columns.at(-1),
     columns.at(-1),
-    columns.at(-1),
-    columns.at(-1)
+    columns.at(-1)*/
+    columns[3],
+    columns[3],
+    columns[3]
   ];
 
   columns = Object.assign([], colums_temp);
@@ -41,9 +36,12 @@ const CompareModal = ({ columns, entries, onClose }) => {
 
     const entities_temp = [
       entry_temp.entities[2],
+      entry_temp.entities[3],
+      entry_temp.entities[3],
+      entry_temp.entities[3]
+      /*entry_temp.entities.at(-1),
       entry_temp.entities.at(-1),
-      entry_temp.entities.at(-1),
-      entry_temp.entities.at(-1)
+      entry_temp.entities.at(-1)*/
     ];
 
     entry_temp.entities = Object.assign([], entities_temp);
@@ -54,6 +52,68 @@ const CompareModal = ({ columns, entries, onClose }) => {
   });
   /* /временно!!!!!! */
 
+  let markedFalse = [];
+  let markedTrue = [];
+  columns.forEach((el, i) => {
+    markedFalse[i] = false;
+    markedTrue[i] = true;
+  });
+
+  const [markedAddAll, setMarkedAddAll] = useState(markedFalse);
+  //const [markedDelAll, setMarkedDelAll] = useState(markedFalse);
+  const [markedDelAll, setMarkedDelAll] = useState([false]);
+  const [markedReplaceAll, setMarkedReplaceAll] = useState(markedFalse);
+
+  const [highlights, setHighlights] = useState({});
+
+  console.log("highlights=======");
+  console.log(highlights);
+
+  const highlightMarkers = data => {
+    const highlights = {};
+
+    for (const [entryId, value1] of Object.entries(data.twins_diff)) {
+      const red = {};
+      const green = {};
+      const yellow = {};
+
+      for (const [masterId, value2] of Object.entries(value1)) {
+        red[masterId] = [];
+        green[masterId] = [];
+        yellow[masterId] = [];
+
+        for (const [key, value3] of Object.entries(value2)) {
+          const [start, length] = key.split(",");
+
+          for (const [twinId, value4] of Object.entries(value3)) {
+            if (value4 === null) {
+              if (mainIds.map(id => id?.join(",")).includes(masterId)) {
+                red[masterId].push({ start, length });
+              } else {
+                green[masterId].push({ start, length });
+              }
+            } else {
+              const [twinStart, twinWord, twinDist, twinDiff] = value4;
+              yellow[masterId].push({
+                start,
+                length,
+                twinId,
+                twinStart,
+                twinWord,
+                twinDist,
+                twinDiff
+              });
+            }
+          }
+        }
+      }
+      // Here a condition can be
+      highlights[entryId] = { red, green, yellow };
+    }
+
+    setHighlights(highlights);
+  };
+
   const mainIds = entries.map(le => le.entities[0]?.id);
   const twinIds = entries.map(le => le.entities.slice(1).map(e => e?.id));
   const entryIds = entries.map(le => le?.id);
@@ -63,19 +123,9 @@ const CompareModal = ({ columns, entries, onClose }) => {
       mainTranslation: mainIds,
       twinTranslation: twinIds,
       entryIds
-    }
+    },
+    onCompleted: data => highlightMarkers(data)
   });
-
-  let markedFalse = [];
-  let markedTrue = [];
-  columns.forEach((el, i) => {
-    markedFalse[i] = false;
-    markedTrue[i] = true;
-  });
-
-  const [markedAddAll, setMarkedAddAll] = useState(markedFalse);
-  const [markedDelAll, setMarkedDelAll] = useState(markedFalse);
-  const [markedReplaceAll, setMarkedReplaceAll] = useState(markedFalse);
 
   const markAdd = column => {
     if (column === undefined) {
@@ -94,19 +144,19 @@ const CompareModal = ({ columns, entries, onClose }) => {
   };
 
   const markDel = column => {
-    if (column === undefined) {
+    /*if (column === undefined) {
       if (markedDelAll.includes(false, 1)) {
         setMarkedDelAll(markedTrue);
       } else {
         setMarkedDelAll(markedFalse);
       }
-    } else {
-      const markedDel = Object.assign([], markedDelAll);
+    } else {*/
+    const markedDel = Object.assign([], markedDelAll);
 
-      markedDel[column] = !markedDelAll[column];
+    markedDel[column] = !markedDelAll[column];
 
-      setMarkedDelAll(markedDel);
-    }
+    setMarkedDelAll(markedDel);
+    /*}*/
   };
 
   const markReplace = column => {
@@ -170,49 +220,8 @@ const CompareModal = ({ columns, entries, onClose }) => {
         .concat(markedReplaceAll[i] ? " marked-replace-all" : "");
   });
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error.message}</p>;
-
-  const highlights = {};
-
-  for (const [entryId, value1] of Object.entries(data.twins_diff)) {
-    const red = {};
-    const green = {};
-    const yellow = {};
-
-    for (const [masterId, value2] of Object.entries(value1)) {
-      red[masterId] = [];
-      green[masterId] = [];
-      yellow[masterId] = [];
-
-      for (const [key, value3] of Object.entries(value2)) {
-        const [start, length] = key.split(",");
-
-        for (const [twinId, value4] of Object.entries(value3)) {
-          if (value4 === null) {
-            if (mainIds.map(id => id?.join(",")).includes(masterId)) {
-              red[masterId].push({start, length});
-            } else {
-              green[masterId].push({start, length});
-            }
-          } else {
-            const [twinStart, twinWord, twinDist, twinDiff] = value4;
-            yellow[masterId].push({
-              start,
-              length,
-              twinId,
-              twinStart,
-              twinWord,
-              twinDist,
-              twinDiff
-            });
-          }
-        }
-      }
-    }
-    // Here a condition can be
-    highlights[entryId] = {red, green, yellow};
-  }
+  /*if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error.message}</p>;*/
 
   return (
     <Modal className="lingvo-modal2" dimmer open closeIcon onClose={onClose} size="fullscreen">
@@ -220,113 +229,130 @@ const CompareModal = ({ columns, entries, onClose }) => {
       <Modal.Content>
         <div className="compare-content">
           <div className="compare-content__table">
-            <Table celled padded className="lingvo-perspective-table">
-              <Table.Header>
-                <Table.Row>
-                  <Table.HeaderCell className="th-markup">
-                    {T(columns[0].translations)}
-                    <div className="" style={{ whiteSpace: "nowrap" }}>
-                      <Button
-                        icon={<i className="lingvo-icon lingvo-icon_add" />}
-                        content={getTranslation("All added")}
-                        onClick={() => markAdd()}
-                        className={
-                          (markedAddAll.includes(false, 1) && "compare-button-added") || "compare-button-added active"
-                        }
-                      />
-                      <Button
-                        icon={<i className="lingvo-icon lingvo-icon_delete" />}
-                        content={getTranslation("All removed")}
-                        onClick={() => markDel()}
-                        className={
+            {loading ? (
+              <Dimmer active style={{ background: "none" }}>
+                <Header as="h2" icon>
+                  <Icon name="spinner" loading className="lingvo-spinner" />
+                </Header>
+              </Dimmer>
+            ) : error ? (
+              <Message negative>
+                <Message.Header>{getTranslation("Compare data loading error")}</Message.Header>
+                <div style={{ marginTop: "0.25em" }}>
+                  {getTranslation("Try reloading the page; if the error persists, please contact administrators.")}
+                </div>
+              </Message>
+            ) : (
+              <Table celled padded className="lingvo-perspective-table">
+                <Table.Header>
+                  <Table.Row>
+                    <Table.HeaderCell className="th-markup">
+                      {T(columns[0].translations)}
+                      <div className="" style={{ whiteSpace: "nowrap" }}>
+                        <Button
+                          icon={<i className="lingvo-icon lingvo-icon_add" />}
+                          content={getTranslation("All added")}
+                          onClick={() => markAdd()}
+                          className={
+                            (markedAddAll.includes(false, 1) && "compare-button-added") || "compare-button-added active"
+                          }
+                        />
+                        <Button
+                          icon={<i className="lingvo-icon lingvo-icon_delete" />}
+                          content={getTranslation("All removed")}
+                          /*onClick={() => markDel()}*/
+                          onClick={() => markDel(0)}
+                          /*className={
                           (markedDelAll.includes(false, 1) && "compare-button-removed") ||
                           "compare-button-removed active"
-                        }
-                      />
-                      <Button
-                        icon={<i className="lingvo-icon lingvo-icon_check" />}
-                        content={getTranslation("All replaced")}
-                        onClick={() => markReplace()}
-                        className={
-                          (markedReplaceAll.includes(false, 1) && "compare-button-replaced") ||
-                          "compare-button-replaced active"
-                        }
-                      />
-                    </div>
-                  </Table.HeaderCell>
-                  {columns.map((column, i) => {
-                    return (
-                      (i > 0 && (
-                        <Table.HeaderCell className="th-markup" key={`column${i}`}>
-                          {T(columns[i].translations)} {i}
-                          <div className="" style={{ whiteSpace: "nowrap" }}>
-                            <Button
-                              icon={<i className="lingvo-icon lingvo-icon_add" />}
-                              content={getTranslation("Added")}
-                              onClick={() => markAdd(i)}
-                              className={(markedAddAll[i] && "compare-button-added active") || "compare-button-added"}
-                            />
-                            <Button
+                        }*/
+                          className={(markedDelAll[0] && "compare-button-removed active") || "compare-button-removed"}
+                        />
+                        <Button
+                          icon={<i className="lingvo-icon lingvo-icon_check" />}
+                          content={getTranslation("All replaced")}
+                          onClick={() => markReplace()}
+                          className={
+                            (markedReplaceAll.includes(false, 1) && "compare-button-replaced") ||
+                            "compare-button-replaced active"
+                          }
+                        />
+                      </div>
+                    </Table.HeaderCell>
+                    {columns.map((column, i) => {
+                      return (
+                        (i > 0 && (
+                          <Table.HeaderCell className="th-markup" key={`column${i}`}>
+                            {T(columns[i].translations)} {i}
+                            <div className="" style={{ whiteSpace: "nowrap" }}>
+                              <Button
+                                icon={<i className="lingvo-icon lingvo-icon_add" />}
+                                content={getTranslation("Added")}
+                                onClick={() => markAdd(i)}
+                                className={(markedAddAll[i] && "compare-button-added active") || "compare-button-added"}
+                              />
+                              {/*<Button
                               icon={<i className="lingvo-icon lingvo-icon_delete" />}
                               content={getTranslation("Removed")}
                               onClick={() => markDel(i)}
                               className={
                                 (markedDelAll[i] && "compare-button-removed active") || "compare-button-removed"
                               }
-                            />
-                            <Button
-                              icon={<i className="lingvo-icon lingvo-icon_check" />}
-                              content={getTranslation("Replaced")}
-                              onClick={() => markReplace(i)}
-                              className={
-                                (markedReplaceAll[i] && "compare-button-replaced active") || "compare-button-replaced"
-                              }
-                            />
-                          </div>
-                        </Table.HeaderCell>
-                      )) ||
-                      null
-                    );
-                  })}
-                </Table.Row>
-              </Table.Header>
-              <Table.Body>
-                {entries.map(entry => {
-                  return (
-                    <Table.Row key={entry.id}>
-                      {entry.entities.map((entity, i) => {
-                        return (
-                          <Table.Cell className={className[i]} key={`${entry.id}column${i}`}>
-                            <RangesMarker
-                              mark={highlights[entry?.id]?.red[entity?.id] ?? []}
-                              options={{
-                                className: "lingvo-marker-red"
-                              }}
-                            >
+                            />*/}
+                              <Button
+                                icon={<i className="lingvo-icon lingvo-icon_check" />}
+                                content={getTranslation("Replaced")}
+                                onClick={() => markReplace(i)}
+                                className={
+                                  (markedReplaceAll[i] && "compare-button-replaced active") || "compare-button-replaced"
+                                }
+                              />
+                            </div>
+                          </Table.HeaderCell>
+                        )) ||
+                        null
+                      );
+                    })}
+                  </Table.Row>
+                </Table.Header>
+                <Table.Body>
+                  {entries.map(entry => {
+                    return (
+                      <Table.Row key={entry.id}>
+                        {entry.entities.map((entity, i) => {
+                          return (
+                            <Table.Cell className={className[i]} key={`${entry.id}column${i}`}>
                               <RangesMarker
-                                mark={highlights[entry?.id]?.green[entity?.id] ?? []}
+                                mark={highlights[entry?.id]?.red[entity?.id] ?? []}
                                 options={{
-                                  className: "lingvo-marker-green"
+                                  className: "lingvo-marker-red"
                                 }}
                               >
                                 <RangesMarker
-                                  mark={highlights[entry?.id]?.yellow[entity?.id] ?? []}
+                                  mark={highlights[entry?.id]?.green[entity?.id] ?? []}
                                   options={{
-                                    className: "lingvo-marker-yellow"
+                                    className: "lingvo-marker-green"
                                   }}
                                 >
-                                  {entity?.content}
+                                  <RangesMarker
+                                    mark={highlights[entry?.id]?.yellow[entity?.id] ?? []}
+                                    options={{
+                                      className: "lingvo-marker-yellow"
+                                    }}
+                                  >
+                                    {entity?.content}
+                                  </RangesMarker>
                                 </RangesMarker>
                               </RangesMarker>
-                            </RangesMarker>
-                          </Table.Cell>
-                        );
-                      })}
-                    </Table.Row>
-                  );
-                })}
-              </Table.Body>
-            </Table>
+                            </Table.Cell>
+                          );
+                        })}
+                      </Table.Row>
+                    );
+                  })}
+                </Table.Body>
+              </Table>
+            )}
           </div>
         </div>
       </Modal.Content>
