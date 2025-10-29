@@ -91,13 +91,16 @@ const CompareModal = ({ columns, entries, onClose }) => {
           const [start, length] = key.split(",");
 
           Object.entries(value3).forEach(([twinId, value4], i4) => {
-            const twinField = T(columns[i4].translations);
+            //For MainField twinFieldNumber starts from 1, because 0 is MainField itself
+            //For other fields only MainField is a TwinField so we start from 0
+            const twinFieldNumber = i4 + Number(isMainField);
+            const twinFieldName = T(columns[twinFieldNumber].translations);
 
             if (value4 === null) {
               if (isMainField) {
-                red[masterId].push({ start, length, twinId, twinField });
+                red[masterId].push({ start, length, twinId, twinFieldNumber, twinFieldName });
               } else {
-                green[masterId].push({ start, length, twinId, twinField });
+                green[masterId].push({ start, length, twinId, twinFieldNumber, twinFieldName });
               }
             } else {
               const [twinStart, twinWord, twinDist, twinDiff, origWord] = value4;
@@ -116,7 +119,8 @@ const CompareModal = ({ columns, entries, onClose }) => {
                 start,
                 length,
                 twinId,
-                twinField,
+                twinFieldNumber,
+                twinFieldName,
                 twinStart,
                 twinWord,
                 twinDist,
