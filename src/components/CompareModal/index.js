@@ -95,12 +95,13 @@ const CompareModal = ({ columns, entries, onClose }) => {
             //For other fields only MainField is a TwinField so we start from 0
             const twinFieldNumber = i4 + Number(isMainField);
             const twinFieldName = T(columns[twinFieldNumber].translations);
+            const marker = { start, length, twinId, twinFieldNumber, twinFieldName };
 
             if (value4 === null) {
               if (isMainField) {
-                red[masterId].push({ start, length, twinId, twinFieldNumber, twinFieldName });
+                red[masterId].push(marker);
               } else {
-                green[masterId].push({ start, length, twinId, twinFieldNumber, twinFieldName });
+                green[masterId].push(marker);
               }
             } else {
               const [twinStart, twinWord, twinDist, twinDiff, origWord] = value4;
@@ -116,11 +117,7 @@ const CompareModal = ({ columns, entries, onClose }) => {
               }
 
               yellow[masterId].push({
-                start,
-                length,
-                twinId,
-                twinFieldNumber,
-                twinFieldName,
+                ...marker,
                 twinStart,
                 twinWord,
                 twinDist,
