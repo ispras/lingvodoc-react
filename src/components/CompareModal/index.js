@@ -65,12 +65,14 @@ const CompareModal = ({ columns, entries, onClose }) => {
   const [markedReplaceAll, setMarkedReplaceAll] = useState(markedFalse);
 
   const [highlights, setHighlights] = useState({});
+  const [allDiffs, setAllDiffs] = useState({});
 
   console.log("highlights=======");
   console.log(highlights);
 
   const highlightMarkers = data => {
     const highlights = {};
+    const allDiffs = {};
     const mainFields = mainIds.map(id => id?.join(","));
 
     Object.entries(data.twins_diff).forEach(([entryId, value1], i1) => {
@@ -79,6 +81,8 @@ const CompareModal = ({ columns, entries, onClose }) => {
       const yellow = {};
 
       Object.entries(value1).forEach(([masterId, value2], i2) => {
+        const isMainField = mainFields.includes(masterId);
+
         red[masterId] = [];
         green[masterId] = [];
         yellow[masterId] = [];
@@ -88,7 +92,6 @@ const CompareModal = ({ columns, entries, onClose }) => {
 
           Object.entries(value3).forEach(([twinId, value4], i4) => {
             const twinField = T(columns[i4].translations);
-            const isMainField = mainFields.includes(masterId);
 
             if (value4 === null) {
               if (isMainField) {
@@ -97,7 +100,18 @@ const CompareModal = ({ columns, entries, onClose }) => {
                 green[masterId].push({ start, length, twinId, twinField });
               }
             } else {
-              const [twinStart, twinWord, twinDist, twinDiff] = value4;
+              const [twinStart, twinWord, twinDist, twinDiff, origWord] = value4;
+
+              // Collect diffs
+              if (isMainField) {
+                twinDiff?.forEach(diff => {
+                  if (!allDiffs.hasOwnProperty(diff)) {
+                    allDiffs[diff] = new Set();
+                  }
+                  allDiffs[diff].add(`${origWord},${twinWord}`);
+                });
+              }
+
               yellow[masterId].push({
                 start,
                 length,
@@ -116,8 +130,8 @@ const CompareModal = ({ columns, entries, onClose }) => {
       highlights[entryId] = { red, green, yellow };
     });
 
-
     setHighlights(highlights);
+    setAllDiffs(allDiffs);
   };
 
   const mainIds = entries.map(le => le.entities[0]?.id);
