@@ -65,53 +65,74 @@ const CompareModal = ({ columns, entries, onClose }) => {
   const [markedReplaceAll, setMarkedReplaceAll] = useState(markedFalse);
 
   const [highlights, setHighlights] = useState({});
+  const [allDiffs, setAllDiffs] = useState({});
 
   console.log("highlights=======");
   console.log(highlights);
 
   const highlightMarkers = data => {
     const highlights = {};
+    const allDiffs = {};
+    const mainFields = mainIds.map(id => id?.join(","));
 
-    for (const [entryId, value1] of Object.entries(data.twins_diff)) {
+    Object.entries(data.twins_diff).forEach(([entryId, value1], i1) => {
       const red = {};
       const green = {};
       const yellow = {};
 
-      for (const [masterId, value2] of Object.entries(value1)) {
+      Object.entries(value1).forEach(([masterId, value2], i2) => {
+        const isMainField = mainFields.includes(masterId);
+
         red[masterId] = [];
         green[masterId] = [];
         yellow[masterId] = [];
 
-        for (const [key, value3] of Object.entries(value2)) {
+        Object.entries(value2).forEach(([key, value3], i3) => {
           const [start, length] = key.split(",");
 
-          for (const [twinId, value4] of Object.entries(value3)) {
+          Object.entries(value3).forEach(([twinId, value4], i4) => {
+            //For MainField twinFieldNumber starts from 1, because 0 is MainField itself
+            //For other fields only MainField is a TwinField so we start from 0
+            const twinFieldNumber = i4 + Number(isMainField);
+            const twinFieldName = T(columns[twinFieldNumber].translations);
+            const marker = { start, length, twinId, twinFieldNumber, twinFieldName };
+
             if (value4 === null) {
-              if (mainIds.map(id => id?.join(",")).includes(masterId)) {
-                red[masterId].push({ start, length });
+              if (isMainField) {
+                red[masterId].push(marker);
               } else {
-                green[masterId].push({ start, length });
+                green[masterId].push(marker);
               }
             } else {
-              const [twinStart, twinWord, twinDist, twinDiff] = value4;
+              const [twinStart, twinWord, twinDist, twinDiff, origWord] = value4;
+
+              // Collect diffs
+              if (isMainField) {
+                twinDiff?.forEach(diff => {
+                  if (!allDiffs.hasOwnProperty(diff)) {
+                    allDiffs[diff] = new Set();
+                  }
+                  allDiffs[diff].add(`${origWord},${twinWord}`);
+                });
+              }
+
               yellow[masterId].push({
-                start,
-                length,
-                twinId,
+                ...marker,
                 twinStart,
                 twinWord,
                 twinDist,
                 twinDiff
               });
             }
-          }
-        }
-      }
+          });
+        });
+      });
       // Here a condition can be
       highlights[entryId] = { red, green, yellow };
-    }
+    });
 
     setHighlights(highlights);
+    setAllDiffs(allDiffs);
   };
 
   const mainIds = entries.map(le => le.entities[0]?.id);
@@ -283,7 +304,7 @@ const CompareModal = ({ columns, entries, onClose }) => {
                       return (
                         (i > 0 && (
                           <Table.HeaderCell className="th-markup" key={`column${i}`}>
-                            {T(columns[i].translations)} {i}
+                            {T(column.translations)} {i}
                             <div className="" style={{ whiteSpace: "nowrap" }}>
                               <Button
                                 icon={<i className="lingvo-icon lingvo-icon_add" />}
