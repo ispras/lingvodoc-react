@@ -10,8 +10,8 @@ import TranslationContext from "Layout/TranslationContext";
 import "./styles.scss";
 
 const getTwinsDiff = gql`
-  query twinsDiff($mainTranslation: [LingvodocID]!, $twinTranslation: [[LingvodocID]]!, $entryIds: [LingvodocID]!) {
-    twins_diff(main_translation: $mainTranslation, twin_translation: $twinTranslation, entry_ids: $entryIds)
+  query twinsDiff($mainIds: [LingvodocID]!, $twinIds: [[LingvodocID]]!, $entryIds: [LingvodocID]!, $fieldNames: [String]!) {
+    twins_diff(main_ids: $mainIds, twin_ids: $twinIds, entry_ids: $entryIds, field_names: $fieldNames)
   }
 `;
 
@@ -65,7 +65,6 @@ const CompareModal = ({ columns, entries, onClose }) => {
   const [markedReplaceAll, setMarkedReplaceAll] = useState(markedFalse);
 
   const [highlights, setHighlights] = useState({});
-  const [allDiffs, setAllDiffs] = useState({});
 
   console.log("highlights=======");
   console.log(highlights);
@@ -75,7 +74,7 @@ const CompareModal = ({ columns, entries, onClose }) => {
     const allDiffs = {};
     const mainFields = mainIds.map(id => id?.join(","));
 
-    Object.entries(data.twins_diff).forEach(([entryId, value1], i1) => {
+    Object.entries(data.twins_diff.diffs).forEach(([entryId, value1], i1) => {
       const red = {};
       const green = {};
       const yellow = {};
@@ -106,16 +105,6 @@ const CompareModal = ({ columns, entries, onClose }) => {
             } else {
               const [twinStart, twinWord, twinDist, twinDiff, origWord] = value4;
 
-              // Collect diffs
-              if (isMainField) {
-                twinDiff?.forEach(diff => {
-                  if (!allDiffs.hasOwnProperty(diff)) {
-                    allDiffs[diff] = new Set();
-                  }
-                  allDiffs[diff].add(`${origWord},${twinWord}`);
-                });
-              }
-
               yellow[masterId].push({
                 ...marker,
                 twinStart,
@@ -132,18 +121,19 @@ const CompareModal = ({ columns, entries, onClose }) => {
     });
 
     setHighlights(highlights);
-    setAllDiffs(allDiffs);
   };
 
   const mainIds = entries.map(le => le.entities[0]?.id);
   const twinIds = entries.map(le => le.entities.slice(1).map(e => e?.id));
   const entryIds = entries.map(le => le?.id);
+  const fieldNames = columns.map(cl => T(cl.translations));
 
   const { data, error, loading } = useQuery(getTwinsDiff, {
     variables: {
-      mainTranslation: mainIds,
-      twinTranslation: twinIds,
-      entryIds
+      mainIds,
+      twinIds,
+      entryIds,
+      fieldNames
     },
     onCompleted: data => highlightMarkers(data)
   });
