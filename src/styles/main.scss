@@ -4520,6 +4520,38 @@ body {
   }
 }
 
+.lingvo-perspective-table.mark-hover {
+  & .marked-add-all {
+    & .lingvo-marker-green {
+      background-color: transparent !important;
+
+      &.marked-add-hover {
+        background-color: #57b894 !important;
+      }
+    }
+  }
+
+  & .marked-del-all {
+    & .lingvo-marker-red {
+      background-color: transparent !important;
+
+      &.marked-del-hover {
+        background-color: #db4e4e !important;
+      }
+    }
+  }
+
+  & .marked-replace-all {
+    & .lingvo-marker-yellow {
+      background-color: transparent !important;
+
+      &.marked-replace-hover {
+        background-color: #ffd700 !important;
+      }
+    }
+  }
+}
+
 .compare-button-added {
   @extend .lingvo-button-green;
   padding-left: 8px !important;
