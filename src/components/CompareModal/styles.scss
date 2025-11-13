@@ -20,3 +20,31 @@
     }
   }
 }
+
+.lingvo-popup-parallel-compare {
+  &.visible.transition {
+    display: none !important;
+  }
+
+  &_visible {
+    &.visible.transition {
+      display: block !important;
+    }
+  }
+
+  /*& br {
+    &::before {
+      content: " ";
+      margin-top: 20px;
+    }
+
+    &::after {
+      content: " ";
+      margin-bottom: 20px;
+    }
+  }*/
+}
+
+.hidden {
+  display: none;
+}
