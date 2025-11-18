@@ -24,7 +24,6 @@ const CompareModal = ({ columns, entries, onClose }) => {
   const getTranslation = useContext(TranslationContext);
 
   /* временно!!!!!! */
-  //const colums_temp = [columns[2], columns[3], columns[3], columns[3]];
   const colums_temp = columns.slice(2);
 
   columns = Object.assign([], colums_temp);
@@ -32,12 +31,6 @@ const CompareModal = ({ columns, entries, onClose }) => {
   entries = entries.map((entry, i) => {
     let entry_temp = Object.assign({}, entry);
 
-    /*const entities_temp = [
-      entry_temp.entities[2],
-      entry_temp.entities[3],
-      entry_temp.entities[3]
-      //entry_temp.entities[3]
-    ];*/
     const entities_temp = entry_temp.entities.slice(2);
 
     entry_temp.entities = Object.assign([], entities_temp);
@@ -47,9 +40,6 @@ const CompareModal = ({ columns, entries, onClose }) => {
     return entry;
   });
   /* /временно!!!!!! */
-
-  console.log("entries=====");
-  console.log(entries);
 
   let markedFalse = [];
   let markedTrue = [];
@@ -168,11 +158,18 @@ const CompareModal = ({ columns, entries, onClose }) => {
 
       markedReplace[column] = !markedReplaceAll[column];
 
+      if (markedReplace[column]) {
+        markedReplace[0] = true;
+      } else {
+        if (!markedReplace.includes(true, 1)) {
+          markedReplace[0] = false;
+        }
+      }
+
       setMarkedReplaceAll(markedReplace);
     }
   };
 
-  /* new!!!!! */
   document.addEventListener(
     "mouseover",
     e => {
@@ -180,10 +177,6 @@ const CompareModal = ({ columns, entries, onClose }) => {
         const td = e.target.closest(".marked-add-all");
         if (td) {
           e.target.classList.add("marked-add-hover");
-          e.target.setAttribute(
-            "title",
-            JSON.stringify(highlights[td.getAttribute("data-row")]?.green[td.getAttribute("data-column")])
-          );
           e.target.closest(".lingvo-perspective-table").classList.add("mark-hover");
           e.stopPropagation();
         }
@@ -199,25 +192,25 @@ const CompareModal = ({ columns, entries, onClose }) => {
 
           const contentMark = e.target.innerHTML;
           if (!contentMark.includes("$$$")) {
-            e.target.innerHTML = '<span class="hidden">$$$</span>' + contentMark;
+            e.target.innerHTML = '<span class="hidden-marker-label">$$$</span>' + contentMark;
           }
 
           const position = content.textContent.indexOf("$$$");
-          console.log("position=====");
-          console.log(position);
+
+          /* new!!!!!! */
+          const contentMarkTemp = e.target.innerHTML;
+          const contentMarkNew = contentMarkTemp.replace('<span class="hidden-marker-label">$$$</span>', "");
+          e.target.innerHTML = contentMarkNew;
+          /* /new!!!!!! */
 
           const rowId = td.getAttribute("data-row");
           const columnId = td.getAttribute("data-column");
 
           const highlightsAll = highlights[rowId]?.red[columnId];
-          console.log("highlightsAll=====");
-          console.log(highlightsAll);
 
           const highlightsMark = highlightsAll?.filter(elem => {
             return Number(elem.start) === position;
           });
-          console.log("highlightsMark=====");
-          console.log(highlightsMark);
 
           // In field ${twinFieldName}: removed
           let text = "";
@@ -231,8 +224,6 @@ const CompareModal = ({ columns, entries, onClose }) => {
               "»: " +
               getTranslation("removed");
           });
-
-          e.target.setAttribute("title", text?.replace(/<br \/>/g, `\n`));
 
           setTimeout(() => {
             const popup = document.getElementsByClassName("lingvo-popup-parallel-compare");
@@ -260,25 +251,31 @@ const CompareModal = ({ columns, entries, onClose }) => {
 
           const contentMark = e.target.innerHTML;
           if (!contentMark.includes("$$$")) {
-            e.target.innerHTML = '<span class="hidden">$$$</span>' + contentMark;
+            e.target.innerHTML = '<span class="hidden-marker-label">$$$</span>' + contentMark;
           }
 
           const position = content.textContent.indexOf("$$$");
-          console.log("position=====");
-          console.log(position);
+          /*console.log("position=====");
+          console.log(position);*/
+
+          /* new!!!!!! */
+          const contentMarkTemp = e.target.innerHTML;
+          const contentMarkNew = contentMarkTemp.replace('<span class="hidden-marker-label">$$$</span>', "");
+          e.target.innerHTML = contentMarkNew;
+          /* /new!!!!!! */
 
           const rowId = td.getAttribute("data-row");
           const columnId = td.getAttribute("data-column");
 
           const highlightsAll = highlights[rowId]?.yellow[columnId];
-          console.log("highlightsAll=====");
-          console.log(highlightsAll);
+          /*console.log("highlightsAll=====");
+          console.log(highlightsAll);*/
 
           const highlightsMark = highlightsAll?.filter(elem => {
             return Number(elem.start) === position;
           });
-          console.log("highlightsMark=====");
-          console.log(highlightsMark);
+          /*console.log("highlightsMark=====");
+          console.log(highlightsMark);*/
 
           const twinTds = Array.from(row.getElementsByClassName("marked-replace-all")).filter(elem => {
             const columnId = elem.getAttribute("data-column");
@@ -290,8 +287,8 @@ const CompareModal = ({ columns, entries, onClose }) => {
             return twin;
           });
 
-          console.log("twinTds=====");
-          console.log(twinTds);
+          /*console.log("twinTds=====");
+          console.log(twinTds);*/
 
           Array.from(twinTds).forEach(elem => {
             const columnId = elem.getAttribute("data-column");
@@ -304,23 +301,21 @@ const CompareModal = ({ columns, entries, onClose }) => {
               if (mark.innerHTML == twin?.twinWord) {
                 //mark.classList.add("marked-replace-hover");
 
-                /* new!!!!! */
                 const contentMark = mark.innerHTML;
                 if (!contentMark.includes("$$$")) {
-                  mark.innerHTML = '<span class="hidden">$$$</span>' + contentMark; // new!!!!!
+                  mark.innerHTML = '<span class="hidden-marker-label">$$$</span>' + contentMark;
                 }
 
                 const position = mark.closest(".lingvo-column-content").textContent.indexOf("$$$");
-                console.log("position Mark =====");
-                console.log(position);
+                /*console.log("position Mark =====");
+                console.log(position);*/
 
                 if (position === twin?.twinStart) {
                   mark.classList.add("marked-replace-hover");
                 }
                 const contentMarkTemp = mark.innerHTML;
-                const contentMarkNew = contentMarkTemp.replace('<span class="hidden">$$$</span>', "");
+                const contentMarkNew = contentMarkTemp.replace('<span class="hidden-marker-label">$$$</span>', "");
                 mark.innerHTML = contentMarkNew;
-                /* /new!!!!! */
               }
             });
           });
@@ -342,8 +337,6 @@ const CompareModal = ({ columns, entries, onClose }) => {
               ((elem?.twinDiff && getTranslation("changed at") + " " + elem?.twinDiff) ||
                 getTranslation("not changed"));
           });
-
-          e.target.setAttribute("title", text?.replace(/<br \/>/g, `\n`));
 
           setTimeout(() => {
             const popup = document.getElementsByClassName("lingvo-popup-parallel-compare");
@@ -370,7 +363,6 @@ const CompareModal = ({ columns, entries, onClose }) => {
         const td = e.target.closest(".marked-add-all");
         if (td) {
           e.target.classList.remove("marked-add-hover");
-          e.target.removeAttribute("title");
           e.target.closest(".lingvo-perspective-table").classList.remove("mark-hover");
           e.stopPropagation();
         }
@@ -381,11 +373,11 @@ const CompareModal = ({ columns, entries, onClose }) => {
         if (td) {
           e.target.classList.remove("marked-del-hover");
 
-          const contentMark = e.target.innerHTML;
-          const contentMarkNew = contentMark.replace('<span class="hidden">$$$</span>', "");
-          e.target.innerHTML = contentMarkNew;
-
-          e.target.removeAttribute("title");
+          /* new!!!!! */
+          /*const contentMark = e.target.innerHTML;
+          const contentMarkNew = contentMark.replace('<span class="hidden-marker-label">$$$</span>', "");
+          e.target.innerHTML = contentMarkNew;*/
+          /* /new!!!!! */
 
           setTimeout(() => {
             const popup = document.getElementsByClassName("lingvo-popup-parallel-compare");
@@ -408,11 +400,11 @@ const CompareModal = ({ columns, entries, onClose }) => {
             mark.classList.remove("marked-replace-hover");
           });
 
-          const contentMark = e.target.innerHTML;
-          const contentMarkNew = contentMark.replace('<span class="hidden">$$$</span>', "");
-          e.target.innerHTML = contentMarkNew;
-
-          e.target.removeAttribute("title");
+          /* new!!!!! */
+          /*const contentMark = e.target.innerHTML;
+          const contentMarkNew = contentMark.replace('<span class="hidden-marker-label">$$$</span>', "");
+          e.target.innerHTML = contentMarkNew;*/
+          /* /new!!!!! */
 
           setTimeout(() => {
             const popup = document.getElementsByClassName("lingvo-popup-parallel-compare");
@@ -429,7 +421,6 @@ const CompareModal = ({ columns, entries, onClose }) => {
     },
     false
   );
-  /* /new!!!!! */
 
   let className = [];
   columns.forEach((el, i) => {
@@ -531,8 +522,8 @@ const CompareModal = ({ columns, entries, onClose }) => {
                             <Table.Cell
                               className={className[i]}
                               key={`${entry.id}column${i}`}
-                              data-row={entry.id} /* new!!!!! */
-                              data-column={entity?.id} /* new!!!!! */
+                              data-row={entry.id}
+                              data-column={entity?.id}
                             >
                               <RangesMarker
                                 mark={highlights[entry?.id]?.red[entity?.id] ?? []}
@@ -557,11 +548,6 @@ const CompareModal = ({ columns, entries, onClose }) => {
                                       basic
                                       inverted
                                       //on="click"
-                                      //popper
-                                      //offset
-                                      //position="top left"
-                                      //popper={<marker />}
-                                      //hideOnScroll={true}
                                       content=""
                                       trigger={<span className="lingvo-column-content">{entity?.content}</span>}
                                     />
@@ -584,6 +570,7 @@ const CompareModal = ({ columns, entries, onClose }) => {
         <Button
           content={getTranslation("Save to XLSX")}
           //onClick={onSaveXlsx}
+          //loading={true}
           className="lingvo-button-greenest"
           style={{ float: "left" }}
         />

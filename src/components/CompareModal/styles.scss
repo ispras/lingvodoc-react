@@ -22,6 +22,10 @@
 }
 
 .lingvo-popup-parallel-compare {
+  &.ui.popup {
+    max-width: 500px !important;
+  }
+
   &.visible.transition {
     display: none !important;
   }
@@ -31,20 +35,8 @@
       display: block !important;
     }
   }
-
-  /*& br {
-    &::before {
-      content: " ";
-      margin-top: 20px;
-    }
-
-    &::after {
-      content: " ";
-      margin-bottom: 20px;
-    }
-  }*/
 }
 
-.hidden {
+.hidden-marker-label {
   display: none;
 }
