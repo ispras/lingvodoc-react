@@ -1834,7 +1834,6 @@ class CognateAnalysisModal extends React.Component {
         const morphology = mode.includes("morphology");
         const suggestions = mode.includes("suggestions");
         let affix_flag = !morphology;
-        let meaning_flag = !morphology;
 
         for (const column of perspective.columns) {
           const field = this.fieldDict[id2str(column.field_id)];
@@ -1847,25 +1846,26 @@ class CognateAnalysisModal extends React.Component {
             text_flag = true;
           }
 
-          if (Object.values(field.translations).some(t =>
-              t.toLowerCase().includes("affix") ||
-              t.toLowerCase().includes("аффикс") ||
-              t.toLowerCase().includes("morph") ||
-              t.toLowerCase().includes("морф"))) {
-            affix_flag = morphology || suggestions;
-            meaning_flag = morphology || suggestions;
+          if (morphology &&
+              Object.values(field.translations).some(t =>
+                t.toLowerCase().includes("affix") ||
+                t.toLowerCase().includes("аффикс") ||
+                t.toLowerCase().includes("morph") ||
+                t.toLowerCase().includes("морф"))) {
+            affix_flag = true;
           }
 
-          /*
-          if (Object.values(field.translations).some(t =>
-              t.toLowerCase().includes("meaning") ||
-              t.toLowerCase().includes("значение"))) {
-            meaning_flag = morphology || suggestions;
+          // Skipping dictionaries for non-morphology mode
+          // if we met 'affix' word in field name
+          if (!morphology &&
+              Object.values(field.translations).some(t =>
+                t.toLowerCase().includes("affix") ||
+                t.toLowerCase().includes("аффикс"))) {
+            affix_flag = false;
           }
-          */
         }
 
-        if (group_flag && text_flag && affix_flag && meaning_flag) {
+        if (group_flag && text_flag && affix_flag) {
           this.available_list.push([treePathList.concat([dictionary, perspective]), perspective]);
         }
       }
