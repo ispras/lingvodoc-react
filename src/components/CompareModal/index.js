@@ -4,6 +4,7 @@ import { Button, Dimmer, Header, Icon, Message, Modal, Popup, Table } from "sema
 import { RangesMarker } from "react-mark.js";
 import PropTypes from "prop-types";
 import { chooseTranslation as T } from "api/i18n";
+import { isEqual } from "lodash";
 
 import TranslationContext from "Layout/TranslationContext";
 
@@ -23,7 +24,6 @@ const getTwinsDiff = gql`
 const CompareModal = ({ columns, entries, onClose }) => {
   const getTranslation = useContext(TranslationContext);
 
-  /* временно!!!!!! */
   const colums_temp = columns.slice(2);
 
   columns = Object.assign([], colums_temp);
@@ -39,7 +39,6 @@ const CompareModal = ({ columns, entries, onClose }) => {
 
     return entry;
   });
-  /* /временно!!!!!! */
 
   let markedFalse = [];
   let markedTrue = [];
@@ -77,7 +76,7 @@ const CompareModal = ({ columns, entries, onClose }) => {
             //For MainField twinFieldNumber starts from 1, because 0 is MainField itself
             //For other fields only MainField is a TwinField so we start from 0
             const twinFieldNumber = i4 + Number(isMainField);
-            const twinFieldName = T(columns[twinFieldNumber].translations);
+            const twinFieldName = T(columns[twinFieldNumber]?.translations);
             const marker = { start, length, twinId, twinFieldNumber, twinFieldName };
 
             if (value4 === null) {
@@ -197,11 +196,9 @@ const CompareModal = ({ columns, entries, onClose }) => {
 
           const position = content.textContent.indexOf("$$$");
 
-          /* new!!!!!! */
           const contentMarkTemp = e.target.innerHTML;
           const contentMarkNew = contentMarkTemp.replace('<span class="hidden-marker-label">$$$</span>', "");
           e.target.innerHTML = contentMarkNew;
-          /* /new!!!!!! */
 
           const rowId = td.getAttribute("data-row");
           const columnId = td.getAttribute("data-column");
@@ -255,27 +252,20 @@ const CompareModal = ({ columns, entries, onClose }) => {
           }
 
           const position = content.textContent.indexOf("$$$");
-          /*console.log("position=====");
-          console.log(position);*/
 
-          /* new!!!!!! */
           const contentMarkTemp = e.target.innerHTML;
           const contentMarkNew = contentMarkTemp.replace('<span class="hidden-marker-label">$$$</span>', "");
           e.target.innerHTML = contentMarkNew;
-          /* /new!!!!!! */
 
           const rowId = td.getAttribute("data-row");
           const columnId = td.getAttribute("data-column");
+          const columnIndex = td.getAttribute("data-column-index");
 
           const highlightsAll = highlights[rowId]?.yellow[columnId];
-          /*console.log("highlightsAll=====");
-          console.log(highlightsAll);*/
 
           const highlightsMark = highlightsAll?.filter(elem => {
             return Number(elem.start) === position;
           });
-          /*console.log("highlightsMark=====");
-          console.log(highlightsMark);*/
 
           const twinTds = Array.from(row.getElementsByClassName("marked-replace-all")).filter(elem => {
             const columnId = elem.getAttribute("data-column");
@@ -287,9 +277,6 @@ const CompareModal = ({ columns, entries, onClose }) => {
             return twin;
           });
 
-          /*console.log("twinTds=====");
-          console.log(twinTds);*/
-
           Array.from(twinTds).forEach(elem => {
             const columnId = elem.getAttribute("data-column");
 
@@ -299,16 +286,12 @@ const CompareModal = ({ columns, entries, onClose }) => {
 
             Array.from(elem.getElementsByClassName("lingvo-marker-yellow")).forEach(mark => {
               if (mark.innerHTML == twin?.twinWord) {
-                //mark.classList.add("marked-replace-hover");
-
                 const contentMark = mark.innerHTML;
                 if (!contentMark.includes("$$$")) {
                   mark.innerHTML = '<span class="hidden-marker-label">$$$</span>' + contentMark;
                 }
 
                 const position = mark.closest(".lingvo-column-content").textContent.indexOf("$$$");
-                /*console.log("position Mark =====");
-                console.log(position);*/
 
                 if (position === twin?.twinStart) {
                   mark.classList.add("marked-replace-hover");
@@ -323,6 +306,29 @@ const CompareModal = ({ columns, entries, onClose }) => {
           // In field ${twinFieldName}: moved on ${twinDist}, changed at ${twinDiff}
           let text = "";
           highlightsMark?.forEach(elem => {
+            let diff;
+            if (elem?.twinDiff) {
+              if (elem?.twinDiff[0][0] === "") {
+                if (columnIndex === "0") {
+                  diff = "+" + elem?.twinDiff[0][1];
+                } else {
+                  diff = "-" + elem?.twinDiff[0][1];
+                }
+              } else if (elem?.twinDiff[0][1] === "") {
+                if (columnIndex === "0") {
+                  diff = "-" + elem?.twinDiff[0][1];
+                } else {
+                  diff = "+" + elem?.twinDiff[0][1];
+                }
+              } else {
+                if (columnIndex === "0") {
+                  diff = elem?.twinDiff[0][0] + " -> " + elem?.twinDiff[0][1];
+                } else {
+                  diff = elem?.twinDiff[0][1] + " -> " + elem?.twinDiff[0][0];
+                }
+              }
+            }
+
             text =
               text +
               ((text !== "" && "<br />") || "") +
@@ -334,8 +340,7 @@ const CompareModal = ({ columns, entries, onClose }) => {
               " " +
               elem?.twinDist +
               ", " +
-              ((elem?.twinDiff && getTranslation("changed at") + " " + elem?.twinDiff) ||
-                getTranslation("not changed"));
+              ((diff && getTranslation("changed at") + " «" + diff + "»") || getTranslation("not changed"));
           });
 
           setTimeout(() => {
@@ -373,12 +378,6 @@ const CompareModal = ({ columns, entries, onClose }) => {
         if (td) {
           e.target.classList.remove("marked-del-hover");
 
-          /* new!!!!! */
-          /*const contentMark = e.target.innerHTML;
-          const contentMarkNew = contentMark.replace('<span class="hidden-marker-label">$$$</span>', "");
-          e.target.innerHTML = contentMarkNew;*/
-          /* /new!!!!! */
-
           setTimeout(() => {
             const popup = document.getElementsByClassName("lingvo-popup-parallel-compare");
             if (popup.length) {
@@ -399,12 +398,6 @@ const CompareModal = ({ columns, entries, onClose }) => {
           Array.from(row.getElementsByClassName("lingvo-marker-yellow")).forEach(mark => {
             mark.classList.remove("marked-replace-hover");
           });
-
-          /* new!!!!! */
-          /*const contentMark = e.target.innerHTML;
-          const contentMarkNew = contentMark.replace('<span class="hidden-marker-label">$$$</span>', "");
-          e.target.innerHTML = contentMarkNew;*/
-          /* /new!!!!! */
 
           setTimeout(() => {
             const popup = document.getElementsByClassName("lingvo-popup-parallel-compare");
@@ -517,13 +510,15 @@ const CompareModal = ({ columns, entries, onClose }) => {
                   {entries.map(entry => {
                     return (
                       <Table.Row key={entry.id}>
-                        {entry.entities.map((entity, i) => {
+                        {columns.map((column, i) => {
+                          const entity = entry.entities.filter(entity => isEqual(entity.field_id, column.id))[0];
                           return (
                             <Table.Cell
                               className={className[i]}
                               key={`${entry.id}column${i}`}
                               data-row={entry.id}
                               data-column={entity?.id}
+                              data-column-index={i}
                             >
                               <RangesMarker
                                 mark={highlights[entry?.id]?.red[entity?.id] ?? []}
@@ -547,7 +542,6 @@ const CompareModal = ({ columns, entries, onClose }) => {
                                       className="lingvo-popup-parallel-compare"
                                       basic
                                       inverted
-                                      //on="click"
                                       content=""
                                       trigger={<span className="lingvo-column-content">{entity?.content}</span>}
                                     />
