@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { useQuery, gql } from "@apollo/client";
+import { useQuery, useLazyQuery, gql } from "@apollo/client";
 import { Button, Dimmer, Header, Icon, Message, Modal, Popup, Table } from "semantic-ui-react";
 import { RangesMarker } from "react-mark.js";
 import PropTypes from "prop-types";
@@ -16,12 +16,24 @@ const getTwinsDiff = gql`
     $twinIds: [[LingvodocID]]!
     $entryIds: [LingvodocID]!
     $fieldNames: [String]!
+    $perspectiveId: LingvodocID!
   ) {
-    twins_diff(main_ids: $mainIds, twin_ids: $twinIds, entry_ids: $entryIds, field_names: $fieldNames)
+    twins_diff(
+      main_ids: $mainIds,
+      twin_ids: $twinIds,
+      entry_ids: $entryIds,
+      field_names: $fieldNames,
+      pers_id: $perspectiveId)
   }
 `;
 
-const CompareModal = ({ columns, entries, onClose }) => {
+const GET_TWINS_XLSX = gql`
+  query twinsXlsx($perspectiveId: LingvodocID!) {
+    twins_xlsx(pers_id: $perspectiveId)
+  }
+`;
+
+const CompareModal = ({ columns, entries, onClose, perspectiveId }) => {
   const getTranslation = useContext(TranslationContext);
 
   const colums_temp = columns.slice(2);
@@ -52,12 +64,13 @@ const CompareModal = ({ columns, entries, onClose }) => {
   const [markedReplaceAll, setMarkedReplaceAll] = useState(markedFalse);
 
   const [highlights, setHighlights] = useState({});
+  const [xlsxUrl, setXlsxUrl] = useState(null);
 
   const highlightMarkers = data => {
     const highlights = {};
     const mainFields = mainIds.map(id => id?.join(","));
 
-    Object.entries(data.twins_diff.diffs).forEach(([entryId, value1], i1) => {
+    Object.entries(data.twins_diff).forEach(([entryId, value1], i1) => {
       const red = {};
       const green = {};
       const yellow = {};
@@ -111,14 +124,20 @@ const CompareModal = ({ columns, entries, onClose }) => {
   const entryIds = entries.map(le => le?.id);
   const fieldNames = columns.map(cl => T(cl.translations));
 
-  const { data, error, loading } = useQuery(getTwinsDiff, {
+  const { error, loading } = useQuery(getTwinsDiff, {
     variables: {
       mainIds,
       twinIds,
       entryIds,
-      fieldNames
+      fieldNames,
+      perspectiveId
     },
     onCompleted: data => highlightMarkers(data)
+  });
+
+  const [getTwinsXlsx, { error: errorXlsx, loading: loadingXlsx }] = useLazyQuery(GET_TWINS_XLSX, {
+    variables: { perspectiveId },
+    onCompleted: data => setXlsxUrl(data?.twins_xlsx)
   });
 
   const markAdd = column => {
@@ -561,13 +580,24 @@ const CompareModal = ({ columns, entries, onClose }) => {
         </div>
       </Modal.Content>
       <Modal.Actions>
-        <Button
-          content={getTranslation("Save to XLSX")}
-          //onClick={onSaveXlsx}
-          //loading={true}
-          className="lingvo-button-greenest"
-          style={{ float: "left" }}
-        />
+        { xlsxUrl && !error && !errorXlsx && !loading && !loadingXlsx && (
+          <a href={xlsxUrl} class="xlsx-link-label">
+            {getTranslation("Click here to download XLSX report")}
+          </a>
+        ) || (
+          <Button
+            content={
+              !xlsxUrl && !error && !errorXlsx
+              ? getTranslation("Save to XLSX")
+              : getTranslation("Something went wrong")
+            }
+            onClick={getTwinsXlsx}
+            loading={loading || loadingXlsx}
+            disabled = {error || errorXlsx}
+            className="lingvo-button-greenest"
+            style={{ float: "left" }}
+          />
+        )}
         <Button content={getTranslation("Close")} onClick={onClose} className="lingvo-button-basic-black" />
       </Modal.Actions>
     </Modal>
@@ -577,7 +607,8 @@ const CompareModal = ({ columns, entries, onClose }) => {
 CompareModal.propTypes = {
   columns: PropTypes.array.isRequired,
   entries: PropTypes.array.isRequired,
-  onClose: PropTypes.func.isRequired
+  onClose: PropTypes.func.isRequired,
+  perspectiveId: PropTypes.array.isRequired
 };
 
 export default CompareModal;
