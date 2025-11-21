@@ -351,9 +351,9 @@ const CompareModal = ({ columns, entries, onClose, perspectiveId }) => {
                 }
               } else if (elem?.twinDiff[0][1] === "") {
                 if (columnIndex === "0") {
-                  diff = "-" + elem?.twinDiff[0][1];
+                  diff = "-" + elem?.twinDiff[0][0];
                 } else {
-                  diff = "+" + elem?.twinDiff[0][1];
+                  diff = "+" + elem?.twinDiff[0][0];
                 }
               } else {
                 if (columnIndex === "0") {
