@@ -325,6 +325,22 @@ const CompareModal = ({ columns, entries, onClose, perspectiveId }) => {
           // In field ${twinFieldName}: moved on ${twinDist}, changed at ${twinDiff}
           let text = "";
           highlightsMark?.forEach(elem => {
+
+            let dist = 0;
+            if (elem?.twinDist) {
+              if (columnIndex === "0") {
+                dist = elem.twinDist;
+              } else {
+                dist = - elem.twinDist;
+              }
+            }
+            if (dist > 0) {
+              dist = String(dist) + " " + getTranslation("right")
+            }
+            if (dist < 0) {
+              dist = String(- dist) + " " + getTranslation("left")
+            }
+
             let diff;
             if (elem?.twinDiff) {
               if (elem?.twinDiff[0][0] === "") {
@@ -351,15 +367,9 @@ const CompareModal = ({ columns, entries, onClose, perspectiveId }) => {
             text =
               text +
               ((text !== "" && "<br />") || "") +
-              getTranslation("In field") +
-              " «" +
-              elem?.twinFieldName +
-              "»: " +
-              getTranslation("moved on") +
-              " " +
-              elem?.twinDist +
-              ", " +
-              ((diff && getTranslation("changed at") + " «" + diff + "»") || getTranslation("not changed"));
+              getTranslation("In field") + " «" + elem?.twinFieldName + "»: " +
+              ((dist && getTranslation("moved on") + " " + dist + (diff ? ", " : "")) || "" ) +
+              ((diff && getTranslation("changed at") + " «" + diff + "»") || ""); //getTranslation("not changed"));
           });
 
           setTimeout(() => {
