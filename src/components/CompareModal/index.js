@@ -66,6 +66,15 @@ const CompareModal = ({ columns, entries, onClose, perspectiveId }) => {
   const [highlights, setHighlights] = useState({});
   const [xlsxUrl, setXlsxUrl] = useState(null);
 
+  const mainIds = entries.map(
+    le => le.entities.filter(
+    en => isEqual(en.field_id, columns[0].id))[0]?.id);
+
+  const twinIds = entries.map(
+    le => columns.slice(1).map(
+    cl => le.entities.filter(
+    en => isEqual(en.field_id, cl.id))[0]?.id));
+
   const highlightMarkers = data => {
     const highlights = {};
     const mainFields = mainIds.map(id => id?.join(","));
@@ -98,7 +107,7 @@ const CompareModal = ({ columns, entries, onClose, perspectiveId }) => {
               } else {
                 green[masterId].push(marker);
               }
-            } else {
+            } else if (Array.isArray(value4) && value4.length === 5) {
               const [twinStart, twinWord, twinDist, twinDiff, origWord] = value4;
 
               yellow[masterId].push({
@@ -119,8 +128,6 @@ const CompareModal = ({ columns, entries, onClose, perspectiveId }) => {
     setHighlights(highlights);
   };
 
-  const mainIds = entries.map(le => le.entities[0]?.id);
-  const twinIds = entries.map(le => le.entities.slice(1).map(e => e?.id));
   const entryIds = entries.map(le => le?.id);
   const fieldNames = columns.map(cl => T(cl.translations));
 
