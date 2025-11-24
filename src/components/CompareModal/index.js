@@ -66,6 +66,15 @@ const CompareModal = ({ columns, entries, onClose, perspectiveId }) => {
   const [highlights, setHighlights] = useState({});
   const [xlsxUrl, setXlsxUrl] = useState(null);
 
+  const mainIds = entries.map(
+    le => le.entities.filter(
+    en => isEqual(en.field_id, columns[0].id))[0]?.id);
+
+  const twinIds = entries.map(
+    le => columns.slice(1).map(
+    cl => le.entities.filter(
+    en => isEqual(en.field_id, cl.id))[0]?.id));
+
   const highlightMarkers = data => {
     const highlights = {};
     const mainFields = mainIds.map(id => id?.join(","));
@@ -98,7 +107,7 @@ const CompareModal = ({ columns, entries, onClose, perspectiveId }) => {
               } else {
                 green[masterId].push(marker);
               }
-            } else {
+            } else if (Array.isArray(value4) && value4.length === 5) {
               const [twinStart, twinWord, twinDist, twinDiff, origWord] = value4;
 
               yellow[masterId].push({
@@ -119,8 +128,6 @@ const CompareModal = ({ columns, entries, onClose, perspectiveId }) => {
     setHighlights(highlights);
   };
 
-  const mainIds = entries.map(le => le.entities[0]?.id);
-  const twinIds = entries.map(le => le.entities.slice(1).map(e => e?.id));
   const entryIds = entries.map(le => le?.id);
   const fieldNames = columns.map(cl => T(cl.translations));
 
@@ -325,6 +332,22 @@ const CompareModal = ({ columns, entries, onClose, perspectiveId }) => {
           // In field ${twinFieldName}: moved on ${twinDist}, changed at ${twinDiff}
           let text = "";
           highlightsMark?.forEach(elem => {
+
+            let dist = 0;
+            if (elem?.twinDist) {
+              if (columnIndex === "0") {
+                dist = elem.twinDist;
+              } else {
+                dist = - elem.twinDist;
+              }
+            }
+            if (dist > 0) {
+              dist = String(dist) + " " + getTranslation("right")
+            }
+            if (dist < 0) {
+              dist = String(- dist) + " " + getTranslation("left")
+            }
+
             let diff;
             if (elem?.twinDiff) {
               if (elem?.twinDiff[0][0] === "") {
@@ -335,9 +358,9 @@ const CompareModal = ({ columns, entries, onClose, perspectiveId }) => {
                 }
               } else if (elem?.twinDiff[0][1] === "") {
                 if (columnIndex === "0") {
-                  diff = "-" + elem?.twinDiff[0][1];
+                  diff = "-" + elem?.twinDiff[0][0];
                 } else {
-                  diff = "+" + elem?.twinDiff[0][1];
+                  diff = "+" + elem?.twinDiff[0][0];
                 }
               } else {
                 if (columnIndex === "0") {
@@ -351,15 +374,9 @@ const CompareModal = ({ columns, entries, onClose, perspectiveId }) => {
             text =
               text +
               ((text !== "" && "<br />") || "") +
-              getTranslation("In field") +
-              " «" +
-              elem?.twinFieldName +
-              "»: " +
-              getTranslation("moved on") +
-              " " +
-              elem?.twinDist +
-              ", " +
-              ((diff && getTranslation("changed at") + " «" + diff + "»") || getTranslation("not changed"));
+              getTranslation("In field") + " «" + elem?.twinFieldName + "»: " +
+              ((dist && getTranslation("moved on") + " " + dist + (diff ? ", " : "")) || "" ) +
+              ((diff && getTranslation("changed at") + " «" + diff + "»") || ""); //getTranslation("not changed"));
           });
 
           setTimeout(() => {
