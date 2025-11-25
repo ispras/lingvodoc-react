@@ -19,11 +19,12 @@ const getTwinsDiff = gql`
     $perspectiveId: LingvodocID!
   ) {
     twins_diff(
-      main_ids: $mainIds,
-      twin_ids: $twinIds,
-      entry_ids: $entryIds,
-      field_names: $fieldNames,
-      pers_id: $perspectiveId)
+      main_ids: $mainIds
+      twin_ids: $twinIds
+      entry_ids: $entryIds
+      field_names: $fieldNames
+      pers_id: $perspectiveId
+    )
   }
 `;
 
@@ -66,14 +67,11 @@ const CompareModal = ({ columns, entries, onClose, perspectiveId }) => {
   const [highlights, setHighlights] = useState({});
   const [xlsxUrl, setXlsxUrl] = useState(null);
 
-  const mainIds = entries.map(
-    le => le.entities.filter(
-    en => isEqual(en.field_id, columns[0].id))[0]?.id);
+  const mainIds = entries.map(le => le.entities.filter(en => isEqual(en.field_id, columns[0].id))[0]?.id);
 
-  const twinIds = entries.map(
-    le => columns.slice(1).map(
-    cl => le.entities.filter(
-    en => isEqual(en.field_id, cl.id))[0]?.id));
+  const twinIds = entries.map(le =>
+    columns.slice(1).map(cl => le.entities.filter(en => isEqual(en.field_id, cl.id))[0]?.id)
+  );
 
   const highlightMarkers = data => {
     const highlights = {};
@@ -332,51 +330,63 @@ const CompareModal = ({ columns, entries, onClose, perspectiveId }) => {
           // In field ${twinFieldName}: moved on ${twinDist}, changed at ${twinDiff}
           let text = "";
           highlightsMark?.forEach(elem => {
-
             let dist = 0;
             if (elem?.twinDist) {
               if (columnIndex === "0") {
                 dist = elem.twinDist;
               } else {
-                dist = - elem.twinDist;
+                dist = -elem.twinDist;
               }
             }
             if (dist > 0) {
-              dist = String(dist) + " " + getTranslation("right")
+              dist = String(dist) + " " + getTranslation("right");
             }
             if (dist < 0) {
-              dist = String(- dist) + " " + getTranslation("left")
+              dist = String(-dist) + " " + getTranslation("left");
             }
 
-            let diff;
+            let diff = [];
+            let diffText = "";
             if (elem?.twinDiff) {
-              if (elem?.twinDiff[0][0] === "") {
-                if (columnIndex === "0") {
-                  diff = "+" + elem?.twinDiff[0][1];
+              elem?.twinDiff?.forEach(item => {
+                if (item[0] === "") {
+                  if (columnIndex === "0") {
+                    diff.push("+" + item[1]);
+                  } else {
+                    diff.push("-" + item[1]);
+                  }
+                } else if (item[1] === "") {
+                  if (columnIndex === "0") {
+                    diff.push("-" + item[0]);
+                  } else {
+                    diff.push("+" + item[0]);
+                  }
                 } else {
-                  diff = "-" + elem?.twinDiff[0][1];
+                  if (columnIndex === "0") {
+                    diff.push(item[0] + " -> " + item[1]);
+                  } else {
+                    diff.push(item[1] + " -> " + item[0]);
+                  }
                 }
-              } else if (elem?.twinDiff[0][1] === "") {
-                if (columnIndex === "0") {
-                  diff = "-" + elem?.twinDiff[0][0];
-                } else {
-                  diff = "+" + elem?.twinDiff[0][0];
-                }
-              } else {
-                if (columnIndex === "0") {
-                  diff = elem?.twinDiff[0][0] + " -> " + elem?.twinDiff[0][1];
-                } else {
-                  diff = elem?.twinDiff[0][1] + " -> " + elem?.twinDiff[0][0];
-                }
-              }
+              });
+
+              diff.forEach(item => {
+                diffText =
+                  diffText +
+                  ((diffText !== "" && ", ") || "") +
+                  (getTranslation("changed at") + " «" + item + "»" || "");
+              });
             }
 
             text =
               text +
               ((text !== "" && "<br />") || "") +
-              getTranslation("In field") + " «" + elem?.twinFieldName + "»: " +
-              ((dist && getTranslation("moved on") + " " + dist + (diff ? ", " : "")) || "" ) +
-              ((diff && getTranslation("changed at") + " «" + diff + "»") || ""); //getTranslation("not changed"));
+              getTranslation("In field") +
+              " «" +
+              elem?.twinFieldName +
+              "»: " +
+              ((dist && getTranslation("moved on") + " " + dist + (diffText !== "" ? ", " : "")) || "") +
+              diffText;
           });
 
           setTimeout(() => {
@@ -548,6 +558,7 @@ const CompareModal = ({ columns, entries, onClose, perspectiveId }) => {
                       <Table.Row key={entry.id}>
                         {columns.map((column, i) => {
                           const entity = entry.entities.filter(entity => isEqual(entity.field_id, column.id))[0];
+
                           return (
                             <Table.Cell
                               className={className[i]}
@@ -597,20 +608,18 @@ const CompareModal = ({ columns, entries, onClose, perspectiveId }) => {
         </div>
       </Modal.Content>
       <Modal.Actions>
-        { xlsxUrl && !error && !errorXlsx && !loading && !loadingXlsx && (
+        {(xlsxUrl && !error && !errorXlsx && !loading && !loadingXlsx && (
           <a href={xlsxUrl} class="xlsx-link-label">
             {getTranslation("Click here to download XLSX report")}
           </a>
-        ) || (
+        )) || (
           <Button
             content={
-              !xlsxUrl && !error && !errorXlsx
-              ? getTranslation("Save to XLSX")
-              : getTranslation("Something went wrong")
+              !xlsxUrl && !error && !errorXlsx ? getTranslation("Save to XLSX") : getTranslation("Something went wrong")
             }
             onClick={getTwinsXlsx}
             loading={loading || loadingXlsx}
-            disabled = {error || errorXlsx}
+            disabled={error || errorXlsx}
             className="lingvo-button-greenest"
             style={{ float: "left" }}
           />
