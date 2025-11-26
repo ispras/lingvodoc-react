@@ -580,18 +580,31 @@ const CompareModal = ({ columns, entries, onClose, perspectiveId }) => {
                                   }}
                                 >
                                   <RangesMarker
-                                    mark={highlights[entry?.id]?.yellow[entity?.id] ?? []}
+                                    mark={
+                                      highlights[entry?.id]?.yellow[entity?.id]?.filter(item => item.twinDiff) ?? []
+                                    }
                                     options={{
                                       className: "lingvo-marker-yellow"
                                     }}
                                   >
-                                    <Popup
-                                      className="lingvo-popup-parallel-compare"
-                                      basic
-                                      inverted
-                                      content=""
-                                      trigger={<span className="lingvo-column-content">{entity?.content}</span>}
-                                    />
+                                    <RangesMarker
+                                      mark={
+                                        highlights[entry?.id]?.yellow[entity?.id]?.filter(
+                                          item => item.twinDist && !item.twinDiff
+                                        ) ?? []
+                                      }
+                                      options={{
+                                        className: "lingvo-marker-yellow lingvo-marker-yellow_light"
+                                      }}
+                                    >
+                                      <Popup
+                                        className="lingvo-popup-parallel-compare"
+                                        basic
+                                        inverted
+                                        content=""
+                                        trigger={<span className="lingvo-column-content">{entity?.content}</span>}
+                                      />
+                                    </RangesMarker>
                                   </RangesMarker>
                                 </RangesMarker>
                               </RangesMarker>
