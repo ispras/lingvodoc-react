@@ -4517,6 +4517,10 @@ body {
 .marked-replace-all {
   & .lingvo-marker-yellow {
     background-color: #ffd700;
+
+    &.lingvo-marker-yellow_light {
+      background-color: #ffeecc !important;
+    }
   }
 }
 
@@ -4547,6 +4551,12 @@ body {
 
       &.marked-replace-hover {
         background-color: #ffd700 !important;
+      }
+
+      &.lingvo-marker-yellow_light {
+        &.marked-replace-hover {
+          background-color: #ffeecc !important;
+        }
       }
     }
   }

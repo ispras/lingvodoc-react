@@ -801,6 +801,7 @@ export const stringsToTranslate = [
   "results on",
   "result url",
   "Return to tree",
+  "right",
   "Right text",
   "Role",
   "Role data loading error, please contact adiministrators.",
