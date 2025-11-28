@@ -43,8 +43,18 @@
 
 .xlsx-link-label {
   float: left;
-  margin-left: 20px;
+  margin: 10px 0 0 16px;
   font-weight: bold;
   font-size: 1.2em;
   text-decoration-line: underline;
+  color: #5d54cd;
+
+  &:hover {
+    color: #5d54cd;
+    text-decoration: underline;
+  }
+
+  &:active {
+    color: #372f9d;
+  }
 }

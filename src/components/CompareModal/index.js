@@ -37,21 +37,8 @@ const GET_TWINS_XLSX = gql`
 const CompareModal = ({ columns, entries, onClose, perspectiveId }) => {
   const getTranslation = useContext(TranslationContext);
 
-  const colums_temp = columns.slice(2);
-
+  const colums_temp = columns.slice(1);
   columns = Object.assign([], colums_temp);
-
-  entries = entries.map((entry, i) => {
-    let entry_temp = Object.assign({}, entry);
-
-    const entities_temp = entry_temp.entities.slice(2);
-
-    entry_temp.entities = Object.assign([], entities_temp);
-
-    entry = Object.assign({}, entry_temp);
-
-    return entry;
-  });
 
   let markedFalse = [];
   let markedTrue = [];
@@ -339,10 +326,10 @@ const CompareModal = ({ columns, entries, onClose, perspectiveId }) => {
               }
             }
             if (dist > 0) {
-              dist = String(dist) + " " + getTranslation("right");
+              dist = String(dist) + getTranslation(" right");
             }
             if (dist < 0) {
-              dist = String(-dist) + " " + getTranslation("left");
+              dist = String(-dist) + getTranslation(" left");
             }
 
             let diff = [];
