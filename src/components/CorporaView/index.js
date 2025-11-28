@@ -561,7 +561,7 @@ class P extends React.Component {
     };
 
     const onCompare = () => {
-      openNewModal(CompareModal, { perspectiveId: id, columns: fields, entries: entries });
+      openNewModal(CompareModal, { perspectiveId: id, columns: fieldsText, entries: entries });
     };
 
     /* Basic case-insensitive, case-sensitive compare. */
