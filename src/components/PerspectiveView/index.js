@@ -35,6 +35,27 @@ const ModalContentWrapper = styled("div")`
   min-height: 15vh;
 `;
 
+export const queryListChanges = gql `
+  query listChanges(
+    $proxy: String,
+    $stamps: ObjectVal!
+  ) {
+    list_changes(
+      proxy: $proxy,
+      stamps: $stamps
+    ) {
+      language
+      dictionary
+      perspective {
+        lexical_entries {
+          entities
+        }
+      }
+    }
+
+  }
+`;
+
 export const queryPerspective = gql`
   query queryPerspective1($id: LingvodocID!) {
     perspective(id: $id) {
@@ -558,6 +579,30 @@ class P extends React.Component {
       });
     };
 
+    const doSync = () => {
+      // 1. Get changes from Core,
+      // 2. Get changes from Satellite,
+      // 3. Display changes,
+      // 4. Apply/Deny changes
+
+      const groupList = [selectedEntries];
+
+      mergeLexicalEntries({
+        variables: { groupList },
+
+        refetchQueries: [
+          {
+            query: queryLexicalEntries,
+            variables: query_args
+          }
+        ]
+
+      }).then(() => {
+        resetSelection();
+        this.setState({ entriesTotal: entriesTotal - selectedEntries.length + 1 });
+      });
+    };
+
     const mergeEntries = () => {
       const groupList = [selectedEntries];
 
@@ -607,7 +652,8 @@ class P extends React.Component {
       );
     }
     /* eslint-enable no-shadow */
-    const isAuthenticated = user && user.user.id;
+    const isAuthenticated = user?.user?.id;
+    const allowedSync = user?.user?.allowed_sync;
 
     const isTableLanguages = JSON.stringify(id) === JSON.stringify([4839, 2]);
 
@@ -713,6 +759,14 @@ class P extends React.Component {
           (mode === "publish" && isAuthenticated) ||
           (mode === "contributions" && isAuthenticated)) && (
             <div className="lingvo-perspective-buttons">
+              {mode === "edit" && allowedSync && (
+                <Button
+                  icon={<i className="lingvo-icon lingvo-icon_refresh" />}
+                  content={this.context("Synchronize")}
+                  onClick={doSync}
+                  className="lingvo-button-green lingvo-perspective-button"
+                />
+              )}
               {mode === "edit" && (
                 <Button
                   icon={<i className="lingvo-icon lingvo-icon_add" />}
@@ -1219,5 +1273,6 @@ export default compose(
   graphql(queryPerspective, {
     options: { notifyOnNetworkStatusChange: true }
   }),
+  graphql(queryListChanges, { name: "listChanges" }),
   branch(({ data: { loading } }) => loading, renderComponent(Placeholder))
 )(PerspectiveViewWrapper);
