@@ -561,7 +561,7 @@ class P extends React.Component {
     };
 
     const onCompare = () => {
-      openNewModal(CompareModal, { perspectiveId: id, columns: fields, entries: entries });
+      openNewModal(CompareModal, { perspectiveId: id, columns: fieldsText, entries: entries });
     };
 
     /* Basic case-insensitive, case-sensitive compare. */
@@ -950,6 +950,10 @@ class P extends React.Component {
       yield* entries;
     }
 
+    const fieldsText = fields?.filter(elem => {
+      return elem.data_type === "Text";
+    });
+
     return (
       <div
         style={{ overflowY: "auto" }}
@@ -959,7 +963,7 @@ class P extends React.Component {
           (mode === "publish" && isAuthenticated) ||
           (mode === "contributions" && isAuthenticated)) && (
           <div className="lingvo-perspective-buttons">
-            {mode === "edit" && (
+            {mode === "edit" && fieldsText.length > 2 && (
               <Button
                 icon={<i className="lingvo-icon lingvo-icon_check" />}
                 content={this.context("Compare")}

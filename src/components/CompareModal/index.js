@@ -1,9 +1,10 @@
 import React, { useContext, useState } from "react";
-import { useQuery, gql } from "@apollo/client";
+import { useQuery, useLazyQuery, gql } from "@apollo/client";
 import { Button, Dimmer, Header, Icon, Message, Modal, Popup, Table } from "semantic-ui-react";
 import { RangesMarker } from "react-mark.js";
 import PropTypes from "prop-types";
 import { chooseTranslation as T } from "api/i18n";
+import { isEqual } from "lodash";
 
 import TranslationContext from "Layout/TranslationContext";
 
@@ -15,41 +16,29 @@ const getTwinsDiff = gql`
     $twinIds: [[LingvodocID]]!
     $entryIds: [LingvodocID]!
     $fieldNames: [String]!
+    $perspectiveId: LingvodocID!
   ) {
-    twins_diff(main_ids: $mainIds, twin_ids: $twinIds, entry_ids: $entryIds, field_names: $fieldNames)
+    twins_diff(
+      main_ids: $mainIds
+      twin_ids: $twinIds
+      entry_ids: $entryIds
+      field_names: $fieldNames
+      pers_id: $perspectiveId
+    )
   }
 `;
 
-const CompareModal = ({ columns, entries, onClose }) => {
+const GET_TWINS_XLSX = gql`
+  query twinsXlsx($perspectiveId: LingvodocID!) {
+    twins_xlsx(pers_id: $perspectiveId)
+  }
+`;
+
+const CompareModal = ({ columns, entries, onClose, perspectiveId }) => {
   const getTranslation = useContext(TranslationContext);
 
-  /* временно!!!!!! */
-  //const colums_temp = [columns[2], columns[3], columns[3], columns[3]];
-  const colums_temp = columns.slice(2);
-
+  const colums_temp = columns.slice(1);
   columns = Object.assign([], colums_temp);
-
-  entries = entries.map((entry, i) => {
-    let entry_temp = Object.assign({}, entry);
-
-    /*const entities_temp = [
-      entry_temp.entities[2],
-      entry_temp.entities[3],
-      entry_temp.entities[3]
-      //entry_temp.entities[3]
-    ];*/
-    const entities_temp = entry_temp.entities.slice(2);
-
-    entry_temp.entities = Object.assign([], entities_temp);
-
-    entry = Object.assign({}, entry_temp);
-
-    return entry;
-  });
-  /* /временно!!!!!! */
-
-  console.log("entries=====");
-  console.log(entries);
 
   let markedFalse = [];
   let markedTrue = [];
@@ -63,12 +52,19 @@ const CompareModal = ({ columns, entries, onClose }) => {
   const [markedReplaceAll, setMarkedReplaceAll] = useState(markedFalse);
 
   const [highlights, setHighlights] = useState({});
+  const [xlsxUrl, setXlsxUrl] = useState(null);
+
+  const mainIds = entries.map(le => le.entities.filter(en => isEqual(en.field_id, columns[0].id))[0]?.id);
+
+  const twinIds = entries.map(le =>
+    columns.slice(1).map(cl => le.entities.filter(en => isEqual(en.field_id, cl.id))[0]?.id)
+  );
 
   const highlightMarkers = data => {
     const highlights = {};
     const mainFields = mainIds.map(id => id?.join(","));
 
-    Object.entries(data.twins_diff.diffs).forEach(([entryId, value1], i1) => {
+    Object.entries(data.twins_diff).forEach(([entryId, value1], i1) => {
       const red = {};
       const green = {};
       const yellow = {};
@@ -87,7 +83,7 @@ const CompareModal = ({ columns, entries, onClose }) => {
             //For MainField twinFieldNumber starts from 1, because 0 is MainField itself
             //For other fields only MainField is a TwinField so we start from 0
             const twinFieldNumber = i4 + Number(isMainField);
-            const twinFieldName = T(columns[twinFieldNumber].translations);
+            const twinFieldName = T(columns[twinFieldNumber]?.translations);
             const marker = { start, length, twinId, twinFieldNumber, twinFieldName };
 
             if (value4 === null) {
@@ -96,7 +92,7 @@ const CompareModal = ({ columns, entries, onClose }) => {
               } else {
                 green[masterId].push(marker);
               }
-            } else {
+            } else if (Array.isArray(value4) && value4.length === 5) {
               const [twinStart, twinWord, twinDist, twinDiff, origWord] = value4;
 
               yellow[masterId].push({
@@ -117,19 +113,23 @@ const CompareModal = ({ columns, entries, onClose }) => {
     setHighlights(highlights);
   };
 
-  const mainIds = entries.map(le => le.entities[0]?.id);
-  const twinIds = entries.map(le => le.entities.slice(1).map(e => e?.id));
   const entryIds = entries.map(le => le?.id);
   const fieldNames = columns.map(cl => T(cl.translations));
 
-  const { data, error, loading } = useQuery(getTwinsDiff, {
+  const { error, loading } = useQuery(getTwinsDiff, {
     variables: {
       mainIds,
       twinIds,
       entryIds,
-      fieldNames
+      fieldNames,
+      perspectiveId
     },
     onCompleted: data => highlightMarkers(data)
+  });
+
+  const [getTwinsXlsx, { error: errorXlsx, loading: loadingXlsx }] = useLazyQuery(GET_TWINS_XLSX, {
+    variables: { perspectiveId },
+    onCompleted: data => setXlsxUrl(data?.twins_xlsx)
   });
 
   const markAdd = column => {
@@ -168,11 +168,18 @@ const CompareModal = ({ columns, entries, onClose }) => {
 
       markedReplace[column] = !markedReplaceAll[column];
 
+      if (markedReplace[column]) {
+        markedReplace[0] = true;
+      } else {
+        if (!markedReplace.includes(true, 1)) {
+          markedReplace[0] = false;
+        }
+      }
+
       setMarkedReplaceAll(markedReplace);
     }
   };
 
-  /* new!!!!! */
   document.addEventListener(
     "mouseover",
     e => {
@@ -180,10 +187,6 @@ const CompareModal = ({ columns, entries, onClose }) => {
         const td = e.target.closest(".marked-add-all");
         if (td) {
           e.target.classList.add("marked-add-hover");
-          e.target.setAttribute(
-            "title",
-            JSON.stringify(highlights[td.getAttribute("data-row")]?.green[td.getAttribute("data-column")])
-          );
           e.target.closest(".lingvo-perspective-table").classList.add("mark-hover");
           e.stopPropagation();
         }
@@ -199,25 +202,23 @@ const CompareModal = ({ columns, entries, onClose }) => {
 
           const contentMark = e.target.innerHTML;
           if (!contentMark.includes("$$$")) {
-            e.target.innerHTML = '<span class="hidden">$$$</span>' + contentMark;
+            e.target.innerHTML = '<span class="hidden-marker-label">$$$</span>' + contentMark;
           }
 
           const position = content.textContent.indexOf("$$$");
-          console.log("position=====");
-          console.log(position);
+
+          const contentMarkTemp = e.target.innerHTML;
+          const contentMarkNew = contentMarkTemp.replace('<span class="hidden-marker-label">$$$</span>', "");
+          e.target.innerHTML = contentMarkNew;
 
           const rowId = td.getAttribute("data-row");
           const columnId = td.getAttribute("data-column");
 
           const highlightsAll = highlights[rowId]?.red[columnId];
-          console.log("highlightsAll=====");
-          console.log(highlightsAll);
 
           const highlightsMark = highlightsAll?.filter(elem => {
             return Number(elem.start) === position;
           });
-          console.log("highlightsMark=====");
-          console.log(highlightsMark);
 
           // In field ${twinFieldName}: removed
           let text = "";
@@ -231,8 +232,6 @@ const CompareModal = ({ columns, entries, onClose }) => {
               "»: " +
               getTranslation("removed");
           });
-
-          e.target.setAttribute("title", text?.replace(/<br \/>/g, `\n`));
 
           setTimeout(() => {
             const popup = document.getElementsByClassName("lingvo-popup-parallel-compare");
@@ -260,25 +259,24 @@ const CompareModal = ({ columns, entries, onClose }) => {
 
           const contentMark = e.target.innerHTML;
           if (!contentMark.includes("$$$")) {
-            e.target.innerHTML = '<span class="hidden">$$$</span>' + contentMark;
+            e.target.innerHTML = '<span class="hidden-marker-label">$$$</span>' + contentMark;
           }
 
           const position = content.textContent.indexOf("$$$");
-          console.log("position=====");
-          console.log(position);
+
+          const contentMarkTemp = e.target.innerHTML;
+          const contentMarkNew = contentMarkTemp.replace('<span class="hidden-marker-label">$$$</span>', "");
+          e.target.innerHTML = contentMarkNew;
 
           const rowId = td.getAttribute("data-row");
           const columnId = td.getAttribute("data-column");
+          const columnIndex = td.getAttribute("data-column-index");
 
           const highlightsAll = highlights[rowId]?.yellow[columnId];
-          console.log("highlightsAll=====");
-          console.log(highlightsAll);
 
           const highlightsMark = highlightsAll?.filter(elem => {
             return Number(elem.start) === position;
           });
-          console.log("highlightsMark=====");
-          console.log(highlightsMark);
 
           const twinTds = Array.from(row.getElementsByClassName("marked-replace-all")).filter(elem => {
             const columnId = elem.getAttribute("data-column");
@@ -290,9 +288,6 @@ const CompareModal = ({ columns, entries, onClose }) => {
             return twin;
           });
 
-          console.log("twinTds=====");
-          console.log(twinTds);
-
           Array.from(twinTds).forEach(elem => {
             const columnId = elem.getAttribute("data-column");
 
@@ -302,25 +297,19 @@ const CompareModal = ({ columns, entries, onClose }) => {
 
             Array.from(elem.getElementsByClassName("lingvo-marker-yellow")).forEach(mark => {
               if (mark.innerHTML == twin?.twinWord) {
-                //mark.classList.add("marked-replace-hover");
-
-                /* new!!!!! */
                 const contentMark = mark.innerHTML;
                 if (!contentMark.includes("$$$")) {
-                  mark.innerHTML = '<span class="hidden">$$$</span>' + contentMark; // new!!!!!
+                  mark.innerHTML = '<span class="hidden-marker-label">$$$</span>' + contentMark;
                 }
 
                 const position = mark.closest(".lingvo-column-content").textContent.indexOf("$$$");
-                console.log("position Mark =====");
-                console.log(position);
 
                 if (position === twin?.twinStart) {
                   mark.classList.add("marked-replace-hover");
                 }
                 const contentMarkTemp = mark.innerHTML;
-                const contentMarkNew = contentMarkTemp.replace('<span class="hidden">$$$</span>', "");
+                const contentMarkNew = contentMarkTemp.replace('<span class="hidden-marker-label">$$$</span>', "");
                 mark.innerHTML = contentMarkNew;
-                /* /new!!!!! */
               }
             });
           });
@@ -328,6 +317,54 @@ const CompareModal = ({ columns, entries, onClose }) => {
           // In field ${twinFieldName}: moved on ${twinDist}, changed at ${twinDiff}
           let text = "";
           highlightsMark?.forEach(elem => {
+            let dist = 0;
+            if (elem?.twinDist) {
+              if (columnIndex === "0") {
+                dist = elem.twinDist;
+              } else {
+                dist = -elem.twinDist;
+              }
+            }
+            if (dist > 0) {
+              dist = String(dist) + getTranslation(" right");
+            }
+            if (dist < 0) {
+              dist = String(-dist) + getTranslation(" left");
+            }
+
+            let diff = [];
+            let diffText = "";
+            if (elem?.twinDiff) {
+              elem?.twinDiff?.forEach(item => {
+                if (item[0] === "") {
+                  if (columnIndex === "0") {
+                    diff.push("+" + item[1]);
+                  } else {
+                    diff.push("-" + item[1]);
+                  }
+                } else if (item[1] === "") {
+                  if (columnIndex === "0") {
+                    diff.push("-" + item[0]);
+                  } else {
+                    diff.push("+" + item[0]);
+                  }
+                } else {
+                  if (columnIndex === "0") {
+                    diff.push(item[0] + " -> " + item[1]);
+                  } else {
+                    diff.push(item[1] + " -> " + item[0]);
+                  }
+                }
+              });
+
+              diff.forEach(item => {
+                diffText =
+                  diffText +
+                  ((diffText !== "" && ", ") || "") +
+                  (getTranslation("changed at") + " «" + item + "»" || "");
+              });
+            }
+
             text =
               text +
               ((text !== "" && "<br />") || "") +
@@ -335,15 +372,9 @@ const CompareModal = ({ columns, entries, onClose }) => {
               " «" +
               elem?.twinFieldName +
               "»: " +
-              getTranslation("moved on") +
-              " " +
-              elem?.twinDist +
-              ", " +
-              ((elem?.twinDiff && getTranslation("changed at") + " " + elem?.twinDiff) ||
-                getTranslation("not changed"));
+              ((dist && getTranslation("moved on") + " " + dist + (diffText !== "" ? ", " : "")) || "") +
+              diffText;
           });
-
-          e.target.setAttribute("title", text?.replace(/<br \/>/g, `\n`));
 
           setTimeout(() => {
             const popup = document.getElementsByClassName("lingvo-popup-parallel-compare");
@@ -370,7 +401,6 @@ const CompareModal = ({ columns, entries, onClose }) => {
         const td = e.target.closest(".marked-add-all");
         if (td) {
           e.target.classList.remove("marked-add-hover");
-          e.target.removeAttribute("title");
           e.target.closest(".lingvo-perspective-table").classList.remove("mark-hover");
           e.stopPropagation();
         }
@@ -380,12 +410,6 @@ const CompareModal = ({ columns, entries, onClose }) => {
         const td = e.target.closest(".marked-del-all");
         if (td) {
           e.target.classList.remove("marked-del-hover");
-
-          const contentMark = e.target.innerHTML;
-          const contentMarkNew = contentMark.replace('<span class="hidden">$$$</span>', "");
-          e.target.innerHTML = contentMarkNew;
-
-          e.target.removeAttribute("title");
 
           setTimeout(() => {
             const popup = document.getElementsByClassName("lingvo-popup-parallel-compare");
@@ -408,12 +432,6 @@ const CompareModal = ({ columns, entries, onClose }) => {
             mark.classList.remove("marked-replace-hover");
           });
 
-          const contentMark = e.target.innerHTML;
-          const contentMarkNew = contentMark.replace('<span class="hidden">$$$</span>', "");
-          e.target.innerHTML = contentMarkNew;
-
-          e.target.removeAttribute("title");
-
           setTimeout(() => {
             const popup = document.getElementsByClassName("lingvo-popup-parallel-compare");
             if (popup.length) {
@@ -429,7 +447,6 @@ const CompareModal = ({ columns, entries, onClose }) => {
     },
     false
   );
-  /* /new!!!!! */
 
   let className = [];
   columns.forEach((el, i) => {
@@ -526,13 +543,16 @@ const CompareModal = ({ columns, entries, onClose }) => {
                   {entries.map(entry => {
                     return (
                       <Table.Row key={entry.id}>
-                        {entry.entities.map((entity, i) => {
+                        {columns.map((column, i) => {
+                          const entity = entry.entities.filter(entity => isEqual(entity.field_id, column.id))[0];
+
                           return (
                             <Table.Cell
                               className={className[i]}
                               key={`${entry.id}column${i}`}
-                              data-row={entry.id} /* new!!!!! */
-                              data-column={entity?.id} /* new!!!!! */
+                              data-row={entry.id}
+                              data-column={entity?.id}
+                              data-column-index={i}
                             >
                               <RangesMarker
                                 mark={highlights[entry?.id]?.red[entity?.id] ?? []}
@@ -547,24 +567,31 @@ const CompareModal = ({ columns, entries, onClose }) => {
                                   }}
                                 >
                                   <RangesMarker
-                                    mark={highlights[entry?.id]?.yellow[entity?.id] ?? []}
+                                    mark={
+                                      highlights[entry?.id]?.yellow[entity?.id]?.filter(item => item.twinDiff) ?? []
+                                    }
                                     options={{
                                       className: "lingvo-marker-yellow"
                                     }}
                                   >
-                                    <Popup
-                                      className="lingvo-popup-parallel-compare"
-                                      basic
-                                      inverted
-                                      //on="click"
-                                      //popper
-                                      //offset
-                                      //position="top left"
-                                      //popper={<marker />}
-                                      //hideOnScroll={true}
-                                      content=""
-                                      trigger={<span className="lingvo-column-content">{entity?.content}</span>}
-                                    />
+                                    <RangesMarker
+                                      mark={
+                                        highlights[entry?.id]?.yellow[entity?.id]?.filter(
+                                          item => item.twinDist && !item.twinDiff
+                                        ) ?? []
+                                      }
+                                      options={{
+                                        className: "lingvo-marker-yellow lingvo-marker-yellow_light"
+                                      }}
+                                    >
+                                      <Popup
+                                        className="lingvo-popup-parallel-compare"
+                                        basic
+                                        inverted
+                                        content=""
+                                        trigger={<span className="lingvo-column-content">{entity?.content}</span>}
+                                      />
+                                    </RangesMarker>
                                   </RangesMarker>
                                 </RangesMarker>
                               </RangesMarker>
@@ -581,12 +608,22 @@ const CompareModal = ({ columns, entries, onClose }) => {
         </div>
       </Modal.Content>
       <Modal.Actions>
-        <Button
-          content={getTranslation("Save to XLSX")}
-          //onClick={onSaveXlsx}
-          className="lingvo-button-greenest"
-          style={{ float: "left" }}
-        />
+        {(xlsxUrl && !error && !errorXlsx && !loading && !loadingXlsx && (
+          <a href={xlsxUrl} class="xlsx-link-label">
+            {getTranslation("Click here to download XLSX report")}
+          </a>
+        )) || (
+          <Button
+            content={
+              !xlsxUrl && !error && !errorXlsx ? getTranslation("Save to XLSX") : getTranslation("Something went wrong")
+            }
+            onClick={getTwinsXlsx}
+            loading={loading || loadingXlsx}
+            disabled={error || errorXlsx}
+            className="lingvo-button-greenest"
+            style={{ float: "left" }}
+          />
+        )}
         <Button content={getTranslation("Close")} onClick={onClose} className="lingvo-button-basic-black" />
       </Modal.Actions>
     </Modal>
@@ -596,7 +633,8 @@ const CompareModal = ({ columns, entries, onClose }) => {
 CompareModal.propTypes = {
   columns: PropTypes.array.isRequired,
   entries: PropTypes.array.isRequired,
-  onClose: PropTypes.func.isRequired
+  onClose: PropTypes.func.isRequired,
+  perspectiveId: PropTypes.array.isRequired
 };
 
 export default CompareModal;
