@@ -20,6 +20,9 @@ export const queryUsers = gql`
       intl_name
       email
       is_active
+      additional_metadata {
+        allowed_sync
+      }
     }
   }
 `;
@@ -32,11 +35,20 @@ const activateDeactivateUserMutation = gql`
   }
 `;
 
+const allowSyncDictsMutation = gql`
+  mutation allowSyncDicts($userId: Int!, $allowedSync: Boolean!) {
+    allow_sync_dicts(user_id: $userId, allowed_sync: $allowedSync) {
+      triumph
+    }
+  }
+`;
+
 class BanModal extends React.Component {
   constructor(props) {
     super(props);
     this.state = { selected_user: null };
     this.handleActivateDeactivate = this.handleActivateDeactivate.bind(this);
+    this.handleAllowSync = this.handleAllowSync.bind(this);
   }
 
   handleActivateDeactivate() {
@@ -57,6 +69,39 @@ class BanModal extends React.Component {
         variables: {
           userId: user.id,
           isActive: !user.is_active
+        }
+      })
+      .then(
+        () => {
+          window.logger.suc(`${this.context(success_str)} ${user_str}.`);
+          this.props.closeModal();
+          refetch();
+        },
+        () => {
+          window.logger.err(`${this.context(error_str)} ${user_str}!`);
+        }
+      );
+  }
+
+  handleAllowSync() {
+    const user = this.state.selected_user;
+    if (user === null) {
+      return;
+    }
+
+    const allowed_sync = user.additional_metadata.allowed_sync;
+    const success_str = allowed_sync ? "Successfully denied synchronization" : "Successfully allowed synchronization";
+    const error_str = allowed_sync ? "Failed to deny synchronization" : "Failed to allow synchronization";
+
+    const user_str = `'${user.login}' (${user.name}${user.intl_name !== user.login ? `, ${user.intl_name}` : ""})`;
+
+    const { refetch } = this.props.data;
+
+    this.props
+      .allowSyncDicts({
+        variables: {
+          userId: user.id,
+          allowedSync: !allowed_sync
         }
       })
       .then(
@@ -114,6 +159,18 @@ class BanModal extends React.Component {
               disabled={this.state.selected_user === null}
               content={
                 this.state.selected_user === null
+                  ? this.context("Allow sync / Deny sync")
+                  : this.state.selected_user.additional_metadata.allowed_sync
+                  ? this.context("Deny sync")
+                  : this.context("Allow sync")
+              }
+              onClick={this.handleAllowSync}
+              className="lingvo-button-violet"
+            />
+            <Button
+              disabled={this.state.selected_user === null}
+              content={
+                this.state.selected_user === null
                   ? this.context("Activate / Deactivate")
                   : this.state.selected_user.is_active
                   ? this.context("Deactivate")
@@ -151,5 +208,6 @@ export default compose(
     dispatch => bindActionCreators({ closeModal }, dispatch)
   ),
   graphql(queryUsers, { skip: props => !props.visible }),
-  graphql(activateDeactivateUserMutation, { name: "activateDeactivateUser" })
+  graphql(activateDeactivateUserMutation, { name: "activateDeactivateUser" }),
+  graphql(allowSyncDictsMutation, { name: "allowSyncDicts" })
 )(BanModal);
