@@ -13,9 +13,8 @@ import { bindActionCreators } from "redux";
 import styled from "styled-components";
 
 import ApproveModal from "components/ApproveModal";
-/* new!!!!!! */
 import JoinMarkupsModal from "components/JoinMarkupsModal";
-/* /new!!!!!! */
+import CompareModal from "components/CompareModal";
 import Pagination from "components/Pagination";
 import Placeholder from "components/Placeholder";
 import { openModal, closeModal } from "ducks/modals";
@@ -92,7 +91,7 @@ export const queryLexicalEntries = gql`
           published
           accepted
           additional_metadata {
-            link_perspective_id,
+            link_perspective_id
             markups
           }
           is_subject_for_parsing
@@ -557,11 +556,13 @@ class P extends React.Component {
       openNewModal(ApproveModal, { perspectiveId: id, mode });
     };
 
-    /* new!!!! */
     const onJoinMarkups = () => {
       openNewModal(JoinMarkupsModal, { perspectiveId: id });
     };
-    /* /new!!!! */
+
+    const onCompare = () => {
+      openNewModal(CompareModal, { perspectiveId: id, columns: fieldsText, entries: entries });
+    };
 
     /* Basic case-insensitive, case-sensitive compare. */
     const ci_cs_compare = (str_a, str_b) => {
@@ -949,6 +950,10 @@ class P extends React.Component {
       yield* entries;
     }
 
+    const fieldsText = fields?.filter(elem => {
+      return elem.data_type === "Text";
+    });
+
     return (
       <div
         style={{ overflowY: "auto" }}
@@ -958,7 +963,14 @@ class P extends React.Component {
           (mode === "publish" && isAuthenticated) ||
           (mode === "contributions" && isAuthenticated)) && (
           <div className="lingvo-perspective-buttons">
-            {/* new!!!!! */}
+            {mode === "edit" && fieldsText.length > 2 && (
+              <Button
+                icon={<i className="lingvo-icon lingvo-icon_check" />}
+                content={this.context("Compare")}
+                onClick={onCompare}
+                className="lingvo-button-green lingvo-perspective-button"
+              />
+            )}
             {mode === "edit" && (
               <Button
                 icon={<i className="lingvo-icon lingvo-icon_check" />}
@@ -967,7 +979,6 @@ class P extends React.Component {
                 className="lingvo-button-green lingvo-perspective-button"
               />
             )}
-            {/* /new!!!!! */}
             {mode === "edit" && (
               <Button
                 icon={<i className="lingvo-icon lingvo-icon_add" />}

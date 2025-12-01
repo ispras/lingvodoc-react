@@ -15,6 +15,7 @@ const COLUMN_SET_TYPE = "@import/COLUMN_SET_TYPE";
 const LANGUAGE_SET = "@import/LANGUAGE_SET";
 const LICENSE_SET = "@import/LICENSE_SET";
 const LOCALE_SET = "@import/LOCALE_SET";
+const MARKED_SET = "@import/MARKED_SET";
 
 function _getLinking(state) {
   return state.get("linking").filter(v => v.get("id"));
@@ -125,6 +126,23 @@ function updateColumnTypes(state) {
   });
 }
 
+function setMarkedTxt(state) {
+  const first = _getLinking(state).first();
+  const firstId = first.get("id");
+  const firstDataType = first.get("data_type");
+  const isTxt = (firstDataType === 'txt');
+  const isMarked = (firstDataType === 'marked');
+  const statePath = ["linking", firstId, "data_type"];
+
+  return (
+    isTxt
+    ? state.setIn(statePath, "marked")
+    : isMarked
+    ? state.setIn(statePath, "txt")
+    : state
+  )
+}
+
 const initial = new Map({
   step: "LINKING",
   blobs: new List(),
@@ -173,6 +191,9 @@ export default function (state = initial, { type, payload }) {
     case LICENSE_SET:
       newState = state.setIn(["licenses", payload.id], payload.license);
       break;
+    case MARKED_SET:
+      newState = setMarkedTxt(state);
+      break;
     case LOCALE_SET:
       if (payload.value) {
         return state.setIn(["linking", payload.id, "translation", payload.locale], payload.value);
@@ -198,7 +219,7 @@ export const selectors = {
 
     switch (state.dictImport.get("step")) {
       case "LANGUAGES":
-        result &&= parallel === 'txt'
+        result &&= (parallel === 'txt' || parallel === 'marked')
           ? linking
             .some((item, blob_id) => languages.has(blob_id) && item.get("translation").size > 0)
           : linking
@@ -207,7 +228,7 @@ export const selectors = {
       case "COLUMNS":
         const all_fields = state.dictImport.get("columnTypes").reduce((acc, field_map) => [...acc, ...field_map.values()], []);
         //console.log(all_fields);
-        result &&= parallel === 'txt'
+        result &&= (parallel === 'txt' || parallel === 'marked')
           ? all_fields.reduce((acc, value, index, arr) =>
             acc && value && arr.findIndex(v => isEqual(v, value)) === index, true)
           : state.dictImport.get("columnTypes").every((field_map, blob_id) => {
@@ -223,7 +244,7 @@ export const selectors = {
           });
 
       case "LINKING":
-        result &&= parallel === 'txt'
+        result &&= (parallel === 'txt' || parallel === 'marked')
           ? linking.size > 1
           : linking
             .toArray()
@@ -325,4 +346,8 @@ export function setTranslation(id, locale, value) {
     type: LOCALE_SET,
     payload: { id, locale, value }
   };
+}
+
+export function setMarked() {
+  return { type: MARKED_SET };
 }
