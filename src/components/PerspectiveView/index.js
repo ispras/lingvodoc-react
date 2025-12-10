@@ -497,15 +497,15 @@ class P extends React.Component {
     const changes1 = {languages: [[stampMid, stampOld, {note: 'Changed before sync'}]]};
     const changes2 = {languages: [[stampMid, stampNew, {note: 'Changed after sync'}]]};
 
-    const { data: { list_changes: isp_changes }} = await client.query({
+    await client.query({
       query: queryListChanges,
       variables: { host: 'isp', id }
-    });
+    }).then(({data: {list_changes: ispSyncData}}) => this.setState(ispSyncData));
 
-    const { data: { list_changes: xal_changes }} = await client.query({
+    await client.query({
       query: queryListChanges,
       variables: { host: 'xal', id }
-    });
+    }).then(({data: {list_changes: xalSyncData}}) => this.setState(xalSyncData));
   };
 
   render() {
