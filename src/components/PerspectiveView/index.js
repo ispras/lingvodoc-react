@@ -10,6 +10,7 @@ import { bindActionCreators } from "redux";
 import styled from "styled-components";
 
 import ApproveModal from "components/ApproveModal";
+import SyncModal from "components/SyncModal"; // new!!!!!!
 import Pagination from "components/Pagination";
 import Placeholder from "components/Placeholder";
 import { openModal } from "ducks/modals";
@@ -38,14 +39,8 @@ const ModalContentWrapper = styled("div")`
 // host: 'isp' or 'xal' for now
 // id: perspective_id to synchronize
 export const queryListChanges = gql`
-  query listChanges(
-    $host: String!,
-    $id: LingvodocID!
-  ) {
-    list_changes(
-      host: $host,
-      id: $id
-    )
+  query listChanges($host: String!, $id: LingvodocID!) {
+    list_changes(host: $host, id: $id)
   }
 `;
 
@@ -82,33 +77,33 @@ export const queryPerspective = gql`
  */
 export const queryLexicalEntries = gql`
   query queryPerspective2(
-    $id: LingvodocID!,
-    $entitiesMode: String!,
-    $filter: String,
-    $sortingField: LingvodocID,
-    $isEditMode: Boolean,
-    $isCaseSens: Boolean,
-    $isAscending: Boolean,
-    $isRegexp: Boolean,
-    $offset: Int,
-    $limit: Int,
-    $createdEntries: [LingvodocID]) {
-
+    $id: LingvodocID!
+    $entitiesMode: String!
+    $filter: String
+    $sortingField: LingvodocID
+    $isEditMode: Boolean
+    $isCaseSens: Boolean
+    $isAscending: Boolean
+    $isRegexp: Boolean
+    $offset: Int
+    $limit: Int
+    $createdEntries: [LingvodocID]
+  ) {
     perspective(id: $id) {
       id
       translations
       perspective_page(
-        mode: $entitiesMode,
-        filter: $filter,
-        sort_by_field: $sortingField,
-        is_edit_mode: $isEditMode,
-        is_case_sens: $isCaseSens,
-        is_ascending: $isAscending,
-        is_regexp: $isRegexp,
-        offset: $offset,
-        limit: $limit,
-        created_entries: $createdEntries) {
-
+        mode: $entitiesMode
+        filter: $filter
+        sort_by_field: $sortingField
+        is_edit_mode: $isEditMode
+        is_case_sens: $isCaseSens
+        is_ascending: $isAscending
+        is_regexp: $isRegexp
+        offset: $offset
+        limit: $limit
+        created_entries: $createdEntries
+      ) {
         entries_total
         lexical_entries {
           id
@@ -261,7 +256,7 @@ TableComponent.defaultProps = {
   actions: [],
   selectEntries: false,
   selectedEntries: [],
-  onEntrySelect: () => { },
+  onEntrySelect: () => {},
   reRender: () => console.log("Fake refetch")
 };
 
@@ -394,12 +389,12 @@ class P extends React.Component {
       createdEntries,
       limit,
       offset
-    }
+    };
 
     const { loading, error } = data;
     const { entriesTotal } = this.state;
     const countEntries = selectedEntries.length;
-    const updateNext =  (offset + limit < entriesTotal);
+    const updateNext = offset + limit < entriesTotal;
 
     if (updateNext) {
       await client.query({
@@ -408,7 +403,7 @@ class P extends React.Component {
           ...query_args,
           offset: offset + limit
         },
-        fetchPolicy: 'cache-first',
+        fetchPolicy: "cache-first"
       });
     }
 
@@ -428,14 +423,12 @@ class P extends React.Component {
                   offset: offset + limit
                 }
               },
-              (data) => {
+              data => {
                 if (!loading && !error && data) {
                   const result = cloneDeep(data);
                   const perspective_page = result.perspective.perspective_page;
                   nextEntries = perspective_page.lexical_entries.slice(0, countEntries);
-                  perspective_page.lexical_entries = (
-                    perspective_page.lexical_entries.slice(countEntries)
-                  );
+                  perspective_page.lexical_entries = perspective_page.lexical_entries.slice(countEntries);
 
                   return result;
                 }
@@ -449,7 +442,7 @@ class P extends React.Component {
               query: queryLexicalEntries,
               variables: query_args
             },
-            (data) => {
+            data => {
               if (!loading && !error) {
                 const result = cloneDeep(data);
                 const perspective_page = result.perspective.perspective_page;
@@ -470,7 +463,7 @@ class P extends React.Component {
       resetSelection();
       this.setState({ entriesTotal: entriesTotal - countEntries });
     });
-  };
+  }
 
   /*
   const mixChanges = (changes1, changes2) => {
@@ -490,23 +483,27 @@ class P extends React.Component {
 
     const { client, id } = this.props;
 
-    const stampNew = Date.parse('2025-12-01T19:30:00Z');
-    const stampMid = Date.parse('2025-11-30T19:30:00Z');
-    const stampOld = Date.parse('2025-11-29T19:30:00Z');
+    const stampNew = Date.parse("2025-12-01T19:30:00Z");
+    const stampMid = Date.parse("2025-11-30T19:30:00Z");
+    const stampOld = Date.parse("2025-11-29T19:30:00Z");
 
-    const changes1 = {languages: [[stampMid, stampOld, {note: 'Changed before sync'}]]};
-    const changes2 = {languages: [[stampMid, stampNew, {note: 'Changed after sync'}]]};
+    const changes1 = { languages: [[stampMid, stampOld, { note: "Changed before sync" }]] };
+    const changes2 = { languages: [[stampMid, stampNew, { note: "Changed after sync" }]] };
 
-    await client.query({
-      query: queryListChanges,
-      variables: { host: 'isp', id }
-    }).then(({data: {list_changes: ispSyncData}}) => this.setState(ispSyncData));
+    await client
+      .query({
+        query: queryListChanges,
+        variables: { host: "isp", id }
+      })
+      .then(({ data: { list_changes: ispSyncData } }) => this.setState(ispSyncData));
 
-    await client.query({
-      query: queryListChanges,
-      variables: { host: 'xal', id }
-    }).then(({data: {list_changes: xalSyncData}}) => this.setState(xalSyncData));
-  };
+    await client
+      .query({
+        query: queryListChanges,
+        variables: { host: "xal", id }
+      })
+      .then(({ data: { list_changes: xalSyncData } }) => this.setState(xalSyncData));
+  }
 
   render() {
     const {
@@ -556,7 +553,7 @@ class P extends React.Component {
       limit,
       offset,
       createdEntries
-    }
+    };
 
     const { loading, error } = data;
 
@@ -574,10 +571,9 @@ class P extends React.Component {
     const { entriesTotal } = this.state;
 
     const addEntry = () => {
-  
       createLexicalEntry({
-        variables: {id, entitiesMode},
-  
+        variables: { id, entitiesMode },
+
         update: (cache, { data: d }) => {
           if (!d.loading && !d.error) {
             const {
@@ -591,10 +587,10 @@ class P extends React.Component {
             cache.updateQuery(
               {
                 query: queryLexicalEntries,
-                variables: {...query_args, offset: 0, createdEntries: []}
+                variables: { ...query_args, offset: 0, createdEntries: [] }
               },
 
-              (data) => {
+              data => {
                 if (!loading && !error && data) {
                   const result = cloneDeep(data);
                   result.perspective.perspective_page.lexical_entries.unshift(lexicalentry);
@@ -622,7 +618,6 @@ class P extends React.Component {
             variables: query_args
           }
         ]
-        
       }).then(() => {
         resetSelection();
         this.setState({ entriesTotal: entriesTotal - selectedEntries.length + 1 });
@@ -632,6 +627,12 @@ class P extends React.Component {
     const onApprove = () => {
       openNewModal(ApproveModal, { perspectiveId: id, mode });
     };
+
+    /* new!!!!! */
+    const onSynchronize = () => {
+      openNewModal(SyncModal, { perspectiveId: id, columns: fields });
+    };
+    /* /new!!!!! */
 
     // join fields and columns
     // {
@@ -766,69 +767,72 @@ class P extends React.Component {
         {(mode === "edit" ||
           (mode === "publish" && isAuthenticated) ||
           (mode === "contributions" && isAuthenticated)) && (
-            <div className="lingvo-perspective-buttons">
-              {mode === "edit" && (allowedSync || isAdmin) && (
-                <Button
-                  icon={<i className="lingvo-icon lingvo-icon_refresh" />}
-                  content={this.context("Synchronize")}
-                  onClick={this.doSync}
-                  className="lingvo-button-green lingvo-perspective-button"
-                />
-              )}
-              {mode === "edit" && (
-                <Button
-                  icon={<i className="lingvo-icon lingvo-icon_add" />}
-                  content={this.context("Add lexical entry")}
-                  onClick={addEntry}
-                  className="lingvo-button-green lingvo-perspective-button"
-                />
-              )}
-              {mode === "edit" && (
-                <Button
-                  icon={<i className="lingvo-icon lingvo-icon_delete" />}
-                  content={this.context("Remove lexical entries")}
-                  onClick={this.removeEntries}
-                  disabled={selectedEntries.length < 1}
-                  className="lingvo-button-red lingvo-perspective-button"
-                />
-              )}
-              {mode === "edit" && (
-                <Button
-                  icon={<i className="lingvo-icon lingvo-icon_add" />}
-                  content={this.context("Merge lexical entries")}
-                  onClick={mergeEntries}
-                  disabled={selectedEntries.length < 2}
-                  className="lingvo-button-green lingvo-perspective-button"
-                />
-              )}
-              {mode === "publish" && isAuthenticated && (
-                <>
-                  <Button
-                    icon={<i className="lingvo-icon lingvo-icon_check" />}
-                    content={this.context("Publish Entities")}
-                    disabled={approveDisableCondition(lexicalEntries)}
-                    onClick={onApprove}
-                    className="lingvo-button-green lingvo-perspective-button"
-                  />
-                  <Button
-                    content={entitiesMode !== "unpublished" ? this.context("Show Unpublished Only") : this.context("Show All")}
-                    disabled={!entriesTotal}
-                    onClick={onUnpublishedOnly}
-                    className="lingvo-button-lite-violet lingvo-perspective-button"
-                  />
-                </>
-              )}
-              {mode === "contributions" && isAuthenticated && (
+          <div className="lingvo-perspective-buttons">
+            {mode === "edit" && (allowedSync || isAdmin) && (
+              <Button
+                icon={<i className="lingvo-icon lingvo-icon_refresh" />}
+                content={this.context("Synchronize")}
+                //onClick={this.doSync}
+                onClick={onSynchronize} // new!!!!!
+                className="lingvo-button-green lingvo-perspective-button"
+              />
+            )}
+            {mode === "edit" && (
+              <Button
+                icon={<i className="lingvo-icon lingvo-icon_add" />}
+                content={this.context("Add lexical entry")}
+                onClick={addEntry}
+                className="lingvo-button-green lingvo-perspective-button"
+              />
+            )}
+            {mode === "edit" && (
+              <Button
+                icon={<i className="lingvo-icon lingvo-icon_delete" />}
+                content={this.context("Remove lexical entries")}
+                onClick={this.removeEntries}
+                disabled={selectedEntries.length < 1}
+                className="lingvo-button-red lingvo-perspective-button"
+              />
+            )}
+            {mode === "edit" && (
+              <Button
+                icon={<i className="lingvo-icon lingvo-icon_add" />}
+                content={this.context("Merge lexical entries")}
+                onClick={mergeEntries}
+                disabled={selectedEntries.length < 2}
+                className="lingvo-button-green lingvo-perspective-button"
+              />
+            )}
+            {mode === "publish" && isAuthenticated && (
+              <>
                 <Button
                   icon={<i className="lingvo-icon lingvo-icon_check" />}
-                  content={this.context("Accept Contributions")}
+                  content={this.context("Publish Entities")}
                   disabled={approveDisableCondition(lexicalEntries)}
                   onClick={onApprove}
                   className="lingvo-button-green lingvo-perspective-button"
                 />
-              )}
-            </div>
-          )}
+                <Button
+                  content={
+                    entitiesMode !== "unpublished" ? this.context("Show Unpublished Only") : this.context("Show All")
+                  }
+                  disabled={!entriesTotal}
+                  onClick={onUnpublishedOnly}
+                  className="lingvo-button-lite-violet lingvo-perspective-button"
+                />
+              </>
+            )}
+            {mode === "contributions" && isAuthenticated && (
+              <Button
+                icon={<i className="lingvo-icon lingvo-icon_check" />}
+                content={this.context("Accept Contributions")}
+                disabled={approveDisableCondition(lexicalEntries)}
+                onClick={onApprove}
+                className="lingvo-button-green lingvo-perspective-button"
+              />
+            )}
+          </div>
+        )}
 
         <div className="lingvo-scrolling-tab__table">
           <Table celled padded className={`${className} lingvo-perspective-table`}>
@@ -875,7 +879,7 @@ class P extends React.Component {
           pageSize={ROWS_PER_PAGE}
           totalItems={entriesTotal}
           showTotal
-          onPageChanged={(newPage) => {
+          onPageChanged={newPage => {
             if (changePage) {
               changePage(newPage);
             }
@@ -936,7 +940,7 @@ const PerspectiveView = compose(
       selectedEntries,
       createdEntries: createdEntries.map(lex => lex.id),
       sortingField: sortByField?.field,
-      isAscending: (sortByField?.order === 'a')
+      isAscending: sortByField?.order === "a"
     }),
     dispatch =>
       bindActionCreators(
@@ -1078,7 +1082,7 @@ LexicalEntryViewBase.defaultProps = {
   actions: [],
   selectEntries: false,
   selectedEntries: [],
-  onEntrySelect: () => { }
+  onEntrySelect: () => {}
 };
 
 export const queryLexicalEntriesByIds = gql`
@@ -1201,9 +1205,19 @@ export const LexicalEntryByIds = compose(
   })
 )(LexicalEntryViewBaseByIds);
 
-const PerspectiveViewWrapper = ({ id, className, mode, entitiesMode, page, data,
-  filter, sortByField, isCaseSens, isRegexp, changePage }) => {
-
+const PerspectiveViewWrapper = ({
+  id,
+  className,
+  mode,
+  entitiesMode,
+  page,
+  data,
+  filter,
+  sortByField,
+  isCaseSens,
+  isRegexp,
+  changePage
+}) => {
   const [unpublishedOnly, setUnpublishedOnly] = useState(false);
 
   if (data.error) {
@@ -1239,7 +1253,7 @@ const PerspectiveViewWrapper = ({ id, className, mode, entitiesMode, page, data,
       id={id}
       className={className}
       mode={mode}
-      entitiesMode={mode==="publish" && unpublishedOnly ? "unpublished" : entitiesMode}
+      entitiesMode={mode === "publish" && unpublishedOnly ? "unpublished" : entitiesMode}
       page={page}
       limit={ROWS_PER_PAGE}
       offset={ROWS_PER_PAGE * (page - 1)}
