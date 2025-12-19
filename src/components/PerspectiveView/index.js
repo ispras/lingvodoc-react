@@ -35,24 +35,17 @@ const ModalContentWrapper = styled("div")`
   min-height: 15vh;
 `;
 
-export const queryListChanges = gql `
+// host: 'isp' or 'xal' for now
+// id: perspective_id to synchronize
+export const queryListChanges = gql`
   query listChanges(
-    $proxy: String,
-    $stamps: ObjectVal!
+    $host: String!,
+    $id: LingvodocID!
   ) {
     list_changes(
-      proxy: $proxy,
-      stamps: $stamps
-    ) {
-      language
-      dictionary
-      perspective {
-        lexical_entries {
-          entities
-        }
-      }
-    }
-
+      host: $host,
+      id: $id
+    )
   }
 `;
 
@@ -280,7 +273,9 @@ class P extends React.Component {
       checkedRow: null,
       checkedColumn: null,
       checkedAll: null,
-      entriesTotal: 0
+      entriesTotal: 0,
+      ispSyncData: {},
+      xalSyncData: {}
     };
 
     this.onCheckRow = this.onCheckRow.bind(this);
@@ -290,7 +285,7 @@ class P extends React.Component {
     this.onCheckAll = this.onCheckAll.bind(this);
     this.resetCheckedAll = this.resetCheckedAll.bind(this);
     this.removeEntries = this.removeEntries.bind(this);
-    //this.reRender = this.reRender.bind(this);
+    this.doSync = this.doSync.bind(this);
   }
 
   componentDidMount() {
@@ -477,6 +472,42 @@ class P extends React.Component {
     });
   };
 
+  /*
+  const mixChanges = (changes1, changes2) => {
+
+    const result = {languages: [[{note: 'Left note'}]]};
+
+    return result;
+
+  };
+  */
+
+  async doSync() {
+    // 1. Get changes from Core,
+    // 2. Get changes from Satellite,
+    // 3. Display changes,
+    // 4. Apply/Deny changes
+
+    const { client, id } = this.props;
+
+    const stampNew = Date.parse('2025-12-01T19:30:00Z');
+    const stampMid = Date.parse('2025-11-30T19:30:00Z');
+    const stampOld = Date.parse('2025-11-29T19:30:00Z');
+
+    const changes1 = {languages: [[stampMid, stampOld, {note: 'Changed before sync'}]]};
+    const changes2 = {languages: [[stampMid, stampNew, {note: 'Changed after sync'}]]};
+
+    await client.query({
+      query: queryListChanges,
+      variables: { host: 'isp', id }
+    }).then(({data: {list_changes: ispSyncData}}) => this.setState(ispSyncData));
+
+    await client.query({
+      query: queryListChanges,
+      variables: { host: 'xal', id }
+    }).then(({data: {list_changes: xalSyncData}}) => this.setState(xalSyncData));
+  };
+
   render() {
     const {
       id,
@@ -579,30 +610,6 @@ class P extends React.Component {
       });
     };
 
-    const doSync = () => {
-      // 1. Get changes from Core,
-      // 2. Get changes from Satellite,
-      // 3. Display changes,
-      // 4. Apply/Deny changes
-
-      const groupList = [selectedEntries];
-
-      mergeLexicalEntries({
-        variables: { groupList },
-
-        refetchQueries: [
-          {
-            query: queryLexicalEntries,
-            variables: query_args
-          }
-        ]
-
-      }).then(() => {
-        resetSelection();
-        this.setState({ entriesTotal: entriesTotal - selectedEntries.length + 1 });
-      });
-    };
-
     const mergeEntries = () => {
       const groupList = [selectedEntries];
 
@@ -653,6 +660,7 @@ class P extends React.Component {
     }
     /* eslint-enable no-shadow */
     const isAuthenticated = user?.user?.id;
+    const isAdmin = user?.user?.id === 1;
     const allowedSync = user?.user?.allowed_sync;
 
     const isTableLanguages = JSON.stringify(id) === JSON.stringify([4839, 2]);
@@ -759,11 +767,11 @@ class P extends React.Component {
           (mode === "publish" && isAuthenticated) ||
           (mode === "contributions" && isAuthenticated)) && (
             <div className="lingvo-perspective-buttons">
-              {mode === "edit" && allowedSync && (
+              {mode === "edit" && (allowedSync || isAdmin) && (
                 <Button
                   icon={<i className="lingvo-icon lingvo-icon_refresh" />}
                   content={this.context("Synchronize")}
-                  onClick={doSync}
+                  onClick={this.doSync}
                   className="lingvo-button-green lingvo-perspective-button"
                 />
               )}
@@ -1273,6 +1281,5 @@ export default compose(
   graphql(queryPerspective, {
     options: { notifyOnNetworkStatusChange: true }
   }),
-  graphql(queryListChanges, { name: "listChanges" }),
   branch(({ data: { loading } }) => loading, renderComponent(Placeholder))
 )(PerspectiveViewWrapper);
