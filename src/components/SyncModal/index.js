@@ -265,7 +265,7 @@ const SyncModal = ({ columns, onClose, perspectiveId }) => {
           //onClick={applySync}
           //loading={loadingApply}
           //disabled={errorApply}
-          className="lingvo-button-greenest"
+          className="lingvo-button-greenest lingvo-button-greenest_sync"
         />
 
         <Button content={getTranslation("Close")} onClick={onClose} className="lingvo-button-basic-black" />
