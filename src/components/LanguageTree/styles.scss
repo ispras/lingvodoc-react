@@ -137,7 +137,7 @@
     font-weight: 400;
 
     &_link:hover {
-      color: #5D54CD;
+      color: #5d54cd;
     }
   }
 
@@ -146,4 +146,20 @@
     font-style: italic;
     font-weight: normal;
   }
+
+  /* new!!!!!! */
+  &_remote {
+    & .dict-name {
+      color: #cecdcd;
+
+      &_link:hover {
+        color: #a3a1bc;
+      }
+    }
+
+    & .dict-authors {
+      color: #cecdcd;
+    }
+  }
+  /* /new!!!!!! */
 }

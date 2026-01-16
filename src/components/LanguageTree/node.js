@@ -82,7 +82,8 @@ const LangNode = ({
           const authors = dictionary.additional_metadata.authors;
           const perspectives = dictionary.perspectives;
           return (
-            <li key={index} className="node_dict">
+            /*<li key={index} className="node_dict ">*/ /* new!!!!! */
+            <li key={index} className={`node_dict${index % 2 == 1 ? " node_dict_remote" : ""}`}>
               {(config.buildType === "desktop" || config.buildType === "proxy") && signedIn && (
                 <Checkbox
                   defaultChecked={selected.includes(dictionary.id)}
@@ -158,7 +159,6 @@ const LangNode = ({
                   </Dropdown.Menu>
                 </Dropdown>
               )}
-
               {authors && authors.length !== 0 && <span className="dict-authors">({authors.join(", ")})</span>}
               {config.buildType === "server" && signedIn && dictionary.english_status === "Published" && (
                 <Popup
@@ -168,13 +168,23 @@ const LangNode = ({
                   hideOnScroll={true}
                 />
               )}
-
               {/* new!!!!!! */}
-              <Button
-                icon={<i className="lingvo-icon lingvo-icon_refresh" />}
-                onClick={() => onSynchronize(dictionary.id, dictionaries)}
-                className="lingvo-button-green lingvo-perspective-button"
-              />
+
+              {(index % 2 == 1 && (
+                <>
+                  <Button
+                    icon={<i className="lingvo-icon lingvo-icon_refresh" />}
+                    //onClick={showSyncConfirm}
+                    className="lingvo-button-green lingvo-perspective-button"
+                  />
+                </>
+              )) || (
+                <Button
+                  icon={<i className="lingvo-icon lingvo-icon_refresh" />}
+                  onClick={() => onSynchronize(dictionary.id, dictionaries)}
+                  className="lingvo-button-green lingvo-perspective-button"
+                />
+              )}
               {/* /new!!!!!! */}
             </li>
           );
