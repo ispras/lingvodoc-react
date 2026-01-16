@@ -1,24 +1,32 @@
-import React from "react";
-import { useSelector } from "react-redux";
+import React, { useState } from "react";
+import { connect, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { Checkbox, Dropdown, Header, Icon, Popup } from "semantic-ui-react";
+import { Button, Checkbox, Confirm, Dropdown, Header, Icon, Popup } from "semantic-ui-react";
 import PropTypes from "prop-types";
+import { compose } from "recompose";
+import { bindActionCreators } from "redux";
 
 import { chooseTranslation } from "api/i18n";
 // eslint-disable-next-line import/no-unresolved
 import config from "config";
 import { useTranslations } from "hooks";
 import { compositeIdToString } from "utils/compositeId";
+import SyncModal from "components/SyncModal"; // new!!!!!!
+
+import { openModal } from "ducks/modals"; // new!!!!!
 
 /** Language tree node of a language. */
-export const LanguageNode = ({
+/*export const LanguageNode = ({*/
+/* new!!!!! */
+const LangNode = ({
   node,
   languageMap,
   dictionaryIdSet,
   dictionaryIdSetReverse,
   selected,
   setSelected,
-  proxyData
+  proxyData,
+  openModal: openNewModal /* new!!!!! */
 }) => {
   const { getTranslation, chooseTranslation } = useTranslations();
   const user = useSelector(state => state.user.user);
@@ -42,6 +50,14 @@ export const LanguageNode = ({
         return dictionaryIdSetReverse ? !check : check;
       })
     : language.dictionaries;
+
+  /* new!!!!! */
+  const onSynchronize = (id, fields) => {
+    //console.log("!!!!!!!");
+    //console.log(openModal);
+    openNewModal(SyncModal, { perspectiveId: id, columns: fields });
+  };
+  /* /new!!!!! */
 
   return (
     <li className="node_lang" id={`language_${languageId}`}>
@@ -91,7 +107,7 @@ export const LanguageNode = ({
                 <Dropdown
                   icon={null}
                   trigger={
-                    <span className={perspectives.length && "dict-name dict-name_link" || "dict-name"}>
+                    <span className={(perspectives.length && "dict-name dict-name_link") || "dict-name"}>
                       {dictionary.translations && chooseTranslation(dictionary.translations)} ({perspectives.length})
                     </span>
                   }
@@ -101,7 +117,10 @@ export const LanguageNode = ({
                     {perspectives.map(perspective => {
                       const permissions = proxyData ? proxyData.permission_lists : undefined;
 
-                      if (!perspective.translations || (perspective.translations && !chooseTranslation(perspective.translations))) {
+                      if (
+                        !perspective.translations ||
+                        (perspective.translations && !chooseTranslation(perspective.translations))
+                      ) {
                         return;
                       }
 
@@ -129,7 +148,8 @@ export const LanguageNode = ({
                           )}
                           {perspective.translations && (
                             <>
-                              <i className="lingvo-icon lingvo-icon_table" />{chooseTranslation(perspective.translations)}
+                              <i className="lingvo-icon lingvo-icon_table" />
+                              {chooseTranslation(perspective.translations)}
                             </>
                           )}
                         </Dropdown.Item>
@@ -138,17 +158,24 @@ export const LanguageNode = ({
                   </Dropdown.Menu>
                 </Dropdown>
               )}
+
               {authors && authors.length !== 0 && <span className="dict-authors">({authors.join(", ")})</span>}
               {config.buildType === "server" && signedIn && dictionary.english_status === "Published" && (
                 <Popup
-                  trigger={
-                    <i className="lingvo-icon lingvo-icon_published" />
-                  }
+                  trigger={<i className="lingvo-icon lingvo-icon_published" />}
                   content={publishedStr}
                   className="lingvo-popup lingvo-popup_published"
                   hideOnScroll={true}
                 />
               )}
+
+              {/* new!!!!!! */}
+              <Button
+                icon={<i className="lingvo-icon lingvo-icon_refresh" />}
+                onClick={() => onSynchronize(dictionary.id, dictionaries)}
+                className="lingvo-button-green lingvo-perspective-button"
+              />
+              {/* /new!!!!!! */}
             </li>
           );
         })}
@@ -156,6 +183,16 @@ export const LanguageNode = ({
     </li>
   );
 };
+
+/* new!!!!!! */
+
+/*LangNode.propTypes = {
+  openModal: PropTypes.func.isRequired
+};*/
+
+export const LanguageNode = compose(connect(null, dispatch => bindActionCreators({ openModal }, dispatch)))(LangNode);
+
+/* /new!!!!!! */
 
 /** Language tree node of a grant. */
 export const GrantNode = ({
