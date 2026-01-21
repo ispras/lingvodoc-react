@@ -1,12 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import { connect, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { Button, Checkbox, Confirm, Dropdown, Header, Icon, Popup } from "semantic-ui-react";
-import PropTypes from "prop-types";
-import { compose } from "recompose";
+import { Button, Checkbox, Dropdown, Header, Icon, Popup } from "semantic-ui-react";
 import { bindActionCreators } from "redux";
 
-import { chooseTranslation } from "api/i18n";
 // eslint-disable-next-line import/no-unresolved
 import config from "config";
 import { useTranslations } from "hooks";
@@ -14,6 +11,7 @@ import { compositeIdToString } from "utils/compositeId";
 import SyncModal from "components/SyncModal"; // new!!!!!!
 
 import { openModal } from "ducks/modals"; // new!!!!!
+import { openModal as openConfirmModal } from "ducks/confirm"; // new!!!!!
 
 /** Language tree node of a language. */
 /*export const LanguageNode = ({*/
@@ -26,6 +24,7 @@ const LangNode = ({
   selected,
   setSelected,
   proxyData,
+  openConfirmModal /* new!!!!! */,
   openModal: openNewModal /* new!!!!! */
 }) => {
   const { getTranslation, chooseTranslation } = useTranslations();
@@ -53,8 +52,6 @@ const LangNode = ({
 
   /* new!!!!! */
   const onSynchronize = (id, fields) => {
-    //console.log("!!!!!!!");
-    //console.log(openModal);
     openNewModal(SyncModal, { perspectiveId: id, columns: fields });
   };
   /* /new!!!!! */
@@ -169,20 +166,24 @@ const LangNode = ({
                 />
               )}
               {/* new!!!!!! */}
-
               {(index % 2 == 1 && (
-                <>
-                  <Button
-                    icon={<i className="lingvo-icon lingvo-icon_refresh" />}
-                    //onClick={showSyncConfirm}
-                    className="lingvo-button-green lingvo-perspective-button"
-                  />
-                </>
+                <Button
+                  icon={<i className="lingvo-icon lingvo-icon_refresh" />}
+                  onClick={() =>
+                    openConfirmModal(
+                      `${getTranslation("Словарь Такой-то -> такой-то будет загружен с центрального сервера")}?`,
+                      () => {
+                        console.log("Загружаем словарь");
+                      }
+                    )
+                  }
+                  className="lingvo-button-green lingvo-lang-tree-button"
+                />
               )) || (
                 <Button
                   icon={<i className="lingvo-icon lingvo-icon_refresh" />}
                   onClick={() => onSynchronize(dictionary.id, dictionaries)}
-                  className="lingvo-button-green lingvo-perspective-button"
+                  className="lingvo-button-green lingvo-lang-tree-button"
                 />
               )}
               {/* /new!!!!!! */}
@@ -196,11 +197,9 @@ const LangNode = ({
 
 /* new!!!!!! */
 
-/*LangNode.propTypes = {
-  openModal: PropTypes.func.isRequired
-};*/
-
-export const LanguageNode = compose(connect(null, dispatch => bindActionCreators({ openModal }, dispatch)))(LangNode);
+export const LanguageNode = connect(null, dispatch => bindActionCreators({ openModal, openConfirmModal }, dispatch))(
+  LangNode
+);
 
 /* /new!!!!!! */
 
