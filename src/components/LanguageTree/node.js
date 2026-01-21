@@ -8,14 +8,13 @@ import { bindActionCreators } from "redux";
 import config from "config";
 import { useTranslations } from "hooks";
 import { compositeIdToString } from "utils/compositeId";
-import SyncModal from "components/SyncModal"; // new!!!!!!
+import SyncModal from "components/SyncModal";
 
-import { openModal } from "ducks/modals"; // new!!!!!
-import { openModal as openConfirmModal } from "ducks/confirm"; // new!!!!!
+import { openModal } from "ducks/modals";
+import { openModal as openConfirmModal } from "ducks/confirm";
 
 /** Language tree node of a language. */
-/*export const LanguageNode = ({*/
-/* new!!!!! */
+
 const LangNode = ({
   node,
   languageMap,
@@ -24,8 +23,8 @@ const LangNode = ({
   selected,
   setSelected,
   proxyData,
-  openConfirmModal /* new!!!!! */,
-  openModal: openNewModal /* new!!!!! */
+  openConfirmModal,
+  openModal: openNewModal
 }) => {
   const { getTranslation, chooseTranslation } = useTranslations();
   const user = useSelector(state => state.user.user);
@@ -50,11 +49,9 @@ const LangNode = ({
       })
     : language.dictionaries;
 
-  /* new!!!!! */
   const onSynchronize = (id, fields) => {
     openNewModal(SyncModal, { perspectiveId: id, columns: fields });
   };
-  /* /new!!!!! */
 
   return (
     <li className="node_lang" id={`language_${languageId}`}>
@@ -79,7 +76,6 @@ const LangNode = ({
           const authors = dictionary.additional_metadata.authors;
           const perspectives = dictionary.perspectives;
           return (
-            /*<li key={index} className="node_dict ">*/ /* new!!!!! */
             <li key={index} className={`node_dict${index % 2 == 1 ? " node_dict_remote" : ""}`}>
               {(config.buildType === "desktop" || config.buildType === "proxy") && signedIn && (
                 <Checkbox
@@ -165,7 +161,7 @@ const LangNode = ({
                   hideOnScroll={true}
                 />
               )}
-              {/* new!!!!!! */}
+
               {(index % 2 == 1 && (
                 <Button
                   icon={<i className="lingvo-icon lingvo-icon_refresh" />}
@@ -174,7 +170,9 @@ const LangNode = ({
                       `${getTranslation("Словарь Такой-то -> такой-то будет загружен с центрального сервера")}?`,
                       () => {
                         console.log("Загружаем словарь");
-                      }
+                      },
+                      getTranslation("Yes"),
+                      getTranslation("No")
                     )
                   }
                   className="lingvo-button-green lingvo-lang-tree-button"
@@ -186,7 +184,6 @@ const LangNode = ({
                   className="lingvo-button-green lingvo-lang-tree-button"
                 />
               )}
-              {/* /new!!!!!! */}
             </li>
           );
         })}
@@ -195,13 +192,9 @@ const LangNode = ({
   );
 };
 
-/* new!!!!!! */
-
 export const LanguageNode = connect(null, dispatch => bindActionCreators({ openModal, openConfirmModal }, dispatch))(
   LangNode
 );
-
-/* /new!!!!!! */
 
 /** Language tree node of a grant. */
 export const GrantNode = ({
