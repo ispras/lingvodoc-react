@@ -148,6 +148,11 @@
   }
 
   /* new!!!!!! */
+
+  & .lingvo-icon_published {
+    vertical-align: middle !important;
+  }
+
   &_remote {
     & .dict-name {
       color: #cecdcd;
@@ -163,3 +168,16 @@
   }
   /* /new!!!!!! */
 }
+
+/* new!!!!!! */
+.lingvo-lang-tree-button {
+  margin: 0 0 0 7px !important;
+  background-color: transparent !important;
+  border: 1px solid transparent !important;
+  padding: 0px 5px !important;
+
+  & .lingvo-icon {
+    margin-right: 0 !important;
+  }
+}
+/* /new!!!!!! */
