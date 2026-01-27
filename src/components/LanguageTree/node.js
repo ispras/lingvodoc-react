@@ -53,6 +53,9 @@ const LangNode = ({
     openNewModal(SyncModal, { perspectiveId: id, columns: fields });
   };
 
+  const proxy = (config.buildType === "desktop" || config.buildType === "proxy");
+  const permissions = proxy ? proxyData?.permission_lists : undefined;
+
   return (
     <li className="node_lang" id={`language_${languageId}`}>
       <span className={langClass}>{language.translations && chooseTranslation(language.translations)}</span>
@@ -109,7 +112,6 @@ const LangNode = ({
                 >
                   <Dropdown.Menu>
                     {perspectives.map(perspective => {
-                      const permissions = proxyData ? proxyData.permission_lists : undefined;
 
                       if (
                         !perspective.translations ||
@@ -118,29 +120,32 @@ const LangNode = ({
                         return;
                       }
 
+                      const view = !! (
+                        permissions?.view.find(p => compositeIdToString(p.id) === compositeIdToString(perspective.id)));
+                      const edit = !! (
+                        permissions?.edit.find(p => compositeIdToString(p.id) === compositeIdToString(perspective.id)));
+                      const publish = !! (
+                        permissions?.publish.find(p => compositeIdToString(p.id) === compositeIdToString(perspective.id)));
+                      const limited = !! (
+                        permissions?.limited.find(p => compositeIdToString(p.id) === compositeIdToString(perspective.id)));
+
                       return (
                         <Dropdown.Item
                           key={compositeIdToString(perspective.id)}
                           as={Link}
                           to={`/dictionary/${dictionary.id.join("/")}/perspective/${perspective.id.join("/")}`}
                         >
-                          {(config.buildType === "desktop" || config.buildType === "proxy") && (
+                          {permissions && (
                             <span>
-                              {permissions.view.find(
-                                p => compositeIdToString(p.id) !== compositeIdToString(perspective.id)
-                              ) !== undefined && <Icon name="book" />}
-                              {permissions.edit.find(
-                                p => compositeIdToString(p.id) !== compositeIdToString(perspective.id)
-                              ) !== undefined && <Icon name="edit" />}
-                              {permissions.publish.find(
-                                p => compositeIdToString(p.id) !== compositeIdToString(perspective.id)
-                              ) !== undefined && <Icon name="external share" />}
-                              {permissions.limited.find(
-                                p => compositeIdToString(p.id) !== compositeIdToString(perspective.id)
-                              ) !== undefined && <Icon name="privacy" />}
+                              {view && <Icon name="book" />}
+                              {edit && <Icon name="edit" />}
+                              {publish && <Icon name="external share" />}
+                              {limited && <Icon name="privacy" />}
                             </span>
                           )}
-                          {perspective.translations && (
+
+                          {(!permissions || permissions && (view || edit || publish || limited))
+                            && perspective.translations && (
                             <>
                               <i className="lingvo-icon lingvo-icon_table" />
                               {chooseTranslation(perspective.translations)}
@@ -162,6 +167,7 @@ const LangNode = ({
                 />
               )}
 
+              {/*(user.id === 1 || user.allowed_sync)*/}
               {(index % 2 == 1 && (
                 <Button
                   icon={<i className="lingvo-icon lingvo-icon_refresh" />}

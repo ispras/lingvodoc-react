@@ -130,7 +130,7 @@ export const languagesQuery = gql`
 `;
 
 export const proxyDictionaryInfo = gql`
-  query ProxyDictionaryInfo($proxy: Boolean, $category: Int) {
+  query ProxyDictionaryInfo($proxy: Boolean!, $category: Int) {
     dictionaries(proxy: false, published: true, category: $category) {
       id
     }

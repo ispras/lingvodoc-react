@@ -9,7 +9,7 @@ import TranslationContext from "Layout/TranslationContext";
 
 import "./styles.scss";
 
-const SyncModal = ({ columns, onClose, perspectiveId }) => {
+const SyncModal = ({ columns, onClose, applySync, perspectiveId }) => {
   const getTranslation = useContext(TranslationContext);
 
   /*const [applySync, { error: errorApply, loading: loadingApply }] = useLazyQuery(GET_TWINS_XLSX, {
@@ -262,7 +262,7 @@ const SyncModal = ({ columns, onClose, perspectiveId }) => {
         </div>
         <Button
           content={getTranslation("Apply")}
-          //onClick={applySync}
+          onClick={applySync}
           //loading={loadingApply}
           //disabled={errorApply}
           className="lingvo-button-greenest lingvo-button-greenest_sync"

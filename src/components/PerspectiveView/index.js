@@ -36,11 +36,11 @@ const ModalContentWrapper = styled("div")`
   min-height: 15vh;
 `;
 
-// host: 'isp' or 'xal' for now
+// remote: 'isp' or 'xal' for now
 // id: perspective_id to synchronize
 export const queryListChanges = gql`
-  query listChanges($host: String!, $id: LingvodocID!) {
-    list_changes(host: $host, id: $id)
+  query listChanges($remote: String!, $perspective_id: LingvodocID!) {
+    list_changes(remote: $remote, perspective_id: $perspective_id)
   }
 `;
 
@@ -493,16 +493,28 @@ class P extends React.Component {
     await client
       .query({
         query: queryListChanges,
-        variables: { host: "isp", id }
+        variables: { remote: "isp", perspective_id: id }
       })
-      .then(({ data: { list_changes: ispSyncData } }) => this.setState(ispSyncData));
+      .then(
+        ({ data: { list_changes: ispSyncData } }) => {
+          this.setState(ispSyncData);
+          console.log(`Possible errors: ${ispSyncData.errors}`);
+        }
+      );
 
+    /*
     await client
       .query({
         query: queryListChanges,
-        variables: { host: "xal", id }
+        variables: { remote: "xal", perspective_id: id }
       })
-      .then(({ data: { list_changes: xalSyncData } }) => this.setState(xalSyncData));
+      .then(
+        ({ data: { list_changes: xalSyncData } }) => {
+          this.setState(xalSyncData);
+          console.log(`Possible errors: ${xalSyncData.errors}`);
+        }
+      );
+    */
   }
 
   render() {
@@ -630,7 +642,7 @@ class P extends React.Component {
 
     /* new!!!!! */
     const onSynchronize = () => {
-      openNewModal(SyncModal, { perspectiveId: id, columns: fields });
+      openNewModal(SyncModal, { perspectiveId: id, columns: fields, applySync: this.doSync });
     };
     /* /new!!!!! */
 
