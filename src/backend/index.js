@@ -201,6 +201,30 @@ export const synchronizeMutation = gql`
   }
 `;
 
+export const applySyncMutation = gql`
+  mutation ApplySync(
+        $perspectiveId: LingvodocID!
+        $foreignChanges: ObjectVal!
+        $remote: String!
+        $debugFlag: Boolean
+) {
+    apply_sync(
+        perspective_id: $perspectiveId
+        foreign_changes: $foreignChanges
+        remote: $remote
+        debug_flag: $debugFlag) {
+      message
+      triumph
+    }
+  }
+`;
+
+export const queryListChanges = gql`
+  query listChanges($remote: String!, $perspectiveId: LingvodocID!) {
+    list_changes(remote: $remote, perspective_id: $perspectiveId)
+  }
+`;
+
 export const updateLanguageAtomMutation = gql`
   mutation updateAtom($id: LingvodocID!, $atom_id: LingvodocID, $locale_id: Int!, $content: String!) {
     update_language_atom(id: $id, atom_id: $atom_id, locale_id: $locale_id, content: $content) {
