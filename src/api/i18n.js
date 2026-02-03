@@ -848,6 +848,7 @@ export const stringsToTranslate = [
   "Select Language for",
   "Select language for the new dictionary",
   "Select languages",
+  "Select months",
   "Select Parent Language",
   "Select parser",
   "Select settlement",

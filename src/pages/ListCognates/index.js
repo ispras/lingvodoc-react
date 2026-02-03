@@ -1,5 +1,5 @@
 import { connect } from "react-redux";
-import { Button, Checkbox, Dimmer, Dropdown, Icon, Input, Label, Loader, Message, Segment } from "semantic-ui-react";
+import { Button, Checkbox, Dropdown, Input, Label, Loader, Message, Segment } from "semantic-ui-react";
 import { gql, useMutation } from "@apollo/client";
 import React, { useContext, useState, useEffect } from "react";
 
@@ -42,9 +42,9 @@ const ListCognates = connect(state => state.user)(({ user }) => {
   const [shownParentGroup, showParentGroup] = useState(false);
   const [shownLanguagePosition, showLanguagePosition] = useState(false);
 
-  const [sMonths, setSMonths] = useState([]); // new!!!!!
-  const [sYears, setSYears] = useState([]); // new!!!!!
-  const [severalYears, setSeveralYears] = useState(false); // new!!!!!
+  const [sMonths, setSMonths] = useState([]);
+  const [sYears, setSYears] = useState([]);
+  const [severalYears, setSeveralYears] = useState(false);
 
   const [getCognatesSummary, { data, error, loading }] = useMutation(cognatesSummaryMutation);
 
@@ -53,8 +53,8 @@ const ListCognates = connect(state => state.user)(({ user }) => {
 
   const debugFlag = false;
 
-  const selectedMonths = (!severalYears && sMonths && sMonths.length && sMonths.join("|")) || `\w{3}`; // new!!!!!
-  const selectedYears = (sYears && sYears.length && sYears.join("|")) || `\d{4}`; // new!!!!!
+  const selectedMonths = (!severalYears && sMonths && sMonths.length && sMonths.join("|")) || `\w{3}`;
+  const selectedYears = (sYears && sYears.length && sYears.join("|")) || `\d{4}`;
 
   const runMutation = () => {
     getCognatesSummary({
@@ -64,16 +64,14 @@ const ListCognates = connect(state => state.user)(({ user }) => {
         languageTitle,
         perspectiveOffset,
         perspectiveLimit,
-        selectedMonths /* new!!!!!! */,
-        selectedYears /* new!!!!!! */,
+        selectedMonths,
+        selectedYears,
         debugFlag
       }
     });
   };
 
   const fail = !data || !data.cognates_summary.triumph;
-
-  /* new!!!!! */
 
   const startYear = 2017;
   const currentYear = new Date().getFullYear();
@@ -107,8 +105,6 @@ const ListCognates = connect(state => state.user)(({ user }) => {
   console.log(selectedMonths);
   console.log("selectedYears=====");
   console.log(selectedYears);
-
-  /* /new!!!!! */
 
   return (
     <div className="background-content">
@@ -221,7 +217,6 @@ const ListCognates = connect(state => state.user)(({ user }) => {
                 style={{ width: 100, maxWidth: "40%" }}
               />
               <p />
-              {/*  new!!!!!!!! */}
               <Dropdown
                 placeholder={getTranslation("Select months")}
                 fluid
@@ -259,7 +254,6 @@ const ListCognates = connect(state => state.user)(({ user }) => {
                   }
                 }}
               />
-              {/*  /new!!!!!!!! */}
             </div>
           )}
           <p />
