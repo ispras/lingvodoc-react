@@ -95,17 +95,6 @@ const ListCognates = connect(state => state.user)(({ user }) => {
     { key: "December", text: "December", value: "Dec" }
   ];
 
-  console.log("sMonths=====");
-  console.log(sMonths);
-
-  console.log("sYears=====");
-  console.log(sYears);
-
-  console.log("selectedMonths=====");
-  console.log(selectedMonths);
-  console.log("selectedYears=====");
-  console.log(selectedYears);
-
   return (
     <div className="background-content">
       {user.id === undefined && !loading ? (
