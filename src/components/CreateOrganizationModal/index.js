@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useState, useContext } from "react";
 import { connect } from "react-redux";
 import { Button, Modal } from "semantic-ui-react";
 import { gql } from "@apollo/client";
@@ -12,35 +12,23 @@ import Translations from "components/Translation2";
 import { closeModal as closeCreateOrganizationModal } from "ducks/createOrganization";
 import TranslationContext from "Layout/TranslationContext";
 import { organizationsQuery } from "pages/Organizations";
-import { compositeIdToString } from "utils/compositeId";
 
 import "./style.scss";
 
-class CreateOrganizationModal extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      translations: [],
-      translations_about: []
-    };
+const CreateOrganizationModal = ({ visible, closeCreateOrganizationModal, createOrganization }) => {
+  const getTranslation = useContext(TranslationContext);
 
-    this.saveOrganization = this.saveOrganization.bind(this);
-    this.isSaveDisabled = this.isSaveDisabled.bind(this);
-  }
+  const [translations, setTranslations] = useState([]);
+  const [translationsAbout, setTranslationsAbout] = useState([]);
 
-  isSaveDisabled() {
-    return (
-      this.state.translations.length === 0 ||
-      every(this.state.translations, translation => translation.content.length === 0)
-    );
-  }
+  const isSaveDisabled = useCallback(() => {
+    return translations.length === 0 || every(translations, translation => translation.content.length === 0);
+  }, [translations]);
 
-  saveOrganization() {
-    const { createOrganization, closeCreateOrganizationModal } = this.props;
+  const saveOrganization = useCallback(() => {
+    const translationAtoms = translations.map(t => ({ locale_id: t.localeId, content: t.content }));
 
-    const translationAtoms = this.state.translations.map(t => ({ locale_id: t.localeId, content: t.content }));
-
-    const translationAtomsAbout = this.state.translations_about.map(t => ({
+    const translationAtomsAbout = translationsAbout.map(t => ({
       locale_id: t.localeId,
       content: t.content
     }));
@@ -56,46 +44,41 @@ class CreateOrganizationModal extends React.Component {
     }).then(({ data }) => {
       closeCreateOrganizationModal();
     });
+  }, [translations, translationsAbout]);
+
+  if (!visible) {
+    return null;
   }
 
-  render() {
-    const { visible, closeCreateOrganizationModal } = this.props;
+  return (
+    <Modal closeIcon onClose={closeCreateOrganizationModal} dimmer open className="lingvo-modal2">
+      <Modal.Header>{getTranslation("New organization")}</Modal.Header>
 
-    if (!visible) {
-      return null;
-    }
+      <Modal.Content>
+        <h4 className="lingvo-org-translation__header">{getTranslation("Organization name")}</h4>
+        <Translations onChange={translations => setTranslations(translations)} />
 
-    return (
-      <Modal closeIcon onClose={closeCreateOrganizationModal} dimmer open className="lingvo-modal2">
-        <Modal.Header>{this.context("New organization")}</Modal.Header>
+        <h4 className="lingvo-org-translation__header">{getTranslation("About the organization")}</h4>
+        <Translations onChange={translationsAbout => setTranslationsAbout(translationsAbout)} textArea={true} />
+      </Modal.Content>
 
-        <Modal.Content>
-          <h4 className="lingvo-org-translation__header">{this.context("Organization name")}</h4>
-          <Translations onChange={translations => this.setState({ translations })} />
+      <Modal.Actions>
+        <Button
+          content={getTranslation("Save")}
+          onClick={saveOrganization}
+          disabled={isSaveDisabled()}
+          className="lingvo-button-violet"
+        />
 
-          <h4 className="lingvo-org-translation__header">{this.context("About the organization")}</h4>
-          <Translations onChange={translations_about => this.setState({ translations_about })} textArea={true} />
-        </Modal.Content>
-
-        <Modal.Actions>
-          <Button
-            content={this.context("Save")}
-            onClick={this.saveOrganization}
-            disabled={this.isSaveDisabled()}
-            className="lingvo-button-violet"
-          />
-          <Button
-            content={this.context("Cancel")}
-            onClick={closeCreateOrganizationModal}
-            className="lingvo-button-basic-black"
-          />
-        </Modal.Actions>
-      </Modal>
-    );
-  }
-}
-
-CreateOrganizationModal.contextType = TranslationContext;
+        <Button
+          content={getTranslation("Cancel")}
+          onClick={closeCreateOrganizationModal}
+          className="lingvo-button-basic-black"
+        />
+      </Modal.Actions>
+    </Modal>
+  );
+};
 
 CreateOrganizationModal.propTypes = {
   closeCreateOrganizationModal: PropTypes.func.isRequired,
