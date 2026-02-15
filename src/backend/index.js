@@ -218,8 +218,8 @@ export const applySyncMutation = gql`
 `;
 
 export const queryListChanges = gql`
-  query listChanges($remote: String!, $perspectiveId: LingvodocID!) {
-    list_changes(remote: $remote, perspective_id: $perspectiveId)
+  query listChanges($remote: String!, $perspectiveId: LingvodocID!, $debugFlag: Boolean) {
+    list_changes(remote: $remote, perspective_id: $perspectiveId, debug_flag: $debugFlag)
   }
 `;
 
