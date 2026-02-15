@@ -40,7 +40,10 @@ const SyncModal = ({ columns, onClose, perspectiveId, foreignChanges }) => {
   const [applySync, { error: errorApply, loading: loadingApply }] = useMutation(
     applySyncMutation, {
       variables: { perspectiveId, remote: 'xal', debugFlag: true },
-      //onCompleted: data => setXlsxUrl(data?.twins_xlsx)
+      onCompleted: ({data: {apply_sync: {triumph, message} }}) => {
+        if (message)
+          console.log(message)
+      }
   });
 
   useEffect(() => {
