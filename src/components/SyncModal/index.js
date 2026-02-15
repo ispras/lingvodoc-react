@@ -40,7 +40,7 @@ const SyncModal = ({ columns, onClose, perspectiveId, foreignChanges }) => {
   const [applySync, { error: errorApply, loading: loadingApply }] = useMutation(
     applySyncMutation, {
       variables: { perspectiveId, remote: 'xal', debugFlag: true },
-      onCompleted: ({data: {apply_sync: {triumph, message} }}) => {
+      onCompleted: ({apply_sync: {triumph, message}}) => {
         if (message)
           console.log(message)
       }
