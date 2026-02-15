@@ -22,7 +22,8 @@ const SyncModal = ({ columns, onClose, perspectiveId, foreignChanges }) => {
     onCompleted: ({ list_changes: ispSyncData }) => {
       setIspSyncData(ispSyncData);
       console.log(`Possible errors: ${ispSyncData.errors}`);
-    }
+    },
+    fetchPolicy: "network-only"
   });
 
   const { error: xalSyncError, loading: xalSyncLoading } = useQuery(queryListChanges, {
@@ -30,25 +31,15 @@ const SyncModal = ({ columns, onClose, perspectiveId, foreignChanges }) => {
     onCompleted: ({ list_changes: xalSyncData }) => {
       setXalSyncData(xalSyncData);
       console.log(`Possible errors: ${xalSyncData.errors}`);
-    }
+    },
+    fetchPolicy: "network-only"
   });
 
-  const [applyIspSync, { error: errorIspApply, loading: loadingIspApply }] = useMutation(
+  const [applySync, { error: errorApply, loading: loadingApply }] = useMutation(
     applySyncMutation, {
-      variables: { perspectiveId, foreignChanges: xalSyncData, remote: 'isp', debugFlag: true },
+      variables: { perspectiveId, remote: 'xal', debugFlag: true },
       //onCompleted: data => setXlsxUrl(data?.twins_xlsx)
   });
-
-  const [applyXalSync, { error: errorXalApply, loading: loadingXalApply }] = useMutation(
-    applySyncMutation, {
-      variables: { perspectiveId, foreignChanges: ispSyncData, remote: 'xal', debugFlag: true },
-      //onCompleted: data => setXlsxUrl(data?.twins_xlsx)
-  });
-
-  const applySync = () => {
-    applyIspSync();
-    applyXalSync();
-  };
 
   const dataCore = {
     languages: [
@@ -294,10 +285,31 @@ const SyncModal = ({ columns, onClose, perspectiveId, foreignChanges }) => {
           </div>
         </div>
         <Button
-          content={getTranslation("Apply")}
-          onClick={applySync}
+          content={
+            (ispSyncLoading || xalSyncLoading) ? (
+              <span>
+                {getTranslation("Loading")}... <Icon name="spinner" loading />
+              </span>
+            ) : loadingApply ? (
+              <span>
+                {getTranslation("Applying")}... <Icon name="spinner" loading />
+              </span>
+            ) : getTranslation("Apply")
+          }
+          onClick={
+            () => {
+              applySync();
+              onClose();
+            }
+          }
           //loading={loadingApply}
-          //disabled={errorApply}
+          disabled={
+            ispSyncLoading ||
+            xalSyncLoading ||
+            ispSyncError ||
+            xalSyncError ||
+            loadingApply
+          }
           className="lingvo-button-greenest lingvo-button-greenest_sync"
         />
 

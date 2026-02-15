@@ -204,13 +204,11 @@ export const synchronizeMutation = gql`
 export const applySyncMutation = gql`
   mutation ApplySync(
         $perspectiveId: LingvodocID!
-        $foreignChanges: ObjectVal!
         $remote: String!
         $debugFlag: Boolean
 ) {
     apply_sync(
         perspective_id: $perspectiveId
-        foreign_changes: $foreignChanges
         remote: $remote
         debug_flag: $debugFlag) {
       message
