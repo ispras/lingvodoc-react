@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { useMutation } from "hooks";
 import { useQuery, useLazyQuery, gql } from "@apollo/client";
 import { Button, Dimmer, Header, Icon, Message, Modal, Popup, Table } from "semantic-ui-react";
@@ -16,6 +16,7 @@ const SyncModal = ({ columns, onClose, perspectiveId, foreignChanges }) => {
 
   const [ ispSyncData, setIspSyncData ] = useState(null);
   const [ xalSyncData, setXalSyncData ] = useState(null);
+  const [ applied, setApplied ] = useState(false);
 
   const { error: ispSyncError, loading: ispSyncLoading } = useQuery(queryListChanges, {
     variables: { remote: "isp", perspectiveId },
@@ -40,6 +41,12 @@ const SyncModal = ({ columns, onClose, perspectiveId, foreignChanges }) => {
       variables: { perspectiveId, remote: 'xal', debugFlag: true },
       //onCompleted: data => setXlsxUrl(data?.twins_xlsx)
   });
+
+  useEffect(() => {
+    if (applied && !loadingApply && !errorApply) {
+      onClose();
+    }
+  }, [applied, loadingApply, errorApply]);
 
   const dataCore = {
     languages: [
@@ -157,13 +164,13 @@ const SyncModal = ({ columns, onClose, perspectiveId, foreignChanges }) => {
       <Modal.Content>
         <div className="sync-content">
           <div className="sync-content__table">
-            {(ispSyncLoading /*|| xalSyncLoading*/) ? (
+            {(ispSyncLoading || xalSyncLoading || loadingApply) ? (
               <Dimmer active style={{ background: "none" }}>
                 <Header as="h2" icon>
                   <Icon name="spinner" loading className="lingvo-spinner" />
                 </Header>
               </Dimmer>
-            ) : (ispSyncError /*|| xalSyncError*/) ? (
+            ) : (ispSyncError || xalSyncError || errorApply) ? (
               <Message negative>
                 <Message.Header>{getTranslation("Synchronize data loading error")}</Message.Header>
                 <div style={{ marginTop: "0.25em" }}>
@@ -299,7 +306,7 @@ const SyncModal = ({ columns, onClose, perspectiveId, foreignChanges }) => {
           onClick={
             () => {
               applySync();
-              onClose();
+              setApplied(true);
             }
           }
           //loading={loadingApply}
@@ -308,7 +315,8 @@ const SyncModal = ({ columns, onClose, perspectiveId, foreignChanges }) => {
             xalSyncLoading ||
             ispSyncError ||
             xalSyncError ||
-            loadingApply
+            loadingApply ||
+            errorApply
           }
           className="lingvo-button-greenest lingvo-button-greenest_sync"
         />
