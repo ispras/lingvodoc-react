@@ -23,7 +23,7 @@ const SyncModal = ({ columns, onClose, perspectiveId, foreignChanges }) => {
     variables: { remote: "isp", perspectiveId, debugFlag },
     onCompleted: ({ list_changes: ispSyncData }) => {
       setIspSyncData(ispSyncData);
-      console.log(`Possible errors: ${ispSyncData.errors}`);
+      console.log(`Possible errors: ${ispSyncData.warns}`);
     },
     fetchPolicy: "network-only"
   });
@@ -32,7 +32,7 @@ const SyncModal = ({ columns, onClose, perspectiveId, foreignChanges }) => {
     variables: { remote: "xal", perspectiveId, debugFlag },
     onCompleted: ({ list_changes: xalSyncData }) => {
       setXalSyncData(xalSyncData);
-      console.log(`Possible errors: ${xalSyncData.errors}`);
+      console.log(`Possible errors: ${xalSyncData.warns}`);
     },
     fetchPolicy: "network-only"
   });
