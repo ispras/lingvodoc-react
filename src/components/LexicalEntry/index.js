@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useState } from "react";
 import { Button } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql, withApollo } from "@apollo/client/react/hoc";
@@ -108,27 +108,40 @@ const getComponent = dataType =>
     "Directed Link": Link
   }[dataType] || Unknown);
 
-class Entities extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      edit: false,
-      is_being_created: false,
-      remove_set: {},
-      update_set: {}
-    };
-    this.create = this.create.bind(this);
-    this.publish = this.publish.bind(this);
-    this.accept = this.accept.bind(this);
-    this.remove = this.remove.bind(this);
-    this.update = this.update.bind(this);
-    this.update_check = this.update_check.bind(this);
-  }
+const Entities = props => {
+  const [edit, setEdit] = useState(false);
+  const [isBeingCreated, setIsBeingCreated] = useState(false);
+  const [removeSet, setRemoveSet] = useState({});
+  const [updateSet, setUpdateSet] = useState({});
 
-  update_check() {
-    /* Checking if we need to manually update perspective data. */
+  const {
+    perspectiveId,
+    entry,
+    allEntriesGenerator,
+    column,
+    columns,
+    mode,
+    entitiesMode,
+    parentEntity,
+    disabled,
+    checkEntries,
+    checkedRow,
+    resetCheckedRow,
+    checkedColumn,
+    resetCheckedColumn,
+    checkedAll,
+    resetCheckedAll,
+    client,
+    queryArgs,
+    createEntity,
+    publishEntity,
+    acceptEntity,
+    removeEntity,
+    updateEntity
+  } = props;
 
-    const { entry, client, perspectiveId, entitiesMode, queryArgs } = this.props;
+  const update_check = () => {
+    //Checking if we need to manually update perspective data.
 
     const data_entities = client.readQuery({
       query: lexicalEntryQuery,
@@ -139,14 +152,16 @@ class Entities extends React.Component {
     });
 
     const data_perspective = queryArgs
-    ? client.readQuery({
-      query: queryLexicalEntries,
-      variables: queryArgs
-    })
-    : { perspective: { perspective_page: { lexical_entries: [] }}};
+      ? client.readQuery({
+          query: queryLexicalEntries,
+          variables: queryArgs
+        })
+      : { perspective: { perspective_page: { lexical_entries: [] } } };
 
     const {
-      perspective: { perspective_page: { lexical_entries } }
+      perspective: {
+        perspective_page: { lexical_entries }
+      }
     } = data_perspective;
 
     const entry_id_str = id2str(entry.id);
@@ -175,8 +190,8 @@ class Entities extends React.Component {
           }
         }
 
-        /* If for some reason queryLexicalEntries failed to update (e.g. when there are several thousand
-         * entries and Apollo GraphQL cache glitches), we update it manually. */
+        // If for some reason queryLexicalEntries failed to update (e.g. when there are several thousand
+        // entries and Apollo GraphQL cache glitches), we update it manually.
 
         if (change_flag && queryArgs) {
           lexical_entry.entities = data_entities.lexicalentry.entities;
@@ -192,14 +207,11 @@ class Entities extends React.Component {
       }
     }
 
-    this.setState({ edit: false });
+    setEdit(false);
+  };
 
-  }
-
-  create(content, self_id) {
-    this.setState({ is_being_created: true });
-
-    const { entry, column, createEntity } = this.props;
+  const create = (content, self_id) => {
+    setIsBeingCreated(true);
 
     const variables = { parent_id: entry.id, field_id: column.id };
     if (content instanceof File) {
@@ -233,14 +245,12 @@ class Entities extends React.Component {
       ],
       awaitRefetchQueries: true
     }).then(() => {
-      this.update_check();
-      this.setState({ is_being_created: false });
+      update_check();
+      setIsBeingCreated(false);
     });
-  }
+  };
 
-  publish(entity, published) {
-    const { perspectiveId, entry, publishEntity } = this.props;
-
+  const publish = (entity, published) => {
     publishEntity({
       variables: { id: entity.id, published },
       refetchQueries: [
@@ -281,12 +291,10 @@ class Entities extends React.Component {
         }
       ],
       awaitRefetchQueries: true
-    }).then(() => this.update_check());
-  }
+    }).then(() => update_check());
+  };
 
-  accept(entity, accepted) {
-    const { entry, acceptEntity } = this.props;
-
+  const accept = (entity, accepted) => {
     acceptEntity({
       variables: { id: entity.id, accepted },
       refetchQueries: [
@@ -306,170 +314,151 @@ class Entities extends React.Component {
         }
       ],
       awaitRefetchQueries: true
-    }).then(() => this.update_check());
+    }).then(() => update_check());
+  };
+
+  const remove = useCallback(
+    entity => {
+      const entity_id_str = id2str(entity.id);
+
+      const remove_set = removeSet;
+      remove_set[entity_id_str] = null;
+      setRemoveSet(remove_set);
+
+      removeEntity({
+        variables: { id: entity.id },
+        refetchQueries: [
+          {
+            query: lexicalEntryQuery,
+            variables: {
+              id: entry.id,
+              entitiesMode: "all"
+            }
+          },
+          {
+            query: lexicalEntryQuery,
+            variables: {
+              id: entry.id,
+              entitiesMode: "published"
+            }
+          }
+        ],
+        awaitRefetchQueries: true
+      }).then(() => {
+        const remove_set = removeSet;
+
+        delete remove_set[entity_id_str];
+        setRemoveSet(remove_set);
+
+        update_check();
+      });
+    },
+    [removeSet]
+  );
+
+  const update = useCallback(
+    (entity, content) => {
+      const entity_id_str = id2str(entity.id);
+
+      const update_set = updateSet;
+      update_set[entity_id_str] = null;
+      setUpdateSet(update_set);
+
+      updateEntity({
+        variables: { id: entity.id, content },
+        refetchQueries: [
+          {
+            query: lexicalEntryQuery,
+            variables: {
+              id: entry.id,
+              entitiesMode: "all"
+            }
+          },
+          {
+            query: lexicalEntryQuery,
+            variables: {
+              id: entry.id,
+              entitiesMode: "published"
+            }
+          }
+        ],
+        awaitRefetchQueries: true
+      }).then(() => {
+        const update_set = updateSet;
+
+        delete update_set[entity_id_str];
+        setUpdateSet(update_set);
+
+        update_check();
+      });
+    },
+    [updateSet]
+  );
+
+  const Component = getComponent(column.data_type);
+
+  if (column.data_type === "Link" || column.data_type === "Grouping Tag" || column.data_type === "Directed Link") {
+    return <Component {...props} />;
   }
 
-  remove(entity) {
-    const entity_id_str = id2str(entity.id);
+  const filters = [
+    ens => ens.filter(entity => isEqual(entity.field_id, column.id)),
+    ens => (!parentEntity ? ens : ens.filter(e => isEqual(e.self_id, parentEntity.id)))
+  ];
+  const entities = flow(filters)(entry.entities);
 
-    const remove_set = this.state.remove_set;
-    remove_set[entity_id_str] = null;
-    this.setState({ remove_set });
+  return (
+    <ul>
+      {entities.map(entity => (
+        <Component
+          key={compositeIdToString(entity.id)}
+          perspectiveId={perspectiveId}
+          as="li"
+          column={column}
+          columns={columns}
+          checkEntries={checkEntries}
+          checkedRow={checkedRow}
+          resetCheckedRow={resetCheckedRow}
+          checkedColumn={checkedColumn}
+          resetCheckedColumn={resetCheckedColumn}
+          checkedAll={checkedAll}
+          resetCheckedAll={resetCheckedAll}
+          entry={entry}
+          allEntriesGenerator={allEntriesGenerator}
+          entity={entity}
+          mode={mode}
+          entitiesMode={entitiesMode}
+          parentEntity={parentEntity}
+          publish={publish}
+          remove={remove}
+          accept={accept}
+          update={update}
+          className={mode != "edit" && entities.indexOf(entity) == entities.length - 1 ? "last" : ""}
+          disabled={disabled}
+          is_being_removed={removeSet.hasOwnProperty(id2str(entity.id))}
+          is_being_updated={updateSet.hasOwnProperty(id2str(entity.id))}
+        />
+      ))}
+      {mode === "edit" && (
+        <li className="last">
+          {!edit && (
+            <Button.Group basic className="lingvo-buttons-group">
+              <Button icon={<i className="lingvo-icon lingvo-icon_plus" />} onClick={() => setEdit(true)} />
+            </Button.Group>
+          )}
 
-    const { entry, removeEntity } = this.props;
-    removeEntity({
-      variables: { id: entity.id },
-      refetchQueries: [
-        {
-          query: lexicalEntryQuery,
-          variables: {
-            id: entry.id,
-            entitiesMode: "all"
-          }
-        },
-        {
-          query: lexicalEntryQuery,
-          variables: {
-            id: entry.id,
-            entitiesMode: "published"
-          }
-        }
-      ],
-      awaitRefetchQueries: true
-    }).then(() => {
-      const remove_set = this.state.remove_set;
-
-      delete remove_set[entity_id_str];
-      this.setState({ remove_set });
-
-      this.update_check();
-    });
-  }
-
-  update(entity, content) {
-    const entity_id_str = id2str(entity.id);
-
-    const update_set = this.state.update_set;
-    update_set[entity_id_str] = null;
-    this.setState({ update_set });
-
-    const { entry, updateEntity } = this.props;
-    updateEntity({
-      variables: { id: entity.id, content },
-      refetchQueries: [
-        {
-          query: lexicalEntryQuery,
-          variables: {
-            id: entry.id,
-            entitiesMode: "all"
-          }
-        },
-        {
-          query: lexicalEntryQuery,
-          variables: {
-            id: entry.id,
-            entitiesMode: "published"
-          }
-        }
-      ],
-      awaitRefetchQueries: true
-    }).then(() => {
-      const update_set = this.state.update_set;
-
-      delete update_set[entity_id_str];
-      this.setState({ update_set });
-
-      this.update_check();
-    });
-  }
-
-  render() {
-    const {
-      perspectiveId,
-      entry,
-      allEntriesGenerator,
-      column,
-      columns,
-      mode,
-      entitiesMode,
-      parentEntity,
-      disabled,
-      checkEntries,
-      checkedRow,
-      resetCheckedRow,
-      checkedColumn,
-      resetCheckedColumn,
-      checkedAll,
-      resetCheckedAll
-    } = this.props;
-
-    const Component = getComponent(column.data_type);
-
-    if (column.data_type === "Link" || column.data_type === "Grouping Tag" || column.data_type === "Directed Link") {
-      return <Component {...this.props} />;
-    }
-
-    const filters = [
-      ens => ens.filter(entity => isEqual(entity.field_id, column.id)),
-      ens => (!parentEntity ? ens : ens.filter(e => isEqual(e.self_id, parentEntity.id)))
-    ];
-    const entities = flow(filters)(entry.entities);
-
-    return (
-      <ul>
-        {entities.map(entity => (
-          <Component
-            key={compositeIdToString(entity.id)}
-            perspectiveId={perspectiveId}
-            as="li"
-            column={column}
-            columns={columns}
-            checkEntries={checkEntries}
-            checkedRow={checkedRow}
-            resetCheckedRow={resetCheckedRow}
-            checkedColumn={checkedColumn}
-            resetCheckedColumn={resetCheckedColumn}
-            checkedAll={checkedAll}
-            resetCheckedAll={resetCheckedAll}
-            entry={entry}
-            allEntriesGenerator={allEntriesGenerator}
-            entity={entity}
-            mode={mode}
-            entitiesMode={entitiesMode}
-            parentEntity={parentEntity}
-            publish={this.publish}
-            remove={this.remove}
-            accept={this.accept}
-            update={this.update}
-            className={mode != "edit" && entities.indexOf(entity) == entities.length - 1 ? "last" : ""}
-            disabled={disabled}
-            is_being_removed={this.state.remove_set.hasOwnProperty(id2str(entity.id))}
-            is_being_updated={this.state.update_set.hasOwnProperty(id2str(entity.id))}
-          />
-        ))}
-        {mode === "edit" && (
-          <li className="last">
-            {!this.state.edit && (
-              <Button.Group basic className="lingvo-buttons-group">
-                <Button icon={<i className="lingvo-icon lingvo-icon_plus" />}
-                  onClick={() => this.setState({ edit: true })} 
-                />
-              </Button.Group>
-            )}
-
-            {this.state.edit && (
-              <Component.Edit
-                is_being_created={this.state.is_being_created}
-                onSave={content => this.create(content, parentEntity == null ? null : parentEntity.id)}
-                onCancel={() => this.setState({ edit: false })}
-              />
-            )}
-          </li>
-        )}
-      </ul>
-    );
-  }
-}
+          {edit && (
+            <Component.Edit
+              is_being_created={isBeingCreated}
+              onSave={content => create(content, parentEntity == null ? null : parentEntity.id)}
+              onCancel={() => setEdit(false)}
+            />
+          )}
+        </li>
+      )}
+    </ul>
+  );
+};
 
 Entities.propTypes = {
   perspectiveId: PropTypes.array.isRequired,
