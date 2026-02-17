@@ -20,7 +20,7 @@ const SyncModal = ({ columns, onClose, perspectiveId, foreignChanges }) => {
   const debugFlag = false;
 
   const { error: ispSyncError, loading: ispSyncLoading } = useQuery(queryListChanges, {
-    variables: { remote: "isp", perspectiveId, debugFlag },
+    variables: { remote: "isp", syncFor: "xal", perspectiveId, debugFlag },
     onCompleted: ({ list_changes: ispSyncData }) => {
       setIspSyncData(ispSyncData);
       console.log(`Possible errors: ${ispSyncData.warns}`);
@@ -29,7 +29,7 @@ const SyncModal = ({ columns, onClose, perspectiveId, foreignChanges }) => {
   });
 
   const { error: xalSyncError, loading: xalSyncLoading } = useQuery(queryListChanges, {
-    variables: { remote: "xal", perspectiveId, debugFlag },
+    variables: { remote: "xal", syncFor: "isp", perspectiveId, debugFlag },
     onCompleted: ({ list_changes: xalSyncData }) => {
       setXalSyncData(xalSyncData);
       console.log(`Possible errors: ${xalSyncData.warns}`);
@@ -39,7 +39,7 @@ const SyncModal = ({ columns, onClose, perspectiveId, foreignChanges }) => {
 
   const [applySync, { error: errorApply, loading: loadingApply }] = useMutation(
     applySyncMutation, {
-      variables: { perspectiveId, remote: 'xal', debugFlag: true },
+      variables: { perspectiveId, syncBetween: ['isp','xal'], debugFlag: true },
       onCompleted: ({apply_sync: {triumph, message}}) => {
         if (message)
           console.log(message)

@@ -204,12 +204,12 @@ export const synchronizeMutation = gql`
 export const applySyncMutation = gql`
   mutation ApplySync(
         $perspectiveId: LingvodocID!
-        $remote: String!
+        $syncBetween: [String]!
         $debugFlag: Boolean
 ) {
     apply_sync(
         perspective_id: $perspectiveId
-        remote: $remote
+        sync_between: $syncBetween
         debug_flag: $debugFlag) {
       message
       triumph
@@ -218,8 +218,8 @@ export const applySyncMutation = gql`
 `;
 
 export const queryListChanges = gql`
-  query listChanges($remote: String!, $perspectiveId: LingvodocID!, $debugFlag: Boolean) {
-    list_changes(remote: $remote, perspective_id: $perspectiveId, debug_flag: $debugFlag)
+  query listChanges($remote: String!, $syncFor: String!, $perspectiveId: LingvodocID!, $debugFlag: Boolean) {
+    list_changes(remote: $remote, sync_for: $syncFor, perspective_id: $perspectiveId, debug_flag: $debugFlag)
   }
 `;
 
