@@ -220,7 +220,7 @@ export const applySyncMutation = gql`
 export const queryListChanges = gql`
   query listChanges(
     $remote: String!
-    $syncFor: String!
+    $syncBetween: [String]!
     $perspectiveId: LingvodocID!
     $userId: Int
     $syncPoint: Float
@@ -228,7 +228,7 @@ export const queryListChanges = gql`
     {
       list_changes(
         remote: $remote
-        sync_for: $syncFor
+        sync_between: $syncBetween
         perspective_id: $perspectiveId
         user_id: $userId
         sync_point: $syncPoint
