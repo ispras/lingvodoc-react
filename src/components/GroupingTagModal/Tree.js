@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useContext } from "react";
 import SortableTree, { map } from "react-sortable-tree";
 import PropTypes from "prop-types";
 import { pure } from "recompose";
@@ -7,25 +7,20 @@ import { chooseTranslation as T } from "api/i18n";
 import { LexicalEntryLink } from "components/Search/LanguageTree";
 import TranslationContext from "Layout/TranslationContext";
 
-class Tree extends React.Component {
-  constructor(props) {
-    super(props);
+const Tree = ({ actions, entitiesMode, mode, resultsTree }) => {
+  const getTranslation = useContext(TranslationContext);
 
-    this.state = {
-      treeData: map({
-        treeData: props.resultsTree.toJS(),
-        callback: ({ node }) => ({ ...node, expanded: true }),
-        getNodeKey: ({ treeIndex }) => treeIndex,
-        ignoreCollapsed: false
-      })
-    };
+  const [treeData, setTreeData] = useState(
+    map({
+      treeData: resultsTree.toJS(),
+      callback: ({ node }) => ({ ...node, expanded: true }),
+      getNodeKey: ({ treeIndex }) => treeIndex,
+      ignoreCollapsed: false
+    })
+  );
 
-    this.generateNodeProps = this.generateNodeProps.bind(this);
-  }
-
-  generateNodeProps({ node }) {
-    const { actions, entitiesMode, mode } = this.props;
-    const defaultTitle = T(node.translations) || this.context("None");
+  const generateNodeProps = ({ node }) => {
+    const defaultTitle = T(node.translations) || getTranslation("None");
     const onlyViewMode = true;
     const title =
       node.type === "perspective" ? (
@@ -41,26 +36,22 @@ class Tree extends React.Component {
       );
 
     return { title };
-  }
+  };
 
-  render() {
-    return (
-      <div style={{ height: 600 }}>
-        <SortableTree
-          canDrag={false}
-          treeData={this.state.treeData}
-          rowHeight={52}
-          scaffoldBlockPxWidth={64}
-          generateNodeProps={this.generateNodeProps}
-          onChange={treeData => this.setState({ treeData })}
-          className="lingvo-rst-tree"
-        />
-      </div>
-    );
-  }
-}
-
-Tree.contextType = TranslationContext;
+  return (
+    <div style={{ height: 600 }}>
+      <SortableTree
+        canDrag={false}
+        treeData={treeData}
+        rowHeight={52}
+        scaffoldBlockPxWidth={64}
+        generateNodeProps={generateNodeProps}
+        onChange={treeData => setTreeData(treeData)}
+        className="lingvo-rst-tree"
+      />
+    </div>
+  );
+};
 
 Tree.propTypes = {
   resultsTree: PropTypes.object.isRequired,

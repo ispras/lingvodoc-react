@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useState, useContext } from "react";
 import { Button, Checkbox, Dimmer, Header, Icon, Modal, Segment, Tab } from "semantic-ui-react";
 import { graphql } from "@apollo/client/react/hoc";
 import { isEqual } from "lodash";
@@ -46,11 +46,11 @@ const EditGroupingTag = props => {
       render: () => (
         <div>
           <Segment textAlign="center">
-            <Button 
-              className="lingvo-button-redder" 
-              content={getTranslation("Disconnect")} 
-              onClick={leaveGroup} 
-              style={{ marginTop: "6px", marginBottom: "6px" }} 
+            <Button
+              className="lingvo-button-redder"
+              content={getTranslation("Disconnect")}
+              onClick={leaveGroup}
+              style={{ marginTop: "6px", marginBottom: "6px" }}
             />
           </Segment>
           <Segment padded="very" textAlign="center" className="lingvo-grouping-tag">
@@ -162,11 +162,14 @@ const PublishGroupingTag = props => {
         <div>
           {entity && (
             <Segment>
-              <Checkbox 
-                toggle 
-                label={published && getTranslation("The entity is currently published. Click to unpublish.") || getTranslation("The entity is NOT currently published. Click to publish.")}
-                checked={published}  
-                onChange={(e, { checked }) => publish(entity, checked)} 
+              <Checkbox
+                toggle
+                label={
+                  (published && getTranslation("The entity is currently published. Click to unpublish.")) ||
+                  getTranslation("The entity is NOT currently published. Click to publish.")
+                }
+                checked={published}
+                onChange={(e, { checked }) => publish(entity, checked)}
                 className="lingvo-radio-toggle"
                 style={{ marginTop: "10px", marginBottom: "10px" }}
               />
@@ -230,7 +233,7 @@ const ContributionsGroupingTag = props => {
                 content={getTranslation("Accept")}
                 disabled={entity.accepted}
                 onClick={() => accept(entity, true)}
-                className="lingvo-button-greenest" 
+                className="lingvo-button-greenest"
                 style={{ marginTop: "6px", marginBottom: "6px" }}
               />
             </Segment>
@@ -280,26 +283,27 @@ const getComponent = mode => {
   }
 };
 
-class GroupingTagModal extends React.Component {
-  constructor(props) {
-    super(props);
+const GroupingTagModal = ({
+  accept,
+  connect: mutate,
+  connectedQueryData,
+  data,
+  disconnect,
+  lexicalEntry,
+  fieldId,
+  entitiesMode,
+  mode,
+  onClose,
+  publish
+}) => {
+  const getTranslation = useContext(TranslationContext);
 
-    const entity = props.lexicalEntry.entities.find(e => isEqual(e.field_id, props.fieldId));
+  const entity = lexicalEntry.entities.find(e => isEqual(e.field_id, fieldId));
 
-    this.state = {
-      entityPublish: entity && entity.published || false
-    };
+  const [entityPublish, setEntityPublish] = useState((entity && entity.published) || false);
 
-    this.joinGroup = this.joinGroup.bind(this);
-    this.leaveGroup = this.leaveGroup.bind(this);
-    this.changePublished = this.changePublished.bind(this);
-    this.changeAccepted = this.changeAccepted.bind(this);
-  }
-
-  joinGroup(targetEntry) {
+  const joinGroup = targetEntry => {
     // connect to lexical group
-    const { connect: mutate, lexicalEntry, fieldId, entitiesMode } = this.props;
-
     mutate({
       variables: { fieldId, connections: [lexicalEntry.id, targetEntry.id] },
       refetchQueries: [
@@ -316,13 +320,13 @@ class GroupingTagModal extends React.Component {
         }
       ]
     }).then(() => {
-      window.logger.suc(this.context("Connected"));
+      window.logger.suc(getTranslation("Connected"));
     });
-  }
+  };
 
-  leaveGroup() {
+  const leaveGroup = () => {
     // disconnect lexical entry from group
-    const { disconnect, lexicalEntry, fieldId, entitiesMode } = this.props;
+
     disconnect({
       variables: { lexicalEntryId: lexicalEntry.id, fieldId },
       refetchQueries: [
@@ -336,13 +340,11 @@ class GroupingTagModal extends React.Component {
         }
       ]
     }).then(() => {
-      window.logger.suc(this.context("Disconnected"));
+      window.logger.suc(getTranslation("Disconnected"));
     });
-  }
+  };
 
-  changePublished(entity, published) {
-    const { publish, lexicalEntry, entitiesMode } = this.props;
-
+  const changePublished = (entity, published) => {
     publish({
       variables: { id: entity.id, published },
       refetchQueries: [
@@ -356,16 +358,11 @@ class GroupingTagModal extends React.Component {
         }
       ]
     }).then(() => {
-      this.setState({
-        entityPublish: published
-      });
+      setEntityPublish(published);
     });
+  };
 
-  }
-
-  changeAccepted(entity, accepted) {
-    const { accept, lexicalEntry, entitiesMode } = this.props;
-
+  const changeAccepted = (entity, accepted) => {
     accept({
       variables: { id: entity.id, accepted },
       refetchQueries: [
@@ -379,89 +376,83 @@ class GroupingTagModal extends React.Component {
         }
       ]
     });
+  };
+
+  const {
+    loading,
+    error,
+    languages: allLanguages,
+    dictionaries: allDictionaries,
+    perspectives: allPerspectives
+  } = data;
+
+  if (error || connectedQueryData.error) {
+    return null;
   }
 
-  render() {
-    const { data, connectedQueryData, lexicalEntry, fieldId, entitiesMode, mode, onClose } = this.props;
-
-    const {
-      loading,
-      error,
-      languages: allLanguages,
-      dictionaries: allDictionaries,
-      perspectives: allPerspectives
-    } = data;
-
-    if (error || connectedQueryData.error) {
-      return null;
-    }
-
-    if (loading || connectedQueryData.loading) {
-      return (
-        <Modal
-          dimmer
-          open
-          size="fullscreen"
-          closeOnDimmerClick={false}
-          closeIcon
-          onClose={onClose}
-          className="lingvo-modal2"
-        >
-          <Modal.Content>
-            <ModalContentWrapper>
-              <Dimmer active style={{ minHeight: "60vh", background: "none" }}>
-                <Header as="h2" icon>
-                  <Icon name="spinner" loading />
-                </Header>
-              </Dimmer>
-            </ModalContentWrapper>
-          </Modal.Content>
-        </Modal>
-      );
-    }
-
-    const Component = getComponent(mode);
-
+  if (loading || connectedQueryData.loading) {
     return (
-      <div>
-        <Modal
-          dimmer
-          open
-          size="fullscreen"
-          closeOnDimmerClick={false}
-          closeIcon
-          onClose={onClose}
-          className="lingvo-modal2"
-        >
-          <Modal.Header>{this.context("Grouping tag")}</Modal.Header>
-          <Modal.Content scrolling>
-            <ModalContentWrapper>
-              <Component
-                lexicalEntry={lexicalEntry}
-                fieldId={fieldId}
-                published={this.state.entityPublish}
-                entitiesMode={entitiesMode}
-                allLanguages={allLanguages}
-                allDictionaries={allDictionaries}
-                allPerspectives={allPerspectives}
-                connectedWords={connectedQueryData.connected_words}
-                joinGroup={this.joinGroup}
-                leaveGroup={this.leaveGroup}
-                publish={this.changePublished}
-                accept={this.changeAccepted}
-              />
-            </ModalContentWrapper>
-          </Modal.Content>
-          <Modal.Actions>
-            <Button content={this.context("Cancel")} onClick={onClose} className="lingvo-button-basic-black" />
-          </Modal.Actions>
-        </Modal>
-      </div>
+      <Modal
+        dimmer
+        open
+        size="fullscreen"
+        closeOnDimmerClick={false}
+        closeIcon
+        onClose={onClose}
+        className="lingvo-modal2"
+      >
+        <Modal.Content>
+          <ModalContentWrapper>
+            <Dimmer active style={{ minHeight: "60vh", background: "none" }}>
+              <Header as="h2" icon>
+                <Icon name="spinner" loading />
+              </Header>
+            </Dimmer>
+          </ModalContentWrapper>
+        </Modal.Content>
+      </Modal>
     );
   }
-}
 
-GroupingTagModal.contextType = TranslationContext;
+  const Component = getComponent(mode);
+
+  return (
+    <div>
+      <Modal
+        dimmer
+        open
+        size="fullscreen"
+        closeOnDimmerClick={false}
+        closeIcon
+        onClose={onClose}
+        className="lingvo-modal2"
+      >
+        <Modal.Header>{getTranslation("Grouping tag")}</Modal.Header>
+        <Modal.Content scrolling>
+          <ModalContentWrapper>
+            <Component
+              lexicalEntry={lexicalEntry}
+              fieldId={fieldId}
+              published={entityPublish}
+              entitiesMode={entitiesMode}
+              allLanguages={allLanguages}
+              allDictionaries={allDictionaries}
+              allPerspectives={allPerspectives}
+              connectedWords={connectedQueryData.connected_words}
+              joinGroup={joinGroup}
+              leaveGroup={leaveGroup}
+              publish={changePublished}
+              accept={changeAccepted}
+            />
+          </ModalContentWrapper>
+        </Modal.Content>
+        <Modal.Actions>
+          <Button content={getTranslation("Cancel")} onClick={onClose} className="lingvo-button-basic-black" />
+        </Modal.Actions>
+      </Modal>
+    </div>
+  );
+};
 
 GroupingTagModal.propTypes = {
   data: PropTypes.shape({
