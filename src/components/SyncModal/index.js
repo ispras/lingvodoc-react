@@ -17,7 +17,7 @@ const SyncModal = ({ columns, onClose, perspectiveId, foreignChanges }) => {
   const [ ispSyncData, setIspSyncData ] = useState(null);
   const [ xalSyncData, setXalSyncData ] = useState(null);
   const [ applied, setApplied ] = useState(false);
-  const debugFlag = false;
+  const debugFlag = true;
 
   const { error: ispSyncError, loading: ispSyncLoading } = useQuery(queryListChanges, {
     variables: { remote: 'isp', syncBetween: ['isp','xal'], perspectiveId, debugFlag },
