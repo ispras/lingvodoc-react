@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useContext } from "react";
 import { Button, Container, Dropdown, Icon, Message, Radio, Table } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
@@ -98,183 +98,152 @@ const deletePerspectiveRoleMutation = gql`
   }
 `;
 
-class Roles extends React.Component {
-  static hasRole(user, role) {
+const Roles = ({ id, addRole, deleteRole, data, mode, user }) => {
+  const getTranslation = useContext(TranslationContext);
+
+  const [selectedUser, setSelectedUser] = useState(0);
+
+  const hasRole = (user, role) => {
     return some(role.users, u => u.id === user.id);
-  }
+  };
 
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      selectedUser: undefined
-    };
-
-    this.onToggleRole = this.onToggleRole.bind(this);
-    this.onAddUser = this.onAddUser.bind(this);
-    this.onDeleteUser = this.onDeleteUser.bind(this);
-  }
-
-  onToggleRole(user, role) {
-    const {
-      id,
-      addRole,
-      deleteRole,
-      data: { refetch }
-    } = this.props;
-    const mutation = Roles.hasRole(user, role) ? deleteRole : addRole;
+  const onToggleRole = (user, role) => {
+    const { refetch } = data;
+    const mutation = hasRole(user, role) ? deleteRole : addRole;
     mutation({
       variables: { id, userId: user.id, rolesIds: [role.group.id] }
     }).then(refetch);
-  }
+  };
 
-  onAddUser(permissions) {
-    const {
-      id,
-      addRole,
-      data: { refetch }
-    } = this.props;
-    const { selectedUser } = this.state;
+  const onAddUser = permissions => {
+    const { refetch } = data;
 
     addRole({
       variables: { id, userId: selectedUser, rolesIds: permissions.map(p => p.group.id) }
     }).then(() => {
-      refetch().then(() => this.setState({ selectedUser: undefined }));
+      refetch().then(() => setSelectedUser(undefined));
     });
-  }
+  };
 
-  onDeleteUser(user, permissions) {
-    const {
-      id,
-      deleteRole,
-      data: { refetch }
-    } = this.props;
+  const onDeleteUser = (user, permissions) => {
+    const { refetch } = data;
     deleteRole({
       variables: { id, userId: user, rolesIds: permissions.map(p => p.group.id) }
     }).then(refetch);
+  };
+
+  if (data.error) {
+    return (
+      <Message negative compact>
+        {getTranslation("Role data loading error, please contact adiministrators.")}
+      </Message>
+    );
+  } else if (data.loading) {
+    return (
+      <span>
+        {getTranslation("Loading role data")}... <Icon name="spinner" loading />
+      </span>
+    );
   }
 
-  render() {
-    const { mode, data, user } = this.props;
+  const currentUser = user;
 
-    if (data.error) {
-      return (
-        <Message negative compact>
-          {this.context("Role data loading error, please contact adiministrators.")}
-        </Message>
-      );
-    } else if (data.loading) {
-      return (
-        <span>
-          {this.context("Loading role data")}... <Icon name="spinner" loading />
-        </span>
-      );
+  const baseGroups = data.all_basegroups ? data.all_basegroups : [];
+
+  const allUsers = data.users ? data.users : [];
+  const rolesUsers = data[mode] ? data[mode].roles.roles_users : [];
+
+  // list of all base groups that can be applied to target
+  const groups = filter(baseGroups, g => {
+    switch (mode) {
+      case "dictionary":
+        return g.dictionary_default;
+      case "perspective":
+        return g.perspective_default;
+      default:
+        return false;
     }
+  });
 
-    const { selectedUser } = this.state;
+  const permissions = groups.map(group => ({
+    group,
+    users: rolesUsers
+      .filter(role => role.roles_ids.indexOf(group.id) >= 0)
+      .map(role => find(allUsers, u => u.id === role.user_id))
+  }));
 
-    const currentUser = user;
+  const users = uniq(union(...permissions.map(p => p.users))).sort((user1, user2) =>
+    user1.name.localeCompare(user2.name)
+  );
+  const userOptions = without(allUsers, ...users)
+    .map(u => ({
+      key: u.id,
+      value: u.id,
+      text: `${u.name} (${u.intl_name !== u.login ? `${u.intl_name}, ` : ""}${u.login})`
+    }))
+    .filter(u => u.value !== 1);
 
-    const baseGroups = data.all_basegroups ? data.all_basegroups : [];
+  return (
+    <Container>
+      <Dropdown
+        key={selectedUser}
+        placeholder={getTranslation("Select user")}
+        search
+        selection
+        options={userOptions}
+        selectOnBlur={false}
+        value={selectedUser}
+        onChange={(e, d) => setSelectedUser(d.value)}
+        className="lingvo-roles-dropdown lingvo-roles-dropdown_search"
+        icon={<i className="lingvo-icon lingvo-icon_arrow" />}
+      />
+      <Button
+        className="lingvo-button-violet"
+        disabled={selectedUser === undefined}
+        onClick={() => onAddUser(permissions)}
+      >
+        {getTranslation("Add")}
+      </Button>
+      <Table celled className="lingvo-roles-table">
+        <Table.Header>
+          <Table.Row>
+            <Table.HeaderCell>{getTranslation("Role")}</Table.HeaderCell>
+            {users.map(u => (
+              <Table.HeaderCell key={u.id}>
+                {u.name}
+                <Button
+                  icon={<i className="lingvo-icon lingvo-icon_trash" />}
+                  title={getTranslation("Remove user")}
+                  onClick={() => onDeleteUser(u.id, permissions)}
+                  className="lingvo-button-roles-delete"
+                  disabled={u.id === currentUser.id}
+                />
+              </Table.HeaderCell>
+            ))}
+          </Table.Row>
+        </Table.Header>
 
-    const allUsers = data.users ? data.users : [];
-    const rolesUsers = data[mode] ? data[mode].roles.roles_users : [];
-
-    // list of all base groups that can be applied to target
-    const groups = filter(baseGroups, g => {
-      switch (mode) {
-        case "dictionary":
-          return g.dictionary_default;
-        case "perspective":
-          return g.perspective_default;
-        default:
-          return false;
-      }
-    });
-
-    const permissions = groups.map(group => ({
-      group,
-      users: rolesUsers
-        .filter(role => role.roles_ids.indexOf(group.id) >= 0)
-        .map(role => find(allUsers, u => u.id === role.user_id))
-    }));
-
-    const users = uniq(union(...permissions.map(p => p.users))).sort((user1, user2) =>
-      user1.name.localeCompare(user2.name)
-    );
-    const userOptions = without(allUsers, ...users)
-      .map(u => ({
-        key: u.id,
-        value: u.id,
-        text: `${u.name} (${u.intl_name !== u.login ? `${u.intl_name}, ` : ""}${u.login})`
-      }))
-      .filter(u => u.value !== 1);
-
-    return (
-      <Container>
-        <Dropdown
-          key={selectedUser}
-          placeholder={this.context("Select user")}
-          search
-          selection
-          options={userOptions}
-          selectOnBlur={false}
-          value={selectedUser}
-          onChange={(e, d) => this.setState({ selectedUser: d.value })}
-          className="lingvo-roles-dropdown lingvo-roles-dropdown_search"
-          icon={<i className="lingvo-icon lingvo-icon_arrow" />}
-        />
-        <Button
-          className="lingvo-button-violet"
-          disabled={selectedUser === undefined}
-          onClick={() => this.onAddUser(permissions)}
-        >
-          {this.context("Add")}
-        </Button>
-
-        <Table celled className="lingvo-roles-table">
-          <Table.Header>
-            <Table.Row>
-              <Table.HeaderCell>{this.context("Role")}</Table.HeaderCell>
+        <Table.Body>
+          {permissions.map(role => (
+            <Table.Row key={role.group.id}>
+              <Table.Cell>{getTranslation(role.group.name)}</Table.Cell>
               {users.map(u => (
-                <Table.HeaderCell key={u.id}>
-                  {u.name}
-                  <Button
-                    icon={<i className="lingvo-icon lingvo-icon_trash" />}
-                    title={this.context("Remove user")}
-                    onClick={() => this.onDeleteUser(u.id, permissions)}
-                    className="lingvo-button-roles-delete"
-                    disabled={u.id === currentUser.id}
+                <Table.Cell key={u.id}>
+                  <Radio
+                    toggle
+                    onChange={() => onToggleRole(u, role, permissions)}
+                    checked={hasRole(u, role)}
+                    className="lingvo-radio-toggle"
                   />
-                </Table.HeaderCell>
+                </Table.Cell>
               ))}
             </Table.Row>
-          </Table.Header>
-
-          <Table.Body>
-            {permissions.map(role => (
-              <Table.Row key={role.group.id}>
-                <Table.Cell>{this.context(role.group.name)}</Table.Cell>
-                {users.map(u => (
-                  <Table.Cell key={u.id}>
-                    <Radio
-                      toggle
-                      onChange={() => this.onToggleRole(u, role, permissions)}
-                      checked={Roles.hasRole(u, role)}
-                      className="lingvo-radio-toggle"
-                    />
-                  </Table.Cell>
-                ))}
-              </Table.Row>
-            ))}
-          </Table.Body>
-        </Table>
-      </Container>
-    );
-  }
-}
-
-Roles.contextType = TranslationContext;
+          ))}
+        </Table.Body>
+      </Table>
+    </Container>
+  );
+};
 
 Roles.propTypes = {
   id: PropTypes.array.isRequired,
