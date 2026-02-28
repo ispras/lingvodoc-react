@@ -29,6 +29,7 @@ export const getLanguageTree = gql`
     $organizationId: Int
     $published: Boolean
     $category: Int
+    $proxy: Boolean
   ) {
     language_tree(
       dictionary_category: $category
@@ -38,6 +39,7 @@ export const getLanguageTree = gql`
       grant_id: $grantId
       by_organizations: $byOrganizations
       organization_id: $organizationId
+      proxy: $proxy
     ) {
       tree
       languages {

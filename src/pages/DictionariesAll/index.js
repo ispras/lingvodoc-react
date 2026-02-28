@@ -311,12 +311,14 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
 
   const queryDictId = {};
   const queryDictAll = {};
+  //const queryDictAllXal = {};
 
   const sortModeList = forCorpora || forParallelCorpora ? ["language"] : ["language", "grant", "organization"];
+  const proxy = (config.buildType !== "server");
 
   for (const aSortMode of sortModeList) {
     const variablesId = { ...variables };
-    const variablesAll = { ...variables };
+    const variablesAll = { ...variables, proxy };
 
     if (aSortMode === "language") {
       variablesId.languageId = entityIdValue;
@@ -343,6 +345,13 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
       fetchPolicy: "cache-and-network",
       skip: skip_general || activeTab !== "1" || aSortMode != sortMode
     });
+    /*
+    queryDictAllXal[aSortMode] = useQuery(getLanguageTree, {
+      variables: {...variablesAll, remote: 'xal'},
+      fetchPolicy: "cache-and-network",
+      skip: skip_general || activeTab !== "1" || aSortMode != sortMode
+    });
+    */
   }
 
   const { data: dataTreeId } = queryDictId[sortMode];
