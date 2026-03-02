@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useState, useContext } from "react";
 import DatePicker, { registerLocale } from "react-datepicker";
 import { connect } from "react-redux";
 import { Button, Checkbox, Container, Icon, List, Message, Modal, Table } from "semantic-ui-react";
@@ -328,28 +328,21 @@ Statistics.propTypes = {
   mode: PropTypes.string.isRequired
 };
 
-class StatisticsModal extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      startDate: moment("2012", "YYYY"),
-      endDate: moment(),
-      disambiguation: false,
-      languageDictionaries: true,
-      languageCorpora: true,
-      loading: false,
-      error: false,
-      statistics: [],
-      emptyStatistics: false,
-      showStatistics: false
-    };
-    this.handleChange = this.handleChange.bind(this);
-    this.getStatistics = this.getStatistics.bind(this);
-  }
+const StatisticsModal = ({ client, id, mode, title, locales, closeStatistics }) => {
+  const getTranslation = useContext(TranslationContext);
 
-  getStatistics() {
-    const { client, id, mode } = this.props;
-    const { startDate, endDate, disambiguation, languageDictionaries, languageCorpora } = this.state;
+  const [startDate, setStartDate] = useState(moment("2012", "YYYY"));
+  const [endDate, setEndDate] = useState(moment());
+  const [disambiguation, setDisambiguation] = useState(false);
+  const [languageDictionaries, setLanguageDictionaries] = useState(true);
+  const [languageCorpora, setLanguageCorpora] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
+  const [statistics, setStatistics] = useState([]);
+  const [emptyStatistics, setEmptyStatistics] = useState(false);
+  const [showStatistics, setShowStatistics] = useState(false);
+
+  const getStatistics = () => {
     const query =
       mode === "language"
         ? languageStatisticsQuery
@@ -357,7 +350,7 @@ class StatisticsModal extends React.Component {
         ? dictionaryStatisticsQuery
         : perspectiveStatisticsQuery;
 
-    this.setState({ loading: true });
+    setLoading(true);
 
     client
       .query({
@@ -379,200 +372,184 @@ class StatisticsModal extends React.Component {
 
           if (perspective) {
             if (!perspective.statistic.length) {
-              this.setState({
-                loading: false,
-                emptyStatistics: true,
-                showStatistics: true
-              });
+              setLoading(false);
+              setEmptyStatistics(true);
+              setShowStatistics(true);
             } else {
-              this.setState({
-                loading: false,
-                statistics: perspective.statistic,
-                emptyStatistics: false,
-                showStatistics: true
-              });
+              setLoading(false);
+              setStatistics(perspective.statistic);
+              setEmptyStatistics(false);
+              setShowStatistics(true);
             }
           }
 
           if (dictionary) {
             if (!dictionary.statistic.length) {
-              this.setState({
-                loading: false,
-                emptyStatistics: true,
-                showStatistics: true
-              });
+              setLoading(false);
+              setEmptyStatistics(true);
+              setShowStatistics(true);
             } else {
-              this.setState({
-                loading: false,
-                statistics: dictionary.statistic,
-                emptyStatistics: false,
-                showStatistics: true
-              });
+              setLoading(false);
+              setStatistics(dictionary.statistic);
+              setEmptyStatistics(false);
+              setShowStatistics(true);
             }
           }
 
           if (language) {
             if (!language.statistic.length) {
-              this.setState({
-                loading: false,
-                emptyStatistics: true,
-                showStatistics: true
-              });
+              setLoading(false);
+              setEmptyStatistics(true);
+              setShowStatistics(true);
             } else {
-              this.setState({
-                loading: false,
-                statistics: language.statistic,
-                emptyStatistics: false,
-                showStatistics: true
-              });
+              setLoading(false);
+              setStatistics(language.statistic);
+              setEmptyStatistics(false);
+              setShowStatistics(true);
             }
           }
         },
         error_data => {
-          this.setState({ loading: false, error: true });
+          setLoading(false);
+          setError(true);
         }
       );
-  }
+  };
 
-  handleChange(value, key) {
-    const u = {};
-    u[key] = value;
-    u.showStatistics = false;
-    this.setState(u);
-  }
+  const currentLocaleId = locale.get();
+  const localesDatePicker = [];
 
-  render() {
-    const { mode, title, locales } = this.props;
+  locales.forEach(item => {
+    if (item.id <= 5) {
+      localesDatePicker.push({
+        shortcut: item.shortcut,
+        id: item.id
+      });
+    } else {
+      localesDatePicker.push({
+        shortcut: "en",
+        id: item.id
+      });
+    }
+  });
 
-    const { startDate, endDate, disambiguation, languageDictionaries, languageCorpora, loading, error, statistics } =
-      this.state;
-
-    const currentLocaleId = locale.get();
-    const localesDatePicker = [];
-
-    locales.forEach(item => {
-      if (item.id <= 5) {
-        localesDatePicker.push({
-          shortcut: item.shortcut,
-          id: item.id
-        });
-      } else {
-        localesDatePicker.push({
-          shortcut: "en",
-          id: item.id
-        });
-      }
-    });
-
-    return (
-      <Modal closeIcon onClose={this.props.closeStatistics} dimmer open size="fullscreen" className="lingvo-modal2">
-        <Modal.Header>{title}</Modal.Header>
-        <Modal.Content>
-          <div className="lingvo-statistics">
-            <div className="lingvo-statistics-block">
-              {this.context("From")}
-              <DatePicker
-                selected={startDate.toDate()}
-                showTimeSelect
-                timeFormat="HH:mm"
-                timeIntervals={15}
-                onChange={d => this.handleChange(moment(d), "startDate")}
-                dateFormat="dd.MM.yyyy HH:mm"
-                locale={localesDatePicker.find(item => item.id === currentLocaleId)["shortcut"] || "en"}
-              />
-            </div>
-            <div className="lingvo-statistics-block">
-              {this.context("To")}
-              <DatePicker
-                selected={endDate.toDate()}
-                showTimeSelect
-                timeFormat="HH:mm"
-                timeIntervals={15}
-                onChange={d => this.handleChange(moment(d), "endDate")}
-                dateFormat="dd.MM.yyyy HH:mm"
-                locale={localesDatePicker.find(item => item.id === currentLocaleId)["shortcut"] || "en"}
-              />
-            </div>
-            <div className="lingvo-statistics-block">
-              <Checkbox
-                label={this.context(
-                  "Disambiguation statistics (not restricted by time interval, may take quite a lot of time to compute)"
-                )}
-                checked={disambiguation}
-                onChange={(e, { checked }) => this.handleChange(checked, "disambiguation")}
-              />
-            </div>
-            {mode === "language" && (
-              <div className="lingvo-statistics-block">
-                <List>
-                  <List.Item>
-                    <Checkbox
-                      label={this.context("Dictionaries")}
-                      checked={languageDictionaries}
-                      onChange={(e, { checked }) => this.handleChange(checked, "languageDictionaries")}
-                    />
-                  </List.Item>
-                  <List.Item>
-                    <Checkbox
-                      label={this.context("Corpora")}
-                      checked={languageCorpora}
-                      onChange={(e, { checked }) => this.handleChange(checked, "languageCorpora")}
-                    />
-                  </List.Item>
-                </List>
-              </div>
-            )}
-          </div>
-          <Container textAlign="center">
-            <Button
-              content={
-                loading ? (
-                  <span>
-                    {this.context("Loading")}... <Icon name="spinner" loading />
-                  </span>
-                ) : (
-                  this.context("Show statistics")
-                )
-              }
-              onClick={this.getStatistics}
-              className="lingvo-button-violet"
-              disabled={loading || error || this.state.showStatistics}
+  return (
+    <Modal closeIcon onClose={closeStatistics} dimmer open size="fullscreen" className="lingvo-modal2">
+      <Modal.Header>{title}</Modal.Header>
+      <Modal.Content>
+        <div className="lingvo-statistics">
+          <div className="lingvo-statistics-block">
+            {getTranslation("From")}
+            <DatePicker
+              selected={startDate.toDate()}
+              showTimeSelect
+              timeFormat="HH:mm"
+              timeIntervals={15}
+              onChange={d => {
+                setStartDate(moment(d));
+                setShowStatistics(false);
+              }}
+              dateFormat="dd.MM.yyyy HH:mm"
+              locale={localesDatePicker.find(item => item.id === currentLocaleId)["shortcut"] || "en"}
             />
-          </Container>
-          <div className="lingvo-statistics-view">
-            {error ? (
-              <div style={{ margin: "auto", width: "fit-content" }}>
-                <Message negative compact>
-                  <Message.Header>{this.context("Statistics error")}</Message.Header>
-                  <div style={{ marginTop: "0.25em" }}>
-                    {this.context(
-                      "Try closing the dialog and opening it again; if the error persists, please contact administrators."
-                    )}
-                  </div>
-                </Message>
-              </div>
-            ) : this.state.emptyStatistics ? (
-              <div className="lingvo-message lingvo-message_warning" style={{ marginBottom: "6px" }}>
-                {this.context("No statistics for the selected period")}
-              </div>
-            ) : (
-              <Statistics statistics={statistics} mode={mode} />
-            )}
           </div>
-        </Modal.Content>
-        <Modal.Actions>
+          <div className="lingvo-statistics-block">
+            {getTranslation("To")}
+            <DatePicker
+              selected={endDate.toDate()}
+              showTimeSelect
+              timeFormat="HH:mm"
+              timeIntervals={15}
+              onChange={d => {
+                setEndDate(moment(d));
+                setShowStatistics(false);
+              }}
+              dateFormat="dd.MM.yyyy HH:mm"
+              locale={localesDatePicker.find(item => item.id === currentLocaleId)["shortcut"] || "en"}
+            />
+          </div>
+          <div className="lingvo-statistics-block">
+            <Checkbox
+              label={getTranslation(
+                "Disambiguation statistics (not restricted by time interval, may take quite a lot of time to compute)"
+              )}
+              checked={disambiguation}
+              onChange={(e, { checked }) => {
+                setDisambiguation(checked);
+                setShowStatistics(false);
+              }}
+            />
+          </div>
+          {mode === "language" && (
+            <div className="lingvo-statistics-block">
+              <List>
+                <List.Item>
+                  <Checkbox
+                    label={getTranslation("Dictionaries")}
+                    checked={languageDictionaries}
+                    onChange={(e, { checked }) => {
+                      setLanguageDictionaries(checked);
+                      setShowStatistics(false);
+                    }}
+                  />
+                </List.Item>
+                <List.Item>
+                  <Checkbox
+                    label={getTranslation("Corpora")}
+                    checked={languageCorpora}
+                    onChange={(e, { checked }) => {
+                      setLanguageCorpora(checked);
+                      setShowStatistics(false);
+                    }}
+                  />
+                </List.Item>
+              </List>
+            </div>
+          )}
+        </div>
+        <Container textAlign="center">
           <Button
-            content={this.context("Close")}
-            onClick={this.props.closeStatistics}
-            className="lingvo-button-basic-black"
+            content={
+              loading ? (
+                <span>
+                  {getTranslation("Loading")}... <Icon name="spinner" loading />
+                </span>
+              ) : (
+                getTranslation("Show statistics")
+              )
+            }
+            onClick={getStatistics}
+            className="lingvo-button-violet"
+            disabled={loading || error || showStatistics}
           />
-        </Modal.Actions>
-      </Modal>
-    );
-  }
-}
-
-StatisticsModal.contextType = TranslationContext;
+        </Container>
+        <div className="lingvo-statistics-view">
+          {error ? (
+            <div style={{ margin: "auto", width: "fit-content" }}>
+              <Message negative compact>
+                <Message.Header>{getTranslation("Statistics error")}</Message.Header>
+                <div style={{ marginTop: "0.25em" }}>
+                  {getTranslation(
+                    "Try closing the dialog and opening it again; if the error persists, please contact administrators."
+                  )}
+                </div>
+              </Message>
+            </div>
+          ) : emptyStatistics ? (
+            <div className="lingvo-message lingvo-message_warning" style={{ marginBottom: "6px" }}>
+              {getTranslation("No statistics for the selected period")}
+            </div>
+          ) : (
+            <Statistics statistics={statistics} mode={mode} />
+          )}
+        </div>
+      </Modal.Content>
+      <Modal.Actions>
+        <Button content={getTranslation("Close")} onClick={closeStatistics} className="lingvo-button-basic-black" />
+      </Modal.Actions>
+    </Modal>
+  );
+};
 
 StatisticsModal.propTypes = {
   id: PropTypes.arrayOf(PropTypes.number).isRequired,
