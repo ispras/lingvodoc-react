@@ -65,9 +65,11 @@ function constructTree(
   organizationDictionaryIdSetMap,
   proxyData,
   selected,
-  setSelected
+  setSelected,
+  dataTreeAllProxy
 ) {
   const { languages, tree } = data.language_tree;
+  const { languages: languagesProxy, tree: treeProxy } = dataTreeAllProxy.language_tree;
   const languageMap = {};
 
   if (tree === null) {
@@ -311,14 +313,14 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
 
   const queryDictId = {};
   const queryDictAll = {};
-  //const queryDictAllXal = {};
+  const queryDictAllProxy = {};
 
   const sortModeList = forCorpora || forParallelCorpora ? ["language"] : ["language", "grant", "organization"];
   const proxy = (config.buildType !== "server");
 
   for (const aSortMode of sortModeList) {
     const variablesId = { ...variables };
-    const variablesAll = { ...variables, proxy };
+    const variablesAll = { ...variables };
 
     if (aSortMode === "language") {
       variablesId.languageId = entityIdValue;
@@ -345,17 +347,17 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
       fetchPolicy: "cache-and-network",
       skip: skip_general || activeTab !== "1" || aSortMode != sortMode
     });
-    /*
-    queryDictAllXal[aSortMode] = useQuery(getLanguageTree, {
-      variables: {...variablesAll, remote: 'xal'},
+
+    queryDictAllProxy[aSortMode] = useQuery(getLanguageTree, {
+      variables: { ...variablesAll, proxy },
       fetchPolicy: "cache-and-network",
-      skip: skip_general || activeTab !== "1" || aSortMode != sortMode
+      skip: skip_general || !proxy || activeTab !== "1" || aSortMode != sortMode
     });
-    */
   }
 
   const { data: dataTreeId } = queryDictId[sortMode];
   const { data: dataTreeAll } = queryDictAll[sortMode];
+  const { data: dataTreeAllProxy } = proxy ? queryDictAllProxy[sortMode] : queryDictAll[sortMode];
 
   const { data: grantData } = queryGrants;
   const { data: organizationData } = queryOrganizations;
@@ -389,7 +391,8 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
       !dataTreeId ||
       (sortMode === "grant" && !grantMap) ||
       (sortMode === "organization" && !organizationMap) ||
-      (config.buildType !== "server" && !proxyData)
+      (proxy && !proxyData) ||
+      (proxy && !dataTreeAllProxy)
     ) {
       return;
     }
@@ -412,7 +415,8 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
         organizationDictionaryIdSetMap,
         proxyData,
         selected,
-        setSelected
+        setSelected,
+        dataTreeAllProxy
       );
 
       if (!active) {
@@ -421,7 +425,7 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
 
       setTreeId(result);
     }
-  }, [sortMode, dataTreeId, grantMap, organizationMap, proxyData, selected, setSelected]);
+  }, [sortMode, dataTreeId, grantMap, organizationMap, proxyData, dataTreeAllProxy, selected, setSelected]);
 
   useEffect(() => {
     let active = true;
@@ -435,7 +439,8 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
         !dataTreeAll ||
         (sortMode === "grant" && !grantMap) ||
         (sortMode === "organization" && !organizationMap) ||
-        (config.buildType !== "server" && !proxyData)
+        (proxy && !proxyData) ||
+        (proxy && !dataTreeAllProxy)
       ) {
         return;
       }
@@ -451,7 +456,8 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
         organizationDictionaryIdSetMap,
         proxyData,
         selected,
-        setSelected
+        setSelected,
+        dataTreeAllProxy
       );
 
       if (!active) {
@@ -460,7 +466,7 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
 
       setTreeAll(result);
     }
-  }, [sortMode, dataTreeAll, grantMap, organizationMap, proxyData, selected, setSelected]);
+  }, [sortMode, dataTreeAll, grantMap, organizationMap, proxyData, dataTreeAllProxy, selected, setSelected]);
 
   if (entityIdValue === undefined) {
     return (
