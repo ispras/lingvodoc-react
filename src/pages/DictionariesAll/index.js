@@ -63,18 +63,26 @@ function constructTree(
   grantDictionaryIdSetMap,
   organizationMap,
   organizationDictionaryIdSetMap,
-  proxyData,
+  proxyPermission,
   selected,
   setSelected,
-  dataTreeAllProxy
+  proxyData=null
 ) {
   const { languages, tree } = data.language_tree;
-  const { languages: languagesProxy, tree: treeProxy } = dataTreeAllProxy.language_tree;
   const languageMap = {};
 
   if (tree === null) {
     return null;
   }
+
+  /*
+  function merge_trees() {
+    if (proxyData === null) {
+      return languages;
+    }
+    const { languages: proxyLanguages, tree: proxyTree } = proxyData.language_tree;
+  }
+  */
 
   languages.forEach(language => {
     languageMap[compositeIdToString(language.id)] = language;
@@ -108,7 +116,7 @@ function constructTree(
           languageMap={languageMap}
           selected={selected}
           setSelected={setSelected}
-          proxyData={proxyData}
+          proxyData={proxyPermission}
         />
       ))
     ) : (
@@ -117,7 +125,7 @@ function constructTree(
         languageMap={languageMap}
         selected={selected}
         setSelected={setSelected}
-        proxyData={proxyData}
+        proxyData={proxyPermission}
       />
     );
   } else {
@@ -132,7 +140,7 @@ function constructTree(
             languageMap={languageMap}
             selected={selected}
             setSelected={setSelected}
-            proxyData={proxyData}
+            proxyData={proxyPermission}
           />
         ) : (
           <IndividualNode
@@ -142,7 +150,7 @@ function constructTree(
             dictionaryIdSet={groupDictionaryIdSetMap[""]}
             selected={selected}
             setSelected={setSelected}
-            proxyData={proxyData}
+            proxyData={proxyPermission}
           />
         )
       )
@@ -154,7 +162,7 @@ function constructTree(
         languageMap={languageMap}
         selected={selected}
         setSelected={setSelected}
-        proxyData={proxyData}
+        proxyData={proxyPermission}
       />
     );
   }
@@ -302,7 +310,7 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
     skip: skip_general || sortMode !== "organization"
   });
 
-  const { data: proxyData } = useQuery(proxyDictionaryInfo, {
+  const { data: proxyPermission } = useQuery(proxyDictionaryInfo, {
     variables: { proxy: published ? false : true, category },
     fetchPolicy: "cache-and-network",
     skip: skip_general || config.buildType === "server"
@@ -313,6 +321,7 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
 
   const queryDictId = {};
   const queryDictAll = {};
+  const queryDictIdProxy = {};
   const queryDictAllProxy = {};
 
   const sortModeList = forCorpora || forParallelCorpora ? ["language"] : ["language", "grant", "organization"];
@@ -347,6 +356,13 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
       fetchPolicy: "cache-and-network",
       skip: skip_general || activeTab !== "1" || aSortMode != sortMode
     });
+    /*
+    queryDictIdProxy[aSortMode] = useQuery(getLanguageTree, {
+      variables: { ...variablesId, proxy },
+      fetchPolicy: "cache-and-network",
+      skip: skip_general || !proxy || !entityIdValue || aSortMode != sortMode
+    });
+    */
 
     queryDictAllProxy[aSortMode] = useQuery(getLanguageTree, {
       variables: { ...variablesAll, proxy },
@@ -357,7 +373,16 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
 
   const { data: dataTreeId } = queryDictId[sortMode];
   const { data: dataTreeAll } = queryDictAll[sortMode];
-  const { data: dataTreeAllProxy } = proxy ? queryDictAllProxy[sortMode] : queryDictAll[sortMode];
+
+  let dataTreeIdProxy = null;
+  if (queryDictIdProxy[sortMode]?.data) {
+    dataTreeIdProxy = queryDictIdProxy[sortMode].data;
+  }
+
+  let dataTreeAllProxy = null;
+  if (queryDictAllProxy[sortMode]?.data) {
+    dataTreeAllProxy = queryDictAllProxy[sortMode].data;
+  }
 
   const { data: grantData } = queryGrants;
   const { data: organizationData } = queryOrganizations;
@@ -391,8 +416,8 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
       !dataTreeId ||
       (sortMode === "grant" && !grantMap) ||
       (sortMode === "organization" && !organizationMap) ||
-      (proxy && !proxyData) ||
-      (proxy && !dataTreeAllProxy)
+      (proxy && !proxyPermission) ||
+      (proxy && !dataTreeIdProxy)
     ) {
       return;
     }
@@ -413,10 +438,10 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
         grantDictionaryIdSetMap,
         organizationMap,
         organizationDictionaryIdSetMap,
-        proxyData,
+        proxyPermission,
         selected,
         setSelected,
-        dataTreeAllProxy
+        dataTreeIdProxy
       );
 
       if (!active) {
@@ -425,7 +450,7 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
 
       setTreeId(result);
     }
-  }, [sortMode, dataTreeId, grantMap, organizationMap, proxyData, dataTreeAllProxy, selected, setSelected]);
+  }, [sortMode, dataTreeId, grantMap, organizationMap, proxyPermission, dataTreeIdProxy, selected, setSelected]);
 
   useEffect(() => {
     let active = true;
@@ -439,7 +464,7 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
         !dataTreeAll ||
         (sortMode === "grant" && !grantMap) ||
         (sortMode === "organization" && !organizationMap) ||
-        (proxy && !proxyData) ||
+        (proxy && !proxyPermission) ||
         (proxy && !dataTreeAllProxy)
       ) {
         return;
@@ -454,7 +479,7 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
         grantDictionaryIdSetMap,
         organizationMap,
         organizationDictionaryIdSetMap,
-        proxyData,
+        proxyPermission,
         selected,
         setSelected,
         dataTreeAllProxy
@@ -466,7 +491,7 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
 
       setTreeAll(result);
     }
-  }, [sortMode, dataTreeAll, grantMap, organizationMap, proxyData, dataTreeAllProxy, selected, setSelected]);
+  }, [sortMode, dataTreeAll, grantMap, organizationMap, proxyPermission, dataTreeAllProxy, selected, setSelected]);
 
   if (entityIdValue === undefined) {
     return (
