@@ -75,14 +75,12 @@ function constructTree(
     return null;
   }
 
-  /*
   function merge_trees() {
     if (proxyData === null) {
       return languages;
     }
     const { languages: proxyLanguages, tree: proxyTree } = proxyData.language_tree;
   }
-  */
 
   languages.forEach(language => {
     languageMap[compositeIdToString(language.id)] = language;
@@ -356,13 +354,12 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
       fetchPolicy: "cache-and-network",
       skip: skip_general || activeTab !== "1" || aSortMode != sortMode
     });
-    /*
+
     queryDictIdProxy[aSortMode] = useQuery(getLanguageTree, {
       variables: { ...variablesId, proxy },
       fetchPolicy: "cache-and-network",
       skip: skip_general || !proxy || !entityIdValue || aSortMode != sortMode
     });
-    */
 
     queryDictAllProxy[aSortMode] = useQuery(getLanguageTree, {
       variables: { ...variablesAll, proxy },
