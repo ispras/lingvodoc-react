@@ -70,7 +70,7 @@ function constructTree(
 ) {
 
   const { languages, tree } = data.language_tree;
-  const languageMap = { 'common': {} };
+  const languageMap = { common: {} };
 
   if (tree === null) {
     return null;
@@ -79,7 +79,7 @@ function constructTree(
   if (proxyData === null) {
 
     languages.forEach(language => {
-      languageMap['common'][compositeIdToString(language.id)] = language;
+      languageMap.common[compositeIdToString(language.id)] = language;
     });
 
   } else {
@@ -99,82 +99,85 @@ function constructTree(
       perspectiveMap[side] = {};
 
       languageData[side].forEach(language => {
-        languageMap[side][compositeIdToString(language.id)] = language;
+        languageMap[side][compositeIdToString(language.id)] = structuredClone(language);
 
         language.dictionaries.forEach(dictionary => {
-          dictionaryMap[side][compositeIdToString(dictionary.id)] = dictionary;
+          dictionaryMap[side][compositeIdToString(dictionary.id)] = structuredClone(dictionary);
 
           dictionary.perspectives.forEach(perspective => {
-            perspectiveMap[side][compositeIdToString(perspective.id)] = perspective;
+            perspectiveMap[side][compositeIdToString(perspective.id)] = structuredClone(perspective);
           });
         });
       });
     });
 
     // Getting diffs and intersection of lang/dict/pers lists between local and proxy sides
-    // !!!!!!!! keys() ?????????????????
     [languageMap, dictionaryMap, perspectiveMap].forEach(amap => {
 
-      amap['local_diff'] = amap['local'].difference(amap['proxy']);
-      amap['proxy_diff'] = amap['proxy'].difference(amap['local']);
-      amap['union'] = amap['local'].union(amap['proxy']);
-      amap['intersection'] = amap['local'].intersection(amap['proxy']);
+      const local_set = new Set(Object.keys(amap.local));
+      const proxy_set = new Set(Object.keys(amap.proxy));
+
+      amap.local_diff = local_set.difference(proxy_set);
+      amap.proxy_diff = proxy_set.difference(local_set);
+      amap.union = local_set.union(proxy_set);
+      amap.intersection = local_set.intersection(proxy_set);
     });
 
     // Marking object in input map as 'single' if corresponding '_diff' list includes its id
     [languageMap, dictionaryMap, perspectiveMap].forEach(amap => {
       ['local', 'proxy'].forEach(side => {
-        amap[side].forEach((obj, id) => {
+        for (const [id, obj] of Object.entries(amap[side])) {
           if (amap[`${side}_diff`].has(id)) {
             obj.single = side;
           }
-        });
+        }
       });
     });
 
     // Iterate through language_union (local+proxy)
     // collect languages into common map
-    languageMap['union'].forEach(lang_id => {
+    languageMap.union.forEach(lang_id => {
 
       // If language exists only on proxy side
-      if (languageMap['proxy_diff'].has(lang_id)) {
-        const lang_result = languageMap['proxy'][lang_id];
-        languageMap['common'][lang_id] = lang_result;
+      if (languageMap.proxy_diff.has(lang_id)) {
+        const lang_result = languageMap.proxy[lang_id];
+        languageMap.common[lang_id] = lang_result;
 
       } else {
-        const lang_result = languageMap['local'][lang_id];
-        languageMap['common'][lang_id] = lang_result;
+        const lang_result = languageMap.local[lang_id];
+        languageMap.common[lang_id] = lang_result;
 
         // If language is on the both sides
-        if (languageMap['intersection'].has(lang_id)) {
-          const dict_union = [
-            ...languageMap['local'][lang_id].dictionaries,
-            ...languageMap['proxy'][lang_id].dictionaries ];
+        if (languageMap.intersection.has(lang_id)) {
+          const dict_union = new Set([
+            ...languageMap.local[lang_id].dictionaries,
+            ...languageMap.proxy[lang_id].dictionaries]
+            .map(obj => compositeIdToString(obj.id)));
 
           // Iterate through dictionary_union for current language
           dict_union.forEach(dict_id => {
 
             // If dictionary exists only on proxy side
-            if (dictionaryMap['proxy_diff'].has(dict_id)) {
-              const dict_result = dictionaryMap['proxy'][dict_id];
+            if (dictionaryMap.proxy_diff.has(dict_id)) {
+              const dict_result = dictionaryMap.proxy[dict_id];
               lang_result.dictionaries.push(dict_result);
 
             } else {
-              const dict_result = dictionaryMap['local'][dict_id];
-              lang_result.dictionaries.push(dict_result);
+              const dict_result = dictionaryMap.local[dict_id];
 
               // If dictionary is on the both sides
-              if (dictionaryMap['intersection'].has(dict_id)) {
-                const pers_union = [
-                  ...dictionaryMap['local'][dict_id].perspectives,
-                  ...dictionaryMap['proxy'][dict_id].perspectives ];
+              if (dictionaryMap.intersection.has(dict_id)) {
+                const pers_union = new Set([
+                  ...dictionaryMap.local[dict_id].perspectives,
+                  ...dictionaryMap.proxy[dict_id].perspectives]
+                  .map(obj => compositeIdToString(obj.id)));
 
                 // Iterate through perspective_union for current dictionary
                 pers_union.forEach(pers_id => {
 
                   // If perspective exists only on proxy side
-                  if (perspectiveMap['proxy_diff'].has(pers_id)) {
-                    const pers_result = perspectiveMap['proxy'][pers_id];
+                  if (perspectiveMap.proxy_diff.has(pers_id)) {
+                    const pers_result = perspectiveMap.proxy[pers_id];
                     dict_result.perspectives.push(pers_result);
                   }
                 });
@@ -211,7 +214,7 @@ function constructTree(
         <LanguageNode
           key={index}
           node={node}
-          languageMap={languageMap['common']}
+          languageMap={languageMap.common}
           selected={selected}
           setSelected={setSelected}
           proxyData={proxyPermission}
@@ -220,7 +223,7 @@ function constructTree(
     ) : (
       <LanguageNode
         node={tree}
-        languageMap={languageMap['common']}
+        languageMap={languageMap.common}
         selected={selected}
         setSelected={setSelected}
         proxyData={proxyPermission}
@@ -235,7 +238,7 @@ function constructTree(
             node={node}
             groupMap={groupMap}
             dictionaryIdSet={groupDictionaryIdSetMap[String(node[0])]}
-            languageMap={languageMap['common']}
+            languageMap={languageMap.common}
             selected={selected}
             setSelected={setSelected}
             proxyData={proxyPermission}
@@ -244,7 +247,7 @@ function constructTree(
           <IndividualNode
             key={index}
             node={node}
-            languageMap={languageMap['common']}
+            languageMap={languageMap.common}
             dictionaryIdSet={groupDictionaryIdSetMap[""]}
             selected={selected}
             setSelected={setSelected}
@@ -257,7 +260,7 @@ function constructTree(
         node={[Number(entityId), tree[1]]}
         groupMap={groupMap}
         dictionaryIdSet={groupDictionaryIdSetMap[entityId]}
-        languageMap={languageMap['common']}
+        languageMap={languageMap.common}
         selected={selected}
         setSelected={setSelected}
         proxyData={proxyPermission}
