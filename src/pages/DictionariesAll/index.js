@@ -86,7 +86,7 @@ function constructTree(
 
     // Merging local and proxy language maps
 
-    const { languages: proxyLanguages, tree: proxyTree } = proxyData.language_tree;
+    const { languages: proxyLanguages } = proxyData.language_tree;
     const languageData = { local: languages, proxy: proxyLanguages };
     const dictionaryMap = {};
     const perspectiveMap = {};
@@ -134,6 +134,53 @@ function constructTree(
       });
     });
 
+    // Insert language from proxy with its parents
+    // to local tree since common point or from the top
+    function f(language) {
+      let parents = [language.id];
+      let cur_lang = language;
+      let parent_id = language.parent_id;
+      let common_point = false;
+
+      while (parent_id !== null && !common_point) {
+        parents = [parent_id, parents];
+        parent_id = compositeIdToString(parent_id);
+        common_point = languageMap.local.has(parent_id);
+        cur_lang = languageMap[parent_id];
+        parent_id = cur_lang.parent_id;
+      }
+
+      let stub = tree[1];
+
+      if (parents.length > 1) {
+        const proxy_id = compositeIdToString(parents[0]);
+        parents = parents[1];
+
+        // Getting stub of tree to place subtree from proxy since top of this stub
+        function g(stb) {
+          for (const s of stb) {
+            const local_id = compositeIdToString(s[0]);
+
+            if (local_id === proxy_id) {
+              stub = s;
+              break;
+
+            } else if (s.length > 1) {
+              g(s.slice(1));
+            }
+          }
+        }
+
+        // Getting stub of tree only if common_point exists
+        // otherwise the function gets full tree so this makes no sense
+        if (common_point) {
+          g(stub);
+        }
+      }
+
+      stub.push(parents);
+    }
+
     // Iterate through language_union (local+proxy)
     // collect languages into common map
     languageMap.union.forEach(lang_id => {
@@ -142,6 +189,7 @@ function constructTree(
       if (languageMap.proxy_diff.has(lang_id)) {
         const lang_result = languageMap.proxy[lang_id];
         languageMap.common[lang_id] = lang_result;
+        f(lang_result);
 
       } else {
         const lang_result = languageMap.local[lang_id];
