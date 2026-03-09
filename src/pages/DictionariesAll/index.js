@@ -69,7 +69,8 @@ function constructTree(
   proxyData=null
 ) {
 
-  const { languages, tree } = data.language_tree;
+  const { languages, tree: frozenTree } = data.language_tree;
+  const tree = structuredClone(frozenTree);
   const languageMap = { common: {} };
 
   if (tree === null) {
@@ -136,17 +137,17 @@ function constructTree(
 
     // Insert language from proxy with its parents
     // to local tree since common point or from the top
-    function f(language) {
-      let parents = [language.id];
-      let cur_lang = language;
-      let parent_id = language.parent_id;
+    function f(lang) {
+      let parents = [lang.id];
+      let cur_lang = lang;
+      let parent_id = lang.parent_id;
       let common_point = false;
 
       while (parent_id !== null && !common_point) {
-        parents = [parent_id, parents];
+        parents = [parent_id, [parents]];
         parent_id = compositeIdToString(parent_id);
-        common_point = languageMap.local.has(parent_id);
-        cur_lang = languageMap[parent_id];
+        common_point = languageMap.intersection.has(parent_id);
+        cur_lang = languageMap.proxy[parent_id];
         parent_id = cur_lang.parent_id;
       }
 
@@ -162,11 +163,11 @@ function constructTree(
             const local_id = compositeIdToString(s[0]);
 
             if (local_id === proxy_id) {
-              stub = s;
+              stub = s[1];
               break;
 
             } else if (s.length > 1) {
-              g(s.slice(1));
+              g(s[1]);
             }
           }
         }
@@ -178,7 +179,8 @@ function constructTree(
         }
       }
 
-      stub.push(parents);
+      // Add languages from proxy at beginning of branch
+      stub.unshift(...parents);
     }
 
     // Iterate through language_union (local+proxy)
