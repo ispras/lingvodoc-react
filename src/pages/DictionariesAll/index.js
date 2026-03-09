@@ -130,6 +130,13 @@ function constructTree(
         for (const [id, obj] of Object.entries(amap[side])) {
           if (amap[`${side}_diff`].has(id)) {
             obj.single = side;
+            // If obj is language or dictionary we should mark
+            // nested dictionaries and/or perspectives as well
+            (obj.dictionaries || []).forEach(dict => {
+              dict.single = side;
+              dict.perspectives.forEach(pers => { pers.single = side });
+            });
+            (obj.perspectives || []).forEach(pers => { pers.single = side });
           }
         }
       });
