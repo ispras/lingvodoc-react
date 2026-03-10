@@ -170,6 +170,9 @@ function constructTree(
             const local_id = compositeIdToString(s[0]);
 
             if (local_id === proxy_id) {
+              if (s.length === 1) {
+                s[s.length] = [];
+              }
               stub = s[1];
               break;
 
@@ -180,7 +183,7 @@ function constructTree(
         }
 
         // Getting stub of tree only if common_point exists
-        // otherwise the function gets full tree so this makes no sense
+        // otherwise the function returns full tree so this makes no sense
         if (common_point) {
           g(stub);
         }
@@ -484,6 +487,7 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
 
   const sortModeList = forCorpora || forParallelCorpora ? ["language"] : ["language", "grant", "organization"];
   const proxy = (config.buildType !== "server");
+  const allowed_sync = (user.user.id === 1 || user.user.allowed_sync);
 
   for (const aSortMode of sortModeList) {
     const variablesId = { ...variables };
@@ -516,15 +520,15 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
     });
 
     queryDictIdProxy[aSortMode] = useQuery(getLanguageTree, {
-      variables: { ...variablesId, proxy },
+      variables: { ...variablesId, proxy: allowed_sync },
       fetchPolicy: "cache-and-network",
-      skip: skip_general || !proxy || !entityIdValue || aSortMode != sortMode
+      skip: skip_general || !allowed_sync || !entityIdValue || aSortMode != sortMode
     });
 
     queryDictAllProxy[aSortMode] = useQuery(getLanguageTree, {
-      variables: { ...variablesAll, proxy },
+      variables: { ...variablesAll, proxy: allowed_sync },
       fetchPolicy: "cache-and-network",
-      skip: skip_general || !proxy || activeTab !== "1" || aSortMode != sortMode
+      skip: skip_general || !allowed_sync || activeTab !== "1" || aSortMode != sortMode
     });
   }
 
@@ -574,7 +578,7 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
       (sortMode === "grant" && !grantMap) ||
       (sortMode === "organization" && !organizationMap) ||
       (proxy && !proxyPermission) ||
-      (proxy && !dataTreeIdProxy)
+      (allowed_sync && !dataTreeIdProxy)
     ) {
       return;
     }
@@ -622,7 +626,7 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
         (sortMode === "grant" && !grantMap) ||
         (sortMode === "organization" && !organizationMap) ||
         (proxy && !proxyPermission) ||
-        (proxy && !dataTreeAllProxy)
+        (allowed_sync && !dataTreeAllProxy)
       ) {
         return;
       }
