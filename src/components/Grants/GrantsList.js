@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Button, Table } from "semantic-ui-react";
 import { graphql } from "@apollo/client/react/hoc";
 import PropTypes from "prop-types";
@@ -18,85 +18,73 @@ function dateFormat(timestamp) {
     .padStart(2, "0")}.${date.getUTCDate().toString().padStart(2, "0")}`;
 }
 
-class GrantsList extends React.Component {
-  constructor(props) {
-    super(props);
-    this.joinGrant = this.joinGrant.bind(this);
-    this.isOwner = this.isOwner.bind(this);
-  }
+const GrantsList = ({ createGrantPermission, data }) => {
+  const getTranslation = useContext(TranslationContext);
 
-  joinGrant(grant) {
-    const { createGrantPermission } = this.props;
+  const joinGrant = grant => {
     createGrantPermission({
       variables: { grantId: grant.id }
     }).then(() => {
-      window.logger.suc(this.context("Request has been sent to the grant's owner."));
+      window.logger.suc(getTranslation("Request has been sent to the grant's owner."));
     });
-  }
+  };
 
-  isOwner(grant) {
-    const {
-      data: { user }
-    } = this.props;
+  const isOwner = grant => {
+    const { user } = data;
     return !!grant.owners.find(u => user && user.id === u.id);
-  }
+  };
 
-  render() {
-    const { data } = this.props;
-    const { grants } = data;
+  const { grants } = data;
 
-    return (
-      <div style={{ overflowY: "auto" }}>
-        <Table celled padded>
-          <Table.Header>
-            <Table.Row>
-              <Table.HeaderCell>{this.context("Grant Issuer")}</Table.HeaderCell>
-              <Table.HeaderCell>{this.context("Grant")}</Table.HeaderCell>
-              <Table.HeaderCell>{this.context("Issuer URL")}</Table.HeaderCell>
-              <Table.HeaderCell>{this.context("Grant URL")}</Table.HeaderCell>
-              <Table.HeaderCell>{this.context("Grant Number")}</Table.HeaderCell>
-              <Table.HeaderCell>{this.context("Begin")}</Table.HeaderCell>
-              <Table.HeaderCell>{this.context("End")}</Table.HeaderCell>
-              <Table.HeaderCell>{this.context("Owners")}</Table.HeaderCell>
-              <Table.HeaderCell />
+  return (
+    <div style={{ overflowY: "auto" }}>
+      <Table celled padded>
+        <Table.Header>
+          <Table.Row>
+            <Table.HeaderCell>{getTranslation("Grant Issuer")}</Table.HeaderCell>
+            <Table.HeaderCell>{getTranslation("Grant")}</Table.HeaderCell>
+            <Table.HeaderCell>{getTranslation("Issuer URL")}</Table.HeaderCell>
+            <Table.HeaderCell>{getTranslation("Grant URL")}</Table.HeaderCell>
+            <Table.HeaderCell>{getTranslation("Grant Number")}</Table.HeaderCell>
+            <Table.HeaderCell>{getTranslation("Begin")}</Table.HeaderCell>
+            <Table.HeaderCell>{getTranslation("End")}</Table.HeaderCell>
+            <Table.HeaderCell>{getTranslation("Owners")}</Table.HeaderCell>
+            <Table.HeaderCell />
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
+          {grants.map(grant => (
+            <Table.Row key={grant.id}>
+              <Table.Cell>{T(grant.issuer_translations)}</Table.Cell>
+              <Table.Cell>{T(grant.translations)}</Table.Cell>
+              <Table.Cell className="lingvo-column-issuer-url">
+                <a href={grant.issuer_url}>{grant.issuer_url}</a>
+              </Table.Cell>
+              <Table.Cell className="lingvo-column-grant-url">
+                <a href={grant.grant_url}>{grant.grant_url}</a>
+              </Table.Cell>
+              <Table.Cell>{grant.grant_number}</Table.Cell>
+              <Table.Cell>{dateFormat(grant.begin)}</Table.Cell>
+              <Table.Cell>{dateFormat(grant.end)}</Table.Cell>
+              <Table.Cell>
+                {grant.owners.map(owner => (
+                  <div key={owner.id}>{owner.name}</div>
+                ))}
+              </Table.Cell>
+              <Table.Cell>
+                {!isOwner(grant) && (
+                  <Button positive onClick={() => joinGrant(grant)}>
+                    {getTranslation("Join")}
+                  </Button>
+                )}
+              </Table.Cell>
             </Table.Row>
-          </Table.Header>
-          <Table.Body>
-            {grants.map(grant => (
-              <Table.Row key={grant.id}>
-                <Table.Cell>{T(grant.issuer_translations)}</Table.Cell>
-                <Table.Cell>{T(grant.translations)}</Table.Cell>
-                <Table.Cell className="lingvo-column-issuer-url">
-                  <a href={grant.issuer_url}>{grant.issuer_url}</a>
-                </Table.Cell>
-                <Table.Cell className="lingvo-column-grant-url">
-                  <a href={grant.grant_url}>{grant.grant_url}</a>
-                </Table.Cell>
-                <Table.Cell>{grant.grant_number}</Table.Cell>
-                <Table.Cell>{dateFormat(grant.begin)}</Table.Cell>
-                <Table.Cell>{dateFormat(grant.end)}</Table.Cell>
-                <Table.Cell>
-                  {grant.owners.map(owner => (
-                    <div key={owner.id}>{owner.name}</div>
-                  ))}
-                </Table.Cell>
-                <Table.Cell>
-                  {!this.isOwner(grant) && (
-                    <Button positive onClick={() => this.joinGrant(grant)}>
-                      {this.context("Join")}
-                    </Button>
-                  )}
-                </Table.Cell>
-              </Table.Row>
-            ))}
-          </Table.Body>
-        </Table>
-      </div>
-    );
-  }
-}
-
-GrantsList.contextType = TranslationContext;
+          ))}
+        </Table.Body>
+      </Table>
+    </div>
+  );
+};
 
 GrantsList.propTypes = {
   data: PropTypes.shape({

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useEffect, useState, useContext } from "react";
 import { Button, Dropdown, Input, List, TextArea } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
@@ -14,118 +14,113 @@ const localesQuery = gql`
   }
 `;
 
-export class Translation extends React.Component {
-  constructor(props) {
-    super(props);
+export const Translation = ({
+  translation,
+  locales,
+  usedLocaleIds,
+  textArea,
+  translations,
+  onChange,
+  onChangeTranslations
+}) => {
+  const [id, setId] = useState(translation.id);
+  const [localeId, setLocaleId] = useState(translation.localeId);
+  const [content, setContent] = useState(translation.content);
 
-    const { translation } = props;
+  useEffect(() => {
+    onChange({
+      id,
+      localeId,
+      content
+    });
+  }, [id, localeId, content]);
 
-    this.state = {
-      id: translation.id,
-      localeId: translation.localeId,
-      content: translation.content
-    };
+  const onChangeContent = (event, data) => {
+    setContent(data.value);
+  };
 
-    this.onChangeContent = this.onChangeContent.bind(this);
-    this.onChangeLocale = this.onChangeLocale.bind(this);
-    this.onDeleteTranslation = this.onDeleteTranslation.bind(this);
-  }
-
-  onChangeContent(event, data) {
-    const { onChange } = this.props;
-    this.setState({ content: data.value }, () => onChange(this.state));
-  }
-
-  onChangeLocale(event, data) {
-    const { locales } = this.props;
-    const { onChange } = this.props;
+  const onChangeLocale = (event, data) => {
     const locale = locales.find(l => l.shortcut === data.value);
     if (locale) {
-      this.setState({ localeId: locale.id }, () => onChange(this.state));
+      setLocaleId(locale.id);
     }
-  }
+  };
 
-  onDeleteTranslation(event, { translationid }) {
+  const onDeleteTranslation = (event, { translationid }) => {
     const newTranslations = [];
-    this.props.translations.forEach(translation => {
+    translations.forEach(translation => {
       if (translation.id != translationid) {
         newTranslations.push(translation);
       }
     });
 
-    this.props.onChangeTranslations(newTranslations);
-  }
+    onChangeTranslations(newTranslations);
+  };
 
-  render() {
-    const { locales, usedLocaleIds, textArea, translations } = this.props;
+  const options = locales
+    .filter(locale => usedLocaleIds.indexOf(locale.id) < 0 || locale.id === localeId)
+    .map(locale => ({ key: locale.shortcut, text: locale.intl_name, value: locale.shortcut }));
 
-    const { id } = this.state;
+  const selectedLocale = locales.find(locale => locale.id === localeId);
 
-    const options = locales
-      .filter(locale => usedLocaleIds.indexOf(locale.id) < 0 || locale.id === this.state.localeId)
-      .map(locale => ({ key: locale.shortcut, text: locale.intl_name, value: locale.shortcut }));
-
-    const selectedLocale = locales.find(locale => locale.id === this.state.localeId);
-
-    return textArea ? (
-      <div className="lingvo-atom-grid" key={id}>
-        <div className="lingvo-atom-grid__text">
-          <TextArea
-            rows={2}
-            placeholder=""
-            value={this.state.content}
-            onChange={this.onChangeContent}
-            className="lingvo-gist-elem lingvo-gist-elem_textarea"
-          />
-        </div>
-        <div className="lingvo-atom-grid__lang">
-          <Dropdown
-            className="lingvo-gist-elem lingvo-gist-elem_language"
-            options={options}
-            value={selectedLocale.shortcut}
-            onChange={this.onChangeLocale}
-            selection
-            icon={<i className="lingvo-icon lingvo-icon_arrow" />}
-          />
-        </div>
-        <div className="lingvo-atom-grid__delete">
-          <Button
-            icon={<i className="lingvo-icon lingvo-icon_trash" />}
-            disabled={translations.length == 1}
-            onClick={this.onDeleteTranslation}
-            translationid={id}
-            className="lingvo-button-atom-delete lingvo-button-atom-delete_disab-hidden"
-          />
-        </div>
+  return textArea ? (
+    <div className="lingvo-atom-grid" key={id}>
+      <div className="lingvo-atom-grid__text">
+        <TextArea
+          rows={2}
+          placeholder=""
+          value={content}
+          onChange={onChangeContent}
+          className="lingvo-gist-elem lingvo-gist-elem_textarea"
+        />
       </div>
-    ) : (
-      <div className="lingvo-atom-grid" key={id}>
-        <div className="lingvo-atom-grid__text">
-          <Input value={this.state.content} onChange={this.onChangeContent} fluid className="lingvo-gist-elem" />
-        </div>
-        <div className="lingvo-atom-grid__lang">
-          <Dropdown
-            className="lingvo-gist-elem lingvo-gist-elem_language"
-            options={options}
-            value={selectedLocale.shortcut}
-            onChange={this.onChangeLocale}
-            selection
-            icon={<i className="lingvo-icon lingvo-icon_arrow" />}
-          />
-        </div>
-        <div className="lingvo-atom-grid__delete">
-          <Button
-            icon={<i className="lingvo-icon lingvo-icon_trash" />}
-            disabled={translations.length == 1}
-            onClick={this.onDeleteTranslation}
-            translationid={id}
-            className="lingvo-button-atom-delete lingvo-button-atom-delete_disab-hidden"
-          />
-        </div>
+      <div className="lingvo-atom-grid__lang">
+        <Dropdown
+          className="lingvo-gist-elem lingvo-gist-elem_language"
+          options={options}
+          value={selectedLocale.shortcut}
+          onChange={onChangeLocale}
+          selection
+          icon={<i className="lingvo-icon lingvo-icon_arrow" />}
+        />
       </div>
-    );
-  }
-}
+      <div className="lingvo-atom-grid__delete">
+        <Button
+          icon={<i className="lingvo-icon lingvo-icon_trash" />}
+          disabled={translations.length == 1}
+          onClick={onDeleteTranslation}
+          translationid={id}
+          className="lingvo-button-atom-delete lingvo-button-atom-delete_disab-hidden"
+        />
+      </div>
+    </div>
+  ) : (
+    <div className="lingvo-atom-grid" key={id}>
+      <div className="lingvo-atom-grid__text">
+        <Input value={content} onChange={onChangeContent} fluid className="lingvo-gist-elem" />
+      </div>
+      <div className="lingvo-atom-grid__lang">
+        <Dropdown
+          className="lingvo-gist-elem lingvo-gist-elem_language"
+          options={options}
+          value={selectedLocale.shortcut}
+          onChange={onChangeLocale}
+          selection
+          icon={<i className="lingvo-icon lingvo-icon_arrow" />}
+        />
+      </div>
+      <div className="lingvo-atom-grid__delete">
+        <Button
+          icon={<i className="lingvo-icon lingvo-icon_trash" />}
+          disabled={translations.length == 1}
+          onClick={onDeleteTranslation}
+          translationid={id}
+          className="lingvo-button-atom-delete lingvo-button-atom-delete_disab-hidden"
+        />
+      </div>
+    </div>
+  );
+};
 
 Translation.propTypes = {
   locales: PropTypes.array.isRequired,
@@ -136,128 +131,98 @@ Translation.propTypes = {
   translations: PropTypes.array
 };
 
-class Translations extends React.Component {
-  constructor(props) {
-    super(props);
+const Translations = ({ data, onChange, textArea, textAddButton, translations }) => {
+  const getTranslation = useContext(TranslationContext);
 
-    this.state = {
-      translations: (props.translations.length && props.translations) || []
-    };
+  const [translationsState, setTranslationsState] = useState(
+    (translations.length && translations) || [{ id: 1, localeId: 1, content: "" }]
+  );
 
-    this.addTranslation = this.addTranslation.bind(this);
-    this.onChange2 = this.onChange2.bind(this);
-    this.isAddTranslationDisabled = this.isAddTranslationDisabled.bind(this);
+  useEffect(() => {
+    onChange(translationsState);
+  }, [translationsState]);
 
-    if (!this.state.translations.length) {
-      const lastId = 1;
-      this.state = {
-        translations: [...this.state.translations, { id: lastId, localeId: lastId, content: "" }]
-      };
-      props.onChange(this.state.translations);
-    }
-  }
+  const onChange2 = useCallback(
+    translation => {
+      const updateState = translationsState.map(t => {
+        if (t.id === translation.id) {
+          return {
+            ...t,
+            localeId: translation.localeId,
+            content: translation.content
+          };
+        }
+        return t;
+      });
 
-  onChange2(translation) {
-    const updateState = this.state.translations.map(t => {
-      if (t.id === translation.id) {
-        return {
-          ...t,
-          localeId: translation.localeId,
-          content: translation.content
-        };
-      }
-      return t;
-    });
+      setTranslationsState(updateState);
+    },
+    [translationsState]
+  );
 
-    this.setState(
-      {
-        translations: updateState
-      },
-      () => this.props.onChange(this.state.translations)
-    );
-  }
+  const addTranslation = useCallback(() => {
+    const { error, loading, all_locales: locales } = data;
 
-  addTranslation() {
-    const {
-      data: { error, loading, all_locales: locales }
-    } = this.props;
     if (!loading && !error) {
       const lastId =
         nth(
-          this.state.translations.map(t => t.id),
+          translationsState.map(t => t.id),
           -1
         ) + 1 || 1;
 
       // pick next free locale id
       const ids = locales.map(locale => locale.id);
 
-      const usedIds = this.state.translations.map(t => t.localeId);
+      const usedIds = translationsState.map(t => t.localeId);
 
       const freeLocales = difference(ids, usedIds);
 
       if (!isEmpty(freeLocales)) {
-        this.setState(
-          {
-            translations: [...this.state.translations, { id: lastId, localeId: head(freeLocales), content: "" }]
-          },
-          () => this.props.onChange(this.state.translations)
-        );
+        setTranslationsState([...translationsState, { id: lastId, localeId: head(freeLocales), content: "" }]);
       } else {
-        window.logger.err(this.context("No more locales!"));
+        window.logger.err(getTranslation("No more locales!"));
       }
     }
+  }, [translationsState]);
+
+  const isAddTranslationDisabled = useCallback(() => {
+    return !translationsState.length || translationsState.some(translation => translation.content.length === 0);
+  }, [translationsState]);
+
+  const { error, loading, all_locales: locales } = data;
+
+  if (loading || error) {
+    return null;
   }
 
-  isAddTranslationDisabled() {
-    return (
-      !this.state.translations.length || this.state.translations.some(translation => translation.content.length === 0)
-    );
-  }
+  const usedLocaleIds = translationsState.map(t => t.localeId);
 
-  render() {
-    const {
-      data: { error, loading, all_locales: locales },
-      textArea, textAddButton
-    } = this.props;
-
-    if (loading || error) {
-      return null;
-    }
-
-    const { translations } = this.state;
-
-    const usedLocaleIds = translations.map(t => t.localeId);
-    return (
-      <div className="lingvo-translation__content">
-        <List style={{ marginBottom: "20px" }}>
-          {translations.map(translation => (
-            <List.Item key={translation.id} style={{ marginBottom: "16px", paddingTop: "0", paddingBottom: "0" }}>
-              <Translation
-                locales={locales}
-                translation={translation}
-                translations={translations}
-                onChangeTranslations={translations =>
-                  this.setState({ translations }, () => this.props.onChange(translations))
-                }
-                usedLocaleIds={usedLocaleIds}
-                onChange={this.onChange2}
-                textArea={textArea}
-              />
-            </List.Item>
-          ))}
-        </List>
-        <Button
-          onClick={this.addTranslation}
-          content={textAddButton && this.context(textAddButton) || this.context("Add translation")}
-          disabled={this.isAddTranslationDisabled()}
-          className="lingvo-button-violet"
-        />
-      </div>
-    );
-  }
-}
-
-Translations.contextType = TranslationContext;
+  return (
+    <div className="lingvo-translation__content">
+      <List style={{ marginBottom: "20px" }}>
+        {translationsState.map(translation => (
+          <List.Item key={translation.id} style={{ marginBottom: "16px", paddingTop: "0", paddingBottom: "0" }}>
+            <Translation
+              locales={locales}
+              translation={translation}
+              translations={translationsState}
+              onChangeTranslations={translations => setTranslationsState(translations)}
+              usedLocaleIds={usedLocaleIds}
+              onChange={onChange2}
+              textArea={textArea}
+            />
+          </List.Item>
+        ))}
+      </List>
+      <Button
+        onClick={addTranslation}
+        content={(textAddButton && getTranslation(textAddButton)) || getTranslation("Add translation")}
+        disabled={isAddTranslationDisabled()}
+        className="lingvo-button-violet"
+      />
+    </div>
+  );
+};
 
 Translations.propTypes = {
   data: PropTypes.shape({

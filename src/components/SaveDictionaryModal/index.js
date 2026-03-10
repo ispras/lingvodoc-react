@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useContext } from "react";
 import { connect } from "react-redux";
 import { Button, Checkbox, Modal } from "semantic-ui-react";
 import { gql } from "@apollo/client";
@@ -21,144 +21,132 @@ const query = gql`
 `;
 
 const saveDictionaryMutation = gql`
-  mutation SaveDictionary($id: LingvodocID!, $mode: String!, $soundFlag: Boolean, $markupFlag: Boolean, $fType: String) {
+  mutation SaveDictionary(
+    $id: LingvodocID!
+    $mode: String!
+    $soundFlag: Boolean
+    $markupFlag: Boolean
+    $fType: String
+  ) {
     save_dictionary(id: $id, mode: $mode, sound_flag: $soundFlag, markup_flag: $markupFlag, f_type: $fType) {
       triumph
     }
   }
 `;
 
-class Properties extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      mode: "all",
-      save_sound: false,
-      save_markup: false,
-      f_type: 'xlsx'
-    };
+const Properties = ({ id, data, save, actions }) => {
+  const getTranslation = useContext(TranslationContext);
 
-    this.onChangeMode = this.onChangeMode.bind(this);
-    this.saveData = this.saveData.bind(this);
-    this.onSaveData = this.onSaveData.bind(this);
-  }
+  const [mode, setMode] = useState("all");
+  const [saveSound, setSaveSound] = useState(false);
+  const [saveMarkup, setSaveMarkup] = useState(false);
+  const [fType, setFType] = useState("xlsx");
 
-  onChangeMode(e, { value }) {
-    this.setState({
-      mode: value
-    });
-  }
+  const onChangeMode = (e, { value }) => {
+    setMode(value);
+  };
 
-  onSaveData(e, { value }) {
-    this.saveData(value);
-  }
+  const onSaveData = (e, { value }) => {
+    saveData(value);
+  };
 
-  saveData(mode) {
-    const { id, save } = this.props;
+  const saveData = mode => {
     save({
       variables: {
         id,
         mode,
-        soundFlag: this.state.save_sound,
-        markupFlag: this.state.save_markup,
-        fType: this.state.f_type
+        soundFlag: saveSound,
+        markupFlag: saveMarkup,
+        fType: fType
       }
     }).then(
       () => {
-        window.logger.suc(this.context("Saving dictionary task is launched. Please check out tasks for details."));
+        window.logger.suc(getTranslation("Saving dictionary task is launched. Please check out tasks for details."));
       },
       () => {
-        window.logger.err(this.context("Failed to launch saving dictionary task."));
+        window.logger.err(getTranslation("Failed to launch saving dictionary task."));
       }
     );
-  }
+  };
 
-  render() {
-    const {
-      data: { dictionary },
-      actions
-    } = this.props;
+  const { dictionary } = data;
+  const { translations } = dictionary;
 
-    const { translations } = dictionary;
-
-    return (
-      <Modal closeIcon onClose={actions.closeSaveDictionaryModal} open dimmer className="lingvo-modal2">
-        <Modal.Header>{`${this.context("Save")} '${T(translations)}'?`}</Modal.Header>
-        <Modal.Content>
-          <div className="lingvo-segment-modal">
-            {this.context("URL with results of saving data should appear soon after clicking save button in the tasks")}
-            .
-          </div>
-          <div style={{ marginBottom: "25px" }}>
-            <Checkbox
-              style={{ margin: "0.5em 2em 0.5em 0.5em" }}
-              label={this.context("Save sound recordings")}
-              checked={this.state.save_sound}
-              onChange={(e, { checked }) => this.setState({ save_sound: checked })}
-              className="lingvo-checkbox"
-            />
-            <Checkbox
-              style={{ margin: "0.5em 0 0.5em 0.5em" }}
-              label={this.context("Save markup")}
-              checked={this.state.save_markup}
-              onChange={(e, { checked }) => this.setState({ save_markup: checked })}
-              className="lingvo-checkbox"
-            />
-          </div>
-          <div style={{ margin: "0 0 0.5em 0.5em" }} key="xlsx">
-            <Checkbox
-              radio
-              label={this.context("Excel file")}
-              value="xlsx"
-              checked={this.state.f_type === 'xlsx'}
-              onChange={(e, { value }) => this.setState({ f_type: value })}
-            />
-          </div>
-          <div style={{ margin: "0 0 0.5em 0.5em" }} key="docx">
-            <Checkbox
-              radio
-              label={this.context("Word file")}
-              value="docx"
-              checked={this.state.f_type === 'docx'}
-              onChange={(e, { value }) => this.setState({ f_type: value })}
-            />
-          </div>
-          <div style={{ margin: "0 0 0.5em 0.5em" }} key="rtf">
-            <Checkbox
-              radio
-              label={this.context("RichText file")}
-              value="rtf"
-              checked={this.state.f_type === 'rtf'}
-              onChange={(e, { value }) => this.setState({ f_type: value })}
-            />
-          </div>
-        </Modal.Content>
-
-        <Modal.Actions>
-          <Button
-            content={this.context("Save all")}
-            value="all"
-            onClick={this.onSaveData}
-            className="lingvo-button-violet"
+  return (
+    <Modal closeIcon onClose={actions.closeSaveDictionaryModal} open dimmer className="lingvo-modal2">
+      <Modal.Header>{`${getTranslation("Save")} '${T(translations)}'?`}</Modal.Header>
+      <Modal.Content>
+        <div className="lingvo-segment-modal">
+          {getTranslation("URL with results of saving data should appear soon after clicking save button in the tasks")}
+          .
+        </div>
+        <div style={{ marginBottom: "25px" }}>
+          <Checkbox
+            style={{ margin: "0.5em 2em 0.5em 0.5em" }}
+            label={getTranslation("Save sound recordings")}
+            checked={saveSound}
+            onChange={(e, { checked }) => setSaveSound(checked)}
+            className="lingvo-checkbox"
           />
-          <Button
-            content={this.context("Save only published")}
-            value="published"
-            onClick={this.onSaveData}
-            className="lingvo-button-violet"
+          <Checkbox
+            style={{ margin: "0.5em 0 0.5em 0.5em" }}
+            label={getTranslation("Save markup")}
+            checked={saveMarkup}
+            onChange={(e, { checked }) => setSaveMarkup(checked)}
+            className="lingvo-checkbox"
           />
-          <Button
-            content={this.context("Close")}
-            onClick={actions.closeSaveDictionaryModal}
-            className="lingvo-button-basic-black"
+        </div>
+        <div style={{ margin: "0 0 0.5em 0.5em" }} key="xlsx">
+          <Checkbox
+            radio
+            label={getTranslation("Excel file")}
+            value="xlsx"
+            checked={fType === "xlsx"}
+            onChange={(e, { value }) => setFType(value)}
           />
-        </Modal.Actions>
-      </Modal>
-    );
-  }
-}
+        </div>
+        <div style={{ margin: "0 0 0.5em 0.5em" }} key="docx">
+          <Checkbox
+            radio
+            label={getTranslation("Word file")}
+            value="docx"
+            checked={fType === "docx"}
+            onChange={(e, { value }) => setFType(value)}
+          />
+        </div>
+        <div style={{ margin: "0 0 0.5em 0.5em" }} key="rtf">
+          <Checkbox
+            radio
+            label={getTranslation("RichText file")}
+            value="rtf"
+            checked={fType === "rtf"}
+            onChange={(e, { value }) => setFType(value)}
+          />
+        </div>
+      </Modal.Content>
 
-Properties.contextType = TranslationContext;
+      <Modal.Actions>
+        <Button
+          content={getTranslation("Save all")}
+          value="all"
+          onClick={onSaveData}
+          className="lingvo-button-violet"
+        />
+        <Button
+          content={getTranslation("Save only published")}
+          value="published"
+          onClick={onSaveData}
+          className="lingvo-button-violet"
+        />
+        <Button
+          content={getTranslation("Close")}
+          onClick={actions.closeSaveDictionaryModal}
+          className="lingvo-button-basic-black"
+        />
+      </Modal.Actions>
+    </Modal>
+  );
+};
 
 Properties.propTypes = {
   id: PropTypes.array.isRequired,

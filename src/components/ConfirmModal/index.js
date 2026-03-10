@@ -1,34 +1,32 @@
-import React from "react";
+import React, { useContext } from "react";
 import { connect } from "react-redux";
 import { Confirm } from "semantic-ui-react";
 import { branch, compose, renderNothing } from "recompose";
 import { bindActionCreators } from "redux";
 
 import { closeModal } from "ducks/confirm";
+import TranslationContext from "Layout/TranslationContext";
 
-class ConfirmModal extends React.Component {
-  constructor(props) {
-    super(props);
-    this.handleConfirm = this.handleConfirm.bind(this);
-  }
+const ConfirmModal = ({ callback, closeModal, content, buttonConfirm, buttonCancel }) => {
+  const getTranslation = useContext(TranslationContext);
 
-  handleConfirm() {
-    this.props.callback();
-    this.props.closeModal();
-  }
+  const handleConfirm = () => {
+    callback();
+    closeModal();
+  };
 
-  render() {
-    return (
-      <Confirm
-        content={this.props.content}
-        onCancel={this.props.closeModal}
-        onConfirm={this.handleConfirm}
-        open={true}
-        className="lingvo-confirm"
-      />
-    );
-  }
-}
+  return (
+    <Confirm
+      content={content}
+      onCancel={closeModal}
+      onConfirm={handleConfirm}
+      open={true}
+      className="lingvo-confirm"
+      confirmButton={buttonConfirm || "OK"}
+      cancelButton={buttonCancel || getTranslation("Cancel")}
+    />
+  );
+};
 
 export default compose(
   connect(
