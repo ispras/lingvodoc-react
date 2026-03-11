@@ -145,52 +145,46 @@ function constructTree(
     // Insert language from proxy with its parents
     // to local tree since common point or from the top
     function f(lang) {
+      languageMap.intersection.add(compositeIdToString(lang.id));
       let parents = [lang.id];
-      let cur_lang = lang;
       let parent_id = lang.parent_id;
-      let common_point = false;
+      let parent_id_str = compositeIdToString(parent_id);
+      let common_point = languageMap.intersection.has(parent_id_str) && parent_id_str;
 
-      while (parent_id !== null && !common_point) {
+      while (parent_id && !common_point) {
+        languageMap.intersection.add(parent_id_str);
         parents = [parent_id, [parents]];
-        parent_id = compositeIdToString(parent_id);
-        common_point = languageMap.intersection.has(parent_id);
-        cur_lang = languageMap.proxy[parent_id];
-        parent_id = cur_lang.parent_id;
+        parent_id = languageMap.proxy[parent_id_str].parent_id;
+        parent_id_str = compositeIdToString(parent_id);
+        common_point = languageMap.intersection.has(parent_id_str) && parent_id_str;
       }
 
       let stub = tree[1];
 
-      if (parents.length > 1) {
-        const proxy_id = compositeIdToString(parents[0]);
-        parents = parents[1];
-
-        // Getting stub of tree to place subtree from proxy since top of this stub
-        function g(stb) {
-          for (const s of stb) {
-            const local_id = compositeIdToString(s[0]);
-
-            if (local_id === proxy_id) {
-              if (s.length === 1) {
-                s[s.length] = [];
-              }
-              stub = s[1];
-              break;
-
-            } else if (s.length > 1) {
-              g(s[1]);
-            }
-          }
+      function g(stb) {
+        if (!common_point) {
+          return;
         }
 
-        // Getting stub of tree only if common_point exists
-        // otherwise the function returns full tree so this makes no sense
-        if (common_point) {
-          g(stub);
+        for (const s of stb) {
+          const local_id = compositeIdToString(s[0]);
+
+          if (local_id === common_point) {
+            if (s.length === 1) {
+              s[s.length] = [];
+            }
+            stub = s[1];
+            break;
+
+          } else if (s.length > 1) {
+            g(s[1]);
+          }
         }
       }
 
-      // Add languages from proxy at beginning of branch
-      stub.unshift(...parents);
+      // Cutting off tree and add languages from proxy at beginning of branch
+      g(stub);
+      stub.unshift(parents);
     }
 
     // Iterate through language_union (local+proxy)
