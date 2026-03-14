@@ -100,13 +100,33 @@ function constructTree(
       perspectiveMap[side] = {};
 
       languageData[side].forEach(language => {
-        languageMap[side][compositeIdToString(language.id)] = structuredClone(language);
+        const lang_id = compositeIdToString(language.id);
+        if (languageMap[side].hasOwnProperty(lang_id)) {
+          console.log(`Collision for language ${lang_id}`);
+          return;
+        }
+        languageMap[side][lang_id] = structuredClone(language);
+
+        // Debugging
+        if (lang_id === '3619,28523') {
+          console.log(`${lang_id}: ${language.translations[2]}`);
+        }
 
         language.dictionaries.forEach(dictionary => {
-          dictionaryMap[side][compositeIdToString(dictionary.id)] = structuredClone(dictionary);
+          const dict_id = compositeIdToString(dictionary.id);
+          if (dictionaryMap[side].hasOwnProperty(dict_id)) {
+            console.log(`Collision for dictionary ${dict_id}`);
+            return;
+          }
+          dictionaryMap[side][dict_id] = structuredClone(dictionary);
 
           dictionary.perspectives.forEach(perspective => {
-            perspectiveMap[side][compositeIdToString(perspective.id)] = structuredClone(perspective);
+            const pers_id = compositeIdToString(perspective.id);
+            if (perspectiveMap[side].hasOwnProperty(pers_id)) {
+              console.log(`Collision for perspective ${pers_id}`);
+              return;
+            }
+            perspectiveMap[side][pers_id] = structuredClone(perspective);
           });
         });
       });
@@ -207,6 +227,11 @@ function constructTree(
             ...languageMap.local[lang_id].dictionaries,
             ...languageMap.proxy[lang_id].dictionaries]
             .map(obj => compositeIdToString(obj.id)));
+
+          // Debugging
+          if (lang_id === '3619,28523') {
+            console.log(`${lang_id}: ${lang_result.translations[2]}`);
+          }
 
           // Iterate through dictionary_union for current language
           dict_union.forEach(dict_id => {
