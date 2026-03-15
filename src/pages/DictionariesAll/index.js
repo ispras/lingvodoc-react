@@ -9,6 +9,7 @@ import { getId } from "api/user";
 import {
   getLanguagesForSearch,
   getLanguageTree,
+  getLanguageTreeProxy,
   getTocGrants,
   getTocOrganizations,
   proxyDictionaryInfo
@@ -538,14 +539,14 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
       skip: skip_general || activeTab !== "1" || aSortMode != sortMode
     });
 
-    queryDictIdProxy[aSortMode] = useQuery(getLanguageTree, {
-      variables: { ...variablesId, proxy: allowed_sync },
+    queryDictIdProxy[aSortMode] = useQuery(getLanguageTreeProxy, {
+      variables: variablesId,
       fetchPolicy: "cache-and-network",
       skip: skip_general || !allowed_sync || !entityIdValue || aSortMode != sortMode
     });
 
-    queryDictAllProxy[aSortMode] = useQuery(getLanguageTree, {
-      variables: { ...variablesAll, proxy: allowed_sync },
+    queryDictAllProxy[aSortMode] = useQuery(getLanguageTreeProxy, {
+      variables: variablesAll,
       fetchPolicy: "cache-and-network",
       skip: skip_general || !allowed_sync || activeTab !== "1" || aSortMode != sortMode
     });
