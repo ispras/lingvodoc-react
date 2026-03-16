@@ -540,13 +540,13 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
     });
 
     queryDictIdProxy[aSortMode] = useQuery(getLanguageTreeProxy, {
-      variables: variablesId,
+      variables: { ...variablesId, proxy: true },
       fetchPolicy: "cache-and-network",
       skip: skip_general || !allowed_sync || !entityIdValue || aSortMode != sortMode
     });
 
     queryDictAllProxy[aSortMode] = useQuery(getLanguageTreeProxy, {
-      variables: variablesAll,
+      variables: { ...variablesAll, proxy: true },
       fetchPolicy: "cache-and-network",
       skip: skip_general || !allowed_sync || activeTab !== "1" || aSortMode != sortMode
     });

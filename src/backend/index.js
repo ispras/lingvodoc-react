@@ -38,9 +38,9 @@ export const getLanguageTree = gql`
       grant_id: $grantId
       by_organizations: $byOrganizations
       organization_id: $organizationId
-      proxy: false
+      local: true
     ) {
-      proxy
+      local
       tree
       languages {
         id
@@ -73,6 +73,7 @@ export const getLanguageTreeProxy = gql`
     $organizationId: Int
     $published: Boolean
     $category: Int
+    $proxy: Boolean
   ) {
     language_tree(
       dictionary_category: $category
@@ -82,7 +83,7 @@ export const getLanguageTreeProxy = gql`
       grant_id: $grantId
       by_organizations: $byOrganizations
       organization_id: $organizationId
-      proxy: true
+      proxy: $proxy
     ) {
       proxy
       tree
