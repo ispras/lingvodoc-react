@@ -68,8 +68,6 @@
     margin-right: -7px !important;
   }
 
-  /* new!!!!!! */
-
   & .lingvo-dropdown-inline.dropdown.ui.active .menu > .item {
     & .lingvo-icon {
       vertical-align: middle !important;
@@ -99,8 +97,6 @@
       }
     }
   }
-
-  /* /new!!!!!! */
 }
 
 .node_grant {
@@ -161,8 +157,6 @@
     border-radius: 0 12px 12px 0;
   }
 
-  /* new!!!!!! */
-
   & .lang-name-remote {
     color: #cecdcd !important;
     cursor: pointer;
@@ -171,7 +165,6 @@
       color: #a3a1bc !important;
     }
   }
-  /* /new!!!!!! */
 }
 
 .node_dict {
@@ -202,7 +195,7 @@
       color: #cecdcd;
 
       &_link {
-        cursor: pointer; // new!!!!!!
+        cursor: pointer;
       }
 
       &_link:hover {
@@ -224,19 +217,16 @@
 
   & .lingvo-icon {
     margin-right: 0 !important;
-    background-color: #57b894 !important; // new!!!!!
+    background-color: #57b894 !important;
   }
 
   &:hover {
     & .lingvo-icon {
-      background-color: #fff !important; // new!!!!!
+      background-color: #fff !important;
     }
   }
 }
 
-/* new!!!!!! */
-
 .lang-name-confirm-modal {
   font-weight: bold;
 }
-/* /new!!!!!! */
