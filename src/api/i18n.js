@@ -1056,6 +1056,7 @@ export const stringsToTranslate = [
   "Vulnerable",
   "Warning",
   "web",
+  "will be downloaded from the central server",
   "With field selection",
   "Word file",
   "XLSX-exported analysis results",
