@@ -36,14 +36,6 @@ const ModalContentWrapper = styled("div")`
   min-height: 15vh;
 `;
 
-// host: 'isp' or 'xal' for now
-// id: perspective_id to synchronize
-export const queryListChanges = gql`
-  query listChanges($host: String!, $id: LingvodocID!) {
-    list_changes(host: $host, id: $id)
-  }
-`;
-
 export const queryPerspective = gql`
   query queryPerspective1($id: LingvodocID!) {
     perspective(id: $id) {
@@ -489,20 +481,6 @@ class P extends React.Component {
 
     const changes1 = { languages: [[stampMid, stampOld, { note: "Changed before sync" }]] };
     const changes2 = { languages: [[stampMid, stampNew, { note: "Changed after sync" }]] };
-
-    await client
-      .query({
-        query: queryListChanges,
-        variables: { host: "isp", id }
-      })
-      .then(({ data: { list_changes: ispSyncData } }) => this.setState(ispSyncData));
-
-    await client
-      .query({
-        query: queryListChanges,
-        variables: { host: "xal", id }
-      })
-      .then(({ data: { list_changes: xalSyncData } }) => this.setState(xalSyncData));
   }
 
   render() {
@@ -630,7 +608,7 @@ class P extends React.Component {
 
     /* new!!!!! */
     const onSynchronize = () => {
-      openNewModal(SyncModal, { perspectiveId: id, columns: fields });
+      openNewModal(SyncModal, { perspectiveId: id, columns: fields, applySync: this.doSync });
     };
     /* /new!!!!! */
 

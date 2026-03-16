@@ -38,7 +38,54 @@ export const getLanguageTree = gql`
       grant_id: $grantId
       by_organizations: $byOrganizations
       organization_id: $organizationId
+      local: true
     ) {
+      local
+      tree
+      languages {
+        id
+        parent_id
+        translations
+        in_toc
+        dictionaries(deleted: false, published: $published, category: $category) {
+          id
+          translations
+          english_status: status(locale_id: 2)
+          additional_metadata {
+            authors
+          }
+          perspectives {
+            id
+            translations
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const getLanguageTreeProxy = gql`
+  query GetLanguageTree(
+    $languageId: LingvodocID
+    $byGrants: Boolean
+    $grantId: Int
+    $byOrganizations: Boolean
+    $organizationId: Int
+    $published: Boolean
+    $category: Int
+    $proxy: Boolean
+  ) {
+    language_tree(
+      dictionary_category: $category
+      dictionary_published: $published
+      language_id: $languageId
+      by_grants: $byGrants
+      grant_id: $grantId
+      by_organizations: $byOrganizations
+      organization_id: $organizationId
+      proxy: $proxy
+    ) {
+      proxy
       tree
       languages {
         id
@@ -130,7 +177,7 @@ export const languagesQuery = gql`
 `;
 
 export const proxyDictionaryInfo = gql`
-  query ProxyDictionaryInfo($proxy: Boolean, $category: Int) {
+  query ProxyDictionaryInfo($proxy: Boolean!, $category: Int) {
     dictionaries(proxy: false, published: true, category: $category) {
       id
     }
@@ -198,6 +245,41 @@ export const synchronizeMutation = gql`
     synchronize {
       triumph
     }
+  }
+`;
+
+export const applySyncMutation = gql`
+  mutation ApplySync(
+        $perspectiveId: LingvodocID!
+        $syncBetween: [String]!
+        $debugFlag: Boolean
+) {
+    apply_sync(
+        perspective_id: $perspectiveId
+        sync_between: $syncBetween
+        debug_flag: $debugFlag) {
+      message
+      triumph
+    }
+  }
+`;
+
+export const queryListChanges = gql`
+  query listChanges(
+    $remote: String!
+    $syncBetween: [String]!
+    $perspectiveId: LingvodocID!
+    $userId: Int
+    $syncPoint: Float
+    $debugFlag: Boolean)
+    {
+      list_changes(
+        remote: $remote
+        sync_between: $syncBetween
+        perspective_id: $perspectiveId
+        user_id: $userId
+        sync_point: $syncPoint
+        debug_flag: $debugFlag)
   }
 `;
 

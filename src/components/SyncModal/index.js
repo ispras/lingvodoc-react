@@ -1,21 +1,56 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
+import { useMutation } from "hooks";
 import { useQuery, useLazyQuery, gql } from "@apollo/client";
 import { Button, Dimmer, Header, Icon, Message, Modal, Popup, Table } from "semantic-ui-react";
 import PropTypes from "prop-types";
 import { chooseTranslation as T } from "api/i18n";
 import { isEqual } from "lodash";
+import { applySyncMutation, queryListChanges } from "backend";
 
 import TranslationContext from "Layout/TranslationContext";
 
 import "./styles.scss";
 
-const SyncModal = ({ columns, onClose, perspectiveId }) => {
+const SyncModal = ({ columns, onClose, perspectiveId, foreignChanges }) => {
   const getTranslation = useContext(TranslationContext);
 
-  /*const [applySync, { error: errorApply, loading: loadingApply }] = useLazyQuery(GET_TWINS_XLSX, {
-    variables: { perspectiveId },
-    onCompleted: data => setXlsxUrl(data?.twins_xlsx)
-  });*/
+  const [ ispSyncData, setIspSyncData ] = useState(null);
+  const [ xalSyncData, setXalSyncData ] = useState(null);
+  const [ applied, setApplied ] = useState(false);
+  const debugFlag = true;
+
+  const { error: ispSyncError, loading: ispSyncLoading } = useQuery(queryListChanges, {
+    variables: { remote: 'isp', syncBetween: ['isp','xal'], perspectiveId, debugFlag },
+    onCompleted: ({ list_changes: ispSyncData }) => {
+      setIspSyncData(ispSyncData);
+      console.log(`Possible errors: ${ispSyncData.warns}`);
+    },
+    fetchPolicy: "network-only"
+  });
+
+  const { error: xalSyncError, loading: xalSyncLoading } = useQuery(queryListChanges, {
+    variables: { remote: 'xal', syncBetween: ['isp','xal'], perspectiveId, debugFlag },
+    onCompleted: ({ list_changes: xalSyncData }) => {
+      setXalSyncData(xalSyncData);
+      console.log(`Possible errors: ${xalSyncData.warns}`);
+    },
+    fetchPolicy: "network-only"
+  });
+
+  const [applySync, { error: errorApply, loading: loadingApply }] = useMutation(
+    applySyncMutation, {
+      variables: { perspectiveId, syncBetween: ['isp','xal'], debugFlag: true },
+      onCompleted: ({apply_sync: {triumph, message}}) => {
+        if (message)
+          console.log(message)
+      }
+  });
+
+  useEffect(() => {
+    if (applied && !loadingApply && !errorApply) {
+      onClose();
+    }
+  }, [applied, loadingApply, errorApply]);
 
   const dataCore = {
     languages: [
@@ -133,111 +168,111 @@ const SyncModal = ({ columns, onClose, perspectiveId }) => {
       <Modal.Content>
         <div className="sync-content">
           <div className="sync-content__table">
-            {/*{loading ? (
+            {(ispSyncLoading || xalSyncLoading || loadingApply) ? (
               <Dimmer active style={{ background: "none" }}>
                 <Header as="h2" icon>
                   <Icon name="spinner" loading className="lingvo-spinner" />
                 </Header>
               </Dimmer>
-            ) : error ? (
+            ) : (ispSyncError || xalSyncError || errorApply) ? (
               <Message negative>
                 <Message.Header>{getTranslation("Synchronize data loading error")}</Message.Header>
                 <div style={{ marginTop: "0.25em" }}>
                   {getTranslation("Try reloading the page; if the error persists, please contact administrators.")}
                 </div>
               </Message>
-            ) : (*/}
-            <Table celled padded className="lingvo-perspective-table">
-              <Table.Header>
-                <Table.Row>
-                  <Table.HeaderCell className="th-type">&nbsp;</Table.HeaderCell>
-                  <Table.HeaderCell className="th-name">{getTranslation("Core")}</Table.HeaderCell>
-                  <Table.HeaderCell className="th-date">{getTranslation("Local Update")}</Table.HeaderCell>
-                  <Table.HeaderCell className="th-date">{getTranslation("Synced")}</Table.HeaderCell>
-                  <Table.HeaderCell className="th-date">{getTranslation("Remote Update")}</Table.HeaderCell>
-                  <Table.HeaderCell className="th-name">{getTranslation("Satellite")}</Table.HeaderCell>
-                </Table.Row>
-              </Table.Header>
-              <Table.Body>
-                {keysData?.map(key => {
-                  return dataCore[key]?.map(item => {
-                    return (
-                      <Table.Row key={item[2].id}>
-                        <Table.Cell className="td-type">
-                          {key === "languages" ? (
-                            <Popup
-                              inverted
-                              content={getTranslation("language")}
-                              trigger={<span className="lingvo-sync-type">L</span>}
-                            />
-                          ) : key === "dictionaries" ? (
-                            <Popup
-                              inverted
-                              content={getTranslation("dictionary")}
-                              trigger={<span className="lingvo-sync-type">D</span>}
-                            />
-                          ) : key === "perspectives" ? (
-                            <Popup
-                              inverted
-                              content={getTranslation("perspective")}
-                              trigger={<span className="lingvo-sync-type">P</span>}
-                            />
-                          ) : key === "entities" ? (
-                            <Popup
-                              inverted
-                              content={getTranslation("entity")}
-                              trigger={<span className="lingvo-sync-type">E</span>}
-                            />
-                          ) : null}
-                        </Table.Cell>
-                        <Table.Cell
-                          className={
-                            (item[2].timeLocal > item[2].timeSynced &&
-                              item[2].timeLocal > item[2].timeRemote &&
-                              "td-color") ||
-                            ""
-                          }
-                        >
-                          {item[2].text}
-                        </Table.Cell>
-                        <Table.Cell
-                          className={
-                            (item[2].timeLocal > item[2].timeSynced &&
-                              item[2].timeLocal > item[2].timeRemote &&
-                              "td-date td-color") ||
-                            "td-date"
-                          }
-                        >
-                          {item[2].dateLocal}
-                        </Table.Cell>
-                        <Table.Cell className="td-date td-date-sync">{item[2].dateSynced}</Table.Cell>
-                        <Table.Cell
-                          className={
-                            (item[2].timeRemote > item[2].timeSynced &&
-                              item[2].timeRemote > item[2].timeLocal &&
-                              "td-date td-color") ||
-                            "td-date"
-                          }
-                        >
-                          {item[2].dateRemote}
-                        </Table.Cell>
-                        <Table.Cell
-                          className={
-                            (item[2].timeRemote > item[2].timeSynced &&
-                              item[2].timeRemote > item[2].timeLocal &&
-                              "td-color") ||
-                            ""
-                          }
-                        >
-                          {item[2].textRemote}
-                        </Table.Cell>
-                      </Table.Row>
-                    );
-                  });
-                })}
-              </Table.Body>
-            </Table>
-            {/*})}*/}
+            ) : (
+              <Table celled padded className="lingvo-perspective-table">
+                <Table.Header>
+                  <Table.Row>
+                    <Table.HeaderCell className="th-type">&nbsp;</Table.HeaderCell>
+                    <Table.HeaderCell className="th-name">{getTranslation("Core")}</Table.HeaderCell>
+                    <Table.HeaderCell className="th-date">{getTranslation("Local Update")}</Table.HeaderCell>
+                    <Table.HeaderCell className="th-date">{getTranslation("Synced")}</Table.HeaderCell>
+                    <Table.HeaderCell className="th-date">{getTranslation("Remote Update")}</Table.HeaderCell>
+                    <Table.HeaderCell className="th-name">{getTranslation("Satellite")}</Table.HeaderCell>
+                  </Table.Row>
+                </Table.Header>
+                <Table.Body>
+                  {keysData?.map(key => {
+                    return dataCore[key]?.map(item => {
+                      return (
+                        <Table.Row key={item[2].id}>
+                          <Table.Cell className="td-type">
+                            {key === "languages" ? (
+                              <Popup
+                                inverted
+                                content={getTranslation("language")}
+                                trigger={<span className="lingvo-sync-type">L</span>}
+                              />
+                            ) : key === "dictionaries" ? (
+                              <Popup
+                                inverted
+                                content={getTranslation("dictionary")}
+                                trigger={<span className="lingvo-sync-type">D</span>}
+                              />
+                            ) : key === "perspectives" ? (
+                              <Popup
+                                inverted
+                                content={getTranslation("perspective")}
+                                trigger={<span className="lingvo-sync-type">P</span>}
+                              />
+                            ) : key === "entities" ? (
+                              <Popup
+                                inverted
+                                content={getTranslation("entity")}
+                                trigger={<span className="lingvo-sync-type">E</span>}
+                              />
+                            ) : null}
+                          </Table.Cell>
+                          <Table.Cell
+                            className={
+                              (item[2].timeLocal > item[2].timeSynced &&
+                                item[2].timeLocal > item[2].timeRemote &&
+                                "td-color") ||
+                              ""
+                            }
+                          >
+                            {item[2].text}
+                          </Table.Cell>
+                          <Table.Cell
+                            className={
+                              (item[2].timeLocal > item[2].timeSynced &&
+                                item[2].timeLocal > item[2].timeRemote &&
+                                "td-date td-color") ||
+                              "td-date"
+                            }
+                          >
+                            {item[2].dateLocal}
+                          </Table.Cell>
+                          <Table.Cell className="td-date td-date-sync">{item[2].dateSynced}</Table.Cell>
+                          <Table.Cell
+                            className={
+                              (item[2].timeRemote > item[2].timeSynced &&
+                                item[2].timeRemote > item[2].timeLocal &&
+                                "td-date td-color") ||
+                              "td-date"
+                            }
+                          >
+                            {item[2].dateRemote}
+                          </Table.Cell>
+                          <Table.Cell
+                            className={
+                              (item[2].timeRemote > item[2].timeSynced &&
+                                item[2].timeRemote > item[2].timeLocal &&
+                                "td-color") ||
+                              ""
+                            }
+                          >
+                            {item[2].textRemote}
+                          </Table.Cell>
+                        </Table.Row>
+                      );
+                    });
+                  })}
+                </Table.Body>
+              </Table>
+            )}
           </div>
         </div>
       </Modal.Content>
@@ -261,10 +296,32 @@ const SyncModal = ({ columns, onClose, perspectiveId }) => {
           </div>
         </div>
         <Button
-          content={getTranslation("Apply")}
-          //onClick={applySync}
+          content={
+            (ispSyncLoading || xalSyncLoading) ? (
+              <span>
+                {getTranslation("Loading")}... <Icon name="spinner" loading />
+              </span>
+            ) : loadingApply ? (
+              <span>
+                {getTranslation("Applying")}... <Icon name="spinner" loading />
+              </span>
+            ) : getTranslation("Apply")
+          }
+          onClick={
+            () => {
+              applySync();
+              setApplied(true);
+            }
+          }
           //loading={loadingApply}
-          //disabled={errorApply}
+          disabled={
+            ispSyncLoading ||
+            xalSyncLoading ||
+            ispSyncError ||
+            xalSyncError ||
+            loadingApply ||
+            errorApply
+          }
           className="lingvo-button-greenest lingvo-button-greenest_sync"
         />
 
