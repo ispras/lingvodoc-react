@@ -9,6 +9,7 @@ import { getId } from "api/user";
 import {
   getLanguagesForSearch,
   getLanguageTree,
+  getLanguageTreeProxy,
   getTocGrants,
   getTocOrganizations,
   proxyDictionaryInfo
@@ -63,20 +64,210 @@ function constructTree(
   grantDictionaryIdSetMap,
   organizationMap,
   organizationDictionaryIdSetMap,
-  proxyData,
+  proxyPermission,
   selected,
-  setSelected
+  setSelected,
+  proxyData=null
 ) {
-  const { languages, tree } = data.language_tree;
-  const languageMap = {};
+
+  const { languages, tree: frozenTree } = data.language_tree;
+  const tree = structuredClone(frozenTree);
+  const languageMap = { common: {} };
 
   if (tree === null) {
     return null;
   }
 
-  languages.forEach(language => {
-    languageMap[compositeIdToString(language.id)] = language;
-  });
+  if (proxyData === null) {
+
+    languages.forEach(language => {
+      languageMap.common[compositeIdToString(language.id)] = language;
+    });
+
+  } else {
+
+    // Merging local and proxy language maps
+
+    const { languages: proxyLanguages } = proxyData.language_tree;
+    const languageData = { local: languages, proxy: proxyLanguages };
+    const dictionaryMap = {};
+    const perspectiveMap = {};
+
+    // Getting maps of languages, dictionaries and perspectives by id
+    ['local', 'proxy'].forEach(side => {
+
+      languageMap[side] = {};
+      dictionaryMap[side] = {};
+      perspectiveMap[side] = {};
+
+      languageData[side].forEach(language => {
+        const lang_id = compositeIdToString(language.id);
+        if (languageMap[side].hasOwnProperty(lang_id)) {
+          console.log(`Collision for language ${lang_id}`);
+          return;
+        }
+        languageMap[side][lang_id] = structuredClone(language);
+
+        // Debugging
+        if (lang_id === '3619,28523') {
+          console.log(`${lang_id}: ${language.translations[2]}`);
+        }
+
+        language.dictionaries.forEach(dictionary => {
+          const dict_id = compositeIdToString(dictionary.id);
+          if (dictionaryMap[side].hasOwnProperty(dict_id)) {
+            console.log(`Collision for dictionary ${dict_id}`);
+            return;
+          }
+          dictionaryMap[side][dict_id] = structuredClone(dictionary);
+
+          dictionary.perspectives.forEach(perspective => {
+            const pers_id = compositeIdToString(perspective.id);
+            if (perspectiveMap[side].hasOwnProperty(pers_id)) {
+              console.log(`Collision for perspective ${pers_id}`);
+              return;
+            }
+            perspectiveMap[side][pers_id] = structuredClone(perspective);
+          });
+        });
+      });
+    });
+
+    // Getting diffs and intersection of lang/dict/pers lists between local and proxy sides
+    [languageMap, dictionaryMap, perspectiveMap].forEach(amap => {
+
+      const local_set = new Set(Object.keys(amap.local));
+      const proxy_set = new Set(Object.keys(amap.proxy));
+
+      amap.local_diff = local_set.difference(proxy_set);
+      amap.proxy_diff = proxy_set.difference(local_set);
+      amap.union = local_set.union(proxy_set);
+      amap.intersection = local_set.intersection(proxy_set);
+    });
+
+    // Marking object in input map as 'single' if corresponding '_diff' list includes its id
+    [languageMap, dictionaryMap, perspectiveMap].forEach(amap => {
+      ['local', 'proxy'].forEach(side => {
+        for (const [id, obj] of Object.entries(amap[side])) {
+          if (amap[`${side}_diff`].has(id)) {
+            obj.single = side;
+            // If obj is language or dictionary we should mark
+            // nested dictionaries and/or perspectives as well
+            (obj.dictionaries || []).forEach(dict => {
+              dict.single = side;
+              dict.perspectives.forEach(pers => { pers.single = side });
+            });
+            (obj.perspectives || []).forEach(pers => { pers.single = side });
+          }
+        }
+      });
+    });
+
+    // Insert language from proxy with its parents
+    // to local tree since common point or from the top
+    function f(lang) {
+      languageMap.intersection.add(compositeIdToString(lang.id));
+      let parents = [lang.id];
+      let parent_id = lang.parent_id;
+      let parent_id_str = compositeIdToString(parent_id);
+      let common_point = languageMap.intersection.has(parent_id_str) && parent_id_str;
+
+      while (parent_id && !common_point) {
+        languageMap.intersection.add(parent_id_str);
+        parents = [parent_id, [parents]];
+        parent_id = languageMap.proxy[parent_id_str].parent_id;
+        parent_id_str = compositeIdToString(parent_id);
+        common_point = languageMap.intersection.has(parent_id_str) && parent_id_str;
+      }
+
+      let stub = tree[1];
+
+      function g(stb) {
+        if (!common_point) {
+          return;
+        }
+
+        for (const s of stb) {
+          const local_id = compositeIdToString(s[0]);
+
+          if (local_id === common_point) {
+            if (s.length === 1) {
+              s[s.length] = [];
+            }
+            stub = s[1];
+            break;
+
+          } else if (s.length > 1) {
+            g(s[1]);
+          }
+        }
+      }
+
+      // Cutting off tree and add languages from proxy at beginning of branch
+      g(stub);
+      stub.unshift(parents);
+    }
+
+    // Iterate through language_union (local+proxy)
+    // collect languages into common map
+    languageMap.union.forEach(lang_id => {
+
+      // If language exists only on proxy side
+      if (languageMap.proxy_diff.has(lang_id)) {
+        const lang_result = languageMap.proxy[lang_id];
+        languageMap.common[lang_id] = lang_result;
+        f(lang_result);
+
+      } else {
+        const lang_result = languageMap.local[lang_id];
+        languageMap.common[lang_id] = lang_result;
+
+        // If language is on the both sides
+        if (languageMap.intersection.has(lang_id)) {
+          const dict_union = new Set([
+            ...languageMap.local[lang_id].dictionaries,
+            ...languageMap.proxy[lang_id].dictionaries]
+            .map(obj => compositeIdToString(obj.id)));
+
+          // Debugging
+          if (lang_id === '3619,28523') {
+            console.log(`${lang_id}: ${lang_result.translations[2]}`);
+          }
+
+          // Iterate through dictionary_union for current language
+          dict_union.forEach(dict_id => {
+
+            // If dictionary exists only on proxy side
+            if (dictionaryMap.proxy_diff.has(dict_id)) {
+              const dict_result = dictionaryMap.proxy[dict_id];
+              lang_result.dictionaries.push(dict_result);
+
+            } else {
+              const dict_result = dictionaryMap.local[dict_id];
+
+              // If dictionary is on the both sides
+              if (dictionaryMap.intersection.has(dict_id)) {
+                const pers_union = new Set([
+                  ...dictionaryMap.local[dict_id].perspectives,
+                  ...dictionaryMap.proxy[dict_id].perspectives]
+                  .map(obj => compositeIdToString(obj.id)));
+
+                // Iterate through perspective_union for current dictionary
+                pers_union.forEach(pers_id => {
+
+                  // If perspective exists only on proxy side
+                  if (perspectiveMap.proxy_diff.has(pers_id)) {
+                    const pers_result = perspectiveMap.proxy[pers_id];
+                    dict_result.perspectives.push(pers_result);
+                  }
+                });
+              }
+            }
+          });
+        }
+      }
+    });
+  }
 
   let groupMap = undefined;
   let groupDictionaryIdSetMap = undefined;
@@ -103,19 +294,19 @@ function constructTree(
         <LanguageNode
           key={index}
           node={node}
-          languageMap={languageMap}
+          languageMap={languageMap.common}
           selected={selected}
           setSelected={setSelected}
-          proxyData={proxyData}
+          proxyData={proxyPermission}
         />
       ))
     ) : (
       <LanguageNode
         node={tree}
-        languageMap={languageMap}
+        languageMap={languageMap.common}
         selected={selected}
         setSelected={setSelected}
-        proxyData={proxyData}
+        proxyData={proxyPermission}
       />
     );
   } else {
@@ -127,20 +318,20 @@ function constructTree(
             node={node}
             groupMap={groupMap}
             dictionaryIdSet={groupDictionaryIdSetMap[String(node[0])]}
-            languageMap={languageMap}
+            languageMap={languageMap.common}
             selected={selected}
             setSelected={setSelected}
-            proxyData={proxyData}
+            proxyData={proxyPermission}
           />
         ) : (
           <IndividualNode
             key={index}
             node={node}
-            languageMap={languageMap}
+            languageMap={languageMap.common}
             dictionaryIdSet={groupDictionaryIdSetMap[""]}
             selected={selected}
             setSelected={setSelected}
-            proxyData={proxyData}
+            proxyData={proxyPermission}
           />
         )
       )
@@ -149,10 +340,10 @@ function constructTree(
         node={[Number(entityId), tree[1]]}
         groupMap={groupMap}
         dictionaryIdSet={groupDictionaryIdSetMap[entityId]}
-        languageMap={languageMap}
+        languageMap={languageMap.common}
         selected={selected}
         setSelected={setSelected}
-        proxyData={proxyData}
+        proxyData={proxyPermission}
       />
     );
   }
@@ -300,7 +491,7 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
     skip: skip_general || sortMode !== "organization"
   });
 
-  const { data: proxyData } = useQuery(proxyDictionaryInfo, {
+  const { data: proxyPermission } = useQuery(proxyDictionaryInfo, {
     variables: { proxy: published ? false : true, category },
     fetchPolicy: "cache-and-network",
     skip: skip_general || config.buildType === "server"
@@ -311,8 +502,12 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
 
   const queryDictId = {};
   const queryDictAll = {};
+  const queryDictIdProxy = {};
+  const queryDictAllProxy = {};
 
   const sortModeList = forCorpora || forParallelCorpora ? ["language"] : ["language", "grant", "organization"];
+  const proxy = (config.buildType !== "server");
+  const allowed_sync = (user.user.id === 1 || user.user.allowed_sync);
 
   for (const aSortMode of sortModeList) {
     const variablesId = { ...variables };
@@ -343,10 +538,32 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
       fetchPolicy: "cache-and-network",
       skip: skip_general || activeTab !== "1" || aSortMode != sortMode
     });
+
+    queryDictIdProxy[aSortMode] = useQuery(getLanguageTreeProxy, {
+      variables: { ...variablesId, proxy: true },
+      fetchPolicy: "cache-and-network",
+      skip: skip_general || !allowed_sync || !entityIdValue || aSortMode != sortMode
+    });
+
+    queryDictAllProxy[aSortMode] = useQuery(getLanguageTreeProxy, {
+      variables: { ...variablesAll, proxy: true },
+      fetchPolicy: "cache-and-network",
+      skip: skip_general || !allowed_sync || activeTab !== "1" || aSortMode != sortMode
+    });
   }
 
   const { data: dataTreeId } = queryDictId[sortMode];
   const { data: dataTreeAll } = queryDictAll[sortMode];
+
+  let dataTreeIdProxy = null;
+  if (queryDictIdProxy[sortMode]?.data) {
+    dataTreeIdProxy = queryDictIdProxy[sortMode].data;
+  }
+
+  let dataTreeAllProxy = null;
+  if (queryDictAllProxy[sortMode]?.data) {
+    dataTreeAllProxy = queryDictAllProxy[sortMode].data;
+  }
 
   const { data: grantData } = queryGrants;
   const { data: organizationData } = queryOrganizations;
@@ -380,7 +597,8 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
       !dataTreeId ||
       (sortMode === "grant" && !grantMap) ||
       (sortMode === "organization" && !organizationMap) ||
-      (config.buildType !== "server" && !proxyData)
+      (proxy && !proxyPermission) ||
+      (allowed_sync && !dataTreeIdProxy)
     ) {
       return;
     }
@@ -401,9 +619,10 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
         grantDictionaryIdSetMap,
         organizationMap,
         organizationDictionaryIdSetMap,
-        proxyData,
+        proxyPermission,
         selected,
-        setSelected
+        setSelected,
+        dataTreeIdProxy
       );
 
       if (!active) {
@@ -412,7 +631,7 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
 
       setTreeId(result);
     }
-  }, [sortMode, dataTreeId, grantMap, organizationMap, proxyData, selected, setSelected]);
+  }, [sortMode, dataTreeId, grantMap, organizationMap, proxyPermission, dataTreeIdProxy, selected, setSelected]);
 
   useEffect(() => {
     let active = true;
@@ -426,7 +645,8 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
         !dataTreeAll ||
         (sortMode === "grant" && !grantMap) ||
         (sortMode === "organization" && !organizationMap) ||
-        (config.buildType !== "server" && !proxyData)
+        (proxy && !proxyPermission) ||
+        (allowed_sync && !dataTreeAllProxy)
       ) {
         return;
       }
@@ -440,9 +660,10 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
         grantDictionaryIdSetMap,
         organizationMap,
         organizationDictionaryIdSetMap,
-        proxyData,
+        proxyPermission,
         selected,
-        setSelected
+        setSelected,
+        dataTreeAllProxy
       );
 
       if (!active) {
@@ -451,7 +672,7 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
 
       setTreeAll(result);
     }
-  }, [sortMode, dataTreeAll, grantMap, organizationMap, proxyData, selected, setSelected]);
+  }, [sortMode, dataTreeAll, grantMap, organizationMap, proxyPermission, dataTreeAllProxy, selected, setSelected]);
 
   if (entityIdValue === undefined) {
     return (
