@@ -67,6 +67,36 @@
     margin-left: -7px !important;
     margin-right: -7px !important;
   }
+
+  & .lingvo-dropdown-inline.dropdown.ui.active .menu > .item {
+    & .lingvo-icon {
+      vertical-align: middle !important;
+    }
+
+    & .lingvo-lang-tree-button {
+      vertical-align: middle !important;
+
+      & .lingvo-icon {
+        vertical-align: top !important;
+      }
+    }
+  }
+
+  & .lingvo-dropdown-inline.dropdown.ui.active .menu > .item_remote {
+    color: #cecdcd !important;
+
+    & .lingvo-icon {
+      background-color: #cecdcd !important;
+    }
+
+    &:hover {
+      color: #a3a1bc !important;
+
+      & .lingvo-icon {
+        background-color: #a3a1bc !important;
+      }
+    }
+  }
 }
 
 .node_grant {
@@ -126,6 +156,15 @@
     background-color: #edecf6;
     border-radius: 0 12px 12px 0;
   }
+
+  & .lang-name-remote {
+    color: #cecdcd !important;
+    cursor: pointer;
+
+    &:hover {
+      color: #a3a1bc !important;
+    }
+  }
 }
 
 .node_dict {
@@ -155,6 +194,10 @@
     & .dict-name {
       color: #cecdcd;
 
+      &_link {
+        cursor: pointer;
+      }
+
       &_link:hover {
         color: #a3a1bc;
       }
@@ -174,5 +217,16 @@
 
   & .lingvo-icon {
     margin-right: 0 !important;
+    background-color: #57b894 !important;
   }
+
+  &:hover {
+    & .lingvo-icon {
+      background-color: #fff !important;
+    }
+  }
+}
+
+.lang-name-confirm-modal {
+  font-weight: bold;
 }
