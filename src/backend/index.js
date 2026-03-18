@@ -20,6 +20,30 @@ export const getLanguageMetadataQuery = gql`
   }
 `;
 
+const LanguageDetailsFragment = gql`
+  fragment LanguageDetails on LanguageTree {
+    tree
+    languages {
+      id
+      parent_id
+      translations
+      in_toc
+      dictionaries(deleted: false, published: $published, category: $category) {
+        id
+        translations
+        english_status: status(locale_id: 2)
+        additional_metadata {
+          authors
+        }
+        perspectives {
+          id
+          translations
+        }
+      }
+    }
+  }
+`;
+
 export const getLanguageTree = gql`
   query GetLanguageTree(
     $languageId: LingvodocID
@@ -40,32 +64,15 @@ export const getLanguageTree = gql`
       organization_id: $organizationId
       local: true
     ) {
-      local
-      tree
-      languages {
-        id
-        parent_id
-        translations
-        in_toc
-        dictionaries(deleted: false, published: $published, category: $category) {
-          id
-          translations
-          english_status: status(locale_id: 2)
-          additional_metadata {
-            authors
-          }
-          perspectives {
-            id
-            translations
-          }
-        }
-      }
+      local,
+      ...LanguageDetails
     }
   }
+  ${LanguageDetailsFragment}
 `;
 
 export const getLanguageTreeProxy = gql`
-  query GetLanguageTree(
+  query GetLanguageTreeProxy(
     $languageId: LingvodocID
     $byGrants: Boolean
     $grantId: Int
@@ -75,7 +82,7 @@ export const getLanguageTreeProxy = gql`
     $category: Int
     $proxy: Boolean
   ) {
-    language_tree(
+    language_tree_proxy(
       dictionary_category: $category
       dictionary_published: $published
       language_id: $languageId
@@ -85,28 +92,11 @@ export const getLanguageTreeProxy = gql`
       organization_id: $organizationId
       proxy: $proxy
     ) {
-      proxy
-      tree
-      languages {
-        id
-        parent_id
-        translations
-        in_toc
-        dictionaries(deleted: false, published: $published, category: $category) {
-          id
-          translations
-          english_status: status(locale_id: 2)
-          additional_metadata {
-            authors
-          }
-          perspectives {
-            id
-            translations
-          }
-        }
-      }
+      proxy,
+      ...LanguageDetails
     }
   }
+  ${LanguageDetailsFragment}
 `;
 
 export const getLanguagesForSearch = gql`

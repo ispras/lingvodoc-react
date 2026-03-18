@@ -88,7 +88,7 @@ function constructTree(
 
     // Merging local and proxy language maps
 
-    const { languages: proxyLanguages } = proxyData.language_tree;
+    const { languages: proxyLanguages } = proxyData.language_tree_proxy;
     const languageData = { local: languages, proxy: proxyLanguages };
     const dictionaryMap = {};
     const perspectiveMap = {};
@@ -509,6 +509,9 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
   const proxy = (config.buildType !== "server");
   const allowed_sync = (user.user.id === 1 || user.user.allowed_sync);
 
+  // For debugging
+  const skipProxy = false;
+
   for (const aSortMode of sortModeList) {
     const variablesId = { ...variables };
     const variablesAll = { ...variables };
@@ -530,25 +533,37 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
     queryDictId[aSortMode] = useQuery(getLanguageTree, {
       variables: variablesId,
       fetchPolicy: "cache-and-network",
+      onCompleted: () => {
+        console.log(`Completed getLanguageTreeId for sortMode '${aSortMode}'`)
+      },
       skip: skip_general || !entityIdValue || aSortMode != sortMode
     });
 
     queryDictAll[aSortMode] = useQuery(getLanguageTree, {
       variables: variablesAll,
       fetchPolicy: "cache-and-network",
+      onCompleted: () => {
+        console.log(`Completed getLanguageTreeAll for sortMode '${aSortMode}'`)
+      },
       skip: skip_general || activeTab !== "1" || aSortMode != sortMode
     });
 
     queryDictIdProxy[aSortMode] = useQuery(getLanguageTreeProxy, {
       variables: { ...variablesId, proxy: true },
       fetchPolicy: "cache-and-network",
-      skip: skip_general || !allowed_sync || !entityIdValue || aSortMode != sortMode
+      onCompleted: () => {
+        console.log(`Completed getLanguageTreeIdProxy for sortMode '${aSortMode}'`)
+      },
+      skip: skip_general || !allowed_sync || !entityIdValue || aSortMode != sortMode || skipProxy
     });
 
     queryDictAllProxy[aSortMode] = useQuery(getLanguageTreeProxy, {
       variables: { ...variablesAll, proxy: true },
       fetchPolicy: "cache-and-network",
-      skip: skip_general || !allowed_sync || activeTab !== "1" || aSortMode != sortMode
+      onCompleted: () => {
+        console.log(`Completed getLanguageTreeAllProxy for sortMode '${aSortMode}'`)
+      },
+      skip: skip_general || !allowed_sync || activeTab !== "1" || aSortMode != sortMode || skipProxy
     });
   }
 
@@ -592,14 +607,46 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
   const [treeId, setTreeId] = useState(undefined);
   const [treeAll, setTreeAll] = useState(undefined);
 
+  // For debugging
+  ['sortMode',
+   'dataTreeAll',
+   'grantMap',
+   'organizationMap',
+   'proxyPermission',
+   'dataTreeAllProxy',
+   'selected',
+   'setSelected'
+  ].forEach(state => {
+    useEffect(() => {
+      let attention = '';
+      if (['dataTreeAll', 'dataTreeAllProxy', 'proxyPermission'].includes(state) && !skipConstructAllTree) {
+        attention = '!!! >>> ';
+      }
+      console.log(`${attention}Changed ${state}`);
+    }, [eval(state)]);
+  });
+
+
+  const skipConstructTree = (
+    (sortMode === "grant" && !grantMap) ||
+    (sortMode === "organization" && !organizationMap) ||
+    (proxy && !proxyPermission)
+  );
+
+  const skipConstructIdTree = (
+    !dataTreeId ||
+    (!skipProxy && allowed_sync && !dataTreeIdProxy) ||
+    skipConstructTree
+  );
+
+  const skipConstructAllTree = (
+    !dataTreeAll ||
+    (!skipProxy && allowed_sync && !dataTreeAllProxy) ||
+    skipConstructTree
+  );
+
   useEffect(() => {
-    if (
-      !dataTreeId ||
-      (sortMode === "grant" && !grantMap) ||
-      (sortMode === "organization" && !organizationMap) ||
-      (proxy && !proxyPermission) ||
-      (allowed_sync && !dataTreeIdProxy)
-    ) {
+    if (skipConstructIdTree) {
       return;
     }
 
@@ -634,6 +681,10 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
   }, [sortMode, dataTreeId, grantMap, organizationMap, proxyPermission, dataTreeIdProxy, selected, setSelected]);
 
   useEffect(() => {
+    if (skipConstructAllTree) {
+      return;
+    }
+
     let active = true;
     constructAllTree();
     return () => {
@@ -641,16 +692,6 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
     };
 
     async function constructAllTree() {
-      if (
-        !dataTreeAll ||
-        (sortMode === "grant" && !grantMap) ||
-        (sortMode === "organization" && !organizationMap) ||
-        (proxy && !proxyPermission) ||
-        (allowed_sync && !dataTreeAllProxy)
-      ) {
-        return;
-      }
-
       const result = constructTree(
         dataTreeAll,
         sortMode,
