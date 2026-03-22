@@ -509,6 +509,12 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
   const proxy = (config.buildType !== "server");
   const allowed_sync = (user.user.id === 1 || user.user.allowed_sync);
 
+  const [dataTreeId, setDataTreeId] = useState(undefined);
+  const [dataTreeAll, setDataTreeAll] = useState(undefined);
+
+  const [dataTreeIdProxy, setDataTreeIdProxy] = useState(undefined);
+  const [dataTreeAllProxy, setDataTreeAllProxy] = useState(undefined);
+
   // For debugging
   const skipProxy = false;
 
@@ -533,8 +539,9 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
     queryDictId[aSortMode] = useQuery(getLanguageTree, {
       variables: variablesId,
       fetchPolicy: "cache-and-network",
-      onCompleted: () => {
-        console.log(`Completed getLanguageTreeId for sortMode '${aSortMode}'`)
+      onCompleted: (data) => {
+        console.log(`Completed getLanguageTreeId for sortMode '${aSortMode}'`);
+        setDataTreeId(data);
       },
       skip: skip_general || !entityIdValue || aSortMode != sortMode
     });
@@ -542,8 +549,9 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
     queryDictAll[aSortMode] = useQuery(getLanguageTree, {
       variables: variablesAll,
       fetchPolicy: "cache-and-network",
-      onCompleted: () => {
-        console.log(`Completed getLanguageTreeAll for sortMode '${aSortMode}'`)
+      onCompleted: (data) => {
+        console.log(`Completed getLanguageTreeAll for sortMode '${aSortMode}'`);
+        setDataTreeAll(data);
       },
       skip: skip_general || activeTab !== "1" || aSortMode != sortMode
     });
@@ -551,8 +559,9 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
     queryDictIdProxy[aSortMode] = useQuery(getLanguageTreeProxy, {
       variables: { ...variablesId, proxy: true },
       fetchPolicy: "cache-and-network",
-      onCompleted: () => {
-        console.log(`Completed getLanguageTreeIdProxy for sortMode '${aSortMode}'`)
+      onCompleted: (data) => {
+        console.log(`Completed getLanguageTreeIdProxy for sortMode '${aSortMode}'`);
+        setDataTreeIdProxy(data);
       },
       skip: skip_general || !allowed_sync || !entityIdValue || aSortMode != sortMode || skipProxy
     });
@@ -560,25 +569,20 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
     queryDictAllProxy[aSortMode] = useQuery(getLanguageTreeProxy, {
       variables: { ...variablesAll, proxy: true },
       fetchPolicy: "cache-and-network",
-      onCompleted: () => {
-        console.log(`Completed getLanguageTreeAllProxy for sortMode '${aSortMode}'`)
+      onCompleted: (data) => {
+        console.log(`Completed getLanguageTreeAllProxy for sortMode '${aSortMode}'`);
+        setDataTreeAllProxy(data);
       },
       skip: skip_general || !allowed_sync || activeTab !== "1" || aSortMode != sortMode || skipProxy
     });
   }
 
+  /*
   const { data: dataTreeId } = queryDictId[sortMode];
   const { data: dataTreeAll } = queryDictAll[sortMode];
-
-  let dataTreeIdProxy = null;
-  if (queryDictIdProxy[sortMode]?.data) {
-    dataTreeIdProxy = queryDictIdProxy[sortMode].data;
-  }
-
-  let dataTreeAllProxy = null;
-  if (queryDictAllProxy[sortMode]?.data) {
-    dataTreeAllProxy = queryDictAllProxy[sortMode].data;
-  }
+  const { data: dataTreeIdProxy } = queryDictIdProxy[sortMode];
+  const { data: dataTreeAllProxy } = queryDictAllProxy[sortMode];
+  */
 
   const { data: grantData } = queryGrants;
   const { data: organizationData } = queryOrganizations;
