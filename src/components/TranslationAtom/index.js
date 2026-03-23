@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 import { Button, Input, Select } from "semantic-ui-react";
 import PropTypes from "prop-types";
 
@@ -7,40 +7,40 @@ import TranslationContext from "Layout/TranslationContext";
 
 import { translationGistQuery } from "../TranslationGist";
 
-export default class TranslationAtom extends React.Component {
-  constructor(props) {
-    super(props);
+const TranslationAtom = ({
+  locales,
+  updateAtomMutation,
+  objectId,
+  id,
+  parentId,
+  onAtomCreated,
+  editable,
+  content,
+  localeId
+}) => {
+  const getTranslation = useContext(TranslationContext);
 
-    this.state = {
-      localeId: props.localeId,
-      content: props.content
-    };
+  const [localeIdState, setLocaleIdState] = useState(localeId);
+  const [contentState, setContentState] = useState(content);
 
-    this.onChangeContent = this.onChangeContent.bind(this);
-    this.onChangeLocale = this.onChangeLocale.bind(this);
-    this.createAtom = this.createAtom.bind(this);
-    this.updateAtom = this.updateAtom.bind(this);
-  }
+  const onChangeContent = (event, data) => {
+    setContentState(data.value);
+  };
 
-  onChangeContent(event, data) {
-    this.setState({ content: data.value });
-  }
-
-  onChangeLocale(event, data) {
-    const locale = this.props.locales.find(l => l.shortcut === data.value);
+  const onChangeLocale = (event, data) => {
+    const locale = locales.find(l => l.shortcut === data.value);
     if (locale) {
-      this.setState({ localeId: locale.id });
+      setLocaleIdState(locale.id);
     }
-  }
+  };
 
-  createAtom(locale_id) {
-    const { updateAtomMutation, objectId, id, parentId, onAtomCreated } = this.props;
+  const createAtom = locale_id => {
     updateAtomMutation({
       variables: {
         id: objectId,
         atom_id: id,
         locale_id,
-        content: this.state.content
+        content: contentState
       },
       refetchQueries: [
         {
@@ -57,16 +57,15 @@ export default class TranslationAtom extends React.Component {
     }).then(() => {
       onAtomCreated();
     });
-  }
+  };
 
-  updateAtom(locale_id) {
-    const { updateAtomMutation, objectId, id, parentId } = this.props;
+  const updateAtom = locale_id => {
     updateAtomMutation({
       variables: {
         id: objectId,
         atom_id: id,
         locale_id,
-        content: this.state.content
+        content: contentState
       },
       refetchQueries: [
         {
@@ -81,57 +80,51 @@ export default class TranslationAtom extends React.Component {
         "queryPerspectivePath"
       ]
     });
-  }
+  };
 
-  render() {
-    const { id, locales, editable, content } = this.props;
+  // true if atom is to be created
+  const isAtomNew = id == null;
 
-    // true if atom is to be created
-    const isAtomNew = id == null;
+  const options = locales.map(locale => ({ key: locale.shortcut, text: locale.intl_name, value: locale.shortcut }));
 
-    const options = locales.map(locale => ({ key: locale.shortcut, text: locale.intl_name, value: locale.shortcut }));
+  const locale = locales.find(lc => lc.id === localeIdState);
 
-    const locale = locales.find(lc => lc.id === this.state.localeId);
-
-    return (
-      <Input
-        fluid
-        value={this.state.content}
-        onChange={this.onChangeContent}
-        disabled={!editable}
-        action
-        className="label-input-adaptive"
-      >
-        <input />
-        <Select
-          defaultValue={locale.shortcut}
-          options={options}
-          disabled={!editable || !isAtomNew}
-          onChange={this.onChangeLocale}
-        />
-        {editable && isAtomNew && (
-          <Button
-            onClick={() => this.createAtom(locale.id)}
-            className="lingvo-button-violet lingvo-button-violet_bradius-right"
-          >
-            {this.context("Save")}
-          </Button>
-        )}
-        {editable && !isAtomNew && (
-          <Button
-            disabled={content == this.state.content}
-            onClick={() => this.updateAtom(locale.id)}
-            className="lingvo-button-basic-black lingvo-button-violet_bradius-right"
-          >
-            {this.context("Update")}
-          </Button>
-        )}
-      </Input>
-    );
-  }
-}
-
-TranslationAtom.contextType = TranslationContext;
+  return (
+    <Input
+      fluid
+      value={contentState}
+      onChange={onChangeContent}
+      disabled={!editable}
+      action
+      className="label-input-adaptive"
+    >
+      <input />
+      <Select
+        defaultValue={locale.shortcut}
+        options={options}
+        disabled={!editable || !isAtomNew}
+        onChange={onChangeLocale}
+      />
+      {editable && isAtomNew && (
+        <Button
+          onClick={() => createAtom(locale.id)}
+          className="lingvo-button-violet lingvo-button-violet_bradius-right"
+        >
+          {getTranslation("Save")}
+        </Button>
+      )}
+      {editable && !isAtomNew && (
+        <Button
+          disabled={content == contentState}
+          onClick={() => updateAtom(locale.id)}
+          className="lingvo-button-basic-black lingvo-button-violet_bradius-right"
+        >
+          {getTranslation("Update")}
+        </Button>
+      )}
+    </Input>
+  );
+};
 
 TranslationAtom.propTypes = {
   objectId: PropTypes.array.isRequired,
@@ -153,3 +146,5 @@ TranslationAtom.defaultProps = {
   editable: true,
   onAtomCreated: () => {}
 };
+
+export default TranslationAtom;
