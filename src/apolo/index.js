@@ -29,11 +29,15 @@ const uploadLink = createUploadLink({
   credentials: "same-origin"
 });
 
-export default new ApolloClient({
+export const getApolloClient = (merge = true) => new ApolloClient({
   link: from([onError(globalErrorHandler), uploadLink]),
   cache: new InMemoryCache({
     typePolicies: {
-      Metadata: { merge: true }
+      Metadata: { merge }
     }
   })
 });
+
+export const additionalClient = getApolloClient();
+
+export default getApolloClient();

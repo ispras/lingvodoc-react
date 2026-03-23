@@ -53,6 +53,7 @@ export const getLanguageTree = gql`
     $organizationId: Int
     $published: Boolean
     $category: Int
+    $proxy: Boolean
   ) {
     language_tree(
       dictionary_category: $category
@@ -62,37 +63,8 @@ export const getLanguageTree = gql`
       grant_id: $grantId
       by_organizations: $byOrganizations
       organization_id: $organizationId
-      local: true
-    ) {
-      local,
-      ...LanguageDetails
-    }
-  }
-  ${LanguageDetailsFragment}
-`;
-
-export const getLanguageTreeProxy = gql`
-  query GetLanguageTreeProxy(
-    $languageId: LingvodocID
-    $byGrants: Boolean
-    $grantId: Int
-    $byOrganizations: Boolean
-    $organizationId: Int
-    $published: Boolean
-    $category: Int
-    $proxy: Boolean
-  ) {
-    language_tree_proxy(
-      dictionary_category: $category
-      dictionary_published: $published
-      language_id: $languageId
-      by_grants: $byGrants
-      grant_id: $grantId
-      by_organizations: $byOrganizations
-      organization_id: $organizationId
       proxy: $proxy
     ) {
-      proxy,
       ...LanguageDetails
     }
   }

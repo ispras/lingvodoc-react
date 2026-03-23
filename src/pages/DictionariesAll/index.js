@@ -2,7 +2,8 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 import { Container, Header, Icon, Menu, Message, Tab } from "semantic-ui-react";
-import { useApolloClient, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
+import { additionalClient } from "apolo";
 import { isEqual } from "lodash";
 
 import { getId } from "api/user";
@@ -88,7 +89,7 @@ function constructTree(
 
     // Merging local and proxy language maps
 
-    const { languages: proxyLanguages } = proxyData.language_tree_proxy;
+    const { languages: proxyLanguages } = proxyData.language_tree;
     const languageData = { local: languages, proxy: proxyLanguages };
     const dictionaryMap = {};
     const perspectiveMap = {};
@@ -556,9 +557,10 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
       skip: skip_general || activeTab !== "1" || aSortMode != sortMode
     });
 
-    queryDictIdProxy[aSortMode] = useQuery(getLanguageTreeProxy, {
+    queryDictIdProxy[aSortMode] = useQuery(getLanguageTree, {
       variables: { ...variablesId, proxy: true },
       fetchPolicy: "cache-and-network",
+      client: additionalClient,
       onCompleted: (data) => {
         console.log(`Completed getLanguageTreeIdProxy for sortMode '${aSortMode}'`);
         setDataTreeIdProxy(data);
@@ -566,9 +568,10 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
       skip: skip_general || !allowed_sync || !entityIdValue || aSortMode != sortMode || skipProxy
     });
 
-    queryDictAllProxy[aSortMode] = useQuery(getLanguageTreeProxy, {
+    queryDictAllProxy[aSortMode] = useQuery(getLanguageTree, {
       variables: { ...variablesAll, proxy: true },
       fetchPolicy: "cache-and-network",
+      client: additionalClient,
       onCompleted: (data) => {
         console.log(`Completed getLanguageTreeAllProxy for sortMode '${aSortMode}'`);
         setDataTreeAllProxy(data);
