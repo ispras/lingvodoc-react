@@ -30,10 +30,12 @@ const LangNode = ({
   const user = useSelector(state => state.user.user);
 
   const signedIn = user.id !== undefined;
+  const allowedSync = user.id === 1 || user.allowed_sync;
   const publishedStr = getTranslation("Published");
 
   const languageId = compositeIdToString(node[0]);
   const language = languageMap[languageId];
+  const proxyLang = language.single === "proxy";
 
   let langClass = "lang-name";
   if (!language.parent_id) {
@@ -59,7 +61,7 @@ const LangNode = ({
   return (
     <li className="node_lang" id={`language_${languageId}`}>
       <span className={langClass}>
-        {(language.single && language.single === "proxy" && language.translations && (
+        {allowedSync && proxyLang && language.translations && (
           <span
             className="lang-name-remote"
             onClick={() =>
@@ -77,7 +79,7 @@ const LangNode = ({
           >
             {chooseTranslation(language.translations)}
           </span>
-        )) ||
+        ) ||
           (language.translations && chooseTranslation(language.translations))}
       </span>
       <ul>
@@ -94,6 +96,11 @@ const LangNode = ({
             />
           ))}
         {dictionaries.map((dictionary, index) => {
+          const dictionaryId = compositeIdToString(dictionary.id);
+          const proxyDict = dictionary.single === "proxy";
+          const commonDict = (
+            !dictionary.single || dictionary.single !== "local" && dictionary.single !== "proxy");
+
           const isDownloaded = proxyData
             ? proxyData.dictionaries.find(d => d.id.toString() === dictionary.id.toString()) !== undefined
             : false;
@@ -102,7 +109,7 @@ const LangNode = ({
           return (
             <li
               key={index}
-              className={`node_dict${dictionary.single && dictionary.single === "proxy" ? " node_dict_remote" : ""}`}
+              className={`node_dict${allowedSync && proxyDict ? " node_dict_remote" : ""}`}
             >
               {(config.buildType === "desktop" || config.buildType === "proxy") && signedIn && (
                 <Checkbox
@@ -121,7 +128,7 @@ const LangNode = ({
               )}
               {isDownloaded && <Icon name="download" />}
 
-              {dictionary.single && dictionary.single === "proxy" ? (
+              {allowedSync && proxyDict ? (
                 <span
                   className="dict-name dict-name_link"
                   onClick={() =>
@@ -157,6 +164,11 @@ const LangNode = ({
                 >
                   <Dropdown.Menu>
                     {perspectives.map((perspective, index) => {
+                      const perspectiveId = compositeIdToString(perspective.id);
+                      const proxyPers = perspective.single === "proxy";
+                      const commonPers = (
+                        !perspective.single || perspective.single !== "local" && perspective.single !== "proxy");
+
                       if (
                         !perspective.translations ||
                         (perspective.translations && !chooseTranslation(perspective.translations))
@@ -165,31 +177,30 @@ const LangNode = ({
                       }
 
                       const view = !!permissions?.view.find(
-                        p => compositeIdToString(p.id) === compositeIdToString(perspective.id)
+                        p => compositeIdToString(p.id) === perspectiveId
                       );
                       const edit = !!permissions?.edit.find(
-                        p => compositeIdToString(p.id) === compositeIdToString(perspective.id)
+                        p => compositeIdToString(p.id) === perspectiveId
                       );
                       const publish = !!permissions?.publish.find(
-                        p => compositeIdToString(p.id) === compositeIdToString(perspective.id)
+                        p => compositeIdToString(p.id) === perspectiveId
                       );
                       const limited = !!permissions?.limited.find(
-                        p => compositeIdToString(p.id) === compositeIdToString(perspective.id)
+                        p => compositeIdToString(p.id) === perspectiveId
                       );
 
                       return (
                         <Dropdown.Item
-                          key={compositeIdToString(perspective.id)}
-                          as={perspective.single && perspective.single === "proxy" ? "span" : Link}
+                          key={perspectiveId}
+                          as={allowedSync && proxyPers ? "span" : Link}
                           to={
-                            !perspective.single || (perspective.single && perspective.single !== "proxy")
+                            !proxyPers
                               ? `/dictionary/${dictionary.id.join("/")}/perspective/${perspective.id.join("/")}`
                               : null
                           }
-                          className={perspective.single && perspective.single === "proxy" ? "item_remote" : ""}
+                          className={allowedSync && proxyPers ? "item_remote" : ""}
                           onClick={
-                            (perspective.single &&
-                              perspective.single === "proxy" &&
+                            (allowedSync && proxyPers &&
                               perspective.translations &&
                               (() =>
                                 openConfirmModal(
@@ -223,7 +234,7 @@ const LangNode = ({
                                 {chooseTranslation(perspective.translations)}
                               </>
                             )}
-                          {perspective.single && perspective.single !== "local" && perspective.single !== "proxy" && (
+                          {allowedSync && commonPers && (
                             <Button
                               icon={<i className="lingvo-icon lingvo-icon_refresh" />}
                               onClick={event => {
@@ -250,8 +261,7 @@ const LangNode = ({
                 />
               )}
 
-              {/*(user.id === 1 || user.allowed_sync)*/}
-              {dictionary.single && dictionary.single !== "local" && dictionary.single !== "proxy" && (
+              {allowedSync && commonDict && (
                 <Button
                   icon={<i className="lingvo-icon lingvo-icon_refresh" />}
                   onClick={() => onSynchronize(dictionary.id, dictionaries)}

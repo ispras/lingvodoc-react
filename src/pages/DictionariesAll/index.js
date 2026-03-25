@@ -147,21 +147,26 @@ function constructTree(
     });
 
     // Marking object in input map as 'single' if corresponding '_diff' list includes its id
-    [languageMap, dictionaryMap, perspectiveMap].forEach(amap => {
-      ['local', 'proxy'].forEach(side => {
-        for (const [id, obj] of Object.entries(amap[side])) {
-          if (amap[`${side}_diff`].has(id)) {
-            obj.single = side;
-            // If obj is language or dictionary we should mark
-            // nested dictionaries and/or perspectives as well
-            (obj.dictionaries || []).forEach(dict => {
-              dict.single = side;
-              dict.perspectives.forEach(pers => { pers.single = side });
-            });
-            (obj.perspectives || []).forEach(pers => { pers.single = side });
-          }
-        }
-      });
+    ['local', 'proxy'].forEach(side => {
+      const side_diff = `${side}_diff`;
+
+      for (const [langId, langObj] of Object.entries(languageMap[side])) {
+        langObj.single = languageMap[side_diff].has(langId) && side;
+
+        langObj.dictionaries.forEach(dictObj => {
+          const dictId = compositeIdToString(dictObj.id);
+          const dictSingleSide = dictionaryMap[side_diff].has(dictId) && side;
+          dictObj.single = dictSingleSide;
+          dictionaryMap[side][dictId].single = dictSingleSide;
+
+          dictObj.perspectives.forEach(persObj => {
+            const persId = compositeIdToString(persObj.id);
+            const persSingleSide = perspectiveMap[side_diff].has(persId) && side;
+            persObj.single = persSingleSide;
+            perspectiveMap[side][persId].single = persSingleSide;
+          });
+        });
+      }
     });
 
     // Insert language from proxy with its parents
@@ -220,7 +225,7 @@ function constructTree(
         f(lang_result);
 
       } else {
-        const lang_result = languageMap.local[lang_id];
+        const lang_result = structuredClone(languageMap.local[lang_id]);
         languageMap.common[lang_id] = lang_result;
 
         // If language is on the both sides
@@ -244,7 +249,12 @@ function constructTree(
               lang_result.dictionaries.push(dict_result);
 
             } else {
-              const dict_result = dictionaryMap.local[dict_id];
+              const dict_result = structuredClone(dictionaryMap.local[dict_id]);
+
+              // Debugging
+              if (lang_id === '3619,28523' && dict_id === '11560,775') {
+                console.log(`${dict_id}: ${dict_result.translations[2]}`);
+              }
 
               // If dictionary is on the both sides
               if (dictionaryMap.intersection.has(dict_id)) {
