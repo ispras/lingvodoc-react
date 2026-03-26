@@ -71,7 +71,7 @@ function constructTree(
   proxyData=null
 ) {
 
-  const { languages, tree: frozenTree } = data.language_tree;
+  const { languages: localLanguages, tree: frozenTree } = data.language_tree;
   const tree = structuredClone(frozenTree);
   const languageMap = { common: {} };
 
@@ -81,7 +81,7 @@ function constructTree(
 
   if (proxyData === null) {
 
-    languages.forEach(language => {
+    localLanguages.forEach(language => {
       languageMap.common[compositeIdToString(language.id)] = language;
     });
 
@@ -90,11 +90,19 @@ function constructTree(
     // Merging local and proxy language maps
 
     const { languages: proxyLanguages } = proxyData.language_tree;
-    const languageData = { local: languages, proxy: proxyLanguages };
+    const languageData = {
+      local: structuredClone(localLanguages),
+      proxy: structuredClone(proxyLanguages)
+    };
     const dictionaryMap = {};
     const perspectiveMap = {};
 
     // Getting maps of languages, dictionaries and perspectives by id
+    // Objects from these three maps must be interlinked.
+    // So dictionaryMap.local[dictId] must point to object
+    // from languageMap.local[langId].dictionaries
+    // (!) but not be its copy (!)
+
     ['local', 'proxy'].forEach(side => {
 
       languageMap[side] = {};
@@ -103,11 +111,14 @@ function constructTree(
 
       languageData[side].forEach(language => {
         const lang_id = compositeIdToString(language.id);
+
+        // Debugging
         if (languageMap[side].hasOwnProperty(lang_id)) {
           console.log(`Collision for language ${lang_id}`);
           return;
         }
-        languageMap[side][lang_id] = structuredClone(language);
+
+        languageMap[side][lang_id] = language;
 
         // Debugging
         if (lang_id === '3619,28523') {
@@ -116,19 +127,25 @@ function constructTree(
 
         language.dictionaries.forEach(dictionary => {
           const dict_id = compositeIdToString(dictionary.id);
+
+          // Debugging
           if (dictionaryMap[side].hasOwnProperty(dict_id)) {
             console.log(`Collision for dictionary ${dict_id}`);
             return;
           }
-          dictionaryMap[side][dict_id] = structuredClone(dictionary);
+
+          dictionaryMap[side][dict_id] = dictionary;
 
           dictionary.perspectives.forEach(perspective => {
             const pers_id = compositeIdToString(perspective.id);
+
+            // Debugging
             if (perspectiveMap[side].hasOwnProperty(pers_id)) {
               console.log(`Collision for perspective ${pers_id}`);
               return;
             }
-            perspectiveMap[side][pers_id] = structuredClone(perspective);
+
+            perspectiveMap[side][pers_id] = perspective;
           });
         });
       });
@@ -155,15 +172,11 @@ function constructTree(
 
         langObj.dictionaries.forEach(dictObj => {
           const dictId = compositeIdToString(dictObj.id);
-          const dictSingleSide = dictionaryMap[side_diff].has(dictId) && side;
-          dictObj.single = dictSingleSide;
-          dictionaryMap[side][dictId].single = dictSingleSide;
+          dictObj.single = dictionaryMap[side_diff].has(dictId) && side;
 
           dictObj.perspectives.forEach(persObj => {
             const persId = compositeIdToString(persObj.id);
-            const persSingleSide = perspectiveMap[side_diff].has(persId) && side;
-            persObj.single = persSingleSide;
-            perspectiveMap[side][persId].single = persSingleSide;
+            persObj.single = perspectiveMap[side_diff].has(persId) && side;
           });
         });
       }
@@ -215,7 +228,10 @@ function constructTree(
     }
 
     // Iterate through language_union (local+proxy)
-    // collect languages into common map
+    // to collect languages into common map.
+    // (!) After this block languageMap.local and
+    // dictionaryMap.local will contain merged data (!)
+
     languageMap.union.forEach(lang_id => {
 
       // If language exists only on proxy side
@@ -225,7 +241,7 @@ function constructTree(
         f(lang_result);
 
       } else {
-        const lang_result = structuredClone(languageMap.local[lang_id]);
+        const lang_result = languageMap.local[lang_id];
         languageMap.common[lang_id] = lang_result;
 
         // If language is on the both sides
@@ -249,7 +265,7 @@ function constructTree(
               lang_result.dictionaries.push(dict_result);
 
             } else {
-              const dict_result = structuredClone(dictionaryMap.local[dict_id]);
+              const dict_result = dictionaryMap.local[dict_id];
 
               // Debugging
               if (lang_id === '3619,28523' && dict_id === '11560,775') {
