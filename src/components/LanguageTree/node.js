@@ -140,6 +140,9 @@ const LangNode = ({
                       )}?`,
                       () => {
                         console.log("Загружаем словарь");
+                        perspectives.forEach(perspective => {
+                          onSynchronize(perspective.id, perspectives);
+                        });
                       },
                       getTranslation("Yes"),
                       getTranslation("No")
@@ -265,7 +268,12 @@ const LangNode = ({
               {allowedSync && commonDict && (
                 <Button
                   icon={<i className="lingvo-icon lingvo-icon_refresh" />}
-                  onClick={() => onSynchronize(dictionary.id, dictionaries)}
+                  onClick={() => {
+                    console.log("Обновляем словарь");
+                    perspectives.forEach(perspective => {
+                      onSynchronize(perspective.id, perspectives);
+                    });
+                  }}
                   className="lingvo-button-green lingvo-lang-tree-button"
                 />
               )}
