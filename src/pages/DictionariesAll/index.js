@@ -101,7 +101,7 @@ function constructTree(
     // Objects from these three maps must be interlinked.
     // So dictionaryMap.local[dictId] must point to object
     // from languageMap.local[langId].dictionaries
-    // (!) but not be its copy (!)
+    // (!) but be not its copy (!)
 
     ['local', 'proxy'].forEach(side => {
 

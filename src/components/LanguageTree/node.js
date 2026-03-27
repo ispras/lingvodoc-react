@@ -68,7 +68,7 @@ const LangNode = ({
               openConfirmModal(
                 `${getTranslation("Language")} "${chooseTranslation(language.translations)}" -> "${chooseTranslation(
                   language.translations
-                )}" ${getTranslation("will be downloaded from the central server")}?`,
+                )}" ${getTranslation("will be downloaded from the another server")}?`,
                 () => {
                   console.log("Загружаем язык");
                 },
@@ -136,7 +136,7 @@ const LangNode = ({
                       `${getTranslation("Dictionary")} "${chooseTranslation(
                         dictionary.translations
                       )}" -> "${chooseTranslation(dictionary.translations)}" ${getTranslation(
-                        "will be downloaded from the central server"
+                        "will be downloaded from the another server"
                       )}?`,
                       () => {
                         console.log("Загружаем словарь");
@@ -207,10 +207,11 @@ const LangNode = ({
                                   `${getTranslation("Perspective")} "${chooseTranslation(
                                     perspective.translations
                                   )}" -> "${chooseTranslation(perspective.translations)}" ${getTranslation(
-                                    "will be downloaded from the central server"
+                                    "will be downloaded from the another server"
                                   )}?`,
                                   () => {
                                     console.log("Загружаем перспективу");
+                                    onSynchronize(perspective.id, perspectives);
                                   },
                                   getTranslation("Yes"),
                                   getTranslation("No")
