@@ -51,8 +51,8 @@ const LangNode = ({
       })
     : language.dictionaries;
 
-  const onSynchronize = (id, fields) => {
-    openNewModal(SyncModal, { perspectiveId: id, columns: fields });
+  const onSynchronize = (id, fields, silentMode=false) => {
+    openNewModal(SyncModal, { perspectiveId: id, columns: fields, silentMode });
   };
 
   const proxy = config.buildType === "desktop" || config.buildType === "proxy";
@@ -141,7 +141,7 @@ const LangNode = ({
                       () => {
                         console.log("Загружаем словарь");
                         perspectives.forEach(perspective => {
-                          onSynchronize(perspective.id, perspectives);
+                          onSynchronize(perspective.id, perspectives, true);
                         });
                       },
                       getTranslation("Yes"),
@@ -214,7 +214,7 @@ const LangNode = ({
                                   )}?`,
                                   () => {
                                     console.log("Загружаем перспективу");
-                                    onSynchronize(perspective.id, perspectives);
+                                    onSynchronize(perspective.id, perspectives, true);
                                   },
                                   getTranslation("Yes"),
                                   getTranslation("No")
@@ -242,6 +242,7 @@ const LangNode = ({
                             <Button
                               icon={<i className="lingvo-icon lingvo-icon_refresh" />}
                               onClick={event => {
+                                console.log("Обновляем перспективу");
                                 onSynchronize(perspective.id, perspectives);
                                 event.preventDefault();
                               }}
@@ -271,7 +272,7 @@ const LangNode = ({
                   onClick={() => {
                     console.log("Обновляем словарь");
                     perspectives.forEach(perspective => {
-                      onSynchronize(perspective.id, perspectives);
+                      onSynchronize(perspective.id, perspectives, true);
                     });
                   }}
                   className="lingvo-button-green lingvo-lang-tree-button"

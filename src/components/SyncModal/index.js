@@ -11,7 +11,7 @@ import TranslationContext from "Layout/TranslationContext";
 
 import "./styles.scss";
 
-const SyncModal = ({ columns, onClose, perspectiveId, foreignChanges }) => {
+const SyncModal = ({ columns, onClose, perspectiveId, silentMode }) => {
   const getTranslation = useContext(TranslationContext);
 
   const [ ispSyncData, setIspSyncData ] = useState(null);
@@ -47,10 +47,20 @@ const SyncModal = ({ columns, onClose, perspectiveId, foreignChanges }) => {
   });
 
   useEffect(() => {
-    if (applied && !loadingApply && !errorApply) {
+    if (applied &&
+        !loadingApply && !errorApply) {
       onClose();
     }
-  }, [applied, loadingApply, errorApply]);
+  }, [applied, loadingApply]);
+
+  useEffect(() => {
+    if (silentMode &&
+        !ispSyncLoading && !ispSyncError &&
+        !xalSyncLoading && !xalSyncError) {
+      applySync();
+      setApplied(true);
+    }
+  }, [ispSyncData, ispSyncLoading, xalSyncData, xalSyncLoading]);
 
   const dataCore = {
     languages: [
@@ -334,7 +344,8 @@ const SyncModal = ({ columns, onClose, perspectiveId, foreignChanges }) => {
 SyncModal.propTypes = {
   columns: PropTypes.array.isRequired,
   onClose: PropTypes.func.isRequired,
-  perspectiveId: PropTypes.array.isRequired
+  perspectiveId: PropTypes.array.isRequired,
+  silentMode: PropTypes.bool
 };
 
 export default SyncModal;
