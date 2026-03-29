@@ -610,8 +610,10 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
   }
 
   const refreshLangTree = () => {
-    queryDictAll[sortMode].refetch();
+    setTimeout(queryDictAll[sortMode].refetch, 500);
   }
+
+  setInterval(queryDictAllProxy[sortMode].refetch, 300000);
 
   /*
   const { data: dataTreeId } = queryDictId[sortMode];
