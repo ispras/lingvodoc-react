@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { connect, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { Button, Checkbox, Dropdown, Header, Icon, Popup } from "semantic-ui-react";
@@ -10,7 +10,7 @@ import { useTranslations } from "hooks";
 import { compositeIdToString } from "utils/compositeId";
 import SyncModal from "components/SyncModal";
 
-import { openModal } from "ducks/modals";
+import { openModal, closeModal } from "ducks/modals";
 import { openModal as openConfirmModal } from "ducks/confirm";
 
 /** Language tree node of a language. */
@@ -25,10 +25,12 @@ const LangNode = ({
   proxyData,
   refreshLangTree,
   openConfirmModal,
-  openModal: openNewModal
+  openModal: openNewModal,
+  closeModal
 }) => {
   const { getTranslation, chooseTranslation } = useTranslations();
   const user = useSelector(state => state.user.user);
+  const [modalCount, setModalCount] = useState(0);
 
   const signedIn = user.id !== undefined;
   const allowedSync = user.id === 1 || user.allowed_sync;
@@ -52,9 +54,23 @@ const LangNode = ({
       })
     : language.dictionaries;
 
-  const onSynchronize = ({ id, silentMode, onClose }) => {
-    openNewModal(SyncModal, { perspectiveId: id, silentMode, onClose });
+  const onSynchronize = ({ id, silentMode }) => {
+    setModalCount(modalCount + 1);
+    openNewModal(SyncModal, {
+      perspectiveId: id,
+      silentMode,
+      onClose: () => {
+        closeModal();
+        setModalCount(modalCount - 1);
+      }
+    });
   };
+
+  useEffect(() => {
+    if (modalCount <= 0) {
+      refreshLangTree();
+    }
+  }, [modalCount]);
 
   const proxy = config.buildType === "desktop" || config.buildType === "proxy";
   const permissions = proxy ? proxyData?.permission_lists : undefined;
@@ -82,7 +98,6 @@ const LangNode = ({
                       });
                     });
                   });
-                  refreshLangTree();
                 },
                 getTranslation("Yes"),
                 getTranslation("No")
@@ -159,7 +174,6 @@ const LangNode = ({
                             silentMode: true
                           });
                         });
-                        refreshLangTree();
                       },
                       getTranslation("Yes"),
                       getTranslation("No")
@@ -235,7 +249,6 @@ const LangNode = ({
                                       id: perspective.id,
                                       silentMode: true
                                     });
-                                    refreshLangTree();
                                   },
                                   getTranslation("Yes"),
                                   getTranslation("No")
@@ -312,7 +325,7 @@ const LangNode = ({
   );
 };
 
-export const LanguageNode = connect(null, dispatch => bindActionCreators({ openModal, openConfirmModal }, dispatch))(
+export const LanguageNode = connect(null, dispatch => bindActionCreators({ openModal, openConfirmModal, closeModal }, dispatch))(
   LangNode
 );
 
