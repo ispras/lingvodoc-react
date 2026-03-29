@@ -54,14 +54,14 @@ const LangNode = ({
       })
     : language.dictionaries;
 
-  const onSynchronize = ({ id, silentMode }) => {
-    setModalCount(modalCount + 1);
+  const onSynchronize = ({ id, silentMode, rendering=true }) => {
+    setModalCount(modalCount + rendering);
     openNewModal(SyncModal, {
       perspectiveId: id,
       silentMode,
       onClose: () => {
         closeModal();
-        setModalCount(modalCount - 1);
+        setModalCount(modalCount - rendering);
       }
     });
   };
@@ -278,7 +278,8 @@ const LangNode = ({
                               onClick={event => {
                                 console.log("Обновляем перспективу");
                                 onSynchronize({
-                                  id: perspective.id
+                                  id: perspective.id,
+                                  rendering: false
                                 });
                                 event.preventDefault();
                               }}
@@ -310,7 +311,8 @@ const LangNode = ({
                     perspectives.forEach(perspective => {
                       onSynchronize({
                         id: perspective.id,
-                        silentMode: true
+                        silentMode: true,
+                        rendering: false
                       });
                     });
                   }}
