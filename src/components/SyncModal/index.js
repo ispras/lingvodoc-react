@@ -41,8 +41,10 @@ const SyncModal = ({ columns, onClose, perspectiveId, silentMode }) => {
     applySyncMutation, {
       variables: { perspectiveId, syncBetween: ['isp','xal'], debugFlag: true },
       onCompleted: ({apply_sync: {triumph, message}}) => {
-        if (message)
-          console.log(message)
+        if (message) {
+          console.log(message);
+        }
+        setApplied(true);
       }
   });
 
@@ -58,7 +60,6 @@ const SyncModal = ({ columns, onClose, perspectiveId, silentMode }) => {
         !ispSyncLoading && !ispSyncError &&
         !xalSyncLoading && !xalSyncError) {
       applySync();
-      setApplied(true);
     }
   }, [ispSyncData, ispSyncLoading, xalSyncData, xalSyncLoading]);
 
@@ -317,12 +318,7 @@ const SyncModal = ({ columns, onClose, perspectiveId, silentMode }) => {
               </span>
             ) : getTranslation("Apply")
           }
-          onClick={
-            () => {
-              applySync();
-              setApplied(true);
-            }
-          }
+          onClick={() => applySync()}
           //loading={loadingApply}
           disabled={
             ispSyncLoading ||

@@ -23,6 +23,7 @@ const LangNode = ({
   selected,
   setSelected,
   proxyData,
+  refreshLangTree,
   openConfirmModal,
   openModal: openNewModal
 }) => {
@@ -51,8 +52,8 @@ const LangNode = ({
       })
     : language.dictionaries;
 
-  const onSynchronize = (id, fields, silentMode=false) => {
-    openNewModal(SyncModal, { perspectiveId: id, columns: fields, silentMode });
+  const onSynchronize = ({ id, silentMode, onClose }) => {
+    openNewModal(SyncModal, { perspectiveId: id, silentMode, onClose });
   };
 
   const proxy = config.buildType === "desktop" || config.buildType === "proxy";
@@ -71,6 +72,17 @@ const LangNode = ({
                 )}" ${getTranslation("will be downloaded from the another server")}?`,
                 () => {
                   console.log("Загружаем язык");
+                  // Probably we should check every dictionary for permissions
+                  // User can synchronize a dictionary if he has 'edit' permissions
+                  language.dictionaries.forEach(dictionary => {
+                    dictionary.perspectives.forEach(perspective => {
+                      onSynchronize({
+                        id: perspective.id,
+                        silentMode: true
+                      });
+                    });
+                  });
+                  refreshLangTree();
                 },
                 getTranslation("Yes"),
                 getTranslation("No")
@@ -93,6 +105,7 @@ const LangNode = ({
               dictionaryIdSetReverse={dictionaryIdSetReverse}
               selected={selected}
               setSelected={setSelected}
+              refreshLangTree={refreshLangTree}
             />
           ))}
         {dictionaries.map((dictionary, index) => {
@@ -141,8 +154,12 @@ const LangNode = ({
                       () => {
                         console.log("Загружаем словарь");
                         perspectives.forEach(perspective => {
-                          onSynchronize(perspective.id, perspectives, true);
+                          onSynchronize({
+                            id: perspective.id,
+                            silentMode: true
+                          });
                         });
+                        refreshLangTree();
                       },
                       getTranslation("Yes"),
                       getTranslation("No")
@@ -214,7 +231,11 @@ const LangNode = ({
                                   )}?`,
                                   () => {
                                     console.log("Загружаем перспективу");
-                                    onSynchronize(perspective.id, perspectives, true);
+                                    onSynchronize({
+                                      id: perspective.id,
+                                      silentMode: true
+                                    });
+                                    refreshLangTree();
                                   },
                                   getTranslation("Yes"),
                                   getTranslation("No")
@@ -243,7 +264,9 @@ const LangNode = ({
                               icon={<i className="lingvo-icon lingvo-icon_refresh" />}
                               onClick={event => {
                                 console.log("Обновляем перспективу");
-                                onSynchronize(perspective.id, perspectives);
+                                onSynchronize({
+                                  id: perspective.id
+                                });
                                 event.preventDefault();
                               }}
                               className="lingvo-button-green lingvo-lang-tree-button"
@@ -272,7 +295,10 @@ const LangNode = ({
                   onClick={() => {
                     console.log("Обновляем словарь");
                     perspectives.forEach(perspective => {
-                      onSynchronize(perspective.id, perspectives, true);
+                      onSynchronize({
+                        id: perspective.id,
+                        silentMode: true
+                      });
                     });
                   }}
                   className="lingvo-button-green lingvo-lang-tree-button"

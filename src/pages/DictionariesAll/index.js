@@ -68,6 +68,7 @@ function constructTree(
   proxyPermission,
   selected,
   setSelected,
+  refreshLangTree,
   proxyData=null
 ) {
 
@@ -325,6 +326,7 @@ function constructTree(
           selected={selected}
           setSelected={setSelected}
           proxyData={proxyPermission}
+          refreshLangTree={refreshLangTree}
         />
       ))
     ) : (
@@ -334,6 +336,7 @@ function constructTree(
         selected={selected}
         setSelected={setSelected}
         proxyData={proxyPermission}
+        refreshLangTree={refreshLangTree}
       />
     );
   } else {
@@ -606,6 +609,10 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
     });
   }
 
+  const refreshLangTree = () => {
+    queryDictAll[sortMode].refetch();
+  }
+
   /*
   const { data: dataTreeId } = queryDictId[sortMode];
   const { data: dataTreeAll } = queryDictAll[sortMode];
@@ -702,6 +709,7 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
         proxyPermission,
         selected,
         setSelected,
+        refreshLangTree,
         dataTreeIdProxy
       );
 
@@ -737,6 +745,7 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
         proxyPermission,
         selected,
         setSelected,
+        refreshLangTree,
         dataTreeAllProxy
       );
 
