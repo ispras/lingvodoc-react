@@ -23,7 +23,7 @@ const LanguageSearchField = ({ sortMode, entityId, dataList, onSelectId }) => {
   const [options, languageIdSet] = useMemo(() => {
     const languageIdSet = new Set();
 
-    if (!data || (!data.languages && !data.language_tree.language)) {
+    if (!data || (!data.languages && !data.language_tree.languages)) {
       return [[], languageIdSet];
     }
 

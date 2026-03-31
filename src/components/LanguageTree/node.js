@@ -55,12 +55,14 @@ const LangNode = ({
     : language.dictionaries;
 
   const onSynchronize = ({ id, silentMode, rendering=true }) => {
+    // +1 or no any change
     setModalCount(modalCount + rendering);
     openNewModal(SyncModal, {
       perspectiveId: id,
       silentMode,
       onClose: () => {
         closeModal();
+        // -1 or no any change
         setModalCount(modalCount - rendering);
       }
     });

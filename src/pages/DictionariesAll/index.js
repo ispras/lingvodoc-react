@@ -68,6 +68,7 @@ function constructTree(
   proxyPermission,
   selected,
   setSelected,
+  setDataTreeCommon,
   refreshLangTree,
   proxyData=null
 ) {
@@ -83,6 +84,7 @@ function constructTree(
   if (proxyData === null) {
 
     localLanguages.forEach(language => {
+      setDataTreeCommon(data);
       languageMap.common[compositeIdToString(language.id)] = language;
     });
 
@@ -296,6 +298,9 @@ function constructTree(
       }
     });
   }
+
+  // Construct common data to use in LanguageSearchField component
+  setDataTreeCommon({language_tree: {languages: Object.values(languageMap.common)}});
 
   let groupMap = undefined;
   let groupDictionaryIdSetMap = undefined;
@@ -613,7 +618,7 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
     setTimeout(queryDictAll[sortMode].refetch, 500);
   }
 
-  setInterval(queryDictAllProxy[sortMode].refetch, 300000);
+  //setInterval(queryDictAllProxy[sortMode].refetch, 300000);
 
   /*
   const { data: dataTreeId } = queryDictId[sortMode];
@@ -646,6 +651,7 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
   /* Async construction of the language trees in case they are large, along the lines of
    * https://stackoverflow.com/a/66071205/2016856. */
 
+  const [dataTreeCommon, setDataTreeCommon] = useState({ language_tree: {} });
   const [treeId, setTreeId] = useState(undefined);
   const [treeAll, setTreeAll] = useState(undefined);
 
@@ -711,6 +717,7 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
         proxyPermission,
         selected,
         setSelected,
+        setDataTreeCommon,
         refreshLangTree,
         dataTreeIdProxy
       );
@@ -747,6 +754,7 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
         proxyPermission,
         selected,
         setSelected,
+        setDataTreeCommon,
         refreshLangTree,
         dataTreeAllProxy
       );
@@ -811,7 +819,7 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
         <LanguageSearchField
           sortMode={sortMode}
           entityId={entityId}
-          dataList={activeTab === "0" ? [queryLanguages.data, dataTreeAll] : [dataTreeAll, queryLanguages.data]}
+          dataList={activeTab === "0" ? [queryLanguages.data, dataTreeCommon] : [dataTreeCommon, queryLanguages.data]}
           onSelectId={onSelectId}
         />
       )}
