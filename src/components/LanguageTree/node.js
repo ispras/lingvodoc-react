@@ -26,7 +26,8 @@ const LangNode = ({
   refreshLangTree,
   openConfirmModal,
   openModal: openNewModal,
-  closeModal
+  closeModal,
+  editPermissions
 }) => {
   const { getTranslation, chooseTranslation } = useTranslations();
   const user = useSelector(state => state.user.user);
@@ -285,6 +286,10 @@ const LangNode = ({
                                 });
                                 event.preventDefault();
                               }}
+                              disabled={
+                                !editPermissions ||
+                                !editPermissions[compositeIdToString(perspective.id)]
+                              }
                               className="lingvo-button-green lingvo-lang-tree-button"
                             />
                           )}

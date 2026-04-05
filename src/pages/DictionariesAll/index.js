@@ -13,7 +13,8 @@ import {
   getLanguageTreeProxy,
   getTocGrants,
   getTocOrganizations,
-  proxyDictionaryInfo
+  proxyDictionaryInfo,
+  getPermissionsBulk
 } from "backend";
 import BackTopButton from "components/BackTopButton";
 import LanguageSearchField from "components/LanguageSearchField";
@@ -70,6 +71,7 @@ function constructTree(
   setSelected,
   setDataTreeCommon,
   refreshLangTree,
+  localPermissions,
   proxyData=null
 ) {
 
@@ -332,6 +334,7 @@ function constructTree(
           setSelected={setSelected}
           proxyData={proxyPermission}
           refreshLangTree={refreshLangTree}
+          editPermissions={localPermissions?.check_permissions_bulk}
         />
       ))
     ) : (
@@ -342,6 +345,7 @@ function constructTree(
         setSelected={setSelected}
         proxyData={proxyPermission}
         refreshLangTree={refreshLangTree}
+        editPermissions={localPermissions?.check_permissions_bulk}
       />
     );
   } else {
@@ -614,6 +618,22 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
     });
   }
 
+  const perspectiveIdList = useMemo(() => {
+    const languages = dataTreeAll?.language_tree?.languages || [];
+    const result = [];
+    languages.forEach(
+      language => language.dictionaries.forEach(
+        dictionary => dictionary.perspectives.forEach(
+          perspective => result.push(perspective.id))));
+    return result;
+  }, [dataTreeAll]);
+
+  const { data: localPermissions } = useQuery(getPermissionsBulk, {
+    variables: { perspectiveIdList },
+    fetchPolicy: "cache-and-network",
+    skip: !allowed_sync || !dataTreeAll?.language_tree?.languages || skipProxy
+  });
+
   const refreshLangTree = () => {
     setTimeout(queryDictAll[sortMode].refetch, 500);
   }
@@ -719,6 +739,7 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
         setSelected,
         setDataTreeCommon,
         refreshLangTree,
+        localPermissions,
         dataTreeIdProxy
       );
 
@@ -756,6 +777,7 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
         setSelected,
         setDataTreeCommon,
         refreshLangTree,
+        localPermissions,
         dataTreeAllProxy
       );
 

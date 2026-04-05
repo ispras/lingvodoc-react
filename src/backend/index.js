@@ -169,6 +169,12 @@ export const queryCounter = gql`
   }
 `;
 
+export const getPermissionsBulk = gql`
+  query checkPermissionsBulk($perspectiveIdList: [LingvodocID]!, $debugFlag: Boolean) {
+    check_permissions_bulk(perspective_id_list: $perspectiveIdList, debug_flag: $debugFlag)
+  }
+`;
+
 // Mutations
 export const createLanguageMutation = gql`
   mutation createLanguage($parent_id: LingvodocID!, $translationAtoms: [ObjectVal]!, $metadata: ObjectVal) {
