@@ -2,7 +2,8 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 import { Container, Header, Icon, Menu, Message, Tab } from "semantic-ui-react";
-import { useApolloClient, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
+import { additionalClient } from "apolo";
 import { isEqual } from "lodash";
 
 import { getId } from "api/user";
@@ -12,7 +13,8 @@ import {
   getLanguageTreeProxy,
   getTocGrants,
   getTocOrganizations,
-  proxyDictionaryInfo
+  proxyDictionaryInfo,
+  getPermissionsBulk
 } from "backend";
 import BackTopButton from "components/BackTopButton";
 import LanguageSearchField from "components/LanguageSearchField";
@@ -67,10 +69,13 @@ function constructTree(
   proxyPermission,
   selected,
   setSelected,
+  setDataTreeCommon,
+  refreshLangTree,
+  localPermissions,
   proxyData=null
 ) {
 
-  const { languages, tree: frozenTree } = data.language_tree;
+  const { languages: localLanguages, tree: frozenTree } = data.language_tree;
   const tree = structuredClone(frozenTree);
   const languageMap = { common: {} };
 
@@ -80,7 +85,8 @@ function constructTree(
 
   if (proxyData === null) {
 
-    languages.forEach(language => {
+    localLanguages.forEach(language => {
+      setDataTreeCommon(data);
       languageMap.common[compositeIdToString(language.id)] = language;
     });
 
@@ -89,11 +95,19 @@ function constructTree(
     // Merging local and proxy language maps
 
     const { languages: proxyLanguages } = proxyData.language_tree;
-    const languageData = { local: languages, proxy: proxyLanguages };
+    const languageData = {
+      local: structuredClone(localLanguages),
+      proxy: structuredClone(proxyLanguages)
+    };
     const dictionaryMap = {};
     const perspectiveMap = {};
 
     // Getting maps of languages, dictionaries and perspectives by id
+    // Objects from these three maps must be interlinked.
+    // So dictionaryMap.local[dictId] must point to object
+    // from languageMap.local[langId].dictionaries
+    // (!) but be not its copy (!)
+
     ['local', 'proxy'].forEach(side => {
 
       languageMap[side] = {};
@@ -102,11 +116,14 @@ function constructTree(
 
       languageData[side].forEach(language => {
         const lang_id = compositeIdToString(language.id);
+
+        // Debugging
         if (languageMap[side].hasOwnProperty(lang_id)) {
           console.log(`Collision for language ${lang_id}`);
           return;
         }
-        languageMap[side][lang_id] = structuredClone(language);
+
+        languageMap[side][lang_id] = language;
 
         // Debugging
         if (lang_id === '3619,28523') {
@@ -115,19 +132,25 @@ function constructTree(
 
         language.dictionaries.forEach(dictionary => {
           const dict_id = compositeIdToString(dictionary.id);
+
+          // Debugging
           if (dictionaryMap[side].hasOwnProperty(dict_id)) {
             console.log(`Collision for dictionary ${dict_id}`);
             return;
           }
-          dictionaryMap[side][dict_id] = structuredClone(dictionary);
+
+          dictionaryMap[side][dict_id] = dictionary;
 
           dictionary.perspectives.forEach(perspective => {
             const pers_id = compositeIdToString(perspective.id);
+
+            // Debugging
             if (perspectiveMap[side].hasOwnProperty(pers_id)) {
               console.log(`Collision for perspective ${pers_id}`);
               return;
             }
-            perspectiveMap[side][pers_id] = structuredClone(perspective);
+
+            perspectiveMap[side][pers_id] = perspective;
           });
         });
       });
@@ -146,21 +169,22 @@ function constructTree(
     });
 
     // Marking object in input map as 'single' if corresponding '_diff' list includes its id
-    [languageMap, dictionaryMap, perspectiveMap].forEach(amap => {
-      ['local', 'proxy'].forEach(side => {
-        for (const [id, obj] of Object.entries(amap[side])) {
-          if (amap[`${side}_diff`].has(id)) {
-            obj.single = side;
-            // If obj is language or dictionary we should mark
-            // nested dictionaries and/or perspectives as well
-            (obj.dictionaries || []).forEach(dict => {
-              dict.single = side;
-              dict.perspectives.forEach(pers => { pers.single = side });
-            });
-            (obj.perspectives || []).forEach(pers => { pers.single = side });
-          }
-        }
-      });
+    ['local', 'proxy'].forEach(side => {
+      const side_diff = `${side}_diff`;
+
+      for (const [langId, langObj] of Object.entries(languageMap[side])) {
+        langObj.single = languageMap[side_diff].has(langId) && side;
+
+        langObj.dictionaries.forEach(dictObj => {
+          const dictId = compositeIdToString(dictObj.id);
+          dictObj.single = dictionaryMap[side_diff].has(dictId) && side;
+
+          dictObj.perspectives.forEach(persObj => {
+            const persId = compositeIdToString(persObj.id);
+            persObj.single = perspectiveMap[side_diff].has(persId) && side;
+          });
+        });
+      }
     });
 
     // Insert language from proxy with its parents
@@ -209,7 +233,10 @@ function constructTree(
     }
 
     // Iterate through language_union (local+proxy)
-    // collect languages into common map
+    // to collect languages into common map.
+    // (!) After this block languageMap.local and
+    // dictionaryMap.local will contain merged data (!)
+
     languageMap.union.forEach(lang_id => {
 
       // If language exists only on proxy side
@@ -245,6 +272,11 @@ function constructTree(
             } else {
               const dict_result = dictionaryMap.local[dict_id];
 
+              // Debugging
+              if (lang_id === '3619,28523' && dict_id === '11560,775') {
+                console.log(`${dict_id}: ${dict_result.translations[2]}`);
+              }
+
               // If dictionary is on the both sides
               if (dictionaryMap.intersection.has(dict_id)) {
                 const pers_union = new Set([
@@ -268,6 +300,9 @@ function constructTree(
       }
     });
   }
+
+  // Construct common data to use in LanguageSearchField component
+  setDataTreeCommon({language_tree: {languages: Object.values(languageMap.common)}});
 
   let groupMap = undefined;
   let groupDictionaryIdSetMap = undefined;
@@ -298,6 +333,8 @@ function constructTree(
           selected={selected}
           setSelected={setSelected}
           proxyData={proxyPermission}
+          refreshLangTree={refreshLangTree}
+          editPermissions={localPermissions?.check_permissions_bulk}
         />
       ))
     ) : (
@@ -307,6 +344,8 @@ function constructTree(
         selected={selected}
         setSelected={setSelected}
         proxyData={proxyPermission}
+        refreshLangTree={refreshLangTree}
+        editPermissions={localPermissions?.check_permissions_bulk}
       />
     );
   } else {
@@ -509,6 +548,15 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
   const proxy = (config.buildType !== "server");
   const allowed_sync = (user.user.id === 1 || user.user.allowed_sync);
 
+  const [dataTreeId, setDataTreeId] = useState(undefined);
+  const [dataTreeAll, setDataTreeAll] = useState(undefined);
+
+  const [dataTreeIdProxy, setDataTreeIdProxy] = useState(undefined);
+  const [dataTreeAllProxy, setDataTreeAllProxy] = useState(undefined);
+
+  // For debugging
+  const skipProxy = false;
+
   for (const aSortMode of sortModeList) {
     const variablesId = { ...variables };
     const variablesAll = { ...variables };
@@ -530,40 +578,74 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
     queryDictId[aSortMode] = useQuery(getLanguageTree, {
       variables: variablesId,
       fetchPolicy: "cache-and-network",
+      onCompleted: (data) => {
+        console.log(`Completed getLanguageTreeId for sortMode '${aSortMode}'`);
+        setDataTreeId(data);
+      },
       skip: skip_general || !entityIdValue || aSortMode != sortMode
     });
 
     queryDictAll[aSortMode] = useQuery(getLanguageTree, {
       variables: variablesAll,
       fetchPolicy: "cache-and-network",
+      onCompleted: (data) => {
+        console.log(`Completed getLanguageTreeAll for sortMode '${aSortMode}'`);
+        setDataTreeAll(data);
+      },
       skip: skip_general || activeTab !== "1" || aSortMode != sortMode
     });
 
-    queryDictIdProxy[aSortMode] = useQuery(getLanguageTreeProxy, {
+    queryDictIdProxy[aSortMode] = useQuery(getLanguageTree, {
       variables: { ...variablesId, proxy: true },
       fetchPolicy: "cache-and-network",
-      skip: skip_general || !allowed_sync || !entityIdValue || aSortMode != sortMode
+      client: additionalClient,
+      onCompleted: (data) => {
+        console.log(`Completed getLanguageTreeIdProxy for sortMode '${aSortMode}'`);
+        setDataTreeIdProxy(data);
+      },
+      skip: skip_general || !allowed_sync || !entityIdValue || aSortMode != sortMode || skipProxy
     });
 
-    queryDictAllProxy[aSortMode] = useQuery(getLanguageTreeProxy, {
+    queryDictAllProxy[aSortMode] = useQuery(getLanguageTree, {
       variables: { ...variablesAll, proxy: true },
       fetchPolicy: "cache-and-network",
-      skip: skip_general || !allowed_sync || activeTab !== "1" || aSortMode != sortMode
+      client: additionalClient,
+      onCompleted: (data) => {
+        console.log(`Completed getLanguageTreeAllProxy for sortMode '${aSortMode}'`);
+        setDataTreeAllProxy(data);
+      },
+      skip: skip_general || !allowed_sync || activeTab !== "1" || aSortMode != sortMode || skipProxy
     });
   }
 
+  const perspectiveIdList = useMemo(() => {
+    const languages = dataTreeAll?.language_tree?.languages || [];
+    const result = [];
+    languages.forEach(
+      language => language.dictionaries.forEach(
+        dictionary => dictionary.perspectives.forEach(
+          perspective => result.push(perspective.id))));
+    return result;
+  }, [dataTreeAll]);
+
+  const { data: localPermissions } = useQuery(getPermissionsBulk, {
+    variables: { perspectiveIdList },
+    fetchPolicy: "cache-and-network",
+    skip: !allowed_sync || !dataTreeAll?.language_tree?.languages || skipProxy
+  });
+
+  const refreshLangTree = () => {
+    setTimeout(queryDictAll[sortMode].refetch, 500);
+  }
+
+  //setInterval(queryDictAllProxy[sortMode].refetch, 300000);
+
+  /*
   const { data: dataTreeId } = queryDictId[sortMode];
   const { data: dataTreeAll } = queryDictAll[sortMode];
-
-  let dataTreeIdProxy = null;
-  if (queryDictIdProxy[sortMode]?.data) {
-    dataTreeIdProxy = queryDictIdProxy[sortMode].data;
-  }
-
-  let dataTreeAllProxy = null;
-  if (queryDictAllProxy[sortMode]?.data) {
-    dataTreeAllProxy = queryDictAllProxy[sortMode].data;
-  }
+  const { data: dataTreeIdProxy } = queryDictIdProxy[sortMode];
+  const { data: dataTreeAllProxy } = queryDictAllProxy[sortMode];
+  */
 
   const { data: grantData } = queryGrants;
   const { data: organizationData } = queryOrganizations;
@@ -589,17 +671,50 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
   /* Async construction of the language trees in case they are large, along the lines of
    * https://stackoverflow.com/a/66071205/2016856. */
 
+  const [dataTreeCommon, setDataTreeCommon] = useState({ language_tree: {} });
   const [treeId, setTreeId] = useState(undefined);
   const [treeAll, setTreeAll] = useState(undefined);
 
+  // For debugging
+  ['sortMode',
+   'dataTreeAll',
+   'grantMap',
+   'organizationMap',
+   'proxyPermission',
+   'dataTreeAllProxy',
+   'selected',
+   'setSelected'
+  ].forEach(state => {
+    useEffect(() => {
+      let attention = '';
+      if (['dataTreeAll', 'dataTreeAllProxy', 'proxyPermission'].includes(state) && !skipConstructAllTree) {
+        attention = '!!! >>> ';
+      }
+      console.log(`${attention}Changed ${state}`);
+    }, [eval(state)]);
+  });
+
+
+  const skipConstructTree = (
+    (sortMode === "grant" && !grantMap) ||
+    (sortMode === "organization" && !organizationMap) ||
+    (proxy && !proxyPermission)
+  );
+
+  const skipConstructIdTree = (
+    !dataTreeId ||
+    (!skipProxy && allowed_sync && !dataTreeIdProxy) ||
+    skipConstructTree
+  );
+
+  const skipConstructAllTree = (
+    !dataTreeAll ||
+    (!skipProxy && allowed_sync && !dataTreeAllProxy) ||
+    skipConstructTree
+  );
+
   useEffect(() => {
-    if (
-      !dataTreeId ||
-      (sortMode === "grant" && !grantMap) ||
-      (sortMode === "organization" && !organizationMap) ||
-      (proxy && !proxyPermission) ||
-      (allowed_sync && !dataTreeIdProxy)
-    ) {
+    if (skipConstructIdTree) {
       return;
     }
 
@@ -622,6 +737,9 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
         proxyPermission,
         selected,
         setSelected,
+        setDataTreeCommon,
+        refreshLangTree,
+        localPermissions,
         dataTreeIdProxy
       );
 
@@ -634,6 +752,10 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
   }, [sortMode, dataTreeId, grantMap, organizationMap, proxyPermission, dataTreeIdProxy, selected, setSelected]);
 
   useEffect(() => {
+    if (skipConstructAllTree) {
+      return;
+    }
+
     let active = true;
     constructAllTree();
     return () => {
@@ -641,16 +763,6 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
     };
 
     async function constructAllTree() {
-      if (
-        !dataTreeAll ||
-        (sortMode === "grant" && !grantMap) ||
-        (sortMode === "organization" && !organizationMap) ||
-        (proxy && !proxyPermission) ||
-        (allowed_sync && !dataTreeAllProxy)
-      ) {
-        return;
-      }
-
       const result = constructTree(
         dataTreeAll,
         sortMode,
@@ -663,6 +775,9 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
         proxyPermission,
         selected,
         setSelected,
+        setDataTreeCommon,
+        refreshLangTree,
+        localPermissions,
         dataTreeAllProxy
       );
 
@@ -726,7 +841,7 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
         <LanguageSearchField
           sortMode={sortMode}
           entityId={entityId}
-          dataList={activeTab === "0" ? [queryLanguages.data, dataTreeAll] : [dataTreeAll, queryLanguages.data]}
+          dataList={activeTab === "0" ? [queryLanguages.data, dataTreeCommon] : [dataTreeCommon, queryLanguages.data]}
           onSelectId={onSelectId}
         />
       )}

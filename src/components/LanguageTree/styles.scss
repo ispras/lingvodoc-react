@@ -79,6 +79,12 @@
       & .lingvo-icon {
         vertical-align: top !important;
       }
+
+      &:disabled {
+        background-color: #fff !important;
+        border: 1px solid #999ca0 !important;
+        opacity: 0.3 !important;
+      }
     }
   }
 
@@ -224,6 +230,12 @@
     & .lingvo-icon {
       background-color: #fff !important;
     }
+  }
+
+  &:disabled {
+    background-color: #fff !important;
+    border: 1px solid #999ca0 !important;
+    opacity: 0.3 !important;
   }
 }
 

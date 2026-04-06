@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { connect, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { Button, Checkbox, Dropdown, Header, Icon, Popup } from "semantic-ui-react";
@@ -10,7 +10,7 @@ import { useTranslations } from "hooks";
 import { compositeIdToString } from "utils/compositeId";
 import SyncModal from "components/SyncModal";
 
-import { openModal } from "ducks/modals";
+import { openModal, closeModal } from "ducks/modals";
 import { openModal as openConfirmModal } from "ducks/confirm";
 
 /** Language tree node of a language. */
@@ -23,17 +23,23 @@ const LangNode = ({
   selected,
   setSelected,
   proxyData,
+  refreshLangTree,
   openConfirmModal,
-  openModal: openNewModal
+  openModal: openNewModal,
+  closeModal,
+  editPermissions
 }) => {
   const { getTranslation, chooseTranslation } = useTranslations();
   const user = useSelector(state => state.user.user);
+  const [modalCount, setModalCount] = useState(0);
 
   const signedIn = user.id !== undefined;
+  const allowedSync = user.id === 1 || user.allowed_sync;
   const publishedStr = getTranslation("Published");
 
   const languageId = compositeIdToString(node[0]);
   const language = languageMap[languageId];
+  const proxyLang = language.single === "proxy";
 
   let langClass = "lang-name";
   if (!language.parent_id) {
@@ -49,9 +55,25 @@ const LangNode = ({
       })
     : language.dictionaries;
 
-  const onSynchronize = (id, fields) => {
-    openNewModal(SyncModal, { perspectiveId: id, columns: fields });
+  const onSynchronize = ({ id, silentMode, rendering=true }) => {
+    // +1 or no any change
+    setModalCount(modalCount + rendering);
+    openNewModal(SyncModal, {
+      perspectiveId: id,
+      silentMode,
+      onClose: () => {
+        closeModal();
+        // -1 or no any change
+        setModalCount(modalCount - rendering);
+      }
+    });
   };
+
+  useEffect(() => {
+    if (modalCount <= 0) {
+      refreshLangTree();
+    }
+  }, [modalCount]);
 
   const proxy = config.buildType === "desktop" || config.buildType === "proxy";
   const permissions = proxy ? proxyData?.permission_lists : undefined;
@@ -59,16 +81,26 @@ const LangNode = ({
   return (
     <li className="node_lang" id={`language_${languageId}`}>
       <span className={langClass}>
-        {(language.single && language.single === "proxy" && language.translations && (
+        {allowedSync && proxyLang && language.translations && (
           <span
             className="lang-name-remote"
             onClick={() =>
               openConfirmModal(
                 `${getTranslation("Language")} "${chooseTranslation(language.translations)}" -> "${chooseTranslation(
                   language.translations
-                )}" ${getTranslation("will be downloaded from the central server")}?`,
+                )}" ${getTranslation("will be downloaded from the another server")}?`,
                 () => {
                   console.log("Загружаем язык");
+                  // Probably we should check every dictionary for permissions
+                  // User can synchronize a dictionary if he has 'edit' permissions
+                  language.dictionaries.forEach(dictionary => {
+                    dictionary.perspectives.forEach(perspective => {
+                      onSynchronize({
+                        id: perspective.id,
+                        silentMode: true
+                      });
+                    });
+                  });
                 },
                 getTranslation("Yes"),
                 getTranslation("No")
@@ -77,7 +109,7 @@ const LangNode = ({
           >
             {chooseTranslation(language.translations)}
           </span>
-        )) ||
+        ) ||
           (language.translations && chooseTranslation(language.translations))}
       </span>
       <ul>
@@ -91,9 +123,15 @@ const LangNode = ({
               dictionaryIdSetReverse={dictionaryIdSetReverse}
               selected={selected}
               setSelected={setSelected}
+              refreshLangTree={refreshLangTree}
             />
           ))}
         {dictionaries.map((dictionary, index) => {
+          const dictionaryId = compositeIdToString(dictionary.id);
+          const proxyDict = dictionary.single === "proxy";
+          const commonDict = (
+            !dictionary.single || dictionary.single !== "local" && dictionary.single !== "proxy");
+
           const isDownloaded = proxyData
             ? proxyData.dictionaries.find(d => d.id.toString() === dictionary.id.toString()) !== undefined
             : false;
@@ -102,7 +140,7 @@ const LangNode = ({
           return (
             <li
               key={index}
-              className={`node_dict${dictionary.single && dictionary.single === "proxy" ? " node_dict_remote" : ""}`}
+              className={`node_dict${allowedSync && proxyDict ? " node_dict_remote" : ""}`}
             >
               {(config.buildType === "desktop" || config.buildType === "proxy") && signedIn && (
                 <Checkbox
@@ -121,7 +159,7 @@ const LangNode = ({
               )}
               {isDownloaded && <Icon name="download" />}
 
-              {dictionary.single && dictionary.single === "proxy" ? (
+              {allowedSync && proxyDict ? (
                 <span
                   className="dict-name dict-name_link"
                   onClick={() =>
@@ -129,10 +167,16 @@ const LangNode = ({
                       `${getTranslation("Dictionary")} "${chooseTranslation(
                         dictionary.translations
                       )}" -> "${chooseTranslation(dictionary.translations)}" ${getTranslation(
-                        "will be downloaded from the central server"
+                        "will be downloaded from the another server"
                       )}?`,
                       () => {
                         console.log("Загружаем словарь");
+                        perspectives.forEach(perspective => {
+                          onSynchronize({
+                            id: perspective.id,
+                            silentMode: true
+                          });
+                        });
                       },
                       getTranslation("Yes"),
                       getTranslation("No")
@@ -157,6 +201,11 @@ const LangNode = ({
                 >
                   <Dropdown.Menu>
                     {perspectives.map((perspective, index) => {
+                      const perspectiveId = compositeIdToString(perspective.id);
+                      const proxyPers = perspective.single === "proxy";
+                      const commonPers = (
+                        !perspective.single || perspective.single !== "local" && perspective.single !== "proxy");
+
                       if (
                         !perspective.translations ||
                         (perspective.translations && !chooseTranslation(perspective.translations))
@@ -165,41 +214,44 @@ const LangNode = ({
                       }
 
                       const view = !!permissions?.view.find(
-                        p => compositeIdToString(p.id) === compositeIdToString(perspective.id)
+                        p => compositeIdToString(p.id) === perspectiveId
                       );
                       const edit = !!permissions?.edit.find(
-                        p => compositeIdToString(p.id) === compositeIdToString(perspective.id)
+                        p => compositeIdToString(p.id) === perspectiveId
                       );
                       const publish = !!permissions?.publish.find(
-                        p => compositeIdToString(p.id) === compositeIdToString(perspective.id)
+                        p => compositeIdToString(p.id) === perspectiveId
                       );
                       const limited = !!permissions?.limited.find(
-                        p => compositeIdToString(p.id) === compositeIdToString(perspective.id)
+                        p => compositeIdToString(p.id) === perspectiveId
                       );
 
                       return (
                         <Dropdown.Item
-                          key={compositeIdToString(perspective.id)}
-                          as={perspective.single && perspective.single === "proxy" ? "span" : Link}
+                          key={perspectiveId}
+                          as={allowedSync && proxyPers ? "span" : Link}
                           to={
-                            !perspective.single || (perspective.single && perspective.single !== "proxy")
+                            !proxyPers
                               ? `/dictionary/${dictionary.id.join("/")}/perspective/${perspective.id.join("/")}`
                               : null
                           }
-                          className={perspective.single && perspective.single === "proxy" ? "item_remote" : ""}
+                          className={allowedSync && proxyPers ? "item_remote" : ""}
                           onClick={
-                            (perspective.single &&
-                              perspective.single === "proxy" &&
+                            (allowedSync && proxyPers &&
                               perspective.translations &&
                               (() =>
                                 openConfirmModal(
                                   `${getTranslation("Perspective")} "${chooseTranslation(
                                     perspective.translations
                                   )}" -> "${chooseTranslation(perspective.translations)}" ${getTranslation(
-                                    "will be downloaded from the central server"
+                                    "will be downloaded from the another server"
                                   )}?`,
                                   () => {
                                     console.log("Загружаем перспективу");
+                                    onSynchronize({
+                                      id: perspective.id,
+                                      silentMode: true
+                                    });
                                   },
                                   getTranslation("Yes"),
                                   getTranslation("No")
@@ -223,13 +275,21 @@ const LangNode = ({
                                 {chooseTranslation(perspective.translations)}
                               </>
                             )}
-                          {perspective.single && perspective.single !== "local" && perspective.single !== "proxy" && (
+                          {allowedSync && commonPers && (
                             <Button
                               icon={<i className="lingvo-icon lingvo-icon_refresh" />}
                               onClick={event => {
-                                onSynchronize(perspective.id, perspectives);
+                                console.log("Обновляем перспективу");
+                                onSynchronize({
+                                  id: perspective.id,
+                                  rendering: false
+                                });
                                 event.preventDefault();
                               }}
+                              disabled={
+                                !editPermissions ||
+                                !editPermissions[compositeIdToString(perspective.id)]
+                              }
                               className="lingvo-button-green lingvo-lang-tree-button"
                             />
                           )}
@@ -250,11 +310,24 @@ const LangNode = ({
                 />
               )}
 
-              {/*(user.id === 1 || user.allowed_sync)*/}
-              {dictionary.single && dictionary.single !== "local" && dictionary.single !== "proxy" && (
+              {allowedSync && commonDict && (
                 <Button
                   icon={<i className="lingvo-icon lingvo-icon_refresh" />}
-                  onClick={() => onSynchronize(dictionary.id, dictionaries)}
+                  onClick={() => {
+                    console.log("Обновляем словарь");
+                    perspectives.forEach(perspective => {
+                      onSynchronize({
+                        id: perspective.id,
+                        silentMode: true,
+                        rendering: false
+                      });
+                    });
+                  }}
+                  disabled={
+                    !editPermissions ||
+                    perspectives.every(
+                      perspective => !editPermissions[compositeIdToString(perspective.id)])
+                  }
                   className="lingvo-button-green lingvo-lang-tree-button"
                 />
               )}
@@ -266,7 +339,7 @@ const LangNode = ({
   );
 };
 
-export const LanguageNode = connect(null, dispatch => bindActionCreators({ openModal, openConfirmModal }, dispatch))(
+export const LanguageNode = connect(null, dispatch => bindActionCreators({ openModal, openConfirmModal, closeModal }, dispatch))(
   LangNode
 );
 

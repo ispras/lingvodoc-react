@@ -20,51 +20,31 @@ export const getLanguageMetadataQuery = gql`
   }
 `;
 
-export const getLanguageTree = gql`
-  query GetLanguageTree(
-    $languageId: LingvodocID
-    $byGrants: Boolean
-    $grantId: Int
-    $byOrganizations: Boolean
-    $organizationId: Int
-    $published: Boolean
-    $category: Int
-  ) {
-    language_tree(
-      dictionary_category: $category
-      dictionary_published: $published
-      language_id: $languageId
-      by_grants: $byGrants
-      grant_id: $grantId
-      by_organizations: $byOrganizations
-      organization_id: $organizationId
-      local: true
-    ) {
-      local
-      tree
-      languages {
+const LanguageDetailsFragment = gql`
+  fragment LanguageDetails on LanguageTree {
+    tree
+    languages {
+      id
+      parent_id
+      translations
+      in_toc
+      dictionaries(deleted: false, published: $published, category: $category) {
         id
-        parent_id
         translations
-        in_toc
-        dictionaries(deleted: false, published: $published, category: $category) {
+        english_status: status(locale_id: 2)
+        additional_metadata {
+          authors
+        }
+        perspectives {
           id
           translations
-          english_status: status(locale_id: 2)
-          additional_metadata {
-            authors
-          }
-          perspectives {
-            id
-            translations
-          }
         }
       }
     }
   }
 `;
 
-export const getLanguageTreeProxy = gql`
+export const getLanguageTree = gql`
   query GetLanguageTree(
     $languageId: LingvodocID
     $byGrants: Boolean
@@ -85,28 +65,10 @@ export const getLanguageTreeProxy = gql`
       organization_id: $organizationId
       proxy: $proxy
     ) {
-      proxy
-      tree
-      languages {
-        id
-        parent_id
-        translations
-        in_toc
-        dictionaries(deleted: false, published: $published, category: $category) {
-          id
-          translations
-          english_status: status(locale_id: 2)
-          additional_metadata {
-            authors
-          }
-          perspectives {
-            id
-            translations
-          }
-        }
-      }
+      ...LanguageDetails
     }
   }
+  ${LanguageDetailsFragment}
 `;
 
 export const getLanguagesForSearch = gql`
@@ -204,6 +166,12 @@ export const queryCounter = gql`
       id
       counter(mode: $mode)
     }
+  }
+`;
+
+export const getPermissionsBulk = gql`
+  query checkPermissionsBulk($perspectiveIdList: [LingvodocID]!, $debugFlag: Boolean) {
+    check_permissions_bulk(perspective_id_list: $perspectiveIdList, debug_flag: $debugFlag)
   }
 `;
 

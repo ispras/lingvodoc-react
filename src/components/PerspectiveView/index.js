@@ -36,6 +36,12 @@ const ModalContentWrapper = styled("div")`
   min-height: 15vh;
 `;
 
+const queryCheckPermissions = gql`
+  query checkPermissions($perspectiveId: LingvodocID!, $debugFlag: Boolean) {
+    check_permissions(perspective_id: $perspectiveId, debug_flag: $debugFlag)
+  }
+`;
+
 export const queryPerspective = gql`
   query queryPerspective1($id: LingvodocID!) {
     perspective(id: $id) {
@@ -516,7 +522,8 @@ class P extends React.Component {
       limit,
       offset,
       changePage,
-      onUnpublishedOnly
+      onUnpublishedOnly,
+      checkEditPermissions,
     } = this.props;
 
     const query_args = {
@@ -737,6 +744,8 @@ class P extends React.Component {
       yield* lexicalEntries;
     }
 
+    const {check_permissions: editPermissions} = checkEditPermissions;
+
     return (
       <div
         style={{ overflowY: "auto" }}
@@ -750,7 +759,7 @@ class P extends React.Component {
               <Button
                 icon={<i className="lingvo-icon lingvo-icon_refresh" />}
                 content={this.context("Synchronize")}
-                //onClick={this.doSync}
+                disabled = {!editPermissions}
                 onClick={onSynchronize} // new!!!!!
                 className="lingvo-button-green lingvo-perspective-button"
               />
@@ -885,6 +894,7 @@ P.propTypes = {
   entitiesMode: PropTypes.string.isRequired,
   filter: PropTypes.string,
   data: PropTypes.object.isRequired,
+  checkEditPermissions: PropTypes.object.isRequired,
   sortByField: PropTypes.object,
   columns: PropTypes.array.isRequired,
   setSortByField: PropTypes.func.isRequired,
@@ -938,6 +948,15 @@ const PerspectiveView = compose(
   graphql(createLexicalEntryMutation, { name: "createLexicalEntry" }),
   graphql(mergeLexicalEntriesMutation, { name: "mergeLexicalEntries" }),
   graphql(removeLexicalEntriesMutation, { name: "removeLexicalEntries" }),
+  graphql(queryCheckPermissions, {
+    name: "checkEditPermissions",
+    options: props => ({
+      variables: {
+        perspectiveId: props.id,
+        debugFlag: true
+      }
+    })
+  }),
   graphql(queryLexicalEntries, {
     options: { notifyOnNetworkStatusChange: true }
   }),
