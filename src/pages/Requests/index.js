@@ -8,11 +8,9 @@ import { branch, compose, pure, renderComponent, renderNothing, withProps } from
 
 import Requests from "components/Grants/Requests";
 
-class UserRequests extends React.Component {
-  render() {
-    return <Requests />;
-  }
-}
+const UserRequests = () => {
+  return <Requests />;
+};
 
 UserRequests.propTypes = {};
 

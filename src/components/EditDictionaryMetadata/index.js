@@ -280,205 +280,197 @@ export const EditInput = ({ metadata_key, label, value: initialValue, mode, onCh
   );
 };
 
-class EditDictionaryMetadata extends React.Component {
-  constructor(props) {
-    super(props);
+const EditDictionaryMetadata = ({ data, metadata: rawMetadata, mode, onChange, onSave }) => {
+  const getTranslation = useContext(TranslationContext);
+
+  let authorsOptions, settlementsOptions, yearsOptions;
+
+  const { loading, error } = data;
+
+  if (loading) {
+    return (
+      <Segment>
+        {getTranslation("Loading metadata")}... <Icon loading name="spinner" />
+      </Segment>
+    );
+  } else if (error) {
+    return <Message negative>{getTranslation("Metadata loading error, please contact adiministrators.")}</Message>;
   }
 
-  render() {
-    const { loading, error } = this.props.data;
+  const metadata = rawMetadata ? { ...initial_dictionary_metadata, ...rawMetadata } : initial_dictionary_metadata;
 
-    if (loading) {
-      return (
-        <Segment>
-          {this.context("Loading metadata")}... <Icon loading name="spinner" />
-        </Segment>
-      );
-    } else if (error) {
-      return <Message negative>{this.context("Metadata loading error, please contact adiministrators.")}</Message>;
-    }
+  if (!authorsOptions) {
+    const { select_tags_metadata } = data;
+    const { authors, humanSettlement, years } = metadata;
 
-    const { metadata: rawMetadata } = this.props;
-
-    const metadata = rawMetadata ? { ...initial_dictionary_metadata, ...rawMetadata } : initial_dictionary_metadata;
-
-    if (!this.authorsOptions) {
-      const { select_tags_metadata } = this.props.data;
-      const { authors, humanSettlement, years } = metadata;
-
-      [this.authorsOptions, this.settlementsOptions, this.yearsOptions] = initDropdownOptions(
-        select_tags_metadata,
-        authors,
-        humanSettlement,
-        years
-      );
-    }
-
-    const { mode, onChange, onSave } = this.props;
-
-    const {
-      kind,
+    [authorsOptions, settlementsOptions, yearsOptions] = initDropdownOptions(
+      select_tags_metadata,
       authors,
       humanSettlement,
-      years,
-      interrogator,
-      informant,
-      processing,
-      typeOfDiscourse,
-      typeOfSpeech,
-      speechGenre,
-      theThemeOfTheText,
-      license
-    } = metadata;
-
-    return (
-      <Form>
-        <Segment>
-          <EditKind kind={kind} mode={mode} onChange={onChange} onSave={onSave} />
-        </Segment>
-        <Segment>
-          <Form.Group widths="equal">
-            <EditSelectMultiple
-              key="authors"
-              metadata_key="authors"
-              label={this.context("Authors")}
-              value={authors}
-              valueOptions={this.authorsOptions}
-              mode={mode}
-              onChange={onChange}
-              onSave={onSave}
-            />
-            <EditSelectMultiple
-              key="interrogator"
-              metadata_key="interrogator"
-              label={this.context("Interrogator")}
-              value={interrogator}
-              valueOptions={this.authorsOptions}
-              mode={mode}
-              onChange={onChange}
-              onSave={onSave}
-            />
-            <EditInput
-              key="informant"
-              metadata_key="informant"
-              label={this.context("Informant")}
-              value={informant}
-              mode={mode}
-              onChange={onChange}
-              onSave={onSave}
-            />
-          </Form.Group>
-        </Segment>
-
-        {mode === "create" && (
-          <Segment>
-            <Form.Group widths="equal">
-              <EditSelect
-                key="license"
-                metadata_key="license"
-                label={this.context("License")}
-                value={license}
-                valueOptions={license_options(this.context)}
-                mode={mode}
-                onChange={onChange}
-                onSave={onSave}
-              />
-            </Form.Group>
-          </Segment>
-        )}
-
-        <Segment>
-          <Form.Group widths="equal">
-            <EditSelectMultiple
-              key="humanSettlement"
-              metadata_key="humanSettlement"
-              label={this.context("Human settlement")}
-              value={humanSettlement}
-              valueOptions={this.settlementsOptions}
-              mode={mode}
-              onChange={onChange}
-              onSave={onSave}
-            />
-          </Form.Group>
-        </Segment>
-        <Segment>
-          <Form.Group widths="equal">
-            <EditSelectMultiple
-              key="years"
-              metadata_key="years"
-              label={this.context("Years")}
-              value={years}
-              valueOptions={this.yearsOptions}
-              mode={mode}
-              onChange={onChange}
-              onSave={onSave}
-            />
-          </Form.Group>
-        </Segment>
-        <Segment>
-          <Form.Group widths="equal">
-            <EditSelectMultiple
-              key="processing"
-              metadata_key="processing"
-              label={this.context("Processing")}
-              value={processing}
-              valueOptions={this.authorsOptions}
-              mode={mode}
-              onChange={onChange}
-              onSave={onSave}
-            />
-          </Form.Group>
-        </Segment>
-        <Segment>
-          <Form.Group widths="equal">
-            <EditInput
-              key="typeOfDiscourse"
-              metadata_key="typeOfDiscourse"
-              label={this.context("Type of discourse")}
-              value={typeOfDiscourse}
-              mode={mode}
-              onChange={onChange}
-              onSave={onSave}
-            />
-            <EditInput
-              key="typeOfSpeech"
-              metadata_key="typeOfSpeech"
-              label={this.context("Type of speech")}
-              value={typeOfSpeech}
-              mode={mode}
-              onChange={onChange}
-              onSave={onSave}
-            />
-            <EditInput
-              key="speechGenre"
-              metadata_key="speechGenre"
-              label={this.context("Speech genre")}
-              value={speechGenre}
-              mode={mode}
-              onChange={onChange}
-              onSave={onSave}
-            />
-          </Form.Group>
-        </Segment>
-        <Segment>
-          <Form.Group widths="equal">
-            <EditInput
-              key="theThemeOfTheText"
-              metadata_key="theThemeOfTheText"
-              label={this.context("The theme of the text")}
-              value={theThemeOfTheText}
-              mode={mode}
-              onChange={onChange}
-              onSave={onSave}
-            />
-          </Form.Group>
-        </Segment>
-      </Form>
+      years
     );
   }
-}
 
-EditDictionaryMetadata.contextType = TranslationContext;
+  const {
+    kind,
+    authors,
+    humanSettlement,
+    years,
+    interrogator,
+    informant,
+    processing,
+    typeOfDiscourse,
+    typeOfSpeech,
+    speechGenre,
+    theThemeOfTheText,
+    license
+  } = metadata;
+
+  return (
+    <Form>
+      <Segment>
+        <EditKind kind={kind} mode={mode} onChange={onChange} onSave={onSave} />
+      </Segment>
+      <Segment>
+        <Form.Group widths="equal">
+          <EditSelectMultiple
+            key="authors"
+            metadata_key="authors"
+            label={getTranslation("Authors")}
+            value={authors}
+            valueOptions={authorsOptions}
+            mode={mode}
+            onChange={onChange}
+            onSave={onSave}
+          />
+          <EditSelectMultiple
+            key="interrogator"
+            metadata_key="interrogator"
+            label={getTranslation("Interrogator")}
+            value={interrogator}
+            valueOptions={authorsOptions}
+            mode={mode}
+            onChange={onChange}
+            onSave={onSave}
+          />
+          <EditInput
+            key="informant"
+            metadata_key="informant"
+            label={getTranslation("Informant")}
+            value={informant}
+            mode={mode}
+            onChange={onChange}
+            onSave={onSave}
+          />
+        </Form.Group>
+      </Segment>
+
+      {mode === "create" && (
+        <Segment>
+          <Form.Group widths="equal">
+            <EditSelect
+              key="license"
+              metadata_key="license"
+              label={getTranslation("License")}
+              value={license}
+              valueOptions={license_options(getTranslation)}
+              mode={mode}
+              onChange={onChange}
+              onSave={onSave}
+            />
+          </Form.Group>
+        </Segment>
+      )}
+
+      <Segment>
+        <Form.Group widths="equal">
+          <EditSelectMultiple
+            key="humanSettlement"
+            metadata_key="humanSettlement"
+            label={getTranslation("Human settlement")}
+            value={humanSettlement}
+            valueOptions={settlementsOptions}
+            mode={mode}
+            onChange={onChange}
+            onSave={onSave}
+          />
+        </Form.Group>
+      </Segment>
+      <Segment>
+        <Form.Group widths="equal">
+          <EditSelectMultiple
+            key="years"
+            metadata_key="years"
+            label={getTranslation("Years")}
+            value={years}
+            valueOptions={yearsOptions}
+            mode={mode}
+            onChange={onChange}
+            onSave={onSave}
+          />
+        </Form.Group>
+      </Segment>
+      <Segment>
+        <Form.Group widths="equal">
+          <EditSelectMultiple
+            key="processing"
+            metadata_key="processing"
+            label={getTranslation("Processing")}
+            value={processing}
+            valueOptions={authorsOptions}
+            mode={mode}
+            onChange={onChange}
+            onSave={onSave}
+          />
+        </Form.Group>
+      </Segment>
+      <Segment>
+        <Form.Group widths="equal">
+          <EditInput
+            key="typeOfDiscourse"
+            metadata_key="typeOfDiscourse"
+            label={getTranslation("Type of discourse")}
+            value={typeOfDiscourse}
+            mode={mode}
+            onChange={onChange}
+            onSave={onSave}
+          />
+          <EditInput
+            key="typeOfSpeech"
+            metadata_key="typeOfSpeech"
+            label={getTranslation("Type of speech")}
+            value={typeOfSpeech}
+            mode={mode}
+            onChange={onChange}
+            onSave={onSave}
+          />
+          <EditInput
+            key="speechGenre"
+            metadata_key="speechGenre"
+            label={getTranslation("Speech genre")}
+            value={speechGenre}
+            mode={mode}
+            onChange={onChange}
+            onSave={onSave}
+          />
+        </Form.Group>
+      </Segment>
+      <Segment>
+        <Form.Group widths="equal">
+          <EditInput
+            key="theThemeOfTheText"
+            metadata_key="theThemeOfTheText"
+            label={getTranslation("The theme of the text")}
+            value={theThemeOfTheText}
+            mode={mode}
+            onChange={onChange}
+            onSave={onSave}
+          />
+        </Form.Group>
+      </Segment>
+    </Form>
+  );
+};
 
 EditDictionaryMetadata.propTypes = {
   mode: PropTypes.string.isRequired,
