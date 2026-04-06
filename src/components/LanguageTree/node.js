@@ -323,6 +323,11 @@ const LangNode = ({
                       });
                     });
                   }}
+                  disabled={
+                    !editPermissions ||
+                    perspectives.every(
+                      perspective => !editPermissions[compositeIdToString(perspective.id)])
+                  }
                   className="lingvo-button-green lingvo-lang-tree-button"
                 />
               )}
