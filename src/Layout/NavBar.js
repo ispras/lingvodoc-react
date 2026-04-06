@@ -54,11 +54,14 @@ const NavBar = ({ openModal }) => {
         </Menu.Item>
 
         <Menu.Menu position="right">
+          {/* This button went from old realization and not actual now */
+          /*
           { isAuthenticated && config.buildType !== "server" &&
             <SyncButton
               openModal={openModal}
             />
           }
+          */}
           <User />
           <Tasks />
           <Locale />

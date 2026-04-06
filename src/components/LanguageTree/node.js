@@ -88,7 +88,7 @@ const LangNode = ({
               openConfirmModal(
                 `${getTranslation("Language")} "${chooseTranslation(language.translations)}" -> "${chooseTranslation(
                   language.translations
-                )}" ${getTranslation("will be downloaded from the another server")}?`,
+                )}" ${getTranslation("will be downloaded from another server")}?`,
                 () => {
                   console.log("Загружаем язык");
                   // Probably we should check every dictionary for permissions
@@ -129,8 +129,7 @@ const LangNode = ({
         {dictionaries.map((dictionary, index) => {
           const dictionaryId = compositeIdToString(dictionary.id);
           const proxyDict = dictionary.single === "proxy";
-          const commonDict = (
-            !dictionary.single || dictionary.single !== "local" && dictionary.single !== "proxy");
+          const commonDict = dictionary.single !== "local" && dictionary.single !== "proxy";
 
           const isDownloaded = proxyData
             ? proxyData.dictionaries.find(d => d.id.toString() === dictionary.id.toString()) !== undefined
@@ -142,6 +141,8 @@ const LangNode = ({
               key={index}
               className={`node_dict${allowedSync && proxyDict ? " node_dict_remote" : ""}`}
             >
+              {/* This elements went from old realization and not actual now */
+              /*
               {(config.buildType === "desktop" || config.buildType === "proxy") && signedIn && (
                 <Checkbox
                   defaultChecked={selected.includes(dictionary.id)}
@@ -158,6 +159,7 @@ const LangNode = ({
                 />
               )}
               {isDownloaded && <Icon name="download" />}
+              */}
 
               {allowedSync && proxyDict ? (
                 <span
@@ -167,7 +169,7 @@ const LangNode = ({
                       `${getTranslation("Dictionary")} "${chooseTranslation(
                         dictionary.translations
                       )}" -> "${chooseTranslation(dictionary.translations)}" ${getTranslation(
-                        "will be downloaded from the another server"
+                        "will be downloaded from another server"
                       )}?`,
                       () => {
                         console.log("Загружаем словарь");
@@ -201,17 +203,12 @@ const LangNode = ({
                 >
                   <Dropdown.Menu>
                     {perspectives.map((perspective, index) => {
-                      const perspectiveId = compositeIdToString(perspective.id);
-                      const proxyPers = perspective.single === "proxy";
-                      const commonPers = (
-                        !perspective.single || perspective.single !== "local" && perspective.single !== "proxy");
 
-                      if (
-                        !perspective.translations ||
-                        (perspective.translations && !chooseTranslation(perspective.translations))
-                      ) {
+                      if (!perspective.translations || !chooseTranslation(perspective.translations)) {
                         return;
                       }
+
+                      const perspectiveId = compositeIdToString(perspective.id);
 
                       const view = !!permissions?.view.find(
                         p => compositeIdToString(p.id) === perspectiveId
@@ -225,6 +222,13 @@ const LangNode = ({
                       const limited = !!permissions?.limited.find(
                         p => compositeIdToString(p.id) === perspectiveId
                       );
+
+                      if (permissions && !(view || edit || publish || limited)) {
+                        return;
+                      }
+
+                      const proxyPers = perspective.single === "proxy";
+                      const commonPers = perspective.single !== "local" && perspective.single !== "proxy";
 
                       return (
                         <Dropdown.Item
@@ -244,7 +248,7 @@ const LangNode = ({
                                   `${getTranslation("Perspective")} "${chooseTranslation(
                                     perspective.translations
                                   )}" -> "${chooseTranslation(perspective.translations)}" ${getTranslation(
-                                    "will be downloaded from the another server"
+                                    "will be downloaded from another server"
                                   )}?`,
                                   () => {
                                     console.log("Загружаем перспективу");
@@ -268,13 +272,13 @@ const LangNode = ({
                             </span>
                           )}
 
-                          {(!permissions || (permissions && (view || edit || publish || limited))) &&
-                            perspective.translations && (
-                              <>
-                                <i className="lingvo-icon lingvo-icon_table" />
-                                {chooseTranslation(perspective.translations)}
-                              </>
-                            )}
+                          {perspective.translations && (
+                            <>
+                              <i className="lingvo-icon lingvo-icon_table" />
+                              {chooseTranslation(perspective.translations)}
+                            </>
+                          )}
+
                           {allowedSync && commonPers && (
                             <Button
                               icon={<i className="lingvo-icon lingvo-icon_refresh" />}
