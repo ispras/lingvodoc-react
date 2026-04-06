@@ -27,7 +27,7 @@ const LangNode = ({
   openConfirmModal,
   openModal: openNewModal,
   closeModal,
-  editPermissions
+  localPermission
 }) => {
   const { getTranslation, chooseTranslation } = useTranslations();
   const user = useSelector(state => state.user.user);
@@ -124,6 +124,7 @@ const LangNode = ({
               selected={selected}
               setSelected={setSelected}
               refreshLangTree={refreshLangTree}
+              localPermission={localPermission}
             />
           ))}
         {dictionaries.map((dictionary, index) => {
@@ -291,8 +292,8 @@ const LangNode = ({
                                 event.preventDefault();
                               }}
                               disabled={
-                                !editPermissions ||
-                                !editPermissions[compositeIdToString(perspective.id)]
+                                !localPermission ||
+                                !localPermission[compositeIdToString(perspective.id)]
                               }
                               className="lingvo-button-green lingvo-lang-tree-button"
                             />
@@ -328,9 +329,9 @@ const LangNode = ({
                     });
                   }}
                   disabled={
-                    !editPermissions ||
+                    !localPermission ||
                     perspectives.every(
-                      perspective => !editPermissions[compositeIdToString(perspective.id)])
+                      perspective => !localPermission[compositeIdToString(perspective.id)])
                   }
                   className="lingvo-button-green lingvo-lang-tree-button"
                 />

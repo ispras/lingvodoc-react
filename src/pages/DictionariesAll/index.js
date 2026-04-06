@@ -71,7 +71,7 @@ function constructTree(
   setSelected,
   setDataTreeCommon,
   refreshLangTree,
-  localPermissions,
+  localPermission,
   proxyData=null
 ) {
 
@@ -334,7 +334,7 @@ function constructTree(
           setSelected={setSelected}
           proxyData={proxyPermission}
           refreshLangTree={refreshLangTree}
-          editPermissions={localPermissions?.check_permissions_bulk}
+          localPermission={localPermission?.check_permissions_bulk}
         />
       ))
     ) : (
@@ -345,7 +345,7 @@ function constructTree(
         setSelected={setSelected}
         proxyData={proxyPermission}
         refreshLangTree={refreshLangTree}
-        editPermissions={localPermissions?.check_permissions_bulk}
+        localPermission={localPermission?.check_permissions_bulk}
       />
     );
   } else {
@@ -628,7 +628,7 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
     return result;
   }, [dataTreeAll]);
 
-  const { data: localPermissions } = useQuery(getPermissionsBulk, {
+  const { data: localPermission } = useQuery(getPermissionsBulk, {
     variables: { perspectiveIdList },
     fetchPolicy: "cache-and-network",
     skip: !allowed_sync || !dataTreeAll?.language_tree?.languages || skipProxy
@@ -698,6 +698,7 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
   const skipConstructTree = (
     (sortMode === "grant" && !grantMap) ||
     (sortMode === "organization" && !organizationMap) ||
+    (!skipProxy && allowed_sync && !localPermission) ||
     (proxy && !proxyPermission)
   );
 
@@ -739,7 +740,7 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
         setSelected,
         setDataTreeCommon,
         refreshLangTree,
-        localPermissions,
+        localPermission,
         dataTreeIdProxy
       );
 
@@ -749,7 +750,7 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
 
       setTreeId(result);
     }
-  }, [sortMode, dataTreeId, grantMap, organizationMap, proxyPermission, dataTreeIdProxy, selected, setSelected]);
+  }, [sortMode, dataTreeId, grantMap, organizationMap, proxyPermission, localPermission, dataTreeIdProxy, selected, setSelected]);
 
   useEffect(() => {
     if (skipConstructAllTree) {
@@ -777,7 +778,7 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
         setSelected,
         setDataTreeCommon,
         refreshLangTree,
-        localPermissions,
+        localPermission,
         dataTreeAllProxy
       );
 
@@ -787,7 +788,7 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
 
       setTreeAll(result);
     }
-  }, [sortMode, dataTreeAll, grantMap, organizationMap, proxyPermission, dataTreeAllProxy, selected, setSelected]);
+  }, [sortMode, dataTreeAll, grantMap, organizationMap, proxyPermission, localPermission, dataTreeAllProxy, selected, setSelected]);
 
   if (entityIdValue === undefined) {
     return (

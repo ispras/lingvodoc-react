@@ -36,7 +36,7 @@ const ModalContentWrapper = styled("div")`
   min-height: 15vh;
 `;
 
-const queryCheckPermissions = gql`
+const getPermissions = gql`
   query checkPermissions($perspectiveId: LingvodocID!, $debugFlag: Boolean) {
     check_permissions(perspective_id: $perspectiveId, debug_flag: $debugFlag)
   }
@@ -523,7 +523,7 @@ class P extends React.Component {
       offset,
       changePage,
       onUnpublishedOnly,
-      checkEditPermissions,
+      localPermissionData,
     } = this.props;
 
     const query_args = {
@@ -744,8 +744,6 @@ class P extends React.Component {
       yield* lexicalEntries;
     }
 
-    const {check_permissions: editPermissions} = checkEditPermissions;
-
     return (
       <div
         style={{ overflowY: "auto" }}
@@ -759,7 +757,7 @@ class P extends React.Component {
               <Button
                 icon={<i className="lingvo-icon lingvo-icon_refresh" />}
                 content={this.context("Synchronize")}
-                disabled = {!editPermissions}
+                disabled = {!localPermissionData?.check_permissions}
                 onClick={onSynchronize} // new!!!!!
                 className="lingvo-button-green lingvo-perspective-button"
               />
@@ -894,7 +892,7 @@ P.propTypes = {
   entitiesMode: PropTypes.string.isRequired,
   filter: PropTypes.string,
   data: PropTypes.object.isRequired,
-  checkEditPermissions: PropTypes.object.isRequired,
+  localPermissionData: PropTypes.object.isRequired,
   sortByField: PropTypes.object,
   columns: PropTypes.array.isRequired,
   setSortByField: PropTypes.func.isRequired,
@@ -948,8 +946,8 @@ const PerspectiveView = compose(
   graphql(createLexicalEntryMutation, { name: "createLexicalEntry" }),
   graphql(mergeLexicalEntriesMutation, { name: "mergeLexicalEntries" }),
   graphql(removeLexicalEntriesMutation, { name: "removeLexicalEntries" }),
-  graphql(queryCheckPermissions, {
-    name: "checkEditPermissions",
+  graphql(getPermissions, {
+    name: "localPermissionData",
     options: props => ({
       variables: {
         perspectiveId: props.id,
