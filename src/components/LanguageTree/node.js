@@ -125,7 +125,7 @@ const LangNode = ({
               dictionaryIdSetReverse={dictionaryIdSetReverse}
               selected={selected}
               setSelected={setSelected}
-              proxyData={proxyPermission}
+              proxyData={proxyData}
               refreshLangTree={refreshLangTree}
               localPermission={localPermission}
             />
@@ -228,12 +228,15 @@ const LangNode = ({
                         p => compositeIdToString(p.id) === perspectiveId
                       );
 
-                      if (permissions && !(view || edit || publish || limited)) {
-                        return;
-                      }
-
                       const proxyPers = perspective.single === "proxy";
                       const commonPers = perspective.single !== "local" && perspective.single !== "proxy";
+
+                      if (
+                        (proxyPers || commonPers) &&
+                        permissions && !(view || edit || publish || limited)
+                      ) {
+                        return;
+                      }
 
                       return (
                         <Dropdown.Item
