@@ -170,8 +170,8 @@ export const queryCounter = gql`
 `;
 
 export const getPermissionsBulk = gql`
-  query checkPermissionsBulk($perspectiveIdList: [LingvodocID]!, $debugFlag: Boolean) {
-    check_permissions_bulk(perspective_id_list: $perspectiveIdList, debug_flag: $debugFlag)
+  query checkPermissionsBulk($perspectiveIdList: [LingvodocID]!) {
+    check_permissions_bulk(perspective_id_list: $perspectiveIdList)
   }
 `;
 

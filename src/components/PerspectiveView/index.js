@@ -37,8 +37,8 @@ const ModalContentWrapper = styled("div")`
 `;
 
 const getPermissions = gql`
-  query checkPermissions($perspectiveId: LingvodocID!, $debugFlag: Boolean) {
-    check_permissions(perspective_id: $perspectiveId, debug_flag: $debugFlag)
+  query checkPermissions($perspectiveId: LingvodocID!) {
+    check_permissions(perspective_id: $perspectiveId)
   }
 `;
 
@@ -923,8 +923,7 @@ const PerspectiveView = compose(
     name: "localPermissionData",
     options: props => ({
       variables: {
-        perspectiveId: props.id,
-        debugFlag: true
+        perspectiveId: props.id
       }
     })
   }),

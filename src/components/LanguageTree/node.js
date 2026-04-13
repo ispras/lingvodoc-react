@@ -55,9 +55,9 @@ const LangNode = ({
       })
     : language.dictionaries;
 
-  const onSynchronize = ({ id, silentMode, action, rendering=true }) => {
+  const onSynchronize = ({ id, silentMode, action, refetching=true }) => {
     // +1 or no any change
-    setModalCount(modalCount + rendering);
+    setModalCount(modalCount + refetching);
     openNewModal(SyncModal, {
       perspectiveId: id,
       silentMode,
@@ -65,7 +65,7 @@ const LangNode = ({
       onClose: () => {
         closeModal();
         // -1 or no any change
-        setModalCount(modalCount - rendering);
+        setModalCount(modalCount - refetching);
       }
     });
   };
@@ -125,6 +125,7 @@ const LangNode = ({
               dictionaryIdSetReverse={dictionaryIdSetReverse}
               selected={selected}
               setSelected={setSelected}
+              proxyData={proxyPermission}
               refreshLangTree={refreshLangTree}
               localPermission={localPermission}
             />
@@ -291,7 +292,7 @@ const LangNode = ({
                                 console.log("Обновляем перспективу");
                                 onSynchronize({
                                   id: perspective.id,
-                                  rendering: false
+                                  refetching: false
                                 });
                                 event.preventDefault();
                               }}
@@ -328,7 +329,7 @@ const LangNode = ({
                       onSynchronize({
                         id: perspective.id,
                         silentMode: true,
-                        rendering: false,
+                        refetching: false,
                         action: perspective.single === "proxy" ? 'create' : 'edit'
                       });
                     });
