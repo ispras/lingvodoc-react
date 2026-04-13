@@ -11,7 +11,7 @@ import TranslationContext from "Layout/TranslationContext";
 
 import "./styles.scss";
 
-const SyncModal = ({ columns, onClose, perspectiveId, silentMode }) => {
+const SyncModal = ({ columns, onClose, perspectiveId, silentMode, action }) => {
   const getTranslation = useContext(TranslationContext);
 
   const [ ispSyncData, setIspSyncData ] = useState(null);
@@ -39,7 +39,7 @@ const SyncModal = ({ columns, onClose, perspectiveId, silentMode }) => {
 
   const [applySync, { error: errorApply, loading: loadingApply }] = useMutation(
     applySyncMutation, {
-      variables: { perspectiveId, syncBetween: ['isp','xal'], debugFlag: true },
+      variables: { perspectiveId, syncBetween: ['isp','xal'], action, debugFlag: true },
       onCompleted: ({apply_sync: {triumph, message}}) => {
         if (message) {
           console.log(message);
@@ -341,7 +341,8 @@ SyncModal.propTypes = {
   columns: PropTypes.array.isRequired,
   onClose: PropTypes.func.isRequired,
   perspectiveId: PropTypes.array.isRequired,
-  silentMode: PropTypes.bool
+  silentMode: PropTypes.bool,
+  action: PropTypes.string
 };
 
 export default SyncModal;

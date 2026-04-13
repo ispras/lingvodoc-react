@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { useSelector, connect } from "react-redux";
 import { Link } from "react-router-dom";
 import { Button, Menu } from "semantic-ui-react";
-import SyncModal from "components/SyncModal";
+//import SyncModal from "components/SyncModal";
 import { openModal } from "ducks/modals";
 import { bindActionCreators } from "redux";
 
@@ -18,6 +18,7 @@ import User from "./User";
 
 import "./style.scss";
 
+/*
 const SyncButton = ({ openModal }) => {
   const [synchronize] = useMutation(synchronizeMutation);
 
@@ -42,6 +43,7 @@ const SyncButton = ({ openModal }) => {
     </Menu.Item>
   );
 };
+*/
 
 const NavBar = ({ openModal }) => {
   const { isAuthenticated } = useSelector(state => state.auth);

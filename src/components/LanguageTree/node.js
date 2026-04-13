@@ -55,12 +55,13 @@ const LangNode = ({
       })
     : language.dictionaries;
 
-  const onSynchronize = ({ id, silentMode, rendering=true }) => {
+  const onSynchronize = ({ id, silentMode, action, rendering=true }) => {
     // +1 or no any change
     setModalCount(modalCount + rendering);
     openNewModal(SyncModal, {
       perspectiveId: id,
       silentMode,
+      action,
       onClose: () => {
         closeModal();
         // -1 or no any change
@@ -97,7 +98,8 @@ const LangNode = ({
                     dictionary.perspectives.forEach(perspective => {
                       onSynchronize({
                         id: perspective.id,
-                        silentMode: true
+                        silentMode: true,
+                        action: 'create'
                       });
                     });
                   });
@@ -177,7 +179,8 @@ const LangNode = ({
                         perspectives.forEach(perspective => {
                           onSynchronize({
                             id: perspective.id,
-                            silentMode: true
+                            silentMode: true,
+                            action: 'create'
                           });
                         });
                       },
@@ -255,7 +258,8 @@ const LangNode = ({
                                     console.log("Загружаем перспективу");
                                     onSynchronize({
                                       id: perspective.id,
-                                      silentMode: true
+                                      silentMode: true,
+                                      action: 'create'
                                     });
                                   },
                                   getTranslation("Yes"),
@@ -324,7 +328,8 @@ const LangNode = ({
                       onSynchronize({
                         id: perspective.id,
                         silentMode: true,
-                        rendering: false
+                        rendering: false,
+                        action: perspective.single === "proxy" ? 'create' : 'edit'
                       });
                     });
                   }}

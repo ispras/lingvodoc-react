@@ -278,7 +278,6 @@ class P extends React.Component {
     this.onCheckAll = this.onCheckAll.bind(this);
     this.resetCheckedAll = this.resetCheckedAll.bind(this);
     this.removeEntries = this.removeEntries.bind(this);
-    this.doSync = this.doSync.bind(this);
   }
 
   componentDidMount() {
@@ -463,32 +462,6 @@ class P extends React.Component {
     });
   }
 
-  /*
-  const mixChanges = (changes1, changes2) => {
-
-    const result = {languages: [[{note: 'Left note'}]]};
-
-    return result;
-
-  };
-  */
-
-  async doSync() {
-    // 1. Get changes from Core,
-    // 2. Get changes from Satellite,
-    // 3. Display changes,
-    // 4. Apply/Deny changes
-
-    const { client, id } = this.props;
-
-    const stampNew = Date.parse("2025-12-01T19:30:00Z");
-    const stampMid = Date.parse("2025-11-30T19:30:00Z");
-    const stampOld = Date.parse("2025-11-29T19:30:00Z");
-
-    const changes1 = { languages: [[stampMid, stampOld, { note: "Changed before sync" }]] };
-    const changes2 = { languages: [[stampMid, stampNew, { note: "Changed after sync" }]] };
-  }
-
   render() {
     const {
       id,
@@ -615,7 +588,7 @@ class P extends React.Component {
 
     /* new!!!!! */
     const onSynchronize = () => {
-      openNewModal(SyncModal, { perspectiveId: id, columns: fields, applySync: this.doSync });
+      openNewModal(SyncModal, { perspectiveId: id });
     };
     /* /new!!!!! */
 
