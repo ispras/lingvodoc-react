@@ -232,7 +232,7 @@ const LangNode = ({
                       const commonPers = perspective.single !== "local" && perspective.single !== "proxy";
 
                       if (
-                        (proxyPers || commonPers) &&
+                        user.id !== 1 && (proxyPers || commonPers) &&
                         permissions && !(view || edit || publish || limited)
                       ) {
                         return;

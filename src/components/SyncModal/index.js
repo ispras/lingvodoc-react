@@ -11,40 +11,36 @@ import TranslationContext from "Layout/TranslationContext";
 
 import "./styles.scss";
 
-const SyncModal = ({ columns, onClose, perspectiveId, silentMode, action }) => {
+const SyncModal = ({ perspectiveId, onClose, silentMode, action, debugFlag }) => {
   const getTranslation = useContext(TranslationContext);
-
-  const [ ispSyncData, setIspSyncData ] = useState(null);
-  const [ xalSyncData, setXalSyncData ] = useState(null);
   const [ applied, setApplied ] = useState(false);
-  const debugFlag = true;
+  const [ message, setMessage ] = useState("");
 
-  const { error: ispSyncError, loading: ispSyncLoading } = useQuery(queryListChanges, {
+  const { data: ispSyncData, error: ispSyncError, loading: ispSyncLoading } = useQuery(queryListChanges, {
     variables: { remote: 'isp', syncBetween: ['isp','xal'], perspectiveId, debugFlag },
-    onCompleted: ({ list_changes: ispSyncData }) => {
-      setIspSyncData(ispSyncData);
-      console.log(`Possible errors: ${ispSyncData.warns}`);
+    onCompleted: (data) => {
+      console.log(`Possible errors: ${data.list_changes.warns}`);
     },
     fetchPolicy: "network-only"
   });
 
-  const { error: xalSyncError, loading: xalSyncLoading } = useQuery(queryListChanges, {
+  const { data: xalSyncData, error: xalSyncError, loading: xalSyncLoading } = useQuery(queryListChanges, {
     variables: { remote: 'xal', syncBetween: ['isp','xal'], perspectiveId, debugFlag },
-    onCompleted: ({ list_changes: xalSyncData }) => {
-      setXalSyncData(xalSyncData);
-      console.log(`Possible errors: ${xalSyncData.warns}`);
+    onCompleted: (data) => {
+      console.log(`Possible errors: ${data.list_changes.warns}`);
     },
     fetchPolicy: "network-only"
   });
 
-  const [applySync, { error: errorApply, loading: loadingApply }] = useMutation(
+  const [applySync, { data: dataApply, error: errorApply, loading: loadingApply }] = useMutation(
     applySyncMutation, {
-      variables: { perspectiveId, syncBetween: ['isp','xal'], action, debugFlag: true },
-      onCompleted: ({apply_sync: {triumph, message}}) => {
-        if (message) {
-          console.log(message);
+      variables: { perspectiveId, syncBetween: ['isp','xal'], action, debugFlag },
+      onCompleted: ({apply_sync: {triumph, message: info}}) => {
+        if (info) {
+          setMessage(info);
+          console.log(info);
         }
-        setApplied(true);
+        setApplied(triumph);
       }
   });
 
@@ -185,11 +181,12 @@ const SyncModal = ({ columns, onClose, perspectiveId, silentMode, action }) => {
                   <Icon name="spinner" loading className="lingvo-spinner" />
                 </Header>
               </Dimmer>
-            ) : (ispSyncError || xalSyncError || errorApply) ? (
+            ) : (ispSyncError || xalSyncError || errorApply || (dataApply && !applied)) ? (
               <Message negative>
                 <Message.Header>{getTranslation("Synchronize data loading error")}</Message.Header>
                 <div style={{ marginTop: "0.25em" }}>
-                  {getTranslation("Try reloading the page; if the error persists, please contact administrators.")}
+                  {getTranslation(message ? message :
+                    "Try reloading the page; if the error persists, please contact administrators.")}
                 </div>
               </Message>
             ) : (
@@ -338,11 +335,11 @@ const SyncModal = ({ columns, onClose, perspectiveId, silentMode, action }) => {
 };
 
 SyncModal.propTypes = {
-  columns: PropTypes.array.isRequired,
-  onClose: PropTypes.func.isRequired,
   perspectiveId: PropTypes.array.isRequired,
+  onClose: PropTypes.func.isRequired,
   silentMode: PropTypes.bool,
-  action: PropTypes.string
+  action: PropTypes.string,
+  debugFlag: PropTypes.bool,
 };
 
 export default SyncModal;
