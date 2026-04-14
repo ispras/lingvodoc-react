@@ -29,17 +29,72 @@ const LangNode = ({
   closeModal,
   localPermission
 }) => {
-  const { getTranslation, chooseTranslation } = useTranslations();
-  const user = useSelector(state => state.user.user);
-  const [modalCount, setModalCount] = useState(0);
 
+  const user = useSelector(state => state.user.user);
   const signedIn = user.id !== undefined;
   const allowedSync = user.id === 1 || user.allowed_sync;
-  const publishedStr = getTranslation("Published");
+
+  const permissionSet = (perspective) => {
+
+    const permissions = new Set();
+    const perspectiveId = compositeIdToString(perspective.id);
+    const proxy = config.buildType === "desktop" || config.buildType === "proxy";
+    const proxyPermissions = proxy ? proxyData?.permission_lists : undefined;
+
+    switch (true) {
+      // Perspective has a twin for synchronization
+      case allowedSync && perspective.single === "proxy":
+        permissions.add('proxyPers');
+
+      case allowedSync && perspective.single !== "local" && perspective.single !== "proxy":
+        permissions.add('commonPers');
+
+      // Perspective is locally writable
+      case localPermission && localPermission[perspectiveId] || user.id !== 1:
+        permissions.add('writable');
+
+      // Perspective has no twin for synchronization or proxyPermissions is undefined
+      case perspective.single === "local" || !proxyPermissions || user.id !== 1:
+        permissions.add('available');
+        break;
+
+      // Perspective has proxyPermissions for current user and can be shown locally
+      case !!proxyPermissions?.view.find(p => compositeIdToString(p.id) === perspectiveId):
+        permissions.add('view').add('available');
+
+      case !!proxyPermissions?.edit.find(p => compositeIdToString(p.id) === perspectiveId):
+        permissions.add('edit').add('available');
+
+      case !!proxyPermissions?.publish.find(p => compositeIdToString(p.id) === perspectiveId):
+        permissions.add('publish').add('available');
+
+      case !!proxyPermissions?.limited.find(p => compositeIdToString(p.id) === perspectiveId):
+        permissions.add('limited').add('available');
+    }
+
+    switch (true) {
+      case !permissions.has('available'):
+        break;
+
+      case permissions.has('proxyPers'):
+        permissions.add('canBeAdded');
+
+      case permissions.has('commonPers') && permissions.has('writable'):
+        permissions.add('canBeSynced');
+
+      case permissions.has('canBeAdded') || permissions.has('canBeSynced'):
+        permissions.add('syncable');
+    }
+
+    return permissions;
+  }
+
+  const { getTranslation, chooseTranslation } = useTranslations();
+  const [modalCount, setModalCount] = useState(0);
 
   const languageId = compositeIdToString(node[0]);
   const language = languageMap[languageId];
-  const proxyLang = language.single === "proxy";
+  const proxyLang = allowedSync && language.single === "proxy";
 
   let langClass = "lang-name";
   if (!language.parent_id) {
@@ -55,11 +110,21 @@ const LangNode = ({
       })
     : language.dictionaries;
 
-  const onSynchronize = ({ id, silentMode, action, refetching=true }) => {
+  const onSynchronize = ({ perspective, silentMode }) => {
+    const action = (perspective.single === 'proxy') ? 'create' : 'edit';
+    const refetching = (action === 'create');
+    const permissions = permissionSet(perspective);
+
+    if (action === 'create' && !permissions.has('canBeAdded') ||
+        action === 'edit' && !permissions.has('canBeSynced')) {
+      console.log("Недостаточно прав на загрузку или обновление перспективы!");
+      return;
+    }
+
     // +1 or no any change
     setModalCount(modalCount + refetching);
     openNewModal(SyncModal, {
-      perspectiveId: id,
+      perspectiveId: perspective.id,
       silentMode,
       action,
       onClose: () => {
@@ -76,20 +141,18 @@ const LangNode = ({
     }
   }, [modalCount]);
 
-  const proxy = config.buildType === "desktop" || config.buildType === "proxy";
-  const permissions = proxy ? proxyData?.permission_lists : undefined;
-
   return (
     <li className="node_lang" id={`language_${languageId}`}>
       <span className={langClass}>
-        {allowedSync && proxyLang && language.translations && (
+        {proxyLang && language.translations && (
           <span
             className="lang-name-remote"
             onClick={() =>
               openConfirmModal(
-                `${getTranslation("Language")} "${chooseTranslation(language.translations)}" -> "${chooseTranslation(
-                  language.translations
-                )}" ${getTranslation("will be downloaded from another server")}?`,
+                `${getTranslation(
+                "Language")} "${chooseTranslation(language.translations)}" ${getTranslation(
+                "with own dictionaries and perspectives")} ${getTranslation(
+                "will be downloaded from another server")}?`,
                 () => {
                   console.log("Загружаем язык");
                   // Probably we should check every dictionary for permissions
@@ -97,9 +160,8 @@ const LangNode = ({
                   language.dictionaries.forEach(dictionary => {
                     dictionary.perspectives.forEach(perspective => {
                       onSynchronize({
-                        id: perspective.id,
-                        silentMode: true,
-                        action: 'create'
+                        perspective,
+                        silentMode: true
                       });
                     });
                   });
@@ -132,8 +194,8 @@ const LangNode = ({
           ))}
         {dictionaries.map((dictionary, index) => {
           const dictionaryId = compositeIdToString(dictionary.id);
-          const proxyDict = dictionary.single === "proxy";
-          const commonDict = dictionary.single !== "local" && dictionary.single !== "proxy";
+          const proxyDict = allowedSync && dictionary.single === "proxy";
+          const commonDict = allowedSync && dictionary.single !== "local" && dictionary.single !== "proxy";
 
           const isDownloaded = proxyData
             ? proxyData.dictionaries.find(d => d.id.toString() === dictionary.id.toString()) !== undefined
@@ -143,7 +205,7 @@ const LangNode = ({
           return (
             <li
               key={index}
-              className={`node_dict${allowedSync && proxyDict ? " node_dict_remote" : ""}`}
+              className={`node_dict${proxyDict ? " node_dict_remote" : ""}`}
             >
               {/* This elements went from old realization and not actual now */
               /*
@@ -165,23 +227,20 @@ const LangNode = ({
               {isDownloaded && <Icon name="download" />}
               */}
 
-              {allowedSync && proxyDict ? (
+              {proxyDict ? (
                 <span
                   className="dict-name dict-name_link"
                   onClick={() =>
                     openConfirmModal(
-                      `${getTranslation("Dictionary")} "${chooseTranslation(
-                        dictionary.translations
-                      )}" -> "${chooseTranslation(dictionary.translations)}" ${getTranslation(
-                        "will be downloaded from another server"
-                      )}?`,
+                      `${getTranslation(
+                      "Dictionary")} "${chooseTranslation(dictionary.translations)}" ${getTranslation(
+                      "with own perspectives")} ${getTranslation("will be downloaded from another server")}?`,
                       () => {
                         console.log("Загружаем словарь");
                         perspectives.forEach(perspective => {
                           onSynchronize({
-                            id: perspective.id,
-                            silentMode: true,
-                            action: 'create'
+                            perspective,
+                            silentMode: true
                           });
                         });
                       },
@@ -213,57 +272,37 @@ const LangNode = ({
                         return;
                       }
 
-                      const perspectiveId = compositeIdToString(perspective.id);
+                      const permissions = permissionSet(perspective);
+                      const proxyPers = permissions.has('proxyPers');
+                      const commonPers = permissions.has('commonPers');
+                      const canBeSynced = permissions.has('canBeSynced');
 
-                      const view = !!permissions?.view.find(
-                        p => compositeIdToString(p.id) === perspectiveId
-                      );
-                      const edit = !!permissions?.edit.find(
-                        p => compositeIdToString(p.id) === perspectiveId
-                      );
-                      const publish = !!permissions?.publish.find(
-                        p => compositeIdToString(p.id) === perspectiveId
-                      );
-                      const limited = !!permissions?.limited.find(
-                        p => compositeIdToString(p.id) === perspectiveId
-                      );
-
-                      const proxyPers = perspective.single === "proxy";
-                      const commonPers = perspective.single !== "local" && perspective.single !== "proxy";
-
-                      if (
-                        user.id !== 1 && (proxyPers || commonPers) &&
-                        permissions && !(view || edit || publish || limited)
-                      ) {
+                      if (!permissions.has('available')) {
                         return;
                       }
 
                       return (
                         <Dropdown.Item
-                          key={perspectiveId}
-                          as={allowedSync && proxyPers ? "span" : Link}
+                          key={compositeIdToString(perspective.id)}
+                          as={proxyPers ? "span" : Link}
                           to={
                             !proxyPers
                               ? `/dictionary/${dictionary.id.join("/")}/perspective/${perspective.id.join("/")}`
                               : null
                           }
-                          className={allowedSync && proxyPers ? "item_remote" : ""}
+                          className={proxyPers ? "item_remote" : ""}
                           onClick={
-                            (allowedSync && proxyPers &&
-                              perspective.translations &&
+                            (proxyPers && perspective.translations &&
                               (() =>
                                 openConfirmModal(
-                                  `${getTranslation("Perspective")} "${chooseTranslation(
-                                    perspective.translations
-                                  )}" -> "${chooseTranslation(perspective.translations)}" ${getTranslation(
-                                    "will be downloaded from another server"
-                                  )}?`,
+                                  `${getTranslation(
+                                    "Perspective")} "${chooseTranslation(perspective.translations)}" ${getTranslation(
+                                    "will be downloaded from another server")}?`,
                                   () => {
                                     console.log("Загружаем перспективу");
                                     onSynchronize({
-                                      id: perspective.id,
-                                      silentMode: true,
-                                      action: 'create'
+                                      perspective,
+                                      silentMode: true
                                     });
                                   },
                                   getTranslation("Yes"),
@@ -272,14 +311,12 @@ const LangNode = ({
                             null
                           }
                         >
-                          {permissions && (
-                            <span>
-                              {view && <Icon name="book" />}
-                              {edit && <Icon name="edit" />}
-                              {publish && <Icon name="external share" />}
-                              {limited && <Icon name="privacy" />}
-                            </span>
-                          )}
+                          <span>
+                            {permissions.has('view') && <Icon name="book" />}
+                            {permissions.has('edit') && <Icon name="edit" />}
+                            {permissions.has('publish') && <Icon name="external share" />}
+                            {permissions.has('limited') && <Icon name="privacy" />}
+                          </span>
 
                           {perspective.translations && (
                             <>
@@ -288,21 +325,17 @@ const LangNode = ({
                             </>
                           )}
 
-                          {allowedSync && commonPers && (
+                          {commonPers && (
                             <Button
                               icon={<i className="lingvo-icon lingvo-icon_refresh" />}
                               onClick={event => {
                                 console.log("Обновляем перспективу");
                                 onSynchronize({
-                                  id: perspective.id,
-                                  refetching: false
+                                  perspective
                                 });
                                 event.preventDefault();
                               }}
-                              disabled={
-                                !localPermission ||
-                                !localPermission[compositeIdToString(perspective.id)]
-                              }
+                              disabled={!canBeSynced}
                               className="lingvo-button-green lingvo-lang-tree-button"
                             />
                           )}
@@ -317,31 +350,25 @@ const LangNode = ({
               {config.buildType === "server" && signedIn && dictionary.english_status === "Published" && (
                 <Popup
                   trigger={<i className="lingvo-icon lingvo-icon_published" />}
-                  content={publishedStr}
+                  content={getTranslation("Published")}
                   className="lingvo-popup lingvo-popup_published"
                   hideOnScroll={true}
                 />
               )}
 
-              {allowedSync && commonDict && (
+              {commonDict && (
                 <Button
                   icon={<i className="lingvo-icon lingvo-icon_refresh" />}
                   onClick={() => {
                     console.log("Обновляем словарь");
                     perspectives.forEach(perspective => {
                       onSynchronize({
-                        id: perspective.id,
-                        silentMode: true,
-                        refetching: false,
-                        action: perspective.single === "proxy" ? 'create' : 'edit'
+                        perspective,
+                        silentMode: true
                       });
                     });
                   }}
-                  disabled={
-                    !localPermission ||
-                    perspectives.every(
-                      perspective => !localPermission[compositeIdToString(perspective.id)])
-                  }
+                  disabled={!perspectives.some(p => permissionSet(p).has('syncable'))}
                   className="lingvo-button-green lingvo-lang-tree-button"
                 />
               )}
