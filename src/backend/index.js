@@ -171,7 +171,7 @@ export const queryCounter = gql`
 
 export const getPermissionsBulk = gql`
   query checkPermissionsBulk($perspectiveIdList: [LingvodocID]!) {
-    check_permissions_bulk(perspective_id_list: $perspectiveIdList)
+    check_permissions_bulk(subject_id_list: $perspectiveIdList)
   }
 `;
 

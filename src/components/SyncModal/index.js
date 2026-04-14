@@ -14,7 +14,7 @@ import "./styles.scss";
 const SyncModal = ({ perspectiveId, onClose, silentMode, action, debugFlag }) => {
   const getTranslation = useContext(TranslationContext);
   const [ applied, setApplied ] = useState(false);
-  const [ message, setMessage ] = useState("");
+  const [ errorMessage, setErrorMessage ] = useState(null);
 
   const { data: ispSyncData, error: ispSyncError, loading: ispSyncLoading } = useQuery(queryListChanges, {
     variables: { remote: 'isp', syncBetween: ['isp','xal'], perspectiveId, debugFlag },
@@ -35,10 +35,10 @@ const SyncModal = ({ perspectiveId, onClose, silentMode, action, debugFlag }) =>
   const [applySync, { data: dataApply, error: errorApply, loading: loadingApply }] = useMutation(
     applySyncMutation, {
       variables: { perspectiveId, syncBetween: ['isp','xal'], action, debugFlag },
-      onCompleted: ({apply_sync: {triumph, message: info}}) => {
-        if (info) {
-          setMessage(info);
-          console.log(info);
+      onCompleted: ({apply_sync: {triumph, message}}) => {
+        if (message) {
+          setErrorMessage(message);
+          console.log(message);
         }
         setApplied(triumph);
       }
@@ -185,7 +185,7 @@ const SyncModal = ({ perspectiveId, onClose, silentMode, action, debugFlag }) =>
               <Message negative>
                 <Message.Header>{getTranslation("Synchronize data loading error")}</Message.Header>
                 <div style={{ marginTop: "0.25em" }}>
-                  {getTranslation(message ? message :
+                  {getTranslation(errorMessage ? errorMessage :
                     "Try reloading the page; if the error persists, please contact administrators.")}
                 </div>
               </Message>
@@ -323,7 +323,8 @@ const SyncModal = ({ perspectiveId, onClose, silentMode, action, debugFlag }) =>
             ispSyncError ||
             xalSyncError ||
             loadingApply ||
-            errorApply
+            errorApply ||
+            errorMessage
           }
           className="lingvo-button-greenest lingvo-button-greenest_sync"
         />

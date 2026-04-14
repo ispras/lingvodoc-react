@@ -38,7 +38,7 @@ const ModalContentWrapper = styled("div")`
 
 const getPermissions = gql`
   query checkPermissions($perspectiveId: LingvodocID!) {
-    check_permissions(perspective_id: $perspectiveId)
+    check_permissions(subject_id: $perspectiveId)
   }
 `;
 
