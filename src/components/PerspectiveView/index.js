@@ -871,7 +871,7 @@ P.propTypes = {
   entitiesMode: PropTypes.string.isRequired,
   filter: PropTypes.string,
   data: PropTypes.object.isRequired,
-  localPermissionData: PropTypes.object.isRequired,
+  localPermissionData: PropTypes.object,
   sortByField: PropTypes.object,
   columns: PropTypes.array.isRequired,
   setSortByField: PropTypes.func.isRequired,
@@ -930,9 +930,9 @@ const PerspectiveView = compose(
     options: props => ({
       variables: {
         perspectiveId: props.id
-      },
-      skip: !props.user?.user?.allowed_sync || props.mode !== 'edit'
-    })
+      }
+    }),
+    skip: props => !props.user?.user?.allowed_sync || props.mode !== 'edit'
   }),
   graphql(queryLexicalEntries, {
     options: { notifyOnNetworkStatusChange: true }
