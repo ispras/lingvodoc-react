@@ -109,8 +109,10 @@ const LangNode = ({
     if (action === 'create' && !permissions.canBeAdded ||
         action === 'edit' && !permissions.canBeSynced
     ) {
-      console.log(
-        `Недостаточно прав на загрузку или обновление перспективы "${chooseTranslation(perspective.translations)}"!`);
+      const message = `${getTranslation(
+        "Not enough permissions to download or update perspective")} "${chooseTranslation(perspective.translations)}"`;
+      console.log(message);
+      window.logger.warn(message);
       return;
     }
 

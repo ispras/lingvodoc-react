@@ -37,8 +37,14 @@ const ModalContentWrapper = styled("div")`
 `;
 
 const getPermissions = gql`
-  query checkPermissions($perspectiveId: LingvodocID!) {
-    check_permissions(subject_id: $perspectiveId)
+  query checkPermissions(
+    $perspectiveId: LingvodocID!
+    $proxy: Boolean
+  ) {
+    check_permissions(
+      subject_id: $perspectiveId
+      proxy: $proxy
+    )
   }
 `;
 
@@ -924,7 +930,8 @@ const PerspectiveView = compose(
     options: props => ({
       variables: {
         perspectiveId: props.id
-      }
+      },
+      skip: !props.user?.user?.allowed_sync || props.mode !== 'edit'
     })
   }),
   graphql(queryLexicalEntries, {
