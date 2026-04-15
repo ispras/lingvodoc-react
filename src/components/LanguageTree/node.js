@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { connect, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { Button, Checkbox, Dropdown, Header, Icon, Popup } from "semantic-ui-react";
@@ -30,53 +30,61 @@ const LangNode = ({
   localPermission
 }) => {
 
+  const proxy = config.buildType === "desktop" || config.buildType === "proxy";
+  const proxyPermission = proxy ? proxyData?.permission_lists : undefined;
+
   const user = useSelector(state => state.user.user);
   const signedIn = user.id !== undefined;
   const allowedSync = user.id === 1 || user.allowed_sync;
 
-  const permissionSet = (perspective) => {
+  const languageId = compositeIdToString(node[0]);
+  const language = languageMap[languageId];
 
-    const perspectiveId = compositeIdToString(perspective.id);
-    const proxy = config.buildType === "desktop" || config.buildType === "proxy";
-    const proxyPermissions = proxy ? proxyData?.permission_lists : undefined;
+  /* Function to calculate permissions */
+  const permissionSet = useMemo(() => {
+    const permissions = {};
 
-    /* Define various permissions */
+    language.dictionaries.forEach(dictionary => dictionary.perspectives.forEach(perspective => {
+      const perspectiveId = compositeIdToString(perspective.id);
 
-    const proxyPers = allowedSync && perspective.single === "proxy";
-    const commonPers = allowedSync && perspective.single !== "local" && perspective.single !== "proxy";
-    const localPers = perspective.single === "local";
+      /* Define various permissions */
 
-    const view = !localPers && !!proxyPermissions?.view.find(p => compositeIdToString(p.id) === perspectiveId);
-    const edit = !localPers && !!proxyPermissions?.edit.find(p => compositeIdToString(p.id) === perspectiveId);
-    const publish = !localPers && !!proxyPermissions?.publish.find(p => compositeIdToString(p.id) === perspectiveId);
-    const limited = !localPers && !!proxyPermissions?.limited.find(p => compositeIdToString(p.id) === perspectiveId);
+      const proxyPers = allowedSync && perspective.single === "proxy";
+      const commonPers = allowedSync && perspective.single !== "local" && perspective.single !== "proxy";
+      const localPers = perspective.single === "local";
 
-    const available = localPers || !proxyPermissions || view || edit || publish || limited || user.id === 1;
-    const writable = localPermission && localPermission[perspectiveId] || user.id === 1;
+      const view = !localPers && !!proxyPermission?.view.find(p => compositeIdToString(p.id) === perspectiveId);
+      const edit = !localPers && !!proxyPermission?.edit.find(p => compositeIdToString(p.id) === perspectiveId);
+      const publish = !localPers && !!proxyPermission?.publish.find(p => compositeIdToString(p.id) === perspectiveId);
+      const limited = !localPers && !!proxyPermission?.limited.find(p => compositeIdToString(p.id) === perspectiveId);
 
-    const canBeAdded = available && proxyPers;
-    const canBeSynced = available && writable && commonPers;
-    const syncable = canBeAdded || canBeSynced;
+      const available = localPers || !proxyPermission || view || edit || publish || limited || user.id === 1;
+      const writable = localPermission && localPermission[perspectiveId] || user.id === 1;
 
-    return {
-      proxyPers,
-      commonPers,
-      available,
-      view,
-      edit,
-      publish,
-      limited,
-      canBeAdded,
-      canBeSynced,
-      syncable
-    };
-  }
+      const canBeAdded = available && proxyPers;
+      const canBeSynced = available && writable && commonPers;
+      const syncable = canBeAdded || canBeSynced;
+
+      permissions[perspective.id] = {
+        proxyPers,
+        commonPers,
+        available,
+        view,
+        edit,
+        publish,
+        limited,
+        canBeAdded,
+        canBeSynced,
+        syncable
+      };
+    }));
+
+    return permissions;
+
+  }, [language, allowedSync, localPermission, proxyPermission]);
 
   const { getTranslation, chooseTranslation } = useTranslations();
   const [modalCount, setModalCount] = useState(0);
-
-  const languageId = compositeIdToString(node[0]);
-  const language = languageMap[languageId];
   const proxyLang = allowedSync && language.single === "proxy";
 
   let langClass = "lang-name";
@@ -94,7 +102,7 @@ const LangNode = ({
     : language.dictionaries;
 
   const onSynchronize = ({ perspective, silentMode }) => {
-    const permissions = permissionSet(perspective);
+    const permissions = permissionSet[perspective.id];
     const action = permissions.proxyPers ? 'create' : 'edit';
     const refetching = permissions.proxyPers;
 
@@ -186,7 +194,7 @@ const LangNode = ({
             ? proxyData.dictionaries.find(d => d.id.toString() === dictionary.id.toString()) !== undefined
             : false;
           const authors = dictionary.additional_metadata.authors;
-          const perspectives = dictionary.perspectives;
+          const perspectives = dictionary.perspectives.filter(p => permissionSet[p.id].available);
           return (
             <li
               key={index}
@@ -257,11 +265,7 @@ const LangNode = ({
                         return;
                       }
 
-                      const permissions = permissionSet(perspective);
-
-                      if (!permissions.available) {
-                        return;
-                      }
+                      const permissions = permissionSet[perspective.id];
 
                       return (
                         <Dropdown.Item
@@ -359,7 +363,7 @@ const LangNode = ({
                       getTranslation("No")
                     )
                   }
-                  disabled={!perspectives.some(p => permissionSet(p).syncable)}
+                  disabled={!perspectives.some(p => permissionSet[p.id].syncable)}
                   className="lingvo-button-green lingvo-lang-tree-button"
                 />
               )}
