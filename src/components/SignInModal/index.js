@@ -60,16 +60,12 @@ const SignInModal = ({ close }) => {
       dispatch(setUser(response.data));
       dispatch(setIsAuthenticated({ isAuthenticated: true }));
       client.resetStore();
-      /* Syncing roles for current user on all dictionaries between hosts */
-      /* Seems it's not optimal step */
-      /*
       syncRoles({
         variables: {
           userId: response.data.id,
           debugFlag: true
         }
       });
-      */
     } else {
       window.logger.err(getTranslation("Could not get user information"));
       dispatch(setError());

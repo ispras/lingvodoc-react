@@ -72,7 +72,7 @@ function constructTree(
   setDataTreeCommon,
   refreshLangTree,
   localPermission,
-  proxyData=null
+  proxyData
 ) {
 
   const { languages: localLanguages, tree: frozenTree } = data.language_tree;
@@ -83,7 +83,7 @@ function constructTree(
     return null;
   }
 
-  if (proxyData === null) {
+  if (!proxyData) {
 
     localLanguages.forEach(language => {
       setDataTreeCommon(data);

@@ -11,10 +11,11 @@ import TranslationContext from "Layout/TranslationContext";
 
 import "./styles.scss";
 
-const SyncModal = ({ perspectiveId, onClose, silentMode, action, debugFlag: true }) => {
+const SyncModal = ({ perspectiveId, onClose, silentMode, action }) => {
   const getTranslation = useContext(TranslationContext);
   const [ applied, setApplied ] = useState(false);
   const [ errorMessage, setErrorMessage ] = useState(null);
+  const debugFlag = true;
 
   const { data: ispSyncData, error: ispSyncError, loading: ispSyncLoading } = useQuery(queryListChanges, {
     variables: { remote: 'isp', syncBetween: ['isp','xal'], perspectiveId, debugFlag },
