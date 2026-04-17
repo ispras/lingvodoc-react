@@ -230,12 +230,14 @@ const Home = props => {
             </Segment>
           </Form>
 
+          {/*
           {isAuthenticated && (config.buildType === "desktop" || config.buildType === "proxy") && (
             <Button positive onClick={download} disabled={selected.size === 0}>
               {selected.size > 0 && <p>Download ({selected.size})</p>}
               {selected.size === 0 && <p>Download</p>}
             </Button>
           )}
+          */}
         </Container>
       </div>
       <Container className="published">

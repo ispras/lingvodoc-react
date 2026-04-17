@@ -11,7 +11,7 @@ import TranslationContext from "Layout/TranslationContext";
 
 import "./styles.scss";
 
-const SyncModal = ({ perspectiveId, onClose, silentMode, action, debugFlag }) => {
+const SyncModal = ({ perspectiveId, onClose, silentMode, action, debugFlag: true }) => {
   const getTranslation = useContext(TranslationContext);
   const [ applied, setApplied ] = useState(false);
   const [ errorMessage, setErrorMessage ] = useState(null);

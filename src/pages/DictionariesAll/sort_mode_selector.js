@@ -80,7 +80,7 @@ const SortModeSelector = ({ sortMode, onChange, selected, setSelected }) => {
             </Form.Group>
           </Segment>
         </Form>
-
+        {/*
         {user.id !== undefined && (config.buildType === "desktop" || config.buildType === "proxy") && (
           <Button
             positive
@@ -91,6 +91,7 @@ const SortModeSelector = ({ sortMode, onChange, selected, setSelected }) => {
             {selected.size === 0 && <p>Download</p>}
           </Button>
         )}
+        */}
       </Container>
     </div>
   );
