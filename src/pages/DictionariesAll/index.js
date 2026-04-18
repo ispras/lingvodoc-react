@@ -75,6 +75,7 @@ function constructTree(
   proxyData
 ) {
 
+  const startstamp = Date.now();
   const { languages: localLanguages, tree: frozenTree } = data.language_tree;
   const tree = structuredClone(frozenTree);
   const languageMap = { common: {} };
@@ -92,6 +93,8 @@ function constructTree(
 
   } else {
 
+    console.log("Starting language trees merging...");
+
     // Merging local and proxy language maps
 
     const { languages: proxyLanguages } = proxyData.language_tree;
@@ -107,6 +110,8 @@ function constructTree(
     // So dictionaryMap.local[dictId] must point to object
     // from languageMap.local[langId].dictionaries
     // (!) but be not its copy (!)
+
+    console.log("Mapping tree...");
 
     ['local', 'proxy'].forEach(side => {
 
@@ -237,6 +242,8 @@ function constructTree(
     // (!) After this block languageMap.local and
     // dictionaryMap.local will contain merged data (!)
 
+    console.log("Merging...");
+
     languageMap.union.forEach(lang_id => {
 
       // If language exists only on proxy side
@@ -303,6 +310,9 @@ function constructTree(
 
   // Construct common data to use in LanguageSearchField component
   setDataTreeCommon({language_tree: {languages: Object.values(languageMap.common)}});
+
+  const finishstamp = Date.now();
+  console.log(`The trees are merged successfully in ${(finishstamp - startstamp)/1000} sec`);
 
   let groupMap = undefined;
   let groupDictionaryIdSetMap = undefined;
@@ -554,9 +564,6 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
   const [dataTreeIdProxy, setDataTreeIdProxy] = useState(undefined);
   const [dataTreeAllProxy, setDataTreeAllProxy] = useState(undefined);
 
-  // For debugging
-  const skipProxy = false;
-
   for (const aSortMode of sortModeList) {
     const variablesId = { ...variables };
     const variablesAll = { ...variables };
@@ -603,7 +610,7 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
         console.log(`Completed getLanguageTreeIdProxy for sortMode '${aSortMode}'`);
         setDataTreeIdProxy(data);
       },
-      skip: skip_general || !allowed_sync || !entityIdValue || aSortMode != sortMode || skipProxy
+      skip: skip_general || !allowed_sync || !entityIdValue || aSortMode != sortMode
     });
 
     queryDictAllProxy[aSortMode] = useQuery(getLanguageTree, {
@@ -614,7 +621,7 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
         console.log(`Completed getLanguageTreeAllProxy for sortMode '${aSortMode}'`);
         setDataTreeAllProxy(data);
       },
-      skip: skip_general || !allowed_sync || activeTab !== "1" || aSortMode != sortMode || skipProxy
+      skip: skip_general || !allowed_sync || activeTab !== "1" || aSortMode != sortMode
     });
   }
 
@@ -629,9 +636,9 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
   }, [dataTreeAll]);
 
   const { data: localPermission } = useQuery(getPermissionsBulk, {
-    variables: { perspectiveIdList },
+    variables: { category },
     fetchPolicy: "cache-and-network",
-    skip: !allowed_sync || !dataTreeAll?.language_tree?.languages || skipProxy
+    skip: !allowed_sync || user.user.id === 1
   });
 
   const refreshLangTree = () => {
@@ -639,13 +646,6 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
   }
 
   //setInterval(queryDictAllProxy[sortMode].refetch, 300000);
-
-  /*
-  const { data: dataTreeId } = queryDictId[sortMode];
-  const { data: dataTreeAll } = queryDictAll[sortMode];
-  const { data: dataTreeIdProxy } = queryDictIdProxy[sortMode];
-  const { data: dataTreeAllProxy } = queryDictAllProxy[sortMode];
-  */
 
   const { data: grantData } = queryGrants;
   const { data: organizationData } = queryOrganizations;
@@ -675,44 +675,46 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
   const [treeId, setTreeId] = useState(undefined);
   const [treeAll, setTreeAll] = useState(undefined);
 
+  const skipConstructTree = (
+    (sortMode === "grant" && !grantMap) ||
+    (sortMode === "organization" && !organizationMap) ||
+    (allowed_sync && user.user.id !== 1 && !localPermission) ||
+    (proxy && !proxyPermission)
+  );
+
+  const skipConstructIdTree = (
+    !dataTreeId ||
+    (allowed_sync && !dataTreeIdProxy) ||
+    skipConstructTree
+  );
+
+  const skipConstructAllTree = (
+    !dataTreeAll ||
+    (allowed_sync && !dataTreeAllProxy) ||
+    skipConstructTree
+  );
+
   // For debugging
   ['sortMode',
-   'dataTreeAll',
    'grantMap',
    'organizationMap',
+   'localPermission',
    'proxyPermission',
+   'dataTreeAll',
    'dataTreeAllProxy',
    'selected',
    'setSelected'
   ].forEach(state => {
     useEffect(() => {
       let attention = '';
-      if (['dataTreeAll', 'dataTreeAllProxy', 'proxyPermission'].includes(state) && !skipConstructAllTree) {
+      if (!skipConstructAllTree) {
         attention = '!!! >>> ';
       }
-      console.log(`${attention}Changed ${state}`);
+      if (eval(state)) {
+        console.log(`${attention}Changed ${state}`);
+      }
     }, [eval(state)]);
   });
-
-
-  const skipConstructTree = (
-    (sortMode === "grant" && !grantMap) ||
-    (sortMode === "organization" && !organizationMap) ||
-    (!skipProxy && allowed_sync && !localPermission) ||
-    (proxy && !proxyPermission)
-  );
-
-  const skipConstructIdTree = (
-    !dataTreeId ||
-    (!skipProxy && allowed_sync && !dataTreeIdProxy) ||
-    skipConstructTree
-  );
-
-  const skipConstructAllTree = (
-    !dataTreeAll ||
-    (!skipProxy && allowed_sync && !dataTreeAllProxy) ||
-    skipConstructTree
-  );
 
   useEffect(() => {
     if (skipConstructIdTree) {
@@ -758,6 +760,7 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
     }
 
     let active = true;
+    console.log("Running constructAllTree...");
     constructAllTree();
     return () => {
       active = false;
