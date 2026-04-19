@@ -138,6 +138,16 @@ export const languagesQuery = gql`
   }
 `;
 
+export const localDictionaryInfo = gql`
+  query LocalDictionaryInfo {
+    permission_lists(proxy: false) {
+      edit {
+        id
+      }
+    }
+  }
+`;
+
 export const proxyDictionaryInfo = gql`
   query ProxyDictionaryInfo($proxy: Boolean!, $category: Int) {
     dictionaries(proxy: false, published: true, category: $category) {

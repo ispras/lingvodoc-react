@@ -59,7 +59,7 @@ const LangNode = ({
       const limited = !localPers && !!proxyPermission?.limited.find(p => compositeIdToString(p.id) === perspectiveId);
 
       const available = localPers || !proxyPermission || view || edit || publish || limited || user.id === 1;
-      const writable = localPermission && localPermission[perspectiveId] || user.id === 1;
+      const writable = localPermission && localPermission.includes(perspectiveId) || user.id === 1;
 
       const canBeAdded = available && proxyPers;
       const canBeSynced = available && writable && commonPers;

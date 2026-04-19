@@ -13,6 +13,7 @@ import {
   getLanguageTreeProxy,
   getTocGrants,
   getTocOrganizations,
+  localDictionaryInfo,
   proxyDictionaryInfo,
   getPermissionsBulk
 } from "backend";
@@ -76,6 +77,8 @@ function constructTree(
 ) {
 
   const startstamp = Date.now();
+  const localEditPermission = (
+    localPermission.permission_lists.edit.map(obj => obj.id.toString()));
   const { languages: localLanguages, tree: frozenTree } = data.language_tree;
   const tree = structuredClone(frozenTree);
   const languageMap = { common: {} };
@@ -344,7 +347,7 @@ function constructTree(
           setSelected={setSelected}
           proxyData={proxyPermission}
           refreshLangTree={refreshLangTree}
-          localPermission={localPermission?.check_permissions_bulk}
+          localPermission={localEditPermission}
         />
       ))
     ) : (
@@ -355,7 +358,7 @@ function constructTree(
         setSelected={setSelected}
         proxyData={proxyPermission}
         refreshLangTree={refreshLangTree}
-        localPermission={localPermission?.check_permissions_bulk}
+        localPermission={localEditPermission}
       />
     );
   } else {
@@ -518,6 +521,7 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
 
   const user_loading = user.loading || (!!getId() && user.user.id === undefined && !user.error);
   const skip_general = user_loading || entityIdValue === undefined;
+  const allowed_sync = (user.user.id === 1 || user.user.allowed_sync);
 
   /* Cache-only in case we are at "Dictionaries" tab and are using cached language data for the language
    * search if we need it and if we have any. */
@@ -546,6 +550,11 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
     skip: skip_general || config.buildType === "server"
   });
 
+  const { data: localPermission } = useQuery(localDictionaryInfo, {
+    fetchPolicy: "cache-and-network",
+    skip: skip_general || !allowed_sync || user.user.id === 1
+  });
+
   /* Multiple queries for different situations because apparently with a single query Apollo returns
    * getLanguageTree query from cache even if variables are different. */
 
@@ -556,7 +565,6 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
 
   const sortModeList = forCorpora || forParallelCorpora ? ["language"] : ["language", "grant", "organization"];
   const proxy = (config.buildType !== "server");
-  const allowed_sync = (user.user.id === 1 || user.user.allowed_sync);
 
   const [dataTreeId, setDataTreeId] = useState(undefined);
   const [dataTreeAll, setDataTreeAll] = useState(undefined);
@@ -635,11 +643,13 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
     return result;
   }, [dataTreeAll]);
 
+  /*
   const { data: localPermission } = useQuery(getPermissionsBulk, {
     variables: { category },
     fetchPolicy: "cache-and-network",
     skip: !allowed_sync || user.user.id === 1
   });
+  */
 
   const refreshLangTree = () => {
     setTimeout(queryDictAll[sortMode].refetch, 500);
