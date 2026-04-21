@@ -78,7 +78,7 @@ function constructTree(
 
   const startstamp = Date.now();
   const localEditPermission = (
-    localPermission.permission_lists.edit.map(obj => obj.id.toString()));
+    localPermission?.permission_lists.edit.map(obj => obj.id.toString()));
   const { languages: localLanguages, tree: frozenTree } = data.language_tree;
   const tree = structuredClone(frozenTree);
   const languageMap = { common: {} };

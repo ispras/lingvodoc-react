@@ -53,10 +53,10 @@ const LangNode = ({
       const commonPers = allowedSync && perspective.single !== "local" && perspective.single !== "proxy";
       const localPers = perspective.single === "local";
 
-      const view = !localPers && !!proxyPermission?.view.find(p => compositeIdToString(p.id) === perspectiveId);
-      const edit = !localPers && !!proxyPermission?.edit.find(p => compositeIdToString(p.id) === perspectiveId);
-      const publish = !localPers && !!proxyPermission?.publish.find(p => compositeIdToString(p.id) === perspectiveId);
-      const limited = !localPers && !!proxyPermission?.limited.find(p => compositeIdToString(p.id) === perspectiveId);
+      const view = !localPers && !!proxyPermission?.view?.find(p => compositeIdToString(p.id) === perspectiveId);
+      const edit = !localPers && !!proxyPermission?.edit?.find(p => compositeIdToString(p.id) === perspectiveId);
+      const publish = !localPers && !!proxyPermission?.publish?.find(p => compositeIdToString(p.id) === perspectiveId);
+      const limited = !localPers && !!proxyPermission?.limited?.find(p => compositeIdToString(p.id) === perspectiveId);
 
       const available = localPers || !proxyPermission || view || edit || publish || limited || user.id === 1;
       const writable = localPermission && localPermission.includes(perspectiveId) || user.id === 1;
@@ -319,7 +319,8 @@ const LangNode = ({
                               onClick={event => {
                                 console.log("Обновляем перспективу");
                                 onSynchronize({
-                                  perspective
+                                  perspective,
+                                  silentMode: true
                                 });
                                 event.preventDefault();
                               }}
