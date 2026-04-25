@@ -551,6 +551,7 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
   });
 
   const { data: localPermission } = useQuery(localDictionaryInfo, {
+    client: additionalClient,
     fetchPolicy: "cache-and-network",
     skip: skip_general || !allowed_sync || user.user.id === 1
   });
