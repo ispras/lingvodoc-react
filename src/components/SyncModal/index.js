@@ -20,7 +20,11 @@ const SyncModal = ({ perspectiveId, onClose, silentMode, action }) => {
   const { data: ispSyncData, error: ispSyncError, loading: ispSyncLoading } = useQuery(queryListChanges, {
     variables: { remote: 'isp', syncBetween: ['isp','xal'], perspectiveId, debugFlag },
     onCompleted: (data) => {
-      console.log(`Possible errors: ${data.list_changes.warns}`);
+      const warns = data.list_changes.warns;
+      if (warns.length > 0) {
+        console.log(`Possible errors: ${warns}`);
+        window.logger.warn(warns);
+      }
     },
     fetchPolicy: "network-only"
   });
@@ -28,7 +32,11 @@ const SyncModal = ({ perspectiveId, onClose, silentMode, action }) => {
   const { data: xalSyncData, error: xalSyncError, loading: xalSyncLoading } = useQuery(queryListChanges, {
     variables: { remote: 'xal', syncBetween: ['isp','xal'], perspectiveId, debugFlag },
     onCompleted: (data) => {
-      console.log(`Possible errors: ${data.list_changes.warns}`);
+      const warns = data.list_changes.warns;
+      if (warns.length > 0) {
+        console.log(`Possible errors: ${warns}`);
+        window.logger.warn(warns);
+      }
     },
     fetchPolicy: "network-only"
   });
