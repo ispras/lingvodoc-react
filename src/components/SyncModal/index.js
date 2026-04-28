@@ -18,7 +18,7 @@ const SyncModal = ({ perspectiveId, perspectiveName, onClose, silentMode, action
   const debugFlag = true;
 
   const { data: ispSyncData, error: ispSyncError, loading: ispSyncLoading } = useQuery(queryListChanges, {
-    variables: { remote: 'isp', syncBetween: ['isp','xal'], perspectiveId, debugFlag },
+    variables: { remote: 'isp', syncBetween: ['isp','xal'], perspectiveId, action, debugFlag },
     onCompleted: (data) => {
       const warns = data.list_changes.warns;
       if (warns.length > 0) {
@@ -30,7 +30,7 @@ const SyncModal = ({ perspectiveId, perspectiveName, onClose, silentMode, action
   });
 
   const { data: xalSyncData, error: xalSyncError, loading: xalSyncLoading } = useQuery(queryListChanges, {
-    variables: { remote: 'xal', syncBetween: ['isp','xal'], perspectiveId, debugFlag },
+    variables: { remote: 'xal', syncBetween: ['isp','xal'], perspectiveId, action, debugFlag },
     onCompleted: (data) => {
       const warns = data.list_changes.warns;
       if (warns.length > 0) {

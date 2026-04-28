@@ -249,7 +249,7 @@ export const queryListChanges = gql`
     $remote: String!
     $syncBetween: [String]!
     $perspectiveId: LingvodocID!
-    $userId: Int
+    $action: String!
     $syncPoint: Float
     $debugFlag: Boolean)
     {
@@ -257,7 +257,7 @@ export const queryListChanges = gql`
         remote: $remote
         sync_between: $syncBetween
         perspective_id: $perspectiveId
-        user_id: $userId
+        action: $action
         sync_point: $syncPoint
         debug_flag: $debugFlag)
   }
