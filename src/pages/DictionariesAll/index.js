@@ -80,14 +80,14 @@ function constructTree(
   const localEditPermission = (
     localPermission?.permission_lists.edit?.map(obj => obj.id.toString()));
   const { languages: localLanguages, tree: frozenTree } = data.language_tree;
-  const tree = structuredClone(frozenTree);
+  let tree = structuredClone(frozenTree);
   const languageMap = { common: {} };
 
-  if (tree === null) {
-    return null;
-  }
-
   if (!proxyData) {
+
+    if (tree === null) {
+      return null;
+    }
 
     localLanguages.forEach(language => {
       setDataTreeCommon(data);
@@ -95,6 +95,10 @@ function constructTree(
     });
 
   } else {
+
+    if (tree === null) {
+      tree = [null, []];
+    }
 
     console.log("Starting language trees merging...");
 
