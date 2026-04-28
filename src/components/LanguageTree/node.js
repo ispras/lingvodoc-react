@@ -193,6 +193,12 @@ const LangNode = ({
             />
           ))}
         {dictionaries.map((dictionary, index) => {
+          const perspectives = dictionary.perspectives.filter(p => permissionSet[p.id].available);
+
+          if (dictionary.single === "proxy" && (!perspectives || !perspectives.length)) {
+            return null;
+          }
+
           const dictionaryId = compositeIdToString(dictionary.id);
           const proxyDict = allowedSync && dictionary.single === "proxy";
           const commonDict = allowedSync && dictionary.single !== "local" && dictionary.single !== "proxy";
@@ -201,7 +207,6 @@ const LangNode = ({
             ? proxyData.dictionaries.find(d => d.id.toString() === dictionary.id.toString()) !== undefined
             : false;
           const authors = dictionary.additional_metadata.authors;
-          const perspectives = dictionary.perspectives.filter(p => permissionSet[p.id].available);
           return (
             <li
               key={index}

@@ -7,6 +7,7 @@ import { drop, flow, isEqual, reverse, take, cloneDeep } from "lodash";
 import PropTypes from "prop-types";
 import { branch, compose, renderComponent } from "recompose";
 import { bindActionCreators } from "redux";
+import { chooseTranslation as T } from "api/i18n";
 import styled from "styled-components";
 
 import ApproveModal from "components/ApproveModal";
@@ -595,7 +596,7 @@ class P extends React.Component {
     const onSynchronize = () => {
       openNewModal(SyncModal, {
         perspectiveId: id,
-        perspectiveName: chooseTranslation(data.perspective.translations)
+        perspectiveName: T(data.perspective.translations)
       });
     };
 
