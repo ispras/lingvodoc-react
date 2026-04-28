@@ -10,7 +10,7 @@ import { bindActionCreators } from "redux";
 import styled from "styled-components";
 
 import ApproveModal from "components/ApproveModal";
-import SyncModal from "components/SyncModal"; // new!!!!!!
+import SyncModal from "components/SyncModal";
 import Pagination from "components/Pagination";
 import Placeholder from "components/Placeholder";
 import { openModal } from "ducks/modals";
@@ -592,11 +592,12 @@ class P extends React.Component {
       openNewModal(ApproveModal, { perspectiveId: id, mode });
     };
 
-    /* new!!!!! */
     const onSynchronize = () => {
-      openNewModal(SyncModal, { perspectiveId: id });
+      openNewModal(SyncModal, {
+        perspectiveId: id,
+        perspectiveName: chooseTranslation(data.perspective.translations)
+      });
     };
-    /* /new!!!!! */
 
     // join fields and columns
     // {

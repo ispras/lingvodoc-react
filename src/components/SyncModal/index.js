@@ -11,7 +11,7 @@ import TranslationContext from "Layout/TranslationContext";
 
 import "./styles.scss";
 
-const SyncModal = ({ perspectiveId, onClose, silentMode, action }) => {
+const SyncModal = ({ perspectiveId, perspectiveName, onClose, silentMode, action }) => {
   const getTranslation = useContext(TranslationContext);
   const [ applied, setApplied ] = useState(false);
   const [ errorMessage, setErrorMessage ] = useState(null);
@@ -180,7 +180,7 @@ const SyncModal = ({ perspectiveId, onClose, silentMode, action }) => {
 
   return (
     <Modal className="lingvo-modal2" dimmer open closeIcon onClose={onClose} size="fullscreen">
-      <Modal.Header>{getTranslation("Synchronize")}</Modal.Header>
+      <Modal.Header>{`${getTranslation("Synchronize")} "${perspectiveName}"`}</Modal.Header>
       <Modal.Content>
         <div className="sync-content">
           <div className="sync-content__table">
@@ -346,6 +346,7 @@ const SyncModal = ({ perspectiveId, onClose, silentMode, action }) => {
 
 SyncModal.propTypes = {
   perspectiveId: PropTypes.array.isRequired,
+  perspectiveName: PropTypes.string.isRequired,
   onClose: PropTypes.func.isRequired,
   silentMode: PropTypes.bool,
   action: PropTypes.string,

@@ -101,8 +101,11 @@ const LangNode = ({
       })
     : language.dictionaries;
 
-  const onSynchronize = ({ perspective, silentMode }) => {
+  const onSynchronize = ({ dictionary, perspective, silentMode }) => {
     const permissions = permissionSet[perspective.id];
+    const perspectiveId = perspective.id;
+    const perspectiveName = `${chooseTranslation(
+      dictionary.translations)} -> ${chooseTranslation(perspective.translations)}`;
     const action = permissions.proxyPers ? 'create' : 'edit';
     const refetching = permissions.proxyPers;
 
@@ -110,7 +113,7 @@ const LangNode = ({
         action === 'edit' && !permissions.canBeSynced
     ) {
       const message = `${getTranslation(
-        "Not enough permissions to download or update perspective")} "${chooseTranslation(perspective.translations)}"`;
+        "Not enough permissions to download or update perspective")} "${perspectiveName}"`;
       console.log(message);
       window.logger.warn(message);
       return;
@@ -119,7 +122,8 @@ const LangNode = ({
     // +1 or no any change
     setModalCount(modalCount + refetching);
     openNewModal(SyncModal, {
-      perspectiveId: perspective.id,
+      perspectiveId,
+      perspectiveName,
       silentMode,
       action,
       onClose: () => {
@@ -155,6 +159,7 @@ const LangNode = ({
                   language.dictionaries.forEach(dictionary => {
                     dictionary.perspectives.forEach(perspective => {
                       onSynchronize({
+                        dictionary,
                         perspective,
                         silentMode: true
                       });
@@ -234,6 +239,7 @@ const LangNode = ({
                         console.log("Загружаем словарь");
                         perspectives.forEach(perspective => {
                           onSynchronize({
+                            dictionary,
                             perspective,
                             silentMode: true
                           });
@@ -289,6 +295,7 @@ const LangNode = ({
                                   () => {
                                     console.log("Загружаем перспективу");
                                     onSynchronize({
+                                      dictionary,
                                       perspective,
                                       silentMode: true
                                     });
@@ -319,6 +326,7 @@ const LangNode = ({
                               onClick={event => {
                                 console.log("Обновляем перспективу");
                                 onSynchronize({
+                                  dictionary,
                                   perspective,
                                   silentMode: true
                                 });
@@ -357,6 +365,7 @@ const LangNode = ({
                         console.log("Обновляем словарь");
                         perspectives.forEach(perspective => {
                           onSynchronize({
+                            dictionary,
                             perspective,
                             silentMode: true
                           });
