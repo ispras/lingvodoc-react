@@ -596,7 +596,8 @@ class P extends React.Component {
     const onSynchronize = () => {
       openNewModal(SyncModal, {
         perspectiveId: id,
-        perspectiveName: T(data.perspective.translations)
+        perspectiveName: T(data.perspective.translations),
+        action: 'edit'
       });
     };
 
