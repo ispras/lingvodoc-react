@@ -40,6 +40,10 @@ const LangNode = ({
   const languageId = compositeIdToString(node[0]);
   const language = languageMap[languageId];
 
+  if (!language) {
+    return null;
+  }
+
   /* Function to calculate permissions */
   const permissionSet = useMemo(() => {
     const permissions = {};
@@ -404,7 +408,9 @@ export const GrantNode = ({
   languageMap,
   selected,
   setSelected,
-  proxyData
+  proxyData,
+  refreshLangTree,
+  localPermission
 }) => {
   const { getTranslation, chooseTranslation } = useTranslations();
 
@@ -414,7 +420,7 @@ export const GrantNode = ({
   return (
     <div id={`grant_${grantId}`} className="node_grant">
       <Header>
-        {chooseTranslation(grant.translations)} ({chooseTranslation(grant.issuer_translations)} {grant.grant_number})
+        {chooseTranslation(grant?.translations)} ({chooseTranslation(grant?.issuer_translations)} {grant?.grant_number})
       </Header>
       {node[1].map((node, index) => (
         <LanguageNode
@@ -425,6 +431,8 @@ export const GrantNode = ({
           selected={selected}
           setSelected={setSelected}
           proxyData={proxyData}
+          refreshLangTree={refreshLangTree}
+          localPermission={localPermission}
         />
       ))}
     </div>
@@ -439,7 +447,9 @@ export const OrganizationNode = ({
   languageMap,
   selected,
   setSelected,
-  proxyData
+  proxyData,
+  refreshLangTree,
+  localPermission
 }) => {
   const { getTranslation, chooseTranslation } = useTranslations();
 
@@ -448,7 +458,7 @@ export const OrganizationNode = ({
 
   return (
     <div id={`organization_${organizationId}`} className="node_grant">
-      <Header>{chooseTranslation(organization.translations)}</Header>
+      <Header>{chooseTranslation(organization?.translations)}</Header>
       {node[1].map((node, index) => (
         <LanguageNode
           key={index}
@@ -458,6 +468,8 @@ export const OrganizationNode = ({
           selected={selected}
           setSelected={setSelected}
           proxyData={proxyData}
+          refreshLangTree={refreshLangTree}
+          localPermission={localPermission}
         />
       ))}
     </div>
@@ -465,7 +477,16 @@ export const OrganizationNode = ({
 };
 
 /** Language tree node of languages with dictionaries outside any grant / any organization. */
-export const IndividualNode = ({ node, languageMap, dictionaryIdSet, selected, setSelected, proxyData }) => {
+export const IndividualNode = ({
+  node,
+  languageMap,
+  dictionaryIdSet,
+  selected,
+  setSelected,
+  proxyData,
+  refreshLangTree,
+  localPermission
+}) => {
   const { getTranslation, chooseTranslation } = useTranslations();
 
   return (
@@ -481,6 +502,8 @@ export const IndividualNode = ({ node, languageMap, dictionaryIdSet, selected, s
           selected={selected}
           setSelected={setSelected}
           proxyData={proxyData}
+          refreshLangTree={refreshLangTree}
+          localPermission={localPermission}
         />
       ))}
     </div>

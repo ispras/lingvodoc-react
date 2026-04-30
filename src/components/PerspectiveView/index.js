@@ -935,7 +935,11 @@ const PerspectiveView = compose(
         perspectiveId: props.id
       }
     }),
-    skip: props => !props.user?.user?.allowed_sync || props.mode !== 'edit'
+    skip: props => (
+      props.user?.user?.id !== 1 &&
+      !props.user?.user?.allowed_sync ||
+      props.mode !== 'edit'
+    )
   }),
   graphql(queryLexicalEntries, {
     options: { notifyOnNetworkStatusChange: true }

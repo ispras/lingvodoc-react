@@ -378,6 +378,8 @@ function constructTree(
             selected={selected}
             setSelected={setSelected}
             proxyData={proxyPermission}
+            refreshLangTree={refreshLangTree}
+            localPermission={localPermission}
           />
         ) : (
           <IndividualNode
@@ -388,6 +390,8 @@ function constructTree(
             selected={selected}
             setSelected={setSelected}
             proxyData={proxyPermission}
+            refreshLangTree={refreshLangTree}
+            localPermission={localPermission}
           />
         )
       )
@@ -400,6 +404,8 @@ function constructTree(
         selected={selected}
         setSelected={setSelected}
         proxyData={proxyPermission}
+        refreshLangTree={refreshLangTree}
+        localPermission={localPermission}
       />
     );
   }
