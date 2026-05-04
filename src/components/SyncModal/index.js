@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useMemo } from "react";
 import { useMutation } from "hooks";
 import { useQuery, useLazyQuery, gql } from "@apollo/client";
 import { Button, Dimmer, Header, Icon, Message, Modal, Popup, Table } from "semantic-ui-react";
@@ -6,6 +6,7 @@ import PropTypes from "prop-types";
 import { chooseTranslation as T } from "api/i18n";
 import { isEqual } from "lodash";
 import { applySyncMutation, queryListChanges } from "backend";
+import config from "config";
 
 import TranslationContext from "Layout/TranslationContext";
 
@@ -60,6 +61,8 @@ const SyncModal = ({ perspectiveId, perspectiveName, onClose, silentMode, action
   useEffect(() => {
     if (applied &&
         !loadingApply && !errorApply) {
+
+      window.logger.suc(`"${perspectiveName}"\n${getTranslation("was synchronized successfully")}`);
       onClose();
     }
   }, [applied, loadingApply]);
@@ -72,115 +75,71 @@ const SyncModal = ({ perspectiveId, perspectiveName, onClose, silentMode, action
     }
   }, [ispSyncData, ispSyncLoading, xalSyncData, xalSyncLoading]);
 
-  const dataCore = {
-    languages: [
-      ["2025-11-15", "2025-11-16", { id: "1", text: "Some text" }],
-      ["2025-11-15", "2025-11-15", { id: "2", text: "Some text 2" }]
-    ],
-    dictionaries: [
-      ["2025-11-15", "2025-11-21", { id: "3", text: "Local dictionary name" }],
-      ["2025-11-15", "2025-11-22", { id: "4", text: "Local dictionary name 2" }],
-      ["2025-11-15", "2025-11-23", { id: "5", text: "Local dictionary name 3" }]
-    ],
-    perspectives: [
-      ["2025-11-15", "2025-11-15", { id: "6", text: "Common perspective name" }],
-      ["2025-11-15", "2025-11-21", { id: "11", text: "Common perspective name 2" }], // нет в dataSatellite
-      ["2025-11-15", "2025-11-15", { id: "12", text: "Common perspective name 3" }] // нет в dataSatellite
-    ],
-    entities: [
-      ["2025-11-15", "2025-11-15", { id: "7", text: "Old text" }],
-      ["2025-11-15", "2025-11-19", { id: "8", text: "Locally edited text" }],
-      [null, null, { id: "9", text: "" }],
-      [null, "2025-11-20", { id: "10", text: "Some locally added entity" }]
-    ]
-  };
+  const reportData = useMemo(() => {
 
-  const dataSatellite = {
-    languages: [
-      ["2025-11-15", "2025-11-17", { id: "1", text: "Some new text" }],
-      ["2025-11-15", "2025-11-17", { id: "2", text: "Some new text 2" }]
-    ],
-    dictionaries: [
-      ["2025-11-15", "2025-11-15", { id: "3", text: "Remote dictionary name" }],
-      ["2025-11-15", "2025-11-15", { id: "4", text: "Remote dictionary name 2" }],
-      ["2025-11-15", "2025-11-15", { id: "5", text: "Remote dictionary name 3" }],
-      ["2025-11-15", "2025-11-15", { id: "13", text: "Remote dictionary name 4" }], // нет в dataCore
-      ["2025-11-15", "2025-12-01", { id: "14", text: "Remote dictionary name 5" }] // нет в dataCore
-    ],
-    perspectives: [["2025-11-15", "2025-11-15", { id: "6", text: "Common perspective name" }]],
-    entities: [
-      ["2025-11-15", "2025-11-17", { id: "7", text: "Remotely edited text" }],
-      ["2025-11-15", "2025-11-17", { id: "8", text: "Old text" }],
-      [null, "2025-11-18", { id: "9", text: "Some remotely added entity" }],
-      [null, null, { id: "10", text: "" }]
-    ]
-  };
+    if(!ispSyncLoading && !ispSyncError &&
+       !xalSyncLoading && !xalSyncError) {
 
-  const keysData = Object.keys(dataCore);
+      const inIsp = (config.buildType === "server");
+      const {list_changes: localChanges} = inIsp ? ispSyncData : xalSyncData;
+      const {list_changes: foreignChanges} = inIsp ? xalSyncData : ispSyncData;
+      const syncPoint = localChanges.sync_point * 1000;
 
-  console.log("keysData=====");
-  console.log(keysData);
+      for (const changes of [localChanges, foreignChanges]) {
+        changes.report = {};
 
-  keysData.forEach(key => {
-    dataCore[key].map(item => {
-      const satellite = dataSatellite[key].filter(item2 => isEqual(item2[2].id, item[2].id))[0];
-
-      item[2].textRemote = (satellite && satellite[2]?.text) || "";
-
-      const dateSynced = (item[0] && new Date(item[0])) || null;
-      const dateLocal = (item[1] && new Date(item[1])) || null;
-      const dateRemote = (satellite && satellite[1] && new Date(satellite[1])) || null;
-
-      item[2].dateSynced =
-        (dateSynced && dateSynced.getDate() + "." + (dateSynced.getMonth() + 1) + "." + dateSynced.getFullYear()) ||
-        "never";
-
-      item[2].dateLocal =
-        (dateLocal && dateLocal.getDate() + "." + (dateLocal.getMonth() + 1) + "." + dateLocal.getFullYear()) ||
-        "never";
-
-      item[2].dateRemote =
-        (dateRemote && dateRemote.getDate() + "." + (dateRemote.getMonth() + 1) + "." + dateRemote.getFullYear()) ||
-        "never";
-
-      item[2].timeSynced = (dateSynced && dateSynced.getTime()) || 0;
-      item[2].timeLocal = (dateLocal && dateLocal.getTime()) || 0;
-      item[2].timeRemote = (dateRemote && dateRemote.getTime()) || 0;
-
-      return item;
-    });
-
-    dataSatellite[key].forEach(item => {
-      const core = dataCore[key].filter(item2 => isEqual(item2[2].id, item[2].id))[0];
-
-      if (!core) {
-        const elem = [null, null, {}];
-
-        elem[2].id = item[2].id;
-        elem[2].text = "";
-        elem[2].textRemote = item[2].text;
-
-        const dateRemote = (item[1] && new Date(item[1])) || null;
-
-        elem[2].dateSynced = "never";
-
-        elem[2].dateLocal = "never";
-
-        elem[2].dateRemote =
-          (dateRemote && dateRemote.getDate() + "." + (dateRemote.getMonth() + 1) + "." + dateRemote.getFullYear()) ||
-          "never";
-
-        elem[2].timeSynced = 0;
-        elem[2].timeLocal = 0;
-        elem[2].timeRemote = (dateRemote && dateRemote.getTime()) || 0;
-
-        dataCore[key].push(elem);
+        changes.report.entities = [];
+        for (const [id, entity] of Object.entries(changes.Entity)) {
+          changes.report.entities.push({
+            id,
+            text: entity.content,
+            updated: entity.updated_at * 1000,
+            deleted: entity.marked_for_deletion
+          });
+        }
       }
-    });
-  });
 
-  console.log("dataCore=====");
-  console.log(dataCore);
+      Object.keys(localChanges.report).forEach(key => {
+        localChanges.report[key].forEach(localItem => {
+          const remote = foreignChanges.report[key].find(remoteItem => isEqual(remoteItem.id, localItem.id));
+
+          localItem.timeSynced = remote ? syncPoint : 0;
+          localItem.textRemote = remote?.text || "";
+          localItem.timeRemote = remote?.updated || 0;
+          localItem.deletedRemote = remote?.marked_for_deletion;
+        });
+
+        foreignChanges.report[key].forEach(remoteItem => {
+          const local = localChanges.report[key].find(localItem => isEqual(localItem.id, remoteItem.id));
+
+          if (!local) {
+            const elem = {};
+
+            elem.id = remoteItem.id;
+            elem.text = "";
+            elem.updated = 0;
+            elem.timeSynced = 0;
+            elem.textRemote = remoteItem.text;
+            elem.timeRemote = remoteItem.updated;
+            elem.deletedRemote = remoteItem.marked_for_deletion;
+
+            localChanges.report[key].push(elem);
+          }
+        });
+      });
+
+      return localChanges.report;
+
+    }
+  }, [ispSyncData, ispSyncLoading, xalSyncData, xalSyncLoading]);
+
+  const getDate = (stamp) => {
+    if (!stamp) {
+      return getTranslation("never");
+    }
+    const date = new Date(stamp);
+    return date.toLocaleDateString('ru-RU');
+  }
 
   return (
     <Modal className="lingvo-modal2" dimmer open closeIcon onClose={onClose} size="fullscreen">
@@ -198,9 +157,9 @@ const SyncModal = ({ perspectiveId, perspectiveName, onClose, silentMode, action
               ispSyncError ||
               xalSyncError ||
               errorApply ||
-              !ispSyncData?.triumph ||
-              !xalSyncData?.triumph ||
-              !dataApply?.triumph
+              !ispSyncData?.list_changes.triumph ||
+              !xalSyncData?.list_changes.triumph ||
+              dataApply && !applied
             ) ? (
               <Message negative>
                 <Message.Header>{getTranslation("Synchronize data loading error")}</Message.Header>
@@ -222,10 +181,10 @@ const SyncModal = ({ perspectiveId, perspectiveName, onClose, silentMode, action
                   </Table.Row>
                 </Table.Header>
                 <Table.Body>
-                  {keysData?.map(key => {
-                    return dataCore[key]?.map(item => {
+                  {Object.keys(reportData).map(key => {
+                    return reportData[key]?.map(item => {
                       return (
-                        <Table.Row key={item[2].id}>
+                        <Table.Row key={item.id}>
                           <Table.Cell className="td-type">
                             {key === "languages" ? (
                               <Popup
@@ -255,44 +214,44 @@ const SyncModal = ({ perspectiveId, perspectiveName, onClose, silentMode, action
                           </Table.Cell>
                           <Table.Cell
                             className={
-                              (item[2].timeLocal > item[2].timeSynced &&
-                                item[2].timeLocal > item[2].timeRemote &&
+                              (item.updated > item.timeSynced &&
+                                item.updated > item.timeRemote &&
                                 "td-color") ||
                               ""
                             }
                           >
-                            {item[2].text}
+                            {item.text}
                           </Table.Cell>
                           <Table.Cell
                             className={
-                              (item[2].timeLocal > item[2].timeSynced &&
-                                item[2].timeLocal > item[2].timeRemote &&
+                              (item.updated > item.timeSynced &&
+                                item.updated > item.timeRemote &&
                                 "td-date td-color") ||
                               "td-date"
                             }
                           >
-                            {item[2].dateLocal}
+                            {getDate(item.updated)}
                           </Table.Cell>
-                          <Table.Cell className="td-date td-date-sync">{item[2].dateSynced}</Table.Cell>
+                          <Table.Cell className="td-date td-date-sync">{getDate(item.timeSynced)}</Table.Cell>
                           <Table.Cell
                             className={
-                              (item[2].timeRemote > item[2].timeSynced &&
-                                item[2].timeRemote > item[2].timeLocal &&
+                              (item.timeRemote > item.timeSynced &&
+                                item.timeRemote > item.updated &&
                                 "td-date td-color") ||
                               "td-date"
                             }
                           >
-                            {item[2].dateRemote}
+                            {getDate(item.timeRemote)}
                           </Table.Cell>
                           <Table.Cell
                             className={
-                              (item[2].timeRemote > item[2].timeSynced &&
-                                item[2].timeRemote > item[2].timeLocal &&
+                              (item.timeRemote > item.timeSynced &&
+                                item.timeRemote > item.updated &&
                                 "td-color") ||
                               ""
                             }
                           >
-                            {item[2].textRemote}
+                            {item.textRemote}
                           </Table.Cell>
                         </Table.Row>
                       );
