@@ -103,10 +103,10 @@ const SyncModal = ({ perspectiveId, perspectiveName, onClose, silentMode, action
         localChanges.report[key].forEach(localItem => {
           const remote = foreignChanges.report[key].find(remoteItem => isEqual(remoteItem.id, localItem.id));
 
-          localItem.timeSynced = remote ? syncPoint : 0;
+          localItem.timeSynced = syncPoint;
           localItem.textRemote = remote?.text || "";
           localItem.timeRemote = remote?.updated || 0;
-          localItem.deletedRemote = remote?.marked_for_deletion;
+          localItem.deletedRemote = remote?.deleted;
         });
 
         foreignChanges.report[key].forEach(remoteItem => {
@@ -118,10 +118,10 @@ const SyncModal = ({ perspectiveId, perspectiveName, onClose, silentMode, action
             elem.id = remoteItem.id;
             elem.text = "";
             elem.updated = 0;
-            elem.timeSynced = 0;
+            elem.timeSynced = syncPoint;
             elem.textRemote = remoteItem.text;
             elem.timeRemote = remoteItem.updated;
-            elem.deletedRemote = remoteItem.marked_for_deletion;
+            elem.deletedRemote = remoteItem.deleted;
 
             localChanges.report[key].push(elem);
           }
@@ -135,7 +135,7 @@ const SyncModal = ({ perspectiveId, perspectiveName, onClose, silentMode, action
 
   const getDate = (stamp) => {
     if (!stamp) {
-      return getTranslation("never");
+      return "-"; //getTranslation("never");
     }
     const date = new Date(stamp);
     return date.toLocaleDateString('ru-RU');
@@ -173,11 +173,11 @@ const SyncModal = ({ perspectiveId, perspectiveName, onClose, silentMode, action
                 <Table.Header>
                   <Table.Row>
                     <Table.HeaderCell className="th-type">&nbsp;</Table.HeaderCell>
-                    <Table.HeaderCell className="th-name">{getTranslation("Core")}</Table.HeaderCell>
+                    <Table.HeaderCell className="th-name">{getTranslation("Local")}</Table.HeaderCell>
                     <Table.HeaderCell className="th-date">{getTranslation("Local Update")}</Table.HeaderCell>
                     <Table.HeaderCell className="th-date">{getTranslation("Synced")}</Table.HeaderCell>
                     <Table.HeaderCell className="th-date">{getTranslation("Remote Update")}</Table.HeaderCell>
-                    <Table.HeaderCell className="th-name">{getTranslation("Satellite")}</Table.HeaderCell>
+                    <Table.HeaderCell className="th-name">{getTranslation("Remote")}</Table.HeaderCell>
                   </Table.Row>
                 </Table.Header>
                 <Table.Body>
@@ -216,7 +216,7 @@ const SyncModal = ({ perspectiveId, perspectiveName, onClose, silentMode, action
                             className={
                               (item.updated > item.timeSynced &&
                                 item.updated > item.timeRemote &&
-                                "td-color") ||
+                                (!item.deleted && "td-color-green" || "td-color-red")) ||
                               ""
                             }
                           >
@@ -226,7 +226,7 @@ const SyncModal = ({ perspectiveId, perspectiveName, onClose, silentMode, action
                             className={
                               (item.updated > item.timeSynced &&
                                 item.updated > item.timeRemote &&
-                                "td-date td-color") ||
+                                (!item.deleted && "td-date td-color-green" || "td-date td-color-red")) ||
                               "td-date"
                             }
                           >
@@ -237,7 +237,7 @@ const SyncModal = ({ perspectiveId, perspectiveName, onClose, silentMode, action
                             className={
                               (item.timeRemote > item.timeSynced &&
                                 item.timeRemote > item.updated &&
-                                "td-date td-color") ||
+                                (!item.deletedRemote && "td-date td-color-green" || "td-date td-color-red")) ||
                               "td-date"
                             }
                           >
@@ -247,7 +247,7 @@ const SyncModal = ({ perspectiveId, perspectiveName, onClose, silentMode, action
                             className={
                               (item.timeRemote > item.timeSynced &&
                                 item.timeRemote > item.updated &&
-                                "td-color") ||
+                                (!item.deletedRemote && "td-color-green" || "td-color-red")) ||
                               ""
                             }
                           >
@@ -264,7 +264,7 @@ const SyncModal = ({ perspectiveId, perspectiveName, onClose, silentMode, action
         </div>
       </Modal.Content>
       <Modal.Actions>
-        <div className="sync-transcript">
+        {/*<div className="sync-transcript">
           <div className="sync-transcript__block">
             <p>
               <span className="sync-transcript__type">L</span> &mdash; {getTranslation("language")}
@@ -281,7 +281,7 @@ const SyncModal = ({ perspectiveId, perspectiveName, onClose, silentMode, action
               <span className="sync-transcript__type">E</span> &mdash; {getTranslation("entity")}
             </p>
           </div>
-        </div>
+        </div>*/}
         <Button
           content={
             (ispSyncLoading || xalSyncLoading) ? (

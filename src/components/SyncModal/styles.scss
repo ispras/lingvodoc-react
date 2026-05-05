@@ -65,11 +65,15 @@
 
       &.td-date {
         width: 120px;
+        text-align: center;
       }
 
-      &.td-color {
-        //background-color: #e9f2a1 !important;
-        background-color: #57b895ce !important;
+      &.td-color-green {
+        background-color: #57b894 !important;
+      }
+
+      &.td-color-red {
+        background-color: #e8725a !important;
       }
 
       &.td-date-sync {
@@ -124,7 +128,6 @@
 
     & .ui.table tr:nth-child(2n) td {
       &.td-color {
-        //background-color: #dee98a !important;
         background-color: #57b894 !important;
       }
 
