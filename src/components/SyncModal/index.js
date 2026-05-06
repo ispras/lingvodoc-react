@@ -86,9 +86,12 @@ const SyncModal = ({ perspectiveId, perspectiveName, onClose, silentMode, action
       const syncPoint = localChanges.sync_point * 1000;
 
       for (const changes of [localChanges, foreignChanges]) {
-        changes.report = {};
+        changes.report = {'entities': []};
 
-        changes.report.entities = [];
+        if (!changes.Entity) {
+          continue;
+        }
+
         for (const [id, entity] of Object.entries(changes.Entity)) {
           changes.report.entities.push({
             id,
