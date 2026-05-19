@@ -48,7 +48,7 @@ const SyncModal = ({ perspectiveId, perspectiveName, onClose, silentMode, action
 
   const [applySync, { data: dataApply, error: errorApply, loading: loadingApply }] = useMutation(
     applySyncMutation, {
-      variables: { perspectiveId, syncBetween: ['isp','xal'], action, debugFlag },
+      variables: { perspectiveId, perspectiveName, syncBetween: ['isp','xal'], action, debugFlag },
       onCompleted: ({apply_sync: {triumph, message}}) => {
         if (message) {
           setErrorMessage(message);
@@ -62,7 +62,11 @@ const SyncModal = ({ perspectiveId, perspectiveName, onClose, silentMode, action
     if (applied &&
         !loadingApply && !errorApply) {
 
-      window.logger.suc(`"${perspectiveName}"\n${getTranslation("was synchronized successfully")}`);
+      window.logger.suc(
+        `${getTranslation("Started writing")}
+        "${perspectiveName}".
+        ${getTranslation("Please look at sidepanel with tasks")}.`);
+
       onClose();
     }
   }, [applied, loadingApply]);

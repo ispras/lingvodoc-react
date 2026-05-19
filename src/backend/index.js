@@ -229,12 +229,14 @@ export const synchronizeMutation = gql`
 export const applySyncMutation = gql`
   mutation ApplySync(
         $perspectiveId: LingvodocID!
+        $perspectiveName: String
         $syncBetween: [String]!
         $action: String
         $debugFlag: Boolean
 ) {
     apply_sync(
         perspective_id: $perspectiveId
+        perspective_name: $perspectiveName
         sync_between: $syncBetween
         action: $action
         debug_flag: $debugFlag) {
