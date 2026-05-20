@@ -195,7 +195,7 @@ const LangNode = ({
               refreshLangTree={refreshLangTree}
               localPermission={localPermission}
             />
-          ))}
+        ))}
         {dictionaries.map((dictionary, index) => {
           const perspectives = dictionary.perspectives.filter(p => permissionSet[p.id].available);
 
@@ -422,18 +422,19 @@ export const GrantNode = ({
       <Header>
         {chooseTranslation(grant?.translations)} ({chooseTranslation(grant?.issuer_translations)} {grant?.grant_number})
       </Header>
-      {node[1].map((node, index) => (
-        <LanguageNode
-          key={index}
-          node={node}
-          languageMap={languageMap}
-          dictionaryIdSet={dictionaryIdSet}
-          selected={selected}
-          setSelected={setSelected}
-          proxyData={proxyData}
-          refreshLangTree={refreshLangTree}
-          localPermission={localPermission}
-        />
+      {node[1] &&
+        node[1].map((node, index) => (
+          <LanguageNode
+            key={index}
+            node={node}
+            languageMap={languageMap}
+            dictionaryIdSet={dictionaryIdSet}
+            selected={selected}
+            setSelected={setSelected}
+            proxyData={proxyData}
+            refreshLangTree={refreshLangTree}
+            localPermission={localPermission}
+          />
       ))}
     </div>
   );
@@ -459,18 +460,19 @@ export const OrganizationNode = ({
   return (
     <div id={`organization_${organizationId}`} className="node_grant">
       <Header>{chooseTranslation(organization?.translations)}</Header>
-      {node[1].map((node, index) => (
-        <LanguageNode
-          key={index}
-          node={node}
-          languageMap={languageMap}
-          dictionaryIdSet={dictionaryIdSet}
-          selected={selected}
-          setSelected={setSelected}
-          proxyData={proxyData}
-          refreshLangTree={refreshLangTree}
-          localPermission={localPermission}
-        />
+      {node[1] &&
+        node[1].map((node, index) => (
+          <LanguageNode
+            key={index}
+            node={node}
+            languageMap={languageMap}
+            dictionaryIdSet={dictionaryIdSet}
+            selected={selected}
+            setSelected={setSelected}
+            proxyData={proxyData}
+            refreshLangTree={refreshLangTree}
+            localPermission={localPermission}
+          />
       ))}
     </div>
   );
@@ -492,19 +494,20 @@ export const IndividualNode = ({
   return (
     <div className="node_grant">
       <div className="grant-title">{getTranslation("Individual work")}</div>
-      {node[1].map((node, index) => (
-        <LanguageNode
-          key={index}
-          node={node}
-          languageMap={languageMap}
-          dictionaryIdSet={dictionaryIdSet}
-          dictionaryIdSetReverse={true}
-          selected={selected}
-          setSelected={setSelected}
-          proxyData={proxyData}
-          refreshLangTree={refreshLangTree}
-          localPermission={localPermission}
-        />
+      {node[1] &&
+        node[1].map((node, index) => (
+          <LanguageNode
+            key={index}
+            node={node}
+            languageMap={languageMap}
+            dictionaryIdSet={dictionaryIdSet}
+            dictionaryIdSetReverse={true}
+            selected={selected}
+            setSelected={setSelected}
+            proxyData={proxyData}
+            refreshLangTree={refreshLangTree}
+            localPermission={localPermission}
+          />
       ))}
     </div>
   );

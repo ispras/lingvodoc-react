@@ -62,10 +62,7 @@ const SyncModal = ({ perspectiveId, perspectiveName, onClose, silentMode, action
     if (applied &&
         !loadingApply && !errorApply) {
 
-      window.logger.suc(
-        `${getTranslation("Started writing")}
-        "${perspectiveName}".
-        ${getTranslation("Please look at sidepanel with tasks")}.`);
+      window.logger.suc(getTranslation("Computation is going. Please see the sidebar with tasks."));
 
       onClose();
     }
