@@ -8,14 +8,8 @@ import { compose } from "recompose";
 import TranslationContext from "Layout/TranslationContext";
 
 const docx2xlsxMutation = gql`
-  mutation docx2xlsx(
-    $docxFile: Upload
-    $separateFlag: Boolean
-  ) {
-    docx2xlsx(
-      docx_file: $docxFile
-      separate_flag: $separateFlag
-    ) {
+  mutation docx2xlsx($docxFile: Upload, $separateFlag: Boolean) {
+    docx2xlsx(docx_file: $docxFile, separate_flag: $separateFlag) {
       triumph
       xlsx_url
       message

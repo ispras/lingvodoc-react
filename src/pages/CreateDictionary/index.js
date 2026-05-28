@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { connect, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { Button, Divider, Header, Message, Segment, Step } from "semantic-ui-react";
@@ -121,27 +121,30 @@ const CreateButton = ({ onCreateDictionary }) => {
   );
 };
 
-class CreateDictionaryWizard extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {};
+const CreateDictionaryWizard = ({
+  nextStep,
+  goToStep,
+  mode,
+  createDictionary,
+  setParentLanguage,
+  step,
+  setPerspectives,
+  createPerspective,
+  setMetadata,
+  setTranslations
+}) => {
+  const getTranslation = useContext(TranslationContext);
+  const [createdDictionary, setCreatedDictionary] = useState(undefined);
 
-    this.onNextClick = this.onNextClick.bind(this);
-    this.onStepClick = this.onStepClick.bind(this);
-    this.selectParent = this.selectParent.bind(this);
-    this.onCreateDictionary = this.onCreateDictionary.bind(this);
-  }
+  const onNextClick = () => {
+    nextStep();
+  };
 
-  onNextClick() {
-    this.props.nextStep();
-  }
+  const onStepClick = name => {
+    return () => goToStep(name);
+  };
 
-  onStepClick(name) {
-    return () => this.props.goToStep(name);
-  }
-
-  onCreateDictionary(parentLanguage, translations, metadata, p) {
-    const { mode, createDictionary } = this.props;
+  const onCreateDictionary = (parentLanguage, translations, metadata, p) => {
     const parentId = parentLanguage.id;
     const dictionaryTranslations = translations
       .map(t => ({ locale_id: t.get("localeId"), content: t.get("content") }))
@@ -183,100 +186,92 @@ class CreateDictionaryWizard extends React.Component {
       ]
     }).then(result => {
       const dictionary = result.data.create_dictionary.dictionary;
-      this.createdDictionary = { id: dictionary.id, perspective_id: dictionary.perspectives[0].id };
-      this.props.goToStep("FINISH");
+      setCreatedDictionary({ id: dictionary.id, perspective_id: dictionary.perspectives[0].id });
+      goToStep("FINISH");
     });
-  }
+  };
 
-  selectParent(parent) {
-    this.props.setParentLanguage(parent);
-  }
+  const selectParent = parent => {
+    setParentLanguage(parent);
+  };
 
-  render() {
-    const { step, mode } = this.props;
+  return (
+    <div className="background-content">
+      <Step.Group widths={4}>
+        <Step link active={step === "PARENT_LANGUAGE"} onClick={onStepClick("PARENT_LANGUAGE")}>
+          <Step.Content>
+            <Step.Title>{getTranslation("Parent language")}</Step.Title>
+            <Step.Description>{getTranslation("Select language")}</Step.Description>
+          </Step.Content>
+        </Step>
 
-    return (
-      <div className="background-content">
-        <Step.Group widths={4}>
-          <Step link active={step === "PARENT_LANGUAGE"} onClick={this.onStepClick("PARENT_LANGUAGE")}>
-            <Step.Content>
-              <Step.Title>{this.context("Parent language")}</Step.Title>
-              <Step.Description>{this.context("Select language")}</Step.Description>
-            </Step.Content>
-          </Step>
+        <Step link active={step === "TRANSLATIONS"} onClick={onStepClick("TRANSLATIONS")}>
+          <Step.Content>
+            <Step.Title>{getTranslation(`${mode.replace(/^\w/, c => c.toUpperCase())} names and metadata`)}</Step.Title>
+            <Step.Description>{getTranslation(`Set ${mode} name, translations and metadata`)}</Step.Description>
+          </Step.Content>
+        </Step>
 
-          <Step link active={step === "TRANSLATIONS"} onClick={this.onStepClick("TRANSLATIONS")}>
-            <Step.Content>
-              <Step.Title>{this.context(`${mode.replace(/^\w/, c => c.toUpperCase())} names and metadata`)}</Step.Title>
-              <Step.Description>{this.context(`Set ${mode} name, translations and metadata`)}</Step.Description>
-            </Step.Content>
-          </Step>
+        <Step link active={step === "PERSPECTIVES"} onClick={onStepClick("PERSPECTIVES")}>
+          <Step.Content>
+            <Step.Title>{getTranslation("Perspectives")}</Step.Title>
+            <Step.Description>{getTranslation("Create one or more perspectives")}</Step.Description>
+          </Step.Content>
+        </Step>
 
-          <Step link active={step === "PERSPECTIVES"} onClick={this.onStepClick("PERSPECTIVES")}>
-            <Step.Content>
-              <Step.Title>{this.context("Perspectives")}</Step.Title>
-              <Step.Description>{this.context("Create one or more perspectives")}</Step.Description>
-            </Step.Content>
-          </Step>
+        <Step
+          link
+          active={step === "FINISH"}
+          onClick={() => {
+            if (createdDictionary) {
+              goToStep("FINISH");
+            }
+          }}
+        >
+          <Step.Content>
+            <Step.Title>{getTranslation("Finish")}</Step.Title>
+          </Step.Content>
+        </Step>
+      </Step.Group>
+      <div style={{ minHeight: "calc(100vh - 303px)" }}>
+        {step === "PARENT_LANGUAGE" && <TabParentLanguage onSelect={selectParent} />}
+        {step === "TRANSLATIONS" && (
+          <TabTranslations
+            setTranslations={translations => setTranslations(translations)}
+            setMetadata={metadata => setMetadata(metadata)}
+            mode={mode}
+          />
+        )}
 
-          <Step
-            link
-            active={step === "FINISH"}
-            onClick={() => {
-              if (this.createdDictionary) {
-                this.props.goToStep("FINISH");
-              }
-            }}
-          >
-            <Step.Content>
-              <Step.Title>{this.context("Finish")}</Step.Title>
-            </Step.Content>
-          </Step>
-        </Step.Group>
+        {step === "PERSPECTIVES" && (
+          <TabPerspectives
+            setPerspectives={perspectives => setPerspectives(perspectives)}
+            createPerspective={createPerspective}
+            mode={mode}
+          />
+        )}
 
-        <div style={{ minHeight: "calc(100vh - 303px)" }}>
-          {step === "PARENT_LANGUAGE" && <TabParentLanguage onSelect={this.selectParent} />}
-          {step === "TRANSLATIONS" && (
-            <TabTranslations
-              setTranslations={translations => this.props.setTranslations(translations)}
-              setMetadata={metadata => this.props.setMetadata(metadata)}
-              mode={mode}
-            />
-          )}
-
-          {step === "PERSPECTIVES" && (
-            <TabPerspectives
-              setPerspectives={perspectives => this.props.setPerspectives(perspectives)}
-              createPerspective={this.props.createPerspective}
-              mode={mode}
-            />
-          )}
-
-          {step === "FINISH" && this.createdDictionary && (
-            <Message>
-              <Message.Header>{this.context(`${mode.replace(/^\w/, c => c.toUpperCase())} created`)}</Message.Header>
-              <Message.Content>
-                {`${this.context(`Your ${mode} is created, click`)} `}
-                <Link
-                  to={`/dictionary/${this.createdDictionary.id.join(
-                    "/"
-                  )}/perspective/${this.createdDictionary.perspective_id.join("/")}/edit`}
-                >
-                  {this.context("here")}
-                </Link>
-                {` ${this.context("to view.")}`}
-              </Message.Content>
-            </Message>
-          )}
-        </div>
-
-        <StepButton step={step} onCreateDictionary={this.onCreateDictionary} onNextClick={this.onNextClick} />
+        {step === "FINISH" && createdDictionary && (
+          <Message>
+            <Message.Header>{getTranslation(`${mode.replace(/^\w/, c => c.toUpperCase())} created`)}</Message.Header>
+            <Message.Content>
+              {`${getTranslation(`Your ${mode} is created, click`)} `}
+              <Link
+                to={`/dictionary/${createdDictionary.id.join("/")}/perspective/${createdDictionary.perspective_id.join(
+                  "/"
+                )}/edit`}
+              >
+                {getTranslation("here")}
+              </Link>
+              {` ${getTranslation("to view.")}`}
+            </Message.Content>
+          </Message>
+        )}
       </div>
-    );
-  }
-}
-
-CreateDictionaryWizard.contextType = TranslationContext;
+      <StepButton step={step} onCreateDictionary={onCreateDictionary} onNextClick={onNextClick} />
+    </div>
+  );
+};
 
 CreateDictionaryWizard.propTypes = {
   step: PropTypes.string.isRequired,

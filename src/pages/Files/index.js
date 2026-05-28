@@ -108,23 +108,16 @@ function sortFiles(files, sortByField) {
   return order === "a" ? sortedFiles : reverse(sortedFiles);
 }
 
-class Files extends React.Component {
-  constructor(props) {
-    super(props);
+const Files = ({ error, loading, user, data, sortByField, dispatch, createBlob }) => {
+  const getTranslation = useContext(TranslationContext);
 
-    this.state = {
-      fileType: "pdf",
-      mimeType: ".pdf",
-      file: undefined,
-      trigger: true,
-      filter: ""
-    };
-    this.uploadBlob = this.uploadBlob.bind(this);
-    this.onFileTypeChange = this.onFileTypeChange.bind(this);
-    this.onFileChange = this.onFileChange.bind(this);
-  }
+  const [fileType, setFileType] = useState("pdf");
+  const [mimeType, setMimeType] = useState(".pdf");
+  const [file, setFile] = useState(undefined);
+  const [trigger, setTrigger] = useState(true);
+  const [filter, setFilter] = useState("");
 
-  onFileTypeChange(_event, target) {
+  const onFileTypeChange = (_event, target) => {
     let mimeType;
     switch (target.value) {
       case "pdf":
@@ -146,206 +139,200 @@ class Files extends React.Component {
         mimeType = "image/*";
         break;
     }
-    this.setState({ fileType: target.value, mimeType });
-  }
+    setFileType(target.value);
+    setMimeType(mimeType);
+  };
 
-  onFileChange(e) {
-    this.setState({ file: e.target.files[0] });
-  }
+  const onFileChange = e => {
+    setFile(e.target.files[0]);
+  };
 
-  uploadBlob() {
-    const { createBlob } = this.props;
+  const uploadBlob = () => {
     createBlob({
-      variables: { data_type: this.state.fileType, content: this.state.file },
+      variables: { data_type: fileType, content: file },
       refetchQueries: [{ query: userBlobsQuery }, { query: fieldsQuery }]
     }).then(
       () => {
-        const { trigger } = this.state;
-        window.logger.suc(this.context("Upload successful"));
-        this.setState({ file: undefined, trigger: !trigger });
+        window.logger.suc(getTranslation("Upload successful"));
+        setFile(undefined);
+        setTrigger(!trigger);
       },
       () => {
-        window.logger.err(this.context("Upload failed"));
+        window.logger.err(getTranslation("Upload failed"));
       }
     );
-  }
+  };
 
-  render() {
-    if (this.props.error) {
-      return (
-        <div className="background-content">
-          <Message compact negative>
-            {this.context("User sign-in error, please sign in; if not successful, please contact administrators.")}
-          </Message>
-        </div>
-      );
-    } else if (this.props.loading) {
-      return (
-        <div className="background-content">
-          <Segment>
-            <Loader active inline="centered" indeterminate>
-              {`${this.context("Loading sign-in data")}...`}
-            </Loader>
-          </Segment>
-        </div>
-      );
-    } else if (this.props.user.id === undefined) {
-      return (
-        <div className="background-content">
-          <Message>
-            <Message.Header>{this.context("Please sign in")}</Message.Header>
-            <p>{this.context("Only registered users can work with files.")}</p>
-          </Message>
-        </div>
-      );
-    } else if (this.props.data.error) {
-      return (
-        <div className="background-content">
-          <Message compact negative>
-            {this.context("General error, please contact administrators.")}
-          </Message>
-        </div>
-      );
-    } else if (this.props.data.loading) {
-      return (
-        <div className="background-content">
-          <Segment>
-            <Loader active inline="centered" indeterminate>
-              {`${this.context("Loading file data")}...`}
-            </Loader>
-          </Segment>
-        </div>
-      );
-    }
-
-    const { data, sortByField, dispatch } = this.props;
-
-    const { user_blobs: userBlobs } = data;
-    const { file, trigger, mimeType, filter } = this.state;
-    let blobs = userBlobs.filter(b => !b.marked_for_deletion);
-    if (filter !== "") {
-      blobs = blobs.filter(b => b.name.includes(filter));
-    }
-    if (sortByField) {
-      blobs = sortFiles(blobs, sortByField);
-    }
-
-    const fileTypes = [
-      {
-        text: this.context("PDF"),
-        value: "pdf",
-        icon: "file pdf outline"
-      },
-      {
-        text: this.context("Dialeqt"),
-        value: "dialeqt_dictionary",
-        icon: "conversation"
-      },
-      {
-        text: this.context("Starling/CSV"),
-        value: "starling/csv",
-        icon: "conversation"
-      },
-      {
-        text: this.context("Txt"),
-        value: "txt",
-        icon: "conversation"
-      },
-      {
-        text: this.context("Json"),
-        value: "json",
-        icon: "conversation"
-      },
-      {
-        text: this.context("Image"),
-        value: "image",
-        icon: "file outline"
-      }
-    ];
-
-    const user_is_active = this.props.user.is_active;
-
+  if (error) {
     return (
       <div className="background-content">
-        <Table celled compact definition>
-          <Table.Header fullWidth>
-            <Table.Row>
-              <Table.HeaderCell colSpan="5">
-                {user_is_active && (
-                  <>
-                    <Button
-                      onClick={() => document.getElementById("file-select").click()}
-                      style={{ marginRight: "1rem" }}
-                    >
-                      {`${this.context("Browse")}...`}
-                    </Button>
-                    {file === undefined ? this.context("No file selected") : file.name}
-                    <Input
-                      id="file-select"
-                      key={trigger}
-                      type="file"
-                      accept={mimeType}
-                      onChange={this.onFileChange}
-                      style={{ display: "none" }}
-                    />
-                    <Dropdown
-                      button
-                      basic
-                      options={fileTypes}
-                      value={this.state.fileType}
-                      onChange={this.onFileTypeChange}
-                      style={{ margin: "0 1rem 0 1rem" }}
-                    />
-                    <Button
-                      color="green"
-                      content={this.context("Upload")}
-                      disabled={file === undefined}
-                      onClick={this.uploadBlob}
-                    />
-                  </>
-                )}
-                <Input
-                  icon={{ name: "search" }}
-                  placeholder={this.context("Search")}
-                  onChange={event => this.setState({ filter: event.target.value })}
-                  style={{ float: "right", width: "300px" }}
-                />
-              </Table.HeaderCell>
-            </Table.Row>
-            <Table.Row>
-              <SortableColumnHeader
-                onSortModeChange={order => dispatch({ type: "SET_SORT_MODE", payload: { prop: "name", order } })}
-              >
-                {this.context("Name")}
-              </SortableColumnHeader>
-              <SortableColumnHeader
-                onSortModeChange={order => dispatch({ type: "SET_SORT_MODE", payload: { prop: "data_type", order } })}
-              >
-                {this.context("Type")}
-              </SortableColumnHeader>
-              <SortableColumnHeader
-                onSortModeChange={order => dispatch({ type: "SET_SORT_MODE", payload: { prop: "created_at", order } })}
-              >
-                {this.context("Created")}
-              </SortableColumnHeader>
-              <Table.HeaderCell>{this.context("Actions")}</Table.HeaderCell>
-            </Table.Row>
-          </Table.Header>
-
-          <Table.Body>
-            {blobs
-              .filter(b => !b.marked_for_deletion)
-              .map(blob => (
-                <BlobWithData key={compositeIdToString(blob.id)} blob={blob} user_is_active={user_is_active} />
-              ))}
-          </Table.Body>
-        </Table>
+        <Message compact negative>
+          {getTranslation("User sign-in error, please sign in; if not successful, please contact administrators.")}
+        </Message>
+      </div>
+    );
+  } else if (loading) {
+    return (
+      <div className="background-content">
+        <Segment>
+          <Loader active inline="centered" indeterminate>
+            {`${getTranslation("Loading sign-in data")}...`}
+          </Loader>
+        </Segment>
+      </div>
+    );
+  } else if (user.id === undefined) {
+    return (
+      <div className="background-content">
+        <Message>
+          <Message.Header>{getTranslation("Please sign in")}</Message.Header>
+          <p>{getTranslation("Only registered users can work with files.")}</p>
+        </Message>
+      </div>
+    );
+  } else if (data.error) {
+    return (
+      <div className="background-content">
+        <Message compact negative>
+          {getTranslation("General error, please contact administrators.")}
+        </Message>
+      </div>
+    );
+  } else if (data.loading) {
+    return (
+      <div className="background-content">
+        <Segment>
+          <Loader active inline="centered" indeterminate>
+            {`${getTranslation("Loading file data")}...`}
+          </Loader>
+        </Segment>
       </div>
     );
   }
-}
 
-Files.contextType = TranslationContext;
+  const { user_blobs: userBlobs } = data;
+
+  let blobs = userBlobs.filter(b => !b.marked_for_deletion);
+  if (filter !== "") {
+    blobs = blobs.filter(b => b.name.includes(filter));
+  }
+  if (sortByField) {
+    blobs = sortFiles(blobs, sortByField);
+  }
+
+  const fileTypes = [
+    {
+      text: getTranslation("PDF"),
+      value: "pdf",
+      icon: "file pdf outline"
+    },
+    {
+      text: getTranslation("Dialeqt"),
+      value: "dialeqt_dictionary",
+      icon: "conversation"
+    },
+    {
+      text: getTranslation("Starling/CSV"),
+      value: "starling/csv",
+      icon: "conversation"
+    },
+    {
+      text: getTranslation("Txt"),
+      value: "txt",
+      icon: "conversation"
+    },
+    {
+      text: getTranslation("Json"),
+      value: "json",
+      icon: "conversation"
+    },
+    {
+      text: getTranslation("Image"),
+      value: "image",
+      icon: "file outline"
+    }
+  ];
+
+  const user_is_active = user.is_active;
+
+  return (
+    <div className="background-content">
+      <Table celled compact definition>
+        <Table.Header fullWidth>
+          <Table.Row>
+            <Table.HeaderCell colSpan="5">
+              {user_is_active && (
+                <>
+                  <Button
+                    onClick={() => document.getElementById("file-select").click()}
+                    style={{ marginRight: "1rem" }}
+                  >
+                    {`${getTranslation("Browse")}...`}
+                  </Button>
+                  {file === undefined ? getTranslation("No file selected") : file.name}
+                  <Input
+                    id="file-select"
+                    key={trigger}
+                    type="file"
+                    accept={mimeType}
+                    onChange={onFileChange}
+                    style={{ display: "none" }}
+                  />
+                  <Dropdown
+                    button
+                    basic
+                    options={fileTypes}
+                    value={fileType}
+                    onChange={onFileTypeChange}
+                    style={{ margin: "0 1rem 0 1rem" }}
+                  />
+                  <Button
+                    color="green"
+                    content={getTranslation("Upload")}
+                    disabled={file === undefined}
+                    onClick={uploadBlob}
+                  />
+                </>
+              )}
+              <Input
+                icon={{ name: "search" }}
+                placeholder={getTranslation("Search")}
+                onChange={event => setFilter(event.target.value)}
+                style={{ float: "right", width: "300px" }}
+              />
+            </Table.HeaderCell>
+          </Table.Row>
+          <Table.Row>
+            <SortableColumnHeader
+              onSortModeChange={order => dispatch({ type: "SET_SORT_MODE", payload: { prop: "name", order } })}
+            >
+              {getTranslation("Name")}
+            </SortableColumnHeader>
+            <SortableColumnHeader
+              onSortModeChange={order => dispatch({ type: "SET_SORT_MODE", payload: { prop: "data_type", order } })}
+            >
+              {getTranslation("Type")}
+            </SortableColumnHeader>
+            <SortableColumnHeader
+              onSortModeChange={order => dispatch({ type: "SET_SORT_MODE", payload: { prop: "created_at", order } })}
+            >
+              {getTranslation("Created")}
+            </SortableColumnHeader>
+            <Table.HeaderCell>{getTranslation("Actions")}</Table.HeaderCell>
+          </Table.Row>
+        </Table.Header>
+
+        <Table.Body>
+          {blobs
+            .filter(b => !b.marked_for_deletion)
+            .map(blob => (
+              <BlobWithData key={compositeIdToString(blob.id)} blob={blob} user_is_active={user_is_active} />
+            ))}
+        </Table.Body>
+      </Table>
+    </div>
+  );
+};
 
 Files.propTypes = {
   data: PropTypes.shape({
