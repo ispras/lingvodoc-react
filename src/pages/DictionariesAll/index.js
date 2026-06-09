@@ -579,6 +579,7 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
 
   const [dataTreeId, setDataTreeId] = useState(undefined);
   const [dataTreeAll, setDataTreeAll] = useState(undefined);
+  const [usedProxy, setUsedProxy] = useState(undefined);
 
   const [dataTreeIdProxy, setDataTreeIdProxy] = useState(undefined);
   const [dataTreeAllProxy, setDataTreeAllProxy] = useState(undefined);
@@ -627,7 +628,8 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
       client: additionalClient,
       onCompleted: (data) => {
         console.log(`Completed getLanguageTreeIdProxy for sortMode '${aSortMode}'`);
-        setDataTreeIdProxy(data);
+        setUsedProxy(!!data);
+        setDataTreeIdProxy(data ? data : {language_tree: {languages: []}});
       },
       skip: skip_general || !allowed_sync || !entityIdValue || aSortMode != sortMode
     });
@@ -638,7 +640,8 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
       client: additionalClient,
       onCompleted: (data) => {
         console.log(`Completed getLanguageTreeAllProxy for sortMode '${aSortMode}'`);
-        setDataTreeAllProxy(data);
+        setUsedProxy(!!data);
+        setDataTreeAllProxy(data ? data : {language_tree: {languages: []}});
       },
       skip: skip_general || !allowed_sync || activeTab !== "1" || aSortMode != sortMode
     });
@@ -876,7 +879,11 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
           activeIndex={activeTab}
           panes={[
             {
-              menuItem: getTranslation("Table of contents"),
+              menuItem: {
+                key: 'toc',
+                content: getTranslation("Table of contents"),
+                className: usedProxy ? "used-proxy" : ""
+              },
               render: () => (
                 <Tab.Pane>
                   {sortMode === "language" ? (
@@ -893,11 +900,17 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
               )
             },
             {
-              menuItem: getTranslation(forCorpora
-                ? "Corpora"
-                : forParallelCorpora
-                ? "Parallel corpora"
-                : "Dictionaries"),
+              menuItem: {
+                key: 'dic',
+                content: getTranslation(
+                  forCorpora
+                  ? "Corpora"
+                  : forParallelCorpora
+                  ? "Parallel corpora"
+                  : "Dictionaries"
+                ),
+                className: usedProxy ? "used-proxy" : ""
+              },
               render: () => (
                 <Tab.Pane>
                   <Wrapper tree={treeAll} sortMode={sortMode} entityId={entityId} />
