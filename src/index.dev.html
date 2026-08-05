@@ -13,7 +13,13 @@
   <div id="root"></div>
   <!-- Voiceflow agent -->
   <script type="text/javascript">
-    (function(d, t) {
+    (async function(d, t) {
+      const widget = "https://cdn.voiceflow.com/widget/bundle.mjs";
+      const timeout = 2000;
+      try {
+        const res = await fetch(widget, { signal: AbortSignal.timeout(timeout) });
+        const result = await res.blob();
+
         var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
         v.onload = function() {
           window.voiceflow.chat.load({
@@ -22,9 +28,19 @@
             versionID: 'production'
           });
         }
-        v.src = "https://cdn.voiceflow.com/widget/bundle.mjs";
+        v.src = widget;
         v.type = "text/javascript";
         s.parentNode.insertBefore(v, s);
+      }
+      catch (err) {
+        if (err.name === "TimeoutError") {
+          // This exception is from the abort signal
+          console.error(`Timeout: It took more than ${timeout} milliseconds to fetch ${widget}`);
+        } else {
+          // A network error, or some other problem.
+          console.error(`Error: type: ${err.name}, message: ${err.message}`);
+        }
+      }
     })(document, 'script');
   </script>
   <!-- /Voiceflow agent -->
