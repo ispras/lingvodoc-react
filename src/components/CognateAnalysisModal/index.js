@@ -555,7 +555,7 @@ class SLSelection extends React.Component {
             <Checkbox
               label={this.context("Select/deselect all dictionaries")}
               checked={p_select_count >= p_max_count}
-              indeterminate={(p_select_count > 0 && p_select_count < p_max_count) || p_max_count <= 0}
+              indeterminate={(p_select_count > 1 && p_select_count < p_max_count) || p_max_count <= 0}
               disabled={p_max_count <= 0}
               onChange={(e, { checked }) => {
                 let p_select_count_new = p_select_count;
@@ -1068,7 +1068,7 @@ class MLSelection extends React.Component {
           <Checkbox
             label={this.context("Select/deselect all dictionaries")}
             checked={p_select_count >= p_max_count}
-            indeterminate={(p_select_count > 0 && p_select_count < p_max_count) || p_max_count <= 0}
+            indeterminate={(p_select_count > 1 && p_select_count < p_max_count) || p_max_count <= 0}
             disabled={p_max_count <= 0}
             onChange={(e, { checked }) => this.onChangeSelectAll(checked)}
             className="lingvo-checkbox lingvo-checkbox_labeled"
