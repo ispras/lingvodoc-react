@@ -302,6 +302,7 @@ const computeNeuroCognateAnalysisMutation = gql`
     $groupFieldId: LingvodocID
     $debugFlag: Boolean
     $intermediateFlag: Boolean
+    $mode: String!
   ) {
     neuro_cognate_analysis(
       source_perspective_id: $sourcePerspectiveId
@@ -313,6 +314,7 @@ const computeNeuroCognateAnalysisMutation = gql`
       group_field_id: $groupFieldId
       debug_flag: $debugFlag
       intermediate_flag: $intermediateFlag
+      mode: $mode
     ) {
       triumph
       message
@@ -417,6 +419,7 @@ class SLPerspectiveSelection extends React.Component {
       perspective,
       textFieldsOptions,
       index,
+      isBase,
       perspectiveSelectionList,
       transcriptionFieldIdStrList,
       translationFieldIdStrList,
@@ -426,6 +429,8 @@ class SLPerspectiveSelection extends React.Component {
 
     const xcr_label = mode.includes("morphology") ? "affix" : "transcription";
     const xln_label = mode.includes("morphology") ? "meaning" : "translation";
+    const baseStyle = isBase ? { color: "darkgreen" } : {};
+    const checkedStyle = perspectiveSelectionList[index] ? {} : { opacity: 0.5 };
 
     return (
       <div className="lingvo-cognate-sub-language" key={`perspective${index}`}>
@@ -433,11 +438,12 @@ class SLPerspectiveSelection extends React.Component {
           <Checkbox
             className="lingvo-checkbox lingvo-checkbox_labeled"
             checked={perspectiveSelectionList[index]}
+            disabled={isBase}
             onChange={(e, { checked }) => this.onChangeSelect(checked)}
             label={
               <label>
                 <Breadcrumb
-                  style={perspectiveSelectionList[index] ? {} : { opacity: 0.5 }}
+                  style={{...baseStyle, ...checkedStyle}}
                   icon="right angle"
                   sections={treePathList.map(e => ({
                     key: e.id,
@@ -526,6 +532,7 @@ class SLSelection extends React.Component {
     const {
       mode,
       computing,
+      perspectiveId,
       perspective_list,
       perspectiveSelectionList,
       transcriptionFieldIdStrList,
@@ -537,6 +544,9 @@ class SLSelection extends React.Component {
 
     const p_select_count = perspectiveSelectionCountMap[""];
     const p_max_count = perspectiveSelectionCountMap["_max"];
+    // Finding base perspective index
+    const basePerspectiveIndex = perspective_list.map(
+      ({ perspective }) => id2str(perspective.id)).indexOf(id2str(perspectiveId));
 
     return (
       <div disabled={computing}>
@@ -554,6 +564,11 @@ class SLSelection extends React.Component {
                 p_select_count_new = p_max_count;
               } else {
                 perspectiveSelectionList.fill(false);
+
+                if (basePerspectiveIndex > 0) {
+                  perspectiveSelectionList[basePerspectiveIndex] = true;
+                }
+
                 p_select_count_new = 0;
               }
 
@@ -585,6 +600,7 @@ class SLSelection extends React.Component {
               perspective={perspective}
               textFieldsOptions={textFieldsOptions}
               index={index}
+              isBase={index === basePerspectiveIndex}
               perspective_list={perspective_list}
               perspectiveSelectionList={perspectiveSelectionList}
               transcriptionFieldIdStrList={transcriptionFieldIdStrList}
@@ -762,7 +778,8 @@ class MLPerspectiveSelection extends React.Component {
                 className="lingvo-dropdown-select lingvo-dropdown-select_cognate"
               />
             </div>
-            { mode !== "multi_neuro_suggestions" && (
+            { mode !== "multi_neuro_suggestions" &&
+              mode !== "multi_borrowing_suggestions" && (
               <>
                 <div className="lingvo-cognate-grid__name">{this.context("Source lexeme field (optional)")}:</div>
                 <div className="lingvo-cognate-grid__select">
@@ -1510,7 +1527,8 @@ class CognateAnalysisModal extends React.Component {
       this.props.mode === "multi_suggestions" ||
       this.props.mode === "multi_swadesh" ||
       this.props.mode === "multi_morphology" ||
-      this.props.mode === "multi_neuro_suggestions";
+      this.props.mode === "multi_neuro_suggestions" ||
+      this.props.mode === "multi_borrowing_suggestions";
 
     (multi ? this.initialize_multi : this.initialize_single)();
 
@@ -1533,20 +1551,24 @@ class CognateAnalysisModal extends React.Component {
       .map(column => this.fieldDict[id2str(column.field_id)])
       .filter(field => field.data_type === "Grouping Tag");
 
-    /* Selecting default grouping field with 'cognate' in its name, or the first field. */
+    /* Selecting default grouping field with 'cognate' or 'borrowing' in its name, or the first field. */
 
     let groupFieldId = null;
 
     for (const field of this.groupFields) {
-      if (field.english_translation.toLowerCase().includes("cognate")) {
+      if (field.english_translation.toLowerCase().includes(
+          this.props.mode === "multi_borrowing_suggestions" ? "borrowing" : "cognate")
+      ) {
         groupFieldId = field.id;
         break;
       }
     }
 
+    /*
     if (!groupFieldId && this.groupFields.length > 0) {
       groupFieldId = this.groupFields[0].id;
     }
+    */
 
     this.state.groupFieldIdStr = id2str(groupFieldId);
     this.state.suggestion_field_id = groupFieldId;
@@ -1673,8 +1695,11 @@ class CognateAnalysisModal extends React.Component {
     /* If we are selecting perspectives for cognate suggestions, and the source perspective is not
      * published, we won't be able to proceed and therefore we need not bother with initialization. */
 
-    if ((mode === "multi_suggestions" || mode === "multi_neuro_suggestions") &&
-        english_status !== "Published" && english_status !== "Limited access") {
+    if ((mode === "multi_suggestions" ||
+         mode === "multi_neuro_suggestions" ||
+         mode === "multi_borrowing_suggestions") &&
+         english_status !== "Published" &&
+         english_status !== "Limited access") {
 
       this.setState({ initialized: true });
       return;
@@ -1886,6 +1911,11 @@ class CognateAnalysisModal extends React.Component {
     /* Looking through all published dictionaries for siblings of the dictionary of our perspective. */
 
     for (const [treePathList, perspective] of this.available_list) {
+      if (!perspective.columns.map(column => id2str(column.field_id)).includes(groupFieldIdStr)) {
+        perspectiveSelectionList.push(false);
+        continue;
+      }
+
       const textFields = perspective.columns
         .map(column => this.fieldDict[id2str(column.field_id)])
         .filter(field => field.data_type === "Text");
@@ -2444,7 +2474,9 @@ class CognateAnalysisModal extends React.Component {
       } catch(error_data) {
         this.handleError(error_data);
       }
-    } else if (this.props.mode === "neuro_suggestions" || this.props.mode === "multi_neuro_suggestions") {
+    } else if (this.props.mode === "neuro_suggestions" ||
+               this.props.mode === "multi_neuro_suggestions" ||
+               this.props.mode === "multi_borrowing_suggestions") {
 
       const truthThreshold = parseFloat(this.state.truthThreshold);
 
@@ -2565,7 +2597,9 @@ class CognateAnalysisModal extends React.Component {
   match_translations_render() {
     return (
       <div disabled={this.state.computing}>
-        {(this.props.mode === "neuro_suggestions" || this.props.mode === "multi_neuro_suggestions") && (
+        {(this.props.mode === "neuro_suggestions" ||
+          this.props.mode === "multi_neuro_suggestions" ||
+          this.props.mode === "multi_borrowing_suggestions") && (
           <Input
             label={this.context("Truth threshold")}
             type='number'
@@ -2590,7 +2624,9 @@ class CognateAnalysisModal extends React.Component {
             className="lingvo-checkbox lingvo-checkbox_labeled"
           />
         </div>
-        { this.props.mode !== "neuro_suggestions" && this.props.mode !== "multi_neuro_suggestions" && (
+        {this.props.mode !== "neuro_suggestions" &&
+         this.props.mode !== "multi_neuro_suggestions" &&
+         this.props.mode !== "multi_borrowing_suggestions" && (
           <>
             <div className="lingvo-cognate-checkbox">
               <Checkbox
@@ -2732,6 +2768,7 @@ class CognateAnalysisModal extends React.Component {
             <SLSelection
               mode={this.props.mode}
               computing={this.state.computing}
+              perspectiveId={this.props.perspectiveId}
               perspective_list={this.perspective_list}
               perspectiveSelectionList={perspectiveSelectionList}
               transcriptionFieldIdStrList={transcriptionFieldIdStrList}
@@ -2776,7 +2813,9 @@ class CognateAnalysisModal extends React.Component {
 
     return (
       <Modal.Content>
-        {this.props.mode !== "multi_neuro_suggestions" && this.grouping_field_render()}
+        {this.props.mode !== "multi_neuro_suggestions" &&
+         this.props.mode !== "multi_borrowing_suggestions" &&
+         this.grouping_field_render()}
 
         <MLSelection
           mode={this.props.mode}
@@ -2822,7 +2861,9 @@ class CognateAnalysisModal extends React.Component {
         )}
 
         {!error_flag &&
-         (this.props.mode === "multi_suggestions" || this.props.mode === "multi_neuro_suggestions") &&
+         (this.props.mode === "multi_suggestions" ||
+          this.props.mode === "multi_neuro_suggestions" ||
+          this.props.mode === "multi_borrowing_suggestions") &&
          this.match_translations_render()}
 
         {!error_flag && this.props.user.id == 1 && this.admin_section_render()}
@@ -3297,6 +3338,8 @@ class CognateAnalysisModal extends React.Component {
               ? this.context("Neuro cognate suggestions")
               : mode === "multi_neuro_suggestions"
               ? this.context("Neuro cognate multi-language suggestions")
+              : mode === "multi_borrowing_suggestions"
+              ? this.context("Neuro borrowing multi-language suggestions")
               : mode === "view_suggestions"
               ? this.context("View suggestions")
               : this.context("Cognate analysis")}
@@ -3379,7 +3422,8 @@ class CognateAnalysisModal extends React.Component {
                      mode !== "suggestions" &&
                      mode !== "multi_suggestions" &&
                      mode !== "neuro_suggestions" &&
-                     mode !== "multi_neuro_suggestions" && (
+                     mode !== "multi_neuro_suggestions" &&
+                     mode !== "multi_borrowing_suggestions" && (
                       <div className="lingvo-cognate-text" style={{ paddingTop: "6px", paddingBottom: "3px" }}>
                         <a href={this.state.xlsx_url}>{this.context("XLSX-exported analysis results")}</a>
                         <p/>

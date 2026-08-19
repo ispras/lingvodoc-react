@@ -1032,6 +1032,14 @@ const Tools = ({
                     : "Neuro cognate multi-language suggestions (disabled, perspective is not published)"
                 )}
               </Dropdown.Item>
+
+              <Dropdown.Item onClick={() => openCognateAnalysisModal(id, "multi_borrowing_suggestions")} disabled={!published}>
+                {getTranslation(
+                  published
+                    ? "Neuro borrowing multi-language suggestions"
+                    : "Neuro borrowing multi-language suggestions (disabled, perspective is not published)"
+                )}
+              </Dropdown.Item>
             </>
           )}
 
