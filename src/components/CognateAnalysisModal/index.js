@@ -1116,7 +1116,7 @@ class MLSelection extends React.Component {
                     </div>
                   ) : (
                     <div>
-                      {p_max_count > 0 && (
+                      {p_language_max_count > 0 && (
                         <div className="lingvo-cognate-checkbox lingvo-cognate-checkbox_lang">
                           <Checkbox
                             label={this.context("Select/deselect all language's dictionaries")}
