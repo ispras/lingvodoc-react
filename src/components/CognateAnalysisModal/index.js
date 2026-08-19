@@ -550,44 +550,50 @@ class SLSelection extends React.Component {
 
     return (
       <div disabled={computing}>
-        <div className="lingvo-cognate-checkbox lingvo-cognate-checkbox_all-langs">
-          <Checkbox
-            label={this.context("Select/deselect all dictionaries")}
-            checked={p_select_count >= p_max_count}
-            indeterminate={(p_select_count > 0 && p_select_count < p_max_count) || p_max_count <= 0}
-            disabled={p_max_count <= 0}
-            onChange={(e, { checked }) => {
-              let p_select_count_new = p_select_count;
+        {p_max_count > 0 && (
+          <div className="lingvo-cognate-checkbox lingvo-cognate-checkbox_all-langs">
+            <Checkbox
+              label={this.context("Select/deselect all dictionaries")}
+              checked={p_select_count >= p_max_count}
+              indeterminate={(p_select_count > 0 && p_select_count < p_max_count) || p_max_count <= 0}
+              disabled={p_max_count <= 0}
+              onChange={(e, { checked }) => {
+                let p_select_count_new = p_select_count;
 
-              if (p_select_count < p_max_count) {
-                perspectiveSelectionList.fill(true);
-                p_select_count_new = p_max_count;
-              } else {
-                perspectiveSelectionList.fill(false);
+                if (p_select_count < p_max_count) {
+                  perspectiveSelectionList.fill(true);
+                  p_select_count_new = p_max_count;
+                } else {
+                  perspectiveSelectionList.fill(false);
 
-                if (basePerspectiveIndex > 0) {
-                  perspectiveSelectionList[basePerspectiveIndex] = true;
+                  if (basePerspectiveIndex > 0) {
+                    perspectiveSelectionList[basePerspectiveIndex] = true;
+                  }
+
+                  p_select_count_new = basePerspectiveIndex > 0 ? 1 : 0;
                 }
 
-                p_select_count_new = 0;
-              }
+                perspectiveSelectionCountMap[""] = p_select_count_new;
 
-              perspectiveSelectionCountMap[""] = p_select_count_new;
+                const no_compute_before = perspective_list.length <= 1 || p_select_count <= 0;
 
-              const no_compute_before = perspective_list.length <= 1 || p_select_count <= 0;
+                const no_compute_after = perspective_list.length <= 1 || p_select_count_new <= 0;
 
-              const no_compute_after = perspective_list.length <= 1 || p_select_count_new <= 0;
+                if (no_compute_before != no_compute_after) {
+                  onModalStateChange();
+                  return;
+                }
 
-              if (no_compute_before != no_compute_after) {
-                onModalStateChange();
-                return;
-              }
-
-              this.setState({ perspectiveSelectionCountMap });
-            }}
-            className="lingvo-checkbox lingvo-checkbox_labeled"
-          />
-        </div>
+                this.setState({ perspectiveSelectionCountMap });
+              }}
+              className="lingvo-checkbox lingvo-checkbox_labeled"
+            />
+          </div>
+        ) || (
+          <span style={{ color: "salmon" }}>
+            {this.context("There are not enough perspectives with expected grouping field.")}
+          </span>
+        )}
 
         <div className="lingvo-cognate-language">
           {map(perspective_list, ({ treePathList, perspective, textFieldsOptions }, index) => (
@@ -714,6 +720,7 @@ class MLPerspectiveSelection extends React.Component {
       perspective,
       textFieldsOptions,
       p_key,
+      isBase,
       perspectiveSelectionMap,
       transcriptionFieldIdStrMap,
       translationFieldIdStrMap,
@@ -722,17 +729,21 @@ class MLPerspectiveSelection extends React.Component {
       onChangeSelectAll
     } = this.props;
 
+    const baseStyle = isBase ? { color: "darkgreen" } : {};
+    const checkedStyle = perspectiveSelectionMap[p_key] ? {} : { opacity: 0.5 };
+
     return (
       <div className="lingvo-cognate-sub-language" key={`perspective${p_key}`}>
         <div>
           <Checkbox
             className="lingvo-checkbox lingvo-checkbox_labeled"
             checked={perspectiveSelectionMap[p_key]}
+            disabled={isBase}
             onChange={(e, { checked }) => this.onChangeSelect(checked)}
             label={
               <label>
                 <Breadcrumb
-                  style={perspectiveSelectionMap[p_key] ? {} : { opacity: 0.5 }}
+                  style={{...baseStyle, ...checkedStyle}}
                   icon="right angle"
                   sections={treePathList.map(e => ({
                     key: e.id,
@@ -881,8 +892,14 @@ class MLSelection extends React.Component {
   }
 
   onChangeSelectAll() {
-    const { mode, language_list, perspectiveSelectionMap, perspectiveSelectionCountMap, onModalStateChange } =
-      this.props;
+    const {
+      mode,
+      language_list,
+      perspectiveId,
+      perspectiveSelectionMap,
+      perspectiveSelectionCountMap,
+      onModalStateChange
+    } = this.props;
 
     const p_select_count = perspectiveSelectionCountMap[""];
     const p_max_count = perspectiveSelectionCountMap["_max"];
@@ -908,13 +925,18 @@ class MLSelection extends React.Component {
     } else {
       for (const language of language_list) {
         for (const { perspective } of language.perspective_list) {
+
+          if (id2str(perspective.id) === id2str(perspectiveId)) {
+            continue;
+          }
+
           perspectiveSelectionMap[id2str(perspective.id)] = false;
         }
 
-        perspectiveSelectionCountMap[id2str(language.id)] = 0;
+        perspectiveSelectionCountMap[id2str(language.id)] = 1;
       }
 
-      p_select_count_new = 0;
+      p_select_count_new = 1;
     }
 
     perspectiveSelectionCountMap[""] = p_select_count_new;
@@ -934,10 +956,17 @@ class MLSelection extends React.Component {
   }
 
   onChangeSelectLanguageAll(language_info, checked) {
-    const { mode, language_list, perspectiveSelectionMap, perspectiveSelectionCountMap, onModalStateChange } =
-      this.props;
+    const {
+      mode,
+      language_list,
+      perspectiveId,
+      perspectiveSelectionMap,
+      perspectiveSelectionCountMap,
+      onModalStateChange
+    } = this.props;
 
     const p_select_count = perspectiveSelectionCountMap[""];
+    const p_base_key = id2str(perspectiveId);
 
     const no_compute_before =
       language_list.length <= 0 ||
@@ -968,6 +997,11 @@ class MLSelection extends React.Component {
       for (const { perspective } of language_info.perspective_list) {
         const perspective_id_str = id2str(perspective.id);
 
+        // Don't deselect base perspective
+        if (perspective_id_str === p_base_key) {
+          continue;
+        }
+
         if (perspectiveSelectionMap[perspective_id_str]) {
           p_select_count_new--;
         }
@@ -975,7 +1009,7 @@ class MLSelection extends React.Component {
         perspectiveSelectionMap[perspective_id_str] = false;
       }
 
-      perspectiveSelectionCountMap[language_id_str] = 0;
+      perspectiveSelectionCountMap[language_id_str] = 1;
     }
 
     perspectiveSelectionCountMap[""] = p_select_count_new;
@@ -1011,6 +1045,7 @@ class MLSelection extends React.Component {
       mode,
       computing,
       language_list,
+      perspectiveId,
       perspectiveSelectionMap,
       transcriptionFieldIdStrMap,
       translationFieldIdStrMap,
@@ -1025,6 +1060,7 @@ class MLSelection extends React.Component {
 
     const p_select_count = perspectiveSelectionCountMap[""];
     const p_max_count = perspectiveSelectionCountMap["_max"];
+    const p_base_key = id2str(perspectiveId);
 
     return (
       <div disabled={computing}>
@@ -1080,15 +1116,21 @@ class MLSelection extends React.Component {
                     </div>
                   ) : (
                     <div>
-                      <div className="lingvo-cognate-checkbox lingvo-cognate-checkbox_lang">
-                        <Checkbox
-                          label={this.context("Select/deselect all language's dictionaries")}
-                          checked={p_language_select_count >= p_language_max_count}
-                          indeterminate={p_language_select_count > 0 && p_language_select_count < p_language_max_count}
-                          onChange={(e, { checked }) => this.onChangeSelectLanguageAll(language_info, checked)}
-                          className="lingvo-checkbox lingvo-checkbox_labeled"
-                        />
-                      </div>
+                      {p_max_count > 0 && (
+                        <div className="lingvo-cognate-checkbox lingvo-cognate-checkbox_lang">
+                          <Checkbox
+                            label={this.context("Select/deselect all language's dictionaries")}
+                            checked={p_language_select_count >= p_language_max_count}
+                            indeterminate={p_language_select_count > 0 && p_language_select_count < p_language_max_count}
+                            onChange={(e, { checked }) => this.onChangeSelectLanguageAll(language_info, checked)}
+                            className="lingvo-checkbox lingvo-checkbox_labeled"
+                          />
+                        </div>
+                      ) || (
+                        <span style={{ color: "salmon" }}>
+                          {this.context("There are not enough perspectives with expected grouping field.")}
+                        </span>
+                      )}
 
                       {map(
                         language_info.perspective_list,
@@ -1108,6 +1150,7 @@ class MLSelection extends React.Component {
                               textFieldsOptions={textFieldsOptions}
                               p_index={p_index}
                               p_key={p_key}
+                              isBase={p_key === p_base_key}
                               perspectiveSelectionMap={perspectiveSelectionMap}
                               transcriptionFieldIdStrMap={transcriptionFieldIdStrMap}
                               translationFieldIdStrMap={translationFieldIdStrMap}
@@ -1912,7 +1955,6 @@ class CognateAnalysisModal extends React.Component {
 
     for (const [treePathList, perspective] of this.available_list) {
       if (!perspective.columns.map(column => id2str(column.field_id)).includes(groupFieldIdStr)) {
-        perspectiveSelectionList.push(false);
         continue;
       }
 
@@ -2821,6 +2863,7 @@ class CognateAnalysisModal extends React.Component {
           mode={this.props.mode}
           computing={this.state.computing}
           language_list={this.state.language_list}
+          perspectiveId={this.props.perspectiveId}
           perspectiveSelectionMap={this.state.perspectiveSelectionMap}
           languageSelectionMap={this.state.languageSelectionMap}
           transcriptionFieldIdStrMap={this.state.transcriptionFieldIdStrMap}
