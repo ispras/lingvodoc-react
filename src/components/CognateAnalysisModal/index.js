@@ -389,6 +389,7 @@ class SLPerspectiveSelection extends React.Component {
     perspectiveSelectionList[index] = checked;
     perspectiveSelectionCountMap[""] = p_select_count_new;
 
+    /*
     const no_compute_before = perspective_list.length <= 1 || p_select_count <= 1;
 
     const no_compute_after = perspective_list.length <= 1 || p_select_count_new <= 1;
@@ -406,6 +407,7 @@ class SLPerspectiveSelection extends React.Component {
       onChangeSelectAll();
       return;
     }
+    */
 
     if (current != checked) {
       this.setState({ perspectiveSelectionList });
