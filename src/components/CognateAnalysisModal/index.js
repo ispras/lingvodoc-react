@@ -389,18 +389,18 @@ class SLPerspectiveSelection extends React.Component {
     perspectiveSelectionList[index] = checked;
     perspectiveSelectionCountMap[""] = p_select_count_new;
 
-    const no_compute_before = perspective_list.length <= 1 || p_select_count <= 0;
+    const no_compute_before = perspective_list.length <= 1 || p_select_count <= 1;
 
-    const no_compute_after = perspective_list.length <= 1 || p_select_count_new <= 0;
+    const no_compute_after = perspective_list.length <= 1 || p_select_count_new <= 1;
 
     if (no_compute_before != no_compute_after) {
       onModalStateChange();
       return;
     }
 
-    const all_before = p_select_count <= 0 ? 0 : p_select_count >= p_max_count ? 1 : 2;
+    const all_before = p_select_count <= 1 ? 0 : p_select_count >= p_max_count ? 1 : 2;
 
-    const all_after = p_select_count_new <= 0 ? 0 : p_select_count_new >= p_max_count ? 1 : 2;
+    const all_after = p_select_count_new <= 1 ? 0 : p_select_count_new >= p_max_count ? 1 : 2;
 
     if (all_before != all_after) {
       onChangeSelectAll();
@@ -409,6 +409,7 @@ class SLPerspectiveSelection extends React.Component {
 
     if (current != checked) {
       this.setState({ perspectiveSelectionList });
+      onModalStateChange();
     }
   }
 
@@ -575,9 +576,9 @@ class SLSelection extends React.Component {
 
                 perspectiveSelectionCountMap[""] = p_select_count_new;
 
-                const no_compute_before = perspective_list.length <= 1 || p_select_count <= 0;
+                const no_compute_before = perspective_list.length <= 1 || p_select_count <= 1;
 
-                const no_compute_after = perspective_list.length <= 1 || p_select_count_new <= 0;
+                const no_compute_after = perspective_list.length <= 1 || p_select_count_new <= 1;
 
                 if (no_compute_before != no_compute_after) {
                   onModalStateChange();
@@ -590,7 +591,7 @@ class SLSelection extends React.Component {
             />
           </div>
         ) || (
-          <span style={{ color: "salmon" }}>
+          <span style={{ color: "gray", fontStyle: "italic" }}>
             {this.context("There are not enough perspectives with expected grouping field.")}
           </span>
         )}
@@ -709,6 +710,7 @@ class MLPerspectiveSelection extends React.Component {
     }
 
     if (current != checked) {
+      onModalStateChange();
       this.setState({ perspectiveSelectionMap });
     }
   }
@@ -924,16 +926,18 @@ class MLSelection extends React.Component {
       p_select_count_new = p_max_count;
     } else {
       for (const language of language_list) {
+        let withBase = false;
         for (const { perspective } of language.perspective_list) {
 
           if (id2str(perspective.id) === id2str(perspectiveId)) {
+            withBase = true;
             continue;
           }
 
           perspectiveSelectionMap[id2str(perspective.id)] = false;
         }
 
-        perspectiveSelectionCountMap[id2str(language.id)] = 1;
+        perspectiveSelectionCountMap[id2str(language.id)] = withBase ? 1 : 0;
       }
 
       p_select_count_new = 1;
@@ -994,11 +998,15 @@ class MLSelection extends React.Component {
 
       perspectiveSelectionCountMap[language_id_str] = p_language_max_count;
     } else {
+
+      let withBase = false;
+
       for (const { perspective } of language_info.perspective_list) {
         const perspective_id_str = id2str(perspective.id);
 
         // Don't deselect base perspective
         if (perspective_id_str === p_base_key) {
+          withBase = true;
           continue;
         }
 
@@ -1009,7 +1017,7 @@ class MLSelection extends React.Component {
         perspectiveSelectionMap[perspective_id_str] = false;
       }
 
-      perspectiveSelectionCountMap[language_id_str] = 1;
+      perspectiveSelectionCountMap[language_id_str] = withBase ? 1 : 0;
     }
 
     perspectiveSelectionCountMap[""] = p_select_count_new;
@@ -1080,6 +1088,10 @@ class MLSelection extends React.Component {
 
           const p_language_select_count = perspectiveSelectionCountMap[language_id_str];
           const p_language_max_count = perspectiveSelectionCountMap[`${language_id_str}_max`];
+          const p_language_select_status =
+            p_language_max_count > 0
+            ? `${p_language_select_count} ${this.context("of")} ${p_language_max_count}`
+            : "Empty";
 
           return (
             <div className="lingvo-cognate-language" key={`language${l_index}`}>
@@ -1099,6 +1111,9 @@ class MLSelection extends React.Component {
                     link: false
                   }))}
                 />
+                <span style={{ marginLeft: "24px" }}>
+                  ({p_language_select_status})
+                </span>
                 <i
                   className="lingvo-icon lingvo-icon_trash"
                   onClick={e => {
@@ -1127,7 +1142,7 @@ class MLSelection extends React.Component {
                           />
                         </div>
                       ) || (
-                        <span style={{ color: "salmon" }}>
+                        <span style={{ color: "gray", fontStyle: "italic" }}>
                           {this.context("There are not enough perspectives with expected grouping field.")}
                         </span>
                       )}
@@ -2790,6 +2805,13 @@ class CognateAnalysisModal extends React.Component {
       perspectiveSelectionCountMap
     } = this.state;
 
+    const p_select_count = perspectiveSelectionCountMap[""];
+    const p_max_count = perspectiveSelectionCountMap["_max"];
+    const p_select_status =
+      p_max_count > 0
+      ? `${p_select_count || "?"} ${this.context("of")} ${p_max_count || "?"}`
+      : "Empty";
+
     return (
       <Modal.Content>
         <h2 className="lingvo-cognate-header">
@@ -2801,6 +2823,9 @@ class CognateAnalysisModal extends React.Component {
               link: false
             }))}
           />
+          <span style={{ marginLeft: "24px" }}>
+            ({p_select_status})
+          </span>
         </h2>
 
         {this.props.mode !== "neuro_suggestions" && this.grouping_field_render()}
@@ -3316,7 +3341,7 @@ class CognateAnalysisModal extends React.Component {
           (mode === "multi_reconstruction" &&
             language_list.filter(language => perspectiveSelectionCountMap[id2str(language.id)] > 0).length <=
               1) ||
-          perspectiveSelectionCountMap[""] <= 0)) ||
+          perspectiveSelectionCountMap[""] <= 1)) ||
       computing
     )
 
