@@ -591,7 +591,7 @@ class SLSelection extends React.Component {
             />
           </div>
         ) || (
-          <span style={{ color: "gray", fontStyle: "italic" }}>
+          <span style={{ color: "gray", fontStyle: "italic", marginLeft: "0.5em" }}>
             {this.context("There are not enough perspectives with expected grouping field.")}
           </span>
         )}
@@ -1111,7 +1111,7 @@ class MLSelection extends React.Component {
                     link: false
                   }))}
                 />
-                <span style={{ marginLeft: "24px" }}>
+                <span style={{ marginLeft: "0.5em" }}>
                   ({p_language_select_status})
                 </span>
                 <i
@@ -1142,8 +1142,8 @@ class MLSelection extends React.Component {
                           />
                         </div>
                       ) || (
-                        <span style={{ color: "gray", fontStyle: "italic" }}>
-                          {this.context("There are not enough perspectives with expected grouping field.")}
+                        <span style={{ color: "gray", fontStyle: "italic", marginLeft: "0.5em" }}>
+                          {this.context("There is no any perspective with expected grouping field.")}
                         </span>
                       )}
 
@@ -2823,7 +2823,7 @@ class CognateAnalysisModal extends React.Component {
               link: false
             }))}
           />
-          <span style={{ marginLeft: "24px" }}>
+          <span style={{ marginLeft: "0.5em" }}>
             ({p_select_status})
           </span>
         </h2>
