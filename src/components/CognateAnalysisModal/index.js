@@ -2398,6 +2398,7 @@ class CognateAnalysisModal extends React.Component {
 
   handleCreate() {
     const {
+      mode,
       perspectiveId,
       computeCognateAnalysis,
       computeSwadeshAnalysis,
@@ -2458,14 +2459,14 @@ class CognateAnalysisModal extends React.Component {
 
     /* If we are to perform acoustic analysis, we will try to launch it in the background. */
 
-    if (this.props.mode === "acoustic") {
+    if (mode === "acoustic") {
       computeCognateAnalysis({
         variables: {
           sourcePerspectiveId: perspectiveId,
           baseLanguageId: this.baseLanguageId,
           groupFieldId: groupField.id,
           perspectiveInfoList: perspectiveInfoList,
-          mode: "acoustic",
+          mode,
           matchTranslationsValue,
           onlyOrphansFlag: this.state.onlyOrphansFlag,
           figureFlag: true,
@@ -2482,7 +2483,7 @@ class CognateAnalysisModal extends React.Component {
           window.logger.err(this.context("Failed to launch cognate acoustic analysis!"));
         }
       );
-    } else if (this.props.mode === "swadesh" || this.props.mode === "multi_swadesh") {
+    } else if (mode === "swadesh" || mode === "multi_swadesh") {
       this.setState({ computing: true });
       computeSwadeshAnalysis({
         variables: {
@@ -2495,7 +2496,7 @@ class CognateAnalysisModal extends React.Component {
         data => this.handleSwadeshResult(data),
         error_data => this.handleError(error_data)
       );
-    } else if (this.props.mode === "morphology" || this.props.mode === "multi_morphology") {
+    } else if (mode === "morphology" || mode === "multi_morphology") {
       this.setState({ computing: true });
       computeMorphCognateAnalysis({
         variables: {
@@ -2508,7 +2509,7 @@ class CognateAnalysisModal extends React.Component {
         data => this.handleMorphologyResult(data),
         error_data => this.handleError(error_data)
       );
-    } else if (this.props.mode === "complex_distance") {
+    } else if (mode === "complex_distance") {
       this.setState({ computing: true });
 
       const { fileSuite, debugFlag } = this.state;
@@ -2537,9 +2538,9 @@ class CognateAnalysisModal extends React.Component {
       } catch(error_data) {
         this.handleError(error_data);
       }
-    } else if (this.props.mode === "neuro_suggestions" ||
-               this.props.mode === "multi_neuro_suggestions" ||
-               this.props.mode === "multi_borrowing_suggestions") {
+    } else if (mode === "neuro_suggestions" ||
+               mode === "multi_neuro_suggestions" ||
+               mode === "multi_borrowing_suggestions") {
 
       const truthThreshold = parseFloat(this.state.truthThreshold);
 
@@ -2567,6 +2568,13 @@ class CognateAnalysisModal extends React.Component {
           truthThreshold,
           onlyOrphansFlag: this.state.onlyOrphansFlag,
           groupFieldId: groupField.id,
+          mode: (
+            mode === "neuro_suggestions" ||
+            mode === "multi_neuro_suggestions"
+            ? "cognates"
+            : mode === "multi_borrowing_suggestions"
+            ? "borrowing"
+            : ""),
           debugFlag: this.state.debugFlag,
           intermediateFlag: this.state.intermediateFlag
         }
@@ -2593,13 +2601,13 @@ class CognateAnalysisModal extends React.Component {
       this.setState({ computing: true });
 
       const backend_mode =
-          this.props.mode === "multi_analysis"
+          mode === "multi_analysis"
           ? ""
-          : this.props.mode === "multi_reconstruction"
+          : mode === "multi_reconstruction"
           ? "multi"
-          : this.props.mode === "multi_suggestions"
+          : mode === "multi_suggestions"
           ? "suggestions"
-          : this.props.mode;
+          : mode;
       computeCognateAnalysis({
         variables: {
           sourcePerspectiveId: perspectiveId,
