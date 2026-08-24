@@ -2104,6 +2104,10 @@ class CognateAnalysisModal extends React.Component {
         groupFieldIdStr: value,
         ...this.initPerspectiveList(value)
       });
+    } else if (this.state.lang_mode === null) {
+      this.setState({
+        suggestion_field_id: str2id(value)
+      });
     }
   }
 
@@ -2633,12 +2637,13 @@ class CognateAnalysisModal extends React.Component {
           <div className="lingvo-cognate-grid__name">{this.context("Grouping field")}:</div>
           <div className="lingvo-cognate-grid__select">
             <Select
-              defaultValue={this.state.groupFieldIdStr}
+              defaultValue={id2str(this.state.suggestion_field_id)}
               placeholder={this.context("Grouping field selection")}
               options={groupFieldsOptions}
               onChange={(e, { value }) => this.select_group_field(value)}
               icon={<i className="lingvo-icon lingvo-icon_arrow" />}
               className="lingvo-dropdown-select lingvo-dropdown-select_cognate"
+              disabled={this.props.mode === "view_suggestions"}
             />
           </div>
         </div>
@@ -3029,7 +3034,6 @@ class CognateAnalysisModal extends React.Component {
   suggestions_render() {
     const {
       suggestion_list,
-      suggestion_field_id,
       perspective_name_list,
       sg_select_list,
       sg_state_list,
