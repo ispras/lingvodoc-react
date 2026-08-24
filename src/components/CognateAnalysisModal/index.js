@@ -302,6 +302,7 @@ const computeNeuroCognateAnalysisMutation = gql`
     $groupFieldId: LingvodocID
     $debugFlag: Boolean
     $intermediateFlag: Boolean
+    $mode: String!
   ) {
     neuro_cognate_analysis(
       source_perspective_id: $sourcePerspectiveId
@@ -313,6 +314,7 @@ const computeNeuroCognateAnalysisMutation = gql`
       group_field_id: $groupFieldId
       debug_flag: $debugFlag
       intermediate_flag: $intermediateFlag
+      mode: $mode
     ) {
       triumph
       message
@@ -387,26 +389,29 @@ class SLPerspectiveSelection extends React.Component {
     perspectiveSelectionList[index] = checked;
     perspectiveSelectionCountMap[""] = p_select_count_new;
 
-    const no_compute_before = perspective_list.length <= 1 || p_select_count <= 0;
+    /*
+    const no_compute_before = perspective_list.length <= 1 || p_select_count <= 1;
 
-    const no_compute_after = perspective_list.length <= 1 || p_select_count_new <= 0;
+    const no_compute_after = perspective_list.length <= 1 || p_select_count_new <= 1;
 
     if (no_compute_before != no_compute_after) {
       onModalStateChange();
       return;
     }
 
-    const all_before = p_select_count <= 0 ? 0 : p_select_count >= p_max_count ? 1 : 2;
+    const all_before = p_select_count <= 1 ? 0 : p_select_count >= p_max_count ? 1 : 2;
 
-    const all_after = p_select_count_new <= 0 ? 0 : p_select_count_new >= p_max_count ? 1 : 2;
+    const all_after = p_select_count_new <= 1 ? 0 : p_select_count_new >= p_max_count ? 1 : 2;
 
     if (all_before != all_after) {
       onChangeSelectAll();
       return;
     }
+    */
 
     if (current != checked) {
       this.setState({ perspectiveSelectionList });
+      onModalStateChange();
     }
   }
 
@@ -417,6 +422,7 @@ class SLPerspectiveSelection extends React.Component {
       perspective,
       textFieldsOptions,
       index,
+      isBase,
       perspectiveSelectionList,
       transcriptionFieldIdStrList,
       translationFieldIdStrList,
@@ -426,6 +432,8 @@ class SLPerspectiveSelection extends React.Component {
 
     const xcr_label = mode.includes("morphology") ? "affix" : "transcription";
     const xln_label = mode.includes("morphology") ? "meaning" : "translation";
+    const baseStyle = isBase ? { color: "darkgreen" } : {};
+    const checkedStyle = perspectiveSelectionList[index] ? {} : { opacity: 0.5 };
 
     return (
       <div className="lingvo-cognate-sub-language" key={`perspective${index}`}>
@@ -433,11 +441,12 @@ class SLPerspectiveSelection extends React.Component {
           <Checkbox
             className="lingvo-checkbox lingvo-checkbox_labeled"
             checked={perspectiveSelectionList[index]}
+            disabled={isBase}
             onChange={(e, { checked }) => this.onChangeSelect(checked)}
             label={
               <label>
                 <Breadcrumb
-                  style={perspectiveSelectionList[index] ? {} : { opacity: 0.5 }}
+                  style={{...baseStyle, ...checkedStyle}}
                   icon="right angle"
                   sections={treePathList.map(e => ({
                     key: e.id,
@@ -526,6 +535,7 @@ class SLSelection extends React.Component {
     const {
       mode,
       computing,
+      perspectiveId,
       perspective_list,
       perspectiveSelectionList,
       transcriptionFieldIdStrList,
@@ -537,42 +547,56 @@ class SLSelection extends React.Component {
 
     const p_select_count = perspectiveSelectionCountMap[""];
     const p_max_count = perspectiveSelectionCountMap["_max"];
+    // Finding base perspective index
+    const basePerspectiveIndex = perspective_list.map(
+      ({ perspective }) => id2str(perspective.id)).indexOf(id2str(perspectiveId));
 
     return (
       <div disabled={computing}>
-        <div className="lingvo-cognate-checkbox lingvo-cognate-checkbox_all-langs">
-          <Checkbox
-            label={this.context("Select/deselect all dictionaries")}
-            checked={p_select_count >= p_max_count}
-            indeterminate={(p_select_count > 0 && p_select_count < p_max_count) || p_max_count <= 0}
-            disabled={p_max_count <= 0}
-            onChange={(e, { checked }) => {
-              let p_select_count_new = p_select_count;
+        {p_max_count > 0 && (
+          <div className="lingvo-cognate-checkbox lingvo-cognate-checkbox_all-langs">
+            <Checkbox
+              label={this.context("Select/deselect all dictionaries")}
+              checked={p_select_count >= p_max_count}
+              indeterminate={(p_select_count > 1 && p_select_count < p_max_count) || p_max_count <= 0}
+              disabled={p_max_count <= 0}
+              onChange={(e, { checked }) => {
+                let p_select_count_new = p_select_count;
 
-              if (p_select_count < p_max_count) {
-                perspectiveSelectionList.fill(true);
-                p_select_count_new = p_max_count;
-              } else {
-                perspectiveSelectionList.fill(false);
-                p_select_count_new = 0;
-              }
+                if (p_select_count < p_max_count) {
+                  perspectiveSelectionList.fill(true);
+                  p_select_count_new = p_max_count;
+                } else {
+                  perspectiveSelectionList.fill(false);
 
-              perspectiveSelectionCountMap[""] = p_select_count_new;
+                  if (basePerspectiveIndex > 0) {
+                    perspectiveSelectionList[basePerspectiveIndex] = true;
+                  }
 
-              const no_compute_before = perspective_list.length <= 1 || p_select_count <= 0;
+                  p_select_count_new = basePerspectiveIndex > 0 ? 1 : 0;
+                }
 
-              const no_compute_after = perspective_list.length <= 1 || p_select_count_new <= 0;
+                perspectiveSelectionCountMap[""] = p_select_count_new;
 
-              if (no_compute_before != no_compute_after) {
-                onModalStateChange();
-                return;
-              }
+                const no_compute_before = perspective_list.length <= 1 || p_select_count <= 1;
 
-              this.setState({ perspectiveSelectionCountMap });
-            }}
-            className="lingvo-checkbox lingvo-checkbox_labeled"
-          />
-        </div>
+                const no_compute_after = perspective_list.length <= 1 || p_select_count_new <= 1;
+
+                if (no_compute_before != no_compute_after) {
+                  onModalStateChange();
+                  return;
+                }
+
+                this.setState({ perspectiveSelectionCountMap });
+              }}
+              className="lingvo-checkbox lingvo-checkbox_labeled"
+            />
+          </div>
+        ) || (
+          <span style={{ color: "gray", fontStyle: "italic", marginLeft: "0.5em" }}>
+            {this.context("There are not enough perspectives with expected grouping field.")}
+          </span>
+        )}
 
         <div className="lingvo-cognate-language">
           {map(perspective_list, ({ treePathList, perspective, textFieldsOptions }, index) => (
@@ -585,6 +609,7 @@ class SLSelection extends React.Component {
               perspective={perspective}
               textFieldsOptions={textFieldsOptions}
               index={index}
+              isBase={index === basePerspectiveIndex}
               perspective_list={perspective_list}
               perspectiveSelectionList={perspectiveSelectionList}
               transcriptionFieldIdStrList={transcriptionFieldIdStrList}
@@ -636,7 +661,7 @@ class MLPerspectiveSelection extends React.Component {
       language_list.length <= 0 ||
       (mode === "multi_reconstruction" &&
         language_list.filter(language => perspectiveSelectionCountMap[id2str(language.id)] > 0).length <= 1) ||
-      p_select_count <= 0;
+      p_select_count <= 1;
 
     let p_select_count_new = p_select_count;
 
@@ -664,7 +689,7 @@ class MLPerspectiveSelection extends React.Component {
       language_list.length <= 0 ||
       (mode === "multi_reconstruction" &&
         language_list.filter(language => perspectiveSelectionCountMap[id2str(language.id)] > 0).length <= 1) ||
-      p_select_count_new <= 0;
+      p_select_count_new <= 1;
 
     if (no_compute_before != no_compute_after) {
       onModalStateChange();
@@ -687,6 +712,7 @@ class MLPerspectiveSelection extends React.Component {
     }
 
     if (current != checked) {
+      onModalStateChange();
       this.setState({ perspectiveSelectionMap });
     }
   }
@@ -698,6 +724,7 @@ class MLPerspectiveSelection extends React.Component {
       perspective,
       textFieldsOptions,
       p_key,
+      isBase,
       perspectiveSelectionMap,
       transcriptionFieldIdStrMap,
       translationFieldIdStrMap,
@@ -706,17 +733,21 @@ class MLPerspectiveSelection extends React.Component {
       onChangeSelectAll
     } = this.props;
 
+    const baseStyle = isBase ? { color: "darkgreen" } : {};
+    const checkedStyle = perspectiveSelectionMap[p_key] ? {} : { opacity: 0.5 };
+
     return (
       <div className="lingvo-cognate-sub-language" key={`perspective${p_key}`}>
         <div>
           <Checkbox
             className="lingvo-checkbox lingvo-checkbox_labeled"
             checked={perspectiveSelectionMap[p_key]}
+            disabled={isBase}
             onChange={(e, { checked }) => this.onChangeSelect(checked)}
             label={
               <label>
                 <Breadcrumb
-                  style={perspectiveSelectionMap[p_key] ? {} : { opacity: 0.5 }}
+                  style={{...baseStyle, ...checkedStyle}}
                   icon="right angle"
                   sections={treePathList.map(e => ({
                     key: e.id,
@@ -762,7 +793,8 @@ class MLPerspectiveSelection extends React.Component {
                 className="lingvo-dropdown-select lingvo-dropdown-select_cognate"
               />
             </div>
-            { mode !== "multi_neuro_suggestions" && (
+            { mode !== "multi_neuro_suggestions" &&
+              mode !== "multi_borrowing_suggestions" && (
               <>
                 <div className="lingvo-cognate-grid__name">{this.context("Source lexeme field (optional)")}:</div>
                 <div className="lingvo-cognate-grid__select">
@@ -827,7 +859,7 @@ class MLSelection extends React.Component {
       language_list.length <= 0 ||
       (mode === "multi_reconstruction" &&
         language_list.filter(language => perspectiveSelectionCountMap[id2str(language.id)] > 0).length <= 1) ||
-      p_select_count <= 0;
+      p_select_count <= 1;
 
     const language_id_str = id2str(language_info.id);
 
@@ -849,7 +881,7 @@ class MLSelection extends React.Component {
       language_list.length <= 0 ||
       (mode === "multi_reconstruction" &&
         language_list.filter(language => perspectiveSelectionCountMap[id2str(language.id)] > 0).length <= 1) ||
-      p_select_count_new <= 0;
+      p_select_count_new <= 1;
 
     if (no_compute_before != no_compute_after) {
       onModalStateChange();
@@ -864,8 +896,14 @@ class MLSelection extends React.Component {
   }
 
   onChangeSelectAll() {
-    const { mode, language_list, perspectiveSelectionMap, perspectiveSelectionCountMap, onModalStateChange } =
-      this.props;
+    const {
+      mode,
+      language_list,
+      perspectiveId,
+      perspectiveSelectionMap,
+      perspectiveSelectionCountMap,
+      onModalStateChange
+    } = this.props;
 
     const p_select_count = perspectiveSelectionCountMap[""];
     const p_max_count = perspectiveSelectionCountMap["_max"];
@@ -874,7 +912,7 @@ class MLSelection extends React.Component {
       language_list.length <= 0 ||
       (mode === "multi_reconstruction" &&
         language_list.filter(language => perspectiveSelectionCountMap[id2str(language.id)] > 0).length <= 1) ||
-      p_select_count <= 0;
+      p_select_count <= 1;
 
     let p_select_count_new = p_select_count;
 
@@ -890,14 +928,21 @@ class MLSelection extends React.Component {
       p_select_count_new = p_max_count;
     } else {
       for (const language of language_list) {
+        let withBase = false;
         for (const { perspective } of language.perspective_list) {
+
+          if (id2str(perspective.id) === id2str(perspectiveId)) {
+            withBase = true;
+            continue;
+          }
+
           perspectiveSelectionMap[id2str(perspective.id)] = false;
         }
 
-        perspectiveSelectionCountMap[id2str(language.id)] = 0;
+        perspectiveSelectionCountMap[id2str(language.id)] = withBase ? 1 : 0;
       }
 
-      p_select_count_new = 0;
+      p_select_count_new = 1;
     }
 
     perspectiveSelectionCountMap[""] = p_select_count_new;
@@ -906,7 +951,7 @@ class MLSelection extends React.Component {
       language_list.length <= 0 ||
       (mode === "multi_reconstruction" &&
         language_list.filter(language => perspectiveSelectionCountMap[id2str(language.id)] > 0).length <= 1) ||
-      p_select_count_new <= 0;
+      p_select_count_new <= 1;
 
     if (no_compute_before != no_compute_after) {
       onModalStateChange();
@@ -917,16 +962,23 @@ class MLSelection extends React.Component {
   }
 
   onChangeSelectLanguageAll(language_info, checked) {
-    const { mode, language_list, perspectiveSelectionMap, perspectiveSelectionCountMap, onModalStateChange } =
-      this.props;
+    const {
+      mode,
+      language_list,
+      perspectiveId,
+      perspectiveSelectionMap,
+      perspectiveSelectionCountMap,
+      onModalStateChange
+    } = this.props;
 
     const p_select_count = perspectiveSelectionCountMap[""];
+    const p_base_key = id2str(perspectiveId);
 
     const no_compute_before =
       language_list.length <= 0 ||
       (mode === "multi_reconstruction" &&
         language_list.filter(language => perspectiveSelectionCountMap[id2str(language.id)] > 0).length <= 1) ||
-      p_select_count <= 0;
+      p_select_count <= 1;
 
     const language_id_str = id2str(language_info.id);
 
@@ -948,8 +1000,17 @@ class MLSelection extends React.Component {
 
       perspectiveSelectionCountMap[language_id_str] = p_language_max_count;
     } else {
+
+      let withBase = false;
+
       for (const { perspective } of language_info.perspective_list) {
         const perspective_id_str = id2str(perspective.id);
+
+        // Don't deselect base perspective
+        if (perspective_id_str === p_base_key) {
+          withBase = true;
+          continue;
+        }
 
         if (perspectiveSelectionMap[perspective_id_str]) {
           p_select_count_new--;
@@ -958,7 +1019,7 @@ class MLSelection extends React.Component {
         perspectiveSelectionMap[perspective_id_str] = false;
       }
 
-      perspectiveSelectionCountMap[language_id_str] = 0;
+      perspectiveSelectionCountMap[language_id_str] = withBase ? 1 : 0;
     }
 
     perspectiveSelectionCountMap[""] = p_select_count_new;
@@ -967,7 +1028,7 @@ class MLSelection extends React.Component {
       language_list.length <= 0 ||
       (mode === "multi_reconstruction" &&
         language_list.filter(language => perspectiveSelectionCountMap[id2str(language.id)] > 0).length <= 1) ||
-      p_select_count_new <= 0;
+      p_select_count_new <= 1;
 
     if (no_compute_before != no_compute_after) {
       onModalStateChange();
@@ -994,6 +1055,7 @@ class MLSelection extends React.Component {
       mode,
       computing,
       language_list,
+      perspectiveId,
       perspectiveSelectionMap,
       transcriptionFieldIdStrMap,
       translationFieldIdStrMap,
@@ -1008,6 +1070,7 @@ class MLSelection extends React.Component {
 
     const p_select_count = perspectiveSelectionCountMap[""];
     const p_max_count = perspectiveSelectionCountMap["_max"];
+    const p_base_key = id2str(perspectiveId);
 
     return (
       <div disabled={computing}>
@@ -1015,7 +1078,7 @@ class MLSelection extends React.Component {
           <Checkbox
             label={this.context("Select/deselect all dictionaries")}
             checked={p_select_count >= p_max_count}
-            indeterminate={(p_select_count > 0 && p_select_count < p_max_count) || p_max_count <= 0}
+            indeterminate={(p_select_count > 1 && p_select_count < p_max_count) || p_max_count <= 0}
             disabled={p_max_count <= 0}
             onChange={(e, { checked }) => this.onChangeSelectAll(checked)}
             className="lingvo-checkbox lingvo-checkbox_labeled"
@@ -1027,6 +1090,10 @@ class MLSelection extends React.Component {
 
           const p_language_select_count = perspectiveSelectionCountMap[language_id_str];
           const p_language_max_count = perspectiveSelectionCountMap[`${language_id_str}_max`];
+          const p_language_select_status =
+            p_language_max_count > 0
+            ? `${p_language_select_count} ${this.context("of")} ${p_language_max_count}`
+            : this.context("Empty");
 
           return (
             <div className="lingvo-cognate-language" key={`language${l_index}`}>
@@ -1046,6 +1113,9 @@ class MLSelection extends React.Component {
                     link: false
                   }))}
                 />
+                <span style={{ marginLeft: "0.5em" }}>
+                  ({p_language_select_status})
+                </span>
                 <i
                   className="lingvo-icon lingvo-icon_trash"
                   onClick={e => {
@@ -1063,15 +1133,21 @@ class MLSelection extends React.Component {
                     </div>
                   ) : (
                     <div>
-                      <div className="lingvo-cognate-checkbox lingvo-cognate-checkbox_lang">
-                        <Checkbox
-                          label={this.context("Select/deselect all language's dictionaries")}
-                          checked={p_language_select_count >= p_language_max_count}
-                          indeterminate={p_language_select_count > 0 && p_language_select_count < p_language_max_count}
-                          onChange={(e, { checked }) => this.onChangeSelectLanguageAll(language_info, checked)}
-                          className="lingvo-checkbox lingvo-checkbox_labeled"
-                        />
-                      </div>
+                      {p_language_max_count > 0 && (
+                        <div className="lingvo-cognate-checkbox lingvo-cognate-checkbox_lang">
+                          <Checkbox
+                            label={this.context("Select/deselect all language's dictionaries")}
+                            checked={p_language_select_count >= p_language_max_count}
+                            indeterminate={p_language_select_count > 0 && p_language_select_count < p_language_max_count}
+                            onChange={(e, { checked }) => this.onChangeSelectLanguageAll(language_info, checked)}
+                            className="lingvo-checkbox lingvo-checkbox_labeled"
+                          />
+                        </div>
+                      ) || (
+                        <span style={{ color: "gray", fontStyle: "italic", marginLeft: "0.5em" }}>
+                          {this.context("There is no any perspective with expected grouping field.")}
+                        </span>
+                      )}
 
                       {map(
                         language_info.perspective_list,
@@ -1091,6 +1167,7 @@ class MLSelection extends React.Component {
                               textFieldsOptions={textFieldsOptions}
                               p_index={p_index}
                               p_key={p_key}
+                              isBase={p_key === p_base_key}
                               perspectiveSelectionMap={perspectiveSelectionMap}
                               transcriptionFieldIdStrMap={transcriptionFieldIdStrMap}
                               translationFieldIdStrMap={translationFieldIdStrMap}
@@ -1510,7 +1587,8 @@ class CognateAnalysisModal extends React.Component {
       this.props.mode === "multi_suggestions" ||
       this.props.mode === "multi_swadesh" ||
       this.props.mode === "multi_morphology" ||
-      this.props.mode === "multi_neuro_suggestions";
+      this.props.mode === "multi_neuro_suggestions" ||
+      this.props.mode === "multi_borrowing_suggestions";
 
     (multi ? this.initialize_multi : this.initialize_single)();
 
@@ -1533,20 +1611,24 @@ class CognateAnalysisModal extends React.Component {
       .map(column => this.fieldDict[id2str(column.field_id)])
       .filter(field => field.data_type === "Grouping Tag");
 
-    /* Selecting default grouping field with 'cognate' in its name, or the first field. */
+    /* Selecting default grouping field with 'cognate' or 'borrowing' in its name, or the first field. */
 
     let groupFieldId = null;
 
     for (const field of this.groupFields) {
-      if (field.english_translation.toLowerCase().includes("cognate")) {
+      if (field.english_translation.toLowerCase().includes(
+          this.props.mode === "multi_borrowing_suggestions" ? "borrowing" : "cognate")
+      ) {
         groupFieldId = field.id;
         break;
       }
     }
 
+    /*
     if (!groupFieldId && this.groupFields.length > 0) {
       groupFieldId = this.groupFields[0].id;
     }
+    */
 
     this.state.groupFieldIdStr = id2str(groupFieldId);
     this.state.suggestion_field_id = groupFieldId;
@@ -1673,8 +1755,11 @@ class CognateAnalysisModal extends React.Component {
     /* If we are selecting perspectives for cognate suggestions, and the source perspective is not
      * published, we won't be able to proceed and therefore we need not bother with initialization. */
 
-    if ((mode === "multi_suggestions" || mode === "multi_neuro_suggestions") &&
-        english_status !== "Published" && english_status !== "Limited access") {
+    if ((mode === "multi_suggestions" ||
+         mode === "multi_neuro_suggestions" ||
+         mode === "multi_borrowing_suggestions") &&
+         english_status !== "Published" &&
+         english_status !== "Limited access") {
 
       this.setState({ initialized: true });
       return;
@@ -1886,6 +1971,10 @@ class CognateAnalysisModal extends React.Component {
     /* Looking through all published dictionaries for siblings of the dictionary of our perspective. */
 
     for (const [treePathList, perspective] of this.available_list) {
+      if (!perspective.columns.map(column => id2str(column.field_id)).includes(groupFieldIdStr)) {
+        continue;
+      }
+
       const textFields = perspective.columns
         .map(column => this.fieldDict[id2str(column.field_id)])
         .filter(field => field.data_type === "Text");
@@ -2014,6 +2103,10 @@ class CognateAnalysisModal extends React.Component {
       this.setState({
         groupFieldIdStr: value,
         ...this.initPerspectiveList(value)
+      });
+    } else if (this.state.lang_mode === null) {
+      this.setState({
+        suggestion_field_id: str2id(value)
       });
     }
   }
@@ -2305,6 +2398,7 @@ class CognateAnalysisModal extends React.Component {
 
   handleCreate() {
     const {
+      mode,
       perspectiveId,
       computeCognateAnalysis,
       computeSwadeshAnalysis,
@@ -2365,14 +2459,14 @@ class CognateAnalysisModal extends React.Component {
 
     /* If we are to perform acoustic analysis, we will try to launch it in the background. */
 
-    if (this.props.mode === "acoustic") {
+    if (mode === "acoustic") {
       computeCognateAnalysis({
         variables: {
           sourcePerspectiveId: perspectiveId,
           baseLanguageId: this.baseLanguageId,
           groupFieldId: groupField.id,
           perspectiveInfoList: perspectiveInfoList,
-          mode: "acoustic",
+          mode,
           matchTranslationsValue,
           onlyOrphansFlag: this.state.onlyOrphansFlag,
           figureFlag: true,
@@ -2389,7 +2483,7 @@ class CognateAnalysisModal extends React.Component {
           window.logger.err(this.context("Failed to launch cognate acoustic analysis!"));
         }
       );
-    } else if (this.props.mode === "swadesh" || this.props.mode === "multi_swadesh") {
+    } else if (mode === "swadesh" || mode === "multi_swadesh") {
       this.setState({ computing: true });
       computeSwadeshAnalysis({
         variables: {
@@ -2402,7 +2496,7 @@ class CognateAnalysisModal extends React.Component {
         data => this.handleSwadeshResult(data),
         error_data => this.handleError(error_data)
       );
-    } else if (this.props.mode === "morphology" || this.props.mode === "multi_morphology") {
+    } else if (mode === "morphology" || mode === "multi_morphology") {
       this.setState({ computing: true });
       computeMorphCognateAnalysis({
         variables: {
@@ -2415,7 +2509,7 @@ class CognateAnalysisModal extends React.Component {
         data => this.handleMorphologyResult(data),
         error_data => this.handleError(error_data)
       );
-    } else if (this.props.mode === "complex_distance") {
+    } else if (mode === "complex_distance") {
       this.setState({ computing: true });
 
       const { fileSuite, debugFlag } = this.state;
@@ -2444,7 +2538,9 @@ class CognateAnalysisModal extends React.Component {
       } catch(error_data) {
         this.handleError(error_data);
       }
-    } else if (this.props.mode === "neuro_suggestions" || this.props.mode === "multi_neuro_suggestions") {
+    } else if (mode === "neuro_suggestions" ||
+               mode === "multi_neuro_suggestions" ||
+               mode === "multi_borrowing_suggestions") {
 
       const truthThreshold = parseFloat(this.state.truthThreshold);
 
@@ -2472,6 +2568,13 @@ class CognateAnalysisModal extends React.Component {
           truthThreshold,
           onlyOrphansFlag: this.state.onlyOrphansFlag,
           groupFieldId: groupField.id,
+          mode: (
+            mode === "neuro_suggestions" ||
+            mode === "multi_neuro_suggestions"
+            ? "cognates"
+            : mode === "multi_borrowing_suggestions"
+            ? "borrowing"
+            : ""),
           debugFlag: this.state.debugFlag,
           intermediateFlag: this.state.intermediateFlag
         }
@@ -2498,13 +2601,13 @@ class CognateAnalysisModal extends React.Component {
       this.setState({ computing: true });
 
       const backend_mode =
-          this.props.mode === "multi_analysis"
+          mode === "multi_analysis"
           ? ""
-          : this.props.mode === "multi_reconstruction"
+          : mode === "multi_reconstruction"
           ? "multi"
-          : this.props.mode === "multi_suggestions"
+          : mode === "multi_suggestions"
           ? "suggestions"
-          : this.props.mode;
+          : mode;
       computeCognateAnalysis({
         variables: {
           sourcePerspectiveId: perspectiveId,
@@ -2542,12 +2645,13 @@ class CognateAnalysisModal extends React.Component {
           <div className="lingvo-cognate-grid__name">{this.context("Grouping field")}:</div>
           <div className="lingvo-cognate-grid__select">
             <Select
-              defaultValue={this.state.groupFieldIdStr}
+              defaultValue={id2str(this.state.suggestion_field_id)}
               placeholder={this.context("Grouping field selection")}
               options={groupFieldsOptions}
               onChange={(e, { value }) => this.select_group_field(value)}
               icon={<i className="lingvo-icon lingvo-icon_arrow" />}
               className="lingvo-dropdown-select lingvo-dropdown-select_cognate"
+              disabled={this.props.mode === "view_suggestions"}
             />
           </div>
         </div>
@@ -2565,7 +2669,9 @@ class CognateAnalysisModal extends React.Component {
   match_translations_render() {
     return (
       <div disabled={this.state.computing}>
-        {(this.props.mode === "neuro_suggestions" || this.props.mode === "multi_neuro_suggestions") && (
+        {(this.props.mode === "neuro_suggestions" ||
+          this.props.mode === "multi_neuro_suggestions" ||
+          this.props.mode === "multi_borrowing_suggestions") && (
           <Input
             label={this.context("Truth threshold")}
             type='number'
@@ -2590,7 +2696,9 @@ class CognateAnalysisModal extends React.Component {
             className="lingvo-checkbox lingvo-checkbox_labeled"
           />
         </div>
-        { this.props.mode !== "neuro_suggestions" && this.props.mode !== "multi_neuro_suggestions" && (
+        {this.props.mode !== "neuro_suggestions" &&
+         this.props.mode !== "multi_neuro_suggestions" &&
+         this.props.mode !== "multi_borrowing_suggestions" && (
           <>
             <div className="lingvo-cognate-checkbox">
               <Checkbox
@@ -2712,6 +2820,13 @@ class CognateAnalysisModal extends React.Component {
       perspectiveSelectionCountMap
     } = this.state;
 
+    const p_select_count = perspectiveSelectionCountMap[""];
+    const p_max_count = perspectiveSelectionCountMap["_max"];
+    const p_select_status =
+      p_max_count > 0
+      ? `${p_select_count || "?"} ${this.context("of")} ${p_max_count || "?"}`
+      : this.context("Empty");
+
     return (
       <Modal.Content>
         <h2 className="lingvo-cognate-header">
@@ -2723,6 +2838,9 @@ class CognateAnalysisModal extends React.Component {
               link: false
             }))}
           />
+          <span style={{ marginLeft: "0.5em" }}>
+            ({p_select_status})
+          </span>
         </h2>
 
         {this.props.mode !== "neuro_suggestions" && this.grouping_field_render()}
@@ -2732,6 +2850,7 @@ class CognateAnalysisModal extends React.Component {
             <SLSelection
               mode={this.props.mode}
               computing={this.state.computing}
+              perspectiveId={this.props.perspectiveId}
               perspective_list={this.perspective_list}
               perspectiveSelectionList={perspectiveSelectionList}
               transcriptionFieldIdStrList={transcriptionFieldIdStrList}
@@ -2776,12 +2895,15 @@ class CognateAnalysisModal extends React.Component {
 
     return (
       <Modal.Content>
-        {this.props.mode !== "multi_neuro_suggestions" && this.grouping_field_render()}
+        {this.props.mode !== "multi_neuro_suggestions" &&
+         this.props.mode !== "multi_borrowing_suggestions" &&
+         this.grouping_field_render()}
 
         <MLSelection
           mode={this.props.mode}
           computing={this.state.computing}
           language_list={this.state.language_list}
+          perspectiveId={this.props.perspectiveId}
           perspectiveSelectionMap={this.state.perspectiveSelectionMap}
           languageSelectionMap={this.state.languageSelectionMap}
           transcriptionFieldIdStrMap={this.state.transcriptionFieldIdStrMap}
@@ -2822,7 +2944,9 @@ class CognateAnalysisModal extends React.Component {
         )}
 
         {!error_flag &&
-         (this.props.mode === "multi_suggestions" || this.props.mode === "multi_neuro_suggestions") &&
+         (this.props.mode === "multi_suggestions" ||
+          this.props.mode === "multi_neuro_suggestions" ||
+          this.props.mode === "multi_borrowing_suggestions") &&
          this.match_translations_render()}
 
         {!error_flag && this.props.user.id == 1 && this.admin_section_render()}
@@ -2918,7 +3042,6 @@ class CognateAnalysisModal extends React.Component {
   suggestions_render() {
     const {
       suggestion_list,
-      suggestion_field_id,
       perspective_name_list,
       sg_select_list,
       sg_state_list,
@@ -3226,13 +3349,12 @@ class CognateAnalysisModal extends React.Component {
     const disabledCompute = (
       (lang_mode === "none" && !fileSuite) ||
       (lang_mode === "single" && (this.perspective_list.length <= 1 ||
-        !perspectiveSelectionList.some(enabled => enabled))) ||
+        perspectiveSelectionList.filter(enabled => enabled).length <= 1)) ||
       (lang_mode === "multi" &&
         (language_list.length <= 0 ||
           (mode === "multi_reconstruction" &&
-            language_list.filter(language => perspectiveSelectionCountMap[id2str(language.id)] > 0).length <=
-              1) ||
-          perspectiveSelectionCountMap[""] <= 0)) ||
+            language_list.filter(language => perspectiveSelectionCountMap[id2str(language.id)] > 0).length <= 1) ||
+          perspectiveSelectionCountMap[""] <= 1)) ||
       computing
     )
 
@@ -3297,6 +3419,8 @@ class CognateAnalysisModal extends React.Component {
               ? this.context("Neuro cognate suggestions")
               : mode === "multi_neuro_suggestions"
               ? this.context("Neuro cognate multi-language suggestions")
+              : mode === "multi_borrowing_suggestions"
+              ? this.context("Neuro borrowing multi-language suggestions")
               : mode === "view_suggestions"
               ? this.context("View suggestions")
               : this.context("Cognate analysis")}
@@ -3379,7 +3503,8 @@ class CognateAnalysisModal extends React.Component {
                      mode !== "suggestions" &&
                      mode !== "multi_suggestions" &&
                      mode !== "neuro_suggestions" &&
-                     mode !== "multi_neuro_suggestions" && (
+                     mode !== "multi_neuro_suggestions" &&
+                     mode !== "multi_borrowing_suggestions" && (
                       <div className="lingvo-cognate-text" style={{ paddingTop: "6px", paddingBottom: "3px" }}>
                         <a href={this.state.xlsx_url}>{this.context("XLSX-exported analysis results")}</a>
                         <p/>
