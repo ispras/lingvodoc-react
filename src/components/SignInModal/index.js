@@ -1,7 +1,7 @@
 import React, { useCallback, useContext, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Button, Form, Header, Input, Message, Modal } from "semantic-ui-react";
-import { useApolloClient } from "@apollo/client";
+import { gql, useApolloClient, useMutation } from "@apollo/client";
 import PropTypes from "prop-types";
 
 import { getId, getUser, signIn } from "api/user";
@@ -9,6 +9,23 @@ import { setIsAuthenticated } from "ducks/auth";
 import { requestUser, setError, setUser } from "ducks/user";
 import TranslationContext from "Layout/TranslationContext";
 import { startTrackUser } from "utils/matomo";
+
+const syncRolesMutation = gql`
+  mutation syncRoles(
+    $userId: Int!
+    $proxy: Boolean
+    $debugFlag: Boolean
+  ) {
+    sync_roles(
+      user_id: $userId
+      proxy: $proxy
+      debug_flag: $debugFlag
+    ) {
+      roles_data
+      triumph
+    }
+  }
+`;
 
 const SignInModal = ({ close }) => {
   const client = useApolloClient();
@@ -22,6 +39,7 @@ const SignInModal = ({ close }) => {
   const [errorMessage, setErrorMessage] = useState();
 
   const getTranslation = useContext(TranslationContext);
+  const [ syncRoles ] = useMutation(syncRolesMutation);
 
   const onSubmit = useCallback(async () => {
     setLogginIn(true);
@@ -42,6 +60,12 @@ const SignInModal = ({ close }) => {
       dispatch(setUser(response.data));
       dispatch(setIsAuthenticated({ isAuthenticated: true }));
       client.resetStore();
+      syncRoles({
+        variables: {
+          userId: response.data.id,
+          debugFlag: true
+        }
+      });
     } else {
       window.logger.err(getTranslation("Could not get user information"));
       dispatch(setError());

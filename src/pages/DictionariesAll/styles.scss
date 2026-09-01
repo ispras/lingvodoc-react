@@ -26,6 +26,10 @@
         border-color: #5d54cd;
         font-weight: 500;
         border-radius: 8px 8px 0px 0px !important;
+
+        &.used-proxy {
+          background-color: green !important;
+        }
       }
     }
 

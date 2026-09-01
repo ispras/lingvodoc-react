@@ -4,7 +4,10 @@ import { combineReducers } from "redux";
 export const OPEN_MODAL = "@confirm/OPEN_MODAL";
 export const CLOSE_MODAL = "@confirm/CLOSE_MODAL";
 
-export const openModal = (text = "Are you sure?", callback = null) => ({ type: OPEN_MODAL, payload: [text, callback] });
+export const openModal = (text = "Are you sure?", callback = null, buttonConfirm = null, buttonCancel = null) => ({
+  type: OPEN_MODAL,
+  payload: [text, callback, buttonConfirm, buttonCancel]
+});
 
 export const closeModal = () => ({ type: CLOSE_MODAL });
 
@@ -30,6 +33,28 @@ const content = (state = null, { type, payload }) => {
   }
 };
 
+const buttonConfirm = (state = null, { type, payload }) => {
+  switch (type) {
+    case OPEN_MODAL:
+      return payload[2];
+    case CLOSE_MODAL:
+      return null;
+    default:
+      return state;
+  }
+};
+
+const buttonCancel = (state = null, { type, payload }) => {
+  switch (type) {
+    case OPEN_MODAL:
+      return payload[3];
+    case CLOSE_MODAL:
+      return null;
+    default:
+      return state;
+  }
+};
+
 const visible = (state = false, action) => {
   switch (action.type) {
     case OPEN_MODAL:
@@ -44,5 +69,7 @@ const visible = (state = false, action) => {
 export default combineReducers({
   callback,
   content,
-  visible
+  visible,
+  buttonConfirm,
+  buttonCancel
 });

@@ -7,7 +7,7 @@ const _ = require("./utils");
 
 const app = express();
 
-const port = config.port;
+const port = process.argv[2] || config.port;
 webpackConfig.entry.client = ["webpack-hot-middleware/client?reload=true", ...webpackConfig.entry.client];
 webpackConfig.plugins.push(new LogPlugin(port));
 

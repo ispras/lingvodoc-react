@@ -5,6 +5,7 @@ import { branch, compose, renderNothing } from "recompose";
 import { bindActionCreators } from "redux";
 
 import { closeModal } from "ducks/confirm";
+import TranslationContext from "Layout/TranslationContext";
 
 class ConfirmModal extends React.Component {
   constructor(props) {
@@ -25,10 +26,14 @@ class ConfirmModal extends React.Component {
         onConfirm={this.handleConfirm}
         open={true}
         className="lingvo-confirm"
+        confirmButton={this.props.buttonConfirm || "OK"}
+        cancelButton={this.props.buttonCancel || this.context("Cancel")}
       />
     );
   }
 }
+
+ConfirmModal.contextType = TranslationContext;
 
 export default compose(
   connect(

@@ -20,6 +20,30 @@ export const getLanguageMetadataQuery = gql`
   }
 `;
 
+const LanguageDetailsFragment = gql`
+  fragment LanguageDetails on LanguageTree {
+    tree
+    languages {
+      id
+      parent_id
+      translations
+      in_toc
+      dictionaries(deleted: false, published: $published, category: $category) {
+        id
+        translations
+        english_status: status(locale_id: 2)
+        additional_metadata {
+          authors
+        }
+        perspectives {
+          id
+          translations
+        }
+      }
+    }
+  }
+`;
+
 export const getLanguageTree = gql`
   query GetLanguageTree(
     $languageId: LingvodocID
@@ -29,6 +53,7 @@ export const getLanguageTree = gql`
     $organizationId: Int
     $published: Boolean
     $category: Int
+    $proxy: Boolean
   ) {
     language_tree(
       dictionary_category: $category
@@ -38,28 +63,12 @@ export const getLanguageTree = gql`
       grant_id: $grantId
       by_organizations: $byOrganizations
       organization_id: $organizationId
+      proxy: $proxy
     ) {
-      tree
-      languages {
-        id
-        parent_id
-        translations
-        in_toc
-        dictionaries(deleted: false, published: $published, category: $category) {
-          id
-          translations
-          english_status: status(locale_id: 2)
-          additional_metadata {
-            authors
-          }
-          perspectives {
-            id
-            translations
-          }
-        }
-      }
+      ...LanguageDetails
     }
   }
+  ${LanguageDetailsFragment}
 `;
 
 export const getLanguagesForSearch = gql`
@@ -129,8 +138,18 @@ export const languagesQuery = gql`
   }
 `;
 
+export const localDictionaryInfo = gql`
+  query LocalDictionaryInfo {
+    permission_lists(proxy: false) {
+      edit {
+        id
+      }
+    }
+  }
+`;
+
 export const proxyDictionaryInfo = gql`
-  query ProxyDictionaryInfo($proxy: Boolean, $category: Int) {
+  query ProxyDictionaryInfo($proxy: Boolean!, $category: Int) {
     dictionaries(proxy: false, published: true, category: $category) {
       id
     }
@@ -157,6 +176,12 @@ export const queryCounter = gql`
       id
       counter(mode: $mode)
     }
+  }
+`;
+
+export const getPermissionsBulk = gql`
+  query checkPermissionsBulk($category: Int!) {
+    check_permissions_bulk(category: $category)
   }
 `;
 
@@ -198,6 +223,45 @@ export const synchronizeMutation = gql`
     synchronize {
       triumph
     }
+  }
+`;
+
+export const applySyncMutation = gql`
+  mutation ApplySync(
+        $perspectiveId: LingvodocID!
+        $perspectiveName: String
+        $syncBetween: [String]!
+        $action: String
+        $debugFlag: Boolean
+) {
+    apply_sync(
+        perspective_id: $perspectiveId
+        perspective_name: $perspectiveName
+        sync_between: $syncBetween
+        action: $action
+        debug_flag: $debugFlag) {
+      message
+      triumph
+    }
+  }
+`;
+
+export const queryListChanges = gql`
+  query listChanges(
+    $remote: String!
+    $syncBetween: [String]!
+    $perspectiveId: LingvodocID!
+    $action: String!
+    $syncPoint: Float
+    $debugFlag: Boolean)
+    {
+      list_changes(
+        remote: $remote
+        sync_between: $syncBetween
+        perspective_id: $perspectiveId
+        action: $action
+        sync_point: $syncPoint
+        debug_flag: $debugFlag)
   }
 `;
 

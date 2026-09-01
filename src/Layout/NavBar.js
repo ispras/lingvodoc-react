@@ -1,7 +1,10 @@
 import React, { useContext } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, connect } from "react-redux";
 import { Link } from "react-router-dom";
 import { Button, Menu } from "semantic-ui-react";
+//import SyncModal from "components/SyncModal";
+import { openModal } from "ducks/modals";
+import { bindActionCreators } from "redux";
 
 import { synchronizeMutation } from "backend";
 // eslint-disable-next-line import/no-unresolved
@@ -15,21 +18,34 @@ import User from "./User";
 
 import "./style.scss";
 
-const SyncButton = () => {
+/*
+const SyncButton = ({ openModal }) => {
   const [synchronize] = useMutation(synchronizeMutation);
 
   const getTranslation = useContext(TranslationContext);
 
+  const confirm_sync = () => {
+    openModal(
+      SyncModal,
+      {
+        perspectiveId: [1,1],
+        columns: [],
+        applySync: synchronize
+      }
+    );
+  }
+
   return (
     <Menu.Item>
-      <Button color="purple" onClick={synchronize}>
+      <Button color="purple" onClick={confirm_sync}>
         {getTranslation("Sync")}
       </Button>
     </Menu.Item>
   );
 };
+*/
 
-const NavBar = () => {
+const NavBar = ({ openModal }) => {
   const { isAuthenticated } = useSelector(state => state.auth);
 
   return (
@@ -40,7 +56,14 @@ const NavBar = () => {
         </Menu.Item>
 
         <Menu.Menu position="right">
-          {isAuthenticated && config.buildType !== "server" && <SyncButton />}
+          {/* This button went from old realization and not actual now */
+          /*
+          { isAuthenticated && config.buildType !== "server" &&
+            <SyncButton
+              openModal={openModal}
+            />
+          }
+          */}
           <User />
           <Tasks />
           <Locale />
@@ -50,4 +73,4 @@ const NavBar = () => {
   );
 };
 
-export default NavBar;
+export default connect(null, dispatch => bindActionCreators({ openModal }, dispatch)) (NavBar);
