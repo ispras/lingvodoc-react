@@ -242,6 +242,7 @@ export const applySyncMutation = gql`
         debug_flag: $debugFlag) {
       message
       triumph
+      task_id
     }
   }
 `;

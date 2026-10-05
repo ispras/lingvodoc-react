@@ -1,5 +1,8 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { connect, useSelector } from "react-redux";
+import { compose } from "recompose";
+import { gql } from "@apollo/client";
+import { withApollo } from "@apollo/client/react/hoc";
 import { Link } from "react-router-dom";
 import { Button, Checkbox, Dropdown, Header, Icon, Popup } from "semantic-ui-react";
 import { bindActionCreators } from "redux";
@@ -12,10 +15,18 @@ import SyncModal from "components/SyncModal";
 
 import { openModal, closeModal } from "ducks/modals";
 import { openModal as openConfirmModal } from "ducks/confirm";
+import { getApolloClient } from "apolo";
+
+const isCompleteTaskQuery = gql`
+  query isCompleteTask($taskId: String!) {
+    is_complete_task(task_id: $taskId)
+  }
+`;
 
 /** Language tree node of a language. */
 
 const LangNode = ({
+  client,
   node,
   languageMap,
   dictionaryIdSet,
@@ -88,8 +99,14 @@ const LangNode = ({
   }, [language, allowedSync, localPermission, proxyPermission]);
 
   const { getTranslation, chooseTranslation } = useTranslations();
-  const [modalCount, setModalCount] = useState(0);
+  const [completeTask, setCompleteTask] = useState(null);
   const proxyLang = allowedSync && language.single === "proxy";
+  const modalOpened = useRef(0);
+  const modalResult = useRef(0);
+
+  useEffect(() => {
+    refreshLangTree();
+  }, [completeTask, refreshLangTree]);
 
   let langClass = "lang-name";
   if (!language.parent_id) {
@@ -111,7 +128,36 @@ const LangNode = ({
     const perspectiveName = `${chooseTranslation(
       dictionary.translations)} -> ${chooseTranslation(perspective.translations)}`;
     const action = permissions.proxyPers ? 'create' : 'edit';
-    const refetching = permissions.proxyPers;
+
+    const checkTaskStatus = (taskId) => {
+      let count = 0;
+      const interval = setInterval(async () => {
+        try {
+          const res = await client.query({
+            query: isCompleteTaskQuery,
+            variables: { taskId },
+            fetchPolicy: "no-cache"
+          });
+
+          const isComplete = res?.data?.is_complete_task;
+
+          if (isComplete) {
+            clearInterval(interval);
+            setCompleteTask(taskId);
+          }
+
+        } catch (error) {
+          console.error("Error checking task status:", error?.message);
+
+        } finally {
+          if (count > 360) {
+            clearInterval(interval);
+            window.logger?.warn(`Task ${taskId} check timeout`);
+          }
+          count++;
+        }
+      }, 10000);
+    };
 
     if (action === 'create' && !permissions.canBeAdded ||
         action === 'edit' && !permissions.canBeSynced
@@ -123,26 +169,40 @@ const LangNode = ({
       return;
     }
 
-    // +1 or no any change
-    setModalCount(modalCount + refetching);
+    modalOpened.current++;
     openNewModal(SyncModal, {
       perspectiveId,
       perspectiveName,
       silentMode,
       action,
-      onClose: () => {
-        closeModal();
-        // -1 or no any change
-        setModalCount(modalCount - refetching);
+      //additionalClient: getApolloClient(),
+      onClose: (taskId=null) => {
+        // On started task we increase the count
+        if (taskId) {
+          modalResult.current++;
+        }
+        // Start checking task status for rerendering
+        if (taskId && permissions.proxyPers) {
+          checkTaskStatus(taskId);
+        }
+        // Manual closing
+        if (!silentMode || (silentMode && !taskId)) {
+          closeModal();
+          modalOpened.current = 0;
+          modalResult.current = 0;
+        }
+        // Bulk closing in silentMode
+        while (silentMode &&
+          0 < modalOpened.current &&
+          modalOpened.current <= modalResult.current
+        ) {
+          closeModal();
+          modalOpened.current--;
+          modalResult.current--;
+        }
       }
     });
   };
-
-  useEffect(() => {
-    if (modalCount <= 0) {
-      refreshLangTree();
-    }
-  }, [modalCount]);
 
   return (
     <li className="node_lang" id={`language_${languageId}`}>
@@ -396,9 +456,12 @@ const LangNode = ({
   );
 };
 
-export const LanguageNode = connect(null, dispatch => bindActionCreators({ openModal, openConfirmModal, closeModal }, dispatch))(
-  LangNode
-);
+export const LanguageNode = compose(
+    connect(null, dispatch => bindActionCreators({
+      openModal, openConfirmModal, closeModal }, dispatch)
+    ),
+    withApollo
+)(LangNode);
 
 /** Language tree node of a grant. */
 export const GrantNode = ({

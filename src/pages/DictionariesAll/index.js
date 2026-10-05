@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 import { Container, Header, Icon, Menu, Message, Tab } from "semantic-ui-react";
 import { useQuery } from "@apollo/client";
-import { additionalClient } from "apolo";
+import { getApolloClient } from "apolo";
 import { isEqual } from "lodash";
 
 import { getId } from "api/user";
@@ -32,6 +32,8 @@ import { compositeIdToString, stringToCompositeId } from "utils/compositeId";
 import SortModeSelector from "./sort_mode_selector";
 
 import "./styles.scss";
+
+const additionalClient = getApolloClient();
 
 function groupMaps(groups) {
   const groupMap = {};
@@ -136,11 +138,6 @@ function constructTree(
         }
 
         languageMap[side][lang_id] = language;
-
-        // Debugging
-        if (lang_id === '3619,28523') {
-          console.log(`${lang_id}: ${language.translations[2]}`);
-        }
 
         language.dictionaries.forEach(dictionary => {
           const dict_id = compositeIdToString(dictionary.id);
@@ -270,11 +267,6 @@ function constructTree(
             ...languageMap.proxy[lang_id].dictionaries]
             .map(obj => compositeIdToString(obj.id)));
 
-          // Debugging
-          if (lang_id === '3619,28523') {
-            console.log(`${lang_id}: ${lang_result.translations[2]}`);
-          }
-
           // Iterate through dictionary_union for current language
           dict_union.forEach(dict_id => {
 
@@ -285,11 +277,6 @@ function constructTree(
 
             } else {
               const dict_result = dictionaryMap.local[dict_id];
-
-              // Debugging
-              if (lang_id === '3619,28523' && dict_id === '11560,775') {
-                console.log(`${dict_id}: ${dict_result.translations[2]}`);
-              }
 
               // If dictionary is on the both sides
               if (dictionaryMap.intersection.has(dict_id)) {

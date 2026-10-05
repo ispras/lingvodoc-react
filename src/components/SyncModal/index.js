@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, useMemo } from "react";
+import React, { useContext, useState, useEffect, useMemo, useRef } from "react";
 import { useMutation } from "hooks";
 import { useQuery, useLazyQuery, gql } from "@apollo/client";
 import { Button, Dimmer, Header, Icon, Message, Modal, Popup, Table } from "semantic-ui-react";
@@ -12,20 +12,21 @@ import TranslationContext from "Layout/TranslationContext";
 
 import "./styles.scss";
 
-const SyncModal = ({ perspectiveId, perspectiveName, onClose, silentMode, action }) => {
+const SyncModal = ({ perspectiveId, perspectiveName, onClose, silentMode, action, additionalClient }) => {
   const getTranslation = useContext(TranslationContext);
-  const [ applied, setApplied ] = useState(false);
+  const applyStarted = useRef(false);
   const [ errorMessage, setErrorMessage ] = useState(null);
   const debugFlag = true;
 
   const { data: ispSyncData, error: ispSyncError, loading: ispSyncLoading } = useQuery(queryListChanges, {
+    client: additionalClient,
     variables: { remote: 'isp', syncBetween: ['isp','xal'], perspectiveId, action, debugFlag },
     onCompleted: ({list_changes: {triumph, message, warns}}) => {
       if (message) {
         setErrorMessage(message);
         //window.logger.warn(message);
       }
-      if (warns) {
+      if (warns.length) {
         console.log(`Possible errors: ${warns}`);
       }
     },
@@ -33,46 +34,54 @@ const SyncModal = ({ perspectiveId, perspectiveName, onClose, silentMode, action
   });
 
   const { data: xalSyncData, error: xalSyncError, loading: xalSyncLoading } = useQuery(queryListChanges, {
+    client: additionalClient,
     variables: { remote: 'xal', syncBetween: ['isp','xal'], perspectiveId, action, debugFlag },
     onCompleted: ({list_changes: {triumph, message, warns}}) => {
       if (message) {
         setErrorMessage(message);
         //window.logger.warn(message);
       }
-      if (warns) {
+      if (warns.length) {
         console.log(`Possible errors: ${warns}`);
       }
     },
     fetchPolicy: "network-only"
   });
 
-  const [applySync, { data: dataApply, error: errorApply, loading: loadingApply }] = useMutation(
-    applySyncMutation, {
-      variables: { perspectiveId, perspectiveName, syncBetween: ['isp','xal'], action, debugFlag },
-      onCompleted: ({apply_sync: {triumph, message}}) => {
-        if (message) {
-          setErrorMessage(message);
-          console.log(message);
-        }
-        setApplied(triumph);
+  const [applySync, { data: dataApply, error: errorApply, loading: loadingApply }] = useMutation(applySyncMutation, {
+    client: additionalClient,
+    variables: { perspectiveId, perspectiveName, syncBetween: ['isp','xal'], action, debugFlag },
+    onCompleted: (data) => {
+      const taskId = data?.apply_sync?.task_id;
+      const message = data?.apply_sync?.message;
+      if (message) {
+        setErrorMessage(message);
+      } else if (taskId) {
+        window.logger.suc(getTranslation("Computation is going. Please see the sidebar with tasks."));
+        console.log(`Merging '${perspectiveName}'...`);
+        onClose(taskId);
+      } else {
+        onClose(null);
       }
+    },
+    onError: (error) => {
+      console.error("applySync error:", error);
+      setErrorMessage(error.message);
+    }
   });
 
-  useEffect(() => {
-    if (applied &&
-        !loadingApply && !errorApply) {
-
-      window.logger.suc(getTranslation("Computation is going. Please see the sidebar with tasks."));
-
-      onClose();
+  const applySyncOnce = () => {
+    if (!applyStarted.current) {
+      applyStarted.current = true;
+      applySync();
     }
-  }, [applied, loadingApply]);
+  }
 
   useEffect(() => {
     if (silentMode &&
-        !ispSyncLoading && !ispSyncError &&
-        !xalSyncLoading && !xalSyncError) {
-      applySync();
+        !ispSyncLoading && !ispSyncError && ispSyncData &&
+        !xalSyncLoading && !xalSyncError && xalSyncData) {
+      applySyncOnce();
     }
   }, [ispSyncData, ispSyncLoading, xalSyncData, xalSyncLoading]);
 
@@ -146,7 +155,7 @@ const SyncModal = ({ perspectiveId, perspectiveName, onClose, silentMode, action
   }
 
   return (
-    <Modal className="lingvo-modal2" dimmer open closeIcon onClose={onClose} size="fullscreen">
+    <Modal className="lingvo-modal2" dimmer open closeIcon onClose={() => onClose(null)} size="fullscreen">
       <Modal.Header>{`${getTranslation("Synchronize")} "${perspectiveName}"`}</Modal.Header>
       <Modal.Content>
         <div className="sync-content">
@@ -163,7 +172,7 @@ const SyncModal = ({ perspectiveId, perspectiveName, onClose, silentMode, action
               errorApply ||
               !ispSyncData?.list_changes.triumph ||
               !xalSyncData?.list_changes.triumph ||
-              dataApply && !applied
+              dataApply && !dataApply.apply_sync.triumph
             ) ? (
               <Message negative>
                 <Message.Header>{getTranslation("Synchronize data loading error")}</Message.Header>
@@ -298,7 +307,7 @@ const SyncModal = ({ perspectiveId, perspectiveName, onClose, silentMode, action
               </span>
             ) : getTranslation("Apply")
           }
-          onClick={() => applySync()}
+          onClick={applySyncOnce}
           //loading={loadingApply}
           disabled={
             ispSyncLoading ||
@@ -307,12 +316,13 @@ const SyncModal = ({ perspectiveId, perspectiveName, onClose, silentMode, action
             xalSyncError ||
             loadingApply ||
             errorApply ||
+            applyStarted.current ||
             errorMessage
           }
           className="lingvo-button-greenest lingvo-button-greenest_sync"
         />
 
-        <Button content={getTranslation("Close")} onClick={onClose} className="lingvo-button-basic-black" />
+        <Button content={getTranslation("Close")} onClick={() => onClose(null)} className="lingvo-button-basic-black" />
       </Modal.Actions>
     </Modal>
   );
