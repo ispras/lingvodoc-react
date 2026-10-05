@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 import { Container, Header, Icon, Menu, Message, Tab } from "semantic-ui-react";
 import { useQuery } from "@apollo/client";
-import { additionalClient } from "apolo";
+import { getApolloClient } from "apolo";
 import { isEqual } from "lodash";
 
 import { getId } from "api/user";
@@ -15,7 +15,8 @@ import {
   getTocOrganizations,
   localDictionaryInfo,
   proxyDictionaryInfo,
-  getPermissionsBulk
+  getPermissionsBulk,
+  queryIsPaired
 } from "backend";
 import BackTopButton from "components/BackTopButton";
 import LanguageSearchField from "components/LanguageSearchField";
@@ -30,8 +31,12 @@ import { useTranslations } from "hooks";
 import { compositeIdToString, stringToCompositeId } from "utils/compositeId";
 
 import SortModeSelector from "./sort_mode_selector";
+import { branch, compose, renderComponent } from "recompose";
+import { graphql } from "@apollo/client/react/hoc";
 
 import "./styles.scss";
+
+const additionalClient = getApolloClient();
 
 function groupMaps(groups) {
   const groupMap = {};
@@ -73,7 +78,8 @@ function constructTree(
   setDataTreeCommon,
   refreshLangTree,
   localPermission,
-  proxyData
+  proxyData,
+  isPaired
 ) {
 
   const startstamp = Date.now();
@@ -136,11 +142,6 @@ function constructTree(
         }
 
         languageMap[side][lang_id] = language;
-
-        // Debugging
-        if (lang_id === '3619,28523') {
-          console.log(`${lang_id}: ${language.translations[2]}`);
-        }
 
         language.dictionaries.forEach(dictionary => {
           const dict_id = compositeIdToString(dictionary.id);
@@ -270,11 +271,6 @@ function constructTree(
             ...languageMap.proxy[lang_id].dictionaries]
             .map(obj => compositeIdToString(obj.id)));
 
-          // Debugging
-          if (lang_id === '3619,28523') {
-            console.log(`${lang_id}: ${lang_result.translations[2]}`);
-          }
-
           // Iterate through dictionary_union for current language
           dict_union.forEach(dict_id => {
 
@@ -285,11 +281,6 @@ function constructTree(
 
             } else {
               const dict_result = dictionaryMap.local[dict_id];
-
-              // Debugging
-              if (lang_id === '3619,28523' && dict_id === '11560,775') {
-                console.log(`${dict_id}: ${dict_result.translations[2]}`);
-              }
 
               // If dictionary is on the both sides
               if (dictionaryMap.intersection.has(dict_id)) {
@@ -352,6 +343,7 @@ function constructTree(
           proxyData={proxyPermission}
           refreshLangTree={refreshLangTree}
           localPermission={localEditPermission}
+          isPaired={isPaired}
         />
       ))
     ) : (
@@ -363,6 +355,7 @@ function constructTree(
         proxyData={proxyPermission}
         refreshLangTree={refreshLangTree}
         localPermission={localEditPermission}
+        isPaired={isPaired}
       />
     );
   } else {
@@ -380,6 +373,7 @@ function constructTree(
             proxyData={proxyPermission}
             refreshLangTree={refreshLangTree}
             localPermission={localPermission}
+            isPaired={isPaired}
           />
         ) : (
           <IndividualNode
@@ -392,6 +386,7 @@ function constructTree(
             proxyData={proxyPermission}
             refreshLangTree={refreshLangTree}
             localPermission={localPermission}
+            isPaired={isPaired}
           />
         )
       )
@@ -406,6 +401,7 @@ function constructTree(
         proxyData={proxyPermission}
         refreshLangTree={refreshLangTree}
         localPermission={localPermission}
+        isPaired={isPaired}
       />
     );
   }
@@ -437,7 +433,7 @@ const Wrapper = ({ tree, ...rest }) => {
 };
 
 /** Dashboard dictionaries page */
-const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => {
+const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false, data: { is_paired: isPaired } }) => {
   const { getTranslation } = useTranslations();
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -557,7 +553,7 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
   const { data: proxyPermission } = useQuery(proxyDictionaryInfo, {
     variables: { proxy: published ? false : true, category },
     fetchPolicy: "cache-and-network",
-    skip: skip_general || config.buildType === "server"
+    skip: skip_general || config.buildType === "server" || !isPaired
   });
 
   const { data: localPermission } = useQuery(localDictionaryInfo, {
@@ -631,7 +627,7 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
         setUsedProxy(!!data);
         setDataTreeIdProxy(data ? data : {language_tree: {languages: []}});
       },
-      skip: skip_general || !allowed_sync || !entityIdValue || aSortMode != sortMode
+      skip: skip_general || !allowed_sync || !entityIdValue || aSortMode != sortMode || !isPaired
     });
 
     queryDictAllProxy[aSortMode] = useQuery(getLanguageTree, {
@@ -643,7 +639,7 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
         setUsedProxy(!!data);
         setDataTreeAllProxy(data ? data : {language_tree: {languages: []}});
       },
-      skip: skip_general || !allowed_sync || activeTab !== "1" || aSortMode != sortMode
+      skip: skip_general || !allowed_sync || activeTab !== "1" || aSortMode != sortMode || !isPaired
     });
   }
 
@@ -703,18 +699,18 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
     (sortMode === "grant" && !grantMap) ||
     (sortMode === "organization" && !organizationMap) ||
     (allowed_sync && user.user.id !== 1 && !localPermission) ||
-    (proxy && !proxyPermission)
+    (proxy && isPaired && !proxyPermission)
   );
 
   const skipConstructIdTree = (
     !dataTreeId ||
-    (allowed_sync && !dataTreeIdProxy) ||
+    (allowed_sync && isPaired && !dataTreeIdProxy) ||
     skipConstructTree
   );
 
   const skipConstructAllTree = (
     !dataTreeAll ||
-    (allowed_sync && !dataTreeAllProxy) ||
+    (allowed_sync && isPaired && !dataTreeAllProxy) ||
     skipConstructTree
   );
 
@@ -767,7 +763,8 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
         setDataTreeCommon,
         refreshLangTree,
         localPermission,
-        dataTreeIdProxy
+        dataTreeIdProxy,
+        isPaired
       );
 
       if (!active) {
@@ -806,7 +803,8 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
         setDataTreeCommon,
         refreshLangTree,
         localPermission,
-        dataTreeAllProxy
+        dataTreeAllProxy,
+        isPaired
       );
 
       if (!active) {
@@ -913,7 +911,7 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
               },
               render: () => (
                 <Tab.Pane>
-                  <Wrapper tree={treeAll} sortMode={sortMode} entityId={entityId} />
+                  <Wrapper tree={treeAll} sortMode={sortMode} entityId={entityId} isPaired={isPaired}/>
                 </Tab.Pane>
               )
             }
@@ -945,4 +943,7 @@ const DictionariesAll = ({ forCorpora = false, forParallelCorpora = false }) => 
   );
 };
 
-export default DictionariesAll;
+export default compose(
+  graphql(queryIsPaired),
+  branch(({ data: { loading } }) => loading, renderComponent(Placeholder))
+)(DictionariesAll);

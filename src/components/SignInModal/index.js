@@ -9,6 +9,8 @@ import { setIsAuthenticated } from "ducks/auth";
 import { requestUser, setError, setUser } from "ducks/user";
 import TranslationContext from "Layout/TranslationContext";
 import { startTrackUser } from "utils/matomo";
+import { useQuery } from "@apollo/client";
+import { queryIsProxy } from "backend";
 
 const syncRolesMutation = gql`
   mutation syncRoles(
@@ -39,11 +41,12 @@ const SignInModal = ({ close }) => {
   const [errorMessage, setErrorMessage] = useState();
 
   const getTranslation = useContext(TranslationContext);
+  const { data: isProxyData, loading: isProxyLoading } = useQuery(queryIsProxy);
   const [ syncRoles ] = useMutation(syncRolesMutation);
 
   const onSubmit = useCallback(async () => {
     setLogginIn(true);
-    let response = await signIn(login, password);
+    let response = await signIn(login, password, isProxyData?.is_proxy);
     if (!response.data) {
       setErrorMessage(
         getTranslation(
@@ -115,12 +118,12 @@ const SignInModal = ({ close }) => {
             id="login-button"
             fluid
             size="huge"
-            color="violet"
+            color={isProxyData?.is_proxy ? "green" : "violet"}
             type="submit"
-            loading={logginIn}
-            disabled={logginIn || login.trim() === "" || password.trim() === ""}
+            loading={logginIn || isProxyLoading}
+            disabled={logginIn || isProxyLoading || login.trim() === "" || password.trim() === ""}
           >
-            {getTranslation("Submit")}
+            {isProxyData?.is_proxy ? getTranslation("Remote submit") : getTranslation("Submit")}
           </Button>
         </Form>
       </Modal.Content>

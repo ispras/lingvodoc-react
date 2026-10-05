@@ -242,6 +242,7 @@ export const applySyncMutation = gql`
         debug_flag: $debugFlag) {
       message
       triumph
+      task_id
     }
   }
 `;
@@ -278,5 +279,17 @@ export const updateLanguageMetadataMutation = gql`
     update_language(id: $id, additional_metadata: $metadata, add_user_id: $add_user_id, del_user_id: $del_user_id) {
       triumph
     }
+  }
+`;
+
+export const queryIsPaired = gql`
+  query isPaired {
+    is_paired
+  }
+`;
+
+export const queryIsProxy = gql`
+  query isProxy {
+    is_proxy
   }
 `;

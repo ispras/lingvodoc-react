@@ -14,6 +14,8 @@ import { openModal as openBanModal } from "ducks/ban";
 import { requestUser, setError, setUser } from "ducks/user";
 import TranslationContext from "Layout/TranslationContext";
 import { startTrackUser, stopTrackUser } from "utils/matomo";
+import { queryIsProxy } from "backend";
+import { useQuery } from "@apollo/client";
 
 import imageUser from "../images/user.svg";
 
@@ -28,19 +30,29 @@ const spinner = (
 const Anonymous = () => {
   const [modal, setModal] = useState();
   const getTranslation = useContext(TranslationContext);
+  const { data: isProxyData, loading: isProxyLoading } = useQuery(queryIsProxy);
+  const notProxy = !isProxyLoading && !isProxyData?.is_proxy;
 
   return (
     <>
-      <Menu.Item className="top_menu top_menu__item_signin">
+      <Menu.Item
+        className={
+          notProxy ?
+          "top_menu top_menu__item_signin" :
+          "top_menu top_menu__item_signup"
+        }
+      >
         <div className="sign_in" onClick={() => setModal("signin")}>
           {getTranslation("Sign In")}
         </div>
       </Menu.Item>
-      <Menu.Item className="top_menu top_menu__item_signup">
-        <div className="sign_up" onClick={() => setModal("signup")}>
-          {getTranslation("Sign Up")}
-        </div>
-      </Menu.Item>
+      {notProxy && (
+        <Menu.Item className="top_menu top_menu__item_signup">
+          <div className="sign_up" onClick={() => setModal("signup")}>
+            {getTranslation("Sign Up")}
+          </div>
+        </Menu.Item>
+      )}
       <Dropdown
         item
         trigger={
@@ -54,9 +66,11 @@ const Anonymous = () => {
           <Dropdown.Item as="a" onClick={() => setModal("signin")}>
             {getTranslation("Sign In")}
           </Dropdown.Item>
-          <Dropdown.Item as="a" onClick={() => setModal("signup")}>
-            {getTranslation("Sign Up")}
-          </Dropdown.Item>
+          {notProxy && (
+            <Dropdown.Item as="a" onClick={() => setModal("signup")}>
+              {getTranslation("Sign Up")}
+            </Dropdown.Item>
+          )}
         </Dropdown.Menu>
       </Dropdown>
       {modal === "signin" && <SignInModal close={() => setModal(undefined)} />}

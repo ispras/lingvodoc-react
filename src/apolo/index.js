@@ -38,6 +38,4 @@ export const getApolloClient = (merge = true) => new ApolloClient({
   })
 });
 
-export const additionalClient = getApolloClient();
-
 export default getApolloClient();
