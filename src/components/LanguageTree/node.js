@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { connect, useSelector } from "react-redux";
+import { compose } from "recompose";
+import { gql } from "@apollo/client";
+import { withApollo } from "@apollo/client/react/hoc";
 import { Link } from "react-router-dom";
 import { Button, Checkbox, Dropdown, Header, Icon, Popup } from "semantic-ui-react";
 import { bindActionCreators } from "redux";
@@ -13,9 +16,16 @@ import SyncModal from "components/SyncModal";
 import { openModal, closeModal } from "ducks/modals";
 import { openModal as openConfirmModal } from "ducks/confirm";
 
+const isCompleteTaskQuery = gql`
+  query isCompleteTask($taskId: String!) {
+    is_complete_task(task_id: $taskId)
+  }
+`;
+
 /** Language tree node of a language. */
 
 const LangNode = ({
+  client,
   node,
   languageMap,
   dictionaryIdSet,
@@ -89,6 +99,7 @@ const LangNode = ({
 
   const { getTranslation, chooseTranslation } = useTranslations();
   const [modalCount, setModalCount] = useState(0);
+  const [completeTask, setCompleteTask] = useState(null);
   const proxyLang = allowedSync && language.single === "proxy";
 
   let langClass = "lang-name";
@@ -113,6 +124,25 @@ const LangNode = ({
     const action = permissions.proxyPers ? 'create' : 'edit';
     const refetching = permissions.proxyPers;
 
+    const checkTaskStatus = (taskId) => {
+      let count = 0;
+      const interval = setInterval(async () => {
+        const res = await client.query({
+          query: isCompleteTaskQuery,
+          variables: { taskId },
+          fetchPolicy: "no-cache"
+        });
+
+        // Checking if task is complete or we are waiting more than an hour
+        if (res.data.is_complete_task || count > 360) {
+          clearInterval(interval);
+          setCompleteTask(taskId);
+        }
+        count++;
+
+      }, 10000);
+    };
+
     if (action === 'create' && !permissions.canBeAdded ||
         action === 'edit' && !permissions.canBeSynced
     ) {
@@ -130,19 +160,28 @@ const LangNode = ({
       perspectiveName,
       silentMode,
       action,
-      onClose: () => {
+      onClose: (taskId=null) => {
         closeModal();
         // -1 or no any change
         setModalCount(modalCount - refetching);
+        if (taskId) {
+          checkTaskStatus(taskId);
+        }
       }
     });
   };
 
   useEffect(() => {
+    console.log(`modalCount: ${modalCount}`);
     if (modalCount <= 0) {
       refreshLangTree();
     }
   }, [modalCount]);
+
+  useEffect(() => {
+    console.log(`completeTask: ${completeTask}`);
+    refreshLangTree();
+  }, [completeTask]);
 
   return (
     <li className="node_lang" id={`language_${languageId}`}>
@@ -396,9 +435,12 @@ const LangNode = ({
   );
 };
 
-export const LanguageNode = connect(null, dispatch => bindActionCreators({ openModal, openConfirmModal, closeModal }, dispatch))(
-  LangNode
-);
+export const LanguageNode = compose(
+    connect(null, dispatch => bindActionCreators({
+      openModal, openConfirmModal, closeModal }, dispatch)
+    ),
+    withApollo
+)(LangNode);
 
 /** Language tree node of a grant. */
 export const GrantNode = ({

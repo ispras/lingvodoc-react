@@ -14,7 +14,7 @@ import "./styles.scss";
 
 const SyncModal = ({ perspectiveId, perspectiveName, onClose, silentMode, action }) => {
   const getTranslation = useContext(TranslationContext);
-  const [ applied, setApplied ] = useState(false);
+  const [ applied, setApplied ] = useState(null);
   const [ errorMessage, setErrorMessage ] = useState(null);
   const debugFlag = true;
 
@@ -49,22 +49,20 @@ const SyncModal = ({ perspectiveId, perspectiveName, onClose, silentMode, action
   const [applySync, { data: dataApply, error: errorApply, loading: loadingApply }] = useMutation(
     applySyncMutation, {
       variables: { perspectiveId, perspectiveName, syncBetween: ['isp','xal'], action, debugFlag },
-      onCompleted: ({apply_sync: {triumph, message}}) => {
+      onCompleted: ({apply_sync: {triumph, message, task_id: taskId}}) => {
         if (message) {
           setErrorMessage(message);
           console.log(message);
         }
-        setApplied(triumph);
+        setApplied(taskId);
       }
   });
 
   useEffect(() => {
     if (applied &&
         !loadingApply && !errorApply) {
-
       window.logger.suc(getTranslation("Computation is going. Please see the sidebar with tasks."));
-
-      onClose();
+      onClose(applied);
     }
   }, [applied, loadingApply]);
 
