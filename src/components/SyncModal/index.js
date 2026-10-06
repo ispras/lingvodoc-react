@@ -25,7 +25,7 @@ const SyncModal = ({ perspectiveId, perspectiveName, onClose, silentMode, action
         setErrorMessage(message);
         //window.logger.warn(message);
       }
-      if (warns) {
+      if (warns.length) {
         console.log(`Possible errors: ${warns}`);
       }
     },
@@ -39,7 +39,7 @@ const SyncModal = ({ perspectiveId, perspectiveName, onClose, silentMode, action
         setErrorMessage(message);
         //window.logger.warn(message);
       }
-      if (warns) {
+      if (warns.length) {
         console.log(`Possible errors: ${warns}`);
       }
     },
@@ -52,7 +52,7 @@ const SyncModal = ({ perspectiveId, perspectiveName, onClose, silentMode, action
       onCompleted: ({apply_sync: {triumph, message, task_id: taskId}}) => {
         if (message) {
           setErrorMessage(message);
-          console.log(message);
+          console.log(`Apply sync message: ${message}`);
         }
         setApplied(taskId);
       }

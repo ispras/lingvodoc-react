@@ -137,11 +137,6 @@ function constructTree(
 
         languageMap[side][lang_id] = language;
 
-        // Debugging
-        if (lang_id === '3619,28523') {
-          console.log(`${lang_id}: ${language.translations[2]}`);
-        }
-
         language.dictionaries.forEach(dictionary => {
           const dict_id = compositeIdToString(dictionary.id);
 
@@ -270,11 +265,6 @@ function constructTree(
             ...languageMap.proxy[lang_id].dictionaries]
             .map(obj => compositeIdToString(obj.id)));
 
-          // Debugging
-          if (lang_id === '3619,28523') {
-            console.log(`${lang_id}: ${lang_result.translations[2]}`);
-          }
-
           // Iterate through dictionary_union for current language
           dict_union.forEach(dict_id => {
 
@@ -285,11 +275,6 @@ function constructTree(
 
             } else {
               const dict_result = dictionaryMap.local[dict_id];
-
-              // Debugging
-              if (lang_id === '3619,28523' && dict_id === '11560,775') {
-                console.log(`${dict_id}: ${dict_result.translations[2]}`);
-              }
 
               // If dictionary is on the both sides
               if (dictionaryMap.intersection.has(dict_id)) {
