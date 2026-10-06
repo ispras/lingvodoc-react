@@ -144,7 +144,7 @@ const SyncModal = ({ perspectiveId, perspectiveName, onClose, silentMode, action
   }
 
   return (
-    <Modal className="lingvo-modal2" dimmer open closeIcon onClose={onClose} size="fullscreen">
+    <Modal className="lingvo-modal2" dimmer open closeIcon onClose={() => onClose(applied)} size="fullscreen">
       <Modal.Header>{`${getTranslation("Synchronize")} "${perspectiveName}"`}</Modal.Header>
       <Modal.Content>
         <div className="sync-content">
@@ -310,7 +310,7 @@ const SyncModal = ({ perspectiveId, perspectiveName, onClose, silentMode, action
           className="lingvo-button-greenest lingvo-button-greenest_sync"
         />
 
-        <Button content={getTranslation("Close")} onClick={onClose} className="lingvo-button-basic-black" />
+        <Button content={getTranslation("Close")} onClick={() => onClose(applied)} className="lingvo-button-basic-black" />
       </Modal.Actions>
     </Modal>
   );

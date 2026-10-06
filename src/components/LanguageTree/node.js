@@ -101,6 +101,7 @@ const LangNode = ({
   const [modalCount, setModalCount] = useState(0);
   const [completeTask, setCompleteTask] = useState(null);
   const proxyLang = allowedSync && language.single === "proxy";
+  let curModalCount = modalCount;
 
   let langClass = "lang-name";
   if (!language.parent_id) {
@@ -127,19 +128,27 @@ const LangNode = ({
     const checkTaskStatus = (taskId) => {
       let count = 0;
       const interval = setInterval(async () => {
-        const res = await client.query({
-          query: isCompleteTaskQuery,
-          variables: { taskId },
-          fetchPolicy: "no-cache"
-        });
+        try {
+          const res = await client.query({
+            query: isCompleteTaskQuery,
+            variables: { taskId },
+            fetchPolicy: "no-cache"
+          });
 
-        // Checking if task is complete or we are waiting more than an hour
-        if (res.data.is_complete_task || count > 360) {
-          clearInterval(interval);
-          setCompleteTask(taskId);
+          const isComplete = res?.data?.is_complete_task;
+          if (isComplete || count > 360) {
+            clearInterval(interval);
+            setCompleteTask(taskId);
+          }
+          count++;
+        } catch (error) {
+          console.error("Error checking task status:", error?.message);
+          count++;
+          if (count > 360) {
+            clearInterval(interval);
+            window.logger?.warn(`Task ${taskId} check timeout`);
+          }
         }
-        count++;
-
       }, 10000);
     };
 
@@ -154,7 +163,8 @@ const LangNode = ({
     }
 
     // +1 or no any change
-    setModalCount(modalCount + refetching);
+    curModalCount = curModalCount + refetching;
+    setModalCount(curModalCount);
     openNewModal(SyncModal, {
       perspectiveId,
       perspectiveName,
@@ -163,7 +173,8 @@ const LangNode = ({
       onClose: (taskId=null) => {
         closeModal();
         // -1 or no any change
-        setModalCount(modalCount - refetching);
+        curModalCount = curModalCount - refetching;
+        setModalCount(curModalCount);
         if (taskId) {
           checkTaskStatus(taskId);
         }
@@ -172,16 +183,14 @@ const LangNode = ({
   };
 
   useEffect(() => {
-    console.log(`modalCount: ${modalCount}`);
     if (modalCount <= 0) {
       refreshLangTree();
     }
-  }, [modalCount]);
+  }, [modalCount, refreshLangTree]);
 
   useEffect(() => {
-    console.log(`completeTask: ${completeTask}`);
     refreshLangTree();
-  }, [completeTask]);
+  }, [completeTask, refreshLangTree]);
 
   return (
     <li className="node_lang" id={`language_${languageId}`}>
