@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, useMemo } from "react";
+import React, { useContext, useState, useEffect, useMemo, useRef } from "react";
 import { useMutation } from "hooks";
 import { useQuery, useLazyQuery, gql } from "@apollo/client";
 import { Button, Dimmer, Header, Icon, Message, Modal, Popup, Table } from "semantic-ui-react";
@@ -14,7 +14,7 @@ import "./styles.scss";
 
 const SyncModal = ({ perspectiveId, perspectiveName, onClose, silentMode, action }) => {
   const getTranslation = useContext(TranslationContext);
-  const [ applied, setApplied ] = useState(null);
+  const applyStarted = useRef(false);
   const [ errorMessage, setErrorMessage ] = useState(null);
   const debugFlag = true;
 
@@ -48,32 +48,33 @@ const SyncModal = ({ perspectiveId, perspectiveName, onClose, silentMode, action
 
   const [applySync, { data: dataApply, error: errorApply, loading: loadingApply }] = useMutation(
     applySyncMutation, {
-      variables: { perspectiveId, perspectiveName, syncBetween: ['isp','xal'], action, debugFlag },
-      onCompleted: ({apply_sync: {triumph, message, task_id: taskId}}) => {
-        if (message) {
-          setErrorMessage(message);
-          console.log(`Apply sync message: ${message}`);
-        }
-        setApplied(taskId);
-      }
+      variables: { perspectiveId, perspectiveName, syncBetween: ['isp','xal'], action, debugFlag }
   });
 
   useEffect(() => {
-    if (silentMode &&
-        !ispSyncLoading && !ispSyncError &&
-        !xalSyncLoading && !xalSyncError) {
-      applySync();
+    if (silentMode && !applyStarted.current &&
+        !ispSyncLoading && !ispSyncError && ispSyncData &&
+        !xalSyncLoading && !xalSyncError && xalSyncData) {
+      applyStarted.current = true;
+      applySync()
+        .then(({data}) => {
+          const taskId = data?.apply_sync?.task_id;
+          const message = data?.apply_sync?.message;
+          if (message) {
+            setErrorMessage(message);
+          }
+          if (taskId) {
+            window.logger.suc(getTranslation("Computation is going. Please see the sidebar with tasks."));
+            console.log(`Merging '${perspectiveName}'...`);
+            onClose(taskId);
+          }
+        })
+        .catch(err => {
+          console.error("applySync error:", err);
+          setErrorMessage(err.message);
+        });
     }
   }, [ispSyncData, ispSyncLoading, xalSyncData, xalSyncLoading]);
-
-  useEffect(() => {
-    if (applied &&
-        !loadingApply && !errorApply) {
-      window.logger.suc(getTranslation("Computation is going. Please see the sidebar with tasks."));
-      console.log(`Merging '${perspectiveName}'...`)
-      onClose(applied);
-    }
-  }, [applied, loadingApply]);
 
   const reportData = useMemo(() => {
 
@@ -145,7 +146,7 @@ const SyncModal = ({ perspectiveId, perspectiveName, onClose, silentMode, action
   }
 
   return (
-    <Modal className="lingvo-modal2" dimmer open closeIcon onClose={() => onClose(applied)} size="fullscreen">
+    <Modal className="lingvo-modal2" dimmer open closeIcon onClose={() => onClose(null)} size="fullscreen">
       <Modal.Header>{`${getTranslation("Synchronize")} "${perspectiveName}"`}</Modal.Header>
       <Modal.Content>
         <div className="sync-content">
@@ -162,7 +163,7 @@ const SyncModal = ({ perspectiveId, perspectiveName, onClose, silentMode, action
               errorApply ||
               !ispSyncData?.list_changes.triumph ||
               !xalSyncData?.list_changes.triumph ||
-              dataApply && !applied
+              !dataApply?.apply_sync.triumph
             ) ? (
               <Message negative>
                 <Message.Header>{getTranslation("Synchronize data loading error")}</Message.Header>
@@ -306,12 +307,13 @@ const SyncModal = ({ perspectiveId, perspectiveName, onClose, silentMode, action
             xalSyncError ||
             loadingApply ||
             errorApply ||
+            applyStarted.current ||
             errorMessage
           }
           className="lingvo-button-greenest lingvo-button-greenest_sync"
         />
 
-        <Button content={getTranslation("Close")} onClick={() => onClose(applied)} className="lingvo-button-basic-black" />
+        <Button content={getTranslation("Close")} onClick={() => onClose(null)} className="lingvo-button-basic-black" />
       </Modal.Actions>
     </Modal>
   );
