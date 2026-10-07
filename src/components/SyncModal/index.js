@@ -59,20 +59,21 @@ const SyncModal = ({ perspectiveId, perspectiveName, onClose, silentMode, action
   });
 
   useEffect(() => {
-    if (applied &&
-        !loadingApply && !errorApply) {
-      window.logger.suc(getTranslation("Computation is going. Please see the sidebar with tasks."));
-      onClose(applied);
-    }
-  }, [applied, loadingApply]);
-
-  useEffect(() => {
     if (silentMode &&
         !ispSyncLoading && !ispSyncError &&
         !xalSyncLoading && !xalSyncError) {
       applySync();
     }
   }, [ispSyncData, ispSyncLoading, xalSyncData, xalSyncLoading]);
+
+  useEffect(() => {
+    if (applied &&
+        !loadingApply && !errorApply) {
+      window.logger.suc(getTranslation("Computation is going. Please see the sidebar with tasks."));
+      console.log(`Merging '${perspectiveName}'...`)
+      onClose(applied);
+    }
+  }, [applied, loadingApply]);
 
   const reportData = useMemo(() => {
 
