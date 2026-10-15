@@ -38,7 +38,8 @@ const LangNode = ({
   openConfirmModal,
   openModal: openNewModal,
   closeModal,
-  localPermission
+  localPermission,
+  isPaired
 }) => {
 
   const proxy = config.buildType === "desktop" || config.buildType === "proxy";
@@ -389,7 +390,7 @@ const LangNode = ({
                             </>
                           )}
 
-                          {permissions.commonPers && (
+                          {permissions.commonPers && isPaired && (
                             <Button
                               icon={<i className="lingvo-icon lingvo-icon_refresh" />}
                               onClick={event => {
@@ -422,7 +423,7 @@ const LangNode = ({
                 />
               )}
 
-              {commonDict && (
+              {commonDict && isPaired && (
                 <Button
                   icon={<i className="lingvo-icon lingvo-icon_refresh" />}
                   onClick={() =>
@@ -473,7 +474,8 @@ export const GrantNode = ({
   setSelected,
   proxyData,
   refreshLangTree,
-  localPermission
+  localPermission,
+  isPaired
 }) => {
   const { getTranslation, chooseTranslation } = useTranslations();
 
@@ -497,6 +499,7 @@ export const GrantNode = ({
             proxyData={proxyData}
             refreshLangTree={refreshLangTree}
             localPermission={localPermission}
+            isPaired={isPaired}
           />
       ))}
     </div>
@@ -513,7 +516,8 @@ export const OrganizationNode = ({
   setSelected,
   proxyData,
   refreshLangTree,
-  localPermission
+  localPermission,
+  isPaired
 }) => {
   const { getTranslation, chooseTranslation } = useTranslations();
 
@@ -535,6 +539,7 @@ export const OrganizationNode = ({
             proxyData={proxyData}
             refreshLangTree={refreshLangTree}
             localPermission={localPermission}
+            isPaired={isPaired}
           />
       ))}
     </div>
@@ -550,7 +555,8 @@ export const IndividualNode = ({
   setSelected,
   proxyData,
   refreshLangTree,
-  localPermission
+  localPermission,
+  isPaired
 }) => {
   const { getTranslation, chooseTranslation } = useTranslations();
 
@@ -570,6 +576,7 @@ export const IndividualNode = ({
             proxyData={proxyData}
             refreshLangTree={refreshLangTree}
             localPermission={localPermission}
+            isPaired={isPaired}
           />
       ))}
     </div>

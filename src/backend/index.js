@@ -281,3 +281,9 @@ export const updateLanguageMetadataMutation = gql`
     }
   }
 `;
+
+export const queryIsPaired = gql`
+  query isPaired {
+    is_paired
+  }
+`;
