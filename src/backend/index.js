@@ -287,3 +287,9 @@ export const queryIsPaired = gql`
     is_paired
   }
 `;
+
+export const queryIsProxy = gql`
+  query isProxy {
+    is_proxy
+  }
+`;

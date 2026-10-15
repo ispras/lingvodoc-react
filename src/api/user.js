@@ -19,8 +19,8 @@ export function getUser() {
   return httpGet("/user");
 }
 
-export function signIn(login, password) {
-  if (config.buildType === "proxy" || config.buildType === "desktop") {
+export function signIn(login, password, isProxy) {
+  if (isProxy) {
     return httpPost("/signin/desktop", { login, password });
   }
   return httpPost("/signin", { login, password });
