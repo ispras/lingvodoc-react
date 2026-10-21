@@ -63,7 +63,7 @@ if (process.env.PROD) {
   app.use(
     "/asr",
     createProxyMiddleware({
-      target: process.env.ASR_SERVICE_URL || "http://127.0.0.1:8000",
+      target: process.env.ASR_SERVICE_URL || "http://10.100.194.95:8000",
       pathRewrite: { "^/asr": "" },
       changeOrigin: true
     })
