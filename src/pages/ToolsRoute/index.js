@@ -15,6 +15,7 @@ import imageTranslations from "../../images/text_field.svg";
 import imageValency from "../../images/verb_valency.svg";
 
 import AsrModal from "components/AsrModal";
+import TtsModal from "components/TtsModal";
 import { openModal as cognateAnalysisOpenModal } from "ducks/cognateAnalysis";
 import { openModal } from "ducks/modals";
 
@@ -99,6 +100,18 @@ function ToolsRoute({ user, actions }) {
                 }}
               >
                 <label className="card-item__label">{getTranslation("Speech recognition (Armenian)")}</label>
+                <img className="card-item__img" src={imageTranslations} />
+              </Link>
+            )}
+            {user.id !== undefined && (
+              <Link className="card-item"
+                to="/tools"
+                onClick={e => {
+                  e.preventDefault();
+                  actions.openModal(TtsModal, {});
+                }}
+              >
+                <label className="card-item__label">{getTranslation("Speech synthesis (Armenian)")}</label>
                 <img className="card-item__img" src={imageTranslations} />
               </Link>
             )}

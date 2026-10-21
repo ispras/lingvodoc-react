@@ -12,7 +12,7 @@ import "./styles.scss";
  *   POST /transcribe       -> multipart { file } -> { text, duration_seconds, processing_sec }
  */
 
-const ASR_BASE_URL = window.ASR_SERVICE_URL || "http://127.0.0.1:8000";
+const ASR_BASE_URL = window.ASR_SERVICE_URL || "/asr";
 
 const HEALTH_POLL_MS = 4000;
 
