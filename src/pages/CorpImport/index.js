@@ -230,11 +230,11 @@ class Info extends React.Component {
           )}
           {step === "FINISH" && (
             <Message>
-              <Message.Header>{this.context("Conversion is in progress...")}</Message.Header>
+              <Message.Header>{this.context("Conversion is in progress") + "..."}</Message.Header>
               <Message.Content>
                 {this.context(
-                  "Your dictionary is scheduled for conversion. Please, check tasks tab for conversion status."
-                )}
+                  "Your dictionary is scheduled for conversion. Please, check tasks tab for conversion status"
+                ) + "."}
               </Message.Content>
             </Message>
           )}
@@ -252,8 +252,8 @@ class Info extends React.Component {
             <Message style={{ margin: 0, textAlign: "center" }}>
               <Message.Content>
                 {this.context(
-                  "Please select parent language and specify at least one translation to name the dictionary. Meet the previous terms."
-                )}
+                  "Please select parent language and specify at least one translation to name the dictionary. Meet the previous terms"
+                ) + "."}
               </Message.Content>
             </Message>
           )
@@ -267,11 +267,11 @@ class Info extends React.Component {
           </Button>
         ) : step === "LINKING" ? (
           <Message style={{ margin: 0, textAlign: "center" }}>
-            <Message.Content>{this.context("Choose at least two txt corpora or one json file.")}</Message.Content>
+            <Message.Content>{this.context("Choose at least two txt corpora or one json file") + "."}</Message.Content>
           </Message>
         ) : step === "COLUMNS" ? (
           <Message style={{ margin: 0, textAlign: "center" }}>
-            <Message.Content>{this.context("Please map all the columns to different Lingvodoc types. Meet the previous terms.")}</Message.Content>
+            <Message.Content>{this.context("Please map all the columns to different Lingvodoc types. Meet the previous terms") + "."}</Message.Content>
           </Message>
         ) : null}
       </div>

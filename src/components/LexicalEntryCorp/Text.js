@@ -214,7 +214,7 @@ const TextEntityContent = ({
 
     if (action === "delete_with_group") {
       setConfirmation({
-        content: getTranslation("Delete selected markups and related groups? Are you sure?"),
+        content: getTranslation("Delete selected markups and related groups? Are you sure") + "?",
         func: () => {
           setConfirmation(null);
           deleteMarkupGroup({ variables: { groupIds: groupsToDelete, perspectiveId: entry.parent_id } });

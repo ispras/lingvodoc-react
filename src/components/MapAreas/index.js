@@ -179,7 +179,7 @@ class MapAreas extends React.PureComponent {
             }
           },
           {
-            text: this.context("Disable all markers of the groups this marker belongs to."),
+            text: this.context("Disable all markers of the groups this marker belongs to") + ".",
             callback: () => {
               this.props.markersHandlers.deleteAllDictsOfGroups(markerGroups);
             }

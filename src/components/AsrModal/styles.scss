@@ -1,0 +1,50 @@
+.asr-modal {
+  .asr-field-row {
+    display: flex;
+    align-items: center;
+    gap: 1em;
+    margin: 0.75em 0;
+  }
+
+  .asr-field-label {
+    min-width: 4em;
+    font-weight: 600;
+  }
+
+  .asr-file-name {
+    color: #666;
+    font-style: italic;
+  }
+
+  .asr-or {
+    color: #999;
+  }
+
+  .asr-result-meta {
+    display: flex;
+    gap: 2em;
+    margin: 1em 0 0.5em;
+    color: #555;
+    font-size: 0.95em;
+  }
+
+  .asr-result-pre {
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-family: inherit;
+    max-height: 40vh;
+    overflow-y: auto;
+    margin: 0;
+  }
+
+  .asr-actions-row {
+    display: flex;
+    align-items: center;
+    gap: 1em;
+    margin-top: 1em;
+  }
+
+  .asr-sent-notice {
+    color: #2e7d32;
+  }
+}

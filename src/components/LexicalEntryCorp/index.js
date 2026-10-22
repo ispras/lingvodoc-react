@@ -594,7 +594,7 @@ const Entities = ({
 
       if (brokenMarkup) {
         setConfirmation({
-          content: getTranslation("You are going to delete a markup and related groups? Are you sure?"),
+          content: getTranslation("You are going to delete a markup and related groups? Are you sure") + "?",
           func: () => {
             setConfirmation(null);
             splitEntity({...variables});
@@ -676,7 +676,7 @@ const Entities = ({
         <li className="last">
           {!edit && (
             <div ref={dropRef}>
-              {isOver && <div className="lingvo-drop-here">{getTranslation("Drop Here!")}</div>}
+              {isOver && <div className="lingvo-drop-here">{getTranslation("Drop Here") + "!"}</div>}
 
               <Button.Group basic className="lingvo-buttons-group">
                 <Button icon={<i className="lingvo-icon lingvo-icon_plus" />}

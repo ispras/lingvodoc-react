@@ -14,7 +14,10 @@ import imageSearch from "../../images/location_search.svg";
 import imageTranslations from "../../images/text_field.svg";
 import imageValency from "../../images/verb_valency.svg";
 
+import AsrModal from "components/AsrModal";
+import TtsModal from "components/TtsModal";
 import { openModal as cognateAnalysisOpenModal } from "ducks/cognateAnalysis";
+import { openModal } from "ducks/modals";
 
 import "./styles.scss";
 
@@ -88,6 +91,30 @@ function ToolsRoute({ user, actions }) {
                 <img className="card-item__img card-item__img_map" src={imageMap} />
               </Link>
             )}
+            {user.id !== undefined && (
+              <Link className="card-item"
+                to="/tools"
+                onClick={e => {
+                  e.preventDefault();
+                  actions.openModal(AsrModal, {});
+                }}
+              >
+                <label className="card-item__label">{getTranslation("Speech recognition (Armenian)")}</label>
+                <img className="card-item__img" src={imageTranslations} />
+              </Link>
+            )}
+            {user.id !== undefined && (
+              <Link className="card-item"
+                to="/tools"
+                onClick={e => {
+                  e.preventDefault();
+                  actions.openModal(TtsModal, {});
+                }}
+              >
+                <label className="card-item__label">{getTranslation("Speech synthesis (Armenian)")}</label>
+                <img className="card-item__img" src={imageTranslations} />
+              </Link>
+            )}
           </div>
         </div>
       </div>
@@ -101,6 +128,7 @@ export default connect(
   dispatch => ({
     actions: bindActionCreators({
       cognateAnalysisOpenModal,
+      openModal,
     },
     dispatch)
   })

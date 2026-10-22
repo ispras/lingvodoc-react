@@ -78,7 +78,7 @@ class Docx2Xlsx extends React.Component {
         {this.props.user.id === undefined && !this.props.loading ? (
           <Message>
             <Message.Header>{this.context("Please sign in")}</Message.Header>
-            <p>{this.context("Only registered users can convert .docx to .xlsx.")}</p>
+            <p>{this.context("Only registered users can convert .docx to .xlsx") + "."}</p>
           </Message>
         ) : this.props.loading ? (
           <Segment>

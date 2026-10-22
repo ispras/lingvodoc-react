@@ -594,7 +594,7 @@ class SLSelection extends React.Component {
           </div>
         ) || (
           <span style={{ color: "gray", fontStyle: "italic", marginLeft: "0.5em" }}>
-            {this.context("There are not enough perspectives with expected grouping field.")}
+            {this.context("There are not enough perspectives with expected grouping field") + "."}
           </span>
         )}
 
@@ -1145,7 +1145,7 @@ class MLSelection extends React.Component {
                         </div>
                       ) || (
                         <span style={{ color: "gray", fontStyle: "italic", marginLeft: "0.5em" }}>
-                          {this.context("There is no any perspective with expected grouping field.")}
+                          {this.context("There is no any perspective with expected grouping field") + "."}
                         </span>
                       )}
 
@@ -1448,7 +1448,7 @@ class SuggestionSelection extends React.Component {
           </div>
         ) : (
           <Button
-            content={sg_state_list[index] === "connecting" ? this.context("Connecting...") : this.context("Connect")}
+            content={sg_state_list[index] === "connecting" ? this.context("Connecting") + "..." : this.context("Connect")}
             disabled={Object.keys(sg_select_list[index]).length <= 1 || sg_state_list[index] === "connecting"}
             onClick={() => sg_connect(index)}
             className="lingvo-button-greenest"
@@ -2120,7 +2120,7 @@ class CognateAnalysisModal extends React.Component {
   }) {
 
     if (result.length > 1048576 && (this.props.mode === "suggestions" || this.props.mode === "multi_suggestions")) {
-      result = this.context("Skipping text output, too long.");
+      result = this.context("Skipping text output, too long") + ".";
     }
 
     /* Data of the 2d cognate distance plots. */
@@ -2372,13 +2372,13 @@ class CognateAnalysisModal extends React.Component {
         (error_data.networkError.statusCode == 502 || error_data.networkError.statusCode == 504)
       ) {
         window.logger.err(
-          this.context("Failed to compute cognate analysis! Analysis library or server connection error.")
+          this.context("Failed to compute cognate analysis! Analysis library or server connection error") + "."
         );
       } else {
-        window.logger.err(this.context("Failed to compute cognate analysis! Server connection error."));
+        window.logger.err(this.context("Failed to compute cognate analysis! Server connection error") + ".");
       }
     } else {
-      window.logger.err(this.context("Failed to compute cognate analysis!"));
+      window.logger.err(this.context("Failed to compute cognate analysis") + "!");
     }
 
     console.log(error_data.message);
@@ -2475,12 +2475,12 @@ class CognateAnalysisModal extends React.Component {
         }
       }).then(
         () => {
-          window.logger.suc(this.context("Cognate acoustic analysis is launched. Please check out tasks for details."));
+          window.logger.suc(this.context("Cognate acoustic analysis is launched. Please check out tasks for details") + ".");
 
           this.props.closeModal();
         },
         () => {
-          window.logger.err(this.context("Failed to launch cognate acoustic analysis!"));
+          window.logger.err(this.context("Failed to launch cognate acoustic analysis") + "!");
         }
       );
     } else if (mode === "swadesh" || mode === "multi_swadesh") {
@@ -2584,14 +2584,14 @@ class CognateAnalysisModal extends React.Component {
 
           if (triumph) {
             this.props.closeModal();
-            window.logger.suc(this.context("Neuro cognate analysis is launched. Please check out tasks for details."));
+            window.logger.suc(this.context("Neuro cognate analysis is launched. Please check out tasks for details") + ".");
           } else {
             window.logger.err(message);
           }
         },
         () => {
           this.setState({ computing: false });
-          window.logger.err(this.context("Failed to launch neuro cognate analysis!"));
+          window.logger.err(this.context("Failed to launch neuro cognate analysis") + "!");
         }
       );
 
@@ -2658,7 +2658,7 @@ class CognateAnalysisModal extends React.Component {
       );
     } else {
       return (
-        <span>{this.context("Perspective does not have any grouping fields, cognate analysis is impossible.")}</span>
+        <span>{this.context("Perspective does not have any grouping fields, cognate analysis is impossible") + "."}</span>
       );
     }
   }
@@ -2744,7 +2744,7 @@ class CognateAnalysisModal extends React.Component {
           <div className="lingvo-message lingvo-message_error" style={{ marginTop: "14px", marginBottom: "14px" }}>
             {this.context("Unauthorized user")}
             <p>
-              {this.context("Only authorized users can create new cognate connections based on cognate suggestions.")}
+              {this.context("Only authorized users can create new cognate connections based on cognate suggestions") + "."}
             </p>
           </div>
         )}
@@ -2796,8 +2796,8 @@ class CognateAnalysisModal extends React.Component {
             {this.context("Perspective is not published")}
             <p>
               {this.context(
-                "Cognate suggestions are available only for perspectives in the “Published” or “Limited access” state."
-              )}
+                "Cognate suggestions are available only for perspectives in the “Published” or “Limited access” state"
+              ) + "."}
             </p>
           </div>
         </Modal.Content>
@@ -2955,7 +2955,7 @@ class CognateAnalysisModal extends React.Component {
           <div className="lingvo-info-message">
             <div className="lingvo-info-message__header">{this.context("Multiple languages required")}</div>
             <p>
-              {this.context("Cognate multi-language reconstruction requires dictionaries from at least 2 languages.")}
+              {this.context("Cognate multi-language reconstruction requires dictionaries from at least 2 languages") + "."}
             </p>
           </div>
         )}
@@ -3062,7 +3062,7 @@ class CognateAnalysisModal extends React.Component {
 
           {sg_count.connecting > 0 && (
             <span>
-              , {sg_count.connecting} {getTranslation("connecting...")}
+              , {sg_count.connecting} {getTranslation("connecting") + "..."}
             </span>
           )}
 
@@ -3543,8 +3543,8 @@ class CognateAnalysisModal extends React.Component {
                           {this.context("Unauthorized user")}
                           <p>
                             {this.context(
-                              "Only authorized users can create new cognate connections based on cognate suggestions."
-                            )}
+                              "Only authorized users can create new cognate connections based on cognate suggestions"
+                            ) + "."}
                           </p>
                         </div>
                       ) : (

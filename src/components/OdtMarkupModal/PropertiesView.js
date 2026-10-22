@@ -150,7 +150,7 @@ class PropertiesView extends React.Component {
         <Confirm
           open={elemToDeleteId !== null}
           header={this.context("Confirmation")}
-          content={this.context("Are you sure you want to delete this variant?")}
+          content={this.context("Are you sure you want to delete this variant") + "?"}
           onConfirm={this.deleteVariant}
           onCancel={() => this.setState({ elemToDeleteId: null })}
           className="lingvo-confirm"

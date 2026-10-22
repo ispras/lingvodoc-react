@@ -564,7 +564,7 @@ class OdtMarkupModal extends React.Component {
   removeFromMarkup() {
     this.setState({
       confirmation: {
-        content: this.context("Are you sure you want to remove selected element from markup?"),
+        content: this.context("Are you sure you want to remove selected element from markup") + "?",
         func: () => {
           this.joinNeighbours();
           this.setState({ json: this.content, selection: null, dirty: true, confirmation: null });
@@ -576,7 +576,7 @@ class OdtMarkupModal extends React.Component {
   moveMarkup() {
     this.setState({
       confirmation: {
-        content: this.context("Are you sure you want to move selected element?"),
+        content: this.context("Are you sure you want to move selected element") + "?",
         func: () => {
           const copiedElem = this.joinNeighbours();
           this.setState({ json: this.content, selection: null, dirty: true, confirmation: null,
@@ -647,7 +647,7 @@ class OdtMarkupModal extends React.Component {
     if (this.state.dirty) {
       this.setState({
         confirmation: {
-          content: this.context("There are unsaved changes present. Are you sure you want to discard it?"),
+          content: this.context("There are unsaved changes present. Are you sure you want to discard it") + "?",
           func: this.props.onClose
         }
       });

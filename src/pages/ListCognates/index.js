@@ -199,7 +199,7 @@ const ListCognates = connect(state => state.user)(({user}) => {
         )}
         { data && data.cognates_summary.triumph && !error && !cleanResult && (
           <Message positive>
-            <Message.Header>{getTranslation("Computation is going. Please see the sidebar with tasks.")}</Message.Header>
+            <Message.Header>{getTranslation("Computation is going. Please see the sidebar with tasks") + "."}</Message.Header>
             <p/>
           </Message>
         )}

@@ -65,10 +65,10 @@ class Properties extends React.Component {
       }
     }).then(
       () => {
-        window.logger.suc(this.context("Saving dictionary task is launched. Please check out tasks for details."));
+        window.logger.suc(this.context("Saving dictionary task is launched. Please check out tasks for details") + ".");
       },
       () => {
-        window.logger.err(this.context("Failed to launch saving dictionary task."));
+        window.logger.err(this.context("Failed to launch saving dictionary task") + ".");
       }
     );
   }

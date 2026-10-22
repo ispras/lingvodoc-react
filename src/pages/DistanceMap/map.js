@@ -219,7 +219,7 @@ class MapAreas extends PureComponent {
         <div className="background-content">
           <Message compact>
             <Message.Header>{this.context("Please sign in")}</Message.Header>
-            <p>{this.context("Only registered users can work with distance map.")}</p>
+            <p>{this.context("Only registered users can work with distance map") + "."}</p>
           </Message>
         </div>
       );

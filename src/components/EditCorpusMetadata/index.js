@@ -126,7 +126,7 @@ class EditCorpusMetadata extends React.Component {
         </Segment>
       );
     } else if (error) {
-      return <Message negative>{this.context("Metadata loading error, please contact adiministrators.")}</Message>;
+      return <Message negative>{this.context("Metadata loading error, please contact adiministrators") + "."}</Message>;
     }
 
     const { metadata: rawMetadata } = this.props;

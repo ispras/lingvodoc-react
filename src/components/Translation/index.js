@@ -162,7 +162,7 @@ class Translations extends React.Component {
           () => this.props.onChange(this.state.translations)
         );
       } else {
-        window.logger.err(this.context("No more locales!"));
+        window.logger.err(this.context("No more locales") + "!");
       }
     }
   }
@@ -178,7 +178,7 @@ class Translations extends React.Component {
         <Message negative compact>
           <Message.Header>{this.context("Locale data loading error")}</Message.Header>
           <div style={{ marginTop: "0.25em" }}>
-            {this.context("Try reloading the page; if the error persists, please contact administrators.")}
+            {this.context("Try reloading the page; if the error persists, please contact administrators") + "."}
           </div>
         </Message>
       );

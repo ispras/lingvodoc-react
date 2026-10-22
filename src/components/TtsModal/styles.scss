@@ -1,0 +1,39 @@
+.tts-modal {
+  .tts-field-row {
+    display: flex;
+    align-items: center;
+    gap: 1em;
+    margin: 0.75em 0;
+  }
+
+  .tts-field-label {
+    min-width: 4em;
+    font-weight: 600;
+  }
+
+  .tts-text-input {
+    width: 100%;
+  }
+
+  .tts-char-count {
+    text-align: right;
+    color: #999;
+    font-size: 0.85em;
+    margin-top: -0.5em;
+  }
+
+  .tts-result {
+    margin-top: 1em;
+  }
+
+  .tts-audio {
+    width: 100%;
+  }
+
+  .tts-actions-row {
+    display: flex;
+    align-items: center;
+    gap: 1em;
+    margin-top: 1em;
+  }
+}

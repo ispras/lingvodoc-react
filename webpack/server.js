@@ -50,6 +50,24 @@ if (process.env.PROD) {
       changeOrigin: true
     })
   );
+
+  app.use(
+    "/tts",
+    createProxyMiddleware({
+      target: process.env.TTS_SERVICE_URL || "http://10.100.194.95:9000",
+      pathRewrite: { "^/tts": "" },
+      changeOrigin: true
+    })
+  );
+
+  app.use(
+    "/asr",
+    createProxyMiddleware({
+      target: process.env.ASR_SERVICE_URL || "http://10.100.194.95:8000",
+      pathRewrite: { "^/asr": "" },
+      changeOrigin: true
+    })
+  );
 }
 
 const devMiddleWare = require("webpack-dev-middleware")(compiler, devServerConf);

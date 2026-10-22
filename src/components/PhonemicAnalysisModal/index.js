@@ -158,7 +158,7 @@ class PhonemicAnalysisModal extends React.Component {
       },
 
       error_data => {
-        window.logger.err(this.context("Failed to compute phonemic analysis!"));
+        window.logger.err(this.context("Failed to compute phonemic analysis") + "!");
 
         if (error_data.message === "GraphQL error: Analysis library is absent, please contact system administrator.") {
           this.setState({

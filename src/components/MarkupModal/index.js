@@ -38,7 +38,7 @@ const MarkupEntity = graphql(q)(props => {
       <Message negative compact>
         <Message.Header>{getTranslation("Markup data loading error")}</Message.Header>
         <div style={{ marginTop: "0.25em" }}>
-          {getTranslation("Try reloading the page; if the error persists, please contact administrators.")}
+          {getTranslation("Try reloading the page; if the error persists, please contact administrators") + "."}
         </div>
       </Message>
     );
@@ -82,13 +82,13 @@ const MarkupModal = props => {
         ) || preview && (
           <>
             <Button
-              content={getTranslation("Convert morphology concordance...")}
+              content={getTranslation("Convert morphology concordance") + "..."}
               onClick={() => actions.openConvert(audio, data.markup, columns, allEntriesGenerator, true, preview)}
               id={data.markup.id}
               className="lingvo-button-lite-violet"
             />
             <Button
-              content={getTranslation("Convert to dictionary...")}
+              content={getTranslation("Convert to dictionary") + "..."}
               onClick={() => actions.openConvert(audio, data.markup, columns, allEntriesGenerator, false, preview)}
               id={data.markup.id}
               className="lingvo-button-violet"

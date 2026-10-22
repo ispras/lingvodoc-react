@@ -190,7 +190,7 @@ const Query = ({ data, query, onFieldChange, onDelete, setSearch }) => {
         <Message negative compact>
           <Message.Header>{getTranslation("Field data loading error")}</Message.Header>
           <div style={{ marginTop: "0.25em" }}>
-            {getTranslation("Try reloading the page; if the error persists, please contact administrators.")}
+            {getTranslation("Try reloading the page; if the error persists, please contact administrators") + "."}
           </div>
         </Message>
       </div>
@@ -788,7 +788,7 @@ class QueryBuilder extends React.Component {
                     float: "right"
                   }}
                 >
-                  {this.context("Link to search results:")}{" "}
+                  {this.context("Link to search results") + ":"}{" "}
                   <Link to={`/map_search/${searchURLId}`}>
                     {`${window.location.protocol}\/\/${window.location.host}/map_search/${searchURLId}`}
                   </Link>
@@ -806,7 +806,7 @@ class QueryBuilder extends React.Component {
                       padding: "0.78571429em 1.5em"
                     }}
                   >
-                    {this.context("Failed to get search link, please contact administrators.")}
+                    {this.context("Failed to get search link, please contact administrators") + "."}
                   </Message>
                 </div>
               ) : !user.id ? (

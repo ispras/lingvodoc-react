@@ -546,8 +546,8 @@ class StatisticsModal extends React.Component {
                   <Message.Header>{this.context("Statistics error")}</Message.Header>
                   <div style={{ marginTop: "0.25em" }}>
                     {this.context(
-                      "Try closing the dialog and opening it again; if the error persists, please contact administrators."
-                    )}
+                      "Try closing the dialog and opening it again; if the error persists, please contact administrators"
+                    ) + "."}
                   </div>
                 </Message>
               </div>

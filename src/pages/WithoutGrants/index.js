@@ -116,7 +116,7 @@ const CorporaAll = props => {
   if (error) {
     return (
       <Message negative compact>
-        {getTranslation("Dictionary info loading error, please contact adiministrators.")}
+        {getTranslation("Dictionary info loading error, please contact adiministrators") + "."}
       </Message>
     );
   }
@@ -274,7 +274,7 @@ const AuthWrapper = ({
   if (error) {
     return (
       <Message negative compact>
-        {getTranslation("Dictionary info loading error, please contact adiministrators.")}
+        {getTranslation("Dictionary info loading error, please contact adiministrators") + "."}
       </Message>
     );
   }

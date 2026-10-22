@@ -36,7 +36,7 @@ const TabParentLanguage = ({ onSelect }) => {
       {!parentLanguage && <Header className="inverted">{getTranslation("Please, select the parent language")}</Header>}
       {parentLanguage && (
         <Header className="inverted">
-          {getTranslation("You have selected:")} <b>{T(parentLanguage.translations)}</b>
+          {getTranslation("You have selected") + ":"} <b>{T(parentLanguage.translations)}</b>
         </Header>
       )}
       <Languages expanded={false} selected={parentLanguage} onSelect={onSelect} />
@@ -264,7 +264,7 @@ class CreateDictionaryWizard extends React.Component {
                 >
                   {this.context("here")}
                 </Link>
-                {` ${this.context("to view.")}`}
+                {` ${this.context("to view") + "."}`}
               </Message.Content>
             </Message>
           )}

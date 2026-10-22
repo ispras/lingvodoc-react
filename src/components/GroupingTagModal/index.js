@@ -164,7 +164,7 @@ const PublishGroupingTag = props => {
             <Segment>
               <Checkbox 
                 toggle 
-                label={published && getTranslation("The entity is currently published. Click to unpublish.") || getTranslation("The entity is NOT currently published. Click to publish.")}
+                label={published && getTranslation("The entity is currently published. Click to unpublish") + "." || getTranslation("The entity is NOT currently published. Click to publish") + "."}
                 checked={published}  
                 onChange={(e, { checked }) => publish(entity, checked)} 
                 className="lingvo-radio-toggle"

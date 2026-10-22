@@ -82,7 +82,7 @@ class CreatePerspectiveModal extends React.Component {
     }).then(({ data }) => {
       closeCreatePerspectiveModal();
 
-      window.logger.suc(this.context("Successfully created perspective."));
+      window.logger.suc(this.context("Successfully created perspective") + ".");
     });
   }
 

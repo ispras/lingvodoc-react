@@ -50,8 +50,8 @@ const SignInModal = ({ close }) => {
     if (!response.data) {
       setErrorMessage(
         getTranslation(
-          "Signin failure. Either no such login/password combination exists, or this user account has been deactivated."
-        )
+          "Signin failure. Either no such login/password combination exists, or this user account has been deactivated"
+        ) + "."
       );
       setLogginIn(false);
       return;

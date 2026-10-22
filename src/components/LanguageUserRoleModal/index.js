@@ -44,7 +44,7 @@ const SelectUserModal = ({ language, kind, close, success, filter_by}) => {
       addRole({ variables: { userId, languageId: language.id }}
     ).then(() => {
       close();
-      window.logger.suc(getTranslation("Added roles successfully."));
+      window.logger.suc(getTranslation("Added roles successfully") + ".");
     });
 
     if (kind === 'sign')
@@ -57,7 +57,7 @@ const SelectUserModal = ({ language, kind, close, success, filter_by}) => {
     }).then(() => {
       close();
       success({add_user_id: userId, language_id: language.id});
-      window.logger.suc(getTranslation("Signed successfully."));
+      window.logger.suc(getTranslation("Signed successfully") + ".");
     });
   }
 
@@ -105,7 +105,7 @@ const SelectUserModal = ({ language, kind, close, success, filter_by}) => {
       <Message negative compact>
         <Message.Header>{getTranslation("User data loading error")}</Message.Header>
         <div style={{ marginTop: "0.25em" }}>
-          {getTranslation("Try reloading the page; if the error persists, please contact administrators.")}
+          {getTranslation("Try reloading the page; if the error persists, please contact administrators") + "."}
         </div>
       </Message>
     );
@@ -116,7 +116,7 @@ const SelectUserModal = ({ language, kind, close, success, filter_by}) => {
       <Message negative compact>
         <Message.Header>{getTranslation("Adding " + kind + " error")}</Message.Header>
         <div style={{ marginTop: "0.25em" }}>
-          {getTranslation("Please contact administrators.")}
+          {getTranslation("Please contact administrators") + "."}
         </div>
       </Message>
     );

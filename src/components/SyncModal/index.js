@@ -57,7 +57,7 @@ const SyncModal = ({ perspectiveId, perspectiveName, onClose, silentMode, action
       if (message) {
         setErrorMessage(message);
       } else if (taskId) {
-        window.logger.suc(getTranslation("Computation is going. Please see the sidebar with tasks."));
+        window.logger.suc(getTranslation("Computation is going. Please see the sidebar with tasks") + ".");
         console.log(`Merging '${perspectiveName}'...`);
         onClose(taskId);
       } else {

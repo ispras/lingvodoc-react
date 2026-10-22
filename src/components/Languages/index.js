@@ -206,7 +206,7 @@ const Languages = ({ actions, height, selected, onSelect, expanded = true, inver
           }
         }).then(() => {
           updateLanguageTree({del_user_id: user_id, language_id: node_id});
-          window.logger.suc(getTranslation("Unsigned successfully."));
+          window.logger.suc(getTranslation("Unsigned successfully") + ".");
         });
 
       const langAttUsr = node.additional_metadata.attached_users;
@@ -249,7 +249,7 @@ const Languages = ({ actions, height, selected, onSelect, expanded = true, inver
           hideOnScroll={true}
           position='top left'
         >
-          <Popup.Header>{getTranslation("Own and inherited users:")}</Popup.Header>
+          <Popup.Header>{getTranslation("Own and inherited users") + ":"}</Popup.Header>
           <Popup.Content>
             <ul>
               {allUsrName

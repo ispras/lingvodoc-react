@@ -38,7 +38,7 @@ const NestedColumn = ({ column, columns, fields, onChange }) => {
       value={nested ? nested.id : null}
       onChange={(a, { value }) => onChange(value, nested ? nested.id : null)}
       icon={<i className="lingvo-icon lingvo-icon_arrow" />}
-      noResultsMessage={getTranslation("No results found.")}
+      noResultsMessage={getTranslation("No results found") + "."}
     />
   );
 };

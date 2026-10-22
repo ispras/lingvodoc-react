@@ -175,7 +175,7 @@ class Files extends React.Component {
       return (
         <div className="background-content">
           <Message compact negative>
-            {this.context("User sign-in error, please sign in; if not successful, please contact administrators.")}
+            {this.context("User sign-in error, please sign in; if not successful, please contact administrators") + "."}
           </Message>
         </div>
       );
@@ -194,7 +194,7 @@ class Files extends React.Component {
         <div className="background-content">
           <Message>
             <Message.Header>{this.context("Please sign in")}</Message.Header>
-            <p>{this.context("Only registered users can work with files.")}</p>
+            <p>{this.context("Only registered users can work with files") + "."}</p>
           </Message>
         </div>
       );
@@ -202,7 +202,7 @@ class Files extends React.Component {
       return (
         <div className="background-content">
           <Message compact negative>
-            {this.context("General error, please contact administrators.")}
+            {this.context("General error, please contact administrators") + "."}
           </Message>
         </div>
       );

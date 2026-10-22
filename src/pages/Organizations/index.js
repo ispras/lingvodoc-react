@@ -96,7 +96,7 @@ class Organizations extends React.Component {
         }
       ]
     }).then(() => {
-      window.logger.suc(this.context("Request has been sent to the organization's administrator."));
+      window.logger.suc(this.context("Request has been sent to the organization's administrator") + ".");
 
       const { process_member_id_set } = this.state;
 
@@ -116,7 +116,7 @@ class Organizations extends React.Component {
         }
       ]
     }).then(() => {
-      window.logger.suc(this.context("Request has been sent to the organization's administrator."));
+      window.logger.suc(this.context("Request has been sent to the organization's administrator") + ".");
 
       const { process_admin_id_set } = this.state;
 

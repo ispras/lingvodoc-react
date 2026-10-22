@@ -15,7 +15,7 @@ class AuthorsField extends PureComponent {
   render() {
     const { classNames, value, options, onChange, getTranslation } = this.props;
     const selectText = getTranslation("Select authors");
-    const noFoundText = getTranslation("No authors found.");
+    const noFoundText = getTranslation("No authors found") + ".";
     const label = getTranslation("Authors");
     const selectAllText = getTranslation("Select all");
     const clearAllText = getTranslation("Clear all");
