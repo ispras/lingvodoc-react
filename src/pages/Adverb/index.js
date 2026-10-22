@@ -849,7 +849,7 @@ class Adverb extends React.Component {
       })
       .then(
         () => {
-          window.logger.suc(this.context("Set adverb annotation."));
+          window.logger.suc(this.context("Set adverb annotation") + ".");
 
           for (const [instance_id, annotation_value] of annotation_list) {
             if (!this.state.annotation_map.has(instance_id)) {
@@ -1143,7 +1143,7 @@ class Adverb extends React.Component {
       return (
         <div className="background-content">
           <Message compact negative>
-            {this.context("User sign-in error, please sign in; if not successful, please contact administrators.")}
+            {this.context("User sign-in error, please sign in; if not successful, please contact administrators") + "."}
           </Message>
         </div>
       );
@@ -1162,7 +1162,7 @@ class Adverb extends React.Component {
         <div className="background-content">
           <Message>
             <Message.Header>{this.context("Please sign in")}</Message.Header>
-            <p>{this.context("Only registered users can work with adverb data.")}</p>
+            <p>{this.context("Only registered users can work with adverb data") + "."}</p>
           </Message>
         </div>
       );
@@ -1170,7 +1170,7 @@ class Adverb extends React.Component {
       return (
         <div className="background-content">
           <Message compact negative>
-            {this.context("General error, please contact administrators.")}
+            {this.context("General error, please contact administrators") + "."}
           </Message>
         </div>
       );
@@ -1424,7 +1424,7 @@ class Adverb extends React.Component {
 
           <Select
             fluid
-            placeholder={this.context("Please select perspective.")}
+            placeholder={this.context("Please select perspective") + "."}
             search
             options={perspective_option_list}
             onChange={(e, { value }) => this.setPerspective(perspective_id_map.get(value))}
@@ -1510,7 +1510,7 @@ class Adverb extends React.Component {
           {this.state.loading_adverb_data && (
             <div style={{ marginTop: "1em" }}>
               <span>
-                {`${this.context("Loading adverb data...")} `}
+                {`${this.context("Loading adverb data") + "..."} `}
                 <Icon name="spinner" loading />
               </span>
             </div>

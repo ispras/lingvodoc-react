@@ -160,7 +160,7 @@ class Roles extends React.Component {
     if (data.error) {
       return (
         <Message negative compact>
-          {this.context("Role data loading error, please contact adiministrators.")}
+          {this.context("Role data loading error, please contact adiministrators") + "."}
         </Message>
       );
     } else if (data.loading) {

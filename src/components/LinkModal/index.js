@@ -168,8 +168,8 @@ const PublishLink = props => {
   const entity = lexicalEntry.entities.find(e => isEqual(e.field_id, column.field_id));
 
   const label = published
-    ? getTranslation("The entity is currently published. Click to unpublish.")
-    : getTranslation("The entity is NOT currently published. Click to publish.");
+    ? getTranslation("The entity is currently published. Click to unpublish") + "."
+    : getTranslation("The entity is NOT currently published. Click to publish") + ".";
 
   const panes = [
     {
@@ -386,7 +386,7 @@ class LinkModalContent extends React.PureComponent {
     if (error) {
       return (
         <Message negative compact>
-          {this.context("Link data loading error, please contact administrators.")}
+          {this.context("Link data loading error, please contact administrators") + "."}
         </Message>
       );
     }

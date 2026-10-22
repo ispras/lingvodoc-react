@@ -93,7 +93,7 @@ class Docx2Eaf extends React.Component {
         {this.props.user.id === undefined && !this.props.loading ? (
           <Message>
             <Message.Header>{this.context("Please sign in")}</Message.Header>
-            <p>{this.context("Only registered users can convert .docx to .eaf.")}</p>
+            <p>{this.context("Only registered users can convert .docx to .eaf") + "."}</p>
           </Message>
         ) : this.props.loading ? (
           <Segment>

@@ -52,7 +52,7 @@ class DictionaryOrganizationsModal extends React.Component {
 
         <Modal.Content>
           <div>
-            <div className="lingvo-organizations-head-table">{this.context("Linked organizations:")}</div>
+            <div className="lingvo-organizations-head-table">{this.context("Linked organizations") + ":"}</div>
 
             {(this.linked_list.length > 0 && (
               <Table celled className="lingvo-organizations-table">
@@ -68,7 +68,7 @@ class DictionaryOrganizationsModal extends React.Component {
           </div>
 
           <div style={{ marginTop: "1.75em" }}>
-            <div className="lingvo-organizations-head-table">{this.context("Organizations available to link to:")}</div>
+            <div className="lingvo-organizations-head-table">{this.context("Organizations available to link to") + ":"}</div>
 
             {(this.link_to_list.length > 0 && (
               <Table celled className="lingvo-organizations-table">
@@ -101,7 +101,7 @@ class DictionaryOrganizationsModal extends React.Component {
                               }).then(
                                 () => {
                                   window.logger.suc(
-                                    this.context("Request has been sent to the organization's administrator.")
+                                    this.context("Request has been sent to the organization's administrator") + "."
                                   );
 
                                   this.state.requested_id_set[id_str] = null;

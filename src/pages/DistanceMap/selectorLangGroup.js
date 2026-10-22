@@ -188,7 +188,7 @@ const SelectorLangGroup = ((props) => {
         <div className="background-content">
           <Message compact>
             <Message.Header>{getTranslation("Please sign in")}</Message.Header>
-            <p>{getTranslation("Only registered users can work with distance map.")}</p>
+            <p>{getTranslation("Only registered users can work with distance map") + "."}</p>
           </Message>
         </div>
       );

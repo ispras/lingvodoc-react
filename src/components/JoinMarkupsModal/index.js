@@ -108,7 +108,7 @@ const JoinMarkupsModal = ({ perspectiveId, onClose }) => {
     onCompleted: ({ save_markup_groups: result }) => {
       if (result.triumph) {
         setSuccessMessage(
-          `${getTranslation("Markup groups were saved into xlsx file.")}
+          `${getTranslation("Markup groups were saved into xlsx file") + "."}
           ${getTranslation("Follow")} <a href=${result.xlsx_url}>${getTranslation("result url")}</a>`
         );
       } else {
@@ -180,7 +180,7 @@ const JoinMarkupsModal = ({ perspectiveId, onClose }) => {
     for (const group of Object.values(groupDict)) {
       const ids = group.markups.map(markup => markup.id);
       if (ids.includes(firstTextRelation) && ids.includes(secondTextRelation) && group.type === typeRelation) {
-        window.logger.warn(getTranslation("Such group already exists."));
+        window.logger.warn(getTranslation("Such group already exists") + ".");
         return;
       }
     }
@@ -197,7 +197,7 @@ const JoinMarkupsModal = ({ perspectiveId, onClose }) => {
     setSecondTextRelation(null);
     setTypeRelation(null);
 
-    window.logger.suc(getTranslation("The group was successfully added."));
+    window.logger.suc(getTranslation("The group was successfully added") + ".");
   }, [firstTextRelation, secondTextRelation, typeRelation, groupDict]);
 
   const onDeleteRelation = useCallback(() => {
@@ -218,7 +218,7 @@ const JoinMarkupsModal = ({ perspectiveId, onClose }) => {
     setSelectedRelations([]);
     setSelectedTotal(0);
 
-    window.logger.suc(getTranslation("The group was successfully deleted."));
+    window.logger.suc(getTranslation("The group was successfully deleted") + ".");
   }, [groupDict, selectedRelations]);
 
   const onRelationSelect = (relation_id, checked) => {

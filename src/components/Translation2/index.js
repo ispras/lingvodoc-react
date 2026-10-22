@@ -203,7 +203,7 @@ class Translations extends React.Component {
           () => this.props.onChange(this.state.translations)
         );
       } else {
-        window.logger.err(this.context("No more locales!"));
+        window.logger.err(this.context("No more locales") + "!");
       }
     }
   }

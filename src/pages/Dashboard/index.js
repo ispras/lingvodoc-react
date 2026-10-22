@@ -447,7 +447,7 @@ class D extends React.Component {
                     <Dropdown.Item onClick={() => actions.openStatistics(id, "dictionary", this.context("Statistics"))}>
                       <i className="lingvo-icon lingvo-icon_stats" /> {this.context("Statistics")}
                     </Dropdown.Item>
-                    {/*<Dropdown.Item icon="circle" text={this.context("Create a new perspective...")} />*/}
+                    {/*<Dropdown.Item icon="circle" text={this.context("Create a new perspective") + "..."} />*/}
                     <Dropdown.Item onClick={() => actions.openSaveDictionaryModal(id)}>
                       <i className="lingvo-icon lingvo-icon_save" /> {this.context("Save dictionary")}
                     </Dropdown.Item>

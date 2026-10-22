@@ -15,7 +15,7 @@ class HumanSettlementField extends PureComponent {
   render() {
     const { classNames, value, options, onChange, getTranslation } = this.props;
     const selectText = getTranslation("Select settlement");
-    const noFoundText = getTranslation("No settlement found.");
+    const noFoundText = getTranslation("No settlement found") + ".";
     const label = getTranslation("Settlement");
     const selectAllText = getTranslation("Select all");
     const clearAllText = getTranslation("Clear all");

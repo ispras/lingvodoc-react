@@ -95,7 +95,7 @@ const TtsModal = ({ onClose }) => {
       const blob = await resp.blob();
       setAudio(blob);
     } catch (e) {
-      setErrorMessage(getTranslation("Could not reach the TTS service."));
+      setErrorMessage(getTranslation("Could not reach the TTS service") + ".");
     } finally {
       setSubmitting(false);
     }
@@ -119,7 +119,7 @@ const TtsModal = ({ onClose }) => {
             <p>
               {getTranslation("The Armenian speech synthesis service is not responding at")}{" "}
               <code>{TTS_BASE_URL}</code>.{" "}
-              {getTranslation("Make sure the tts-hy container is running and its healthcheck reports ready, then reload this dialog.")}
+              {getTranslation("Make sure the tts-hy container is running and its healthcheck reports ready, then reload this dialog") + "."}
             </p>
           </Message>
         )}
@@ -142,7 +142,7 @@ const TtsModal = ({ onClose }) => {
                 className="tts-text-input"
                 rows={5}
                 maxLength={MAX_TEXT_LENGTH}
-                placeholder={getTranslation("Enter Armenian text to synthesize…")}
+                placeholder={getTranslation("Enter Armenian text to synthesize") + "…"}
                 value={text}
                 onChange={e => setText(e.target.value)}
               />

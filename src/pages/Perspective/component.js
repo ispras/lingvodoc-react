@@ -247,8 +247,8 @@ const VerbCasesModal = ({ verbCases, setVerbCases, data, error, loading }) => {
             <Message.Header>{getTranslation("Valency verb cases error")}</Message.Header>
             <div style={{ marginTop: "0.25em" }}>
               {getTranslation(
-                "Try closing the dialog and opening it again; if the error persists, please contact administrators."
-              )}
+                "Try closing the dialog and opening it again; if the error persists, please contact administrators"
+              ) + "."}
             </div>
           </Message>
         )}
@@ -872,7 +872,7 @@ const VerbCasesActionResult = ({ close, client, info }) => {
         },
         () => {
           setComputing(false);
-          window.logger.err(getTranslation("Failed to compute valency verb cases analysis."));
+          window.logger.err(getTranslation("Failed to compute valency verb cases analysis") + ".");
         }
       );
   };
@@ -1262,10 +1262,10 @@ const soundAndMarkup = (perspectiveId, mode, launchSoundAndMarkup, getTranslatio
     }
   }).then(
     () => {
-      window.logger.suc(getTranslation("Sound and markup compilation is being created. Check out tasks for details."));
+      window.logger.suc(getTranslation("Sound and markup compilation is being created. Check out tasks for details") + ".");
     },
     () => {
-      window.logger.err(getTranslation("Failed to launch sound and markup compilation!"));
+      window.logger.err(getTranslation("Failed to launch sound and markup compilation") + "!");
     }
   );
 };
@@ -1277,10 +1277,10 @@ const valency = (perspectiveId, launchValency, getTranslation) => {
     }
   }).then(
     () => {
-      window.logger.suc(getTranslation("Valency data is being compiled. Check out tasks for details."));
+      window.logger.suc(getTranslation("Valency data is being compiled. Check out tasks for details") + ".");
     },
     () => {
-      window.logger.err(getTranslation("Failed to launch valency data compilation!"));
+      window.logger.err(getTranslation("Failed to launch valency data compilation") + "!");
     }
   );
 };
@@ -1338,7 +1338,7 @@ const Perspective = ({
   if (p.is_hidden_for_client) {
     return (
       <div style={{ marginTop: "1em" }}>
-        <Label>{getTranslation("Perspective is hidden and you don't have permissions to access it.")}</Label>
+        <Label>{getTranslation("Perspective is hidden and you don't have permissions to access it") + "."}</Label>
       </div>
     );
   }

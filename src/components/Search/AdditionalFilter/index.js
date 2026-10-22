@@ -655,7 +655,7 @@ const AdditionalFilterWrap = props => {
     return (
       <Segment>
         <Loader active={languagesQueryLoading} inline="centered">
-          {getTranslation("Loading additional filter data...")}
+          {getTranslation("Loading additional filter data") + "..."}
         </Loader>
       </Segment>
     );

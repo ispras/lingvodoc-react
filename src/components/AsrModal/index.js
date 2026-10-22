@@ -74,7 +74,7 @@ const AsrModal = ({ onClose }) => {
     if (!f) return;
     const ext = (f.name.split(".").pop() || "").toLowerCase();
     if (!ACCEPTED_EXTENSIONS.includes(ext)) {
-      setErrorMessage(getTranslation("Please select an audio file in wav, mp3, ogg, flac or webm format."));
+      setErrorMessage(getTranslation("Please select an audio file in wav, mp3, ogg, flac or webm format") + ".");
       setFile(null);
       return;
     }
@@ -86,7 +86,7 @@ const AsrModal = ({ onClose }) => {
   const startRecording = async () => {
     setErrorMessage(null);
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || typeof MediaRecorder === "undefined") {
-      setErrorMessage(getTranslation("Audio recording is not supported in this browser."));
+      setErrorMessage(getTranslation("Audio recording is not supported in this browser") + ".");
       return;
     }
     try {
@@ -114,7 +114,7 @@ const AsrModal = ({ onClose }) => {
       setElapsedSec(0);
       timerRef.current = setInterval(() => setElapsedSec(s => s + 1), 1000);
     } catch (err) {
-      setErrorMessage(getTranslation("Microphone access denied or unavailable."));
+      setErrorMessage(getTranslation("Microphone access denied or unavailable") + ".");
     }
   };
 
@@ -141,7 +141,7 @@ const AsrModal = ({ onClose }) => {
       }
       setResult(data);
     } catch (e) {
-      setErrorMessage(getTranslation("Could not reach the ASR service."));
+      setErrorMessage(getTranslation("Could not reach the ASR service") + ".");
     } finally {
       setSubmitting(false);
     }
@@ -153,8 +153,8 @@ const AsrModal = ({ onClose }) => {
      * show a notice. Kept as a stub for the future GraphQL upload. */
     if (result && result.text && navigator.clipboard) {
       navigator.clipboard.writeText(result.text).then(
-        () => setSentNotice(getTranslation("Transcription copied to clipboard.")),
-        () => setSentNotice(getTranslation("Copy failed — please select and copy the text manually."))
+        () => setSentNotice(getTranslation("Transcription copied to clipboard") + "."),
+        () => setSentNotice(getTranslation("Copy failed — please select and copy the text manually") + ".")
       );
     }
   };
@@ -201,8 +201,8 @@ const AsrModal = ({ onClose }) => {
               {getTranslation("The Armenian speech recognition service is not responding at")}{" "}
               <code>{ASR_BASE_URL}</code>.{" "}
               {getTranslation(
-                "Make sure the model archive is deployed (e.g. to ~/asr-hy-cpu) and gunicorn is running, then reload this dialog."
-              )}
+                "Make sure the model archive is deployed (e.g. to ~/asr-hy-cpu) and gunicorn is running, then reload this dialog"
+              ) + "."}
             </p>
           </Message>
         )}

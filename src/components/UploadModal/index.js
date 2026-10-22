@@ -41,7 +41,7 @@ const Upload = props => {
           <Message negative compact>
             <Message.Header>{getTranslation("Perspective info loading error")}</Message.Header>
             <div style={{ marginTop: "0.25em" }}>
-              {getTranslation("Try reloading the page; if the error persists, please contact administrators.")}
+              {getTranslation("Try reloading the page; if the error persists, please contact administrators") + "."}
             </div>
           </Message>
         </Modal.Content>

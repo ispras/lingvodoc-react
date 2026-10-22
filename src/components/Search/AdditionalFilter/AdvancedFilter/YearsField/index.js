@@ -15,7 +15,7 @@ class YearsField extends PureComponent {
   render() {
     const { classNames, value, options, onChange, getTranslation } = this.props;
     const selectText = getTranslation("Select years");
-    const noFoundText = getTranslation("No years found.");
+    const noFoundText = getTranslation("No years found") + ".";
     const label = getTranslation("Years");
     const selectAllText = getTranslation("Select all");
     const clearAllText = getTranslation("Clear all");

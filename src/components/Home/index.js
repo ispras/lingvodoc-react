@@ -132,7 +132,7 @@ const Home = props => {
   if (error) {
     return (
       <Message negative compact>
-        {getTranslation("Dictionary data loading error, please contact administrators.")}
+        {getTranslation("Dictionary data loading error, please contact administrators") + "."}
       </Message>
     );
   }
@@ -400,7 +400,7 @@ const AuthWrapper = ({
   if (error) {
     return (
       <Message negative compact>
-        {getTranslation("Dictionary data loading error, please contact administrators.")}
+        {getTranslation("Dictionary data loading error, please contact administrators") + "."}
       </Message>
     );
   }

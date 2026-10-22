@@ -175,7 +175,7 @@ class TranslationsBlock extends React.Component {
         types.push(this.props.gists_type);
         typeGistsMap[this.props.gists_type] = [];
       } else {
-        return <h1 className="lingvo-header-translations">{this.context("No translations.")}</h1>;
+        return <h1 className="lingvo-header-translations">{this.context("No translations") + "."}</h1>;
       }
     }
 
@@ -222,7 +222,7 @@ class TranslationsBlock extends React.Component {
                 ></EditAtoms>
               ))
             ) : (
-              <h1 className="lingvo-header-translations">{this.context("No translations.")}</h1>
+              <h1 className="lingvo-header-translations">{this.context("No translations") + "."}</h1>
             )}
           </Container>
         ))}

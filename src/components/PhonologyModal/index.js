@@ -506,12 +506,12 @@ class PhonologyModal extends React.Component {
       }).then(
         () => {
           window.logger.suc(
-            this.context("Phonological statistical distance comparison is being computed. Please check out tasks for details.")
+            this.context("Phonological statistical distance comparison is being computed. Please check out tasks for details") + "."
           );
           this.props.closeModal();
         },
         () => {
-          window.logger.err(this.context("Failed to launch phonological statistical distance computation!"));
+          window.logger.err(this.context("Failed to launch phonological statistical distance computation") + "!");
         }
       );
 
@@ -558,11 +558,11 @@ class PhonologyModal extends React.Component {
       }
     }).then(
       () => {
-        window.logger.suc(this.context("Phonology is being compiled. Please check out tasks for details."));
+        window.logger.suc(this.context("Phonology is being compiled. Please check out tasks for details") + ".");
         this.props.closeModal();
       },
       () => {
-        window.logger.err(this.context("Failed to launch phonology compilation!"));
+        window.logger.err(this.context("Failed to launch phonology compilation") + "!");
       }
     );
   }

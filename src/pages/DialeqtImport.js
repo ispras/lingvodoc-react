@@ -293,7 +293,7 @@ class DialeqtImport extends React.Component {
                 >
                   {parentLanguage ? (
                     <span>
-                      {this.context("You have selected:")} <b>{T(parentLanguage.translations)}</b>
+                      {this.context("You have selected") + ":"} <b>{T(parentLanguage.translations)}</b>
                     </span>
                   ) : (
                     this.context("Please, select the parent language")

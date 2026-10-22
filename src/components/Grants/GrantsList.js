@@ -30,7 +30,7 @@ class GrantsList extends React.Component {
     createGrantPermission({
       variables: { grantId: grant.id }
     }).then(() => {
-      window.logger.suc(this.context("Request has been sent to the grant's owner."));
+      window.logger.suc(this.context("Request has been sent to the grant's owner") + ".");
     });
   }
 

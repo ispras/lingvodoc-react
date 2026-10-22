@@ -88,7 +88,7 @@ const Subject = ({ request, grants, dictionaries, organizations }) => {
     }
 
     default:
-      return <div>{getTranslation("Unknown request type!")}</div>;
+      return <div>{getTranslation("Unknown request type") + "!"}</div>;
   }
 };
 

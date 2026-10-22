@@ -411,12 +411,12 @@ class ConvertEafModal extends React.Component {
       }).then(
         () => {
           window.logger.suc(
-            this.context("Started convertion to a new dictionary. Please check out tasks for details.")
+            this.context("Started convertion to a new dictionary. Please check out tasks for details") + "."
           );
           actions.closeConvert();
         },
         () => {
-          window.logger.err(this.context("Failed to start convertion to a new dictionary!"));
+          window.logger.err(this.context("Failed to start convertion to a new dictionary") + "!");
         }
       );
     } else if (mode === "update") {
@@ -433,11 +433,11 @@ class ConvertEafModal extends React.Component {
         }
       }).then(
         () => {
-          window.logger.suc(this.context("Started dictionary update. Please check out tasks for details."));
+          window.logger.suc(this.context("Started dictionary update. Please check out tasks for details") + ".");
           actions.closeConvert();
         },
         () => {
-          window.logger.err(this.context("Failed to start dictionary update!"));
+          window.logger.err(this.context("Failed to start dictionary update") + "!");
         }
       );
     }
@@ -634,7 +634,7 @@ class ConvertEafModal extends React.Component {
                     <Message negative compact>
                       <Message.Header>{this.context("Markup data loading error")}</Message.Header>
                       <div style={{ marginTop: "0.25em" }}>
-                        {this.context("Try reloading the page; if the error persists, please contact administrators.")}
+                        {this.context("Try reloading the page; if the error persists, please contact administrators") + "."}
                       </div>
                     </Message>
                   ) : (
@@ -658,7 +658,7 @@ class ConvertEafModal extends React.Component {
               {!parentLanguage && <Header>{this.context("Please, select the parent language")}</Header>}
               {parentLanguage && (
                 <Header>
-                  {this.context("You have selected:")} <b>{T(parentLanguage.translations)}</b>
+                  {this.context("You have selected") + ":"} <b>{T(parentLanguage.translations)}</b>
                 </Header>
               )}
               <div style={{ height: "400px" }}>
@@ -679,7 +679,7 @@ class ConvertEafModal extends React.Component {
               <Message negative compact>
                 <Message.Header>{this.context("Dictionary data loading error")}</Message.Header>
                 <div style={{ marginTop: "0.25em" }}>
-                  {this.context("Try reloading the page; if the error persists, please contact administrators.")}
+                  {this.context("Try reloading the page; if the error persists, please contact administrators") + "."}
                 </div>
               </Message>
             ) : (

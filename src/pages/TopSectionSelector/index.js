@@ -90,14 +90,14 @@ const TopSectionSelector = () => {
         <div className="lingvo-comm-bar">
           <div className={visible && "lingvo-comm-bar__title lingvo-comm-bar__title_visible" || "lingvo-comm-bar__title"} onClick={toggleVisibility}>
             <div className="lingvo-comm-bar__title-inner">
-              <i className="lingvo-icon lingvo-icon_arrow" /> {getTranslation("For grantees and commercial use.")}
+              <i className="lingvo-icon lingvo-icon_arrow" /> {getTranslation("For grantees and commercial use") + "."}
             </div>
           </div>
           <Transition visible={visible} duration={30}>
             <div className="lingvo-comm-bar__desc">
               <div className="lingvo-comm-bar__desc-inner">
                 {getTranslation("If you receive a grant for the development of the platform or intend to use it")} <br />
-                {getTranslation("for commercial purposes, you must sign an agreement with ISP RAS.")} <br /> 
+                {getTranslation("for commercial purposes, you must sign an agreement with ISP RAS") + "."} <br /> 
                 {getTranslation("To get an agreement, you need to")} <a href="https://docs.google.com/forms/d/e/1FAIpQLSd-h0GFww61WmQgJBRYf72s1eFfNPYjx7-ZF0PcCK4cquZ-QQ/viewform" target="_blank" rel="noreferrer">{getTranslation("register")}</a>.
               </div>
             </div>
@@ -106,11 +106,11 @@ const TopSectionSelector = () => {
 
         <div className="lingvo-main-block">
           <div className="lingvo-main-block__content">
-            <h2 className="lingvo-main-block__title">{getTranslation("LingvoDoc is a linguistic platform.")}</h2>
+            <h2 className="lingvo-main-block__title">{getTranslation("LingvoDoc is a linguistic platform") + "."}</h2>
             <div className="lingvo-main-block__subtit lingvo-main-block__subtit_platform">
               {getTranslation(
-                "Designed for compiling, analyzing and storing dictionaries, corpora and concordances of various languages and dialects."
-              )}
+                "Designed for compiling, analyzing and storing dictionaries, corpora and concordances of various languages and dialects"
+              ) + "."}
             </div>
 
             <div className="lingvo-main-block__platform">
@@ -140,8 +140,8 @@ const TopSectionSelector = () => {
                   </strong>
                   <div className="lingvo-main-block__platform-desc">
                     {getTranslation(
-                      "Many dialects have already disappeared, and the LingvoDoc platform holds data from archives, which are presently stacked and inaccessible."
-                    )}
+                      "Many dialects have already disappeared, and the LingvoDoc platform holds data from archives, which are presently stacked and inaccessible"
+                    ) + "."}
                   </div>
                 </div>
 
@@ -154,8 +154,8 @@ const TopSectionSelector = () => {
                   </strong>
                   <div className="lingvo-main-block__platform-desc">
                     {getTranslation(
-                      "(for example, Eastern Mansi) as well as those that are in danger of extinction (that is, languages that have no more than 10 speakers over 60 years old left)."
-                    )}
+                      "(for example, Eastern Mansi) as well as those that are in danger of extinction (that is, languages that have no more than 10 speakers over 60 years old left)"
+                    ) + "."}
                   </div>
                 </div>
               </div>
@@ -205,7 +205,7 @@ const TopSectionSelector = () => {
             <h2 className="lingvo-main-block__title">{getTranslation("Opportunities")}</h2>
             <div className="lingvo-main-block__opportunities-info">
               <div className="lingvo-main-block__opportunities-details">
-                {getTranslation("Follow the link to learn more about using these options:")}{" "}
+                {getTranslation("Follow the link to learn more about using these options") + ":"}{" "}
                 <a href="https://github.com/ispras/lingvodoc-react/wiki" target="_blank" rel="noreferrer">
                   https://github.com/ispras/lingvodoc-react/wiki
                 </a>

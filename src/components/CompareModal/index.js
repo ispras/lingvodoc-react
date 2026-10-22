@@ -475,7 +475,7 @@ const CompareModal = ({ columns, entries, onClose, perspectiveId }) => {
               <Message negative>
                 <Message.Header>{getTranslation("Compare data loading error")}</Message.Header>
                 <div style={{ marginTop: "0.25em" }}>
-                  {getTranslation("Try reloading the page; if the error persists, please contact administrators.")}
+                  {getTranslation("Try reloading the page; if the error persists, please contact administrators") + "."}
                 </div>
               </Message>
             ) : (

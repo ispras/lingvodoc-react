@@ -94,13 +94,13 @@ class ParserResults extends React.Component {
               {mode === "edit" && (
                 <Button
                   icon={<i className="lingvo-icon lingvo-icon_refresh" />} 
-                  onClick={() => openConfirmModal(this.context("Redo parser execution?"), () => this.reexecute(res))}
+                  onClick={() => openConfirmModal(this.context("Redo parser execution") + "?", () => this.reexecute(res))}
                 />
               )}
               {mode === "edit" && (
                 <Button
                   icon={<i className="lingvo-icon lingvo-icon_delete2" />}
-                  onClick={() => openConfirmModal(this.context("Delete parser results?"), () => this.remove(res))}
+                  onClick={() => openConfirmModal(this.context("Delete parser results") + "?", () => this.remove(res))}
                 />
               )}
             </Button.Group>

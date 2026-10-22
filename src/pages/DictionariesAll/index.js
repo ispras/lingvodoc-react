@@ -422,7 +422,7 @@ const Wrapper = ({ tree, ...rest }) => {
   }, [pause]);
 
   if (tree === null) {
-    return <Header>{getTranslation("No data.")}</Header>;
+    return <Header>{getTranslation("No data") + "."}</Header>;
   }
 
   if (tree === undefined || pause) {

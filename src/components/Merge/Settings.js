@@ -636,7 +636,7 @@ class MergeSettings extends React.Component {
                         }
                         icon={<i className="lingvo-icon lingvo-icon_arrow" />}
                         className="lingvo-dropdown-select lingvo-dropdown-select_merge"
-                        placeholder={this.context("Choose what?")}
+                        placeholder={this.context("Choose what") + "?"}
                       />
                     </List.Item>
                     <List.Item style={{ paddingTop: "13px" }}>
@@ -710,7 +710,7 @@ class MergeSettings extends React.Component {
         {this.state.loading && (
           <div className="lingvo-segment">
             <Container textAlign="center">
-              {this.context("Loading suggestions...")}
+              {this.context("Loading suggestions") + "..."}
               <div style={{ marginTop: "2em" }}>
                 <Header as="h4" icon>
                   <Icon name="spinner" loading />
@@ -746,7 +746,7 @@ class MergeSettings extends React.Component {
                       disabled={page_state === "merging" || this.state.error_message}
                       content={
                         page_state === "merging"
-                          ? this.context("Merging selected on current page...")
+                          ? this.context("Merging selected on current page") + "..."
                           : this.context("Merge selected on current page")
                       }
                       onClick={() => this.mergeSelectedPage(page, group_index_shift)}
@@ -842,15 +842,15 @@ class MergeSettings extends React.Component {
                   <div style={{ marginTop: "10px", paddingBottom: "6px" }}>
                     {empty_flag ? (
                       <div className="lingvo-message lingvo-message_info">
-                        {this.context("Group doesn't have any unmerged lexical entries left.")}
+                        {this.context("Group doesn't have any unmerged lexical entries left") + "."}
                       </div>
                     ) : attached ? (
                       <div className="lingvo-message lingvo-message_info">
-                        {this.context("Attached to another group.")}
+                        {this.context("Attached to another group") + "."}
                       </div>
                     ) : result === "merging" ? (
                       <div style={{ textAlign: "center", paddingTop: "10px" }}>
-                        <Button className="lingvo-button-greenest" disabled content={this.context("Merging...")} />
+                        <Button className="lingvo-button-greenest" disabled content={this.context("Merging") + "..."} />
                       </div>
                     ) : result === "success" ? (
                       <div className="lingvo-message lingvo-message_success">
@@ -860,7 +860,7 @@ class MergeSettings extends React.Component {
                       <div className="lingvo-message lingvo-message_error">
                         {this.context("Merge error")}
                         <p>
-                          {this.context("Failed to merge selected lexical entries, please contact developers.")}
+                          {this.context("Failed to merge selected lexical entries, please contact developers") + "."}
                         </p>
                         <p>
                           {this.state.error_message.split(/[\r\n]+/).map((line, i) => (
@@ -873,7 +873,7 @@ class MergeSettings extends React.Component {
                       </div>
                     ) : this.state.error_message ? (
                       <div className="lingvo-message lingvo-message_warning">
-                        {this.context("Merges are disabled due to an error, please contact developers.")}
+                        {this.context("Merges are disabled due to an error, please contact developers") + "."}
                       </div>
                     ) : (
                       <div style={{ textAlign: "center", paddingTop: "10px" }}>
