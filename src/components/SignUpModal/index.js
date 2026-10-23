@@ -65,10 +65,13 @@ const SignUpModal = ({ close }) => {
           }
         }
         window.logger.suc(getTranslation("Signup success"));
+        close();
       } else if (response.data.result === "Signup approval pending.") {
         window.logger.suc(getTranslation(getTranslation("Signup approval pending")));
+        close();
       } else {
         window.logger.log(getTranslation(response.data.result));
+        close();
       }
     } else if (response.err) {
       setErrorMessage(getTranslation(typeof response.err === "string" ? response.err : response.err.error));
