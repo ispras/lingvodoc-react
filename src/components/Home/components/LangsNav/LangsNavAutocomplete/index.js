@@ -148,7 +148,7 @@ const LangsNavAutocomplete = props => {
                 className={classNames.disableBesideButton}
                 type="button"
                 onClick={disableLangsNavAcBeside}
-                aria-label={getTranslation("Закрыть ввод языка")}
+                aria-label={getTranslation("Close input of language")}
               >
                 <Icon name="window close outline" />
               </button>
