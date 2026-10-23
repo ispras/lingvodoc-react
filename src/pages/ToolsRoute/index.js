@@ -85,7 +85,7 @@ function ToolsRoute({ user, actions }) {
             {user.id !== undefined && (
               <Link className="card-item"
                 to="/tools"
-                onClick={() => actions.cognateAnalysisOpenModal(null, "complex_distance")}
+                onClick={() => actions.cognateAnalysisOpenModal(null, "complex_distance", null)}
               >
                 <label className="card-item__label">{getTranslation("Get composite distance between languages")}</label>
                 <img className="card-item__img card-item__img_map" src={imageMap} />

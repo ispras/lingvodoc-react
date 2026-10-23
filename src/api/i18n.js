@@ -198,6 +198,7 @@ export const stringsToTranslate = [
   "Click here to download XLSX report",
   "Client type",
   "Close",
+  "Close input of language",
   "Cognate acoustic analysis",
   "Cognate acoustic analysis is launched. Please check out tasks for details",
   "Cognate analysis",
@@ -1205,8 +1206,7 @@ export const stringsToTranslate = [
   "Your dictionary is created, click",
   "Your dictionary is created, clickRequests",
   "Your dictionary is scheduled for conversion. Please, check tasks tab for conversion status",
-  "Zharov Andrey Anatolievich",
-  "Закрыть ввод языка",
+  "Zharov Andrey Anatolievich"
 ];
 
 let i18n_was_set = false;
