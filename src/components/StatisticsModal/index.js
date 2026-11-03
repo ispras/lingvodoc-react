@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { Button, Checkbox, Container, Icon, List, Message, Modal, Table } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 import { withApollo } from "@apollo/client/react/hoc";
-import { de, enGB, fi, fr, ru } from "date-fns/locale";
+import { de, enGB, fi, fr, hy, ru } from "date-fns/locale";
 import { upperFirst } from "lodash";
 import moment from "moment";
 import PropTypes from "prop-types";
@@ -20,6 +20,7 @@ registerLocale("ru", ru);
 registerLocale("de", de);
 registerLocale("fi", fi);
 registerLocale("fr", fr);
+registerLocale("hy", hy);
 
 import "react-datepicker/dist/react-datepicker.css";
 import "./style.scss";
@@ -450,8 +451,10 @@ class StatisticsModal extends React.Component {
     const currentLocaleId = locale.get();
     const localesDatePicker = [];
 
+    const registeredDatePickerLocales = ["en", "ru", "de", "fi", "fr", "hy"];
+
     locales.forEach(item => {
-      if (item.id <= 5) {
+      if (registeredDatePickerLocales.includes(item.shortcut)) {
         localesDatePicker.push({
           shortcut: item.shortcut,
           id: item.id

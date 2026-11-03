@@ -7,7 +7,13 @@ import { branch, compose, pure, renderComponent } from "recompose";
 import { changeLocale } from "ducks/locale";
 
 function checkCountry(shortcut) {
-  return shortcut === "en" ? "gb" : shortcut;
+  if (shortcut === "en") {
+    return "gb";
+  }
+  if (shortcut === "hy") {
+    return "am";
+  }
+  return shortcut;
 }
 
 function icon({ shortcut }) {
